@@ -69,13 +69,13 @@ void CNetworkDetection::CheckConnectivity()
 			{
 				int iConnectSuccess = connect(sockfd, ptr->ai_addr, ptr->ai_addrlen);
 
-#if defined(OS_WINCE)
-                if (iConnectSuccess == SOCKET_ERROR)
-#else
+//#if defined(OS_WINCE)
+//                if (iConnectSuccess == SOCKET_ERROR)
+//#else
 				//  Because Socket is non blocking we expect it to return SOCKET_ERROR
 				//  and WSAGetLastError() would be WSAEWOULDBLOCK
                 if (!(iConnectSuccess == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK))
-#endif
+//#endif
 				{
 					m_szLastError = "Socket Operation unexpectedly blocked, are you connected to a PC?";
 					LOG(WARNING) + m_szLastError;

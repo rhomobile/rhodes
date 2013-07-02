@@ -68,7 +68,7 @@
         end.push("/* optional function */ oResult").join(', ')
     %>
           // function(<%= params %>)
-        <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.name %>', nativeName: '<%= module_method.name %>:inst',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
+        <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.name %>', nativeName: '<%= module_method.name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
     <% first_method = false
        end %>
     ], apiReq, function(){ return this.getId(); });
@@ -175,5 +175,13 @@ end %>
     <% end %>
 
     rhoUtil.namespace(moduleNS, <%= $cur_module.name %>);
+
+    <%  $cur_module.module_aliases.each do |module_alias|
+        next if module_alias.deprecated
+    %>
+        rhoUtil.namespaceAlias(<%= namespace $cur_module %>, <%= $cur_module.parents.clone().join(".") %>, '<%= module_alias.new_name %>');
+    <% end %>
+
+
 
 })(Rho.jQuery, Rho, Rho.util);

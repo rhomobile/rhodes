@@ -1,0 +1,418 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C52563AE1781C0DD008D394D /* applepushclient.mm in Sources */ = {isa = PBXBuildFile; fileRef = C52563AC1781C0DD008D394D /* applepushclient.mm */; };
+		C52563AF1781C0DD008D394D /* applepushclient.h in Headers */ = {isa = PBXBuildFile; fileRef = C52563AD1781C0DD008D394D /* applepushclient.h */; };
+		C52563B31781CB23008D394D /* PushNotificationsReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C52563B11781CB23008D394D /* PushNotificationsReceiver.h */; };
+		C52563B41781CB23008D394D /* PushNotificationsReceiver.mm in Sources */ = {isa = PBXBuildFile; fileRef = C52563B21781CB23008D394D /* PushNotificationsReceiver.mm */; };
+		FA3E1F211779EFAA00F5E33A /* applePush.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F1B1779EFAA00F5E33A /* applePush.h */; };
+		FA3E1F221779EFAA00F5E33A /* applePush.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F1C1779EFAA00F5E33A /* applePush.m */; };
+		FA3E1F231779EFAA00F5E33A /* applePushFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F1D1779EFAA00F5E33A /* applePushFactorySingleton.m */; };
+		FA3E1F241779EFAA00F5E33A /* applePushSetup.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F1E1779EFAA00F5E33A /* applePushSetup.mm */; };
+		FA3E1F251779EFAA00F5E33A /* applePushSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F1F1779EFAA00F5E33A /* applePushSingleton.h */; };
+		FA3E1F261779EFAA00F5E33A /* applePushSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F201779EFAA00F5E33A /* applePushSingleton.m */; };
+		FA3E1F281779EFB100F5E33A /* IapplePush.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F271779EFB100F5E33A /* IapplePush.h */; };
+		FA3E1F2F1779EFBB00F5E33A /* applePushBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F291779EFBB00F5E33A /* applePushBase.h */; };
+		FA3E1F301779EFBB00F5E33A /* applePushBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2A1779EFBB00F5E33A /* applePushBase.m */; };
+		FA3E1F311779EFBB00F5E33A /* applePushFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F2B1779EFBB00F5E33A /* applePushFactoryBase.h */; };
+		FA3E1F321779EFBB00F5E33A /* applePushFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2C1779EFBB00F5E33A /* applePushFactoryBase.m */; };
+		FA3E1F331779EFBB00F5E33A /* applePushSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F2D1779EFBB00F5E33A /* applePushSingletonBase.h */; };
+		FA3E1F341779EFBB00F5E33A /* applePushSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2E1779EFBB00F5E33A /* applePushSingletonBase.m */; };
+		FA3E1F361779EFC400F5E33A /* applepush_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F351779EFC400F5E33A /* applepush_js_wrap.mm */; };
+		FA3E1F381779EFCB00F5E33A /* applepush_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F371779EFCB00F5E33A /* applepush_ruby_wrap.m */; };
+		FA3E1F3C1779EFD700F5E33A /* applepush_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F391779EFD700F5E33A /* applepush_api_init.cpp */; };
+		FA3E1F3D1779EFD700F5E33A /* applepush_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3A1779EFD700F5E33A /* applepush_js_api.cpp */; };
+		FA3E1F3E1779EFD700F5E33A /* applepush_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3B1779EFD700F5E33A /* applepush_ruby_api.c */; };
+		FAC155E7145855CF0016F3BD /* applePush_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* applePush_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C52563AC1781C0DD008D394D /* applepushclient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = applepushclient.mm; path = ../../../../../commonAPI/mediaplayer/ext/platform/iphone/impl/applepushclient.mm; sourceTree = "<group>"; };
+		C52563AD1781C0DD008D394D /* applepushclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applepushclient.h; path = ../../../../../commonAPI/mediaplayer/ext/platform/iphone/impl/applepushclient.h; sourceTree = "<group>"; };
+		C52563B11781CB23008D394D /* PushNotificationsReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PushNotificationsReceiver.h; path = impl/PushNotificationsReceiver.h; sourceTree = "<group>"; };
+		C52563B21781CB23008D394D /* PushNotificationsReceiver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = PushNotificationsReceiver.mm; path = impl/PushNotificationsReceiver.mm; sourceTree = "<group>"; };
+		FA3E1F1B1779EFAA00F5E33A /* applePush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applePush.h; path = impl/applePush.h; sourceTree = "<group>"; };
+		FA3E1F1C1779EFAA00F5E33A /* applePush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = applePush.m; path = impl/applePush.m; sourceTree = "<group>"; };
+		FA3E1F1D1779EFAA00F5E33A /* applePushFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = applePushFactorySingleton.m; path = impl/applePushFactorySingleton.m; sourceTree = "<group>"; };
+		FA3E1F1E1779EFAA00F5E33A /* applePushSetup.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = applePushSetup.mm; path = impl/applePushSetup.mm; sourceTree = "<group>"; };
+		FA3E1F1F1779EFAA00F5E33A /* applePushSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applePushSingleton.h; path = impl/applePushSingleton.h; sourceTree = "<group>"; };
+		FA3E1F201779EFAA00F5E33A /* applePushSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = applePushSingleton.m; path = impl/applePushSingleton.m; sourceTree = "<group>"; };
+		FA3E1F271779EFB100F5E33A /* IapplePush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IapplePush.h; path = generated/IapplePush.h; sourceTree = "<group>"; };
+		FA3E1F291779EFBB00F5E33A /* applePushBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applePushBase.h; path = generated/base_impl/applePushBase.h; sourceTree = "<group>"; };
+		FA3E1F2A1779EFBB00F5E33A /* applePushBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = applePushBase.m; path = generated/base_impl/applePushBase.m; sourceTree = "<group>"; };
+		FA3E1F2B1779EFBB00F5E33A /* applePushFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applePushFactoryBase.h; path = generated/base_impl/applePushFactoryBase.h; sourceTree = "<group>"; };
+		FA3E1F2C1779EFBB00F5E33A /* applePushFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = applePushFactoryBase.m; path = generated/base_impl/applePushFactoryBase.m; sourceTree = "<group>"; };
+		FA3E1F2D1779EFBB00F5E33A /* applePushSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applePushSingletonBase.h; path = generated/base_impl/applePushSingletonBase.h; sourceTree = "<group>"; };
+		FA3E1F2E1779EFBB00F5E33A /* applePushSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = applePushSingletonBase.m; path = generated/base_impl/applePushSingletonBase.m; sourceTree = "<group>"; };
+		FA3E1F351779EFC400F5E33A /* applepush_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = applepush_js_wrap.mm; path = generated/javascript/applepush_js_wrap.mm; sourceTree = "<group>"; };
+		FA3E1F371779EFCB00F5E33A /* applepush_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = applepush_ruby_wrap.m; path = generated/ruby/applepush_ruby_wrap.m; sourceTree = "<group>"; };
+		FA3E1F391779EFD700F5E33A /* applepush_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = applepush_api_init.cpp; path = ../../shared/generated/applepush_api_init.cpp; sourceTree = "<group>"; };
+		FA3E1F3A1779EFD700F5E33A /* applepush_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = applepush_js_api.cpp; path = ../../shared/generated/applepush_js_api.cpp; sourceTree = "<group>"; };
+		FA3E1F3B1779EFD700F5E33A /* applepush_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = applepush_ruby_api.c; path = ../../shared/generated/applepush_ruby_api.c; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libapplePush.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libapplePush.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* applePush_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = applePush_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libapplePush.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* applePush */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = applePush;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F161779EF7600F5E33A /* impl */,
+				FA3E1F151779EF6E00F5E33A /* generated */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* applePush_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		FA3E1F151779EF6E00F5E33A /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F1A1779EF9B00F5E33A /* api */,
+				FA3E1F191779EF9400F5E33A /* base_impl */,
+				FA3E1F181779EF8D00F5E33A /* wrappers */,
+				FA3E1F171779EF7D00F5E33A /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FA3E1F161779EF7600F5E33A /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C52563AC1781C0DD008D394D /* applepushclient.mm */,
+				C52563AD1781C0DD008D394D /* applepushclient.h */,
+				FA3E1F1B1779EFAA00F5E33A /* applePush.h */,
+				FA3E1F1C1779EFAA00F5E33A /* applePush.m */,
+				FA3E1F1D1779EFAA00F5E33A /* applePushFactorySingleton.m */,
+				FA3E1F1E1779EFAA00F5E33A /* applePushSetup.mm */,
+				FA3E1F1F1779EFAA00F5E33A /* applePushSingleton.h */,
+				FA3E1F201779EFAA00F5E33A /* applePushSingleton.m */,
+				C52563B11781CB23008D394D /* PushNotificationsReceiver.h */,
+				C52563B21781CB23008D394D /* PushNotificationsReceiver.mm */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FA3E1F171779EF7D00F5E33A /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F391779EFD700F5E33A /* applepush_api_init.cpp */,
+				FA3E1F3A1779EFD700F5E33A /* applepush_js_api.cpp */,
+				FA3E1F3B1779EFD700F5E33A /* applepush_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FA3E1F181779EF8D00F5E33A /* wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F371779EFCB00F5E33A /* applepush_ruby_wrap.m */,
+				FA3E1F351779EFC400F5E33A /* applepush_js_wrap.mm */,
+			);
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FA3E1F191779EF9400F5E33A /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F291779EFBB00F5E33A /* applePushBase.h */,
+				FA3E1F2A1779EFBB00F5E33A /* applePushBase.m */,
+				FA3E1F2B1779EFBB00F5E33A /* applePushFactoryBase.h */,
+				FA3E1F2C1779EFBB00F5E33A /* applePushFactoryBase.m */,
+				FA3E1F2D1779EFBB00F5E33A /* applePushSingletonBase.h */,
+				FA3E1F2E1779EFBB00F5E33A /* applePushSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FA3E1F1A1779EF9B00F5E33A /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F271779EFB100F5E33A /* IapplePush.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* applePush_Prefix.pch in Headers */,
+				FA3E1F211779EFAA00F5E33A /* applePush.h in Headers */,
+				FA3E1F251779EFAA00F5E33A /* applePushSingleton.h in Headers */,
+				FA3E1F281779EFB100F5E33A /* IapplePush.h in Headers */,
+				FA3E1F2F1779EFBB00F5E33A /* applePushBase.h in Headers */,
+				FA3E1F311779EFBB00F5E33A /* applePushFactoryBase.h in Headers */,
+				FA3E1F331779EFBB00F5E33A /* applePushSingletonBase.h in Headers */,
+				C52563AF1781C0DD008D394D /* applepushclient.h in Headers */,
+				C52563B31781CB23008D394D /* PushNotificationsReceiver.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* applePush */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "applePush" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = applePush;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libapplePush.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "ApplePush" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* applePush */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* applePush */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA3E1F221779EFAA00F5E33A /* applePush.m in Sources */,
+				FA3E1F231779EFAA00F5E33A /* applePushFactorySingleton.m in Sources */,
+				FA3E1F241779EFAA00F5E33A /* applePushSetup.mm in Sources */,
+				FA3E1F261779EFAA00F5E33A /* applePushSingleton.m in Sources */,
+				FA3E1F301779EFBB00F5E33A /* applePushBase.m in Sources */,
+				FA3E1F321779EFBB00F5E33A /* applePushFactoryBase.m in Sources */,
+				FA3E1F341779EFBB00F5E33A /* applePushSingletonBase.m in Sources */,
+				FA3E1F361779EFC400F5E33A /* applepush_js_wrap.mm in Sources */,
+				FA3E1F381779EFCB00F5E33A /* applepush_ruby_wrap.m in Sources */,
+				FA3E1F3C1779EFD700F5E33A /* applepush_api_init.cpp in Sources */,
+				FA3E1F3D1779EFD700F5E33A /* applepush_js_api.cpp in Sources */,
+				FA3E1F3E1779EFD700F5E33A /* applepush_ruby_api.c in Sources */,
+				C52563AE1781C0DD008D394D /* applepushclient.mm in Sources */,
+				C52563B41781CB23008D394D /* PushNotificationsReceiver.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					/Users/alexepifanoff/repos/rhodes/platform/iphone/Classes,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					/Users/alexepifanoff/repos/rhodes/platform/iphone/Classes,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/applePush.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = applePush_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					"$(RHO_ROOT)/platform/iphone/Classes/NativeView",
+					"$(RHO_ROOT)/platform/iphone/Classes/Signature",
+					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
+					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
+					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = applePush;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv7";
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /tmp/applePush.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = applePush_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					"$(RHO_ROOT)/platform/iphone/Classes/NativeView",
+					"$(RHO_ROOT)/platform/iphone/Classes/Signature",
+					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
+					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
+					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = applePush;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386  armv7";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "ApplePush" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "applePush" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

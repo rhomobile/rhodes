@@ -518,6 +518,15 @@ end
 
 
 namespace "config" do
+
+  namespace "iphone" do
+    task :app_config do
+      if $app_config['capabilities'].index('push')
+        $app_config['extensions'] << 'applePush' unless $app_config['extensions'].index('applePush')
+      end
+    end
+  end
+
   task :set_iphone_platform do
     $current_platform = "iphone"
   end
