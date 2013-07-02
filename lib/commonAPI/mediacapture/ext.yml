@@ -7,6 +7,13 @@ android:
   - ext/platform/android/AndroidManifest_rhomobile.xml
   - ext/platform/android/ApplicationCameraActivity.erb
   adds: ext/platform/android/adds
+
+wp8:
+  libraries: ["Mediacapture"]
+  camera:
+    csharp_impl: yes
+    root_namespace: rho
+    project_path: ext/platform/wp8/Mediacapture.vcxproj
   
 project_paths:
   wp8: ext/platform/wp8/Mediacapture.vcxproj
@@ -15,4 +22,4 @@ project_paths:
   
 xml_api_paths: ext/camera.xml, ext/videocapture.xml
 
-platforms: ["wm", "iphone", "android"]
+platforms: ["wm", "iphone", "android", "wp8"]
