@@ -19,8 +19,9 @@ namespace rho {
 
 class CSystemImpl : public CSystemImplBase
 {
+    bool mScreenSleeping;
 public:
-    CSystemImpl() : CSystemImplBase() {}
+    CSystemImpl() : CSystemImplBase(), mScreenSleeping(true) {}
     virtual ~CSystemImpl(){}
 
     virtual void getScreenWidth(rho::apiGenerator::CMethodResult& result);
@@ -224,12 +225,13 @@ void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& result)
 
 void CSystemImpl::getScreenSleeping(rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+    result.set(mScreenSleeping);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CSystemImpl::setScreenSleeping(bool flag, rho::apiGenerator::CMethodResult& result)
 {
+    mScreenSleeping = flag;
     rho_sys_set_sleeping(flag?1:0);
 }
 //----------------------------------------------------------------------------------------------------------------------
