@@ -89,6 +89,7 @@ private:
     SENSOR_TYPE         m_type;
     DWORD               m_dwQuietTime;
     LONG                m_lScale;
+    bool                m_bFirstSample;
 
     static rho::Hashtable<DWORD, sensormodule::ISensorEventListener*> g_listenerMap;
     //static std::vector<LONG> g_scale;
