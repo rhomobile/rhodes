@@ -700,7 +700,7 @@ class Jake
   def self.getBuildBoolProp(propName, config_yml=$app_config)
     res = getBuildProp(propName)
     
-    return true if res && (res.to_i() != 0 || res.casecmp("true") == 0 )
+    return true if res && (res.to_i() != 0 || res.casecmp("true") == 0 || res.casecmp("yes") == 0 )
     
     false
   end

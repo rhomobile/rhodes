@@ -288,7 +288,7 @@ namespace "build" do
                         cp_r lib, ENV['TARGET_TEMP_DIR']
                     end
                 else    
-                    puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
+                    Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
                 end    
           
           else
@@ -310,9 +310,8 @@ namespace "build" do
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
 
-              if File.exists? File.join(extpath,'build.bat')
-                chdir extpath
-                puts `build.bat`
+              if File.exists? File.join(extpath, 'build.bat')
+                Jake.run3('build.bat', extpath)
               elsif is_prebuilt
                 file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
                 puts "PREBUILD: #{file_mask}"
