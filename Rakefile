@@ -2128,7 +2128,12 @@ namespace "run" do
     task :rhosimulator_base => [:set_rhosimulator_flag, "config:common"] do
         puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
         $path = ""
-        $args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
+        if $js_application
+            $args = ["-jsapproot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
+        else
+            $args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
+        end
+            
         $args << "-security_token=#{ENV['security_token']}" if !ENV['security_token'].nil?
         cmd = nil
 
