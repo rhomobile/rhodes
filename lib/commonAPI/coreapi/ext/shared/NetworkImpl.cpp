@@ -101,7 +101,7 @@ public:
 #endif
 private:
 
-    NetRequest& getCurRequest(NetRequest& oNetRequest);
+    NetRequest& getCurRequest(NetRequest& oNetRequest, rho::apiGenerator::CMethodResult& oResult);
 
     void readHeaders( const rho::Hashtable<rho::String, rho::String>& propertyMap, Hashtable<String,String>& mapHeaders );
     void createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult );
@@ -111,12 +111,12 @@ private:
 #if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 	CWAN *m_pConnectionManager;
 #endif
-    void setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest );
+    void setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest, rho::apiGenerator::CMethodResult& oResult );
 };
 
-NetRequest& CNetworkImpl::getCurRequest(NetRequest& oNetRequest)
+NetRequest& CNetworkImpl::getCurRequest(NetRequest& oNetRequest, rho::apiGenerator::CMethodResult& oResult)
 {
-    if (!getCommandQueue())
+    if (!getCommandQueue() || !oResult.hasCallback() )
         return oNetRequest;
 
     CHttpCommand* pCmd = (CHttpCommand*)(getCommandQueue()->getCurCommand());
@@ -182,12 +182,12 @@ void CNetworkImpl::get( const rho::Hashtable<rho::String, rho::String>& property
 
     NetRequest oNetRequest;
     
-    setupSecureConnection( propertyMap, oNetRequest );
+    setupSecureConnection( propertyMap, oNetRequest, oResult );
 
-    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).doRequest( getStringProp(propertyMap, "httpVerb", "GET").c_str(),
+    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest, oResult)).doRequest( getStringProp(propertyMap, "httpVerb", "GET").c_str(),
             propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
 
-    if ( !getCurRequest(oNetRequest).isCancelled())
+    if ( !getCurRequest(oNetRequest, oResult).isCancelled())
         createResult( resp, mapHeaders, oResult );
 }
 
@@ -201,13 +201,13 @@ void CNetworkImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>&
     bool overwriteFile = propertyMap.containsKey("overwriteFile") && (propertyMap.get("overwriteFile")=="true");
     bool createFolders = propertyMap.containsKey("createFolders") && (propertyMap.get("createFolders")=="true");
 
-    setupSecureConnection( propertyMap, oNetRequest );
+    setupSecureConnection( propertyMap, oNetRequest, oResult );
     
     bool fileExists = false;
 
-    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).pullFile( propertyMap.get("url"), propertyMap.get("filename"), null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest, oResult)).pullFile( propertyMap.get("url"), propertyMap.get("filename"), null, &mapHeaders,overwriteFile,createFolders,&fileExists);
 
-    if ( !getCurRequest(oNetRequest).isCancelled()) {
+    if ( !getCurRequest(oNetRequest, oResult).isCancelled()) {
         if (fileExists) {
             Hashtable<String,String>& mapRes = oResult.getStringHash();
             mapRes["status"] = "error";
@@ -227,12 +227,12 @@ void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propert
 
     NetRequest oNetRequest;
 
-    setupSecureConnection( propertyMap, oNetRequest );
+    setupSecureConnection( propertyMap, oNetRequest, oResult );
 
-    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).doRequest( getStringProp(propertyMap, "httpVerb", "POST").c_str(),
+    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest, oResult)).doRequest( getStringProp(propertyMap, "httpVerb", "POST").c_str(),
             propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
 
-    if ( !getCurRequest(oNetRequest).isCancelled())
+    if ( !getCurRequest(oNetRequest, oResult).isCancelled())
         createResult( resp, mapHeaders, oResult );
 }
 
@@ -243,7 +243,7 @@ void CNetworkImpl::uploadFile( const rho::Hashtable<rho::String, rho::String>& p
 
     NetRequest oNetRequest;
 
-    setupSecureConnection( propertyMap, oNetRequest );
+    setupSecureConnection( propertyMap, oNetRequest, oResult );
 
     VectorPtr<net::CMultipartItem*> arMultipartItems;
     if ( propertyMap.containsKey("multipart") )
@@ -289,9 +289,9 @@ void CNetworkImpl::uploadFile( const rho::Hashtable<rho::String, rho::String>& p
         }
     }
 
-    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).pushMultipartData( propertyMap.get("url"), arMultipartItems, null, &mapHeaders );
+    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest, oResult)).pushMultipartData( propertyMap.get("url"), arMultipartItems, null, &mapHeaders );
 
-    if ( !getCurRequest(oNetRequest).isCancelled())
+    if ( !getCurRequest(oNetRequest, oResult).isCancelled())
         createResult( resp, mapHeaders, oResult );
 }
 
@@ -578,7 +578,7 @@ void CNetworkImpl::disconnectWan(rho::apiGenerator::CMethodResult& oResult)
 #endif
 }
     
-void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest )
+void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest, rho::apiGenerator::CMethodResult& oResult )
 {
     String clientCertificate = "";
     String clientCertificatePassword = "";
@@ -586,7 +586,7 @@ void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho:
     //will enable server SSL auth if true.
     if ( propertyMap.containsKey("verifyPeerCertificate") ) {
         bool verifyPeer = (propertyMap.get("verifyPeerCertificate") == "true");
-        getCurRequest(oNetRequest).setSslVerifyPeer( verifyPeer );
+        getCurRequest(oNetRequest, oResult).setSslVerifyPeer( verifyPeer );
         
         if ( verifyPeer ) {
             //will enable client-side SSL auth if valid certificate path is provided (Android-only).
