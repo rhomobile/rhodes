@@ -19,7 +19,8 @@ CRawMotoSensor::CRawMotoSensor(const char* sensorType) :
     m_status(SENSOR_STATUS_NOT_READY),
     m_type(ConvertFromTypeDescription(sensorType)),
     m_dwQuietTime(::GetTickCount()),
-    m_lScale(1)
+    m_lScale(1),
+    m_bFirstSample(true)
 {
     CSensorApiDll* sensorApiDll = new CSensorApiDll();
     if((NULL != sensorApiDll) && sensorApiDll->SensorAPIsPresent())
@@ -301,6 +302,7 @@ bool CRawMotoSensor::Start()
         else
         {
             m_status = SENSOR_STATUS_STARTED;
+            m_bFirstSample = true;
         }
     }
     else
@@ -399,8 +401,10 @@ DWORD CRawMotoSensor::OnReceiveAccelerometerSensorData(HANDLE hSensor, SENSOR_DA
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
-    {        
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
+    {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
         char szBuffer[32] = {0};
         rho::String x,y,z;
 
@@ -473,8 +477,11 @@ DWORD CRawMotoSensor::OnReceiveOrientationSensorData(HANDLE hSensor, SENSOR_DATA
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
     {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
+
         rho::String orientation;
 
         if (DATA_TYPE_SCALAR == ptSensorData->eType)
@@ -560,8 +567,10 @@ DWORD CRawMotoSensor::OnReceiveTiltAngleSensorData(HANDLE hSensor, SENSOR_DATA_T
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
-    {        
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
+    {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;       
         char szBuffer[32] = {0};
         rho::String x,y,z;
 
@@ -631,8 +640,11 @@ DWORD CRawMotoSensor::OnReceiveMotionSensorData(HANDLE hSensor, SENSOR_DATA_T* p
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
     {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
+
         if (DATA_TYPE_SCALAR == ptSensorData->eType)
 	    {
             char szBuffer[32] = {0};            
@@ -691,8 +703,10 @@ DWORD CRawMotoSensor::OnReceiveECompassSensorData(HANDLE hSensor, SENSOR_DATA_T*
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
     {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
         if (DATA_TYPE_SCALAR == ptSensorData->eType)
 	    {
             char szBuffer[32] = {0};            
@@ -752,8 +766,11 @@ DWORD CRawMotoSensor::OnReceiveMagnetometerSensorData(HANDLE hSensor, SENSOR_DAT
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
-    {        
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
+    {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
+
         char szBuffer[32] = {0};
         rho::String x,y,z;
 
@@ -822,8 +839,11 @@ DWORD CRawMotoSensor::OnReceiveGyroscopeSensorData(HANDLE hSensor, SENSOR_DATA_T
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
-    {        
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
+    {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
+
         char szBuffer[32] = {0};
         rho::String x,y,z;
 
@@ -892,8 +912,11 @@ DWORD CRawMotoSensor::OnReceiveAmbientLightSensorData(HANDLE hSensor, SENSOR_DAT
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
     {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
+
         if (DATA_TYPE_SCALAR == ptSensorData->eType)
 	    {
             char szBuffer[32] = {0};            
@@ -952,8 +975,10 @@ DWORD CRawMotoSensor::OnReceiveProximitySensorData(HANDLE hSensor, SENSOR_DATA_T
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
     {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
         if (DATA_TYPE_SCALAR == ptSensorData->eType)
 	    {
             char szBuffer[32] = {0};            
@@ -1013,8 +1038,10 @@ DWORD CRawMotoSensor::OnReceiveProximityLongRangeSensorData(HANDLE hSensor, SENS
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
     {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
         if (DATA_TYPE_SCALAR == ptSensorData->eType)
 	    {
             char szBuffer[32] = {0};            
@@ -1072,8 +1099,10 @@ DWORD CRawMotoSensor::OnReceivePressureSensorData(HANDLE hSensor, SENSOR_DATA_T*
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
     {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
         if (DATA_TYPE_SCALAR == ptSensorData->eType)
 	    {
             char szBuffer[32] = {0};            
@@ -1131,8 +1160,10 @@ DWORD CRawMotoSensor::OnReceiveTemperatureSensorData(HANDLE hSensor, SENSOR_DATA
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
     {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
         if (DATA_TYPE_SCALAR == ptSensorData->eType)
 	    {
             char szBuffer[32] = {0};            
@@ -1190,8 +1221,10 @@ DWORD CRawMotoSensor::OnReceiveHumiditySensorData(HANDLE hSensor, SENSOR_DATA_T*
         ullElapsed = (ULONGLONG)(((DWORD)(0xffffffff)) - sensor->m_dwQuietTime) + dwTC;
     }
 
-    if (ullElapsed >= sensor->m_minimumInterval)
+    if ((sensor->m_bFirstSample) ||(ullElapsed >= sensor->m_minimumInterval))
     {
+        if (sensor->m_bFirstSample)
+            sensor->m_bFirstSample = false;
         if (DATA_TYPE_SCALAR == ptSensorData->eType)
 	    {
             char szBuffer[32] = {0};            
