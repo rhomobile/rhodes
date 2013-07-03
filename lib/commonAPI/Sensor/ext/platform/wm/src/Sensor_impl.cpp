@@ -189,7 +189,15 @@ void CSensorImpl::readData(rho::apiGenerator::CMethodResult& oResult)
     else
     {
         rho::common::CMutexLock lock(m_cs);
-        oResult.set(m_cache);
+        if (m_cache.empty())
+        {
+            rho::Hashtable<rho::String, rho::String> props;
+            props.put("message", "No Samples received from sensor. Check status");// The sampling is stopped (check status) or retry based on the minium gap property or reduce the gap interval");
+	        props.put("status", "error");
+            oResult.set(props);
+        }
+        else
+            oResult.set(m_cache);
     }
 }
 
@@ -209,6 +217,8 @@ void CSensorImpl::stop(rho::apiGenerator::CMethodResult& oResult)
             m_callbackMethodResult = NULL;
 
         }
+        rho::common::CMutexLock lock(m_cs);
+        m_cache.clear();
     }
 }
 
@@ -347,6 +357,7 @@ void CSensorImpl::OnReceiveAccelerometerSensorData(rho::String& accel_x, rho::St
     props.put("accelerometer_x", accel_x);
 	props.put("accelerometer_y", accel_y);
 	props.put("accelerometer_z", accel_z);
+    props.put("message", "");
 	props.put("status", "ok");
 
 
@@ -366,6 +377,7 @@ void CSensorImpl::OnReceiveOrientationSensorData(rho::String& orientation)
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("deviceorientation_value", orientation);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -386,6 +398,7 @@ void CSensorImpl::OnReceiveTiltAngleSensorData(rho::String& tilt_x, rho::String&
     props.put("tiltangle_x", tilt_x);
 	props.put("tiltangle_y", tilt_y);
 	props.put("tiltangle_z", tilt_z);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -405,6 +418,7 @@ void CSensorImpl::OnReceiveMotionSensorData(rho::String& motion)
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("motion_value", motion);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -423,6 +437,7 @@ void CSensorImpl::OnReceiveECompassSensorData(rho::String& ecompassVal)
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("ecompass_value", ecompassVal);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -443,6 +458,7 @@ void CSensorImpl::OnReceiveMagnetometerSensorData(rho::String& mm_x, rho::String
     props.put("magnetometer_x", mm_x);
 	props.put("magnetometer_y", mm_y);
 	props.put("magnetometer_z", mm_z);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -463,6 +479,7 @@ void CSensorImpl::OnReceiveGyroscopeSensorData(rho::String& gyro_x, rho::String&
     props.put("gyroscope_x", gyro_x);
 	props.put("gyroscope_y", gyro_y);
 	props.put("gyroscope_z", gyro_z);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -481,6 +498,7 @@ void CSensorImpl::OnReceiveAmbientLightSensorData(rho::String& ambientVal)
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("ambientlight_value", ambientVal);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -498,6 +516,7 @@ void CSensorImpl::OnReceiveProximitySensorData(rho::String& proximityVal)
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("proximity_value", proximityVal);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -516,6 +535,7 @@ void CSensorImpl::OnReceiveProximityLongRangeSensorData(rho::String& proximitylr
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("proximitylongrange_value", proximitylrVal);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -534,6 +554,7 @@ void CSensorImpl::OnReceivePressureSensorData(rho::String& pressure)
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("pressure_value", pressure);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -552,6 +573,7 @@ void CSensorImpl::OnReceiveTemperatureSensorData(rho::String& temperature)
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("temperature_value", temperature);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
@@ -570,6 +592,7 @@ void CSensorImpl::OnReceiveHumiditySensorData(rho::String& humidity)
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("humidity_value", humidity);
+    props.put("message", "");
 	props.put("status", "ok");
 
     rho::common::CMutexLock lock(m_cs);
