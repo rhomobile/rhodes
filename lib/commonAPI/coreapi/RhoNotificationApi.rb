@@ -24,7 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-if Rho::System.isRhoSimulator || System.get_property('platform') == 'WINDOWS_DESKTOP'
+if Rho::System.isRhoSimulator || %w(WINDOWS_DESKTOP WINDOWS WP7 WP8 ANDROID APPLE).include?(System.get_property('platform'))
 
 class Alert
   class << self
