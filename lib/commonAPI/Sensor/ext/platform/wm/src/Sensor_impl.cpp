@@ -106,7 +106,8 @@ void CSensorImpl::getMinimumGap(rho::apiGenerator::CMethodResult& oResult)
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot get minimumGap.");
-    } else
+    }
+    else
     {
         oResult.set(this->m_rawSensor->getMinimumGap());
     }
@@ -119,16 +120,13 @@ void CSensorImpl::setMinimumGap(int minimumGap, rho::apiGenerator::CMethodResult
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot set minimumegap.");
-    } else
+    }
+    else
     {
-        if (minimumGap >= 200)
-        {
-            this->m_rawSensor->setMinimumGap(minimumGap);
-            oResult.set(true);
-        } else
-        {
-            oResult.setError("miniumm gap cannot be less than 200ms");
-        }
+        if (minimumGap < 200)
+            minimumGap = 200;         
+        this->m_rawSensor->setMinimumGap(minimumGap);
+        oResult.set(true);
     }
 }
 
@@ -301,14 +299,11 @@ void CSensorImpl::setProperty(const rho::String& propertyName,  const rho::Strin
         if (_stricmp(propertyName.c_str(), "minimumGap") == 0)
         {
             int minimumGap = atoi(propertyValue.c_str());
-            if (minimumGap >= 200)
+            if (minimumGap < 200)
             {
-                this->m_rawSensor->setMinimumGap(minimumGap);
-                //oResult.set(minimumGap);
-            } else
-            {
-                oResult.setError("minimumgap cannot be less than 200");
+                minimumGap = 200;
             }
+            this->m_rawSensor->setMinimumGap(minimumGap);            
         } else
         {
             oResult.setError(propertyName + " is readonly or is invalid.");
@@ -330,14 +325,11 @@ void CSensorImpl::setProperties(const rho::Hashtable<rho::String, rho::String>& 
             if (_stricmp(propMapItr->first.c_str(), "minimumGap") == 0)
             {
                 int minimumGap = atoi(propMapItr->second.c_str());
-                if (minimumGap >= 200)
+                if (minimumGap < 200)
                 {
-                    this->m_rawSensor->setMinimumGap(minimumGap);
-                    //oResult.set(minimumGap);
-                } else
-                {
-                    oResult.setError("minimumgap cannot be less than 200");
+                    minimumGap = 200;
                 }
+                this->m_rawSensor->setMinimumGap(minimumGap);
             } else
             {
                 oResult.setError(propMapItr->first + " is readonly or is invalid.");

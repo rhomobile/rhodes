@@ -120,11 +120,11 @@ bool CRawMotoSensor::RegisterSensor(ISensorEventListener* eventListener)
             success = false;
             break;        
     }
-    /*if (success)
+    if (success)
     {
         LOG(INFO) + "Sensor opened : " + ConvertToTypeDescription(this->m_type) + " : " + rho::common::convertToStringA<int>((static_cast<int>(this->m_type)));
         Start();
-    }*/
+    }
     return success;
 }
 
@@ -305,7 +305,7 @@ bool CRawMotoSensor::Start()
     }
     else
     {
-        LOG(WARNING) + "State invalid. Cannot kick start sampling for  sensor : " + ConvertToTypeDescription(this->m_type);
+        LOG(WARNING) + "Sampling already started sensor: " + ConvertToTypeDescription(this->m_type);
     }
     return (retStatus);
 }
@@ -333,7 +333,7 @@ bool CRawMotoSensor::Stop()
     }
     else
     {
-        LOG(WARNING) + "State invalid. Cannot kick start sampling for  sensor : " + ConvertToTypeDescription(this->m_type);
+        LOG(WARNING) + "Sampling already disabled for sensor : " + ConvertToTypeDescription(this->m_type);
     }
     return (retStatus);
 }
