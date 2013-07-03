@@ -30,6 +30,9 @@ module MSpec
   @expectations = false
   @backtrace = false  
   @file_count = 0
+  @is_network_available = false
+  @errorMessages = nil
+
 
   def self.exc_count
     @exc_count
@@ -37,6 +40,14 @@ module MSpec
   
   def self.count
     @count
+  end
+
+  def self.errorMessages
+    @errorMessages   
+  end
+    
+  def self.is_network_available
+    @is_network_available
   end
 
   def self.file_count
