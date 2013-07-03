@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 * THE SOFTWARE.
-* 
+*  
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 using System;
@@ -271,7 +271,10 @@ namespace rhodes
             if (TabbarPivot.Items.Count == 0)
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
             else
+            {
+                WebBrowser wb = (WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content;
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
+            }
         }
 
         public string executeScript(string script, int index) 
@@ -368,7 +371,7 @@ namespace rhodes
 
         private void RhodesWebBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            String url = getCurrentURLFunc(-1);
+            String url = getCurrentURLFunc((sender as WebBrowser).TabIndex);
             CRhoRuntime.getInstance().onWebViewUrlChanged(url);
         }
 
@@ -379,13 +382,13 @@ namespace rhodes
            
         private void RhodesWebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            String url = getCurrentURLFunc(-1);
+            String url = getCurrentURLFunc((sender as WebBrowser).TabIndex);
             CRhoRuntime.getInstance().onWebViewUrlChanged(url);
             int index = (sender as WebBrowser).TabIndex;
             if (index > -1 && !_tabProps[index]._isInitialized)
             {
                 _tabProps[index]._isInitialized = true;
-                if (_tabProps.ContainsKey(index))
+                if (_tabProps.ContainsKey(index) && _tabProps[index]._action != null)
                     navigate(_tabProps[index]._action, index);
             }
             else if (TabbarPivot.Items.Count == 0 && !_isBrowserInitialized)
@@ -395,7 +398,7 @@ namespace rhodes
             }
             else
             {
-                if (TabbarPivot.Items.Count > 0 && url.Contains("about:blank") == false)
+                if (TabbarPivot.Items.Count > 0 && index > -1 && url.Contains("about:blank") == false)
                 {
                     if (_tabProps[index]._isLoaded == false)
                         _tabProps[index]._isLoaded = true;
@@ -405,13 +408,13 @@ namespace rhodes
 
         private void RhodesWebBrowser_Loaded(object sender, RoutedEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
+            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc((sender as WebBrowser).TabIndex));
         }
 
 
         private void RhodesWebBrowser_Unloaded(object sender, RoutedEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
+            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc((sender as WebBrowser).TabIndex));
         }
 
         private void RhodesWebBrowser_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -662,7 +665,7 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSwitch(index); }); return; }
             if ((index >= 0) && (index < TabbarPivot.Items.Count))
             {
-                raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
+                //raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
                 TabbarPivot.SelectedIndex = index;
             }
         }
