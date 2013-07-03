@@ -538,9 +538,33 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
 LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
     bHandled = TRUE;
+    LRESULT retCode;
 
     LOG(INFO) + "START load png";
-    rho_wmimpl_draw_splash_screen(m_hWnd);
+    
+    retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
+    
+    //SPR 23830 - Fix - Do loading.html On load png failure
+    if (retCode == 0)
+    {
+        LOG(INFO) + "CMainWindow::OnPaint: failed on rho_wmimpl_draw_splash_screen()";
+
+        StringW pathW = convertToStringW(RHODESAPP().getLoadingPagePath());
+
+        //If engine is ready then try the following method to navigate to loading.html
+        bool bNavigate = true;
+        if ( m_pBrowserEng )
+            bNavigate = m_pBrowserEng->NavigateToHtml(pathW.c_str()) ? false : true;
+        
+        if (bNavigate)
+        {
+            LOG(INFO) + "CMainWindow::OnPaint: m_pBrowserEng is NULL";
+
+            //If engine is not ready then queue Navigate request for loading.html
+            rho_webview_navigate(RHODESAPP().getLoadingPagePath().c_str(), 0 );
+        }
+    }
+    
     LOG(INFO) + "END load png";
 
     return 0;
@@ -1969,6 +1993,13 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
         SelectObject(hdcMem, resObj);
 	    DeleteObject(hbitmap);
 	    //DeleteObject(hdcMem);
+    }
+    else //SPR 23830 - Fix
+    {
+        LOG(INFO) + "SHLoadImageFile() failed: missing loading.png";
+
+        EndPaint(hWnd, &ps);
+        return 0; // return failure code
     }
 
 	EndPaint(hWnd, &ps);

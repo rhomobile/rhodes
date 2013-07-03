@@ -214,7 +214,9 @@ void QtMainWindow::showEvent(QShowEvent *)
 
 void QtMainWindow::closeEvent(QCloseEvent *ce)
 {
-    rb_thread_wakeup(rb_thread_main());
+    if ( rho_ruby_is_started() )
+        rb_thread_wakeup(rb_thread_main());
+
     if (mainWindowCallback) mainWindowCallback->onWindowClose();
     tabbarRemoveAllTabs(false);
     webInspectorWindow->close();

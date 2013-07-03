@@ -158,37 +158,37 @@ void CSystemImpl::getUuid(rho::apiGenerator::CMethodResult& result)
 
 void CSystemImpl::getHttpProxyURI(rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CSystemImpl::setHttpProxyURI(const rho::String&, rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CSystemImpl::getLockWindowSize(rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CSystemImpl::setLockWindowSize(bool, rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CSystemImpl::getKeyboardState(rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CSystemImpl::setKeyboardState(const rho::String&, rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -271,19 +271,19 @@ void CSystemImpl::openUrl(const rho::String& url, rho::apiGenerator::CMethodResu
 
 void CSystemImpl::setWindowFrame(int, int, int, int, rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CSystemImpl::setWindowPosition(int, int, rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CSystemImpl::setWindowSize(int, int, rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
