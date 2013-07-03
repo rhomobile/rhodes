@@ -16,7 +16,7 @@ static PushNotificationsReceiver *instance = nil;
 + (id<IPushNotificationsReceiver>)sharedInstance {
     
     if (instance == nil) {
-        instance = [PushNotificationsReceiver alloc];
+        instance = [[PushNotificationsReceiver alloc] init];
     }
     
     return instance;
@@ -50,7 +50,7 @@ static PushNotificationsReceiver *instance = nil;
 + (NSMutableString*) dictToJSON:(NSDictionary*)dict context:(NSMutableString*)context
 {
     if (nil == context) {
-        context = [NSMutableString alloc];
+        context = [[NSMutableString alloc] init];
     }
     
     [context appendString:@"{"];
@@ -65,7 +65,7 @@ static PushNotificationsReceiver *instance = nil;
             continue;
 		}
         
-        [context appendFormat:@"\"%@\"",(NSString*)k];
+        [context appendFormat:@"\"%@\":",(NSString*)k];
         
         id val = [dict objectForKey:k];
         
@@ -74,9 +74,31 @@ static PushNotificationsReceiver *instance = nil;
 
 		} else if ([val isKindOfClass:[NSNumber class]]) {
             [context appendFormat:@"\"%@\"",[(NSNumber*)val stringValue]];
-        }
-        else if ([val isKindOfClass:[NSDictionary class]]) {
-            [context appendFormat:@"\"%@\"", [PushNotificationsReceiver dictToJSON:(NSDictionary*)val context:context] ];
+        } else if ([val isKindOfClass:[NSDictionary class]]) {
+            NSMutableString* json = [[NSMutableString alloc] init];
+            [PushNotificationsReceiver dictToJSON:(NSDictionary*)val context:json];
+            [context appendString:json];
+            [json dealloc];
+        } else if ([val isKindOfClass:[NSArray class]]) {
+            
+            [context appendString:@"["];
+            //will only support String values in array
+            NSArray* vals = (NSArray*)val;
+            for ( int j = 0; j < ([vals count]); ++j ) {
+                id v = vals[j];
+                if ([v isKindOfClass:[NSString class]]) {
+                    [context appendFormat:@"\"%@\"",(NSString*)v];
+
+                    if ( j < ([vals count]-1) ) {
+                        [context appendString:@","];
+                    }
+                }
+            }
+            
+            [context appendString:@"]"];
+            
+        } else {
+            [context appendString:@"\"\""];
         }
         
         if ( i < ([keys count]-1) ) {
@@ -92,7 +114,7 @@ static PushNotificationsReceiver *instance = nil;
 
 - (void) onPushMessageReceived:(NSDictionary *)userInfo
 {
-    NSMutableString* json = [NSMutableString alloc];
+    NSMutableString* json = [[NSMutableString alloc] init];
     json = [PushNotificationsReceiver dictToJSON:userInfo context:json];
         
     rho::push::CPushManager::getInstance()->callBack("apple", [json UTF8String]);

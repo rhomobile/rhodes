@@ -973,6 +973,9 @@ void rho_ruby_raise_argerror(const char *fmt, ...)
 
 VALUE rho_ruby_main_thread()
 {
+    if (!rho_ruby_is_started())
+        return Qnil;
+
     return rb_thread_main();
 }
 

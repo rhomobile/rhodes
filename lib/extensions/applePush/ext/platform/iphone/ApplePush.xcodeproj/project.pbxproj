@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C52563AE1781C0DD008D394D /* applepushclient.mm in Sources */ = {isa = PBXBuildFile; fileRef = C52563AC1781C0DD008D394D /* applepushclient.mm */; };
-		C52563AF1781C0DD008D394D /* applepushclient.h in Headers */ = {isa = PBXBuildFile; fileRef = C52563AD1781C0DD008D394D /* applepushclient.h */; };
+		C5155AB817830B41004FAA39 /* applepushclient.h in Headers */ = {isa = PBXBuildFile; fileRef = C5155AB617830B41004FAA39 /* applepushclient.h */; };
+		C5155AB917830B41004FAA39 /* applepushclient.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5155AB717830B41004FAA39 /* applepushclient.mm */; };
 		C52563B31781CB23008D394D /* PushNotificationsReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C52563B11781CB23008D394D /* PushNotificationsReceiver.h */; };
 		C52563B41781CB23008D394D /* PushNotificationsReceiver.mm in Sources */ = {isa = PBXBuildFile; fileRef = C52563B21781CB23008D394D /* PushNotificationsReceiver.mm */; };
 		FA3E1F211779EFAA00F5E33A /* applePush.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F1B1779EFAA00F5E33A /* applePush.h */; };
@@ -36,8 +36,8 @@
 
 /* Begin PBXFileReference section */
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		C52563AC1781C0DD008D394D /* applepushclient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = applepushclient.mm; path = ../../../../../commonAPI/mediaplayer/ext/platform/iphone/impl/applepushclient.mm; sourceTree = "<group>"; };
-		C52563AD1781C0DD008D394D /* applepushclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applepushclient.h; path = ../../../../../commonAPI/mediaplayer/ext/platform/iphone/impl/applepushclient.h; sourceTree = "<group>"; };
+		C5155AB617830B41004FAA39 /* applepushclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applepushclient.h; path = impl/applepushclient.h; sourceTree = "<group>"; };
+		C5155AB717830B41004FAA39 /* applepushclient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = applepushclient.mm; path = impl/applepushclient.mm; sourceTree = "<group>"; };
 		C52563B11781CB23008D394D /* PushNotificationsReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PushNotificationsReceiver.h; path = impl/PushNotificationsReceiver.h; sourceTree = "<group>"; };
 		C52563B21781CB23008D394D /* PushNotificationsReceiver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = PushNotificationsReceiver.mm; path = impl/PushNotificationsReceiver.mm; sourceTree = "<group>"; };
 		FA3E1F1B1779EFAA00F5E33A /* applePush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applePush.h; path = impl/applePush.h; sourceTree = "<group>"; };
@@ -135,8 +135,8 @@
 		FA3E1F161779EF7600F5E33A /* impl */ = {
 			isa = PBXGroup;
 			children = (
-				C52563AC1781C0DD008D394D /* applepushclient.mm */,
-				C52563AD1781C0DD008D394D /* applepushclient.h */,
+				C5155AB617830B41004FAA39 /* applepushclient.h */,
+				C5155AB717830B41004FAA39 /* applepushclient.mm */,
 				FA3E1F1B1779EFAA00F5E33A /* applePush.h */,
 				FA3E1F1C1779EFAA00F5E33A /* applePush.m */,
 				FA3E1F1D1779EFAA00F5E33A /* applePushFactorySingleton.m */,
@@ -203,8 +203,8 @@
 				FA3E1F2F1779EFBB00F5E33A /* applePushBase.h in Headers */,
 				FA3E1F311779EFBB00F5E33A /* applePushFactoryBase.h in Headers */,
 				FA3E1F331779EFBB00F5E33A /* applePushSingletonBase.h in Headers */,
-				C52563AF1781C0DD008D394D /* applepushclient.h in Headers */,
 				C52563B31781CB23008D394D /* PushNotificationsReceiver.h in Headers */,
+				C5155AB817830B41004FAA39 /* applepushclient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,8 +270,8 @@
 				FA3E1F3C1779EFD700F5E33A /* applepush_api_init.cpp in Sources */,
 				FA3E1F3D1779EFD700F5E33A /* applepush_js_api.cpp in Sources */,
 				FA3E1F3E1779EFD700F5E33A /* applepush_ruby_api.c in Sources */,
-				C52563AE1781C0DD008D394D /* applepushclient.mm in Sources */,
 				C52563B41781CB23008D394D /* PushNotificationsReceiver.mm in Sources */,
+				C5155AB917830B41004FAA39 /* applepushclient.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

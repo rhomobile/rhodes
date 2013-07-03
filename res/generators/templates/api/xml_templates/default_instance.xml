@@ -4,7 +4,7 @@
 <DEFAULT_INSTANCE>
 	<METHODS>
 	    <METHOD name="getDefault" access="STATIC" factory="true" nativeName="getDefaultID">
-			<DESC>This is documentation</DESC>
+			<DESC>This method will return an object that represents the default instance of the API Class. For example Camera.getDefault will return a Camera object that represents the default camera.</DESC>
             <RETURN type="SELF_INSTANCE">
                 <DESC>Default object of Module.</DESC>
             </RETURN>
@@ -12,10 +12,10 @@
         </METHOD>
 
         <METHOD name="setDefault" access="STATIC" nativeName="setDefaultID">
-            <DESC>This is documentation</DESC>
+            <DESC>This method allows you to set the attributes of the default object instance by passing in an object of the same class.</DESC>
             <PARAMS>
                 <PARAM name="defaultInstance" type="SELF_INSTANCE">
-                    <DESC>Default instance I want to set</DESC>
+                    <DESC>An instance object that is of the same class.</DESC>
                 </PARAM>
             </PARAMS>
         </METHOD>
