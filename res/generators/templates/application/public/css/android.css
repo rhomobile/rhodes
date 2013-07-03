@@ -221,13 +221,13 @@ li.ui-btn-up-c {
 .ui-field-contain input[type="true"],
 .ui-field-contain textarea {
     -webkit-appearance: none;
-    color: #000000;
+    /* color: #000000; */
     text-shadow: none;
     font-size: 0.9em;
 
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+    /* background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7)); */
     border: 1px solid #d6d7d6;
-    box-shadow: 0 -1px 3px #000000;
+    /* box-shadow: 0 -1px 3px #000000; */
 
 }
 
