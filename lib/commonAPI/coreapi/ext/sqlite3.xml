@@ -107,7 +107,7 @@
             <DESC>Is it batch</DESC>
           </PARAM>
           <PARAM name="args" type="ARRAY">
-            <DESC>Array of the sql expressions</DESC>
+            <DESC>Array of the sql expressions. It is ignored when isBatch is true.</DESC>
             <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
