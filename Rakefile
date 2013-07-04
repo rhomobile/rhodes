@@ -989,6 +989,7 @@ end
 
 def init_extensions(dest, mode = "")
   extentries = []
+  extentries_init = []
   nativelib = []
   extlibs = []
   extjsmodulefiles = []
@@ -1071,7 +1072,12 @@ def init_extensions(dest, mode = "")
           if $js_application
             #rhoelementsext for win mobile shared runtime mode only              
             if !xml_api_paths.nil? || ("rhoelementsext" == extname && $config["platform"] == "wm")
+
               extentries << entry unless entry.nil?
+              
+              entry =  "if (rho_ruby_is_started()) #{entry}" if entry && entry.length() > 0 && xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")
+              extentries_init << entry unless entry.nil?
+                
             else
               puts '********* WARNING *****************************************************************************************************'
               puts 'Extension ' + extname + ' does not have javascript api implementation and will not initilized in the application!!!'
@@ -1079,6 +1085,10 @@ def init_extensions(dest, mode = "")
             end
           else
             extentries << entry unless entry.nil?
+          
+            entry =  "if (rho_ruby_is_started()) #{entry}" if entry && entry.length() > 0 && xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")
+            extentries_init << entry unless entry.nil?
+          
           end
           
           if type.to_s() != "nativelib"
@@ -1210,7 +1220,7 @@ def init_extensions(dest, mode = "")
     end
 
     f.puts "void Init_Extensions(void) {"
-    extentries.each do |entry|
+    extentries_init.each do |entry|
       f.puts "    #{entry}();"
     end
     f.puts "}"
