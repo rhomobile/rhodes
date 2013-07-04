@@ -305,6 +305,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         switch (type)
         {
         case app_deactivated:
+            callCallback("/system/deactivateapp"); //SPR 24104 fix
 #if !defined( WINDOWS_PLATFORM )
             m_expected = local_server_restart;
 #else
