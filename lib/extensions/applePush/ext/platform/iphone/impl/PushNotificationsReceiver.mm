@@ -47,6 +47,33 @@ static PushNotificationsReceiver *instance = nil;
     NSLog(@"Push Notification Error: %@", [error localizedDescription]);
 }
 
++ (NSDictionary*)ansMessageToRhodesMessage:(NSDictionary*)dict
+{
+    NSDictionary* ret = [[NSDictionary alloc] init];
+    NSDictionary* retData = [[NSDictionary alloc] init];
+    
+    NSArray *keys = [dict allKeys];
+    
+    for ( id key in keys ) {
+        if (![key isKindOfClass:[NSString class]]) {
+            NSLog(@"Non-string key type in push payload");
+            continue;
+		}
+        
+        NSString* sKey = (NSString*) key;
+        id val = [dict objectForKey:key];
+        
+        if ( [sKey isEqualToString:@"ans"] ) {
+            [retData setValuesForKeysWithDictionary:val];
+        } else {
+            [retData setValue:val forKey:sKey];
+        }
+    }
+    
+    [ret setValue:retData forKey:@"data"];
+    return ret;
+}
+
 + (NSMutableString*) dictToJSON:(NSDictionary*)dict context:(NSMutableString*)context
 {
     if (nil == context) {
@@ -115,10 +142,13 @@ static PushNotificationsReceiver *instance = nil;
 - (void) onPushMessageReceived:(NSDictionary *)userInfo
 {
     NSMutableString* json = [[NSMutableString alloc] init];
-    json = [PushNotificationsReceiver dictToJSON:userInfo context:json];
-        
+    NSDictionary* processedMessage = [PushNotificationsReceiver ansMessageToRhodesMessage:userInfo];
+    
+    json = [PushNotificationsReceiver dictToJSON:processedMessage context:json];
+    
     rho::push::CPushManager::getInstance()->callBack("apple", [json UTF8String]);
     
+    [processedMessage dealloc];
     [json dealloc];
 }
 
