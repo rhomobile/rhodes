@@ -54,7 +54,7 @@ class Alert
   end
 
   def show_status(title, message, hide_label)
-    Rho::Notification.show_status(title, message, hide_label)
+    Rho::Notification.showStatus(title, message, hide_label)
   end
 
   end #self
