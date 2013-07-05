@@ -49,8 +49,8 @@ static PushNotificationsReceiver *instance = nil;
 
 + (NSDictionary*)ansMessageToRhodesMessage:(NSDictionary*)dict
 {
-    NSDictionary* ret = [[NSDictionary alloc] init];
-    NSDictionary* retData = [[NSDictionary alloc] init];
+    NSMutableDictionary* ret = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* retData = [[NSMutableDictionary alloc] init];
     
     NSArray *keys = [dict allKeys];
     
@@ -63,8 +63,8 @@ static PushNotificationsReceiver *instance = nil;
         NSString* sKey = (NSString*) key;
         id val = [dict objectForKey:key];
         
-        if ( [sKey isEqualToString:@"ans"] ) {
-            [retData setValuesForKeysWithDictionary:val];
+        if ( [sKey isEqualToString:@"aps"] && [val isKindOfClass:[NSDictionary class]] ) {
+            [retData addEntriesFromDictionary:val];
         } else {
             [retData setValue:val forKey:sKey];
         }
