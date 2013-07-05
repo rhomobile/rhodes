@@ -525,7 +525,8 @@
 
             </METHOD>
             <METHOD name="setScreenRotationNotification" deprecated="true">
-                <DESC>Use ScreenOrientation.setNotification: Notify (call a callback method) when the screen rotates.</DESC>
+                <DESC>Use ScreenOrientation.setScreenOrientationEvent: Notify (call a callback method) when the screen rotates.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>URL of the callback method. If empty, unregisters notification callback.</DESC>
