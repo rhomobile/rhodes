@@ -164,6 +164,7 @@
 
             <METHOD name="showLog">
                 <DESC>Display Log view window.</DESC>
+                <PLATFORMS>WM, Win32, iOS, Android</PLATFORMS>
             </METHOD>
 
             <METHOD name="cleanLogFile">
