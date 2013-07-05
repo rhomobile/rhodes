@@ -802,7 +802,7 @@ namespace "config" do
     $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
     $obfuscator        = 'res/build-tools/yuicompressor-2.4.7.jar'
     
-    $js_application    = $current_platform == "android" ? false : Jake.getBuildBoolProp("javascript_application")
+    $js_application    = Jake.getBuildBoolProp("javascript_application")
     
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
