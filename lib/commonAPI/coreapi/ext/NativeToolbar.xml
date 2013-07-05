@@ -53,6 +53,7 @@
                                         </VALUE>
                                         <VALUE value ="log">
                                             <DESC>Display Log View window.</DESC>
+                                            <PLATFORMS>WM, Win32, iOS, Android</PLATFORMS>
                                         </VALUE>
                                         <VALUE value ="fullscreen">
                                             <DESC>Expand application window to full screen.</DESC>
