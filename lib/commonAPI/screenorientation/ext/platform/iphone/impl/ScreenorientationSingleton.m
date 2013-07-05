@@ -1,6 +1,7 @@
 
 #import "ScreenOrientationSingleton.h"
 #import "Rhodes.h"
+#import "UIKit/UIKit.h"
 
 
 @implementation ScreenOrientationSingleton
@@ -17,33 +18,46 @@
 }
 
 -(void)handleOrientationChangeNotification:(NSNotification*)notification {
-	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    
-    if ( mOrientationCallback != nil ) {
-        switch (orientation) {
-            case UIInterfaceOrientationPortrait:
-                [mOrientationCallback set: @"normal"];
-                break;
-            case UIInterfaceOrientationPortraitUpsideDown:
-                [mOrientationCallback set: @"upsidedown"];
-                break;
-            case UIInterfaceOrientationLandscapeLeft:
-                [mOrientationCallback set: @"lefthanded"];
-                break;
-            case UIInterfaceOrientationLandscapeRight:
-                [mOrientationCallback set: @"righthanded"];
-                break;
+    if ( (mOrientationCallback != nil) && (![[Rhodes sharedInstance] isRotationLocked])) {
+        UIDeviceOrientation dorient = [UIDevice currentDevice].orientation;
+
+        if (dorient == UIDeviceOrientationPortrait) {
+            [mOrientationCallback setResult: @"normal"];
+        } else if (dorient == UIDeviceOrientationPortraitUpsideDown) {
+            [mOrientationCallback setResult: @"upsidedown"];
+        } else if (dorient == UIDeviceOrientationLandscapeLeft) {
+            [mOrientationCallback setResult: @"lefthanded"];
+        } else if (dorient == UIDeviceOrientationLandscapeRight) {
+            [mOrientationCallback setResult: @"righthanded"];
+        } else {
+            /*
+            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+            
+            if ( mOrientationCallback != nil ) {
+                switch (orientation) {
+                    case UIInterfaceOrientationPortrait:
+                        [mOrientationCallback setResult: @"normal"];
+                        break;
+                    case UIInterfaceOrientationPortraitUpsideDown:
+                        [mOrientationCallback setResult: @"upsidedown"];
+                        break;
+                    case UIInterfaceOrientationLandscapeLeft:
+                        [mOrientationCallback setResult: @"lefthanded"];
+                        break;
+                    case UIInterfaceOrientationLandscapeRight:
+                        [mOrientationCallback setResult: @"righthanded"];
+                        break;
+                }
+            }
+             */
         }
     }
 }
 
 
 -(void) getAutoRotate:(id<IMethodResult>)methodResult {
-    [methodResult setResult :
-     [NSNumber numberWithBool:
-      ![[Rhodes sharedInstance] isRotationLocked]
-     ]
-    ];
+    BOOL auto_enable = ![[Rhodes sharedInstance] isRotationLocked];
+    [methodResult setResult:[NSNumber numberWithBool:auto_enable]];
 }
 
 -(void) setAutoRotate:(BOOL)autoRotate {
