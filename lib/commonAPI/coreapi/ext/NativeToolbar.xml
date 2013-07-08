@@ -81,7 +81,7 @@
                                     <PLATFORMS>iOS</PLATFORMS>
                                 </PARAM>
                                 <PARAM name="width" type="INTEGER">
-                                    <DESC>Button width in pixel. Used to define separator width.</DESC>
+                                    <DESC>Button width in pixel. Used to define separator width when more than one separator specified.</DESC>
                                     <PLATFORMS>WM</PLATFORMS>
                                 </PARAM>
                             </PARAMS>
