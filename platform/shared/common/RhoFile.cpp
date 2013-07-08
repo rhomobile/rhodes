@@ -582,8 +582,9 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 	recursiveDeleteDirectory(swPath);
 	return 0;
 #elif defined (OS_ANDROID)
-
-    return iterateFolderTree(String(szFolderPath), RemoveFileFunctor(szFolderPath));
+    
+    RemoveFileFunctor funct(szFolderPath);
+    return funct("");
 
 #else
     rho_file_impl_delete_folder(szFolderPath);
