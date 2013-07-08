@@ -473,12 +473,22 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 {
     String strRelPath = String(szFolderPath).substr(strlen(szBasePath), strlen(szFolderPath) );
     String strPath = szBasePath;
+    // handle case when szBasePath is empty and szFolderPath is starting with /
+    if (strPath.length() == 0 && strRelPath.length() > 0 && strRelPath[0] == '/')
+    {
+        strPath += '/';
+    }
+    
     CTokenizer oTokenizer( strRelPath, "/\\" );
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String tok = oTokenizer.nextToken();
         strPath = CFilePath::join(strPath, tok);
-        createFolder(strPath.c_str());
+        
+        if (!isDirectory(strPath.c_str()))
+        {
+            createFolder(strPath.c_str());
+        }
     }
 }
 
