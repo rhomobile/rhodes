@@ -31,7 +31,7 @@
                                     <DESC>URL to call when button is pressed or special value.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
                                     <VALUES>
                                         <VALUE value ="separator">
-                                            <DESC>Added separator to toolbar.</DESC>
+                                            <DESC>Added separator to toolbar.If only one separator is specified, when elements after separator will be right-aligned.If more then one separator is added, when platform dependent separator will be displayed.</DESC>
                                         </VALUE>
                                         <VALUE value ="exit">
                                             <DESC>Exit the application.</DESC>
@@ -66,7 +66,7 @@
                                             <PLATFORMS>WM, Win32</PLATFORMS>
                                         </VALUE>
                                         <VALUE value ="SIP">
-                                            <DESC>Display software keyboard window.</DESC>
+                                            <DESC>Display software keyboard window.Set Rho.System.keyboardState to Rho.System.KEYBOARD_AUTOMATIC to use this element.</DESC>
                                             <PLATFORMS>WM</PLATFORMS>
                                         </VALUE>
 
@@ -82,7 +82,7 @@
                                 </PARAM>
                                 <PARAM name="width" type="INTEGER">
                                     <DESC>Button width in pixel. Used to define separator width.</DESC>
-                                    <PLATFORMS>WM, Win32</PLATFORMS>
+                                    <PLATFORMS>WM</PLATFORMS>
                                 </PARAM>
                             </PARAMS>
                         </PARAM>
