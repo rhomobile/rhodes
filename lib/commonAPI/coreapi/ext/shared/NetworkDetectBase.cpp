@@ -99,7 +99,7 @@ bool CNetworkDetectionBase::StartNetworkChecking()
 bool CNetworkDetectionBase::StopNetworkChecking()
 {
 	//  Only stop the network checking if it is currently running
-	stop(10000);
+	stop(60000);
 	return true;
 }
 
