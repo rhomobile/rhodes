@@ -1213,7 +1213,7 @@ namespace "build" do
 
     task :manifest => ["config:android", :extensions] do
 
-      version = {'major' => 0, 'minor' => 0, 'patch' => 0}
+      version = {'major' => 0, 'minor' => 0, 'patch' => 0, "build" => 0}
       if $app_config["version"]
         if $app_config["version"] =~ /^(\d+)$/
           version["major"] = $1.to_i
@@ -1224,10 +1224,17 @@ namespace "build" do
           version["major"] = $1.to_i
           version["minor"] = $2.to_i
           version["patch"] = $3.to_i
+        elsif $app_config["version"] =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+          version["major"] = $1.to_i
+          version["minor"] = $2.to_i
+          version["patch"] = $3.to_i
+          version["build"] = $4.to_i
+        else
+          raise "Version number must be numeric and in one of these formats: major, major.minor, major.minor.patch, or major.minor.patch.build."
         end
       end
 
-      version = version["major"]*10000 + version["minor"]*100 + version["patch"]
+      version = version["major"]*1000000 + version["minor"]*10000 + version["patch"]*100 + version["build"]
       
       usesPermissions = ['android.permission.INTERNET', 'android.permission.PERSISTENT_ACTIVITY', 'android.permission.WAKE_LOCK']
       $app_config["capabilities"].each do |cap|
