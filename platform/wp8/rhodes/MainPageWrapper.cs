@@ -23,6 +23,7 @@ namespace rhodes
 		// webview
         public void navigate(string url, int index) { _mainPage.navigate(url, index); }
         public string executeScript(string script, int index) { return _mainPage.executeScript(script, index); }
+        public string executeScriptAsync(string script, int index) { return _mainPage.executeScriptAsync(script, index); }
         public void GoBack() { _mainPage.GoBack(); }
         public void GoBack(int index) { _mainPage.GoBack(index); }
         public void GoForward() { _mainPage.GoForward(); }
