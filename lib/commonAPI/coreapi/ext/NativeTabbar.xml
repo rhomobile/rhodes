@@ -112,7 +112,7 @@
                             <PLATFORM>WM</PLATFORM>
                         </PARAM>
                         <PARAM name="oldTabIndex" type="INTEGER">
-                            <DESC>New tab index.</DESC>
+                            <DESC>New tab index. If you switched to first activated tab, when oldTabIndex will be -1, whcih means that there was no old tab index exists.</DESC>
                             <PLATFORM>WM</PLATFORM>
                         </PARAM>
                         <PARAM name="tabEvent" type="STRING">
