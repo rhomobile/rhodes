@@ -428,8 +428,21 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
         synchronized (mExtensions) {
             boolean res = false;
-            for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onBeforeNavigate(this, url, rhoWebView, res);
+            for (Map.Entry<String, IRhoExtension> extEntry : mExtensions.entrySet()) {
+                Logger.T(TAG, "onBeforeNavigate: " + extEntry.getKey());
+                res = extEntry.getValue().onBeforeNavigate(this, url, rhoWebView, res);
+            }
+        }
+    }
+
+    public void onNavigateStarted(View view, String url) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
+
+        synchronized (mExtensions) {
+            boolean res = false;
+            for (Map.Entry<String, IRhoExtension> extEntry : mExtensions.entrySet()) {
+                Logger.T(TAG, "onNavigateStarted: " + extEntry.getKey());
+                res = extEntry.getValue().onNavigateStarted(this, url, rhoWebView, res);
             }
         }
     }
