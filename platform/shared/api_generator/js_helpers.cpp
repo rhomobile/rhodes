@@ -15,7 +15,8 @@ namespace apiGenerator
 using namespace rho::json;
 
 
-static rho::Hashtable<rho::String,Func_JS> g_hashJSMethods;
+static rho::Hashtable<rho::String,Func_JS> g_hashJSStaticMethods;
+static rho::Hashtable<rho::String,Func_JS> g_hashJSInstanceMethods;
 
 static const String ID("id");
 static const String METHOD("method");
@@ -25,9 +26,14 @@ static const String RHO_CALLBACK("__rhoCallback");
 static const String VM_ID("vmID");
 static const String RHO_CALLBACK_PARAM("optParams");
 
-void js_define_method(const char* szMethodPath, Func_JS pFunc )
+void js_define_static_method(const char* szMethodPath, Func_JS pFunc )
 {
-    g_hashJSMethods[szMethodPath] = pFunc;
+    g_hashJSStaticMethods[szMethodPath] = pFunc;
+}
+    
+void js_define_instance_method(const char* szMethodPath, Func_JS pFunc )
+{
+    g_hashJSInstanceMethods[szMethodPath] = pFunc;
 }
 
 rho::String js_entry_point(const char* szJSON)
@@ -89,7 +95,16 @@ rho::String js_entry_point(const char* szJSON)
     }
 
     String_replace(strMethod, '.', ':');
-    Func_JS pMethod = g_hashJSMethods[strMethod];
+    Func_JS pMethod = NULL;
+    if (strObjID == "0")
+    {
+        pMethod = g_hashJSStaticMethods[strMethod];
+    }
+    else
+    {
+        pMethod = g_hashJSInstanceMethods[strMethod];
+    }
+    
     if (!pMethod)
     {
         RAWLOG_ERROR1("API method does not found: %s", strMethod.c_str());

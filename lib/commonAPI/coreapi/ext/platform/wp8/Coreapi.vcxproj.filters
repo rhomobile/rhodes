@@ -77,6 +77,18 @@
     <Filter Include="File\shared\generated\cpp">
       <UniqueIdentifier>{d10fda35-44c4-40d5-89ad-f4f51ed6af22}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Push">
+      <UniqueIdentifier>{0b6cdafc-6376-4c8a-8e51-98f7deb12ec0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Push\shared">
+      <UniqueIdentifier>{f85e8987-0a2e-4179-8afb-79a4a2fa1243}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Push\shared\generated">
+      <UniqueIdentifier>{0c62b512-e0a9-4ae5-a0dd-faf811aee780}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Push\shared\generated\cpp">
+      <UniqueIdentifier>{cf61144c-82ea-4911-89b4-69eb7935244c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp">
@@ -216,6 +228,27 @@
     <ClCompile Include="..\..\shared\generated\cpp\RhoFileBase.cpp">
       <Filter>File\shared\generated\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\PushImpl.cpp">
+      <Filter>Push\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\push_api_init.cpp">
+      <Filter>Push\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\push_js_api.cpp">
+      <Filter>Push\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\push_ruby_api.c">
+      <Filter>Push\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Push_js_wrap.cpp">
+      <Filter>Push\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Push_ruby_wrap.cpp">
+      <Filter>Push\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\PushBase.cpp">
+      <Filter>Push\shared\generated\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
@@ -277,5 +310,10 @@
     <CustomBuild Include="..\..\File.xml">
       <Filter>File</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\push.xml">
+      <Filter>Push</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

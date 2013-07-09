@@ -63,6 +63,8 @@
 					</PARAM>
 					<PARAM name="hide_button_label" type="STRING">
 						<DESC>The label text for the hide button in the popup status window</DESC>
+                        <PLATFORM>iOS, Android, WP8</PLATFORM>
+                        <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators Windows Close icon used to hide the status window.</MORE_HELP>
 					</PARAM>
 				</PARAMS>
             </METHOD>

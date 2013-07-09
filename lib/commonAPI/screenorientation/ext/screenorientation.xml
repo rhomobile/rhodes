@@ -8,31 +8,33 @@
         <PROPERTIES access="STATIC">
             <DESC>Properties used to configure Screen Orientation module</DESC>
             <PROPERTY name="autoRotate" type="BOOLEAN" access="STATIC" generateAccessors="true" default="true">
-                <DESC>Enables or Disables autorotation of the screen orientation when the device is rotated.</DESC>
+                <DESC>Enables or Disables autorotation of the screen orientation when the device is rotated. For Windows Mobile/CE devices, support is limited to only Motorola Solutions devices with IST Sensor support.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
 
         <METHODS access="STATIC">
             <METHOD name="normal" runInThread="module">
                 <DESC>Sets the screen orientation to default device orientation</DESC>
-                <PLATFORM>Android, WP8</PLATFORM>
+                <PLATFORM>Android, WP8, WM</PLATFORM>
             </METHOD>
 			<METHOD name="rightHanded" runInThread="module">
                 <DESC>Sets the screen orientation to righthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
-                <PLATFORM>Android, WP8</PLATFORM>
+                <PLATFORM>Android, WP8, WM</PLATFORM>
             </METHOD>
             <METHOD name="leftHanded" runInThread="module">
                 <DESC>Sets the screen orientation to lefthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
-                <PLATFORM>Android, WP8</PLATFORM>
+                <PLATFORM>Android, WP8, WM</PLATFORM>
             </METHOD>
             <METHOD name="upsideDown" runInThread="module">
                 <DESC>Sets the screen orientation to upside down, useful if presenting the device to a customer to obtain a signature.</DESC>
-                <PLATFORM>Android, WP8</PLATFORM>
-            </METHOD>
+                <PLATFORM>Android, WP8, WM</PLATFORM>
+            </METHOD>			
 			<METHOD name="setScreenOrientationEvent" hasCallback="mandatory" runInThread="module">
 				<DESC>Sets the callback to be called when a screen orientation event occurres</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
 				<CALLBACK type="STRING">
-					<DESC>Current orientation of the screen</DESC>
+					<DESC>Current orientation of the screen. The orientation is reported as normal, leftHanded, rightHanded or upsideDown. If auto rotation is disabled - real rotating of device do not produce event! Event occured only for real changing of screen orientation.</DESC>
 				</CALLBACK>
 			</METHOD>
         </METHODS>

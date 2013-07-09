@@ -7,7 +7,8 @@ namespace rhoruntime {
     public:
         [Windows::Foundation::Metadata::DefaultOverloadAttribute]
 
-        void set(bool res);
+        bool hasCallback();
+		void set(bool res);
         void set(int64 res);
         void set(int res);
         void set(double res);

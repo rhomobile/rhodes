@@ -301,7 +301,7 @@ def make_application_build_capabilities_header_file
 
   f.puts ''
   
-  if $js_application == true
+  if $js_application
     f.puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY_API'
   end
@@ -634,17 +634,22 @@ namespace "config" do
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
             $app_config['extensions'] = $app_config['extensions'] | ['signature']
+            $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
         end    
         
         if $current_platform == "iphone"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
             $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
+            $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
         end    
 
         if $current_platform == "android"
+            $app_config['extensions'] = $app_config['extensions'] | ['barcode']
             $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
+            $app_config['extensions'] = $app_config['extensions'] | ['indicators']
+            $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
         end    
         
     end
@@ -797,7 +802,7 @@ namespace "config" do
     $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
     $obfuscator        = 'res/build-tools/yuicompressor-2.4.7.jar'
     
-    $js_application    = ($app_config["javascript_application"].nil? || $app_config["javascript_application"] == 'false') ? false : true; 
+    $js_application    = Jake.getBuildBoolProp("javascript_application")
     
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
@@ -908,7 +913,7 @@ def add_extension(path,dest)
   chdir path if File.directory?(path)
   puts 'chdir path=' + path.to_s
 
-  if $js_application == false   
+  if !$js_application
     Dir.glob("*").each do |f|
       cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
     end
@@ -984,6 +989,7 @@ end
 
 def init_extensions(dest, mode = "")
   extentries = []
+  extentries_init = []
   nativelib = []
   extlibs = []
   extjsmodulefiles = []
@@ -1063,10 +1069,15 @@ def init_extensions(dest, mode = "")
             end
           end
           
-          if $js_application == true
+          if $js_application
             #rhoelementsext for win mobile shared runtime mode only              
             if !xml_api_paths.nil? || ("rhoelementsext" == extname && $config["platform"] == "wm")
+
               extentries << entry unless entry.nil?
+              
+              entry =  "if (rho_ruby_is_started()) #{entry}" if entry && entry.length() > 0 && xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")
+              extentries_init << entry unless entry.nil?
+                
             else
               puts '********* WARNING *****************************************************************************************************'
               puts 'Extension ' + extname + ' does not have javascript api implementation and will not initilized in the application!!!'
@@ -1074,6 +1085,10 @@ def init_extensions(dest, mode = "")
             end
           else
             extentries << entry unless entry.nil?
+          
+            entry =  "if (rho_ruby_is_started()) #{entry}" if entry && entry.length() > 0 && xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")
+            extentries_init << entry unless entry.nil?
+          
           end
           
           if type.to_s() != "nativelib"
@@ -1205,7 +1220,7 @@ def init_extensions(dest, mode = "")
     end
 
     f.puts "void Init_Extensions(void) {"
-    extentries.each do |entry|
+    extentries_init.each do |entry|
       f.puts "    #{entry}();"
     end
     f.puts "}"
@@ -1352,7 +1367,7 @@ def common_bundle_start( startdir, dest)
   start = pwd
   chdir rhodeslib
 
-  if $js_application == false
+  if !$js_application
     Dir.glob("*").each { |f|
       if f.to_s == "autocomplete"
         next
@@ -1423,7 +1438,7 @@ def common_bundle_start( startdir, dest)
   replace_platform = "bb6" if $bb6
   #replace_platform = "wm" if replace_platform == 'win32'
 
-  if $js_application == false
+  if !$js_application
     [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
       chdir folder
       
@@ -1514,7 +1529,7 @@ end
 namespace "build" do
   namespace "bundle" do
     task :xruby do
-      if $js_application == true
+      if $js_application
         return
       end
       
@@ -1633,7 +1648,7 @@ namespace "build" do
         process_exclude_folders(excluded_dirs)
         chdir startdir
       
-      if $js_application == false
+      if !$js_application
 
         create_manifest
         cp compileERB, $srcdir
@@ -2128,7 +2143,12 @@ namespace "run" do
     task :rhosimulator_base => [:set_rhosimulator_flag, "config:common"] do
         puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
         $path = ""
-        $args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
+        if $js_application
+            $args = ["-jsapproot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
+        else
+            $args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
+        end
+            
         $args << "-security_token=#{ENV['security_token']}" if !ENV['security_token'].nil?
         cmd = nil
 

@@ -720,16 +720,21 @@ static Rhodes *instance = NULL;
     pickImageDelegate = [[PickImageDelegate alloc] init];
     signatureDelegate = [SignatureDelegate getSharedInstance];
     nvDelegate = [[NVDelegate alloc] init];
-    
-#ifdef APP_BUILD_CAPABILITY_PUSH    
-#ifdef __IPHONE_3_0
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-     (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
-#endif //__IPHONE_3_0
-#endif //APP_BUILD_CAPABILITY_PUSH
-        
+
     NSLog(@"Initialization finished");
 }
+
+- (void) registerForPushNotifications:(id<IPushNotificationsReceiver>)receiver;
+{
+    pushReceiver = receiver;
+
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+     (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
+    
+    UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+    NSLog(@"Enabled notification types: %i", (int)nt);
+}
+
 
 - (void) signalNetworkStatusPollIntervalChanged
 {
@@ -783,79 +788,7 @@ static Rhodes *instance = NULL;
 	}
 	}
 }
-- (void)processPushMessage:(NSDictionary *)userInfo
-{
-    RAWLOG_INFO("Processing PUSH message...");
-	
-    {
-		NSMutableString* strData = [[NSMutableString alloc] init];
-		for (NSString* key in userInfo) 
-		{
-			if ( !key )
-				continue;
-			
-		    NSLog(@"Push item: %@", key );
-			if ( [key compare:@"aps"] == 0)
-			{
-				NSDictionary *aps = [userInfo objectForKey:key];
-				for (NSString* key1 in aps) 
-				{
-					if ( !key1 )
-						continue;
-				    NSLog(@"Push aps item: %@", key1 );
-					
-					if ( [strData length] > 0 )
-						[strData appendString:@"&"];					
-					
-					[strData appendString:key1];
-					[strData appendString:@"="];
-					if ( [aps objectForKey:key1] )
-						[strData appendString:[NSString stringWithFormat:@"%@", [aps objectForKey:key1]]];
-				}
-				
-				continue;
-			}
 
-			if ( [strData length] > 0 )
-				[strData appendString:@"&"];					
-			[strData appendString:key];
-			[strData appendString:@"="];
-			if ( [userInfo objectForKey:key] )
-				[strData appendString:[NSString stringWithFormat:@"%@", [userInfo objectForKey:key]]];
-
-		}	
-		
-//        NSString* strData = [userInfo description];
-        NSLog(@"Push string: %@", strData );
-        const char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]];
-        int nRes = rho_rhodesapp_callPushCallback(szData);
-        [strData release];
-        if ( nRes )
-            return;
-    }
-    
-    NSDictionary *aps = [userInfo objectForKey:@"aps"];
-    if (aps) {
-        NSString *alert = [aps objectForKey:@"alert"];
-        if (alert && [alert length] > 0) {
-            NSLog(@"Push Alert: %@", alert);
-            rho_param *p = rho_param_str((char*)[alert UTF8String]);
-            [RhoAlert showPopup:p];
-            rho_param_free(p);
-        }
-        NSString *sound = [aps objectForKey:@"sound"];
-        if (sound && [sound length] > 0) {
-            NSLog(@"Sound file name: %@", sound);
-            [RhoAlert playFile:[@"/public/alerts/" stringByAppendingPathComponent:sound] mediaType:NULL];
-        }
-        NSString *vibrate = [aps objectForKey:@"vibrate"];
-        if (vibrate && [vibrate length] > 0) {
-            NSLog(@"Do vibrate...");
-            [RhoAlert vibrate:1];
-        }
-    }
-    [self processDoSync:userInfo];
-}
 #endif
 
 - (void) saveLastUsedTime {
@@ -1089,59 +1022,32 @@ static Rhodes *instance = NULL;
 } */
 
 
-#ifdef APP_BUILD_CAPABILITY_PUSH
-
 #ifdef __IPHONE_3_0
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-	NSLog(@"Device token is %@", deviceToken);
-	
-	NSMutableString *stringBuffer = [NSMutableString stringWithCapacity:([deviceToken length] * 2)];
-	const unsigned char *dataBuffer = [deviceToken bytes];
-	for (int i = 0; i < [deviceToken length]; ++i)
-		[stringBuffer appendFormat:@"%02x", (unsigned long)dataBuffer[ i ]];
-	
-	char* szpin = strdup([stringBuffer cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-	RAWLOG_INFO1("device pin: %s\n", szpin);
-	
-	if (([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) && ([[UIDevice currentDevice] isMultitaskingSupported]))
-	{
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-				
-			NSLog(@"Waiting for extensions to load");
-				
-			while (rho_extensions_are_loaded()!=1) {
-				[NSThread sleepForTimeInterval:0.01];
-			}
-				
-			NSLog(@"Extensions loaded");
-			
-			rho_clientregister_create(szpin);
-			free(szpin);
-				
-		});
-	}
-	else
-	{
-		rho_clientregister_create(szpin);
-		free(szpin);
-	}
+    if ( pushReceiver != nil ) {
+        [pushReceiver onPushRegistrationSucceed:deviceToken];
+    }
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-	NSLog(@"Push Notification Error: %@", [error localizedDescription]);
+    if ( pushReceiver != nil ) {
+        [pushReceiver onPushRegistrationFailed:error];
+    }
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-	[self processPushMessage:userInfo];
+    if ( pushReceiver != nil ) {
+        [pushReceiver onPushMessageReceived:userInfo];
+    }
+    
+//	[self processPushMessage:userInfo];
 }
 
 #endif //__IPHONE_3_0
-
-#endif //APP_BUILD_CAPABILITY_PUSH
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     RAWLOG_INFO("Application did become active");

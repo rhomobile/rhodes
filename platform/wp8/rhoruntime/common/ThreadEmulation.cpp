@@ -79,7 +79,7 @@ extern "C" void WINAPI TlsShutdownWP8()
 
 
 // Helper shared between CreateThread and ResumeThread.
-static void* StartThreadWP8(LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter, HANDLE completionEvent, int nPriority)
+static void* StartThreadWP8(LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter, HANDLE completionEvent, int nPriority, HANDLE threadHandle)
 {
 	auto workItemHandler = ref new WorkItemHandler([=](IAsyncAction^)
 	{
@@ -90,12 +90,19 @@ static void* StartThreadWP8(LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpPara
 		}
 		catch (...) { }
 
-		// Clean up any TLS allocations made by this thread.
-		TlsShutdownWP8();
+		//auto worker = workers.find(threadHandle);
+		//if(worker == workers.end())
+		//{
+			// Clean up any TLS allocations made by this thread.
+			TlsShutdownWP8();
 
-		// Signal that the thread has completed.
-		SetEvent(completionEvent);
-		CloseHandle(completionEvent);
+			// Signal that the thread has completed.
+			SetEvent(completionEvent);
+			CloseHandle(completionEvent);
+			//workers.erase(hThread);
+		//}
+		//else
+			//workers.erase(threadHandle);
 
 	}, CallbackContext::Any);
 
@@ -148,7 +155,7 @@ extern "C" _Use_decl_annotations_ HANDLE WINAPI CreateThreadWP8(LPSECURITY_ATTRI
 		{
 			// Start the thread immediately.
 			WorkerInfo winfo;
-			winfo.lpAsyncAction = StartThreadWP8(lpStartAddress, lpParameter, completionEvent, 0);
+			winfo.lpAsyncAction = StartThreadWP8(lpStartAddress, lpParameter, completionEvent, 0, threadHandle);
 			winfo.completionEvent = completionEvent;
 			workers[threadHandle] = winfo;
 		}
@@ -185,7 +192,7 @@ extern "C" _Use_decl_annotations_ DWORD WINAPI ResumeThreadWP8(HANDLE hThread)
 	{
 		PendingThreadInfo& info = threadInfo->second;
 		WorkerInfo winfo;
-	    winfo.lpAsyncAction = StartThreadWP8(info.lpStartAddress, info.lpParameter, info.completionEvent, info.nPriority);
+	    winfo.lpAsyncAction = StartThreadWP8(info.lpStartAddress, info.lpParameter, info.completionEvent, info.nPriority, hThread);
 		winfo.completionEvent = info.completionEvent;
 		workers[hThread] = winfo;
 	}
@@ -206,11 +213,12 @@ extern "C" _Use_decl_annotations_ DWORD WINAPI TerminateThreadWP8(HANDLE hThread
 	(reinterpret_cast<IAsyncAction^>(workers[hThread].lpAsyncAction))->Close();
 
 	// Clean up any TLS allocations made by this thread.
-	TlsShutdownWP8();
+	//TlsShutdownWP8();
 
 	// Signal that the thread has completed.
-	SetEvent(workers[hThread].completionEvent);
-	CloseHandle(workers[hThread].completionEvent);
+	//SetEvent(workers[hThread].completionEvent);
+	//CloseHandle(workers[hThread].completionEvent);
+	//workers[hThread].completionEvent = NULL;
 
 	workers.erase(hThread);
 

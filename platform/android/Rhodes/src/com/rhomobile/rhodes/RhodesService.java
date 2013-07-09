@@ -1555,10 +1555,11 @@ public class RhodesService extends Service {
                 JSONObject json = new JSONObject(jsonItem);
                 Iterator<String> itemIter = json.keys();
                 while(itemIter.hasNext()) {
+                    Logger.T(TAG, "New menu item");
                     String itemKey = itemIter.next();
                     String itemDescr = json.getString(itemKey);
 
-                    Logger.T(TAG, "Add menu item: " + itemKey + "->" + itemDescr);
+                    Logger.T(TAG, itemKey + "->" + itemDescr);
 
                     menuItem.put(itemKey, itemDescr);
                 }

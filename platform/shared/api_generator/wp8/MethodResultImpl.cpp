@@ -8,6 +8,11 @@ CMethodResultImpl::CMethodResultImpl(int64 native):
 {
 }
 
+bool CMethodResultImpl::hasCallback()
+{
+	return oResult->hasCallback();
+}
+
 void CMethodResultImpl::set(bool res)
 {
     oResult->set(res);
