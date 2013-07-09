@@ -112,7 +112,7 @@
                             <PLATFORM>WM</PLATFORM>
                         </PARAM>
                         <PARAM name="oldTabIndex" type="INTEGER">
-                            <DESC>New tab index.</DESC>
+                            <DESC>New tab index. If you switched to first activated tab, when oldTabIndex will be -1, whcih means that there was no old tab index exists.</DESC>
                             <PLATFORM>WM</PLATFORM>
                         </PARAM>
                         <PARAM name="tabEvent" type="STRING">
@@ -144,7 +144,7 @@
             </METHOD>
 
             <METHOD name="removeTab" runInThread="ui">
-                <DESC>Removes the Tab by index. Method will remove WebView for specific tab, it will not remove tab from tab array, so all indexes will remain the same.</DESC>
+                <DESC>Removes the Tab by index. Method will remove WebView for specific tab, it will not remove tab from tab array, so all indexes will remain the same.If you switch to previously removed tab, tab will be recreated.</DESC>
                 <PLATFORM>WM</PLATFORM>
 
                 <PARAMS>

@@ -46,6 +46,7 @@ namespace rhoruntime
 		// webview
 		void navigate(::Platform::String^ url, int index);
 		::Platform::String^ executeScript(::Platform::String^ script, int index);
+		::Platform::String^ executeScriptAsync(::Platform::String^ script, int index);
 		void GoBack(void);
 		void GoBack(int index);
 		void GoForward(void);
@@ -76,7 +77,7 @@ namespace rhoruntime
 		void tabbarRemove(int index);
 		void tabbarSwitch(int index);
 		int tabbarGetCurrent();
-		void tabbarAddTab(::Platform::String^ label, ::Platform::String^ icon, ::Platform::String^ action, bool disabled, ::Platform::String^ web_bkg_color, ::Platform::String^ selected_color, bool reload, bool use_current_view_for_tab);
+		void tabbarAddTab(::Platform::String^ label, ::Platform::String^ icon, ::Platform::String^ action, bool disabled, ::Platform::String^ web_bkg_color, ::Platform::String^ selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, ::Platform::Object^ oResult);
 		void tabbarSetBadge(int index, ::Platform::String^ badge);
 		void exitCommand(void);
 		void navigateBackCommand(void);

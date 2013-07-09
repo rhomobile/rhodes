@@ -89,7 +89,7 @@ class SettingsController < Rho::RhoController
 	
       if @params['server_errors'] && @params['server_errors']['create-error']
         SyncEngine.on_sync_create_error( 
-          @params['source_name'], @params['server_errors']['create-error'].keys, :delete )
+          @params['source_name'], @params['server_errors']['create-error'].keys, :recreate )
       end
 
       if @params['server_errors'] && @params['server_errors']['update-error']

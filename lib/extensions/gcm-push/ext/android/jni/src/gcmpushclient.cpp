@@ -47,13 +47,10 @@ extern "C" void Init_GCMPushClient()
 
     rho::push::CPushManager::getInstance()->addClient(pClient);
 
-//    if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
-//        rho::sync::RhoconnectClientManager::clientRegisterSetDevicePin("");
-//    }
-    
     RAWTRACEC("Init_GCMPushClient", "request GCM registration >>>>>>>>>>>>>>>>");
 
-    pClient->doRegister();;
+    pClient->doRegister();
+
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -122,14 +119,6 @@ GcmPushClient::GcmPushClient()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::init()
-{
-    if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() && (!sync::RhoconnectClientManager::clientRegisterHaveInstance())) {
-        sync::RhoconnectClientManager::clientRegisterCreate();
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
 
 void GcmPushClient::getDeviceId(CMethodResult& result)
 {
@@ -167,7 +156,12 @@ void GcmPushClient::setDeviceId(const String& deviceId)
     CMethodResult result;
     setProperty("deviceId", deviceId, result);
 
+    LOG(TRACE) + "creating client register";
+    rho::sync::RhoconnectClientManager::clientRegisterCreate(deviceId.c_str());
+
     getDeviceId(m_deviceIdResult);
+    m_deviceIdResult = CMethodResult();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
