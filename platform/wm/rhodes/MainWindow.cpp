@@ -700,7 +700,7 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 {
     ProcessActivate( FALSE, MAKEWPARAM(0,1), 0 );
 
-	SetForegroundWindow(m_hWnd);
+	//SetForegroundWindow(m_hWnd);
 
 	::ShowWindow( m_hWnd, SW_MINIMIZE );
 
