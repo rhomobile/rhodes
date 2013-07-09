@@ -161,6 +161,16 @@ void hideSIPButton()
         ::ShowWindow(hg_sipbut, SW_HIDE);
 }
 
+void CMainWindow::showTaskBar(bool bShow)
+{
+    HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
+    if ( hTaskBar )
+    {
+        ::EnableWindow(hTaskBar, !bShow ? FALSE : TRUE ); 
+        ::ShowWindow(hTaskBar, !bShow ? SW_HIDE : SW_SHOW );
+    }
+}
+
 void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 {
     LOG(INFO) + "RhoSetFullScreen: " + (bFull ? 1 : 0);
@@ -168,16 +178,11 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
     if( !IsWindowVisible() )
     {
-        LOG(INFO) + "Main Window is invisible. Skip fill screen method";
+        LOG(INFO) + "Main Window is invisible.";// Skip full screen method";
         //return;
     }
 
-    HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
-    if ( hTaskBar )
-    {
-        ::EnableWindow(hTaskBar, bFull ? FALSE : TRUE ); 
-        ::ShowWindow(hTaskBar, bFull ? SW_HIDE : SW_SHOW );
-    }
+    showTaskBar(!bFull);
 
 #if defined( OS_PLATFORM_MOTCE )
 
@@ -744,7 +749,10 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 {
 #if defined(_WIN32_WCE) 
 	if (m_bFullScreen)
-		RhoSetFullScreen(fActive!=0);
+    {
+		//RhoSetFullScreen(fActive!=0);
+        showTaskBar(fActive==0);
+    }
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
     RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
