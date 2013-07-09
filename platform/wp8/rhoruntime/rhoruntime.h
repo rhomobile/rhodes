@@ -46,6 +46,7 @@ namespace rhoruntime
 		// webview
 		void navigate(::Platform::String^ url, int index);
 		::Platform::String^ executeScript(::Platform::String^ script, int index);
+		::Platform::String^ executeScriptAsync(::Platform::String^ script, int index);
 		void GoBack(void);
 		void GoBack(int index);
 		void GoForward(void);

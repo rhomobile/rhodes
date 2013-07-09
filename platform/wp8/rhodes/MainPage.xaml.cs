@@ -84,7 +84,7 @@ namespace rhodes
         {
             get { return _uiThreadID == System.Threading.Thread.CurrentThread.ManagedThreadId; }
         } 
-           
+              
         private void raiseTabEvent( string eventName, int nOldTab, int nNewTab )
         {
             if ( _oTabResult != null)
@@ -95,8 +95,8 @@ namespace rhodes
                 mapRes["oldTabIndex"] = Convert.ToString(nOldTab);
                 mapRes["tabEvent"] = eventName;
                 _oTabResult.set(mapRes);
-        }
-}
+           }
+        }   
 
         static public MainPage getInstance()
         {  
@@ -271,15 +271,17 @@ namespace rhodes
             if (TabbarPivot.Items.Count == 0)
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
             else
-            {
-                WebBrowser wb = (WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content;
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
-            }
         }
 
         public string executeScript(string script, int index) 
         {
             return StringValueByStringIntReturnAgent(executeScriptFunc, script, index);
+        }
+
+        public string executeScriptAsync(string script, int index)
+        {
+            return StringValueByStringIntReturnAgentAsync(executeScriptFunc, script, index);
         }
 
 		public void GoBack()
@@ -665,7 +667,7 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSwitch(index); }); return; }
             if ((index >= 0) && (index < TabbarPivot.Items.Count))
             {
-                //raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
+                raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
                 TabbarPivot.SelectedIndex = index;
             }
         }
@@ -956,6 +958,31 @@ namespace rhodes
             waitEvent.WaitOne();
             if (exception != null)
                 throw exception; 
+
+            return return_value;
+        }
+
+        private string StringValueByStringIntReturnAgentAsync(Func<string, int, string> func, string str, int index)
+        {
+            if (isUIThread)
+                return func(str, index);
+
+            Exception exception = null;
+            string return_value = "";
+            Dispatcher.BeginInvoke(() =>
+            {
+                try
+                {
+                    return_value = func(str, index);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+            });
+
+            if (exception != null)
+                throw exception;
 
             return return_value;
         }
