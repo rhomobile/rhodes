@@ -268,7 +268,7 @@ namespace rhodes
         public string executeScriptFunc(string script, int index)
         {
             string[] codeString = { script };
-            if (TabbarPivot.Items.Count == 0)
+            if (TabbarPivot.Items.Count == 0 || _tabProps[index]._isInitialized == false)
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
             else
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
@@ -667,7 +667,7 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSwitch(index); }); return; }
             if ((index >= 0) && (index < TabbarPivot.Items.Count))
             {
-                //raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
+                raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
                 TabbarPivot.SelectedIndex = index;
             }
         }
