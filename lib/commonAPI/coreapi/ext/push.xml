@@ -25,9 +25,6 @@
                     </VALUE>
                 </VALUES>
             </PROPERTY>
-            <PROPERTY name="id" type="STRING" readOnly="true" generateAccessors="true">
-                <DESC>Push engine id.</DESC>
-            </PROPERTY>
             <PROPERTY name="deviceId" type="STRING" readOnly="true">
                 <DESC>Push token used to identify particular device.</DESC>
             </PROPERTY>
