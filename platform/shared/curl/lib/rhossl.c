@@ -86,6 +86,7 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
     struct ssl_config_data *config = &conn->ssl_config;
     CURLcode retcode;
+	char host[255];
 
 	int idone = *done;
 
@@ -94,7 +95,9 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
     
     connssl->storage = rho_ssl_create_storage();
 
-	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->verifypeer, connssl->storage, conn->host.name);
+	sprintf(host,"%s:%d\0", conn->host.name, conn->port); 
+
+	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->verifypeer, connssl->storage, host);
     if (retcode)
         return retcode;
     
