@@ -181,8 +181,36 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
 #if defined( OS_PLATFORM_MOTCE )
 
-	if(g_hWndCommandBar)
-		::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
+	//if(g_hWndCommandBar)
+		//::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
+    //    CommandBar_Show(g_hWndCommandBar, !bFull ? TRUE : FALSE);
+
+    if ( m_bFullScreen )
+    {
+        if ( g_hWndCommandBar )
+        {
+            ::DestroyWindow(g_hWndCommandBar);
+            g_hWndCommandBar = NULL;
+        }
+    }else
+    {
+        if ( !g_hWndCommandBar )
+        {
+            g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+
+            TBBUTTON oBtn = {0};
+            oBtn.iBitmap = -1;
+            oBtn.idCommand = IDM_POPUP_MENU;
+            oBtn.fsState = TBSTATE_ENABLED;
+            oBtn.iString = (int)L"File";
+
+            CommandBar_InsertButton(g_hWndCommandBar, 0, &oBtn);
+
+            CommandBar_AddAdornments(g_hWndCommandBar, 0, 0);
+            CommandBar_Show(g_hWndCommandBar, TRUE);
+        }
+    }
+
 #endif
 
     if (!bDestroy)
@@ -278,7 +306,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     }
 
 #elif defined( OS_PLATFORM_MOTCE )
-    g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+/*    g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
 
     TBBUTTON oBtn = {0};
     oBtn.iBitmap = -1;
@@ -290,7 +318,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     CommandBar_AddAdornments(g_hWndCommandBar, 0, 0);
     CommandBar_Show(g_hWndCommandBar, TRUE);
-
+*/
 #endif
 
 #if defined(OS_WINCE)
