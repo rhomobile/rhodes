@@ -1844,6 +1844,9 @@ void CMainWindow::createCustomMenu()
 
 			popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, 
                 oItem.m_eType == CAppMenuItem::emtClose ? _T("Exit") : strLabelW.c_str() );
+
+            if (!oItem.m_isEnable)
+                popup.EnableMenuItem(0, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
         }
     }
 
