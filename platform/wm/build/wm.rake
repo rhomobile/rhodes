@@ -60,6 +60,31 @@ def sign (cabfile)
   $stdout.flush
 end
 
+def edit_xml(file, out_file = nil)
+  out_file = file if out_file.nil?
+
+  doc = REXML::Document.new(File.new(file).read)
+  yield doc
+  File.open(out_file, 'w') {|f| f << doc}
+end
+
+def clean_vsprops(file, *vars)
+  edit_xml(file) do |doc|
+    vars.each do |var|
+      REXML::XPath.each(doc, "//UserMacro[@Name='#{var}']") do |node|
+        node.remove
+      end
+    end
+  end
+end
+
+def clean_vsprops_r(root, *vars)
+  Dir.glob(File.join(root, '**', '*.vsprops')) do |file|
+    clean_vsprops(file, *vars)
+  end
+end
+
+
 namespace "config" do
   task :set_wince_platform do
     $current_platform = "wm" unless $current_platform
@@ -288,6 +313,7 @@ namespace "build" do
                         cp_r lib, ENV['TARGET_TEMP_DIR']
                     end
                 else    
+                    clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
                     Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
                 end    
           
@@ -311,6 +337,7 @@ namespace "build" do
               ENV['SDK'] = $sdk
 
               if File.exists? File.join(extpath, 'build.bat')
+                clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
                 Jake.run3('build.bat', extpath)
               elsif is_prebuilt
                 file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
