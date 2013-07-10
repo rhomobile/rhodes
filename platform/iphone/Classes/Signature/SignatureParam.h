@@ -27,15 +27,23 @@
 #ifndef __SignatureParam__
 #define __SignatureParam__
 
+/*
 enum ComporessionFormat {
     CF_JPEG = 0,
     CF_PNG,
     CF_BMP
 };
+*/
+
+#define CF_JPEG 0
+#define CF_PNG 1
+#define CF_BMP 2
+
 
 struct SignatureParam {    
     unsigned int compressionFormat;
     const char* outputFormat;
+    NSString* fileName;
     
     bool border;
     
