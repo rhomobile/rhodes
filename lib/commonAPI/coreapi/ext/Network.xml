@@ -9,8 +9,6 @@
         </TEMPLATES>
 
         <PROPERTIES access="STATIC" generateAccessors="false">
-            <DESC>object supports this properties bla bla bla :</DESC>
-
             <ALIASES>
                 <ALIAS new="ssl_verify_peer" existing="verifyPeerCertificate" deprecated="true"/>
                 <ALIAS new="http_command" existing="httpVerb" deprecated="true"/>

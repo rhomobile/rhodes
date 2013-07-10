@@ -560,7 +560,15 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         createAutoStartShortcut();
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
-    RHODESAPP().setJSApplication(_AtlModule.isJSApplication());
+
+    bool bRE1App = false;
+
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    if (!rho_wmimpl_get_is_version2())
+        bRE1App = true;
+#endif
+
+    RHODESAPP().setJSApplication(bRE1App || _AtlModule.isJSApplication());
 
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
@@ -619,13 +627,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         m_appWindow.ShowWindow(SW_MINIMIZE);
 #endif
 
-    bool bRE1App = false;
-
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-    if (!rho_wmimpl_get_is_version2())
-        bRE1App = true;
-#endif
-
+/*
     if (bRE1App)
     {
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
@@ -639,14 +641,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0 );
     }
     else
-    {
+    { */
         RHODESAPP().startApp();
 
 #if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
         // Navigate to the "loading..." page
 	    m_appWindow.Navigate2(_T("about:blank"), -1 );
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    }
+    //}
 
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 
