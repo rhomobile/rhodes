@@ -34,7 +34,7 @@
             </PROPERTY>
             <PROPERTY name="verifyPeerCertificate" type="BOOLEAN" default="true">
                 <DESC>Verify SSL certificates.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpVerb" type="STRING">
                 <DESC>Password for basic authentication.</DESC>
