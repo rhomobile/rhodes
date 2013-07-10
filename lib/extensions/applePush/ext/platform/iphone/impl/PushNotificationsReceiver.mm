@@ -50,7 +50,6 @@ static PushNotificationsReceiver *instance = nil;
 + (NSDictionary*)ansMessageToRhodesMessage:(NSDictionary*)dict
 {
     NSMutableDictionary* ret = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary* retData = [[NSMutableDictionary alloc] init];
     
     NSArray *keys = [dict allKeys];
     
@@ -64,13 +63,12 @@ static PushNotificationsReceiver *instance = nil;
         id val = [dict objectForKey:key];
         
         if ( [sKey isEqualToString:@"aps"] && [val isKindOfClass:[NSDictionary class]] ) {
-            [retData addEntriesFromDictionary:val];
+            [ret addEntriesFromDictionary:val];
         } else {
-            [retData setValue:val forKey:sKey];
+            [ret setValue:val forKey:sKey];
         }
     }
     
-    [ret setValue:retData forKey:@"data"];
     return ret;
 }
 
@@ -108,13 +106,13 @@ static PushNotificationsReceiver *instance = nil;
             [json dealloc];
         } else if ([val isKindOfClass:[NSArray class]]) {
             
-            [context appendString:@"["];
+            [context appendString:@"\""];
             //will only support String values in array
             NSArray* vals = (NSArray*)val;
             for ( int j = 0; j < ([vals count]); ++j ) {
                 id v = vals[j];
                 if ([v isKindOfClass:[NSString class]]) {
-                    [context appendFormat:@"\"%@\"",(NSString*)v];
+                    [context appendFormat:@"%@",(NSString*)v];
 
                     if ( j < ([vals count]-1) ) {
                         [context appendString:@","];
@@ -122,7 +120,7 @@ static PushNotificationsReceiver *instance = nil;
                 }
             }
             
-            [context appendString:@"]"];
+            [context appendString:@"\""];
             
         } else {
             [context appendString:@"\"\""];

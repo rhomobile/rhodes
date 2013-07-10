@@ -168,6 +168,8 @@ public:
 	bool m_bFullScreen, m_bFullScreenBeforeLicense;
    	void RhoSetFullScreen(bool bFull, bool bDestroy = false);
     bool getFullScreen(){ return m_bFullScreen; }
+    void showTaskBar(bool bShow);
+
 #endif
 
 	void openNativeView(	NativeViewFactory* nativeViewFactory, 

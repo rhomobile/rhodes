@@ -39,6 +39,11 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     }
 
     @Override
+    public boolean onNavigateStarted(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
     public boolean onNavigateProgress(IRhoExtManager extManager, String url, int pos, int total, IRhoWebView ext, boolean res) {
         return res;
     }

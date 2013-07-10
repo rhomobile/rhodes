@@ -268,7 +268,7 @@ namespace rhodes
         public string executeScriptFunc(string script, int index)
         {
             string[] codeString = { script };
-            if (TabbarPivot.Items.Count == 0)
+            if (TabbarPivot.Items.Count == 0 || _tabProps[index]._isInitialized == false)
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
             else
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
@@ -936,24 +936,24 @@ namespace rhodes
 
         private string StringValueByStringIntReturnAgent(Func<string, int, string> func, string str, int index)
         {
-            if (isUIThread)
+            if (isUIThread)  
                 return func(str, index);
 
-            Exception exception = null;
-            var waitEvent = new System.Threading.ManualResetEvent(false);
-            string return_value = "";
+            Exception exception = null; 
+            var waitEvent = new System.Threading.ManualResetEvent(false); 
+            string return_value = "";   
             Dispatcher.BeginInvoke(() =>
-            {
+            { 
                 try
                 {
                     return_value = func(str, index);
                 }
-                catch (Exception ex)
+                catch (Exception ex)  
                 {
                     exception = ex;
                 }
                 waitEvent.Set();
-            });  
+            });   
             
             waitEvent.WaitOne();
             if (exception != null)
@@ -991,7 +991,7 @@ namespace rhodes
         {
             String answer = CRhoRuntime.getInstance().onJSInvoke(e.Value);
             WebBrowser wb = sender as WebBrowser;
-            wb.IsScriptEnabled = true;
+            wb.IsScriptEnabled = true; 
             wb.InvokeScript("__rhoNativeApiResult", new string[] { answer });
         }
     }
