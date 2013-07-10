@@ -94,6 +94,8 @@ public class RhoWebViewClient extends WebViewClient
         
         Logger.profStart("BROWSER_PAGE");
         
+        RhoExtManager.getImplementationInstance().onNavigateStarted(view, url);
+
         if (mWebView.getConfig() != null && mWebView.getConfig().getBool("enablePageLoadingIndication"))
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
     }
