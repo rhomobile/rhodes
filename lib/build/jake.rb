@@ -697,9 +697,11 @@ class Jake
     res
   end
 
-  def self.getBuildBoolProp(propName, config_yml=$app_config)
+  def self.getBuildBoolProp(propName, config_yml=$app_config, def_value=false)
     res = getBuildProp(propName)
     
+    return def_value unless res
+     
     return true if res && (res.to_i() != 0 || res.casecmp("true") == 0 || res.casecmp("yes") == 0 )
     
     false
