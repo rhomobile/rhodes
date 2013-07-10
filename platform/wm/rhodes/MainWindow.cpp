@@ -578,24 +578,33 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
     
     //SPR 23830 - Fix - Do loading.html On load png failure
-    if (retCode == 0)
+    if (retCode == 0 && m_bLoading)
     {
-        LOG(INFO) + "CMainWindow::OnPaint: failed on rho_wmimpl_draw_splash_screen()";
+        LOG(INFO) + "CMainWindow::OnPaint: loading.png cannot be found. Try loading.html";
 
-        StringW pathW = convertToStringW(RHODESAPP().getLoadingPagePath());
+        String strLoadingPagePath = RHODESAPP().getLoadingPagePath();
+        if ( String_startsWith( strLoadingPagePath, "file://" ) )
+            strLoadingPagePath = strLoadingPagePath.substr(7);
 
-        //If engine is ready then try the following method to navigate to loading.html
-        bool bNavigate = true;
-        if ( m_pBrowserEng )
-            bNavigate = m_pBrowserEng->NavigateToHtml(pathW.c_str()) ? false : true;
-        
-        if (bNavigate)
+        if (CRhoFile::isFileExist( strLoadingPagePath.c_str()))
         {
-            LOG(INFO) + "CMainWindow::OnPaint: m_pBrowserEng is NULL";
+            StringW pathW = convertToStringW(RHODESAPP().getLoadingPagePath());
 
-            //If engine is not ready then queue Navigate request for loading.html
-            rho_webview_navigate(RHODESAPP().getLoadingPagePath().c_str(), 0 );
-        }
+            //If engine is ready then try the following method to navigate to loading.html
+            bool bNavigate = true;
+            if ( m_pBrowserEng )
+                bNavigate = m_pBrowserEng->NavigateToHtml(pathW.c_str()) ? false : true;
+            
+            //It does not make any sense to show loading.html, since first page will be loaded anyway, just after browser will be created.
+            /*if (bNavigate)
+            {
+                LOG(INFO) + "CMainWindow::OnPaint: m_pBrowserEng is NULL, navigate to loading.html";
+
+                //If engine is not ready then queue Navigate request for loading.html
+                rho_webview_navigate(RHODESAPP().getLoadingPagePath().c_str(), 0 );
+            }*/
+        }else
+            LOG(INFO) + "CMainWindow::OnPaint: loading.html cannot be found";
     }
     
     LOG(INFO) + "END load png";

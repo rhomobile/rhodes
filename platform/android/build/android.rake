@@ -2236,3 +2236,10 @@ namespace "clean" do
   end
 end
 
+namespace :stop do
+  namespace :android do
+    task :emulator do
+      AndroidTools.kill_adb_and_emulator
+    end
+  end
+end

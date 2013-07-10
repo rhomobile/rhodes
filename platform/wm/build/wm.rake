@@ -313,7 +313,7 @@ namespace "build" do
                         cp_r lib, ENV['TARGET_TEMP_DIR']
                     end
                 else    
-                    clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
+                    # clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
                     Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
                 end    
           
@@ -337,7 +337,7 @@ namespace "build" do
               ENV['SDK'] = $sdk
 
               if File.exists? File.join(extpath, 'build.bat')
-                clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
+                # clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
                 Jake.run3('build.bat', extpath)
               elsif is_prebuilt
                 file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
