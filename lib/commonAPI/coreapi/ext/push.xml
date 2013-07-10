@@ -4,7 +4,7 @@
     <MODULE name="Push" parent="Rho">
         <HELP_OVERVIEW>The Push API provides access to Push messaging functionality</HELP_OVERVIEW>
         <MORE_HELP>Use this API to give application the ability to receive server initiated messages.</MORE_HELP>
-        <PLATFORM>Android, iOS, WM, WP8</PLATFORM>
+        <PLATFORM>WM, Android, iOS, WP8</PLATFORM>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
 
         <TEMPLATES>
@@ -24,9 +24,6 @@
                         <DESC>Native push engine (like GCM on Android).</DESC>
                     </VALUE>
                 </VALUES>
-            </PROPERTY>
-            <PROPERTY name="id" type="STRING" readOnly="true" generateAccessors="true">
-                <DESC>Push engine id.</DESC>
             </PROPERTY>
             <PROPERTY name="deviceId" type="STRING" readOnly="true">
                 <DESC>Push token used to identify particular device.</DESC>
@@ -109,31 +106,33 @@
             <EXAMPLE title="Handle push message">
                 <SECTIONS>
                     <SECTION>
-                        <DESC>Take an image with as little code as possible, using all default values.</DESC>
+                        <DESC>Start push nofification service and define alert popup window in push callback method.</DESC>
                         <CODE>
                             <RUBY>
                                 <![CDATA[
 def setup_push
-  # Capture an image from the default camera on the device, using the default image settings
+  # Start listening for push messages with push_callback parameter
   Rho::Push.startNotifications(url_for(:action=>:push_callback))
 end
 
+
 def push_callback
-  unless @params[:error]
-  end
+  # Show 'alert' popup window with push message test
+  Rho::Notification.showPopup({'message' => @params['alert'], 'buttons' =>['OK']})
 end
                                 ]]>
                             </RUBY>
                             <JAVASCRIPT>
                                 <![CDATA[
 function setupPush() {
-  // Capture an image from the default camera on the device, using the default image settings
+  // Start listening for push messages with push_callback parameter
   Rho.Push.startNotifications(pushCallback);
 }
 
 function pushCallback(params) {
-  if (params["error"]==undefined) {
-  }
+  // Show 'alert' popup window with push message test
+  var propertyMap = {message: params["alert"], buttons: [{id: 'OK', title: 'OK'}]};
+  Rho.Notification.showPopup(propertyMap);
 }
                                 ]]>
                             </JAVASCRIPT>

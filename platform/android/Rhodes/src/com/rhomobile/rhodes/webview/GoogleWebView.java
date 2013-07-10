@@ -7,6 +7,7 @@ import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.IRhoWebViewConfig;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -152,6 +153,8 @@ public class GoogleWebView implements IRhoWebView {
 
     @Override
     public void loadUrl(String url) {
+        RhoExtManager.getImplementationInstance().onBeforeNavigate(mWebView, url);
+
         if (URLUtil.isFileUrl(url)) {
             String path = Uri.parse(url).getPath();
             if(path.startsWith("/data/data")) {
