@@ -803,6 +803,7 @@ namespace "config" do
     $obfuscator        = 'res/build-tools/yuicompressor-2.4.7.jar'
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
+    $minify_js         = Jake.getBuildBoolProp("minify_js", $app_config, true) 
     
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
@@ -963,16 +964,16 @@ def write_modules_js(filename, modules)
         end
     end
 
-    #if $debug
+    if !$minify_js
         Jake.modify_file_if_content_changed(filename, f)
-    #else
-    #    require 'uglifier'
-    #    f.rewind()
-    #    fc = StringIO.new("","w+")
-    #    fc.puts(Uglifier.compile(f))
+    else
+        require 'uglifier'
+        f.rewind()
+        fc = StringIO.new("","w+")
+        fc.puts(Uglifier.compile(f))
         
-    #    Jake.modify_file_if_content_changed(filename, fc)
-    #end
+        Jake.modify_file_if_content_changed(filename, fc)
+    end
 end
 
 def is_ext_supported(extpath)
