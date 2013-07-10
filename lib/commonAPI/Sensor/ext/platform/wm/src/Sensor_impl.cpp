@@ -1,7 +1,7 @@
 #include <common/RhodesApp.h>
 #include "../../../shared/generated/cpp/SensorBase.h"
 #include <common/StringConverter.h>
-#include <SensorAPI.h>
+#include "SensorAPI.h"
 #include "RawMotoSensor.h"
 #include <algorithm>
 #include "SensorEventListener.h"

@@ -2,14 +2,20 @@
 #define SENSOR_H_34612E1C_97AA_43C1_B1E1_61EB28C378DE
 #pragma once
 
-//-----------------------------------------------------------------------------
-// Include Files
-//-----------------------------------------------------------------------------
-#pragma warning (push, 3)
+#include "SensorApi.h"
+////-----------------------------------------------------------------------------
+//// Include Files
+////-----------------------------------------------------------------------------
+//
 #include <Service.h>
-#include <StrucInf.h>
-#pragma warning (pop)
-
+//// Structure information structure
+//typedef struct tagSTRUCT_INFO
+//{
+//	DWORD	dwAllocated;				// Size of allocated structure in bytes
+//	DWORD	dwUsed;						// Amount of structure actually used
+//
+//} STRUCT_INFO;
+//
 #define SENSOR_DEVICE L"IST0:"
 
 //-----------------------------------------------------------------------------
