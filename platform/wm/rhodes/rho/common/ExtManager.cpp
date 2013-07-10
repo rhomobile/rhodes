@@ -258,6 +258,7 @@ void CExtManager::quitApp()
 static void __minimize_restoreApp(int nParam)
 {
     ::ShowWindow(getMainWnd(), nParam );
+    SetForegroundWindow(getMainWnd());
 }
 
 void CExtManager::minimizeApp()
@@ -271,7 +272,7 @@ void CExtManager::minimizeApp()
 
 void CExtManager::restoreApp()
 {
-    rho_callInUIThread(__minimize_restoreApp, SW_RESTORE);
+    rho_callInUIThread(__minimize_restoreApp, SW_SHOW);
 }
 
 void CExtManager::resizeBrowserWindow(RECT rc)
