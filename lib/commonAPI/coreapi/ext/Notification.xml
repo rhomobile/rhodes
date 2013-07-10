@@ -24,6 +24,7 @@
 							<PARAM name="icon" type="String" default="">
 								<DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon.</DESC>
                                 <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only predefined icons are supported.</MORE_HELP>
+								<PLATFORM>Android</PLATFORM>
 							</PARAM>
 							<PARAM name="buttons" type="Array" default="">
 								<DESC>array of buttons. Specify each button either by hash with :id and :title keys, or by a string where id and title are set to the string value. TODO - HOW SPECIFY</DESC>
