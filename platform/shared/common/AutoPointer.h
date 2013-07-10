@@ -63,6 +63,12 @@ public:
             m_ptr = 0;
         }
     }
+    PTRTYPE ReleasePtr()
+    {
+        PTRTYPE ptr = m_ptr;
+        m_ptr = 0;
+        return ptr;
+    }
 
 protected:
     PTRTYPE m_ptr;
