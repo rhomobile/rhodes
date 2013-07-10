@@ -147,7 +147,7 @@
                     </PARAM>
 
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
-                        <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
+                        <DESC>TabBar tab index. If no tab bar present, index is ignored. Please avoid of navigate in not opened tab - this is unsupported on Android.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Refresh active WebView.</DESC>
                         </CAN_BE_NIL>
