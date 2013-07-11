@@ -81,6 +81,7 @@
 						<DESC>The full path to the file, ending in the file name and extension.</DESC>
 					</PARAM>
 					<PARAM name="media_type" type="STRING" default="">
+					    <CAN_BE_NIL/>
 						<DESC>Media type can be specified explicitly, or can be recognized from the file extension. The known file extensions are ".mp3" - "audio/mpeg" and ".wav" - "audio/x-wav".</DESC>
                         <PLATFORM>iOS, Android</PLATFORM>
 					</PARAM>
@@ -115,6 +116,7 @@
 				<APPLIES msiOnly="false"></APPLIES>
 				<PARAMS>
 					<PARAM name="duration" type="Integer" default="1000">
+					    <CAN_BE_NIL/>
 						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration.</DESC>
 					</PARAM>
 				</PARAMS>
