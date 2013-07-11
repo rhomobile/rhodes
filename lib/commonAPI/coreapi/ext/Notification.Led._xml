@@ -15,6 +15,7 @@
 			<PROPERTY name="name" type="STRING" readOnly="true">
 				<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
 				<DESC>Human readable name for the notification object, e.g. 'Green LED'.</DESC>
+				<PLATFORM>WM, Android, iOS</PLATFORM>
 			</PROPERTY>
 			
 		</PROPERTIES>

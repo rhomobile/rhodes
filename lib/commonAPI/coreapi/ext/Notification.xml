@@ -11,6 +11,7 @@
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
                 <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button. Icon is not supported on iOS devices.</DESC>
+				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
 				<PARAMS>
 					<PARAM name="propertyMap" type="HASH">
 						<DESC>The properties associated with the popup.</DESC>
@@ -51,10 +52,12 @@
             <METHOD name="hidePopup" access="STATIC" hasCallback="none">
                 <DESC>Closes the current popup window</DESC>
                 <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</MORE_HELP>
+				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
             </METHOD>
 		
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
                 <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button.</DESC>
+				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
 				<PARAMS>
 					<PARAM name="title" type="STRING">
 						<DESC>The title on the status message popup window.</DESC>
