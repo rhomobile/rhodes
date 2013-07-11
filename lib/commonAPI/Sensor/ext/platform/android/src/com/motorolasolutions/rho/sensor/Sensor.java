@@ -143,14 +143,6 @@ public class Sensor extends SensorBase implements ISensor {
     	}
     }
     
-    @Override
-    public void clearAllProperties(IMethodResult result) 
-    {
-    	Logger.D(TAG,  "clearAllProperties API");
-    	  
-    	resetProperties();	    	
-    }
-    
     public void resetProperties()
     {
     	sensorUrl = null;
