@@ -169,8 +169,11 @@ public class NotificationSingleton implements INotificationSingleton
 		if (activity != null)
 		{
 			if(vibrator != null) vibrator.cancel();
-			vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
-			vibrator.vibrate(duration > 0 ? duration : 1000);
+			if(duration > 0)
+			{
+				vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+				vibrator.vibrate(duration > 0 ? duration : 1000);
+			}
 		}
 	}
 	
