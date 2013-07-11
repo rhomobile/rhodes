@@ -46,15 +46,15 @@ public class NotificationSingleton implements INotificationSingleton
 				}
 				catch (Exception e)
 				{
-					reportFail("showPopup", e);
-					setError(e);
+					Logger.E(TAG, e);
+					result.setError(e.getLocalizedMessage());
 				}
 			}
 		});
 	}
 
 	@Override
-	public void hidePopup(IMethodResult result)
+	public void hidePopup(final IMethodResult result)
 	{
 		RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true)
 		{
@@ -68,15 +68,15 @@ public class NotificationSingleton implements INotificationSingleton
 				}
 				catch (Exception e)
 				{
-					reportFail("hidePopup", e);
-					setError(e);
+					Logger.E(TAG, e);
+					result.setError(e.getLocalizedMessage());
 				}
 			}
 		});
 	}
 
 	@Override
-	public void showStatus(final String titleText, final String statusText, final String hideLabelText, IMethodResult result)
+	public void showStatus(final String titleText, final String statusText, final String hideLabelText, final IMethodResult result)
 	{
 		RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true)
 		{
@@ -97,15 +97,15 @@ public class NotificationSingleton implements INotificationSingleton
 				}
 				catch (Exception e)
 				{
-					reportFail("showStatusPopup", e);
-					setError(e);
+					Logger.E(TAG, e);
+					result.setError(e.getLocalizedMessage());
 				}
 			}
 		});
 	}
 
 	@Override
-	public void playFile(String path, String mediaType, IMethodResult result)
+	public void playFile(String path, String mediaType, final IMethodResult result)
 	{
 		try
 		{
@@ -130,7 +130,8 @@ public class NotificationSingleton implements INotificationSingleton
 		}
 		catch (Exception e)
 		{
-			reportFail("playFile", e);
+			Logger.E(TAG, e);
+			result.setError(e.getLocalizedMessage());
 		}
 	}
 
@@ -162,32 +163,20 @@ public class NotificationSingleton implements INotificationSingleton
 		(new NotificationBeep(frequency)).play(duration, volume);
 	}
 
-	@Override
-	public void vibrate(int duration, IMethodResult result)
-	{
-		Activity activity = RhodesActivity.safeGetInstance();
-		if (activity != null)
-		{
-			if(vibrator != null) vibrator.cancel();
-			if(duration > 0)
-			{
-				vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
-				vibrator.vibrate(duration > 0 ? duration : 1000);
-			}
-		}
-	}
-	
-	/**
-	 * Sends a log message reporting a failure of a method/procedure.
-	 * @param name the name of the failed method/procedure call
-	 * @param e the exception to log
-	 * @author Unknown
-	 */
-	private static void reportFail(String name, Exception e)
-	{
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
-	}
-	
+    @Override
+    public void vibrate(int duration, IMethodResult result)
+    {
+        Logger.T(TAG, "Vibrate: " + duration);
+        
+        if (duration != 0)
+        {
+            Activity activity = RhodesActivity.safeGetInstance();
+            if(vibrator != null) vibrator.cancel();
+            vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(duration > 0 ? duration : 1000);
+        }
+    }
+
 	/**
 	 * @author unknown (From RE1)
 	 */
