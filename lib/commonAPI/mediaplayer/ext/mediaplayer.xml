@@ -13,13 +13,13 @@
                 <DESC>Play a media file using the supplied filename.</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING">
-                        <DESC>File name of the audio media to be played - full filepath</DESC>
+                        <DESC>File name of the audio media to be played - full filepath. On iOS when you post URL to remote server, then we open standart browser (another application) for playing it. On iOS we support : mp3, mp4, wav formats</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="stop" access="STATIC" hasCallback="none">
-                <DESC>Stop playing the media file. Not applicable on iOS, because on iOS the special UI opened for playback media/video - user can stop/close player by UI</DESC>
+                <DESC>Stop playing the media file. Not applicable on iOS, because on iOS the special UI opened for playback media/video - user can stop/close player by UI.</DESC>
                 <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
 
@@ -28,7 +28,7 @@
                 <DESC>Playing a video file back</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING" runInThread="ui">
-                        <DESC>File name of the video media to be played - full filepath</DESC>
+                        <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server, then we open standart browser (another application) for playing it. On iOS we support : mov, mp4, 3gp formats</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
