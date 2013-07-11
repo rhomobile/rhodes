@@ -200,7 +200,7 @@
             </ALIASES>
             <METHOD name="applicationInstall">
                 <DESC>Install an application.</DESC>
-                <PLATFORM>WM, Win32, Android</PLATFORM>
+              <PLATFORM>Apple, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationUrl" type="STRING">
                         <DESC>The url of an application to install on the device.</DESC>
@@ -209,6 +209,7 @@
             </METHOD>
             <METHOD name="isApplicationInstalled">
                 <DESC>Is application installed on the device?</DESC>
+                <PLATFORM>Apple, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
                         <DESC>The name of the application.</DESC>
@@ -603,6 +604,7 @@
             </METHOD>
             <METHOD name="runApplication">
                 <DESC>Use System.Process.runApplication: Run an application.</DESC>
+                <PLATFORM>Apple, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="appName" type="STRING">
                         <DESC>The name of the application on the device to run.</DESC>
