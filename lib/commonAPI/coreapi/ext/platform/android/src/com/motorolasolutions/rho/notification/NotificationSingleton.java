@@ -173,7 +173,8 @@ public class NotificationSingleton implements INotificationSingleton
             Activity activity = RhodesActivity.safeGetInstance();
             if(vibrator != null) vibrator.cancel();
             vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(duration > 0 ? duration : 1000);
+            if (vibrator.hasVibrator())
+                vibrator.vibrate(duration > 0 ? duration : 1000);
         }
     }
 
