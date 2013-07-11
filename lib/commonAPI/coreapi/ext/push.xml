@@ -111,13 +111,13 @@
                             <RUBY>
                                 <![CDATA[
 def setup_push
-  # Start listening for push messages with push_callback parameter
+  # Start listening for push messages. Parameter is an url to push_callback method
   Rho::Push.startNotifications(url_for(:action=>:push_callback))
 end
 
 
 def push_callback
-  # Show 'alert' popup window with push message test
+  # Show 'alert' popup window with push message text
   Rho::Notification.showPopup({'message' => @params['alert'], 'buttons' =>['OK']})
 end
                                 ]]>
@@ -125,12 +125,12 @@ end
                             <JAVASCRIPT>
                                 <![CDATA[
 function setupPush() {
-  // Start listening for push messages with push_callback parameter
+  // Start listening for push messages. Parameter is an url to push_callback method
   Rho.Push.startNotifications(pushCallback);
 }
 
 function pushCallback(params) {
-  // Show 'alert' popup window with push message test
+  // Show 'alert' popup window with push message text
   var propertyMap = {message: params["alert"], buttons: [{id: 'OK', title: 'OK'}]};
   Rho.Notification.showPopup(propertyMap);
 }
