@@ -66,11 +66,11 @@
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
-            <METHOD name="getDeviceId" access="STATIC" hasCallback="optional">
+            <METHOD name="getDeviceId" access="INSTANCE" hasCallback="optional">
                 <DESC>Returns push token used to identify particular device.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
-            <METHOD name="startNotifications" access="STATIC" hasCallback="mandatory" runInThread="none">
+            <METHOD name="startNotifications" access="INSTANCE" hasCallback="mandatory" runInThread="none">
                 <DESC>Start listening for push messages, errors or other push related events.</DESC>
                 <CALLBACK type="HASH">
                     <DESC>Hash map with push message payload.</DESC>
@@ -90,7 +90,7 @@
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="stopNotifications" access="STATIC" hasCallback="none">
+            <METHOD name="stopNotifications" access="INSTANCE" hasCallback="none">
                 <DESC>Stop listening push events.</DESC>
             </METHOD>
         </METHODS>
