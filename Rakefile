@@ -394,6 +394,14 @@ end
 #TODO:  call clean from all platfroms scripts
 namespace "clean" do
   task :common => "config:common" do
+    if $config["platform"] == "bb"
+      return
+    end
+    
+    rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")    
+  end
+
+  task :generated => "config:common" do
     
     if $config["platform"] == "bb"
       return
