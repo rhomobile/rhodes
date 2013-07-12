@@ -392,14 +392,6 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
  	    mResolution = resolution.HIGH;
     }
     
-    @Override
-    public void clearAllProperties(IMethodResult result) 
-    {
-    	Logger.D(TAG,  "clearAllProperties API");
-    	  
-    	resetProperties();	    	
-    }
-	
     public void onActivityResultVideoCapture(RhodesActivity activity, int reqCode, int resCode, Intent intent)
     {
 		Logger.T(TAG, "onActivityResult -- START " + resCode + " " + reqCode);    	
