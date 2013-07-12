@@ -977,14 +977,13 @@ def write_modules_js(filename, modules)
     if !$minify_js
         Jake.modify_file_if_content_changed(filename, f)
     else
-        require 'popen4'
+        require 'Open3'
         f.rewind()
         fc = StringIO.new("","w+")
         
-        command = "java -jar #{$minifier} --type js"
-        
         output = true
-        status = POpen4.popen4(command, "b") do |stdout, stderr, stdin, pid|
+        status = nil
+        Open3.popen2("java","-jar","#{$minifier}","--type","js") do |stdin, stdout, wait_thr|
             begin
                 stdin.binmode
                 
@@ -996,9 +995,11 @@ def write_modules_js(filename, modules)
                 
                 output = stdout.read
                 
+                status = wait_thr.value
+                
             rescue Exception => e
-                puts "Obfuscation error"
-                exit 1
+                puts "Minify error: #{e.inspect}"
+                raise e
             end
         end
         
