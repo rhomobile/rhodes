@@ -1029,7 +1029,7 @@ namespace "clean" do
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
       
     end
-    task :all => "clean:wince:rhodes"
+    task :all => ["clean:common", "clean:wince:rhodes"]
   end
 
   namespace "wm" do
@@ -1041,11 +1041,11 @@ namespace "clean" do
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
       
     end
-    task :all => "clean:wm:rhodes"
+    task :all => ["clean:common", "clean:wm:rhodes"]
   end
 
   desc "Clean win32"
-  task :win32 => [ "config:set_win32_platform", "config:wm" ]do
+  task :win32 => ["clean:common", "config:set_win32_platform", "config:wm" ]do
     rm_rf $vcbindir + "/win32"
     rm_rf $tmpdir
     rm_rf $targetdir

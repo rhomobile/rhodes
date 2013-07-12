@@ -2223,7 +2223,8 @@ end
 
 namespace "clean" do
   desc "Clean Android"
-  task :android => "clean:android:all"
+  task :android => ["clean:common", "clean:android:all"]
+
   namespace "android" do
     task :files => "config:android" do
       rm_rf $targetdir

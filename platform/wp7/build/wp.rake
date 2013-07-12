@@ -316,7 +316,8 @@ end
 
 namespace "clean" do
   desc "Clean wp"
-  task :wp => "clean:wp:all"
+  task :wp => ["clean:common", "clean:wp:all"]
+
   namespace "wp" do
     task :rhodes => ["config:wp"] do
       rm_rf $vcbindir
