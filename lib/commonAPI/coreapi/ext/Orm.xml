@@ -235,11 +235,11 @@ var productModel = Rho.ORM.getModel("Product");
             <CODE>
               <RUBY>
                 <![CDATA[
-ORM.databaseFullResetEx(:models => ['Product', 'Customer'], :reset_client_info => true, :reset_local_models => true) ]]>
+ORM.databaseFullResetEx({:models => ['Product', 'Customer'], :reset_client_info => true, :reset_local_models => true}) ]]>
               </RUBY>
               <JAVASCRIPT>
                 <![CDATA[
-Rho.ORM.databaseFullResetEx({"models":['Product', 'Customer']},true,true); ]]>
+Rho.ORM.databaseFullResetEx({'models' : ['Product', 'Customer'], 'reset_client_info' : true, 'reset_local_models' : true} ]]>
               </JAVASCRIPT>
             </CODE>
 
