@@ -809,6 +809,8 @@ namespace "config" do
     $obfuscate_css     = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["css"].nil?) ? nil : 1 )
     $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
     $obfuscator        = 'res/build-tools/yuicompressor-2.4.7.jar'
+    $minifier          = 'res/build-tools/yuicompressor-2.4.7.jar'
+
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
     $minify_js         = Jake.getBuildBoolProp("minify_js", $app_config, true) 
@@ -975,11 +977,37 @@ def write_modules_js(filename, modules)
     if !$minify_js
         Jake.modify_file_if_content_changed(filename, f)
     else
-        require 'uglifier'
+        require 'popen4'
         f.rewind()
         fc = StringIO.new("","w+")
-        fc.puts(Uglifier.compile(f))
         
+        command = "java -jar #{$minifier} --type js"
+        
+        output = true
+        status = POpen4.popen4(command, "b") do |stdout, stderr, stdin, pid|
+            begin
+                stdin.binmode
+                
+                while buffer = f.read(4096)
+                    stdin.write(buffer)
+                end
+                f.close
+                stdin.close
+                
+                output = stdout.read
+                
+            rescue Exception => e
+                puts "Obfuscation error"
+                exit 1
+            end
+        end
+        
+        if not status.exitstatus.zero?
+            puts "Obfuscation error"
+            exit 1
+        end
+        
+        fc.puts(output)        
         Jake.modify_file_if_content_changed(filename, fc)
     end
 end
