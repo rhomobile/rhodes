@@ -89,19 +89,19 @@
           </PARAM>
 
           <PARAM name="perPage" type="INTEGER">
-            <DESC>Maximum number of items to return.</DESC>
+            <DESC>Ruby only. Maximum number of items to return.</DESC>
             <CAN_BE_NIL/>
             <APPLIES rubyOnly="true"/>
           </PARAM>
 
           <PARAM name="offset" type="INTEGER">
-            <DESC>Offset from beginning of the list.</DESC>
+            <DESC>Ruby only. Offset from beginning of the list.</DESC>
             <CAN_BE_NIL/>
             <APPLIES rubyOnly="true"/>
           </PARAM>
 
           <PARAM name="op" type="STRING">
-            <DESC>Operator, such as "OR" or "IN". Allows you to have more than one set of conditions.</DESC>
+            <DESC>Ruby only. Operator, such as "OR" or "IN". Allows you to have more than one set of conditions.</DESC>
             <CAN_BE_NIL/>
             <APPLIES rubyOnly="true"/>
           </PARAM>
