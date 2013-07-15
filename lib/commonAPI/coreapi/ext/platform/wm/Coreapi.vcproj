@@ -2463,6 +2463,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\push.xml"
+					>
+				</File>
+				<File
 					RelativePath="..\..\shared\PushImpl.cpp"
 					>
 				</File>
