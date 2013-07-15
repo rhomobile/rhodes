@@ -23,11 +23,13 @@ namespace rhodes
 		// webview
         public void navigate(string url, int index) { _mainPage.navigate(url, index); }
         public string executeScript(string script, int index) { return _mainPage.executeScript(script, index); }
+        public string executeScriptAsync(string script, int index) { return _mainPage.executeScriptAsync(script, index); }
         public void GoBack() { _mainPage.GoBack(); }
         public void GoBack(int index) { _mainPage.GoBack(index); }
         public void GoForward() { _mainPage.GoForward(); }
         public void Refresh(int index) { _mainPage.Refresh(index); }
         public bool isStarted() { return _mainPage.isStarted(); }
+        public bool isEmulator() { return _mainPage.isEmulator(); }
         public string getCurrentURL(int index) { return _mainPage.getCurrentURL(index); }
 		// toolbar
         public void toolbarRemoveAllButtons() { _mainPage.toolbarRemoveAllButtons(); }
@@ -53,8 +55,8 @@ namespace rhodes
         public void tabbarRemove(int index) { _mainPage.tabbarRemove(index); }
         public void tabbarSwitch(int index) { _mainPage.tabbarSwitch(index); }
         public int tabbarGetCurrent() { return _mainPage.tabbarGetCurrent(); }
-        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab)
-            { _mainPage.tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab); }
+        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, object oResult)
+            { _mainPage.tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab, hasCallback, oResult); }
         public void tabbarSetBadge(int index, string badge) { _mainPage.tabbarSetBadge(index, badge); }
         public void exitCommand() { _mainPage.exitCommand(); }
         public void navigateBackCommand() { _mainPage.navigateBackCommand(); }

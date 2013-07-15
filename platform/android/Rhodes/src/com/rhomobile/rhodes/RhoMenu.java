@@ -120,8 +120,9 @@ public class RhoMenu {
 
         public Item(String title, String url, ItemType type) {
             this.title = title;
-            this.url = url;
             this.type = type;
+            if (type == ItemType.ItemTypeUrl)
+                this.url = url;
         }
     };
     
@@ -165,13 +166,23 @@ public class RhoMenu {
     public synchronized void setMenu(List<Map<String, String>> items) {
         mNewMenu = true;
         mItems = new ArrayList<Item>();
-
+        
         for(Map<String, String> itemDescription: items) {
-            Map.Entry<String, String> entry = (Map.Entry<String, String>)itemDescription.entrySet().toArray()[0];
-            if (entry.getKey().equalsIgnoreCase("separator"))
+            String label = itemDescription.get("label");
+            
+            if (label == null) {
+                Logger.E(TAG, "Menu item with label: <null>");
                 continue;
+            }
+            
+            if (label.equals("separator")) {
+                continue;
+            }
+            
+            String action = itemDescription.get("action");
+            ItemType type = getItemType(action);
 
-            Item item = new Item(entry.getKey(), entry.getValue(), getItemType(entry.getKey()));
+            Item item = new Item(label, action, type);
             mItems.add(item);
         }
     }

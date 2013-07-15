@@ -57,10 +57,10 @@ extern "C" void Init_CoreAPI_Extension()
 
 
 #if defined(OS_WINCE) || defined(OS_ANDROID)
-	Init_Led();
+	//Init_Led();
 #endif
 
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_WINCE) || defined(OS_MACOSX)
 	Init_Push();
 #endif
 }

@@ -15,6 +15,8 @@ import java.util.List;
 import com.rhomobile.rhodes.util.ContextFactory;
 import android.os.Handler;
 
+import java.lang.System;
+
 
 public class LedImpl implements ILed
 {
@@ -25,11 +27,11 @@ public class LedImpl implements ILed
     
     private Handler mCancelHandler = new Handler();
     
-    public LedImpl( String name, int color, int notificationId )
+    public LedImpl( String name, int color/*, int notificationId*/ )
     {
         mName = name;
         mColor = color;
-        mNotificationId = notificationId;
+        //mNotificationId = notificationId;
     }
 
     public void getName(IMethodResult result)
@@ -55,6 +57,7 @@ public class LedImpl implements ILed
         notif.flags = Notification.FLAG_SHOW_LIGHTS;
         notif.ledOnMS = 1;
         notif.ledOffMS = 0;
+        mNotificationId = (int)System.currentTimeMillis();
         nm.notify(mNotificationId, notif);
     }
     
@@ -66,12 +69,13 @@ public class LedImpl implements ILed
         String ns = ctx.NOTIFICATION_SERVICE;
         
         NotificationManager nm = ( NotificationManager ) ctx.getSystemService( ns );
-        Notification notif = new Notification();
+        nm.cancel(mNotificationId);
+        /*Notification notif = new Notification();
         notif.ledARGB = 0x00FFFFFF & mColor;
         notif.flags = Notification.FLAG_SHOW_LIGHTS;
         notif.ledOnMS = 0;
         notif.ledOffMS = 0;
-        nm.notify(mNotificationId, notif);
+        nm.notify(mNotificationId, notif);*/
     }
     
     synchronized public void flash(Map<String, Integer> propertyMap, IMethodResult result)
@@ -93,6 +97,7 @@ public class LedImpl implements ILed
         notif.flags = Notification.FLAG_SHOW_LIGHTS;
         notif.ledOnMS = msOn;
         notif.ledOffMS = msOff;
+        mNotificationId = (int)System.currentTimeMillis();
         nm.notify(mNotificationId, notif);
         
         mCancelHandler.postDelayed(

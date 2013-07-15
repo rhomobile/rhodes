@@ -299,7 +299,10 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             {
                 if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
                 {
-                    callCallback("/system/uicreated");
+                    if ( rho_ruby_is_started() )
+                        callCallback("/system/uicreated");
+                    else
+                        rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0);
                 }
                 m_expected = app_activated;
             }
@@ -382,7 +385,7 @@ void RhoJsStart()
 
     rho_db_open(dbPath.c_str(), partName.c_str(), &dbObj);
 
-    rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0);
+    //rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0);
 }
 
 void CRhodesApp::run()
@@ -1534,7 +1537,7 @@ void CRhodesApp::initAppUrls()
     //write local server url to file
 #ifdef OS_WINCE
     String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
-    CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl );
+    CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
 #endif
 
 }

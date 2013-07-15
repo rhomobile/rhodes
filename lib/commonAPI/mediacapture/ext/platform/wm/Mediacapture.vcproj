@@ -691,6 +691,10 @@
 			Name="Video"
 			>
 			<File
+				RelativePath="..\..\videocapture.xml"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Videocapture_impl.cpp"
 				>
 			</File>

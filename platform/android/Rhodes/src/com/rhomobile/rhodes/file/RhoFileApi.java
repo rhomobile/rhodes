@@ -191,16 +191,16 @@ public class RhoFileApi {
 
 		fillStatTable();
 	}
-	
-	public static void initialCopy(Context ctx, String assets[])
-	{
-		am = ctx.getAssets();
+
+    public static void initialCopy(Context ctx, String assets[])
+    {
+        am = ctx.getAssets();
         for(String asset: assets)
         {
-            forceFile(getRootPath() + asset);
+            copy(makeRelativePath(getRootPath() + asset));
         }
-	}
-	
+    }
+
 	public static boolean copy(String path)
 	{
 		Log.d(TAG, "Copy " + path + " to FS");
@@ -261,8 +261,11 @@ public class RhoFileApi {
     private static void forceFile(String path)
     {
         String relPath = makeRelativePath(path);
-        if(copy(relPath))
-            Logger.D(TAG, "File extracted from package to file system: " + path);
+        if(needEmulate(relPath)) {
+            if(copy(relPath)) {
+                Logger.D(TAG, "File extracted from package to file system: " + path);
+            }
+        }
     }
 
     public static FileDescriptor openFd(String path)

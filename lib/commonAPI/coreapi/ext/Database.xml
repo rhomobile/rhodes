@@ -84,10 +84,6 @@
           <PARAM name="sqlStmt" type="STRING">
             <DESC>The SQL statement</DESC>
           </PARAM>
-          <PARAM name="args" type="ARRAY">
-            <DESC>Array of the sql expressions</DESC>
-            <CAN_BE_NIL/>
-          </PARAM>
         </PARAMS>
       </METHOD>
 

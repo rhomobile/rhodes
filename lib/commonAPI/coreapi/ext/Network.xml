@@ -9,8 +9,6 @@
         </TEMPLATES>
 
         <PROPERTIES access="STATIC" generateAccessors="false">
-            <DESC>object supports this properties bla bla bla :</DESC>
-
             <ALIASES>
                 <ALIAS new="ssl_verify_peer" existing="verifyPeerCertificate" deprecated="true"/>
                 <ALIAS new="http_command" existing="httpVerb" deprecated="true"/>
@@ -36,6 +34,7 @@
             </PROPERTY>
             <PROPERTY name="verifyPeerCertificate" type="BOOLEAN" default="true">
                 <DESC>Verify SSL certificates.</DESC>
+                <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpVerb" type="STRING">
                 <DESC>Password for basic authentication.</DESC>

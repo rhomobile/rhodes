@@ -50,6 +50,7 @@ public class Logger {
 	public static void E(String tag, Throwable e) {
 	    Writer bufWriter = new CharArrayWriter(256);
 	    PrintWriter writer = new PrintWriter(bufWriter);
+	    writer.print(e.getMessage() + "\n");
 	    e.printStackTrace(writer);
 
 	    if (writer.checkError()) {
