@@ -87,11 +87,11 @@
     });
 */
 
-    //shared page enhancements
+	//shared page enhancements
 	function enhancePage( $page, role ) {
 		// If a role was specified, make sure the data-role attribute
 		// on the page element is in sync.
-		if( role ) {
+		if ( role ) {
 			$page.attr( "data-" + $.mobile.ns + "role", role );
 		}
 
@@ -105,8 +105,8 @@
     // introduce custom initialization parameter support
     original_loadPage.defaults.loadMsgDelay = $.mobile.loadingMessageDelay || original_loadPage.defaults.loadMsgDelay;
 
-    $.mobile.loadPage = function( url, options ) {
-
+	// Load a page into the DOM.
+	$.mobile.loadPage = function( url, options ) {
         // if no page HTML code provided, then call original function
         if(!options["html"]) {
             return original_loadPage(url, options);
@@ -129,17 +129,11 @@
 			// page is loaded off the network.
 			dupCachedPage = null,
 
-			// determine the current base url
-			findBaseWithDefault = function(){
-				var closestBase = ( $.mobile.activePage && getClosestBaseUrl( $.mobile.activePage ) );
-				return closestBase || documentBase.hrefNoHash;
-			},
-
             /*
 			// The absolute version of the URL passed into the function. This
 			// version of the URL may contain dialog/subpage params in it.
 			absUrl = path.makeUrlAbsolute( url, findBaseWithDefault() );
-            */
+			*/
             absUrl = "";
 
 		// If the caller provided data, and we're using "get" request,
@@ -150,12 +144,12 @@
 		}
 
 		// If the caller is using a "post" request, reloadPage must be true
-		if(  settings.data && settings.type === "post" ){
+		if ( settings.data && settings.type === "post" ) {
 			settings.reloadPage = true;
 		}
 
-			// The absolute version of the URL minus any dialog/subpage params.
-			// In otherwords the real URL of the page to be loaded.
+		// The absolute version of the URL minus any dialog/subpage params.
+		// In otherwords the real URL of the page to be loaded.
 		var fileUrl = path.getFilePath( absUrl ),
 
 			// The version of the Url actually stored in the data-url attribute of
@@ -169,7 +163,9 @@
 		settings.pageContainer = settings.pageContainer || $.mobile.pageContainer;
 
 		// Check to see if the page already exists in the DOM.
-		page = settings.pageContainer.children( ":jqmData(url='" + dataUrl + "')" );
+		// NOTE do _not_ use the :jqmData psuedo selector because parenthesis
+		//      are a valid url char and it breaks on the first occurence
+		page = settings.pageContainer.children( "[data-" + $.mobile.ns +"url='" + dataUrl + "']" );
 
 		// If we failed to find the page, check to see if the url is a
 		// reference to an embedded page. If so, it may have been dynamically
@@ -177,39 +173,34 @@
 		// attribute and in need of enhancement.
 		if ( page.length === 0 && dataUrl && !path.isPath( dataUrl ) ) {
 			page = settings.pageContainer.children( "#" + dataUrl )
-				.attr( "data-" + $.mobile.ns + "url", dataUrl );
+				.attr( "data-" + $.mobile.ns + "url", dataUrl )
+				.jqmData( "url", dataUrl );
 		}
+
 
 		// If we failed to find a page in the DOM, check the URL to see if it
 		// refers to the first page in the application. If it isn't a reference
 		// to the first page and refers to non-existent embedded page, error out.
-        if ( page.length === 0 ) {
-            if ( $.mobile.firstPage && fileUrl && path.isFirstPageUrl( fileUrl ) ) {
-                // Check to make sure our cached-first-page is actually
-                // in the DOM. Some user deployed apps are pruning the first
-                // page from the DOM for various reasons, we check for this
-                // case here because we don't want a first-page with an id
-                // falling through to the non-existent embedded page error
-                // case. If the first-page is not in the DOM, then we let
-                // things fall through to the ajax loading code below so
-                // that it gets reloaded.
-                if ( $.mobile.firstPage.parent().length ) {
-                    page = $( $.mobile.firstPage );
-                }
-            } else if ( fileUrl && path.isEmbeddedPage( fileUrl )  ) {
-                deferred.reject( absUrl, options );
-                return deferred.promise();
-            }
-        }
-
-        /*
-		// Reset base to the default document base.
-		if ( base ) {
-			base.reset();
+		if ( page.length === 0 ) {
+			if ( $.mobile.firstPage && fileUrl && path.isFirstPageUrl( fileUrl ) ) {
+				// Check to make sure our cached-first-page is actually
+				// in the DOM. Some user deployed apps are pruning the first
+				// page from the DOM for various reasons, we check for this
+				// case here because we don't want a first-page with an id
+				// falling through to the non-existent embedded page error
+				// case. If the first-page is not in the DOM, then we let
+				// things fall through to the ajax loading code below so
+				// that it gets reloaded.
+				if ( $.mobile.firstPage.parent().length ) {
+					page = $( $.mobile.firstPage );
+				}
+			} else if ( fileUrl && path.isEmbeddedPage( fileUrl )  ) {
+				deferred.reject( absUrl, options );
+				return deferred.promise();
+			}
 		}
-        */
 
-        /*
+		/*
 		// If the page we are interested in is already in the DOM,
 		// and the caller did not indicate that we should force a
 		// reload of the file, we are done. Otherwise, track the
@@ -218,41 +209,51 @@
 			if ( !settings.reloadPage ) {
 				enhancePage( page, settings.role );
 				deferred.resolve( absUrl, options, page );
+				//if we are reloading the page make sure we update the base if its not a prefetch
+				if( base && !options.prefetch ){
+					base.set(url);
+				}
 				return deferred.promise();
 			}
 			dupCachedPage = page;
 		}
+		*/
+		var mpc = settings.pageContainer,
+			pblEvent = new $.Event( "pagebeforeload" ),
+			triggerData = { url: url, absUrl: absUrl, dataUrl: dataUrl, deferred: deferred, options: settings };
+
+		// Let listeners know we're about to load a page.
+		mpc.trigger( pblEvent, triggerData );
+
+		// If the default behavior is prevented, stop here!
+		if ( pblEvent.isDefaultPrevented() ) {
+			return deferred.promise();
+		}
+
+		if ( settings.showLoadMsg ) {
+
+			// This configurable timeout allows cached pages a brief delay to load without showing a message
+			var loadMsgDelay = setTimeout(function() {
+					$.mobile.showPageLoadingMsg();
+				}, settings.loadMsgDelay ),
+
+				// Shared logic for clearing timeout and removing message.
+				hideMsg = function() {
+
+					// Stop message show timer
+					clearTimeout( loadMsgDelay );
+
+					// Hide loading message
+					$.mobile.hidePageLoadingMsg();
+				};
+		}
+		/*
+		// Reset base to the default document base.
+		// only reset if we are not prefetching
+		if ( base && typeof options.prefetch === "undefined" ) {
+			base.reset();
+		}
         */
-
-        var mpc = settings.pageContainer,
-            pblEvent = new $.Event( "pagebeforeload" ),
-            triggerData = { url: url, absUrl: absUrl, dataUrl: dataUrl, deferred: deferred, options: settings };
-
-        // Let listeners know we're about to load a page.
-        mpc.trigger( pblEvent, triggerData );
-
-        // If the default behavior is prevented, stop here!
-        if( pblEvent.isDefaultPrevented() ){
-            return deferred.promise();
-        }
-
-        if ( settings.showLoadMsg ) {
-
-            // This configurable timeout allows cached pages a brief delay to load without showing a message
-            var loadMsgDelay = setTimeout(function(){
-                    $.mobile.showPageLoadingMsg();
-                }, settings.loadMsgDelay ),
-
-                // Shared logic for clearing timeout and removing message.
-                hideMsg = function(){
-
-                    // Stop message show timer
-                    clearTimeout( loadMsgDelay );
-
-                    // Hide loading message
-                    $.mobile.hidePageLoadingMsg();
-                };
-        }
 
         setHtml(options.html);
 
@@ -261,30 +262,25 @@
             //use it as the new fileUrl, base path, etc
             var all = $( "<div></div>" ),
 
-                    //page title regexp
-                    newPageTitle = html.match( /<title[^>]*>([^<]*)/ ) && RegExp.$1,
+                //page title regexp
+                newPageTitle = html.match( /<title[^>]*>([^<]*)/ ) && RegExp.$1,
 
-                    // TODO handle dialogs again
-                    pageElemRegex = new RegExp( "(<[^>]+\\bdata-" + $.mobile.ns + "role=[\"']?page[\"']?[^>]*>)" ),
-                    dataUrlRegex = new RegExp( "\\bdata-" + $.mobile.ns + "url=[\"']?([^\"'>]*)[\"']?" );
+                // TODO handle dialogs again
+                pageElemRegex = new RegExp( "(<[^>]+\\bdata-" + $.mobile.ns + "role=[\"']?page[\"']?[^>]*>)" ),
+                dataUrlRegex = new RegExp( "\\bdata-" + $.mobile.ns + "url=[\"']?([^\"'>]*)[\"']?" );
 
 
             // data-url must be provided for the base tag so resource requests can be directed to the
             // correct url. loading into a temprorary element makes these requests immediately
-            if( pageElemRegex.test( html )
-                    && RegExp.$1
-                    && dataUrlRegex.test( RegExp.$1 )
-                    && RegExp.$1 ) {
-                url = fileUrl = path.getFilePath( RegExp.$1 );
+            if ( pageElemRegex.test( html ) &&
+                    RegExp.$1 &&
+                    dataUrlRegex.test( RegExp.$1 ) &&
+                    RegExp.$1 ) {
+                url = fileUrl = path.getFilePath( $( "<div>" + RegExp.$1 + "</div>" ).text() );
             }
             /*
-            else{
-
-            }
-            */
-
-            /*
-            if ( base ) {
+            //dont update the base tag if we are prefetching
+            if ( base && typeof options.prefetch === "undefined") {
                 base.set( fileUrl );
             }
             */
@@ -294,8 +290,8 @@
             page = all.find( ":jqmData(role='page'), :jqmData(role='dialog')" ).first();
 
             //if page elem couldn't be found, create one and insert the body element's contents
-            if( !page.length ){
-                page = $( "<div data-" + $.mobile.ns + "role='page'>" + html.split( /<\/?body[^>]*>/gmi )[1] + "</div>" );
+            if ( !page.length ) {
+                page = $( "<div data-" + $.mobile.ns + "role='page'>" + ( html.split( /<\/?body[^>]*>/gmi )[1] || "" ) + "</div>" );
             }
 
             if ( newPageTitle && !page.jqmData( "title" ) ) {
@@ -306,11 +302,11 @@
             }
 
             //rewrite src and href attrs to use a base url
-            if( !$.support.dynamicBaseTag ) {
+            if ( !$.support.dynamicBaseTag ) {
                 var newPath = path.get( fileUrl );
                 page.find( "[src], link[href], a[rel='external'], :jqmData(ajax='false'), a[target]" ).each(function() {
                     var thisAttr = $( this ).is( '[href]' ) ? 'href' :
-                            $(this).is('[src]') ? 'src' : 'action',
+                            $( this ).is( '[src]' ) ? 'src' : 'action',
                         thisUrl = $( this ).attr( thisAttr );
 
                     // XXX_jblas: We need to fix this so that it removes the document
@@ -318,7 +314,7 @@
                     //if full path exists and is same, chop it - helps IE out
                     thisUrl = thisUrl.replace( location.protocol + '//' + location.host + location.pathname, '' );
 
-                    if( !/^(\w+:|#|\/)/.test( thisUrl ) ) {
+                    if ( !/^(\w+:|#|\/)/.test( thisUrl ) ) {
                         $( this ).attr( thisAttr, newPath + thisUrl );
                     }
                 });
@@ -342,17 +338,15 @@
             // into the DOM. If the original absUrl refers to a sub-page, that is the
             // real page we are interested in.
             if ( absUrl.indexOf( "&" + $.mobile.subPageUrlKey ) > -1 ) {
-                page = settings.pageContainer.children( ":jqmData(url='" + dataUrl + "')" );
+                page = settings.pageContainer.children( "[data-" + $.mobile.ns +"url='" + dataUrl + "']" );
             }
-
-            //bind pageHide to removePage after it's hidden, if the page options specify to do so
 
             // Remove loading message.
             if ( settings.showLoadMsg ) {
                 hideMsg();
             }
 
-            // Add the page reference to our triggerData.
+            // Add the page reference and xhr to our triggerData.
             //triggerData.xhr = xhr;
             //triggerData.textStatus = textStatus;
             triggerData.page = page;
@@ -362,7 +356,6 @@
 
             deferred.resolve( absUrl, options, page, dupCachedPage );
         }
-
 		return deferred.promise();
 	};
     // copy original defaults

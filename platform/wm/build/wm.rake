@@ -60,6 +60,38 @@ def sign (cabfile)
   $stdout.flush
 end
 
+def edit_xml(file, out_file = nil)
+  out_file = file if out_file.nil?
+
+  doc = REXML::Document.new(File.new(file).read)
+  yield doc
+  File.open(out_file, 'w') {|f| f << doc}
+end
+
+def clean_vsprops(file, *vars)
+  changed = false
+  edit_xml(file) do |doc|
+    vars.each do |var|
+      REXML::XPath.each(doc, "//UserMacro[@Name='#{var}']") do |node|
+        changed = true
+        node.remove
+      end
+    end
+  end
+  puts "CLEAN_VSPROPS [#{file}]. TODO: remove this output." if changed
+end
+
+def clean_vsprops_r(root, *vars)
+  Dir.glob(File.join(root, '**', '*.vsprops')) do |file|
+    clean_vsprops(file, *vars)
+  end
+end
+
+def clean_ext_vsprops(ext_path)
+  clean_vsprops_r(ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
+end
+
+
 namespace "config" do
   task :set_wince_platform do
     $current_platform = "wm" unless $current_platform
@@ -115,16 +147,9 @@ namespace "config" do
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
-    $build_persistent_cab = false
-    $run_on_startup = false
-
-    if !$app_config["wm"].nil? && ($app_config["wm"]["persistent"] == "yes")
-      $build_persistent_cab = true
-    end
-
-    if !$app_config["wm"].nil? && $app_config["wm"]["startAtBoot"]
-      $run_on_startup = true
-    end
+    $build_persistent_cab = Jake.getBuildBoolProp("persistent")
+    $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
+    $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
 
     begin
       if $webkit_capability || $motorola_capability
@@ -152,24 +177,23 @@ namespace "config" do
     $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
     $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
 
-    $use_shared_runtime = nil
-
-    if !$app_config["use_shared_runtime"].nil? 
-      $use_shared_runtime = $app_config["use_shared_runtime"]
-    end
-
-    if $use_shared_runtime.nil? && ($app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?) == false
-      $use_shared_runtime = $app_config["wm"]["use_shared_runtime"]
-    end
-
-    if !$use_shared_runtime.nil? && $use_shared_runtime.to_s == '0'
-      $use_shared_runtime = nil
-    end
-
     puts "$sdk [#{$sdk}]"
   end
 
+  namespace :wm do
+    namespace :win32 do
+      task :ignore_vsprops do
+        $wm_win32_ignore_vsprops = true
+      end
+    end
+  end
+
   namespace "win32" do
+    namespace :wm do
+      task :ignore_vsprops do
+        $wm_win32_ignore_vsprops = true
+      end
+    end
 
     task :qt do
       $vscommontools = ENV['VS90COMNTOOLS']
@@ -242,7 +266,7 @@ namespace "build" do
   namespace "wm" do
   
     task :extensions => "config:wm" do
-      if not $use_shared_runtime.nil? then next end
+      if $use_shared_runtime then next end
 
       if $additional_dlls_path.nil?
         puts 'new $additional_dlls_paths'
@@ -309,7 +333,8 @@ namespace "build" do
                         cp_r lib, ENV['TARGET_TEMP_DIR']
                     end
                 else    
-                    puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
+                    clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
+                    Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
                 end    
           
           else
@@ -331,9 +356,9 @@ namespace "build" do
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
 
-              if File.exists? File.join(extpath,'build.bat')
-                chdir extpath
-                puts `build.bat`
+              if File.exists? File.join(extpath, 'build.bat')
+                clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
+                Jake.run3('build.bat', extpath)
               elsif is_prebuilt
                 file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
                 puts "PREBUILD: #{file_mask}"
@@ -356,7 +381,7 @@ namespace "build" do
     end
 
     task :rhodes => ["config:wm", "build:wm:rhobundle"] do
-      if not $use_shared_runtime.nil? then next end
+      if $use_shared_runtime then next end
 
       chdir $config["build"]["wmpath"]
 
@@ -529,6 +554,7 @@ namespace "build" do
                 
                 ENV['RHO_EXT_NAME']=ext                
 
+                clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
           
           else
@@ -542,6 +568,7 @@ namespace "build" do
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
 
+              clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
           end
       end
@@ -676,7 +703,9 @@ namespace "device" do
       
       Dir.glob("**/*").each { |f|
         if File.directory?(f) == false
-          cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+          path = "\\application\\"   + $appname + "\\rho\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\rho\\" + f.to_s
+          path.gsub!("/", "\\")
+          cf.puts(path)
         end
       }
       
@@ -686,7 +715,9 @@ namespace "device" do
           
           Dir.glob("**/*").each { |f|
             if File.directory?(f) == false
-              cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+              path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
+              path.gsub!("/", "\\")
+              cf.puts(path)
             end
           }        
         }
@@ -697,7 +728,9 @@ namespace "device" do
         
         Dir.glob("**/*").each { |f|
           if File.directory?(f) == false && File.extname(f) != ".lib" && File.extname(f) != ".exp"
-            cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+            path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
+            path.gsub!("/", "\\")
+            cf.puts(path)
           end
         }
       end
@@ -707,7 +740,9 @@ namespace "device" do
         
       Dir.glob("**/*").each { |f|
         if File.directory?(f) == false && (File.extname(f) == ".exe" || File.extname(f) == ".dll") && f != "rhodes.exe"
-          cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+          path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
+          path.gsub!("/", "\\")
+          cf.puts(path)
         end
       }
           
@@ -771,7 +806,7 @@ namespace "device" do
     task :production, [:exclude_dirs] => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 
       wm_icon = $app_path + '/icon/icon.ico'
-      if $use_shared_runtime.nil? then
+      if !$use_shared_runtime then
         build_rholaunch()
         
         out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
@@ -780,7 +815,12 @@ namespace "device" do
         cp out_rholauch_dir + "RhoLaunch.exe", out_dir + "RhoLaunch.exe"
         cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
       else
-        shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
+        if $js_application
+            shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
+        else
+            shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
+        end    
+        
         if File.exists? wm_icon then
           shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
         end
@@ -806,7 +846,7 @@ namespace "device" do
 
       icon_dest = $srcdir + '/icon'
       rm_rf icon_dest
-      if not $use_shared_runtime.nil? then
+      if $use_shared_runtime then
         rm_rf $srcdir + '/lib'
         if File.exists? wm_icon then
           mkdir_p icon_dest if not File.exists? icon_dest
@@ -817,10 +857,6 @@ namespace "device" do
       builder_name = 'build_inf.js'
       persistent_paths = []
       
-      if $build_persistent_cab == true && $use_shared_runtime.nil?
-        builder_name = 'build_pers_inf.js'
-      end
-
       args = [builder_name.to_s, 
               $appname + ".inf",                        #0
               build_platform,                           #1
@@ -830,12 +866,13 @@ namespace "device" do
               $hidden_app,                              #5
               ($webkit_capability ? "1" : "0"),         #6
               $wk_data_dir,                             #7
-              (($use_shared_runtime.nil?) ? "0" : "1"), #8
+              ($use_shared_runtime  ? "1" : "0"), #8
               ($motorola_capability ? "1" : "0"),       #9
-              ($run_on_startup == false ? "0" : "1"),   #10
-              $srcdir ]                                 #11
-
-      if $use_shared_runtime.nil? then
+              ($run_on_startup      ? "1" : "0"),   #10
+              $srcdir,                                  #11
+              ($build_persistent_cab ? "1" : "0")]      #12
+      
+      if !$use_shared_runtime then
         $additional_dlls_paths.each do |path|
           args << path
           persistent_paths << path
@@ -859,7 +896,7 @@ namespace "device" do
         $regkey_file.close   
       end  
       
-      if $build_persistent_cab && $use_shared_runtime.nil?
+      if $build_persistent_cab && !$use_shared_runtime
         if $webkit_capability
           makePersistentFiles($srcdir, persistent_paths, $wk_data_dir, reg_keys_filename)
         else
@@ -1014,7 +1051,7 @@ namespace "clean" do
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
       
     end
-    task :all => "clean:wince:rhodes"
+    task :all => ["clean:common", "clean:wince:rhodes"]
   end
 
   namespace "wm" do
@@ -1026,11 +1063,11 @@ namespace "clean" do
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
       
     end
-    task :all => "clean:wm:rhodes"
+    task :all => ["clean:common", "clean:wm:rhodes"]
   end
 
   desc "Clean win32"
-  task :win32 => [ "config:set_win32_platform", "config:wm" ]do
+  task :win32 => ["clean:common", "config:set_win32_platform", "config:wm" ]do
     rm_rf $vcbindir + "/win32"
     rm_rf $tmpdir
     rm_rf $targetdir
@@ -1081,7 +1118,7 @@ namespace "run" do
         sleep(1)
       end
 
-      if $webkit_capability and ($use_shared_runtime.nil?)
+      if $webkit_capability and !$use_shared_runtime
         wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
         Jake.run2( detool, wk_args, {:nowait => false})
       end
@@ -1093,7 +1130,7 @@ namespace "run" do
         end
       end
 
-      args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+      args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
       Jake.run2( detool, args, {:nowait => false})
     end
   end
@@ -1166,7 +1203,7 @@ namespace "run" do
           sleep(1)
         end    
 
-        if $webkit_capability and ($use_shared_runtime.nil?)
+        if $webkit_capability and !$use_shared_runtime
           wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
           Jake.run2( detool, wk_args, {:nowait => false})
         end
@@ -1178,7 +1215,7 @@ namespace "run" do
           end
         end
 
-        args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+        args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
         Jake.run2( detool, args, {:nowait => false})
       end
     end
@@ -1192,7 +1229,22 @@ namespace "run" do
 
             cd $startdir + "/res/build-tools"
             detool = "detool.exe"
-            args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+            
+            if $webkit_capability and !$use_shared_runtime
+              wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+              Jake.run2( detool, wk_args, {:nowait => false})
+            end
+
+            if $additional_dlls_paths
+              $additional_dlls_paths.each do |path|
+                add_files_args   = [ 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+                Jake.run2( detool, add_files_args, {:nowait => false})
+              end
+            end
+
+            args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+     
+            #args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
             puts "\nStarting application on the WM6 emulator\n\n"
             log_file = gelLogPath
 
@@ -1273,7 +1325,7 @@ namespace "run" do
 
         cd $startdir + "/res/build-tools"
         detool = "detool.exe"
-        args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, (($use_shared_runtime.nil?) ? "0" : "1")]
+        args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
         puts "\nStarting application on the device"
         puts "Please, connect you device via ActiveSync.\n\n"
         log_file = gelLogPath
@@ -1291,7 +1343,7 @@ namespace "run" do
 
       cd $startdir + "/res/build-tools"
       detool = "detool.exe"
-      args   = ['emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, (($use_shared_runtime.nil?) ? "0" : "1")]
+      args   = ['emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
       log_file = gelLogPath
 
       Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
@@ -1374,4 +1426,13 @@ namespace "run" do
 
   end
 
+end
+
+namespace 'stop' do
+  task :win32 => ['config:wm'] do
+    Jake.get_process_list.each do |p|
+      next unless p[:cmd] =~ /^bin\\win32\\rhodes\\#{$buildcfg}\\rhodes\\.exe /
+      Jake.run2('taskkill.exe', ['/F', '/PID', p[:pid]], {:hide_output => true})
+    end
+  end
 end

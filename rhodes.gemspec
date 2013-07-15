@@ -24,7 +24,6 @@ Gem::Specification.new do |s|
   s.add_dependency('activesupport', '~> 2.3.5')
   s.add_dependency('uuid', '>= 2.3.2')
   #s.add_dependency('rdoc', '~> 3.6.1')
-  s.add_dependency('uglifier', '>= 2.1.0')
   s.executables << 'rhogen'
   s.executables << 'rhodes'
   s.executables << 'upgrade-rhodes-app'

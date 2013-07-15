@@ -57,7 +57,12 @@ public:
     }
     
     virtual void deleteRecursive( const rho::String& path,  bool leaveRoot, rho::apiGenerator::CMethodResult& oResult) {
-        oResult.set( (int)CRhoFile::deleteFolder( path.c_str() ) );
+        int result = (int)CRhoFile::deleteFolder( path.c_str() );
+        if (leaveRoot && result == 0 )
+        {
+            result = (int)CRhoFile::createFolder( path.c_str() );
+        }
+        oResult.set( result );
     }
     
     virtual void listDir( const rho::String& path, rho::apiGenerator::CMethodResult& oResult) {
@@ -111,13 +116,22 @@ public:
         char* buf = 0;
         if ( size > 0 ) {
             buf = new char[size + 1];
-            
-            m_oFile.readData((void*)buf,0,size);
-            buf[size] = 0;
-            
-            String data(buf);
-            oResult.set(data);
-        } else {
+        }
+        if (buf)
+        {
+            int actualsize = m_oFile.readData((void*)buf,0,size);
+            if ( actualsize> 0 )
+            {
+                buf[actualsize] = 0;
+                
+                String data(buf);
+                oResult.set(data);
+            }else
+                oResult.set("");
+
+            delete[] buf;
+        }
+        else {
             oResult.set("");
         }
     }

@@ -39,6 +39,7 @@
     unsigned int penColor;
     float penWidth;
     unsigned int bgColor;
+    NSString* fileName;
     SignatureView* signatureInlineView;
     id<IMethodResult> callbackHolder;
 }
@@ -57,6 +58,7 @@
 -(void)setPenWidth:(float)value;
 -(void)setBgColor:(unsigned int)value;
 -(void)setCallback:(id<IMethodResult>)value;
+-(void)setFileName:(NSString*)fName;
 
 -(void)hideSignatureInlineView;
 

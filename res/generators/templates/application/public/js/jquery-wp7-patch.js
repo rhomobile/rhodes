@@ -144,7 +144,7 @@
         }
 
         //console.log('wp7notifyProxy: urlQueryParams: ' +urlQueryParams);
-        var reqObj = $.toJSON(request);
+        var reqObj = JSON.stringify(request);
         window.external.notify('request:' +reqObj);
         //window.external.notify('request:' +options.url +urlQueryParams);
         return options[_rho_deferred_paramName];
@@ -190,7 +190,7 @@
         if (pendingCallbacks[cbId]) {
             //console.log('_rho_ajaxProxyCallback: callback found!');
             fireHandlers(pendingCallbacks[cbId], result,
-                ("string" == typeof headers) ? $.parseJSON(headers) : headers,
+                ("string" == typeof headers) ? JSON.parse(headers) : headers,
                 status, errCode);
             delete pendingCallbacks[cbId];
         }

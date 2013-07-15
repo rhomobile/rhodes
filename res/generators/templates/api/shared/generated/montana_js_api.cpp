@@ -23,11 +23,13 @@ def api_generator_MakeJSMethodDef(module_method_name, module_method_native_name,
     method_name += 's_' if is_static
     method_name += $cur_module.name + "_" + module_method_native_name
 
+    method_type = is_static ? "static" : "instance"
+
     parent = ''
     $cur_module.parents.each do |p|
         parent = parent + p + ":"
     end
-    "    rho::apiGenerator::js_define_method(\"#{parent}#{$cur_module.name}:#{module_method_name}\", #{method_name});"
+    "    rho::apiGenerator::js_define_#{method_type}_method(\"#{parent}#{$cur_module.name}:#{module_method_name}\", #{method_name});"
 end
 
 %>

@@ -88,6 +88,10 @@ SignatureDelegate* ourSD = nil;
     penColor = value;
 }
 
+-(void)setFileName:(NSString*)fName {
+    fileName = fName;
+}
+
 -(void)setPenWidth:(float)value
 {
     penWidth = value;
@@ -122,14 +126,22 @@ SignatureDelegate* ourSD = nil;
     NSData *pngImage;
     
     if (imageFormat == CF_PNG) {
-        filename = [NSString stringWithFormat:@"Image_%@.png", now]; 	
+        filename = [NSString stringWithFormat:@"%@", fileName];
+        if (![filename hasSuffix:@".png"]) {
+            filename = [filename stringByAppendingString:@".png"];
+        }
         fullname = [folder stringByAppendingPathComponent:filename];
         pngImage = UIImagePNGRepresentation(theImage);
     } else {
-        filename = [NSString stringWithFormat:@"Image_%@.jpg", now]; 	
+        filename = [NSString stringWithFormat:@"%@", fileName];
+        if (![filename hasSuffix:@".jpg"]) {
+            filename = [filename stringByAppendingString:@".jpg"];
+        }
         fullname = [folder stringByAppendingPathComponent:filename];
         pngImage = UIImageJPEGRepresentation(theImage, 1.0);
     }
+    NSError* er = nil;
+    [fileManager removeItemAtPath:filename error:&er];
 
     int isError = ![pngImage writeToFile:fullname atomically:YES];
     
@@ -140,7 +152,7 @@ SignatureDelegate* ourSD = nil;
         if (isError) {
             result = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"error", @"status", @"" , @"imageUri", @"Can't write image to the storage.", @"message", nil];
         } else{
-            NSString* extpath = [NSString stringWithFormat:@"db%%2Fdb-files%%2F%@", filename];
+            NSString* extpath = [NSString stringWithFormat:@"db/db-files/%@", filename];
             // imageUri for new commonAPI, signature_uri for legacy support
             result = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"ok", @"status", extpath , @"imageUri", extpath, @"signature_uri", nil];
         }
@@ -151,7 +163,7 @@ SignatureDelegate* ourSD = nil;
     else
     {
         rho_rhodesapp_callSignatureCallback([postUrl UTF8String], [filename UTF8String],
-            isError ? "Can't write image to the storage." : "", 0 );
+            isError ? "Can't write image to the storage - no callback defined." : "", 0 );
     }
 } 
 
@@ -283,6 +295,7 @@ void init_signature_param( struct SignatureParam* sigparam )
     sigparam->width = 100;
     sigparam->height = 100;
     sigparam->setFullscreen = false;
+    sigparam->fileName = @"signature";
 }
 
 
@@ -297,6 +310,7 @@ void rho_signature_take_ex( id<IMethodResult> callback, struct SignatureParam* s
     [deleg setPenWidth:sig_params->penWidth];
     [deleg setBgColor:(sig_params->bgColor | 0xFF000000)];
     [deleg setCallback:callback];
+    [deleg setFileName:sig_params->fileName];
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takeSignature:)
                                               withObject:url waitUntilDone:NO];
 }

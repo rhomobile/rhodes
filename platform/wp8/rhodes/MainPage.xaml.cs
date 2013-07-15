@@ -20,16 +20,18 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 * THE SOFTWARE.
-* 
+*  
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 using System;
 using System.Collections.Generic;
+using Microsoft.Phone.Info;
 using System.Threading;
 using System.Windows;
 using Microsoft.Devices;
 using Microsoft.Phone.Controls;
 using rhodes.Resources;
+using System.IO;
 using rhoruntime;
 using Microsoft.Phone.Shell;
 using System.Windows.Media;
@@ -39,10 +41,19 @@ using rhodes.common;
 
 namespace rhodes
 {
+    public partial class TabProps
+    {
+        public bool _isInitialized = false;
+        public string _action = null;
+        public bool _isLoaded = false;
+        public bool _isReload = false;
+    };
+    
     public partial class MainPage : PhoneApplicationPage
     {
         // saved singletone instance of MainPage
         static private MainPage _instance = null;
+        private IMethodResult _oTabResult = null;
         // saved id of the UI thread
         private int _uiThreadID = -1;
         // rhodes main thread
@@ -54,14 +65,7 @@ namespace rhodes
         private double _screenPhysicalHeight;
         private bool _isBrowserInitialized = false;
 
-        //QUICK FIX
-        //REDESIGN IT!!! join all this maps into one map with int key and object value
-        //(create tabProps object for reload, init uries, loaded states e.t.c)
-        private Dictionary<int, bool> tbInitMap = new Dictionary<int, bool>();
-        private Dictionary<int, string> tbInitUri = new Dictionary<int, string>();
-        private Dictionary<int, bool> tbLoadedMap = new Dictionary<int, bool>();
-        //REDESIGN IT!!! join all this maps into one map with int key and object value
-        //(create tabProps object for reload, init uries, loaded states e.t.c)
+        private Dictionary<int, TabProps> _tabProps= new Dictionary<int, TabProps>();
 
         private string initUri = "";
         private PageOrientation _screenOrientation = PageOrientation.None;
@@ -73,19 +77,37 @@ namespace rhodes
 
         public bool isBrowserInitialized(int index)
         {
-            return (index == -1) ? _isBrowserInitialized : tbInitMap[index];
+            return (index == -1) ? _isBrowserInitialized : _tabProps[index]._isInitialized;
         }
 
         private bool isUIThread
         {
             get { return _uiThreadID == System.Threading.Thread.CurrentThread.ManagedThreadId; }
-        }
+        } 
+              
+        private void raiseTabEvent( string eventName, int nOldTab, int nNewTab )
+        {
+            if ( _oTabResult != null)
+            {
+                rho.common.Hashtable<String,String> mapRes = new rho.common.Hashtable<String,String>();
+                mapRes["tab_index"] = Convert.ToString(nNewTab);
+                mapRes["newTabIndex"] = Convert.ToString(nNewTab);
+                mapRes["oldTabIndex"] = Convert.ToString(nOldTab);
+                mapRes["tabEvent"] = eventName;
+                _oTabResult.set(mapRes);
+           }
+        }   
 
         static public MainPage getInstance()
-        {
+        {  
             return _instance;
-        }
+        } 
 
+        public bool isEmulator() 
+        {    
+            return DeviceStatus.DeviceName.Contains("Emulator") == true ? true : false;
+        }
+          
         public MainPage()
         {
             _instance = this;
@@ -219,7 +241,10 @@ namespace rhodes
 
 		public void navigate(string url, int index)
         {
+           
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigate(url, index); }); return; }
+
+            if (_tabProps.Count == 0) index = -1;
 
             if (url == "") return;
 
@@ -228,23 +253,22 @@ namespace rhodes
                 initUri = url;
                 return;
             }
-            else if (index > -1 && tbInitMap[index] == false)
+            else if (index > -1 && _tabProps[index]._isInitialized == false)
             {
-                tbInitUri[index] = url;
+                _tabProps[index]._action = url;
                 return;
             }
 
-
             if (TabbarPivot.Items.Count == 0)
-                RhodesWebBrowser.Navigate(new Uri(url));
+                RhodesWebBrowser.Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
             else
-                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url));
+                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
         }
 
         public string executeScriptFunc(string script, int index)
         {
             string[] codeString = { script };
-            if (TabbarPivot.Items.Count == 0)
+            if (TabbarPivot.Items.Count == 0 || _tabProps[index]._isInitialized == false)
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
             else
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
@@ -253,6 +277,11 @@ namespace rhodes
         public string executeScript(string script, int index) 
         {
             return StringValueByStringIntReturnAgent(executeScriptFunc, script, index);
+        }
+
+        public string executeScriptAsync(string script, int index)
+        {
+            return StringValueByStringIntReturnAgentAsync(executeScriptFunc, script, index);
         }
 
 		public void GoBack()
@@ -344,7 +373,7 @@ namespace rhodes
 
         private void RhodesWebBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            String url = getCurrentURLFunc(-1);
+            String url = getCurrentURLFunc((sender as WebBrowser).TabIndex);
             CRhoRuntime.getInstance().onWebViewUrlChanged(url);
         }
 
@@ -355,14 +384,14 @@ namespace rhodes
            
         private void RhodesWebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            String url = getCurrentURLFunc(-1);
+            String url = getCurrentURLFunc((sender as WebBrowser).TabIndex);
             CRhoRuntime.getInstance().onWebViewUrlChanged(url);
             int index = (sender as WebBrowser).TabIndex;
-            if (index > -1 && !tbInitMap[index])
+            if (index > -1 && !_tabProps[index]._isInitialized)
             {
-                tbInitMap[index] = true;
-                if (tbInitUri.ContainsKey(index))
-                    navigate(tbInitUri[index], index);
+                _tabProps[index]._isInitialized = true;
+                if (_tabProps.ContainsKey(index) && _tabProps[index]._action != null)
+                    navigate(_tabProps[index]._action, index);
             }
             else if (TabbarPivot.Items.Count == 0 && !_isBrowserInitialized)
             {
@@ -371,23 +400,23 @@ namespace rhodes
             }
             else
             {
-                if (TabbarPivot.Items.Count > 0 && url.Contains("about:blank") == false)
+                if (TabbarPivot.Items.Count > 0 && index > -1 && url.Contains("about:blank") == false)
                 {
-                    if (tbLoadedMap[index] == false)
-                        tbLoadedMap[index] = true;
+                    if (_tabProps[index]._isLoaded == false)
+                        _tabProps[index]._isLoaded = true;
                 }
             }
         }
 
         private void RhodesWebBrowser_Loaded(object sender, RoutedEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
+            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc((sender as WebBrowser).TabIndex));
         }
 
 
         private void RhodesWebBrowser_Unloaded(object sender, RoutedEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
+            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc((sender as WebBrowser).TabIndex));
         }
 
         private void RhodesWebBrowser_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -524,8 +553,9 @@ namespace rhodes
             // TODO: implement setToolbarStyle
             if(background != "")
                 ApplicationBar.BackgroundColor = getColorFromString(background);
-            if(mask != "")
-                ApplicationBar.ForegroundColor = getColorFromString(mask);
+            //implement opacity for pictures
+            //if(mask != "")
+            //    ApplicationBar.ForegroundColor = getColorFromString(mask);
         }
 
         private void toolbarButton_Click(object sender, EventArgs e)
@@ -585,7 +615,8 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemoveAllTabs(); }); return; }
             TabbarPivot.Items.Clear();
-            tbInitMap.Clear();
+            _tabProps.Clear();
+            _oTabResult = null;
         }
 
         public void tabbarRemove(int index)
@@ -635,7 +666,10 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSwitch(index); }); return; }
             if ((index >= 0) && (index < TabbarPivot.Items.Count))
+            {
+                raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
                 TabbarPivot.SelectedIndex = index;
+            }
         }
 
         private int tabbarGetCurrentFunc()
@@ -664,9 +698,9 @@ namespace rhodes
             return Color.FromArgb(255, Convert.ToByte(cR), Convert.ToByte(cG), Convert.ToByte(cB));
         }
 
-        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab)
+        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, object oResult)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab); }); return; }
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
             PivotItem tab = new PivotItem();
             // TODO: make labels font smaller
             // TODO: implement icons
@@ -697,8 +731,12 @@ namespace rhodes
             //}
             //else
             //{
-            tbInitMap[TabbarPivot.Items.Count] = false;
-            tbLoadedMap[TabbarPivot.Items.Count] = false;
+
+            _tabProps[TabbarPivot.Items.Count] = new TabProps();
+            _tabProps[TabbarPivot.Items.Count]._isReload = reload;
+            if(hasCallback == true)
+                _oTabResult = oResult as IMethodResult;
+
             WebBrowser wv = new WebBrowser();
             wv.Height = double.NaN;
             wv.Width = double.NaN;
@@ -733,7 +771,7 @@ namespace rhodes
 
         private void TabbarPivot_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) && (tbLoadedMap[TabbarPivot.SelectedIndex] == false))
+            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) && ((_tabProps[TabbarPivot.SelectedIndex]._isLoaded == false) || (_tabProps[TabbarPivot.SelectedIndex]._isLoaded == true && _tabProps[TabbarPivot.SelectedIndex]._isReload == true)))
                 CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag));
         }
 
@@ -898,11 +936,38 @@ namespace rhodes
 
         private string StringValueByStringIntReturnAgent(Func<string, int, string> func, string str, int index)
         {
+            if (isUIThread)  
+                return func(str, index);
+
+            Exception exception = null; 
+            var waitEvent = new System.Threading.ManualResetEvent(false); 
+            string return_value = "";   
+            Dispatcher.BeginInvoke(() =>
+            { 
+                try
+                {
+                    return_value = func(str, index);
+                }
+                catch (Exception ex)  
+                {
+                    exception = ex;
+                }
+                waitEvent.Set();
+            });   
+            
+            waitEvent.WaitOne();
+            if (exception != null)
+                throw exception; 
+
+            return return_value;
+        }
+
+        private string StringValueByStringIntReturnAgentAsync(Func<string, int, string> func, string str, int index)
+        {
             if (isUIThread)
                 return func(str, index);
 
             Exception exception = null;
-            var waitEvent = new System.Threading.ManualResetEvent(false);
             string return_value = "";
             Dispatcher.BeginInvoke(() =>
             {
@@ -914,12 +979,10 @@ namespace rhodes
                 {
                     exception = ex;
                 }
-                waitEvent.Set();
-            });  
-            
-            waitEvent.WaitOne();
+            });
+
             if (exception != null)
-                throw exception; 
+                throw exception;
 
             return return_value;
         }
@@ -928,7 +991,7 @@ namespace rhodes
         {
             String answer = CRhoRuntime.getInstance().onJSInvoke(e.Value);
             WebBrowser wb = sender as WebBrowser;
-            wb.IsScriptEnabled = true;
+            wb.IsScriptEnabled = true; 
             wb.InvokeScript("__rhoNativeApiResult", new string[] { answer });
         }
     }

@@ -6,3 +6,4 @@ android:
   - ext/android/ApplicationManifestAdds.erb
   source_list: ext/android/ext_build.files
 libraries: ['gcm-push']
+xml_api_paths: ext/gcm.xml

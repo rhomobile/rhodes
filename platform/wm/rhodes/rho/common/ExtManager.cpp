@@ -214,7 +214,10 @@ bool CExtManager::DeRegisterForPrimaryBrowserMessage(unsigned int iMsgId)
 
 void CExtManager::executeJavascript(const wchar_t* szJSFunction)
 {
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)_wcsdup(szJSFunction) );
+    TNavigateData* nd = new TNavigateData();
+    nd->index = rho_webview_active_tab();
+    nd->url = _tcsdup(szJSFunction);
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
 }
 
 StringW CExtManager::getCurrentUrl()
@@ -255,6 +258,7 @@ void CExtManager::quitApp()
 static void __minimize_restoreApp(int nParam)
 {
     ::ShowWindow(getMainWnd(), nParam );
+    SetForegroundWindow(getMainWnd());
 }
 
 void CExtManager::minimizeApp()
@@ -268,7 +272,7 @@ void CExtManager::minimizeApp()
 
 void CExtManager::restoreApp()
 {
-    rho_callInUIThread(__minimize_restoreApp, SW_RESTORE);
+    rho_callInUIThread(__minimize_restoreApp, SW_SHOW);
 }
 
 void CExtManager::resizeBrowserWindow(RECT rc)

@@ -161,6 +161,16 @@ void hideSIPButton()
         ::ShowWindow(hg_sipbut, SW_HIDE);
 }
 
+void CMainWindow::showTaskBar(bool bShow)
+{
+    HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
+    if ( hTaskBar )
+    {
+        ::EnableWindow(hTaskBar, !bShow ? FALSE : TRUE ); 
+        ::ShowWindow(hTaskBar, !bShow ? SW_HIDE : SW_SHOW );
+    }
+}
+
 void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 {
     LOG(INFO) + "RhoSetFullScreen: " + (bFull ? 1 : 0);
@@ -168,21 +178,44 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
     if( !IsWindowVisible() )
     {
-        LOG(INFO) + "Main Window is invisible. Skip fill screen method";
+        LOG(INFO) + "Main Window is invisible.";// Skip full screen method";
         //return;
     }
 
-    HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
-    if ( hTaskBar )
-    {
-        ::EnableWindow(hTaskBar, bFull ? FALSE : TRUE ); 
-        ::ShowWindow(hTaskBar, bFull ? SW_HIDE : SW_SHOW );
-    }
+    showTaskBar(!bFull);
 
 #if defined( OS_PLATFORM_MOTCE )
 
-	if(g_hWndCommandBar)
-		::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
+	//if(g_hWndCommandBar)
+		//::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
+    //    CommandBar_Show(g_hWndCommandBar, !bFull ? TRUE : FALSE);
+
+    if ( m_bFullScreen )
+    {
+        if ( g_hWndCommandBar )
+        {
+            ::DestroyWindow(g_hWndCommandBar);
+            g_hWndCommandBar = NULL;
+        }
+    }else
+    {
+        if ( !g_hWndCommandBar )
+        {
+            g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+
+            TBBUTTON oBtn = {0};
+            oBtn.iBitmap = -1;
+            oBtn.idCommand = IDM_POPUP_MENU;
+            oBtn.fsState = TBSTATE_ENABLED;
+            oBtn.iString = (int)L"File";
+
+            CommandBar_InsertButton(g_hWndCommandBar, 0, &oBtn);
+
+            CommandBar_AddAdornments(g_hWndCommandBar, 0, 0);
+            CommandBar_Show(g_hWndCommandBar, TRUE);
+        }
+    }
+
 #endif
 
     if (!bDestroy)
@@ -278,7 +311,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     }
 
 #elif defined( OS_PLATFORM_MOTCE )
-    g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+/*    g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
 
     TBBUTTON oBtn = {0};
     oBtn.iBitmap = -1;
@@ -290,7 +323,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     CommandBar_AddAdornments(g_hWndCommandBar, 0, 0);
     CommandBar_Show(g_hWndCommandBar, TRUE);
-
+*/
 #endif
 
 #if defined(OS_WINCE)
@@ -538,9 +571,42 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
 LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
     bHandled = TRUE;
+    LRESULT retCode;
 
     LOG(INFO) + "START load png";
-    rho_wmimpl_draw_splash_screen(m_hWnd);
+    
+    retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
+    
+    //SPR 23830 - Fix - Do loading.html On load png failure
+    if (retCode == 0 && m_bLoading)
+    {
+        LOG(INFO) + "CMainWindow::OnPaint: loading.png cannot be found. Try loading.html";
+
+        String strLoadingPagePath = RHODESAPP().getLoadingPagePath();
+        if ( String_startsWith( strLoadingPagePath, "file://" ) )
+            strLoadingPagePath = strLoadingPagePath.substr(7);
+
+        if (CRhoFile::isFileExist( strLoadingPagePath.c_str()))
+        {
+            StringW pathW = convertToStringW(RHODESAPP().getLoadingPagePath());
+
+            //If engine is ready then try the following method to navigate to loading.html
+            bool bNavigate = true;
+            if ( m_pBrowserEng )
+                bNavigate = m_pBrowserEng->NavigateToHtml(pathW.c_str()) ? false : true;
+            
+            //It does not make any sense to show loading.html, since first page will be loaded anyway, just after browser will be created.
+            /*if (bNavigate)
+            {
+                LOG(INFO) + "CMainWindow::OnPaint: m_pBrowserEng is NULL, navigate to loading.html";
+
+                //If engine is not ready then queue Navigate request for loading.html
+                rho_webview_navigate(RHODESAPP().getLoadingPagePath().c_str(), 0 );
+            }*/
+        }else
+            LOG(INFO) + "CMainWindow::OnPaint: loading.html cannot be found";
+    }
+    
     LOG(INFO) + "END load png";
 
     return 0;
@@ -648,7 +714,7 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 {
     ProcessActivate( FALSE, MAKEWPARAM(0,1), 0 );
 
-	SetForegroundWindow(m_hWnd);
+	//SetForegroundWindow(m_hWnd);
 
 	::ShowWindow( m_hWnd, SW_MINIMIZE );
 
@@ -692,7 +758,10 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 {
 #if defined(_WIN32_WCE) 
 	if (m_bFullScreen)
-		RhoSetFullScreen(fActive!=0);
+    {
+		//RhoSetFullScreen(fActive!=0);
+        showTaskBar(fActive==0);
+    }
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
     RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
@@ -1820,6 +1889,9 @@ void CMainWindow::createCustomMenu()
 
 			popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, 
                 oItem.m_eType == CAppMenuItem::emtClose ? _T("Exit") : strLabelW.c_str() );
+
+            if (!oItem.m_isEnable)
+                popup.EnableMenuItem(0, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
         }
     }
 
@@ -1969,6 +2041,13 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
         SelectObject(hdcMem, resObj);
 	    DeleteObject(hbitmap);
 	    //DeleteObject(hdcMem);
+    }
+    else //SPR 23830 - Fix
+    {
+        LOG(INFO) + "SHLoadImageFile() failed: missing loading.png";
+
+        EndPaint(hWnd, &ps);
+        return 0; // return failure code
     }
 
 	EndPaint(hWnd, &ps);

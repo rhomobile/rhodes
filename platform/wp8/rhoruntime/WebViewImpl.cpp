@@ -25,15 +25,14 @@ extern "C" void rho_webview_navigate_forward()
 
 extern "C" const char* rho_webview_execute_js(const char* js, int index) 
 {
-	rho::String urlA = rho::common::convertStringAFromWP8(CRhoRuntime::getInstance()->getMainPage()->executeScript(rho::common::convertStringCToWP8(js), index));
-    return strdup(urlA.c_str());
+    rho::common::convertStringAFromWP8(CRhoRuntime::getInstance()->getMainPage()->executeScriptAsync(rho::common::convertStringCToWP8(js), index));
+    return "";
 }
 
 extern "C" const char* rho_webview_execute_js_sync(const char* js, int index) 
 {
-    // TODO: implement sync js callback
-    rho_webview_execute_js(js, index);
-    return "";
+    rho::String urlA = rho::common::convertStringAFromWP8(CRhoRuntime::getInstance()->getMainPage()->executeScript(rho::common::convertStringCToWP8(js), index));
+    return strdup(urlA.c_str());
 }
 
 extern "C" const char* rho_webview_current_location(int index)

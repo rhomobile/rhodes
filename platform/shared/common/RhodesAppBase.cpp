@@ -87,11 +87,11 @@ void CRhodesAppBase::initAppUrls()
     m_strBlobsDirPath = db_dir + "db/db-files";
 	m_strDBDirPath = db_dir + "db";
 
-#ifndef OS_WP8
+//#ifndef OS_WP8
     m_strAppRootPath = getRhoRootPath() + "apps";
-#else
-    m_strAppRootPath = getRhoRootPath();
-#endif
+//#else
+//    m_strAppRootPath = getRhoRootPath();
+//#endif
     //m_strRhodesPath = "";
 #else
     m_strBlobsDirPath = getRhoUserPath() + RHO_EMULATOR_DIR"/db/db-files";
@@ -139,44 +139,42 @@ String CRhodesAppBase::getDBFileRoot()
 	return strDbFileRoot;
 }
 
-String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
-{
-    rho::String appRootTag = "%APP_PATH%";
-    rho::String filePrefix = "file://";
-    rho::String retPath    = strPath;
-
-    if (strPath.length() == 0 )
-        return "";
-
-    if (String::npos != strPath.find("http:") || 
-        String::npos != strPath.find("https:") &&
-        String::npos == strPath.find("file:"))
-    {
-        return strPath;
-    }
-
-    if (String::npos != strPath.find("file:"))
-    {
-        String::size_type findIt   = strPath.find(appRootTag);
-
-        if (findIt != String::npos)
-        {   
-            retPath = strPath;
-            retPath.erase(findIt, appRootTag.size());
-            retPath.insert(findIt, rho_rhodesapp_getapprootpath());
-        }
-    }
-    
-    return retPath;
-}
-
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 {
     if (strUrl.length() == 0 )
+    {
         return m_strHomeUrl;
+    }
 
-    if (0 == strUrl.find("javascript:"))
-	    return strUrl;
+    if (String_startsWith(strUrl, "javascript:"))
+    {
+        return strUrl;
+    }
+
+    if (String_startsWith(strUrl, "file:"))
+    {
+        const rho::String appRootTag = "%APP_PATH%";
+
+        String::size_type findIt = strUrl.find(appRootTag);
+
+        if (findIt != String::npos)
+        {
+            String retPath = strUrl;
+            retPath.erase(findIt, appRootTag.size());
+            retPath.insert(findIt, rho_rhodesapp_getapprootpath());
+#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8)
+            return retPath.substr(7);
+#else
+            return retPath;
+#endif
+        }
+#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8)
+        return strUrl.substr(7);
+#else
+        return strUrl;
+#endif
+
+    }
 
     size_t pos = strUrl.find_first_of(":#");
     if((pos == String::npos) || (strUrl.at(pos) == '#'))
@@ -537,15 +535,6 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
         strncpy(res, s_res.c_str(), sizeof(res)-1);
         return res;
     }
-    
-    const char* rho_app_canonicalize_rho_path(const char* path) {
-        static char res[FILENAME_MAX];
-        rho::String s_res = RHODESAPPBASE().canonicalizeRhoPath(path);
-        strncpy(res, s_res.c_str(), sizeof(res)-1);
-        return res;
-    }
-    
-    
 
 } //extern "C"
 

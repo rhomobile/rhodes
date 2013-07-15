@@ -176,4 +176,12 @@ end %>
 
     rhoUtil.namespace(moduleNS, <%= $cur_module.name %>);
 
+    <%  $cur_module.module_aliases.each do |module_alias|
+        next if module_alias.deprecated
+    %>
+        rhoUtil.namespaceAlias(<%= namespace $cur_module %>, <%= $cur_module.parents.clone().join(".") %>, '<%= module_alias.new_name %>');
+    <% end %>
+
+
+
 })(Rho.jQuery, Rho, Rho.util);

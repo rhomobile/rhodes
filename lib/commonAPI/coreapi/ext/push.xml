@@ -4,16 +4,16 @@
     <MODULE name="Push" parent="Rho">
         <HELP_OVERVIEW>The Push API provides access to Push messaging functionality</HELP_OVERVIEW>
         <MORE_HELP>Use this API to give application the ability to receive server initiated messages.</MORE_HELP>
-        <PLATFORM>Android, iOS, WM, WP8</PLATFORM>
+        <PLATFORM>WM, Android, iOS, WP8</PLATFORM>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-    
+
         <TEMPLATES>
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/>
         </TEMPLATES>
         <PROPERTIES access="INSTANCE" generateAccessors="false">
             <DESC>These properties are used to configure the Push API.</DESC>
-            
+
             <PROPERTY name="type" type="STRING" readOnly="true" generateAccessors="true">
                <DESC>Push engine type.</DESC>
                 <VALUES>
@@ -24,9 +24,6 @@
                         <DESC>Native push engine (like GCM on Android).</DESC>
                     </VALUE>
                 </VALUES>
-            </PROPERTY>
-            <PROPERTY name="id" type="STRING" readOnly="true" generateAccessors="true">
-                <DESC>Push engine id.</DESC>
             </PROPERTY>
             <PROPERTY name="deviceId" type="STRING" readOnly="true">
                 <DESC>Push token used to identify particular device.</DESC>
@@ -73,7 +70,7 @@
                 <DESC>Returns push token used to identify particular device.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
-            <METHOD name="startNotifications" access="INSTANCE" hasCallback="mandatory">
+            <METHOD name="startNotifications" access="INSTANCE" hasCallback="mandatory" runInThread="none">
                 <DESC>Start listening for push messages, errors or other push related events.</DESC>
                 <CALLBACK type="HASH">
                     <DESC>Hash map with push message payload.</DESC>
@@ -97,43 +94,45 @@
                 <DESC>Stop listening push events.</DESC>
             </METHOD>
         </METHODS>
-        
+
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
             <![CDATA[
- 
+
             ]]>
-            
+
         </USER_OVERVIEW>
         <EXAMPLES >
             <EXAMPLE title="Handle push message">
                 <SECTIONS>
                     <SECTION>
-                        <DESC>Take an image with as little code as possible, using all default values.</DESC>
+                        <DESC>Start push nofification service and define alert popup window in push callback method.</DESC>
                         <CODE>
                             <RUBY>
                                 <![CDATA[
 def setup_push
-  # Capture an image from the default camera on the device, using the default image settings
-  Rho::Push.setNotification(url_for(:action=>:push_callback))
+  # Start listening for push messages. Parameter is an url to push_callback method
+  Rho::Push.startNotifications(url_for(:action=>:push_callback))
 end
-  
+
+
 def push_callback
-  unless @params[:error]
-  end
+  # Show 'alert' popup window with push message text
+  Rho::Notification.showPopup({'message' => @params['alert'], 'buttons' =>['OK']})
 end
                                 ]]>
                             </RUBY>
                             <JAVASCRIPT>
                                 <![CDATA[
 function setupPush() {
-  // Capture an image from the default camera on the device, using the default image settings
-  Rho.Push.setNotification(pushCallback);
+  // Start listening for push messages. Parameter is an url to push_callback method
+  Rho.Push.startNotifications(pushCallback);
 }
 
 function pushCallback(params) {
-  if (params["error"]==undefined) {
-  }
+  // Show 'alert' popup window with push message text
+  var propertyMap = {message: params["alert"], buttons: [{id: 'OK', title: 'OK'}]};
+  Rho.Notification.showPopup(propertyMap);
 }
                                 ]]>
                             </JAVASCRIPT>
@@ -143,4 +142,4 @@ function pushCallback(params) {
             </EXAMPLE>
         </EXAMPLES>
     </MODULE>
-</API>    
+</API>

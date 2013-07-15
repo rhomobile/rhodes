@@ -429,7 +429,7 @@ namespace "clean" do
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
       
     end
-    task :all => "clean:wp8:rhodes"
+    task :all => ["clean:common", "clean:wp8:rhodes"]
   end
 end
 

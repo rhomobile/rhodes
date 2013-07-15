@@ -686,4 +686,24 @@ class Jake
     proc_list
   end
 
+  def self.getBuildProp(propName, config_yml=$app_config)
+    res = nil
+    if config_yml[propName]
+        res = config_yml[propName]
+    elsif config_yml[$current_platform]
+        res = config_yml[$current_platform][propName]        
+    end    
+    
+    res
+  end
+
+  def self.getBuildBoolProp(propName, config_yml=$app_config, def_value=false)
+    res = getBuildProp(propName)
+    
+    return def_value unless res
+     
+    return true if res && (res.to_i() != 0 || res.casecmp("true") == 0 || res.casecmp("yes") == 0 )
+    
+    false
+  end
 end

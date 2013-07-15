@@ -26,9 +26,9 @@ public class LedSingleton implements ILedSingleton
 {
 	protected static String TAG = "LedSingleton";
     
-    private ILed mRed   = new LedImpl("red", 0xFFFF0000, 1);
-    private ILed mGreen = new LedImpl("green", 0xFF00FF00, 2);
-    private ILed mBlue  = new LedImpl("blue", 0xFF0000FF, 3);
+    private ILed mRed   = new LedImpl("red", 0xFFFF0000/*, 1*/);
+    private ILed mGreen = new LedImpl("green", 0xFF00FF00/*, 2*/);
+    private ILed mBlue  = new LedImpl("blue", 0xFF0000FF/*, 3*/);
     
     public void enumerate(IMethodResult result)
     {

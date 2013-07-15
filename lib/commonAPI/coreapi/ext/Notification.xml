@@ -11,6 +11,7 @@
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
                 <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button. Icon is not supported on iOS devices.</DESC>
+				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
 				<PARAMS>
 					<PARAM name="propertyMap" type="HASH">
 						<DESC>The properties associated with the popup.</DESC>
@@ -24,6 +25,7 @@
 							<PARAM name="icon" type="String" default="">
 								<DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon.</DESC>
                                 <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only predefined icons are supported.</MORE_HELP>
+								<PLATFORM>Android</PLATFORM>
 							</PARAM>
 							<PARAM name="buttons" type="Array" default="">
 								<DESC>array of buttons. Specify each button either by hash with :id and :title keys, or by a string where id and title are set to the string value. TODO - HOW SPECIFY</DESC>
@@ -50,10 +52,12 @@
             <METHOD name="hidePopup" access="STATIC" hasCallback="none">
                 <DESC>Closes the current popup window</DESC>
                 <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</MORE_HELP>
+				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
             </METHOD>
 		
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
                 <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button.</DESC>
+				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
 				<PARAMS>
 					<PARAM name="title" type="STRING">
 						<DESC>The title on the status message popup window.</DESC>
@@ -63,6 +67,8 @@
 					</PARAM>
 					<PARAM name="hide_button_label" type="STRING">
 						<DESC>The label text for the hide button in the popup status window</DESC>
+                        <PLATFORM>iOS, Android, WP8</PLATFORM>
+                        <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators Windows Close icon used to hide the status window.</MORE_HELP>
 					</PARAM>
 				</PARAMS>
             </METHOD>
@@ -75,6 +81,7 @@
 						<DESC>The full path to the file, ending in the file name and extension.</DESC>
 					</PARAM>
 					<PARAM name="media_type" type="STRING" default="">
+					    <CAN_BE_NIL/>
 						<DESC>Media type can be specified explicitly, or can be recognized from the file extension. The known file extensions are ".mp3" - "audio/mpeg" and ".wav" - "audio/x-wav".</DESC>
                         <PLATFORM>iOS, Android</PLATFORM>
 					</PARAM>
@@ -109,6 +116,7 @@
 				<APPLIES msiOnly="false"></APPLIES>
 				<PARAMS>
 					<PARAM name="duration" type="Integer" default="1000">
+					    <CAN_BE_NIL/>
 						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration.</DESC>
 					</PARAM>
 				</PARAMS>

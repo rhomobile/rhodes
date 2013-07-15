@@ -111,7 +111,18 @@
             //move recorded to destination
             [fileManager moveItemAtPath:moviePath toPath:destination error:&err];
             
-            [self fireCallback:@"OK" fileName:destination fileSize:nil];
+            NSNumber* size = nil;
+            if ([fileManager isReadableFileAtPath:destination]) {
+                NSDictionary *attributes = [fileManager attributesOfItemAtPath:destination error:&err];
+                if (!err) {
+                    NSNumber *fsize = [attributes objectForKey:NSFileSize];
+                    if (fsize != nil) {
+                        size = [NSNumber numberWithInt:[fsize intValue]];
+                    }
+                }
+            }
+            
+            [self fireCallback:@"OK" fileName:destination fileSize:size];
             
         }
         
@@ -152,7 +163,7 @@
 
 }
 
-- (void) fireCallback:(NSString*)status fileName:(NSString*)fileName fileSize:(NSString*)fileSize {
+- (void) fireCallback:(NSString*)status fileName:(NSString*)fileName fileSize:(NSNumber*)fileSize {
     if (callback == nil) {
         return;
     }

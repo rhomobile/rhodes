@@ -17,6 +17,10 @@ namespace rho {
     public:
         
         CLogCaptureImpl(): CLogCaptureSingletonBase(), mMaxLines(1024), mTotalSize(0) {}
+        virtual ~CLogCaptureImpl()
+        {
+            LOGCONF().removeAuxSink(this);
+        }
         
         // ILogSink
         virtual void writeLogMessage( String& strMsg )

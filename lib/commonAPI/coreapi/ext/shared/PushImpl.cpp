@@ -45,7 +45,10 @@ class CPushSingleton: public CPushManager, public CPushFactoryBase {
     VectorPtr<CPushClient*> m_clients;
     DEFINE_LOGCLASS;
 public:
-    virtual ~CPushSingleton() {}
+    virtual ~CPushSingleton()
+    {
+        m_pInstance.ReleasePtr();
+    }
     String getInitialDefaultID();
     void enumerate(rho::apiGenerator::CMethodResult& oResult);
     void addClient(CPushClient* pClient)

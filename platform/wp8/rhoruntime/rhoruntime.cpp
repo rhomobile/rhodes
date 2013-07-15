@@ -423,7 +423,8 @@ extern "C" void recursiveDeleteDirectory(const std::wstring &path) {
   if(searchHandle == INVALID_HANDLE_VALUE) {
     DWORD lastError = ::GetLastError();
     if(lastError != ERROR_FILE_NOT_FOUND) { // or ERROR_NO_MORE_FILES, ERROR_NOT_FOUND?
-      throw std::runtime_error("Could not start directory enumeration");
+    //  throw std::runtime_error("Could not start directory enumeration");
+		return;
     }
   }
  
@@ -439,13 +440,14 @@ extern "C" void recursiveDeleteDirectory(const std::wstring &path) {
           ((findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0);
  
         // Subdirectories need to be handled by deleting their contents first
-        std::wstring filePath = path + L'\\' + findData.cFileName;
+        std::wstring filePath = path + L'/' + findData.cFileName;
         if(isDirectory) {
           recursiveDeleteDirectory(filePath);
         } else {
           BOOL result = ::DeleteFileW(filePath.c_str());
           if(result == FALSE) {
-            throw std::runtime_error("Could not delete file");
+            //throw std::runtime_error("Could not delete file");
+			  return;
           }
         }
       }
@@ -455,7 +457,8 @@ extern "C" void recursiveDeleteDirectory(const std::wstring &path) {
       if(result == FALSE) {
         DWORD lastError = ::GetLastError();
         if(lastError != ERROR_NO_MORE_FILES) {
-          throw std::runtime_error("Error enumerating directory");
+        //  throw std::runtime_error("Error enumerating directory");
+			return;
         }
         break; // All directory contents enumerated and deleted
       }
@@ -466,6 +469,7 @@ extern "C" void recursiveDeleteDirectory(const std::wstring &path) {
   // The directory is empty, we can now safely remove it
   BOOL result = ::RemoveDirectory(path.c_str());
   if(result == FALSE) {
-    throw std::runtime_error("Could not remove directory");
+    //throw std::runtime_error("Could not remove directory");
+	  return;
   }
 }

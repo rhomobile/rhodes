@@ -18,7 +18,7 @@
 -(void) stop;
 -(void) cancel;
 
-- (void) fireCallback:(NSString*)status fileName:(NSString*)fileName fileSize:(NSString*)fileSize;
+- (void) fireCallback:(NSString*)status fileName:(NSString*)fileName fileSize:(NSNumber*)fileSize;
 
 // UIImagePickerControllerDelegate
 - (void) imagePickerControllerDidCancel: (UIImagePickerController *) picker;

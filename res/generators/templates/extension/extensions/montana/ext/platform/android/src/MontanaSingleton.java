@@ -10,8 +10,8 @@ class <%= namecamelcase %>Singleton extends <%= namecamelcase %>SingletonBase im
         super(factory);
     }
 
-    List<String> getIDs() {
-        List<String> ids = new LinkedList<String>();
+    List<Object> getIDs() {
+        List<Object> ids = new LinkedList<Object>();
         ids.add("SCN1");
         ids.add("SCN2");
         return ids;
@@ -19,7 +19,7 @@ class <%= namecamelcase %>Singleton extends <%= namecamelcase %>SingletonBase im
     
     @Override
     protected String getInitialDefaultID() {
-        return getIDs().get(0);
+        return (String)(getIDs().get(0));
     }
 
     @Override

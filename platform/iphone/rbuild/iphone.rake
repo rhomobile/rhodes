@@ -516,8 +516,22 @@ def check_sdk(sdkname)
       end
 end
 
+def kill_iphone_simulator
+  puts 'kill iPhone Simulator'
+  `killall -9 "iPhone Simulator"`
+  `killall -9 iphonesim`
+end
 
 namespace "config" do
+
+  namespace "iphone" do
+    task :app_config do
+      if $app_config['capabilities'].index('push')
+        $app_config['extensions'] << 'applePush' unless $app_config['extensions'].index('applePush')
+      end
+    end
+  end
+
   task :set_iphone_platform do
     $current_platform = "iphone"
   end
@@ -1096,9 +1110,7 @@ namespace "run" do
 
           Jake.before_run_spec
 
-          puts 'kill iPhone Simulator'
-          `killall -9  "iPhone Simulator"`
-          `killall -9 iphonesim`
+          kill_iphone_simulator
 
           mkdir_p $tmpdir
           log_name  =   File.join($tmpdir, 'logout')
@@ -1155,9 +1167,7 @@ namespace "run" do
 
           $stdout.flush
 
-          puts 'kill iPhone Simulator'
-          `killall -9  "iPhone Simulator"`
-          `killall -9 iphonesim`
+          kill_iphone_simulator
 
           $stdout.flush
 
@@ -1281,12 +1291,7 @@ namespace "run" do
        puts "SDK must be one of the iphonesimulator sdks to run in the iphone simulator"
        exit 1       
      end
-     `killall "iPhone Simulator"`
-
-
-      puts 'kill iPhone Simulator'
-      `killall -9  "iPhone Simulator"`
-      `killall -9 iphonesim`
+     kill_iphone_simulator
 
      use_old_scheme = ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
 
@@ -1431,9 +1436,7 @@ namespace "run" do
     rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
     commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
 
-    puts 'kill iPhone Simulator'
-    `killall -9  "iPhone Simulator"`
-    `killall -9 iphonesim`
+    kill_iphone_simulator
 
 
     $ios_run_completed = false
@@ -1503,7 +1506,8 @@ end
 
 namespace "clean" do
   desc "Clean iphone"
-  task :iphone => ["clean:iphone:all"]
+  task :iphone => ["clean:common", "clean:iphone:all"]
+
   namespace "iphone" do
 #    desc "Clean rhodes binaries"
     task :rhodes => ["config:iphone"] do 
@@ -1602,4 +1606,10 @@ namespace "device" do
     end
   end
 
+end
+
+namespace :stop do
+  task :iphone do
+    kill_iphone_simulator
+  end
 end

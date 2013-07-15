@@ -218,18 +218,18 @@ bool CRhoFile::isOpened(){
 bool CRhoFile::open( const char* szFilePath, EOpenModes eMode ){
     m_strPath = szFilePath;
     if ( eMode == OpenForAppend || eMode == OpenForReadWrite ){
-        m_file = fopen(szFilePath,"r+b");
+        m_file = fopen(szFilePath,"r+bc");
 
         if ( !m_file && !isFileExist(szFilePath) )
-            m_file = fopen(szFilePath,"wb");
+            m_file = fopen(szFilePath,"wbc");
 
         if ( eMode == OpenForAppend )
             movePosToEnd();
 
     }else if ( eMode == OpenReadOnly )
-        m_file = fopen(szFilePath,"rb");
+        m_file = fopen(szFilePath,"rbc");
     else if ( eMode == OpenForWrite )
-        m_file = fopen(szFilePath,"wb");
+        m_file = fopen(szFilePath,"wbc");
     
     return isOpened();
 }
@@ -242,7 +242,10 @@ unsigned int CRhoFile::write( const void* data, unsigned int len ){
 }
 
 int CRhoFile::readByte()
-{ 
+{
+    if ( !isOpened() )
+        return -1;
+    
     unsigned char buf[1];
     int nSize = fread(buf, 1, 1, m_file);
 
@@ -250,7 +253,10 @@ int CRhoFile::readByte()
 }
 
 int CRhoFile::readData(void* buffer, int bufOffset, int bytesToRead)
-{ 
+{
+    if ( !isOpened() )
+        return -1;
+    
     int nSize = fread(((char*)buffer)+bufOffset, 1, bytesToRead, m_file);
     return nSize > 0 ? nSize : -1;
 }
@@ -394,7 +400,8 @@ unsigned int CRhoFile::getFileSize( const char* szFilePath ){
     memset(&st,0, sizeof(st));
     int rc = stat(szFilePath, &st);
     if ( rc == 0 && st.st_size > 0 )
-        return st.st_size;
+        if (!S_ISDIR(st.st_mode))
+            return st.st_size;
 
     return 0;
 }
@@ -466,12 +473,22 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 {
     String strRelPath = String(szFolderPath).substr(strlen(szBasePath), strlen(szFolderPath) );
     String strPath = szBasePath;
+    // handle case when szBasePath is empty and szFolderPath is starting with /
+    if (strPath.length() == 0 && strRelPath.length() > 0 && strRelPath[0] == '/')
+    {
+        strPath += '/';
+    }
+    
     CTokenizer oTokenizer( strRelPath, "/\\" );
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String tok = oTokenizer.nextToken();
         strPath = CFilePath::join(strPath, tok);
-        createFolder(strPath.c_str());
+        
+        if (!isDirectory(strPath.c_str()))
+        {
+            createFolder(strPath.c_str());
+        }
     }
 }
 
@@ -575,8 +592,9 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 	recursiveDeleteDirectory(swPath);
 	return 0;
 #elif defined (OS_ANDROID)
-
-    return iterateFolderTree(String(szFolderPath), RemoveFileFunctor(szFolderPath));
+    
+    RemoveFileFunctor funct(szFolderPath);
+    return funct("");
 
 #else
     rho_file_impl_delete_folder(szFolderPath);
