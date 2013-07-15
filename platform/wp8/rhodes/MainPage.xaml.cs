@@ -58,6 +58,7 @@ namespace rhodes
         private int _uiThreadID = -1;
         // rhodes main thread
         private Thread _rhoruntimeThread;
+        private bool _isCallbackFired = false;
         // internal variables
         private double _screenWidth;
         private double _screenHeight;
@@ -95,6 +96,7 @@ namespace rhodes
                 mapRes["newTabIndex"] = Convert.ToString(nNewTab);
                 mapRes["oldTabIndex"] = Convert.ToString(nOldTab);
                 mapRes["tabEvent"] = eventName;
+                _isCallbackFired = true;
                 _oTabResult.set(mapRes);
            }
         }   
@@ -269,8 +271,11 @@ namespace rhodes
         public string executeScriptFunc(string script, int index)
         {
             string[] codeString = { script };
-            if (TabbarPivot.Items.Count == 0 || _tabProps[index]._isInitialized == false)
+            if (TabbarPivot.Items.Count == 0 || _isCallbackFired)//_tabProps[index]._isInitialized == false)
+            {
+                _isCallbackFired = false;
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
+            }
             else
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
         } 
