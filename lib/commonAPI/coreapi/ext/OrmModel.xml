@@ -14,8 +14,7 @@
 
     <PROPERTIES>
       <PROPERTY name="metadata" access="STATIC" type="HASH" generateAPI="false">
-        <DESC>Returns the metadata definition for a given model as a hash.
-          Assigns the hash metadata definition for a given model.
+        <DESC>Returns the metadata definition for a given model as a hash. Assigns the hash metadata definition for a given model.
         </DESC>
         <APPLIES rubyOnly="true"/>
       </PROPERTY>
@@ -30,12 +29,10 @@
       </METHOD>
       <METHOD name="deleteAll" generateAPI="false" access="STATIC">
         <DESC>Delete all Rhodes model objects for a source.
-          example.
         </DESC>
         <PARAMS>
           <PARAM name="conditions" type="HASH">
-            <DESC>Hash of attribute/values; delete only objects matching these criteria, such as :conditions =>
-              {'industry'=>'electronics'}.
+            <DESC>Hash of attribute/values; delete only objects matching these criteria, such as :conditions =>{'industry'=>'electronics'}.
             </DESC>
             <CAN_BE_NIL/>
             <APPLIES rubyOnly="true"/>
@@ -65,9 +62,7 @@
             </VALUES>
           </PARAM>
           <PARAM name="conditions" type="HASH">
-            <DESC>Hash of attribute/values. Also supports sql fragments (i.e. "name like 'Ormobile'") or sql fragment
-              with binding (you have to define :select with sql queries) (i.e. ["name like ?", "'#{company#}'"]) Use a
-              comma around string values.
+            <DESC>Hash of attribute/values. Also supports sql fragments (i.e. "name like 'Ormobile'") or sql fragment with binding (you have to define :select with sql queries) (i.e. ["name like ?", "'#{company#}'"]) Use a comma around string values.
             </DESC>
             <CAN_BE_NIL/>
           </PARAM>
@@ -82,8 +77,7 @@
           </PARAM>
 
           <PARAM name="select" type="ARRAY">
-            <DESC>Array of string attributes to return with the object. Useful if your model has many attributes and
-              your query only needs a few of them.
+            <DESC>Array of string attributes to return with the object. Useful if your model has many attributes and your query only needs a few of them.
             </DESC>
             <CAN_BE_NIL/>
           </PARAM>
@@ -154,13 +148,11 @@
         <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="create" generateAPI="false" access="STATIC">
-        <DESC>Create a new Rhodes model object and save it to the database.Orm create example. This is the fastest way
-          to insert a single item into the database.
+        <DESC>Create a new Rhodes model object and save it to the database.Orm create example. This is the fastest wayto insert a single item into the database.
         </DESC>
         <PARAMS>
           <PARAM name="attributes" type="HASH">
-            <DESC>List of attributes assigned to the new model object, such as {"name" => "ABC Inc.","address" => "555
-              5th St."}.
+            <DESC>List of attributes assigned to the new model object, such as {"name" => "ABC Inc.","address" => "555 5th St."}.
             </DESC>
           </PARAM>
         </PARAMS>
@@ -219,15 +211,13 @@
         </PARAMS>
       </METHOD>
       <METHOD name="isChanged" generateAPI="false" access="STATIC">
-        <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false
-          otherwise.
+        <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false otherwise.
         </DESC>
         <RETURN type="BOOLEAN"/>
         <APPLIES rubyOnly="true"/>
       </METHOD>
       <METHOD name="haveLocalChanges" generateAPI="false" access="STATIC">
-        <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false
-          otherwise.
+        <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false otherwise.
         </DESC>
         <RETURN type="BOOLEAN"/>
         <APPLIES jsOnly="true"/>
@@ -254,11 +244,7 @@
         <DESC>Destroy a Rhodes model object.</DESC>
       </METHOD>
       <METHOD name="canModify" deprecated="true" generateAPI="false">
-        <DESC>Returns true if the Rhodes model object is not currently being synced (if it is being synced, you should
-          disable editing of the object). Before displaying an edit page for an object, your application can check if the object is currently being
-          accessed by the sync process. If it is, you should disable editing of the object. can_modify could return
-          true, for example, on a new local record that was created and sent to the RhoConnect application, but no
-          response has been received yet.
+        <DESC>Returns true if the Rhodes model object is not currently being synced (if it is being synced, you should disable editing of the object). Before displaying an edit page for an object, your application can check if the object is currently being accessed by the sync process. If it is, you should disable editing of the object. can_modify could return true, for example, on a new local record that was created and sent to the RhoConnect application, but no response has been received yet.
         </DESC>
         <RETURN type="BOOLEAN"/>
       </METHOD>
@@ -267,13 +253,11 @@
         </DESC>
       </METHOD>
       <METHOD name="updateAttributes" generateAPI="false">
-        <DESC>Updates the current Rho model object attributes and saves it to the database. This is the fastest way to
-          add or update model attributes.
+        <DESC>Updates the current Rho model object attributes and saves it to the database. This is the fastest way to add or update model attributes.
         </DESC>
         <PARAMS>
           <PARAM name="attributes" type="HASH">
-            <DESC>List of attributes and their updated values, such as {"name" => "ABC Inc.","address" => "555 5th
-              St."}.
+            <DESC>List of attributes and their updated values, such as {"name" => "ABC Inc.","address" => "555 5th St."}.
             </DESC>
           </PARAM>
         </PARAMS>
