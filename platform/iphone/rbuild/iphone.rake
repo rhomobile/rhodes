@@ -1506,7 +1506,7 @@ end
 
 namespace "clean" do
   desc "Clean iphone"
-  task :iphone => ["clean:common", "clean:iphone:all"]
+  task :iphone => ["clean:iphone:all", "clean:common"]
 
   namespace "iphone" do
 #    desc "Clean rhodes binaries"
