@@ -370,6 +370,27 @@ class Jake
     fail "[#{command}]" unless system(to_run)
   end
 
+  def self.edit_xml(file, out_file = nil)
+    out_file = file if out_file.nil?
+
+    doc = REXML::Document.new(File.new(file).read)
+    yield doc
+    File.open(out_file, 'w') {|f| f << doc}
+  end
+
+  def self.clean_vsprops(file)
+    changed = false
+    edit_xml(file) do |doc|
+      ['RHO_ROOT', 'TEMP_FILES_DIR'].each do |var|
+        REXML::XPath.each(doc, "//UserMacro[@Name='#{var}']") do |node|
+          changed = true
+          node.remove
+        end
+      end
+    end
+    puts "CLEAN_VSPROPS [#{file}, #{changed}]. TODO: remove this output."
+  end
+
   def self.unjar(src,targetdir)
     jpath = $config["env"]["paths"]["java"]   
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
