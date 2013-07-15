@@ -106,7 +106,7 @@
             <EXAMPLE title="Handle push message">
                 <SECTIONS>
                     <SECTION>
-                        <DESC>Start push nofification service and define alert popup window in push callback method.</DESC>
+                        <DESC>Start Push Notifications service and define alert popup window in push callback method.</DESC>
                         <CODE>
                             <RUBY>
                                 <![CDATA[
