@@ -2,8 +2,14 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
   <MODULE name="ORM" parent="Rho" generateUnderscoreRubyNames="true" generateAPI="false">
-    <HELP_OVERVIEW></HELP_OVERVIEW>
-    <MORE_HELP></MORE_HELP>
+    <HELP_OVERVIEW>This API class allows you to interact with the local RHOM database and programtically add models or get references to models.</HELP_OVERVIEW>
+    <MORE_HELP>
+    ## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+</MORE_HELP>
 
     <TEMPLATES>
     </TEMPLATES>
@@ -16,8 +22,7 @@
       <ALIASES>
       </ALIASES>
       <METHOD name="databaseFullReset" generateAPI="false">
-        <DESC>
-          Deletes all records from the property bag and model tables.
+        <DESC>Deletes all records from the property bag and model tables.
         </DESC>
 
         <PARAMS>
@@ -47,13 +52,12 @@
         <RETURN type="BOOLEAN"/>
       </METHOD>
       <METHOD name="getClientId" generateAPI="false">
-        <DESC>>Returns the current sync client id.
+        <DESC>Returns the current sync client id.
         </DESC>
       </METHOD>
 
       <METHOD name="haveLocalChanges" generateAPI="false">
-        <DESC>>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized,
-          false otherwise.
+        <DESC>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized, false otherwise.
         </DESC>
       </METHOD>
       <METHOD name="export" deprecated="true"  generateAPI="false">
@@ -61,16 +65,14 @@
         <RETURN type="STRING"/>
       </METHOD>
       <METHOD name="databaseFullResetAndLogout" generateAPI="false">
-        <DESC>Deletes all records from the property bag and model tables. For examples, see Resetting the Database in
-          Using the Local Database with ORM.
+        <DESC>Deletes all records from the property bag and model tables. For examples, see Resetting the Database in Using the Local Database with ORM.
         </DESC>
       </METHOD>
       <METHOD name="databaseLocalReset" generateAPI="false">
         <DESC>Reset only local (non-sync-enabled) models.</DESC>
       </METHOD>
       <METHOD name="databaseFullclientResetAndLogout" generateAPI="false">
-        <DESC>Reset the Rhodes model database and logout. Equivalent to ORM::ORM.database_full_reset(true) followed by
-          SyncEngine.logout.
+        <DESC>Reset the Rhodes model database and logout. Equivalent to ORM::ORM.database_full_reset(true) followed by SyncEngine.logout.
         </DESC>
       </METHOD>
       <METHOD name="databaseFullResetEx" generateAPI="false">
@@ -109,8 +111,7 @@
         </PARAMS>
       </METHOD>
       <METHOD name="addModel" generateAPI="false">
-        <DESC>
-          Javascript using only. Creates ORM model.
+        <DESC>Javascript using only. Creates ORM model.
         </DESC>
         <PARAMS>
           <PARAM name="Anoynomous Function methods" type="">

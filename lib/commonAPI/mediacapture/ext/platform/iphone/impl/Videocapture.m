@@ -104,6 +104,21 @@
             NSError *err = nil;
             NSString* destination = [mProperties objectForKey:@"fileName"];
             
+            if (destination == nil) {
+                destination = @"Videocapture.mov";
+            }
+            
+            NSString *appDirectory = [NSString stringWithUTF8String:rho_native_rhopath()];
+            NSString *dbDirectory = [NSString stringWithUTF8String:rho_native_rhodbpath()];
+            
+            
+            
+            if ((![destination hasPrefix:appDirectory])   && (![destination hasPrefix:dbDirectory])) {
+                NSString* userfolder = [NSString stringWithUTF8String:rho_native_rhouserpath()];
+                
+                destination = [userfolder stringByAppendingPathComponent:destination];
+            }
+            
             if ([fileManager fileExistsAtPath:destination]) {
                 [fileManager removeItemAtPath:destination error:&err];
             }
@@ -117,7 +132,7 @@
                 if (!err) {
                     NSNumber *fsize = [attributes objectForKey:NSFileSize];
                     if (fsize != nil) {
-                        size = [NSNumber numberWithInt:[fsize intValue]];
+                        size = [NSNumber numberWithInt:([fsize intValue]/1024)];
                     }
                 }
             }
