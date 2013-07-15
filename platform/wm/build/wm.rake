@@ -69,19 +69,26 @@ def edit_xml(file, out_file = nil)
 end
 
 def clean_vsprops(file, *vars)
+  changed = false
   edit_xml(file) do |doc|
     vars.each do |var|
       REXML::XPath.each(doc, "//UserMacro[@Name='#{var}']") do |node|
+        changed = true
         node.remove
       end
     end
   end
+  puts "CLEAN_VSPROPS [#{file}]. TODO: remove this output." if changed
 end
 
 def clean_vsprops_r(root, *vars)
   Dir.glob(File.join(root, '**', '*.vsprops')) do |file|
     clean_vsprops(file, *vars)
   end
+end
+
+def clean_ext_vsprops(ext_path)
+  clean_vsprops_r(ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
 end
 
 
@@ -173,7 +180,20 @@ namespace "config" do
     puts "$sdk [#{$sdk}]"
   end
 
+  namespace :wm do
+    namespace :win32 do
+      task :ignore_vsprops do
+        $wm_win32_ignore_vsprops = true
+      end
+    end
+  end
+
   namespace "win32" do
+    namespace :wm do
+      task :ignore_vsprops do
+        $wm_win32_ignore_vsprops = true
+      end
+    end
 
     task :qt do
       $vscommontools = ENV['VS90COMNTOOLS']
@@ -313,7 +333,7 @@ namespace "build" do
                         cp_r lib, ENV['TARGET_TEMP_DIR']
                     end
                 else    
-                    # clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
+                    clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                     Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
                 end    
           
@@ -337,7 +357,7 @@ namespace "build" do
               ENV['SDK'] = $sdk
 
               if File.exists? File.join(extpath, 'build.bat')
-                # clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
+                clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('build.bat', extpath)
               elsif is_prebuilt
                 file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
@@ -534,6 +554,7 @@ namespace "build" do
                 
                 ENV['RHO_EXT_NAME']=ext                
 
+                clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
           
           else
@@ -547,6 +568,7 @@ namespace "build" do
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
 
+              clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
           end
       end
