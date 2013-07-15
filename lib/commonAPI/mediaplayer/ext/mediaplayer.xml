@@ -2,7 +2,13 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="Mediaplayer" parent="Rho">
-        <HELP_OVERVIEW>The MediaPlayer extension is used to playback different types of audio file. It also allows the playback of Ringtones for the respective platform.</HELP_OVERVIEW>
+        <HELP_OVERVIEW>The MediaPlayer extension is used to playback different types of audio file. It also allows the playback of Ringtones for the respective platform.
+## Enabling the API           
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["mediaplayer"]
+
+        </HELP_OVERVIEW>
     
         <TEMPLATES>
         </TEMPLATES>

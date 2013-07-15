@@ -2,7 +2,13 @@
 <API>
 	<MODULE name="Notification" parent="Rho">
 		<HELP_OVERVIEW>The Notification API allows you to provide feedback to the user, either auditory, tactile or visual.  Use this API to give a visual popup window, sound the device beeper or illuminate the device LEDs (hardware permitting)</HELP_OVERVIEW>
-		<MORE_HELP></MORE_HELP>
+		<MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+</MORE_HELP>
 		<PLATFORM>iOS, Android, WM</PLATFORM>
 		<TEMPLATES>
 		</TEMPLATES>

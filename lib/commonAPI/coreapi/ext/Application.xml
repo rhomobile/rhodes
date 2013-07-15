@@ -3,7 +3,13 @@
 <API>
     <MODULE name="Application" parent="Rho">
         <HELP_OVERVIEW>The Application class is used for accessing or setting application level configuration settings.</HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
+        <MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+</MORE_HELP>
         
         <TEMPLATES>
         </TEMPLATES>
