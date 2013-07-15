@@ -58,12 +58,14 @@ namespace rhodes
         private int _uiThreadID = -1;
         // rhodes main thread
         private Thread _rhoruntimeThread;
+        private bool _isCallbackFired = false;
         // internal variables
         private double _screenWidth;
         private double _screenHeight;
         private double _screenPhysicalWidth;
         private double _screenPhysicalHeight;
         private bool _isBrowserInitialized = false;
+        private int _tabIndex = -1;
 
         private Dictionary<int, TabProps> _tabProps= new Dictionary<int, TabProps>();
 
@@ -94,6 +96,7 @@ namespace rhodes
                 mapRes["newTabIndex"] = Convert.ToString(nNewTab);
                 mapRes["oldTabIndex"] = Convert.ToString(nOldTab);
                 mapRes["tabEvent"] = eventName;
+                _isCallbackFired = true;
                 _oTabResult.set(mapRes);
            }
         }   
@@ -268,11 +271,14 @@ namespace rhodes
         public string executeScriptFunc(string script, int index)
         {
             string[] codeString = { script };
-            if (TabbarPivot.Items.Count == 0 || _tabProps[index]._isInitialized == false)
+            if (TabbarPivot.Items.Count == 0 || _isCallbackFired)//_tabProps[index]._isInitialized == false)
+            {
+                _isCallbackFired = false;
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
+            }
             else
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
-        }
+        } 
 
         public string executeScript(string script, int index) 
         {
@@ -667,9 +673,9 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSwitch(index); }); return; }
             if ((index >= 0) && (index < TabbarPivot.Items.Count))
             {
-                raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
+                //raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
                 TabbarPivot.SelectedIndex = index;
-            }
+            } 
         }
 
         private int tabbarGetCurrentFunc()
@@ -773,6 +779,9 @@ namespace rhodes
         {
             if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) && ((_tabProps[TabbarPivot.SelectedIndex]._isLoaded == false) || (_tabProps[TabbarPivot.SelectedIndex]._isLoaded == true && _tabProps[TabbarPivot.SelectedIndex]._isReload == true)))
                 CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag));
+            int nOldTab = _tabIndex;
+            _tabIndex = TabbarPivot.SelectedIndex;
+            raiseTabEvent("onTabFocus", nOldTab, _tabIndex);
         }
 
         public void tabbarSetBadge(int index, string badge)
