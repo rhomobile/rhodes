@@ -3,7 +3,13 @@
 <API>
     <MODULE name="NativeMenubar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NativeMenubar methods let you customize the Rhodes Menubar at runtime.</HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
+        <MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+        </MORE_HELP>
         <PLATFORM>WM</PLATFORM>
         
         <TEMPLATES>

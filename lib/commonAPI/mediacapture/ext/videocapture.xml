@@ -8,7 +8,12 @@
         </ALIASES>
 		
         <HELP_OVERVIEW>captures video files from the default camera device.</HELP_OVERVIEW>
-        <MORE_HELP>Only the foreground RhoElements application is given access to capture video, when an application is sent to the background any capture that is in progress will be cancelled and it will automatically relinquish control of the video hardware.  When brought back to the foreground, an application previously using the video capture will have its previous configuration (eg. name etc.) reapplied to the plugin automatically. Please note that any file transfer that is in progress continues even if the application is sent to the background.</MORE_HELP>
+        <MORE_HELP>Only the foreground RhoElements application is given access to capture video, when an application is sent to the background any capture that is in progress will be cancelled and it will automatically relinquish control of the video hardware.  When brought back to the foreground, an application previously using the video capture will have its previous configuration (eg. name etc.) reapplied to the plugin automatically. Please note that any file transfer that is in progress continues even if the application is sent to the background.
+## Enabling the API           
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["mediacapture"]
+        </MORE_HELP>
     
         <TEMPLATES>            
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
