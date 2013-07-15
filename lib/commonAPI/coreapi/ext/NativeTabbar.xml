@@ -3,7 +3,13 @@
 <API>
     <MODULE name="NativeTabbar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NativeTabbar methods let you customize the Rhodes tabbar at runtime.</HELP_OVERVIEW>
-        <MORE_HELP>No more than 4 buttons can be created in Windows Phone 8 toolbar. A toolbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs.</MORE_HELP>
+        <MORE_HELP>No more than 4 buttons can be created in Windows Phone 8 toolbar. A toolbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs.
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+        </MORE_HELP>
         
         <TEMPLATES>
         </TEMPLATES>

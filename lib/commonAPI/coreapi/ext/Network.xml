@@ -2,8 +2,14 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="Network" parent="Rho">
-        <HELP_OVERVIEW></HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
+        <HELP_OVERVIEW>This API class allows you to interact with either the WAN or WiFI network of the device.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+</MORE_HELP>
         
         <TEMPLATES>
         </TEMPLATES>

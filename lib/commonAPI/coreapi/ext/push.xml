@@ -3,7 +3,13 @@
 <API>
     <MODULE name="Push" parent="Rho">
         <HELP_OVERVIEW>The Push API provides access to Push messaging functionality</HELP_OVERVIEW>
-        <MORE_HELP>Use this API to give application the ability to receive server initiated messages.</MORE_HELP>
+        <MORE_HELP>Use this API to give application the ability to receive server initiated messages.
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+        </MORE_HELP>
         <PLATFORM>WM, Android, iOS, WP8</PLATFORM>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
 

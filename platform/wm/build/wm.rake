@@ -60,27 +60,9 @@ def sign (cabfile)
   $stdout.flush
 end
 
-def edit_xml(file, out_file = nil)
-  out_file = file if out_file.nil?
-
-  doc = REXML::Document.new(File.new(file).read)
-  yield doc
-  File.open(out_file, 'w') {|f| f << doc}
-end
-
-def clean_vsprops(file, *vars)
-  edit_xml(file) do |doc|
-    vars.each do |var|
-      REXML::XPath.each(doc, "//UserMacro[@Name='#{var}']") do |node|
-        node.remove
-      end
-    end
-  end
-end
-
-def clean_vsprops_r(root, *vars)
-  Dir.glob(File.join(root, '**', '*.vsprops')) do |file|
-    clean_vsprops(file, *vars)
+def clean_ext_vsprops(ext_path)
+  Dir.glob(File.join(ext_path, '**', '*.vsprops')) do |file|
+    Jake.clean_vsprops(file)
   end
 end
 
@@ -173,7 +155,20 @@ namespace "config" do
     puts "$sdk [#{$sdk}]"
   end
 
+  namespace :wm do
+    namespace :win32 do
+      task :ignore_vsprops do
+        $wm_win32_ignore_vsprops = true
+      end
+    end
+  end
+
   namespace "win32" do
+    namespace :wm do
+      task :ignore_vsprops do
+        $wm_win32_ignore_vsprops = true
+      end
+    end
 
     task :qt do
       $vscommontools = ENV['VS90COMNTOOLS']
@@ -313,7 +308,7 @@ namespace "build" do
                         cp_r lib, ENV['TARGET_TEMP_DIR']
                     end
                 else    
-                    # clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
+                    clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                     Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
                 end    
           
@@ -337,7 +332,7 @@ namespace "build" do
               ENV['SDK'] = $sdk
 
               if File.exists? File.join(extpath, 'build.bat')
-                # clean_vsprops_r(commin_ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
+                clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('build.bat', extpath)
               elsif is_prebuilt
                 file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
@@ -366,6 +361,12 @@ namespace "build" do
       chdir $config["build"]["wmpath"]
 
       cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
+
+      if $wm_win32_ignore_vsprops
+        Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
+          Jake.clean_vsprops(file)
+        end
+      end
 
       args = ['/M4', $build_solution, "\"Release|#{$sdk}\""]
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
@@ -534,6 +535,7 @@ namespace "build" do
                 
                 ENV['RHO_EXT_NAME']=ext                
 
+                clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
           
           else
@@ -547,6 +549,7 @@ namespace "build" do
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
 
+              clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
           end
       end
@@ -601,6 +604,12 @@ namespace "build" do
       cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 
       chdir $config["build"]["wmpath"]
+
+      if $wm_win32_ignore_vsprops
+        Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
+          Jake.clean_vsprops(file)
+        end
+      end
 
       args = ['/M4', $build_solution, '"SimulatorRelease|Win32"']
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
