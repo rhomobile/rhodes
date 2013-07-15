@@ -606,7 +606,7 @@ namespace "build" do
       chdir $config["build"]["wmpath"]
 
       if $wm_win32_ignore_vsprops
-        Dir.glob(File.basedir($build_solution), '*.vsprops')) do |file|
+        Dir.glob(FIle.join(File.basedir($build_solution), '*.vsprops')) do |file|
           Jake.clean_vsprops(file)
         end
       end
