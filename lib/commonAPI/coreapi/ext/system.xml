@@ -3,7 +3,13 @@
 <API>
     <MODULE name="System" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The System API is used to control and modify core aspects of the device such as the screen, OS and device capabilities.</HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
+        <MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+        </MORE_HELP>
         <ALIASES>
             <ALIAS new="System" deprecated="true"/>
         </ALIASES>

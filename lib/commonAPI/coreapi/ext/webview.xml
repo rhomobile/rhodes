@@ -2,8 +2,14 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="WebView" parent="Rho" generateUnderscoreRubyNames="true">
-        <HELP_OVERVIEW></HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
+        <HELP_OVERVIEW>The `Webview` is the core container used for rendering your application code. You can control certain behaviours of the webview by using this API class.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+        </MORE_HELP>
 
         <ALIASES>
             <ALIAS new="WebView" deprecated="true"/>

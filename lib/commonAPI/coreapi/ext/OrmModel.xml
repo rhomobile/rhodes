@@ -5,7 +5,13 @@
     <HELP_OVERVIEW>The ORM Model provides CRUD and helper methods for your defined model to interact with the database.  You must define and add a model before you can use the ORM Model Object.  See Orm to learn about defining and adding a model.
     </HELP_OVERVIEW>
     <LINK><a href='./Orm'>Orm</a></LINK> 
-    <MORE_HELP> See remarks for different between ruby and javascript usage.
+    <MORE_HELP> See remarks for differences between ruby and javascript usage.
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+      
     </MORE_HELP>
 
 

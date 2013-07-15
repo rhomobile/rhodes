@@ -2,7 +2,13 @@
 <API>
 	<MODULE name="Led" parent="Rho.Notification">
 		<HELP_OVERVIEW>The LED API is a child of the Notification API and allows access to the LEDs on your device</HELP_OVERVIEW>
-		<MORE_HELP></MORE_HELP>
+		<MORE_HELP>
+    ## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+</MORE_HELP>
 		<PLATFORM>iOS, Android, WM</PLATFORM>
 		<TEMPLATES>
 		</TEMPLATES>

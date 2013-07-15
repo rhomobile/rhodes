@@ -3,7 +3,13 @@
 <API>
     <MODULE name="Camera" parent="Rho">
         <HELP_OVERVIEW>The Camera API provides access to your device's Camera(s)</HELP_OVERVIEW>
-        <MORE_HELP>Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application.  Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.</MORE_HELP>
+        <MORE_HELP>Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application.  Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.
+## Enabling the API           
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["mediacapture"]
+
+        </MORE_HELP>
         <PLATFORM>Android, iOS, WM</PLATFORM>
     
     	<ALIASES>
