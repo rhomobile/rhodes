@@ -60,35 +60,10 @@ def sign (cabfile)
   $stdout.flush
 end
 
-def edit_xml(file, out_file = nil)
-  out_file = file if out_file.nil?
-
-  doc = REXML::Document.new(File.new(file).read)
-  yield doc
-  File.open(out_file, 'w') {|f| f << doc}
-end
-
-def clean_vsprops(file, *vars)
-  changed = false
-  edit_xml(file) do |doc|
-    vars.each do |var|
-      REXML::XPath.each(doc, "//UserMacro[@Name='#{var}']") do |node|
-        changed = true
-        node.remove
-      end
-    end
-  end
-  puts "CLEAN_VSPROPS [#{file}]. TODO: remove this output." if changed
-end
-
-def clean_vsprops_r(root, *vars)
-  Dir.glob(File.join(root, '**', '*.vsprops')) do |file|
-    clean_vsprops(file, *vars)
-  end
-end
-
 def clean_ext_vsprops(ext_path)
-  clean_vsprops_r(ext_path, 'RHO_ROOT', 'TEMP_FILES_DIR')
+  Dir.glob(File.join(ext_path, '**', '*.vsprops')) do |file|
+    Jake.clean_vsprops(file)
+  end
 end
 
 
@@ -387,6 +362,12 @@ namespace "build" do
 
       cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
 
+      if $wm_win32_ignore_vsprops
+        Dir.glob(File.basedir($build_solution), '*.vsprops')) do |file|
+          Jake.clean_vsprops(file)
+        end
+      end
+
       args = ['/M4', $build_solution, "\"Release|#{$sdk}\""]
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       puts Jake.run($vcbuild,args)
@@ -623,6 +604,12 @@ namespace "build" do
       cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 
       chdir $config["build"]["wmpath"]
+
+      if $wm_win32_ignore_vsprops
+        Dir.glob(File.basedir($build_solution), '*.vsprops')) do |file|
+          Jake.clean_vsprops(file)
+        end
+      end
 
       args = ['/M4', $build_solution, '"SimulatorRelease|Win32"']
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
