@@ -3,7 +3,13 @@
 <API>
   <MODULE name="Database" parent="Rho" generateUnderscoreRubyNames="true">
     <HELP_OVERVIEW>Database is low-level API to access SQLite local database.</HELP_OVERVIEW>
-    <MORE_HELP>This API used internally by RHOM. To use RHOM, just define your models and partition databases will be created automatically.</MORE_HELP>
+    <MORE_HELP>This API used internally by RHOM. To use RHOM, just define your models and partition databases will be created automatically.
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+    </MORE_HELP>
 
     <ALIASES>
     </ALIASES>

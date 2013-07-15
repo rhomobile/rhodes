@@ -2,8 +2,14 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
   <MODULE name="ORM" parent="Rho" generateUnderscoreRubyNames="true" generateAPI="false">
-    <HELP_OVERVIEW></HELP_OVERVIEW>
-    <MORE_HELP></MORE_HELP>
+    <HELP_OVERVIEW>This API class allows you to interact with the local RHOM database and programtically add models or get references to models.</HELP_OVERVIEW>
+    <MORE_HELP>
+    ## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+</MORE_HELP>
 
     <TEMPLATES>
     </TEMPLATES>
