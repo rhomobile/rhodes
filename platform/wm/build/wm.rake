@@ -1054,7 +1054,7 @@ namespace "clean" do
   end
 
   desc "Clean win32"
-  task :win32 => ["clean:common", "config:set_win32_platform", "config:wm" ]do
+  task :win32 => ["config:set_win32_platform", "config:wm", "clean:common"]do
     rm_rf $vcbindir + "/win32"
     rm_rf $tmpdir
     rm_rf $targetdir
