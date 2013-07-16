@@ -45,6 +45,7 @@ using namespace std;
 
 static String g_strCmdLine;
 
+static bool m_isJSApplication;
 static String m_strRootPath, m_strRhodesPath, m_logPort;
 static String m_strHttpProxy;
 
@@ -132,6 +133,18 @@ int main(int argc, char *argv[])
                 m_strRootPath = path;
                 free(path);
             }
+        } else if (strncasecmp("-jsapproot",argv[i],10)==0) {
+            char* path = parseToken(argv[i]);
+            if (path) {
+                int len = strlen(path);
+                if (!(path[len-1]=='\\' || path[len-1]=='/')) {
+                    path[len] = '/';
+                    path[len+1]  = 0;
+                }
+                m_strRootPath = path;
+                free(path);
+            }
+            m_isJSApplication = true;
         } else if (strncasecmp("-rhodespath",argv[i],11)==0) {
             char* path = parseToken(argv[i]);
             if (path) {
@@ -198,6 +211,8 @@ int main(int argc, char *argv[])
 #endif // OS_WINDOWS_DESKTOP
 #endif // RHODES_EMULATOR
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRootPath);
+
+    RHODESAPP().setJSApplication(m_isJSApplication);
 
     // Create the main application window
 #ifdef RHODES_EMULATOR
