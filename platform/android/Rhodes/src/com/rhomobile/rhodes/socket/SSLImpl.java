@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.Socket;
+import java.net.InetSocketAddress;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -367,12 +368,20 @@ public class SSLImpl {
             RhoSockAddr remote = getRemoteSockAddr(fd);
             Socket s = new RhoSocket(fd, remote);
             SSLSocketFactory f = getFactory(sslVerifyPeer);
+            int sockTimeout = RhoConf.getInt("connect_timeout") * 1000;
+            if(sockTimeout == 0) sockTimeout = 30000;
 
-            SSLSocket aSock = (SSLSocket)f.createSocket(s, remote.host.toString(), remote.port, true);
+            int netTimeout = RhoConf.getInt("net_timeout") * 1000;
+            if(netTimeout == 0) netTimeout = 30000;
+            
+
+            SSLSocket aSock = (SSLSocket)f.createSocket(remote.host.getHostAddress(), remote.port);
             aSock.setUseClientMode(true);
+            aSock.setSoTimeout(netTimeout);
 
             synchronized (this) {
                 sock = aSock;
+                
                 os = sock.getOutputStream();
                 is = sock.getInputStream();
                 sockfd = fd;
