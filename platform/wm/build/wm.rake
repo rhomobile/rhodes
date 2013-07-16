@@ -1038,7 +1038,7 @@ namespace "clean" do
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
       
     end
-    task :all => ["clean:common", "clean:wince:rhodes"]
+    task :all => ["clean:wince:rhodes", "clean:common"]
   end
 
   namespace "wm" do
@@ -1050,7 +1050,7 @@ namespace "clean" do
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
       
     end
-    task :all => ["clean:common", "clean:wm:rhodes"]
+    task :all => ["clean:wm:rhodes", "clean:common"]
   end
 
   desc "Clean win32"

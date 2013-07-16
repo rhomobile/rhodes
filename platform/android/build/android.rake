@@ -2223,7 +2223,7 @@ end
 
 namespace "clean" do
   desc "Clean Android"
-  task :android => ["clean:common", "clean:android:all"]
+  task :android => ["clean:android:all", "clean:common"]
 
   namespace "android" do
     task :files => "config:android" do
