@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Vector;
 
+import android.content.Context;
 import android.app.Application;
 import android.content.pm.ApplicationInfo;
 import android.os.Handler;
@@ -48,6 +49,7 @@ public class RhodesApplication extends Application{
 	
     private static final String TAG = RhodesApplication.class.getSimpleName();
     private static Handler mHandler;
+    private static RhodesApplication curInstance;
 
     static AppEventObserver sRhodesAppActiveWatcher;
     static {
@@ -56,6 +58,10 @@ public class RhodesApplication extends Application{
 
     public static void handleAppStarted() {
         sRhodesAppActiveWatcher.run();
+    }
+
+    public static Context getContext() {
+        return curInstance;
     }
 
     private boolean isAppHashChanged(String rootPath) {
@@ -119,6 +125,8 @@ public class RhodesApplication extends Application{
         super.onCreate();
 
         Log.i(TAG, "Initializing...");
+
+        curInstance = this;
 
         registerStateHandlers();
 
@@ -225,6 +233,7 @@ public class RhodesApplication extends Application{
             public void run() {
                 Logger.T(TAG, "do stopRhodesApp");
                 stopRhodesApp();
+                curInstance = null;
                 try {
                     Logger.T(TAG, "do RhodesActivity.finish()");
                     RhodesActivity.safeGetInstance().finish();
