@@ -158,7 +158,7 @@ namespace "config" do
   namespace :wm do
     namespace :win32 do
       task :ignore_vsprops do
-        $wm_win32_ignore_vsprops = false #true
+        $wm_win32_ignore_vsprops = true
       end
     end
   end
@@ -166,7 +166,7 @@ namespace "config" do
   namespace "win32" do
     namespace :wm do
       task :ignore_vsprops do
-        $wm_win32_ignore_vsprops = false #true
+        $wm_win32_ignore_vsprops = true
       end
     end
 
