@@ -567,6 +567,7 @@ namespace "config" do
       $ext_android_build_scripts = {}
       $ext_android_manifest_changes = {}
       $ext_android_adds = {}
+      $ext_android_library_deps = {}
 
       $app_config["extensions"].each do |ext|
         puts "#{ext} is processing..."
@@ -639,6 +640,16 @@ namespace "config" do
 
               if resource_addons
                 $ext_android_adds[ext] = resource_addons
+              end
+              
+              library_deps = extconf_android['library_deps'] if extconf_android
+              if library_deps
+                if library_deps.is_a? Array
+                  library_deps.each do |dep|
+                    deppath = File.join($androidsdkpath, dep)
+                    $ext_android_library_deps[AndroidTools.read_manifest_package(deppath)] = deppath
+                  end
+                end
               end
 
               additional_sources = extconf["android_additional_sources_list"]
@@ -845,6 +856,14 @@ namespace "build" do
           cp_r add, addspath if File.directory? add
         end
       end
+      #$ext_android_library_deps.each do |package, path|
+      #  res = File.join path, 'res'
+      #  assets = File.join path, 'assets'
+      #  addspath = File.join($app_builddir, 'extensions', package, 'adds')
+      #  mkdir_p addspath
+      #  cp_r res, addspath if File.directory? res
+      #  cp_r assets, addspath if File.directory? assets
+      #end
     end #task :extensions
 
     task :libsqlite => "config:android" do
@@ -1150,7 +1169,7 @@ namespace "build" do
           f.puts "#ifndef RHO_GENCONFIG_H_411BFA4742CF4F2AAA3F6B411ED7514F"
           f.puts "#define RHO_GENCONFIG_H_411BFA4742CF4F2AAA3F6B411ED7514F"
           f.puts ""
-          f.puts "#define RHO_GOOGLE_API_KEY \"#{$gapikey}\"" if $use_geomapping and !$gapikey.nil?
+          f.puts "#define RHO_GOOGLE_API_KEY \"#{$gapikey}\"" if $gapikey
           caps_enabled.each do |k, v|
             f.puts "#define RHO_CAP_#{k.upcase}_ENABLED #{v ? "true" : "false"}"
           end
@@ -1331,8 +1350,7 @@ namespace "build" do
       generator.maxSdkVer = $max_sdk_level
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
-
-      generator.usesLibraries['com.google.android.maps'] = true if $use_google_addon_api
+      generator.apikey = $gapikey if $gapikey
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
@@ -1564,6 +1582,9 @@ namespace "build" do
 
     task :genrjava => [:manifest, :resources] do
       mkdir_p $app_rjava_dir
+      
+      puts "Generate initial R.java at #{$app_rjava_dir} >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      
       args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
       Jake.run($aapt, args)
 
@@ -1576,6 +1597,13 @@ namespace "build" do
       buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage com.rhomobile.rhodes;\n")
       #buf.gsub!(/public\s*static\s*final\s*int/, "public static int")
       File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
+
+      $ext_android_library_deps.each do |package, path|
+        r_dir = File.join $tmpdir, 'gen', package.split('.') 
+        mkdir_p r_dir
+        buf = File.new(File.join($app_rjava_dir, 'R.java'), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage #{package};\n")
+        File.open(File.join(r_dir,'R.java'), 'w') { |f| f.write(buf) }
+      end
     end
 
     task :genreclipse => [:manifest, :resources] do
@@ -1615,22 +1643,18 @@ namespace "build" do
           line.chomp!
           next if line =~ /\/AndroidR\.java\s*$/
 
-          if !$use_geomapping
-            next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/GoogleMapView.java"
-            next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/AnnotationsOverlay.java"
-            next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/CalloutOverlay.java"
-          end
-
           lines << line
         end
       end
-      lines << "\"" +File.join($app_rjava_dir, "R.java")+"\""
-      lines << "\"" +File.join($app_rjava_dir, "R", "R.java")+"\""
-      #lines << "\"" +$app_android_r+"\""
-      lines << "\"" +$app_native_libs_java+"\""
-      lines << "\"" +$app_capabilities_java+"\""
-      lines << "\"" +$app_push_java+"\""
-      lines << "\"" +$app_startup_listeners_java+"\""
+      Dir.glob(File.join($tmpdir,'gen','**','*.java')) do |filepath|
+        lines << "\"#{filepath}\""
+      end
+      #lines << "\"" +File.join($app_rjava_dir, "R.java")+"\""
+      #lines << "\"" +File.join($app_rjava_dir, "R", "R.java")+"\""
+      #lines << "\"" +$app_native_libs_java+"\""
+      #lines << "\"" +$app_capabilities_java+"\""
+      #lines << "\"" +$app_push_java+"\""
+      #lines << "\"" +$app_startup_listeners_java+"\""
 
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist
