@@ -47,7 +47,12 @@ public class Sensor extends SensorBase implements ISensor {
 	/**
 	 * Variable that records the event sending data to avoid sending another event before minimum interval
 	 */
-	private long dwQuietStart;	
+	private long dwQuietStart;
+	/**
+	 *	The default minimem gap specified in the sensor.xml
+	 *  Cannot be set to any value lower than 200.
+	*/
+	static private final int DEFAULT_MINIMUM_GAP = 200;
 	
 	@Override
 	public void getMinimumGap(IMethodResult result)
@@ -58,7 +63,7 @@ public class Sensor extends SensorBase implements ISensor {
 	@Override
 	public void setMinimumGap(int duration, IMethodResult result)
 	{		
-		minimumInterval = duration;		
+		minimumInterval = duration >= DEFAULT_MINIMUM_GAP ? duration : DEFAULT_MINIMUM_GAP;		
 	}	
 	
 	@Override
@@ -76,13 +81,13 @@ public class Sensor extends SensorBase implements ISensor {
 	@Override
     public void getAllProperties(IMethodResult result) {
        
-	   Logger.D(TAG,  "getAllProperties API");   
+	   Logger.D(TAG,  "getProperty API [" + minimumInterval + ", " + mType + ", " + mStatus + "]");
 	   
 	   Map<String, Object> props = new HashMap<String, Object>();
 	  
-	   props.put("minimumGap", minimumInterval);
+	   props.put("minimumGap", Integer.toString(minimumInterval));
 	   props.put("type", mType);
-	   props.put("status", mStatus);
+	   props.put("status", mStatus);	   
 	   
 	   result.set(props);
     }
@@ -92,9 +97,9 @@ public class Sensor extends SensorBase implements ISensor {
         
     	Logger.D(TAG,  "getProperty API");
     	if (name.equalsIgnoreCase("minimumGap"))
-    		result.set(minimumInterval);
+    		result.set(Integer.toString(minimumInterval));
     	else if (name.equalsIgnoreCase("type"))
-    		result.set(mType);
+    		result.set(mType);    	
     	else if (name.equalsIgnoreCase("status"))
     		result.set(mStatus);
     	else
@@ -109,11 +114,11 @@ public class Sensor extends SensorBase implements ISensor {
     	for (String name: names)
     	{
     		if (name.equalsIgnoreCase("minimumGap"))
-        		result.set(minimumInterval);
+    			props.put("minimumGap", Integer.toString(minimumInterval));        		
         	else if (name.equalsIgnoreCase("type"))
-        		result.set(mType);
+        		props.put("type", mType);
         	else if (name.equalsIgnoreCase("status"))
-        		result.set(mStatus);
+        		props.put("status", mStatus);
         	else
         		result.setError("Invalid attribute");
     	}
@@ -125,7 +130,19 @@ public class Sensor extends SensorBase implements ISensor {
         
     	Logger.D(TAG,  "setProperty API");
     	if (name.equalsIgnoreCase("minimumGap"))
-    		minimumInterval = Integer.parseInt(val);
+    	{
+    		int minGap = DEFAULT_MINIMUM_GAP;
+    		try
+    		{
+    			minGap = Integer.parseInt(val);
+    			minimumInterval = (minGap >= DEFAULT_MINIMUM_GAP) ? minGap : DEFAULT_MINIMUM_GAP;
+    		}
+    		catch(NumberFormatException nfex)
+    		{
+    			Logger.E(TAG,  "setProperties API, Invalid minimumGap " + val);
+    			result.setError("Invalid minimumGap " + val + " , must be greater than " + DEFAULT_MINIMUM_GAP);
+    		}    		
+    	}
     	else 
     		result.setError("Invalid attribute");
     }
@@ -137,7 +154,19 @@ public class Sensor extends SensorBase implements ISensor {
     	for (Map.Entry<String, String> entry: props.entrySet())
     	{
     		if (entry.getKey().equalsIgnoreCase("minimumGap"))
-        		minimumInterval = Integer.parseInt(entry.getValue());
+    		{
+    			int minGap = DEFAULT_MINIMUM_GAP;
+	    		try
+	    		{
+	    			minGap = Integer.parseInt(entry.getValue());
+	    			minimumInterval = (minGap >= DEFAULT_MINIMUM_GAP) ? minGap : DEFAULT_MINIMUM_GAP;
+	    		}
+	    		catch(NumberFormatException nfex)
+	    		{
+	    			Logger.E(TAG,  "setProperties API, Invalid minimumGap " + entry.getValue());
+	    			result.setError("Invalid minimumGap " + entry.getValue() + " , must be greater than " + DEFAULT_MINIMUM_GAP);
+	    		}
+    		}
         	else 
         		result.setError("Invalid attribute");
     	}
@@ -155,7 +184,7 @@ public class Sensor extends SensorBase implements ISensor {
     {
     	sensorUrl = null;
 		dwQuietStart = System.currentTimeMillis();        	
-		minimumInterval = 200; //Default - 200 milli seconds
+		minimumInterval = DEFAULT_MINIMUM_GAP; //Default - 200 milli seconds
 		mStatus = ISensorSingleton.SENSOR_STATUS_NOT_READY;
     }
 
@@ -441,7 +470,7 @@ public class Sensor extends SensorBase implements ISensor {
 		sensorUrl = null;
 		mType = id; //ISensorSingleton.SENSOR_TYPE_ACCELEROMETER; 
 		dwQuietStart = System.currentTimeMillis();        	
-		minimumInterval = 200; //Default - 200 milli seconds
+		minimumInterval = DEFAULT_MINIMUM_GAP; //Default - 200 milli seconds
 		
 		// List the available sensors
 		List<android.hardware.Sensor> sensors = mSensorManager.getSensorList(android.hardware.Sensor.TYPE_ALL);
@@ -457,6 +486,12 @@ public class Sensor extends SensorBase implements ISensor {
 	public void start(IMethodResult result)
 	{		
 		sensorUrl = result;	
+
+		if (mStatus == ISensorSingleton.SENSOR_STATUS_STARTED)
+		{
+			Logger.I(TAG, "Sensor type " + mType + " is already started");
+			return;
+		}
 		
 		if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_ACCELEROMETER))
 		{
@@ -531,16 +566,22 @@ public class Sensor extends SensorBase implements ISensor {
 	@Override
 	public void readData(IMethodResult result)
 	{
-		result.setError("readData method not supported on Android platform");				
+		Map<String, Object> props = new HashMap<String, Object>();
+		props.put("status", "error");
+		props.put("message", "readData method not supported on Android platform");
+		result.set(props);
+		//result.setError("readData method not supported on Android platform");				
 	}
 
 	@Override
 	public void stop(IMethodResult result)
 	{
-		mSensorManager.unregisterListener(sensorListener);
-		Logger.D(TAG, "Sensor unregistered successfully");		
-		mStatus = ISensorSingleton.SENSOR_STATUS_NOT_READY;
-		mType = "";
+		if (mStatus == ISensorSingleton.SENSOR_STATUS_STARTED)
+		{
+			mSensorManager.unregisterListener(sensorListener);
+			Logger.D(TAG, "Sensor unregistered successfully");		
+			mStatus = ISensorSingleton.SENSOR_STATUS_READY;
+		}
 	}
 
 }
