@@ -316,7 +316,7 @@ end
 
 namespace "clean" do
   desc "Clean wp"
-  task :wp => ["clean:common", "clean:wp:all"]
+  task :wp => ["clean:wp:all", "clean:common"]
 
   namespace "wp" do
     task :rhodes => ["config:wp"] do
