@@ -521,4 +521,18 @@ def logclear(device_flag = '-e')
 end
 module_function :logclear
 
+def read_manifest_package(path)
+  manifestpath = File.join path, 'AndroidManifest.xml'
+  if File.exists? manifestpath
+    puts "library manifest: #{manifestpath}"
+
+    manifestdoc = REXML::Document.new(File.new(manifestpath))
+    manifesttag = manifestdoc.elements["manifest"]
+
+    return manifesttag.attribute('package').to_s
+  end
+  ''
+end
+module_function :read_manifest_package
+
 end
