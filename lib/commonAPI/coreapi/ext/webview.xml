@@ -40,7 +40,7 @@ This API is part of the `coreapi` extension that is included automatically.
                 <APPLIES>Motorola Solutions' WebKit on Windows Mobile/CE</APPLIES> 
             </PROPERTY>
             <PROPERTY name="enableWebPlugins" type="BOOLEAN" default="true" readOnly="true">
-                <DESC>Enable/disable web plugins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value.</DESC>
+                <DESC>Enable/disable web plugins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="navigationTimeout" type="INTEGER" default="0">
