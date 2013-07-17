@@ -52,7 +52,9 @@ class SensorSingleton extends SensorSingletonBase implements ISensorSingleton {
 
 	@Override
 	public void makeSensorByType(String type, IMethodResult result)
-	{		
+	{
+		Logger.D(TAG, "Request sensor type " + type);
+		System.out.println("Request sensor type " + type);
 		if (type.equalsIgnoreCase(SENSOR_TYPE_ACCELEROMETER))
 			result.set((String) getIDs().get(0));
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_TILT_ANGLE))
@@ -88,7 +90,10 @@ class SensorSingleton extends SensorSingletonBase implements ISensorSingleton {
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_ORIENTATION))
 			result.set((String) getIDs().get(16));
 		else
-			result.setError("Sensor type " + type + " not supported on Android");
+		{
+			//result.setError("Sensor type " + type + " not supported on Android");
+			Logger.E(TAG, "Sensor type " + type + " not supported on Android");
+		}
 		
 	}
 
