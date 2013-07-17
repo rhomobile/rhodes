@@ -90,7 +90,10 @@ class SensorSingleton extends SensorSingletonBase implements ISensorSingleton {
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_ORIENTATION))
 			result.set((String) getIDs().get(16));
 		else
-			result.setError("Sensor type " + type + " not supported on Android");
+		{
+			//result.setError("Sensor type " + type + " not supported on Android");
+			Logger.E(TAG, "Sensor type " + type + " not supported on Android");
+		}
 		
 	}
 

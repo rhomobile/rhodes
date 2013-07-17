@@ -252,7 +252,8 @@ void CScreenOrientationSingleton::setAutoRotate( bool autoRotate, rho::apiGenera
 	{
 		this->m_autoRotate = false;
 		LOG(WARNING) + "Set: Autorotate feature is currently enabled only on Motorola devices with IST support"; 
-        oResult.setError("Autorotate feature is currently enabled only on Motorola devices with IST support");
+        //oResult.setError("Autorotate feature is currently enabled only on Motorola devices with IST support");
+        oResult.set(bDone);
 	}
 	
 }
