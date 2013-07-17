@@ -21,11 +21,11 @@ This API is part of the `coreapi` extension that is included automatically.
             </ALIASES>
 
             <PROPERTY name="url" type="STRING">
-                <DESC>URL of the request.</DESC>
+                <DESC>URL of the request. This should be fully formatted URL like http://domain.com/</DESC>
             </PROPERTY>
 
             <PROPERTY name="authType" type="STRING">
-                <DESC>URL of the request.</DESC>
+                <DESC>Type of authentication used for this request. Check the list of available options below. Leaving blank will result in no authentication type</DESC>
                 <VALUES>
                     <VALUE constName="AUTH_BASIC" value ="basic">
                         <DESC></DESC>
@@ -33,20 +33,20 @@ This API is part of the `coreapi` extension that is included automatically.
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="authUser" type="STRING">
-                <DESC>User name for basic authentication.</DESC>
+                <DESC>User name for basic authentication. You must also specify `authType='basic'`</DESC>
             </PROPERTY>
             <PROPERTY name="authPassword" type="STRING">
-                <DESC>Password for basic authentication.</DESC>
+                <DESC>Password for basic authentication. You must also specify `authType='basic'</DESC>
             </PROPERTY>
             <PROPERTY name="verifyPeerCertificate" type="BOOLEAN" default="true">
-                <DESC>Verify SSL certificates.</DESC>
+                <DESC>Verify SSL certificates.When set to false it will allow untrusted certificates.</DESC>
                 <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpVerb" type="STRING">
-                <DESC>Password for basic authentication.</DESC>
+                <DESC>HTTP verb to be used in the network request.</DESC>
             </PROPERTY>
             <PROPERTY name="headers" type="HASH">
-                <DESC>Request HTTP headers.</DESC>
+                <DESC>List of HTTP headers to be used in the network  request.</DESC>
             </PROPERTY>
             
             <PROPERTY name="responseTimeout" type="INTEGER" default="30" generateAccessors="true">
@@ -109,7 +109,7 @@ This API is part of the `coreapi` extension that is included automatically.
             </METHOD>
 
             <METHOD name="get" hasCallback="optional">
-                <DESC>Perform an HTTP GET request.</DESC>
+                <DESC>Perform a HTTP GET request.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
@@ -136,7 +136,7 @@ This API is part of the `coreapi` extension that is included automatically.
             </METHOD>
 
             <METHOD name="post" hasCallback="optional">
-                <DESC>Download a file to the specified filename.</DESC>
+                <DESC>Perform a HTTP Post.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
