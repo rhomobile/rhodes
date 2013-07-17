@@ -671,6 +671,7 @@ void CSensorSingleton::makeSensorByType(const rho::String& type, rho::apiGenerat
         } else
         {
             LOG(WARNING) + "Requested sensor type  " + type + " not found under Motorola supported sensors.";
+            oResult.setError("Sensor type " + type + " not supported.");
         }
     }
 
