@@ -61,7 +61,7 @@ public:
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
     virtual void set_application_icon_badge( int badgeNumber, rho::apiGenerator::CMethodResult& oResult);
-
+    virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
 };
 
 }

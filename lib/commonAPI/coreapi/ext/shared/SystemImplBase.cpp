@@ -415,4 +415,9 @@ void CSystemImplBase::setKeyboardState( const rho::String & value, CMethodResult
     //windows only
 }
 
+void CSystemImplBase::getMain_window_closed(rho::apiGenerator::CMethodResult& oResult)
+{
+    //windows only
+}
+
 }
