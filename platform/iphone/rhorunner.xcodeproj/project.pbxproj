@@ -71,16 +71,12 @@
 		F57917150E8ACA9E00BBC54D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F57917140E8ACA9E00BBC54D /* AppManager.m */; };
 		F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FDA0F008A6B00E46829 /* phonebook.m */; };
 		F58E80110F008B3F00E46829 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E80100F008B3F00E46829 /* AddressBook.framework */; };
-		F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */; };
 		F5F06668102CB134006CFD39 /* ParamsWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F5F06667102CB134006CFD39 /* ParamsWrapper.m */; };
 		F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0943106151C200B7B8ED /* MapViewController.m */; };
 		FA14CECD150130DB00734801 /* DateTimePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA14CECC150130DB00734801 /* DateTimePickerViewController.m */; };
-		FA291E9811FF2EF70096AC39 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9511FF2EF70096AC39 /* SignatureDelegate.m */; };
-		FA291E9911FF2EF70096AC39 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9711FF2EF70096AC39 /* SignatureViewController.m */; };
 		FA305F8D16D7BD8900565023 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA305F8C16D7BD8900565023 /* MobileCoreServices.framework */; };
 		FA3C79AE136ED523002302E5 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3C79AD136ED523002302E5 /* CoreVideo.framework */; };
 		FA3C79E2136ED8BB002302E5 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */; };
-		FA4981B511FFC53C00488CB2 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4981B411FFC53C00488CB2 /* SignatureView.m */; };
 		FA4D3F8D136B0A98009D6E63 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */; };
 		FA522E7F12DEA7B300AB55CC /* NVDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7B12DEA7B300AB55CC /* NVDelegate.m */; };
 		FA522E8012DEA7B300AB55CC /* NVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7D12DEA7B300AB55CC /* NVViewController.m */; };
@@ -92,6 +88,10 @@
 		FA52317B12E7511700AB55CC /* esri.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317412E7511700AB55CC /* esri.png */; };
 		FA52317C12E7511700AB55CC /* esri@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317512E7511700AB55CC /* esri@2x.png */; };
 		FA52330112E9204300AB55CC /* BluePushpin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52330012E9204300AB55CC /* BluePushpin@2x.png */; };
+		FA5F2DBB17976449007FFE5A /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA5F2DBA17976449007FFE5A /* PickImageDelegate.m */; };
+		FA5F2DC317976468007FFE5A /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA5F2DBE17976468007FFE5A /* SignatureDelegate.m */; };
+		FA5F2DC417976468007FFE5A /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA5F2DC017976468007FFE5A /* SignatureView.m */; };
+		FA5F2DC517976468007FFE5A /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA5F2DC217976468007FFE5A /* SignatureViewController.m */; };
 		FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA673A5615FCD787005CAD64 /* CoreMotion.framework */; };
 		FAC6EE6D143B3AF100B8E352 /* RhoMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE6C143B3AF100B8E352 /* RhoMapViewController.m */; };
 		FACA4C781270AC0900777CFF /* LeftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C711270AC0900777CFF /* LeftViewController.m */; };
@@ -309,6 +309,14 @@
 		FA52317412E7511700AB55CC /* esri.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = esri.png; path = ESRI/esri.png; sourceTree = "<group>"; };
 		FA52317512E7511700AB55CC /* esri@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "esri@2x.png"; path = "ESRI/esri@2x.png"; sourceTree = "<group>"; };
 		FA52330012E9204300AB55CC /* BluePushpin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "BluePushpin@2x.png"; path = "ESRI/BluePushpin@2x.png"; sourceTree = "<group>"; };
+		FA5F2DB917976449007FFE5A /* PickImageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickImageDelegate.h; path = Camera.old/PickImageDelegate.h; sourceTree = "<group>"; };
+		FA5F2DBA17976449007FFE5A /* PickImageDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PickImageDelegate.m; path = Camera.old/PickImageDelegate.m; sourceTree = "<group>"; };
+		FA5F2DBD17976468007FFE5A /* SignatureDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureDelegate.h; path = Signature.old/SignatureDelegate.h; sourceTree = "<group>"; };
+		FA5F2DBE17976468007FFE5A /* SignatureDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureDelegate.m; path = Signature.old/SignatureDelegate.m; sourceTree = "<group>"; };
+		FA5F2DBF17976468007FFE5A /* SignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureView.h; path = Signature.old/SignatureView.h; sourceTree = "<group>"; };
+		FA5F2DC017976468007FFE5A /* SignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureView.m; path = Signature.old/SignatureView.m; sourceTree = "<group>"; };
+		FA5F2DC117976468007FFE5A /* SignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureViewController.h; path = Signature.old/SignatureViewController.h; sourceTree = "<group>"; };
+		FA5F2DC217976468007FFE5A /* SignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureViewController.m; path = Signature.old/SignatureViewController.m; sourceTree = "<group>"; };
 		FA673A5615FCD787005CAD64 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
 		FAC6EE6B143B3AF100B8E352 /* RhoMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMapViewController.h; path = MapView/RhoMapViewController.h; sourceTree = "<group>"; };
 		FAC6EE6C143B3AF100B8E352 /* RhoMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoMapViewController.m; path = MapView/RhoMapViewController.m; sourceTree = "<group>"; };
@@ -371,6 +379,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FA5F2DBC17976450007FFE5A /* Signature.old */,
+				FA5F2DB817976432007FFE5A /* Camera.old */,
 				FAD04711175697A800000F15 /* URLProtocol */,
 				BD97AC1E1160EE7A006960F9 /* Alert */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
@@ -762,6 +772,28 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+		FA5F2DB817976432007FFE5A /* Camera.old */ = {
+			isa = PBXGroup;
+			children = (
+				FA5F2DB917976449007FFE5A /* PickImageDelegate.h */,
+				FA5F2DBA17976449007FFE5A /* PickImageDelegate.m */,
+			);
+			name = Camera.old;
+			sourceTree = "<group>";
+		};
+		FA5F2DBC17976450007FFE5A /* Signature.old */ = {
+			isa = PBXGroup;
+			children = (
+				FA5F2DBD17976468007FFE5A /* SignatureDelegate.h */,
+				FA5F2DBE17976468007FFE5A /* SignatureDelegate.m */,
+				FA5F2DBF17976468007FFE5A /* SignatureView.h */,
+				FA5F2DC017976468007FFE5A /* SignatureView.m */,
+				FA5F2DC117976468007FFE5A /* SignatureViewController.h */,
+				FA5F2DC217976468007FFE5A /* SignatureViewController.m */,
+			);
+			name = Signature.old;
+			sourceTree = "<group>";
+		};
 		FACA4C6E1270ABCD00777CFF /* SplitView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1013,7 +1045,6 @@
 				F56DF7280E8C373800F6CBE8 /* AppLoader.m in Sources */,
 				F563D38F0EA6BC2E0062DA57 /* LocationController.m in Sources */,
 				F58E7FDB0F008A6B00E46829 /* phonebook.m in Sources */,
-				F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */,
 				F52181130F96B13500B7F974 /* LogViewController.m in Sources */,
 				F547F2880F9945D2007C2CD2 /* LogOptionsController.m in Sources */,
 				5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */,
@@ -1035,9 +1066,6 @@
 				BD97AC3F1160F8A5006960F9 /* RingtoneManager.m in Sources */,
 				BD97ACA711610666006960F9 /* DateTimePicker.m in Sources */,
 				BD9E5DFA1185D2E10053049C /* NavBar.m in Sources */,
-				FA291E9811FF2EF70096AC39 /* SignatureDelegate.m in Sources */,
-				FA291E9911FF2EF70096AC39 /* SignatureViewController.m in Sources */,
-				FA4981B511FFC53C00488CB2 /* SignatureView.m in Sources */,
 				5C0D0A2E121D28A30022E83C /* RhoClassFactory.cpp in Sources */,
 				5C0D0A2F121D28A30022E83C /* RhoFileImpl.m in Sources */,
 				5C0D0A32121D28BF0022E83C /* sslimpl.cpp in Sources */,
@@ -1060,6 +1088,10 @@
 				C5D90EF815F4F58D005F7C86 /* Reachability.m in Sources */,
 				C5D90EFB15F4FC92005F7C86 /* NetworkStatusMonitor.mm in Sources */,
 				FAD047181757A23F00000F15 /* CRhoURLProtocol.m in Sources */,
+				FA5F2DBB17976449007FFE5A /* PickImageDelegate.m in Sources */,
+				FA5F2DC317976468007FFE5A /* SignatureDelegate.m in Sources */,
+				FA5F2DC417976468007FFE5A /* SignatureView.m in Sources */,
+				FA5F2DC517976468007FFE5A /* SignatureViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
