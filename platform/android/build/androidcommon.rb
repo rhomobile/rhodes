@@ -38,13 +38,9 @@ USE_TRACES = Rake.application.options.trace
 if RUBY_PLATFORM =~ /(win|w)32$/
   $bat_ext = ".bat"
   $exe_ext = ".exe"
-  $ndkhostvariants = []
-  $ndkhostvariants << 'windows-x86_64' if `wmic OS get OSArchitecture`.split[1].include?('64')
-  $ndkhostvariants << 'windows'
 else
   $bat_ext = ""
   $exe_ext = ""
-  $ndkhostvariants = [`uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, `uname -s`.downcase!.chomp! + '-x86']
 end
 
 def num_cpus
@@ -71,9 +67,18 @@ def detect_toolchain(ndkpath)
   $ndktools = nil
   $ndkabi = "unknown"
   $ndkgccver = "unknown"
+  ndkhostvariants = []
+  if RUBY_PLATFORM =~ /(win|w)32$/
+      bufcheck64 = `wmic OS get OSArchitecture`.split[1]
+      ndkhostvariants << 'windows-x86_64' if bufcheck64 and bufcheck64.include?('64')
+      ndkhostvariants << 'windows'
+  else
+      ndkhostvariants = [`uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, `uname -s`.downcase!.chomp! + '-x86']
+  end
+
   ["arm-linux-androideabi-4.6", "arm-linux-androideabi-4.4.3", "arm-eabi-4.4.0", "arm-eabi-4.2.1"].each do |abi|
     variants = []
-    $ndkhostvariants.each do |ndkhost|
+    ndkhostvariants.each do |ndkhost|
       variants << File.join(ndkpath,'build','prebuilt',ndkhost,abi)
       variants << File.join(ndkpath,'toolchains',abi,'prebuilt',ndkhost)
       variants.each do |variant|
