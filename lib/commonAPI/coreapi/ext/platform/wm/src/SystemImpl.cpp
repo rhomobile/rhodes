@@ -126,6 +126,7 @@ public:
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
 
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
@@ -1009,6 +1010,12 @@ void CSystemImpl::getHasCamera(CMethodResult& oResult)
     oResult.set(true);
 #endif
 
+}
+
+extern "C" bool rho_rhosim_window_closed();
+void CSystemImpl::getMain_window_closed(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(rho_rhosim_window_closed());
 }
 
 ////////////////////////////////////////////////////////////////////////

@@ -270,7 +270,7 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
             while debug_handle_cmd(true) do end
 
             if app_type.eql? "rhodes"
-              if System::get_property('main_window_closed')
+              if Rho::System.main_window_closed
                  $_s.write("QUIT\n") if !($_s.nil?)
                  $_wait = false
               end
