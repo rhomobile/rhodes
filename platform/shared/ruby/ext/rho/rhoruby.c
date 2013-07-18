@@ -254,13 +254,10 @@ void RhoRubyStart()
 //#endif
 
 #if defined(WINDOWS_PLATFORM)
-    //init_rhoext_Signature();
+    init_rhoext_Signature();
 #else
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
-        Init_SignatureCapture();
+    //Init_SignatureCapture();
 #endif
-#endif
-
     Init_RhoBluetooth();
 	Init_RhodesNativeViewManager();
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
@@ -268,22 +265,35 @@ void RhoRubyStart()
 #endif
     Init_stringio(); //+
     Init_DateTimePicker();
-#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(OS_ANDROID) && !defined(OS_MACOSX)
-    Init_NativeBar();
-#endif
+//#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(OS_ANDROID) && !defined(OS_MACOSX)
+//    Init_NativeBar();
+//#endif
     Init_RhoSupport(); //+
     Init_MapView();                         
     Init_RingtoneManager();
     Init_socket(); //+
-#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(OS_MACOSX)
-    Init_NavBar();
-#endif
+//#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(OS_MACOSX)
+//    Init_NavBar();
+//#endif
     Init_RhoEvent();
     Init_Calendar();
-#if !defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR) && ! defined(OS_WINCE)
-    Init_Alert();
+//#if !defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR) && ! defined(OS_WINCE)
+//    Init_Alert();
+//#endif
+        
+#if defined(OS_MACOSX)
+#ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
+        Init_Camera();
+        Init_SignatureCapture();
 #endif
-
+#endif
+        
+#if defined(OS_ANDROID)
+#ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
+        Init_SignatureCapture();
+#endif
+#endif
+        
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
     Init_Extensions();

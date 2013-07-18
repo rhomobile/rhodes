@@ -4958,6 +4958,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\rho\rubyext\RhoSignature.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rho\rubyext\RhoSignature.h"
+					>
+				</File>
+				<File
 					RelativePath=".\rho\rubyext\SystemImpl.cpp"
 					>
 				</File>

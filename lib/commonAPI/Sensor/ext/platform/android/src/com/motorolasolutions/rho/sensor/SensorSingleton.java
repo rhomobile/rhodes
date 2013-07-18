@@ -52,11 +52,21 @@ class SensorSingleton extends SensorSingletonBase implements ISensorSingleton {
 
 	@Override
 	public void makeSensorByType(String type, IMethodResult result)
-	{		
+	{
+		// check if the sensor objects are present and then add then to the
+		// the supported list
+		Logger.D(TAG, "Request sensor type " + type);
+		System.out.println("Request sensor type " + type);
 		if (type.equalsIgnoreCase(SENSOR_TYPE_ACCELEROMETER))
-			result.set((String) getIDs().get(0));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null)
+				result.set((String) getIDs().get(0));
+		}
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_TILT_ANGLE))
-			result.set((String) getIDs().get(1));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) // Tilt angle is measured from the accelorometr data
+				result.set((String) getIDs().get(1));
+		}
 		//else if (type == SENSOR_TYPE_DEVICE_ORIENTATION)
 			//result.set((String) getIDs().get(2));
 		//else if (type == SENSOR_TYPE_MOTION)
@@ -64,31 +74,64 @@ class SensorSingleton extends SensorSingletonBase implements ISensorSingleton {
 		//else if (type == SENSOR_TYPE_ECOMPASS)
 			//result.set((String) getIDs().get(4));
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_MAGNETOMETER))
-			result.set((String) getIDs().get(5));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null)
+				result.set((String) getIDs().get(5));
+		}
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_GYROSCOPE))
-			result.set((String) getIDs().get(6));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null)
+				result.set((String) getIDs().get(6));
+		}
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_AMBIENT_LIGHT))
-			result.set((String) getIDs().get(7));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT) != null)
+				result.set((String) getIDs().get(7));
+		}
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_PROXIMITY))
-			result.set((String) getIDs().get(8));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null)
+				result.set((String) getIDs().get(8));
+		}
 		//else if (type == SENSOR_TYPE_PROXIMITY_LONG_RANGE)
 			//result.set((String) getIDs().get(9));
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_PRESSURE))
-			result.set((String) getIDs().get(10));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null)
+				result.set((String) getIDs().get(10));
+		}
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_TEMPERATURE))
-			result.set((String) getIDs().get(11));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE) != null)
+				result.set((String) getIDs().get(11));
+		}
 		//else if (type == SENSOR_TYPE_HUMIDITY)
 			//result.set((String) getIDs().get(12));
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_GRAVITY))
-			result.set((String) getIDs().get(13));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) != null)
+				result.set((String) getIDs().get(13));
+		}
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_LINEAR_ACCELERATION))
-			result.set((String) getIDs().get(14));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null)
+				result.set((String) getIDs().get(14));
+		}
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_ROTATION))
-			result.set((String) getIDs().get(15));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) != null)
+				result.set((String) getIDs().get(15));
+		}
 		else if (type.equalsIgnoreCase(SENSOR_TYPE_ORIENTATION))
-			result.set((String) getIDs().get(16));
+		{
+			if (mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION) != null)
+				result.set((String) getIDs().get(16));
+		}
 		else
-			result.setError("Sensor type " + type + " not supported on Android");
+		{
+			//result.setError("Sensor type " + type + " not supported on Android");
+			Logger.E(TAG, "Sensor type " + type + " not supported on Android");
+		}
 		
 	}
 
