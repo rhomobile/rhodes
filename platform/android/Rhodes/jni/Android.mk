@@ -33,6 +33,7 @@ LOCAL_SRC_FILES := \
     src/rhodesapp.cpp \
     src/rhodessystem.cpp \
     src/ringtones.cpp \
+    src/signature.cpp \
     src/socketimpl.cpp \
     src/splashscreen.cpp \
     src/sslimpl.cpp \
