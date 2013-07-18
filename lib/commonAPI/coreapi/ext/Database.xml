@@ -39,19 +39,19 @@ This API is part of the `coreapi` extension that is included automatically.
       </METHOD>
 
       <METHOD name="close" destructor="true" generateAPI="false">
-        <DESC>Close database</DESC>
+        <DESC>Closes the database.The database will not be accessible until it is opened again.</DESC>
       </METHOD>
 
       <METHOD name="startTransaction" generateAPI="false">
-        <DESC>Start database transaction</DESC>
+        <DESC>Start database transaction. All operations will not be the saved to the database until a Commit is executed.</DESC>
       </METHOD>
 
       <METHOD name="commitTransaction" generateAPI="false">
-        <DESC>Commit database transaction</DESC>
+        <DESC>Commit database transaction. Saves all updates to the database from the start of the transaction.</DESC>
       </METHOD>
 
       <METHOD name="rollbackTransaction" generateAPI="false">
-        <DESC>Rollback database transaction</DESC>
+        <DESC>Rollback database transaction. This will cancel any pending actions to the database that were executed since the last Start and before a Commit.</DESC>
       </METHOD>
 
       <METHOD name="lockDb" generateAPI="false" generateDoc="false">
@@ -68,7 +68,7 @@ This API is part of the `coreapi` extension that is included automatically.
       </METHOD>
 
       <METHOD name="executeSql" generateAPI="false" >
-        <DESC>Execute sql statement</DESC>
+        <DESC>Execute the sql statement specified in the method's parameters.</DESC>
         <PARAMS>
           <PARAM name="sqlStmt" type="STRING">
             <DESC>The SQL statement</DESC>
@@ -85,7 +85,7 @@ This API is part of the `coreapi` extension that is included automatically.
       </METHOD>
 
       <METHOD name="executeBatchSql" generateAPI="false" >
-        <DESC>Execute sql statement</DESC>
+        <DESC>Execute a series of sql statements included in the sqlStmt string parameter.</DESC>
         <PARAMS>
           <PARAM name="sqlStmt" type="STRING">
             <DESC>The SQL statement</DESC>
@@ -94,7 +94,7 @@ This API is part of the `coreapi` extension that is included automatically.
       </METHOD>
 
       <METHOD name="import" deprecated="true" generateAPI="false">
-        <DESC>Import db</DESC>
+        <DESC>Import the contents of the archived databse into the current database.</DESC>
         <PARAMS>
           <PARAM name="zipName" type="STRING">
             <DESC>The name of the zip file</DESC>
@@ -104,12 +104,12 @@ This API is part of the `coreapi` extension that is included automatically.
       </METHOD>
 
       <METHOD name="export" deprecated="true"  generateAPI="false">
-        <DESC>Export db</DESC>
+        <DESC>Exports the contents of the current database to a file.</DESC>
         <RETURN type="STRING"/>
       </METHOD>
 
       <METHOD name="destroyTable" generateAPI="false">
-        <DESC>Destroy database table</DESC>
+        <DESC>Destroys a database table</DESC>
         <PARAMS>
           <PARAM name="tableName" type="STRING">
             <DESC>Table name to destroy</DESC>
@@ -118,7 +118,7 @@ This API is part of the `coreapi` extension that is included automatically.
       </METHOD>
 
       <METHOD name="destroyTables" generateAPI="false">
-        <DESC>Destroy database tables.</DESC>
+        <DESC>Destroy a list of database tables.</DESC>
         <PARAMS>
           <PARAM name="propertyMap" type="HASH">
             <PARAMS>
@@ -134,7 +134,7 @@ This API is part of the `coreapi` extension that is included automatically.
       </METHOD>
 
       <METHOD name="isTableExist" generateAPI="false">
-        <DESC>Does table exist?</DESC>
+        <DESC>Will return true or false if the specified table exists in the current database.</DESC>
         <PARAMS>
           <PARAM name="tableName" type="STRING">
             <DESC>The name of the table</DESC>
@@ -167,6 +167,63 @@ This API is part of the `coreapi` extension that is included automatically.
     </PLATFORM>
       
     <EXAMPLES>
+      <EXAMPLE title="Using Transactions">
+        <SECTIONS>
+          <SECTION>
+            <DESC> To insert/update multiple object/models use database transactions. This is the most performant method to initialize your application with a large set of data. </DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+db = Rho::Database
+  db.startTransaction
+  begin
+    items.each do |item|
+      # create hash of attribute/value pairs
+      data = {
+        :field1 => item['value1'], 
+        :field2 => item['value2'] 
+      } 
+      # Creates a new itemModel object and saves it
+      new_item = itemModel.create(data)
+    end
+   db.commitTransaction
+  rescue
+   db.rollbackTransaction
+  end
+  ]]>
+              </RUBY>
+              <JAVASCRIPT>
+                <![CDATA[
+var db = Rho.Database;
+db.startTransaction();
+try
+{
+  for (var index in items) {
+    // create hash of attribute/value pairs
+    data = {
+      field1 : item[index].value1, 
+      field2 : item[index].value2
+    }; 
+    // Creates a new itemModel object and saves it
+    new_item = itemModel.create(data);
+  }
+  
+ db.commitTransaction();
+}
+catch
+{
+ db.rollbackTransaction();
+}
+
+  ]]>
+
+              </JAVASCRIPT>
+            </CODE>
+
+          </SECTION>
+        </SECTIONS>          
+      </EXAMPLE>
+
       <EXAMPLE title="Open and close database">
         <SECTIONS>
           <SECTION>
