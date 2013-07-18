@@ -93,6 +93,11 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
         CloseHandle(se.hProcess); 
 }
 
+bool rho_rhosim_window_closed()
+{
+    return CMainWindow::mainWindowClosed;
+}
+
 #ifdef OS_WINDOWS_DESKTOP
 void rho_win32sys_run_appW(const wchar_t* szPath, const wchar_t* szParams, const wchar_t* szDir)
 {

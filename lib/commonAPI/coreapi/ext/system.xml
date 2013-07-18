@@ -23,6 +23,9 @@ This API is part of the `coreapi` extension that is included automatically.
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
                 <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
             </ALIASES>
+            <PROPERTY name="main_window_closed" type="BOOLEAN" readOnly="true" generateDoc="false">
+                <DESC>It is internal property for using in debugger (signal for main window close).</DESC>
+            </PROPERTY>            
             <PROPERTY name="platform" type="STRING" readOnly="true">
                 <DESC>Platform where application is running.</DESC>
                 <VALUES>         
