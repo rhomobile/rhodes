@@ -789,94 +789,16 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_destroy
 
 
 
-
-
-
-//#if 0
-RHO_GLOBAL void google_mapview_create(rho_param *p)
-{
-#ifdef RHO_GOOGLE_API_KEY
-    JNIEnv *env = jnienv();
-    jclass& clsMapView = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
-    if (!clsMapView) return;
-    jmethodID midCreate = getJNIClassStaticMethod(env, clsMapView, "create", "(Ljava/lang/String;Ljava/util/Map;)V");
-    if (!midCreate) return;
-
-    if (p->type != RHO_PARAM_HASH) {
-        RAWLOG_ERROR("create: wrong input parameter (expect Hash)");
-        return;
-    }
-
-    jhobject paramsObj = RhoValueConverter(env).createObject(p);
-    jhstring keyObj = rho_cast<jstring>(env, RHO_GOOGLE_API_KEY);
-    env->CallStaticVoidMethod(clsMapView, midCreate, keyObj.get(), paramsObj.get());
-#else
-    RAWLOG_ERROR("MapView disabled at build time");
-#endif
-}
-
-RHO_GLOBAL void google_mapview_close()
-{
-#ifdef RHO_GOOGLE_API_KEY
-    JNIEnv *env = jnienv();
-    jclass& clsMapView = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
-    if (!clsMapView) return;
-    jmethodID midClose = getJNIClassStaticMethod(env, clsMapView, "close", "()V");
-    if (!midClose) return;
-
-    env->CallStaticVoidMethod(clsMapView, midClose);
-#endif
-}
-
-RHO_GLOBAL VALUE google_mapview_state_started()
-{
-#ifdef RHO_GOOGLE_API_KEY
-    VALUE nil = rho_ruby_get_NIL();
-    JNIEnv *env = jnienv();
-    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
-    if (!cls) return nil;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "isStarted", "()Z");
-    if (!mid) return nil;
-
-    return rho_ruby_create_boolean(env->CallStaticBooleanMethod(cls, mid));
-#else
-    return rho_ruby_create_boolean(0);
-#endif
-}
-
-RHO_GLOBAL double google_mapview_state_center_lat()
-{
-#ifdef RHO_GOOGLE_API_KEY
-    JNIEnv *env = jnienv();
-    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
-    if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "getCenterLatitude", "()D");
-    if (!mid) return 0;
-
-    return env->CallStaticDoubleMethod(cls, mid);
-#else
-    return 0;
-#endif
-}
-
-RHO_GLOBAL double google_mapview_state_center_lon()
-{
-#ifdef RHO_GOOGLE_API_KEY
-    JNIEnv *env = jnienv();
-    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
-    if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "getCenterLongitude", "()D");
-    if (!mid) return 0;
-
-    return env->CallStaticDoubleMethod(cls, mid);
-#else
-    return 0;
-#endif
-}
 //#endif
 
 
-
+#ifdef RHO_GOOGLE_API_KEY
+RHO_GLOBAL void google_mapview_create(rho_param *p);
+RHO_GLOBAL void google_mapview_close();
+RHO_GLOBAL VALUE google_mapview_state_started();
+RHO_GLOBAL double google_mapview_state_center_lat();
+RHO_GLOBAL double google_mapview_state_center_lon();
+#endif
 
 static bool ourIsOldGoogleEngineUsed = true;
 
@@ -884,10 +806,13 @@ static bool ourIsOldGoogleEngineUsed = true;
 
 RHO_GLOBAL void mapview_close()
 {
+#ifdef RHO_GOOGLE_API_KEY
     if (ourIsOldGoogleEngineUsed) {
         google_mapview_close();
     }
-    else {
+    else
+#endif
+    {
 		if (s_mapdevice)
 		{
 			rhomap::IMapView *mv = s_mapdevice->mapView();
@@ -932,10 +857,13 @@ RHO_GLOBAL void mapview_create(rho_param *p)
         ourIsOldGoogleEngineUsed = true;
     }
 
+#ifdef RHO_GOOGLE_API_KEY
     if (ourIsOldGoogleEngineUsed) {
         google_mapview_create(p);
     }
-    else {
+    else
+#endif
+    {
 		if (rho_map_check_param(p)) {
 			s_mapdevice = new rhomap::AndroidMapDevice(p);
 		}
@@ -947,20 +875,26 @@ RHO_GLOBAL void mapview_create(rho_param *p)
 
 RHO_GLOBAL VALUE mapview_state_started()
 {
+#ifdef RHO_GOOGLE_API_KEY
     if (ourIsOldGoogleEngineUsed) {
         return google_mapview_state_started();
     }
-    else {
-	    return rho_ruby_create_boolean(!!s_mapdevice);
-	}
+    else
+#endif
+    {
+        return rho_ruby_create_boolean(!!s_mapdevice);
+    }
 }
 
 RHO_GLOBAL double mapview_state_center_lat()
 {
+#ifdef RHO_GOOGLE_API_KEY
     if (ourIsOldGoogleEngineUsed) {
         return google_mapview_state_center_lat();
     }
-    else {
+    else
+#endif
+    {
 		if (!s_mapdevice)
 			return 0;
 		return s_mapdevice->mapView()->latitude();
@@ -969,10 +903,13 @@ RHO_GLOBAL double mapview_state_center_lat()
 
 RHO_GLOBAL double mapview_state_center_lon()
 {
+#ifdef RHO_GOOGLE_API_KEY
     if (ourIsOldGoogleEngineUsed) {
         return google_mapview_state_center_lon();
     }
-    else {
+    else
+#endif
+    {
 		if (!s_mapdevice)
 			return 0;
 		return s_mapdevice->mapView()->longitude();

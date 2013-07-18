@@ -8,6 +8,9 @@
  * interface file instead. 
  * ----------------------------------------------------------------------------- */
 
+#ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
+
+
 #define SWIGRUBY
 
 /* -----------------------------------------------------------------------------
@@ -2411,3 +2414,4 @@ SWIGEXPORT void Init_SignatureCapture(void) {
   rb_define_module_function(mSignatureCapture, "clear", _wrap_clear, -1);
 }
 
+#endif //RHO_DISABLE_OLD_CAMERA_SIGNATURE_API

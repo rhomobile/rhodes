@@ -420,7 +420,9 @@ static Rhodes *instance = NULL;
 - (void)takePicture:(RhoCameraSettings*) settings {
     if (!rho_rhodesapp_check_mode())
         return;
-    //[pickImageDelegate setPostUrl:settings.callback_url];
+#ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
+    [pickImageDelegate setPostUrl:settings.callback_url];
+#endif
     pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypeCamera];

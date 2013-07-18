@@ -47,7 +47,12 @@ public class Sensor extends SensorBase implements ISensor {
 	/**
 	 * Variable that records the event sending data to avoid sending another event before minimum interval
 	 */
-	private long dwQuietStart;	
+	private long dwQuietStart;
+	/**
+	 *	The default minimem gap specified in the sensor.xml
+	 *  Cannot be set to any value lower than 200.
+	*/
+	static private final int DEFAULT_MINIMUM_GAP = 200;
 	
 	@Override
 	public void getMinimumGap(IMethodResult result)
@@ -58,7 +63,7 @@ public class Sensor extends SensorBase implements ISensor {
 	@Override
 	public void setMinimumGap(int duration, IMethodResult result)
 	{		
-		minimumInterval = duration;		
+		minimumInterval = duration >= DEFAULT_MINIMUM_GAP ? duration : DEFAULT_MINIMUM_GAP;		
 	}	
 	
 	@Override
@@ -76,13 +81,13 @@ public class Sensor extends SensorBase implements ISensor {
 	@Override
     public void getAllProperties(IMethodResult result) {
        
-	   Logger.D(TAG,  "getAllProperties API");   
+	   Logger.D(TAG,  "getProperty API [" + minimumInterval + ", " + mType + ", " + mStatus + "]");
 	   
 	   Map<String, Object> props = new HashMap<String, Object>();
 	  
-	   props.put("minimumGap", minimumInterval);
+	   props.put("minimumGap", Integer.toString(minimumInterval));
 	   props.put("type", mType);
-	   props.put("status", mStatus);
+	   props.put("status", mStatus);	   
 	   
 	   result.set(props);
     }
@@ -92,9 +97,9 @@ public class Sensor extends SensorBase implements ISensor {
         
     	Logger.D(TAG,  "getProperty API");
     	if (name.equalsIgnoreCase("minimumGap"))
-    		result.set(minimumInterval);
+    		result.set(Integer.toString(minimumInterval));
     	else if (name.equalsIgnoreCase("type"))
-    		result.set(mType);
+    		result.set(mType);    	
     	else if (name.equalsIgnoreCase("status"))
     		result.set(mStatus);
     	else
@@ -109,11 +114,11 @@ public class Sensor extends SensorBase implements ISensor {
     	for (String name: names)
     	{
     		if (name.equalsIgnoreCase("minimumGap"))
-        		result.set(minimumInterval);
+    			props.put("minimumGap", Integer.toString(minimumInterval));        		
         	else if (name.equalsIgnoreCase("type"))
-        		result.set(mType);
+        		props.put("type", mType);
         	else if (name.equalsIgnoreCase("status"))
-        		result.set(mStatus);
+        		props.put("status", mStatus);
         	else
         		result.setError("Invalid attribute");
     	}
@@ -125,7 +130,19 @@ public class Sensor extends SensorBase implements ISensor {
         
     	Logger.D(TAG,  "setProperty API");
     	if (name.equalsIgnoreCase("minimumGap"))
-    		minimumInterval = Integer.parseInt(val);
+    	{
+    		int minGap = DEFAULT_MINIMUM_GAP;
+    		try
+    		{
+    			minGap = Integer.parseInt(val);
+    			minimumInterval = (minGap >= DEFAULT_MINIMUM_GAP) ? minGap : DEFAULT_MINIMUM_GAP;
+    		}
+    		catch(NumberFormatException nfex)
+    		{
+    			Logger.E(TAG,  "setProperties API, Invalid minimumGap " + val);
+    			result.setError("Invalid minimumGap " + val + " , must be greater than " + DEFAULT_MINIMUM_GAP);
+    		}    		
+    	}
     	else 
     		result.setError("Invalid attribute");
     }
@@ -137,7 +154,19 @@ public class Sensor extends SensorBase implements ISensor {
     	for (Map.Entry<String, String> entry: props.entrySet())
     	{
     		if (entry.getKey().equalsIgnoreCase("minimumGap"))
-        		minimumInterval = Integer.parseInt(entry.getValue());
+    		{
+    			int minGap = DEFAULT_MINIMUM_GAP;
+	    		try
+	    		{
+	    			minGap = Integer.parseInt(entry.getValue());
+	    			minimumInterval = (minGap >= DEFAULT_MINIMUM_GAP) ? minGap : DEFAULT_MINIMUM_GAP;
+	    		}
+	    		catch(NumberFormatException nfex)
+	    		{
+	    			Logger.E(TAG,  "setProperties API, Invalid minimumGap " + entry.getValue());
+	    			result.setError("Invalid minimumGap " + entry.getValue() + " , must be greater than " + DEFAULT_MINIMUM_GAP);
+	    		}
+    		}
         	else 
         		result.setError("Invalid attribute");
     	}
@@ -155,7 +184,7 @@ public class Sensor extends SensorBase implements ISensor {
     {
     	sensorUrl = null;
 		dwQuietStart = System.currentTimeMillis();        	
-		minimumInterval = 200; //Default - 200 milli seconds
+		minimumInterval = DEFAULT_MINIMUM_GAP; //Default - 200 milli seconds
 		mStatus = ISensorSingleton.SENSOR_STATUS_NOT_READY;
     }
 
@@ -186,18 +215,23 @@ public class Sensor extends SensorBase implements ISensor {
 		double accel_z = event.values[2];	
 
 		int sensorType = event.sensor.getType();
+		long currentTimeMillis = System.currentTimeMillis();
 		
 		//Logger.D(TAG, "Sensor event fired for type:" + sensorType);
 		switch (sensorType)
 		{
-			case android.hardware.Sensor.TYPE_ACCELEROMETER:		
+			case android.hardware.Sensor.TYPE_ACCELEROMETER:
+
+				//Logger.D(TAG,  ISensorSingleton.SENSOR_TYPE_ACCELEROMETER + ">>>" + mType + " [" + accel_x + ", " + accel_y + ", " + accel_z + "]");
 	
 				//Logger.D(TAG, "Accelerometer Sensor change detected");
-				if (mType == ISensorSingleton.SENSOR_TYPE_ACCELEROMETER && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_ACCELEROMETER) && (sensorUrl != null))
 				{
 					//Logger.D(TAG, "Acceleromert fire the event");
-					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					//get time from the last event					
+					long elapsed = currentTimeMillis - dwQuietStart;
+
+					Logger.D(TAG,  "Accelerometer>>> elapsed " + elapsed + ", " + currentTimeMillis);
 	
 					if (elapsed >= minimumInterval)
 					{
@@ -207,16 +241,17 @@ public class Sensor extends SensorBase implements ISensor {
 						props.put("accelerometer_z", accel_z);
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
 						//Logger.T(TAG, "Accelerometer event fired: "+ sensorUrl +":" + props);
-						dwQuietStart = System.currentTimeMillis();	
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}		
 	
-				if (mType == ISensorSingleton.SENSOR_TYPE_TILT_ANGLE && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_TILT_ANGLE) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
@@ -231,18 +266,20 @@ public class Sensor extends SensorBase implements ISensor {
 						props.put("tiltangle_z", String.valueOf(tilt_z));
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;
 					}					
 				}
 				break;
 				
-			case android.hardware.Sensor.TYPE_MAGNETIC_FIELD:	
+			case android.hardware.Sensor.TYPE_MAGNETIC_FIELD:
 				
-				if (mType == ISensorSingleton.SENSOR_TYPE_MAGNETOMETER && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_MAGNETOMETER) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
@@ -251,18 +288,20 @@ public class Sensor extends SensorBase implements ISensor {
 						props.put("magnetometer_z", event.values[2]);	
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}
 				}	
 				break;
 				
 			case android.hardware.Sensor.TYPE_GYROSCOPE:		
 		      		
-				if (mType == ISensorSingleton.SENSOR_TYPE_GYROSCOPE && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_GYROSCOPE) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
@@ -271,90 +310,100 @@ public class Sensor extends SensorBase implements ISensor {
 						props.put("gyroscope_z", event.values[2]);	
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}	
 				break;
 				
 			case android.hardware.Sensor.TYPE_LIGHT:		
 	      		
-				if (mType == ISensorSingleton.SENSOR_TYPE_AMBIENT_LIGHT && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_AMBIENT_LIGHT) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
 						props.put("ambientlight_value", event.values[0]);						
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}	
 				break;
 				
 			case android.hardware.Sensor.TYPE_PROXIMITY:		
 	      		
-				if (mType == ISensorSingleton.SENSOR_TYPE_PROXIMITY && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_PROXIMITY) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
 						props.put("proximity_value", event.values[0]);						
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}	
 				break;
 				
 			case android.hardware.Sensor.TYPE_PRESSURE:		
 	      		
-				if (mType == ISensorSingleton.SENSOR_TYPE_PRESSURE && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_PRESSURE) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
 						props.put("pressure_value", event.values[0]);						
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}	
 				break;
 				
 			case android.hardware.Sensor.TYPE_TEMPERATURE:		
 	      		
-				if (mType == ISensorSingleton.SENSOR_TYPE_TEMPERATURE && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_TEMPERATURE) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
 						props.put("temperature_value", event.values[0]);						
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}	
 				break;
 				
 			case android.hardware.Sensor.TYPE_GRAVITY:		
 	      		
-				if (mType == ISensorSingleton.SENSOR_TYPE_GRAVITY && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_GRAVITY) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
@@ -363,18 +412,20 @@ public class Sensor extends SensorBase implements ISensor {
 						props.put("gravity_z", event.values[2]);	
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}	
 				break;
 				
 			case android.hardware.Sensor.TYPE_LINEAR_ACCELERATION:		
 	      		
-				if (mType == ISensorSingleton.SENSOR_TYPE_LINEAR_ACCELERATION && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_LINEAR_ACCELERATION) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
@@ -383,18 +434,20 @@ public class Sensor extends SensorBase implements ISensor {
 						props.put("linearacceleration_z", event.values[2]);	
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}	
 				break;
 				
 			case android.hardware.Sensor.TYPE_ROTATION_VECTOR:		
 	      		
-				if (mType == ISensorSingleton.SENSOR_TYPE_ROTATION && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_ROTATION) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
@@ -403,18 +456,20 @@ public class Sensor extends SensorBase implements ISensor {
 						props.put("rotation_z", event.values[2]);	
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}	
 				break;
 				
 			case android.hardware.Sensor.TYPE_ORIENTATION:		
 	      		
-				if (mType == ISensorSingleton.SENSOR_TYPE_ORIENTATION && sensorUrl != null)
+				if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_ORIENTATION) && (sensorUrl != null))
 				{
 					//get time from the last event
-					long elapsed = System.currentTimeMillis() - dwQuietStart;
+					long elapsed = currentTimeMillis - dwQuietStart;
 	
 					if (elapsed >= minimumInterval)
 					{
@@ -423,8 +478,10 @@ public class Sensor extends SensorBase implements ISensor {
 						props.put("orientation_z", event.values[2]);	
 						props.put("status", "ok");
 	
-						sensorUrl.set(props);
-						dwQuietStart = System.currentTimeMillis();	
+						if (isCallback(sensorUrl))
+							sensorUrl.set(props);
+
+						dwQuietStart = currentTimeMillis;	
 					}				
 				}	
 				break;
@@ -440,8 +497,9 @@ public class Sensor extends SensorBase implements ISensor {
         mSensorManager = (SensorManager) RhodesActivity.safeGetInstance().getSystemService("sensor");		
 		sensorUrl = null;
 		mType = id; //ISensorSingleton.SENSOR_TYPE_ACCELEROMETER; 
-		dwQuietStart = System.currentTimeMillis();        	
-		minimumInterval = 200; //Default - 200 milli seconds
+		// initial the start time to zero as the first event will get propgated to the JS/Ruby layer
+		dwQuietStart = 0;//System.currentTimeMillis();        	
+		minimumInterval = DEFAULT_MINIMUM_GAP; //Default - 200 milli seconds
 		
 		// List the available sensors
 		List<android.hardware.Sensor> sensors = mSensorManager.getSensorList(android.hardware.Sensor.TYPE_ALL);
@@ -457,6 +515,15 @@ public class Sensor extends SensorBase implements ISensor {
 	public void start(IMethodResult result)
 	{		
 		sensorUrl = result;	
+
+		if (mStatus == ISensorSingleton.SENSOR_STATUS_STARTED)
+		{
+			Logger.I(TAG, "Sensor type " + mType + " is already started");
+			return;
+		}
+
+		// reset the start time to zero as the first event will get propgated to the JS/Ruby layer
+		dwQuietStart = 0;
 		
 		if (mType.equalsIgnoreCase(ISensorSingleton.SENSOR_TYPE_ACCELEROMETER))
 		{
@@ -531,16 +598,31 @@ public class Sensor extends SensorBase implements ISensor {
 	@Override
 	public void readData(IMethodResult result)
 	{
-		result.setError("readData method not supported on Android platform");				
+		Map<String, Object> props = new HashMap<String, Object>();
+		props.put("status", "error");
+		props.put("message", "readData method not supported on Android platform");
+		result.set(props);
+		//result.setError("readData method not supported on Android platform");				
 	}
 
 	@Override
 	public void stop(IMethodResult result)
 	{
-		mSensorManager.unregisterListener(sensorListener);
-		Logger.D(TAG, "Sensor unregistered successfully");		
-		mStatus = ISensorSingleton.SENSOR_STATUS_NOT_READY;
-		mType = "";
+		if (mStatus == ISensorSingleton.SENSOR_STATUS_STARTED)
+		{
+			mSensorManager.unregisterListener(sensorListener);
+			Logger.D(TAG, "Sensor unregistered successfully");		
+			mStatus = ISensorSingleton.SENSOR_STATUS_READY;
+		}
+	}
+
+	private boolean isCallback(IMethodResult result)
+	{
+
+		if ((result == null) || result.toString().contains("Callback: ,")) // No callback is set
+			return false;
+
+		return true;
 	}
 
 }

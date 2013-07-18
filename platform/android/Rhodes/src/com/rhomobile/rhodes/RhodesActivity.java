@@ -337,7 +337,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         RhoExtManager.getImplementationInstance().onDestroyActivity(this);
 
+        RhodesApplication.stateChanged(RhodesApplication.UiState.Undefined);
+
         sInstance = null;
+
         super.onDestroy();
     }
 	
