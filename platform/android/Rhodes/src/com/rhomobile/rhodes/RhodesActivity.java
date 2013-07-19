@@ -257,7 +257,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.T(TAG, "onActivityResult");
 
         RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
-
+        com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
+        
         RhoExtManager.getImplementationInstance().onActivityResult(this, requestCode, resultCode, data);
     }
 

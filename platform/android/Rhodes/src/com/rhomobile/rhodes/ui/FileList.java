@@ -134,22 +134,23 @@ public class FileList extends BaseActivity implements OnClickListener{
 
     private void doCallback(int status, String filename) {
         Intent intent = new Intent();
-        try {
-            Uri dstUrl = getIntent().getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-            String dstPath = dstUrl.getPath();
+        //try {
+            //Uri dstUrl = getIntent().getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+            //String dstPath = dstUrl.getPath();
             if (filename != null && filename.length() > 0) {
                 Logger.T(TAG, "Selected file: " + Uri.fromFile(new File(filename)));
-                Utils.copy(filename, dstPath);
-                Logger.T(TAG, "Copied file: " + dstPath);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, dstUrl);
+                //Utils.copy(filename, dstPath);
+                //Logger.T(TAG, "Copied file: " + dstPath);
+                //intent.putExtra(MediaStore.EXTRA_OUTPUT, dstUrl);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(filename)));
             } else {
                 intent.putExtra("error", "No input file name");
             }
-        } catch (IOException e) {
-            Logger.E(TAG, e);
-            intent.putExtra("error", e.getMessage());
-            status = RESULT_CANCELED;
-        }
+//        } catch (IOException e) {
+//            Logger.E(TAG, e);
+//            intent.putExtra("error", e.getMessage());
+//            status = RESULT_CANCELED;
+//        }
         setResult(status, intent);
     }
 
