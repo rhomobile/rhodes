@@ -19,6 +19,6 @@ wp:
 symbian:
   uid: '<%=@uid%>'
 android:
-  version: 2.1
+  version: 2.3.3
 
 extensions: [<%=@rhoconnectclient_ext%>]
