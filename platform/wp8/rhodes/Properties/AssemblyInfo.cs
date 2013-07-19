@@ -7,7 +7,7 @@ using System.Resources;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("rhodes")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Rhodes")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Motorola Solutions, Inc.")]
 [assembly: AssemblyProduct("rhodes")]
