@@ -375,8 +375,14 @@ void CRhodesApp::startApp()
 
 extern "C" void Init_Extensions(void);
 
-void RhoJsStart()
+void CRhodesApp::RhoJsStart()
 {
+    const char* szBlobPath = getBlobsDirPath().c_str();
+    const char* szUserPath = rho_native_rhodbpath();
+    LOG(INFO) + "Init_RhoBlobs:" + szBlobPath;
+
+    CRhoFile::recursiveCreateDir(szBlobPath, szUserPath);
+
     Init_Extensions();
     void *dbObj = NULL;
 
