@@ -52,7 +52,31 @@ end
 
 task :copylibs => TARGETDIR do
     mkdir_p File.join($curdir, 'adds','res','values')
-    cp_r File.join($androidsdk,'extras','google','google_play_services','libproject','google-play-services_lib','res','values','maps_attrs.xml'), File.join($curdir, 'adds','res','values')
+    
+    srcPath = File.join($androidsdk,'extras','google','google_play_services','libproject','google-play-services_lib','res')
+    srcPathName = Pathname.new(srcPath)
+    dstPath = File.join($curdir, 'adds','res')
+    
+    
+    Dir.glob(File.join(srcPath,'**','*')) do |f|
+        
+        if File.file?(f) then
+            targetName = File.join( dstPath, Pathname.new(f).relative_path_from(srcPathName) )
+            targetDir = File.dirname(targetName)
+            
+            if File.basename(targetDir).start_with?('values') and File.extname(targetName) == '.xml' then
+                targetName = File.join(targetDir,"google_play_services_"+File.basename(targetName))
+            end
+            
+            mkdir_p targetDir
+            cp f,targetName
+            
+        end
+        
+    end
+    
+    
+    
     cp File.join($androidsdk,'extras','google','google_play_services','libproject','google-play-services_lib','libs','google-play-services.jar'), TARGETDIR
     cp File.join($androidsdk,'extras','android','support','v4','android-support-v4.jar'), TARGETDIR
 end
