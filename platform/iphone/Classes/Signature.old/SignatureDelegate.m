@@ -235,6 +235,16 @@ SignatureDelegate* ourSD = nil;
 @end
 
 void rho_signature_take(char* callback_url, rho_param* p) {
+    
+    // check for RhoElements :
+    if (get_app_build_config_item("motorola_license") == 0) {
+        RAWLOG_ERROR("Rho::SignatureCapture.take() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
+        return;
+    }
+    if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
+        RAWLOG_ERROR("Rho::SignatureCapture.take() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
+    }
+    
     NSString *url = [NSString stringWithUTF8String:callback_url];
     char* image_format = 0;
     char* penColor = 0;
@@ -286,6 +296,10 @@ void rho_signature_take(char* callback_url, rho_param* p) {
 void rho_signature_visible(bool b, rho_param* p)
 {
     // check for RhoElements :
+    if (get_app_build_config_item("motorola_license") == 0) {
+        RAWLOG_ERROR("Rho::SignatureCapture.visible() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
+        return;
+    }
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.visible() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
@@ -382,6 +396,10 @@ void rho_signature_visible(bool b, rho_param* p)
 void rho_signature_capture(const char* callback_url) 
 {
     // check for RhoElements :
+    if (get_app_build_config_item("motorola_license") == 0) {
+        RAWLOG_ERROR("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
+        return;
+    }
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
@@ -396,10 +414,14 @@ void rho_signature_capture(const char* callback_url)
 void rho_signature_clear() 
 {
     // check for RhoElements :
+    if (get_app_build_config_item("motorola_license") == 0) {
+        RAWLOG_ERROR("Rho::SignatureCapture.clear() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
+        return;
+    }
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.clear() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
-	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance]; 
+	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance];
     [deleg clearSignatureInlineView];
     
 }
