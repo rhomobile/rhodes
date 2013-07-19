@@ -19,7 +19,7 @@ In order to use this API you must include the following extension in your `build
                 <DESC>Play a media file using the supplied filename.</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING">
-                        <DESC>File name of the audio media to be played - full filepath. On iOS when you post URL to remote server, then we open standart browser (another application) for playing it. On iOS we support : mp3, mp4, wav formats</DESC>
+                        <DESC>File name of the audio media to be played - full filepath. On iOS when you post URL to remote server (except https), then we open standart browser (another application) for playing it. On iOS we support : mp3, mp4, wav formats</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -34,7 +34,7 @@ In order to use this API you must include the following extension in your `build
                 <DESC>Playing a video file back</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING" runInThread="ui">
-                        <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server, then we open standart browser (another application) for playing it. On iOS we support : mov, mp4, 3gp formats</DESC>
+                        <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server  (except https), then we open standart browser (another application) for playing it. On iOS we support : mov, mp4, 3gp formats</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
