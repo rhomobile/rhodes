@@ -64,6 +64,7 @@ public:
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
 
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
@@ -188,6 +189,11 @@ void CSystemImpl::openUrl( const rho::String& url, CMethodResult& oResult)
     if (sUrl.startsWith("/"))
         sUrl.prepend("file://");
     QDesktopServices::openUrl(QUrl(sUrl));
+}
+
+void CSystemImpl::getMain_window_closed(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(CMainWindow::mainWindowClosed);
 }
 
 void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, CMethodResult& oResult)
