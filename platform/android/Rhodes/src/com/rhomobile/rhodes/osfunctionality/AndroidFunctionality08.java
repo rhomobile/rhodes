@@ -69,5 +69,10 @@ class AndroidFunctionality08 extends AndroidFunctionality07 implements
             return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         }
     }
+            
+    @Override
+    public CalendarIDsProvider buildCalendarIDsProvider() {
+        return new CalendarIDsProviderFroyo();
+    }
 
 }
