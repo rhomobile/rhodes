@@ -1094,9 +1094,11 @@ end
 namespace "run" do
   namespace "iphone" do
 
-    task :spec => ["clean:iphone",:buildsim] do
+    task :spec => ["clean:iphone"] do
  	
       Jake.decorate_spec do
+
+          Rake::Task['run:buildsim'].invoke
 
           # Run local http server
           $iphonespec = true

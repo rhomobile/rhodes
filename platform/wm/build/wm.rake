@@ -1207,9 +1207,11 @@ namespace "run" do
       end
     end
 
-    task :spec, [:exclude_dirs] => ["device:wm:production"] do
+    task :spec, [:exclude_dirs] => [] do
 
         Jake.decorate_spec do
+
+            Rake::Task['device:wm:production'].invoke
 
             # kill all running detool
             kill_detool
@@ -1386,8 +1388,12 @@ namespace "run" do
       rm_rf db_path if File.exists?(db_path)
     end
 
-    task :spec => [:delete_db, "build:win32"] do
+    task :spec => [:delete_db] do
+
       Jake.decorate_spec do
+
+        Rake::Task['build:win32'].invoke
+
         #remove log file
         win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
         win32logpath = File.join(win32rhopath,"RhoLog.txt")
