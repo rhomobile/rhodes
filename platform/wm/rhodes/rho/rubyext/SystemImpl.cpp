@@ -95,7 +95,11 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
 
 bool rho_rhosim_window_closed()
 {
+#ifdef RHODES_EMULATOR
     return CMainWindow::mainWindowClosed;
+#else
+    return false;
+#endif
 }
 
 #ifdef OS_WINDOWS_DESKTOP
