@@ -272,7 +272,11 @@ void CExtManager::minimizeApp()
 
 void CExtManager::restoreApp()
 {
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+    rho_callInUIThread(__minimize_restoreApp, SW_RESTORE);
+#else
     rho_callInUIThread(__minimize_restoreApp, SW_SHOW);
+#endif
 }
 
 void CExtManager::resizeBrowserWindow(RECT rc)
