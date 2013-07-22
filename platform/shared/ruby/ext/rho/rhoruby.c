@@ -473,6 +473,8 @@ void RhoRubyStop()
 {
     //TBD: clenup framework, etc.
     ruby_cleanup(0);
+
+    rb_mKernel = 0;
 }
 
 char* makeControllerCall(char* classname, char* methodname);
