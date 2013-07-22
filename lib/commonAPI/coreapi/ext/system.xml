@@ -456,7 +456,7 @@ This API is part of the `coreapi` extension that is included automatically.
                 <DESC>Replace application bundle.</DESC>
                 <PARAMS>
                     <PARAM name="pathToBundle" type="STRING">
-                        <DESC>Path to bundle.</DESC>
+                        <DESC>Local path to bundle folder. See Build Application/Upgrade Application section to find out how to build bundle on computer.</DESC>
                     </PARAM>
                     <PARAM name="params" type="HASH">
                         <DESC>Update parameters.</DESC>
