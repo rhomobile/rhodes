@@ -127,6 +127,19 @@ public class EventStore {
 			calendarCursor.close();
 		}
 	}
+	
+	private static void createCalendar() {
+		ContentValues values = new ContentValues();
+		
+		values.put( mIDsProvider.getCalendarName()			, "Rho Calendar");
+		//values.put( mIDsProvider.getCalendarDisplayName()	, "Rho Calendar");
+		//values.put( mIDsProvider.getCalendarColor()		, "000000");
+		//values.put( mIDsProvider.getCalendarAccessLevel()	, "700");
+		
+		getContentResolver().insert(Uri.parse("content://" + AUTHORITY + "/calendars"), values);
+		
+	}
+
 
     static Event fetchEvent(Cursor cursor, boolean expandRecurrency) {
         String eid = cursor.getString(cursor.getColumnIndex(expandRecurrency ? EVENTS_EVENT_ID : EVENTS_ID));
@@ -347,6 +360,11 @@ public class EventStore {
 					", recurrence count: " + String.valueOf((Object)event.recurrenceTimes) +
 					", rrule: " + String.valueOf((Object)values.get(EVENTS_RRULE)));
 */
+			if ( !hasCalendar() ) {
+				Logger.I(TAG,"No calendar exists, creating default calendar.");
+				createCalendar();
+			}
+			
 			long calendarId = getDefaultCalendarId();
 			values.put("calendar_id", calendarId);
 			

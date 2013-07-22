@@ -16,4 +16,9 @@ public class CalendarIDsProvider {
 	public String getEventsBegin()			{ return "begin"; }
 	public String getEventsEnd()			{ return "end"; }
 	public String getEventsRrule()			{ return "rrule"; }
+	
+	public String getCalendarName()			{ return "name"; }
+	public String getCalendarDisplayName()	{ return "calendar_displayName"; }
+	public String getCalendarColor()		{ return "calendar_color"; }
+	public String getCalendarAccessLevel()	{ return "calendar_access_level"; }
 }
