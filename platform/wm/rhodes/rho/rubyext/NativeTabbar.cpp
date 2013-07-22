@@ -172,11 +172,6 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
     }else if ( m_arTabs.size() && !m_arTabs[0].m_bUseCurrentViewForTab )
         SwitchTab(0);
 
-	//It's a workaround(not general fix)
-	//Should be done normaly in v4.1
-	if(rho_webview_get_full_screen())
-		rho_webview_full_screen_mode(1);
-
     m_bTabCreated = true;
 }
 
