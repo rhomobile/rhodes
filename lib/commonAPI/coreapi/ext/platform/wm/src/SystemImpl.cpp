@@ -316,7 +316,11 @@ void CSystemImpl::getLocale(CMethodResult& oResult)
 void CSystemImpl::getCountry(CMethodResult& oResult)
 {
     wchar_t szCountry[20];
-    int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SISO3166CTRYNAME , szCountry, sizeof(szCountry)/sizeof(szCountry[0]));
+#if defined(OS_WINDOWS_DESKTOP)
+    int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, szCountry, sizeof(szCountry)/sizeof(szCountry[0]));
+#else
+    int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SABBREVCTRYNAME, szCountry, sizeof(szCountry)/sizeof(szCountry[0]));
+#endif
     szCountry[2] = 0;
 
   	oResult.set(szCountry);
