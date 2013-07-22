@@ -243,6 +243,12 @@ namespace "build" do
       rm_r $srcdir + "/apps/public"
     end
 
+    task :upgrade_package => [:rhobundle_noext, :extensions] do        
+      mkdir_p $targetdir if not File.exists? $targetdir
+      zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
+      Jake.zip_upgrade_bundle( $bindir, zip_file_path)
+    end
+
     # create file with map of bundle files 
     task :rhobundlemap do
       puts "rhobundlemap task started"
