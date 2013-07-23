@@ -13,6 +13,7 @@
 #include "../shared/api_generator/MethodResult.h" //oResult 
 #include "DShowCam.h"
 #include "RcmLoader.h"
+#include <windows.h>
 
 
 #if !defined(AFX_IMAGER_H__3892DEB7_7A23_4A68_A117_F19017B916D9__INCLUDED_)
@@ -233,11 +234,16 @@ public:
 	BOOL SetCompressionFormat(const char* cstr);
 	const char* GetCompressionFormat(void);
 
+	virtual bool onWndMsg(MSG& oMsg);
+
 	bool m_bDisableDuringNavigate;
 private:
 	RECT m_rcWinPos;///<View Finder window position
 	HMODULE hModule;///<Image Capture device handle
 	HWND m_hWndViewer;///<Handle to ViewFinder window
+	WNDCLASS WndCls; /// Window class structure for Message Window
+	MSG Msg; /// Message object for the Window
+	HWND m_hWndMessageWindow; /// Local window that can receive, but not send messages
 	BOOL m_PreviewOn;
 	
 
@@ -266,7 +272,10 @@ private:
     HANDLE m_hTriggerQuit;
     HANDLE m_hTriggerThread;
 	HANDLE m_hTriggerNotification;
-    LPWSTR m_szCaptureSound;
+	LPWSTR m_szCaptureSound;
+
+	// WindowProc
+	static LRESULT CALLBACK MessageWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 public:
 	//Msg Queue Options 
