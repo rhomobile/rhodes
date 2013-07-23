@@ -744,6 +744,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\Imager.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\Imager.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\shared\MediacaptureInit.cpp"
 			>
 		</File>
