@@ -434,7 +434,7 @@ namespace rhodes
             String url = getCurrentURLFunc((sender as WebBrowser).TabIndex);
             CRhoRuntime.getInstance().onWebViewUrlChanged(url);
             int index = (sender as WebBrowser).TabIndex;
-            if (index > -1 && !_tabProps[index]._isInitialized)
+            if (index > -1 && _tabProps.ContainsKey(index) && !_tabProps[index]._isInitialized)
             {
                 _tabProps[index]._isInitialized = true;
                 if (_tabProps.ContainsKey(index) && _tabProps[index]._action != null)
