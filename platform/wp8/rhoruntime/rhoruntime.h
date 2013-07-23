@@ -38,6 +38,8 @@ namespace rhoruntime
         int getScreenWidth();
         int getScreenHeight();
 		bool isBrowserInitialized(int index);
+		::Platform::String^ getUserAgent();
+		::Platform::String^ getWebviewFramework();
 		::Platform::String^ getScreenOrientation();
 		bool  isEmulator();
 		void bringToFront();

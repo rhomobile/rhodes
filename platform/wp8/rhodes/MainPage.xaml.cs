@@ -66,6 +66,26 @@ namespace rhodes
         private double _screenPhysicalHeight;
         private bool _isBrowserInitialized = false;
         private int _tabIndex = -1;
+        // HTML code to get true User-Agent string
+        private const string getUserAgentHtml =
+        @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01 Transitional//EN"">
+        <html>
+        <head>
+        <script language=""javascript"" type=""text/javascript"">
+            function notifyUA() {
+               window.external.notify(navigator.userAgent);
+            }
+        </script>
+        </head>
+        <body onload=""notifyUA();""></body>
+        </html>";
+        // web browser user agent string (initialized with fabricated default value)
+        private string _userAgent = "Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone " +
+            System.Environment.OSVersion.Version.Major.ToString() + "." +
+            System.Environment.OSVersion.Version.Minor.ToString() +
+            "; Trident/6.0; IEMobile/10.0; ARM; Touch; " +
+            Microsoft.Phone.Info.DeviceStatus.DeviceManufacturer + "; " +
+            Microsoft.Phone.Info.DeviceStatus.DeviceName + ")";
 
         private Dictionary<int, TabProps> _tabProps= new Dictionary<int, TabProps>();
 
@@ -161,6 +181,17 @@ namespace rhodes
             return (int)_screenHeight;
         }
 
+        public string getUserAgent()
+        {
+            return this._userAgent;
+        }
+
+        public string getWebviewFramework()
+        {
+            return "IE/" + System.Environment.OSVersion.Version.Major.ToString() + "." +
+                System.Environment.OSVersion.Version.Minor.ToString();
+        }
+
         public string getScreenOrientation()
         {
             if (_screenOrientation == PageOrientation.Portrait ||
@@ -232,7 +263,17 @@ namespace rhodes
 
         private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
         {
-            // TODO: put after-load app code here (e.g. switch to fullscreen if rhoconfig specifies that)
+            var browser = new Microsoft.Phone.Controls.WebBrowser();
+            browser.IsScriptEnabled = true;
+            browser.Visibility = Visibility.Collapsed;
+            browser.Loaded += (asender, args) => browser.NavigateToString(getUserAgentHtml);
+            browser.ScriptNotify += (asender, args) =>
+            {
+                string userAgent = args.Value;
+                LayoutRoot.Children.Remove(browser);
+                this._userAgent = userAgent;
+            };
+            LayoutRoot.Children.Add(browser);
         }
 
         private string prependWithSlash(string url)

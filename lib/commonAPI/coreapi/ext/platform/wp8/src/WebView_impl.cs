@@ -40,9 +40,8 @@ namespace WebViewImpl
 
         public void getFramework(IMethodResult oResult)
         {
-            string DeviceManufacturer = (string)Microsoft.Phone.Info.DeviceExtendedProperties.GetValue("DeviceManufacturer");
-            string DeviceName = (string)Microsoft.Phone.Info.DeviceExtendedProperties.GetValue("DeviceName");
-            oResult.set(System.Environment.OSVersion.ToString() + " / " + DeviceName + ", " + DeviceManufacturer);
+            MainPage mp = getMainPage();
+            oResult.set(mp != null ? mp.getWebviewFramework() : "");
         }
 
         public void getFullScreen(IMethodResult oResult)
@@ -116,8 +115,8 @@ namespace WebViewImpl
 
         public void getUserAgent(IMethodResult oResult)
         {
-            // implement this method in C# here
-            oResult.set("IE/" + System.Environment.OSVersion.ToString());
+            MainPage mp = getMainPage();
+            oResult.set(mp != null ? mp.getUserAgent() : "");
         }
 
         public void getViewportEnabled(IMethodResult oResult)
@@ -128,7 +127,6 @@ namespace WebViewImpl
 
         public void getViewportWidth(IMethodResult oResult)
         {
-            // implement this method in C# here
             MainPage mp = getMainPage();
             oResult.set(mp != null ? mp.getScreenWidth() : 0);
         }
