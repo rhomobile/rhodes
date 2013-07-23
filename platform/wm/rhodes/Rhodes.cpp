@@ -173,7 +173,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     static HINSTANCE m_hInstance;
     CMainWindow m_appWindow;
     rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath, m_strAppName;
-	int m_nRestarting;
+	bool m_bRestarting;
     bool m_bMinimized;
 	bool m_isRhoConnectPush;
     bool m_startAtBoot, m_bJSApplication;
@@ -233,7 +233,7 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw()
 {
-	m_nRestarting      = 1;
+	m_bRestarting      = false;
     m_bMinimized       = false;
     m_startAtBoot      = false;
 #ifdef RHO_NO_RUBY
@@ -277,7 +277,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 
 		if (isCmdLineOpt) {
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
-				m_nRestarting = 10;
+				m_bRestarting = true;
 			}
 
             if (wcsncmp(lpszToken, _T("minimized"), 9)==0) {
@@ -415,7 +415,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     SetLastError(0);
     HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
 
-    if ( hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+    if ( !m_bRestarting && hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
     {
         // Rho Running so could bring to foreground
         HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
