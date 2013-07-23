@@ -298,6 +298,9 @@ namespace "build" do
       doc.elements.each("Deployment/App") { |element|
         element.attributes["ProductID"] = "{"+$app_config["wp"]["productid"]+"}"
         element.attributes["Title"] = $app_config["name"]
+        element.attributes["Description"] = $app_config["name"]
+        element.attributes["Author"] = $app_config["vendor"]
+        element.attributes["Publisher"] = $app_config["vendor"]
       }
 
       File.open($startdir + "/"+$config["build"]["wp8path"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
