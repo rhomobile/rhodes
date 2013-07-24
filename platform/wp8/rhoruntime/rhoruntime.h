@@ -27,6 +27,7 @@
 #pragma once
 
 #include "json/JSONIterator.h"
+#include "api_generator/wp8/IMethodResult.h"
 
 namespace rhoruntime
 {
@@ -79,7 +80,7 @@ namespace rhoruntime
 		void tabbarRemove(int index);
 		void tabbarSwitch(int index);
 		int tabbarGetCurrent();
-		void tabbarAddTab(::Platform::String^ label, ::Platform::String^ icon, ::Platform::String^ action, bool disabled, ::Platform::String^ web_bkg_color, ::Platform::String^ selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, ::Platform::Object^ oResult);
+		void tabbarAddTab(::Platform::String^ label, ::Platform::String^ icon, ::Platform::String^ action, bool disabled, ::Platform::String^ web_bkg_color, ::Platform::String^ selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, IMethodResult^ oResult);
 		void tabbarSetBadge(int index, ::Platform::String^ badge);
 		void exitCommand(void);
 		void navigateBackCommand(void);
