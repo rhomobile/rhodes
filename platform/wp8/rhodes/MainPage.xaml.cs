@@ -111,7 +111,7 @@ namespace rhodes
         {
             if ( _oTabResult != null)
             {
-                rho.common.Hashtable<String,String> mapRes = new rho.common.Hashtable<String,String>();
+                Dictionary<string, string> mapRes = new Dictionary<string, string>();
                 mapRes["tab_index"] = Convert.ToString(nNewTab);
                 mapRes["newTabIndex"] = Convert.ToString(nNewTab);
                 mapRes["oldTabIndex"] = Convert.ToString(nOldTab);
@@ -745,7 +745,7 @@ namespace rhodes
             return Color.FromArgb(255, Convert.ToByte(cR), Convert.ToByte(cG), Convert.ToByte(cB));
         }
 
-        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, object oResult)
+        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, IMethodResult oResult)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
             PivotItem tab = new PivotItem();
@@ -782,7 +782,7 @@ namespace rhodes
             _tabProps[TabbarPivot.Items.Count] = new TabProps();
             _tabProps[TabbarPivot.Items.Count]._isReload = reload;
             if(hasCallback == true)
-                _oTabResult = oResult as IMethodResult;
+                _oTabResult = oResult;
 
             WebBrowser wv = new WebBrowser();
             wv.Height = double.NaN;
@@ -829,7 +829,8 @@ namespace rhodes
             }
             int nOldTab = _tabIndex;
             _tabIndex = TabbarPivot.SelectedIndex;
-            raiseTabEvent("onTabFocus", nOldTab, _tabIndex);
+            if ((nOldTab != _tabIndex) && (_tabIndex > -1))
+                raiseTabEvent("onTabFocus", nOldTab, _tabIndex);
         }
 
         public void tabbarSetBadge(int index, string badge)
