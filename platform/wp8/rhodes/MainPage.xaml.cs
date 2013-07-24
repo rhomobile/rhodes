@@ -99,7 +99,7 @@ namespace rhodes
 
         public bool isBrowserInitialized(int index)
         {
-            return (index == -1) ? _isBrowserInitialized : _tabProps[index]._isInitialized;
+            return (index == -1) || !_tabProps.ContainsKey(index) ? _isBrowserInitialized : _tabProps[index]._isInitialized;
         }
 
         private bool isUIThread
@@ -297,7 +297,7 @@ namespace rhodes
                 initUri = url;
                 return;
             }
-            else if (index > -1 && _tabProps[index]._isInitialized == false)
+            else if (index > -1 && _tabProps.ContainsKey(index) && _tabProps[index]._isInitialized == false)
             {
                 _tabProps[index]._action = url;
                 return;
@@ -437,7 +437,7 @@ namespace rhodes
             if (index > -1 && _tabProps.ContainsKey(index) && !_tabProps[index]._isInitialized)
             {
                 _tabProps[index]._isInitialized = true;
-                if (_tabProps.ContainsKey(index) && _tabProps[index]._action != null)
+                if (_tabProps[index]._action != null)
                     navigate(_tabProps[index]._action, index);
             }
             else if (TabbarPivot.Items.Count == 0 && !_isBrowserInitialized)
@@ -447,7 +447,7 @@ namespace rhodes
             }
             else
             {
-                if (TabbarPivot.Items.Count > 0 && index > -1 && url.Contains("about:blank") == false)
+                if (TabbarPivot.Items.Count > 0 && index > -1 && _tabProps.ContainsKey(index) && url.Contains("about:blank") == false)
                 {
                     if (_tabProps[index]._isLoaded == false)
                         _tabProps[index]._isLoaded = true;
@@ -818,8 +818,15 @@ namespace rhodes
 
         private void TabbarPivot_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) && ((_tabProps[TabbarPivot.SelectedIndex]._isLoaded == false) || (_tabProps[TabbarPivot.SelectedIndex]._isLoaded == true && _tabProps[TabbarPivot.SelectedIndex]._isReload == true)))
-                CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag));
+            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (_tabProps.Count > 0) &&
+                (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) && _tabProps.ContainsKey(TabbarPivot.SelectedIndex) &&
+                ((_tabProps[TabbarPivot.SelectedIndex]._isLoaded == false) ||
+                 (_tabProps[TabbarPivot.SelectedIndex]._isLoaded == true && _tabProps[TabbarPivot.SelectedIndex]._isReload == true)))
+            {
+                string action = ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag);
+                if (action != null)
+                    CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, action);
+            }
             int nOldTab = _tabIndex;
             _tabIndex = TabbarPivot.SelectedIndex;
             raiseTabEvent("onTabFocus", nOldTab, _tabIndex);
