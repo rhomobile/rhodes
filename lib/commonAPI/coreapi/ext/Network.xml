@@ -64,7 +64,7 @@ This API is part of the `coreapi` extension that is included automatically.
             </METHOD>
 
             <METHOD name="downloadFile" hasCallback="optional">
-                <DESC>Download a file to the specified filename.</DESC>
+                <DESC>Download a file to the specified filename. NB: if 'overwriteFile' flag is default or false, the HEAD request to the server will be performed before actual download to retreive 'last-modified' header which is used to support resuming interrupted download. If targed server doesn't support HEAD requests, 'overwriteFile' should be set to true.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
