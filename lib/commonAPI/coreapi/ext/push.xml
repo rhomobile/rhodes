@@ -32,7 +32,7 @@ This API is part of the `coreapi` extension that is included automatically.
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="deviceId" type="STRING" readOnly="true">
-                <DESC>Push token used to identify particular device.</DESC>
+                <DESC>Push token used to identify particular device.  Note the deviceId will be empty until push server registration has completed.  To ensure you always receive the deviceId when it is ready, use the `Rho.Push.getDeviceId(function() { // ... }` instead.  This will execute your callback when deviceId is populated.</DESC>
             </PROPERTY>
             <PROPERTY name="userNotifyMode" type="STRING" default="backgroundNotifications" deprecated="true">
                 <DESC>UI notification mode.</DESC>
