@@ -83,6 +83,7 @@ void CMethodResult::convertToType(ETypes eType)
                 m_bRes = m_dRes != 0;
                 m_ResType = eBool;
                 break;
+            default:;
             }
         }
         break;
@@ -105,6 +106,7 @@ void CMethodResult::convertToType(ETypes eType)
                 m_nRes = m_bRes ? 1 :0;
                 m_ResType = eInt;
                 break;
+            default:;
             }
         }
         break;
@@ -130,9 +132,11 @@ void CMethodResult::convertToType(ETypes eType)
                 m_dRes = static_cast<double>(m_nRes);
                 m_ResType = eDouble;
                 break;
+            default:;
             }
         }
         break;
+    default:;
     }
 }
 
