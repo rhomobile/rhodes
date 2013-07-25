@@ -56,8 +56,8 @@ private:
 
 public:
 
-    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_synchronousCallback(false), m_iTabId(-1), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode),
-        m_nRes(0), m_bRes(false), m_dRes(0), m_eRequestedType(eNone){}
+    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_synchronousCallback(false), m_iTabId(-1),
+        m_nRes(0), m_bRes(false), m_dRes(0), m_ResType(eNone), m_eRequestedType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode){}
     
     ECallbackType getCallbackType();
 

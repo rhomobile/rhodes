@@ -45,7 +45,7 @@ struct CAppMenuItem
 	EnumMenuType  m_eType;
 
     CAppMenuItem (const String &label, const String &link);
-    CAppMenuItem () : m_eType(emtNone), m_isEnable(true) {}
+    CAppMenuItem () : m_isEnable(true), m_eType(emtNone) {}
     void processCommand();
 };
 
