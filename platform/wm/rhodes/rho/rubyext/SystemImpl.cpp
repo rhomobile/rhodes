@@ -53,6 +53,11 @@ void rho_sys_app_exit()
 	::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
 }
 
+void rho_sys_app_exit2()
+{
+	::DestroyWindow(getMainWnd());
+}
+
 void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
 
 void rho_wmsys_run_app(const char* szPath, const char* szParams )

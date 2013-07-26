@@ -44,7 +44,10 @@
 using namespace rho;
 using namespace rho::common;
 extern "C" void rho_sys_app_exit();
+extern "C" void rho_sys_app_exit2();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
+
+extern bool g_bRestart;
 
 #if defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
 extern "C" int rho_prepare_folder_for_upgrade(const char* szPath);
@@ -654,8 +657,9 @@ void CReplaceBundleThread::run()
         }
     }
     else {
-        rho_platform_restart_application();
-        rho_sys_app_exit();
+        //rho_platform_restart_application();
+		g_bRestart = true;
+        rho_sys_app_exit2();
     }
     if (m_is_finished_flag != NULL) {
         *m_is_finished_flag = true;
@@ -740,7 +744,7 @@ void CReplaceBundleThread::doReplaceBundle()
     }
     if (is_partial_update) {
         filelist.saveToFile();
-#ifdef OS_ANDROID
+#ifdef OS_ANDROIDr
         rho_android_file_reload_stat_table();
 #endif                
     }
