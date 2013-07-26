@@ -47,10 +47,6 @@ extern "C" void rho_sys_app_exit();
 extern "C" void rho_sys_app_exit2();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
-#if defined(OS_WINDOWS_DESKTOP)
-extern bool g_bRestart;
-#endif
-
 #if defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
 extern "C" int rho_prepare_folder_for_upgrade(const char* szPath);
 #endif
@@ -659,13 +655,8 @@ void CReplaceBundleThread::run()
         }
     }
     else {
-#if defined(OS_WINDOWS_DESKTOP)
-		g_bRestart = true;
-        rho_sys_app_exit2();
-#else
         rho_platform_restart_application();
         rho_sys_app_exit();
-#endif
     }
     if (m_is_finished_flag != NULL) {
         *m_is_finished_flag = true;

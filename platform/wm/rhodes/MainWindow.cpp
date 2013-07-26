@@ -87,8 +87,6 @@ extern "C" bool rho_wmimpl_get_resize_on_sip();
 
 extern "C" int rho_wm_impl_CheckLicense();
 
-bool g_bRestart = false;
-
 CMainWindow::CMainWindow()
 {
     mIsBrowserViewHided = false;
@@ -493,11 +491,6 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     PostQuitMessage(0);
 
     bHandled = FALSE; // Allow ATL's default processing (e.g. NULLing m_hWnd)
-
-	if(g_bRestart)
-		rho_platform_restart_application();
-
-	MessageBox(L"ssss", L"sss", MB_ICONWARNING | MB_OK);
 
     return 0;
 }
