@@ -153,6 +153,17 @@ class Jake
     return server, addr, port
   end
 
+  def self.run_local_server_with_logger(port, log_file)
+    addr = localip
+    log = WEBrick::Log.new log_file
+    access_log = [[log_file, WEBrick::AccessLog::COMBINED_LOG_FORMAT]]
+    server = WEBrick::HTTPServer.new :Port => port, :Logger => log, :AccessLog => access_log
+    port = server.config[:Port]
+    # puts "LOCAL SERVER STARTED ON #{addr}:#{port}"
+    Thread.new { server.start }
+    return server, addr, port
+  end
+
   def self.reset_spec_server(platform)
     require 'rest_client'
     require 'json'
