@@ -29,6 +29,7 @@ require 'pathname'
 require 'yaml'
 require 'socket'
 require 'webrick'
+
   
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
 SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
@@ -634,19 +635,27 @@ class Jake
           puts 'Install gem by "gem install rubyzip"'
         end        
       else
+        require 'fileutils'
+                 
         #chdir folder_path
         temp_dir = folder_path + '_tmp'
-        mkdir_p temp_dir
-        cp_r 'RhoBundle', temp_dir
-        chdir temp_dir         
-        rm_rf File.join(temp_dir, 'RhoBundle/lib')
-        rm_rf File.join(temp_dir, 'RhoBundle/db')
-        rm_rf File.join(temp_dir, 'RhoBundle/hash')
-        rm_rf File.join(temp_dir, 'RhoBundle/name')
-        sh %{zip -r temporary_archive.zip .}
-        cp_r 'temporary_archive.zip', zip_file_path
-        rm_rf 'temporary_archive.zip'
-        rm_rf temp_dir
+        FileUtils.mkdir_p temp_dir
+        FileUtils.cp_r 'RhoBundle', temp_dir
+        Dir.chdir temp_dir
+        FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/lib')
+        FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/db')
+        FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/hash')
+        FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/name')
+        #sh %{zip -r temporary_archive.zip .}
+        #cmd "zip -r temporary_archive.zip ."
+        args = []
+        args << "-r"
+        args << "temporary_archive.zip"
+        args << "."
+        run("zip", args, temp_dir)
+        FileUtils.cp_r 'temporary_archive.zip', zip_file_path
+        FileUtils.rm_rf 'temporary_archive.zip'
+        FileUtils.rm_rf temp_dir
       end
       
       Dir.chdir currentdir
