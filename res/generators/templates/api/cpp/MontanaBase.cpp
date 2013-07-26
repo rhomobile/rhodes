@@ -56,27 +56,22 @@ end%>
 
 void <%= propBaseClass %>::getProperty( const rho::String& propertyName, CMethodResult& oResult)
 {
-    if ( m_mapPropAccessors.containsKey(propertyName) )
+<% if $cur_module.is_property_bag_limit_to_only_declared_properties %>
+    if ( !m_mapPropAccessors.containsKey(propertyName) )
     {
-        CMethodAccessor< <%= propBaseI %> >* pAccessor = m_mapPropAccessors[propertyName];
-        if ( pAccessor )
-            pAccessor->callGetter(this, oResult);
-        else
-            oResult.setArgError("pAccessor = NULL for property " + propertyName);
+        oResult.setArgError("Get unknown property: " + propertyName);
+        return;
     }
+<% end %>
+    CMethodAccessor< <%= propBaseI %> >* pAccessor = m_mapPropAccessors[propertyName];
+    if ( pAccessor )
+        pAccessor->callGetter(this, oResult);
     else
     {
-<% if $cur_module.is_property_bag_limit_to_only_declared_properties %>
-        oResult.setArgError("Get unknown property: " + propertyName);
-<% else %>
-        if ( m_hashProps.containsKey(propertyName) )
-        {
-            oResult.set(m_hashProps[propertyName]);
-        }
-        else
-        {
-            oResult.setArgError("Get unknown property: " + propertyName);
-        }
+<% if $cur_module.is_template_propertybag %>
+        oResult.set(m_hashProps[propertyName]);
+<% else%>
+        oResult.setArgError("Get unknown property: " + propertyName);        
 <% end %>
     }
 }
@@ -103,7 +98,15 @@ void <%= propBaseClass %>::getAllProperties(CMethodResult& oResult)
 {
     rho::Hashtable<rho::String, rho::String> res;
     oResult.setCollectionMode(true);
-    
+
+    <% if $cur_module.is_template_propertybag && !$cur_module.is_property_bag_limit_to_only_declared_properties%>
+    // user defined properties
+    for ( rho::Hashtable<rho::String, rho::String>::const_iterator it = m_hashProps.begin();  it != m_hashProps.end(); ++it )
+    {
+        res[it->first] = it->second;
+    }
+    <% end %>
+
     // existing properties
     for ( rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< <%= propBaseI %> > *>::const_iterator it = m_mapPropAccessors.begin();  it != m_mapPropAccessors.end(); ++it )
     {
@@ -115,17 +118,6 @@ void <%= propBaseClass %>::getAllProperties(CMethodResult& oResult)
         res[it->first] = oResult.toString();
     }
     
-    <% if !$cur_module.is_property_bag_limit_to_only_declared_properties %>
-    if (!oResult.isError())
-    {
-        // user defined properties
-        for ( rho::Hashtable<rho::String, rho::String>::const_iterator it = m_hashProps.begin();  it != m_hashProps.end(); ++it )
-        {
-            res[it->first] = it->second;
-        }
-    }
-    <% end %>
-
     oResult.setCollectionMode(false);
     if ( oResult.isError() )
         oResult.callCallback();
@@ -142,10 +134,13 @@ void <%= propBaseClass %>::setProperty( const rho::String& propertyName,  const 
     {
         <% if $cur_module.is_property_bag_limit_to_only_declared_properties %>
         if ( !m_mapPropAccessors.containsKey(propertyName) )
+        {
             oResult.setArgError("Set unknown property: " + propertyName);
-        <% else %>
-        m_hashProps.put(propertyName, propertyValue);
+            return;
+        }
         <% end %>
+
+        m_hashProps.put(propertyName, propertyValue);
     }
 }
 
@@ -161,9 +156,7 @@ void <%= propBaseClass %>::setProperties( const rho::Hashtable<rho::String, rho:
 
 void <%= propBaseClass %>::clearAllProperties(CMethodResult& oResult)
 {
-<% if !$cur_module.is_property_bag_limit_to_only_declared_properties %>
     m_hashProps.clear();
-<% end %>
     // ToDo: set default values to existing properties 
 }
 
