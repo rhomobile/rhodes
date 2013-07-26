@@ -47,7 +47,7 @@ extern "C" void rho_sys_app_exit();
 extern "C" void rho_sys_app_exit2();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
-#ifdef WIN32
+#if defined(OS_WINDOWS_DESKTOP)
 extern bool g_bRestart;
 #endif
 
@@ -659,7 +659,7 @@ void CReplaceBundleThread::run()
         }
     }
     else {
-#ifdef WIN32
+#if defined(OS_WINDOWS_DESKTOP)
 		g_bRestart = true;
         rho_sys_app_exit2();
 #else
@@ -750,7 +750,7 @@ void CReplaceBundleThread::doReplaceBundle()
     }
     if (is_partial_update) {
         filelist.saveToFile();
-#ifdef OS_ANDROIDr
+#ifdef OS_ANDROID
         rho_android_file_reload_stat_table();
 #endif                
     }
