@@ -60,6 +60,7 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
 extern "C" void registerRhoExtension();
 extern "C" void rho_webview_navigate(const char* url, int index);
+static void rho_platform_check_restart_application();
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
@@ -727,6 +728,8 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 #if !defined(OS_WINDOWS_DESKTOP)
 //	ReleaseMutex(m_hMutex);
 #endif
+
+    rho_platform_check_restart_application();
 }
 
 const rho::String& CRhodesModule::getRhoRootPath()
@@ -851,8 +854,17 @@ CMainWindow* Rhodes_getMainWindow() {
 }
 
 extern "C" void rho_wmsys_run_app(const char* szPath, const char* szParams );
+static bool g_bIsRestartApplication = false;
 void rho_platform_restart_application() 
 {
+    g_bIsRestartApplication = true;
+}
+
+static void rho_platform_check_restart_application() 
+{
+    if (!g_bIsRestartApplication)
+        return;
+
 	char module[MAX_PATH];
     ::GetModuleFileNameA(NULL,module,MAX_PATH);
                                        
