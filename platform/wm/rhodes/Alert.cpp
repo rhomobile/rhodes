@@ -342,7 +342,6 @@ HICON CAlertDialog::loadIcon()
 
 	for (int i = 0; i < (sizeof(iconTable)/sizeof(iconTable[0])); i++) 
 	{
-		//LOG(ERROR) + "ICON == " + iconTable[i].name;
 		if (iconTable[i].name == m_icon)
 			iconId = iconTable[i].id;
 	}
@@ -351,12 +350,18 @@ HICON CAlertDialog::loadIcon()
 	{
 #ifdef OS_WINCE
 		HMODULE hGWES = LoadLibraryEx( L"gwes.exe", NULL, LOAD_LIBRARY_AS_DATAFILE );
+
+        if (hGWES == NULL)
+            hGWES = LoadLibraryEx( L"gwes.dll", NULL, LOAD_LIBRARY_AS_DATAFILE );
+
 		hIcon = LoadIcon(hGWES, MAKEINTRESOURCE(iconId));
+
+        if (hIcon == NULL)
+            LOG(INFO) + "icon was not loaded";
 #else
 		hIcon = LoadIcon(NULL, iconId);
 #endif
 	}
-	//TODO: if icon has predefined type - try to load it from system resources.
 
 	return hIcon;
 }
