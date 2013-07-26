@@ -749,7 +749,6 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
             PivotItem tab = new PivotItem();
-            // TODO: make labels font smaller
             // TODO: implement icons
             tab.Header = label;
             //if ((icon == null) || (icon.Length == 0))
@@ -811,8 +810,8 @@ namespace rhodes
             tab.Tag = action;
             //tab.SetValue(FrameworkElement.NameProperty, "tabItem" + TabbarPivot.Items.Count.ToString());
               
-            TabbarPivot.Items.Add(tab);   
-             
+            TabbarPivot.Items.Add(tab);
+
             //return TabbarPivot.Items.Count-1;          
         }
 
