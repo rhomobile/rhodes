@@ -656,7 +656,11 @@ void CReplaceBundleThread::run()
     }
     else {
         rho_platform_restart_application();
-        rho_sys_app_exit();
+#ifdef OS_WINCE
+        rho_sys_app_exit2();
+#else
+		rho_sys_app_exit();
+#endif
     }
     if (m_is_finished_flag != NULL) {
         *m_is_finished_flag = true;
