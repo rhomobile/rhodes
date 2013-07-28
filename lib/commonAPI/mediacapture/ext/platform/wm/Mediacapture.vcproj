@@ -642,6 +642,10 @@
 				Name="shared"
 				>
 				<File
+					RelativePath="..\..\camera.xml"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Camera_impl.cpp"
 					>
 				</File>
