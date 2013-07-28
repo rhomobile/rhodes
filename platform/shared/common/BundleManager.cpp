@@ -44,7 +44,6 @@
 using namespace rho;
 using namespace rho::common;
 extern "C" void rho_sys_app_exit();
-extern "C" void rho_sys_app_exit2();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
 #if defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
@@ -656,15 +655,13 @@ void CReplaceBundleThread::run()
     }
     else {
         rho_platform_restart_application();
-#ifdef OS_WINCE
-        rho_sys_app_exit2();
-#else
-		rho_sys_app_exit();
-#endif
+        rho_sys_app_exit();
     }
+
     if (m_is_finished_flag != NULL) {
         *m_is_finished_flag = true;
     }
+
 }
 
     
@@ -778,7 +775,7 @@ extern "C"
 void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode )
 {
     bool is_finished_flag = false;
-    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, &is_finished_flag);  
+    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, (not_thread_mode ? &is_finished_flag : 0));  
     if (not_thread_mode) {
         while (!is_finished_flag) {
             replace_thread->sleep(10);
