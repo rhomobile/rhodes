@@ -24,15 +24,15 @@ extern void native_tabbar_switch_tab(int index);
     [methodResult setResult:[NSNumber numberWithInt:native_tabbar_get_current_tab()]];
 }
 
--(void) remove {
+-(void) remove:(id<IMethodResult>)methodResult{
     remove_native_tabbar();
 }
 
--(void) setTabBadge:(int)tabIndex badge:(NSString*)badge {
+-(void) setTabBadge:(int)tabIndex badge:(NSString*)badge methodResult:(id<IMethodResult>)methodResult{
     native_tabbar_set_tab_badge(tabIndex, (char*)[badge UTF8String]);
 }
 
--(void) switchTab:(int)tabIndex {
+-(void) switchTab:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{
     native_tabbar_switch_tab(tabIndex);
 }
 
@@ -40,7 +40,7 @@ extern void native_tabbar_switch_tab(int index);
     [methodResult setResult:[NSNumber numberWithBool:nativebar_started()]];
 }
 
--(void) removeTab:(int)tabIndex {
+-(void) removeTab:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{
     // unsupported
 }
 

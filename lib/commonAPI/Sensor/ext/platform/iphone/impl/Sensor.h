@@ -10,7 +10,7 @@
 
 -(void) start:(id<IMethodResult>)methodResult;
 -(void) readData:(id<IMethodResult>)methodResult;
--(void) stop;
+-(void) stop:(id<IMethodResult>)methodResult;
 
 
 

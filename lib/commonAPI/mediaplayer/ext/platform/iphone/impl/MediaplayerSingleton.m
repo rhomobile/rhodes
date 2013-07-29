@@ -7,21 +7,21 @@ extern void rho_sys_open_url(const char* url);
 
 
 
--(void) start:(NSString*)filename {
+-(void) start:(NSString*)filename methodResult:(id<IMethodResult>)methodResult {
     if (filename != nil) {
         rho_sys_open_url([filename UTF8String]);
     }
 }
 
--(void) stop {
+-(void) stop:(id<IMethodResult>)methodResult{
 
 }
 
--(void) startvideo:(NSString*)filename {
+-(void) startvideo:(NSString*)filename methodResult:(id<IMethodResult>)methodResult {
     [self start:filename];
 }
 
--(void) stopvideo {
+-(void) stopvideo:(id<IMethodResult>)methodResult {
 
 }
 
@@ -30,11 +30,11 @@ extern void rho_sys_open_url(const char* url);
     [methodResult setResult:ar];
 }
 
--(void) playRingTone:(NSString*)name {
+-(void) playRingTone:(NSString*)name methodResult:(id<IMethodResult>)methodResult {
 
 }
 
--(void) stopRingTone {
+-(void) stopRingTone:(id<IMethodResult>)methodResult {
 
 }
 
