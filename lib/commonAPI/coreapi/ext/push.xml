@@ -17,10 +17,10 @@ This API is part of the `coreapi` extension that is included automatically.
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/>
         </TEMPLATES>
-        <PROPERTIES access="INSTANCE" generateAccessors="false">
+        <PROPERTIES access="INSTANCE">
             <DESC>These properties are used to configure the Push API.</DESC>
 
-            <PROPERTY name="type" type="STRING" readOnly="true" generateAccessors="true">
+            <PROPERTY name="type" type="STRING" readOnly="true">
                <DESC>Push engine type.</DESC>
                 <VALUES>
                     <VALUE constName="PUSH_TYPE_RHOCONNECT" value="rhoconnect-push">
@@ -31,12 +31,10 @@ This API is part of the `coreapi` extension that is included automatically.
                     </VALUE>
                 </VALUES>
             </PROPERTY>
-            <PROPERTY name="deviceId" type="STRING" readOnly="true">
-                <DESC>Push token used to identify particular device.  Note the deviceId will be empty until push server registration has completed.  To ensure you always receive the deviceId when it is ready, use the `Rho.Push.getDeviceId(function() { // ... }` instead.  This will execute your callback when deviceId is populated.</DESC>
-            </PROPERTY>
             <PROPERTY name="userNotifyMode" type="STRING" default="backgroundNotifications" deprecated="true">
-                <DESC>UI notification mode.</DESC>
+                <DESC>UI notification mode.  Use `Rho.Notification` instead.</DESC>
                 <PLATFORM>Android</PLATFORM>
+                <APPLIES rubyOnly="true"/>
                 <VALUES>
                     <VALUE constName="PUSH_NOTIFY_NONE" value="none">
                         <DESC>Do not notify user about received push messages.</DESC>
@@ -51,10 +49,6 @@ This API is part of the `coreapi` extension that is included automatically.
                         <DESC>Notify user using notification bar if in background and with alerts in foreground.</DESC>
                     </VALUE>
                 </VALUES>
-            </PROPERTY>
-            <PROPERTY name="senderId" type="STRING" readOnly="true">
-                <PLATFORM>Android</PLATFORM>
-                <DESC>Sender ID used to identify sender at GCM push server.</DESC>
             </PROPERTY>
             <PROPERTY name="pushServer" type="STRING" readOnly="true">
                 <DESC>URL of RhoConnect Push server.</DESC>
