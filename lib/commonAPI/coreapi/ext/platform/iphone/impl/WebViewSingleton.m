@@ -33,7 +33,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     [methodResult setResult:[NSNumber numberWithBool:rho_webview_get_full_screen_mode()]];
 }
 
--(void) setFullScreen:(BOOL)value {
+-(void) setFullScreen:(BOOL)value methodResult:(id<IMethodResult>)methodResult{
     rho_webview_full_screen_mode(value?1:0);
 }
 
@@ -41,7 +41,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setNativeMenu:(NSDictionary*)value {
+-(void) setNativeMenu:(NSDictionary*)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -49,7 +49,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //TODO?
 }
 
--(void) setEnableZoom:(BOOL)value {
+-(void) setEnableZoom:(BOOL)value methodResult:(id<IMethodResult>)methodResult{
     //TODO?
 }
 
@@ -57,7 +57,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setEnablePageLoadingIndication:(BOOL)value {
+-(void) setEnablePageLoadingIndication:(BOOL)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -65,7 +65,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setEnableWebPlugins:(BOOL)value {
+-(void) setEnableWebPlugins:(BOOL)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -73,7 +73,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setNavigationTimeout:(int)value {
+-(void) setNavigationTimeout:(int)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -81,7 +81,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setScrollTechnique:(NSString*)value {
+-(void) setScrollTechnique:(NSString*)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -89,7 +89,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setFontFamily:(NSString*)value {
+-(void) setFontFamily:(NSString*)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -97,7 +97,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setUserAgent:(NSString*)value {
+-(void) setUserAgent:(NSString*)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -105,7 +105,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setViewportEnabled:(BOOL)value {
+-(void) setViewportEnabled:(BOOL)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -113,7 +113,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setViewportWidth:(int)value {
+-(void) setViewportWidth:(int)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -121,7 +121,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setCacheSize:(int)value {
+-(void) setCacheSize:(int)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -129,7 +129,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //TODO?
 }
 
--(void) setEnableCache:(BOOL)value {
+-(void) setEnableCache:(BOOL)value methodResult:(id<IMethodResult>)methodResult{
     //TODO?
 }
 
@@ -137,7 +137,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setAcceptLanguage:(NSString*)value {
+-(void) setAcceptLanguage:(NSString*)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -145,7 +145,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setZoomPage:(float)value {
+-(void) setZoomPage:(float)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -153,7 +153,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
--(void) setTextZoomLevel:(int)value {
+-(void) setTextZoomLevel:(int)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
@@ -161,15 +161,15 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     [methodResult setResult:[NSNumber numberWithInt:rho_webview_active_tab()]];
 }
 
--(void) refresh:(int)tabIndex {
+-(void) refresh:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{
     rho_webview_refresh(tabIndex);
 }
 
--(void) navigate:(NSString*)url tabIndex:(int)tabIndex {
+-(void) navigate:(NSString*)url tabIndex:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{
     rho_webview_navigate([url UTF8String], tabIndex);
 }
 
--(void) navigateBack:(int)tabIndex {
+-(void) navigateBack:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{
     rho_webview_navigate_back_with_tab(tabIndex);
 }
 
@@ -181,7 +181,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     [methodResult setResult:rho_webview_get_current_url(tabIndex)];
 }
 
--(void) executeJavascript:(NSString*)javascriptText tabIndex:(int)tabIndex {
+-(void) executeJavascript:(NSString*)javascriptText tabIndex:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{
     rho_webview_execute_js([javascriptText UTF8String], tabIndex);
 }
 
@@ -189,19 +189,19 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     [self getActiveTab:methodResult];
 }
 
--(void) full_screen_mode:(BOOL)enable {
+-(void) full_screen_mode:(BOOL)enable methodResult:(id<IMethodResult>)methodResult{
     [self setFullScreen:enable];
 }
 
--(void) setCookie:(NSString*)url cookie:(NSString*)cookie {
+-(void) setCookie:(NSString*)url cookie:(NSString*)cookie methodResult:(id<IMethodResult>)methodResult{
     rho_webview_set_cookie([url UTF8String], [cookie UTF8String]);
 }
 
--(void) save:(NSString*)format path:(NSString*)path tabIndex:(int)tabIndex {
+-(void) save:(NSString*)format path:(NSString*)path tabIndex:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 
--(void) set_menu_items:(NSDictionary*)menuItems {
+-(void) set_menu_items:(NSDictionary*)menuItems methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
 

@@ -13,7 +13,7 @@
 -(void) getCameraByType:(NSString*)cameraType methodResult:(id<IMethodResult>)methodResult;
 
 -(void) choosePicture:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
--(void) saveImageToDeviceGallery:(NSString*)pathToImage;
+-(void) saveImageToDeviceGallery:(NSString*)pathToImage methodResult:(id<IMethodResult>)methodResult;
 
 
 @end

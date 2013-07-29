@@ -122,13 +122,13 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
         for i in 1..(module_method.params.size-1)
             method_line = method_line + "#{module_method.params[i].name}:(#{$iphone_types[module_method.params[i].type]})#{$iphone_extract_param_prefix[module_method.params[i].type]}[params objectAtIndex:#{i}]#{$iphone_extract_param_suffix[module_method.params[i].type]} "
         end
-        if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
+        #if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
             method_line = method_line + "methodResult:methodResult "
-        end
+        #end
     else
-        if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
+        #if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
             method_line = method_line + ":methodResult "
-        end
+        #end
     end
     method_line = method_line + "];"
     %>
@@ -161,6 +161,10 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     BOOL method_return_result = YES;
     BOOL method_receive_callback = NO;
     int argc = argv.getSize();
+
+
+    [methodResult setMethodSignature:@"<%= $cur_module.name+"::"+module_method.name %>"];
+
     <%
      lines = prepare_rho_api_params_structure_lines(module_method.params, 'rho_api_params')
      lines.each do |line|
