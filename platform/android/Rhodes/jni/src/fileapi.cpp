@@ -1202,6 +1202,13 @@ RHO_GLOBAL int stat(const char *path, struct stat *buf)
 {
     RHO_LOG("stat: %s", path);
     std::string fpath = make_full_path(path);
+    
+    /* fail immediately if found invalid symbol */
+    if (fpath.find(':')!=std::string::npos)
+    {
+        return -1;
+    }
+    
     if (!need_emulate(fpath))
     {
         int e = real_stat(path, buf);
@@ -1240,6 +1247,13 @@ RHO_GLOBAL int lstat(const char *path, struct stat *buf)
 {
     RHO_LOG("lstat: %s", path);
     std::string fpath = make_full_path(path);
+    
+    /* fail immediately if found invalid symbol */
+    if (fpath.find(':')!=std::string::npos)
+    {
+        return -1;
+    }
+    
     if (!need_emulate(fpath))
         return real_lstat(path, buf);
 
