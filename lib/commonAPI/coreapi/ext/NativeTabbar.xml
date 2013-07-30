@@ -58,6 +58,7 @@ This API is part of the `coreapi` extension that is included automatically.
                                 </PARAM>
                                 <PARAM name="useCurrentViewForTab" type="BOOLEAN" default="false">
                                     <DESC>Smooth transfer WebView from current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
+                                    <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                                 </PARAM>
 
                                 <PARAM name="perishable" type="BOOLEAN" default="false">
