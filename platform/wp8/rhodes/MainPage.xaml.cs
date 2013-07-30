@@ -38,6 +38,7 @@ using System.Windows.Media;
 using System.Windows.Controls;
 using System.IO.IsolatedStorage;
 using rhodes.common;
+using System.ComponentModel;
 
 namespace rhodes
 {
@@ -48,7 +49,40 @@ namespace rhodes
         public bool _isLoaded = false;
         public bool _isReload = false;
     };
-    
+
+    public partial class TabHeader : INotifyPropertyChanged
+    {
+        // internal settings
+        public Brush SelectedBackground = null;
+        public Brush UnselectedBackground = null;
+
+        // INotifyPropertyChanged impl
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        // fields:
+
+        public string Label { get; set; }
+
+        private Brush _background;
+        public Brush Background
+        {
+            get { return _background; }
+            set
+            {
+                if (_background != value)
+                {
+                    _background = value;
+                    OnPropertyChanged("Background");
+                }
+            }
+        }
+    };
+
     public partial class MainPage : PhoneApplicationPage
     {
         // saved singletone instance of MainPage
@@ -745,12 +779,22 @@ namespace rhodes
             return Color.FromArgb(255, Convert.ToByte(cR), Convert.ToByte(cG), Convert.ToByte(cB));
         }
 
-        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, IMethodResult oResult)
+        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, string background_color, bool reload, bool use_current_view_for_tab, bool hasCallback, IMethodResult oResult)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, background_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
             PivotItem tab = new PivotItem();
             // TODO: implement icons
-            tab.Header = label;
+            TabHeader th = new TabHeader();
+            th.Label = label;
+            th.Background = th.UnselectedBackground = new SolidColorBrush(
+                (background_color != null) && (background_color.Length > 0) ?
+                getColorFromString(background_color) :
+                Color.FromArgb(255, 0, 0, 0)
+                );
+            th.SelectedBackground = (selected_color != null) && (selected_color.Length > 0) ?
+                new SolidColorBrush(getColorFromString(selected_color)) :
+                th.UnselectedBackground;
+            tab.Header = th;
             //if ((icon == null) || (icon.Length == 0))
             //{
             //    TextBlock tb = new TextBlock();
@@ -804,27 +848,33 @@ namespace rhodes
             tab.Content = wv;
             //}
 
-            if ((selected_color != null) && (selected_color.Length > 0))
-                tab.Background = new SolidColorBrush(getColorFromString(selected_color));
             tab.IsEnabled = !disabled;
             tab.Tag = action;
             //tab.SetValue(FrameworkElement.NameProperty, "tabItem" + TabbarPivot.Items.Count.ToString());
-              
-            TabbarPivot.Items.Add(tab);
 
-            //return TabbarPivot.Items.Count-1;          
+            TabbarPivot.Items.Add(tab);
         }
 
         private void TabbarPivot_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (_tabProps.Count > 0) &&
-                (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) && _tabProps.ContainsKey(TabbarPivot.SelectedIndex) &&
-                ((_tabProps[TabbarPivot.SelectedIndex]._isLoaded == false) ||
-                 (_tabProps[TabbarPivot.SelectedIndex]._isLoaded == true && _tabProps[TabbarPivot.SelectedIndex]._isReload == true)))
+            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count))
             {
-                string action = ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag);
-                if (action != null)
-                    CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, action);
+                for (int iTab = 0; iTab < TabbarPivot.Items.Count; ++iTab)
+                {
+                    TabHeader th = (TabHeader)((PivotItem)TabbarPivot.Items[iTab]).Header;
+                    Brush newColor = iTab == TabbarPivot.SelectedIndex ?
+                        th.SelectedBackground : th.UnselectedBackground;
+                    if (newColor != th.Background)
+                        th.Background = newColor;
+                }
+                if ((_tabProps.Count > 0) && _tabProps.ContainsKey(TabbarPivot.SelectedIndex) &&
+                    ((_tabProps[TabbarPivot.SelectedIndex]._isLoaded == false) ||
+                     (_tabProps[TabbarPivot.SelectedIndex]._isLoaded == true && _tabProps[TabbarPivot.SelectedIndex]._isReload == true)))
+                {
+                    string action = ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag);
+                    if (action != null)
+                        CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, action);
+                }
             }
             int nOldTab = _tabIndex;
             _tabIndex = TabbarPivot.SelectedIndex;
