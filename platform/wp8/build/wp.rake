@@ -127,7 +127,7 @@ def addbundletoxap()
   cp File.join($srcdir, "RhoBundleMap.txt"), tmp_dir
   cp_r File.join($srcdir, "apps"), rho_dir
   #cp_r appsFiles, File.join(rho_dir, 'apps')
-  cp_r File.join($srcdir, "public"), File.join(rho_dir, 'apps')
+  #cp_r File.join($srcdir, "public"), File.join(rho_dir, 'apps')
   cp_r File.join($srcdir, "lib"), rho_dir
   cp_r File.join($srcdir, "db"), rho_dir
 
@@ -239,8 +239,14 @@ namespace "build" do
       #confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
       #File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) } if confpath_content && confpath_content.length()>0
 
-      cp_r $srcdir + "/apps/public", $srcdir + "/public"
-      rm_r $srcdir + "/apps/public"
+      #cp_r $srcdir + "/apps/public", $srcdir + "/public"
+      #rm_r $srcdir + "/apps/public"
+    end
+
+    task :upgrade_package => [:rhobundle_noext, :extensions] do        
+      mkdir_p $targetdir if not File.exists? $targetdir
+      zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
+      Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
 
     # create file with map of bundle files 
@@ -292,6 +298,9 @@ namespace "build" do
       doc.elements.each("Deployment/App") { |element|
         element.attributes["ProductID"] = "{"+$app_config["wp"]["productid"]+"}"
         element.attributes["Title"] = $app_config["name"]
+        element.attributes["Description"] = $app_config["name"]
+        element.attributes["Author"] = $app_config["vendor"]
+        element.attributes["Publisher"] = $app_config["vendor"]
       }
 
       File.open($startdir + "/"+$config["build"]["wp8path"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }

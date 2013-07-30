@@ -66,6 +66,26 @@ namespace rhodes
         private double _screenPhysicalHeight;
         private bool _isBrowserInitialized = false;
         private int _tabIndex = -1;
+        // HTML code to get true User-Agent string
+        private const string getUserAgentHtml =
+        @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01 Transitional//EN"">
+        <html>
+        <head>
+        <script language=""javascript"" type=""text/javascript"">
+            function notifyUA() {
+               window.external.notify(navigator.userAgent);
+            }
+        </script>
+        </head>
+        <body onload=""notifyUA();""></body>
+        </html>";
+        // web browser user agent string (initialized with fabricated default value)
+        private string _userAgent = "Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone " +
+            System.Environment.OSVersion.Version.Major.ToString() + "." +
+            System.Environment.OSVersion.Version.Minor.ToString() +
+            "; Trident/6.0; IEMobile/10.0; ARM; Touch; " +
+            Microsoft.Phone.Info.DeviceStatus.DeviceManufacturer + "; " +
+            Microsoft.Phone.Info.DeviceStatus.DeviceName + ")";
 
         private Dictionary<int, TabProps> _tabProps= new Dictionary<int, TabProps>();
 
@@ -79,7 +99,7 @@ namespace rhodes
 
         public bool isBrowserInitialized(int index)
         {
-            return (index == -1) ? _isBrowserInitialized : _tabProps[index]._isInitialized;
+            return (index == -1) || !_tabProps.ContainsKey(index) ? _isBrowserInitialized : _tabProps[index]._isInitialized;
         }
 
         private bool isUIThread
@@ -91,7 +111,7 @@ namespace rhodes
         {
             if ( _oTabResult != null)
             {
-                rho.common.Hashtable<String,String> mapRes = new rho.common.Hashtable<String,String>();
+                Dictionary<string, string> mapRes = new Dictionary<string, string>();
                 mapRes["tab_index"] = Convert.ToString(nNewTab);
                 mapRes["newTabIndex"] = Convert.ToString(nNewTab);
                 mapRes["oldTabIndex"] = Convert.ToString(nOldTab);
@@ -159,6 +179,17 @@ namespace rhodes
         {
             // TODO: consider rotation
             return (int)_screenHeight;
+        }
+
+        public string getUserAgent()
+        {
+            return this._userAgent;
+        }
+
+        public string getWebviewFramework()
+        {
+            return "IE/" + System.Environment.OSVersion.Version.Major.ToString() + "." +
+                System.Environment.OSVersion.Version.Minor.ToString();
         }
 
         public string getScreenOrientation()
@@ -232,7 +263,17 @@ namespace rhodes
 
         private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
         {
-            // TODO: put after-load app code here (e.g. switch to fullscreen if rhoconfig specifies that)
+            var browser = new Microsoft.Phone.Controls.WebBrowser();
+            browser.IsScriptEnabled = true;
+            browser.Visibility = Visibility.Collapsed;
+            browser.Loaded += (asender, args) => browser.NavigateToString(getUserAgentHtml);
+            browser.ScriptNotify += (asender, args) =>
+            {
+                string userAgent = args.Value;
+                LayoutRoot.Children.Remove(browser);
+                this._userAgent = userAgent;
+            };
+            LayoutRoot.Children.Add(browser);
         }
 
         private string prependWithSlash(string url)
@@ -256,7 +297,7 @@ namespace rhodes
                 initUri = url;
                 return;
             }
-            else if (index > -1 && _tabProps[index]._isInitialized == false)
+            else if (index > -1 && _tabProps.ContainsKey(index) && _tabProps[index]._isInitialized == false)
             {
                 _tabProps[index]._action = url;
                 return;
@@ -393,10 +434,10 @@ namespace rhodes
             String url = getCurrentURLFunc((sender as WebBrowser).TabIndex);
             CRhoRuntime.getInstance().onWebViewUrlChanged(url);
             int index = (sender as WebBrowser).TabIndex;
-            if (index > -1 && !_tabProps[index]._isInitialized)
+            if (index > -1 && _tabProps.ContainsKey(index) && !_tabProps[index]._isInitialized)
             {
                 _tabProps[index]._isInitialized = true;
-                if (_tabProps.ContainsKey(index) && _tabProps[index]._action != null)
+                if (_tabProps[index]._action != null)
                     navigate(_tabProps[index]._action, index);
             }
             else if (TabbarPivot.Items.Count == 0 && !_isBrowserInitialized)
@@ -406,7 +447,7 @@ namespace rhodes
             }
             else
             {
-                if (TabbarPivot.Items.Count > 0 && index > -1 && url.Contains("about:blank") == false)
+                if (TabbarPivot.Items.Count > 0 && index > -1 && _tabProps.ContainsKey(index) && url.Contains("about:blank") == false)
                 {
                     if (_tabProps[index]._isLoaded == false)
                         _tabProps[index]._isLoaded = true;
@@ -704,11 +745,10 @@ namespace rhodes
             return Color.FromArgb(255, Convert.ToByte(cR), Convert.ToByte(cG), Convert.ToByte(cB));
         }
 
-        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, object oResult)
+        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, IMethodResult oResult)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
             PivotItem tab = new PivotItem();
-            // TODO: make labels font smaller
             // TODO: implement icons
             tab.Header = label;
             //if ((icon == null) || (icon.Length == 0))
@@ -741,7 +781,7 @@ namespace rhodes
             _tabProps[TabbarPivot.Items.Count] = new TabProps();
             _tabProps[TabbarPivot.Items.Count]._isReload = reload;
             if(hasCallback == true)
-                _oTabResult = oResult as IMethodResult;
+                _oTabResult = oResult;
 
             WebBrowser wv = new WebBrowser();
             wv.Height = double.NaN;
@@ -770,18 +810,26 @@ namespace rhodes
             tab.Tag = action;
             //tab.SetValue(FrameworkElement.NameProperty, "tabItem" + TabbarPivot.Items.Count.ToString());
               
-            TabbarPivot.Items.Add(tab);   
-             
+            TabbarPivot.Items.Add(tab);
+
             //return TabbarPivot.Items.Count-1;          
         }
 
         private void TabbarPivot_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) && ((_tabProps[TabbarPivot.SelectedIndex]._isLoaded == false) || (_tabProps[TabbarPivot.SelectedIndex]._isLoaded == true && _tabProps[TabbarPivot.SelectedIndex]._isReload == true)))
-                CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag));
+            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (_tabProps.Count > 0) &&
+                (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) && _tabProps.ContainsKey(TabbarPivot.SelectedIndex) &&
+                ((_tabProps[TabbarPivot.SelectedIndex]._isLoaded == false) ||
+                 (_tabProps[TabbarPivot.SelectedIndex]._isLoaded == true && _tabProps[TabbarPivot.SelectedIndex]._isReload == true)))
+            {
+                string action = ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag);
+                if (action != null)
+                    CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, action);
+            }
             int nOldTab = _tabIndex;
             _tabIndex = TabbarPivot.SelectedIndex;
-            raiseTabEvent("onTabFocus", nOldTab, _tabIndex);
+            if ((nOldTab != _tabIndex) && (_tabIndex > -1))
+                raiseTabEvent("onTabFocus", nOldTab, _tabIndex);
         }
 
         public void tabbarSetBadge(int index, string badge)

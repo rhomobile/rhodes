@@ -5,9 +5,8 @@ namespace rhoruntime {
     public interface class IMethodResult
     {
     public:
-        [Windows::Foundation::Metadata::DefaultOverloadAttribute]
-
         bool hasCallback();
+        [Windows::Foundation::Metadata::DefaultOverloadAttribute]
 		void set(bool res);
         void set(int64 res);
         void set(int res);

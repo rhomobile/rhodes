@@ -18,7 +18,7 @@ static NSDictionary* ourPropertyAliases= nil;
     mProperties = [[NSMutableDictionary dictionaryWithCapacity:4] retain];
     <% $cur_module.properties.each do |prop|
           if prop.default_value != nil
-             line = '[self setProperty:@"'+prop.native_name+'" propertyValue:@"'+prop.default_value.to_s+'"];' %>
+             line = '[self setProperty:@"'+prop.native_name+'" propertyValue:@"'+prop.default_value.to_s+'" methodResult:nil];' %>
     <%= line %><%
           end
        end
@@ -87,7 +87,7 @@ static NSDictionary* ourPropertyAliases= nil;
     [methodResult setResult:[mProperties objectForKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]]];
 }
 
--(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue {
+-(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue methodResult:(id<IMethodResult>)methodResult {
     NSObject* value = propertyValue;
     NSString* strValue = propertyValue;
     if ([value isKindOfClass:[NSNumber class]]) {
@@ -146,17 +146,17 @@ static NSDictionary* ourPropertyAliases= nil;
 }
 
 
--(void) setProperties:(NSDictionary*)propertyMap {
+-(void) setProperties:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
     NSArray* keys = [propertyMap allKeys];
     int i;
     for (i = 0; i < [keys count]; i++) {
         NSString* key = (NSString*)[keys objectAtIndex:i];
         NSString* value = (NSString*)[propertyMap objectForKey:key];
-        [self setProperty:key propertyValue:value];
+        [self setProperty:key propertyValue:value methodResult:methodResult];
     }
 }
 
--(void) clearAllProperties {
+-(void) clearAllProperties:(id<IMethodResult>)methodResult {
    [mProperties removeAllObjects];
    [self resetAllPropertiesToDefault];
 }

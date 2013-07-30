@@ -21,6 +21,9 @@ This API is part of the `coreapi` extension that is included automatically.
             <PROPERTY name="appsBundleFolder" type="STRING" readOnly="true">
                 <DESC>Path to apps folder inside application bundle.</DESC>
             </PROPERTY>
+            <PROPERTY name="bundleFolder" type="STRING" readOnly="true">
+                <DESC>Path to application bundle folder.</DESC>
+            </PROPERTY>
             <PROPERTY name="userFolder" type="STRING" readOnly="true">
                 <DESC>Path to folder where application can write files and create subfolders.</DESC>
             </PROPERTY>

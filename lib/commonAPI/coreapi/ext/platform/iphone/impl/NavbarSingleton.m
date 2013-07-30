@@ -10,7 +10,7 @@ extern BOOL navbar_started();
 
 
 
--(void) create:(NSDictionary*)navBarProperties {
+-(void) create:(NSDictionary*)navBarProperties methodResult:(id<IMethodResult>)methodResult{
     if (![navBarProperties isKindOfClass:[NSDictionary class]]) {
         NSLog(@"Navbar.create ERROR - parameter should be HASH !");
         return;
@@ -18,7 +18,7 @@ extern BOOL navbar_started();
     create_navbar(navBarProperties);
 }
 
--(void) remove {
+-(void) remove:(id<IMethodResult>)methodResult{
     remove_navbar();
 }
 

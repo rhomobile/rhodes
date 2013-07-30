@@ -228,7 +228,7 @@ module Rho
     end
     
     def self.rhobundle_getfilename()
-        File.join( __rhoGetCurrentDir(), '/RhoBundle/upgrade_bundle.zip')
+        File.join( __rhoGetUserDir(), '/RhoBundle/upgrade_bundle.zip')
     end
     
     def self.rhobundle_download(download_url, download_callback)

@@ -60,23 +60,23 @@
     [methodResult setResult:[NSNumber numberWithBool:auto_enable]];
 }
 
--(void) setAutoRotate:(BOOL)autoRotate {
+-(void) setAutoRotate:(BOOL)autoRotate methodResult:(id<IMethodResult>)methodResult {
     [[Rhodes sharedInstance] setRotationLocked: !autoRotate];
 }
 
--(void) normal {
+-(void) normal:(id<IMethodResult>)methodResult {
 
 }
 
--(void) rightHanded {
+-(void) rightHanded:(id<IMethodResult>)methodResult {
 
 }
 
--(void) leftHanded {
+-(void) leftHanded:(id<IMethodResult>)methodResult {
 
 }
 
--(void) upsideDown {
+-(void) upsideDown:(id<IMethodResult>)methodResult {
 
 }
 
