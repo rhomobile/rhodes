@@ -11,13 +11,19 @@
 #include "Imager.h"
 //#include "ImagerMod.h"
 #include "wininet.h"
+#include <sstream>
 // SPS
+
+#include <windows.h>
 
 // SPS  - taken from error.h
 #pragma once
 /**
  * General error codes
  */
+
+#define WM_STOPVIEWER (WM_APP + 500)
+
 enum errType
 {
 	SUCCESS = 0,				
@@ -199,6 +205,11 @@ CImager::CImager(HINSTANCE hInstance,HWND hParent,int iInstanceID) :m_iInstanceI
 	m_lpSzFiletype[0] = (TCHAR)'\0';
 	m_hImager = INVALID_HANDLE_VALUE;
 
+	//m_rcWinPos.left = GetSystemMetrics(SM_CXSCREEN)/2-50;
+	//m_rcWinPos.right = GetSystemMetrics(SM_CXSCREEN)/2+50;
+	//m_rcWinPos.top = GetSystemMetrics(SM_CYSCREEN)/2-50;
+	//m_rcWinPos.bottom = GetSystemMetrics(SM_CYSCREEN)/2+50;
+
 	// SPS
 	// Screen is portrait while camera is lansacape, convert viewer to fit 
 	// while retaining aspect ratio
@@ -220,6 +231,8 @@ CImager::CImager(HINSTANCE hInstance,HWND hParent,int iInstanceID) :m_iInstanceI
 	// SPS
 	m_hInst=hInstance;
 	m_hParentWnd=hParent;
+	m_hWndMessageWindow=NULL;
+
 	// SPS
 
 	m_bImgLight = FALSE;//default state
@@ -295,7 +308,49 @@ CImager::CImager(HINSTANCE hInstance,HWND hParent,int iInstanceID) :m_iInstanceI
 	m_bSaveAsFile = true;
 }
 
+// Define the WindowProc to be used by this Imager.
+LRESULT CALLBACK CImager::MessageWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+	stringstream ss;
+	CImager *lImager;
 
+	ss << "HWND: " << hWnd << " Processing message: " << hex << Msg;
+
+	LOG(INFO) + ss.str();
+
+    switch(Msg)
+    {
+		case WM_STOPVIEWER:
+			LOG(INFO) + __FUNCTION__ + "Processing WM_STOPVIEWER message.";
+			lImager = (CImager *)GetWindowLong(hWnd, GWL_USERDATA);
+
+			lImager->StopViewer();
+			break;
+
+		case WM_PAINT:
+			break;
+
+		default:
+			return DefWindowProc(hWnd, Msg, wParam, lParam);
+    }
+    return 0;
+}
+
+bool CImager::onWndMsg(MSG& oMsg)
+{
+	bool handled = false;
+	std::stringstream ss;
+	ss << "Received message " << oMsg.message;
+	LOG(INFO) + __FUNCTION__ + ss.str();
+
+	if (oMsg.message == WM_STOPVIEWER)
+	{
+		LOG(INFO) + __FUNCTION__ + "Processing WM_STOPVIEWER in CImager";
+		handled = true;
+	}
+
+	return false;
+}
 
 ////////////////////////////////////////////////////////////////////////
 // Function:	~CImager
@@ -402,6 +457,7 @@ DWORD CImager::StartViewer()
 	DWORD dwCapValue;
 	DWORD dwRes; 
 	TCHAR tcString[200];
+	stringstream ss;
 
 	LOG(INFO) + "3300:Calling StartViewer ...";
 
@@ -412,7 +468,34 @@ DWORD CImager::StartViewer()
 				m_rcWinPos.right,
 				m_rcWinPos.bottom, 
 				m_hParentWnd, NULL, m_hInst, NULL);
-		
+
+	// Populate the Window message structure
+    WndCls.style         = 0;
+	WndCls.lpfnWndProc   = (WNDPROC)CImager::MessageWndProc;
+    WndCls.cbClsExtra    = 0;
+    WndCls.cbWndExtra    = 0;
+    WndCls.hInstance     = m_hInst;
+    WndCls.hIcon         = NULL;
+    WndCls.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    WndCls.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    WndCls.lpszMenuName  = NULL;
+    WndCls.lpszClassName = L"messagewindow";
+
+    RegisterClass(&WndCls);
+
+	// Create the message window
+	m_hWndMessageWindow = CreateWindowEx(WS_EX_NOANIMATION|WS_EX_TOPMOST, L"messagewindow", NULL, WS_CHILD, 50, 50, 50, 50, m_hParentWnd, NULL, m_hInst, NULL);
+	SetWindowLong(m_hWndMessageWindow, GWL_USERDATA, (long)this);
+	ss << "Created Window handled " << m_hWndMessageWindow;
+	LOG(INFO) + __FUNCTION__ + ss.str();
+	ss.clear(); ss.str("");
+
+	// Post a message to the Window
+	ss << "Posting message WM_STOPVIEWER to Window Handle " << m_hWndMessageWindow;
+	LOG(INFO) + __FUNCTION__ + ss.str();
+	ss.clear(); ss.str("");
+	PostMessage(m_hWndMessageWindow, WM_STOPVIEWER, 1, 1);
+
 	wsprintf(tcString, L"3310:start viewer 1 ->left=%d, right=%d, top=%d, bottom=%d", m_rcWinPos.left, m_rcWinPos.right, m_rcWinPos.top, m_rcWinPos.bottom);
 	LOG(INFO) + tcString;
 
@@ -485,6 +568,7 @@ DWORD CImager::StartViewer()
 		
 		Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_LAMPSTATE, sizeof(BOOL), &m_bImgLight);
 		Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_bImgAim);
+
 	}
 	else
 	{
@@ -1238,6 +1322,8 @@ void CImager::StopTriggerWatch (void)
 
 void CImager::TriggerProc (void)
 {
+	stringstream ss;
+
 	if (!m_bRcmLoaded)
 	{
 		LOG(WARNING) + "Trigger functionality is not available on this device";
@@ -1248,6 +1334,7 @@ void CImager::TriggerProc (void)
 	DWORD status, error;
 	LPWSTR perror;
 	HANDLE wait [2];
+	BOOL posterror;
 
 	wait [0] = m_hTriggerQuit;
 	wait [1] = m_hTriggerEvent;
@@ -1262,8 +1349,18 @@ void CImager::TriggerProc (void)
         }
 
         SaveImage();
-        StopViewer();
-	LOG(INFO) + "SaveImage done.";
+
+		// Send a message to the Window that Imager 
+		//SendMessage(m_hWndMessageWindow, WM_STOPVIEWER, 0, NULL);
+		ss << "PostMessage " << WM_STOPVIEWER << " to m_hWndMessageWindow:" << m_hWndMessageWindow;
+		LOG(INFO) + ss.str();
+		ss.str(""); ss.clear();
+		posterror = PostMessage(m_hWndMessageWindow, WM_STOPVIEWER, 0, 0);
+		ss << "PostMessage returned " << posterror;
+		LOG(INFO) + ss.str();
+		LOG(INFO) + "Posted Message WM_STOPVIEWER to m_hWndMessageWindow";
+        //StopViewer();
+		LOG(INFO) + "SaveImage done.";
 	}
 
 	CloseHandle (m_hTriggerThread);

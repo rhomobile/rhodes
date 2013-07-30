@@ -1,5 +1,7 @@
 package com.rhomobile.rhodes.webview;
 
+import java.lang.reflect.Method;
+
 import android.annotation.SuppressLint;
 import android.webkit.WebSettings;
 
@@ -30,10 +32,14 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         setWebPlugins(settings, config);
     }
     
-    @SuppressWarnings("deprecation")
     protected void setWebPlugins(WebSettings settings, IRhoWebViewConfig config) {
-        settings.setPluginsEnabled(config != null && config.getBool("enableWebPlugins"));
         
-        Logger.T(TAG, "Enable Web Plugins: " + settings.getPluginsEnabled());
+        try {
+            Class<WebSettings> clazz = WebSettings.class;
+            Method methodSetPlugins = clazz.getMethod("setPluginsEnabled", boolean.class);
+            methodSetPlugins.invoke(settings, config != null && config.getBool("enableWebPlugins"));
+        } catch (Throwable e) {
+            Logger.W(TAG, "WebSettings.setPluginsEnabled(bool) is removed from API by Google.");
+        }
     }
 }

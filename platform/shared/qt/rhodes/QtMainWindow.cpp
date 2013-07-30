@@ -43,6 +43,7 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QDesktopWidget>
+#include "QtWebPage.h"
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -108,6 +109,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     qs->enablePersistentStorage(rs_dir.c_str());
 
 	this->ui->webView->setContextMenuPolicy(Qt::NoContextMenu);
+	this->ui->webView->setPage(new QtWebPage());
     setUpWebPage(this->ui->webView->page());
     this->main_webView = this->ui->webView;
     this->main_webInspector = webInspectorWindow->webInspector();
@@ -514,6 +516,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         wv->setMaximumSize(0,0);
         wv->setParent(ui->centralWidget);
         ui->verticalLayout->addWidget(wv);
+		wv->setPage(new QtWebPage());
         setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
             wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );

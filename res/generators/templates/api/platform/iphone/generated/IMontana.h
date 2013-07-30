@@ -47,9 +47,9 @@ end %>
      method_line = method_line + module_method.native_name
 
      if module_method.params.size == 0
-        if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value || module_method.is_factory_method)
+        #if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value || module_method.is_factory_method)
            method_line = method_line + ':(id<IMethodResult>)methodResult'
-        end
+        #end
      else
         param_index = 0
         module_method.params.each do |method_param|
@@ -61,9 +61,9 @@ end %>
            method_line = method_line + method_param.name
            param_index = param_index + 1
         end
-         if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
+         #if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
             method_line = method_line + ' methodResult:(id<IMethodResult>)methodResult'
-         end
+         #end
      end
      module_method.cached_data["iphone_line"] = method_line
      method_line = method_line + ';';
@@ -93,9 +93,9 @@ end %>
      method_line = method_line + module_method.native_name
 
      if module_method.params.size == 0
-        if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value || module_method.is_factory_method)
+        #if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value || module_method.is_factory_method)
            method_line = method_line + ':(id<IMethodResult>)methodResult'
-        end
+        #end
      else
         param_index = 0
         module_method.params.each do |method_param|
@@ -107,9 +107,9 @@ end %>
            method_line = method_line + method_param.name
            param_index = param_index + 1
         end
-         if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
+         #if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
             method_line = method_line + ' methodResult:(id<IMethodResult>)methodResult'
-         end
+         #end
      end
      module_method.cached_data["iphone_line"] = method_line
      method_line = method_line + ';';

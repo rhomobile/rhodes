@@ -500,6 +500,9 @@ void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
 
 void CRhodesApp::stopApp()
 {
+    if (m_bExit)
+        return;
+
    	m_appCallbacksQueue->stop(1000);
 
     if (!m_bExit)

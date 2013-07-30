@@ -246,8 +246,9 @@ public class RhodesService extends Service {
 	public static native void doRequestAsync(String url);
 	public static native void doRequestEx(String url, String body, String data, boolean waitForResponse);
     public static native void doRequestJson(String url, String body, String data, boolean waitForResponse);
-	
-	public static native void loadUrl(String url);
+    
+    public static native void loadUrl(String url);
+    public static native String currentLocation(int tab);
 	
 	public static native void navigateBack();
 	

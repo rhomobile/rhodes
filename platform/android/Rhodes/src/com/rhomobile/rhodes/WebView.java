@@ -28,10 +28,12 @@ package com.rhomobile.rhodes;
 
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.net.Uri;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 
 public class WebView {
 	
@@ -107,14 +109,21 @@ public class WebView {
 		
 		public SetCookieTask(String u, String c) {
 			Uri uri = Uri.parse(u);
-			url = uri.getScheme() + "://" + uri.getHost() + "/" + uri.getPath();
+			url = uri.getScheme() + "://" + uri.getHost() + uri.getPath();
 			cookie = c;
 		}
 		
-		public void run() {
-			CookieManager mgr = CookieManager.getInstance();
-			mgr.setCookie(url, cookie);
-		}
+        public void run() {
+            String cookiesArray[] = cookie.split(";");
+            CookieSyncManager.createInstance(ContextFactory.getUiContext());
+            CookieManager mgr = CookieManager.getInstance();
+            for(String val: cookiesArray) {
+                Logger.T(TAG, "Cookie: " + val);
+                mgr.setCookie(url, val);
+            }
+            CookieSyncManager.getInstance().sync();
+            Logger.T(TAG, "Cookie is set: " + url + ", " + cookie);
+        }
 	};
 
     ///*** StopNavigateTask ***

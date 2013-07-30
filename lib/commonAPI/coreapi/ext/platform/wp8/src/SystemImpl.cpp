@@ -321,17 +321,7 @@ void CSystemImpl::setWindowPosition( int x,  int y, CMethodResult& oResult)
 
 void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
 {
-	String strRes = "";
-
-#if defined(OS_WINDOWS_DESKTOP)
-	strRes = rho_sys_win32_getWebviewFramework();
-#elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-	strRes = "WEBKIT/MOTOROLA";
-#else
-	strRes = "IE";
-#endif
-
-    oResult.set(strRes);
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getWebviewFramework()->Data());
 }
 
 void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)

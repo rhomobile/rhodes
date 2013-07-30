@@ -15,6 +15,8 @@ namespace rhodes
         public int getLogicalDpiY() { return _mainPage.getLogicalDpiY(); }
         public int getScreenWidth() { return _mainPage.getScreenWidth();  }
         public int getScreenHeight() { return _mainPage.getScreenHeight();  }
+        public string getUserAgent() { return _mainPage.getUserAgent(); }
+        public string getWebviewFramework() { return _mainPage.getWebviewFramework(); }
         public string getScreenOrientation() { return _mainPage.getScreenOrientation(); }
         public bool isBrowserInitialized(int index) { return _mainPage.isBrowserInitialized(index); }
         public void bringToFront() { _mainPage.bringToFront(); }
@@ -55,7 +57,7 @@ namespace rhodes
         public void tabbarRemove(int index) { _mainPage.tabbarRemove(index); }
         public void tabbarSwitch(int index) { _mainPage.tabbarSwitch(index); }
         public int tabbarGetCurrent() { return _mainPage.tabbarGetCurrent(); }
-        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, object oResult)
+        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, rhoruntime.IMethodResult oResult)
             { _mainPage.tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab, hasCallback, oResult); }
         public void tabbarSetBadge(int index, string badge) { _mainPage.tabbarSetBadge(index, badge); }
         public void exitCommand() { _mainPage.exitCommand(); }

@@ -7,8 +7,8 @@
 
 
 
--(void) create:(NSDictionary*)navBarProperties;
--(void) remove;
+-(void) create:(NSDictionary*)navBarProperties methodResult:(id<IMethodResult>)methodResult;
+-(void) remove:(id<IMethodResult>)methodResult;
 -(void) started:(id<IMethodResult>)methodResult;
 
 

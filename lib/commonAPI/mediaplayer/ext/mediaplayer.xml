@@ -64,7 +64,7 @@ In order to use this API you must include the following extension in your `build
 
             <METHOD name="playRingTone" access="STATIC" hasCallback="none">
                 <DESC>Play a ringtone with the name supplied being used to designate which one.  You cannot supply a location for the ringtone.  They are built in.  To get a full list of all ringtones avaialable on the system use the method getAllRintones</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="name" type="STRING">
                         <DESC>Name of the ringtone to be played.</DESC>
@@ -74,7 +74,7 @@ In order to use this API you must include the following extension in your `build
 
             <METHOD name="stopRingTone" access="STATIC" hasCallback="none">
                 <DESC>Stop the currently playing ringtone.</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>Android</PLATFORM>
             </METHOD>            
 
 

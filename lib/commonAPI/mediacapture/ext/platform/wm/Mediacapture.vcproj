@@ -642,6 +642,10 @@
 				Name="shared"
 				>
 				<File
+					RelativePath="..\..\camera.xml"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Camera_impl.cpp"
 					>
 				</File>
@@ -741,6 +745,14 @@
 		</Filter>
 		<File
 			RelativePath=".\src\DShowCam.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\Imager.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\Imager.h"
 			>
 		</File>
 		<File

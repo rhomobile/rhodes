@@ -49,6 +49,10 @@ public:
     {
         oResult.set( CFilePath::join( rho_native_rhopath(), RHO_APPS_DIR) );
     }
+    virtual void getBundleFolder(rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set( rho_native_rhopath() );
+    }
 
     virtual void getUserFolder(rho::apiGenerator::CMethodResult& oResult)
     {

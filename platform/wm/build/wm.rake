@@ -562,6 +562,12 @@ namespace "build" do
     task :rhobundle => ["config:set_win32_platform", "build:wm:rhobundle", :after_bundle] do
     end
 
+    task :upgrade_package => ["build:win32:rhobundle"] do        
+      mkdir_p $targetdir if not File.exists? $targetdir
+      zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
+      Jake.zip_upgrade_bundle( $bindir, zip_file_path)
+    end
+
     task :set_debug_config do
         $buildcfg = 'Debug'
     end
