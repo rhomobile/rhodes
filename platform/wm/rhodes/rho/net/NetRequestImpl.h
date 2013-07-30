@@ -128,7 +128,7 @@ class CNetRequestImpl : public INetRequestImpl
     static HANDLE    m_hWceConnMgrConnection;
     HINTERNET  m_hConnection, m_hRequest;
 
-    LPCTSTR  m_pszErrFunction;
+    StringW  m_strErrFunction;
 
     URL_COMPONENTS m_uri;
     CAtlStringW m_strReqUrlW;
@@ -157,7 +157,7 @@ public :
 
 private:
     void close();
-    bool isError(){ return m_pszErrFunction!= null; }
+    bool isError(){ return m_strErrFunction.length()>0; }
 
     void init( const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
 
