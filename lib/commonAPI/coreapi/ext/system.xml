@@ -612,7 +612,7 @@ This API is part of the `coreapi` extension that is included automatically.
                 </PARAMS>
             </METHOD>
             <METHOD name="runApplication">
-                <DESC>Use System.Process.runApplication: Run an application.</DESC>
+                <DESC>Run an application.</DESC>
                 <PLATFORM>Apple, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="appName" type="STRING">
