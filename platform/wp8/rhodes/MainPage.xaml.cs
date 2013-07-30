@@ -39,6 +39,7 @@ using System.Windows.Controls;
 using System.IO.IsolatedStorage;
 using rhodes.common;
 using System.ComponentModel;
+using System.Windows.Media.Imaging;
 
 namespace rhodes
 {
@@ -67,6 +68,7 @@ namespace rhodes
         // fields:
 
         public string Label { get; set; }
+        public ImageSource IconImage { get; set; }
 
         private Brush _background;
         public Brush Background
@@ -783,7 +785,6 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, background_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
             PivotItem tab = new PivotItem();
-            // TODO: implement icons
             TabHeader th = new TabHeader();
             th.Label = label;
             th.Background = th.UnselectedBackground = new SolidColorBrush(
@@ -794,6 +795,8 @@ namespace rhodes
             th.SelectedBackground = (selected_color != null) && (selected_color.Length > 0) ?
                 new SolidColorBrush(getColorFromString(selected_color)) :
                 th.UnselectedBackground;
+            th.IconImage = (icon == null) || (icon.Length == 0) ?
+                new BitmapImage() : new BitmapImage(new Uri(prependWithSlash(icon), UriKind.Relative));
             tab.Header = th;
             //if ((icon == null) || (icon.Length == 0))
             //{
