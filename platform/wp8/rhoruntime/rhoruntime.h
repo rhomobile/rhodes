@@ -175,6 +175,7 @@ namespace rhoruntime
 		// proxy methods needed for C# implementation of CoreAPI
 		::Platform::String^ canonicalizeRhoUrl(::Platform::String^ url);
 		::Platform::String^ getRootPath(::Platform::String^ path);
+		::Platform::String^ getAppRootPath(::Platform::String^ path);
 		::Platform::String^ getRERuntimePath(::Platform::String^ path);
 
 	private:

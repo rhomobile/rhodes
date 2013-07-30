@@ -102,7 +102,7 @@ namespace NativeTabbarImpl
                         use_current_view_for_tab = oEntry.getString("useCurrentViewForTab");
 
                     if ((icon != null) && (icon.Length > 0))
-                        icon = CRhoRuntime.getInstance().getRootPath(icon);
+                        icon = CRhoRuntime.getInstance().getAppRootPath(icon);
 
                     CRhoRuntime.getInstance().logEvent("AddTab: " + (label==null?"(null)":label) + "; " +
                         (icon==null?"(null)":icon) + "; " + (action==null?"(null)":action) + "; " +
