@@ -120,6 +120,12 @@ public class GMapActivity extends FragmentActivity {
         
         mMap = mapFragment.getMap();
         
+        if ( null == mMap ) {
+            Logger.E(TAG,"GoogleMap object is null from fragment. Finishing activity.");
+            finish();
+            return;
+        }
+        
         Logger.T(TAG, "Map options: " + mHolder.toString());
         
         String map_type = mHolder.getString(SETTINGS_PREFIX + "map_type");
