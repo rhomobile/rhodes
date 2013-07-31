@@ -167,7 +167,7 @@ This API is part of the `coreapi` extension that is included automatically.
                 <PLATFORM>iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER">
-                        <DESC>The index for this tab (index numbered from 0). To set to all tabs : - 1.</DESC>
+                        <DESC>The index for this tab (index numbered from 0). You can also set -1 to select current tab for set badge.</DESC>
                     </PARAM>
                     <PARAM name="badge" type="STRING">
                         <DESC>String for iPhone badge, such as '12'.</DESC>
