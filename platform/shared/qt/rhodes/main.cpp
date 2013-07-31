@@ -253,16 +253,3 @@ extern "C"
     }
 }
 #endif
-
-#if defined(OS_MACOSX) && defined(RHODES_EMULATOR)
-extern "C"
-{
-    void rho_file_impl_delete_folder(const char* szFolderPath)
-    {
-    }
-
-    void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath)
-    {
-    }
-}
-#endif // OS_MACOSX && RHODES_EMULATOR
