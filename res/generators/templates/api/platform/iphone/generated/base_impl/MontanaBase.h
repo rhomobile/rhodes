@@ -5,6 +5,7 @@
 @interface <%= $cur_module.name %>Base : NSObject {
 <% if $cur_module.is_template_propertybag %>
     NSMutableDictionary* mProperties;
+    NSSet* mDeclaredProperties;
 <% end %>
 }
 

@@ -14,8 +14,14 @@ static NSDictionary* ourPropertyAliases= nil;
 @implementation <%= $cur_module.name %>Base
 
 - (void) resetAllPropertiesToDefault {
-<% if $cur_module.is_template_propertybag %>
-    mProperties = [[NSMutableDictionary dictionaryWithCapacity:4] retain];
+<% if $cur_module.is_template_propertybag 
+%>    mDeclaredProperties = [[NSSet setWithObjects:<% 
+        $cur_module.properties.each do |prop|
+          line = '@"'+prop.native_name+'", ' %><%= line %><%
+        end
+     %>nil] retain];
+
+    mProperties = [[NSMutableDictionary dictionaryWithCapacity:<%= $cur_module.properties.size + 2 %>] retain];
     <% $cur_module.properties.each do |prop|
           if prop.default_value != nil
              line = '[self setProperty:@"'+prop.native_name+'" propertyValue:@"'+prop.default_value.to_s+'" methodResult:nil];' %>
@@ -136,7 +142,11 @@ static NSDictionary* ourPropertyAliases= nil;
         if ([resultHolder getResult] != nil) {
             NSString* value = (NSString*)[resultHolder getResult];
             [dict setObject:value forKey:key];
-        }
+        } <% 
+if !$cur_module.is_property_bag_limit_to_only_declared_properties && $cur_module.is_template_propertybag %>
+        else {
+          [dict setObject:@"" forKey:key];
+        }<% end %>
     }
     [methodResult setResult:dict];
 }
@@ -228,6 +238,7 @@ end %>
 -(void) dealloc {
 <% if $cur_module.is_template_propertybag %>
     [mProperties release];
+    [mDeclaredProperties release];
 <% end %>
     [super dealloc];
 }
