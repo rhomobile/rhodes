@@ -1476,8 +1476,9 @@ def common_bundle_start( startdir, dest)
   replace_platform = "bb6" if $bb6
   #replace_platform = "wm" if replace_platform == 'win32'
 
-  if !$js_application
+  #if !$js_application
     [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
+      next unless Dir.exists? folder
       chdir folder
       
       Dir.glob("**/*.#{replace_platform}.*").each do |file|
@@ -1498,7 +1499,7 @@ def common_bundle_start( startdir, dest)
       Dir.glob("**/.svn").each { |f| rm_rf f }
       Dir.glob("**/CVS").each { |f| rm_rf f }
     end
-  end  
+  #end  
 end
 
 def create_manifest
@@ -1707,11 +1708,11 @@ namespace "build" do
           puts "Error interpreting ruby code"
           exit 1
         end
-
-        chdir $srcdir
-        Dir.glob("**/*.rb") { |f| rm f }
-        Dir.glob("**/*.erb") { |f| rm f }
       end
+     
+      chdir $srcdir
+      Dir.glob("**/*.rb") { |f| rm f }
+      Dir.glob("**/*.erb") { |f| rm f }
 
       chdir startdir
 
