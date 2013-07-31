@@ -26,34 +26,24 @@
 
 package com.rhomobile.rhodes;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.security.InvalidParameterException;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
-import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
-import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Config;
-import com.rhomobile.rhodes.webview.GoogleWebView;
 
 import android.app.Dialog;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.pm.ApplicationInfo;
@@ -66,11 +56,9 @@ import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
-import android.widget.AbsoluteLayout;
+import android.widget.FrameLayout;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
 	
@@ -84,8 +72,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	
 	private Handler mHandler;
 	
+	private FrameLayout mTopLayout;
 	private SplashScreen mSplashScreen;
-	
 	private MainView mMainView;
 	
 	private RhoMenu mAppMenu;
@@ -192,6 +180,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         Logger.T(TAG, "Creating default main view");
         
+        mTopLayout = new FrameLayout(this);
+        setContentView(mTopLayout);
+
         SimpleMainView simpleMainView = new SimpleMainView();
         setMainView(simpleMainView);
         
@@ -438,8 +429,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     public void setMainView(MainView v) {
         if (v != null) {
+            mTopLayout.removeAllViews();
             mMainView = v;
-            setContentView(v.getView());
+            mTopLayout.addView(v.getView(), new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         }
     }
 
