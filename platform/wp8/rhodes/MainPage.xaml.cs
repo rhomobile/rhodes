@@ -65,7 +65,7 @@ namespace rhodes
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // fields:
+        // properties:
 
         public string Label { get; set; }
         public ImageSource IconImage { get; set; }
@@ -174,6 +174,7 @@ namespace rhodes
             updateScreenSize();
             InitializeComponent();
             ApplicationBar.IsVisible = false;
+            _screenOrientation = Orientation;
             try
             {
                 // initialize C# extensions factories
@@ -232,18 +233,18 @@ namespace rhodes
         {
             if (_screenOrientation == PageOrientation.Portrait ||
                 _screenOrientation == PageOrientation.PortraitDown ||
-                _screenOrientation == PageOrientation.PortraitUp)
+                _screenOrientation == PageOrientation.PortraitUp ||
+                _screenOrientation == PageOrientation.None)
 	        {
 		        return "portrait";
 	        }
-	        else if (_screenOrientation == PageOrientation.Landscape ||
-                     _screenOrientation == PageOrientation.LandscapeLeft ||
-                     _screenOrientation == PageOrientation.LandscapeRight)
+	        else
+            //if (_screenOrientation == PageOrientation.Landscape ||
+            //    _screenOrientation == PageOrientation.LandscapeLeft ||
+            //    _screenOrientation == PageOrientation.LandscapeRight)
 	        {
 		         return "landscape";
 	        }
-
-            return "none";
         }
 
         public void bringToFront()
@@ -636,7 +637,7 @@ namespace rhodes
             // TODO: implement setToolbarStyle
             if(background != "")
                 ApplicationBar.BackgroundColor = getColorFromString(background);
-            //implement opacity for pictures
+            // TODO: implement opacity for pictures
             //if(mask != "")
             //    ApplicationBar.ForegroundColor = getColorFromString(mask);
         }
@@ -798,37 +799,20 @@ namespace rhodes
             th.IconImage = (icon == null) || (icon.Length == 0) ?
                 new BitmapImage() : new BitmapImage(new Uri(prependWithSlash(icon), UriKind.Relative));
             tab.Header = th;
-            //if ((icon == null) || (icon.Length == 0))
-            //{
-            //    TextBlock tb = new TextBlock();
-            //    tb.Text = label;
-            //    tb.FontSize = 20;
-            //    tb.Height = double.NaN;
-            //    tb.Width = double.NaN;
-            //    tb.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-            //    tb.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-            //    tb.SetValue(FrameworkElement.NameProperty, "tabLabel"+TabbarPivot.Items.Count.ToString());
-            //    //tb.Margin = new Thickness(5, 5, 5, 5);
-            //    //tb.TextWrapping = TextWrapping.Wrap;
-            //    //tb.TextAlignment = TextAlignment.Left;
-            //    tab.Header = tb;
-            //}
-            // //else
-            // //    tab.Header = new RhoTabHeader(label, prependWithSlash(icon));
-
-            // throws expection:
-            //if (use_current_view_for_tab)
-            //{
-            //    
-            //    tab.Content = RhodesWebBrowser;
-            //}
-            //else
-            //{
 
             _tabProps[TabbarPivot.Items.Count] = new TabProps();
             _tabProps[TabbarPivot.Items.Count]._isReload = reload;
             if(hasCallback == true)
                 _oTabResult = oResult;
+
+            // TODO: implement useCurrentViewForTab
+            // throws expection:
+            //if (use_current_view_for_tab)
+            //{
+            //    tab.Content = RhodesWebBrowser;
+            //}
+            //else
+            //{
 
             WebBrowser wv = new WebBrowser();
             wv.Height = double.NaN;
@@ -843,9 +827,9 @@ namespace rhodes
             wv.ScriptNotify += RhodesWebBrowser_JSNotify;
             wv.Source = new Uri("about:blank");
             wv.TabIndex = TabbarPivot.Items.Count;
+            if ((web_bkg_color != null) && (web_bkg_color.Length > 0))
+                wv.Background = new SolidColorBrush(getColorFromString(web_bkg_color));
             //wv.SetValue(FrameworkElement.NameProperty, "tabWeb" + TabbarPivot.Items.Count.ToString());
-            // TODO: reload
-            // TODO: web_bkg_color 
             //if ((action != null) && (action.Length > 0))
             //    wv.Navigate(new Uri(CRhoRuntime.getInstance().canonicalizeRhoUrl(action)));
             tab.Content = wv;
@@ -865,10 +849,8 @@ namespace rhodes
                 for (int iTab = 0; iTab < TabbarPivot.Items.Count; ++iTab)
                 {
                     TabHeader th = (TabHeader)((PivotItem)TabbarPivot.Items[iTab]).Header;
-                    Brush newColor = iTab == TabbarPivot.SelectedIndex ?
-                        th.SelectedBackground : th.UnselectedBackground;
-                    if (newColor != th.Background)
-                        th.Background = newColor;
+                    Brush newColor = iTab == TabbarPivot.SelectedIndex ? th.SelectedBackground : th.UnselectedBackground;
+                    th.Background = newColor;
                 }
                 if ((_tabProps.Count > 0) && _tabProps.ContainsKey(TabbarPivot.SelectedIndex) &&
                     ((_tabProps[TabbarPivot.SelectedIndex]._isLoaded == false) ||
@@ -924,8 +906,6 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { refreshCommand(tab_index); }); return; }
             this.Refresh(tab_index);
         }
-
-		//public void navigateCommand(TNavigateData* nd) {}
 		
         public void takePicture(string callbackUrl)
         {
@@ -937,18 +917,12 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { selectPicture(callbackUrl); }); return; }
         }
 
-		//public void alertShowPopup(CAlertParams *) {}
-
 		public void alertHidePopup()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { alertHidePopup(); }); return; }
         }
 
 		//public void dateTimePicker(CDateTimeMessage *) {}
-		
-        //public void executeCommand(RhoNativeViewRunnable*) {}
-		
-        //public void executeRunnable(rho::common::IRhoRunnable* pTask) {}
 		
         //public void takeSignature(void*); // Signature::Params*
 

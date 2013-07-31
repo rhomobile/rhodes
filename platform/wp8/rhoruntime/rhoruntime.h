@@ -87,14 +87,10 @@ namespace rhoruntime
 		void navigateForwardCommand(void);
 		void logCommand(void);
 		void refreshCommand(int tab_index);
-		//void navigateCommand(TNavigateData* nd);
 		void takePicture(::Platform::String^ callbackUrl);
 		void selectPicture(::Platform::String^ callbackUrl);
-		//void alertShowPopup(CAlertParams *);
 		void alertHidePopup(void);
 		//void dateTimePicker(CDateTimeMessage *);
-		//void executeCommand(RhoNativeViewRunnable*);
-		//void executeRunnable(rho::common::IRhoRunnable* pTask);
 		//void takeSignature(void*); //TODO: Signature::Params*
 		void fullscreenCommand(int fullScreen);
 		void setCookie(::Platform::String^ url, ::Platform::String^ cookie);
@@ -168,8 +164,6 @@ namespace rhoruntime
 		// public methods:
 		bool Initialize(::Platform::String^ title);
 		void DestroyUi(void);
-		//CNativeToolbar& getToolbar(){ return m_toolbar; }
-		//CNativeTabbar& getTabbar(){ return m_tabbar; }
 		void setCryptoEngine(ICryptoEngine^ cryptoEngine);
 		ICryptoEngine^ getCryptoEngine() {return m_CryptoEngine;}
 		// proxy methods needed for C# implementation of CoreAPI

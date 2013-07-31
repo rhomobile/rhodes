@@ -65,14 +65,10 @@ namespace rhodes
         public void navigateForwardCommand() { _mainPage.navigateForwardCommand(); }
         public void logCommand() { _mainPage.logCommand(); }
         public void refreshCommand(int tab_index) { _mainPage.refreshCommand(tab_index); }
-        //public void navigateCommand(TNavigateData* nd);
         public void takePicture(string callbackUrl) { _mainPage.takePicture(callbackUrl); }
         public void selectPicture(string callbackUrl) { _mainPage.selectPicture(callbackUrl); }
-        //public void alertShowPopup(CAlertParams *);
         public void alertHidePopup() { _mainPage.alertHidePopup(); }
         //public void dateTimePicker(CDateTimeMessage *);
-        //public void executeCommand(RhoNativeViewRunnable*);
-        //public void executeRunnable(rho::common::IRhoRunnable* pTask);
         //public void takeSignature(void*); //TODO: Signature::Params*
         public void fullscreenCommand(int fullScreen) { _mainPage.fullscreenCommand(fullScreen); }
         public void setCookie(string url, string cookie) { _mainPage.setCookie(url, cookie); }
