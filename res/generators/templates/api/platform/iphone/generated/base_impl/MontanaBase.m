@@ -217,7 +217,7 @@ $iphone_pb_setter_conversion_post["STRING"] = '];'
 <% end
  if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER %>
     <%= $iphone_pb_setter_conversion_pre[module_method.linked_property.type] + module_method.linked_property.native_name + $iphone_pb_setter_conversion_post[module_method.linked_property.type] %>
-    [self setProperty:@"<%= module_method.linked_property.native_name %>" propertyValue:strValue];
+    [self setProperty:@"<%= module_method.linked_property.native_name %>" propertyValue:strValue methodResult:methodResult];
 <% end %>
 }
 
