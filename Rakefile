@@ -812,7 +812,7 @@ namespace "config" do
 
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
-    $minify_js         = Jake.getBuildBoolProp("minify_js", $app_config, true) 
+    $minify_js         = Jake.getBuildBoolProp("minify_scripts", $app_config, true)
     
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
@@ -1672,7 +1672,7 @@ namespace "build" do
       minify_types = []
         
       minify_types << "js" if $minify_js or $obfuscate_js or !$debug
-      minify_types << "css" if $obfuscate_css or !$debug
+      minify_types << "css" if $minify_js or $obfuscate_css or !$debug
         
       if not minify_types.empty?
           minify_js_and_css($srcdir,minify_types)
