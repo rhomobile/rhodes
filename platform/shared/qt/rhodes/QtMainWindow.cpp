@@ -735,8 +735,10 @@ void QtMainWindow::toolbarAddSeparator(int width)
     ui->toolBar->addSeparator();
 }
 
-void QtMainWindow::setToolbarStyle(bool border, QString background)
+void QtMainWindow::setToolbarStyle(bool border, QString background, int viewHeight)
 {
+    ui->toolBar->setMinimumHeight(viewHeight);
+    ui->toolBarRight->setMinimumHeight(viewHeight);
     QString style = "";
     if (!border) style += "border:0px;";
     if (background.length()>0)
