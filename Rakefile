@@ -812,7 +812,7 @@ namespace "config" do
 
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
-    $minify_js         = Jake.getBuildBoolProp("minify_scripts", $app_config, true)
+    $minify_js         = Jake.getBuildBoolProp("minify_scripts", $app_config, false)
     
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
