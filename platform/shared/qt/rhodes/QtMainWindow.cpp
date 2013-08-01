@@ -741,10 +741,10 @@ void QtMainWindow::setToolbarStyle(bool border, QString background)
     if (!border) style += "border:0px;";
     if (background.length()>0)
         style += "background:"+background+";";
-    if (toolBarSeparatorWidth > 0)
-        style += "spacing:"+QString::number(toolBarSeparatorWidth/2)+"px;";
     if (style.length()>0) {
         style = "QToolBar{"+style+"}";
+        if (toolBarSeparatorWidth > 0)
+            style += "QToolBar::separator{width:"+QString::number(toolBarSeparatorWidth)+"px;}";
         ui->toolBar->setStyleSheet(style);
         ui->toolBarRight->setStyleSheet(style);
     }
