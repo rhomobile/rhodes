@@ -162,6 +162,7 @@ public slots:
     void setPosition(int x, int y);
     void setSize(int width, int height);
     void lockSize(int locked);
+    void setTitle(const char* title);
 protected:
     void resizeEvent(QResizeEvent *);
 };

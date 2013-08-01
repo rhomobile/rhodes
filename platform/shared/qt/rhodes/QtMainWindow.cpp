@@ -1082,3 +1082,8 @@ void QtMainWindow::lockSize(int locked)
 	else
 		this->setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 }
+
+void QtMainWindow::setTitle(const char* title)
+{
+    this->setWindowTitle(QString::fromUtf8(title));
+}
