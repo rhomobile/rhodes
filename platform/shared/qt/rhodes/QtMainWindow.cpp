@@ -85,7 +85,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_alertDialog(0),
     m_LogicalDpiX(0),
     m_LogicalDpiY(0),
-	firstShow(true), m_bFirstLoad(true)
+    firstShow(true), m_bFirstLoad(true),
+    toolBarSeparatorWidth(0)
     //TODO: m_SyncStatusDlg
 {
 #ifdef OS_WINDOWS_DESKTOP
@@ -677,6 +678,7 @@ void QtMainWindow::toolbarRemoveAllButtons()
 {
     ui->toolBar->clear();
     ui->toolBarRight->clear();
+    toolBarSeparatorWidth = 0;
 }
 
 void QtMainWindow::toolbarShow()
@@ -727,19 +729,20 @@ void QtMainWindow::toolbarAddAction(const QIcon & icon, const QString & text, co
         ui->toolBar->addAction(qAction);
 }
 
-void QtMainWindow::toolbarAddSeparator()
+void QtMainWindow::toolbarAddSeparator(int width)
 {
+    toolBarSeparatorWidth = width;
     ui->toolBar->addSeparator();
 }
 
 void QtMainWindow::setToolbarStyle(bool border, QString background)
 {
     QString style = "";
-    if (!border) style += "border:0px";
-    if (background.length()>0) {
-        if (style.length()>0) style += ";";
-        style += "background:"+background;
-    }
+    if (!border) style += "border:0px;";
+    if (background.length()>0)
+        style += "background:"+background+";";
+    if (toolBarSeparatorWidth > 0)
+        style += "spacing:"+QString::number(toolBarSeparatorWidth/2)+"px;";
     if (style.length()>0) {
         style = "QToolBar{"+style+"}";
         ui->toolBar->setStyleSheet(style);

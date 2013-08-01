@@ -378,7 +378,7 @@ void CMainWindow::createToolbarEx( const rho::Vector<rho::String>& toolbarElemen
                 LOG(INFO) + "addToolbarButton: Label: '"+label+"';Action: '"+action+"'";
                 if (strcasecmp(action, "separator")==0) {
                     if (nSeparators!=1)
-                        ((QtMainWindow*)qtMainWindow)->toolbarAddSeparator();
+                        ((QtMainWindow*)qtMainWindow)->toolbarAddSeparator(nItemWidth);
                     else
                         wasSeparator = true;
                 } else {
