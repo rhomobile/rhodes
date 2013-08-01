@@ -89,47 +89,47 @@ CNetRequestWrapper::~CNetRequestWrapper()
         m_pHolder->setRequest(0); 
 }
 
-INetResponse* CNetRequestWrapper::pullData(const String& strUrl, IRhoSession* oSession )
+rho::net::CNetResponseWrapper CNetRequestWrapper::pullData(const String& strUrl, IRhoSession* oSession )
 {
     return doRequest("GET",strUrl,String(),oSession,null);
 }
 
-INetResponse* CNetRequestWrapper::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
+rho::net::CNetResponseWrapper CNetRequestWrapper::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
     return doRequest("POST",strUrl,strBody,oSession,null);
 }
 
-INetResponse* CNetRequestWrapper::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
+rho::net::CNetResponseWrapper CNetRequestWrapper::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-    INetResponse* pResp = doRequest("POST", strUrl, strBody, oSession, null );
-    if ( pResp->getRespCode() == 200 )
-        pResp->setCharData(pResp->getCookies().c_str());
+    rho::net::CNetResponseWrapper oResp = doRequest("POST", strUrl, strBody, oSession, null );
+    if ( oResp.getRespCode() == 200 )
+        oResp.setCharData(oResp.getCookies().c_str());
 		
-    return pResp;
+    return oResp;
 }
 
-INetResponse* CNetRequestWrapper::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
+rho::net::CNetResponseWrapper CNetRequestWrapper::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
 {
     return m_pReqImpl->doRequest(method, strUrl, strBody, oSession, pHeaders );
 }
 
-INetResponse* CNetRequestWrapper::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+rho::net::CNetResponseWrapper CNetRequestWrapper::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     return m_pReqImpl->pushMultipartData(strUrl, arItems, oSession, pHeaders);
 }
 
-INetResponse* CNetRequestWrapper::pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+rho::net::CNetResponseWrapper CNetRequestWrapper::pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     VectorPtr<CMultipartItem*> arItems;
     arItems.addElement(&oItem);
 
-    INetResponse* pResp = pushMultipartData(strUrl, arItems, oSession, pHeaders);
+    rho::net::CNetResponseWrapper oResp = pushMultipartData(strUrl, arItems, oSession, pHeaders);
 
     arItems[0] = 0; //do not delete item
-    return pResp;
+    return oResp;
 }
 
-INetResponse* CNetRequestWrapper::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+rho::net::CNetResponseWrapper CNetRequestWrapper::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     common::CRhoFile oFile;
     if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForAppend) ) 
