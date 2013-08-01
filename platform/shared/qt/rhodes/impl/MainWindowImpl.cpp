@@ -228,6 +228,8 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(setSize(int,int)) );
     QObject::connect(this, SIGNAL(doLockSize(int)),
         ((QtMainWindow*)qtMainWindow), SLOT(lockSize(int)) );
+    QObject::connect(this, SIGNAL(doSetTitle(const char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setTitle(const char*)) );
     return true;
 }
 
@@ -677,6 +679,11 @@ void CMainWindow::setSize(int width, int height)
 void CMainWindow::lockSize(int locked)
 {
     emit doLockSize(locked);
+}
+
+void CMainWindow::setTitle(const char* title)
+{
+    emit doSetTitle(title);
 }
 
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
