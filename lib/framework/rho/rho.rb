@@ -830,17 +830,17 @@ end
           
           if attribs
             if attribs['sync_priority'].to_i != sync_priority.to_i
-                db.update_into_table('sources', {"sync_priority"=>sync_priority},{"name"=>name})
+              db.update_into_table('sources', {"sync_priority"=>sync_priority},{"name"=>name})
             end
             if attribs['sync_type'] != sync_type
-                db.update_into_table('sources', {"sync_type"=>sync_type},{"name"=>name})
+              db.update_into_table('sources', {"sync_type"=>sync_type},{"name"=>name})
             end
             if attribs['schema_version'] != schema_version
-                if db_partition == partition
-                    hash_migrate[name] = attribs['schema_version']
-                else    
-                    db.update_into_table('sources', {"schema_version"=>schema_version},{"name"=>name})
-                end    
+              if db_partition == partition
+                  hash_migrate[name] = attribs['schema_version']
+              else    
+                  db.update_into_table('sources', {"schema_version"=>schema_version},{"name"=>name})
+              end    
             end
             if attribs['partition'] != partition
                 db.update_into_table('sources', {"partition"=>partition},{"name"=>name})
