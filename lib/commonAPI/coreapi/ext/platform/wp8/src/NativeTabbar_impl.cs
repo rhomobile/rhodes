@@ -67,6 +67,9 @@ namespace NativeTabbarImpl
             {
                 mp.tabbarHide();
                 mp.toolbarRemoveAllButtons();
+                string tab_background_color = null;
+                if (tabBarProperties.ContainsKey("backgroundColor"))
+                    tab_background_color = tabBarProperties["backgroundColor"];
                 for (int i = 0; i < tabElements.Count; ++i)
                 {
                     string tb = tabElements[i];
@@ -78,7 +81,7 @@ namespace NativeTabbarImpl
                     string reload = null;
     	            string selected_color = null;
                     string disabled = null;
-		            string background_color = null;
+                    string background_color = null;
                     string use_current_view_for_tab = null;
 
                     if (oEntry.hasName("label"))
@@ -99,18 +102,18 @@ namespace NativeTabbarImpl
                         use_current_view_for_tab = oEntry.getString("useCurrentViewForTab");
 
                     if ((icon != null) && (icon.Length > 0))
-                        icon = CRhoRuntime.getInstance().getRootPath(icon);
+                        icon = CRhoRuntime.getInstance().getAppRootPath(icon);
 
                     CRhoRuntime.getInstance().logEvent("AddTab: " + (label==null?"(null)":label) + "; " +
                         (icon==null?"(null)":icon) + "; " + (action==null?"(null)":action) + "; " +
                         charToBool(disabled) + "; " + (background_color==null?"(null)":background_color) + "; " +
                         (selected_color==null?"(null)":selected_color) + "; " +
+                        (tab_background_color==null?"(null)":tab_background_color) + "; " +
                         charToBool(reload) + "; " + charToBool(use_current_view_for_tab));
-                    mp.tabbarAddTab(label, icon, action,
-				        charToBool(disabled), background_color, selected_color,
+                    mp.tabbarAddTab(label, icon, action, charToBool(disabled),
+                        background_color, selected_color, tab_background_color,
                         charToBool(reload), charToBool(use_current_view_for_tab), oResult.hasCallback(), oResult);                    
                 }
-                // TODO: on_change_tab_callback
                 mp.tabbarSwitch(0);
                 mp.tabbarShow();
             }

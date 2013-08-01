@@ -243,6 +243,7 @@ Manifest.java
 platform/shared/qt/rhodes/GeneratedFiles/*
 platform/shared/qt/*/Makefile*
 platform/shared/qt/Makefile*
+lib/commonAPI/*/ext/platform/osx/Makefile*
 platform/shared/qtrhodes/generatedfiles/*
 platform/wm/rhodes/emulator/generatedfiles/*
 platform/shared/RhoSimulator-build*

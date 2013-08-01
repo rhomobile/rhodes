@@ -93,6 +93,7 @@ public:
     CNetResponseWrapper( INetResponse* resp = 0) : m_netResp(resp)  {}
 
     const char* getCharData(){ return m_netResp->getCharData(); }
+    void setCharData(const char* szData){ return m_netResp->setCharData(szData); }
     unsigned int getDataSize(){ return m_netResp->getDataSize(); }
     int getRespCode(){ return m_netResp->getRespCode(); }
     String getCookies(){ return m_netResp->getCookies(); }
@@ -150,13 +151,13 @@ public:
     CNetRequestWrapper(INetRequestImpl* pImpl, CNetRequestHolder* pHolder);
     ~CNetRequestWrapper();
 
-    INetResponse* pullData(const String& strUrl, IRhoSession* oSession );
-    INetResponse* pushData(const String& strUrl, const String& strBody, IRhoSession* oSession);
-    INetResponse* pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession);
-    INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
-    INetResponse* pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
-    INetResponse* pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
-    INetResponse* pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders,bool overwriteFile,bool createFolders, bool* pFileExistsFlag = 0 );
+    rho::net::CNetResponseWrapper pullData(const String& strUrl, IRhoSession* oSession );
+    rho::net::CNetResponseWrapper pushData(const String& strUrl, const String& strBody, IRhoSession* oSession);
+    rho::net::CNetResponseWrapper pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession);
+    rho::net::CNetResponseWrapper doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
+    rho::net::CNetResponseWrapper pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+    rho::net::CNetResponseWrapper pushMultipartData(const String& strUrl, CMultipartItem& oItem, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+    rho::net::CNetResponseWrapper pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders,bool overwriteFile,bool createFolders, bool* pFileExistsFlag = 0 );
 
     String resolveUrl(const String& strUrl);
 

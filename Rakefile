@@ -808,12 +808,11 @@ namespace "config" do
     $obfuscate_js      = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["js"].nil?) ? nil : 1 )
     $obfuscate_css     = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["css"].nil?) ? nil : 1 )
     $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
-    $obfuscator        = 'res/build-tools/yuicompressor-2.4.7.jar'
-    $minifier          = 'res/build-tools/yuicompressor-2.4.7.jar'
+    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
 
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
-    $minify_js         = Jake.getBuildBoolProp("minify_js", $app_config, true) 
+    $minify_js         = Jake.getBuildBoolProp("minify_scripts", $app_config, true)
     
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
@@ -974,43 +973,7 @@ def write_modules_js(filename, modules)
         end
     end
 
-    if !$minify_js
-        Jake.modify_file_if_content_changed(filename, f)
-    else
-        require 'Open3'
-        f.rewind()
-        fc = StringIO.new("","w+")
-        
-        output = true
-        status = nil
-        Open3.popen2("java","-jar","#{$minifier}","--type","js") do |stdin, stdout, wait_thr|
-            begin
-                stdin.binmode
-                
-                while buffer = f.read(4096)
-                    stdin.write(buffer)
-                end
-                f.close
-                stdin.close
-                
-                output = stdout.read
-                
-                status = wait_thr.value
-                
-            rescue Exception => e
-                puts "Minify error: #{e.inspect}"
-                raise e
-            end
-        end
-        
-        if not status.exitstatus.zero?
-            puts "Obfuscation error"
-            exit 1
-        end
-        
-        fc.puts(output)        
-        Jake.modify_file_if_content_changed(filename, fc)
-    end
+    Jake.modify_file_if_content_changed(filename, f)
 end
 
 def is_ext_supported(extpath)
@@ -1341,15 +1304,7 @@ def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
     if File.directory?(filepath)
       public_folder_cp_r(filepath,dst_path,(level+1),((obfuscate==1) && ((level>0) || $obfuscate_exclude.nil? || !$obfuscate_exclude.include?(filename)) ? 1 : 0))
     else
-      if (obfuscate==1) && (((!$obfuscate_js.nil?) && File.extname(filename).eql?(".js")) || ((!$obfuscate_css.nil?) && File.extname(filename).eql?(".css")))
-        puts Jake.run('java',['-jar', $obfuscator, filepath, '-o', dst_path])
-        unless $? == 0
-          puts "Obfuscation error"
-          exit 1
-        end
-      else
-        cp filepath, dst_path, :preserve => true
-      end
+      cp filepath, dst_path, :preserve => true
     end
   end
 end
@@ -1476,8 +1431,9 @@ def common_bundle_start( startdir, dest)
   replace_platform = "bb6" if $bb6
   #replace_platform = "wm" if replace_platform == 'win32'
 
-  if !$js_application
+  #if !$js_application
     [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
+      next unless Dir.exists? folder
       chdir folder
       
       Dir.glob("**/*.#{replace_platform}.*").each do |file|
@@ -1498,7 +1454,7 @@ def common_bundle_start( startdir, dest)
       Dir.glob("**/.svn").each { |f| rm_rf f }
       Dir.glob("**/CVS").each { |f| rm_rf f }
     end
-  end  
+  #end  
 end
 
 def create_manifest
@@ -1707,20 +1663,90 @@ namespace "build" do
           puts "Error interpreting ruby code"
           exit 1
         end
-
-        chdir $srcdir
-        Dir.glob("**/*.rb") { |f| rm f }
-        Dir.glob("**/*.erb") { |f| rm f }
       end
-
+     
+      chdir $srcdir
+      Dir.glob("**/*.rb") { |f| rm f }
+      Dir.glob("**/*.erb") { |f| rm f }
+        
+      minify_types = []
+        
+      minify_types << "js" if $minify_js or $obfuscate_js or !$debug
+      minify_types << "css" if $minify_js or $obfuscate_css or !$debug
+        
+      if not minify_types.empty?
+          minify_js_and_css($srcdir,minify_types)
+      end
+        
       chdir startdir
 
       cp_r "platform/shared/db/res/db", $srcdir 
     end
+      
+      
+    def minify_js_and_css(dir,types)
+      pattern = types.join(',')
+      Dir.glob( File.join(dir,'**',"*.{#{pattern}}") ) do |f|
+          if File.file?(f) and !File.fnmatch("*.min.*",f)
+              ext = File.extname(f)
+              type = nil
+              if ext == '.js' then
+                  type = 'js'
+              elsif ext == '.css' then
+                  type = 'css'
+              end
+              
+              minify_inplace(f,type) if type
+          end
+      end
+    end
     
+    
+    def minify_inplace(filename,type)
+        puts "minify_inplace: #{filename}, #{type}"
+    
+        f = StringIO.new("", "w+")
+        f.write(File.read(filename))
+        f.rewind()
+
+        require 'Open3'
+        f.rewind()
+        fc = StringIO.new("","w+")
+     
+        output = true
+        status = nil
+        Open3.popen2("java","-jar","#{$minifier}","--type","#{type}") do |stdin, stdout, wait_thr|
+        begin
+            stdin.binmode
+     
+            while buffer = f.read(4096)
+                stdin.write(buffer)
+            end
+            f.close
+            stdin.close
+     
+            output = stdout.read
+     
+            status = wait_thr.value
+     
+        rescue Exception => e
+            puts "Minify error: #{e.inspect}"
+            raise e
+        end
+        end
+     
+        if not status.exitstatus.zero?
+            puts "Minification error"
+            exit 1
+        end
+     
+        fc.puts(output)
+        Jake.modify_file_if_content_changed(filename, fc)
+    end
+
     task :upgrade_package do
     
-      $bindir = File.join($app_path, "bin") 
+      $bindir = File.join($app_path, "bin")
       $current_platform = 'empty'
       $srcdir = File.join($bindir, "RhoBundle")
     

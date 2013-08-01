@@ -214,7 +214,7 @@ def debug_handle_cmd(inline)
 end
 
 $_tracefunc = lambda{|event, file, line, id, bind, classname|
-  return if eval('Thread.current!=Thread.main', bind)
+  return if eval('::Thread.current != ::Thread.main', bind)
   $_binding = bind;
   $_classname = classname;
   $_methodname = id;

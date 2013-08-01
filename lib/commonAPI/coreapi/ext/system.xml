@@ -9,6 +9,12 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+
         </MORE_HELP>
         <ALIASES>
             <ALIAS new="System" deprecated="true"/>
@@ -612,7 +618,7 @@ This API is part of the `coreapi` extension that is included automatically.
                 </PARAMS>
             </METHOD>
             <METHOD name="runApplication">
-                <DESC>Use System.Process.runApplication: Run an application.</DESC>
+                <DESC>Run an application.</DESC>
                 <PLATFORM>Apple, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="appName" type="STRING">

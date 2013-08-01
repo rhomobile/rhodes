@@ -81,8 +81,8 @@ public:
     int toolbarGetHeight(void);
     void toolbarAddAction(const QString & text);
     void toolbarAddAction(const QIcon & icon, const QString & text, const char* action, bool rightAlign = false);
-    void toolbarAddSeparator(void);
-    void setToolbarStyle(bool border, QString background);
+    void toolbarAddSeparator(int width);
+    void setToolbarStyle(bool border, QString background, int viewHeight);
     // menu
     void menuClear(void);
     void menuAddAction(const QString & text, int item);
@@ -123,6 +123,7 @@ private:
 	bool firstShow, m_bFirstLoad;
     QBasicTimer m_SplashTimer;
     rho::apiGenerator::CMethodResult m_oTabBarSwitchCallback;
+    int toolBarSeparatorWidth;
 
 private slots:
     void on_webView_urlChanged(QUrl );
@@ -162,6 +163,7 @@ public slots:
     void setPosition(int x, int y);
     void setSize(int width, int height);
     void lockSize(int locked);
+    void setTitle(const char* title);
 protected:
     void resizeEvent(QResizeEvent *);
 };

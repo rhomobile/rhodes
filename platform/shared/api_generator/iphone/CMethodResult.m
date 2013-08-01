@@ -285,6 +285,7 @@ extern int rho_webview_active_tab();
 
 - (void)dealloc {
     [resultObject release];
+    [super dealloc];
 }
 
 @end

@@ -190,7 +190,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
 }
 
 -(void) full_screen_mode:(BOOL)enable methodResult:(id<IMethodResult>)methodResult{
-    [self setFullScreen:enable];
+    [self setFullScreen:enable methodResult:methodResult];
 }
 
 -(void) setCookie:(NSString*)url cookie:(NSString*)cookie methodResult:(id<IMethodResult>)methodResult{
