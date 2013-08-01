@@ -33,9 +33,9 @@ void QtWebPage::javaScriptConsoleMessage(const QString& message, int lineNumber,
 	QString origin = "Console message at " + sourceID + ":" + QString::number(lineNumber);
 	const QByteArray asc_origin = origin.toAscii(); 
 	rho::String str_origin = ::std::string(asc_origin.constData(), asc_origin.length());
-	LOG(WARNING) + str_origin.c_str();
+	LOG(INFO) + str_origin.c_str();
 
 	const QByteArray asc_message = message.toAscii(); 
 	rho::String str_message = ::std::string(asc_message.constData(), asc_message.length());
-	LOG(WARNING) + str_message.c_str();
+	LOG(INFO) + str_message.c_str();
 }
