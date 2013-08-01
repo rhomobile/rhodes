@@ -82,7 +82,7 @@ public:
     void toolbarAddAction(const QString & text);
     void toolbarAddAction(const QIcon & icon, const QString & text, const char* action, bool rightAlign = false);
     void toolbarAddSeparator(int width);
-    void setToolbarStyle(bool border, QString background);
+    void setToolbarStyle(bool border, QString background, int viewHeight);
     // menu
     void menuClear(void);
     void menuAddAction(const QString & text, int item);
