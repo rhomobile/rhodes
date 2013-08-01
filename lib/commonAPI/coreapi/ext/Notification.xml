@@ -123,7 +123,7 @@ This API is part of the `coreapi` extension that is included automatically.
 				<PARAMS>
 					<PARAM name="duration" type="Integer" default="1000">
 					    <CAN_BE_NIL/>
-						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration.</DESC>
+						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration. iOS devices have fixed system vibration time. It could not be changed.</DESC>
 					</PARAM>
 				</PARAMS>
             </METHOD>
