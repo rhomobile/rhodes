@@ -142,6 +142,7 @@ public:
     void setPosition(int x, int y);
     void setSize(int width, int height);
     void lockSize(int locked);
+    void setTitle(const char* title);
 
 signals:
     void doExitCommand(void);
@@ -166,4 +167,5 @@ signals:
     void doSetPosition(int x, int y);
     void doSetSize(int width, int height);
     void doLockSize(int locked);
+    void doSetTitle(const char* title);
 };

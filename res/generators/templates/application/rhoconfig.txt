@@ -48,6 +48,7 @@ LastVisitedPage = ''
 # sync server url, typically this will look like 'http://<hostname>:<port>'
 # for example: 'http://localhost:9292'
 syncserver = '<%=syncserver%>'
+sync_poll_interval=0
 
 # geo location inactivity timeout (in seconds)
 #geo_location_inactivity_timeout = 30

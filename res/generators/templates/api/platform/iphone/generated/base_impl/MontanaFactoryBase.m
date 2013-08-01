@@ -34,7 +34,7 @@
 -(id<I<%= $cur_module.name %>>)create<%= $cur_module.name %>ByID:(NSString*)ID {
     <%= $cur_module.name %>* obj = [[<%= $cur_module.name %> alloc] init];
 <% if $cur_module.is_template_propertybag %>
-    [obj setProperty:@"ID" propertyValue:ID];
+    [obj setProperty:@"ID" propertyValue:ID methodResult:nil];
 <% end %>
     return obj;
 }

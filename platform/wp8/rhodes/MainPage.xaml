@@ -26,8 +26,9 @@
             <phone:Pivot x:Name="TabbarPivot" Height="Auto" Title="" Width="Auto" SelectionChanged="TabbarPivot_SelectionChanged">
                 <phone:Pivot.HeaderTemplate>
                     <DataTemplate>
-                        <StackPanel Margin="0">
-                            <TextBlock FontSize="48" Margin="0" Text="{Binding}"/>
+                        <StackPanel Background="{Binding Background}" Margin="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
+                            <Image Source="{Binding IconImage}" Height="Auto" Width="Auto"/>
+                            <TextBlock FontSize="48" Margin="0" Text="{Binding Label}"/>
                         </StackPanel>
                     </DataTemplate>
                 </phone:Pivot.HeaderTemplate>
