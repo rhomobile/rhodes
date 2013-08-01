@@ -310,10 +310,10 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
         if (!internalUrlProcessing(url)) {
             sUrl.remove(QRegExp("#+$"));
             if (sUrl.compare(ui->webView->url().toString())!=0) {
-#ifdef OS_MACOSX
-                if (mainWindowCallback && !sUrl.startsWith("javascript:", Qt::CaseInsensitive))
-                    mainWindowCallback->onWebViewUrlChanged(sUrl.toStdString());
-#endif
+                if (mainWindowCallback && !sUrl.startsWith("javascript:", Qt::CaseInsensitive)) {
+                    const QByteArray asc_url = sUrl.toAscii();
+                    mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
+                }
                 ui->webView->load(QUrl(sUrl));
             }
         }
@@ -339,9 +339,10 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
 
     PROF_STOP("BROWSER_PAGE");
 
-#ifdef OS_MACOSX
-    if (mainWindowCallback && ok) mainWindowCallback->onWebViewUrlChanged(ui->webView->url().toString().toStdString());
-#endif
+    if (mainWindowCallback && ok) {
+        const QByteArray asc_url = ui->webView->url().toString().toAscii();
+        mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
+    }
 
     if ( m_bFirstLoad )
     {
@@ -374,13 +375,10 @@ void QtMainWindow::timerEvent(QTimerEvent *ev)
 void QtMainWindow::on_webView_urlChanged(QUrl url)
 {
     if (mainWindowCallback) {
-#ifdef OS_MACOSX
-        ::std::string sUrl = url.toString().toStdString();
+        const QByteArray asc_url = url.toString().toAscii();
+        ::std::string sUrl = ::std::string(asc_url.constData(), asc_url.length());
         LOG(INFO) + "WebView: URL changed to " + sUrl;
         mainWindowCallback->onWebViewUrlChanged(sUrl);
-#else
-        LOG(INFO) + "WebView: URL changed";
-#endif
     }
 }
 
@@ -398,9 +396,10 @@ void QtMainWindow::navigate(QString url, int index)
             //wv->stop();
             wv->page()->mainFrame()->evaluateJavaScript(url);
         } else if (!internalUrlProcessing(url)) {
-#ifdef OS_MACOSX
-            if (mainWindowCallback) mainWindowCallback->onWebViewUrlChanged(url.toStdString());
-#endif
+            if (mainWindowCallback) {
+                const QByteArray asc_url = url.toAscii();
+                mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
+            }
             wv->load(QUrl(url));
         }
     }
@@ -423,9 +422,10 @@ void QtMainWindow::Refresh(int index)
 {
     QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
     if (wv) {
-#ifdef OS_MACOSX
-        if (mainWindowCallback) mainWindowCallback->onWebViewUrlChanged(wv->url().toString().toStdString());
-#endif
+        if (mainWindowCallback) {
+            const QByteArray asc_url = wv->url().toString().toAscii();
+            mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
+        }
         wv->reload();
     }
 }
