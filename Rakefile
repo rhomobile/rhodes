@@ -805,14 +805,17 @@ namespace "config" do
         puts "Jake.localip() error : #{e}"  
     end
 
-    $obfuscate_js      = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["js"].nil?) ? nil : 1 )
-    $obfuscate_css     = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["css"].nil?) ? nil : 1 )
-    $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
-    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
+    $obfuscate_js      = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
+    $obfuscate_css     = Jake.getBuildBoolProp2("obfuscate", "css", $app_config, nil)
+    $obfuscate_exclude = Jake.getBuildProp2("obfuscate", "exclude_dirs" )
 
+    $minify_js      = Jake.getBuildBoolProp2("minify", "js", $app_config, nil)
+    $minify_css     = Jake.getBuildBoolProp2("minify", "css", $app_config, nil)
+    $minify_exclude = Jake.getBuildProp2("minify", "exclude_dirs" )
+
+    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
-    $minify_js         = Jake.getBuildBoolProp("minify_scripts", $app_config, false)
     
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
@@ -1293,7 +1296,7 @@ def init_extensions(dest, mode = "")
   #exit
 end
 
-def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
+def public_folder_cp_r(src_dir,dst_dir,level)
   mkdir_p dst_dir if not File.exists? dst_dir
   Dir.foreach(src_dir) do |filename|
     next if filename.eql?('.') || filename.eql?('..')
@@ -1302,7 +1305,7 @@ def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
     filepath = src_dir + '/' + filename
     dst_path = dst_dir + '/' + filename
     if File.directory?(filepath)
-      public_folder_cp_r(filepath,dst_path,(level+1),((obfuscate==1) && ((level>0) || $obfuscate_exclude.nil? || !$obfuscate_exclude.include?(filename)) ? 1 : 0))
+      public_folder_cp_r(filepath,dst_path,(level+1))
     else
       cp filepath, dst_path, :preserve => true
     end
@@ -1389,7 +1392,7 @@ def common_bundle_start( startdir, dest)
   end
   
   if File.exists? app + '/public'
-    public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, 1
+    public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0
   end
   
   copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
@@ -1670,10 +1673,15 @@ namespace "build" do
       Dir.glob("**/*.erb") { |f| rm f }
         
       minify_types = []
-        
-      minify_types << "js" if $minify_js or $obfuscate_js or !$debug
-      minify_types << "css" if $minify_js or $obfuscate_css or !$debug
-        
+
+      if !$debug
+        $minify_js = true if $minify_js == nil
+        $minify_css = true if $minify_css == nil
+      end
+                
+      minify_types << "js" if $minify_js or $obfuscate_js
+      minify_types << "css" if $minify_css or $obfuscate_css
+      
       if not minify_types.empty?
           minify_js_and_css($srcdir,minify_types)
       end
@@ -1683,11 +1691,23 @@ namespace "build" do
       cp_r "platform/shared/db/res/db", $srcdir 
     end
       
-      
+    def is_exclude_folder(excludes, filename)  
+        return false if !excludes || !filename
+        
+        excludes.each do |excl|        
+            return true if filename.index(excl)
+        end
+        
+        return false
+    end
+    
     def minify_js_and_css(dir,types)
       pattern = types.join(',')
       Dir.glob( File.join(dir,'**',"*.{#{pattern}}") ) do |f|
           if File.file?(f) and !File.fnmatch("*.min.*",f)
+              next if is_exclude_folder($obfuscate_exclude, f )
+              next if is_exclude_folder( $minify_exclude, f )
+              
               ext = File.extname(f)
               type = nil
               if ext == '.js' then
@@ -1703,7 +1723,7 @@ namespace "build" do
     
     
     def minify_inplace(filename,type)
-        puts "minify_inplace: #{filename}, #{type}"
+        puts "minify file: #{filename}"
     
         f = StringIO.new("", "w+")
         f.write(File.read(filename))
@@ -1715,24 +1735,25 @@ namespace "build" do
      
         output = true
         status = nil
-        Open3.popen2("java","-jar","#{$minifier}","--type","#{type}") do |stdin, stdout, wait_thr|
         begin
-            stdin.binmode
-     
-            while buffer = f.read(4096)
-                stdin.write(buffer)
+        
+            Open3.popen2("java","-jar","#{$minifier}","--type","#{type}") do |stdin, stdout, wait_thr|
+                stdin.binmode
+         
+                while buffer = f.read(4096)
+                    stdin.write(buffer)
+                end
+                f.close
+                stdin.close
+         
+                output = stdout.read
+         
+                status = wait_thr.value
             end
-            f.close
-            stdin.close
-     
-            output = stdout.read
-     
-            status = wait_thr.value
-     
+            
         rescue Exception => e
             puts "Minify error: #{e.inspect}"
             raise e
-        end
         end
      
         if not status.exitstatus.zero?
@@ -1741,7 +1762,8 @@ namespace "build" do
         end
      
         fc.puts(output)
-        Jake.modify_file_if_content_changed(filename, fc)
+        #Jake.modify_file_if_content_changed(filename, fc)
+        File.open(filename, "w"){|file| file.write(fc)}
     end
 
     task :upgrade_package do
