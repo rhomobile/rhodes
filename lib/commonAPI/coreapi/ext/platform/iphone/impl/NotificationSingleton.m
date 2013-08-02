@@ -52,8 +52,9 @@ static BOOL is_current_alert_status = NO;
 }
 
 - (void)run:(NSObject*)v {
+    
     NSString *title = @"Alert";
-    NSString *message = nil;
+    NSString *message = @"";
     NSString *imagePath = nil;
     
 	is_current_alert_status = NO;
@@ -103,8 +104,10 @@ static BOOL is_current_alert_status = NO;
                     NSString *itemTitle = nil;
                     
                     if ([buttonVal isKindOfClass:[NSString class]]) {
-                        itemId = (NSString*) buttonVal;
-                        itemTitle = (NSString*) buttonVal;
+                        if ([(NSString*)buttonVal length] > 0)  {
+                            itemId = (NSString*) buttonVal;
+                            itemTitle = (NSString*) buttonVal;
+                        }
                     } else if ([buttonVal isKindOfClass:[NSDictionary class]]) {
                         NSDictionary* btnDict = (NSDictionary*)buttonVal;
                         // get ID
@@ -125,7 +128,7 @@ static BOOL is_current_alert_status = NO;
                         RAWLOG_ERROR("Illegal type of button item");
                     }
                     
-                    if (!itemId || !itemTitle) {
+                    if ((itemId == nil) || (itemTitle == nil)) {
                         RAWLOG_ERROR("Incomplete button item");
                         continue;
                     }
@@ -136,6 +139,9 @@ static BOOL is_current_alert_status = NO;
                     [buttons addObject:btn];
                 }
             }
+        }
+        if ([buttons count] <= 0) {
+            [buttons addObject:[NSMutableArray arrayWithObjects:@"OK", @"OK", nil]];
         }
     }
     [v release];
@@ -170,6 +176,7 @@ static BOOL is_current_alert_status = NO;
     }
     
     [alert show];
+
     currentAlert = alert;
 }
 
