@@ -92,6 +92,7 @@ public:
 
 private:
 	void processCommand(IQueueCommand* pCmd);
+	rho::net::INetRequestImpl* m_netRequest;
 };
   
 }
