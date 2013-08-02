@@ -627,11 +627,8 @@ namespace "config" do
 
     if $app_config["app_type"] == 'rhoelements'
     
-        # add rawsensors and audiocapture extensions for rhoelements app
+        # add audiocapture extensions for rhoelements app
         if !$app_config['extensions'].index('rhoelementsext')
-            if $current_platform == "iphone"
-                $app_config['extensions'] = $app_config['extensions'] | ['rawsensors']
-            end
             if $current_platform == "iphone" || $current_platform == "android"
                 $app_config['extensions'] = $app_config['extensions'] | ['audiocapture']
             end
@@ -643,6 +640,7 @@ namespace "config" do
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
             #$app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
+            $app_config['extensions'] = $app_config['extensions'] | ['sensor']
         end    
         
         if $current_platform == "iphone"
@@ -650,6 +648,7 @@ namespace "config" do
             #$app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
+            $app_config['extensions'] = $app_config['extensions'] | ['sensor']
         end    
 
         if $current_platform == "android"
@@ -658,12 +657,13 @@ namespace "config" do
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
+            $app_config['extensions'] = $app_config['extensions'] | ['sensor']
         end    
         
     end
 
     if $app_config['extensions'].index('rhoelementsext')
-        $app_config["extensions"].delete("rawsensors")
+        #$app_config["extensions"].delete("rawsensors")
         $app_config["extensions"].delete("audiocapture")
     end
 
@@ -692,10 +692,6 @@ namespace "config" do
     if $app_config['extensions'].index('nfc')
         #$app_config['extensions'].delete('nfc')
         $rhoelements_features += "- NFC extension\n"
-    end
-    if $app_config['extensions'].index('rawsensors')
-        #$app_config['extensions'].delete('rawsensors')
-        $rhoelements_features += "- Raw Sensors\n"
     end
     if $app_config['extensions'].index('audiocapture')
         #$app_config['extensions'].delete('audiocapture')
@@ -764,9 +760,6 @@ namespace "config" do
             rescue Exception => e
                 if $app_config['extensions'].index('nfc')
                     $app_config['extensions'].delete('nfc')
-                end
-                if $app_config['extensions'].index('rawsensors')
-                    $app_config['extensions'].delete('rawsensors')
                 end
                 if $app_config['extensions'].index('audiocapture')
                     $app_config['extensions'].delete('audiocapture')
