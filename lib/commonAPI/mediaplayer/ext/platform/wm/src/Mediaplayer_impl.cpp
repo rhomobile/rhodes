@@ -1,4 +1,6 @@
 #include "../../../shared/generated/cpp/MediaplayerBase.h"
+#include "net/INetRequest.h"
+#include "RhoFile.h"
 
 namespace rho {
 
@@ -35,6 +37,27 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
     virtual rho::String getInitialDefaultID();
     virtual void enumerate(CMethodResult& oResult);
 
+	/**
+	* Function to kill the player thread so that VideoCapture can unlock
+	* any in-use media files
+	*/
+	void KillPlayer()
+	{
+		if (m_hPlayProcess)
+		{
+			TerminateProcess(m_hPlayProcess, -1);
+			WaitForSingleObject(m_hPlayProcess, 500);
+			CloseHandle(m_hPlayProcess);
+			m_hPlayProcess = NULL;
+		}
+		if (m_hPlayThread)
+		{
+			TerminateThread(m_hPlayThread, -1);
+			CloseHandle(m_hPlayThread);
+			m_hPlayThread = NULL;
+		}
+	}
+
 	bool playLocalAudio()
 	{
 		LOG(INFO) + __FUNCTION__ + ": playLocalAudio called";
@@ -69,9 +92,38 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 		// Check that the filename is not empty or NULL.
 		if (!filename.empty() && (!m_hPlayThread))
 		{
-			// Store the local filename away.
-			//common::convertToStringW(filename, lFilename);
-			lFilename = s2ws(filename);
+			// Download the audio file and store name in lFilename
+			if(String_startsWith(filename, "http://") || String_startsWith(filename, "https://"))
+			{
+				rho::common::CRhoFile::deleteFile("download.wav");
+				// Networked code
+				LOG(INFO) + __FUNCTION__ + "Attempting to download the file. " + filename;
+				NetRequest oNetRequest;
+				Hashtable<String,String> mapHeaders;
+				bool overwriteFile = true;
+				bool createFolders = false;
+				bool fileExists = false;
+				String& newfilename = String("download.wav");
+
+				// Call the download function with the url and new filename the temp filename to be used.
+				NetResponse resp = getNetRequest().pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+
+				if (!resp.isOK())
+				{
+					LOG(INFO) + __FUNCTION__ + "Could not download the file";
+					return; // Don't attempt to play the file.
+				}
+				else
+				{
+					LOG(INFO) + __FUNCTION__ + "Could download the file";
+					lFilename = s2ws(newfilename);
+				}	
+			}
+			else
+			{
+				// Store the local filename away.
+				lFilename = s2ws(filename);
+			}
 
 			// Launch the audio player.
 			playLocalAudio();
@@ -95,11 +147,46 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 	// Start playing a video file.
     virtual void startvideo( const rho::String& filename, rho::apiGenerator::CMethodResult& oResult)
 	{
+		// Attempt to kill the player.  If we don't do this, WMP holds a lock on the file and we cannot delete it.
+		KillPlayer();
+		rho::common::CRhoFile::deleteFile("download.wmv");
+
 		// Check that the filename is not empty or NULL.
 		if (!filename.empty() &&  (!m_hPlayProcess))
 		{
 			PROCESS_INFORMATION pi;
-			StringW m_lpzFilename = s2ws(filename);
+			StringW m_lpzFilename;
+
+			if (String_startsWith(filename, "http://") || String_startsWith(filename, "https://"))
+			{
+				// Networked code
+				LOG(INFO) + __FUNCTION__ + "Attempting to download the file. " + filename;
+				NetRequest oNetRequest;
+				Hashtable<String,String> mapHeaders;
+				bool overwriteFile = true;
+				bool createFolders = false;
+				bool fileExists = false;
+				String& newfilename = String("download.wmv");
+
+				// Call the download function with the url and new filename the temp filename to be used.
+				NetResponse resp = getNetRequest().pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+
+				if (!resp.isOK())
+				{
+					LOG(INFO) + __FUNCTION__ + "Could not download the file";
+					return; // Don't attempt to play the file.
+				}
+				else
+				{
+					LOG(INFO) + __FUNCTION__ + "Could download the file";
+					m_lpzFilename = s2ws(newfilename);
+				}
+			}
+			else
+			{
+				// Local file, just change the name to a format the WM/CE understands.
+				m_lpzFilename = s2ws(filename);
+			}
 
 			// Launch the video player.
 			if (!CreateProcess(L"\\windows\\WMPlayer.exe", m_lpzFilename.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi))
@@ -129,6 +216,9 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 				m_hPlayProcess = pi.hProcess;
 				m_hPlayThread = pi.hThread;
 			}
+
+			m_hPlayProcess = pi.hProcess;
+			m_hPlayThread = pi.hThread;
 		}
 	}
 
