@@ -161,7 +161,11 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
     
     const char* on_change_tab_callback = NULL;
 
+	const char* ios_7_icon_color = NULL;
+	const char* ios_7_selected_color = NULL;
+
 	
+    
     NSObject* obj = nil;
     
     if ([p_properties isKindOfClass:[NSDictionary class]]) {
@@ -177,6 +181,16 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
             if ([obj_num boolValue]) {
                 bar_t = VTABBAR_TYPE;
             }
+        }
+        obj = [p_properties objectForKey:NATIVE_BAR_ICON_COLOR];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            ios_7_icon_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
+        }
+        obj = [p_properties objectForKey:NATIVE_BAR_SELECTED_COLOR];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            ios_7_selected_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
         }
     }
     
@@ -322,6 +336,12 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 	if (background_color != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:background_color] forKey:NATIVE_BAR_BACKGOUND_COLOR];	
 	}
+    if (ios_7_icon_color != NULL) {
+		[properties setObject:[NSString stringWithUTF8String:ios_7_icon_color] forKey:NATIVE_BAR_ICON_COLOR];
+    }
+    if (ios_7_selected_color != NULL) {
+		[properties setObject:[NSString stringWithUTF8String:ios_7_selected_color] forKey:NATIVE_BAR_SELECTED_COLOR];
+    }
     
     //COMMONAPI
     if (callback != NULL) {
