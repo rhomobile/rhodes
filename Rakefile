@@ -1755,8 +1755,8 @@ namespace "build" do
         end
      
         fc.puts(output)
-        #Jake.modify_file_if_content_changed(filename, fc)
-        File.open(filename, "w"){|file| file.write(fc)}
+        Jake.modify_file_if_content_changed(filename, fc)
+        #File.open(filename, "w"){|file| file.write(f.read())}
     end
 
     task :upgrade_package do
