@@ -266,7 +266,8 @@ void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems, bool bLeftMen
     }
 }
 
-CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
+CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink):
+    m_eType(emtNone)
 {
 	m_strLabel = strLabel;
 	m_strLink  = strLink;
