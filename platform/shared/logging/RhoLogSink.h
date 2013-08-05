@@ -93,7 +93,8 @@ public:
 
 private:
 	void processCommand(IQueueCommand* pCmd);
-	rho::net::INetRequestImpl* m_netRequest;
+	NetRequest m_netRequest;
+	net::CNetRequestWrapper getNet(){ return getNetRequest(&m_netRequest); }
 };
   
 }
