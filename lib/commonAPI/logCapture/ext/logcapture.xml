@@ -2,7 +2,12 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="LogCapture" parent="Rho">
-        <HELP_OVERVIEW>The LogCapture class is used for capturing logging events.</HELP_OVERVIEW>
+        <HELP_OVERVIEW>The LogCapture class is used for capturing logging events.
+## Enabling the API           
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["logCapture"]
+        </HELP_OVERVIEW>
         
         <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="excludeCategories" type="STRING" default="">

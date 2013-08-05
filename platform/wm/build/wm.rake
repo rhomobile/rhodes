@@ -158,7 +158,7 @@ namespace "config" do
   namespace :wm do
     namespace :win32 do
       task :ignore_vsprops do
-        $wm_win32_ignore_vsprops = true
+        $wm_win32_ignore_vsprops = false #true
       end
     end
   end
@@ -166,7 +166,7 @@ namespace "config" do
   namespace "win32" do
     namespace :wm do
       task :ignore_vsprops do
-        $wm_win32_ignore_vsprops = true
+        $wm_win32_ignore_vsprops = false #true
       end
     end
 
@@ -363,7 +363,7 @@ namespace "build" do
       cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
 
       if $wm_win32_ignore_vsprops
-        Dir.glob(File.join(File.basedir($build_solution), '*.vsprops')) do |file|
+        Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
           Jake.clean_vsprops(file)
         end
       end
@@ -606,7 +606,7 @@ namespace "build" do
       chdir $config["build"]["wmpath"]
 
       if $wm_win32_ignore_vsprops
-        Dir.glob(FIle.join(File.basedir($build_solution), '*.vsprops')) do |file|
+        Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
           Jake.clean_vsprops(file)
         end
       end
