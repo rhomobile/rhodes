@@ -1746,12 +1746,16 @@ namespace "build" do
             
         rescue Exception => e
             puts "Minify error: #{e.inspect}"
-            raise e
+            #raise e
         end
      
-        if not status.exitstatus.zero?
-            puts "Minification error"
-            exit 1
+        if !status || !status.exitstatus.zero?
+            puts "WARNING: Minification error!"
+            
+            output = File.read(filename)
+            $minification_failed_list = [] if !$minification_failed_list
+            $minification_failed_list << filename
+            #exit 1
         end
      
         fc.puts(output)
@@ -2525,6 +2529,15 @@ at_exit do
     puts 'To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.'
     puts '************************************************************************'
   end
+
+  if ($minification_failed_list)  
+    puts '********* WARNING ************************************************************************'
+    puts ' The JavaScript or CSS files failed to minify:'
+    puts $minification_failed_list
+    puts ' See log for details '
+    puts '**************************************************************************************'
+    
+  end
   
   if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
     puts '********* WARNING ************************************************************************'
@@ -2541,5 +2554,5 @@ at_exit do
     puts ' For more information go to http://www.motorolasolutions.com/rhoelements '    
     puts '**************************************************************************************'
   end
-  
+
 end
