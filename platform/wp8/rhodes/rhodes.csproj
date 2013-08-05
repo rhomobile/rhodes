@@ -150,9 +150,6 @@
     <Compile Include="common\RhoFile.cs" />
     <Compile Include="common\RhoFilePath.cs" />
     <Compile Include="common\RhoStd.cs" />
-    <Compile Include="RhoTabHeader.xaml.cs">
-      <DependentUpon>RhoTabHeader.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -162,10 +159,6 @@
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="RhoTabHeader.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

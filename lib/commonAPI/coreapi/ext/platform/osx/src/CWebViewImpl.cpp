@@ -18,7 +18,7 @@ class CWebViewImpl: public CWebViewSingletonBase
     int m_nTextZoom;
 public:
 
-    CWebViewImpl(): m_nNavigationTimeout(0), m_dZoomPage(1.0), m_nTextZoom(1), CWebViewSingletonBase(){}
+    CWebViewImpl(): CWebViewSingletonBase(), m_nNavigationTimeout(0), m_dZoomPage(1.0), m_nTextZoom(1) {}
 
     virtual void getFramework(rho::apiGenerator::CMethodResult& oResult)
     {

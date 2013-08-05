@@ -27,6 +27,7 @@
 #pragma once
 
 #include "json/JSONIterator.h"
+#include "api_generator/wp8/IMethodResult.h"
 
 namespace rhoruntime
 {
@@ -38,6 +39,8 @@ namespace rhoruntime
         int getScreenWidth();
         int getScreenHeight();
 		bool isBrowserInitialized(int index);
+		::Platform::String^ getUserAgent();
+		::Platform::String^ getWebviewFramework();
 		::Platform::String^ getScreenOrientation();
 		bool  isEmulator();
 		void bringToFront();
@@ -77,21 +80,17 @@ namespace rhoruntime
 		void tabbarRemove(int index);
 		void tabbarSwitch(int index);
 		int tabbarGetCurrent();
-		void tabbarAddTab(::Platform::String^ label, ::Platform::String^ icon, ::Platform::String^ action, bool disabled, ::Platform::String^ web_bkg_color, ::Platform::String^ selected_color, bool reload, bool use_current_view_for_tab, bool hasCallback, ::Platform::Object^ oResult);
+		void tabbarAddTab(::Platform::String^ label, ::Platform::String^ icon, ::Platform::String^ action, bool disabled, ::Platform::String^ web_bkg_color, ::Platform::String^ selected_color, ::Platform::String^ background_color, bool reload, bool use_current_view_for_tab, bool hasCallback, IMethodResult^ oResult);
 		void tabbarSetBadge(int index, ::Platform::String^ badge);
 		void exitCommand(void);
 		void navigateBackCommand(void);
 		void navigateForwardCommand(void);
 		void logCommand(void);
 		void refreshCommand(int tab_index);
-		//void navigateCommand(TNavigateData* nd);
 		void takePicture(::Platform::String^ callbackUrl);
 		void selectPicture(::Platform::String^ callbackUrl);
-		//void alertShowPopup(CAlertParams *);
 		void alertHidePopup(void);
 		//void dateTimePicker(CDateTimeMessage *);
-		//void executeCommand(RhoNativeViewRunnable*);
-		//void executeRunnable(rho::common::IRhoRunnable* pTask);
 		//void takeSignature(void*); //TODO: Signature::Params*
 		void fullscreenCommand(int fullScreen);
 		void setCookie(::Platform::String^ url, ::Platform::String^ cookie);
@@ -165,13 +164,12 @@ namespace rhoruntime
 		// public methods:
 		bool Initialize(::Platform::String^ title);
 		void DestroyUi(void);
-		//CNativeToolbar& getToolbar(){ return m_toolbar; }
-		//CNativeTabbar& getTabbar(){ return m_tabbar; }
 		void setCryptoEngine(ICryptoEngine^ cryptoEngine);
 		ICryptoEngine^ getCryptoEngine() {return m_CryptoEngine;}
 		// proxy methods needed for C# implementation of CoreAPI
 		::Platform::String^ canonicalizeRhoUrl(::Platform::String^ url);
 		::Platform::String^ getRootPath(::Platform::String^ path);
+		::Platform::String^ getAppRootPath(::Platform::String^ path);
 		::Platform::String^ getRERuntimePath(::Platform::String^ path);
 
 	private:

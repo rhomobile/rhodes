@@ -214,7 +214,7 @@ def debug_handle_cmd(inline)
 end
 
 $_tracefunc = lambda{|event, file, line, id, bind, classname|
-  return if eval('Thread.current!=Thread.main', bind)
+  return if eval('::Thread.current != ::Thread.main', bind)
   $_binding = bind;
   $_classname = classname;
   $_methodname = id;
@@ -270,7 +270,7 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
             while debug_handle_cmd(true) do end
 
             if app_type.eql? "rhodes"
-              if System::get_property('main_window_closed')
+              if Rho::System.main_window_closed
                  $_s.write("QUIT\n") if !($_s.nil?)
                  $_wait = false
               end

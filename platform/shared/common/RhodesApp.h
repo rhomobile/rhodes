@@ -274,6 +274,8 @@ protected:
 
     void initHttpServer();
     void initAppUrls();
+
+    void RhoJsStart();
 };
 
 #if defined(WINDOWS_PLATFORM)

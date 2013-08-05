@@ -90,6 +90,7 @@ extern int rho_webview_active_tab();
     mRubyModulePath = nil;
     mRubyCallbackMethod = 0;
     mJSTabIndex = -1;
+    mMethodSignature = nil;
     return self;
 }
 
@@ -124,6 +125,10 @@ extern int rho_webview_active_tab();
 
 -(NSObject*) getResult {
     return mValue;
+}
+
+-(void) setMethodSignature:(NSString*)methodSignature {
+    mMethodSignature = methodSignature;
 }
 
 
@@ -280,6 +285,7 @@ extern int rho_webview_active_tab();
 
 - (void)dealloc {
     [resultObject release];
+    [super dealloc];
 }
 
 @end

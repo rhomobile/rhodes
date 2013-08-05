@@ -1,0 +1,11 @@
+libraries: [gmaps]
+entry: Init_GMaps
+android:
+  exttype: rakefile
+  manifest_changes: 
+  - ext/platform/android/AndroidManifest.rb
+  - ext/platform/android/ApplicationManifestAdds.erb
+  - ext/platform/android/ManifestManifestAdds.erb
+  source_list: ext/platform/android/java_build.files
+  adds: ext/platform/android/adds
+  library_deps: [extras/google/google_play_services/libproject/google-play-services_lib]

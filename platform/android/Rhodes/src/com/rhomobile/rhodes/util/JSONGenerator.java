@@ -38,7 +38,7 @@ public class JSONGenerator {
     }
     
     protected void parse(Object obj) throws JSONException {
-        Logger.T(TAG, "Parse " + obj.getClass().getSimpleName());
+        Logger.T(TAG, "parse: " + ((obj==null) ? "<null>" : obj.getClass().getSimpleName()));
         if (Map.class.isInstance(obj)) {
             Logger.T(TAG, "Parsing Map instance >>>");
             parseMap((Map<String, ?>)obj);

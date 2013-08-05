@@ -19,4 +19,9 @@ public class CalendarIDsProviderICS extends CalendarIDsProvider {
 	public String getEventsBegin()			{ return "begin"; }
 	public String getEventsEnd()			{ return "end"; }
 	public String getEventsRrule()			{ return Events.RRULE; }
+	
+	public String getCalendarName()			{ return CalendarContract.Calendars.NAME; }
+	public String getCalendarDisplayName()	{ return CalendarContract.Calendars.CALENDAR_DISPLAY_NAME; }
+	public String getCalendarColor()		{ return CalendarContract.Calendars.CALENDAR_COLOR; }
+	public String getCalendarAccessLevel()	{ return CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL; }
 }

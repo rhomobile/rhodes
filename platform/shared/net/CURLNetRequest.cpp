@@ -251,6 +251,8 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         }
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
+		//curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 2);
+		//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2);
         if (nStartFrom > 0)
 		{
 			RAWLOG_INFO1("CURLNetRequest::doPull - resuming from %d",nStartFrom);
@@ -576,7 +578,9 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         curl_easy_setopt(m_curl, CURLOPT_COOKIE, session.c_str());
     }
     
-    curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
+    curl_easy_setopt(m_curl, CURLOPT_CONNECTTIMEOUT, timeout);
+	curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
+	
     curl_easy_setopt(m_curl, CURLOPT_TCP_NODELAY, 0); //enable Nagle algorithm
     
     curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, (long)m_sslVerifyPeer);
@@ -585,7 +589,10 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     // It is required because otherwise requests (especially requests to writing!)
     // could repeated twice or more times
     if (RHODESAPP().isBaseUrl(strUrl))
-        curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, 10*24*60*60);
+	{
+        curl_easy_setopt(m_curl, CURLOPT_CONNECTTIMEOUT, 10*24*60*60);
+		curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, 10*24*60*60);
+	}
     
     curl_slist *hdrs = NULL;
     // Disable "Expect: 100-continue"

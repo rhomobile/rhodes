@@ -11,11 +11,11 @@
 
 
 -(void) getAutoRotate:(id<IMethodResult>)methodResult;
--(void) setAutoRotate:(BOOL)autoRotate;
--(void) normal;
--(void) rightHanded;
--(void) leftHanded;
--(void) upsideDown;
+-(void) setAutoRotate:(BOOL)autoRotate methodResult:(id<IMethodResult>)methodResult;
+-(void) normal:(id<IMethodResult>)methodResult;
+-(void) rightHanded:(id<IMethodResult>)methodResult;
+-(void) leftHanded:(id<IMethodResult>)methodResult;
+-(void) upsideDown:(id<IMethodResult>)methodResult;
 -(void) setScreenOrientationEvent:(id<IMethodResult>)methodResult;
 
 -(void)dealloc;

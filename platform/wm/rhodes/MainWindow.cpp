@@ -491,6 +491,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     PostQuitMessage(0);
 
     bHandled = FALSE; // Allow ATL's default processing (e.g. NULLing m_hWnd)
+
     return 0;
 }
 

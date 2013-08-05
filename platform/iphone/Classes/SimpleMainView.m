@@ -204,12 +204,17 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	
 
 	NSString *background_color = nil;
+    NSString *icon_color = nil;
 
 	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
 	if (global_properties != nil) {
 		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
+		icon_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_ICON_COLOR];
 	}
-	
+
+#ifdef __IPHONE_7_0
+	tb.translucent = NO;
+#endif
 	
 	if (background_color != nil) {
 		tb.barStyle = UIBarStyleDefault;
@@ -217,7 +222,21 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		int cR = (c & 0xFF0000) >> 16;
 		int cG = (c & 0xFF00) >> 8;
 		int cB = (c & 0xFF);
+#ifdef __IPHONE_7_0
+		tb.barTintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+#else
 		tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+#endif
+	}
+    
+	if (icon_color != nil) {
+		int c = [icon_color intValue];
+		int cR = (c & 0xFF0000) >> 16;
+		int cG = (c & 0xFF00) >> 8;
+		int cB = (c & 0xFF);
+#ifdef __IPHONE_7_0
+		tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+#endif
 	}
 	
 	

@@ -126,6 +126,7 @@ public:
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
 
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
@@ -315,7 +316,11 @@ void CSystemImpl::getLocale(CMethodResult& oResult)
 void CSystemImpl::getCountry(CMethodResult& oResult)
 {
     wchar_t szCountry[20];
-    int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SISO3166CTRYNAME , szCountry, sizeof(szCountry)/sizeof(szCountry[0]));
+#if defined(OS_WINDOWS_DESKTOP)
+    int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, szCountry, sizeof(szCountry)/sizeof(szCountry[0]));
+#else
+    int nRes = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SABBREVCTRYNAME, szCountry, sizeof(szCountry)/sizeof(szCountry[0]));
+#endif
     szCountry[2] = 0;
 
   	oResult.set(szCountry);
@@ -1009,6 +1014,12 @@ void CSystemImpl::getHasCamera(CMethodResult& oResult)
     oResult.set(true);
 #endif
 
+}
+
+extern "C" bool rho_rhosim_window_closed();
+void CSystemImpl::getMain_window_closed(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(rho_rhosim_window_closed());
 }
 
 ////////////////////////////////////////////////////////////////////////

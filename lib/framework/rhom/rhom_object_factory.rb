@@ -502,7 +502,7 @@ module Rhom
                     else
                         if condition_hash.length > 0
                             sql = ""
-						    vals = []
+						                vals = []
                         
                             condition_hash.each do |key,value|
                                 sql << "\nINTERSECT\n" if sql.length > 0 
@@ -514,27 +514,22 @@ module Rhom
                                 end    
 								
                                 sqlCond, valCond = makeCondWhereEx(key,value,get_source_id)
-								sql << sqlCond
-								vals = vals + valCond
+								                sql << sqlCond
+								                vals = vals + valCond
 								
                                 sql << strLimit if strLimit
                             end
-                            
                             listObjs = db.execute_sql(sql, vals)
-
                         else
                             sql = ""
-						    vals = []
-                        
+						                vals = []
                             sql << "SELECT distinct( object ) FROM object_values WHERE \n"
                             sql << "source_id=?"
-							vals << get_source_id
+							              vals << get_source_id
                             sql << strLimit if strLimit
                             
-                            listObjs = db.execute_sql(sql, vals)
-                            
-                        end
-                                            
+                            listObjs = db.execute_sql(sql, vals)     
+                        end                  
                     end
                     #puts "non-null select end : #{listObjs.length}"
                     
@@ -569,47 +564,27 @@ module Rhom
                 end
 
                 def find_objects_ex(condition_ar, op, limit, offset, order_attr, &block)
-                    mapObjs = {}
-                    listObjs = []
+                    ary_objs = []
+                    ary_op   = []
+                    ary_res  = []
+                    finalObj = {}
+                    operator = op == "AND" ? "&" : "|"
                     condition_ar.each do |cond|
                         res = find_objects(cond[:conditions], cond[:op], limit, offset, order_attr, &block)
-                        
-                        if listObjs.length() == 0
-                            if condition_ar.length() > 1
-                                res.each do |hash_attrs|
-                                    mapObjs[ hash_attrs['object'] ] = 1
-                                end
-                            end
-                            
-                            listObjs = res
-                        else
-                            if op == 'OR'
-                                res.each do |hash_attrs|
-                                    obj = hash_attrs['object']
-                                    if !mapObjs.has_key?(obj)
-                                        listObjs << hash_attrs
-                                        mapObjs[ obj ] = 1
-                                    end    
-                                end
-                            else
-                                andRes = []
-                                res.each do |hash_attrs|
-                                    obj = hash_attrs['object']
-                                    if mapObjs.has_key?(obj)
-                                        andRes << hash_attrs
-                                    end    
-                                end
-                                listObjs = andRes
-                            end
-                        end    
+                        ary_res += res
+                        ary_objs << res.inject([]){|res2,element| res2 << element['object'];res2}
                     end
-                    
-                    listObjs
+                    ary_op = ary_objs.inject(ary_objs.first){|res,element| res = element.send(operator,res);res}
+                    finalObj = ary_res.inject([]) do |res,element|
+                      if ary_op.include? element['object']
+                        res << element
+                        ary_op.delete(element['object'])
+                      end
+                      res
+                    end
                 end
                                 
-                def find_bycondhash(args, &block)                
-                    #puts 'find_bycondhash start' + (block_given? ? 'with block' : "")
-                    
+                def find_bycondhash(args, &block)
                     condition_hash = {}
                     select_arr = nil
                     limit = nil
@@ -663,9 +638,9 @@ module Rhom
                     begin
                         listObjs = []
                         if condition_hash.is_a?(Hash)
-                            listObjs = find_objects(condition_hash, op, limit, offset, order_attr, &block)
+                          listObjs = find_objects(condition_hash, op, limit, offset, order_attr, &block)
                         else
-                            listObjs = find_objects_ex(condition_hash, op, limit, offset, order_attr, &block)
+                          listObjs = find_objects_ex(condition_hash, op, limit, offset, order_attr, &block)
                         end
 
                         nCount = 0;

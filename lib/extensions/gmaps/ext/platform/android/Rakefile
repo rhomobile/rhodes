@@ -1,0 +1,90 @@
+require 'fileutils'
+
+$curdir = pwd
+TARGETDIR = ENV['TARGET_TEMP_DIR']
+raise "TARGET_TEMP_DIR is not set" if TARGETDIR.nil?
+OBJDIR = ENV['TEMP_FILES_DIR']
+raise "TEMP_FILES_DIR is not set" if OBJDIR.nil?
+$rootdir = ENV['RHO_ROOT']
+raise "RHO_ROOT is not set" if $rootdir.nil?
+$appincdir = ENV["RHO_INC"]
+raise "RHO_INC is not set" if $appincdir.nil?
+$androidsdk = ENV['ANDROID_SDK']
+raise 'ANDROID_SDK is not set' unless $androidsdk    
+
+TARGETLIB = File.join(TARGETDIR, 'libgmaps.a')
+
+require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+task :config do
+    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+    $sources = get_sources File.join($curdir, 'native_build.files')
+    $objects = get_objects $sources, OBJDIR
+end
+
+directory TARGETDIR
+directory OBJDIR
+
+task :build => [:config, OBJDIR] do
+
+    $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
+
+    args = []
+    #args << "-I#{$curdir}/generated/jni"
+    #args << "-I#{$curdir}/../../shared" 
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details"
+    args << "-I#{$rootdir}/platform/shared/ruby/include"
+    args << "-I#{$rootdir}/platform/shared"
+    args << "-I#{$rootdir}/platform/shared/common"
+    args << "-I#{$rootdir}/platform/shared/api_generator"
+    args << "-I#{$appincdir}"
+    args << "-I#{$std_includes}"
+    args << "-I#{$rootdir}/platform/shared/ruby"
+    args << "-I#{$rootdir}/platform/shared/ruby/android"
+    args << "-I#{$rootdir}/platform/shared/ruby/generated"
+    
+    cd '../../..'
+    puts "pwd: #{pwd} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+    
+    cc_build $sources, OBJDIR, args or raise "Compile is failed"
+end
+
+task :copylibs => TARGETDIR do
+    mkdir_p File.join($curdir, 'adds','res','values')
+    
+    srcPath = File.join($androidsdk,'extras','google','google_play_services','libproject','google-play-services_lib','res')
+    srcPathName = Pathname.new(srcPath)
+    dstPath = File.join($curdir, 'adds','res')
+    
+    
+    Dir.glob(File.join(srcPath,'**','*')) do |f|
+        
+        if File.file?(f) then
+            targetName = File.join( dstPath, Pathname.new(f).relative_path_from(srcPathName) )
+            targetDir = File.dirname(targetName)
+            
+            if File.basename(targetDir).start_with?('values') and File.extname(targetName) == '.xml' then
+                targetName = File.join(targetDir,"google_play_services_"+File.basename(targetName))
+            end
+            
+            mkdir_p targetDir
+            cp f,targetName
+            
+        end
+        
+    end
+    
+    
+    
+    cp File.join($androidsdk,'extras','google','google_play_services','libproject','google-play-services_lib','libs','google-play-services.jar'), TARGETDIR
+    cp File.join($androidsdk,'extras','android','support','v4','android-support-v4.jar'), TARGETDIR
+end
+
+file TARGETLIB => [TARGETDIR, :build] do |t|
+    puts "objects: " + $objects.inspect
+    
+    cc_ar ('"'+t.name+'"'), $objects.collect{|x| '"'+x+'"'} or raise "Static library is failed"
+end
+
+task :default => [:copylibs, TARGETLIB]

@@ -277,6 +277,9 @@ public class BaseActivity extends Activity implements ServiceConnection {
     
     public static void setScreenAutoRotateMode(boolean mode) {
         sScreenAutoRotate = mode;
+        if (sScreenAutoRotate && (sTopActivity!=null)) {
+            sTopActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        }
     }
 
     public static boolean getScreenAutoRotateMode() {

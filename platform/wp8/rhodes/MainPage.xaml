@@ -23,7 +23,16 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid x:Name="TabbarPanel" Grid.Row="0" Margin="0,0,0,0">
-            <phone:Pivot x:Name="TabbarPivot" Height="Auto" Title="" Width="Auto" SelectionChanged="TabbarPivot_SelectionChanged"/>
+            <phone:Pivot x:Name="TabbarPivot" Height="Auto" Title="" Width="Auto" SelectionChanged="TabbarPivot_SelectionChanged">
+                <phone:Pivot.HeaderTemplate>
+                    <DataTemplate>
+                        <StackPanel Background="{Binding Background}" Margin="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
+                            <Image Source="{Binding IconImage}" Height="Auto" Width="Auto"/>
+                            <TextBlock FontSize="48" Margin="0" Text="{Binding Label}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </phone:Pivot.HeaderTemplate>
+            </phone:Pivot>
         </Grid>
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="0,0,0,0">
             <phone:WebBrowser x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto" TabIndex="-1" IsScriptEnabled="True" SizeChanged="RhodesWebBrowser_SizeChanged" Navigated="RhodesWebBrowser_Navigated" NavigationFailed="RhodesWebBrowser_NavigationFailed" LoadCompleted="RhodesWebBrowser_LoadCompleted" Loaded="RhodesWebBrowser_Loaded" Unloaded="RhodesWebBrowser_Unloaded" ScriptNotify="RhodesWebBrowser_JSNotify"/>

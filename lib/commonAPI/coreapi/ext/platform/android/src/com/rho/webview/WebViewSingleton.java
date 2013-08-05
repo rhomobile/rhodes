@@ -232,7 +232,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
 
     @Override
     public void currentLocation(int tabIndex, IMethodResult result) {
-        result.set(RhodesActivity.safeGetInstance().getMainView().currentLocation(tabIndex));
+        result.set(RhodesService.currentLocation(tabIndex));
     }
 
     @Override
