@@ -264,7 +264,7 @@ bool CNativeTabbar::removePerishableTab()
     int nTabToClose = -1;
     for ( int i = 0; i < (int)m_arTabs.size(); i++ )
     {
-        if ( m_arTabs[i].m_nTabID != 0 && m_arTabs[i].m_bPerishable && i != m_nCurrentTab )
+        if ( m_arTabs[i].m_nTabID > 0 && m_arTabs[i].m_bPerishable && i != m_nCurrentTab )
         {
             nTabToClose = i;
             break;
@@ -309,9 +309,9 @@ void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/)
 
             if ( m_arTabs[index].m_nTabID < 0 )
             {
-                LOG(ERROR) + "New Tab failed: " + m_arTabs[index].m_nTabID;
+                LOG(ERROR) + "New Tab failed with error: " + m_arTabs[index].m_nTabID + "; Tab Index: " + index;
 
-                if ( !bCreateOnly && (m_arTabs[index].m_nTabID == NEWTAB_LOW_MEM || m_arTabs[index].m_nTabID == NEWTAB_MAX_TABS) )
+                if ( /*!bCreateOnly &&*/ (m_arTabs[index].m_nTabID == NEWTAB_LOW_MEM || m_arTabs[index].m_nTabID == NEWTAB_MAX_TABS) )
                 {
                     LOG(INFO) + "Try to close perishable tab.";
                     removePerishableTab();
@@ -319,7 +319,7 @@ void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/)
 
                     if ( m_arTabs[index].m_nTabID < 0 )
                     {
-                        LOG(ERROR) + "New Tab failed: " + m_arTabs[index].m_nTabID;
+                        LOG(ERROR) + "New Tab failed with error: " + m_arTabs[index].m_nTabID + "; Tab Index: " + index;
                         raiseTabEvent( "onTabNewError", m_nCurrentTab, index );
                         return;
                     }

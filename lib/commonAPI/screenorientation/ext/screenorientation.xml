@@ -3,7 +3,12 @@
 <API>
     <MODULE name="ScreenOrientation" parent="Rho">
         <HELP_OVERVIEW>The ScreenOrientation Module is used to control the screen orientation/layout and register to receive an event when it changes.</HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
+        <MORE_HELP>
+## Enabling the API           
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["screenorientation"]
+        </MORE_HELP>
     
         <PROPERTIES access="STATIC">
             <DESC>Properties used to configure Screen Orientation module</DESC>

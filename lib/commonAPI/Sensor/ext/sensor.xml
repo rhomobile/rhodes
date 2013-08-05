@@ -3,7 +3,12 @@
 <API>
     <MODULE name="Sensor" parent="Rho">
 		
-        <HELP_OVERVIEW>The Sensors extension is used to retrieve the raw data values of the specified sensors (Accelerometer, tilt angle, device orientation, motion, eCompass, mangetometer, gyroscope, ambient light, proximity, proximity long range, pressure, temperature, humidity, gravity, linear acceleration, rotation, orientation etc.) from the device.</HELP_OVERVIEW>       
+        <HELP_OVERVIEW>The Sensors extension is used to retrieve the raw data values of the specified sensors (Accelerometer, tilt angle, device orientation, motion, eCompass, mangetometer, gyroscope, ambient light, proximity, proximity long range, pressure, temperature, humidity, gravity, linear acceleration, rotation, orientation etc.) from the device.
+## Enabling the API           
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["sensor"]
+        </HELP_OVERVIEW>       
 
 		<PLATFORM>WM, Android, iOS</PLATFORM>
  

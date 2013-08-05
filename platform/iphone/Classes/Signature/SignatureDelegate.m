@@ -59,6 +59,7 @@ SignatureDelegate* ourSD = nil;
         penColor = 0;
         penWidth = 0;
         bgColor = 0;
+        postUrl = nil;
 
     }
     return self;
@@ -130,20 +131,31 @@ SignatureDelegate* ourSD = nil;
         if (![filename hasSuffix:@".png"]) {
             filename = [filename stringByAppendingString:@".png"];
         }
-        fullname = [folder stringByAppendingPathComponent:filename];
+        //fullname = [folder stringByAppendingPathComponent:filename];
         pngImage = UIImagePNGRepresentation(theImage);
     } else {
         filename = [NSString stringWithFormat:@"%@", fileName];
         if (![filename hasSuffix:@".jpg"]) {
             filename = [filename stringByAppendingString:@".jpg"];
         }
-        fullname = [folder stringByAppendingPathComponent:filename];
+        //fullname = [folder stringByAppendingPathComponent:filename];
         pngImage = UIImageJPEGRepresentation(theImage, 1.0);
     }
+    
+    NSString *appDirectory = [NSString stringWithUTF8String:rho_native_rhopath()];
+    NSString *dbDirectory = [NSString stringWithUTF8String:rho_native_rhodbpath()];
+    
+    if ((![filename hasPrefix:appDirectory])   && (![filename hasPrefix:dbDirectory])) {
+        NSString* userfolder = [NSString stringWithUTF8String:rho_native_rhouserpath()];
+        
+        filename = [userfolder stringByAppendingPathComponent:filename];
+    }
+    
     NSError* er = nil;
+    //[fileManager removeItemAtPath:fullname error:&er];
     [fileManager removeItemAtPath:filename error:&er];
 
-    int isError = ![pngImage writeToFile:fullname atomically:YES];
+    int isError = ![pngImage writeToFile:filename atomically:YES];
     
     if (callbackHolder)
     {
@@ -152,9 +164,9 @@ SignatureDelegate* ourSD = nil;
         if (isError) {
             result = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"error", @"status", @"" , @"imageUri", @"Can't write image to the storage.", @"message", nil];
         } else{
-            NSString* extpath = [NSString stringWithFormat:@"db/db-files/%@", filename];
+            //NSString* extpath = [NSString stringWithFormat:@"db/db-files/%@", filename];
             // imageUri for new commonAPI, signature_uri for legacy support
-            result = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"ok", @"status", extpath , @"imageUri", extpath, @"signature_uri", nil];
+            result = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"ok", @"status", filename , @"imageUri", filename, @"signature_uri", nil];
         }
 
         [callbackHolder setResult:result];
@@ -162,8 +174,10 @@ SignatureDelegate* ourSD = nil;
     }
     else
     {
+        if (postUrl != nil) {
         rho_rhodesapp_callSignatureCallback([postUrl UTF8String], [filename UTF8String],
             isError ? "Can't write image to the storage - no callback defined." : "", 0 );
+        }
     }
 } 
 
@@ -224,6 +238,8 @@ SignatureDelegate* ourSD = nil;
     rect.origin.y = properties.params.top;
     rect.size.width = properties.params.width;
     rect.size.height = properties.params.height;
+    
+    fileName = properties.params.fileName;
     
     signatureInlineView = [[[SignatureView alloc] initWithFrame:rect] autorelease];
 

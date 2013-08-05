@@ -3,7 +3,13 @@
 <API>
     <MODULE name="Navbar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>he NavBar API supports a native navigation bar for the iPhone.</HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
+        <MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+</MORE_HELP>
         <PLATFORM>iOS</PLATFORM>
         
         <ALIASES>
