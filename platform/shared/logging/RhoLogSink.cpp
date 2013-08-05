@@ -168,7 +168,7 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 CLogSocketSink::CLogSocketSink(const LogSettings& oSettings)
 {
 	m_URL = oSettings.getLogURL();
-	m_netRequest = rho_get_RhoClassFactory()->createNetRequestImpl();;
+	m_netRequest = 0;
 
     CThreadQueue::setLogCategory(LogCategory("NO_LOGGING"));
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
@@ -183,6 +183,11 @@ CLogSocketSink::~CLogSocketSink()
     CRhoThread::stop(2000);
 }
 
+void CLogSocketSink::setUrl(String url)
+{
+	m_URL = url;
+}
+
 void CLogSocketSink::writeLogMessage( String& strMsg )
 {
 	addQueueCommand(new LogCommand(m_URL.c_str(), strMsg.c_str()));
@@ -194,6 +199,7 @@ void CLogSocketSink::processCommand(IQueueCommand* pCmd)
     if (!cmd)
         return;
 
+	m_netRequest = rho_get_RhoClassFactory()->createNetRequestImpl();
 	rho::net::CNetRequestWrapper( m_netRequest, 0 ).doRequest( "POST", cmd->m_url, cmd->m_body, 0, 0 );
 }
         
