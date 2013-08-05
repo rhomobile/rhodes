@@ -170,7 +170,8 @@ void LogSettings::setLogToSocket(bool bLogToSocket)
     if ( m_bLogToSocket != bLogToSocket )
     {
         m_bLogToSocket = bLogToSocket;
-        reinitRemoteLog();
+        if(m_pSocketSink == 0)
+			reinitRemoteLog();
     }
 }
 
@@ -179,7 +180,10 @@ void LogSettings::setLogURL(const char* szLogURL)
     if ( m_strLogURL != szLogURL )
     {
         m_strLogURL = rho::String(szLogURL); 
-        reinitRemoteLog();
+        if(m_pSocketSink == 0)
+			reinitRemoteLog();
+		else
+			((CLogSocketSink*)m_pSocketSink)->setUrl(m_strLogURL);
     }
 }
 
@@ -308,7 +312,7 @@ void LogSettings::internalSinkLogMessage( String& strMsg ){
     if ( isLogToOutput() )
         m_pOutputSink->writeLogMessage(strMsg);
 
-	if (m_pSocketSink)
+	if (m_bLogToSocket && m_pSocketSink)
         m_pSocketSink->writeLogMessage(strMsg);
     
     if (m_pAuxSinks.size() > 0)

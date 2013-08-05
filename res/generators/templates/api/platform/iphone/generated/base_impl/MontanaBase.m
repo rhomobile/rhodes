@@ -14,11 +14,17 @@ static NSDictionary* ourPropertyAliases= nil;
 @implementation <%= $cur_module.name %>Base
 
 - (void) resetAllPropertiesToDefault {
-<% if $cur_module.is_template_propertybag %>
-    mProperties = [[NSMutableDictionary dictionaryWithCapacity:4] retain];
+<% if $cur_module.is_template_propertybag 
+%>    mDeclaredProperties = [[NSSet setWithObjects:<% 
+        $cur_module.properties.each do |prop|
+          line = '@"'+prop.native_name+'", ' %><%= line %><%
+        end
+     %>nil] retain];
+
+    mProperties = [[NSMutableDictionary dictionaryWithCapacity:<%= $cur_module.properties.size + 2 %>] retain];
     <% $cur_module.properties.each do |prop|
           if prop.default_value != nil
-             line = '[self setProperty:@"'+prop.native_name+'" propertyValue:@"'+prop.default_value.to_s+'"];' %>
+             line = '[self setProperty:@"'+prop.native_name+'" propertyValue:@"'+prop.default_value.to_s+'" methodResult:nil];' %>
     <%= line %><%
           end
        end
@@ -87,7 +93,7 @@ static NSDictionary* ourPropertyAliases= nil;
     [methodResult setResult:[mProperties objectForKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]]];
 }
 
--(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue {
+-(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue methodResult:(id<IMethodResult>)methodResult {
     NSObject* value = propertyValue;
     NSString* strValue = propertyValue;
     if ([value isKindOfClass:[NSNumber class]]) {
@@ -136,7 +142,11 @@ static NSDictionary* ourPropertyAliases= nil;
         if ([resultHolder getResult] != nil) {
             NSString* value = (NSString*)[resultHolder getResult];
             [dict setObject:value forKey:key];
-        }
+        } <% 
+if !$cur_module.is_property_bag_limit_to_only_declared_properties && $cur_module.is_template_propertybag %>
+        else {
+          [dict setObject:@"" forKey:key];
+        }<% end %>
     }
     [methodResult setResult:dict];
 }
@@ -146,17 +156,17 @@ static NSDictionary* ourPropertyAliases= nil;
 }
 
 
--(void) setProperties:(NSDictionary*)propertyMap {
+-(void) setProperties:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
     NSArray* keys = [propertyMap allKeys];
     int i;
     for (i = 0; i < [keys count]; i++) {
         NSString* key = (NSString*)[keys objectAtIndex:i];
         NSString* value = (NSString*)[propertyMap objectForKey:key];
-        [self setProperty:key propertyValue:value];
+        [self setProperty:key propertyValue:value methodResult:methodResult];
     }
 }
 
--(void) clearAllProperties {
+-(void) clearAllProperties:(id<IMethodResult>)methodResult {
    [mProperties removeAllObjects];
    [self resetAllPropertiesToDefault];
 }
@@ -217,7 +227,7 @@ $iphone_pb_setter_conversion_post["STRING"] = '];'
 <% end
  if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER %>
     <%= $iphone_pb_setter_conversion_pre[module_method.linked_property.type] + module_method.linked_property.native_name + $iphone_pb_setter_conversion_post[module_method.linked_property.type] %>
-    [self setProperty:@"<%= module_method.linked_property.native_name %>" propertyValue:strValue];
+    [self setProperty:@"<%= module_method.linked_property.native_name %>" propertyValue:strValue methodResult:methodResult];
 <% end %>
 }
 
@@ -228,6 +238,7 @@ end %>
 -(void) dealloc {
 <% if $cur_module.is_template_propertybag %>
     [mProperties release];
+    [mDeclaredProperties release];
 <% end %>
     [super dealloc];
 }

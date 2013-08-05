@@ -79,6 +79,7 @@ public:
     void writeLogMessage( String& strMsg );
     int getCurPos(){ return -1; }
     void clear(){}
+	void setUrl(String url);
 
     struct LogCommand : public IQueueCommand
     {
@@ -92,6 +93,7 @@ public:
 
 private:
 	void processCommand(IQueueCommand* pCmd);
+	rho::net::INetRequestImpl* m_netRequest;
 };
   
 }

@@ -15,8 +15,8 @@
 
 -(id) init;
 -(void) start:(id<IMethodResult>)methodResult;
--(void) stop;
--(void) cancel;
+-(void) stop:(id<IMethodResult>)methodResult;
+-(void) cancel:(id<IMethodResult>)methodResult;
 
 - (void) fireCallback:(NSString*)status fileName:(NSString*)fileName fileSize:(NSNumber*)fileSize;
 

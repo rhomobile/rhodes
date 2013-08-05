@@ -43,6 +43,7 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QDesktopWidget>
+#include "QtWebPage.h"
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -84,7 +85,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_alertDialog(0),
     m_LogicalDpiX(0),
     m_LogicalDpiY(0),
-	firstShow(true), m_bFirstLoad(true)
+    firstShow(true), m_bFirstLoad(true),
+    toolBarSeparatorWidth(0)
     //TODO: m_SyncStatusDlg
 {
 #ifdef OS_WINDOWS_DESKTOP
@@ -108,6 +110,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     qs->enablePersistentStorage(rs_dir.c_str());
 
 	this->ui->webView->setContextMenuPolicy(Qt::NoContextMenu);
+	this->ui->webView->setPage(new QtWebPage());
     setUpWebPage(this->ui->webView->page());
     this->main_webView = this->ui->webView;
     this->main_webInspector = webInspectorWindow->webInspector();
@@ -308,10 +311,10 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
         if (!internalUrlProcessing(url)) {
             sUrl.remove(QRegExp("#+$"));
             if (sUrl.compare(ui->webView->url().toString())!=0) {
-#ifdef OS_MACOSX
-                if (mainWindowCallback && !sUrl.startsWith("javascript:", Qt::CaseInsensitive))
-                    mainWindowCallback->onWebViewUrlChanged(sUrl.toStdString());
-#endif
+                if (mainWindowCallback && !sUrl.startsWith("javascript:", Qt::CaseInsensitive)) {
+                    const QByteArray asc_url = sUrl.toAscii();
+                    mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
+                }
                 ui->webView->load(QUrl(sUrl));
             }
         }
@@ -337,9 +340,10 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
 
     PROF_STOP("BROWSER_PAGE");
 
-#ifdef OS_MACOSX
-    if (mainWindowCallback && ok) mainWindowCallback->onWebViewUrlChanged(ui->webView->url().toString().toStdString());
-#endif
+    if (mainWindowCallback && ok) {
+        const QByteArray asc_url = ui->webView->url().toString().toAscii();
+        mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
+    }
 
     if ( m_bFirstLoad )
     {
@@ -372,13 +376,10 @@ void QtMainWindow::timerEvent(QTimerEvent *ev)
 void QtMainWindow::on_webView_urlChanged(QUrl url)
 {
     if (mainWindowCallback) {
-#ifdef OS_MACOSX
-        ::std::string sUrl = url.toString().toStdString();
+        const QByteArray asc_url = url.toString().toAscii();
+        ::std::string sUrl = ::std::string(asc_url.constData(), asc_url.length());
         LOG(INFO) + "WebView: URL changed to " + sUrl;
         mainWindowCallback->onWebViewUrlChanged(sUrl);
-#else
-        LOG(INFO) + "WebView: URL changed";
-#endif
     }
 }
 
@@ -396,9 +397,10 @@ void QtMainWindow::navigate(QString url, int index)
             //wv->stop();
             wv->page()->mainFrame()->evaluateJavaScript(url);
         } else if (!internalUrlProcessing(url)) {
-#ifdef OS_MACOSX
-            if (mainWindowCallback) mainWindowCallback->onWebViewUrlChanged(url.toStdString());
-#endif
+            if (mainWindowCallback) {
+                const QByteArray asc_url = url.toAscii();
+                mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
+            }
             wv->load(QUrl(url));
         }
     }
@@ -421,9 +423,10 @@ void QtMainWindow::Refresh(int index)
 {
     QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
     if (wv) {
-#ifdef OS_MACOSX
-        if (mainWindowCallback) mainWindowCallback->onWebViewUrlChanged(wv->url().toString().toStdString());
-#endif
+        if (mainWindowCallback) {
+            const QByteArray asc_url = wv->url().toString().toAscii();
+            mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
+        }
         wv->reload();
     }
 }
@@ -514,6 +517,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         wv->setMaximumSize(0,0);
         wv->setParent(ui->centralWidget);
         ui->verticalLayout->addWidget(wv);
+		wv->setPage(new QtWebPage());
         setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
             wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
@@ -674,6 +678,7 @@ void QtMainWindow::toolbarRemoveAllButtons()
 {
     ui->toolBar->clear();
     ui->toolBarRight->clear();
+    toolBarSeparatorWidth = 0;
 }
 
 void QtMainWindow::toolbarShow()
@@ -724,21 +729,24 @@ void QtMainWindow::toolbarAddAction(const QIcon & icon, const QString & text, co
         ui->toolBar->addAction(qAction);
 }
 
-void QtMainWindow::toolbarAddSeparator()
+void QtMainWindow::toolbarAddSeparator(int width)
 {
+    toolBarSeparatorWidth = width;
     ui->toolBar->addSeparator();
 }
 
-void QtMainWindow::setToolbarStyle(bool border, QString background)
+void QtMainWindow::setToolbarStyle(bool border, QString background, int viewHeight)
 {
+    ui->toolBar->setMinimumHeight(viewHeight);
+    ui->toolBarRight->setMinimumHeight(viewHeight);
     QString style = "";
-    if (!border) style += "border:0px";
-    if (background.length()>0) {
-        if (style.length()>0) style += ";";
-        style += "background:"+background;
-    }
+    if (!border) style += "border:0px;";
+    if (background.length()>0)
+        style += "background:"+background+";";
     if (style.length()>0) {
         style = "QToolBar{"+style+"}";
+        if (toolBarSeparatorWidth > 0)
+            style += "QToolBar::separator{width:"+QString::number(toolBarSeparatorWidth)+"px;}";
         ui->toolBar->setStyleSheet(style);
         ui->toolBarRight->setStyleSheet(style);
     }
@@ -1078,4 +1086,9 @@ void QtMainWindow::lockSize(int locked)
 		this->setFixedSize(this->width(), this->height());
 	else
 		this->setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+}
+
+void QtMainWindow::setTitle(const char* title)
+{
+    this->setWindowTitle(QString::fromUtf8(title));
 }

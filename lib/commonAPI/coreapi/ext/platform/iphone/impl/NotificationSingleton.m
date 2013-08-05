@@ -52,8 +52,9 @@ static BOOL is_current_alert_status = NO;
 }
 
 - (void)run:(NSObject*)v {
+    
     NSString *title = @"Alert";
-    NSString *message = nil;
+    NSString *message = @"";
     NSString *imagePath = nil;
     
 	is_current_alert_status = NO;
@@ -103,8 +104,10 @@ static BOOL is_current_alert_status = NO;
                     NSString *itemTitle = nil;
                     
                     if ([buttonVal isKindOfClass:[NSString class]]) {
-                        itemId = (NSString*) buttonVal;
-                        itemTitle = (NSString*) buttonVal;
+                        if ([(NSString*)buttonVal length] > 0)  {
+                            itemId = (NSString*) buttonVal;
+                            itemTitle = (NSString*) buttonVal;
+                        }
                     } else if ([buttonVal isKindOfClass:[NSDictionary class]]) {
                         NSDictionary* btnDict = (NSDictionary*)buttonVal;
                         // get ID
@@ -125,7 +128,7 @@ static BOOL is_current_alert_status = NO;
                         RAWLOG_ERROR("Illegal type of button item");
                     }
                     
-                    if (!itemId || !itemTitle) {
+                    if ((itemId == nil) || (itemTitle == nil)) {
                         RAWLOG_ERROR("Incomplete button item");
                         continue;
                     }
@@ -136,6 +139,9 @@ static BOOL is_current_alert_status = NO;
                     [buttons addObject:btn];
                 }
             }
+        }
+        if ([buttons count] <= 0) {
+            [buttons addObject:[NSMutableArray arrayWithObjects:@"OK", @"OK", nil]];
         }
     }
     [v release];
@@ -170,6 +176,7 @@ static BOOL is_current_alert_status = NO;
     }
     
     [alert show];
+
     currentAlert = alert;
 }
 
@@ -242,12 +249,12 @@ static BOOL is_current_alert_status = NO;
     [Rhodes performOnUiThread:runnable arg:propertyMap wait:NO];
 }
 
--(void) hidePopup {
+-(void) hidePopup:(id<IMethodResult>)methodResult {
     id runnable = [AlertHidePopupTask class];
     [Rhodes performOnUiThread:runnable wait:NO];
 }
 
--(void) showStatus:(NSString*)title status_text:(NSString*)status_text hide_button_label:(NSString*)hide_button_label{
+-(void) showStatus:(NSString*)title status_text:(NSString*)status_text hide_button_label:(NSString*)hide_button_label methodResult:(id<IMethodResult>)methodResult{
     
     NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:title, HK_TITLE, status_text, HK_MESSAGE, [NSNumber numberWithBool:true], @"status_type", [NSMutableArray arrayWithObject:hide_button_label], @"buttons",  nil];
     
@@ -256,16 +263,16 @@ static BOOL is_current_alert_status = NO;
     [Rhodes performOnUiThread:runnable arg:params wait:NO];
 }
 
--(void) playFile:(NSString*)path media_type:(NSString*)media_type {
+-(void) playFile:(NSString*)path media_type:(NSString*)media_type methodResult:(id<IMethodResult>)methodResult{
     id runnable = [AlertPlayFileTask class];
     [Rhodes performOnUiThread:runnable arg:path arg:media_type wait:NO];
 }
 
--(void) beep:(NSDictionary*)propertyMap {
+-(void) beep:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult{
     // NYI
 }
 
--(void) vibrate:(int)duration {
+-(void) vibrate:(int)duration methodResult:(id<IMethodResult>)methodResult{
     id runnable = [AlertVibrateTask class];
     [Rhodes performOnUiThread:runnable wait:NO];
 }

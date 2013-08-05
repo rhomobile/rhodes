@@ -23,6 +23,7 @@
     int mJSTabIndex;
     NSString* mCallbackParam;
     NSString* mRubyModulePath;
+    NSString* mMethodSignature;
     id<IMethodResult_RubyObjectFactory> mRubyFactory;
 }
 
@@ -30,6 +31,8 @@
 
 -(void) setResult:(NSObject*)value;
 -(BOOL) hasCallback;
+
+-(void) setMethodSignature:(NSString*)methodSignature;
 
 -(BOOL) isHash;
 -(NSDictionary*) getHashResult;

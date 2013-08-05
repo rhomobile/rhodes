@@ -64,9 +64,7 @@ protected:
 <% end %>
 
 <% if $cur_module.is_template_propertybag  && $cur_module.properties_access == ModuleMethod::ACCESS_STATIC %>
-<% if !$cur_module.is_property_bag_limit_to_only_declared_properties %>
     rho::Hashtable<rho::String, rho::String> m_hashProps;
-<% end %>
     rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %>Singleton > *> m_mapPropAccessors;
 <% end %>
 
@@ -110,9 +108,7 @@ protected:
     DEFINE_LOGCLASS;
 
 <% if $cur_module.is_template_propertybag && $cur_module.properties_access != ModuleMethod::ACCESS_STATIC %>
-<% if !$cur_module.is_property_bag_limit_to_only_declared_properties %>
     rho::Hashtable<rho::String, rho::String> m_hashProps;
-<% end %>
     rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %> > *> m_mapPropAccessors;
 <% end %>
 public:

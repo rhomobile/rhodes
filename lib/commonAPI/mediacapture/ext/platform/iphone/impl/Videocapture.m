@@ -170,11 +170,11 @@
     [self performSelectorOnMainThread:@selector(startCommand) withObject:nil waitUntilDone:NO];
 }
 
--(void) stop {
+-(void) stop:(id<IMethodResult>)methodResult {
 
 }
 
--(void) cancel {
+-(void) cancel:(id<IMethodResult>)methodResult {
 
 }
 

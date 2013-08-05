@@ -158,7 +158,7 @@ namespace "config" do
   namespace :wm do
     namespace :win32 do
       task :ignore_vsprops do
-        $wm_win32_ignore_vsprops = false #true
+        $wm_win32_ignore_vsprops = true
       end
     end
   end
@@ -166,7 +166,7 @@ namespace "config" do
   namespace "win32" do
     namespace :wm do
       task :ignore_vsprops do
-        $wm_win32_ignore_vsprops = false #true
+        $wm_win32_ignore_vsprops = true
       end
     end
 
@@ -560,6 +560,12 @@ namespace "build" do
     #end
 
     task :rhobundle => ["config:set_win32_platform", "build:wm:rhobundle", :after_bundle] do
+    end
+
+    task :upgrade_package => ["build:win32:rhobundle"] do        
+      mkdir_p $targetdir if not File.exists? $targetdir
+      zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
+      Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
 
     task :set_debug_config do
@@ -1038,7 +1044,7 @@ namespace "clean" do
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
       
     end
-    task :all => ["clean:common", "clean:wince:rhodes"]
+    task :all => ["clean:wince:rhodes", "clean:common"]
   end
 
   namespace "wm" do
@@ -1050,11 +1056,11 @@ namespace "clean" do
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
       
     end
-    task :all => ["clean:common", "clean:wm:rhodes"]
+    task :all => ["clean:wm:rhodes", "clean:common"]
   end
 
   desc "Clean win32"
-  task :win32 => ["clean:common", "config:set_win32_platform", "config:wm" ]do
+  task :win32 => ["config:set_win32_platform", "config:wm", "clean:common"]do
     rm_rf $vcbindir + "/win32"
     rm_rf $tmpdir
     rm_rf $targetdir
@@ -1207,9 +1213,11 @@ namespace "run" do
       end
     end
 
-    task :spec, [:exclude_dirs] => ["device:wm:production"] do
+    task :spec, [:exclude_dirs] => [] do
 
         Jake.decorate_spec do
+
+            Rake::Task['device:wm:production'].invoke
 
             # kill all running detool
             kill_detool
@@ -1386,8 +1394,12 @@ namespace "run" do
       rm_rf db_path if File.exists?(db_path)
     end
 
-    task :spec => [:delete_db, "build:win32"] do
+    task :spec => [:delete_db] do
+
       Jake.decorate_spec do
+
+        Rake::Task['build:win32'].invoke
+
         #remove log file
         win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
         win32logpath = File.join(win32rhopath,"RhoLog.txt")
@@ -1418,7 +1430,7 @@ end
 namespace 'stop' do
   task :win32 => ['config:wm'] do
     Jake.get_process_list.each do |p|
-      next unless p[:cmd] =~ /^bin\\win32\\rhodes\\#{$buildcfg}\\rhodes\\.exe /
+      next unless p[:cmd] =~ /^bin\\win32\\rhodes\\#{$buildcfg}\\rhodes\.exe /
       Jake.run2('taskkill.exe', ['/F', '/PID', p[:pid]], {:hide_output => true})
     end
   end

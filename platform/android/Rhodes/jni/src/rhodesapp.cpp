@@ -285,6 +285,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_loadUrl
     rho_rhodesapp_load_url(rho_cast<std::string>(env, str).c_str());
 }
 
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_currentLocation(JNIEnv * env, jclass, jint jTab)
+{
+    std::string strLocation = RHODESAPP().getCurrentUrl(static_cast<int>(jTab));
+    RAWTRACE2("Controller currentLocation (tab: %d): %s", static_cast<int>(jTab), strLocation.c_str());
+    return rho_cast<jstring>(env, strLocation);
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_onScreenOrientationChanged
   (JNIEnv *env, jclass, jint width, jint height, jint angle)
 {

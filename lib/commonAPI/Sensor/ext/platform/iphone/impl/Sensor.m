@@ -14,7 +14,7 @@
 
 }
 
--(void) stop {
+-(void) stop:(id<IMethodResult>)methodResult {
 
 }
 
@@ -48,7 +48,7 @@
     ready = isReady;
 }
 
--(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue {
+-(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue methodResult:(id<IMethodResult>)methodResult {
     if ([@"status" isEqualToString:propertyName] || ([@"type" isEqualToString:propertyName] && ![SENSOR_TYPE_ACCELEROMETER isEqualToString:propertyValue])) {
         return;
     }
@@ -60,7 +60,7 @@
         updatePeriod = gap;
         propertyValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithInt:gap]];
     }
-    [super setProperty:propertyName propertyValue:propertyValue];
+    [super setProperty:propertyName propertyValue:propertyValue methodResult:methodResult];
 }
 
 -(void) postResultTo:(id<IMethodResult>)methodResult {
@@ -103,7 +103,7 @@
 
 
 -(void) start:(id<IMethodResult>)methodResult {
-    [self stop];
+    [self stop:methodResult];
     if (callback != nil) {
         [callback release];
     }
@@ -129,7 +129,7 @@
     }
 }
 
--(void) stop {
+-(void) stop:(id<IMethodResult>)methodResult {
     acceleration_x = 0;
     acceleration_y = 0;
     acceleration_z = 0;
@@ -139,7 +139,7 @@
 
 
 -(void)dealloc {
-    [self stop];
+    [self stop:nil];
     [super dealloc];
 }
 
@@ -169,7 +169,7 @@
     ready = isReady;
 }
 
--(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue {
+-(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue methodResult:(id<IMethodResult>)methodResult {
     if ([@"status" isEqualToString:propertyName] || ([@"type" isEqualToString:propertyName] && ![SENSOR_TYPE_MAGNETOMETER isEqualToString:propertyValue])) {
         return;
     }
@@ -181,7 +181,7 @@
         updatePeriod = gap;
         propertyValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithInt:gap]];
     }
-    [super setProperty:propertyName propertyValue:propertyValue];
+    [super setProperty:propertyName propertyValue:propertyValue methodResult:methodResult];
 }
 
 -(void) postResultTo:(id<IMethodResult>)methodResult {
@@ -225,7 +225,7 @@
 
 
 -(void) start:(id<IMethodResult>)methodResult {
-    [self stop];
+    [self stop:methodResult];
     if (callback != nil) {
         [callback release];
     }
@@ -251,7 +251,7 @@
     }
 }
 
--(void) stop {
+-(void) stop:(id<IMethodResult>)methodResult {
     magnetometer_x = 0;
     magnetometer_y = 0;
     magnetometer_z = 0;
@@ -261,7 +261,7 @@
 
 
 -(void)dealloc {
-    [self stop];
+    [self stop:nil];
     [super dealloc];
 }
 @end

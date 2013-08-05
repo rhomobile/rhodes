@@ -100,6 +100,7 @@ MainWindowCallback.h\
 QtMainWindow.h\
 QtNativeTabBar.h\
 QtWebInspector.h\
+QtWebPage.h\
 impl/RhoClassFactoryImpl.h\
 impl/MainWindowImpl.h\
 impl/NativeToolbarImpl.h\
@@ -116,6 +117,7 @@ ExternalWebView.cpp\
 QtMainWindow.cpp\
 QtNativeTabBar.cpp\
 QtWebInspector.cpp\
+QtWebPage.cpp\
 impl/AlertImpl.cpp\
 impl/BluetoothImpl.cpp\
 impl/CalendarImpl.cpp\

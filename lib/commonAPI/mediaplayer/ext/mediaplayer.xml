@@ -8,6 +8,12 @@ In order to use this API you must include the following extension in your `build
     :::ruby
     extensions: ["mediaplayer"]
 
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+
         </HELP_OVERVIEW>
     
         <TEMPLATES>
@@ -19,7 +25,7 @@ In order to use this API you must include the following extension in your `build
                 <DESC>Play a media file using the supplied filename.</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING">
-                        <DESC>File name of the audio media to be played - full filepath. On iOS when you post URL to remote server, then we open standart browser (another application) for playing it. On iOS we support : mp3, mp4, wav formats</DESC>
+                        <DESC>File name of the audio media to be played - full filepath. On iOS when you post URL to remote server (except https), then we open standart browser (another application) for playing it. On iOS we support : mp3, mp4, wav formats</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -34,7 +40,7 @@ In order to use this API you must include the following extension in your `build
                 <DESC>Playing a video file back</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING" runInThread="ui">
-                        <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server, then we open standart browser (another application) for playing it. On iOS we support : mov, mp4, 3gp formats</DESC>
+                        <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server  (except https), then we open standart browser (another application) for playing it. On iOS we support : mov, mp4, 3gp formats</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -64,7 +70,7 @@ In order to use this API you must include the following extension in your `build
 
             <METHOD name="playRingTone" access="STATIC" hasCallback="none">
                 <DESC>Play a ringtone with the name supplied being used to designate which one.  You cannot supply a location for the ringtone.  They are built in.  To get a full list of all ringtones avaialable on the system use the method getAllRintones</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="name" type="STRING">
                         <DESC>Name of the ringtone to be played.</DESC>
@@ -74,7 +80,7 @@ In order to use this API you must include the following extension in your `build
 
             <METHOD name="stopRingTone" access="STATIC" hasCallback="none">
                 <DESC>Stop the currently playing ringtone.</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>Android</PLATFORM>
             </METHOD>            
 
 

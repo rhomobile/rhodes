@@ -5,6 +5,7 @@
 @interface <%= $cur_module.name %>Base : NSObject {
 <% if $cur_module.is_template_propertybag %>
     NSMutableDictionary* mProperties;
+    NSSet* mDeclaredProperties;
 <% end %>
 }
 
@@ -17,9 +18,9 @@
 -(void) getProperty:(NSString*)propertyName methodResult:(id<IMethodResult>)methodResult;
 -(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult;
 -(void) getAllProperties:(id<IMethodResult>)methodResult;
--(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue;
--(void) setProperties:(NSDictionary*)propertyMap;
--(void) clearAllProperties;
+-(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue methodResult:(id<IMethodResult>)methodResult;;
+-(void) setProperties:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;;
+-(void) clearAllProperties:(id<IMethodResult>)methodResult;
 <% end %>
 
 <% $cur_module.methods.each do |module_method|

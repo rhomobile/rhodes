@@ -16,6 +16,7 @@ class ManifestGenerator
   attr_accessor :debuggable
   attr_accessor :rhodesActivityIntentFilters
   attr_accessor :hardwareAcceleration
+  attr_accessor :apikey
   
   attr_accessor :manifestManifestAdds
   attr_accessor :applicationManifestAdds
@@ -41,6 +42,7 @@ class ManifestGenerator
     @hardwareAcceleration = nil
     @manifestManifestAdds = []
     @applicationManifestAdds = []
+    @apikey = ''
   end
   
   def addGoogleMaps

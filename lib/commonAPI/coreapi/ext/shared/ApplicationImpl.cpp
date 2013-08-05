@@ -49,6 +49,10 @@ public:
     {
         oResult.set( CFilePath::join( rho_native_rhopath(), RHO_APPS_DIR) );
     }
+    virtual void getBundleFolder(rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set( rho_native_rhopath() );
+    }
 
     virtual void getUserFolder(rho::apiGenerator::CMethodResult& oResult)
     {
@@ -118,7 +122,7 @@ public:
     {
         RHOCONF().setString("title_text", title, false);
 
-#if defined( OS_WINCE) || defined (OS_WINDOWS_DESKTOP)
+#if defined(OS_WINCE) || defined (OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
         rho_title_change(0, title.c_str());
 #endif
     }

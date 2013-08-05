@@ -657,9 +657,11 @@ void CReplaceBundleThread::run()
         rho_platform_restart_application();
         rho_sys_app_exit();
     }
+
     if (m_is_finished_flag != NULL) {
         *m_is_finished_flag = true;
     }
+
 }
 
     
@@ -773,7 +775,7 @@ extern "C"
 void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode )
 {
     bool is_finished_flag = false;
-    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, &is_finished_flag);  
+    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, (not_thread_mode ? &is_finished_flag : 0));  
     if (not_thread_mode) {
         while (!is_finished_flag) {
             replace_thread->sleep(10);

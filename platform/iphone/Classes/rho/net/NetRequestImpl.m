@@ -86,7 +86,7 @@ VALUE rho_sys_has_wifi_network() {
     if (rho_sys_has_wifi_network_iphone()) {
         res = 1;
     }
-    rho_ruby_create_boolean(res);
+    return rho_ruby_create_boolean(res);
 }
 
 BOOL rho_sys_has_cell_network_iphone() {
@@ -158,7 +158,7 @@ VALUE rho_sys_has_network() {
     if (rho_sys_has_network_iphone()) {
         res = 1;
     }
-    rho_ruby_create_boolean(res);
+    return rho_ruby_create_boolean(res);
 }
 
 

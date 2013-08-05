@@ -27,6 +27,8 @@
 #include "common/RhoPort.h"
 #undef null
 #include <QDir>
+#include <QQueue>
+#include <QPair>
 
 bool RemoveDirectory(QString &path, bool deleteDir)
 {
@@ -52,12 +54,61 @@ bool RemoveDirectory(QString &path, bool deleteDir)
     return has_err;
 }
 
+void CopyDirectory(const QString& sourceFolder,const QString& destFolder)
+{
+    QQueue< QPair<QString, QString> > queue;
+
+    queue.enqueue(qMakePair(sourceFolder, destFolder));
+
+    while (!queue.isEmpty())
+    {
+        QPair<QString, QString> pair = queue.dequeue();
+        QDir sourceDir(pair.first);
+        QDir destDir(pair.second);
+
+        if(!sourceDir.exists())
+            continue;
+
+        if(!destDir.exists())
+            destDir.mkpath(pair.second);
+
+        QStringList files = sourceDir.entryList(QDir::Files);
+        for(int i = 0; i < files.count(); i++)
+        {
+            QString srcName = pair.first + "/" + files.at(i);
+            QString destName = pair.second + "/" + files.at(i);
+            QFile::copy(srcName, destName);
+        }
+
+        QStringList dirs = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+        for(int i = 0; i < dirs.count(); i++)
+        {
+            QString srcName = pair.first + "/" + dirs.at(i);
+            QString destName = pair.second + "/" + dirs.at(i);
+            queue.enqueue(qMakePair(srcName, destName));
+        }
+    }
+}
+
 extern "C" {
 
 void rho_file_impl_delete_files_in_folder(const char *szFolderPath)
 {
     QString path = QString::fromUtf8(szFolderPath);
     RemoveDirectory(path, false);
+}
+
+void rho_file_impl_delete_folder(const char* szFolderPath)
+{
+    QString path = QString::fromUtf8(szFolderPath);
+    RemoveDirectory(path, true);
+}
+
+void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath)
+{
+    QString src = QString::fromUtf8(szSrcFolderPath);
+    QString dst = QString::fromUtf8(szDstFolderPath);
+    CopyDirectory(src, dst);
 }
 
 } //extern "C"

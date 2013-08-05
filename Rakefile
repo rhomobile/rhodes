@@ -189,7 +189,7 @@ load File.join(pwd, 'platform/android/build/android.rake')
 load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
-load File.join(pwd, 'platform/wp7/build/wp.rake')
+#load File.join(pwd, 'platform/wp7/build/wp.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
 load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
@@ -627,11 +627,8 @@ namespace "config" do
 
     if $app_config["app_type"] == 'rhoelements'
     
-        # add rawsensors and audiocapture extensions for rhoelements app
+        # add audiocapture extensions for rhoelements app
         if !$app_config['extensions'].index('rhoelementsext')
-            if $current_platform == "iphone"
-                $app_config['extensions'] = $app_config['extensions'] | ['rawsensors']
-            end
             if $current_platform == "iphone" || $current_platform == "android"
                 $app_config['extensions'] = $app_config['extensions'] | ['audiocapture']
             end
@@ -641,29 +638,32 @@ namespace "config" do
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
-            $app_config['extensions'] = $app_config['extensions'] | ['signature']
+            #$app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
+            $app_config['extensions'] = $app_config['extensions'] | ['sensor']
         end    
         
         if $current_platform == "iphone"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
-            $app_config['extensions'] = $app_config['extensions'] | ['signature']
+            #$app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
+            $app_config['extensions'] = $app_config['extensions'] | ['sensor']
         end    
 
         if $current_platform == "android"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
-            $app_config['extensions'] = $app_config['extensions'] | ['signature']
+            #$app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
+            $app_config['extensions'] = $app_config['extensions'] | ['sensor']
         end    
         
     end
 
     if $app_config['extensions'].index('rhoelementsext')
-        $app_config["extensions"].delete("rawsensors")
+        #$app_config["extensions"].delete("rawsensors")
         $app_config["extensions"].delete("audiocapture")
     end
 
@@ -692,10 +692,6 @@ namespace "config" do
     if $app_config['extensions'].index('nfc')
         #$app_config['extensions'].delete('nfc')
         $rhoelements_features += "- NFC extension\n"
-    end
-    if $app_config['extensions'].index('rawsensors')
-        #$app_config['extensions'].delete('rawsensors')
-        $rhoelements_features += "- Raw Sensors\n"
     end
     if $app_config['extensions'].index('audiocapture')
         #$app_config['extensions'].delete('audiocapture')
@@ -765,9 +761,6 @@ namespace "config" do
                 if $app_config['extensions'].index('nfc')
                     $app_config['extensions'].delete('nfc')
                 end
-                if $app_config['extensions'].index('rawsensors')
-                    $app_config['extensions'].delete('rawsensors')
-                end
                 if $app_config['extensions'].index('audiocapture')
                     $app_config['extensions'].delete('audiocapture')
                 end
@@ -805,15 +798,17 @@ namespace "config" do
         puts "Jake.localip() error : #{e}"  
     end
 
-    $obfuscate_js      = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["js"].nil?) ? nil : 1 )
-    $obfuscate_css     = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["css"].nil?) ? nil : 1 )
-    $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
-    $obfuscator        = 'res/build-tools/yuicompressor-2.4.7.jar'
-    $minifier          = 'res/build-tools/yuicompressor-2.4.7.jar'
+    $obfuscate_js      = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
+    $obfuscate_css     = Jake.getBuildBoolProp2("obfuscate", "css", $app_config, nil)
+    $obfuscate_exclude = Jake.getBuildProp2("obfuscate", "exclude_dirs" )
 
+    $minify_js      = Jake.getBuildBoolProp2("minify", "js", $app_config, nil)
+    $minify_css     = Jake.getBuildBoolProp2("minify", "css", $app_config, nil)
+    $minify_exclude = Jake.getBuildProp2("minify", "exclude_dirs" )
+
+    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
-    $minify_js         = Jake.getBuildBoolProp("minify_js", $app_config, true) 
     
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
@@ -974,43 +969,7 @@ def write_modules_js(filename, modules)
         end
     end
 
-    if !$minify_js
-        Jake.modify_file_if_content_changed(filename, f)
-    else
-        require 'Open3'
-        f.rewind()
-        fc = StringIO.new("","w+")
-        
-        output = true
-        status = nil
-        Open3.popen2("java","-jar","#{$minifier}","--type","js") do |stdin, stdout, wait_thr|
-            begin
-                stdin.binmode
-                
-                while buffer = f.read(4096)
-                    stdin.write(buffer)
-                end
-                f.close
-                stdin.close
-                
-                output = stdout.read
-                
-                status = wait_thr.value
-                
-            rescue Exception => e
-                puts "Minify error: #{e.inspect}"
-                raise e
-            end
-        end
-        
-        if not status.exitstatus.zero?
-            puts "Obfuscation error"
-            exit 1
-        end
-        
-        fc.puts(output)        
-        Jake.modify_file_if_content_changed(filename, fc)
-    end
+    Jake.modify_file_if_content_changed(filename, f)
 end
 
 def is_ext_supported(extpath)
@@ -1330,7 +1289,7 @@ def init_extensions(dest, mode = "")
   #exit
 end
 
-def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
+def public_folder_cp_r(src_dir,dst_dir,level)
   mkdir_p dst_dir if not File.exists? dst_dir
   Dir.foreach(src_dir) do |filename|
     next if filename.eql?('.') || filename.eql?('..')
@@ -1339,17 +1298,9 @@ def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
     filepath = src_dir + '/' + filename
     dst_path = dst_dir + '/' + filename
     if File.directory?(filepath)
-      public_folder_cp_r(filepath,dst_path,(level+1),((obfuscate==1) && ((level>0) || $obfuscate_exclude.nil? || !$obfuscate_exclude.include?(filename)) ? 1 : 0))
+      public_folder_cp_r(filepath,dst_path,(level+1))
     else
-      if (obfuscate==1) && (((!$obfuscate_js.nil?) && File.extname(filename).eql?(".js")) || ((!$obfuscate_css.nil?) && File.extname(filename).eql?(".css")))
-        puts Jake.run('java',['-jar', $obfuscator, filepath, '-o', dst_path])
-        unless $? == 0
-          puts "Obfuscation error"
-          exit 1
-        end
-      else
-        cp filepath, dst_path, :preserve => true
-      end
+      cp filepath, dst_path, :preserve => true
     end
   end
 end
@@ -1434,7 +1385,7 @@ def common_bundle_start( startdir, dest)
   end
   
   if File.exists? app + '/public'
-    public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, 1
+    public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0
   end
   
   copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
@@ -1476,8 +1427,9 @@ def common_bundle_start( startdir, dest)
   replace_platform = "bb6" if $bb6
   #replace_platform = "wm" if replace_platform == 'win32'
 
-  if !$js_application
+  #if !$js_application
     [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
+      next unless Dir.exists? folder
       chdir folder
       
       Dir.glob("**/*.#{replace_platform}.*").each do |file|
@@ -1498,7 +1450,7 @@ def common_bundle_start( startdir, dest)
       Dir.glob("**/.svn").each { |f| rm_rf f }
       Dir.glob("**/CVS").each { |f| rm_rf f }
     end
-  end  
+  #end  
 end
 
 def create_manifest
@@ -1707,20 +1659,109 @@ namespace "build" do
           puts "Error interpreting ruby code"
           exit 1
         end
-
-        chdir $srcdir
-        Dir.glob("**/*.rb") { |f| rm f }
-        Dir.glob("**/*.erb") { |f| rm f }
       end
+     
+      chdir $srcdir
+      Dir.glob("**/*.rb") { |f| rm f }
+      Dir.glob("**/*.erb") { |f| rm f }
+        
+      minify_types = []
 
+      if !$debug
+        $minify_js = true if $minify_js == nil
+        $minify_css = true if $minify_css == nil
+      end
+                
+      minify_types << "js" if $minify_js or $obfuscate_js
+      minify_types << "css" if $minify_css or $obfuscate_css
+      
+      if not minify_types.empty?
+          minify_js_and_css($srcdir,minify_types)
+      end
+        
       chdir startdir
 
       cp_r "platform/shared/db/res/db", $srcdir 
     end
+      
+    def is_exclude_folder(excludes, filename)  
+        return false if !excludes || !filename
+        
+        excludes.each do |excl|        
+            return true if filename.index(excl)
+        end
+        
+        return false
+    end
     
+    def minify_js_and_css(dir,types)
+      pattern = types.join(',')
+      Dir.glob( File.join(dir,'**',"*.{#{pattern}}") ) do |f|
+          if File.file?(f) and !File.fnmatch("*.min.*",f)
+              next if is_exclude_folder($obfuscate_exclude, f )
+              next if is_exclude_folder( $minify_exclude, f )
+              
+              ext = File.extname(f)
+              type = nil
+              if ext == '.js' then
+                  type = 'js'
+              elsif ext == '.css' then
+                  type = 'css'
+              end
+              
+              minify_inplace(f,type) if type
+          end
+      end
+    end
+    
+    
+    def minify_inplace(filename,type)
+        puts "minify file: #{filename}"
+    
+        f = StringIO.new("", "w+")
+        f.write(File.read(filename))
+        f.rewind()
+
+        require 'Open3'
+        f.rewind()
+        fc = StringIO.new("","w+")
+     
+        output = true
+        status = nil
+        begin
+        
+            Open3.popen2("java","-jar","#{$minifier}","--type","#{type}") do |stdin, stdout, wait_thr|
+                stdin.binmode
+         
+                while buffer = f.read(4096)
+                    stdin.write(buffer)
+                end
+                f.close
+                stdin.close
+         
+                output = stdout.read
+         
+                status = wait_thr.value
+            end
+            
+        rescue Exception => e
+            puts "Minify error: #{e.inspect}"
+            raise e
+        end
+     
+        if not status.exitstatus.zero?
+            puts "Minification error"
+            exit 1
+        end
+     
+        fc.puts(output)
+        Jake.modify_file_if_content_changed(filename, fc)
+        #File.open(filename, "w"){|file| file.write(f.read())}
+    end
+
     task :upgrade_package do
     
-      $bindir = File.join($app_path, "bin") 
+      $bindir = File.join($app_path, "bin")
       $current_platform = 'empty'
       $srcdir = File.join($bindir, "RhoBundle")
     

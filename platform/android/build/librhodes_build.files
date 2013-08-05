@@ -4,6 +4,7 @@ platform/android/Rhodes/jni/src/JNIRhoJS.cpp
 platform/android/Rhodes/jni/src/alert.cpp
 platform/android/Rhodes/jni/src/bluetooth.cpp
 platform/android/Rhodes/jni/src/callbacks.cpp
+platform/android/Rhodes/jni/src/camera.cpp
 platform/android/Rhodes/jni/src/datetimepicker.cpp
 platform/android/Rhodes/jni/src/event.cpp
 platform/android/Rhodes/jni/src/fileapi.cpp
@@ -20,6 +21,7 @@ platform/android/Rhodes/jni/src/rhodes.cpp
 platform/android/Rhodes/jni/src/rhodesapp.cpp
 platform/android/Rhodes/jni/src/rhodessystem.cpp
 platform/android/Rhodes/jni/src/ringtones.cpp
+platform/android/Rhodes/jni/src/signature.cpp
 platform/android/Rhodes/jni/src/socketimpl.cpp
 platform/android/Rhodes/jni/src/splashscreen.cpp
 platform/android/Rhodes/jni/src/sslimpl.cpp

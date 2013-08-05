@@ -4124,6 +4124,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="signature"
+					>
+					<File
+						RelativePath="..\..\shared\ruby\ext\signature\signature.i"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\ruby\ext\signature\signature_wrap.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="generated"
