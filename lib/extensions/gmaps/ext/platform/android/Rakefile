@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'pathname'
 
 $curdir = pwd
 TARGETDIR = ENV['TARGET_TEMP_DIR']
