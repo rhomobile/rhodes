@@ -130,7 +130,7 @@ end %>
     <% if $cur_module.is_template_default_instance %>
 
         rhoUtil.createPropsProxy(<%= $cur_module.name %>, [
-            { propName: 'default:getDefault:setDefault', propAccess: 'rw', customSet: function(obj) { if(!obj || 'function' != typeof obj.getId){ throw 'Default object should provide getId method!' }; currentDefaultID = obj.getId(); } }
+            { propName: 'defaultInstance:getDefaultInstance:setDefaultInstance', propAccess: 'rw', customSet: function(obj) { if(!obj || 'function' != typeof obj.getId){ throw 'Default object should provide getId method!' }; currentDefaultID = obj.getId(); } }
           , { propName: 'defaultID:getDefaultID:setDefaultID', propAccess: 'rw', customSet: function(id) { currentDefaultID = id; } }
         ], apiReq);
 
