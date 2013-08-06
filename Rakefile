@@ -441,10 +441,10 @@ namespace "clean" do
         
         if File.file? extyml
           extconf = Jake.config(File.open(extyml))
-          type    = extconf["exttype"]
-          wm_type = extconf["wm"]["exttype"] if extconf["wm"]
+          type = Jake.getBuildProp( "exttype", extconf )
+          #wm_type = extconf["wm"]["exttype"] if extconf["wm"]
        
-          if type != "prebuilt" && wm_type != "prebuilt"      
+          if type != "prebuilt" #&& wm_type != "prebuilt"      
             rm_rf  File.join(extpath, "ext", "shared", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "android", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "iphone", "generated")
@@ -1054,8 +1054,8 @@ def init_extensions(dest, mode = "")
             
           entry           = extconf["entry"]
           nlib            = extconf["nativelibs"]
-          type            = extconf["exttype"]
-          wm_type         = extconf["wm"]["exttype"] if extconf["wm"]
+          type            = Jake.getBuildProp( "exttype", extconf )
+          #wm_type         = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths   = extconf["xml_api_paths"]
           extconf_wp8     = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
           csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
@@ -1116,7 +1116,7 @@ def init_extensions(dest, mode = "")
             end
           end
 
-          if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
+          if xml_api_paths && type != "prebuilt" # && wm_type != "prebuilt"
             xml_api_paths    = xml_api_paths.split(',')
                                                           
             xml_api_paths.each do |xml_api|
@@ -2348,10 +2348,11 @@ namespace "run" do
         
               if File.file? extyml
                 extconf = Jake.config(File.open(extyml))
+                type = Jake.getBuildProp( "exttype", extconf )
                 xml_api_paths  = extconf["xml_api_paths"]
                 templates_path = File.join($startdir, "res", "generators", "templates")
                                 
-                if xml_api_paths
+                if xml_api_paths && type != "prebuilt"
                   xml_api_paths = xml_api_paths.split(',')
 
                   xml_api_paths.each do |xml_api|
