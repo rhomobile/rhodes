@@ -52,7 +52,8 @@ public:
 		CRhoExtData rhodesData = RHODESAPP().getExtManager().makeExtData();
 		if (rhodesData.m_hBrowserWnd)
 		{
-			m_pConnectionManager = new CWAN(rhodesData.m_hBrowserWnd);
+//			m_pConnectionManager = new CWAN(rhodesData.m_hBrowserWnd);
+			m_pConnectionManager = new CWAN(rhodesData.m_hWnd);
 			m_pConnectionManager->Initialise();
 		}
 		else
