@@ -1046,4 +1046,5 @@ extern "C" void Init_System()
 {
     rho::CSystemFactory::setInstance( new rho::CSystemFactory() );
     rho::Init_System_API();
+    RHODESAPP().getExtManager().requireRubyFile("RhoSystemApi");
 }
