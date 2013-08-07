@@ -92,6 +92,7 @@
 #define L_ERROR   3
 #define L_FATAL   4
 #define L_NUM_SEVERITIES  5
+#define L_USER		6
 
 #define RHO_STRIP_LOG 0
 #define RHO_STRIP_PROFILER 1
