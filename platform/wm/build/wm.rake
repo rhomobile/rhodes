@@ -1171,6 +1171,10 @@ namespace "run" do
       Rake::Task["run:rhosimulator_debug"].invoke
     end
 
+    task :test do #, :log do |t, arg|
+      puts  #arg["log"].to_s
+    end
+
     desc "Build and run on the Windows Mobile device"
     task :device => ["device:wm:production"] do
       if $use_direct_deploy == "no" 
@@ -1188,14 +1192,16 @@ namespace "run" do
 
         File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
  	  
-        Jake.run_rho_log_server($app_path)
-        puts "RhoLogServer is starting"
-        while true do
-          if File.exists?($app_path + "/started")
-            break
-          end
-          sleep(1)
-        end    
+        if Jake.getBool(ENV["no_remote_log"]) == false
+          Jake.run_rho_log_server($app_path)
+          puts "RhoLogServer is starting"
+          while true do
+            if File.exists?($app_path + "/started")
+              break
+            end
+            sleep(1)
+          end    
+        end
 
         if $webkit_capability and !$use_shared_runtime
           wk_args   = [$detoolappflag, 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
