@@ -666,7 +666,7 @@ namespace "config" do
         #$app_config["extensions"].delete("rawsensors")
         $app_config["extensions"].delete("audiocapture")
     end
-
+    
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
     #application build configs
@@ -697,7 +697,7 @@ namespace "config" do
         #$app_config['extensions'].delete('audiocapture')
         $rhoelements_features += "- Audio Capture\n"
     end
-    if $app_config['extensions'].index('signature') && (($current_platform == "iphone") || ($current_platform == "android"))
+    if ($app_config['extensions'].index('signature') || $app_config['capabilities'].index('signature')) && (($current_platform == "iphone") || ($current_platform == "android"))
         $rhoelements_features += "- Signature Capture\n"
     end
     
@@ -771,8 +771,17 @@ namespace "config" do
                 if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
                     $application_build_configs.delete('encrypt_database')
                 end
+                
+                if $app_config['extensions'].index('signature')
+                  $app_config['extensions'].delete('signature')
+                end
             end
         end
+    end
+
+    if $app_config['extensions'].index('signature') && (($current_platform == 'iphone') || ($current_platform == 'android'))
+        $app_config['capabilities'] << 'signature'
+        $app_config['extensions'].delete('signature')
     end
 
     if $current_platform == "win32" && $winxpe_build == true
