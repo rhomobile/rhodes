@@ -102,6 +102,7 @@ namespace "config" do
     $srcdir =  $bindir + "/RhoBundle"
     $buildcfg = $app_config["buildcfg"] unless $buildcfg
     $buildcfg = "Release" unless $buildcfg
+    $detoolappflag = $js_application == true ? "js" : "ruby" 
 
     if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
         $targetdir = $bindir + "/target/wm6p"
@@ -1112,18 +1113,18 @@ namespace "run" do
       end
 
       if $webkit_capability and !$use_shared_runtime
-        wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+        wk_args   = [$detoolappflag, 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
         Jake.run2( detool, wk_args, {:nowait => false})
       end
 
       if $additional_dlls_paths
         $additional_dlls_paths.each do |path|
-          add_files_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+          add_files_args   = [$detoolappflag, 'wk-emu', "\"#{$wm_emulator}\"", '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
           Jake.run2( detool, add_files_args, {:nowait => false})
         end
       end
 
-      args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+      args = [$detoolappflag, 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
       Jake.run2( detool, args, {:nowait => false})
     end
   end
@@ -1197,18 +1198,18 @@ namespace "run" do
         end    
 
         if $webkit_capability and !$use_shared_runtime
-          wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+          wk_args   = [$detoolappflag, 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
           Jake.run2( detool, wk_args, {:nowait => false})
         end
 
         if $additional_dlls_paths
           $additional_dlls_paths.each do |path|
-            add_files_args   = [ 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+            add_files_args   = [$detoolappflag, 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
             Jake.run2( detool, add_files_args, {:nowait => false})
           end
         end
 
-        args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+        args = [$detoolappflag, 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
         Jake.run2( detool, args, {:nowait => false})
       end
     end
@@ -1226,18 +1227,18 @@ namespace "run" do
             detool = "detool.exe"
             
             if $webkit_capability and !$use_shared_runtime
-              wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+              wk_args   = [$detoolappflag, 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
               Jake.run2( detool, wk_args, {:nowait => false})
             end
 
             if $additional_dlls_paths
               $additional_dlls_paths.each do |path|
-                add_files_args   = [ 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+                add_files_args   = [$detoolappflag, 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
                 Jake.run2( detool, add_files_args, {:nowait => false})
               end
             end
 
-            args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+            args = [$detoolappflag, 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
      
             #args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
             puts "\nStarting application on the WM6 emulator\n\n"
@@ -1320,7 +1321,7 @@ namespace "run" do
 
         cd $startdir + "/res/build-tools"
         detool = "detool.exe"
-        args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
+        args   = [$detoolappflag, 'devcab', $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
         puts "\nStarting application on the device"
         puts "Please, connect you device via ActiveSync.\n\n"
         log_file = gelLogPath
@@ -1338,7 +1339,7 @@ namespace "run" do
 
       cd $startdir + "/res/build-tools"
       detool = "detool.exe"
-      args   = ['emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
+      args   = [$detoolappflag, 'emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
       log_file = gelLogPath
 
       Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
