@@ -58,4 +58,5 @@ extern "C" void Init_Notification(void)
 
 extern "C" void Init_Notification_extension() {
     Init_Notification();
+    RHODESAPP().getExtManager().requireRubyFile("RhoNotificationApi");
 }

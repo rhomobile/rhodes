@@ -19,6 +19,8 @@
 #define DEFAULT_LOGCATEGORY "System"
 
 
+
+
 extern "C" int rho_sysimpl_get_property_iphone(char* szPropName, NSObject** resValue);
 extern "C" void rho_sys_set_application_icon_badge(int badge_number);
 extern "C" int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
@@ -401,6 +403,10 @@ extern "C" void Init_System()
 {
     rho::CSystemFactoryBase::setInstance( new rho::CSystemImplIphoneAccessFactory() );
     Init_System_API();
+    
+#ifndef RHO_NO_RUBY_API
+    RHODESAPP().getExtManager().requireRubyFile("RhoSystemApi");
+#endif
 }
 
 

@@ -83,7 +83,6 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
 <% if $cur_module.is_template_default_instance %>
     rb_define_singleton_method(rb_api_m<%= $cur_module.name %>, "getDefault", rb_<%= $cur_module.name %>_s_default, 0);
     rb_define_singleton_method(rb_api_m<%= $cur_module.name %>, "setDefault", rb_<%= $cur_module.name %>_s_setDefault, 1);
-    rb_define_singleton_method(rb_api_m<%= $cur_module.name %>, "default=", rb_<%= $cur_module.name %>_s_setDefault, 1);
 <% end %>
 
 <% $cur_module.constants.each do |module_constant| %>

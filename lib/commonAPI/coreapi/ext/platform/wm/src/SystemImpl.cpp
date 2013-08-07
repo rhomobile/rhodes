@@ -272,7 +272,7 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
             _toHexString( rgDeviceId[i], strDeviceID, 16);
         }
     }
-#else
+#elif defined( OS_PLATFORM_MOTCE )
     wchar_t buffer[256];    
     BOOL ret = SystemParametersInfoW( SPI_GETOEMINFO, sizeof(buffer), buffer, 0);
 
@@ -1046,4 +1046,5 @@ extern "C" void Init_System()
 {
     rho::CSystemFactory::setInstance( new rho::CSystemFactory() );
     rho::Init_System_API();
+    RHODESAPP().getExtManager().requireRubyFile("RhoSystemApi");
 }
