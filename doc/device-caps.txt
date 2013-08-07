@@ -780,7 +780,8 @@ To use ESRI maps in your projects on iPhone:
 
 To use native Google map view on Android:
 
-* Install Google Add-on API using Android SDK Manager
+* Install Google APIs package within target platform you build for using Android SDK Manager
+* Install Google Play Services package within Extras section using Android SDK Manager
 * Setup Google Play Map service and create [Google Maps V2 API key](https://developers.google.com/maps/documentation/android/start#the_google_maps_api_key)
 * Add 'apikey' parameter and 'gmaps' extension to your build.yml
     
@@ -792,6 +793,7 @@ To use native Google map view on Android:
 
         capabilities:
             - network_state
+            - sdcard
 
 Map settings in rhoconfig.txt :
 

@@ -119,8 +119,7 @@ rho::String js_entry_point(const char* szJSON)
 
 void rho_http_js_entry_point(void *arg, rho::String const &query )
 {
-	rho::String data = rho::net::URI::urlDecode(query);
-    rho::String res = js_entry_point(data.c_str());
+    rho::String res = js_entry_point(query.c_str());
     rho_http_sendresponse(arg, res.c_str());
 }
 

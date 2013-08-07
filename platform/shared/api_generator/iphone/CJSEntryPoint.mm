@@ -12,8 +12,7 @@
 
 
 + (NSString*) js_entry_point:(NSString*)query {
-	rho::String data = rho::net::URI::urlDecode([query UTF8String]);
-    rho::String res = rho::apiGenerator::js_entry_point(data.c_str());
+    rho::String res = rho::apiGenerator::js_entry_point([query UTF8String]);
     return [NSString stringWithUTF8String:res.c_str()];
 }
 
