@@ -798,13 +798,23 @@ namespace "config" do
         puts "Jake.localip() error : #{e}"  
     end
 
-    $obfuscate_js      = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
-    $obfuscate_css     = Jake.getBuildBoolProp2("obfuscate", "css", $app_config, nil)
+    obfuscate_js      = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
+    obfuscate_css     = Jake.getBuildBoolProp2("obfuscate", "css", $app_config, nil)
     $obfuscate_exclude = Jake.getBuildProp2("obfuscate", "exclude_dirs" )
 
-    $minify_js      = Jake.getBuildBoolProp2("minify", "js", $app_config, nil)
-    $minify_css     = Jake.getBuildBoolProp2("minify", "css", $app_config, nil)
+    minify_js      = Jake.getBuildBoolProp2("minify", "js", $app_config, nil)
+    minify_css     = Jake.getBuildBoolProp2("minify", "css", $app_config, nil)
     $minify_exclude = Jake.getBuildProp2("minify", "exclude_dirs" )
+
+    $minify_types = []
+
+    if !$debug
+        minify_js = true if minify_js == nil
+        minify_css = true if minify_css == nil
+    end
+            
+    $minify_types << "js" if minify_js or obfuscate_js
+    $minify_types << "css" if minify_css or obfuscate_css
 
     $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
     
@@ -1661,18 +1671,8 @@ namespace "build" do
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
         
-      minify_types = []
-
-      if !$debug
-        $minify_js = true if $minify_js == nil
-        $minify_css = true if $minify_css == nil
-      end
-                
-      minify_types << "js" if $minify_js or $obfuscate_js
-      minify_types << "css" if $minify_css or $obfuscate_css
-      
-      if not minify_types.empty?
-          minify_js_and_css($srcdir,minify_types)
+      if not $minify_types.empty?
+          minify_js_and_css($srcdir,$minify_types)
       end
         
       chdir startdir
@@ -1879,7 +1879,8 @@ task :update_rho_modules_js, [:platform] do |t,args|
     Rake::Task["config:common"].invoke  
     
     init_extensions( nil, "update_rho_modules_js")
-    
+
+    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules.js" ), "js" ) if $minify_types.include?('js')
 end
     
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
