@@ -1065,29 +1065,25 @@ def init_extensions(dest, mode = "")
               nativelib << libname
             end
           end
-          
-          if $js_application
-            #rhoelementsext for win mobile shared runtime mode only              
-            if !xml_api_paths.nil? || ("rhoelementsext" == extname && $config["platform"] == "wm")
 
-              extentries << entry unless entry.nil?
-              
-              entry =  "if (rho_ruby_is_started()) #{entry}" if entry && entry.length() > 0 && xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")
-              extentries_init << entry unless entry.nil?
-                
+          if entry && entry.length() > 0            
+            if xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")          
+            
+                $ruby_only_extensions_list = [] unless $ruby_only_extensions_list
+                $ruby_only_extensions_list << extname
+            
+                if !$js_application
+                    extentries << entry
+                    entry =  "if (rho_ruby_is_started()) #{entry}" 
+                    extentries_init << entry
+                end
             else
-              puts '********* WARNING *****************************************************************************************************'
-              puts 'Extension ' + extname + ' does not have javascript api implementation and will not initilized in the application!!!'
-              puts '***********************************************************************************************************************'
+                extentries << entry
+                extentries_init << entry
             end
-          else
-            extentries << entry unless entry.nil?
-          
-            entry =  "if (rho_ruby_is_started()) #{entry}" if entry && entry.length() > 0 && xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")
-            extentries_init << entry unless entry.nil?
-          
+            
           end
-          
+            
           if type.to_s() != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
@@ -2537,6 +2533,16 @@ at_exit do
     puts $minification_failed_list
     puts ' See log for details '
     puts '**************************************************************************************'
+    
+  end
+
+  if ($ruby_only_extensions_list)  
+  
+    puts '********* WARNING *****************************************************************************************************'
+    puts 'The following extensions do not have JavaScript API: '
+    puts $ruby_only_extensions_list
+    puts 'Use RMS 4.0 extensions to provide JavaScript API'
+    puts '***********************************************************************************************************************'
     
   end
   
