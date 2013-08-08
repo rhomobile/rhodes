@@ -1,9 +1,12 @@
 package com.rho.mediaplayer;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +33,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.file.RhoFileApi;
 
 public class MediaplayerSingleton extends MediaplayerSingletonBase implements IMediaplayerSingleton
 {
@@ -79,17 +83,18 @@ public class MediaplayerSingleton extends MediaplayerSingletonBase implements IM
 
 		try
 		{
-			if(filename.matches("^(file:)?[/]{0,3}data/data.*$"))
+			if(isPackageFile(filename))
 			{
-				File dataFile = new File(filename);
-				Logger.D(TAG, "DATADATA: exists: " + dataFile.exists());
-				Logger.D(TAG, "DATADATA: isHidden: " + dataFile.isHidden());
-				Logger.D(TAG, "DATADATA: canRead: " + dataFile.canRead());
-				Logger.D(TAG, "DATADATA: canExecute: " + dataFile.canExecute());
-				Logger.D(TAG, "/data/data file");
-				FileInputStream stream = new FileInputStream(filename);
-				mPlayer.setDataSource(stream.getFD()); //Use for private files.
-				stream.close();
+				FileDescriptor fileDescriptor = RhoFileApi.openFd(filename);
+				if(fileDescriptor != null && fileDescriptor.valid())
+				{
+					mPlayer.setDataSource(fileDescriptor);
+				}
+				else
+				{
+					Logger.E(TAG, "Bad filename");
+					throw new FileNotFoundException();
+				}
 			}
 			else
 			{
@@ -118,6 +123,11 @@ public class MediaplayerSingleton extends MediaplayerSingletonBase implements IM
 		Logger.D(TAG, "start-");
 	}
 	
+	private boolean isPackageFile(String filename)
+	{
+		return filename.matches("^(file:)?[/]{0,3}data/data.*$");
+	}
+
 	/**
 	 * Stop the playback of the currently playing media file and release the MediaPlayer
 	 * @author Ben Kennedy (NCVT73)
@@ -270,11 +280,70 @@ public class MediaplayerSingleton extends MediaplayerSingletonBase implements IM
 			createVideoView();
 		}
 
+		mVideoView.stopPlayback();
+		
 		// Play URL
-		dialog.show();
-		mVideoView.setVideoURI(Uri.parse(filename));
-		mVideoView.setVisibility(View.VISIBLE);
-		mVideoView.requestFocus();
+		// If this is Rho Package file, force Rhodes to copy it to /data/data, then copy this to a local file and play.
+		if(isPackageFile(filename))
+		{
+			FileDescriptor rhoFileDesc = RhoFileApi.openFd(filename);
+			if(rhoFileDesc != null && rhoFileDesc.valid())
+			{
+				FileInputStream srcStream = null;
+				FileOutputStream dstStream = null;
+				try
+				{
+	                File internalVideoFile = new File(filename);
+	                File temporaryVideoFile = File.createTempFile("video", "tmp");
+	
+	                if (internalVideoFile.exists())
+	                {
+	                	srcStream = new FileInputStream(internalVideoFile);
+	                	dstStream = new FileOutputStream(temporaryVideoFile);
+	                    FileChannel src = srcStream.getChannel();
+	                    FileChannel dst = dstStream.getChannel();
+	                    dst.transferFrom(src, 0, src.size());
+	                    src.close();
+	                    dst.close();
+	                    
+	                    dialog.show();
+	                    mVideoView.setVideoURI(Uri.parse(temporaryVideoFile.getAbsolutePath()));
+	            		mVideoView.setVisibility(View.VISIBLE);
+	            		mVideoView.requestFocus();
+	                }
+	                else
+	                {
+	                	result.setError("Video not found");
+	                }
+				}
+				catch (FileNotFoundException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				finally
+				{
+                    if(srcStream != null) try{srcStream.close();}catch(IOException e){e.printStackTrace();}
+                    if(dstStream != null) try{dstStream.close();}catch(IOException e){e.printStackTrace();}
+				}
+			}
+			else
+			{
+				result.setError("Video not found");
+			}
+		}
+		else
+		{
+			dialog.show();
+			mVideoView.setVideoURI(Uri.parse(filename));
+			mVideoView.setVisibility(View.VISIBLE);
+			mVideoView.requestFocus();
+		}
 	}
 
 	/**
