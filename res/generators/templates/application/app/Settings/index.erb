@@ -22,7 +22,7 @@
 
       <li><a href="<%%= url_for :action => :reset %>">Reset Database</a></li>
       <li><a href="<%%= url_for :action => :do_sync %>">Perform Sync</a></li>
-      <%% if SyncEngine::logged_in > 0 %>
+      <%% if Rho::RhoConnectClient.isLoggedIn %>
           <li><a href="<%%= url_for :action => :logout %>">Logout</a></li>
       <%% else %>
           <li><a href="<%%= url_for :action => :login %>">Login</a></li>
