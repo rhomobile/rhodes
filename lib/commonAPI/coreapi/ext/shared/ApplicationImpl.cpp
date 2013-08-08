@@ -127,7 +127,7 @@ public:
 #endif
     }
 
-    virtual void getName(rho::apiGenerator::CMethodResult& oResult)
+    virtual void getAppName(rho::apiGenerator::CMethodResult& oResult)
     {
         oResult.set( RHODESAPP().getAppName() );
     }
