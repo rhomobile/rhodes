@@ -105,6 +105,14 @@ Because the MediaPlayer extension uses the operating system's built-in player fo
 
                 </DESC>
             </REMARK>
+            <REMARK title="Playback Controls">
+                <DESC>
+                    <![CDATA[
+Because the MediaPlayer extension uses the operating system's built-in player for some media types, the playback controls available to the user are outside the control of RhoElements. Some players may have no playback controls in which the user will have to wait for the media to finish playing.
+                ]]>
+
+                </DESC>
+            </REMARK>
         </REMARKS>
     </MODULE>
 </API>    
