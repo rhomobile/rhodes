@@ -36,6 +36,9 @@
 #include <QDesktopServices>
 #include <QMessageBox>
 #include "MainWindowImpl.h"
+#if QT_VERSION >= 0x050000
+#include <QtWebKit/qtwebkitversion.h>
+#endif
 
 using namespace rho;
 using namespace rho::common;

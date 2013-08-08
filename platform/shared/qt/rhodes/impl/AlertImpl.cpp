@@ -32,7 +32,11 @@
 #include "MainWindowImpl.h"
 #include "../DateTimeDialog.h"
 #undef null
+#if QT_VERSION >= 0x050000
+#include <QtMultimedia/QMediaPlayer>
+#else
 #include <QSound>
+#endif
 
 using namespace rho;
 using namespace rho::json;
@@ -188,11 +192,22 @@ void alert_vibrate(int duration_ms) {
 void alert_play_file(char* file_name, char *media_type)
 {
     String path = RHODESAPP().getRhoRootPath() + file_name;
+#if QT_VERSION >= 0x050000
+    QMediaPlayer* player = new QMediaPlayer;
+    QUrl url = QUrl::fromLocalFile(QString::fromStdString(path));
+    player->setMedia(url);
+    player->setVolume(100);
+    player->play();
+    if ((player->availability() != QMultimedia::Available) || (player->error() != QMediaPlayer::NoError))
+#else
     if (QSound::isAvailable()) {
         QSound::play(QString(path.c_str()));
-    } else {
+    } else
+#endif
         RAWLOGC_INFO("AlertImpl", "OnAlertPlayFile: failed to play file");
-    }
+#if QT_VERSION >= 0x050000
+    delete player;
+#endif
 }
 
 void alert_hide_popup()

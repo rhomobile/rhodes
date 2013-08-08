@@ -1,4 +1,5 @@
 QT += core gui network webkit
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets multimedia
 
 TARGET = RhoSimulator
 TEMPLATE = app

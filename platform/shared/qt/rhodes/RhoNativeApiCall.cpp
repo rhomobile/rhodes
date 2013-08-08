@@ -38,7 +38,7 @@ const QString RhoNativeApiCall::apiCall(const QString& msg)
 {
     //RAWLOGC_INFO1("RhoNativeApiCall", "JS API call: %s", msg.toStdString().c_str());
 
-    const QByteArray asc = msg.toAscii(); 
+    const QByteArray asc = msg.toLatin1(); 
     
     rho::String data = rho::net::URI::urlDecode( std::string(asc.constData(), asc.length()) );
     rho::String res = rho::apiGenerator::js_entry_point(data.c_str());

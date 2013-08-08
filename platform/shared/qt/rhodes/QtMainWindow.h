@@ -30,8 +30,13 @@
 #include <vector>
 #include <QMainWindow>
 #include <QUrl>
+#if QT_VERSION >= 0x050000
+#include <QtWebKitWidgets/QWebView>
+#include <QtWebKitWidgets/QWebInspector>
+#else
 #include <QtWebKit/QWebView>
 #include <QtWebKit/QWebInspector>
+#endif
 #include <QAction>
 #include <QMessageBox>
 #include <QBasicTimer>
