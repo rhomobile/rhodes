@@ -7,5 +7,4 @@ ext/platform/android/generated/src/com/rho/mediaplayer/IMediaplayerSingleton.jav
 ext/platform/android/src/com/rho/mediaplayer/Mediaplayer.java
 ext/platform/android/src/com/rho/mediaplayer/MediaplayerFactory.java
 ext/platform/android/src/com/rho/mediaplayer/MediaplayerSingleton.java
-ext/platform/android/src/com/rho/mediaplayer/MediaplayerRhoListener.java
 ext/platform/android/src/com/rho/mediaplayer/RhoVideoView.java
