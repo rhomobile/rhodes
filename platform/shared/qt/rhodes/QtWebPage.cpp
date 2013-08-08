@@ -31,11 +31,11 @@ IMPLEMENT_LOGCLASS(QtWebPage,"JavaScript");
 void QtWebPage::javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID)
 {
 	QString origin = "Console message at " + sourceID + ":" + QString::number(lineNumber);
-	const QByteArray asc_origin = origin.toAscii(); 
+	const QByteArray asc_origin = origin.toLatin1(); 
 	rho::String str_origin = ::std::string(asc_origin.constData(), asc_origin.length());
 	LOG(INFO) + str_origin.c_str();
 
-	const QByteArray asc_message = message.toAscii(); 
+	const QByteArray asc_message = message.toLatin1(); 
 	rho::String str_message = ::std::string(asc_message.constData(), asc_message.length());
 	LOG(INFO) + str_message.c_str();
 }

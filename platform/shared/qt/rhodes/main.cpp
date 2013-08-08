@@ -35,7 +35,12 @@
 #include "sync/RhoconnectClientManager.h"
 #include "common/RhoFilePath.h"
 #undef null
+#include <qglobal.h>
+#if QT_VERSION >= 0x050000
+#include <QApplication>
+#else
 #include <QtGui/QApplication>
+#endif
 #include <QMessageBox>
 #include "impl/MainWindowImpl.h"
 
