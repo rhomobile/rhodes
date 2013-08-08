@@ -141,7 +141,13 @@
         NSMutableArray* ns_array = [NSMutableArray arrayWithCapacity:count];
         for (i =0 ; i < count; i++) {
             rho::json::CJSONEntry js_entry = js_array[i];
-            [ns_array addObject:[CJSConverter convertFromJSentry:&js_entry rho_api_param:NULL]];
+            NSObject* obj = [CJSConverter convertFromJSentry:&js_entry rho_api_param:NULL];
+            if (obj != nil) {
+                [ns_array addObject:obj];
+            }
+            else {
+                NSLog(@"ERROR during convert JSON data !");
+            }
         }
         return ns_array;
     }
@@ -154,7 +160,14 @@
             rho::String key = js_iterator.getCurKey();
             rho::json::CJSONEntry js_entry = js_iterator.getCurValue();
             
-            [ns_hash setObject:[CJSConverter convertFromJSentry:&js_entry rho_api_param:NULL] forKey:[NSString stringWithUTF8String:(key.c_str())]];
+            NSObject* obj = [CJSConverter convertFromJSentry:&js_entry rho_api_param:NULL];
+            
+            if (obj != nil) {
+                [ns_hash setObject:obj forKey:[NSString stringWithUTF8String:(key.c_str())]];
+            }
+            else {
+                NSLog(@"ERROR during convert JSON data !");
+            }
             
             js_iterator.next();
         }
