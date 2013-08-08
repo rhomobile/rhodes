@@ -351,6 +351,7 @@ BOOL CWAN::Connect(LPCTSTR szConnectionDestination, BOOL bUserRequest)
 		}
 	}
 
+	ConnectionManagerStatusUpdate();
 	return bReturnValue;
 }
 

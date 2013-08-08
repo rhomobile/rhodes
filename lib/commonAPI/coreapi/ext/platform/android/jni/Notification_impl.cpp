@@ -53,9 +53,10 @@ extern "C" void Init_Notification(void)
     {
         RAWLOG_ERROR("Failed to initialize Notification API: jnienv() is failed");
     }
-
+    RHODESAPP().getExtManager().requireRubyFile("RhoNotificationApi");
 }
 
 extern "C" void Init_Notification_extension() {
     Init_Notification();
+    RHODESAPP().getExtManager().requireRubyFile("RhoNotificationApi");
 }

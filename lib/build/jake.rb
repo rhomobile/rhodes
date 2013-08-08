@@ -729,13 +729,21 @@ class Jake
 
   def self.getBuildProp(propName, config_yml=$app_config)
     res = nil
-    if config_yml[propName]
-        res = config_yml[propName]
-    elsif config_yml[$current_platform]
-        res = config_yml[$current_platform][propName]        
-    end    
+    
+    res = config_yml[propName] if config_yml[propName]
+    res = config_yml[$current_platform][propName] if config_yml[$current_platform] && config_yml[$current_platform][propName]        
     
     res
+  end
+
+  def self.getBool(propObject, def_value=false)
+    res = propObject
+    
+    return def_value unless res
+     
+    return true if res && (res.to_i() != 0 || res.casecmp("true") == 0 || res.casecmp("yes") == 0 )
+    
+    false
   end
 
   def self.getBuildBoolProp(propName, config_yml=$app_config, def_value=false)
@@ -751,11 +759,13 @@ class Jake
   def self.getBuildProp2(propName, propName2, config_yml=$app_config)
     res = nil
     if config_yml[propName]
-        res = config_yml[propName]
-        res = res[propName2] if res
-    elsif config_yml[$current_platform]
-        res = config_yml[$current_platform][propName]        
-        res = res[propName2] if res
+        res1 = config_yml[propName]
+        res = res1[propName2] if res1 && res1[propName2]
+    end
+    
+    if config_yml[$current_platform]
+        res1 = config_yml[$current_platform][propName]        
+        res = res1[propName2] if res1 && res1[propName2]
     end    
     
     res
