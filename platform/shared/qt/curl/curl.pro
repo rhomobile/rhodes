@@ -18,6 +18,12 @@ SOURCES += ../../curl/lib/http_ntlm.c\
 ../../curl/lib/ssluse.c
 }
 
+win32 {
+  DESTDIR = ../../../win32/bin/curl
+  OBJECTS_DIR = ../../../win32/bin/curl/tmp
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE
+}
+
 unix:!macx {
   DESTDIR = ../../../linux/bin/curl
   OBJECTS_DIR = ../../../linux/bin/curl/tmp
@@ -29,6 +35,10 @@ DEFINES += RHODES_EMULATOR
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+}
+win32 {
+  QMAKE_CFLAGS_WARN_ON += /wd4101 /wd4005
+  QMAKE_CFLAGS_RELEASE += /O2
 }
 
 HEADERS += ../../curl/lib/arpa_telnet.h\

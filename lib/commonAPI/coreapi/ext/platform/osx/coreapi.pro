@@ -11,12 +11,23 @@ INCLUDEPATH += ../../shared\
 ../../../../../../platform/shared/common\
 ../../../../../../platform/shared/rubyext\
 ../../../../../../platform/shared/ruby/include\
-../../../../../../platform/shared/ruby/iphone\
 ../../../../../../platform/shared
 
 macx {
   DESTDIR = ../../../../../../platform/osx/bin/extensions
   OBJECTS_DIR = ../../../../../../platform/osx/bin/extensions/coreapi
+  INCLUDEPATH += ../../../../../../platform/shared/ruby/iphone
+  SOURCES += src/NetworkDetect.cpp
+}
+win32 {
+  DESTDIR = ../../../../../../platform/win32/bin/extensions
+  OBJECTS_DIR = ../../../../../../platform/win32/bin/extensions/coreapi
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  INCLUDEPATH += ../../../../../../platform/shared/ruby/win32
+  HEADERS += ../../../../../../platform/shared/ruby/win32/ruby/config.h\
+../../../../../../platform/shared/ruby/win32/dir.h\
+../wm/src/NetworkDetect.h
+  SOURCES += ../wm/src/NetworkDetect.cpp
 }
 
 DEFINES += RHODES_EMULATOR
@@ -26,6 +37,12 @@ DEFINES += RHODES_EMULATOR
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   # QMAKE_CFLAGS += -fvisibility=hidden
   # QMAKE_CXXFLAGS += -fvisibility=hidden
+}
+win32 {
+  QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
+  QMAKE_CXXFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
+  QMAKE_CFLAGS_RELEASE += /O2
+  QMAKE_CXXFLAGS_RELEASE += /O2
 }
 
 HEADERS += \
@@ -172,7 +189,6 @@ SOURCES += \
 ../../shared/qt/NavbarImpl.cpp\
 src/NativeTabbarImpl.cpp\
 src/NativeToolbarImpl.cpp\
-src/NetworkDetect.cpp\
 src/NotificationImpl.cpp
 
 # CSystemImpl.cpp & CWebViewImpl.cpp must be compiled in Qt environment (see /platform/shared/qt/rhodes/rhodes.pro)
