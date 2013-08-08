@@ -1086,7 +1086,7 @@ def init_extensions(dest, mode = "")
           end
 
           if entry && entry.length() > 0            
-            if xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")          
+            if xml_api_paths.nil? && !("rhoelementsext" == extname && ($config["platform"] == "wm"||$config["platform"] == "android"))
             
                 $ruby_only_extensions_list = [] unless $ruby_only_extensions_list
                 $ruby_only_extensions_list << extname
