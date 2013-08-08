@@ -41,4 +41,8 @@ public:*/
     ~CNativeToolbar(void) {};
 };*/
 
+bool rho_osximpl_toolbar_isStarted();
+void rho_osximpl_toolbar_create( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties);
+void rho_osximpl_toolbar_remove();
+
 #endif // NATIVETOOLBARIMPL_H

@@ -37,7 +37,6 @@ win32 {
 ../../ruby/missing/crypt.c\
 ../../ruby/missing/dup2.c\
 ../../ruby/missing/erf.c\
-../../ruby/missing/hypot.c\
 ../../ruby/missing/tgamma.c\
 ../../ruby/missing/strlcpy.c\
 ../../ruby/missing/strlcat.c\

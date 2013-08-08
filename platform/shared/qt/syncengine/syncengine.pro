@@ -17,8 +17,6 @@ win32 {
   DESTDIR = ../../../win32/bin/syncengine
   OBJECTS_DIR = ../../../win32/bin/syncengine/tmp
   DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE
-  HEADERS += ../../sync/ISyncProtocol.h\
-../../sync/SyncProtocol_3.h
 }
 
 unix:!macx {

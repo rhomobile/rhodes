@@ -41,4 +41,11 @@ public:
     ~CNativeTabbar(void) {};
 };*/
 
+bool rho_osximpl_tabbar_isStarted();
+void rho_osximpl_tabbar_create(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
+void rho_osximpl_tabbar_remove();
+int rho_osximpl_tabbar_currentTabIndex();
+void rho_osximpl_tabbar_switchTab(int tabIndex);
+void rho_osximpl_tabbar_setTabBadge(int tabIndex, const rho::String& badge);
+
 #endif // NATIVETABBARIMPL_H
