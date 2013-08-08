@@ -96,23 +96,5 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
-        <REMARKS>
-            <REMARK title="Availbility of Operating System">
-                <DESC>
-                    <![CDATA[
-Because the MediaPlayer extension uses the operating system's built-in player for some media types, it may be possible for the user to access operating system features while media is playing.
-                ]]>
-
-                </DESC>
-            </REMARK>
-            <REMARK title="Playback Controls">
-                <DESC>
-                    <![CDATA[
-Because the MediaPlayer extension uses the operating system's built-in player for some media types, the playback controls available to the user are outside the control of RhoElements. Some players may have no playback controls in which the user will have to wait for the media to finish playing.
-                ]]>
-
-                </DESC>
-            </REMARK>
-        </REMARKS>
     </MODULE>
 </API>    
