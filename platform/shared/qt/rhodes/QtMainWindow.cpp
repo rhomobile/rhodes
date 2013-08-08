@@ -279,6 +279,11 @@ void QtMainWindow::on_actionRotate180_triggered()
 	RHODESAPP().callScreenRotationCallback(this->width(), this->height(), 180);
 }
 
+void QtMainWindow::on_actionExit_triggered()
+{
+    this->close();
+}
+
 bool QtMainWindow::internalUrlProcessing(const QUrl& url)
 {
     int ipos;
