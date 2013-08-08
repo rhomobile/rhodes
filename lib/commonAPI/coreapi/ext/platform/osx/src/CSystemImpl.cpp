@@ -17,6 +17,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
 
+
+
 namespace rho {
 
 using namespace apiGenerator;
@@ -301,6 +303,8 @@ extern "C" void Init_System()
 {
     CSystemFactory::setInstance( new CSystemFactory() );
     Init_System_API();
+
+    RHODESAPP().getExtManager().requireRubyFile("RhoSystemApi");
 }
 
 }

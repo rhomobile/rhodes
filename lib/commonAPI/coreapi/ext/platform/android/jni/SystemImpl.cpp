@@ -1,6 +1,7 @@
 #include "SystemImplBase.h"
 #include "rhodes/JNIRhodes.h"
 
+
 RHO_GLOBAL int rho_sysimpl_get_property(const char* szPropName, rho::apiGenerator::CMethodResult& result);
 RHO_GLOBAL int rho_sys_set_sleeping(int sleeping);
 RHO_GLOBAL void rho_sys_is_app_installed(const rho::String& appname, rho::apiGenerator::CMethodResult& result);
@@ -367,6 +368,8 @@ extern "C" void Init_System()
 {
     CSystemFactory::setInstance( new CSystemFactory() );
     Init_System_API();
+
+    RHODESAPP().getExtManager().requireRubyFile("RhoSystemApi");
 }
 //----------------------------------------------------------------------------------------------------------------------
 

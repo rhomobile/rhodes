@@ -255,10 +255,10 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
     String strDeviceID;
 
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
-    String strAppData = "RHODES_" + RHODESAPP().getAppName() + "_DEVICEID";
-
     BYTE rgDeviceId[20];
     DWORD cbDeviceId = sizeof(rgDeviceId);
+    String strAppData = "RHODES_" + RHODESAPP().getAppName() + "_DEVICEID";
+
     HRESULT hr = GetDeviceUniqueID( (PBYTE)(strAppData.c_str()),
        strAppData.length(),
        GETDEVICEUNIQUEID_V1,
@@ -271,6 +271,14 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
         {
             _toHexString( rgDeviceId[i], strDeviceID, 16);
         }
+    }
+#elif defined( OS_PLATFORM_MOTCE )
+    wchar_t buffer[256];    
+    BOOL ret = SystemParametersInfoW( SPI_GETOEMINFO, sizeof(buffer), buffer, 0);
+
+    if (ret)
+    {
+        strDeviceID = convertToStringA(buffer);
     }
 #endif
 
@@ -1038,4 +1046,5 @@ extern "C" void Init_System()
 {
     rho::CSystemFactory::setInstance( new rho::CSystemFactory() );
     rho::Init_System_API();
+    RHODESAPP().getExtManager().requireRubyFile("RhoSystemApi");
 }

@@ -833,6 +833,12 @@ bool str_ends_with(const TCHAR* str, const TCHAR* suffix)
 	return (_wcsnicmp( str + str_len - suffix_len, suffix, suffix_len ) == 0);
 }
 
+enum EAppType
+{
+    eRuby,
+    eJs,
+};
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	TCHAR *emu_name = NULL;
@@ -845,73 +851,79 @@ int _tmain(int argc, _TCHAR* argv[])
 	TCHAR *lcdll_path = NULL;
     TCHAR *dst_path = NULL;
 	TCHAR params_buf[MAX_PATH + 16];
-	//WIN32_FIND_DATAW findData;
 	int new_copy = 0;
 	int deploy_type;
 	bool use_shared_runtime = false;
+    EAppType app_type = eRuby;
 
 	USES_CONVERSION;
 
-	if (argc > 5) {        //assuming that need to start emulator
-		if (strcmp(T2A(argv[1]), "emu") == 0) {
-			emu_name    = argv[2];
+    if (strcmp(T2A(argv[1]), "js") == 0) {
+        app_type = eJs;
+    }
+
+	if (argc > 6) {        //assuming that need to start emulator
+		if (strcmp(T2A(argv[2]), "emu") == 0) {
+			emu_name    = argv[3];
+			app_name    = argv[4];
+			bundle_path = argv[5];
+			app_exe     = argv[6];
+			log_port    = argv[7];
+			lcdll_path  = argv[8];
+			deploy_type = DEPLOY_EMU;
+		}
+		if (strcmp(T2A(argv[2]), "emucab") == 0) {
+			emu_name = argv[3];
+			cab_file = argv[4];
+			app_name = argv[5];
+			if (strcmp(T2A(argv[6]), "1") == 0)
+				use_shared_runtime = true;
+			deploy_type = DEPLOY_EMUCAB;
+		}
+
+		if (strcmp(T2A(argv[2]), "dev") == 0) {
 			app_name    = argv[3];
 			bundle_path = argv[4];
 			app_exe     = argv[5];
 			log_port    = argv[6];
 			lcdll_path  = argv[7];
-			deploy_type = DEPLOY_EMU;
-		}
-		if (strcmp(T2A(argv[1]), "emucab") == 0) {
-			emu_name = argv[2];
-			cab_file = argv[3];
-			app_name = argv[4];
-			//log_port = argv[5];
-			if (strcmp(T2A(argv[5]), "1") == 0)
-				use_shared_runtime = true;
-			deploy_type = DEPLOY_EMUCAB;
-		}
-
-		if (strcmp(T2A(argv[1]), "dev") == 0) {
-			app_name    = argv[2];
-			bundle_path = argv[3];
-			app_exe     = argv[4];
-			log_port    = argv[5];
-			lcdll_path  = argv[6];
 			deploy_type = DEPLOY_DEV;
 		}
-	} else if (argc == 5) { //assuming that need to deploy and start on device
-        if (strcmp(T2A(argv[1]), "wk-emu") == 0)  {
+	} 
+    else if (argc == 6) { //assuming that need to deploy and start on device
+        if (strcmp(T2A(argv[2]), "wk-emu") == 0)  {
             deploy_type = DEPLOY_EMU_WEBKIT;
-            emu_name = argv[2];
-            src_path = argv[3];
-            app_name = argv[4];            
+            emu_name = argv[3];
+            src_path = argv[4];
+            app_name = argv[5];            
         }
         else {
-            cab_file = argv[2];
-            app_name = argv[3];
+            cab_file = argv[3];
+            app_name = argv[4];
             //log_port = argv[4];
-			if (strcmp(T2A(argv[4]), "1") == 0)
+			if (strcmp(T2A(argv[5]), "1") == 0)
 				use_shared_runtime = true;
             deploy_type = DEPLOY_DEVCAB;
         }
-	} else if (argc == 4) { // log
-		if (strcmp(T2A(argv[1]), "log") == 0) {
-			log_file = argv[2];
-			log_port = argv[3];
+	}
+    else if (argc == 5) { // log
+		if (strcmp(T2A(argv[2]), "log") == 0) {
+			log_file = argv[3];
+			log_port = argv[4];
 			app_name = _T("");
 			deploy_type = DEPLOY_LOG;
 		}
-        else if (strcmp(T2A(argv[1]), "wk-dev") == 0)  {
+        else if (strcmp(T2A(argv[2]), "wk-dev") == 0)  {
             deploy_type = DEPLOY_DEV_WEBKIT;
-            src_path = argv[2];
-            app_name = argv[3];
+            src_path = argv[3];
+            app_name = argv[4];
         }
 	}
 	else {
 		usage();
 		return EXIT_FAILURE;
 	}
+
 	if ((!use_shared_runtime) && app_exe)
 		use_shared_runtime = str_ends_with(app_exe, L".lnk");
 
@@ -944,7 +956,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			if (!wceConnect ()) {
 				printf ("Failed to connect to remote device.\n");
 				goto stop_emu_deploy;
-			} else {
+			} 
+            else 
+            {
 				// start Windows Mobile Device Center for network connectivity of the device emulator (if applicable)
 				startWMDC();
 
@@ -1018,10 +1032,17 @@ int _tmain(int argc, _TCHAR* argv[])
 				params[0] = 0;
 				if (use_shared_runtime) {
 					_tcscpy(params_buf, RE2_RUNTIME);
-					_tcscpy(params, _T("-approot='\\Program Files\\"));
+                    if (app_type == eRuby) {
+					    _tcscpy(params, _T("-approot='\\Program Files\\"));
+                    }
+                    else {
+                        _tcscpy(params, _T("-jsapproot='\\Program Files\\"));
+                    }
 					_tcscat(params, app_name);
 					_tcscat(params, _T("'"));
-				} else {
+				} 
+                else 
+                {
 					_tcscpy(params_buf, TEXT("\\Program Files\\"));
 					_tcscat(params_buf, app_name);
 					_tcscat(params_buf, _T("\\"));
@@ -1109,7 +1130,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			params[0] = 0;
 			if (use_shared_runtime) {
 				_tcscpy(params_buf, RE2_RUNTIME);
-				_tcscpy(params, _T("-approot='\\Program Files\\"));
+			    if (app_type == eRuby) {
+				    _tcscpy(params, _T("-approot='\\Program Files\\"));
+                }
+                else {
+                    _tcscpy(params, _T("-jsapproot='\\Program Files\\"));
+                }
 				_tcscat(params, app_name);
 				_tcscat(params, _T("'"));
 			} else {
@@ -1223,7 +1249,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		params[0] = 0;
 		if (use_shared_runtime) {
 			_tcscpy(params_buf, RE2_RUNTIME);
-			_tcscpy(params, _T("-approot='\\Program Files\\"));
+		    if (app_type == eRuby) {
+			    _tcscpy(params, _T("-approot='\\Program Files\\"));
+            }
+            else {
+                _tcscpy(params, _T("-jsapproot='\\Program Files\\"));
+            }
 			_tcscat(params, app_name);
 			_tcscat(params, _T("'"));
 		} else {
@@ -1309,7 +1340,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			params[0] = 0;
 			if (use_shared_runtime) {
 				_tcscpy(params_buf, RE2_RUNTIME);
-				_tcscpy(params, _T("-approot='\\Program Files\\"));
+			    if (app_type == eRuby) {
+				    _tcscpy(params, _T("-approot='\\Program Files\\"));
+                }
+                else {
+                    _tcscpy(params, _T("-jsapproot='\\Program Files\\"));
+                }
 				_tcscat(params, app_name);
 				_tcscat(params, _T("'"));
 			} else {

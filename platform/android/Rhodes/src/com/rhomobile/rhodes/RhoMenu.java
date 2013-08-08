@@ -208,7 +208,7 @@ public class RhoMenu {
         ItemType type = item.type;
         if (!type.action()){
             MainView mainView = RhodesActivity.safeGetInstance().getMainView();
-            mainView.navigate(item.url, mainView.activeTab());
+            mainView.navigate(RhodesService.getInstance().normalizeUrl(item.url), mainView.activeTab());
         }
         return true;
     }
