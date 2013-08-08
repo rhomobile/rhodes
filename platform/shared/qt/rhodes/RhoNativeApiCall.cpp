@@ -40,8 +40,7 @@ const QString RhoNativeApiCall::apiCall(const QString& msg)
 
     const QByteArray asc = msg.toLatin1(); 
     
-    rho::String data = rho::net::URI::urlDecode( std::string(asc.constData(), asc.length()) );
-    rho::String res = rho::apiGenerator::js_entry_point(data.c_str());
+    rho::String res = rho::apiGenerator::js_entry_point( std::string(asc.constData(), asc.length()).c_str() );
     return QString(res.c_str());
     // how to return JS-object instance: (QVariant) return m_frame->evaluateJavascript("__rhoNativeApi;");
 }

@@ -441,10 +441,10 @@ namespace "clean" do
         
         if File.file? extyml
           extconf = Jake.config(File.open(extyml))
-          type    = extconf["exttype"]
-          wm_type = extconf["wm"]["exttype"] if extconf["wm"]
+          type = Jake.getBuildProp( "exttype", extconf )
+          #wm_type = extconf["wm"]["exttype"] if extconf["wm"]
        
-          if type != "prebuilt" && wm_type != "prebuilt"      
+          if type != "prebuilt" #&& wm_type != "prebuilt"      
             rm_rf  File.join(extpath, "ext", "shared", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "android", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "iphone", "generated")
@@ -666,7 +666,7 @@ namespace "config" do
         #$app_config["extensions"].delete("rawsensors")
         $app_config["extensions"].delete("audiocapture")
     end
-
+    
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
     #application build configs
@@ -697,7 +697,7 @@ namespace "config" do
         #$app_config['extensions'].delete('audiocapture')
         $rhoelements_features += "- Audio Capture\n"
     end
-    if $app_config['extensions'].index('signature') && (($current_platform == "iphone") || ($current_platform == "android"))
+    if ($app_config['extensions'].index('signature') || $app_config['capabilities'].index('signature')) && (($current_platform == "iphone") || ($current_platform == "android"))
         $rhoelements_features += "- Signature Capture\n"
     end
     
@@ -771,8 +771,17 @@ namespace "config" do
                 if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
                     $application_build_configs.delete('encrypt_database')
                 end
+                
+                if $app_config['extensions'].index('signature')
+                  $app_config['extensions'].delete('signature')
+                end
             end
         end
+    end
+
+    if $app_config['extensions'].index('signature') && (($current_platform == 'iphone') || ($current_platform == 'android'))
+        $app_config['capabilities'] << 'signature'
+        $app_config['extensions'].delete('signature')
     end
 
     if $current_platform == "win32" && $winxpe_build == true
@@ -798,13 +807,23 @@ namespace "config" do
         puts "Jake.localip() error : #{e}"  
     end
 
-    $obfuscate_js      = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
-    $obfuscate_css     = Jake.getBuildBoolProp2("obfuscate", "css", $app_config, nil)
+    obfuscate_js      = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
+    obfuscate_css     = Jake.getBuildBoolProp2("obfuscate", "css", $app_config, nil)
     $obfuscate_exclude = Jake.getBuildProp2("obfuscate", "exclude_dirs" )
 
-    $minify_js      = Jake.getBuildBoolProp2("minify", "js", $app_config, nil)
-    $minify_css     = Jake.getBuildBoolProp2("minify", "css", $app_config, nil)
+    minify_js      = Jake.getBuildBoolProp2("minify", "js", $app_config, nil)
+    minify_css     = Jake.getBuildBoolProp2("minify", "css", $app_config, nil)
     $minify_exclude = Jake.getBuildProp2("minify", "exclude_dirs" )
+
+    $minify_types = []
+
+    if !$debug
+        minify_js = true if minify_js == nil
+        minify_css = true if minify_css == nil
+    end
+            
+    $minify_types << "js" if minify_js or obfuscate_js
+    $minify_types << "css" if minify_css or obfuscate_css
 
     $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
     
@@ -1054,8 +1073,8 @@ def init_extensions(dest, mode = "")
             
           entry           = extconf["entry"]
           nlib            = extconf["nativelibs"]
-          type            = extconf["exttype"]
-          wm_type         = extconf["wm"]["exttype"] if extconf["wm"]
+          type            = Jake.getBuildProp( "exttype", extconf )
+          #wm_type         = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths   = extconf["xml_api_paths"]
           extconf_wp8     = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
           csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
@@ -1065,29 +1084,25 @@ def init_extensions(dest, mode = "")
               nativelib << libname
             end
           end
-          
-          if $js_application
-            #rhoelementsext for win mobile shared runtime mode only              
-            if !xml_api_paths.nil? || ("rhoelementsext" == extname && $config["platform"] == "wm")
 
-              extentries << entry unless entry.nil?
-              
-              entry =  "if (rho_ruby_is_started()) #{entry}" if entry && entry.length() > 0 && xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")
-              extentries_init << entry unless entry.nil?
-                
+          if entry && entry.length() > 0            
+            if xml_api_paths.nil? #&& !("rhoelementsext" == extname && ($config["platform"] == "wm"||$config["platform"] == "android"))
+            
+                $ruby_only_extensions_list = [] unless $ruby_only_extensions_list
+                $ruby_only_extensions_list << extname
+            
+                if !$js_application
+                    extentries << entry
+                    entry =  "if (rho_ruby_is_started()) #{entry}" 
+                    extentries_init << entry
+                end
             else
-              puts '********* WARNING *****************************************************************************************************'
-              puts 'Extension ' + extname + ' does not have javascript api implementation and will not initilized in the application!!!'
-              puts '***********************************************************************************************************************'
+                extentries << entry
+                extentries_init << entry
             end
-          else
-            extentries << entry unless entry.nil?
-          
-            entry =  "if (rho_ruby_is_started()) #{entry}" if entry && entry.length() > 0 && xml_api_paths.nil? && !("rhoelementsext" == extname && $config["platform"] == "wm")
-            extentries_init << entry unless entry.nil?
-          
+            
           end
-          
+            
           if type.to_s() != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
@@ -1116,7 +1131,7 @@ def init_extensions(dest, mode = "")
             end
           end
 
-          if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
+          if xml_api_paths && type != "prebuilt" # && wm_type != "prebuilt"
             xml_api_paths    = xml_api_paths.split(',')
                                                           
             xml_api_paths.each do |xml_api|
@@ -1665,18 +1680,8 @@ namespace "build" do
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
         
-      minify_types = []
-
-      if !$debug
-        $minify_js = true if $minify_js == nil
-        $minify_css = true if $minify_css == nil
-      end
-                
-      minify_types << "js" if $minify_js or $obfuscate_js
-      minify_types << "css" if $minify_css or $obfuscate_css
-      
-      if not minify_types.empty?
-          minify_js_and_css($srcdir,minify_types)
+      if not $minify_types.empty?
+          minify_js_and_css($srcdir,$minify_types)
       end
         
       chdir startdir
@@ -1746,12 +1751,16 @@ namespace "build" do
             
         rescue Exception => e
             puts "Minify error: #{e.inspect}"
-            raise e
+            #raise e
         end
      
-        if not status.exitstatus.zero?
-            puts "Minification error"
-            exit 1
+        if !status || !status.exitstatus.zero?
+            puts "WARNING: Minification error!"
+            
+            output = File.read(filename)
+            $minification_failed_list = [] if !$minification_failed_list
+            $minification_failed_list << filename
+            #exit 1
         end
      
         fc.puts(output)
@@ -1879,7 +1888,8 @@ task :update_rho_modules_js, [:platform] do |t,args|
     Rake::Task["config:common"].invoke  
     
     init_extensions( nil, "update_rho_modules_js")
-    
+
+    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules.js" ), "js" ) if $minify_types.include?('js')
 end
     
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
@@ -2344,10 +2354,11 @@ namespace "run" do
         
               if File.file? extyml
                 extconf = Jake.config(File.open(extyml))
+                type = Jake.getBuildProp( "exttype", extconf )
                 xml_api_paths  = extconf["xml_api_paths"]
                 templates_path = File.join($startdir, "res", "generators", "templates")
                                 
-                if xml_api_paths
+                if xml_api_paths && type != "prebuilt"
                   xml_api_paths = xml_api_paths.split(',')
 
                   xml_api_paths.each do |xml_api|
@@ -2525,6 +2536,25 @@ at_exit do
     puts 'To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.'
     puts '************************************************************************'
   end
+
+  if ($minification_failed_list)  
+    puts '********* WARNING ************************************************************************'
+    puts ' The JavaScript or CSS files failed to minify:'
+    puts $minification_failed_list
+    puts ' See log for details '
+    puts '**************************************************************************************'
+    
+  end
+
+  if ($ruby_only_extensions_list)  
+  
+    puts '********* WARNING *****************************************************************************************************'
+    puts 'The following extensions do not have JavaScript API: '
+    puts $ruby_only_extensions_list
+    puts 'Use RMS 4.0 extensions to provide JavaScript API'
+    puts '***********************************************************************************************************************'
+    
+  end
   
   if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
     puts '********* WARNING ************************************************************************'
@@ -2541,5 +2571,5 @@ at_exit do
     puts ' For more information go to http://www.motorolasolutions.com/rhoelements '    
     puts '**************************************************************************************'
   end
-  
+
 end

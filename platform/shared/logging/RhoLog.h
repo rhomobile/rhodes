@@ -65,6 +65,7 @@ namespace rho {
 #define COMPACT_RHO_LOGC_ERROR(category) rho::NullMessage()
 #endif
 
+
 #if RHO_STRIP_LOG <= L_FATAL
 #define COMPACT_RHO_LOGC_FATAL(category) rho::LogMessage(__FILE__, __LINE__, L_FATAL, LOGCONF(), category )
 #else
