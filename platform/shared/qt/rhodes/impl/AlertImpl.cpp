@@ -30,7 +30,6 @@
 #include "common/RhoAppAdapter.h"
 #include "json/JSONIterator.h"
 #include "MainWindowImpl.h"
-#include "../DateTimeDialog.h"
 #undef null
 #if QT_VERSION >= 0x050000
 #include <QtMultimedia/QMediaPlayer>
