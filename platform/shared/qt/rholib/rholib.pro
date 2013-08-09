@@ -42,7 +42,7 @@ unix:!macx {
 ../../net/ssl.cpp
 }
 
-DEFINES += RHODES_EMULATOR
+DEFINES += RHODES_EMULATOR RHODES_EMULATOR_QMAKE
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
