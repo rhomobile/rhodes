@@ -33,16 +33,6 @@
 #include "ExternalWebView.h"
 #include "RhoSimulator.h"
 #include <sstream>
-#include <QResizeEvent>
-#include <QWebFrame>
-#include <QWebSettings>
-#include <QWebSecurityOrigin>
-#include <QWebHistory>
-#include <QLabel>
-#include <QtNetwork/QNetworkCookie>
-#include <QFileDialog>
-#include <QDesktopServices>
-#include <QDesktopWidget>
 #include "QtWebPage.h"
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
@@ -60,6 +50,16 @@
 #include <QtWebKit/qtwebkitversion.h>
 #include <QNetworkCookieJar>
 #endif
+#include <QResizeEvent>
+#include <QWebFrame>
+#include <QWebSettings>
+#include <QWebSecurityOrigin>
+#include <QWebHistory>
+#include <QLabel>
+#include <QtNetwork/QNetworkCookie>
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QDesktopWidget>
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp

@@ -27,6 +27,8 @@
 #include "DateTimeDialog.h"
 #include "ui_DateTimeDialog.h"
 
+#include <QDateTimeEdit>
+
 DateTimeDialog::DateTimeDialog(CDateTimeMessage* msg, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DateTimeDialog)
@@ -36,6 +38,7 @@ DateTimeDialog::DateTimeDialog(CDateTimeMessage* msg, QWidget *parent) :
     if (msg->m_title && (strlen(msg->m_title) > 0))
         this->setWindowTitle(QString(msg->m_title));
 
+    QDateTimeEdit* m_dte;
     switch (m_type = msg->m_format) {
     case CDateTimeMessage::FORMAT_DATE:
         m_dte = new QDateEdit(this);
@@ -70,16 +73,18 @@ DateTimeDialog::DateTimeDialog(CDateTimeMessage* msg, QWidget *parent) :
         //m_dte->setDisplayFormat(QLocale::system().dateTimeFormat(QLocale::ShortFormat));
     }
     m_dte->move(20, 20);
+    mv_dte = m_dte;
 }
 
 DateTimeDialog::~DateTimeDialog()
 {
-    delete m_dte;
+    delete (QDateTimeEdit*)mv_dte;
     delete ui;
 }
 
 time_t DateTimeDialog::getUnixTime(void)
 {
+    QDateTimeEdit* m_dte = (QDateTimeEdit*)mv_dte;
     switch (m_type) {
     case CDateTimeMessage::FORMAT_DATE:
         return QDateTime(m_dte->date()).toTime_t();
