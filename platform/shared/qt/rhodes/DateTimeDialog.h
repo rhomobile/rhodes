@@ -29,6 +29,7 @@
 
 #include "impl/DateTimePickerImpl.h"
 #undef null
+#undef min
 #include <QDialog>
 
 namespace Ui {
