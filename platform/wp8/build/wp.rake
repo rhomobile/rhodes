@@ -506,14 +506,14 @@ namespace "run" do
 
     task :spec do
       Jake.decorate_spec do
-        Rake::Task["run:wp8"].invoke
+         Rake::Task["run:wp8"].invoke
         Jake.before_run_spec
         start = Time.now
         log_file = getLogPath
 
         puts "waiting for log: " + log_file
 
-        for i in 0..120
+        for i in 0..1200
           if !File.exist?(log_file)
             sleep(1)
           else
@@ -561,6 +561,7 @@ namespace "run" do
 
         $stdout.flush
         chdir $startdir
+
       end
     end
 

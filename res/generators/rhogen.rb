@@ -1430,6 +1430,8 @@ module Rhogen
       # those property types could be mapped to corresponding constants
       supported_simple_types = [ "BOOLEAN", "INTEGER", "FLOAT", "STRING" ].map(&:upcase)
 
+      unsupported_names = [ "__proto__", "break", "case", "catch", "class", "const", "constructor", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally", "for", "function", "if", "implements", "import", "in", "instanceof", "interface", "let", "name", "new", "null", "package", "private", "protected", "prototype", "public", "return", "static", "super", "switch", "this", "throw", "true", "try", "typeof", "var", "void", "while", "with", "yield" ].map(&:upcase)
+
       xml_api_root.elements.each("MODULE") do |xml_module_item|
          module_item = ModuleItem.new()
 
@@ -1588,6 +1590,9 @@ module Rhogen
          xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
             module_property = ModuleProperty.new()
             module_property.name = xml_module_property.attribute("name").to_s
+            if unsupported_names.include?( module_property.name.upcase )
+              raise "Property have invalid name !\n Module[#{module_item.name}].property[#{module_property.name}] is in the list of forbidden names:\n '#{unsupported_names.join("','")}'"
+            end
             module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map{|w| w}.join("")
             module_property.param = process_param(xml_module_property, module_property.native_name, module_item, "property_"+module_property.name, 0)
             if xml_module_property.attribute("generateAccessors") != nil

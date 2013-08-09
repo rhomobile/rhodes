@@ -17,6 +17,6 @@ module BrowserHelper
   end
 
   def is_bb6
-    platform == 'blackberry' && (System::get_property('os_version').split('.')[0].to_i >= 6)
+    platform == 'blackberry' && (Rho::System.getProperty('os_version').split('.')[0].to_i >= 6)
   end
 end
