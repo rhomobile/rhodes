@@ -62,7 +62,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Define Window caption text.If missed - caption from page used.Not supported on Windows CE devices.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
-            <PROPERTY name="name" type="STRING" readOnly="true">
+            <PROPERTY name="appName" type="STRING" readOnly="true">
                 <DESC>Application name.</DESC>
             </PROPERTY>
             <PROPERTY name="locale" type="STRING" readOnly="true" generateAPI="false">

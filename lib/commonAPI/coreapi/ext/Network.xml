@@ -254,7 +254,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="pollInterval" type="INTEGER" default="20">
                         <DESC>The network status polling period for systems that can not notify network status change immediately. In seconds.</DESC>
                         <PLATFORM>Android, iOS</PLATFORM>
-                        <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
                 <CALLBACK type="HASH">
