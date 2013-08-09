@@ -35,6 +35,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
                 <DESC>Use full screen mode.</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="enableZoom" type="BOOLEAN" default="true" readOnly="true">
                 <DESC>Enable WebView zoom. Use 'enable_screen_zoom' parameter in rhoconfig.txt to configure this value.</DESC>
