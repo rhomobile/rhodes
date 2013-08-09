@@ -361,6 +361,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
     return w;
 }
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
+
 - (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame bar_info:(NSDictionary*)bar_info web_bkg_color:(UIColor*)web_bkg_color {
 	[self init];
 	
@@ -393,10 +396,33 @@ static BOOL makeHiddenUntilLoadContent = YES;
     
 	CGRect wFrame = frame;
     wFrame.origin.y = 0;
+    
+#ifdef __IPHONE_7_0
+    
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        const char* fs = get_app_build_config_item("iphone_use_new_ios7_status_bar_style");
+        if (fs == NULL) {
+            fs = "0";
+        }
+        
+        if ((fs[0] == '0')) {
+            wFrame.origin.y += 20;
+            wFrame.size.height -= 20;
+            root.backgroundColor = [UIColor grayColor];
+        }
+    }
+    
+#endif
+    
+    
     webView.frame = wFrame;
     
+    
+    
+    
+    
     webView.autoresizesSubviews = YES;
-    webView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    webView.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 
 	if (web_bkg_color != nil) {
 		self.webView.backgroundColor = web_bkg_color;
@@ -969,10 +995,14 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if (nvHeight < 44) {
 		nvHeight = 44;
 	}
+    CGRect wFrame = [self getContentRect];
+
 	nFrame.size.height = nvHeight;
+#ifdef __IPHONE_7_0
+    nFrame.origin.y = wFrame.origin.y;
+#endif
 	navbar.frame = nFrame;
 	
-    CGRect wFrame = [self getContentRect];
     wFrame.origin.y += nFrame.size.height;
     wFrame.size.height -= nFrame.size.height;
 
