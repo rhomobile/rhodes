@@ -2061,7 +2061,7 @@ def run_as_spec(device_flag)
   Jake.before_run_spec
   start = Time.now
 
-  puts "waiting for application"
+  puts "Waiting for application ..."
 
   for i in 0..60
     if AndroidTools.application_running(device_flag, $app_package_name)
@@ -2071,7 +2071,7 @@ def run_as_spec(device_flag)
     end
   end
 
-  puts "waiting for log: " + log_name
+  puts "Waiting for log file: #{log_name}"
 
   for i in 0..120
     if !File.exist?(log_name)
@@ -2086,15 +2086,13 @@ def run_as_spec(device_flag)
     exit(1)
   end
 
-  puts "start read log"
+  puts "Start reading log ..."
 
   io = File.new(log_name, 'r:UTF-8')
   end_spec = false
   while !end_spec do
 
     io.each do |line|
-      #puts line
-
       if line.class.method_defined? "valid_encoding?"
         end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
       else
@@ -2108,10 +2106,12 @@ def run_as_spec(device_flag)
   end
   io.close
 
+  puts "Processing spec results ..."
   Jake.process_spec_results(start)
 
   # stop app
-  do_uninstall(device_flag)
+  # FIXME:
+  # do_uninstall(device_flag)
   if device_flag == '-e'
     AndroidTools.kill_adb_and_emulator
   else
