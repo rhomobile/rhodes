@@ -113,6 +113,14 @@ Because the MediaPlayer extension uses the operating system's built-in player fo
 
                 </DESC>
             </REMARK>
+            <REMARK title="Android Support">
+                <DESC>
+                    <![CDATA[
+On Android devices, HTTPS is supported only on Android versions 4.0 (Ice Cream Sandwich) or newer.
+                ]]>
+
+                </DESC>
+            </REMARK>
         </REMARKS>
     </MODULE>
 </API>    
