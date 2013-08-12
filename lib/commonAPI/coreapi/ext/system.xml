@@ -91,11 +91,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
-                <DESC>Primary email of phone owner.</DESC>
+                <DESC>Primary email of phone owner. To access this property 'pim' capability must be enabled.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceOwnerName" type="STRING" readOnly="true">
-                <DESC>Name(account name) of phone owner.</DESC>
+                <DESC>Name(account name) of phone owner. To access this property 'pim' capability must be enabled.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="devicePushId" type="STRING" readOnly="true">
