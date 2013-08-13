@@ -217,7 +217,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
 
     @Override
     public void refresh(int tabIndex, IMethodResult result) {
-        RhodesActivity.safeGetInstance().getMainView().reload(tabIndex);
+        WebView.refresh(tabIndex);
     }
 
     @Override
@@ -267,7 +267,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
 
     @Override
     public void getActiveTab(IMethodResult result) {
-        result.set(WebView.activeTab());
+        result.set(RhodesActivity.safeGetInstance().getMainView().activeTab());
     }
 
 }
