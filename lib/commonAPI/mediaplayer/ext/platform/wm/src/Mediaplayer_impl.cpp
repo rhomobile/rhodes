@@ -106,7 +106,11 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 				String& newfilename = String("download.wav");
 
 				// Call the download function with the url and new filename the temp filename to be used.
-				NetResponse resp = getNetRequest().pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+				net::CNetRequestHolder *requestHolder = new net::CNetRequestHolder();
+				requestHolder->setSslVerifyPeer(false);
+				NetResponse resp = getNetRequest(requestHolder).pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+
+				delete requestHolder;
 
 				if (!resp.isOK())
 				{
@@ -169,7 +173,12 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 				String& newfilename = String("download.wmv");
 
 				// Call the download function with the url and new filename the temp filename to be used.
-				NetResponse resp = getNetRequest().pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+				net::CNetRequestHolder *requestHolder = new net::CNetRequestHolder();
+				requestHolder->setSslVerifyPeer(false);
+
+				NetResponse resp = getNetRequest(requestHolder).pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+
+				delete requestHolder;
 
 				if (!resp.isOK())
 				{
