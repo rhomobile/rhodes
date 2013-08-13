@@ -18,11 +18,11 @@ class NativeToolbarSingleton extends NativeToolbarSingletonBase implements INati
     }
     
     public void remove(IMethodResult result) {
-    	NativeBar.remove();
+    	NativeBar.removeToolbar();
     }
     
     public void isCreated(IMethodResult result) {
-    	result.set(NativeBar.isStarted());
+    	result.set(NativeBar.isToolbarStarted());
     }
 
 }
