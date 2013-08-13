@@ -2,7 +2,7 @@
 #import "NativeTabbarSingleton.h"
 
 extern void rho_create_tabbar(NSArray* items, NSDictionary* properties, id<IMethodResult>callback);
-extern BOOL nativebar_started();
+extern BOOL nativetabbar_started();
 extern void remove_native_tabbar();
 extern void native_tabbar_set_tab_badge(int index,char *val);
 extern int native_tabbar_get_current_tab();
@@ -37,7 +37,7 @@ extern void native_tabbar_switch_tab(int index);
 }
 
 -(void) isCreated:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[NSNumber numberWithBool:nativebar_started()]];
+    [methodResult setResult:[NSNumber numberWithBool:nativetabbar_started()]];
 }
 
 -(void) removeTab:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{

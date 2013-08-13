@@ -39,6 +39,11 @@
 
 static int started = 0;
 
+static int toolbar_started = 0;
+static int tabbar_started = 0;
+
+
+
 @interface RhoNativeBarCreateTask : NSObject {}
 + (void)run:(NSValue*)value :(NSDictionary*)parameters;
 @end
@@ -70,6 +75,8 @@ static int started = 0;
 				[view release];
 			}
 			started = 0;
+            toolbar_started = 0;
+            tabbar_started = 0;
 			break;
 		case TOOLBAR_TYPE:
 			if (smv != nil) {
@@ -81,11 +88,15 @@ static int started = 0;
 				[view release];
 			}
 			started = 1;
+            toolbar_started = 1;
+            tabbar_started = 0;
 			break;
 		case TABBAR_TYPE: {
 			[[Rhodes sharedInstance] hideSplash];
 			view = [[TabbedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
 			started = 1;
+            toolbar_started = 0;
+            tabbar_started = 1;
 			[r setMainView:view];
 			[view release];
 		}
@@ -106,6 +117,8 @@ static int started = 0;
 				view = [[TabbedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
 			}
 			started = 1;
+            toolbar_started = 0;
+            tabbar_started = 1;
 			[r setMainView:view];
 			[view release];
 			}
@@ -383,18 +396,28 @@ BOOL nativebar_started() {
     return (started != 0);
 }
 
+BOOL nativetoolbar_started() {
+    return (toolbar_started != 0);
+}
 
+BOOL nativetabbar_started() {
+    return (tabbar_started != 0);
+}
 
 
 
 void remove_native_toolbar() {
-	remove_nativebar_innner();
+    if (nativetoolbar_started()) {
+        remove_nativebar_innner();
+    }
 }
 
 
 
 void remove_native_tabbar() {
-	remove_nativebar_innner();
+    if (nativetabbar_started()) {
+        remove_nativebar_innner();
+    }
 }
 
 void native_tabbar_switch_tab(int index) {
