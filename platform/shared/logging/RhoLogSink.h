@@ -48,6 +48,7 @@ class CLogFileSink : public ILogSink{
 
 public:
     CLogFileSink(const LogSettings& oSettings);
+	~CLogFileSink();
 
     void writeLogMessage( String& strMsg );
     int getCurPos();

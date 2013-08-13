@@ -56,7 +56,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             
             <PROPERTY name="responseTimeout" type="INTEGER" default="30" generateAccessors="true">
-                <DESC>Timeout of network requests in seconds.</DESC>
+                <DESC>Timeout of network requests in seconds. NB: This property has module scope. Do not pass it as hash parameter to methods, use property accessors instead.</DESC>
             </PROPERTY>
 
         </PROPERTIES>

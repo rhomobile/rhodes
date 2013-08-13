@@ -42,6 +42,13 @@ CLogFileSink::CLogFileSink(const LogSettings& oSettings)
 
 }
 
+CLogFileSink::~CLogFileSink()
+{
+	if(m_pFile)
+		delete m_pFile;
+}
+
+
 void CLogFileSink::writeLogMessage( String& strMsg ){
     unsigned int len = strMsg.length();
 

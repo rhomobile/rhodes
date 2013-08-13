@@ -220,6 +220,10 @@ CJSONEntry::CJSONEntry(const CJSONEntry& oCopy) : m_rootObject(null)
 CJSONEntry::CJSONEntry(const char* szData) : m_rootObject(null)
 {
     m_rootObject = json_tokener_parse(const_cast<char*>(szData));
+    
+    if ( !m_rootObject || is_error(m_rootObject) )
+        m_rootObject = 0;
+    
     m_object = m_rootObject;
 }
 

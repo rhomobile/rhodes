@@ -28,7 +28,7 @@ class NativeTabbarSingleton extends NativeTabbarSingletonBase implements INative
     }
     
     public void remove(IMethodResult result) {
-    	NativeBar.remove();
+    	NativeBar.removeTabbar();
     }
     
     public void setTabBadge(int tabIndex, String badge, IMethodResult result) {
@@ -40,7 +40,7 @@ class NativeTabbarSingleton extends NativeTabbarSingletonBase implements INative
     }
     
     public void isCreated(IMethodResult result) {
-    	result.set(NativeBar.isStarted());
+    	result.set(NativeBar.isTabbarStarted());
     }
     
     public void removeTab(int tabIndex, IMethodResult result) {

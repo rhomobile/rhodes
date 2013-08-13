@@ -43,6 +43,8 @@ public class NativeBar {
 	public static final int NOBAR_TYPE = 2;
 	
 	private static boolean started = false;
+	private static boolean toolbar_started = false;
+	private static boolean tabbar_started = false;
 	
 	private static class CreateTask implements Runnable {
 		
@@ -76,6 +78,8 @@ public class NativeBar {
                     } else
 						smv.removeToolbar();
 					started = false;
+					toolbar_started = false;
+					tabbar_started = false;
 					break;
 				case TOOLBAR_TYPE:
                     if (smv == null) {
@@ -85,10 +89,14 @@ public class NativeBar {
 					else
 						smv.setToolbar(params, options);
 					started = true;
+					toolbar_started = true;
+					tabbar_started = false;
 					break;
 				case TABBAR_TYPE:
 					v = new TabbedMainView(params, options, callback);
 					started = true;
+					toolbar_started = false;
+					tabbar_started = true;
 					break;
 				default:
 					Logger.E(TAG, "Unknown bar type passed: " + type);
@@ -145,6 +153,28 @@ public class NativeBar {
 			reportFail("remove", e);
 		}
 	}
+
+	public static void removeToolbar() {
+		try {
+			if (toolbar_started) {
+				PerformOnUiThread.exec(new CreateTask(NOBAR_TYPE, null, null, null));
+			}
+		}
+		catch (Exception e) {
+			reportFail("remove", e);
+		}
+	}
+	
+	public static void removeTabbar() {
+		try {
+			if (tabbar_started) {
+				PerformOnUiThread.exec(new CreateTask(NOBAR_TYPE, null, null, null));
+			}
+		}
+		catch (Exception e) {
+			reportFail("remove", e);
+		}
+	}
 	
 	public static void switchTab(int index) {
 		try {
@@ -157,6 +187,14 @@ public class NativeBar {
 	
 	public static boolean isStarted() {
 		return started;
+	}
+	
+	public static boolean isToolbarStarted() {
+		return toolbar_started;
+	}
+
+	public static boolean isTabbarStarted() {
+		return tabbar_started;
 	}
 	
 	public static int activeTab() {
