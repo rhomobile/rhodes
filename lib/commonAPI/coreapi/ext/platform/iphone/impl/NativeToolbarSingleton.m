@@ -2,7 +2,7 @@
 #import "NativeToolbarSingleton.h"
 
 extern void rho_create_toolbar(NSArray* items, NSDictionary* properties);
-extern BOOL nativebar_started();
+extern BOOL nativetoolbar_started();
 extern void remove_native_toolbar();
 
 @implementation NativeToolbarSingleton
@@ -22,7 +22,7 @@ extern void remove_native_toolbar();
 }
 
 -(void) isCreated:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[NSNumber numberWithBool:nativebar_started()]];
+    [methodResult setResult:[NSNumber numberWithBool:nativetoolbar_started()]];
 }
 
 

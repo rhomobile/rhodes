@@ -270,14 +270,15 @@ class Jake
       File.open($app_path + "/faillog.txt", "w") { |io| $faillog.each {|x| io << x }  }
     end
     
+    puts "\n"
     puts "************************"
-    puts "\n\n"
     puts "Tests completed in #{finish - start} seconds"
     puts "Total: #{$total}"
     puts "Passed: #{$passed}"
     puts "Failed: #{$failed}"
-    puts "\n"
     puts "Failures stored in faillog.txt" if $failed.to_i > 0
+    puts "************************"
+    puts "\n"
   end
 
   def self.run2(command, args, options = {}, &block)

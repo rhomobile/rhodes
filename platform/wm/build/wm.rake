@@ -1071,6 +1071,11 @@ namespace "clean" do
     rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
     
   end
+  
+  desc "Clean winxpe"
+  task :winxpe => ["clean:win32"]do
+  end
+  
 end
 
 namespace "run" do

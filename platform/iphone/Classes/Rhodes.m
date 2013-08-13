@@ -95,11 +95,11 @@ static BOOL app_created = NO;
 @implementation RhoFullScreenEnableTask
 + (void)run {
 #ifdef __IPHONE_3_2
-    [[Rhodes application] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    //[[Rhodes application] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 #else
-    [[Rhodes application] setStatusBarHidden:YES animated:YES];
+    //[[Rhodes application] setStatusBarHidden:YES animated:YES];
 #endif
-    [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
+    //[[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
 }
 @end
 
@@ -110,11 +110,11 @@ static BOOL app_created = NO;
 @implementation RhoFullScreenDisableTask
 + (void)run {
 #ifdef __IPHONE_3_2
-    [[Rhodes application] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    //[[Rhodes application] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 #else
-    [[Rhodes application] setStatusBarHidden:NO animated:YES];
+    //[[Rhodes application] setStatusBarHidden:NO animated:YES];
 #endif
-    [[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
+    //[[[[Rhodes sharedInstance] mainView] view] setFrame:[Rhodes applicationFrame]];
 }
 @end
 
@@ -689,6 +689,21 @@ static Rhodes *instance = NULL;
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
+    
+    
+    const char* fs = get_app_build_config_item("iphone_full_screen");
+    if (fs == NULL) {
+        fs = "0";
+    }
+    
+    if ((rho_conf_getBool("full_screen") != 0) || (fs[0] != '0')) {
+        [Rhodes setStatusBarHidden:YES];
+#ifdef __IPHONE_3_2
+        [[Rhodes application] setStatusBarHidden:YES withAnimation:NO];
+#else
+        [[Rhodes application] setStatusBarHidden:YES animated:NO];
+#endif    
+    }
     
     window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
