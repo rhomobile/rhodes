@@ -995,6 +995,7 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 		}
 	}
 	LOG(ERROR) + "Failed to connect";
+    m_strErrFunction = L"ConnMgrConnectionStatus";
 	return false;
 #else
 	return true;
