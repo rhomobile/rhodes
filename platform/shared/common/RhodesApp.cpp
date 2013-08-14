@@ -1979,9 +1979,10 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 {
     if( rho_ruby_is_started() )
     {
+        RAWTRACEC1("CExtManager", "Require ruby file: %s", szFilePath);
         unsigned long val = rho_ruby_safe_require(szFilePath);
         if ( rho_ruby_is_NIL(val) )
-            LOG(INFO) + "requireRubyFile cannot find file: " + szFilePath;
+            RAWLOGC_WARNING1("CExtManager", "requireRubyFile cannot find file: %s", szFilePath);
     }
 }
 	
