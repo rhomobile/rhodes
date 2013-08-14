@@ -42,6 +42,7 @@
 #include <QtGui/QApplication>
 #endif
 #include <QMessageBox>
+#include <QDir>
 #include "impl/MainWindowImpl.h"
 
 using namespace rho;
@@ -105,9 +106,11 @@ char* parseToken(const char* start)
 
     return value;
 }
-#include <QDir>
+
 int main(int argc, char *argv[])
 {
+    bool isJSApp;
+
     CMainWindow* m_appWindow = CMainWindow::getInstance();
 
     m_logPort = String("11000");
@@ -127,7 +130,7 @@ int main(int argc, char *argv[])
                 free(proxy);
             } else
                 RAWLOGC_INFO("Main", "invalid value for \"http_proxy_url\" cmd parameter");
-        } else if (strncasecmp("-approot",argv[i],8)==0) {
+        } else if ((strncasecmp("-approot",argv[i],8)==0) || (isJSApp = (strncasecmp("-jsapproot",argv[i],10)==0))) {
             char* path = parseToken(argv[i]);
             if (path) {
                 int len = strlen(path);
@@ -137,24 +140,19 @@ int main(int argc, char *argv[])
                 }
                 m_strRootPath = path;
                 free(path);
+                if (m_strRootPath.substr(0,7).compare("file://")==0)
+                    m_strRootPath.erase(0,7);
+                String_replace(m_strRootPath, '\\', '/');
             }
-        } else if (strncasecmp("-jsapproot",argv[i],10)==0) {
-            char* path = parseToken(argv[i]);
-            if (path) {
-                int len = strlen(path);
-                if (!(path[len-1]=='\\' || path[len-1]=='/')) {
-                    path[len] = '/';
-                    path[len+1]  = 0;
-                }
-                m_strRootPath = path;
-                free(path);
-            }
-            m_isJSApplication = true;
+            m_isJSApplication = isJSApp;
         } else if (strncasecmp("-rhodespath",argv[i],11)==0) {
             char* path = parseToken(argv[i]);
             if (path) {
                 m_strRhodesPath = path;
                 free(path);
+                if (m_strRhodesPath.substr(0,7).compare("file://")==0)
+                    m_strRhodesPath.erase(0,7);
+                String_replace(m_strRhodesPath, '\\', '/');
             }
         } else {
             RAWLOGC_INFO1("Main", "wrong cmd parameter: %s", argv[i]);
