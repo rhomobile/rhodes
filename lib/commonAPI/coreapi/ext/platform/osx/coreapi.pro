@@ -17,7 +17,7 @@ macx {
   DESTDIR = ../../../../../../platform/osx/bin/extensions
   OBJECTS_DIR = ../../../../../../platform/osx/bin/extensions/coreapi
   INCLUDEPATH += ../../../../../../platform/shared/ruby/iphone
-  SOURCES += src/NetworkDetect.cpp
+  SOURCES += src/CNetworkDetect.cpp
 }
 win32 {
   DESTDIR = ../../../../../../platform/win32/bin/extensions
