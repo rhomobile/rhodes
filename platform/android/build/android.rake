@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -308,7 +308,7 @@ namespace "config" do
     $appincdir = File.join $tmpdir, "include"
 
     $rho_java_gen_dir = File.join $tmpdir,'gen','com','rhomobile','rhodes'
-    
+
     #$rho_android_r = File.join $androidpath, 'Rhodes','src','com','rhomobile','rhodes','AndroidR.java'
     #$app_android_r = File.join $rho_java_gen_dir,'AndroidR.java'
     $app_rjava_dir = $rho_java_gen_dir
@@ -346,7 +346,7 @@ namespace "config" do
       build_tools_path.sort!
       build_tools_path = build_tools_path.last
     end
-    
+
     if build_tools_path
       puts "Using Android SDK build-tools: #{build_tools_path}"
       build_tools_path = File.join $androidsdkpath,'build-tools',build_tools_path
@@ -641,7 +641,7 @@ namespace "config" do
               if resource_addons
                 $ext_android_adds[ext] = resource_addons
               end
-              
+
               library_deps = extconf_android['library_deps'] if extconf_android
               if library_deps
                 if library_deps.is_a? Array
@@ -730,7 +730,7 @@ namespace "config" do
       $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
 
       if RUBY_PLATFORM =~ /(win|w)32$/
-        $emulator = #"cmd /c " + 
+        $emulator = #"cmd /c " +
             File.join($androidsdkpath, "tools", "emulator.exe")
       else
         $emulator = File.join($androidsdkpath, "tools", "emulator")
@@ -754,7 +754,7 @@ namespace "config" do
 
     task :device => "config:android" do
     end
-  end #namespace 'config:android'  
+  end #namespace 'config:android'
 end
 
 
@@ -1318,7 +1318,7 @@ namespace "build" do
       end
 
       version = version["major"]*1000000 + version["minor"]*10000 + version["patch"]*100 + version["build"]
-      
+
       usesPermissions = ['android.permission.INTERNET', 'android.permission.PERSISTENT_ACTIVITY', 'android.permission.WAKE_LOCK']
       $app_config["capabilities"].each do |cap|
         cap = ANDROID_PERMISSIONS[cap]
@@ -1373,7 +1373,7 @@ namespace "build" do
 
 
       #######################################################
-      # Deprecated staff below 
+      # Deprecated staff below
 
 
       app_f = File.new($appmanifest)
@@ -1582,9 +1582,9 @@ namespace "build" do
 
     task :genrjava => [:manifest, :resources] do
       mkdir_p $app_rjava_dir
-      
+
       puts "Generate initial R.java at #{$app_rjava_dir} >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-      
+
       args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
       Jake.run($aapt, args)
 
@@ -1599,7 +1599,7 @@ namespace "build" do
       File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
 
       $ext_android_library_deps.each do |package, path|
-        r_dir = File.join $tmpdir, 'gen', package.split('.') 
+        r_dir = File.join $tmpdir, 'gen', package.split('.')
         mkdir_p r_dir
         buf = File.new(File.join($app_rjava_dir, 'R.java'), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage #{package};\n")
         File.open(File.join(r_dir,'R.java'), 'w') { |f| f.write(buf) }
@@ -2110,8 +2110,7 @@ def run_as_spec(device_flag)
   Jake.process_spec_results(start)
 
   # stop app
-  # FIXME:
-  # do_uninstall(device_flag)
+  do_uninstall(device_flag)
   if device_flag == '-e'
     AndroidTools.kill_adb_and_emulator
   else

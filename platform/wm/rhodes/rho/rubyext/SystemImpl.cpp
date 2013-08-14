@@ -83,11 +83,40 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
     if ( szParams && *szParams )
         se.lpParameters = szParams;
 
+    bool bError = false;
     if ( !ShellExecuteEx(&se) )
 	{
-        LOG(ERROR) + "Cannot execute: " + strAppNameW + ";Error: " + GetLastError();
-		SetLastError(-1);
+        String strPath = convertToStringA(szPath);
+
+        if ( String_startsWith(strPath, "http:") || String_startsWith(strPath, "ftp:") )
+        {
+            //Try to run internet explorer
+#ifdef OS_PLATFORM_MOTCE
+            se.lpFile = L"iesample.exe";            
+#else
+            se.lpFile = L"iexplore.exe";            
+#endif
+
+            StringW strParamsW = szPath;
+            if ( szParams && *szParams )
+            {
+                strParamsW += L" ";
+                strParamsW += szParams;
+            }
+
+            se.lpParameters = strParamsW.c_str();
+
+            if ( !ShellExecuteEx(&se) )
+                bError = true;
+        }else
+            bError = true;
 	}
+
+    if ( bError )
+    {
+        LOG(ERROR) + "Cannot execute: " + strAppNameW + ";Error: " + GetLastError();
+	    SetLastError(-1);
+    }
 
     if(se.hProcess)
         CloseHandle(se.hProcess); 
