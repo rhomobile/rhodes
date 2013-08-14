@@ -33,8 +33,6 @@ macx {
   exists("../../../osx/bin/extensions/extensions.pri") {
     include("../../../osx/bin/extensions/extensions.pri")
   }
-  SOURCES += ../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CSystemImpl.cpp\
-../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CWebViewImpl.cpp
 }
 
 win32 {
@@ -46,7 +44,8 @@ win32 {
   RCC_DIR =  ../../../win32/bin/RhoSimulator/resources
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
 impl/RhoThreadImpl.h
-  SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp
+  SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp\
+impl/ExtManager.cpp
   RESOURCES += resources/simulator.qrc
   INCLUDEPATH += ../../../wm/rhodes\
 ../../wtl80/include
@@ -57,7 +56,7 @@ impl/RhoThreadImpl.h
 ../../../win32/bin/sqlite3/sqlite3.lib\
 ../../../win32/bin/syncengine/syncengine.lib\
 ../../../win32/bin/curl/curl.lib\
-wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+oldnames.lib wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
   PRE_TARGETDEPS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
 ../../../win32/bin/sqlite3/sqlite3.lib\
@@ -145,7 +144,9 @@ impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
 DateTimeDialog.cpp\
-RhoNativeApiCall.cpp
+RhoNativeApiCall.cpp\
+../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CSystemImpl.cpp\
+../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CWebViewImpl.cpp
 
 FORMS += ExternalWebView.ui\
 QtMainWindow.ui\
