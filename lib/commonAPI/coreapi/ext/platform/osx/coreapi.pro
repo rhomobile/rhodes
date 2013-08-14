@@ -187,9 +187,9 @@ SOURCES += \
 ../../shared/generated/cpp/WebView_js_wrap.cpp\
 ../../shared/generated/cpp/WebView_ruby_wrap.cpp\
 ../../shared/qt/NavbarImpl.cpp\
-src/NativeTabbarImpl.cpp\
-src/NativeToolbarImpl.cpp\
-src/NotificationImpl.cpp
+src/CNativeTabbarImpl.cpp\
+src/CNativeToolbarImpl.cpp\
+src/CNotificationImpl.cpp
 
 # CSystemImpl.cpp & CWebViewImpl.cpp must be compiled in Qt environment (see /platform/shared/qt/rhodes/rhodes.pro)
 #src/CSystemImpl.cpp

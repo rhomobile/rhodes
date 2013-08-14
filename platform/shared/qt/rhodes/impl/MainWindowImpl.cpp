@@ -204,6 +204,8 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(refreshCommand(int)) );
     QObject::connect(this, SIGNAL(doNavigateCommand(TNavigateData*)),
         ((QtMainWindow*)qtMainWindow), SLOT(navigateCommand(TNavigateData*)) );
+    QObject::connect(this, SIGNAL(doExecuteJavaScriptCommand(TNavigateData*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeJavaScriptCommand(TNavigateData*)) );
     QObject::connect(this, SIGNAL(doTakePicture(char*)),
         ((QtMainWindow*)qtMainWindow), SLOT(takePicture(char*)) );
     QObject::connect(this, SIGNAL(doSelectPicture(char*)),
@@ -608,6 +610,11 @@ void CMainWindow::refreshCommand(int tab_index)
 void CMainWindow::navigateCommand(TNavigateData* nd)
 {
     emit doNavigateCommand(nd);
+}
+
+void CMainWindow::executeJavaScriptCommand(TNavigateData* nd)
+{
+    emit doExecuteJavaScriptCommand(nd);
 }
 
 void CMainWindow::takePicture(char* callbackUrl)

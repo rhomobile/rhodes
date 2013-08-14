@@ -850,6 +850,19 @@ void QtMainWindow::navigateCommand(TNavigateData* nd)
     }
 }
 
+void QtMainWindow::executeJavaScriptCommand(TNavigateData* nd)
+{
+    if (nd) {
+        if (nd->url) {
+            QWebView* wv = (nd->index < tabViews.size()) && (nd->index >= 0) ? tabViews[nd->index] : ui->webView;
+            if (wv)
+                wv->page()->mainFrame()->evaluateJavaScript(QString::fromWCharArray(nd->url));
+            free(nd->url);
+        }
+        free(nd);
+    }
+}
+
 void QtMainWindow::takePicture(char* callbackUrl)
 {
     selectPicture(callbackUrl);

@@ -154,6 +154,7 @@ public slots:
     void logCommand(void);
     void refreshCommand(int tab_index);
     void navigateCommand(TNavigateData* nd);
+    void executeJavaScriptCommand(TNavigateData*);
     void takePicture(char* callbackUrl);
     void selectPicture(char* callbackUrl);
     void alertShowPopup(CAlertParams *);
