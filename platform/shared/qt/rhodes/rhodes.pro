@@ -55,13 +55,11 @@ impl/ExtManager.cpp
 ../../../win32/bin/rholib/rholib.lib\
 ../../../win32/bin/sqlite3/sqlite3.lib\
 ../../../win32/bin/syncengine/syncengine.lib\
-../../../win32/bin/curl/curl.lib\
 oldnames.lib wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
   PRE_TARGETDEPS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
 ../../../win32/bin/sqlite3/sqlite3.lib\
-../../../win32/bin/syncengine/syncengine.lib\
-../../../win32/bin/curl/curl.lib
+../../../win32/bin/syncengine/syncengine.lib
   exists("../../../win32/bin/extensions/extensions.pri") {
     include("../../../win32/bin/extensions/extensions.pri")
   }

@@ -25,7 +25,7 @@ win32 {
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
   DEFINES -= _UNICODE UNICODE
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS
   HEADERS += ../../rubyext/WebView.h
 }
 
@@ -140,7 +140,6 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/map/MapEngine.cpp\
 ../../common/BundleManager.cpp\
 ../../unzip/zip.cpp\
-../../rubyext/ZipFiles.cpp\
 ../../common/push/RhoPushManager.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\
