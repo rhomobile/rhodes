@@ -281,6 +281,10 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     :m_active(false), m_port(port), verbose(true)
 {
     m_root = CFilePath::normalizePath(root);
+#ifdef RHODES_EMULATOR
+    m_strRhoRoot = m_root;
+    m_strRuntimeRoot = runtime_root;
+#else // !RHODES_EMULATOR
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
     m_strRuntimeRoot = runtime_root.substr(0, runtime_root.length()-5) +
 #ifdef OS_WP8
@@ -288,6 +292,7 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 #else
          "/rho/apps";
 #endif
+#endif // !RHODES_EMULATOR
     m_userroot = CFilePath::normalizePath(user_root);
     m_strRhoUserRoot = m_userroot;
 	m_listener = INVALID_SOCKET;
