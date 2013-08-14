@@ -172,7 +172,7 @@ void CExtManager::executeJavascript(const wchar_t* szJSFunction)
     TNavigateData* nd = new TNavigateData();
     nd->index = rho_webview_active_tab();
     nd->url = wcsdup(szJSFunction);
-    CMainWindow::getInstance()->doNavigateCommand(nd);
+    CMainWindow::getInstance()->executeJavaScriptCommand(nd);
 }
 
 StringW CExtManager::getCurrentUrl()
