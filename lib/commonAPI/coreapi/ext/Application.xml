@@ -195,7 +195,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
                 <DESC>Set application activation/deactivation callback.</DESC>
                 <CALLBACK type="HASH">
-                    <DESC>Information related to the activation/deactivation of application.</DESC>
+                    <DESC>Information related to the activation/deactivation of application. Please note that events are platform depend.</DESC>
                     <PARAMS>
                         <PARAM name="applicationEvent" type="STRING">
                             <DESC></DESC>
@@ -207,7 +207,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <DESC></DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_UICREATED" value ="UICreated">
-                                    <DESC></DESC>
+                                    <DESC>APP_EVENT_UICREATED is generated before start page is loaded. There are no means to set callback and catch event in javascript. Ruby Application class descendant can to set callback and process this event.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_UIDESTROYED" value ="UIDestroyed">
                                     <DESC></DESC>
