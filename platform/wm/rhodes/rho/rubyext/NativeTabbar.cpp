@@ -344,8 +344,6 @@ void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/)
         int nOldTab = m_nCurrentTab; 
         m_nCurrentTab = index;
 
-        RHODESAPP().keepLastVisitedUrl(m_arTabs[index].m_strAction);
-
         raiseTabEvent( "onTabFocus", nOldTab, m_nCurrentTab );
     }
 
