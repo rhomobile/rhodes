@@ -84,6 +84,10 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 
 	@Override
 	public void onCreate(Bundle icicle) {
+		
+		//Utils.platformLog("$$$$$", "ImageCapture.onCreate()");
+		
+		mEnableScreenOrientationOverride = true;
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -108,6 +112,8 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
             @Override
             public void onOrientationChanged(int orientation) 
             { 
+        		//Utils.platformLog("$$$$$", "onOrientationChanged()");
+
             	Logger.D(TAG, "onOrientationChanged("+String.valueOf(orientation)+")");
                 //Logger.D(TAG, "onOrientationChanged: " + orientation); 
                 if (orientation == ORIENTATION_UNKNOWN) {
@@ -378,7 +384,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
                 Logger.D(TAG, "Camera rotation resetup for platforms >= 2.2: " + deviceRotation );
             }
             
-            Utils.platformLog(TAG, "$$$   parameters.set(rotation, "+String.valueOf(nCamRotate)+" );");
+            //Utils.platformLog(TAG, "$$$   parameters.set(rotation, "+String.valueOf(nCamRotate)+" );");
             if ((mSettings != null) && (mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
 
             	

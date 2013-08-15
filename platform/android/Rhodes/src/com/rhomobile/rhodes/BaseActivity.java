@@ -28,6 +28,7 @@ package com.rhomobile.rhodes;
 
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -52,12 +53,15 @@ public class BaseActivity extends Activity implements ServiceConnection {
 	
 	public static final String INTENT_SOURCE = BaseActivity.class.getName();
 	
+	public boolean mEnableScreenOrientationOverride = false;
+	
     public static class ScreenProperties {
         private int mScreenWidth;
         private int mScreenHeight;
         private int mScreenOrientation;
         private float mScreenPpiX;
         private float mScreenPpiY;
+        
         
         ScreenProperties(Context context) {
             reread(context);
@@ -173,6 +177,9 @@ public class BaseActivity extends Activity implements ServiceConnection {
         if (RhoConf.isExist("disable_screen_rotation")) {
             sScreenAutoRotate = !RhoConf.getBool("disable_screen_rotation");
         }
+        if (mEnableScreenOrientationOverride) {
+        	sScreenAutoRotate = true;
+        }
 
         if (sScreenProp == null) {
             sScreenProp = new ScreenProperties(this);
@@ -213,16 +220,24 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+  		//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged()");
         Logger.T(TAG, "onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
         if(!sScreenAutoRotate)
         {
-            Logger.D(TAG, "Screen rotation is disabled. Force old orientation: " + getScreenProperties().getOrientation());
-            setRequestedOrientation(getScreenProperties().getOrientation());
+      		//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged() ###1");
+
+        	if (!mEnableScreenOrientationOverride) {
+          		//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged() ###2");
+        		Logger.D(TAG, "Screen rotation is disabled. Force old orientation: " + getScreenProperties().getOrientation());
+            	setRequestedOrientation(getScreenProperties().getOrientation());
+        	}
         }
         else
         {
-            ScreenProperties props = getScreenProperties();
+      		//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged() ###3");
+
+      		ScreenProperties props = getScreenProperties();
             props.reread(this);
 
             int rotation = 0;
@@ -276,6 +291,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
     }
     
     public static void setScreenAutoRotateMode(boolean mode) {
+   		//Utils.platformLog("$$$$$", "BaseActivity.setScreenAutoRotateMode("+String.valueOf(mode)+")");
         sScreenAutoRotate = mode;
         if (sScreenAutoRotate && (sTopActivity!=null)) {
             sTopActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
@@ -283,7 +299,8 @@ public class BaseActivity extends Activity implements ServiceConnection {
     }
 
     public static boolean getScreenAutoRotateMode() {
-        return sScreenAutoRotate; 
+   	   //Utils.platformLog("$$$$$", "BaseActivity.getScreenAutoRotateMode("+String.valueOf(sScreenAutoRotate)+")");
+       return sScreenAutoRotate; 
     }
 
     public void setFullScreen(boolean enable) {
