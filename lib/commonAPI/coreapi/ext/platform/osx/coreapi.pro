@@ -22,7 +22,13 @@ macx {
 win32 {
   DESTDIR = ../../../../../../platform/win32/bin/extensions
   OBJECTS_DIR = ../../../../../../platform/win32/bin/extensions/coreapi
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  debug {
+    DEFINES += _DEBUG DEBUG
+  }
+  release {
+    DEFINES += _NDEBUG NDEBUG
+  }
   INCLUDEPATH += ../../../../../../platform/shared/ruby/win32
   HEADERS += ../../../../../../platform/shared/ruby/win32/ruby/config.h\
 ../../../../../../platform/shared/ruby/win32/dir.h\

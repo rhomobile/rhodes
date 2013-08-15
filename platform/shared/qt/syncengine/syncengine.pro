@@ -16,7 +16,13 @@ macx {
 win32 {
   DESTDIR = ../../../win32/bin/syncengine
   OBJECTS_DIR = ../../../win32/bin/syncengine/tmp
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  debug {
+    DEFINES += _DEBUG DEBUG
+  }
+  release {
+    DEFINES += _NDEBUG NDEBUG
+  }
 }
 
 unix:!macx {
