@@ -59,10 +59,13 @@ bool CMainWindow::mainWindowClosed = false;
 CMainWindow::CMainWindow():
     QObject(),
     m_started(true),
-    qtMainWindow(NULL),
-    qtApplication(NULL)
+    qtMainWindow(NULL)
     //TODO: m_logView
 {
+    int argc = 0;
+    QCoreApplication::setOrganizationName("Rhomobile");
+    QCoreApplication::setApplicationName("RhoSimulator");
+    qtApplication = (void*)new QApplication(argc, 0);
 }
 
 CMainWindow::~CMainWindow()
@@ -181,10 +184,6 @@ void CMainWindow::setCallback(IMainWindowCallback* callback)
 
 bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
 {
-    int argc = 0;
-	QCoreApplication::setOrganizationName("Rhomobile");
-	QCoreApplication::setApplicationName("RhoSimulator");
-    qtApplication = (void*)new QApplication(argc, 0);
     qtMainWindow = (void*)new QtMainWindow();
     ((QtMainWindow*)qtMainWindow)->setWindowTitle(QString::fromWCharArray(title));
     ((QtMainWindow*)qtMainWindow)->setCallback(callback);
