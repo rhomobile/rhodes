@@ -29,7 +29,13 @@ win32 {
   OBJECTS_DIR = ../../../win32/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/win32
   DEFINES -= _UNICODE UNICODE
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB BUFSIZ=512 STATIC_LINKED
+  DEFINES += WIN32 _WINDOWS _LIB BUFSIZ=512 TLS_OUT_OF_INDEXES=0xFFFFFFFF FILENAME_MAX=MAX_PATH STATIC_LINKED RUBY_EXPORT
+  debug {
+    DEFINES += _DEBUG DEBUG
+  }
+  release {
+    DEFINES += _NDEBUG NDEBUG
+  }
   HEADERS += ../../ruby/win32/ruby/config.h\
 ../../ruby/win32/dir.h
   SOURCES += ../../ruby/missing/acosh.c\

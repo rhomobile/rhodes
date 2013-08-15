@@ -21,7 +21,13 @@ SOURCES += ../../curl/lib/http_ntlm.c\
 win32 {
   DESTDIR = ../../../win32/bin/curl
   OBJECTS_DIR = ../../../win32/bin/curl/tmp
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  debug {
+    DEFINES += _DEBUG DEBUG
+  }
+  release {
+    DEFINES += _NDEBUG NDEBUG
+  }
 }
 
 unix:!macx {

@@ -25,7 +25,13 @@ win32 {
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
   DEFINES -= _UNICODE UNICODE
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS
+  DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS
+  debug {
+    DEFINES += _DEBUG DEBUG
+  }
+  release {
+    DEFINES += _NDEBUG NDEBUG
+  }
   HEADERS += ../../rubyext/WebView.h
 }
 
