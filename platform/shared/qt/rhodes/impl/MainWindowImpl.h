@@ -170,4 +170,5 @@ signals:
     void doSetSize(int width, int height);
     void doLockSize(int locked);
     void doSetTitle(const char* title);
+    void doCreateCustomMenu(void);
 };
