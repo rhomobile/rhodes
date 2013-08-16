@@ -1142,7 +1142,7 @@ def init_extensions(dest, mode = "")
                   #api generator
                   if gen_checker.check(xml_path)      
                     puts 'start running rhogen with api key'
-                    Jake.run3("#{$startdir}/bin/rhogen api \"#{xml_path}\"")
+                    Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
                   end
               end    
             end
