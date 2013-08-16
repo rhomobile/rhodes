@@ -340,7 +340,7 @@ void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/)
 
     if ( m_nCurrentTab != index && !bCreateOnly)
     {
-        getAppWindow().getWebKitEngine()->SwitchTab(m_arTabs[index].m_nTabID);
+        getAppWindow().getWebKitEngine()->SwitchTab(m_arTabs[index].m_nTabID);        
         int nOldTab = m_nCurrentTab; 
         m_nCurrentTab = index;
 

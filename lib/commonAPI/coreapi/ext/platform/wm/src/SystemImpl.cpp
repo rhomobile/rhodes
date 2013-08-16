@@ -21,6 +21,12 @@
 #include <getdeviceuniqueid.h>
 #endif
 
+//#ifndef RCMCAPI_H_
+//#define RCMCAPI_H_
+//// Get unique unit ID information (extended)
+//DWORD WINAPI RCM_GetUniqueUnitIdEx(LPUNITID_EX lpUnitIdEx);
+//#endif
+
 //  Defines for Unique Device ID (not present in MC3000c50b)
 #ifndef _GETDEVICEUNIQUEID_INC
 #define _GETDEVICEUNIQUEID_INC
@@ -273,12 +279,18 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
         }
     }
 #elif defined( OS_PLATFORM_MOTCE )
-    wchar_t buffer[256];    
-    BOOL ret = SystemParametersInfoW( SPI_GETOEMINFO, sizeof(buffer), buffer, 0);
+	UNITID_EX uuid;
+    memset(&uuid, 0, sizeof uuid);
+    uuid.StructInfo.dwAllocated = sizeof uuid;
 
-    if (ret)
+	if (populateUUID(&uuid))
     {
-        strDeviceID = convertToStringA(buffer);
+        DWORD cbDeviceId = sizeof(uuid.byUUID);
+
+        for(unsigned int i = 0; i < cbDeviceId; i++)
+        {
+            _toHexString( uuid.byUUID[i], strDeviceID, 16);
+        }
     }
 #endif
 
