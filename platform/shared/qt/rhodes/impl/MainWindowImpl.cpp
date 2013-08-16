@@ -235,6 +235,8 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(lockSize(int)) );
     QObject::connect(this, SIGNAL(doSetTitle(const char*)),
         ((QtMainWindow*)qtMainWindow), SLOT(setTitle(const char*)) );
+    QObject::connect(this, SIGNAL(doCreateCustomMenu(void)),
+        this, SLOT(createCustomMenu(void)) );
     return true;
 }
 
