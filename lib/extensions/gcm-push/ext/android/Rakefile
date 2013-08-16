@@ -10,11 +10,8 @@ def build_extension(name, arch, src_files)
   args << "-I."
   args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
   args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\""
-  #args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
   args << "-I\"#{$rootdir}/platform/shared\""
   args << "-I\"#{$rootdir}/lib/commonAPI/coreapi/ext/shared\""
-  #args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
-  #args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
   args << "-I\"#{$appincdir}\""
   args << "-I\"#{$std_includes}\""
   
