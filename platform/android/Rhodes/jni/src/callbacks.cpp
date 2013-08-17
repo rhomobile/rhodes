@@ -115,6 +115,7 @@ RHO_GLOBAL int rho_sysimpl_get_property(const char* szPropName, rho::apiGenerato
 
     jhstring propNameObj = rho_cast<jstring>(env, szPropName);
     jhobject jhresult = env->CallStaticObjectMethod(cls, mid, propNameObj.get());
+    JNI_EXCEPTION_CHECK_AND_RETURN(env, result, 0)
     if (!jhresult) return 0;
 
     jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
@@ -152,8 +153,10 @@ RHO_GLOBAL int rho_sysimpl_get_property(const char* szPropName, rho::apiGenerato
         rho::String res = rho_cast<rho::String>(env, resStrObj);
         result.set(res);
         return 1;
-    }
+    } 
 
+    // clear result
+    result.set("");    
     return 0;
 }
 
