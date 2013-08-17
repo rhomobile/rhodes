@@ -63,6 +63,7 @@ void <%= propBaseClass %>::getProperty( const rho::String& propertyName, CMethod
         return;
     }
 <% end %>
+    oResult.resetToEmptyString();
     CMethodAccessor< <%= propBaseI %> >* pAccessor = m_mapPropAccessors[propertyName];
     if ( pAccessor )
         pAccessor->callGetter(this, oResult);
