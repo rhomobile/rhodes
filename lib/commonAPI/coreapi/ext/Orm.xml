@@ -122,26 +122,115 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <PARAMS>
           <PARAM name="Anoynomous Function methods" type="">
             <PARAMS>
-              <PARAM name='modelName' type=''>
-                <DESC>modelName(STRING name). The name of your model.</DESC>
+              <PARAM name='modelName("value")' type='STRING'>
+                <DESC>The name of your model.</DESC>
               </PARAM>
-              <PARAM name='enable' type=''>
-                <DESC>enable(STRING sync). Same as set(name,true). Sets attribute to true.</DESC>
+              <PARAM name='enable("value")' type='STRING'>
+                <DESC>Enables Model Properties.</DESC>
+                <VALUES>
+                                <VALUE constName="" value ="sync">
+                                    <DESC>If set then model is set for RhoConnect Sync</DESC>
+                                </VALUE>
+                                <VALUE constName="" value ="propertyBag">
+                                    <DESC>(Default) Model will be of type propertyBag.</DESC>
+                                </VALUE>
+                                <VALUE constName="" value ="fixedSchema">
+                                    <DESC>Model will be of type fixedSchema</DESC>
+                                </VALUE>
+                             
+                </VALUES>
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
               </PARAM>
-              <PARAM name='property' type=''>
-                <DESC>property(STRING name,STRING value,STRING options). Used to create properties on your model.</DESC>
+              <PARAM name='property("name","type")' type='STRING,STRING'>
+                <DESC>Used to create properties on your model.</DESC>
+                  <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>The name of the property</DESC>
+                    </PARAM>
+                    <PARAM name="type" type="STRING">
+                        <DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default</DESC>
+                    </PARAM>
+                   </PARAMS> 
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+
               </PARAM>
-              <PARAM name='addIndex' type=''>
-                <DESC>addIndex(STRING name,ARRAY [col1,col2]). Add an index to your fixedSchema model.</DESC>
+              <PARAM name='addIndex("name",[colArray])' type='STRING, ARRAY'>
+                <DESC>Add an index to your fixedSchema model.</DESC>
+                  <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>The name of the index</DESC>
+                    </PARAM>
+                    <PARAM name="colArray" type="ARRAY">
+                        <DESC>Array of model column names to use in index, Ex: ['name','qty']</DESC>
+                    </PARAM>
+                   </PARAMS> 
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+
               </PARAM>
-              <PARAM name='addUniqueIndex' type=''>
-                <DESC>addUniqueIndex(STRING name,ARRAY [col1,col2]). Add a unique index to your fixedSchema model.</DESC>
+              <PARAM name='addUniqueIndex("name",[colArray])' type='STRING, ARRAY'>
+                <DESC>Add an index to your fixedSchema model.</DESC>
+                  <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>The name of the index</DESC>
+                    </PARAM>
+                    <PARAM name="colArray" type="ARRAY">
+                        <DESC>Array of model column names to use in index, Ex: ['name','qty']</DESC>
+                    </PARAM>
+                  </PARAMS> 
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+
               </PARAM>
-              <PARAM name='belongs_to' type=''>
-                <DESC>belongs_to(STRING name).  Add belongs_to association to another defined model, for sync models. Comma separted String for more than one model.</DESC>
+
+
+              <PARAM name='belongs_to("name")' type='STRING'>
+                <DESC>Add belongs_to association to another defined model, for sync models. Comma separted String for more than one model.</DESC>
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+
               </PARAM>
-              <PARAM name='set' type=''>
-                <DESC>set(STRING name,STRING|BOOLEAN|INTEGER value).  Set an attribute to your model.</DESC>
+              <PARAM name='set(property,value)' type='STRING,VALUE'>
+                <DESC>Set Behavior of this model. Possible `property` options and corresponding values:</DESC>
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+                  <PARAMS>
+                    <PARAM name="partition" type="STRING">
+                        <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data seperate from synched models. Possible `values`</DESC>
+                        <VALUES>
+                          <VALUE constName="" value ="local">
+                              <DESC>This partition is used automatically if the model is not a sync model</DESC>
+                          </VALUE>
+                          <VALUE constName="" value ="user">
+                              <DESC>This partition is used automatically if the model is a sync model</DESC>
+                          </VALUE>
+                      </VALUES>
+                    </PARAM>
+                    <PARAM name="sync_type" type="STRING">
+                        <DESC>Sets the type of sync it will be. </DESC>
+                      <VALUES>
+                        <VALUE constName="" value ="none">
+                            <DESC>If data model is not a sync model</DESC>
+                        </VALUE>
+                        <VALUE constName="" value ="incremental">
+                            <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
+                        </VALUE>
+                      </VALUES>
+                                               
+                    </PARAM>
+                    <PARAM name="sync_priority" type="INTEGER">
+                        <DESC>Determines how frequently to check for changes. In seconds. Default is 1000. </DESC>
+                                              
+                    </PARAM>
+                  </PARAMS>                
               </PARAM>
             </PARAMS>
           </PARAM>
@@ -224,6 +313,13 @@ product.get('name'); // iPhone5
         
         <JAVASCRIPT>
    <![CDATA[
+// The model 'Product' must have been defined in Javascript execution earlier 
+// in order for 'getModel' to work properly. 
+
+// The models generated in RhoStudio, are not accessible in Javascript unless 
+// the classes are defined via the  Rho.ORM.addModel api
+
+
 // Get a model by its name after it has been added
 var productModel = Rho.ORM.getModel("Product");
 
