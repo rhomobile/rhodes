@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
   <MODULE name="ORMModel" parent="Rho">
-    <HELP_OVERVIEW>The ORM Model provides CRUD and helper methods for your defined model to interact with the database.  You must define and add a model before you can use the ORM Model Object.  See Orm to learn about defining and adding a model.
+    <HELP_OVERVIEW>The ORM Model provides CRUD and helper methods for your defined model to interact with the database.  You must define and add a model before you can use the ORM Model Object.  See [Orm](Orm) to learn about defining and adding a model.
     </HELP_OVERVIEW>
     <LINK><a href='./Orm'>Orm</a></LINK> 
     <MORE_HELP> See remarks for differences between ruby and javascript usage.
@@ -258,6 +258,52 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <DESC>Returns true if the Rhodes model object is not currently being synced (if it is being synced, you should disable editing of the object). Before displaying an edit page for an object, your application can check if the object is currently being accessed by the sync process. If it is, you should disable editing of the object. can_modify could return true, for example, on a new local record that was created and sent to the RhoConnect application, but no response has been received yet.
         </DESC>
         <RETURN type="BOOLEAN"/>
+      </METHOD>
+      <METHOD name="vars" generateAPI="false">
+        <DESC>Returns an object containing all propertyName and values for the model. You can use myModelData.vars().name instead of myModelData.get('name')
+        </DESC>
+        <RETURN type="HASH"/>
+        
+      </METHOD>
+      <METHOD name="has" generateAPI="false">
+        <DESC>Returns true or false if the model has the propertyName given.
+        </DESC>
+        <RETURN type="BOOLEAN"/>
+        <PARAMS>
+
+          <PARAM name="propertyName" type="STRING">
+            <DESC>The name of the property you are checking for validity. See also the vars() method.
+            </DESC>
+          </PARAM>
+
+        </PARAMS>
+      </METHOD>
+      <METHOD name="get" generateAPI="false">
+        <DESC>Get the value of a property of the current model.Ex: myModelData.get('name'); See also the vars() method.
+        </DESC>
+        <PARAMS>
+
+          <PARAM name="propertyName" type="STRING">
+            <DESC>The name of the property you are trying to retrieve. 
+            </DESC>
+          </PARAM>
+
+        </PARAMS>
+      </METHOD>
+      <METHOD name="set" generateAPI="false">
+        <DESC>Sets the value of a property of the current model. Ex: myModelData.set('name','new name');
+        </DESC>
+        <PARAMS>
+
+          <PARAM name="propertyName" type="STRING">
+            <DESC>The name of the property you are trying to set.  
+            </DESC>
+          </PARAM>
+          <PARAM name="propertyValue" type="STRING">
+            <DESC>The value you are setting in the current model. After setting values you must issue a .save() in order for the data to be saved to the database.
+            </DESC>
+          </PARAM>
+        </PARAMS>
       </METHOD>
       <METHOD name="save" generateAPI="false">
         <DESC>Saves the current Rhodes model object to the database.
