@@ -37,6 +37,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       </ALIASES>
       <METHOD name="clearNotification" deprecated="true" generateAPI="false" access="STATIC">
         <DESC>Clear notification for the object. Use Rhoconnect-client</DESC>
+        <APPLIES rubyOnly="true"/>
       </METHOD>
       <METHOD name="deleteAll" generateAPI="false" access="STATIC">
         <DESC>Delete all Rhodes model objects for a source.For Javascript you cannot specify conditions.
@@ -243,6 +244,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
+        <APPLIES rubyOnly="true"/>
       </METHOD>
       <METHOD name="isChanged" generateAPI="false" access="STATIC">
         <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false otherwise.
@@ -271,7 +273,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
-
+        <APPLIES rubyOnly="true"/>
       </METHOD>
 
       <METHOD name="destroy" generateAPI="false">
