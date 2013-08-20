@@ -778,7 +778,7 @@ namespace "device" do
             value_name = "\"" + parts[2] + "\"="
           end
           
-          val = parts[4].gsub(/[^0-9A-Za-z]/, '')
+          val = parts[4].gsub(/[^0-9A-Za-z.\\\/\-{}]/, '')
           
           if parts[3] == "0x00010001"
             value_name += "dword:"
