@@ -230,6 +230,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Determines how frequently to check for changes. In seconds. Default is 1000. </DESC>
                                               
                     </PARAM>
+                    <PARAM name="freezed" type="BOOLEAN">
+                        <DESC>(Ruby Only) If you want to limit model attributes by a specific list – you can ‘freeze’ model. FixedSchema models are ‘freezed’ by default.</DESC>
+                                              
+                    </PARAM>
                   </PARAMS>                
               </PARAM>
             </PARAMS>

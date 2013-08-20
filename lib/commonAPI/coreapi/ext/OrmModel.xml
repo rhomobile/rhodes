@@ -39,7 +39,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <DESC>Clear notification for the object. Use Rhoconnect-client</DESC>
       </METHOD>
       <METHOD name="deleteAll" generateAPI="false" access="STATIC">
-        <DESC>Delete all Rhodes model objects for a source.
+        <DESC>Delete all Rhodes model objects for a source.For Javascript you cannot specify conditions.
         </DESC>
         <PARAMS>
           <PARAM name="conditions" type="HASH">
@@ -263,6 +263,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <DESC>Returns an object containing all propertyName and values for the model. You can use myModelData.vars().name instead of myModelData.get('name')
         </DESC>
         <RETURN type="HASH"/>
+        
+      </METHOD>
+      <METHOD name="object" generateAPI="false">
+        <DESC>Returns the unique ID for the data record. Use this to identify records. You can also use this in a .find() method for retrieving a specific record.
+        </DESC>
+        <RETURN type="STRING"/>
         
       </METHOD>
       <METHOD name="has" generateAPI="false">
