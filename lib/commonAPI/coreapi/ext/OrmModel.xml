@@ -159,7 +159,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <APPLIES rubyOnly="true"/>
       </METHOD>
       <METHOD name="new" generateAPI="false" access="STATIC">
-        <DESC>Create a new Rhodes model object. Orm new example.</DESC>
+        <DESC>Create a new Rhodes model object Ruby reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method. See the Orm new example.</DESC>
         <PARAMS>
           <PARAM name="attributes" type="HASH">
             <DESC>List of attributes assigned to the new model object, such as {"name" => "ABC Inc.","address" => "555
@@ -171,10 +171,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <APPLIES rubyOnly="true"/>
       </METHOD>
       <METHOD name="make" generateAPI="false" access="STATIC">
-        <DESC>Create a new Rhodes model object. Orm new example.</DESC>
+        <DESC>Create a new Rhodes model object Javascript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method. See the Orm new example.</DESC>
         <PARAMS>
           <PARAM name="attributes" type="HASH">
-            <DESC>List of attributes assigned to the new model object, such as {"name" => "ABC Inc.","address" => "555
+            <DESC>List of attributes assigned to the new model object, such as {name:"ABC Inc.",address:"555
               5th St."}.
             </DESC>
           </PARAM>
