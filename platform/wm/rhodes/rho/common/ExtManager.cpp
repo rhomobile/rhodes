@@ -113,6 +113,9 @@ void CExtManager::onDocumentComplete(const wchar_t* szUrlOfDocument)
 
 void CExtManager::close()
 {
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+        delete it->second;
+
    m_hashExtensions.clear();
 }
 
