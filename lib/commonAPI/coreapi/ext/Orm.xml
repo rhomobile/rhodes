@@ -117,8 +117,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PARAMS>
       </METHOD>
       <METHOD name="addModel" generateAPI="false">
-        <DESC>Javascript using only. Creates ORM model.
-        </DESC>
+        <DESC>Javascript using only. Creates ORM model.</DESC>
         <PARAMS>
           <PARAM name="Anoynomous Function methods" type="">
             <PARAMS>
@@ -240,6 +239,42 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
           </PARAM>
         </PARAMS>
         <RETURN type="Model"/>
+      </METHOD>
+      <METHOD name="on_sync_create_error" generateAPI="false">
+        <DESC>Callback executed if an exception is raised during sync creation.</DESC>
+        <PARAMS>
+          <PARAM name='object' type='Hash/Array'>
+            <DESC>hash or array objects.</DESC>
+          </PARAM>
+          <PARAM name='action' type='String'>
+            <DESC>You can pass "delete" or "recreate" actions.</DESC>
+          </PARAM>
+        </PARAMS>
+         <APPLIES rubyOnly="true"/>
+      </METHOD>
+      <METHOD name="on_sync_delete_error" generateAPI="false">
+        <DESC>Callback executed if an exception is raised during sync deletions.</DESC>
+        <PARAMS>
+          <PARAM name='objects' type='Hash'>
+            <DESC>hash of objects.</DESC>
+          </PARAM>
+          <PARAM name='action' type='String'>
+            <DESC>You can pass "retry".</DESC>
+          </PARAM>
+        </PARAMS>
+         <APPLIES rubyOnly="true"/>
+      </METHOD>
+      <METHOD name="on_sync_update_error" generateAPI="false">
+        <DESC>Callback executed if an exception is raised during sync updates.</DESC>
+        <PARAMS>
+          <PARAM name='objects' type='Hash'>
+            <DESC>hash of objects.</DESC>
+          </PARAM>
+          <PARAM name='action' type='String'>
+            <DESC>You can pass "retry" or "rollback" actions.</DESC>
+          </PARAM>
+        </PARAMS>
+        <APPLIES rubyOnly="true"/>
       </METHOD>
     </METHODS>
 
