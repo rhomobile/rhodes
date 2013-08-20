@@ -896,6 +896,16 @@ public class TabbedMainView implements MainView {
 		
 		
 	}
+    
+    private boolean isValidIndex( int index ) {
+        boolean ok = ((index >= -1) && (index < getTabsCount()));
+        
+        if ( !ok ) {
+            Logger.E(TAG,"TabBar invalid tab index [ " + String.valueOf(index) + " ] !!!");
+        }
+        
+        return ok;
+    }
 	
 	@Override
 	public View getView() {
@@ -904,11 +914,20 @@ public class TabbedMainView implements MainView {
 
    @Override
     public void setWebView(IRhoWebView view, int index) {
+        
+        if ( !isValidIndex(index) ) {
+            return;
+        }
+        
        getTabMainView(index).setWebView(view, -1);
     }
 
     @Override
     public IRhoWebView getWebView(int tab_index) {
+        if ( !isValidIndex(tab_index) ) {
+            return null;
+        }
+
         return getTabMainView(tab_index).getWebView(-1);
     }
 
@@ -935,22 +954,42 @@ public class TabbedMainView implements MainView {
     }
 
 	public void back(int index) {
+        if ( !isValidIndex(index) ) {
+            return;
+        }
+
 		getTabMainView(index).back(0);
 	}
 	
 	public void forward(int index) {
+        if ( !isValidIndex(index) ) {
+            return;
+        }
+
 		getTabMainView(index).forward(0);
 	}
 	
 	public void navigate(String url, int index) {
+        if ( !isValidIndex(index) ) {
+            return;
+        }
+
 		getTabMainView(index).navigate(url, 0);
 	}
 	
 	public void reload(int index) {
+        if ( !isValidIndex(index) ) {
+            return;
+        }
+
 		getTabMainView(index).reload(0);
 	}
 	
 	public String currentLocation(int index) {
+        if ( !isValidIndex(index) ) {
+            return null;
+        }
+
 		return getTabMainView(index).currentLocation(0);
 	}
 
@@ -968,6 +1007,10 @@ public class TabbedMainView implements MainView {
 	}
 
 	public void loadData(String data, int index) {
+        if ( !isValidIndex(index) ) {
+            return;
+        }
+
 		getTabMainView(index).loadData(data, 0);
 	}
 	
@@ -986,21 +1029,37 @@ public class TabbedMainView implements MainView {
 
     @Override
     public void executeJS(String js, int index) {
+        if ( !isValidIndex(index) ) {
+            return;
+        }
+
         getTabMainView(index).executeJS(js, 0);
     }
 
     @Override
     public void stopNavigate(int index) {
+        if ( !isValidIndex(index) ) {
+            return;
+        }
+
         getTabMainView(index).stopNavigate(0);
     }
 
 
     @Override
     public void saveCurrentPage(String format, String path, int index) {
+        if ( !isValidIndex(index) ) {
+            return;
+        }
+
         getTabMainView(index).saveCurrentPage(format, path, 0);
     }
     
 	public String get_current_url(int tab_index) {
+        if ( !isValidIndex(tab_index) ) {
+            return null;
+        }
+
 		return getTabMainView(tab_index).get_current_url(tab_index);
 	}     
 

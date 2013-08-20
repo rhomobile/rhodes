@@ -2027,8 +2027,7 @@ end
 #  end
 #end
 
-def run_as_spec(device_flag)
-
+def run_as_spec(device_flag, uninstall_app)
   Rake::Task["device:android:debug"].invoke
 
   if device_flag == '-e'
@@ -2110,7 +2109,8 @@ def run_as_spec(device_flag)
   Jake.process_spec_results(start)
 
   # stop app
-  do_uninstall(device_flag)
+  uninstall_app = true if uninstall_app.nil? # by default uninstall spec app
+  do_uninstall(device_flag) if uninstall_app
   if device_flag == '-e'
     AndroidTools.kill_adb_and_emulator
   else
@@ -2123,14 +2123,14 @@ end
 namespace "run" do
   namespace "android" do
     namespace "emulator" do
-      task :spec do
-        Jake.decorate_spec {run_as_spec '-e'}
+      task :spec, :uninstall_app do |t, args|
+        Jake.decorate_spec { run_as_spec('-e', args.uninstall_app) }
       end
     end
 
     namespace "device" do
-      task :spec do
-        Jake.decorate_spec {run_as_spec '-d'}
+      task :spec, :uninstall_app do |t, args|
+        Jake.decorate_spec { run_as_spec('-d', args.uninstall_app) }
       end
     end
 
@@ -2264,6 +2264,13 @@ namespace :stop do
   namespace :android do
     task :emulator do
       AndroidTools.kill_adb_and_emulator
+    end
+
+    task :device do
+      device_flag = '-d'
+      do_uninstall(device_flag)
+      log_name = $app_path + '/RhoLogSpec.txt'
+      AndroidTools.kill_adb_logcat device_flag, log_name
     end
   end
 end
