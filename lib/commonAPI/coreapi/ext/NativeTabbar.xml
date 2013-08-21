@@ -3,7 +3,7 @@
 <API>
     <MODULE name="NativeTabbar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NativeTabbar methods let you customize the Rhodes tabbar at runtime.</HELP_OVERVIEW>
-        <MORE_HELP>No more than 4 buttons can be created in Windows Phone 8 toolbar. A toolbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs.
+        <MORE_HELP>No more than 4 buttons can be created in Windows Phone 8 toolbar. A toolbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time. 
 ## Enabling the API           
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
@@ -29,7 +29,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </ALIASES>
 
             <METHOD name="create" hasCallback="optional" runInThread="ui">
-                <DESC>Removes the current tabbar and replaces it with this one. Callback will be called when tab is switched.</DESC>
+                <DESC>Removes the current tabbar/toolbar and replaces it with this one. Callback will be called when tab is switched.</DESC>
                 <PARAMS>
                     <PARAM name="tabElements" type="ARRAY">
                         <DESC>Array of Tab elements.</DESC>
