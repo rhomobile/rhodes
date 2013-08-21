@@ -32,6 +32,10 @@
 #import "Rhodes.h"
 #include "logging/RhoLog.h"
 
+extern "C" int  rho_ruby_is_started();
+
+
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoNativeViewManager"
 
@@ -294,10 +298,12 @@ static RhoNativeViewManagerOC *instance = NULL;
 	
 	
 	UIView* v = ((UIView*)item.nv_view->createView(item.start_params));
-	if (!rho_ruby_is_NIL(item.start_params)) {
-		rho_ruby_releaseValue(item.start_params);
-	}
-	if (v == nil) {
+    if (rho_ruby_is_started()) {
+        if (!rho_ruby_is_NIL(item.start_params)) {
+            rho_ruby_releaseValue(item.start_params);
+        }
+    }
+    if (v == nil) {
 		RAWLOG_ERROR("NativeView do not make UIView* object !");
 		return;
 	}
@@ -317,11 +323,16 @@ static RhoNativeViewManagerOC *instance = NULL;
 	
 	item.type_name = viewType;
 	item.tab_index = tab_index;
-	item.start_params = params;
+    if (rho_ruby_is_started()) {
+        item.start_params = params;
+        if (!rho_ruby_is_NIL(item.start_params)) {
+            rho_ruby_holdValue(item.start_params);
+        }
+    }
+    else {
+        item.start_params = NULL;
+    }
 	
-	if (!rho_ruby_is_NIL(item.start_params)) {
-		rho_ruby_holdValue(item.start_params);
-	}
 	[sharedInstance.mOpenedViews addObject:item];
 
 	[sharedInstance performSelectorOnMainThread:@selector(create_native_view_command:) withObject:item waitUntilDone:NO];
