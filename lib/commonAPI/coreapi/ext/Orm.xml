@@ -115,9 +115,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Name of the model you want returned.</DESC>
           </PARAM>
         </PARAMS>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="addModel" generateAPI="false">
         <DESC>Javascript using only. Creates ORM model.</DESC>
+        <APPLIES jsOnly="true"/>
         <PARAMS>
           <PARAM name="Anoynomous Function methods" type="">
             <PARAMS>
