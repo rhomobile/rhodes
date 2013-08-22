@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-  <MODULE name="ORMModel" parent="Rho">
+  <MODULE name="[Your-Model-Name]" parent="Rho">
     <HELP_OVERVIEW>The ORM Model provides CRUD and helper methods for your defined model to interact with the database.  You must define and add a model before you can use the ORM Model Object.  See [Orm](Orm) to learn about defining and adding a model.
     </HELP_OVERVIEW>
     <LINK><a href='./Orm'>Orm</a></LINK> 
@@ -35,11 +35,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       <ALIASES>
         <ALIAS new="changed?" existing="isChanged"></ALIAS>
       </ALIASES>
-      <METHOD name="clearNotification" deprecated="true" generateAPI="false" access="STATIC">
+      <METHOD name="clearNotification" deprecated="true" generateAPI="false" >
         <DESC>Clear notification for the object. Use Rhoconnect-client</DESC>
         <APPLIES rubyOnly="true"/>
       </METHOD>
-      <METHOD name="deleteAll" generateAPI="false" access="STATIC">
+      <METHOD name="deleteAll" generateAPI="false" >
         <DESC>Delete all Rhodes model objects for a source.For Javascript you cannot specify conditions.
         </DESC>
         <PARAMS>
@@ -56,7 +56,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
           </PARAM>
         </PARAMS>
       </METHOD>
-      <METHOD name="find" generateAPI="false" access="STATIC">
+      <METHOD name="find" generateAPI="false">
         <DESC>Find model objects.
         </DESC>
         <PARAMS>
@@ -137,12 +137,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PARAMS>
         <RETURN type="ARRAY"/>
       </METHOD>
-      <METHOD name="findAll" generateAPI="false" access="STATIC">
+      <METHOD name="findAll" generateAPI="false" >
         <DESC>Alias for Model.find(:all, argument list).</DESC>
         <RETURN type="ARRAY"/>
         <APPLIES rubyOnly="true"/>
       </METHOD>
-      <METHOD name="findBySql" generateAPI="false" access="STATIC">
+      <METHOD name="findBySql" generateAPI="false">
         <DESC>Returns Rhodes model object(s) based on sql_query. This method works only for schema models.
         </DESC>
         <PARAMS>
@@ -153,12 +153,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <RETURN type="ARRAY"/>
         <APPLIES rubyOnly="true"/>
       </METHOD>
-      <METHOD name="getSourceName" generateAPI="false" access="STATIC">
+      <METHOD name="getSourceName" generateAPI="false">
         <DESC>Returns the source name for this Rhodes model object.</DESC>
         <RETURN type="STRING"/>
         <APPLIES rubyOnly="true"/>
       </METHOD>
-      <METHOD name="new" generateAPI="false" access="STATIC">
+      <METHOD name="new" generateAPI="false" >
         <DESC>Create a new Rhodes model object Ruby reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method. See the Orm new example.</DESC>
         <PARAMS>
           <PARAM name="attributes" type="HASH">
@@ -170,7 +170,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <RETURN type="OBJECT"/>
         <APPLIES rubyOnly="true"/>
       </METHOD>
-      <METHOD name="make" generateAPI="false" access="STATIC">
+      <METHOD name="make" generateAPI="false" >
         <DESC>Create a new Rhodes model object Javascript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method. See the Orm new example.</DESC>
         <PARAMS>
           <PARAM name="attributes" type="HASH">
@@ -182,7 +182,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <RETURN type="OBJECT"/>
         <APPLIES jsOnly="true"/>
       </METHOD>
-      <METHOD name="create" generateAPI="false" access="STATIC">
+      <METHOD name="create" generateAPI="false" >
         <DESC>Create a new Rhodes model object and save it to the database.Orm create example. This is the fastest wayto insert a single item into the database.
         </DESC>
         <PARAMS>
@@ -193,7 +193,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PARAMS>
         <RETURN type="OBJECT"/>
       </METHOD>
-      <METHOD name="paginate" generateAPI="false" access="STATIC">
+      <METHOD name="paginate" generateAPI="false" >
         <DESC>Call find with a limit on the number of records. Default page size is 10. Orm paginate example.</DESC>
         <PARAMS>
           <PARAM name="page" type="INTEGER">
@@ -221,7 +221,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <RETURN type="ARRAY"/>
         <APPLIES rubyOnly="true"/>
       </METHOD>
-      <METHOD name="sync" generateAPI="false" access="STATIC">
+      <METHOD name="sync" generateAPI="false" >
         <DESC>Start the sync process for a Rhodes model.</DESC>
         <PARAMS>
           <PARAM name="callbackUrl" type="STRING">
@@ -246,19 +246,19 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PARAMS>
         <APPLIES rubyOnly="true"/>
       </METHOD>
-      <METHOD name="isChanged" generateAPI="false" access="STATIC">
+      <METHOD name="isChanged" generateAPI="false">
         <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false otherwise.
         </DESC>
         <RETURN type="BOOLEAN"/>
         <APPLIES rubyOnly="true"/>
       </METHOD>
-      <METHOD name="haveLocalChanges" generateAPI="false" access="STATIC">
+      <METHOD name="haveLocalChanges" generateAPI="false" >
         <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false otherwise.
         </DESC>
         <RETURN type="BOOLEAN"/>
         <APPLIES jsOnly="true"/>
       </METHOD>
-      <METHOD name="setNotification" hasCallback="mandatory" deprecated="true" runInThread="none" generateAPI="false" access="STATIC">
+      <METHOD name="setNotification" hasCallback="mandatory" deprecated="true" runInThread="none" generateAPI="false" >
         <DESC>Use RhoConnectClient.setNotification instead. Saves the current Rhodes model object to the database.
         </DESC>
         <PARAMS>
