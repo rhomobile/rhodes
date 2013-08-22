@@ -197,6 +197,13 @@ static BOOL makeHiddenUntilLoadContent = YES;
     return btn;
 }
 
+
+
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
+
+
+
 - (UIToolbar*)newToolbar:(NSDictionary*)bar_info frame:(CGRect)mainFrame {
     
     UIToolbar *tb = [UIToolbar new];
@@ -213,7 +220,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
 
 #ifdef __IPHONE_7_0
-	tb.translucent = NO;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        tb.translucent = NO;
+    }
 #endif
 	
 	if (background_color != nil) {
@@ -223,7 +232,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		int cG = (c & 0xFF00) >> 8;
 		int cB = (c & 0xFF);
 #ifdef __IPHONE_7_0
-		tb.barTintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+            tb.barTintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        }
+        else {
+            tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        }
 #else
 		tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
 #endif
@@ -235,7 +249,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		int cG = (c & 0xFF00) >> 8;
 		int cB = (c & 0xFF);
 #ifdef __IPHONE_7_0
-		tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+            tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        }
 #endif
 	}
 	
@@ -360,9 +376,6 @@ static BOOL makeHiddenUntilLoadContent = YES;
     assert([w retainCount] == 1);
     return w;
 }
-
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
-
 
 - (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame bar_info:(NSDictionary*)bar_info web_bkg_color:(UIColor*)web_bkg_color {
 	[self init];
