@@ -157,7 +157,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="removeTab" runInThread="ui">
-                <DESC>Removes the Tab by index. Method will remove WebView for specific tab, it will not remove tab from tab array, so all indexes will remain the same.If you switch to previously removed tab, tab will be recreated.</DESC>
+                <DESC>Removes the Tab by index. Method will remove WebView for specific tab, it will not remove tab from tab array, so all indexes will remain the same.You cannot delete tab with useCurrentViewForTab flag.If you switch to previously removed tab, tab will be recreated.</DESC>
                 <PLATFORM>WM</PLATFORM>
 
                 <PARAMS>
