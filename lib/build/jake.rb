@@ -1,19 +1,19 @@
 # encoding: utf-8
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +21,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ require 'yaml'
 require 'socket'
 require 'webrick'
 
-  
+
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
 SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
 SYNC_SERVER_CONSOLE_PASSWORD = ''
@@ -45,7 +45,7 @@ class Hash
       return self[key]
     else
       self.each do |val|
-	value = false 
+	value = false
 	if val.is_a?(Array)
           val.each do |x|
             value = x.fetch_r(key) if x.is_a?(Hash)
@@ -56,10 +56,10 @@ class Hash
   	return value if value
       end
     end
-    return false  
+    return false
   end
 end
-  
+
 class Jake
 
   def self.config(configfile)
@@ -74,28 +74,28 @@ class Jake
   def self.get_absolute(path)
     get_absolute_ex(path, Dir.pwd())
   end
-    
+
   def self.get_absolute_ex(path, currentdir)
     ret_path = File.expand_path(path, currentdir)
     return ret_path  if File.exists?(ret_path)
 
     path = currentdir + "/" + path
-  
+
     patharray = path.split(/\//)
-  
+
     while idx = patharray.index("..") do
       if idx == 0
         raise "error getting absolute"
       end
-     
+
       if patharray[idx-1] != ".."
         patharray.delete_at(idx)
         patharray.delete_at(idx-1)
       end
     end
-    return patharray.join("/")  
-  end	
-  
+    return patharray.join("/")
+  end
+
   def self.config_parse(conf)
     if conf.is_a?(Array)
       conf.collect! do |x|
@@ -174,7 +174,7 @@ class Jake
         exact_url = SYNC_SERVER_BASE_URL.gsub(/exact_platform/, platform)
         puts "going to reset server: #{exact_url}"
         # login to the server
-        unless @srv_token			
+        unless @srv_token
 		  @srv_token = RestClient.post("#{exact_url}/rc/v1/system/login", { :login => SYNC_SERVER_CONSOLE_LOGIN, :password => SYNC_SERVER_CONSOLE_PASSWORD }.to_json, :content_type => :json)
         end
         # reset server
@@ -182,13 +182,13 @@ class Jake
 		puts "reset OK"
     rescue Exception => e
       puts "reset_spec_server failed: #{e}"
-    end        
+    end
   end
 
   def self.reset_bulk_server()
 	require 'rest_client'
 	require 'json'
-	
+
 	begin
 		platform = platform
 		exact_url = BULK_SYNC_SERVER_URL
@@ -201,7 +201,7 @@ class Jake
 		puts "reset OK"
     rescue Exception => e
 		puts "reset_bulk_server failed: #{e}"
-	end        
+	end
   end
 
   def self.decorate_spec
@@ -220,7 +220,7 @@ class Jake
     $faillog = []
     $getdump = false
   end
-  
+
   def self.process_spec_output(line)
       puts line if line =~ /\| - it/ or line =~ /\| describe/ or line =~ /\|   - /
 
@@ -239,12 +239,12 @@ class Jake
         end
       end
 
-      if line =~ /\*\*\*Failed:\s+(.*)/
+      if line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
         $failed += $1.to_i
         return false
-      elsif line =~ /\*\*\*Total:\s+(.*)/
+      elsif line =~ /\| \*\*\*Total:\s+(.*)/  # | ***Total:
         $total += $1.to_i
-      elsif line =~ /\*\*\*Passed:\s+(.*)/
+      elsif line =~ /\| \*\*\*Passed:\s+(.*)/ # | ***Passed:
         $passed += $1.to_i
       end
 
@@ -255,13 +255,13 @@ class Jake
         end
         $getdump = true
       end
-      
+
       return true
   end
-  
+
   def self.process_spec_results(start)
     finish = Time.now
-  
+
     FileUtils.rm_rf $app_path + "/faillog.txt"
     if $failed.to_i > 0
       puts "************************"
@@ -269,10 +269,10 @@ class Jake
       $faillog.each {|x| puts x }
       File.open($app_path + "/faillog.txt", "w") { |io| $faillog.each {|x| io << x }  }
     end
-    
+
     puts "\n"
     puts "************************"
-    puts "Tests completed in #{finish - start} seconds"
+    puts "Tests completed in #{"%.1f" % (finish - start)} seconds"
     puts "Total: #{$total}"
     puts "Passed: #{$passed}"
     puts "Failed: #{$failed}"
@@ -328,15 +328,15 @@ class Jake
                 res = yield(line)
                 if !res
                     #puts "f.pid : #{f.pid}"
-                    Process.kill( 9, f.pid ) 
-                end    
+                    Process.kill( 9, f.pid )
+                end
             else
                 retval += line
 		unless options[:hide_output]
                     puts "RET: " + line
                     $stdout.flush
 		end
-            end    
+            end
           end
         end
       end
@@ -348,11 +348,11 @@ class Jake
 
     retval
   end
-  
+
   def self.run(command, args, wd=nil,system = false, hideerrors = false)
     self.run2(command, args, {:directory => wd, :system => system, :hiderrors => hideerrors})
   end
-  
+
   def self.run3(command, cd = nil, env = {})
     set_list = []
     env.each_pair do |k, v|
@@ -405,9 +405,9 @@ class Jake
   end
 
   def self.unjar(src,targetdir)
-    jpath = $config["env"]["paths"]["java"]   
+    jpath = $config["env"]["paths"]["java"]
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
-  
+
 #    if RUBY_PLATFORM =~ /(win|w)32$/
 #      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
 #    else
@@ -418,21 +418,21 @@ class Jake
     src = p.realpath
     currentdir = Dir.pwd()
     src = src.to_s.gsub(/"/,"")
-  
+
     args = Array.new
-  
+
     args << "xf"
     args << src.to_s
-  
+
     Dir.chdir targetdir
     puts run(cmd,args)
     Dir.chdir currentdir
   end
-  
+
   def self.jarfilelist(target)
-    jpath = $config["env"]["paths"]["java"]   
+    jpath = $config["env"]["paths"]["java"]
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
-  
+
 #    if RUBY_PLATFORM =~ /(win|w)32$/
 #      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
 #    else
@@ -451,12 +451,12 @@ class Jake
   end
 
   def self.jar(target,manifest,files,isfolder=false)
-    jpath = $config["env"]["paths"]["java"]   
+    jpath = $config["env"]["paths"]["java"]
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
     #cmd +=  ".exe" if RUBY_PLATFORM =~ /(win|w)32$/
-	
+
     target.gsub!(/"/,"")
-    
+
     args = []
     args << "cfm"
     args << target
@@ -468,25 +468,25 @@ class Jake
     else
       args << files
     end
-  
+
     puts run(cmd,args)
-  
-  
+
+
   end
-  
+
   def self.rapc(output,destdir,imports,files,title=nil,vendor=nil,version=nil,icon=nil,library=true,cldc=false,quiet=true, nowarn=true)
     #cmd = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
 #   cmd = "java.exe"
-    
+
     jdehome = $config["env"]["paths"][@@bbver]["jde"]
     javabin = $config["env"]["paths"]["java"]
     cmd = jdehome + "/bin/rapc.exe"
-    
+
     currentdir = Dir.pwd()
-  
-  
+
+
     Dir.chdir destdir
-  
+
     if output and title and version and vendor
       f = File.new(output + ".rapc", "w")
       f.write "MicroEdition-Profile: MIDP-2.0\n"
@@ -502,33 +502,33 @@ class Jake
         f.write "MIDlet-1: " + title + "," + icon + ",\n"
         puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! service_enabled: #{$service_enabled}"
         $stdout.flush
-        
-          if $service_enabled      
+
+          if $service_enabled
             if $hidden_app == "0"
-                f.write "RIM-MIDlet-Flags-1: 1\n" 
+                f.write "RIM-MIDlet-Flags-1: 1\n"
             else
-                f.write "RIM-MIDlet-Flags-1: 3\n" 
-            end    
+                f.write "RIM-MIDlet-Flags-1: 3\n"
+            end
           else
             if $hidden_app == "0"
-                f.write "RIM-MIDlet-Flags-1: 0\n" 
+                f.write "RIM-MIDlet-Flags-1: 0\n"
             else
-                f.write "RIM-MIDlet-Flags-1: 2\n" 
-            end    
+                f.write "RIM-MIDlet-Flags-1: 2\n"
+            end
           end
-        
+
       end
 
       f.close
     end
-  
-  
+
+
     args = []
     #args << "-classpath"
   #  args << "-jar"
     #args << jdehome + "/bin/rapc.jar"
     #args << "net.rim.tools.compiler.Compiler"
-    
+
     args << "-javacompiler=" + javabin + "/javac.exe"
     args << "-quiet" if quiet
     args << "-nowarn" if nowarn
@@ -537,23 +537,23 @@ class Jake
     args << 'library=' + output if library
     args << output + '.rapc'
     args << files
-  
+
     cmd.gsub!(/\//,"\\")
     outputstring = run(cmd, args)
     puts outputstring unless $? == 0
     Dir.chdir currentdir
-  
+
   end
-  
+
   def self.ant(dir,target)
-  
+
     srcdir = $config["build"]["srcdir"]
     rubypath = $config["build"]["rubypath"]
     excludelib = $config["build"]["excludelib"]
     excludeapps = $config["build"]["excludeapps"]
     compileERB = $config["build"]["compileERB"]
-    
-  
+
+
     args = []
     args << "-buildfile"
     args << dir + "/build.xml"
@@ -563,23 +563,23 @@ class Jake
     args << '-Dexclude.apps=' + excludeapps
     args << '-DcompileERB.path=' + get_absolute(compileERB)
     args << '-Dsrclib.dir=' + get_absolute(srcdir)
-  
-  
+
+
     args << target
     #puts args.to_s
     puts run("ant.bat",args,dir)
   end
-  
+
   def self.modify_file_if_content_changed(file_name, f)
     f.rewind
     content = f.read()
     old_content = File.exists?(file_name) ? File.read(file_name) : ""
 
-    if old_content != content  
-        puts "!!!MODIFY #{file_name}"      
+    if old_content != content
+        puts "!!!MODIFY #{file_name}"
         File.open(file_name, "w"){|file| file.write(content)}
     end
-    
+
     f.close
   end
 
@@ -602,7 +602,7 @@ class Jake
 
           dat.puts "#{relpath}\t#{type}\t#{size.to_s}\t#{tm.to_s}"
         end
-    end 
+    end
   end
 
   def self.zip_upgrade_bundle(folder_path, zip_file_path)
@@ -611,10 +611,10 @@ class Jake
 
       currentdir = Dir.pwd()
       Dir.chdir folder_path
-      
+
       if RUBY_PLATFORM =~ /(win|w)32$/
         begin
-      
+
           require 'rubygems'
           require 'zip/zip'
           require 'find'
@@ -625,19 +625,19 @@ class Jake
             Find.find("RhoBundle") do |path|
               Find.prune if File.basename(path)[0] == ?.
               next if path.start_with?("RhoBundle/lib") || path.start_with?("RhoBundle/db") || path == 'RhoBundle/hash' || path == 'RhoBundle/name'
-              
+
               puts "add to zip : #{path}"
               zipfile.add(path, path)
-            end 
+            end
           end
         rescue Exception => e
           puts "ERROR : #{e}"
           puts 'Require "rubyzip" gem for make zip file !'
           puts 'Install gem by "gem install rubyzip"'
-        end        
+        end
       else
         require 'fileutils'
-                 
+
         #chdir folder_path
         temp_dir = folder_path + '_tmp'
         FileUtils.mkdir_p temp_dir
@@ -658,45 +658,45 @@ class Jake
         FileUtils.rm_rf 'temporary_archive.zip'
         FileUtils.rm_rf temp_dir
       end
-      
+
       Dir.chdir currentdir
 
   end
-  
+
   def self.run_rho_log_server(app_path)
 
 	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
 	confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
 	confpath_content += "\r\n" + "LogToSocket=1" if !confpath_content.include?("LogToSocket=")
 	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
-  
+
     begin
         require 'net/http'
-        
+
         res = Net::HTTP.start(Jake.localip(), $rhologhostport) {|http|
              http.post('/', "RHOLOG_GET_APP_NAME")
         }
         puts "res : #{res}"
         puts "body : #{res.body}"
-        
+
         if ( res && res.body == app_path)
             puts "Log server is already running. Reuse it."
-            
+
 	        started = File.open($app_path + "/started", "w+")
 	        started.close
-            
+
             return
         else
-            puts "Close Log server for another app."            
+            puts "Close Log server for another app."
             res = Net::HTTP.start(Jake.localip(), $rhologhostport) {|http|
                  http.post('/', "RHOLOG_CLOSE")
             }
-            
+
         end
     rescue Exception => e
         puts "EXC: #{e}"
-    end    
-  
+    end
+
     system("START rake run:webrickrhologserver[\"#{app_path}\"]")
   end
 
@@ -704,7 +704,7 @@ class Jake
     cmd = nil
     args = nil
     proc_list = []
-    
+
     if RUBY_PLATFORM =~ /(win|w)32$/
       cmd = 'wmic'
       args = ['path', 'win32_process', 'get', 'Processid,Parentprocessid,Commandline']
@@ -712,9 +712,9 @@ class Jake
       cmd = 'ps'
       args = ['axww', '-o', 'pid', '-o', 'ppid', '-o', 'command']
     end
-    
+
     output = run2 cmd, args, {:hide_output=>true}
-    
+
     output.each_line do |line|
       #puts "[[#{line}]]"
       if RUBY_PLATFORM =~ /(win|w)32$/
@@ -730,56 +730,56 @@ class Jake
 
   def self.getBuildProp(propName, config_yml=$app_config)
     res = nil
-    
+
     res = config_yml[propName] if config_yml[propName]
-    res = config_yml[$current_platform][propName] if config_yml[$current_platform] && config_yml[$current_platform][propName]        
-    
+    res = config_yml[$current_platform][propName] if config_yml[$current_platform] && config_yml[$current_platform][propName]
+
     res
   end
 
   def self.getBool(propObject, def_value=false)
     res = propObject
-    
+
     return def_value unless res
-     
+
     return true if res && (res.to_i() != 0 || res.casecmp("true") == 0 || res.casecmp("yes") == 0 )
-    
+
     false
   end
 
   def self.getBuildBoolProp(propName, config_yml=$app_config, def_value=false)
     res = getBuildProp(propName)
-    
+
     return def_value unless res
-     
+
     return true if res && (res.to_i() != 0 || res.casecmp("true") == 0 || res.casecmp("yes") == 0 )
-    
+
     false
   end
-  
+
   def self.getBuildProp2(propName, propName2, config_yml=$app_config)
     res = nil
     if config_yml[propName]
         res1 = config_yml[propName]
         res = res1[propName2] if res1 && res1[propName2]
     end
-    
+
     if config_yml[$current_platform]
-        res1 = config_yml[$current_platform][propName]        
+        res1 = config_yml[$current_platform][propName]
         res = res1[propName2] if res1 && res1[propName2]
-    end    
-    
+    end
+
     res
   end
 
   def self.getBuildBoolProp2(propName, propName2, config_yml=$app_config, def_value=false)
     res = getBuildProp2(propName, propName2)
-    
+
     return def_value unless res
-     
+
     return true if res && (res.to_i() != 0 || res.casecmp("true") == 0 || res.casecmp("yes") == 0 )
-    
+
     false
   end
-  
+
 end

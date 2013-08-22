@@ -2081,16 +2081,14 @@ def run_as_spec(device_flag, uninstall_app)
   end
 
   if !File.exist?(log_name)
-    puts "Can not read log file: " + log_name
+    puts "Cannot read log file: " + log_name
     exit(1)
   end
 
   puts "Start reading log ..."
-
   io = File.new(log_name, 'r:UTF-8')
   end_spec = false
   while !end_spec do
-
     io.each do |line|
       if line.class.method_defined? "valid_encoding?"
         end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
