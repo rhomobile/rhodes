@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
   <MODULE name="ORM" parent="Rho" generateUnderscoreRubyNames="true" generateAPI="false">
-    <HELP_OVERVIEW>This API class allows you to interact with the local RHOM database and programtically add models or get references to models.</HELP_OVERVIEW>
+    <HELP_OVERVIEW>This Javascript API class allows you to interact with the local RHOM database and programatically add models or get references to models.</HELP_OVERVIEW>
     <MORE_HELP>
 ## Enabling the API           
 This API is part of the `coreapi` extension that is included automatically.
@@ -13,7 +13,7 @@ This API is part of the `coreapi` extension that is included automatically.
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/rhom-api).
 
 </MORE_HELP>
 
@@ -30,7 +30,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       <METHOD name="databaseFullReset" generateAPI="false">
         <DESC>Deletes all records from the property bag and model tables.
         </DESC>
-
+        <APPLIES jsOnly="true"/>
         <PARAMS>
           <PARAM name="resetClientInfo" type="BOOLEAN">
             <DESC>true to clean the client_info table, false otherwise.</DESC>
@@ -50,6 +50,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       </METHOD>
        <METHOD name="import" deprecated="true" generateAPI="false">
         <DESC>Import db</DESC>
+        <APPLIES jsOnly="true"/>
         <PARAMS>
           <PARAM name="zipName" type="STRING">
             <DESC>The name of the zip file</DESC>
@@ -60,30 +61,37 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       <METHOD name="getClientId" generateAPI="false">
         <DESC>Returns the current sync client id.
         </DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
 
       <METHOD name="haveLocalChanges" generateAPI="false">
         <DESC>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized, false otherwise.
         </DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="export" deprecated="true"  generateAPI="false">
         <DESC>Export db</DESC>
         <RETURN type="STRING"/>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseFullResetAndLogout" generateAPI="false">
         <DESC>Deletes all records from the property bag and model tables. For examples, see Resetting the Database in Using the Local Database with ORM.
         </DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseLocalReset" generateAPI="false">
         <DESC>Reset only local (non-sync-enabled) models.</DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseFullclientResetAndLogout" generateAPI="false">
         <DESC>Reset the Rhodes model database and logout. Equivalent to ORM::ORM.database_full_reset(true) followed by SyncEngine.logout.
         </DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseFullResetEx" generateAPI="false">
         <DESC>Deletes all records from the property bag and model tables for the model names passed in parameters.
         </DESC>
+        <APPLIES jsOnly="true"/>
         <PARAMS>
           <PARAM name="propertyMap" type="HASH" propertyHash="true">
             <DESC>Properties map.</DESC>
@@ -108,7 +116,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PARAMS>
       </METHOD>
       <METHOD name="getModel" generateAPI="false">
-        <DESC>Javascript using only. Returns a model.
+        <DESC>Returns a model.
         </DESC>
         <PARAMS>
           <PARAM name="modelName" type="String">
@@ -118,7 +126,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="addModel" generateAPI="false">
-        <DESC>Javascript using only. Creates ORM model.</DESC>
+        <DESC>Creates an ORM model reference.</DESC>
         <APPLIES jsOnly="true"/>
         <PARAMS>
           <PARAM name="Anoynomous Function methods" type="">
@@ -262,20 +270,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
               This example describes creating model and adding model object.
             </DESC>
             <CODE>
-              <RUBY>
-                <![CDATA[
-class Product
-  include ORM::PropertyBag
-end
-
-product = Product.create( :brand => 'Apple', :name => 'iPhone5', :price => 199.99)
-
-readedProduct = Product.find(:first)
-readedProduct.brand
-  #=> "Apple"
-readedProduct.name
-  #=> "iPhone5"    ]]>
-              </RUBY>
+              
 
               <JAVASCRIPT>
                 <![CDATA[
@@ -341,10 +336,7 @@ var productModel = Rho.ORM.getModel("Product");
               Delete all Rhodes model objects for a source, filtering by conditions.
             </DESC>
             <CODE>
-              <RUBY>
-                <![CDATA[
-ORM.databaseFullResetEx({:models => ['Product', 'Customer'], :reset_client_info => true, :reset_local_models => true}) ]]>
-              </RUBY>
+              
               <JAVASCRIPT>
                 <![CDATA[
 Rho.ORM.databaseFullResetEx({'models' : ['Product', 'Customer'], 'reset_client_info' : true, 'reset_local_models' : true} ]]>
