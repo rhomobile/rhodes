@@ -47,7 +47,7 @@ static BOOL ourIsMagnetometerAvailability = NO;
         //obj = [[Sensor alloc] init];
     }
     if (obj != nil) {
-        [obj setProperty:@"ID" propertyValue:ID];
+        [obj setProperty:@"ID" propertyValue:ID methodResult:nil];
     }
     return obj;
 }

@@ -38,7 +38,7 @@
     acceleration_z = 0;
     updatePeriod = 200;
     ready = NO;
-    [self setProperty:@"type" propertyValue:SENSOR_TYPE_ACCELEROMETER];
+    [self setProperty:@"type" propertyValue:SENSOR_TYPE_ACCELEROMETER methodResult:nil];
     [self internalSetStatus:SENSOR_STATUS_READY isReady:NO];
     return self;
 }
@@ -159,7 +159,7 @@
     magnetometer_z = 0;
     updatePeriod = 200;
     ready = NO;
-    [self setProperty:@"type" propertyValue:SENSOR_TYPE_MAGNETOMETER];
+    [self setProperty:@"type" propertyValue:SENSOR_TYPE_MAGNETOMETER methodResult:nil];
     [self internalSetStatus:SENSOR_STATUS_READY isReady:NO];
     return self;
 }
