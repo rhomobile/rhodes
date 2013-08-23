@@ -357,17 +357,24 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public RhoMenu getMenu() {
         return mAppMenu;
     }
-    
-    public void setMenu(RhoMenu menu) {
-        mAppMenu = menu;
-    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        
+        Logger.T(TAG, "onCreateOptionsMenu");
+        
+        return mAppMenu.getItemsCount() != 0;
+    }
+    
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        
+        Logger.T(TAG, "onPrepareOptionsMenu");
 
         mAppMenu.enumerateMenu(menu);
-        return true;
+        return mAppMenu.getItemsCount() != 0;
     }
 
     @Override
