@@ -31,66 +31,57 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.rhomobile.rhodes.mainview.MainView;
-
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class RhoMenu {
+    private static final String CALLBACK_PREFIX = "callback:";
+    private static final String JSCALLBACK_PREFIX = "__rhoCallback:";
     
     private static enum ItemType {
         ItemTypeBack("Back") {
-            @Override public boolean action() {
+            @Override public void action(String url) {
                 WebView.navigateBack();
-                return true;
             }
         },
         ItemTypeHome("Home") {
-            @Override public boolean action() {
+            @Override public void action(String url) {
                 WebView.navigateHome();
-                return true;
             }
         },
         ItemTypeRefresh("Refresh") {
-            @Override public boolean action() {
+            @Override public void action(String url) {
                 WebView.refresh();
-                return true;
             }
         },
         ItemTypeSync("Sync") {
-            @Override public boolean action() {
+            @Override public void action(String url) {
                 RhodesService.getInstance().doSyncAllSources(true);
-                return true;
             }
         },
         ItemTypeOptions("Options") {
-            @Override public boolean action() {
+            @Override public void action(String url) {
                 WebView.navigateOptions();
-                return true;
             }
         },
         ItemTypeExit("Exit") {
-            @Override public boolean action() {
+            @Override public void action(String url) {
                 RhodesService.exit();
-                return true;
             }
         },
         ItemTypeClose("Close") {
-            @Override public boolean action() {
+            @Override public void action(String url) {
                 RhodesService.exit();
-                return true;
             }
         },
         ItemTypeFullScreen("FullScreen") {
-            @Override public boolean action() {
+            @Override public void action(String url) {
                 RhodesActivity.setFullScreenMode(!RhodesActivity.getFullScreenMode());
-                return true;
             }
         },
         ItemTypeLog("Log") {
-            @Override public boolean action() {
+            @Override public void action(String url) {
                 RhodesService.showLogView();
-                return true;
             }
         },
         ItemTypeUrl("URL");
@@ -105,8 +96,17 @@ public class RhoMenu {
             return mStrType;
         }
         
-        public boolean action() {
-            return false;
+        public void action(String url) {
+            if (url.startsWith(JSCALLBACK_PREFIX)) {
+                url = url.substring(JSCALLBACK_PREFIX.length());
+                url = "Rho.callbackHandler(\"" + url + "\", {},\"\")";
+                WebView.executeJs(url, WebView.activeTab());
+            } else if (url.startsWith(CALLBACK_PREFIX)) {
+                url = url.substring(CALLBACK_PREFIX.length());
+                RhodesService.doRequestEx(url, "rho_callback=1", null, false);
+            } else {
+                WebView.navigate(RhodesService.getInstance().normalizeUrl(url), WebView.activeTab());
+            }
         }
     }
 
@@ -147,7 +147,7 @@ public class RhoMenu {
         return ItemType.ItemTypeUrl;
     }
 
-    private boolean mNewMenu = false;
+    private boolean mNewMenu = true;
     private List<Item> mItems = null;
     private Map<MenuItem, Item> mItemMap = new HashMap<MenuItem, Item>();
 
@@ -161,6 +161,10 @@ public class RhoMenu {
             }
         }
         return menuDescr;
+    }
+    
+    public int getItemsCount() {
+        return mItems == null ? 0 : mItems.size();
     }
 
     public synchronized void setMenu(List<Map<String, String>> items) {
@@ -188,13 +192,22 @@ public class RhoMenu {
     }
 
     public synchronized void enumerateMenu(Menu menu) {
+        Logger.T(TAG, "enumerateMenu");
         if (mNewMenu) {
+            Logger.T(TAG, "Enumearting new menu...");
             menu.clear();
             mItemMap.clear();
-            for(Item item: mItems) {
-                MenuItem menuItem = menu.add(item.title);
-                mItemMap.put(menuItem, item);
+            if(mItems != null) {
+                Logger.T(TAG, "Menu size: " + mItems.size());
+                for(Item item: mItems) {
+                    Logger.T(TAG, "Item: " + item.title);
+                    MenuItem menuItem = menu.add(item.title);
+                    mItemMap.put(menuItem, item);
+                }
+            } else {
+                Logger.T(TAG, "Menu is empty");
             }
+            mNewMenu = false;
         }
     }
 
@@ -205,11 +218,7 @@ public class RhoMenu {
             return false;
         }
 
-        ItemType type = item.type;
-        if (!type.action()){
-            MainView mainView = RhodesActivity.safeGetInstance().getMainView();
-            mainView.navigate(RhodesService.getInstance().normalizeUrl(item.url), mainView.activeTab());
-        }
+        item.type.action(item.url);
         return true;
     }
 }
