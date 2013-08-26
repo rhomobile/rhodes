@@ -696,7 +696,11 @@ rho_param *rho_param_fromvalue(VALUE v)
             VALUE value = v;
             if (TYPE(v) != T_STRING)
                 value = rb_funcall(value, rb_intern("to_s"), 0, NULL);
-            return rho_param_str(RSTRING_PTR(value));
+
+            if(strlen(RSTRING_PTR(value)) != RSTRING_LEN(value))
+                return rho_param_str2(RSTRING_PTR(value), RSTRING_LEN(value));
+            else
+                return rho_param_str(RSTRING_PTR(value));
         }
     }
 }

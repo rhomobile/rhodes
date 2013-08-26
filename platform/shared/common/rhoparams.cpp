@@ -65,7 +65,7 @@ String CRhoParams::getString(const char* szName) const
 String CRhoParams::getString(const char* szName, const char* szDefValue) const
 {
     const rho_param * value = findHashParam(szName);
-    String strRes = value && value->v.string ? value->v.string : "";
+    String strRes((value && value->v.string ? value->v.string : ""),(value && value->v.string ? value->len : 0));
     if (strRes.length() == 0 && szDefValue && *szDefValue)
         strRes = szDefValue;
 
@@ -132,8 +132,20 @@ rho_param *rho_param_str(char *s)
     rho_param *ret = (rho_param *)malloc(sizeof(rho_param));
     ret->type = RHO_PARAM_STRING;
     ret->v.string = strdup(s);
+    ret->len = strlen(s);
     return ret;
 }
+
+rho_param *rho_param_str2(char *s, int len)
+{
+    rho_param *ret = (rho_param *)malloc(sizeof(rho_param));
+    ret->type = RHO_PARAM_STRING;
+    ret->v.string = (char *)malloc(len);
+    ret->len = len;
+    memcpy(ret->v.string,s,len);
+    return ret;
+}
+
 
 rho_param *rho_param_array(int size)
 {

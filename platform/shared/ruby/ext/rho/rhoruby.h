@@ -169,6 +169,7 @@ typedef struct rho_hash_t
 typedef struct rho_param_t
 {
     int type;
+    int len;
     union {
         char *string;
         rho_array *array;
