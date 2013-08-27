@@ -14,3 +14,5 @@ project_paths:
   win32: ext/platform/wm/Mediaplayer.vcproj
   
 xml_api_paths: ext/mediaplayer.xml
+
+platforms: ["wm", "iphone", "android"]
