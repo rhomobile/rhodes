@@ -141,3 +141,4 @@ module Rhom
   end
   
 end # Rhom
+ORM = Rhom

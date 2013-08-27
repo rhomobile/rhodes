@@ -35,7 +35,9 @@ module Rhom
         
         false
     end
-	           
+  class << self
+	  alias_method :anyModelChanged?, :any_model_changed?
+  end
   class RhomObjectFactory
     
     def initialize
@@ -1418,6 +1420,13 @@ end
                     new_obj
                 end    
                     
+
+              alias_method :clearNotification, :clear_notification
+              alias_method :deleteAll, :delete_all
+              alias_method :findAll, :find_all
+              alias_method :findBySql, :find_by_sql
+              alias_method :getSourceName, :get_source_name
+              alias_method :setNotification, :set_notification
               end #class methods
 	          
 	          # if app server does not support oo in inserts. 
@@ -1429,6 +1438,8 @@ end
                 result = db.execute_sql("SELECT object FROM changed_values WHERE source_id=? and object=? and sent>1 LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
                 return !(result && result.length > 0) 
 	          end
+            alias_method :canModify, :can_modify
+      
 
 	          def self.changed?
 	            db = ::Rho::RHO.get_src_db(get_source_name)
@@ -1442,6 +1453,7 @@ end
                 result = db.execute_sql("SELECT object FROM changed_values WHERE source_id=?  and object=? LIMIT 1 OFFSET 0", get_inst_source_id().to_i(), obj )
                 return result && result.length > 0
 	          end
+            alias_method :isChanged?, :changed?
 	            
               # deletes the record from the viewable list as well as
               # adding a delete record to the list of sync operations
@@ -1779,6 +1791,7 @@ end
                     
                 true
               end
+              alias_method :updateAttributes, :update_attributes
 
               def get_inst_source_name
                 self.class.name.to_s
@@ -1812,6 +1825,8 @@ end
         #puts "classname: #{classname}; modelname: #{modelname}"
         #require "#{classname}/#{modelname}" if File.exists? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"#{modelname}" + RHO_RB_EXT)
       #end
+   
     end #init_object
   end # RhomObjectFactory
 end # Rhom
+ORM = Rhom
