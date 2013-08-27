@@ -468,6 +468,8 @@ namespace "config" do
     $app_extensions_list = {}
     buildyml = 'rhobuild.yml'
 
+    $current_platform_bridge = $current_platform unless $current_platform_bridge
+
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
@@ -1153,7 +1155,7 @@ def init_extensions(dest, mode = "")
           Dir.glob(extpath + "/public/api/*.js").each do |f|
               fBaseName = File.basename(f)
               if (fBaseName.start_with?("rhoapi-native") )
-                endJSModules << f if fBaseName == "rhoapi-native." + $current_platform + ".js"
+                endJSModules << f if fBaseName == "rhoapi-native.#{$current_platform_bridge}.js"
                 next
               end
               
@@ -1867,9 +1869,8 @@ task :get_ext_xml_paths, [:platform] do |t,args|
     throw "You must pass in platform(win32, wm, android, iphone, wp8)" if args.platform.nil?
 
     $current_platform = args.platform
+    $current_platform_bridge = args.platform
 
-    config_platform = $current_platform == 'win32' ? 'wm' : $current_platform
-    
     Rake::Task["config:common"].invoke  
     
     res_xmls = init_extensions( nil, "get_ext_xml_paths")
@@ -1878,12 +1879,12 @@ task :get_ext_xml_paths, [:platform] do |t,args|
 end
 
 task :update_rho_modules_js, [:platform] do |t,args|
-    throw "You must pass in platform(win32, wm, android, iphone, wp8)" if args.platform.nil?
+    throw "You must pass in platform(win32, wm, android, iphone, wp8, all)" if args.platform.nil?
 
     $current_platform = args.platform
+    $current_platform = 'wm' if args.platform == 'all'
+    $current_platform_bridge = args.platform
 
-    config_platform = $current_platform == 'win32' ? 'wm' : $current_platform
-    
     Rake::Task["config:common"].invoke  
     
     init_extensions( nil, "update_rho_modules_js")
