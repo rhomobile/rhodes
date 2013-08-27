@@ -468,6 +468,8 @@ namespace "config" do
     $app_extensions_list = {}
     buildyml = 'rhobuild.yml'
 
+    $current_platform_bridge = $current_platform unless $current_platform_bridge
+
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
