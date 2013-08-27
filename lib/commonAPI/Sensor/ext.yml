@@ -12,3 +12,5 @@ project_paths:
   win32: ext/platform/wm/Sensor.vcproj
   
 xml_api_paths: ext/Sensor.xml
+
+platforms: ["wm", "iphone", "android"]

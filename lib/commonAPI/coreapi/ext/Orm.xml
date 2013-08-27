@@ -239,10 +239,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                         <DESC>Determines how frequently to check for changes. In seconds. Default is 1000. </DESC>
                                               
                     </PARAM>
-                    <PARAM name="freezed" type="BOOLEAN">
-                        <DESC>(Ruby Only) If you want to limit model attributes by a specific list – you can ‘freeze’ model. FixedSchema models are ‘freezed’ by default.</DESC>
-                                              
-                    </PARAM>
+                    
                   </PARAMS>                
               </PARAM>
             </PARAMS>
