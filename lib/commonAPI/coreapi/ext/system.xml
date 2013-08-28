@@ -244,7 +244,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
             <METHOD name="getStartParams">
-                <DESC>Return the command line parameters. At Android start parameters are returned as URL query string starting with '?', name-value delimitter '=' and name value pairs delimitter '&#038;'.</DESC>
+                <DESC>Return the command line parameters. At Android start parameters are returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
             <METHOD name="openUrl">
