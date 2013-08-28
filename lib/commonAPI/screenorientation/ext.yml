@@ -11,3 +11,5 @@ project_paths:
   win32: ext/platform/wm/Screenorientation.vcproj
   
 xml_api_paths: ext/screenorientation.xml
+
+platforms: ["wm", "iphone", "android"]

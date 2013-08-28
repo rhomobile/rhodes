@@ -18,7 +18,7 @@ extern void rho_sys_open_url(const char* url);
 }
 
 -(void) startvideo:(NSString*)filename methodResult:(id<IMethodResult>)methodResult {
-    [self start:filename];
+    [self start:filename methodResult:nil];
 }
 
 -(void) stopvideo:(id<IMethodResult>)methodResult {

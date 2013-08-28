@@ -6,12 +6,12 @@ require 'socket'
 module RhoconnectHelper
 	require 'rest_client'
 	require 'json'
-	
+
 	@@enable_redis = true
 	@@enable_resque = true
 	@@enable_push = true
 	#	@@enable_rails = true
-	
+
 	def self.set_enable_redis(b)
 		@@enable_redis = b
 	end
@@ -30,29 +30,30 @@ module RhoconnectHelper
 
 
 	@@rhoconnect_bin = nil
-	def self.set_rhoconnect_bin(bin)
-		@@rhoconnect_bin = bin
+	def self.set_rhoconnect_bin(path)
+		@@rhoconnect_path = path
+		@@rhoconnect_bin = File.join(path, 'bin', 'rhoconnect')
 	end
 
 	def self.rhoconnect_bin
 		@@rhoconnect_bin
 	end
-	
+
 	@@host = nil
 	def self.host
 		@@host
 	end
-	
+
 	@@port = nil
 	def self.port
 		@@port
 	end
-	
+
 	@@server_pid = nil
 	@@resque_pid = nil
 	@@rhoconnect_push_pid = nil
     @@redis_pid = nil
-	
+
 	@@rc_out = $stdout
 	def self.set_rc_out(rc_out)
 		@@rc_out = rc_out
@@ -82,9 +83,9 @@ module RhoconnectHelper
 	def self.push_port
 		@@push_port
 	end
-	
+
 	@@server_path = nil
-	
+
 	def self.start_server(dir)
 		@@server_path = dir
 
@@ -125,7 +126,7 @@ module RhoconnectHelper
 		Process.kill('INT', @@resque_pid) if @@resque_pid
 		@@resque_pid = nil
 	end
-	
+
 	def self.api_post(request,params,api_token=nil)
 		headers = {}
 		headers[:content_type] = :json
@@ -142,7 +143,7 @@ module RhoconnectHelper
 		RestClient.get("#{@@host}:#{@@port}/rc/v1/#{request}",params.to_json, headers)
 	end
 
-	def self.reset_server		
+	def self.reset_server
 		begin
 			platform = platform
 			exact_url = "http://#{@@host}:#{@@port}"
@@ -179,12 +180,12 @@ module RhoconnectHelper
 			start_rails
 			sleep 10
 		end
-=end		
+=end
 		if reset
 			puts "reset rhoconnect"
 			reset_server
 		end
-		
+
 		if @@enable_resque
 			puts "run resque"
 			start_resque
@@ -197,7 +198,7 @@ module RhoconnectHelper
 			puts "stop resque"
 			stop_resque
 		end
-		
+
 		puts "stop rhoconnect"
 		stop_server
 =begin
@@ -216,10 +217,19 @@ module RhoconnectHelper
 			stop_redis
 		end
 	end
-	
-	def self.generate_app(dir,name)
-		puts "generating rhoconnect app: rhoconnect is: #{@@rhoconnect_bin}, app name is #{name}, dir is #{dir}"
-		execute_rhoconnect(dir,"app",name)
+
+	def self.generate_app(dir, name, run_bundler = true)
+		puts "Generating rhoconnect app: binary: #{@@rhoconnect_bin}, app name: #{name}, dir: #{dir}"
+		execute_rhoconnect(dir,"app", name)
+
+		# Patch Gemfile: replace gem version by path to source
+		gem_path = "gem 'rhoconnect', :path => '#{@@rhoconnect_path}'"
+		path_gemfile = File.join(dir, name, "Gemfile")
+		lines = File.read(path_gemfile)
+		lines.gsub!(/(gem 'rhoconnect'.*)/, gem_path)
+		File.open(path_gemfile, 'w') { |f| f.write lines }
+
+		Kernel.system('bundle install', :chdir => File.join(dir, name)) if run_bundler
 	end
 
 	def self.start_rhoconnect_push
@@ -246,17 +256,17 @@ module RhoconnectHelper
 
 	def self.execute_rhoconnect(workdir,*args)
 		cmd = ""
-	
+
 		if RUBY_PLATFORM =~ /(win|w)32$/
 			cmd = "ruby #{@@rhoconnect_bin}"
 		else
 			cmd = "#{@@rhoconnect_bin}"
 		end
-	
+
 		args.each do |arg|
 			cmd = "#{cmd} #{arg}"
 		end
-	
+
 		puts cmd
 		if workdir
 			Kernel.system(cmd,:chdir => workdir, :out => @@rc_out)
