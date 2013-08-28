@@ -1258,8 +1258,9 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
 {
-#if defined (_WIN32_WCE)
+    LOG(INFO) + "OnConnectionsNetworkCount: " + wParam;
 
+#if defined (_WIN32_WCE)
 	rho_sysimpl_sethas_network( wParam );
 	m_networkStatusMonitor.notifyReceiver( ((int)wParam!=0)?rho::common::networkStatusConnected:rho::common::networkStatusDisconnected );
 
@@ -1269,8 +1270,9 @@ LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPA
 
 LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
 {
-#if defined (_WIN32_WCE)
+    LOG(INFO) + "OnConnectionsNetworkCell: " + wParam;
 
+#if defined (_WIN32_WCE)
 	rho_sysimpl_sethas_cellnetwork( (int)wParam );
 	m_networkStatusMonitor.notifyReceiver( (wParam!=0)?rho::common::networkStatusConnected:rho::common::networkStatusDisconnected );
 
@@ -1622,10 +1624,17 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
 	//createCustomMenu();
-	
-	m_pageCounter++;
-	if (m_pageCounter > 1) //"loading" page + first page
-		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
+
+    if (m_pageCounter >= 0)
+    {
+	    m_pageCounter++;
+	    if (m_pageCounter > 1) //"loading" page + first page
+        {
+            //Do it once
+		    SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
+            m_pageCounter = -1;
+        }
+    }
 #endif	
 
     //CMetaHandler oHandler(m_spIWebBrowser2);
