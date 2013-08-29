@@ -1262,7 +1262,9 @@ LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPA
 
 #if defined (_WIN32_WCE)
 	rho_sysimpl_sethas_network( wParam );
-	m_networkStatusMonitor.notifyReceiver( ((int)wParam!=0)?rho::common::networkStatusConnected:rho::common::networkStatusDisconnected );
+	// TODO: the absolutely correct way to check WiFi connection is: ((wParam & 0x10) != 0) - instead of just (wParam > 1)
+	// (but this code needs to be tested on all supported WM/CE platforms first; it seems to work fine on WM6Pro)
+	m_networkStatusMonitor.notifyReceiver( (wParam > 1) ? rho::common::networkStatusConnected : rho::common::networkStatusDisconnected );
 
 #endif
 	return 0;
