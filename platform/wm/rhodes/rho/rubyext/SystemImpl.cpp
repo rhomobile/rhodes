@@ -914,7 +914,7 @@ VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_name
 
 void rho_sysimpl_sethas_network(int nValue)
 {
-    g_rho_has_network = nValue > 1 ? 1 : 0;
+    g_rho_has_network = nValue >= 1 ? 1 : 0;
 }
 
 void rho_sysimpl_sethas_cellnetwork(int nValue)

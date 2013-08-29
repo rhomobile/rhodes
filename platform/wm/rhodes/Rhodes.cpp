@@ -659,7 +659,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		SN_CONNECTIONSNETWORKCOUNT_VALUE, 
         &dwConnCount
     );
-    rho_sysimpl_sethas_network(dwConnCount);
+    rho_sysimpl_sethas_network((dwConnCount > 1) ? 1 : 0);
 
     DWORD dwCellConnected = 0;
     hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
