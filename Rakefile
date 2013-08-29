@@ -689,6 +689,16 @@ namespace "config" do
         #$app_config['extensions'].delete('barcode')
         $rhoelements_features += "- Barcode extension\n"
     end
+    if $app_config['extensions'].index('indicators')
+        $rhoelements_features += "- Indicators extension\n"
+    end
+    if $app_config['extensions'].index('hardwarekeys')
+        $rhoelements_features += "- HardwareKeys extension\n"
+    end
+    if $app_config['extensions'].index('cardreader')
+        $rhoelements_features += "- CardReader extension\n"
+    end
+    
     if $app_config['extensions'].index('nfc')
         #$app_config['extensions'].delete('nfc')
         $rhoelements_features += "- NFC extension\n"
