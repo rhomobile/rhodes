@@ -56,7 +56,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <!-- These three methods are for RingtoneManager-->
             <METHOD name="getAllRingtones" access="STATIC" hasCallback="mandatory">
                 <DESC>Getting all ringtones on the device - result is array of hashes , each HASH contain pair name, fullname info about ringtone</DESC>    
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>Android</PLATFORM>
                 <CALLBACK type="ARRAY">
                     <PARAM type="HASH">
                         <PARAMS>
