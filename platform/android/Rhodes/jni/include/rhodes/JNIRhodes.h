@@ -77,9 +77,9 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
 
 #define JNI_EXCEPTION_CHECK(env, result) if(env->ExceptionCheck()) { \
     jholder<jthrowable> jhexc = env->ExceptionOccurred(); \
+    env->ExceptionClear(); \
     jholder<jclass> jhclass = env->GetObjectClass(jhexc.get()); \
     jmethodID mid = env->GetMethodID(jhclass.get(), "toString", "()Ljava/lang/String;"); \
-    env->ExceptionClear(); \
     jhstring jhmsg = (jstring)env->CallObjectMethod(jhexc.get(), mid); \
     rho::String error = rho_cast<rho::String>(env, jhmsg); \
     RAWLOG_ERROR(error.c_str()); \
@@ -88,9 +88,9 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
 
 #define JNI_EXCEPTION_CHECK_AND_RETURN(env, result, value) if(env->ExceptionCheck()) { \
     jholder<jthrowable> jhexc = env->ExceptionOccurred(); \
+    env->ExceptionClear(); \
     jholder<jclass> jhclass = env->GetObjectClass(jhexc.get()); \
     jmethodID mid = env->GetMethodID(jhclass.get(), "toString", "()Ljava/lang/String;"); \
-    env->ExceptionClear(); \
     jhstring jhmsg = (jstring)env->CallObjectMethod(jhexc.get(), mid); \
     rho::String error = rho_cast<rho::String>(env, jhmsg); \
     RAWLOG_ERROR(error.c_str()); \

@@ -81,9 +81,9 @@ String AndroidMemoryInfoCollector::collect()
 String clearException(JNIEnv* env)
 {
     jholder<jthrowable> jhexc = env->ExceptionOccurred();
+    env->ExceptionClear();
     jholder<jclass> jhclass = env->GetObjectClass(jhexc.get());
     jmethodID mid = env->GetMethodID(jhclass.get(), "toString", "()Ljava/lang/String;");
-    env->ExceptionClear();
     jhstring jhmsg = (jstring)env->CallObjectMethod(jhexc.get(), mid);
     return rho_cast<rho::String>(env, jhmsg);
 }
