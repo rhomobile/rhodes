@@ -728,10 +728,10 @@ namespace "config" do
         $rhoelements_features += "- Motorola device capabilities\n"                
     end
 
-    if $app_config['extensions'].index('webkit-browser')
+    if $app_config['extensions'].index('webkit-browser') || $app_config['capabilities'].index('webkit_browser')
         $rhoelements_features += "- Motorola WebKit Browser\n"                
     end
-
+      
     if $app_config['extensions'].index('rho-javascript')
         $rhoelements_features += "- Javascript API for device capabilities\n"                
     end
