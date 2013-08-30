@@ -230,6 +230,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>
+                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
             </METHOD>
 
             <METHOD name="processApplicationEvent" generateAPI="false">
