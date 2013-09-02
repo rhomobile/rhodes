@@ -2,7 +2,6 @@ package com.rho.mediaplayer;
 
 import android.view.KeyEvent;
 
-import com.motorolasolutions.rho.keycapture.KeyCaptureSingleton;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.extmanager.AbstractRhoListener;

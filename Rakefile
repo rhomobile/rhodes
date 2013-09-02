@@ -468,6 +468,8 @@ namespace "config" do
     $app_extensions_list = {}
     buildyml = 'rhobuild.yml'
 
+    $current_platform_bridge = $current_platform unless $current_platform_bridge
+
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
@@ -579,8 +581,6 @@ namespace "config" do
     if $current_platform == "wm" || $current_platform == "android"
         if $app_config["app_type"] == 'rhoelements'
         
-            $app_config['extensions'] << 'rhoelements-license' if $current_platform == "android"
-        
             if !$app_config["capabilities"].index('non_motorola_device')        
                 $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
                 $app_config["extensions"] += ["rhoelementsext"]
@@ -689,6 +689,16 @@ namespace "config" do
         #$app_config['extensions'].delete('barcode')
         $rhoelements_features += "- Barcode extension\n"
     end
+    if $app_config['extensions'].index('indicators')
+        $rhoelements_features += "- Indicators extension\n"
+    end
+    if $app_config['extensions'].index('hardwarekeys')
+        $rhoelements_features += "- HardwareKeys extension\n"
+    end
+    if $app_config['extensions'].index('cardreader')
+        $rhoelements_features += "- CardReader extension\n"
+    end
+    
     if $app_config['extensions'].index('nfc')
         #$app_config['extensions'].delete('nfc')
         $rhoelements_features += "- NFC extension\n"
@@ -718,10 +728,10 @@ namespace "config" do
         $rhoelements_features += "- Motorola device capabilities\n"                
     end
 
-    if $app_config['extensions'].index('webkit-browser')
+    if $app_config['extensions'].index('webkit-browser') || $app_config['capabilities'].index('webkit_browser')
         $rhoelements_features += "- Motorola WebKit Browser\n"                
     end
-
+      
     if $app_config['extensions'].index('rho-javascript')
         $rhoelements_features += "- Javascript API for device capabilities\n"                
     end
@@ -738,6 +748,7 @@ namespace "config" do
     $invalid_license = false
 
     if $rhoelements_features.length() > 0
+        $app_config['extensions'] << 'rhoelements-license' if $current_platform == "android"
 
         #check for RhoElements gem and license
 	    if  !$app_config['re_buildstub']	
@@ -1142,7 +1153,7 @@ def init_extensions(dest, mode = "")
                   #api generator
                   if gen_checker.check(xml_path)      
                     puts 'start running rhogen with api key'
-                    Jake.run3("#{$startdir}/bin/rhogen api #{xml_path}")
+                    Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
                   end
               end    
             end
@@ -1154,7 +1165,7 @@ def init_extensions(dest, mode = "")
           Dir.glob(extpath + "/public/api/*.js").each do |f|
               fBaseName = File.basename(f)
               if (fBaseName.start_with?("rhoapi-native") )
-                endJSModules << f if fBaseName == "rhoapi-native." + $current_platform + ".js"
+                endJSModules << f if fBaseName == "rhoapi-native.#{$current_platform_bridge}.js"
                 next
               end
               
@@ -1868,9 +1879,8 @@ task :get_ext_xml_paths, [:platform] do |t,args|
     throw "You must pass in platform(win32, wm, android, iphone, wp8)" if args.platform.nil?
 
     $current_platform = args.platform
+    $current_platform_bridge = args.platform
 
-    config_platform = $current_platform == 'win32' ? 'wm' : $current_platform
-    
     Rake::Task["config:common"].invoke  
     
     res_xmls = init_extensions( nil, "get_ext_xml_paths")
@@ -1879,12 +1889,12 @@ task :get_ext_xml_paths, [:platform] do |t,args|
 end
 
 task :update_rho_modules_js, [:platform] do |t,args|
-    throw "You must pass in platform(win32, wm, android, iphone, wp8)" if args.platform.nil?
+    throw "You must pass in platform(win32, wm, android, iphone, wp8, all)" if args.platform.nil?
 
     $current_platform = args.platform
+    $current_platform = 'wm' if args.platform == 'all'
+    $current_platform_bridge = args.platform
 
-    config_platform = $current_platform == 'win32' ? 'wm' : $current_platform
-    
     Rake::Task["config:common"].invoke  
     
     init_extensions( nil, "update_rho_modules_js")

@@ -183,6 +183,11 @@ end
 					On Android, the maximum duration for vibrate is 15 seconds (15000ms).
 				</DESC>
 			</REMARK>
+            <REMARK title="Spuriously reported hardware">
+                <DESC>
+					Some Windows Mobile or CE devices may report hardware which is not present on the device such as a pager or LEDs.  This is a limitation of the underlying driver layer reporting spurious results to the application, though all real hardware will be controllable.
+				</DESC>
+			</REMARK>
 	   </REMARKS>
 	</MODULE>
 </API>    

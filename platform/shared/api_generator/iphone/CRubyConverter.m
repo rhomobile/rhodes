@@ -67,6 +67,10 @@
             rho_ruby_add_to_hash(v, vKey, vItem);
         }
     }
+    else if ([objectiveC_value isKindOfClass:[CMethodResultError class]]) {
+        CMethodResultError* errorObject = (CMethodResultError*)objectiveC_value;
+        
+    }
     // ToDo: Support CMethodResultError
     
     return v;

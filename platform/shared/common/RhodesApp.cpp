@@ -510,7 +510,7 @@ void CRhodesApp::stopApp()
         m_bExit = true;
         m_httpServer->stop();
         stopWait();
-        stop(2000);
+        stop(4000);
     }
 
     #ifdef OS_ANDROID

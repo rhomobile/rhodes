@@ -20,6 +20,10 @@ public:
 	
 	// return Ruby object
 	virtual unsigned long getObjectValue() {
+        if ([mMethodResult isError]) {
+            NSString* errMsg = [mMethodResult getErrorMessage];
+            return rho_ruby_create_string([errMsg UTF8String]);
+        }
 		return [mMethodResult toRuby];
 	}
 	

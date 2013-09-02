@@ -94,6 +94,7 @@ public:
     void set(int res){ m_nRes = res;  setType(eInt); }
     void set(unsigned long res){ m_nRes = res;  setType(eInt); }
     void set(double res){ m_dRes = res;  setType(eDouble);  }
+    void resetToEmptyString() { m_strRes.clear(); m_ResType = eString; }
 
     void setError(const rho::String& res){ m_strError = res; setType(eError); }
     void setArgError(const rho::String& fmt, ...)

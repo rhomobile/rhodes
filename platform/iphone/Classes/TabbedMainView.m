@@ -356,21 +356,34 @@
 	
     
 #ifdef __IPHONE_7_0
-    tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
-    tabbar.tabBar.translucent = NO;
-	if (background_color != nil) {
-		int c = [background_color intValue];
-		int cR = (c & 0xFF0000) >> 16;
-		int cG = (c & 0xFF00) >> 8;
-		int cB = (c & 0xFF);
-		tabbar.tabBar.barTintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
+        tabbar.tabBar.translucent = NO;
+        if (background_color != nil) {
+            int c = [background_color intValue];
+            int cR = (c & 0xFF0000) >> 16;
+            int cG = (c & 0xFF00) >> 8;
+            int cB = (c & 0xFF);
+            tabbar.tabBar.barTintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        }
+        if (selected_color != nil) {
+            int c = [selected_color intValue];
+            int cR = (c & 0xFF0000) >> 16;
+            int cG = (c & 0xFF00) >> 8;
+            int cB = (c & 0xFF);
+            tabbar.tabBar.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        }
     }
-	if (selected_color != nil) {
-		int c = [selected_color intValue];
-		int cR = (c & 0xFF0000) >> 16;
-		int cG = (c & 0xFF00) >> 8;
-		int cB = (c & 0xFF);
-		tabbar.tabBar.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+    else {
+        if (background_color != nil) {
+            RhoUITabBarController* rc = [RhoUITabBarController alloc];
+            rc.bkgColor = [background_color intValue];
+            rc = [rc initWithNibName:nil bundle:nil];
+            tabbar = rc;
+        }
+        else {
+            tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
+        }
     }
 #else
 	if (background_color != nil) {

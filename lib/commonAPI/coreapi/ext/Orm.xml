@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
   <MODULE name="ORM" parent="Rho" generateUnderscoreRubyNames="true" generateAPI="false">
-    <HELP_OVERVIEW>This API class allows you to interact with the local RHOM database and programtically add models or get references to models.</HELP_OVERVIEW>
+    <HELP_OVERVIEW>This Javascript API class allows you to interact with the local RHOM database and programatically add models or get references to models.</HELP_OVERVIEW>
     <MORE_HELP>
 ## Enabling the API           
 This API is part of the `coreapi` extension that is included automatically.
@@ -13,7 +13,7 @@ This API is part of the `coreapi` extension that is included automatically.
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/rhom-api).
 
 </MORE_HELP>
 
@@ -30,7 +30,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       <METHOD name="databaseFullReset" generateAPI="false">
         <DESC>Deletes all records from the property bag and model tables.
         </DESC>
-
+        <APPLIES jsOnly="true"/>
         <PARAMS>
           <PARAM name="resetClientInfo" type="BOOLEAN">
             <DESC>true to clean the client_info table, false otherwise.</DESC>
@@ -50,6 +50,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       </METHOD>
        <METHOD name="import" deprecated="true" generateAPI="false">
         <DESC>Import db</DESC>
+        <APPLIES jsOnly="true"/>
         <PARAMS>
           <PARAM name="zipName" type="STRING">
             <DESC>The name of the zip file</DESC>
@@ -60,30 +61,37 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       <METHOD name="getClientId" generateAPI="false">
         <DESC>Returns the current sync client id.
         </DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
 
       <METHOD name="haveLocalChanges" generateAPI="false">
         <DESC>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized, false otherwise.
         </DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="export" deprecated="true"  generateAPI="false">
         <DESC>Export db</DESC>
         <RETURN type="STRING"/>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseFullResetAndLogout" generateAPI="false">
         <DESC>Deletes all records from the property bag and model tables. For examples, see Resetting the Database in Using the Local Database with ORM.
         </DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseLocalReset" generateAPI="false">
         <DESC>Reset only local (non-sync-enabled) models.</DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseFullclientResetAndLogout" generateAPI="false">
         <DESC>Reset the Rhodes model database and logout. Equivalent to ORM::ORM.database_full_reset(true) followed by SyncEngine.logout.
         </DESC>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseFullResetEx" generateAPI="false">
         <DESC>Deletes all records from the property bag and model tables for the model names passed in parameters.
         </DESC>
+        <APPLIES jsOnly="true"/>
         <PARAMS>
           <PARAM name="propertyMap" type="HASH" propertyHash="true">
             <DESC>Properties map.</DESC>
@@ -108,40 +116,131 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PARAMS>
       </METHOD>
       <METHOD name="getModel" generateAPI="false">
-        <DESC>Javascript using only. Returns a model.
+        <DESC>Returns a model.
         </DESC>
         <PARAMS>
           <PARAM name="modelName" type="String">
             <DESC>Name of the model you want returned.</DESC>
           </PARAM>
         </PARAMS>
+        <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="addModel" generateAPI="false">
-        <DESC>Javascript using only. Creates ORM model.
-        </DESC>
+        <DESC>Creates an ORM model reference.</DESC>
+        <APPLIES jsOnly="true"/>
         <PARAMS>
           <PARAM name="Anoynomous Function methods" type="">
             <PARAMS>
-              <PARAM name='modelName' type=''>
-                <DESC>modelName(STRING name). The name of your model.</DESC>
+              <PARAM name='modelName("value")' type='STRING'>
+                <DESC>The name of your model.</DESC>
               </PARAM>
-              <PARAM name='enable' type=''>
-                <DESC>enable(STRING sync). Same as set(name,true). Sets attribute to true.</DESC>
+              <PARAM name='enable("value")' type='STRING'>
+                <DESC>Enables Model Properties.</DESC>
+                <VALUES>
+                                <VALUE constName="" value ="sync">
+                                    <DESC>If set then model is set for RhoConnect Sync</DESC>
+                                </VALUE>
+                                <VALUE constName="" value ="propertyBag">
+                                    <DESC>(Default) Model will be of type propertyBag.</DESC>
+                                </VALUE>
+                                <VALUE constName="" value ="fixedSchema">
+                                    <DESC>Model will be of type fixedSchema</DESC>
+                                </VALUE>
+                             
+                </VALUES>
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
               </PARAM>
-              <PARAM name='property' type=''>
-                <DESC>property(STRING name,STRING value,STRING options). Used to create properties on your model.</DESC>
+              <PARAM name='property("name","type")' type='STRING,STRING'>
+                <DESC>Used to create properties on your model.</DESC>
+                  <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>The name of the property</DESC>
+                    </PARAM>
+                    <PARAM name="type" type="STRING">
+                        <DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default</DESC>
+                    </PARAM>
+                   </PARAMS> 
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+
               </PARAM>
-              <PARAM name='addIndex' type=''>
-                <DESC>addIndex(STRING name,ARRAY [col1,col2]). Add an index to your fixedSchema model.</DESC>
+              <PARAM name='addIndex("name",[colArray])' type='STRING, ARRAY'>
+                <DESC>Add an index to your fixedSchema model.</DESC>
+                  <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>The name of the index</DESC>
+                    </PARAM>
+                    <PARAM name="colArray" type="ARRAY">
+                        <DESC>Array of model column names to use in index, Ex: ['name','qty']</DESC>
+                    </PARAM>
+                   </PARAMS> 
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+
               </PARAM>
-              <PARAM name='addUniqueIndex' type=''>
-                <DESC>addUniqueIndex(STRING name,ARRAY [col1,col2]). Add a unique index to your fixedSchema model.</DESC>
+              <PARAM name='addUniqueIndex("name",[colArray])' type='STRING, ARRAY'>
+                <DESC>Add an index to your fixedSchema model.</DESC>
+                  <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>The name of the index</DESC>
+                    </PARAM>
+                    <PARAM name="colArray" type="ARRAY">
+                        <DESC>Array of model column names to use in index, Ex: ['name','qty']</DESC>
+                    </PARAM>
+                  </PARAMS> 
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+
               </PARAM>
-              <PARAM name='belongs_to' type=''>
-                <DESC>belongs_to(STRING name).  Add belongs_to association to another defined model, for sync models. Comma separted String for more than one model.</DESC>
+
+
+              <PARAM name='belongs_to("name")' type='STRING'>
+                <DESC>Add belongs_to association to another defined model, for sync models. Comma separted String for more than one model.</DESC>
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+
               </PARAM>
-              <PARAM name='set' type=''>
-                <DESC>set(STRING name,STRING|BOOLEAN|INTEGER value).  Set an attribute to your model.</DESC>
+              <PARAM name='set(property,value)' type='STRING,VALUE'>
+                <DESC>Set Behavior of this model. Possible `property` options and corresponding values:</DESC>
+                <CAN_BE_NIL>
+                            
+                </CAN_BE_NIL>
+                  <PARAMS>
+                    <PARAM name="partition" type="STRING">
+                        <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data seperate from synched models. Possible `values`</DESC>
+                        <VALUES>
+                          <VALUE constName="" value ="local">
+                              <DESC>This partition is used automatically if the model is not a sync model</DESC>
+                          </VALUE>
+                          <VALUE constName="" value ="user">
+                              <DESC>This partition is used automatically if the model is a sync model</DESC>
+                          </VALUE>
+                      </VALUES>
+                    </PARAM>
+                    <PARAM name="sync_type" type="STRING">
+                        <DESC>Sets the type of sync it will be. </DESC>
+                      <VALUES>
+                        <VALUE constName="" value ="none">
+                            <DESC>If data model is not a sync model</DESC>
+                        </VALUE>
+                        <VALUE constName="" value ="incremental">
+                            <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
+                        </VALUE>
+                      </VALUES>
+                                               
+                    </PARAM>
+                    <PARAM name="sync_priority" type="INTEGER">
+                        <DESC>Determines how frequently to check for changes. In seconds. Default is 1000. </DESC>
+                                              
+                    </PARAM>
+                    
+                  </PARAMS>                
               </PARAM>
             </PARAMS>
           </PARAM>
@@ -168,20 +267,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
               This example describes creating model and adding model object.
             </DESC>
             <CODE>
-              <RUBY>
-                <![CDATA[
-class Product
-  include ORM::PropertyBag
-end
-
-product = Product.create( :brand => 'Apple', :name => 'iPhone5', :price => 199.99)
-
-readedProduct = Product.find(:first)
-readedProduct.brand
-  #=> "Apple"
-readedProduct.name
-  #=> "iPhone5"    ]]>
-              </RUBY>
+              
 
               <JAVASCRIPT>
                 <![CDATA[
@@ -224,6 +310,13 @@ product.get('name'); // iPhone5
         
         <JAVASCRIPT>
    <![CDATA[
+// The model 'Product' must have been defined in Javascript execution earlier 
+// in order for 'getModel' to work properly. 
+
+// The models generated in RhoStudio, are not accessible in Javascript unless 
+// the classes are defined via the  Rho.ORM.addModel api
+
+
 // Get a model by its name after it has been added
 var productModel = Rho.ORM.getModel("Product");
 
@@ -240,10 +333,7 @@ var productModel = Rho.ORM.getModel("Product");
               Delete all Rhodes model objects for a source, filtering by conditions.
             </DESC>
             <CODE>
-              <RUBY>
-                <![CDATA[
-ORM.databaseFullResetEx({:models => ['Product', 'Customer'], :reset_client_info => true, :reset_local_models => true}) ]]>
-              </RUBY>
+              
               <JAVASCRIPT>
                 <![CDATA[
 Rho.ORM.databaseFullResetEx({'models' : ['Product', 'Customer'], 'reset_client_info' : true, 'reset_local_models' : true} ]]>
