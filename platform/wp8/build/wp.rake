@@ -605,3 +605,9 @@ namespace "run" do
     end
   end
 end
+
+namespace :stop do
+  task :wp8 do
+    # TODO: add implementation
+  end
+end

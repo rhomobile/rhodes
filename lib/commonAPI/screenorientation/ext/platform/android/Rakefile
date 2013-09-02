@@ -28,21 +28,21 @@ task :build => [:config, OBJDIR] do
     $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
 
     args = []
-    args << "-I#{$curdir}/generated/jni"
-    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
-    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details"
-    args << "-I#{$rootdir}/platform/shared/ruby/include"
-    args << "-I#{$rootdir}/platform/shared"
-    args << "-I#{$rootdir}/platform/shared/common"
-    args << "-I#{$rootdir}/platform/shared/api_generator"
-    args << "-I#{$appincdir}"
-    args << "-I#{$std_includes}"
-    args << "-I#{$rootdir}/platform/shared/ruby"
-    args << "-I#{$rootdir}/platform/shared/ruby/android"
-    args << "-I#{$rootdir}/platform/shared/ruby/generated"
+    args << "-I\"#{$curdir}/generated/jni\""
+    args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
+    args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\""
+    args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
+    args << "-I\"#{$rootdir}/platform/shared\""
+    args << "-I\"#{$rootdir}/platform/shared/common\""
+    args << "-I\"#{$rootdir}/platform/shared/api_generator\""
+    args << "-I\"#{$appincdir}\""
+    args << "-I\"#{$std_includes}\""
+    args << "-I\"#{$rootdir}/platform/shared/ruby\""
+    args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
+    args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
     
     cd '../../..'
-    puts "pwd: #{pwd} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+    puts "pwd: #{pwd}"
     
     cc_build $sources, OBJDIR, args or raise "Compile is failed"
 end

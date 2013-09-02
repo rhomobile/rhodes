@@ -21,11 +21,11 @@ class JUnitFormatter < YamlFormatter
   def finish
     switch
 
-	time = @timer.elapsed
+    time = @timer.elapsed
+    formatted_time = "%.1f" % time
     tests = @tally.counter.examples
     errors = @tally.counter.errors
     failures = @tally.counter.failures
-
 #RHO
 	  #printf <<-XML
 	print <<-XML
@@ -34,14 +34,14 @@ class JUnitFormatter < YamlFormatter
         testCount="#{tests}"
         errorCount="#{errors}"
         failureCount="#{failures}"
-        timeCount="#{time}" time="#{time}">
+        timeCount="#{formatted_time}" time="#{formatted_time}">
       <testsuite
           tests="#{tests}"
           errors="#{errors}"
           failures="#{failures}"
-          time="#{time}"
+          time="#{formatted_time}"
           name="Spec Output For #{::RUBY_NAME} (#{::RUBY_VERSION})">
-	  
+
     XML
 
     @tests.each do |h|

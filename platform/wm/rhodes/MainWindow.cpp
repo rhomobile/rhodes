@@ -1258,10 +1258,13 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
 {
-#if defined (_WIN32_WCE)
+    LOG(INFO) + "OnConnectionsNetworkCount: " + wParam;
 
-	rho_sysimpl_sethas_network( wParam );
-	m_networkStatusMonitor.notifyReceiver( ((int)wParam!=0)?rho::common::networkStatusConnected:rho::common::networkStatusDisconnected );
+#if defined (_WIN32_WCE)
+	// TODO: the absolutely correct way to check WiFi connection is: ((wParam & 0x10) != 0) - instead of just (wParam > 1)
+	// (but this code needs to be tested on all supported WM/CE platforms first; it seems to work fine on WM6Pro)
+	rho_sysimpl_sethas_network( (wParam > 1) ? 1 : 0 );
+	m_networkStatusMonitor.notifyReceiver( (wParam > 1) ? rho::common::networkStatusConnected : rho::common::networkStatusDisconnected );
 
 #endif
 	return 0;
@@ -1269,8 +1272,9 @@ LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPA
 
 LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
 {
-#if defined (_WIN32_WCE)
+    LOG(INFO) + "OnConnectionsNetworkCell: " + wParam;
 
+#if defined (_WIN32_WCE)
 	rho_sysimpl_sethas_cellnetwork( (int)wParam );
 	m_networkStatusMonitor.notifyReceiver( (wParam!=0)?rho::common::networkStatusConnected:rho::common::networkStatusDisconnected );
 
@@ -1622,10 +1626,17 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
 	//createCustomMenu();
-	
-	m_pageCounter++;
-	if (m_pageCounter > 1) //"loading" page + first page
-		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
+
+    if (m_pageCounter >= 0)
+    {
+	    m_pageCounter++;
+	    if (m_pageCounter > 1) //"loading" page + first page
+        {
+            //Do it once
+		    SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
+            m_pageCounter = -1;
+        }
+    }
 #endif	
 
     //CMetaHandler oHandler(m_spIWebBrowser2);

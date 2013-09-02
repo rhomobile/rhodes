@@ -81,9 +81,9 @@ String AndroidMemoryInfoCollector::collect()
 String clearException(JNIEnv* env)
 {
     jholder<jthrowable> jhexc = env->ExceptionOccurred();
+    env->ExceptionClear();
     jholder<jclass> jhclass = env->GetObjectClass(jhexc.get());
     jmethodID mid = env->GetMethodID(jhclass.get(), "toString", "()Ljava/lang/String;");
-    env->ExceptionClear();
     jhstring jhmsg = (jstring)env->CallObjectMethod(jhexc.get(), mid);
     return rho_cast<rho::String>(env, jhmsg);
 }
@@ -378,11 +378,17 @@ rho_cast_helper<HStringMap, jobjectArray>::operator()(JNIEnv *env, jobjectArray 
     unsigned n = env->GetArrayLength(jKeys);
     for(unsigned i = 0; i < n; ++i)
     {
-        jhstring jkey = static_cast<jstring>(env->GetObjectArrayElement(jKeys, i));
-        jhstring jval = static_cast<jstring>(env->GetObjectArrayElement(jVals, i));
+		jobject jkeyraw = env->GetObjectArrayElement(jKeys, i);
+		jobject jvalraw = env->GetObjectArrayElement(jVals, i);
+		
+        jhstring jkey = static_cast<jstring>(jkeyraw);
+        jhstring jval = static_cast<jstring>(jvalraw);
 
         std::string key = rho_cast<std::string>(env, jkey);
         std::string val = rho_cast<std::string>(env, jval);
+		
+		env->DeleteLocalRef(jkeyraw);
+		env->DeleteLocalRef(jvalraw);
 
         result->put(key, val);
     }
@@ -402,8 +408,13 @@ rho_cast_helper<HStringVector, jobjectArray>::operator ()(JNIEnv *env, jobjectAr
 
     for(unsigned i = 0; i < n; ++i)
     {
-        jhstring jval = static_cast<jstring>(env->GetObjectArrayElement(jArr, i));
+		jobject jvalraw = env->GetObjectArrayElement(jArr, i);
+		
+        jhstring jval = static_cast<jstring>(jvalraw);
         std::string val = rho_cast<std::string>(env, jval);
+		
+		env->DeleteLocalRef(jvalraw);
+		
         result->push_back(val);
     }
     return result;

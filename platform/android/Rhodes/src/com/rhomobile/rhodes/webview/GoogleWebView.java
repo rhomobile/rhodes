@@ -263,7 +263,13 @@ public class GoogleWebView implements IRhoWebView {
     }
     
     private void saveJpeg(String path) {
-        Picture picture = mWebView.capturePicture(); 
+        Picture picture = mWebView.capturePicture();
+        
+        if ( ( picture == null ) || ( picture.getWidth() == 0 ) || picture.getHeight() == 0 ) {
+            Logger.E(TAG, "Can't capture picture from WebView.");
+            return;
+        }
+        
         Bitmap bitmap = Bitmap.createBitmap( picture.getWidth(), picture.getHeight(), Bitmap.Config.ARGB_8888); 
         Canvas canvas = new Canvas(bitmap); 
         picture.draw(canvas); 

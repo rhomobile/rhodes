@@ -65,7 +65,7 @@ public:
     void CreateTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
     void RemoveTabbar();
     void RemoveTab(int index);
-    void SwitchTab(int index, bool bCreateOnly=false);
+    void SwitchTab(int index, bool bCreateOnly=false, bool bByName = false);
     void SetBadge(int index, const char* badge);
     int GetCurrentTabID();
     int GetTabID(int nIndex);

@@ -86,6 +86,14 @@ unsigned long rb_c_impl_SQLite3_execute(int argc, VALUE *argv, void* pDB)
                 case T_BIGNUM:
                     sqlite3_bind_int64(statement, i+1, NUM2LL(arg));
                     break;
+                case T_DATA:
+                    if (CLASS_OF(arg) == rb_cTime)
+                    {
+                        VALUE intVal = rb_funcall(arg, rb_intern("to_i"), 0);	
+                        sqlite3_bind_int64(statement, i+1, NUM2LL(intVal));
+                        break;
+                    }
+
                 default:
 					{
 						VALUE strVal = rb_funcall(arg, rb_intern("to_s"), 0);	

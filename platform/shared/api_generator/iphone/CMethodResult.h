@@ -35,6 +35,10 @@
 -(void) setMethodSignature:(NSString*)methodSignature;
 
 -(BOOL) isHash;
+-(BOOL) isError;
+
+-(NSString*) getErrorMessage;
+
 -(NSDictionary*) getHashResult;
 
 -(NSObject*) getResult;

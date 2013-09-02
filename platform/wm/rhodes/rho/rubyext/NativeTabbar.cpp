@@ -169,7 +169,7 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
         //getAppWindow().SetTimer( TABBAR_TIMER_ID, 1000 );
         SwitchTabByName( m_strStartTabName.c_str(), false );
         m_strStartTabName = "";
-    }else if ( m_arTabs.size() && !m_arTabs[0].m_bUseCurrentViewForTab )
+    }else if ( m_arTabs.size() ) //&& !m_arTabs[0].m_bUseCurrentViewForTab )
         SwitchTab(0);
 
     m_bTabCreated = true;
@@ -234,7 +234,7 @@ void CNativeTabbar::SwitchTabByName(const char* szTabName, bool bExecuteJS)
                 rho_webview_execute_js( strJS.c_str(), GetCurrentTabIndex() );
             }
             else*/
-                SwitchTab(i);
+                SwitchTab(i, false, true);
             break;
         }
     }
@@ -244,6 +244,8 @@ void CNativeTabbar::raiseTabEvent( const char* szEventName, int nOldTab, int nNe
 {
     if ( m_oCallback.hasCallback() )
     {
+        LOG(INFO) + "raiseTabEvent: " + szEventName + "; " + nOldTab + "; " + nNewTab;
+
         Hashtable<String,String> mapRes;
         mapRes["tab_index"] = convertToStringA(nNewTab);
         mapRes["newTabIndex"] = convertToStringA(nNewTab);
@@ -281,7 +283,7 @@ bool CNativeTabbar::removePerishableTab()
     return true;
 }
 
-void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/)
+void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/, bool bByName /*= false*/)
 {
     if (!getAppWindow().getWebKitEngine())
         return;
@@ -344,11 +346,17 @@ void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/)
         int nOldTab = m_nCurrentTab; 
         m_nCurrentTab = index;
 
+        if (bNewTab || bByName)
+            Sleep(200);
+
         raiseTabEvent( "onTabFocus", nOldTab, m_nCurrentTab );
     }
 
     if (  m_arTabs[index].m_strAction.length() > 0 && (m_arTabs[index].m_bReloadPage || bNewTab) )
+    {
+        LOG(INFO) + "loadUrl";
         RHODESAPP().loadUrl( m_arTabs[index].m_strAction, index );
+    }
     
 }
 

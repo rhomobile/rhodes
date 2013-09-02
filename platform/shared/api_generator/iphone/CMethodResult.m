@@ -15,20 +15,21 @@ extern int rho_webview_active_tab();
 // ToDo: Support CMethodResultError
 @implementation CMethodResultError
 
--(id)init:(NSString*)error_type description:(NSString*)description {
+
+-(id)init:(int)error_code description:(NSString*)description {
     self = [super init];
-    errorType = error_type;
+    errorCode = error_code;
     errorDescription = description;
     return self;
 }
 
-+ (CMethodResultError*) errorWithType:(NSString*)error_type description:(NSString*)description {
-    CMethodResultError* b = [[CMethodResultError alloc] init:error_type description:description];
++ (CMethodResultError*) errorWithCode:(int)error_code description:(NSString*)description {
+    CMethodResultError* b = [[CMethodResultError alloc] init:error_code description:description];
     return b;
 }
 
--(NSString*)getErrorType {
-    return errorType;
+-(int)getErrorCode {
+    return errorCode;
 }
 
 -(NSString*)getErrorDescription {
@@ -131,8 +132,28 @@ extern int rho_webview_active_tab();
     mMethodSignature = methodSignature;
 }
 
+-(NSString*) getErrorMessage {
+    if ([mValue isKindOfClass:[CMethodResultError class]]) {
+        CMethodResultError* errObj = (CMethodResultError*)mValue;
+        return [errObj getErrorDescription];
+    }
+    return @"";
+}
+
+
 
 -(VALUE) toRuby {
+    if ([self isError]) {
+        CMethodResultError* errObj = (CMethodResultError*)mValue;
+        NSString* errMsg = [errObj getErrorDescription];
+        if ([errObj getErrorCode] == METHOD_RESULT_ERROR_CODE_INVALID_PARAMS) {
+            rho_ruby_raise_argerror([errMsg UTF8String]);
+        }
+        else {
+            rho_ruby_raise_runtime([errMsg UTF8String]);
+        }
+        return rho_ruby_get_NIL();
+    }
     if (mRubyFactory != nil) {
         return [mRubyFactory makeRubyValue:mValue];
     }
@@ -147,6 +168,10 @@ extern int rho_webview_active_tab();
 
 -(BOOL) isHash {
     return [mValue isKindOfClass:[NSDictionary class]];
+}
+
+-(BOOL) isError {
+    return [mValue isKindOfClass:[CMethodResultError class]];
 }
 
 -(NSDictionary*) getHashResult {

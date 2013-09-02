@@ -42,18 +42,21 @@
 @end
 
 
+#define METHOD_RESULT_ERROR_CODE_INVALID_PARAMS  -32602
+#define METHOD_RESULT_ERROR_CODE_GENERAL_ERROR   -32603
+
 
 // Error result object - make it and set as result if you want send error instead of result
 @interface CMethodResultError : NSObject {
-    NSString* errorType;
+    int errorCode;
     NSString* errorDescription;
 }
 
--(id)init:(NSString*)error_type description:(NSString*)description;
+-(id)init:(int)error_code description:(NSString*)description;
 
-+ (CMethodResultError*) errorWithType:(NSString*)error_type description:(NSString*)description;
++ (CMethodResultError*) errorWithCode:(int)error_code description:(NSString*)description;
 
--(NSString*)getErrorType;
+-(int)getErrorCode;
 -(NSString*)getErrorDescription;
 
 -(void)dealloc;
