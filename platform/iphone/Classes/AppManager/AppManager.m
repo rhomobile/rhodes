@@ -1112,13 +1112,45 @@ void rho_platform_restart_application() {
 
 int rho_sys_set_do_not_bakup_attribute(const char* path, int value) {
     const char* attrName = "com.apple.MobileBackup";
+    NSString* pathString = [NSString stringWithUTF8String:path];
     u_int8_t attrValue = value;
+    int result = -1;
     
-    int result = setxattr(path, attrName, &attrValue, sizeof(attrValue), 0, 0);
-    
-    if (result != 0) {
-        NSLog(@"Can not change [do_not_bakup] attribute for path: %@", [NSString stringWithUTF8String:path]);
+    if (SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(@"5.01") || &NSURLIsExcludedFromBackupKey == nil) {
+        // iOS 5.0.1 and lower
+        result = setxattr(path, attrName, &attrValue, sizeof(attrValue), 0, 0);
+        
+        if (result != 0) {
+            NSLog(@"Can not change [do_not_bakup] attribute for path: %@", [NSString stringWithUTF8String:path]);
+        }
     }
+    else {
+#ifndef __IPHONE_5_1
+#define NSURLIsExcludedFromBackupKey @"NSURLIsExcludedFromBackupKey"
+#endif
+        
+        // Remove old style attribute if it exists
+        int result = getxattr(path, attrName, NULL, sizeof(u_int8_t), 0, 0);
+        if (result != -1) {
+            int removeResult = removexattr(path, attrName, 0);
+            if (removeResult == 0) {
+                NSLog(@"Removed extended attribute on file %@", pathString);
+            }
+        }
+        
+        NSError *error = nil;
+        NSURL* url = [NSURL fileURLWithPath:pathString];
+        BOOL success = [url setResourceValue: [NSNumber numberWithBool: (value == 1)]
+                                      forKey: NSURLIsExcludedFromBackupKey
+                                       error: &error];
+        
+        result = success ? 0 : -1;
+        
+        if (result != 0) {
+            NSLog(@"Can not change [do_not_bakup] attribute for path: %@, error: %@", pathString, error);
+        }
+    }
+
     
     return (int)(result == 0);
 }
