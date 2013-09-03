@@ -266,7 +266,7 @@ void CRhoFile::readString(String& strData){
         return;
 
     int nSize = size();
-    strData.resize(nSize);
+    strData.resize(nSize+1);
     nSize = fread(&strData[0], 1, nSize, m_file);
     strData[nSize] = 0;
 }
