@@ -62,7 +62,7 @@ class CDBResult
 public:
     CDBResult(sqlite3_stmt* st,CDBAdapter* pDB);
     CDBResult();
-    ~CDBResult(void);
+    virtual ~CDBResult(void);
 
     void setStatement(sqlite3_stmt* st);
     sqlite3_stmt* getStatement(){ return m_dbStatement; }
