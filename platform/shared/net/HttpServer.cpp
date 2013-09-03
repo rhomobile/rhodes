@@ -34,6 +34,7 @@
 #include "sync/RhoconnectClientManager.h"
 
 #include <algorithm>
+#include <iterator>
 
 #if !defined(WINDOWS_PLATFORM)
 #include <arpa/inet.h>
