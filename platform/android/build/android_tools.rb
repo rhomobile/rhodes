@@ -264,15 +264,12 @@ def  run_emulator(options = {})
 
     Thread.new { system(cmd) }
 
-    puts "Waiting for emulator..."
-    res = 'error'
-    while res =~ /error/ do
-      sleep 5
-      res = Jake.run $adb, ['-e', 'wait-for-device']
-      puts res
-    end
+    puts "Starting android emulator..."
+    cmd_start_emu = "#{$adb} -e wait-for-device shell getprop init.svc.bootanim"
+    puts cmd_start_emu
+    raise "Android emulator failed to start." unless system(cmd_start_emu)
 
-    puts "Waiting up to 600 seconds for emulator..."
+    puts "Waiting up to 600 seconds for emulator to be ready ..."
     startedWaiting = Time.now
     adbRestarts = 1
     while (Time.now - startedWaiting < 600 )
