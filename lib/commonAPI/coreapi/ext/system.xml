@@ -625,7 +625,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>The name of the application on the device to run.</DESC>
                     </PARAM>
                     <PARAM name="params" type="STRING">
-                        <DESC>The name of the application on the device to run.</DESC>
+                        <DESC>The name of the application on the device to run. Parameter could be just value, or key-value pair separated by '&#61;' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by "&#38;", on other platforms by '&#044;' or '&#032;'.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                     <PARAM name="blockingCall" type="BOOLEAN">
