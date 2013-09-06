@@ -259,13 +259,19 @@ def  run_emulator(options = {})
     cmd << " -no-window" if options[:hidden]
     cmd << " -avd #{$avdname}"
     cmd << " -wipe-data" if options[:wipe]
+    cmd << " -verbose"
 
     puts "Starting emulator: #{cmd}" if USE_TRACES
+    thread = Thread.new do
+      # puts 'adb emu kill'
+      # system('adb emu kill')
+      puts cmd
+      raise "Android emulator failed to start." unless system(cmd)
+    end
+    # Join for 30 secs and let emulator to start ...
+    thread.join(30)
 
-    Thread.new { system(cmd) }
-
-    puts "Starting android emulator..."
-    cmd_start_emu = "#{$adb} -e wait-for-device shell getprop init.svc.bootanim"
+    cmd_start_emu = "#{$adb} -e wait-for-device shell getprop sys.boot_completed"
     puts cmd_start_emu
     raise "Android emulator failed to start." unless system(cmd_start_emu)
 
