@@ -327,7 +327,7 @@ void MethodResultJni::reset(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(bool isRuby) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
+MethodResultJni::MethodResultJni(bool isRuby) : m_bhasLocalFrame(false), m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
 {
     m_env = jniInit();
     if (!m_env) {
@@ -335,12 +335,22 @@ MethodResultJni::MethodResultJni(bool isRuby) : m_env(0), m_jhResult(0), m_bGlob
         return;
     }
 
+	if(m_env->PushLocalFrame(256) >= 0)
+	{
+		m_bhasLocalFrame = true;
+	}
+	
     m_jhResult = m_env->NewObject(s_methodResultClass, s_midMethodResult, static_cast<jboolean>(isRuby));
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_jhResult(jResult), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
+MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_bhasLocalFrame(false), m_jhResult(jResult), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
 {
+	if(env->PushLocalFrame(256) >= 0)
+	{
+		m_bhasLocalFrame = true;
+	}
+	
     m_env = jniInit(env);
     if (!m_env) {
         RAWLOG_ERROR("ctor - JNI initialization failed");
@@ -349,9 +359,14 @@ MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_jhResult(jRes
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(const MethodResultJni& result) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
+MethodResultJni::MethodResultJni(const MethodResultJni& result) : m_bhasLocalFrame(false), m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
 {
     JNIEnv* env = result.m_env;
+	if(env->PushLocalFrame(256) >= 0)
+	{
+		m_bhasLocalFrame = true;
+	}
+	
     if(result.m_bGlobalRef) {
         RAWTRACE1("Copying MethodResult with global JNI reference: 0x%.8x ---------------------------------------", result.m_jhResult.get());
         m_jhResult = result.m_jhResult.get();
@@ -366,6 +381,11 @@ MethodResultJni::MethodResultJni(const MethodResultJni& result) : m_env(0), m_jh
 
 MethodResultJni::~MethodResultJni()
 {
+	if(m_bhasLocalFrame && m_env)
+	{
+		m_bhasLocalFrame = false;
+		m_env->PopLocalFrame(NULL);
+	}
     if(m_bGlobalRef)
     {
         jobject jResult = m_jhResult.release();

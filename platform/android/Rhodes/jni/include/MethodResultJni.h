@@ -69,6 +69,7 @@ private:
     jhobject m_jhResult;
     bool m_bGlobalRef;
     mutable bool m_bSlaveRef;
+	bool m_bhasLocalFrame;
 
     bool m_hasCallback;
 
