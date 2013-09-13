@@ -1354,7 +1354,7 @@ void CRhodesApp::initAppUrls()
 {
     CRhodesAppBase::initAppUrls(); 
    
-#if defined( __SYMBIAN32__ ) || defined( OS_ANDROID )
+#if defined( __SYMBIAN32__ )
     m_strHomeUrl = "http://localhost:";
 #elif defined( OS_WINCE ) && !defined(OS_PLATFORM_MOTCE)
     TCHAR oem[257];
