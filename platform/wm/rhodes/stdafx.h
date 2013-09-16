@@ -96,6 +96,7 @@
 #define SHELL_AYGSHELL
 #endif
 
+#if !defined(RHODES_EMULATOR_QMAKE)
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlwin.h>
@@ -103,6 +104,10 @@
 //#include <atlsiface.h>
 #include <atlstr.h>
 #include <atlcoll.h>
+#else
+#include <atlbase.h>
+#include <atlstr.h>
+#endif
 
 #if defined (_WIN32_WCE) 
 //--- Define max and min macroses for WTL only ---
@@ -161,6 +166,7 @@
 
 using namespace ATL;
 
+#if !defined(RHODES_EMULATOR_QMAKE)
 /*#ifdef SHELL_AYGSHELL
 #include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
@@ -194,11 +200,13 @@ using namespace ATL;
     #endif
 #endif
 
+#endif
+
 //#include "tcmalloc/rhomem.h"
 #include "logging/RhoLog.h"
 //#include <afxwin.h>
 
-#if defined(OS_WINDOWS_DESKTOP) && !defined(RHO_SYMBIAN)
+#if defined(OS_WINDOWS_DESKTOP) && !defined(RHO_SYMBIAN) && !defined(RHODES_EMULATOR_QMAKE)
 #include <atlapp.h>
 //#include <atlwin.h>
 //#include <atlcrack.h>

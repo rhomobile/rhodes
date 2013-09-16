@@ -253,7 +253,7 @@ void RhoRubyStart()
 //    Init_Alert();
 //#endif
 
-#if defined(WINDOWS_PLATFORM)
+#if defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR)
     init_rhoext_Signature();
 #else
     //Init_SignatureCapture();

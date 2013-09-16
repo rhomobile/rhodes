@@ -33,16 +33,6 @@
 #include "ExternalWebView.h"
 #include "RhoSimulator.h"
 #include <sstream>
-#include <QResizeEvent>
-#include <QWebFrame>
-#include <QWebSettings>
-#include <QWebSecurityOrigin>
-#include <QWebHistory>
-#include <QLabel>
-#include <QtNetwork/QNetworkCookie>
-#include <QFileDialog>
-#include <QDesktopServices>
-#include <QDesktopWidget>
 #include "QtWebPage.h"
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
@@ -56,6 +46,20 @@
 #include "RhoNativeApiCall.h"
 #include "statistic/RhoProfiler.h"
 #include <QStylePainter>
+#if QT_VERSION >= 0x050000
+#include <QtWebKit/qtwebkitversion.h>
+#include <QNetworkCookieJar>
+#endif
+#include <QResizeEvent>
+#include <QWebFrame>
+#include <QWebSettings>
+#include <QWebSecurityOrigin>
+#include <QWebHistory>
+#include <QLabel>
+#include <QtNetwork/QNetworkCookie>
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QDesktopWidget>
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp
@@ -275,6 +279,11 @@ void QtMainWindow::on_actionRotate180_triggered()
 	RHODESAPP().callScreenRotationCallback(this->width(), this->height(), 180);
 }
 
+void QtMainWindow::on_actionExit_triggered()
+{
+    this->close();
+}
+
 bool QtMainWindow::internalUrlProcessing(const QUrl& url)
 {
     int ipos;
@@ -312,7 +321,7 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
             sUrl.remove(QRegExp("#+$"));
             if (sUrl.compare(ui->webView->url().toString())!=0) {
                 if (mainWindowCallback && !sUrl.startsWith("javascript:", Qt::CaseInsensitive)) {
-                    const QByteArray asc_url = sUrl.toAscii();
+                    const QByteArray asc_url = sUrl.toLatin1();
                     mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
                 }
                 ui->webView->load(QUrl(sUrl));
@@ -341,7 +350,7 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
     PROF_STOP("BROWSER_PAGE");
 
     if (mainWindowCallback && ok) {
-        const QByteArray asc_url = ui->webView->url().toString().toAscii();
+        const QByteArray asc_url = ui->webView->url().toString().toLatin1();
         mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
     }
 
@@ -376,7 +385,7 @@ void QtMainWindow::timerEvent(QTimerEvent *ev)
 void QtMainWindow::on_webView_urlChanged(QUrl url)
 {
     if (mainWindowCallback) {
-        const QByteArray asc_url = url.toString().toAscii();
+        const QByteArray asc_url = url.toString().toLatin1();
         ::std::string sUrl = ::std::string(asc_url.constData(), asc_url.length());
         LOG(INFO) + "WebView: URL changed to " + sUrl;
         mainWindowCallback->onWebViewUrlChanged(sUrl);
@@ -398,7 +407,7 @@ void QtMainWindow::navigate(QString url, int index)
             wv->page()->mainFrame()->evaluateJavaScript(url);
         } else if (!internalUrlProcessing(url)) {
             if (mainWindowCallback) {
-                const QByteArray asc_url = url.toAscii();
+                const QByteArray asc_url = url.toLatin1();
                 mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
             }
             wv->load(QUrl(url));
@@ -424,7 +433,7 @@ void QtMainWindow::Refresh(int index)
     QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
     if (wv) {
         if (mainWindowCallback) {
-            const QByteArray asc_url = wv->url().toString().toAscii();
+            const QByteArray asc_url = wv->url().toString().toLatin1();
             mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
         }
         wv->reload();
@@ -663,7 +672,7 @@ void QtMainWindow::on_tabBar_currentChanged(int index)
 
         if (tbrp["reload"].toBool() || (ui->webView && (ui->webView->history()->count()==0))) 
         {
-            const QByteArray asc = tbrp["action"].toString().toAscii(); 
+            const QByteArray asc = tbrp["action"].toString().toLatin1(); 
             rho::String strAction = std::string(asc.constData(), asc.length());//new rho::String(tbrp["action"].toString().toStdString());
             RHODESAPP().loadUrl(strAction);
 
@@ -709,7 +718,7 @@ void QtMainWindow::toolbarActionEvent(bool checked)
     QAction* action;
     if (sender && (action = dynamic_cast<QAction*>(sender))) 
     {
-        const QByteArray asc = action->data().toString().toAscii(); 
+        const QByteArray asc = action->data().toString().toLatin1(); 
         rho::String strAction = std::string(asc.constData(), asc.length());//new rho::String(action->data().toString().toStdString());
         if ( strcasecmp(strAction.c_str(), "forward") == 0 )
             rho_webview_navigate_forward();
@@ -841,6 +850,19 @@ void QtMainWindow::navigateCommand(TNavigateData* nd)
     }
 }
 
+void QtMainWindow::executeJavaScriptCommand(TNavigateData* nd)
+{
+    if (nd) {
+        if (nd->url) {
+            QWebView* wv = (nd->index < tabViews.size()) && (nd->index >= 0) ? tabViews[nd->index] : ui->webView;
+            if (wv)
+                wv->page()->mainFrame()->evaluateJavaScript(QString::fromWCharArray(nd->url));
+            free(nd->url);
+        }
+        free(nd);
+    }
+}
+
 void QtMainWindow::takePicture(char* callbackUrl)
 {
     selectPicture(callbackUrl);
@@ -862,7 +884,7 @@ void QtMainWindow::selectPicture(char* callbackUrl)
         int tz = (int)(now.secsTo(QDateTime::currentDateTime())/3600);
 
         char file_name[4096];
-        const QByteArray asc = szExt.toAscii(); 
+        const QByteArray asc = szExt.toLatin1(); 
         rho::String strExt = std::string(asc.constData(), asc.length());
 
         ::sprintf(file_name, "Image_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i%s",
@@ -1050,7 +1072,7 @@ void QtMainWindow::setCookie(const char* url, const char* cookie)
         QNetworkCookieJar* cj = ui->webView->page()->networkAccessManager()->cookieJar();
         QStringList cookieList = QString::fromUtf8(cookie).split(";");
         for (int i=0; i<cookieList.size(); ++i)
-            cj->setCookiesFromUrl(QNetworkCookie::parseCookies(cookieList.at(i).toAscii()), urlStr);
+            cj->setCookiesFromUrl(QNetworkCookie::parseCookies(cookieList.at(i).toLatin1()), urlStr);
     }
 }
 

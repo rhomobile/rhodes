@@ -37,6 +37,9 @@
 #ifdef OS_WP8
 extern "C" void createMenu();
 #endif
+#ifdef RHODES_EMULATOR
+extern "C" void rho_symimpl_createMenu();
+#endif
 
 namespace
 {
@@ -252,6 +255,9 @@ void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bo
 #ifdef OS_WP8
 		createMenu();
 #endif
+#ifdef RHODES_EMULATOR
+        rho_symimpl_createMenu();
+#endif
     }
 }
 
@@ -266,7 +272,8 @@ void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems, bool bLeftMen
     }
 }
 
-CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
+CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink):
+    m_eType(emtNone)
 {
 	m_strLabel = strLabel;
 	m_strLink  = strLink;

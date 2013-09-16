@@ -35,7 +35,7 @@ bool RemoveDirectory(QString &path, bool deleteDir)
     QDir aDir(path);
     bool has_err = false;
     if (aDir.exists()) {
-        QFileInfoList entries = aDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+        QFileInfoList entries = aDir.entryInfoList(QDir::NoDot | QDir::NoDotDot | QDir::Dirs | QDir::Files);
         int count = entries.size();
         for (int idx = 0; ((idx < count) && (!has_err)); idx++) {
             QFileInfo entryInfo = entries[idx];
@@ -80,7 +80,7 @@ void CopyDirectory(const QString& sourceFolder,const QString& destFolder)
             QFile::copy(srcName, destName);
         }
 
-        QStringList dirs = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+        QStringList dirs = sourceDir.entryList(QDir::AllDirs | QDir::NoDot | QDir::NoDotDot);
         for(int i = 0; i < dirs.count(); i++)
         {
             QString srcName = pair.first + "/" + dirs.at(i);

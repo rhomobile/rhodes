@@ -7,6 +7,9 @@
 
 #undef null
 #include <qwebkitglobal.h>
+#if QT_VERSION >= 0x050000
+#include <QtWebKit/qtwebkitversion.h>
+#endif
 #include <QLocale>
 #include <QDesktopServices>
 #include <QUrl>
