@@ -30,8 +30,13 @@
 #include <vector>
 #include <QMainWindow>
 #include <QUrl>
+#if QT_VERSION >= 0x050000
+#include <QtWebKitWidgets/QWebView>
+#include <QtWebKitWidgets/QWebInspector>
+#else
 #include <QtWebKit/QWebView>
 #include <QtWebKit/QWebInspector>
+#endif
 #include <QAction>
 #include <QMessageBox>
 #include <QBasicTimer>
@@ -134,6 +139,7 @@ private slots:
     void on_actionRotateRight_triggered();
     void on_actionRotateLeft_triggered();
     void on_actionRotate180_triggered();
+    void on_actionExit_triggered();
     void on_tabBar_currentChanged(int index);
     void on_menuMain_aboutToShow();
     void on_actionAbout_triggered();
@@ -148,6 +154,7 @@ public slots:
     void logCommand(void);
     void refreshCommand(int tab_index);
     void navigateCommand(TNavigateData* nd);
+    void executeJavaScriptCommand(TNavigateData*);
     void takePicture(char* callbackUrl);
     void selectPicture(char* callbackUrl);
     void alertShowPopup(CAlertParams *);

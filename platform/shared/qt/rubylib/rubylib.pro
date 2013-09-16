@@ -29,7 +29,13 @@ win32 {
   OBJECTS_DIR = ../../../win32/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/win32
   DEFINES -= _UNICODE UNICODE
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB BUFSIZ=512 STATIC_LINKED
+  DEFINES += WIN32 _WINDOWS _LIB BUFSIZ=512 TLS_OUT_OF_INDEXES=0xFFFFFFFF FILENAME_MAX=MAX_PATH STATIC_LINKED RUBY_EXPORT
+  debug {
+    DEFINES += _DEBUG DEBUG
+  }
+  release {
+    DEFINES += _NDEBUG NDEBUG
+  }
   HEADERS += ../../ruby/win32/ruby/config.h\
 ../../ruby/win32/dir.h
   SOURCES += ../../ruby/missing/acosh.c\
@@ -37,7 +43,6 @@ win32 {
 ../../ruby/missing/crypt.c\
 ../../ruby/missing/dup2.c\
 ../../ruby/missing/erf.c\
-../../ruby/missing/hypot.c\
 ../../ruby/missing/tgamma.c\
 ../../ruby/missing/strlcpy.c\
 ../../ruby/missing/strlcat.c\
@@ -68,7 +73,7 @@ unix:!macx {
 DEFINES += RHODES_EMULATOR
 
 !win32 {
-  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses -Wself-assign
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4244 /wd4133 /wd4996 /wd4554 /wd4018 /wd4101 /wd4005 /wd4146 /wd4047 /wd4100 /wd4189 /wd4646 /wd4645

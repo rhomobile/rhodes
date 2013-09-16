@@ -26,6 +26,10 @@
 
 #pragma once
 
+#if defined(RHODES_EMULATOR_QMAKE)
+#include "stdafx.h"
+#endif
+
 #include <wininet.h>
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"

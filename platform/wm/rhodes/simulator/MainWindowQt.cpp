@@ -42,7 +42,11 @@
 #undef null
 #include <QString>
 #include <QApplication>
+#if QT_VERSION >= 0x050000
+#include <QtWidgets/QAction>
+#else
 #include <QtGui/QAction>
+#endif
 #include <QHash>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QNetworkProxyFactory>

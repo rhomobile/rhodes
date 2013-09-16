@@ -34,7 +34,11 @@
 #undef null
 #include <QString>
 #include <QApplication>
+#if QT_VERSION >= 0x050000
+#include <QtWidgets/QAction>
+#else
 #include <QtGui/QAction>
+#endif
 
 extern CMainWindow& getAppWindow();
 IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");

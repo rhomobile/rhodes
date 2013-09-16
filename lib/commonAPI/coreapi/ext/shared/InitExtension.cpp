@@ -39,7 +39,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_NativeTabbar_extension();
 #endif
 
-#if (defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
+#if defined(OS_MACOSX) || defined(RHODES_EMULATOR)
     Init_Navbar();
 #endif
 
@@ -51,7 +51,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_RhoFile();
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(RHODES_EMULATOR)
     Init_NativeMenuBar();
 #endif
 

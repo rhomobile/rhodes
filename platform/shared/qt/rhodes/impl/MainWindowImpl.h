@@ -126,6 +126,7 @@ public:
     void logCommand(void);
     void refreshCommand(int);
     void navigateCommand(TNavigateData*);
+    void executeJavaScriptCommand(TNavigateData*);
     void takePicture(char*);
     void selectPicture(char*);
     void alertShowPopup(CAlertParams *);
@@ -152,6 +153,7 @@ signals:
     void doLogCommand(void);
     void doRefreshCommand(int);
     void doNavigateCommand(TNavigateData*);
+    void doExecuteJavaScriptCommand(TNavigateData*);
     void doTakePicture(char*);
     void doSelectPicture(char*);
     void doAlertShowPopup(CAlertParams *);
@@ -168,4 +170,5 @@ signals:
     void doSetSize(int width, int height);
     void doLockSize(int locked);
     void doSetTitle(const char* title);
+    void doCreateCustomMenu(void);
 };

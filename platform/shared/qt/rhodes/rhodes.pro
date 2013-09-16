@@ -1,4 +1,5 @@
 QT += core gui network webkit
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets multimedia
 
 TARGET = RhoSimulator
 TEMPLATE = app
@@ -32,8 +33,6 @@ macx {
   exists("../../../osx/bin/extensions/extensions.pri") {
     include("../../../osx/bin/extensions/extensions.pri")
   }
-  SOURCES += ../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CSystemImpl.cpp\
-../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CWebViewImpl.cpp
 }
 
 win32 {
@@ -45,21 +44,31 @@ win32 {
   RCC_DIR =  ../../../win32/bin/RhoSimulator/resources
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
 impl/RhoThreadImpl.h
-  SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp
+  SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp\
+impl/ExtManager.cpp
   RESOURCES += resources/simulator.qrc
   INCLUDEPATH += ../../../wm/rhodes\
 ../../wtl80/include
   DEFINES -= _UNICODE
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS UNICODE QT_LARGEFILE_SUPPORT QT_NO_DEBUG QT_CORE_LIB QT_GUI_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
+  DEFINES += WIN32 _WINDOWS UNICODE QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
+  debug {
+    DEFINES += _DEBUG DEBUG
+  }
+  release {
+    DEFINES += _NDEBUG NDEBUG QT_NO_DEBUG
+  }
   LIBS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
 ../../../win32/bin/sqlite3/sqlite3.lib\
 ../../../win32/bin/syncengine/syncengine.lib\
-wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+oldnames.lib wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
   PRE_TARGETDEPS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
 ../../../win32/bin/sqlite3/sqlite3.lib\
 ../../../win32/bin/syncengine/syncengine.lib
+  exists("../../../win32/bin/extensions/extensions.pri") {
+    include("../../../win32/bin/extensions/extensions.pri")
+  }
 }
 
 unix:!macx {
@@ -82,15 +91,15 @@ unix:!macx {
 ../../../linux/bin/syncengine/libsyncengine.a
 }
 
-DEFINES += RHODES_EMULATOR=1
+DEFINES += RHODES_EMULATOR RHODES_EMULATOR_QMAKE
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
 }
 win32 {
-  QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100
-  QMAKE_CXXFLAGS_WARN_ON += /wd4996 /wd4100
+  QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
+  QMAKE_CXXFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
   QMAKE_CFLAGS_RELEASE += /O2
   QMAKE_CXXFLAGS_RELEASE += /O2
 }
@@ -139,7 +148,9 @@ impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
 DateTimeDialog.cpp\
-RhoNativeApiCall.cpp
+RhoNativeApiCall.cpp\
+../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CSystemImpl.cpp\
+../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CWebViewImpl.cpp
 
 FORMS += ExternalWebView.ui\
 QtMainWindow.ui\

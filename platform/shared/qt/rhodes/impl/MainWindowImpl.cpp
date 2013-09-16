@@ -35,7 +35,11 @@
 //#undef null
 #include <QString>
 #include <QApplication>
+#if QT_VERSION >= 0x050000
+#include <QtWidgets/QAction>
+#else
 #include <QtGui/QAction>
+#endif
 #include <QHash>
 #include "../QtMainWindow.h"
 
@@ -55,10 +59,13 @@ bool CMainWindow::mainWindowClosed = false;
 CMainWindow::CMainWindow():
     QObject(),
     m_started(true),
-    qtMainWindow(NULL),
-    qtApplication(NULL)
+    qtMainWindow(NULL)
     //TODO: m_logView
 {
+    int argc = 0;
+    QCoreApplication::setOrganizationName("Rhomobile");
+    QCoreApplication::setApplicationName("RhoSimulator");
+    qtApplication = (void*)new QApplication(argc, 0);
 }
 
 CMainWindow::~CMainWindow()
@@ -177,10 +184,6 @@ void CMainWindow::setCallback(IMainWindowCallback* callback)
 
 bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
 {
-    int argc = 0;
-	QCoreApplication::setOrganizationName("Rhomobile");
-	QCoreApplication::setApplicationName("RhoSimulator");
-    qtApplication = (void*)new QApplication(argc, 0);
     qtMainWindow = (void*)new QtMainWindow();
     ((QtMainWindow*)qtMainWindow)->setWindowTitle(QString::fromWCharArray(title));
     ((QtMainWindow*)qtMainWindow)->setCallback(callback);
@@ -200,6 +203,8 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(refreshCommand(int)) );
     QObject::connect(this, SIGNAL(doNavigateCommand(TNavigateData*)),
         ((QtMainWindow*)qtMainWindow), SLOT(navigateCommand(TNavigateData*)) );
+    QObject::connect(this, SIGNAL(doExecuteJavaScriptCommand(TNavigateData*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeJavaScriptCommand(TNavigateData*)) );
     QObject::connect(this, SIGNAL(doTakePicture(char*)),
         ((QtMainWindow*)qtMainWindow), SLOT(takePicture(char*)) );
     QObject::connect(this, SIGNAL(doSelectPicture(char*)),
@@ -230,6 +235,8 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(lockSize(int)) );
     QObject::connect(this, SIGNAL(doSetTitle(const char*)),
         ((QtMainWindow*)qtMainWindow), SLOT(setTitle(const char*)) );
+    QObject::connect(this, SIGNAL(doCreateCustomMenu(void)),
+        this, SLOT(createCustomMenu(void)) );
     return true;
 }
 
@@ -604,6 +611,11 @@ void CMainWindow::refreshCommand(int tab_index)
 void CMainWindow::navigateCommand(TNavigateData* nd)
 {
     emit doNavigateCommand(nd);
+}
+
+void CMainWindow::executeJavaScriptCommand(TNavigateData* nd)
+{
+    emit doExecuteJavaScriptCommand(nd);
 }
 
 void CMainWindow::takePicture(char* callbackUrl)

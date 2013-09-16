@@ -1991,6 +1991,73 @@
 			</Filter>
 		</Filter>
 		<Filter
+			Name="Navbar"
+			>
+			<File
+				RelativePath="..\..\shared\qt\NavbarImpl.cpp"
+				>
+			</File>
+			<Filter
+				Name="shared"
+				>
+				<File
+					RelativePath="..\..\Navbar.xml"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="API 4"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(InputDir)shared/generated3"
+						/>
+					</FileConfiguration>
+				</File>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\..\shared\generated\navbar_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\navbar_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\navbar_ruby_api.c"
+						>
+					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\INavbar.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Navbar_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Navbar_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\NavbarBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\NavbarBase.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
+			</Filter>
+		</Filter>
+		<Filter
 			Name="NativeToolbar"
 			>
 			<File

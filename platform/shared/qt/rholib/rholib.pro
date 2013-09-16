@@ -25,7 +25,13 @@ win32 {
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
   DEFINES -= _UNICODE UNICODE
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS
+  DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS
+  debug {
+    DEFINES += _DEBUG DEBUG
+  }
+  release {
+    DEFINES += _NDEBUG NDEBUG
+  }
   HEADERS += ../../rubyext/WebView.h
 }
 
@@ -42,7 +48,7 @@ unix:!macx {
 ../../net/ssl.cpp
 }
 
-DEFINES += RHODES_EMULATOR
+DEFINES += RHODES_EMULATOR RHODES_EMULATOR_QMAKE
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
@@ -140,7 +146,6 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/map/MapEngine.cpp\
 ../../common/BundleManager.cpp\
 ../../unzip/zip.cpp\
-../../rubyext/ZipFiles.cpp\
 ../../common/push/RhoPushManager.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\

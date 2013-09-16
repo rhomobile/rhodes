@@ -29,8 +29,8 @@
 
 #include "impl/DateTimePickerImpl.h"
 #undef null
+#undef min
 #include <QDialog>
-#include <QDateTimeEdit>
 
 namespace Ui {
     class DateTimeDialog;
@@ -47,7 +47,7 @@ public:
 
 private:
     Ui::DateTimeDialog *ui;
-    QDateTimeEdit* m_dte;
+    void* mv_dte;
     int m_type;
 };
 
