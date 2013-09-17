@@ -34,7 +34,6 @@
 #include "sync/RhoconnectClientManager.h"
 
 #include <algorithm>
-#include <iterator>
 
 #if !defined(WINDOWS_PLATFORM)
 #include <arpa/inet.h>
@@ -282,10 +281,6 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     :m_active(false), m_port(port), verbose(true)
 {
     m_root = CFilePath::normalizePath(root);
-#ifdef RHODES_EMULATOR
-    m_strRhoRoot = m_root;
-    m_strRuntimeRoot = runtime_root;
-#else // !RHODES_EMULATOR
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
     m_strRuntimeRoot = runtime_root.substr(0, runtime_root.length()-5) +
 #ifdef OS_WP8
@@ -293,7 +288,6 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 #else
          "/rho/apps";
 #endif
-#endif // !RHODES_EMULATOR
     m_userroot = CFilePath::normalizePath(user_root);
     m_strRhoUserRoot = m_userroot;
 	m_listener = INVALID_SOCKET;
@@ -323,9 +317,7 @@ CHttpServer::~CHttpServer()
 
 void CHttpServer::close_listener()
 {
-    //SOCKET l = m_listener;
-    //m_listener = INVALID_SOCKET;
-	if(m_listener != INVALID_SOCKET)
+ 	if(m_listener != INVALID_SOCKET)
 	{
 		closesocket(m_listener);
 		m_listener = INVALID_SOCKET;
@@ -340,6 +332,13 @@ void CHttpServer::stop()
     // right. To work around this, we create dummy socket and connect
     // to the listener. This surely unblock accept on listener and,
     // therefore, stop server thread (because m_active set to false).
+
+    //if (m_listenThread->isAlive())
+    //{
+    //    m_listenThread->stop(100);
+    //    delete m_listenThread;
+    //}
+
     m_active = false;
     RAWLOG_INFO("Stopping server...");
 
@@ -395,7 +394,66 @@ extern "C" void rb_gc(void);
 
 bool CHttpServer::init()
 {
-	RAWTRACE("Open listening socket...");
+    m_listenThread = new ListenerThread(this);
+    bool ret = m_listenThread->init(m_port);
+    m_listener = m_listenThread->m_listener;
+    return ret;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+class HttpProcessCommand : public common::CThreadQueue::IQueueCommand
+{
+public:
+    HttpProcessCommand(CHttpServer* httpServer, SOCKET inConn, SOCKET inListen, fd_set inFdset) 
+        : listen(inListen), m_httpServer(httpServer), conn(inConn),fdset(inFdset) {}
+    
+    virtual boolean equals(const common::CThreadQueue::IQueueCommand& cmd) {return false;}
+    virtual String toString() {return "HttpProcessCommand";}
+
+    virtual void execute()
+    {
+        if (FD_ISSET(listen, &fdset))
+        {
+            RAWTRACE("Connection accepted, process it...");
+            VALUE val;
+
+            if (rho_ruby_is_started())
+            {
+                if ( !RHOCONF().getBool("enable_gc_while_request") )                
+                    val = rho_ruby_disable_gc();
+            }
+
+            bool bProcessed = m_httpServer->process(conn);
+
+            if (rho_ruby_is_started())
+            {
+                if ( !RHOCONF().getBool("enable_gc_while_request") )
+                    rho_ruby_enable_gc(val);
+            }
+
+            RAWTRACE("Close connected socket");
+            closesocket(conn);
+        }
+    }
+
+private:
+    fd_set fdset;
+    SOCKET conn;
+    SOCKET listen;
+    CHttpServer *m_httpServer;
+};
+
+ListenerThread::ListenerThread(CHttpServer* server) : m_server(server) 
+{}
+
+ListenerThread::~ListenerThread()
+{
+    close_listener();
+}
+
+bool ListenerThread::init(int port)
+{
     close_listener();
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
     if (m_listener == INVALID_SOCKET) {
@@ -409,44 +467,41 @@ bool CHttpServer::init()
         close_listener();
         return false;
     }
-    
+
     struct sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
-    sa.sin_port = htons((uint16_t)m_port);
+    sa.sin_port = htons((uint16_t)port);
     sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     if (bind(m_listener, (const sockaddr *)&sa, sizeof(sa)) == SOCKET_ERROR) {
-        RAWLOG_ERROR2("Can not bind to port %d: %d", m_port, RHO_NET_ERROR_CODE);
+        RAWLOG_ERROR2("Can not bind to port %d: %d", port, RHO_NET_ERROR_CODE);
         close_listener();
         return false;
     }
-    
+
     if (listen(m_listener, 128) == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not listen on socket: %d", RHO_NET_ERROR_CODE);
         close_listener();
         return false;
     }
-    
-    RAWLOG_INFO1("Listen for connections on port %d", m_port);
+
     return true;
 }
 
-bool CHttpServer::run()
+void ListenerThread::close_listener()
 {
-    LOG(INFO) + "Start HTTP server";
-    if (!init())
-        return false;
+    if(m_listener != INVALID_SOCKET)
+    {
+        closesocket(m_listener);
+        m_listener = INVALID_SOCKET;
+    }
+}
 
-    m_active = true;
-
-    RHODESAPP().notifyLocalServerStarted();
-
+void ListenerThread::run()
+{
     for(;;) 
     {
         RAWTRACE("Waiting for connections...");
-
-        if (rho_ruby_is_started())
-            rho_ruby_start_threadidle();
 
         fd_set readfds;
         FD_ZERO(&readfds);
@@ -468,39 +523,17 @@ bool CHttpServer::run()
             {
                 //RAWTRACE("Before accept...");
                 SOCKET conn = accept(m_listener, NULL, NULL);
-                //RAWTRACE("After accept...");
-                if (!m_active) {
-                    RAWTRACE("Stop HTTP server");
-                    return true;
-                }
+
                 if (conn == INVALID_SOCKET) {
-        #if !defined(WINDOWS_PLATFORM)
+#if !defined(WINDOWS_PLATFORM)
                     if (RHO_NET_ERROR_CODE == EINTR)
                         continue;
-        #endif
+#endif
                     RAWLOG_ERROR1("Can not accept connection: %d", RHO_NET_ERROR_CODE);
-                    return false;
+                    return;// false;
                 }
 
-                RAWTRACE("Connection accepted, process it...");
-                VALUE val;
-                
-                if (rho_ruby_is_started())
-                {
-                    if ( !RHOCONF().getBool("enable_gc_while_request") )                
-                        val = rho_ruby_disable_gc();
-                }
-
-                bProcessed = process(conn);
-
-                if (rho_ruby_is_started())
-                {
-                    if ( !RHOCONF().getBool("enable_gc_while_request") )
-                        rho_ruby_enable_gc(val);
-                }
-
-                RAWTRACE("Close connected socket");
-                closesocket(conn);
+                m_server->addQueueCommand(new HttpProcessCommand(m_server, conn, m_listener, readfds));
             }
         }
         else if ( ret == 0 ) //timeout
@@ -510,7 +543,7 @@ bool CHttpServer::run()
         else
         {
             RAWLOG_ERROR1("select error: %d", ret);
-            return false;
+            return;// false;
         }
 
         if (rho_ruby_is_started())
@@ -522,6 +555,55 @@ bool CHttpServer::run()
                 LOG(INFO) + "GC End.";
             }
         }
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void CHttpServer::run()
+{
+    LOG(INFO) + "Start HTTP server";
+    if (!init())
+        return;// false;  
+
+    RHODESAPP().notifyLocalServerStarted();
+
+    if(__rhoCurrentCategory.getName() == "NO_LOGGING")
+        m_logThreadId = getThreadID();
+
+    LOG(INFO) + "Starting main routine...";
+
+    m_listenThread->start(rho::common::IRhoRunnable::epNormal);
+
+    int nLastPollInterval = getLastPollInterval();
+    while( !isStopping() )
+    {
+        if (rho_ruby_is_started())
+            rho_ruby_start_threadidle();        
+
+        unsigned int nWait = m_nPollInterval > 0 ? m_nPollInterval : QUEUE_POLL_INTERVAL_INFINITE;
+
+        if ( m_nPollInterval > 0 && nLastPollInterval > 0 )
+        {
+            int nWait2 = m_nPollInterval - nLastPollInterval;
+            if ( nWait2 <= 0 )
+                nWait = QUEUE_STARTUP_INTERVAL_SECONDS;
+            else
+                nWait = nWait2;
+        }
+
+        if ( !m_bNoThreaded && !isStopping() && isNoCommands() )
+        {
+            LOG(INFO) + "ThreadQueue blocked for " + nWait + " seconds...";
+
+            if ( wait(nWait*100) == 1 )
+                onTimeout();
+        }
+
+        nLastPollInterval = 0;
+
+        if ( !m_bNoThreaded && !isStopping() )
+            processCommands();
     }
 }
 
@@ -586,7 +668,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 				continue;
 #endif
 
-#if defined(OS_WP8) || (defined(RHODES_EMULATOR) && defined(OS_WINDOWS_DESKTOP))
+#if defined(OS_WP8)
             if (e == EAGAIN || e == WSAEWOULDBLOCK) {
 #else
             if (e == EAGAIN) {
@@ -1285,7 +1367,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             call_ruby_proc( query, body );
         else
             callback(this, query.length() ? query : body);
-
+           
         return false;
     }
 

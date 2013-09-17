@@ -29,6 +29,7 @@
 
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
+#include "common/ThreadQueue.h"
 
 #if !defined(WINDOWS_PLATFORM)
 typedef int SOCKET;
@@ -48,6 +49,12 @@ typedef int SOCKET;
 
 namespace rho
 {
+
+namespace common
+{
+struct IRhoRunnable;
+}
+
 namespace net
 {
 
@@ -73,9 +80,26 @@ struct HttpHeader
 
 typedef Vector<HttpHeader> HttpHeaderList;
 
-class CHttpServer
+class CHttpServer;
+
+class ListenerThread : public rho::common::CRhoThread
+{
+public:
+    SOCKET m_listener;
+    rho::net::CHttpServer* m_server;
+public:
+    ListenerThread(CHttpServer* server);
+    ~ListenerThread();
+    virtual void run();
+    bool init(int port);
+    void close_listener();
+};
+
+class CHttpServer : public rho::common::CThreadQueue
 {
     DEFINE_LOGCLASS;
+
+    friend class HttpProcessCommand;
     
     enum {BUF_SIZE = 4096};
     
@@ -104,7 +128,7 @@ public:
 
     bool started() const {return m_active;}
     
-    bool run();
+    void run();
     void stop();
 
     bool send_response(String const &response, bool redirect = false);
@@ -149,6 +173,8 @@ private:
     SOCKET m_sock;
     std::map<String, callback_t> m_registered;
     bool verbose;
+
+    ListenerThread *m_listenThread;
 };
 
 void rho_http_ruby_proc_callback(void *arg, rho::String const &query );
