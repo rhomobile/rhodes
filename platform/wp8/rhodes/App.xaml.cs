@@ -113,7 +113,7 @@ namespace rhodes
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
             // TODO: add onActivate call
-            //rhoruntime.CRhoRuntime.getInstance().onActivate(1);
+            rhoruntime.CRhoRuntime.getInstance().onActivate(1);
         }
 
         // Code to execute when the application is deactivated (sent to background)
@@ -121,7 +121,7 @@ namespace rhodes
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
             // TODO: add onActivate call
-            //rhoruntime.CRhoRuntime.getInstance().onActivate(0);
+            rhoruntime.CRhoRuntime.getInstance().DestroyUi();
         }
 
         // Code to execute when the application is closing (eg, user hit Back)
@@ -129,7 +129,7 @@ namespace rhodes
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
             // TODO: add onActivate call ?
-            //rhoruntime.CRhoRuntime.getInstance().onActivate(0);
+            rhoruntime.CRhoRuntime.getInstance().DestroyUi();
         }
 
         // Code to execute if a navigation fails
