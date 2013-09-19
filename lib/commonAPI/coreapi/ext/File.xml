@@ -72,7 +72,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
               </PARAM>
           </PARAMS>              
           <RETURN type="STRING">
-              <DESC>String read from file.</DESC>
+              <DESC>String: specified number of symbols from current position of file</DESC>
           </RETURN>
       </METHOD>
         
