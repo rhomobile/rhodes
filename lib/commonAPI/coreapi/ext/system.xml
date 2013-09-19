@@ -641,9 +641,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
         </METHODS>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>
-            <!--  This section is used for the supported platform images at the top -->
-        </PLATFORM>
+        <PLATFORM>iOS, WM, Win32, WP8, Android</PLATFORM>
         <EXAMPLES >
            <EXAMPLE title="Get device capabilities">
             <SECTIONS>

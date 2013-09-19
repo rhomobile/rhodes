@@ -13,6 +13,8 @@
             <RETURN type="STRING">
                 <DESC>The one property that I want to know about</DESC>
             </RETURN>
+            <PLATFORM usemodule="true"></PLATFORM>
+            
         </METHOD>
 
         <METHOD name="getProperties" hasCallback="optional">
@@ -29,6 +31,7 @@
                     <PARAM type="STRING"/>
                 </PARAMS>
             </RETURN>
+            <PLATFORM usemodule="true"></PLATFORM>
 
         </METHOD>
 
@@ -40,6 +43,7 @@
                     <PARAM type="STRING"/>
                 </PARAMS>
             </RETURN>
+            <PLATFORM usemodule="true"></PLATFORM>
 
         </METHOD>
 
@@ -53,7 +57,8 @@
                     <DESC>The one property value that I want to set</DESC>
                 </PARAM>
             </PARAMS>
-        </METHOD>
+             <PLATFORM usemodule="true"></PLATFORM>
+       </METHOD>
 
         <METHOD name="setProperties">
             <DESC>This method will set the values of a list of properties for the API class. The propertyName must be a valid property for the class and must also not be read only.</DESC>
@@ -63,6 +68,7 @@
                     <PARAM type="STRING"/>
                 </PARAM>
             </PARAMS>
+            <PLATFORM usemodule="true"></PLATFORM>
         </METHOD>
 
       </METHODS>
