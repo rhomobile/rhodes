@@ -72,7 +72,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
               </PARAM>
           </PARAMS>              
           <RETURN type="STRING">
-              <DESC>String: specified number of symbols from current position of file</DESC>
+              <DESC>String from current position of file containing specified number of symbols</DESC>
           </RETURN>
       </METHOD>
         
@@ -261,10 +261,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PARAM name="path" type="STRING">
                     <DESC>Directory path.</DESC>
                 </PARAM>
-                <RETURN type="ARRAY">
-                    <DESC>Array of directory entry names.</DESC>
-                </RETURN>
             </PARAMS>
+            <RETURN type="ARRAY">
+                <DESC>Array of directory entry names.</DESC>
+            </RETURN>
         </METHOD>
         
         
@@ -273,25 +273,25 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <METHOD name="basename" access="STATIC">
             <DESC>Return basename part of the specified path.</DESC>
             <PARAMS>
-                <PARAM name="path" type="STRING">
-                    <DESC>Path.</DESC>
-                </PARAM>
-                <RETURN type="STRING">
-                    <DESC>Basename.</DESC>
-                </RETURN>
+              <PARAM name="path" type="STRING">
+                  <DESC>Path.</DESC>
+              </PARAM>
             </PARAMS>
+            <RETURN type="STRING">
+                <DESC>Basename.</DESC>
+            </RETURN>
         </METHOD>
             
         <METHOD name="dirname" access="STATIC">
             <DESC>Returns directory name part of the specified path.</DESC>
             <PARAMS>
-                <PARAM name="path" type="STRING">
-                    <DESC>Path.</DESC>
-                </PARAM>
-                <RETURN type="STRING">
-                    <DESC>Directory name.</DESC>
-                </RETURN>
+              <PARAM name="path" type="STRING">
+                  <DESC>Path.</DESC>
+              </PARAM>
             </PARAMS>
+            <RETURN type="STRING">
+                <DESC>Directory name.</DESC>
+            </RETURN>
         </METHOD>
             
         <METHOD name="join" access="STATIC">
