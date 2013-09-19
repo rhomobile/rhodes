@@ -73,6 +73,7 @@ public:
     // IMainWindowCallback
     virtual void updateSizeProperties(int width, int height);
     virtual void onActivate(int active);
+    virtual void logEvent(const ::std::string& message);
     virtual void createCustomMenu(void);
     virtual void onCustomMenuItemCommand(int nItemPos);
 	virtual void onWindowClose(void);
