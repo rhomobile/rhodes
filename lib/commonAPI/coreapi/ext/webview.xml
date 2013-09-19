@@ -278,7 +278,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
-                            <DESC>Set cookie to active WebView.</DESC>
+                            <DESC>If tabbar index ommited then active WebView will be saved.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
