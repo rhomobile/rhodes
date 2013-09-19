@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="Navbar" parent="Rho" generateUnderscoreRubyNames="true">
-        <HELP_OVERVIEW>he NavBar API supports a native navigation bar for the iPhone.</HELP_OVERVIEW>
+        <HELP_OVERVIEW>The NavBar API supports a native navigation bar for iOS devices.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API           
 This API is part of the `coreapi` extension that is included automatically.
@@ -62,15 +62,21 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     
                 </PARAMS>
 
+                <PLATFORM>iOS</PLATFORM>
+        
             </METHOD>
 
             <METHOD name="remove" >
                 <DESC>Removes the current navigation bar. Does nothing if there is no active navigation bar.</DESC>
+                <PLATFORM>iOS</PLATFORM>
+        
             </METHOD>
             
             <METHOD name="started" >
                 <DESC>Return true is navbar is started (used only for automatic tests!)</DESC>
                 <RETURN type="BOOLEAN"/>
+                <PLATFORM>iOS</PLATFORM>
+        
             </METHOD>
             
 

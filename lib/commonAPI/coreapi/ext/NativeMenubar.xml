@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="NativeMenubar" parent="Rho" generateUnderscoreRubyNames="true">
-        <HELP_OVERVIEW>The NativeMenubar methods let you customize the Rhodes Menubar at runtime.</HELP_OVERVIEW>
+        <HELP_OVERVIEW>The NativeMenubar API lets you customize the Windows Mobile/CE native menu buttons.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API           
 This API is part of the `coreapi` extension that is included automatically.
@@ -40,6 +40,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAMS>
 
                 </PARAM>
+                <PLATFORM>WM</PLATFORM>
             </PROPERTY>
             <PROPERTY name="extraMenu" type="ARRAY">
                 <DESC>Extra Native MenuBar items. This menu will display when left menu button is selected (Windows Mobile only).</DESC>
@@ -63,6 +64,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <PROPERTY name="defaultMainMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <PARAM type="HASH" />
                 <DESC>Default Main Menu items.Same values as for mainMenu.</DESC>
+                <APPLIES rubyOnly="true"/>
+                <PLATFORM>WM</PLATFORM>
             </PROPERTY>
 
         </PROPERTIES>
