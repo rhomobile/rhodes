@@ -90,6 +90,11 @@ void CMainWindow::updateSizeProperties(int width, int height)
     LOGCONF().setLogView(&m_logView);
 }
 
+void CMainWindow::logEvent(const ::std::string& message)
+{
+    LOG(INFO) + message;
+}
+
 void CMainWindow::onWebViewUrlChanged(const ::std::string& url)
 {
     rho::String sUrl = url;
