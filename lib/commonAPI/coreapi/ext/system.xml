@@ -246,6 +246,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <METHOD name="getStartParams">
                 <DESC>Return the command line parameters. At Android start parameters are returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
                 <RETURN type="STRING"/>
+                <PLATFORM>WM, Win32, Android</PLATFORM>
+                
             </METHOD>
             <METHOD name="openUrl">
                 <DESC>Open the application associated with the URL.</DESC>

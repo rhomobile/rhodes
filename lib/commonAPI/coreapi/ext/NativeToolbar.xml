@@ -44,7 +44,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <VALUES>
                                         <VALUE value ="separator">
                                             <DESC>Added separator to toolbar.If only one separator is specified, when elements after separator will be right-aligned.If more then one separator is added, when on WM/CE platform dependent separator will be displayed, on Android/iOS center-aligned groups will be created.</DESC>
-                                            <PLATFORMS>WM, Win32, iOS, Android</PLATFORMS>
+                                            <PLATFORM>WM, Win32, iOS, Android</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="exit">
                                             <DESC>Exit the application.</DESC>
@@ -66,7 +66,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                         </VALUE>
                                         <VALUE value ="log">
                                             <DESC>Display Log View window.</DESC>
-                                            <PLATFORMS>WM, Win32, iOS, Android</PLATFORMS>
+                                            <PLATFORM>WM, Win32, iOS, Android</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="fullscreen">
                                             <DESC>Expand application window to full screen.</DESC>
@@ -76,11 +76,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                         </VALUE>
                                         <VALUE value ="minimize">
                                             <DESC>Minimize application window.</DESC>
-                                            <PLATFORMS>WM, Win32</PLATFORMS>
+                                            <PLATFORM>WM, Win32</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="SIP">
                                             <DESC>Display software keyboard window.Set Rho.System.keyboardState to Rho.System.KEYBOARD_AUTOMATIC to use this element.</DESC>
-                                            <PLATFORMS>WM</PLATFORMS>
+                                            <PLATFORM>WM</PLATFORM>
                                         </VALUE>
 
                                     </VALUES>
@@ -91,11 +91,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 </PARAM>
                                 <PARAM name="coloredIcon" type="BOOLEAN" default="false">
                                     <DESC>Use colored icon in toolbar on iPhone instead of standard monochrome white icon (prepared from image alpha).</DESC>
-                                    <PLATFORMS>iOS</PLATFORMS>
+                                    <PLATFORM>iOS</PLATFORM>
                                 </PARAM>
                                 <PARAM name="width" type="INTEGER">
                                     <DESC>Button width in pixel. Used to define separator width when more than one separator specified.</DESC>
-                                    <PLATFORMS>WM</PLATFORMS>
+                                    <PLATFORM>WM</PLATFORM>
                                 </PARAM>
                             </PARAMS>
                         </PARAM>
@@ -110,11 +110,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             </PARAM>
                             <PARAM name="maskColor" type="INTEGER" default="0xFFFFFF">
                                 <DESC>Image mask color(transparent color).</DESC>
-                                <PLATFORMS>WM, Win32</PLATFORMS>
+                                <PLATFORM>WM, Win32</PLATFORM>
                             </PARAM>
                             <PARAM name="viewHeight" type="INTEGER">
                                 <DESC>Toolbar height in pixels.</DESC>
-                                <PLATFORMS>WM, Win32</PLATFORMS>
+                                <PLATFORM>WM, Win32</PLATFORM>
                             </PARAM>
 
                         </PARAMS>
