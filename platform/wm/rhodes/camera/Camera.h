@@ -37,8 +37,8 @@ public:
 	virtual ~Camera(void);
 
 public: 
-	HRESULT takePicture(HWND hwndOwner,LPTSTR pszFilename);
-	HRESULT selectPicture(HWND hwndOwner,LPTSTR pszFilename);
+	HRESULT takePicture(HWND hwndOwner,LPTSTR pszFilename, LPTSTR pszFileFullname); 
+	HRESULT selectPicture(HWND hwndOwner,LPTSTR pszFilename, LPTSTR pszFileFullname);
 
 private:
     StringW generate_filename(LPCTSTR szExt );
