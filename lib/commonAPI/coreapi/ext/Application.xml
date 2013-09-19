@@ -144,7 +144,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="databaseFilePath">
-                <DESC>Path to database file by partition name.</DESC>
+                <DESC>Path to database file by partition name. Please note that function does not create database file. This function only generates file path based on application path and partition name.</DESC>
 
                 <PARAMS>
                     <PARAM name="partitionName" type="STRING">
@@ -156,7 +156,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="expandDatabaseBlobFilePath">
-                <DESC>Make absolute path to database blob file.</DESC>
+                <DESC>Make absolute path to database blob file. Please note that function does not create database file. This function only generates file path based on application path and partition name.</DESC>
 
                 <PARAMS>
                     <PARAM name="relativePath" type="STRING">
@@ -168,7 +168,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="relativeDatabaseBlobFilePath">
-                <DESC>Make relative path to database blob file.</DESC>
+                <DESC>Make relative path to database blob file. Please note that function does not create database file. This function only generates file path based on application path and partition name.</DESC>
 
                 <PARAMS>
                     <PARAM name="absolutePath" type="STRING">
@@ -194,6 +194,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
                 <DESC>Set application activation/deactivation callback.</DESC>
+                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
                     <DESC>Information related to the activation/deactivation of application. Please note that events are platform depend.</DESC>
                     <PARAMS>
@@ -230,11 +231,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>
-                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
             </METHOD>
 
             <METHOD name="processApplicationEvent" generateAPI="false">
                 <DESC>Default processing of application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
+                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="applicationEvent" type="STRING">
@@ -244,7 +245,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Event specific data.</DESC>
                     </PARAM>
                 </PARAMS>
-
             </METHOD>
 
             <METHOD name="setLocale" generateAPI="false" generateDoc="false" access="STATIC">
