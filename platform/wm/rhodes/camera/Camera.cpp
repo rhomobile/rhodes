@@ -49,7 +49,7 @@ Camera::Camera(void) {
 Camera::~Camera(void) {
 }
 
-HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) 
+HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename, LPTSTR pszFileFullname) 
 {
     HRESULT         hResult = S_OK;
 #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
@@ -82,6 +82,8 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
     if (S_OK == hResult) 
     {
         LOG(INFO) + "takePicture get file: " + shcc.szFile;
+        StringCchCopy( pszFileFullname, MAX_PATH, shcc.szFile );
+	LOG(INFO) + "takePicture full filename: " + pszFileFullname;
 
         LPTSTR fname = get_file_name( shcc.szFile, imageDir.c_str() );
 		if (fname) {
@@ -102,7 +104,7 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
     return hResult;
 }
 
-HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) 
+HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename, LPTSTR pszFileFullname) 
 {
 	RHO_ASSERT(pszFilename);
 #if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_MOTCE )
@@ -142,6 +144,8 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
         LPCTSTR szExt = wcsrchr(pszFilename, '.');
 		StringW strFileName = generate_filename(szExt);
 		StringW strFullName = strBlobRoot + L"\\" + strFileName;
+		wcscpy( pszFileFullname, pszFilename);
+		LOG(INFO) + "selectPicture full filename: " + pszFileFullname;
 
 		if (copy_file( pszFilename, strFullName.c_str() )) 
         {
