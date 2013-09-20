@@ -158,7 +158,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="fatalError">
-                <DESC>Log message at the FatalError level.</DESC>
+                <DESC>Log message at the FatalError level. Application will be terminated (on all platforms except iOS)</DESC>
 
                 <PARAMS>
                     <PARAM name="message" type="STRING">
