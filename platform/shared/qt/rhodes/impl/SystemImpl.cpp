@@ -296,7 +296,7 @@ void rho_sys_lock_window_size(int locked)
 
 void rho_symimpl_createMenu()
 {
-    CMainWindow::getInstance()->doCreateCustomMenu();
+    CMainWindow::getInstance()->createCustomMenuCommand();
 }
 
 } //extern "C"
