@@ -9,7 +9,8 @@
                 <DESC>Default object of Module.</DESC>
             </RETURN>
 
-        </METHOD>
+             <PLATFORM usemodule="true"></PLATFORM>
+       </METHOD>
 
         <METHOD name="setDefault" access="STATIC" nativeName="setDefaultID">
             <DESC>This method allows you to set the attributes of the default object instance by passing in an object of the same class.</DESC>
@@ -18,6 +19,7 @@
                     <DESC>An instance object that is of the same class.</DESC>
                 </PARAM>
             </PARAMS>
+            <PLATFORM usemodule="true"></PLATFORM>
         </METHOD>
 
     </METHODS>

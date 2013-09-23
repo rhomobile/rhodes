@@ -698,6 +698,11 @@ void CMainWindow::setTitle(const char* title)
     emit doSetTitle(title);
 }
 
+void CMainWindow::createCustomMenuCommand(void)
+{
+    emit doCreateCustomMenu();
+}
+
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
     CMainWindow::getInstance()->executeRunnable(pTask);

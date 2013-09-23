@@ -15,12 +15,12 @@ def build_extension(name, arch)
     files << f
   end
   # CSystemImpl.cpp & CWebViewImpl.cpp must be compiled in Qt environment (see /platform/shared/qt/rhodes/rhodes.pro)
-  Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/**/Native*Impl.cpp").each do |f|
+  Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/**/CNative*Impl.cpp").each do |f|
     files << f
   end
 
-  files << "#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/src/NetworkDetect.cpp"
-  files << "#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/src/NotificationImpl.cpp"
+  files << "#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/src/CNetworkDetect.cpp"
+  files << "#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/src/CNotificationImpl.cpp"
   files << "#{$rootdir}/lib/commonAPI/coreapi/ext/shared/qt/NavbarImpl.cpp"
 
   files.each do |f|
