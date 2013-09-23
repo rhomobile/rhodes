@@ -269,6 +269,7 @@ public:
     bool isLocalServerRunning() { return ( (m_httpServer) && (m_httpServer->started()) ); }
 
     void callCallbackProcWithData(unsigned long oRubyCallbackProc, String strBody, const String& strCallbackData, bool bWaitForResponse);
+
 protected:
     virtual void run();
 

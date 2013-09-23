@@ -128,9 +128,13 @@ begin
     
     require 'rho'
 
-if Rho::System.isRhoSimulator
-    require 'debugger'
-end
+    puts "RHOSTUDIO_REMOTE_DEBUG=" + RHOSTUDIO_REMOTE_DEBUG.to_s
+    puts "RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
+    
+      #if Rho::System.isRhoSimulator
+    if RHOSTUDIO_REMOTE_DEBUG == true
+      require 'debugger'
+    end
 	
     puts 'RHO loaded'
     RHO_FRAMEWORK = Rho::RHO.new

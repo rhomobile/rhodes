@@ -92,6 +92,8 @@ namespace "config" do
       $sdk = value if value      
     end
 
+    $remote_debug = false
+    $remote_debug = Jake.getBool(ENV['rho_remote_debug'])  if ENV['rho_remote_debug']
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"
@@ -1095,6 +1097,10 @@ namespace "run" do
 
   desc "Build and run on WM6 emulator"
   task :wm => ["device:wm:production"] do
+    if $remote_debug
+      Jake.modify_rhoconfig_for_debug()
+    end
+
     if $use_direct_deploy == "no" 
       Rake::Task["run:wm:cab"].execute
     else

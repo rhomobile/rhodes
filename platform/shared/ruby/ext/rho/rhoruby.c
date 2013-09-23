@@ -82,7 +82,7 @@ extern VALUE RhoPreparePath(VALUE path);
 extern const char* rho_native_rhopath();
 extern const char* rho_native_reruntimepath();
 extern const char* rho_native_rhouserpath();
-//extern void RhoSetCurAppPath(char* path);
+extern const char* rho_get_remote_debug_host();
 
 static VALUE  framework;
 static ID framework_mid;
@@ -317,6 +317,16 @@ void RhoRubyStart()
 
     if ( rho_rcclient_have_rhoconnect_client() ) {
         rb_const_set(rb_cObject, rb_intern("RHOCONNECT_CLIENT_PRESENT"), Qtrue);
+    }
+
+    if (rho_is_remote_debug())
+    {
+        rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_DEBUG"), Qtrue);
+        rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_HOST"), rho_ruby_create_string(rho_get_remote_debug_host()));
+    }
+    else
+    {
+        rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_DEBUG"), Qfalse);
     }
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)

@@ -36,7 +36,7 @@ end
 
 def execute_cmd(cmd, advanced)
   #$_s.write("execute_cmd start\n")
-  cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
+  cmd = unescape(cmd.gsub(/\+/,' ')) if advanced
   debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Executing: #{cmd.inspect}")
   result = ""
   error = '0';
@@ -311,7 +311,10 @@ begin
   debug_port_env = ENV['rho_debug_port']
   debug_path_env = ENV['ROOT_PATH']
 
-  debug_host = ((debug_host_env.nil?) || (debug_host_env == "")) ? '127.0.0.1' : debug_host_env 
+  puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
+  
+  debug_host = ((debug_host_env.nil?) || (debug_host_env == "")) ? '127.0.0.1' : debug_host_env
+  debug_host = ((RHOSTUDIO_REMOTE_HOST.to_s != nil) || (RHOSTUDIO_REMOTE_HOST.to_s != "")) ? RHOSTUDIO_REMOTE_HOST.to_s : "" 
   debug_port = ((debug_port_env.nil?) || (debug_port_env == "")) ? 9000 : debug_port_env  
 
   debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host_env.to_s)
