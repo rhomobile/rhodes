@@ -123,6 +123,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="SELF_INSTANCE">
                     <DESC>return sensor object for the sensor type passed as parameter</DESC>
                 </RETURN>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
+ 
             </METHOD>
             
 

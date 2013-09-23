@@ -144,6 +144,7 @@ public:
     void setSize(int width, int height);
     void lockSize(int locked);
     void setTitle(const char* title);
+    void createCustomMenuCommand(void);
 
 signals:
     void doExitCommand(void);

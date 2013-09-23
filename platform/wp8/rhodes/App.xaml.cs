@@ -112,24 +112,23 @@ namespace rhodes
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
-            // TODO: add onActivate call
-            //rhoruntime.CRhoRuntime.getInstance().onActivate(1);
+            rhoruntime.CRhoRuntime.getInstance().onActivate(1);
         }
 
         // Code to execute when the application is deactivated (sent to background)
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
-            // TODO: add onActivate call
-            //rhoruntime.CRhoRuntime.getInstance().onActivate(0);
+            rhoruntime.CRhoRuntime.getInstance().DestroyUi();
         }
 
         // Code to execute when the application is closing (eg, user hit Back)
         // This code will not execute when the application is deactivated
+        // in this case we have to send app to background, we shouldnt close it
+        // confirmed by Evgeniy
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
-            // TODO: add onActivate call ?
-            //rhoruntime.CRhoRuntime.getInstance().onActivate(0);
+            rhoruntime.CRhoRuntime.getInstance().DestroyUi();
         }
 
         // Code to execute if a navigation fails

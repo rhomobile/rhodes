@@ -28,7 +28,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="filename" type="STRING">
-                        <DESC>File name of the audio media to be played - full filepath. On iOS when you post URL to remote server (except https), then we open standart browser (another application) for playing it. On iOS we support : mp3, mp4, wav formats</DESC>
+                        <DESC>File name of the audio media to be played - full filepath. On iOS when you post URL to remote server (except https), then we open standard browser (another application) for playing it. On iOS we support: mp3, mp4, wav formats. On other platforms the formats supported depend on what support is built into the platform. Typically on WM/CE this will be wav and on Android mp3.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -43,7 +43,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Playing a video file back</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING" runInThread="ui">
-                        <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server  (except https), then we open standart browser (another application) for playing it. On iOS we support : mov, mp4, 3gp formats</DESC>
+                        <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server  (except https), then we open standard browser (another application) for playing it. On iOS we support: mov, mp4, 3gp formats. On other platforms the formats supported depend on what support is built into the platform. Typically on WM/CE this will be wmv and on Android mp4.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
