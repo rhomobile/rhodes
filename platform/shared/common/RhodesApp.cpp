@@ -1986,41 +1986,41 @@ void CExtManager::requireRubyFile( const char* szFilePath )
     }
 }
 	
-	void CRhodesApp::setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval)
+void CRhodesApp::setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval)
+{
+	synchronized(m_mxNetworkStatus)
 	{
-		synchronized(m_mxNetworkStatus)
+		m_networkStatusReceiver.setMethodResult(oResult);
+		if ( m_pNetworkStatusMonitor != 0 )
 		{
-			m_networkStatusReceiver.setMethodResult(oResult);
-			if ( m_pNetworkStatusMonitor != 0 )
-			{
-				if ( poll_interval <= 0 ) {
-					poll_interval = c_defaultNetworkStatusPollInterval;
-				}
-				m_pNetworkStatusMonitor->setPollInterval(poll_interval);
+			if ( poll_interval <= 0 ) {
+				poll_interval = c_defaultNetworkStatusPollInterval;
 			}
+			m_pNetworkStatusMonitor->setPollInterval(poll_interval);
 		}
 	}
-	
-	void CRhodesApp::clearNetworkStatusNotify()
+}
+
+void CRhodesApp::clearNetworkStatusNotify()
+{
+	synchronized(m_mxNetworkStatus)
 	{
-		synchronized(m_mxNetworkStatus)
-		{
-			m_networkStatusReceiver.setMethodResult(apiGenerator::CMethodResult());
-		}
+		m_networkStatusReceiver.setMethodResult(apiGenerator::CMethodResult());
 	}
-	
-	void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
+}
+
+void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
+{
+	synchronized(m_mxNetworkStatus)
 	{
-		synchronized(m_mxNetworkStatus)
+		m_pNetworkStatusMonitor = netMonitor;
+		if ( m_pNetworkStatusMonitor != 0)
 		{
-			m_pNetworkStatusMonitor = netMonitor;
-			if ( m_pNetworkStatusMonitor != 0)
-			{
-				m_pNetworkStatusMonitor->setNetworkStatusReceiver(&m_networkStatusReceiver);
-				m_pNetworkStatusMonitor->setPollInterval( c_defaultNetworkStatusPollInterval );
-			}
+			m_pNetworkStatusMonitor->setNetworkStatusReceiver(&m_networkStatusReceiver);
+			m_pNetworkStatusMonitor->setPollInterval( c_defaultNetworkStatusPollInterval );
 		}
 	}
+}
 	
 	
 	NetworkStatusReceiver::NetworkStatusReceiver( common::CMutex& mxAccess ) :
@@ -2445,11 +2445,6 @@ void rho_rhodesapp_callUiDestroyedCallback()
     if ( rho::common::CRhodesApp::getInstance() )
         RHODESAPP().callUiDestroyedCallback();
 }
-/*
-void rho_rhodesapp_setViewMenu(unsigned long valMenu)
-{
-    RHODESAPP().getAppMenu().setAppMenu(valMenu);
-}*/
 
 const char* rho_rhodesapp_getappbackurl()
 {
@@ -2642,3 +2637,13 @@ extern "C"
 	}
 }
 #endif
+
+extern "C" bool rho_is_remote_debug()
+{
+    return RHOCONF().getBool("remotedebug");
+}
+
+extern "C" const char* rho_get_remote_debug_host()
+{
+    return RHOCONF().getString("debughosturl").c_str();
+}
