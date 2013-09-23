@@ -70,6 +70,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                         </VALUE>
                                         <VALUE value ="fullscreen">
                                             <DESC>Expand application window to full screen.</DESC>
+                                            <PLATFORM>WM, Win32, Android, WP8</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="sync">
                                             <DESC>Run full sync command.</DESC>
