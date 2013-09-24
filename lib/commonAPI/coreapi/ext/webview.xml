@@ -153,7 +153,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <METHOD name="navigate">
                 <DESC>Force WebView to navigate to a URL.</DESC>
-                <MORE_HELP>White page flickering during transition may happen if a controller action method doesn't return any rendered value, but instead performs a WebView.navigate(someUrl) call. It is important to avoid using WebView.navigate in action methods because WebView.navigate is intended to be used in callback methods asynchronously.</MORE_HELP>
+                <MORE_HELP>White page flickering during transition may happen if a controller action method doesn't return any rendered value, but instead performs a WebView.navigate(someUrl) call. It is important to avoid using WebView.navigate in Ruby action methods because WebView.navigate is intended to be used in callback methods asynchronously.</MORE_HELP>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>Navigate to this url.</DESC>

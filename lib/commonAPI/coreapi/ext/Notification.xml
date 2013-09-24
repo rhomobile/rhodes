@@ -29,10 +29,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 						<DESC>The properties associated with the popup.</DESC>
 						<PARAMS>
 							<PARAM name="message" type="String" default="">
-								<DESC>text displayed in the popup window</DESC>
+								<DESC>Text displayed in the popup window</DESC>
 							</PARAM>
 							<PARAM name="title" type="String" default="">
-								<DESC>title of the popup window</DESC>
+								<DESC>Title of the popup window</DESC>
 							</PARAM>
 							<PARAM name="icon" type="String" default="">
 								<DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon.</DESC>
@@ -40,13 +40,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 								<PLATFORM>Android</PLATFORM>
 							</PARAM>
 							<PARAM name="buttons" type="Array" default="">
-								<DESC>array of buttons. Specify each button either by hash with :id and :title keys, or by a string where id and title are set to the string value. TODO - HOW SPECIFY</DESC>
+								<DESC>Array of buttons. Specify each button either by hash with :id and :title keys, or by a string where id and title are set to the string value. Ex: [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}]</DESC>
 							</PARAM>
 						</PARAMS>
 					</PARAM>
 				</PARAMS>
 				<CALLBACK type="HASH">
-					<DESC>TODO</DESC>
+					<DESC>A hash/object is returned indicated which button was pressed.</DESC>
 					<PARAMS>
 						<PARAM name="button_id" type="STRING">
 							<DESC>ID assigned to the button when showing the popup</DESC>
@@ -55,7 +55,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 							<DESC>Button text</DESC>
 						</PARAM>
 						<PARAM name="button_index" type="STRING">
-							<DESC>TODO</DESC>
+							<DESC>The index in the 'buttons' array.</DESC>
 						</PARAM>
 					</PARAMS>
 				</CALLBACK>    
@@ -172,6 +172,39 @@ def sound_beeper
 end
                    ]]>
                  </RUBY>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Show an alert">
+            <SECTIONS>
+              <SECTION>
+               <DESC>
+                   This example shows how to show an alert in Javascript. 
+               </DESC>
+               <CODE>
+                <JAVASCRIPT>
+           <![CDATA[
+function show_alert()
+{
+	//creates a popup with a message and two buttons
+	Rho.Notification.showPopup({
+		title:'My Popup',
+		message:'Do you really want to delete this record',
+		buttons:[
+			{id:'yes',title:'Ok to Delete'},
+			{id:'no',title:'No'}]
+		},
+			function(e){
+				if(e.button_id == "yes")
+				{
+					// go ahead and delete the record
+				}
+			}
+	);
+}
+                   ]]>
+                 </JAVASCRIPT>
                </CODE>
                </SECTION>
                </SECTIONS>

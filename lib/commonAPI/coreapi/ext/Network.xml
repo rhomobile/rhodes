@@ -34,7 +34,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Type of authentication used for this request. Check the list of available options below. Leaving blank will result in no authentication type</DESC>
                 <VALUES>
                     <VALUE constName="AUTH_BASIC" value ="basic">
-                        <DESC></DESC>
+                        <DESC>Basic Authentication Type. uses authUser and authPassword</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
@@ -45,7 +45,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Password for basic authentication. You must also specify `authType='basic'</DESC>
             </PROPERTY>
             <PROPERTY name="verifyPeerCertificate" type="BOOLEAN" default="true">
-                <DESC>Verify SSL certificates.When set to false it will allow untrusted certificates.</DESC>
+                <DESC>Verify SSL certificates. When set to false it will allow untrusted certificates.</DESC>
                 <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpVerb" type="STRING">
@@ -56,7 +56,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             
             <PROPERTY name="responseTimeout" type="INTEGER" default="30" generateAccessors="true">
-                <DESC>Timeout of network requests in seconds. NB: This property has module scope. Do not pass it as hash parameter to methods, use property accessors instead.</DESC>
+                <DESC>Timeout of network requests in seconds. This property has module scope. Do not pass it as hash parameter to methods, use property accessors instead.</DESC>
             </PROPERTY>
 
         </PROPERTIES>
@@ -66,14 +66,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </ALIASES>
 
             <METHOD name="cancel" hasCallback="optional" runInThread="none">
-                <DESC>Cancel the request identified by callback. If callback is mossed then all requests will be cancelled.</DESC>
+                <DESC>Cancel the request identified by callback. If callback is not specified then all requests will be cancelled.</DESC>
             </METHOD>
 
             <METHOD name="downloadFile" hasCallback="optional">
-                <DESC>Download a file to the specified filename. NB: if 'overwriteFile' flag is default or false, the HEAD request to the server will be performed before actual download to retreive 'last-modified' header which is used to support resuming interrupted download. If targed server doesn't support HEAD requests, 'overwriteFile' should be set to true.</DESC>
+                <DESC>Download a file to the specified filename. Note: if 'overwriteFile' flag is default or false, the HEAD request to the server will be performed before actual download to retreive 'last-modified' header which is used to support resuming interrupted download. If targed server doesn't support HEAD requests, 'overwriteFile' should be set to true.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-                        <DESC>Properties map.</DESC>
+                        <DESC>Properties to be used in this request.</DESC>
                         <PARAMS>
                             <PARAM name="url" type="STRING">
                                 <DESC>URL of file to be downloaded. HTTP and HTTPS protocols are supported.</DESC>
@@ -145,7 +145,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Perform a HTTP Post.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-                        <DESC>Properties map.</DESC>
+                        <DESC>The properties for the Network module can be used in this hash along with the following:</DESC>
                         <PARAMS>
                             <PARAM name="body" type="STRING">
                                 <DESC>The message body of the HTTP request.</DESC>
@@ -177,7 +177,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Upload the specified file using HTTP POST.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-                        <DESC>Properties map.</DESC>
+                        <DESC>The properties for the Network module can be used in this hash along with the following:</DESC>
                         <PARAMS>
                             <PARAM name="filename" type="STRING">
                                 <DESC>The path and name of the file to be uploaded.</DESC>
@@ -232,26 +232,26 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="hasNetwork">
-                <DESC>Is device connected to the network.</DESC>
+                <DESC>Returns true if the device is connected to a network.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasWifiNetwork">
-                <DESC>Is device connected to the wifi network</DESC>
+                <DESC>Returns true if the device is connected to a wifi network</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasCellNetwork">
-                <DESC>Is device connected to the cell network.</DESC>
+                <DESC>Returns true if the device is connected to a cell network.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="startStatusNotify" hasCallback="mandatory" runInThread="none">
-                <DESC>Start network status notifications.Notification send when Wifi or Cell network appear/disappear. To check real Internet connectivity use detectConnection method.</DESC>
+                <DESC>Start network status notifications. Notifications are sent when Wifi or Cell network appear/disappear. To check real Internet connectivity use detectConnection method.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <PARAMS>
@@ -282,7 +282,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <METHOD name="detectConnection" hasCallback="mandatory" runInThread="none">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback. Note that callback will be called only if connection status have changed compared to previous polling.</DESC>
+                <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback. Note that callback will be called only if connection status has changed compared to previous polling.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
@@ -321,9 +321,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
             
             <METHOD name="connectWan" hasCallback="mandatory">
-                <DESC>Connects RhoElements through a Wide Area Network. The connection destination must be first configured through the Connection Manager and the destination name provided to this method. If a connection is already established, you must first call disconnectWan before attempting another connection. A list of available connection destinations is written to the log file when either connectWan or disconnectWan are first specified. Specify the connection as 'Internet' to use the default internet connection defined on the device. If the specified destination does not exist no connection attempt will be made and an entry will be made in the log file.</DESC>
+                <DESC>Connects the device to a Wide Area Network. The connection destination must be first configured through the Connection Manager (on the device) and the destination name provided to this method. If a connection is already established, you must first call disconnectWan before attempting another connection. A list of available connection destinations is written to the log file when either connectWan or disconnectWan are first specified. Specify the connection as 'Internet' to use the default internet connection defined on the device. If the specified destination does not exist no connection attempt will be made and an entry will be made in the log file.</DESC>
                 <PLATFORM>WM</PLATFORM>
-                <APPLIES>This method only applies to platforms with the Windows connection manager</APPLIES>
+                <APPLIES>This method only applies to platforms with the Windows Mobile connection manager</APPLIES>
                 <VER_INTRODUCED>1.0.3</VER_INTRODUCED>
                 <PARAMS>
                     <PARAM name="connectionDestination" type="STRING">

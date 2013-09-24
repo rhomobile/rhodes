@@ -2,8 +2,8 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="NativeTabbar" parent="Rho" generateUnderscoreRubyNames="true">
-        <HELP_OVERVIEW>The NativeTabbar methods let you customize the Rhodes tabbar at runtime.</HELP_OVERVIEW>
-        <MORE_HELP>No more than 4 buttons can be created in Windows Phone 8 toolbar. A toolbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time. 
+        <HELP_OVERVIEW>The NativeTabbar methods let you use multiple instances of the RhoMobile webview in seperate tabs. On Android, iOS and WIndows Phone 8 the tabs are true Native Tabbar controls to give your application a native look and feel.</HELP_OVERVIEW>
+        <MORE_HELP>No more than 4 tabs can be created in the Windows Phone 8 tabbar. A tabbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time. 
 ## Enabling the API           
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
@@ -51,7 +51,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <DESC>When tab is activated  - page in tab will be reloaded.</DESC>
                                 </PARAM>
                                 <PARAM name="selectedColor" type="INTEGER">
-                                    <DESC>Change the selected color of this tab. On Android worked only if you setup selectedColor for all tabs and also setup backgroundColor for whole Tabbar !</DESC>
+                                    <DESC>Change the selected color of this tab. On Android this works only if you setup selectedColor for all tabs and also setup backgroundColor for the whole Tabbar</DESC>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                                 </PARAM>
                                 <PARAM name="disabled" type="BOOLEAN" default="false">
@@ -63,18 +63,18 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                                 </PARAM>
                                 <PARAM name="useCurrentViewForTab" type="BOOLEAN" default="false">
-                                    <DESC>Smooth transfer WebView from current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
+                                    <DESC>Gives a smooth transfer to a newly opened tab from the current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
                                     <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                                 </PARAM>
 
                                 <PARAM name="perishable" type="BOOLEAN" default="false">
-                                    <DESC>When true when Tab is not required to preserve state, so it can be closed to open another tabs in case of limited memory.</DESC>
+                                    <DESC>Sets whether this tab is allowed to be destroyed when a memory limit is reached (Windows Mobile)</DESC>
                                     <PLATFORM>WM</PLATFORM>
                                 </PARAM>
                                 
                                 <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                     <PLATFORM>WM</PLATFORM>
-                                    <DESC>Create tab immediatly when TabBar is created. Action also will be executed. If false, when tab will be created when first switch to the tab executed.</DESC>
+                                    <DESC>Create tab immediatly when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to.</DESC>
                                 </PARAM>
 
                             </PARAMS>
@@ -102,7 +102,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
                             <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                 <PLATFORM>WM</PLATFORM>
-                                <DESC>Create tabs immediatly when TabBar is created. Action also will be executed. If false, when each tab will be created when first switch to the tab executed.</DESC>
+                                <DESC>Create tabs immediatly when TabBar is created. Action also will be executed. If false, then each tab will be created when first switch to the tab is executed.</DESC>
                             </PARAM>
                             <PARAM name="placeTabsBottom" type="BOOLEAN">
                                 <PLATFORM>Android</PLATFORM>
@@ -125,7 +125,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <PLATFORM>WM</PLATFORM>
                         </PARAM>
                         <PARAM name="oldTabIndex" type="INTEGER">
-                            <DESC>New tab index. If you switched to first activated tab, when oldTabIndex will be -1, whcih means that there was no old tab index exists.</DESC>
+                            <DESC>New tab index. If you switched to first activated tab, when oldTabIndex will be -1, which means that there was no old tab index exists.</DESC>
                             <PLATFORM>WM</PLATFORM>
                         </PARAM>
                         <PARAM name="tabEvent" type="STRING">
@@ -157,7 +157,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="removeTab" runInThread="ui">
-                <DESC>Removes the Tab by index. Method will remove WebView for specific tab, it will not remove tab from tab array, so all indexes will remain the same.You cannot delete tab with useCurrentViewForTab flag.If you switch to previously removed tab, tab will be recreated.</DESC>
+                <DESC>Removes the Tab by index. Method will remove the WebView for the specific tab, it will not remove the tab from the tab array, so all indexes will remain the same.You cannot delete the tab with useCurrentViewForTab flag.If you switch to previously removed tab, tab will be recreated.</DESC>
                 <PLATFORM>WM</PLATFORM>
 
                 <PARAMS>

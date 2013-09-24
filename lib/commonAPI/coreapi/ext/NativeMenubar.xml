@@ -23,7 +23,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
         <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="mainMenu" type="ARRAY">
-                <DESC>Main Native MenuBar items</DESC>
+                <DESC>The Right menu items in Windows Mobile applications. This defines the list of menu choices when the mainButton is pressed.</DESC>
                 <PARAM type="HASH">
 
                     <PARAMS>
@@ -43,7 +43,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM</PLATFORM>
             </PROPERTY>
             <PROPERTY name="extraMenu" type="ARRAY">
-                <DESC>Extra Native MenuBar items. This menu will display when left menu button is selected (Windows Mobile only).</DESC>
+                <DESC>The Left menu items for Windows Mobile applictions. This defines the list of menu choices when the extraButton is pressed.</DESC>
                 <PLATFORM>WM</PLATFORM>
 
                 <PARAM type="HASH">
@@ -53,17 +53,17 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
 
             <PROPERTY name="mainButton" type="HASH">
-                <DESC>Main MenuBar button properties.Same values as for mainMenu.When action is specified, when mainMenu will be ignored.</DESC>
+                <DESC>Defined behavior of the Right menu button for Windows Mobile applications. This takes the same HASH as a menu item {label: 'Right Button', action: 'javascript: alert("You pressed the right button");'}. If your menu is using menu items via mainMenu, then be sure to not set an action for the mainButton. Setting an action for the mainButton will cause the mainMenu setting to be ignored.</DESC>
                 <PLATFORM>WM</PLATFORM>
             </PROPERTY>
             <PROPERTY name="extraButton" type="HASH">
-                <DESC>Extra MenuBar button properties.Same values as for mainMenu.When action is specified, when extraMenu will be ignored.This item will display when left menu button is selected (Windows Mobile only).</DESC>
+                <DESC>Defined behavior of the Left menu button for Windows Mobile applications. This takes the same HASH as a menu item {label: 'Left Button', action: 'alert("You pressed the left button")'}. If your menu is using menu items via mainMenu, then be sure to not set an action for the extraButton. Setting an action for the extraButton will cause the mainMenu setting to be ignored. </DESC>
                 <PLATFORM>WM</PLATFORM>
             </PROPERTY>
 
             <PROPERTY name="defaultMainMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <PARAM type="HASH" />
-                <DESC>Default Main Menu items.Same values as for mainMenu.</DESC>
+                <DESC>This will return what the default right menu should be. This is a readonly property.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <PLATFORM>WM</PLATFORM>
             </PROPERTY>
@@ -114,11 +114,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
     Rho.NativeMenubar.extraMenu = [
       {
           label: "Show alert 1",
-          action: show_alert_1,
+          action: javascript:show_alert_1();,
       },
       {
           label: "Show alert 2",
-          action: show_alert_2,
+          action: javascript:show_alert_2();,
       },
       {
           label: "Win the lottery",

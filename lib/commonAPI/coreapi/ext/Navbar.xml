@@ -73,7 +73,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
             
             <METHOD name="started" >
-                <DESC>Return true is navbar is started (used only for automatic tests!)</DESC>
+                <DESC>Return true is navbar is started (used only for automatic tests)</DESC>
                 <RETURN type="BOOLEAN"/>
                 <PLATFORM>iOS</PLATFORM>
         

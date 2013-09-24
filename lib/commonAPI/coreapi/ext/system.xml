@@ -54,7 +54,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
-                <DESC>Is camera available on the device.</DESC>
+                <DESC>Returns true if there is a camera available on the device.</DESC>
             </PROPERTY>
             <PROPERTY name="screenWidth" type="INTEGER" readOnly="true">
                 <DESC>Screen width in logical pixels (used for set coordinates).</DESC>
@@ -91,11 +91,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
-                <DESC>Primary email of phone owner. To access this property 'pim' capability must be enabled.</DESC>
+                <DESC>Primary email of phone owner. To access this property 'pim' capability must be enabled in your build.yml.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceOwnerName" type="STRING" readOnly="true">
-                <DESC>Name(account name) of phone owner. To access this property 'pim' capability must be enabled.</DESC>
+                <DESC>Name(account name) of phone owner. To access this property 'pim' capability must be enabled in your build.yml.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="devicePushId" type="STRING" readOnly="true">
@@ -118,16 +118,16 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Current device country code.</DESC>
             </PROPERTY>
             <PROPERTY name="isEmulator" type="BOOLEAN" readOnly="true">
-                <DESC>Returns whether or not the application is running on emulator.</DESC>
+                <DESC>Returns true if the application is running on a platform emulator.</DESC>
             </PROPERTY>
             <PROPERTY name="isRhoSimulator" type="BOOLEAN" readOnly="true">
-                <DESC>Returns whether or not the application is running on RhoSimulator.</DESC>
+                <DESC>Returns true if the application is running on RhoSimulator.</DESC>
             </PROPERTY>
             <PROPERTY name="hasCalendar" type="BOOLEAN" readOnly="true">
-                <DESC>Is calendar support is available.</DESC>
+                <DESC>Returns true if calendar support is available.</DESC>
             </PROPERTY>
             <PROPERTY name="isMotorolaDevice" type="BOOLEAN" readOnly="true">
-                <DESC>Is device supports Motorola device capabilities, such as Scanner, etc.</DESC>
+                <DESC>Returns true if the device supports Motorola device capabilities. APIs will indicate if the property or method is available on MSI devices only. You can use this property to help your application decide when to take advantage of advanced MSI capabilities.</DESC>
             </PROPERTY>
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
                 <DESC>The OEM Information string for the terminal.</DESC>
@@ -144,11 +144,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
-                <DESC>Client HTTP proxy. RhoSimulator the method supported only for windows OS.</DESC>
+                <DESC>Client HTTP proxy. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
-                <DESC>Lock/unlock the window size change by the user. RhoSimulator the method supported only for windows OS.</DESC>
+                <DESC>Lock/unlock the window size change by the user. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <PLATFORM>Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="keyboardState" type="STRING" default="See Description">
@@ -168,7 +168,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="localServerPort" type="INTEGER" default="8080" readOnly="true">
-                <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.</DESC>
+                <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, the platform will detect a free port on the device and use that one.</DESC>
             </PROPERTY>
             <PROPERTY name="freeServerPort" type="INTEGER" readOnly="true">
                 <DESC>Get free local server port, available for binding.</DESC>
@@ -178,13 +178,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>Android, iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="hasTouchscreen" type="BOOLEAN" readOnly="true">
-                <DESC>Is device has touch screen.</DESC>
+                <DESC>Returns true if the device has touch screen capabilities.</DESC>
             </PROPERTY>
             <PROPERTY name="webviewFramework" type="STRING" readOnly="true">
                 <DESC>Browser framework identity string.</DESC>
             </PROPERTY>
             <PROPERTY name="screenSleeping" type="BOOLEAN">
-                <DESC>Should screen go to sleep by timeout.</DESC>
+                <DESC>Set true if the screen should go to sleep by timeout.</DESC>
                 <PLATFORM>Android, iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="hasNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
@@ -197,7 +197,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Use Network.hasCellNetwork to tell if device is connected to the cell network.</DESC>
             </PROPERTY>
             <PROPERTY name="hasSqlite" type="BOOLEAN" readOnly="true" deprecated="true">
-                <DESC>Does sqlite used on this platform.</DESC>
+                <DESC>Returns true if the device has sqlite capabilities (previously only BlackBerry did not support this).</DESC>
             </PROPERTY>
         </PROPERTIES>
         <METHODS  access="STATIC">
@@ -223,7 +223,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
             <METHOD name="isApplicationInstalled">
-                <DESC>Is application installed on the device?</DESC>
+                <DESC>Checks if the specified applicationName is installed on the device</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
@@ -253,7 +253,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Open the application associated with the URL.</DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
-                        <DESC>Open the application at this url; behavior may be different on different platforms and depend on installed software.</DESC>
+                        <DESC>Open the application at this url; behavior may be different on different platforms and depends on the installed software.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -261,7 +261,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
-                        <DESC>The path to the file to be unzipped. Application should have write permissions to folder where zip placed.</DESC>
+                        <DESC>The path to the file to be unzipped. Application should have write permissions to this folder.</DESC>
                     </PARAM>
                     <PARAM name="password" type="STRING">
                         <DESC>Password for the zip.</DESC>
@@ -270,10 +270,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
             <METHOD name="zipFile">
-                <DESC>Zip one file. Zip archive must placed to  folder where application can write files. </DESC>
+                <DESC>Zip one file. Zip archive must placed to the folder where application can write files. </DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
-                        <DESC>The path to the specified zip. Application should have write permissions to folder where zip would be created.</DESC>
+                        <DESC>The path to the specified zip. Application should have write permissions to this folder.</DESC>
                     </PARAM>
                     <PARAM name="localPathToFile" type="STRING">
                         <DESC>The path to the file to be zipped.</DESC>
@@ -303,7 +303,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
             <METHOD name="setRegistrySetting">
-                <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  RhoSimulator the method supported only for windows OS.</DESC>
+                <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -364,7 +364,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="getRegistrySetting">
-                <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  RhoSimulator the method supported only for windows OS.</DESC>
+                <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -388,7 +388,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
             
             <METHOD name="deleteRegistrySetting">
-                <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  RhoSimulator the method supported only for windows OS.</DESC>
+                <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">

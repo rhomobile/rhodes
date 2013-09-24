@@ -46,7 +46,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				<DESC>Sets the callback to be called when a screen orientation event occurres</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
 				<CALLBACK type="STRING">
-					<DESC>Current orientation of the screen. The orientation is reported as normal, leftHanded, rightHanded or upsideDown. If auto rotation is disabled - real rotating of device do not produce event! Event occured only for real changing of screen orientation.</DESC>
+					<DESC>Current orientation of the screen. The orientation is reported as normal, leftHanded, rightHanded or upsideDown. If auto rotation is disabled - real rotating of device do not produce an event. The event occurs only for real changing of screen orientation.</DESC>
 				</CALLBACK>
 			</METHOD>
         </METHODS>
