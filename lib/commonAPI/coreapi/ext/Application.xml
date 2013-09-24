@@ -22,28 +22,28 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
         <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="appBundleFolder" type="STRING" readOnly="true">
-                <DESC>Path to apps/app folder inside application bundle.</DESC>
+                <DESC>Path to apps/app folder inside the application bundle.</DESC>
             </PROPERTY>
             <PROPERTY name="appsBundleFolder" type="STRING" readOnly="true">
-                <DESC>Path to apps folder inside application bundle.</DESC>
+                <DESC>Path to apps folder inside the application bundle.</DESC>
             </PROPERTY>
             <PROPERTY name="bundleFolder" type="STRING" readOnly="true">
                 <DESC>Path to application bundle folder.</DESC>
             </PROPERTY>
             <PROPERTY name="userFolder" type="STRING" readOnly="true">
-                <DESC>Path to folder where application can write files and create subfolders.</DESC>
+                <DESC>Path to folder where the application can write files and create subfolders.</DESC>
             </PROPERTY>
             <PROPERTY name="configPath" type="STRING" readOnly="true">
-                <DESC>Path to configuration file.</DESC>
+                <DESC>Path to the configuration file.</DESC>
             </PROPERTY>
             <PROPERTY name="modelsManifestPath" type="STRING" readOnly="true">
-                <DESC>Path to file with model list.</DESC>
+                <DESC>Path to file with the model list.</DESC>
             </PROPERTY>
             <PROPERTY name="databaseBlobFolder" type="STRING" readOnly="true">
-                <DESC>Path to folder where database blob files are stored.</DESC>
+                <DESC>Path to folder where the database blob files are stored.</DESC>
             </PROPERTY>             
             <PROPERTY name="publicFolder" type="STRING" readOnly="true">
-                <DESC>Path to application public folder.</DESC>
+                <DESC>Path to the application public folder.</DESC>
             </PROPERTY>
             
             <PROPERTY name="startURI" type="STRING">
@@ -56,7 +56,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Splash screen image display options. This a string with several parameters divided by ';': delay=5;center;hcenter;vcenter;vzoom;hzoom;zoom</DESC>
             </PROPERTY>
             <PROPERTY name="version" type="STRING" readOnly="true">
-                <DESC>Version from build time configuration file.</DESC>
+                <DESC>Version from build time configuration file (build.yml).</DESC>
             </PROPERTY>
             <PROPERTY name="title" type="STRING">
                 <DESC>Define Window caption text.If missed - caption from page used.Not supported on Windows CE devices.</DESC>
@@ -104,7 +104,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Is the security token check was failed.Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
             </PROPERTY>
             <PROPERTY name="invalidSecurityTokenStartPath" type="STRING" readOnly="true">
-                <DESC>Page to navigate in case of check of SecurityToken was failed.Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
+                <DESC>Page to navigate in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
             </PROPERTY>
             
             <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true" generateDoc="false">
@@ -112,7 +112,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
 
             <PROPERTY name="badLinkURI" type="STRING" readOnly="true">
-                <DESC>Bad link URI to navigate in browser.Defines in config.xml: Navigation\\BadLinkURI</DESC>
+                <DESC>Bad link URI to navigate in browser. This is defined in config.xml: Navigation\\BadLinkURI</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
                 <MORE_HELP>
@@ -144,7 +144,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="databaseFilePath">
-                <DESC>Path to database file by partition name. Please note that function does not create database file. This function only generates file path based on application path and partition name.</DESC>
+                <DESC>Path to database file by partition name. Please note that this function does not create a database file. This function only generates the file path based on the application path and partition name.</DESC>
 
                 <PARAMS>
                     <PARAM name="partitionName" type="STRING">
@@ -156,7 +156,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="expandDatabaseBlobFilePath">
-                <DESC>Make absolute path to database blob file. Please note that function does not create database file. This function only generates file path based on application path and partition name.</DESC>
+                <DESC>Generates the absolute path to database blob file. Please note that this function does not the create database file. This function only generates the file path based on application path and partition name.</DESC>
 
                 <PARAMS>
                     <PARAM name="relativePath" type="STRING">
@@ -168,7 +168,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="relativeDatabaseBlobFilePath">
-                <DESC>Make relative path to database blob file. Please note that function does not create database file. This function only generates file path based on application path and partition name.</DESC>
+                <DESC>Generates the relative path to database blob file. Please note that this function does not create a database file. This function only generates the file path based on the application path and partition name.</DESC>
 
                 <PARAMS>
                     <PARAM name="absolutePath" type="STRING">
@@ -184,11 +184,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="minimize">
-                <DESC>Minimize or move application to background. RhoSimulator the method supported only for windows OS.</DESC>
+                <DESC>Minimize or move the application to background. When running in RhoSimulator this method is supported only for Windows OS.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
             <METHOD name="restore">
-                <DESC>Restore application on the screen. RhoSimulator the method supported only for windows OS.</DESC>
+                <DESC>Restores the application to be in the foreground. When running in RhoSimulator the method is supported only for windows OS.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
 
@@ -196,32 +196,32 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Set application activation/deactivation callback.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
-                    <DESC>Information related to the activation/deactivation of application. Please note that events are platform depend.</DESC>
+                    <DESC>Information related to the activation/deactivation of application. Please note that events are platform dependant.</DESC>
                     <PARAMS>
                         <PARAM name="applicationEvent" type="STRING">
                             <DESC></DESC>
                             <VALUES>
                                 <VALUE constName="APP_EVENT_ACTIVATED" value ="Activated">
-                                    <DESC></DESC>
+                                    <DESC>The application has been activated</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_DEACTIVATED" value ="Deactivated">
-                                    <DESC></DESC>
+                                    <DESC>The application has been deactivated</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_UICREATED" value ="UICreated">
-                                    <DESC>APP_EVENT_UICREATED is generated before start page is loaded. There are no means to set callback and catch event in javascript. Ruby Application class descendant can to set callback and process this event.</DESC>
+                                    <DESC>APP_EVENT_UICREATED is generated before the start page is loaded. There are no means to set callback and catch event in javascript. Ruby Application class descendant can to set callback and process this event.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_UIDESTROYED" value ="UIDestroyed">
-                                    <DESC></DESC>
+                                    <DESC>This event is triggered when the application is closing and the UI has been cleared.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged">
-                                    <DESC>This is available under Ruby Only</DESC>
+                                    <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_CONFIGCONFLICT" value ="ConfigConflict">
-                                    <DESC>This is available under Ruby Only</DESC>
+                                    <DESC>This is available under Ruby Only.</DESC>
                                     <APPLIES rubyOnly="true"/>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_DBMIGRATESOURCE" value ="DBMigrateSource">
-                                    <DESC>This is available under Ruby Only</DESC>
+                                    <DESC>This is available under Ruby Only.</DESC>
                                     <APPLIES rubyOnly="true"/>
                                 </VALUE>
                             </VALUES>
@@ -234,7 +234,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="processApplicationEvent" generateAPI="false">
-                <DESC>Default processing of application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
+                <DESC>Default processing of an application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>

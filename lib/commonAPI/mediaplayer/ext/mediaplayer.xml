@@ -133,5 +133,43 @@ When more flexible file transfer is required than is provided by MediaPlayer its
                 </DESC>
             </REMARK>
         </REMARKS>
+        <EXAMPLES>
+           <EXAMPLE title="Play the first available ringtone">
+            <SECTIONS>
+              <SECTION>
+               <CODE>
+                <RUBY>
+                  <![CDATA[
+def list_ringtones
+  # Enumerate ringtones
+  Rho::Mediaplayer.getAllRingtones(url_for(:action => :list_ringtones_callback))
+end
+
+def list_ringtones_callback
+  # Play the first ringtone
+  first_ringtone = @params[0]["name"]
+  Rho::Mediaplayer.playRingTone(first_ringtone)
+end
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+                  <![CDATA[
+function list_ringtones() {
+  // Enumerate ringtones
+  Rho.Mediaplayer.getAllRingtones(list_ringtones_callback);
+}
+
+function list_ringtones_callback(params) {
+  // play the first ringtone
+  var first_ringtone = params[0]["name"];
+  Rho.Mediaplayer.playRingTone(first_ringtone);
+}
+                  ]]>
+                 </JAVASCRIPT>
+               </CODE>
+              </SECTION>
+            </SECTIONS>
+           </EXAMPLE>
+        </EXAMPLES>        
     </MODULE>
 </API>    

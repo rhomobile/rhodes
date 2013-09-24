@@ -23,47 +23,47 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <PROPERTIES access="STATIC" generateAccessors="true">
             
             <PROPERTY name="level" type="INTEGER">
-                <DESC>Logging level.</DESC>
+                <DESC>The current logging level.</DESC>
                 <VALUES>
                     <VALUE constName="LEVEL_TRACE" value = "0">
-                        <DESC></DESC>
+                        <DESC>Everything will be logged. Also see settings for controlling log size</DESC>
                     </VALUE>
                     <VALUE constName="LEVEL_INFO" value = "1">
-                        <DESC></DESC>
+                        <DESC>Information level logs and above will be shown</DESC>
                     </VALUE>
                     <VALUE constName="LEVEL_WARNING" value = "2">
-                        <DESC></DESC>
+                        <DESC>Warnings and above will only be shown</DESC>
                     </VALUE>
                     <VALUE constName="LEVEL_ERROR" value = "3">
-                        <DESC></DESC>
+                        <DESC>Error level log messages and above will be shown</DESC>
                     </VALUE>
                     <VALUE constName="LEVEL_FATAL" value = "4">
-                        <DESC></DESC>
+                        <DESC>Fatala level log messages and above will be shown</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
 
             <PROPERTY name="destination" type="ARRAY">
-                <DESC>List of log destinations</DESC>
+                <DESC>List of log destinations that are being used.</DESC>
                 <VALUES>
                     <VALUE constName="DEST_FILE" value ="file">
-                        <DESC></DESC>
+                        <DESC>Log is written to a local file on the device (typically rholog.txt)</DESC>
                     </VALUE>
                     <VALUE constName="DEST_OUTPUT" value ="stdio">
-                        <DESC></DESC>
+                        <DESC>Log is written to the standard output (ex: Android ADB)</DESC>
                     </VALUE>
                     <VALUE constName="DEST_URI" value ="uri">
-                        <DESC></DESC>
+                        <DESC>Log is written to a remote logger</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
 
             <PROPERTY name="includeCategories" type="STRING" default="*">
-                <DESC>Comma-separated list of included log categories. Set to '*' to log all categories.</DESC>
+                <DESC>Comma-separated list of included log categories. Set to '*' to log all categories. ex: myCat1, myCat2</DESC>
             </PROPERTY>
 
             <PROPERTY name="excludeCategories" type="STRING" default="">
-                <DESC>Comma-separated list of excluded log categories</DESC>
+                <DESC>Comma-separated list of excluded log categories. ex: myCat1, myCat2</DESC>
             </PROPERTY>
 
             <PROPERTY name="fileSize" type="INTEGER" default="0">
@@ -71,7 +71,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
 
             <PROPERTY name="filePath" type="STRING" default="rholog.txt">
-                <DESC>Path to the log file including file name. Path related to the platform specific application root or start if from '/'('/mnt/sdcard/myapp.log').</DESC>
+                <DESC>Path to the log file including file name. The path is relative to the platform specific application root or start if from '/' if you wish to store elsewhere ('/mnt/sdcard/myapp.log'). </DESC>
             </PROPERTY>
 
             <PROPERTY name="memoryPeriod" type="INTEGER" default="0">

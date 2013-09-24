@@ -78,6 +78,82 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
        <REMARKS>
         </REMARKS>
         <EXAMPLES >
+           <EXAMPLE title="Customize the extra menu">
+            <SECTIONS>
+               
+              <SECTION>
+               <CODE>
+                <RUBY>
+                  <![CDATA[
+    Rho::NativeMenubar.extraButton = {
+      :label => "Extra"
+    }
+
+    Rho::NativeMenubar.extraMenu = [
+      {
+        :label => "Show alert 1",
+        :action => url_for(:action => :show_alert_1)
+      },
+      {
+        :label => "Show alert 2",
+        :action => url_for(:action => :show_alert_2)
+      },
+      {
+        :label => "Win the lottery",
+        :disabled => true
+      }
+    ]
+                  ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+                  <![CDATA[
+    Rho.NativeMenubar.extraButton = {
+        label: "Extra"
+    };
+
+    Rho.NativeMenubar.extraMenu = [
+      {
+          label: "Show alert 1",
+          action: show_alert_1,
+      },
+      {
+          label: "Show alert 2",
+          action: show_alert_2,
+      },
+      {
+          label: "Win the lottery",
+          disabled: true
+      }
+    ];
+                  ]]>
+                 </JAVASCRIPT>
+               </CODE>
+              </SECTION>
+            </SECTIONS>
+           </EXAMPLE>     
+           <EXAMPLE title="Clear the main menu">
+            <SECTIONS>
+               
+              <SECTION>
+               <CODE>
+                <RUBY>
+                  <![CDATA[
+    def remove_menuitems
+      Rho::NativeMenubar.mainMenu = []
+    end
+                  ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+                  <![CDATA[
+    function remove_menuitems() {
+        Rho.NativeMenubar.mainMenu = [];
+    }
+                  ]]>
+                 </JAVASCRIPT>
+               </CODE>
+              </SECTION>
+            </SECTIONS>
+           </EXAMPLE>                  
         </EXAMPLES>
     </MODULE>
 </API>    
