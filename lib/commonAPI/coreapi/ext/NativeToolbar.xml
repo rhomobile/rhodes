@@ -141,6 +141,64 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <REMARKS>
         </REMARKS>
         <EXAMPLES >
+           <EXAMPLE title="Create native toolbar">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Create a native Toolbar
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+Rho::NativeToolbar.create([{
+  :label => "Home",
+  :action => url_for(Rho::Application.startURI)
+  },
+  {
+  :label => "example.com",
+  :action => "http://www.example.com",
+  }
+], {})
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.NativeToolbar.create([{
+        label: "Home",
+        action: Rho.Application.startURI
+    }, {
+        label: "example.com",
+        action: "http://www.example.org"
+    }], {})
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Remove the toolbar">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Remove the toolbar
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+Rho::NativeToolbar.remove
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.NativeToolbar.remove();
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
         </EXAMPLES>
     </MODULE>
 </API>    

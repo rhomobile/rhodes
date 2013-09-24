@@ -203,6 +203,100 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <REMARKS>
         </REMARKS>
         <EXAMPLES >
+           <EXAMPLE title="Create native tabbar">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                    Create a platform-native tabbar. Tabs can link to internal application links (such as those built with "url_for") as well as external URLs.
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+def create_tabbar           
+    Rho::NativeTabbar.create([{
+      :label => "Home",
+      :action => url_for(Rho::Application.startURI)
+      },
+      {
+      :label => "example.com",
+      :action => "http://www.example.com",
+      }], {}, url_for(:action => :tabbar_callback)
+    )
+end
+
+def tabbar_callback
+    Alert.show_popup("Switching to tab #{@params["rab_index"]}")
+end
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+function create_tabbar() {
+    Rho.NativeTabbar.create([{
+            label: "Home",
+            action: "/app"
+        }, {
+            label: "example.com"
+            action: "http://www.example.com"
+        }], {}, tabbar_callback
+    );
+}
+
+function tabbar_callback(params) {
+    alert("Switching to tab "+params["tab_index"]);
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Switch tab">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                    Switch the active tab
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# Make the third tab active
+Rho::NativeTabbar.switchTab(2);
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// Make the third tab active
+Rho.NativeTabbar.switchTab(2);
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Remove tabbar">
+            <SECTIONS>
+              <SECTION>
+               <DESC>
+                    Remove the tabbar
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+Rho::NativeTabbar.remove
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.NativeTabbar.remove();
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
         </EXAMPLES>
     </MODULE>
 </API>    

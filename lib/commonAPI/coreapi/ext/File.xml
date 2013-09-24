@@ -330,7 +330,51 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
     </USER_OVERVIEW>
     <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
-      
+      <EXAMPLES >
+           <EXAMPLE title="List contents of a folder">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Iterate through the contents of a folder and divide the entries in "folders" and "files"
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+folders = []
+files = []
+
+root_path = "/arbitrary/path"
+entries = Rho::File.listDir(root_path)
+
+entries.each do |entry|
+  unless (entry == "." || entry == "..")
+    (Rho::File.isDir(Rho::File.join(root_path,entry)) ? folders : files) << entry
+  end
+end
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+var folders = [];
+var files = [];
+var root_path = "/arbitrary/path"
+var entries = Rho.File.listDir(root_path);
+
+for (var i = 0; i < entries.length; i++) {
+  var entry = entries[i];
+  if ((entry != ".") && (entry != "..")) {
+
+    (Rho.RhoFile.isDir(Rho.RhoFile.join(root_path, entry)) ? folders : files).push(entry);
+  }
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+       </EXAMPLES>      
     
 
 </MODULE>

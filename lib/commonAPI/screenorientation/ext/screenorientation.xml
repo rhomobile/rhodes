@@ -58,5 +58,128 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </USER_OVERVIEW>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
          <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+         <EXAMPLES >
+           <EXAMPLE title="Detect screen orientation changes">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Detect when the device changes orientation
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+def start_detecting_orientation_changes
+  Rho::ScreenOrientation.setScreenOrientationEvent(url_for(:action => :orientation_callback))
+end
+ 
+def orientation_callback
+  Alert.show_popup("The screen changed orientation")
+end
+]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+function start_detecting_orientation_changes(){
+  ScreenOrientation.setScreenOrientationEvent(orientation_callback)
+}
+ 
+function orientation_callback(){
+    
+  Alert.show_popup("The screen changed orientation")
+}
+
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+
+           <EXAMPLE title="Change screen orientation">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Set the screen orientation programmatically. Particularly useful in a tablet: before capturing a signature, set the orientation to upside-down so that the interface will look right from the signer's point of view without having to physically rotate the device
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+def capture_signature_with_attention_to_details
+    # Set screen orientation to upside down
+    Rho::ScreenOrientation.upsideDown
+    # At this point, offer the device to the user. You just saved the user the hassle of rotating the tablet
+    # and there's less potential for the device to be dropped along the way  
+    Rho::Signature.takeFullScreen({}, url_for(:action => :signature_callback))
+end
+
+def signature_callback
+    # do whatever we need to do with the signature
+    ...
+    # restore screen orientation to default
+    Rho::ScreenOrientation.normal
+end
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+
+function capture_signature_with_attention_to_details() {
+    // Set screen orientation to upside down
+    Rho.ScreenOrientation.upsideDown();
+
+    // At this point, offer the device to the user. You just saved the user the hassle of rotating the tablet
+    // and there's less potential for the device to be dropped along the way  
+    Rho.Signature.takeFullScreen({}, signature_callback);
+}           
+
+function signature_callback(params) {
+    // do whatever we need to do with the signature
+    ...
+    // restore screen orientation to default
+    Rho.ScreenOrientation.normal();
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Enable / disable auto rotate">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Enable / disable automatic rotation of the screen according to device orientation
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# Enable autorotate
+Rho::ScreenOrientation.autoRotate=true
+
+# Disable autorotate
+Rho::ScreenOrientation.autoRotate=false
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// Enable autorotate
+Rho.ScreenOrientation.autoRotate=true;
+
+// Disable autorotate
+Rho.ScreenOrientation.autoRotate=false;
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           
+
+                     
+        </EXAMPLES>
+
     </MODULE>
 </API>    
