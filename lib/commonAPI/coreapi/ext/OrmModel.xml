@@ -213,7 +213,10 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
           </PARAM>
 
         </PARAMS>
-                <APPLIES jsOnly="true"/>
+        <APPLIES jsOnly="true"/>
+        <RETURN type="STRING">
+          <DESC>Value of the specified property from the database.</DESC>
+        </RETURN>
 
       </METHOD>
       <METHOD name="set" generateAPI="false">
