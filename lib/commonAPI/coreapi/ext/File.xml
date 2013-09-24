@@ -142,7 +142,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
-                <DESC>Error code. 0 if no error</DESC>
+                <DESC>Error code. 0 on success, -1 otherwise.</DESC>
             </RETURN>
 
         </METHOD>
@@ -155,7 +155,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
-                <DESC>Error code. 0 if no error</DESC>
+                <DESC>Error code. 0 on success, -1 otherwise.</DESC>
             </RETURN>
         </METHOD>
         
@@ -163,7 +163,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Checks if specified path exists.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Path.</DESC>
+                    <DESC>Full pathname of file or directory.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="BOOLEAN">
@@ -187,7 +187,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Checks if specified path is a directory.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Path.</DESC>
+                    <DESC>Full pathname of the directory.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="BOOLEAN">
@@ -199,7 +199,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Checks if specified path is a file.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Path.</DESC>
+                    <DESC>Full pathname of the file.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="BOOLEAN">
@@ -211,11 +211,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Deletes file.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Path to the file to be deleted.</DESC>
+                    <DESC>Full path to the file to be deleted.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
-                <DESC>Error code. 0 if no error</DESC>
+                <DESC>Error code. 0 on success, -1 otherwise.</DESC>
             </RETURN>
 
         </METHOD>
@@ -224,17 +224,17 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Deletes directory. Non-empty directory will not be deleted.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Path to the directory to be deleted.</DESC>
+                    <DESC>Full path to the directory to be deleted.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
-                <DESC>Error code. 0 if no error</DESC>
+                <DESC>Error code. 0 on success, -1 otherwise.</DESC>
             </RETURN>
 
         </METHOD>
         
         <METHOD name="makeDirs" access="STATIC">
-            <DESC>Creates directory and all top-level directories if necessary.</DESC>
+            <DESC>Creates directory and all top-level directories if necessary. Subsequent isDir call is necessary to check if path was successfully created.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
                     <DESC>Path to the directory to be created.</DESC>
@@ -263,7 +263,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAM>
             </PARAMS>
             <RETURN type="ARRAY">
-                <DESC>Array of directory entry names.</DESC>
+                <DESC>Array of directory entry names. If directory is empty array of size 0 will be returned.</DESC>
             </RETURN>
         </METHOD>
         
@@ -271,14 +271,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
     <!--PATH METHODS -->
             
         <METHOD name="basename" access="STATIC">
-            <DESC>Return basename part of the specified path.</DESC>
+            <DESC>Return basename part for the specified path. Will remove any prefix up to the last path separator ('/' or '\' depending on platform). Exampe: for path '/full/path/to/file.ext' basename will return 'file.ext'. </DESC>
             <PARAMS>
               <PARAM name="path" type="STRING">
-                  <DESC>Path.</DESC>
+                  <DESC>Full pathname for which basename is given.</DESC>
               </PARAM>
             </PARAMS>
             <RETURN type="STRING">
-                <DESC>Basename.</DESC>
+                <DESC>Basename part for the given path.</DESC>
             </RETURN>
         </METHOD>
             
@@ -295,7 +295,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </METHOD>
             
         <METHOD name="join" access="STATIC">
-            <DESC>Joins two parts of the path</DESC>
+            <DESC>Joins two parts of the path concidering all necessary path delimiters. I.e.: join('/path/to','file') will return '/path/to/file' </DESC>
             <PARAMS>
                 <PARAM name="p1" type="STRING">
                     <DESC>First part of the path.</DESC>
