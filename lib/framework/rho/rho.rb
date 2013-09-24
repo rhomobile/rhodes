@@ -786,7 +786,7 @@ end
             src_id = db_src['source_id']
             start_id = src_id if src_id > start_id
         end        
-        puts "partition is #{db_partition}"
+       
         if start_id < Rho::RhoConfig.max_config_srcid()[db_partition]        
             start_id = Rho::RhoConfig.max_config_srcid()[db_partition]+2 
         else
