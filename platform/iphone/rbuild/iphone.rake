@@ -546,6 +546,16 @@ namespace "config" do
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir =  $bindir +"/tmp"
 
+    if $devroot.nil?
+        $devroot = $app_config["iphone"]["xcodepath"]
+        if $devroot == nil
+            $devroot = $config["env"]["paths"]["xcodepath"]
+        end
+        if $devroot != nil
+            $devroot = File.join($devroot, 'Contents/Developer')
+        end
+    end
+
     $devroot = '/Applications/Xcode.app/Contents/Developer' if $devroot.nil?
     $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43') if $iphonesim.nil?
     $xcodebuild = $devroot + "/usr/bin/xcodebuild"
