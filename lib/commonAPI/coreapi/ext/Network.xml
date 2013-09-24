@@ -51,7 +51,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <PROPERTY name="httpVerb" type="STRING">
                 <DESC>HTTP verb to be used in the network request.</DESC>
             </PROPERTY>
-            <PROPERTY name="headers" type="HASH">
+            <PROPERTY name="headers" type="HASH" generateDoc="false">
                 <DESC>List of HTTP headers to be used in the network  request.</DESC>
             </PROPERTY>
             
