@@ -129,8 +129,6 @@ module Rhom
             db = ::Rho::RHO.get_src_db(src_name)
             src_partition = Rho::RhoConfig.sources[src_name]['partition']
             is_schema_source = !Rho::RhoConfig.sources[src_name]['schema'].nil?
-            puts "src is #{src_name}"
-            puts "src partition is #{src_partition}"
             next if !args[0][:reset_local_models] && src_partition == 'local'        
 
             if (src_partition != 'local')

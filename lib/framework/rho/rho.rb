@@ -104,8 +104,6 @@ module Rho
     def self.get_src_db(src_name=nil)
         if src_name
             src_partition = Rho::RhoConfig.sources[src_name]['partition']
-            puts "partition is #{src_partition}"
-            puts "fwork partition is #{@@rho_framework.db_partitions[src_partition]}"
             @@rho_framework.db_partitions[src_partition]
         else
             @@rho_framework.db_partitions['user']
@@ -794,8 +792,7 @@ end
         else
             start_id += 1
         end
-            
-        puts "start_id: #{start_id}"
+       
         start_id
     end
     

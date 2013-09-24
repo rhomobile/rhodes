@@ -7,16 +7,16 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>rhodes</string>
+				<string>rhodesrhomtest</string>
 			</array>
 			<key>CFBundleURLName</key>
-			<string>com.rhomobile.rhosyncclient</string>
+			<string>com.rhomobile.phone_spec</string>
 		</dict>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Rhodes</string>
+	<string>phone_spec</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
@@ -28,7 +28,7 @@
 		<string>icon114.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
-	<string>com.rhomobile.rhosyncclient</string>
+	<string>com.rhomobile.phonespec</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -38,7 +38,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>4.0.0</string>
+	<string>1.0.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchImageFile</key>
