@@ -256,8 +256,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <PARAMS>
                     <PARAM name="pollInterval" type="INTEGER" default="20">
-                        <DESC>The network status polling period for systems that can not notify network status change immediately. In seconds.</DESC>
-                        <PLATFORM>Android, iOS</PLATFORM>
+                        <DESC>The network status polling period for systems that can not notify network status change immediately. In seconds. Currently applies to iOS only as immediate status notification is not available on this platform.</DESC>
                     </PARAM>
                 </PARAMS>
                 <CALLBACK type="HASH">
