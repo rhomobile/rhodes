@@ -53,9 +53,6 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
     </PROPERTIES>
 
     <METHODS>
-      <ALIASES>
-        <ALIAS new="changed?" existing="isChanged"></ALIAS>
-      </ALIASES>
       
       <METHOD name="deleteAll" generateAPI="false" >
         <DESC>Delete all Rhodes model objects for a source.For Javascript you cannot specify conditions.
@@ -216,7 +213,10 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
           </PARAM>
 
         </PARAMS>
-                <APPLIES jsOnly="true"/>
+        <APPLIES jsOnly="true"/>
+        <RETURN type="STRING">
+          <DESC>Value of the specified property from the database.</DESC>
+        </RETURN>
 
       </METHOD>
       <METHOD name="set" generateAPI="false">
@@ -456,26 +456,6 @@ var accounts = Account.find(
           </SECTION>
 
 
-        </SECTIONS>
-      </EXAMPLE>
-      <EXAMPLE title="ORM IsChanged Method Example">
-        <SECTIONS>
-          <SECTION>
-            <DESC>
-              Determine if a ORM model has local database changes that need to be synchronized.  The model must have sync enabled to use this function.
-            </DESC>
-            <CODE>
-              
-              <JAVASCRIPT>
-                <![CDATA[
-
-  if (Product.haveLocalChanges()) {
-      //... do stuff ...
-    }
-  ]]>
-              </JAVASCRIPT>
-            </CODE>
-          </SECTION>
         </SECTIONS>
       </EXAMPLE>
 
