@@ -62,12 +62,14 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
         <DESC>Returns the current sync client id.
         </DESC>
         <APPLIES jsOnly="true"/>
+        <RETURN type="STRING"/>
       </METHOD>
 
       <METHOD name="haveLocalChanges" generateAPI="false">
         <DESC>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized, false otherwise.
         </DESC>
         <APPLIES jsOnly="true"/>
+        <RETURN type="BOOLEAN"/>
       </METHOD>
       <METHOD name="export" deprecated="true"  generateAPI="false">
         <DESC>Export db</DESC>
@@ -75,7 +77,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
         <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseFullResetAndLogout" generateAPI="false">
-        <DESC>Deletes all records from the property bag and model tables. For examples, see Resetting the Database in Using the Local Database with ORM.
+        <DESC>Deletes all records from the property bag and model tables.  Logout the user from RhoConnectClient. For examples, see Resetting the Database in Using the Local Database with ORM.
         </DESC>
         <APPLIES jsOnly="true"/>
       </METHOD>
@@ -84,7 +86,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
         <APPLIES jsOnly="true"/>
       </METHOD>
       <METHOD name="databaseFullclientResetAndLogout" generateAPI="false">
-        <DESC>Reset the Rhodes model database and logout. Equivalent to ORM::ORM.database_full_reset(true) followed by SyncEngine.logout.
+        <DESC>Deletes all records from the property bag and model tables.  Logout the user from RhoConnectClient and erase all RhoConnectClient device information. Equivalent to ORM::ORM.databaseFullReset(true) followed by RhoConnectClient.logout.
         </DESC>
         <APPLIES jsOnly="true"/>
       </METHOD>
@@ -124,6 +126,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
           </PARAM>
         </PARAMS>
         <APPLIES jsOnly="true"/>
+        <RETURN type="Model"/>
       </METHOD>
       <METHOD name="addModel" generateAPI="false">
         <DESC>Creates an ORM model reference.</DESC>
