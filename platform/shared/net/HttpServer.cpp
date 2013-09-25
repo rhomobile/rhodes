@@ -32,6 +32,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/Tokenizer.h"
 #include "sync/RhoconnectClientManager.h"
+#include "statistic/RhoProfiler.h"
 
 #include <algorithm>
 #include <iterator>
@@ -434,6 +435,7 @@ bool CHttpServer::init()
 bool CHttpServer::run()
 {
     LOG(INFO) + "Start HTTP server";
+
     if (!init())
         return false;
 
@@ -1131,8 +1133,10 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         send_response(create_response("404 Not Found",error));
         return false;
     }
-    
+
+    PROF_START("LOW_FILE");
     FILE *fp = fopen(fullPath.c_str(), "rb");
+    PROF_STOP("LOW_FILE");
     if (!fp) {
         RAWLOG_ERROR1("The file %s could not be opened", path.c_str());
         String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
@@ -1206,7 +1210,10 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         
         if (need_to_read > FILE_BUF_SIZE)
             need_to_read = FILE_BUF_SIZE;
+
+PROF_START("LOW_FILE");
         size_t n = fread(buf, 1, need_to_read, fp);//fread(buf, 1, need_to_read, fp);
+PROF_STOP("LOW_FILE");
         if (n < need_to_read) {
 			if (ferror(fp) ) {
 				RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
@@ -1228,7 +1235,9 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         }
     }
 
+PROF_START("LOW_FILE");
     fclose(fp);
+PROF_STOP("LOW_FILE");
     delete buf;
     if (verbose) RAWTRACE1("File %s was sent successfully", path.c_str());
     return false;
@@ -1383,7 +1392,12 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
     // Try to send requested file
     RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
-    return send_file(uri, headers);
+
+    PROF_START("READ_FILE");
+    bool bRes = send_file(uri, headers);
+    PROF_STOP("READ_FILE");
+
+    return bRes;
 }
 
 } // namespace net
