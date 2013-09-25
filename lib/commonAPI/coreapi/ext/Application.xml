@@ -152,7 +152,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
 
-                <RETURN type="STRING"/>
+                <RETURN type="STRING">
+                    <DESC>Full path to the database file for given partition.</DESC>
+                </RETURN>
             </METHOD>
 
             <METHOD name="expandDatabaseBlobFilePath">
@@ -160,11 +162,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
                 <PARAMS>
                     <PARAM name="relativePath" type="STRING">
-                        <DESC>Relative path to database blob file.</DESC>
+                        <DESC>Relative path to the blob file, as it is stored in the database.</DESC>
                     </PARAM>
                 </PARAMS>
 
-                <RETURN type="STRING"/>
+                <RETURN type="STRING">
+                    <DESC>Full path to the databaes blob.</DESC>
+                </RETURN>
             </METHOD>
 
             <METHOD name="relativeDatabaseBlobFilePath">
