@@ -291,8 +291,6 @@ Below is the full list of links to the [Rhom API methods](/rhodesapi/rhom-api) a
 
  * [client_id](/rhodesapi/rhom-api#clientid) - Returns the current sync client id.
  * [clear_notification](/rhodesapi/rhom-api#clearnotification) - Clear notification for the object.
- * [database_export](/rhodesapi/rhom-api#databaseexport) - Creates a zip archive of a local database partition with all its blob objects, and returns a path to that zip archive.
- * [database_import](/rhodesapi/rhom-api#databaseimport) - Imports the database and blob objects from a zip archive created with `database_export`.
  * [delete_all](/rhodesapi/rhom-api#deleteall) - Delete all Rhodes model objects for a source, filtering by conditions.
  * [destroy](/rhodesapi/rhom-api#destroy) - Destroy a Rhodes model object.
  * [find](/rhodesapi/rhom-api#find) - Find Rhodes model objects.
@@ -691,14 +689,6 @@ Case|priority|4900dc4c072c|High|
 </pre>
 
 **NOTE: The column names are always the first line of the file.**
-
-## Importing and exporting the database
-
-You can export local database partition with all its blob objects to zip archive. Also you can import previously exported partition.
-
-[Rhom.database_export](/rhodesapi/rhom-api#databaseexport) returns a local path to created archive with database and blob objects.
-
-[Rhom.database_import](/rhodesapi/rhom-api#databaseimport) imports database and blob objects from zip archive, created with `database_export` call. If imported archive is inconsistent, or other failure will occur during import process, original database will be restored.
 
 
 ## Advanced Queries
