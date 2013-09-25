@@ -126,8 +126,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
-            <PROPERTY name="activeTab" type="INTEGER" default="0" readOnly="true">
-                <DESC>Use Rho::NativeTabbar.currentTab property. An active tab index.</DESC>
+            <PROPERTY name="activeTab" type="INTEGER" readOnly="true">
+                <DESC>Return an active tab index. For change active tab use Use Rho.NativeTabbar.currentTab property.</DESC>
             </PROPERTY>
 
         </PROPERTIES>
