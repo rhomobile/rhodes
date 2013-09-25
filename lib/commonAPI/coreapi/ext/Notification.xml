@@ -40,7 +40,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 								<PLATFORM>Android</PLATFORM>
 							</PARAM>
 							<PARAM name="buttons" type="Array" default="">
-								<DESC>Array of buttons. Specify each button either by hash with :id and :title keys, or by a string where id and title are set to the string value. Ex: [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}]</DESC>
+								<DESC>Array of buttons. Specify each button either by hash with :id and :title keys os string. For example: [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}].
+                                  Using hash this way: [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}]
+                                  Using string example: ['Yes', 'No']. Note: in case of buttons has been specified using strings an id and a title of each button will have same value.
+                                </DESC>
 							</PARAM>
 						</PARAMS>
 					</PARAM>
@@ -129,7 +132,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				<PARAMS>
 					<PARAM name="duration" type="Integer" default="1000">
 					    <CAN_BE_NIL/>
-						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration. iOS devices have fixed system vibration time. It could not be changed.</DESC>
+						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration. iOS devices have fixed system vibration time. It could not be changed. Android and Windows devices have default vibration time 1000 ms</DESC>
 					</PARAM>
 				</PARAMS>
             </METHOD>
