@@ -22,7 +22,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 		<METHODS access="STATIC">
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
-                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button. Icon is not supported on iOS devices.</DESC>
+                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the `button` array. Icon is not supported on iOS devices.</DESC>
 				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
 				<PARAMS>
 					<PARAM name="propertyMap" type="HASH">

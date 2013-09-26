@@ -40,7 +40,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Path to file with the model list.</DESC>
             </PROPERTY>
             <PROPERTY name="databaseBlobFolder" type="STRING" readOnly="true">
-                <DESC>Path to folder where the database blob files are stored.</DESC>
+                <DESC>Path to folder where the database blob files are stored. Blobs are usually images or binary files. In the ORM Model you would specify that the attibute is of type blob Ex. When capturing an image, the actual file is saved in the databaseBlobFolder</DESC>
             </PROPERTY>             
             <PROPERTY name="publicFolder" type="STRING" readOnly="true">
                 <DESC>Path to the application public folder.</DESC>

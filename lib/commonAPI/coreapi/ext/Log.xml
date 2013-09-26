@@ -197,7 +197,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <METHOD name="showLog">
                 <DESC>Display Log view window.</DESC>
-                <PLATFORMS>WM, Win32, iOS, Android</PLATFORMS>
+                <PLATFORM>WM, Win32, iOS, Android</PLATFORM>
             </METHOD>
 
             <METHOD name="cleanLogFile">
@@ -232,9 +232,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                <DESC>
                    Show the contents of the log file in a window with controls to refresh, clear and send. Useful for debugging and when asking users to report error messages
                </DESC>
-               <CODE lang='ruby'>
+               <CODE>
+                <RUBY>
            <![CDATA[
 Rho::Log.showLog]]>
+                </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.Log.showLog();]]>
+                </JAVASCRIPT>
 
                </CODE>
                </SECTION>
@@ -246,11 +252,17 @@ Rho::Log.showLog]]>
                <DESC>
                    Retrieve the contents of the log file as a string
                </DESC>
-               <CODE lang='ruby'>
+               <CODE>
+                <RUBY>
            <![CDATA[
 # Read at most 16384 symbols
 logFileContent = Rho::Log.readLogFile 16384]]>
-
+                </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+# Read at most 16384 symbols
+logFileContent = Rho.Log.readLogFile(16384);]]>
+                </JAVASCRIPT>
                </CODE>
                </SECTION>
                </SECTIONS>
@@ -261,7 +273,8 @@ logFileContent = Rho::Log.readLogFile 16384]]>
                <DESC>
                    Clear the contents of the log file. In this example, logFileContentBefore will contain the log up until that point, while logFileContentAfter will be empty
                </DESC>
-               <CODE lang='ruby'>
+               <CODE>
+                <RUBY>
            <![CDATA[
 # Read log file
 logFileContentBefore = Rho::Log.readLogFile 16384
@@ -270,8 +283,19 @@ logFileContentBefore = Rho::Log.readLogFile 16384
 Rho::Log.cleanLogFile
 
 # Read log file again - this time it will be empty
-logFileContentAfter = Rho::Log.readLogFile 16384]]>
+logFileContentAfter = Rho::Log.readLogFile(16384]]>
+                </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// Read log file
+logFileContentBefore = Rho.Log.readLogFile(16384);
 
+// Clear log file
+Rho.Log.cleanLogFile();
+
+// Read log file again - this time it will be empty
+logFileContentAfter = Rho.Log.readLogFile(16384);]]>
+                </JAVASCRIPT>
                </CODE>
                </SECTION>
                </SECTIONS>
@@ -282,24 +306,30 @@ logFileContentAfter = Rho::Log.readLogFile 16384]]>
                <DESC>
                    Categories help you organize your logging messages and find related statements using tools like grep or a text editor's "search" function.
                </DESC>
-               <CODE lang='ruby'>
+               <CODE>
+                <RUBY>
            <![CDATA[
 Rho::Log.info("Consectetuer adipiscing elit", "Lorem Ipsum")
-Rho::Log.info("Foo acquired value Bar in method Baz", "Miscellaneous")]]>
+Rho::Log.info("Foo acquired value Bar in method Baz", "Miscellaneous")
 
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                   The above code will result in logging statements like these:
-               </DESC>
-               <CODE lang='ruby'>
-           <![CDATA[
+#The above code will result in logging statements like these
 Lorem Ipsum| Consectetuer adipiscing elit
-Miscellaneous| Foo acquired value Bar in method Baz]]>
+Miscellaneous| Foo acquired value Bar in method Baz
+]]>
+                </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.Log.info("Consectetuer adipiscing elit", "Lorem Ipsum");
+Rho.Log.info("Foo acquired value Bar in method Baz", "Miscellaneous");
 
+//The above code will result in logging statements like these
+Lorem Ipsum| Consectetuer adipiscing elit
+Miscellaneous| Foo acquired value Bar in method Baz
+]]>
+                </JAVASCRIPT>
                </CODE>
                </SECTION>
+               
                </SECTIONS>
            </EXAMPLE>
            <EXAMPLE title="Memory Usage">
@@ -309,29 +339,26 @@ Miscellaneous| Foo acquired value Bar in method Baz]]>
                    You can ask the system to automatically log memory usage information on a set interval. 
                    This can be used to debug potential memory leaks in operations where a high number of objects are touched in memory. 
                </DESC>
-               <CODE lang='ruby'>
+               <CODE>
+                <RUBY>
            <![CDATA[
 # Request that memory usage be logged automatically by the system every second.
 Rho::Log.memoryPeriod = 1000
 # Perform memory-intensive operations here. Examining the log will tell us if we have a memory leak
 # Once our task finishes, disable automatic memory logging
 Rho::Log.memoryPeriod = 0]]>
-
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                   The same API is available in Javascript
-               </DESC>
-               <CODE lang='javascript'>
+                </RUBY>
+                <JAVASCRIPT>
            <![CDATA[
 Rho.Log.memoryPeriod = 1000;
 // Perform memory-intensive operations here. Examining the log will tell us if we have a memory leak
 // Once our task finishes, disable automatic memory logging
 Rho.Log.memoryPeriod = 0;]]>
 
+               </JAVASCRIPT>
                </CODE>
                </SECTION>
+               
                </SECTIONS>
            </EXAMPLE>
        </EXAMPLES>

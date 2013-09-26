@@ -232,26 +232,26 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="hasNetwork">
-                <DESC>Returns true if the device is connected to a network.</DESC>
+                <DESC>Returns true if the device is connected to a network. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasWifiNetwork">
-                <DESC>Returns true if the device is connected to a wifi network</DESC>
+                <DESC>Returns true if the device is connected to a wifi network. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasCellNetwork">
-                <DESC>Returns true if the device is connected to a cell network.</DESC>
+                <DESC>Returns true if the device is connected to a cell network. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="startStatusNotify" hasCallback="mandatory" runInThread="none">
-                <DESC>Start network status notifications. Notifications are sent when Wifi or Cell network appear/disappear. To check real Internet connectivity use detectConnection method.</DESC>
+                <DESC>Start network status notifications. Notifications are sent when Wifi or Cell network appear/disappear. To check real Internet connectivity use detectConnection method. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <PARAMS>
@@ -274,7 +274,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="stopStatusNotify">
-                <DESC>Stop network status notifications.</DESC>
+                <DESC>Stop network status notifications. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
             </METHOD>

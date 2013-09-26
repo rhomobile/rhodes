@@ -121,7 +121,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>					
                 <RETURN type="SELF_INSTANCE">
-                    <DESC>return sensor object for the sensor type passed as parameter</DESC>
+                    <DESC>Returns a sensor object for the sensor type passed as parameter. You can use the type field along with the Rho.Sensor Constants to see what type of sensor is returned.</DESC>
                 </RETURN>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
  
