@@ -33,7 +33,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       </ALIASES>
 
       <METHOD name="initialize" constructor="true" generateAPI="false">
-        <DESC>Open or create database. If database file does not exist it will be created using SQL schema: rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC>
+        <DESC>This method is a contructor for this class. Instead of saying Rho.Database.initialize(dbPath,dbPartition) you would use new Rho.Database(dbPath,dbPartition). ex: `var db = new Rho.Database(Rho.Application.databaseFilePath('test'), 'test');` Make sure you issue a `.close()` when you are finished using the database. If the database file does not exist it will be created using a SQL schema: rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
             <DESC>The path to the database. Databases stored at the path provided by Rho::Application.databaseFilePath</DESC>
@@ -99,7 +99,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PARAMS>
       </METHOD>
 
-      <METHOD name="import" deprecated="true" generateAPI="false">
+      <METHOD name="import" deprecated="true" generateAPI="false" generateDoc="false">
         <DESC>Import the contents of the archived databse into the current database.</DESC>
         <PARAMS>
           <PARAM name="zipName" type="STRING">
@@ -109,7 +109,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <RETURN type="BOOLEAN"/>
       </METHOD>
 
-      <METHOD name="export" deprecated="true"  generateAPI="false">
+      <METHOD name="export" deprecated="true"  generateAPI="false"  generateDoc="false">
         <DESC>Exports the contents of the current database to a file.</DESC>
         <RETURN type="STRING"/>
       </METHOD>
@@ -232,7 +232,7 @@ catch
       <EXAMPLE title="Open and close database">
         <SECTIONS>
           <SECTION>
-            <DESC> Closing a database </DESC>
+            <DESC> The following example opens the database using the `constructor` method: .initialize. It then closes the database using the destructor method `.close()` </DESC>
             <CODE>
               <RUBY>
                 <![CDATA[
@@ -254,7 +254,7 @@ db.close();
       <EXAMPLE title="destroyTables">
         <SECTIONS>
           <SECTION>
-            <DESC>Destroy multiple tables.</DESC>
+            <DESC>Destroy multiple tables. The following example opens the database using the `constructor` method: .initialize.</DESC>
             <CODE>
               <RUBY>
                 <![CDATA[
