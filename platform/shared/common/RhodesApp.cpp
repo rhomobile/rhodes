@@ -31,6 +31,7 @@
 #include "common/RhoConf.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoAppAdapter.h"
+#include "statistic/RhoProfiler.h"
 #include "net/INetRequest.h"
 #include "sync/RhoconnectClientManager.h"
 #include "net/URI.h"
@@ -432,6 +433,8 @@ void CRhodesApp::run()
 
     RHOCONF().conflictsResolved();
 
+    PROF_CREATE_COUNTER("READ_FILE");
+    PROF_CREATE_COUNTER("LOW_FILE");
     while (!m_bExit) {
         m_httpServer->run();
         if (m_bExit)
@@ -444,6 +447,8 @@ void CRhodesApp::run()
         }
         m_bRestartServer = false;
     }
+    PROF_DESTROY_COUNTER("LOW_FILE");
+    PROF_DESTROY_COUNTER("READ_FILE");
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
