@@ -101,12 +101,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
 
             <PROPERTY name="netTrace" type="BOOLEAN" default="false">
-                <DESC>Turn on local http server traces. Traces contain infromation about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of remote server app. Default value can be overridden by the setting in rhoconfig.txt (net_trace) </DESC>
+                <DESC>Turn on local http server traces. Traces contain infromation about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of remote server app (and/or shared runtime). Default value can be overridden by the setting in rhoconfig.txt (net_trace) </DESC>
                 <PLATFORM>Android, iOS, WP8</PLATFORM>
             </PROPERTY>
 
             <PROPERTY name="skipPost" type="BOOLEAN" default="false">
-                <DESC>Skip http package body from log(for security reasons). Please note that this parameter will not take an effect in case of remote server app (Shared runtime for WM/CE), no log will appear in this case. </DESC>
+                <DESC>Skip http package body from log(for security reasons). Please note that this parameter will not take an effect in case of remote server app (and/or shared runtime), no log will appear in this case. </DESC>
             </PROPERTY>
 
             <PROPERTY name="excludeFilter" type="STRING" default="">
