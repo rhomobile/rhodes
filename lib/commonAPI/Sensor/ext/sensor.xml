@@ -167,14 +167,17 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         
                         <!-- only for DeviceOrientation callback -->
                         <PARAM name="deviceorientation_value" type="STRING">
+                            <DESC>The values of the Orientation sensor. Possible values include Portrait Down, Portrait Up, Landscape Left, Landscape Right, Face Up, Face Down. Applicable only for Motorola Windows Mobile/CE devices with Sensor support.</DESC>
                         </PARAM>						
                         
                         <!-- only for Motion callback -->
                         <PARAM name="motion_value" type="STRING">
+                            <DESC>Value from the Motion sensor</DESC>
                         </PARAM>												
                         
                         <!-- only for ECompass callback -->
                         <PARAM name="ecompass_value" type="STRING">
+                            <DESC>Value from the E-Compass sensor</DESC>
                         </PARAM>												
 
                         <!-- only for Magnetometer callback -->
@@ -201,26 +204,32 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         
                         <!-- only for AmbientLight callback -->
                         <PARAM name="ambientlight_value" type="STRING">
+                            <DESC>Value of the ambient Light sensor in SI lux units</DESC>
                         </PARAM>												
 
                         <!-- only for Proximity callback -->
                         <PARAM name="proximity_value" type="STRING">
+                            <DESC>Value of the proximity sensor in centimeters units</DESC>
                         </PARAM>											
 
                         <!-- only for ProximityLongRange callback -->
                         <PARAM name="proximitylongrange_value" type="STRING">
+                             <DESC>Value of the proximitylongrange sensor</DESC>
                         </PARAM>											
 
                         <!-- only for Pressure callback -->
                         <PARAM name="pressure_value" type="STRING">
+                            <DESC>Value of the pressure sensor in hPa (millibar) units</DESC>
                         </PARAM>												
 
                         <!-- only for Temperature callback -->
                         <PARAM name="temperature_value" type="STRING">
+                            <DESC>Value of the temperature sensor in degree Celsius units</DESC>
                         </PARAM>												
                         
                         <!-- only for Humidity callback -->
                         <PARAM name="humidity_value" type="STRING">
+                            <DESC>Value of the humidity sensor in percent units</DESC>
                         </PARAM>												
 
                         <!-- only for Gravity callback -->
