@@ -260,7 +260,7 @@ logFileContent = Rho::Log.readLogFile 16384]]>
                 </RUBY>
                 <JAVASCRIPT>
            <![CDATA[
-# Read at most 16384 symbols
+//Read at most 16384 symbols
 logFileContent = Rho.Log.readLogFile(16384);]]>
                 </JAVASCRIPT>
                </CODE>
