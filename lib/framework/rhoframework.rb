@@ -128,11 +128,21 @@ begin
     
     require 'rho'
 
-    puts "RHOSTUDIO_REMOTE_DEBUG=" + RHOSTUDIO_REMOTE_DEBUG.to_s
-    puts "RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
+    remote_debug = false
+    remote_host  = nil
+
+    if defined?(RHOSTUDIO_REMOTE_DEBUG)
+      remote_debug = RHOSTUDIO_REMOTE_DEBUG
+    end
+
+    if defined?(RHOSTUDIO_REMOTE_HOST)
+      remote_host = RHOSTUDIO_REMOTE_HOST
+    end
+
+    puts "RHOSTUDIO_REMOTE_DEBUG=" + remote_debug.to_s
+    puts "RHOSTUDIO_REMOTE_HOST=" + remote_host.to_s
     
-      #if Rho::System.isRhoSimulator
-    if RHOSTUDIO_REMOTE_DEBUG == true
+    if RHOSTUDIO_REMOTE_DEBUG == true || Rho::System.isRhoSimulator
       require 'debugger'
     end
 	
