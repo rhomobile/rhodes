@@ -23,6 +23,21 @@
 * 
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
+
+#if defined(RHODES_EMULATOR_QMAKE)
+
+#include <windows.h>
+#include "common/RhoDefs.h"
+#include "common/RhoStd.h"
+#undef null
+#include <qglobal.h>
+#if QT_VERSION >= 0x050000
+#include <QtWebKit/qtwebkitversion.h>
+#endif
+#include "../../qt/rhodes/impl/MainWindowImpl.h"
+
+#else // RHODES_EMULATOR_QMAKE
+
 #include "stdafx.h"
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
@@ -33,10 +48,13 @@
 #include <QWebPage>
 #endif
 
-using namespace rho;
-using namespace rho::common;
 extern "C" HWND getMainWnd();
 CMainWindow& getAppWindow();
+
+#endif // RHODES_EMULATOR_QMAKE
+
+using namespace rho;
+using namespace rho::common;
 
 extern "C"
 {
@@ -47,6 +65,72 @@ const char* rho_sys_win32_getWebviewFramework()
     return "WEBKIT/" QTWEBKIT_VERSION_STR;
 }
 #endif
+
+bool rho_rhosim_window_closed()
+{
+#ifdef RHODES_EMULATOR
+    return CMainWindow::mainWindowClosed;
+#else
+    return false;
+#endif
+}
+
+void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
+{
+    SHELLEXECUTEINFO se = {0};
+    se.cbSize = sizeof(SHELLEXECUTEINFO);
+    se.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
+    se.lpVerb = L"Open";
+    se.nShow = SW_SHOWNORMAL;
+
+    StringW strAppNameW = szPath;
+    String_replace(strAppNameW, '/', '\\' );
+
+    se.lpFile = strAppNameW.c_str();
+
+    if ( szParams && *szParams )
+        se.lpParameters = szParams;
+
+    bool bError = false;
+    if ( !ShellExecuteEx(&se) )
+    {
+        String strPath = convertToStringA(szPath);
+
+        if ( String_startsWith(strPath, "http:") || String_startsWith(strPath, "ftp:") )
+        {
+            //Try to run internet explorer
+#ifdef OS_PLATFORM_MOTCE
+            se.lpFile = L"iesample.exe";
+#else
+            se.lpFile = L"iexplore.exe";
+#endif
+
+            StringW strParamsW = szPath;
+            if ( szParams && *szParams )
+            {
+                strParamsW += L" ";
+                strParamsW += szParams;
+            }
+
+            se.lpParameters = strParamsW.c_str();
+
+            if ( !ShellExecuteEx(&se) )
+                bError = true;
+        }else
+            bError = true;
+    }
+
+    if ( bError )
+    {
+        LOG(ERROR) + "Cannot execute: " + strAppNameW + ";Error: " + GetLastError();
+        SetLastError(-1);
+    }
+
+    if(se.hProcess)
+        CloseHandle(se.hProcess);
+}
+
+#if !defined(RHODES_EMULATOR_QMAKE)
 
 void rho_sys_app_exit()
 {
@@ -65,70 +149,6 @@ void rho_wmsys_run_app(const char* szPath, const char* szParams )
         convertToStringW(szParams, strParamsW);
 
     rho_wmsys_run_appW(strAppNameW.c_str(), strParamsW.c_str() );
-}
-
-void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
-{
-	SHELLEXECUTEINFO se = {0};
-    se.cbSize = sizeof(SHELLEXECUTEINFO);
-    se.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
-    se.lpVerb = L"Open";
-    se.nShow = SW_SHOWNORMAL;
-
-    StringW strAppNameW = szPath;
-    String_replace(strAppNameW, '/', '\\' );
-
-    se.lpFile = strAppNameW.c_str();
-
-    if ( szParams && *szParams )
-        se.lpParameters = szParams;
-
-    bool bError = false;
-    if ( !ShellExecuteEx(&se) )
-	{
-        String strPath = convertToStringA(szPath);
-
-        if ( String_startsWith(strPath, "http:") || String_startsWith(strPath, "ftp:") )
-        {
-            //Try to run internet explorer
-#ifdef OS_PLATFORM_MOTCE
-            se.lpFile = L"iesample.exe";            
-#else
-            se.lpFile = L"iexplore.exe";            
-#endif
-
-            StringW strParamsW = szPath;
-            if ( szParams && *szParams )
-            {
-                strParamsW += L" ";
-                strParamsW += szParams;
-            }
-
-            se.lpParameters = strParamsW.c_str();
-
-            if ( !ShellExecuteEx(&se) )
-                bError = true;
-        }else
-            bError = true;
-	}
-
-    if ( bError )
-    {
-        LOG(ERROR) + "Cannot execute: " + strAppNameW + ";Error: " + GetLastError();
-	    SetLastError(-1);
-    }
-
-    if(se.hProcess)
-        CloseHandle(se.hProcess); 
-}
-
-bool rho_rhosim_window_closed()
-{
-#ifdef RHODES_EMULATOR
-    return CMainWindow::mainWindowClosed;
-#else
-    return false;
-#endif
 }
 
 #ifdef OS_WINDOWS_DESKTOP
@@ -248,6 +268,8 @@ void rho_sys_lock_window_size(int locked)
 	rho_callInUIThread(CRhoWindow::lockSize, new CRhoWindow::CParams(locked, 0, 0, 0));
 }
 #endif
+
+#endif // RHODES_EMULATOR_QMAKE
 
 }
 #if 0
