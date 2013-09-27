@@ -210,10 +210,10 @@ void rho_sys_stop_timer( const char *url )
     RHODESAPP().getTimer().stopTimer(url);
 }
 
-void zip_iter(const char* szVal, void* par)
+void zip_iter(const char* szVal, int valueLen, void* par)
 {
     rho::Vector<rho::String>& ar = *((rho::Vector<rho::String>*)(par));
-    ar.addElement(szVal);
+    ar.addElement(rho::String(szVal,valueLen));
 }
 	
 int rho_sys_zip_files(const char* szZipFilePath, const char *base_path, VALUE valToZipPaths, const char* psw)

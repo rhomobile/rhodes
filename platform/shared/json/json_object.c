@@ -417,6 +417,8 @@ struct json_object* json_object_new_string(char *s)
   this->_delete = &json_object_string_delete;
   this->_to_json_string = &json_object_string_to_json_string;
   this->o.c_string = strdup(s);
+  this->str_len = strlen(s);
+
   return this;
 }
 
@@ -427,8 +429,23 @@ struct json_object* json_object_new_string_len(char *s, int len)
   this->_delete = &json_object_string_delete;
   this->_to_json_string = &json_object_string_to_json_string;
   this->o.c_string = strndup(s, len);
+  this->str_len = len;
   return this;
 }
+
+struct json_object* json_object_new_string_len2(char *s, int len)
+{
+    struct json_object *this = json_object_new(json_type_string);
+    if(!this) return NULL;
+    this->_delete = &json_object_string_delete;
+    this->_to_json_string = &json_object_string_to_json_string;
+    this->o.c_string = malloc(len+1);
+    memcpy(this->o.c_string,s,len);
+    this->o.c_string[len]=0;
+    this->str_len = len;
+    return this;
+}
+
 
 char* json_object_get_string(struct json_object *this)
 {
@@ -440,6 +457,18 @@ char* json_object_get_string(struct json_object *this)
     return json_object_to_json_string(this);
   }
 }
+
+int json_object_get_string_len(struct json_object *this)
+{
+    if(!this) return NULL;
+    switch(this->o_type) {
+        case json_type_string:
+            return this->str_len;
+        default:
+            return 0;
+    }
+}
+
 
 
 /* json_object_array */
