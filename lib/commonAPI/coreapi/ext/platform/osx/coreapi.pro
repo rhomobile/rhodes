@@ -33,7 +33,9 @@ win32 {
   HEADERS += ../../../../../../platform/shared/ruby/win32/ruby/config.h\
 ../../../../../../platform/shared/ruby/win32/dir.h\
 ../wm/src/NetworkDetect.h
-  SOURCES += ../wm/src/NetworkDetect.cpp
+  SOURCES += ../wm/src/NetworkDetect.cpp\
+../wm/src/SystemImpl.cpp\
+../wm/src/Registry.cpp
 }
 
 DEFINES += RHODES_EMULATOR
