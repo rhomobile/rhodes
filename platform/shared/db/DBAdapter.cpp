@@ -1283,10 +1283,10 @@ int rho_db_is_ui_waitfordb(void* pDB)
 }
 
 extern "C" void
-string_iter(const char* szVal, void* par)
+string_iter(const char* szVal, int valueLen, void* par)
 {
     rho::Vector<rho::String>& ar = *((rho::Vector<rho::String>*)(par));
-    ar.addElement(szVal);
+    ar.addElement(rho::String(szVal,valueLen));
 }
 
 #ifndef RHO_NO_RUBY

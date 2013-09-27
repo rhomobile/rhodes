@@ -43,7 +43,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <DESC>URL to call when button is pressed or special value.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
                                     <VALUES>
                                         <VALUE value ="separator">
-                                            <DESC>Added separator to toolbar.If only one separator is specified, when elements after separator will be right-aligned.If more then one separator is added, when on WM/CE, platform dependent separator will be displayed, on Android/iOS center-aligned groups will be created.</DESC>
+                                            <DESC>Add a separator to the toolbar. If only one separator is specified, then elements after separator will be right-aligned. If more then one separator is added: on WM/CE, platform dependent separator will be displayed, on Android/iOS center-aligned groups will be created.</DESC>
                                             <PLATFORM>WM, Win32, iOS, Android</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="exit">

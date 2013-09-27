@@ -506,12 +506,14 @@ static int
 hash_each_str(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
 {
     const char* szValue = "";
+    int valueLen = 0;
     const char* szKey = "";
 
     if ( value != 0 && value != Qnil )
     {
         VALUE strVal = rb_funcall(value, rb_intern("to_s"), 0);
         szValue = RSTRING_PTR(strVal);
+        valueLen = RSTRING_LEN(strVal);
     }
     if ( key != 0 && key != Qnil )
     {
@@ -519,7 +521,7 @@ hash_each_str(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
         szKey = RSTRING_PTR(strKey);
     }
 
-    (*pEnumData->func)(szKey, szValue, pEnumData->data );
+    (*pEnumData->func)(szKey, szValue, valueLen, pEnumData->data );
     return ST_CONTINUE;
 }
 
@@ -540,6 +542,7 @@ static int
 hash_each_json(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
 {
     const char* szValue = "";
+    int valueLen = 0;
     const char* szKey = "";
 
     if ( value != 0 && value != Qnil )
@@ -552,6 +555,7 @@ hash_each_json(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
             strVal = rb_funcall(value, rb_intern("to_json"), 0);
 
         szValue = RSTRING_PTR(strVal);
+        valueLen = RSTRING_LEN(strVal);
     }
     if ( key != 0 && key != Qnil )
     {
@@ -559,7 +563,7 @@ hash_each_json(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
         szKey = RSTRING_PTR(strKey);
     }
 
-    (*pEnumData->func)(szKey, szValue, pEnumData->data );
+    (*pEnumData->func)(szKey, szValue, valueLen, pEnumData->data );
     return ST_CONTINUE;
 }
 
@@ -580,14 +584,16 @@ static int
 hash_each(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
 {
     const char* szKey = "";
+    int keyLen = 0;
 
     if ( key != 0 && key != Qnil )
     {
         VALUE strKey = rb_funcall(key, rb_intern("to_s"), 0);
         szKey = RSTRING_PTR(strKey);
+        keyLen = RSTRING_LEN(strKey);
     }
 
-    (*pEnumData->func)(szKey, value, pEnumData->data);
+    (*pEnumData->func)(szKey, value, keyLen, pEnumData->data);
     return ST_CONTINUE;
 }
 
@@ -615,13 +621,15 @@ void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func * func, void* data)
     {
         VALUE value = RARRAY_PTR(ary)[i];
         const char* szValue = "";
+        int valueLen = 0;
         if ( value != 0 && value != Qnil )
         {
             VALUE strVal = rb_funcall(value, rb_intern("to_s"), 0);
             szValue = RSTRING_PTR(strVal);
+            valueLen = RSTRING_LEN(strVal);
         }
 
-        (*func)(szValue, data );
+        (*func)(szValue, valueLen, data );
     }
 }
 
@@ -636,6 +644,7 @@ void rho_ruby_enum_strary_json(VALUE ary, rho_ary_eachstr_func * func, void* dat
     {
         VALUE value = RARRAY_PTR(ary)[i];
         const char* szValue = "";
+        int valueLen = 0;
         if ( value != 0 && value != Qnil )
         {
             VALUE strVal;
@@ -646,9 +655,10 @@ void rho_ruby_enum_strary_json(VALUE ary, rho_ary_eachstr_func * func, void* dat
                 strVal = rb_funcall(value, rb_intern("to_json"), 0);
 
             szValue = RSTRING_PTR(strVal);
+            valueLen = RSTRING_LEN(strVal);
         }
 
-        (*func)(szValue, data );
+        (*func)(szValue, valueLen, data );
     }
 }
 

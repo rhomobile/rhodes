@@ -200,8 +200,7 @@ CJSONEntry CJSONStructIterator::getCurValue() const
 
 String CJSONStructIterator::getCurString() const
 {
-    const char* szValue = getCurValue().getString();
-    return szValue ? szValue : "";
+    return getCurValue().getStringObject();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -298,6 +297,28 @@ boolean CJSONEntry::hasName(const String& name) const
 {
     return json_object_object_get(m_object,const_cast<char*>(name.c_str())) != null;
 }
+    
+String CJSONEntry::getStringObject( const char* name, const char* szDefValue )
+{
+    struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
+    if ( obj != 0 )
+    {
+        return String(json_object_get_string(obj),json_object_get_string_len(obj));
+    }
+    else if (szDefValue != 0 )
+    {
+        return String(szDefValue);
+    }
+    
+    return "";
+}
+
+    
+String CJSONEntry::getStringObject()
+{
+    return String(json_object_get_string(m_object),json_object_get_string_len(m_object));
+}
+
 
 const char* CJSONEntry::getString(const char* name)
 {
@@ -319,11 +340,14 @@ const char* CJSONEntry::getString(const char* name, const char* szDefValue)
     return szRes;
 }
 
+
+
 const char* CJSONEntry::getString() const
 {
     return json_object_get_string(m_object);
 }
 
+    
 int CJSONEntry::getInt(const char* name)
 {
     int nRes = 0;
