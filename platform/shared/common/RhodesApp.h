@@ -277,6 +277,8 @@ protected:
     void initAppUrls();
 
     void RhoJsStart();
+
+    void modifyRhoApiFile();
 };
 
 #if defined(WINDOWS_PLATFORM)

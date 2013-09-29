@@ -728,6 +728,7 @@ String CHttpServer::create_response(String const &reason, HeaderList const &hdrs
     HeaderList headers;
     headers.push_back(Header("Host", String("127.0.0.1:") + buf));
     headers.push_back(Header("Connection", "close"));
+    headers.push_back(HttpHeader("Access-Control-Allow-Origin", "*"));
     std::copy(hdrs.begin(), hdrs.end(), std::back_inserter(headers));
     
     for(HeaderList::const_iterator it = headers.begin(), lim = headers.end();
