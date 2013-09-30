@@ -465,7 +465,7 @@ int json_object_get_string_len(struct json_object *this)
         case json_type_string:
             return this->str_len;
         default:
-            return 0;
+            return strlen(json_object_to_json_string(this));
     }
 }
 
