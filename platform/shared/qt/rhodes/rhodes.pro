@@ -47,8 +47,7 @@ win32 {
 impl/RhoThreadImpl.h
   SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp\
 ../../../wm/rhodes/rho/rubyext/SystemImpl.cpp\
-impl/ExtManager.cpp\
-impl/QtSystemImpl.cpp
+impl/ExtManager.cpp
   RESOURCES += resources/simulator.qrc
   INCLUDEPATH += ../../../wm/rhodes\
 ../../wtl80/include
@@ -146,6 +145,7 @@ impl/RhoNativeViewManagerImpl.cpp\
 impl/RhoThreadImpl.cpp\
 impl/RingtoneManagerImpl.cpp\
 impl/SignatureImpl.cpp\
+impl/QtSystemImpl.cpp\
 impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
