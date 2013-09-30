@@ -353,7 +353,7 @@ class Jake
     self.run2(command, args, {:directory => wd, :system => system, :hiderrors => hideerrors})
   end
 
-  def self.run3(command, cd = nil, env = {})
+  def self.run3_dont_fail(command, cd = nil, env = {})
     set_list = []
     env.each_pair do |k, v|
       if RUBY_PLATFORM =~ /(win|w)32$/
@@ -380,7 +380,17 @@ class Jake
     puts to_print
     STDOUT.flush
 
-    fail "[#{command}]" unless system(to_run)
+    system(to_run)
+  end
+
+  def self.run3(command, cd = nil, env = {})
+    fail "[#{cmd}]" unless self.run3_dont_fail(command, cd, env)
+  end
+
+  def self.run4(command)
+      out = `#{command}`
+      fail "[#{command}]" if $?.exitstatus != 0
+      out
   end
 
   def self.edit_xml(file, out_file = nil)
