@@ -542,7 +542,6 @@ def start_emulator(cmd)
       sleep 1
       out = Jake.run4("#{$adb} devices")
       lines = out.chomp.split("\n");
-      puts "UGU [#{lines.inspect}]"
       return if lines.length > 1
     end
 
