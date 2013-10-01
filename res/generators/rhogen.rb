@@ -2278,6 +2278,7 @@ module Rhogen
         ################################################
         # init method
         ntt_init= ModuleMethod.new()
+        ntt_init.access = ModuleMethod::ACCESS_STATIC
         ntt_init.linked_entity = module_entity
         ntt_init.is_generated = true
         module_entity.init_method = ntt_init
@@ -2287,16 +2288,13 @@ module Rhogen
         ntt_init.native_name = 'init' + module_entity.native_name.capitalize_first
         ntt_init.desc = 'init for "' + module_entity.name
 
-        if store_fileds.size != 0
+        if store_param
           ntt_init.params = [store_param]
-        else
-          ntt_init.params = []
         end
 
         ntt_init.run_in_thread = module_entity.run_in_thread
         ntt_init.is_factory_method = false
         ntt_init.is_return_value = true
-        ntt_init.access = ModuleMethod::ACCESS_STATIC
         ntt_init.has_callback = ModuleMethod::CALLBACK_NONE
         ntt_init.generateAPI = true
 
@@ -2321,6 +2319,7 @@ module Rhogen
 
         if update_args.size > 0
           ntt_update = ModuleMethod.new()
+          ntt_update.access = ModuleMethod::ACCESS_STATIC
           ntt_update.linked_entity = module_entity
           ntt_update.is_generated = true
           module_entity.update_method = ntt_update
@@ -2394,7 +2393,7 @@ module Rhogen
             if (module_entity.binding_fields.size != 0)
               module_method.params.insert(0, create_param_from_list(module_entity.binding_fields, false))
             else
-              if fields != 0
+              if fields.size != 0
                 module_method.params.insert(0, create_param_from_list(fields, false))
               end
             end
