@@ -95,9 +95,6 @@ extern enum json_type json_object_get_type(struct json_object *obj);
 extern char* json_object_to_json_string(struct json_object *obj);
 
 
-extern int json_object_get_string_len(struct json_object *obj);
-
-
 /* object type methods */
 
 /** Create a new empty object
@@ -310,6 +307,6 @@ extern struct json_object* json_object_new_string_len(char *s, int len);
  * @param obj the json_object instance
  * @returns a string
  */
-extern char* json_object_get_string(struct json_object *obj);
+extern char* json_object_get_string(struct json_object *obj, /*OUT*/int* len);
 
 #endif

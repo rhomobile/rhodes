@@ -447,28 +447,23 @@ struct json_object* json_object_new_string_len2(char *s, int len)
 }
 
 
-char* json_object_get_string(struct json_object *this)
+char* json_object_get_string(struct json_object *this, int* len)
 {
   if(!this) return NULL;
   switch(this->o_type) {
   case json_type_string:
-    return this->o.c_string;
+    {
+        if ( len != 0 ) *len = this->str_len;
+        return this->o.c_string;
+    }
   default:
-    return json_object_to_json_string(this);
+    {
+        char* ret = json_object_to_json_string(this);
+        if ( len != 0 ) *len = strlen(ret);
+        return ret;
+    }
   }
 }
-
-int json_object_get_string_len(struct json_object *this)
-{
-    if(!this) return NULL;
-    switch(this->o_type) {
-        case json_type_string:
-            return this->str_len;
-        default:
-            return strlen(json_object_to_json_string(this));
-    }
-}
-
 
 
 /* json_object_array */
