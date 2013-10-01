@@ -104,8 +104,8 @@ public:
         {
             String path = *bit;
 
-            boolean bSlash1 = path.length()>0 && (path[path.length()-1] == '/' || path[path.length()-1] == '\\');
-            boolean bSlash2 = res.length()>0 && (res[0] == '/' || res[0] == '\\');
+            boolean bSlash1 = res.length()>0 && (res[res.length()-1] == '/' || res[res.length()-1] == '\\');
+            boolean bSlash2 = path.length()>0 && (path[0] == '/' || path[0] == '\\');
 
             if (bSlash1 && bSlash2)
                 res = res + path.substr(1);
@@ -113,6 +113,8 @@ public:
                 res = res + path;
             else
                 res = res + '/' + path;
+
+            ++bit;
         }
 
         return res;

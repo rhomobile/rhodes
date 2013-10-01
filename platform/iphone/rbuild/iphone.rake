@@ -988,8 +988,13 @@ namespace "build" do
 
     task :extensions => "config:iphone" do
       simulator = $sdk =~ /iphonesimulator/
-      target_dir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
-        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+      if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
+         target_dir = ENV["TARGET_TEMP_DIR"]
+      else
+         target_dir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+            ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+      end
+      
       build_extension_libs($sdk, target_dir)
     end
 

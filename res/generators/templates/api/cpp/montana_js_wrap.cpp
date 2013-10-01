@@ -70,7 +70,7 @@ end %>
     {
         if ( argv[<%= first_arg %>].isString() )
         {
-            arg<%= first_arg %> = argv[<%= first_arg %>].getString();
+            arg<%= first_arg %> = argv[<%= first_arg %>].getStringObject();
         }
         else if (!argv[<%= first_arg %>].isNull())
         {
@@ -133,7 +133,7 @@ end %>
             CJSONArray arParam(argv[<%= first_arg %>]);
             for( int i = 0; i < arParam.getSize(); i++ )
             {
-                arg<%= first_arg %>.addElement( arParam[i].getString() );
+                arg<%= first_arg %>.addElement( arParam[i].getStringObject() );
             }
         }
         else if (!argv[<%= first_arg %>].isNull())

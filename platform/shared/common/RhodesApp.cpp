@@ -1554,6 +1554,77 @@ void CRhodesApp::initAppUrls()
     CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
 #endif
 
+    modifyRhoApiFile();
+}
+
+void CRhodesApp::modifyRhoApiFile()
+{
+    const int bufferLenght = 10240;
+
+    std::vector<String> apiFilePathV;
+    apiFilePathV.push_back(m_strRuntimePath);
+    apiFilePathV.push_back("apps");
+    apiFilePathV.push_back("public");
+    apiFilePathV.push_back("api");
+    apiFilePathV.push_back("rhoapi-modules.js");
+    
+    String apiFilePath = CFilePath::join(apiFilePathV);
+
+    std::vector<String> apiFilePathTmpV;
+    apiFilePathTmpV.push_back(m_strRuntimePath);
+    apiFilePathTmpV.push_back("apps");
+    apiFilePathTmpV.push_back("public");
+    apiFilePathTmpV.push_back("api");
+    apiFilePathTmpV.push_back("rhoapi-modules-tmp.js");
+
+    String apiFilePathTmp = CFilePath::join(apiFilePathTmpV);
+
+    if (common::CRhoFile::isFileExist(apiFilePath.c_str()))
+    {
+        common::CRhoFile apiFile, tmpFile;
+
+        if (apiFile.open(apiFilePath.c_str(), common::CRhoFile::OpenReadOnly) && 
+            tmpFile.open(apiFilePathTmp.c_str(), common::CRhoFile::OpenForWrite))
+        {
+            common::InputStream* is = apiFile.getInputStream();
+
+            char buffer[bufferLenght];
+            buffer[0] = '/0';
+
+            while (is->available())
+            {
+                int realLen = is->read(buffer, 0, bufferLenght);
+
+                if (realLen == -1)
+                    break;
+
+                buffer[realLen] = 0;
+
+                String bufferStr(buffer);
+
+                String::size_type posStart = bufferStr.find("RHO_AJAX");
+                String::size_type posEnd   = bufferStr.find("PORT_NUMBER");
+
+                if (posStart != String::npos && posEnd != String::npos)
+                {
+                    String::size_type replaceLen = posEnd - posStart + 13;
+
+                    String portStr = "\'RHO_AJAX-->";
+                    portStr += getFreeListeningPort();
+                    portStr += "<--PORT_NUMBER\'";
+                    bufferStr.replace(posStart - 1, replaceLen, portStr.c_str());
+                }
+
+                tmpFile.write(bufferStr.c_str(), bufferStr.size());
+            }
+
+            apiFile.close();
+            tmpFile.close();
+
+            common::CRhoFile::deleteFile(apiFilePath.c_str());
+            common::CRhoFile::renameFile(apiFilePathTmp.c_str(), apiFilePath.c_str());
+        }
+    }
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
@@ -1991,41 +2062,41 @@ void CExtManager::requireRubyFile( const char* szFilePath )
     }
 }
 	
-	void CRhodesApp::setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval)
+void CRhodesApp::setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval)
+{
+	synchronized(m_mxNetworkStatus)
 	{
-		synchronized(m_mxNetworkStatus)
+		m_networkStatusReceiver.setMethodResult(oResult);
+		if ( m_pNetworkStatusMonitor != 0 )
 		{
-			m_networkStatusReceiver.setMethodResult(oResult);
-			if ( m_pNetworkStatusMonitor != 0 )
-			{
-				if ( poll_interval <= 0 ) {
-					poll_interval = c_defaultNetworkStatusPollInterval;
-				}
-				m_pNetworkStatusMonitor->setPollInterval(poll_interval);
+			if ( poll_interval <= 0 ) {
+				poll_interval = c_defaultNetworkStatusPollInterval;
 			}
+			m_pNetworkStatusMonitor->setPollInterval(poll_interval);
 		}
 	}
-	
-	void CRhodesApp::clearNetworkStatusNotify()
+}
+
+void CRhodesApp::clearNetworkStatusNotify()
+{
+	synchronized(m_mxNetworkStatus)
 	{
-		synchronized(m_mxNetworkStatus)
-		{
-			m_networkStatusReceiver.setMethodResult(apiGenerator::CMethodResult());
-		}
+		m_networkStatusReceiver.setMethodResult(apiGenerator::CMethodResult());
 	}
-	
-	void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
+}
+
+void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
+{
+	synchronized(m_mxNetworkStatus)
 	{
-		synchronized(m_mxNetworkStatus)
+		m_pNetworkStatusMonitor = netMonitor;
+		if ( m_pNetworkStatusMonitor != 0)
 		{
-			m_pNetworkStatusMonitor = netMonitor;
-			if ( m_pNetworkStatusMonitor != 0)
-			{
-				m_pNetworkStatusMonitor->setNetworkStatusReceiver(&m_networkStatusReceiver);
-				m_pNetworkStatusMonitor->setPollInterval( c_defaultNetworkStatusPollInterval );
-			}
+			m_pNetworkStatusMonitor->setNetworkStatusReceiver(&m_networkStatusReceiver);
+			m_pNetworkStatusMonitor->setPollInterval( c_defaultNetworkStatusPollInterval );
 		}
 	}
+}
 	
 	
 	NetworkStatusReceiver::NetworkStatusReceiver( common::CMutex& mxAccess ) :
@@ -2450,11 +2521,6 @@ void rho_rhodesapp_callUiDestroyedCallback()
     if ( rho::common::CRhodesApp::getInstance() )
         RHODESAPP().callUiDestroyedCallback();
 }
-/*
-void rho_rhodesapp_setViewMenu(unsigned long valMenu)
-{
-    RHODESAPP().getAppMenu().setAppMenu(valMenu);
-}*/
 
 const char* rho_rhodesapp_getappbackurl()
 {
@@ -2647,3 +2713,13 @@ extern "C"
 	}
 }
 #endif
+
+extern "C" bool rho_is_remote_debug()
+{
+    return RHOCONF().getBool("remotedebug");
+}
+
+extern "C" const char* rho_get_remote_debug_host()
+{
+    return RHOCONF().getString("debughosturl").c_str();
+}

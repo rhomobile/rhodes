@@ -261,15 +261,7 @@ def  run_emulator(options = {})
     cmd << " -wipe-data" if options[:wipe]
     cmd << " -verbose"
 
-    puts "Starting emulator: #{cmd}" if USE_TRACES
-    thread = Thread.new do
-      # puts 'adb emu kill'
-      # system('adb emu kill')
-      puts cmd
-      raise "Android emulator failed to start." unless system(cmd)
-    end
-    # Join for 30 secs and let emulator to start ...
-    thread.join(30)
+    start_emulator(cmd)
 
     cmd_start_emu = "#{$adb} -e wait-for-device shell getprop sys.boot_completed"
     puts cmd_start_emu
@@ -470,14 +462,10 @@ def kill_adb_and_emulator
   if RUBY_PLATFORM =~ /windows|cygwin|mingw/
     # Windows
     `taskkill /F /IM adb.exe`
-    `taskkill /F /IM emulator-arm.exe`
-    `taskkill /F /IM emulator.exe`
   else
     `killall -9 adb`
-    `killall -9 emulator-arm`
-    `killall -9 emulator64-arm`
-    `killall -9 emulator`
   end
+  stop_emulator
 end
 module_function :kill_adb_and_emulator
 
@@ -539,3 +527,40 @@ end
 module_function :read_manifest_package
 
 end
+
+def start_emulator(cmd)
+  # sometimes emulator fails to add itself to adb device list
+  # lets reduce failure rate trying to start an emulator several times
+  10.times do
+    # start emulator async
+    Thread.start do
+      Jake.run3_dont_fail(cmd)
+    end
+
+    # wait while emulator appears in adb device list
+    30.times do
+      sleep 1
+      out = Jake.run4("#{$adb} devices")
+      lines = out.chomp.split("\n");
+      return if lines.length > 1
+    end
+
+    # the time is out and there is no emulator in device list
+    puts 'Warning: An emulator is not visible in adb device list. Lets start it again.'
+    stop_emulator
+  end
+  fail "Can't start an emulator."
+end
+
+def stop_emulator
+  if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+    # Windows
+    Jake.run3_dont_fail('taskkill /F /IM emulator-arm.exe')
+    Jake.run3_dont_fail('taskkill /F /IM emulator.exe')
+  else
+    Jake.run3_dont_fail('killall -9 emulator-arm')
+    Jake.run3_dont_fail('killall -9 emulator64-arm')
+    Jake.run3_dont_fail('killall -9 emulator')
+  end
+end
+
