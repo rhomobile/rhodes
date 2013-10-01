@@ -1554,7 +1554,9 @@ void CRhodesApp::initAppUrls()
     CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
 #endif
 
+#ifndef OS_MACOSX
     modifyRhoApiFile();
+#endif
 }
 
 void CRhodesApp::modifyRhoApiFile()
