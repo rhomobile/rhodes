@@ -68,7 +68,10 @@ public:
     const char* getString(const char* name);
     const char* getString(const char* name, const char* szDefValue );
     const char* getString() const;
-
+ 
+    String getStringObject( const char* name, const char* szDefValue = 0 );
+    String getStringObject();
+    
     CJSONEntry getEntry(const char* name) const;
 
     struct json_object* getObject() const { return m_object; }

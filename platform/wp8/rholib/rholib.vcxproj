@@ -78,33 +78,13 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>$(SolutionDir)bin\ARM\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\ARM\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -115,16 +95,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>$(SolutionDir)bin\ARM\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\ARM\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -318,9 +288,7 @@
     <ClCompile Include="..\..\shared\rubyext\ZipFiles.cpp" />
     <ClCompile Include="..\..\shared\statistic\RhoProfiler.cpp" />
     <ClCompile Include="..\..\shared\unzip\unzip.cpp" />
-    <ClCompile Include="..\..\shared\unzip\zip.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\zip.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

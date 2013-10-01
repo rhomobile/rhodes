@@ -305,7 +305,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 
     case json_tokener_state_string:
       if(c == tok->quote_char) {
-	current = json_object_new_string(tok->pb->buf);
+	current = json_object_new_string_len2(tok->pb->buf,tok->pb->bpos);
 	saved_state = json_tokener_state_finish;
 	state = json_tokener_state_eatws;
       } else if(c == '\\') {
@@ -328,10 +328,12 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
       case 'n':
       case 'r':
       case 't':
+      case 'f':
 	if(c == 'b') printbuf_memappend(tok->pb, "\b", 1);
 	else if(c == 'n') printbuf_memappend(tok->pb, "\n", 1);
 	else if(c == 'r') printbuf_memappend(tok->pb, "\r", 1);
 	else if(c == 't') printbuf_memappend(tok->pb, "\t", 1);
+	else if(c == 'f') printbuf_memappend(tok->pb, "\f", 1);              
 	state = saved_state;
 	break;
       case 'u':

@@ -22,6 +22,7 @@ struct json_object
   json_object_delete_fn *_delete;
   json_object_to_json_string_fn *_to_json_string;
   int _ref_count;
+  int str_len;
   struct printbuf *_pb;
   union data {
     boolean c_boolean;

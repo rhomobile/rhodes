@@ -19,7 +19,8 @@ macx {
   OBJECTS_DIR = ../../../osx/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../osx/bin/RhoSimulator/resources
   HEADERS += impl/SSLImpl.h
-  SOURCES += impl/SSLImpl.cpp
+  SOURCES += impl/SSLImpl.cpp\
+../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CSystemImpl.cpp
   LIBS += -lcrypto -lssl -lz -lldap
   LIBS += -L../../../osx/bin/curl -lcurl
   LIBS += -L../../../osx/bin/rubylib -lrubylib
@@ -45,6 +46,7 @@ win32 {
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
 impl/RhoThreadImpl.h
   SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp\
+../../../wm/rhodes/rho/rubyext/SystemImpl.cpp\
 impl/ExtManager.cpp
   RESOURCES += resources/simulator.qrc
   INCLUDEPATH += ../../../wm/rhodes\
@@ -143,13 +145,12 @@ impl/RhoNativeViewManagerImpl.cpp\
 impl/RhoThreadImpl.cpp\
 impl/RingtoneManagerImpl.cpp\
 impl/SignatureImpl.cpp\
-impl/SystemImpl.cpp\
+impl/QtSystemImpl.cpp\
 impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
 DateTimeDialog.cpp\
 RhoNativeApiCall.cpp\
-../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CSystemImpl.cpp\
 ../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CWebViewImpl.cpp
 
 FORMS += ExternalWebView.ui\

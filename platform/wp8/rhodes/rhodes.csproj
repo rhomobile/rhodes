@@ -117,6 +117,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <BaseIntermediateOutputPath>..\bin\x64\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\x64\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <OutputPath>..\bin\x64\rhodes\Release\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <Optimize>true</Optimize>
