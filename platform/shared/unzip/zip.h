@@ -15,6 +15,7 @@
 #include <ctype.h>
 
 #include "../common/RhoDefs.h"
+#include "../common/RhoStd.h"
 
 // # i n c l u d e "zip.h"
 //
@@ -151,6 +152,10 @@ unsigned int FormatZipMessage(ZRESULT code, TCHAR *buf,unsigned int len);
 // FormatZipMessage - given an error code, formats it as a string.
 // It returns the length of the error message. If buf/len points
 // to a real buffer, then it also writes as much as possible into there.
+
+
+
+ZRESULT GZipBuffer(const rho::String& input, rho::String& output );
 
 
 
