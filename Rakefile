@@ -2083,13 +2083,24 @@ namespace "buildall" do
   end
 end
 
+def edit_version_h_file(file, version)
+  fail "Invalid version [#{version}]" unless version =~ /^[0-9a-zA-Z\.]+$/
+  text = File.read(file)
+  pattern = /^(\s*#\s*define\s+RHO_VERSION\s+\").*(\"\s*)$/
+  fail "Can't find line to edit in #{file}" unless text =~ pattern
+  text.gsub!(pattern, "\\1#{version}\\2")
+  File.open(file, 'w') { |f| f.write text }
+end
+
 
 task :gem do
   puts "Removing old gem"
   rm_rf Dir.glob("rhodes*.gem")
   puts "Copying Rakefile"
   cp "Rakefile", "rakefile.rb"
-  
+    
+  edit_version_h_file('platform/shared/common/version.h', File.read('version').chomp)
+
   puts "Building manifest"
   out = ""
   Dir.glob("**/*") do |fname| 
