@@ -821,6 +821,7 @@ module Rhogen
         @default_value = nil
         @is_property_hash = false
         @linked_field = nil
+        @is_generated = false
       end
 
       attr_accessor :name
@@ -838,6 +839,7 @@ module Rhogen
       attr_accessor :default_value
       attr_accessor :is_property_hash
       attr_accessor :linked_field
+      attr_accessor :is_generated
 
       def type=(value)
         up_value = value.upcase
@@ -984,6 +986,7 @@ module Rhogen
         @is_constructor = false
         @is_destructor = false
         @is_generated = false
+        @is_static_for_entity = false
         @generateNativeAPI = true
 
         # name of template produced this method if applicable
@@ -1013,6 +1016,7 @@ module Rhogen
       attr_accessor :result
       attr_accessor :is_deprecated
       attr_accessor :is_generated
+      attr_accessor :is_static_for_entity
       attr_accessor :generated_by_template
       attr_accessor :linked_property
       attr_accessor :linked_entity
@@ -1578,7 +1582,7 @@ module Rhogen
       return field_list
     end
 
-    def create_param_from_list(field_list, can_be_nil)
+    def create_param_from_list(field_list, param_name, can_be_nil)
       param = nil
       if field_list.size > 0
         fields_param_list = param_list_from_fields(field_list, can_be_nil)
@@ -1586,6 +1590,7 @@ module Rhogen
           param = fields_param_list.at(0)
         else
           param = MethodParam.new()
+          param.name = param_name
           param.type = MethodParam::TYPE_HASH
           param.sub_params = fields_param_list
         end
@@ -1872,13 +1877,13 @@ module Rhogen
       #      end
       #      method_param.type = ttype
       #   else
-      #      raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
+      #      raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{entity_method.name}].param_index[#{param_index.to_s}]"
       #   end
       #
       #   method_param.can_be_nil = (xml_method_param.elements['CAN_BE_NIL'] != nil)
       #
       #   param_index = param_index + 1
-      #   module_method.params << method_param
+      #   entity_method.params << method_param
       #end
 
       return module_method
@@ -2201,27 +2206,27 @@ module Rhogen
           module_entity.fields.each do |field|
             result_item = MethodParam.new()
             result_item.name = field.name
+            result_item.is_generated = true
             result_item.type = field.type
             result_item.default_value = field.default_value
             cnt_hash << result_item
           end
           cnt_param = MethodParam.new()
+          cnt_param.is_generated = true
           cnt_param.type = MethodParam::TYPE_HASH
           cnt_param.sub_params = cnt_hash
 
-          is_initialized_param = MethodParam.new()
-          is_initialized_param.name = 'isInitialized'
-          is_initialized_param.type = MethodParam::TYPE_BOOL
-          is_initialized_param.default_value = false
-
           # access params
-          binding_param = create_param_from_list(module_entity.binding_fields, false)
+          binding_param = create_param_from_list(module_entity.binding_fields, 'binding', false)
+          binding_param.is_generated = true unless binding_param.nil?
 
           store_fileds = module_entity.fields.select { |f| !f.const }
-          store_param = create_param_from_list(store_fileds, true)
+          store_param = create_param_from_list(store_fileds, 'init_hash', true)
+          store_param.is_generated = true unless store_param.nil?
 
           update_fileds = module_entity.fields.select { |f| !f.const && !f.binding }
-          update_param = create_param_from_list(update_fileds, true)
+          update_param = create_param_from_list(update_fileds, 'updates', true)
+          update_param.is_generated = true unless update_param.nil?
 
           ## constructor for entity
           #ntt_constructor = ModuleMethod.new()
@@ -2278,7 +2283,9 @@ module Rhogen
         ################################################
         # init method
         ntt_init= ModuleMethod.new()
+        module_entity.methods << ntt_init
         ntt_init.access = ModuleMethod::ACCESS_STATIC
+        ntt_init.is_static_for_entity = true
         ntt_init.linked_entity = module_entity
         ntt_init.is_generated = true
         module_entity.init_method = ntt_init
@@ -2319,7 +2326,9 @@ module Rhogen
 
         if update_args.size > 0
           ntt_update = ModuleMethod.new()
+          module_entity.methods << ntt_update
           ntt_update.access = ModuleMethod::ACCESS_STATIC
+          ntt_update.is_static_for_entity = true
           ntt_update.linked_entity = module_entity
           ntt_update.is_generated = true
           module_entity.update_method = ntt_update
@@ -2373,35 +2382,43 @@ module Rhogen
         #  ntt_load.is_return_value = true
         #end
 
-        xml_methods_item = xml_module_entity.elements['METHODS']
+        xml_entity_methods_item = xml_module_entity.elements['METHODS']
         xml_module_entity.elements.each('METHODS/METHOD') do |xml_module_method|
-          module_method = process_method(xml_module_method, xml_methods_item, module_item, [module_item.parents.join('.'), module_item.name, module_entity.name].join('.'))
-          module_method.linked_entity = module_entity
-          module_item.methods << module_method
+          entity_method = process_method(xml_module_method, xml_entity_methods_item, module_item, [module_item.parents.join('.'), module_item.name, module_entity.name].join('.'))
+          module_entity.methods << entity_method
+          entity_method.linked_entity = module_entity
+          module_item.methods << entity_method
 
           # static methods are not taking hashes as parameters
           is_static = false
-          attr_access = get_attribute_value_inherited(xml_module_method, xml_methods_item, 'access')
+          attr_access = get_attribute_value_inherited(xml_module_method, xml_entity_methods_item, 'access')
           if attr_access != nil
             if attr_access == 'static'
               is_static = true
             end
           end
+          entity_method.is_static_for_entity = is_static
 
           if !is_static
             fields = module_entity.fields.select { |f| !f.const }
+            params = nil
             if (module_entity.binding_fields.size != 0)
-              module_method.params.insert(0, create_param_from_list(module_entity.binding_fields, false))
+              params = module_entity.binding_fields
             else
               if fields.size != 0
-                module_method.params.insert(0, create_param_from_list(fields, false))
+                params = fields
               end
+            end
+            if params != nil
+              hash_param = create_param_from_list(params, 'hash', false)
+              hash_param.is_generated = true
+              entity_method.params.insert(0, hash_param)
             end
           end
 
-          module_method.name << module_entity.name + 'Entity'
-          module_method.native_name = module_method.name.split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
-          module_method.access = ModuleMethod::ACCESS_STATIC
+          entity_method.name << module_entity.name + 'Entity'
+          entity_method.native_name = entity_method.name.split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
+          entity_method.access = ModuleMethod::ACCESS_STATIC
         end
       end
     end
