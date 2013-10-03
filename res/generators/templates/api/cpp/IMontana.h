@@ -8,6 +8,23 @@
 namespace <%= parent.downcase() %> {<%
 end %>
 ///////////////////////////////////////////////////////////
+<% $cur_module.entities.each do |ett| 
+%>struct <%= ett.native_name %>;
+<% end %>
+
+<% $cur_module.entities.each do |ett| %>
+struct <%= ett.native_name %>
+{
+    <%= ett.native_name %>()<% if ett.fields.size > 0 %> : <% end %><%= ett.fields.map{ |f| f.name + '(' + f.default_value + ')' }.join(', ') %> {} <% 
+    if ett.fields.size > 0%>
+    <%= ett.native_name %>( <%= ett.fields.map{ |f| f.cpptype + ' _' + f.name }.join(', ') %> ) : <%= ett.fields.map{ |f| f.name + '(_' + f.name + ')' }.join(', ') %> {} <% end %>
+
+    virtual ~<%= ett.native_name %>(){}
+
+<% ett.fields.each do |fld|
+%>    <%= fld.cpptype %> <%= fld.name %>;
+<% end %>};
+<% end %>
 struct I<%= $cur_module.name %>
 {
 //constants
