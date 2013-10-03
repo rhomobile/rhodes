@@ -15,7 +15,6 @@
 #include <ctype.h>
 
 #include "../common/RhoDefs.h"
-#include "../common/RhoStd.h"
 
 // # i n c l u d e "zip.h"
 //
@@ -63,6 +62,8 @@ typedef FILE* HANDLE;
 typedef time_t FILETIME;
 
 #endif
+
+#include "../common/RhoStd.h"
 
 // ZIP functions -- for creating zip files
 // This file is a repackaged form of the Info-Zip source code available
