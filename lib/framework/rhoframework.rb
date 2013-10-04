@@ -130,7 +130,8 @@ begin
 
     remote_debug = false
     remote_host  = nil
-
+    remote_path  = nil
+    
     if defined?(RHOSTUDIO_REMOTE_DEBUG)
       remote_debug = RHOSTUDIO_REMOTE_DEBUG
     end
@@ -138,9 +139,14 @@ begin
     if defined?(RHOSTUDIO_REMOTE_HOST)
       remote_host = RHOSTUDIO_REMOTE_HOST
     end
+    
+    if defined?(RHOSTUDIO_REMOTE_HOST)
+      remote_path = RHOSTUDIO_REMOTE_APPPATH
+    end
 
     puts "RHOSTUDIO_REMOTE_DEBUG=" + remote_debug.to_s
-    puts "RHOSTUDIO_REMOTE_HOST=" + remote_host.to_s
+    puts "RHOSTUDIO_REMOTE_HOST="  + remote_host.to_s
+    puts "RHOSTUDIO_REMOTE_PATH="  + remote_host.to_s
     
     if RHOSTUDIO_REMOTE_DEBUG == true || Rho::System.isRhoSimulator
       require 'debugger'
