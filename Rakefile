@@ -498,10 +498,13 @@ namespace "config" do
         exit 1
       end
     end
+    
+    $bindir = $app_path + "/bin"
+    $srcdir = $bindir + "/RhoBundle"
 
 	  ENV["RHO_APP_PATH"] = $app_path.to_s
-    ENV["ROOT_PATH"] = $app_path.to_s + '/app/'
-    ENV["APP_TYPE"] = "rhodes"
+    ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
+    ENV["APP_TYPE"]     = "rhodes"
 
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
 
@@ -855,9 +858,18 @@ namespace "config" do
       make_application_build_capabilities_header_file
       update_rhodefs_header_file
     end
+      
+    $remote_debug = false
+    $remote_debug = Jake.getBool(ENV['rho_remote_debug'])  if ENV['rho_remote_debug']
 
-  end
+    if $remote_debug      
+      $app_config['extensions'] = $app_config['extensions'] | ['debugger']
+      $app_config['extensions'] = $app_config['extensions'] | ['uri']
+      $app_config['extensions'] = $app_config['extensions'] | ['timeout']
+    end
 
+  end # end of common:config 
+  
   task :qt do
     $qtdir = ENV['QTDIR']
     unless (!$qtdir.nil?) and ($qtdir !~/^\s*$/) and File.directory?($qtdir)
@@ -1415,6 +1427,12 @@ def common_bundle_start( startdir, dest)
   end
   
   copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
+ 
+  # modify rhoconfig for ruby debugger
+  if $remote_debug      
+    puts "$app_config=" + $app_config['extensions'].to_s    
+    Jake.modify_rhoconfig_for_debug()
+  end
 
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
@@ -2083,24 +2101,13 @@ namespace "buildall" do
   end
 end
 
-def edit_version_h_file(file, version)
-  fail "Invalid version [#{version}]" unless version =~ /^[0-9a-zA-Z\.]+$/
-  text = File.read(file)
-  pattern = /^(\s*#\s*define\s+RHO_VERSION\s+\").*(\"\s*)$/
-  fail "Can't find line to edit in #{file}" unless text =~ pattern
-  text.gsub!(pattern, "\\1#{version}\\2")
-  File.open(file, 'w') { |f| f.write text }
-end
-
 
 task :gem do
   puts "Removing old gem"
   rm_rf Dir.glob("rhodes*.gem")
   puts "Copying Rakefile"
   cp "Rakefile", "rakefile.rb"
-    
-  edit_version_h_file('platform/shared/common/version.h', File.read('version').chomp)
-
+  
   puts "Building manifest"
   out = ""
   Dir.glob("**/*") do |fname| 

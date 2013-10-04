@@ -83,6 +83,7 @@ extern const char* rho_native_rhopath();
 extern const char* rho_native_reruntimepath();
 extern const char* rho_native_rhouserpath();
 extern const char* rho_get_remote_debug_host();
+extern const char* rho_native_rhopath();
 
 static VALUE  framework;
 static ID framework_mid;
@@ -323,6 +324,7 @@ void RhoRubyStart()
     {
         rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_DEBUG"), Qtrue);
         rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_HOST"), rho_ruby_create_string(rho_get_remote_debug_host()));
+        rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_APPPATH"), rho_ruby_create_string(rho_native_rhopath()));
     }
     else
     {

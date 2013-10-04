@@ -10,7 +10,7 @@ DEBUGGER_LOG_LEVEL_WARN  = 2
 DEBUGGER_LOG_LEVEL_ERROR = 3
 
 def debugger_log(level, msg)
-  if (level >= DEBUGGER_LOG_LEVEL_WARN)
+  if (level >= DEBUGGER_LOG_LEVEL_INFO) #DEBUGGER_LOG_LEVEL_WARN)
     puts "[Debugger] #{msg}"
   end
 end
@@ -302,7 +302,6 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   end
 }
 
-
 $_s = nil
 
 begin
@@ -311,15 +310,20 @@ begin
   debug_port_env = ENV['rho_debug_port']
   debug_path_env = ENV['ROOT_PATH']
 
-  puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
-  
   debug_host = ((debug_host_env.nil?) || (debug_host_env == "")) ? '127.0.0.1' : debug_host_env
-  debug_host = ((RHOSTUDIO_REMOTE_HOST.to_s != nil) || (RHOSTUDIO_REMOTE_HOST.to_s != "")) ? RHOSTUDIO_REMOTE_HOST.to_s : "" 
-  debug_port = ((debug_port_env.nil?) || (debug_port_env == "")) ? 9000 : debug_port_env  
-
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host_env.to_s)
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "port=" + debug_port_env.to_s)
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "path=" + debug_path_env.to_s)
+  debug_port = ((debug_port_env.nil?) || (debug_port_env == "")) ? 9000 : debug_port_env
+  debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
+   
+  if defined?(RHOSTUDIO_REMOTE_DEBUG) && RHOSTUDIO_REMOTE_DEBUG == true 
+    puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
+    debug_host = ((RHOSTUDIO_REMOTE_HOST.to_s != nil) || (RHOSTUDIO_REMOTE_HOST.to_s != "")) ? RHOSTUDIO_REMOTE_HOST.to_s : ""
+    debug_path = ((RHOSTUDIO_REMOTE_APPPATH.to_s != nil) || (RHOSTUDIO_REMOTE_APPPATH.to_s != "")) ? RHOSTUDIO_REMOTE_APPPATH.to_s : "" 
+    debug_path += "/app/"  
+  end
+  
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host.to_s)
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "port=" + debug_port.to_s)
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "path=" + debug_path.to_s)
 
   $_s = timeout(30) { TCPSocket.open(debug_host, debug_port) }
 
@@ -335,7 +339,7 @@ begin
   $_cmd = ""
   $_app_path = ""
 
-  $_app_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env  
+  $_app_path = debug_path
   $_s.write("DEBUG PATH=" + $_app_path.to_s + "\n")
 
   at_exit {
