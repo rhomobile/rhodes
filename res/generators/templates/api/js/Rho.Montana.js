@@ -100,8 +100,8 @@ class TrueClass; def to_i; 1 end end
             else 
             %> this.binding.<%=f.name%> <% 
             end %> = val;<% 
-            end %>} <% 
-    end %>
+            end %>} <% end %>
+        this.isInitialized = true;
     } 
     <% end
 
@@ -157,9 +157,9 @@ class TrueClass; def to_i; 1 end end
         entity_mehtod.params.size + (entity_mehtod.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>, apiReq); 
 <%  end %>    // <%= entity.name %> push changes to native 
     <%=proto_name %>.save = function() {
-        if (isInitialized) {
+        if (this.isInitialized) {
 <% if entity.update_method 
-%>            if (isChanged) {
+%>            if (this.isChanged) {
                 <%= "updateobj = " if have_update_fn %>fn<%=entity.update_method.name.camelcase%>(<%= fn_update_args.map{ |arg| "this.#{arg}" }.join(', ') %>);
                 <% if have_update_fn 
                 %>this.update(updateobj); <%  end %>
@@ -169,9 +169,9 @@ class TrueClass; def to_i; 1 end end
                 %><%= "initobj = " if have_init_fn %>fn<%=entity.init_method.name.camelcase%>(<%=init_args.map{ |arg| "this.#{arg}" }.join(', ')%>); <% 
                 if have_init_fn 
                     %>
-            this.init(initobj); <% 
-                end 
-            end %>this.isInitialized = true;
+            this.init(initobj); <% else %>
+            this.isInitialized = true;  <% end 
+            end %>
         }
     }
     // <%= entity.name %> wrapper
@@ -186,8 +186,8 @@ class TrueClass; def to_i; 1 end end
                     throw "Wrong class instantiation!";
                 } 
                 <% if have_init_fn 
-                %>this.__impl.init(initobj); <% 
-                end %>this.__impl.isInitialized = true;
+                %>this.__impl.init(initobj); <% else %>this.__impl.isInitialized = true; <% 
+                end %>
             }
         }         
     };
@@ -202,7 +202,7 @@ class TrueClass; def to_i; 1 end end
     end
 %>
     <%=proto_name %>.save = function() { this.__impl.save(); }
-    
+
 <%  
     sorted_method_list = entity.methods.select{|m| !m.is_generated }.stable_sort{|a,b| (a.is_static_for_entity == b.is_static_for_entity) ? (a.name <=> b.name) : (a.is_static_for_entity ? 1 : -1)}
 
