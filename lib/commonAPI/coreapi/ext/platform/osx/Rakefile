@@ -6,9 +6,11 @@ def build_extension(name, arch)
 
   files = []
   Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/shared/**/*.c").each do |f|
+    next if f.include? "/stub/"
     files << f
   end
   Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/shared/**/*.cpp").each do |f|
+    next if f.include? "/stub/"
     files << f
   end
   Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/**/*.c").each do |f|
