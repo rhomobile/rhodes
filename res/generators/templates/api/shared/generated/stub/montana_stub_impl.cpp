@@ -1,8 +1,5 @@
 //
 //  <%= $cur_module.name %>Impl.cpp
-
-#include "<%= $cur_module.name %>Impl.h"
-
 #include "generated/cpp/<%= $cur_module.name %>Base.h"
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"

@@ -2600,8 +2600,8 @@ module Rhogen
     end
 
     template :shared_stub_api_impl do |template|
-      template.source = 'shared/generated/montana_stub_impl.cpp'
-      template.destination = "shared/generated/#{namefixed($cur_module.name)}_stub_impl.cpp"
+      template.source = 'shared/generated/stub/montana_stub_impl.cpp'
+      template.destination = "shared/generated/stub/#{namefixed($cur_module.name)}_stub_impl.cpp"
     end
 
     template :iphone_api do |template|
