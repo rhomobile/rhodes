@@ -1,5 +1,4 @@
 #include "zip.h"
-#include <iostream>
 #include <vector>
 
 // THIS FILE is almost entirely based upon code by info-zip.
@@ -2954,15 +2953,15 @@ bool IsZipHandleZ(HZIP hz)
   return (han->flag==2);
 }
 
-ZRESULT GZipBuffer( const rho::String& input, rho::String& output )
+ZRESULT GZipBuffer( const std::string& input, std::string& output )
 {
     class MyMemWorker {
-        const rho::String&  m_input;
-        rho::String&        m_output;        
+        const std::string&  m_input;
+        std::string&        m_output;        
         int                 m_inputPos;
         
     public:
-        MyMemWorker( const rho::String& input, rho::String& output ) :
+        MyMemWorker( const std::string& input, std::string& output ) :
             m_input(input),
             m_output(output),
             m_inputPos(0)
