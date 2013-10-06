@@ -1,5 +1,6 @@
 #include "zip.h"
 #include <vector>
+#include <memory>
 
 // THIS FILE is almost entirely based upon code by info-zip.
 // It has been modified by Lucian Wischik. The modifications
