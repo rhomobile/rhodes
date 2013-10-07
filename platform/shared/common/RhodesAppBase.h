@@ -55,7 +55,6 @@ protected:
 #else
 	String m_strHomeUrl;
 #endif
-	String m_strHomeUrlLocalHost;
 
     boolean m_bSendingLog;
 	

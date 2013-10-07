@@ -1092,8 +1092,16 @@ module Rhogen
         end
       end
 
-      def index()
+      def index
         return ((binding ? 0 : 2) + (const ? 0 : 1))
+      end
+
+      def is_readable
+        return @access == ACCESS_READ_ONLY || @access == ACCESS_READ_WRITE
+      end
+
+      def is_writeable
+        return @access == ACCESS_WRITE_ONLY || @access == ACCESS_READ_WRITE
       end
 
       def constructor_param=(value)
@@ -2599,6 +2607,11 @@ module Rhogen
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_js_api.cpp"
     end
 
+    template :shared_stub_api_impl do |template|
+      template.source = 'shared/generated/stub/montana_stub_impl.cpp'
+      template.destination = "shared/generated/stub/#{namefixed($cur_module.name)}_stub_impl.cpp"
+    end
+
     template :iphone_api do |template|
       template.source = 'platform/iphone/generated/IMontana.h'
       template.destination = "platform/iphone/generated/I#{$cur_module.name}.h"
@@ -2709,6 +2722,7 @@ module Rhogen
       template.source = 'cpp/montana_js_wrap.cpp'
       template.destination = "shared/generated/cpp/#{$cur_module.name}_js_wrap.cpp"
     end
+
 
     template :android_java_obj_interface do |template|
       template.source = 'platform/android/gen/src/IMontana.java'
