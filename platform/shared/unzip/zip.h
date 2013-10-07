@@ -63,7 +63,7 @@ typedef time_t FILETIME;
 
 #endif
 
-#include "../common/RhoStd.h"
+#include <string>
 
 // ZIP functions -- for creating zip files
 // This file is a repackaged form of the Info-Zip source code available
@@ -156,7 +156,7 @@ unsigned int FormatZipMessage(ZRESULT code, TCHAR *buf,unsigned int len);
 
 
 
-ZRESULT GZipBuffer(const rho::String& input, rho::String& output );
+ZRESULT GZipBuffer(const std::string& input, std::string& output );
 
 
 

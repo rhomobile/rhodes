@@ -3336,11 +3336,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\api_generator\StringfyHelper.cpp"
+				RelativePath="..\..\shared\api_generator\StringifyHelper.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\api_generator\StringfyHelper.h"
+				RelativePath="..\..\shared\api_generator\StringifyHelper.h"
 				>
 			</File>
 		</Filter>

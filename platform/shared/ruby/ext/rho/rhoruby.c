@@ -583,25 +583,23 @@ void rho_ruby_enum_strhash_json(VALUE hash, rho_hash_eachstr_func *func, void* d
 }
 
 static int
-hash_each(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
+hash_each(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
 {
     const char* szKey = "";
-    int keyLen = 0;
 
     if ( key != 0 && key != Qnil )
     {
         VALUE strKey = rb_funcall(key, rb_intern("to_s"), 0);
         szKey = RSTRING_PTR(strKey);
-        keyLen = RSTRING_LEN(strKey);
     }
 
-    (*pEnumData->func)(szKey, value, keyLen, pEnumData->data);
+    (*pEnumData->func)(szKey, value, pEnumData->data);
     return ST_CONTINUE;
 }
 
 void rho_ruby_enum_hash(VALUE hash, rho_hash_each_func * func, void* data)
 {
-    struct CHashEnumStrData enumData;
+    struct CHashEnumData enumData;
 
     if ( !hash || hash == Qnil )
         return;
