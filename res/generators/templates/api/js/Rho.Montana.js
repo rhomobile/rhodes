@@ -160,16 +160,16 @@ class TrueClass; def to_i; 1 end end
         if (this.isInitialized) {
 <% if entity.update_method 
 %>            if (this.isChanged) {
-                <%= "updateobj = " if have_update_fn %>fn<%=entity.update_method.name.camelcase%>(<%= fn_update_args.map{ |arg| "this.#{arg}" }.join(', ') %>);
+                <%= "var updateobj = " if have_update_fn %>fn<%=entity.update_method.name.camelcase%>(<%= fn_update_args.map{ |arg| "this.#{arg}" }.join(', ') %>);
                 <% if have_update_fn 
                 %>this.update(updateobj); <%  end %>
             } 
 <% end %>        }  else {
             <% if entity.init_method != nil 
-                %><%= "initobj = " if have_init_fn %>fn<%=entity.init_method.name.camelcase%>(<%=init_args.map{ |arg| "this.#{arg}" }.join(', ')%>); <% 
+                %><%= "var init_object = " if have_init_fn %>fn<%=entity.init_method.name.camelcase%>(<%=init_args.map{ |arg| "this.#{arg}" }.join(', ')%>); <% 
                 if have_init_fn 
                     %>
-            this.init(initobj); <% else %>
+            this.init(init_object); <% else %>
             this.isInitialized = true;  <% end 
             end %>
         }
@@ -180,13 +180,13 @@ class TrueClass; def to_i; 1 end end
 
         
         if (1 == arguments.length) {
-            initobj = arguments[0][rhoUtil.rhoIdParam()];
-            if (initobj) {
+            var init_object = arguments[0][rhoUtil.rhoIdParam()];
+            if (init_object) {
                 if (entity<%=entity.name%>NS != arguments[0][rhoUtil.rhoClassParam()]) {
                     throw "Wrong class instantiation!";
                 } 
                 <% if have_init_fn 
-                %>this.__impl.init(initobj); <% else %>this.__impl.isInitialized = true; <% 
+                %>this.__impl.init(init_object); <% else %>this.__impl.isInitialized = true; <% 
                 end %>
             }
         }         
@@ -238,6 +238,13 @@ class TrueClass; def to_i; 1 end end
     };
 
 <%   end  %>
+    rhoUtil.createEntityPropsProxy(<%= entity.name %>.prototype, [
+    <% first_prop = true
+       entity.fields.each do |entity_field|
+         next if entity_field.name.nil? || entity_field.name.empty?
+    %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= entity_field.name %>', propAccess: '<%= 'r' if entity_field.is_readable %><%= 'w' if entity_field.is_writeable && !entity_field.const %>' }
+    <% first_prop = false
+       end %>]);
 <%   end  %><%
 end %>
     // === <%= $cur_module.name %> class definition ===

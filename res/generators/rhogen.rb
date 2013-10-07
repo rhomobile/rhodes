@@ -1092,8 +1092,16 @@ module Rhogen
         end
       end
 
-      def index()
+      def index
         return ((binding ? 0 : 2) + (const ? 0 : 1))
+      end
+
+      def is_readable
+        return @access == ACCESS_READ_ONLY || @access == ACCESS_READ_WRITE
+      end
+
+      def is_writeable
+        return @access == ACCESS_WRITE_ONLY || @access == ACCESS_READ_WRITE
       end
 
       def constructor_param=(value)
