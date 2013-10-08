@@ -499,10 +499,7 @@ namespace "config" do
       end
     end
     
-    $bindir = $app_path + "/bin"
-    $srcdir = $bindir + "/RhoBundle"
-
-	  ENV["RHO_APP_PATH"] = $app_path.to_s
+    ENV["RHO_APP_PATH"] = $app_path.to_s
     ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
     ENV["APP_TYPE"]     = "rhodes"
 
@@ -816,9 +813,9 @@ namespace "config" do
     $rhologhostport = $config["log_host_port"] 
     $rhologhostport = 52363 unless $rhologhostport
     begin
-	    $rhologhostaddr = Jake.localip()
+      $rhologhostaddr = Jake.localip()
     rescue Exception => e      
-        puts "Jake.localip() error : #{e}"  
+      puts "Jake.localip() error : #{e}"  
     end
 
     obfuscate_js      = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
