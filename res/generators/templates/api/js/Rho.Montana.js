@@ -234,7 +234,9 @@ class TrueClass; def to_i; 1 end end
     fn_call_params = entity_mehtod.params.select{|param| !param.is_generated}.map{|param| "#{param.name}"}
     %>
     <%= entity.name %><%=entity_mehtod.is_static_for_entity ? "" : ".prototype"%>.<%=entity_mehtod.name%> = function(<%= fn_call_params.join(', ')%>){
-        <%= "return " if entity_mehtod.is_return_value %>fn<%=entity_mehtod.name.camelcase%>(<%= (call_params + fn_call_params).join(', ') %>);
+        <%= "this.__impl.save();
+" if !entity_mehtod.is_static_for_entity %><%= 
+        "return " if entity_mehtod.is_return_value %>fn<%=entity_mehtod.name.camelcase%>(<%= (call_params + fn_call_params).join(', ') %>);
     };
 
 <%   end  %>
