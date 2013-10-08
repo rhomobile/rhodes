@@ -1481,7 +1481,7 @@ module Rhogen
     end
 
     #return MethodParam object
-    def process_param(xml_param_item, predefined_name, module_item, method_name, param_index)
+    def process_param(xml_param_item, predefined_name, module_item, method_name, param_index, self_type)
       param = MethodParam.new()
 
       if xml_param_item.attribute('name') != nil
@@ -1503,7 +1503,7 @@ module Rhogen
       if xml_param_item.attribute('type') != nil
         ttype = xml_param_item.attribute('type').to_s #.upcase
         if ttype == MethodParam::TYPE_SELF
-          ttype = [module_item.parents.join('.'), module_item.name].join('.')
+          ttype = self_type
         end
         param.type = ttype
 
@@ -1511,7 +1511,7 @@ module Rhogen
           # looking for <PARAM> child
           xml_param_item.elements.each('PARAM') do |xml_method_subparam|
             if xml_method_subparam.parent == xml_param_item
-              param.sub_param = process_param(xml_method_subparam, 'array_param', module_item, method_name, param_index)
+              param.sub_param = process_param(xml_method_subparam, 'array_param', module_item, method_name, param_index, self_type)
             end
           end
           if param.sub_param == nil
@@ -1523,7 +1523,7 @@ module Rhogen
         if ttype == MethodParam::TYPE_HASH
           xml_param_item.elements.each('PARAMS') do |xml_method_subparams|
             if xml_method_subparams.parent == xml_param_item
-              param.sub_params = process_params(xml_method_subparams, module_item, method_name+'_'+param.name)
+              param.sub_params = process_params(xml_method_subparams, module_item, method_name+'_'+param.name, self_type)
             end
           end
 
@@ -1547,13 +1547,13 @@ module Rhogen
     end
 
     #return array of MethodParam objects
-    def process_params(xml_params_item, module_item, method_name)
+    def process_params(xml_params_item, module_item, method_name, self_type)
       params = []
 
       param_index = 1
       xml_params_item.elements.each('PARAM') do |xml_param|
         if xml_param.parent == xml_params_item
-          param = process_param(xml_param, 'param'+ param_index.to_s, module_item, method_name, param_index)
+          param = process_param(xml_param, 'param'+ param_index.to_s, module_item, method_name, param_index, self_type)
           param_index = param_index + 1
           params << param
         end
@@ -1827,22 +1827,22 @@ module Rhogen
         #end
 
         xml_module_method.elements.each('RETURN/PARAM') do |return_param_xml|
-          method_result.sub_param = process_param(return_param_xml, 'result', module_item, module_method.name+'_RETURN', 0)
+          method_result.sub_param = process_param(return_param_xml, 'result', module_item, module_method.name+'_RETURN', 0, self_type)
           if method_result.sub_param != nil
             method_result.item_type = method_result.sub_param.type
           end
         end
         xml_module_method.elements.each('RETURN/PARAMS') do |return_params_xml|
-          method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN')
+          method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN', self_type)
         end
         xml_module_method.elements.each('CALLBACK/PARAM') do |return_param_xml|
-          method_result.sub_param = process_param(return_param_xml, 'result', module_item, module_method.name+'_RETURN', 0)
+          method_result.sub_param = process_param(return_param_xml, 'result', module_item, module_method.name+'_RETURN', 0, self_type)
           if method_result.sub_param != nil
             method_result.item_type = method_result.sub_param.type
           end
         end
         xml_module_method.elements.each('CALLBACK/PARAMS') do |return_params_xml|
-          method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN')
+          method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN', self_type)
         end
 
         if (method_result.type == MethodParam::TYPE_ARRAY) && (method_result.item_type == nil)
@@ -1862,7 +1862,7 @@ module Rhogen
 
       xml_module_method.elements.each('PARAMS') do |xml_method_params|
         if xml_method_params.parent == xml_module_method
-          module_method.params = process_params(xml_method_params, module_item, module_method.name)
+          module_method.params = process_params(xml_method_params, module_item, module_method.name, self_type)
         end
       end
 
@@ -1899,8 +1899,9 @@ module Rhogen
 
     def process_methods(module_item, xml_module_item)
       xml_methods_item = xml_module_item.elements['METHODS']
+      self_type = [module_item.parents.join('.'), module_item.name].join('.')
       xml_module_item.elements.each('METHODS/METHOD') do |xml_module_method|
-        module_method = process_method(xml_module_method, xml_methods_item, module_item, [module_item.parents.join('.'), module_item.name].join('.'))
+        module_method = process_method(xml_module_method, xml_methods_item, module_item, self_type)
 
         attr_access = get_attribute_value_inherited(xml_module_method, xml_methods_item, 'access')
         if attr_access != nil
@@ -1951,6 +1952,8 @@ module Rhogen
         end
       end
 
+      self_type = [module_item.parents.join('.'), module_item.name].join('.')
+
       xml_module_item.elements.each('PROPERTIES/PROPERTY') do |xml_module_property|
         module_property = ModuleProperty.new()
         module_property.name = xml_module_property.attribute('name').to_s
@@ -1958,7 +1961,7 @@ module Rhogen
           raise "Property have invalid name !\n Module[#{module_item.name}].property[#{module_property.name}] is in the list of forbidden names:\n '#{unsupported_names.join("','")}'"
         end
         module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
-        module_property.param = process_param(xml_module_property, module_property.native_name, module_item, 'property_'+module_property.name, 0)
+        module_property.param = process_param(xml_module_property, module_property.native_name, module_item, 'property_'+module_property.name, 0, self_type)
         if xml_module_property.attribute('generateAccessors') != nil
           module_property.generate_accessors = xml_module_property.attribute('generateAccessors').to_s.downcase != 'false'
         else
@@ -2152,6 +2155,7 @@ module Rhogen
           raise "ModuleEntity have invalid name !\n Module[#{module_item.name}].entity[#{module_entity.name}] is in the list of forbidden names:\n '#{unsupported_names.join("','")}'"
         end
         module_entity.native_name = (module_entity.name + 'Entity').split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
+        self_type = [module_item.parents.join('.'), module_item.name, module_entity.name].join('.')
 
         module_entity.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
 
@@ -2392,7 +2396,8 @@ module Rhogen
 
         xml_entity_methods_item = xml_module_entity.elements['METHODS']
         xml_module_entity.elements.each('METHODS/METHOD') do |xml_module_method|
-          entity_method = process_method(xml_module_method, xml_entity_methods_item, module_item, [module_item.parents.join('.'), module_item.name, module_entity.name].join('.'))
+
+          entity_method = process_method(xml_module_method, xml_entity_methods_item, module_item, self_type)
           module_entity.methods << entity_method
           entity_method.linked_entity = module_entity
           module_item.methods << entity_method
