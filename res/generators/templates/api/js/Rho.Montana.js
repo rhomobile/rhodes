@@ -80,7 +80,13 @@ class TrueClass; def to_i; 1 end end
     end
     
     init_args = [];
-    init_args << "hash" if (updateable_fields.size > 0)
+    if (updateable_fields.size > 0)
+        if (updateable_fields.size == 1)
+            init_args << "hash.#{updateable_fields[0].name}"
+        else
+            init_args << "hash"
+        end
+    end
 
     if have_init_fn 
 
