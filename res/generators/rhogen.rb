@@ -1049,8 +1049,10 @@ module Rhogen
       CONSTRUCTOR_PARAM_TYPES = [CONSTRUCTOR_PARAM_NONE, CONSTRUCTOR_PARAM_MANDATORY, CONSTRUCTOR_PARAM_OPTIONAL]
 
       def initialize
+        @field_index = 0
         @type = MethodParam::TYPE_STRING
         @cpptype = MethodParam::TYPE_TRAITS[@type]['cpp_type']
+        @type_index = 0
         @constructor_param = 0
         @binding = false
         @const = false
@@ -1065,9 +1067,11 @@ module Rhogen
         @param = nil
       end
 
+      attr_accessor :field_index
       attr_reader :type
       attr_reader :cpptype
       attr_reader :constructor_param
+      attr_reader :type_index
       attr_accessor :binding
       attr_accessor :const
       attr_accessor :name
@@ -1082,13 +1086,14 @@ module Rhogen
 
       def type=(value)
         up_value = value.upcase
-        MethodParam::SIMPLE_TYPES.each do |t|
-          if up_value == t
-            @type = up_value
-            @cpptype = MethodParam::TYPE_TRAITS[@type]['cpp_type']
-            @default_value = MethodParam::TYPE_TRAITS[@type]['default']
-            return
-          end
+        type_index = MethodParam::SIMPLE_TYPES.index(up_value)
+
+        if index != nil
+          @type = up_value
+          @cpptype = MethodParam::TYPE_TRAITS[@type]['cpp_type']
+          @type_index = index
+          @default_value = MethodParam::TYPE_TRAITS[@type]['default']
+          return
         end
       end
 
@@ -1101,7 +1106,7 @@ module Rhogen
       end
 
       def is_writeable
-        return @access == ACCESS_WRITE_ONLY || @access == ACCESS_READ_WRITE
+        return (@access == ACCESS_WRITE_ONLY || @access == ACCESS_READ_WRITE) && !const
       end
 
       def constructor_param=(value)
@@ -1590,11 +1595,11 @@ module Rhogen
       return field_list
     end
 
-    def create_param_from_list(field_list, param_name, can_be_nil)
+    def create_param_from_list(field_list, param_name, can_be_nil, can_be_simplified)
       param = nil
       if field_list.size > 0
         fields_param_list = param_list_from_fields(field_list, can_be_nil)
-        if fields_param_list.size == 1
+        if fields_param_list.size == 1 && can_be_simplified
           param = fields_param_list.at(0)
         else
           param = MethodParam.new()
@@ -2154,7 +2159,7 @@ module Rhogen
         if unsupported_names.include?(module_entity.name.upcase)
           raise "ModuleEntity have invalid name !\n Module[#{module_item.name}].entity[#{module_entity.name}] is in the list of forbidden names:\n '#{unsupported_names.join("','")}'"
         end
-        module_entity.native_name = (module_entity.name + 'Entity').split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
+        module_entity.native_name = (module_entity.name).split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
         self_type = [module_item.parents.join('.'), module_item.name, module_entity.name].join('.')
 
         module_entity.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
@@ -2163,10 +2168,14 @@ module Rhogen
           module_entity.run_in_thread = xml_module_entity.attribute('runInThread').to_s
         end
 
+        current_field_index = 0
+
         xml_module_entity.elements.each('FIELDS/FIELD') do |xml_entity_field|
           curr_name = xml_entity_field.attribute('name').to_s
 
           entity_field = EntityField.new()
+          entity_field.field_index = current_field_index
+          current_field_index = current_field_index + 1
           module_entity.fields << entity_field
           entity_field.name = curr_name
           entity_field.parent_entity = module_entity
@@ -2229,15 +2238,15 @@ module Rhogen
           cnt_param.sub_params = cnt_hash
 
           # access params
-          binding_param = create_param_from_list(module_entity.binding_fields, 'binding', false)
+          binding_param = create_param_from_list(module_entity.binding_fields, 'binding', false, true)
           binding_param.is_generated = true unless binding_param.nil?
 
           store_fileds = module_entity.fields.select { |f| !f.const }
-          store_param = create_param_from_list(store_fileds, 'init_hash', true)
+          store_param = create_param_from_list(store_fileds, 'init_hash', true, true)
           store_param.is_generated = true unless store_param.nil?
 
           update_fileds = module_entity.fields.select { |f| !f.const && !f.binding }
-          update_param = create_param_from_list(update_fileds, 'updates', true)
+          update_param = create_param_from_list(update_fileds, 'updates', true, false)
           update_param.is_generated = true unless update_param.nil?
 
           ## constructor for entity
@@ -2303,7 +2312,7 @@ module Rhogen
         module_entity.init_method = ntt_init
         module_item.methods << ntt_init
 
-        ntt_init.name = 'init' + module_entity.name + 'Entity'
+        ntt_init.name = 'init' + module_entity.name
         ntt_init.native_name = 'init' + module_entity.native_name.capitalize_first
         ntt_init.desc = 'init for "' + module_entity.name
 
@@ -2346,7 +2355,7 @@ module Rhogen
           module_entity.update_method = ntt_update
           module_item.methods << ntt_update
 
-          ntt_update.name = 'update' + module_entity.name + 'Entity'
+          ntt_update.name = 'update' + module_entity.name
           ntt_update.native_name = 'update' + module_entity.native_name.capitalize_first
           ntt_update.desc = 'update for "' + module_entity.name
 
@@ -2423,14 +2432,14 @@ module Rhogen
               end
             end
             if params != nil
-              hash_param = create_param_from_list(params, 'hash', false)
+              hash_param = create_param_from_list(params, 'hash', false, true)
               hash_param.is_generated = true
               entity_method.params.insert(0, hash_param)
             end
           end
 
-          entity_method.name << module_entity.name + 'Entity'
-          entity_method.native_name = entity_method.name.split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
+          # entity_method.name << module_entity.name + 'Entity'
+          entity_method.native_name = (  entity_method.name + module_entity.name + (is_static ? "Static" : "") ).split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
           entity_method.access = ModuleMethod::ACCESS_STATIC
         end
       end
