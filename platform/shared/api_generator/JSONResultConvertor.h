@@ -21,14 +21,21 @@ class CJSONResultConvertor<CMethodResult>
     {
         return m_oResult.getObjectClassPath().length() > 0;
     }
-    rho::String getObjectOrString(const rho::String& str)
+    rho::String getObjectOrString(const rho::String& str, const bool complex_object = false)
     {
         rho::String res;
         if(hasObjectClass())
         {
-            res = "{ \"__rhoID\": \"";
-            res += str;
-            res += "\", \"__rhoClass\": ";
+            res = "{ \"__rhoID\": ";
+            if (!complex_object)
+            {
+                res += "\" str \" ";
+            }
+            else
+            {
+                res += str;
+            }
+            res += ", \"__rhoClass\": ";
             res += CJSONEntry::quoteValue(m_oResult.getObjectClassPath());
             res += "}";
         } else
@@ -101,8 +108,11 @@ public:
                 {
                     resArray += ",";
                 }
-
                 toString(m_oResult.getHashArray()[i],buffer);
+                if (hasObjectClass())
+                {
+                    buffer = getObjectOrString(buffer, true);
+                }
                 resArray += buffer;
             }
         }
@@ -118,6 +128,13 @@ public:
         resHash.reserve(128);
         rho::String buffer;
         unsigned idx = 0;
+        
+        // return class with object
+        if ( hasObjectClass() && m_oResult.getStringHash().size() > 0 && m_oResult.getStringHashL2().size() == 0 && m_oResult.getStringHashVector().size() == 0)
+        {
+            toString(m_oResult.getStringHash(), resHash);
+            return getObjectOrString(resHash, true);
+        }
         
         resHash = "{";
         for(rho::Hashtable<rho::String, rho::String>::const_iterator it = m_oResult.getStringHash().begin(); it != m_oResult.getStringHash().end(); ++it)

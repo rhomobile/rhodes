@@ -49,34 +49,52 @@ class TrueClass; def to_i; 1 end end
         this.to_update = {}; <% end %>
     } 
 <% # // prepare class function ########################################### %>
-    <% if updateable_fields.size > 0     
-    %>    // <%= entity.name %> data fields  
-    var entity<%=entity.name%>Fields = {
-        //name : const, binding
-        <%= entity.fields.sort{|a,b| a.index <=> b.index}.map{ |f| "#{f.name}: [#{f.const}, #{f.binding}]" }.join(",\n        ") %>
-    };
-<%  end 
+<% 
+    proto_name = [entity.name+"Impl","prototype"].join('.') 
 
-    proto_name = [entity.name+"Impl","prototype"].join('.')
-
-    if entity.fields.size > 0 
-    %>    // <%= entity.name %> field access function  
-    <%= proto_name %>.get = function(field) { 
-        return this.hash[field]; 
-    }
-<%      if updateable_fields.size > 0     %>
-    <%= proto_name %>.set = function(field,value) { 
-        var idx = entity<%=entity.name%>Fields[field]; 
-        if (idx && this.hash[field]!=value && !idx[0/*const*/]) { 
-            this.hash[field] = value; 
-            <% if is_update_used %> this.to_update[field] = value; this.isChanged = true; 
-            <% end if updateable_binding_fields.size > 0 %>if (idx[1/*binding*/]) {
-                <% if entity.binding_fields.size == 1 %> this.binding = value; 
-            }<% else %> this.binding[field] = value 
-            }<% end %>
-        } 
-    }
-<%      end 
+    entity.fields.each do |f| %>
+    // <%= entity.name %> field <%= f.name %> access function
+    <%= proto_name %>.store<%= f.field_index %> = function(value) { 
+        if (null != value && undefined != value) {<% 
+            case f.type
+                when MethodParam::TYPE_STRING
+            %>
+            value = (("string" == typeof value) ? value : String(value) );<%
+                when MethodParam::TYPE_INT
+            %>
+            value = (("number" == typeof value) ? value : parseInt(value) ); <%
+                when MethodParam::TYPE_DOUBLE
+            %>
+            value = (("number" == typeof value) ? value : parseFloat(value) ); <%
+                when MethodParam::TYPE_BOOL
+            %>
+            value = (("boolean" == typeof value) ? value : (value.toLowerCase() == "true") ); <%
+            end %>
+            this.hash.<%= f.name %> = value; <%
+        if f.binding 
+            if entity.binding_fields.size == 1 %>this.binding = value;<% 
+            else %>this.binding.<%= f.name %> = value; <% 
+            end 
+        end %>
+            return value
+        }   
+        return null
+    }<%
+        if f.is_readable %>
+    <%= proto_name %>.get<%= f.field_index %> = function() { 
+        return this.hash.<%= f.name %>; 
+    } <% 
+        end 
+        if f.is_writeable %>
+    <%= proto_name %>.set<%= f.field_index %> = function(value) { 
+        value = this.store<%= f.field_index %>(value);
+        if (null != value) {
+            <% if is_update_used %>this.to_update["<%= f.name %>"] = value; this.isChanged = true; <% end %>
+        }
+    } <% 
+        end %>
+ 
+<%
     end
     
     init_args = [];
@@ -96,18 +114,10 @@ class TrueClass; def to_i; 1 end end
     // <%= entity.name %> fields initialization
     <%= proto_name %>.init = function(fields)
     {
-<% if entity.fields.size > 0 
-%>        var val = null;<% end
-    entity.fields.each do |f| %>
-        val = fields.<%=f.name%>; if (val) { this.hash.<%=f.name%> = val; <%
-        if f.binding
-            if entity.binding_fields.size == 1 
-            %> this.binding <% 
-            else 
-            %> this.binding.<%=f.name%> <% 
-            end %> = val;<% 
-            end %>} <% end %>
-        this.isInitialized = true;
+<%      entity.fields.each do |f| 
+%>        this.store<%= f.field_index %>(fields.<%= f.name%>);
+<%      end 
+%>        this.isInitialized = true;
     } 
     <% end
 
@@ -119,19 +129,13 @@ class TrueClass; def to_i; 1 end end
     %>  // <%= entity.name %> fields update
     <%= proto_name %>.update = function(fields)
     {
-        var val = null;<% 
-    entity.fields.each do |f| 
-        next if f.const %>
-        val = fields.<%=f.name%>; if (val) { this.hash.<%=f.name%> = val; <%
-        if f.binding
-            if entity.binding_fields.size == 1 
-            %> this.binding <% 
-            else 
-            %> bthis.inding.<%=f.name%> <% 
-            end %> = val;<% 
-        end %>} <% 
-    end %> <%if is_update_used %> 
-        this.to_update = {}; this.isChanged = false; <% end %>
+        if (null != fields) {
+<%      entity.fields.each do |f| 
+            next if f.const 
+%>            this.store<%= f.field_index %>(fields.<%= f.name%>);
+<%      end 
+%>            this.to_update = {}; this.isChanged = false; 
+        }
     }
     <% end %>
     <%
@@ -199,12 +203,14 @@ class TrueClass; def to_i; 1 end end
     };
 
 <%  proto_name = [entity.name,"prototype"].join('.')
-    if entity.fields.size > 0 
-    %>    // <%= entity.name %> field access function  
-    <%= proto_name %>.get = function(field) { return this.__impl.get(field); }
-<%      if updateable_fields.size > 0     %>
-    <%= proto_name %>.set = function(field, value) { this.__impl.set(field, value); }
-<%      end 
+    entity.fields.each do |f| %>
+    // <%= entity.name %> field access function  
+    <% if f.is_readable 
+        %><%= proto_name %>.get<%= f.name.capitalize_first %> = function() { return this.__impl.get<%= f.field_index %>(); }
+    <% end %>
+    <% if f.is_writeable
+        %><%= proto_name %>.set<%= f.name.capitalize_first %> = function(value) { this.__impl.set<%= f.field_index %>(value); }
+    <% end  
     end
 %>
     <%=proto_name %>.save = function() { this.__impl.save(); }
@@ -220,15 +226,15 @@ class TrueClass; def to_i; 1 end end
         call_params = []
         if ( !entity_mehtod.is_static_for_entity)
             if entity.binding_fields.size > 0 
-                call_params << "this.__inst.binding"
+                call_params << "this.__impl.binding"
             else
                 if entity.fields.size > 0 
-                    call_params << "this.__inst.hash"
+                    call_params << "this.__impl.hash"
                 end
             end
         end
 
-%>    // function(<%= params %>)
+%>    // function <%=entity_mehtod.name.camelcase%> (<%= params %>)
     var fn<%=entity_mehtod.name.camelcase%> = rhoUtil.methodAccessReqFunc(<%
        %>'<%= entity_mehtod.name %>', <%= 
         if entity_mehtod.has_callback != ModuleMethod::CALLBACK_NONE 
@@ -241,19 +247,32 @@ class TrueClass; def to_i; 1 end end
     %>
     <%= entity.name %><%=entity_mehtod.is_static_for_entity ? "" : ".prototype"%>.<%=entity_mehtod.name%> = function(<%= fn_call_params.join(', ')%>){
         <%= "this.__impl.save();
-" if !entity_mehtod.is_static_for_entity %><%= 
+        " if !entity_mehtod.is_static_for_entity %><%= 
         "return " if entity_mehtod.is_return_value %>fn<%=entity_mehtod.name.camelcase%>(<%= (call_params + fn_call_params).join(', ') %>);
     };
 
 <%   end  %>
-    rhoUtil.createEntityPropsProxy(<%= entity.name %>.prototype, [
-    <% first_prop = true
-       entity.fields.each do |entity_field|
-         next if entity_field.name.nil? || entity_field.name.empty?
-    %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= entity_field.name %>', propAccess: '<%= 'r' if entity_field.is_readable %><%= 'w' if entity_field.is_writeable && !entity_field.const %>' }
-    <% first_prop = false
-       end %>]);
-<%   end  %><%
+    rhoUtil.createEntityPropsProxy(<%= entity.name %>.prototype, [<% 
+        first_prop = true
+        entity.fields.each do |f|
+            next if f.name.nil? || f.name.empty?
+%>
+         <%= first_prop ? '  ' : ', ' %>{ propName: '<%= f.name %>'<%
+    %>, propGetter : <%
+            if f.is_readable 
+                %><%= proto_name %>.get<%= f.name.capitalize_first %><%      
+            else %>null<% 
+            end 
+    %>, propSetter : <%
+            if f.is_writeable 
+                %><%= proto_name %>.set<%= f.name.capitalize_first %><%      
+            else %>null<%
+            end %> } <% 
+            first_prop = false
+        end %>
+    ]);
+<%   
+    end  
 end %>
     // === <%= $cur_module.name %> class definition ===
 
