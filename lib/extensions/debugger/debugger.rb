@@ -224,8 +224,10 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
          
         if !(file.index("./").nil?)
           filename = "/" + file[file.index("./") + 2, file.length]
+        elsif !(file.index("lib").nil?)
+          filename = "framework/" + file[file.index("lib") + 3, file.length]
         elsif !(file.index("framework").nil?)
-          filename = file[file.index("framework"), file.length]
+            filename = file[file.index("framework"), file.length]
         elsif !(file.index("extensions").nil?)
           filename = file[file.index("extensions"), file.length]
         else
@@ -292,11 +294,14 @@ begin
   debug_port = ((debug_port_env.nil?) || (debug_port_env == "")) ? 9000 : debug_port_env
   debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
    
+  $is_rhosim = false
+  
   if defined?(RHOSTUDIO_REMOTE_DEBUG) && RHOSTUDIO_REMOTE_DEBUG == true 
     puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
     debug_host = ((RHOSTUDIO_REMOTE_HOST.to_s != nil) || (RHOSTUDIO_REMOTE_HOST.to_s != "")) ? RHOSTUDIO_REMOTE_HOST.to_s : ""
     debug_path = "apps/app/"
   else
+    $is_rhosim = true
     debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
   end
   
