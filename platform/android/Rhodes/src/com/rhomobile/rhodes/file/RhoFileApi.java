@@ -116,6 +116,7 @@ public class RhoFileApi {
 				
 				updateStatTable(path, type, size, mtime);
 			}
+			Log.i(TAG, "Stat table is initialized successfully");
 		}
 		finally {
 			if (is != null)

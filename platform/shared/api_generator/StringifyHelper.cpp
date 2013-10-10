@@ -1,4 +1,4 @@
-#include "StringfyHelper.h"
+#include "StringifyHelper.h"
 #include "json/JSONIterator.h"
 
 namespace rho

@@ -102,9 +102,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
                 <DESC>Is the security token check was failed.Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
+                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="invalidSecurityTokenStartPath" type="STRING" readOnly="true">
                 <DESC>Page to navigate in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
+                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
             
             <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true" generateDoc="false">

@@ -63,6 +63,8 @@ typedef time_t FILETIME;
 
 #endif
 
+#include <string>
+
 // ZIP functions -- for creating zip files
 // This file is a repackaged form of the Info-Zip source code available
 // at www.info-zip.org. The original copyright notice may be found in
@@ -151,6 +153,10 @@ unsigned int FormatZipMessage(ZRESULT code, TCHAR *buf,unsigned int len);
 // FormatZipMessage - given an error code, formats it as a string.
 // It returns the length of the error message. If buf/len points
 // to a real buffer, then it also writes as much as possible into there.
+
+
+
+ZRESULT GZipBuffer(const std::string& input, std::string& output );
 
 
 

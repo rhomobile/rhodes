@@ -2120,6 +2120,15 @@ end
 
 namespace "run" do
   namespace "android" do
+      
+    def sleepRubyProcess
+      if $remote_debug == true      
+        while 1
+          sleep 1
+        end
+      end    
+    end 
+    
     namespace "emulator" do
       task :spec, :uninstall_app do |t, args|
         Jake.decorate_spec { run_as_spec('-e', args.uninstall_app) }
@@ -2147,6 +2156,8 @@ namespace "run" do
       AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
 
       AndroidTools.logcat_process('-e')
+      
+      sleepRubyProcess
     end
 
     desc "Run application on RhoSimulator"
@@ -2180,6 +2191,8 @@ namespace "run" do
       AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
 
       AndroidTools.logcat_process('-d')
+
+      sleepRubyProcess
     end
   end
 
@@ -2260,6 +2273,28 @@ end
 
 namespace :stop do
   namespace :android do
+    namespace :debug do
+    
+      def killRuby
+        if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+          # Windows
+          `taskkill /F /IM ruby.exe`
+        else
+          `killall -9 ruby`
+        end
+      end
+      
+      task :emulator do #=> "stop:android:emulator"do
+        AndroidTools.kill_adb_logcat('-e')
+        killRuby        
+      end
+      
+      task :device do #=> "stop:android:device" do
+        AndroidTools.kill_adb_logcat('-d')
+        killRuby
+      end
+    end #end of debug 
+    
     task :emulator do
       AndroidTools.kill_adb_and_emulator
     end
