@@ -46,7 +46,7 @@
 #include "unzip/unzip.h"
 #include "common/Tokenizer.h"
 #include "api_generator/js_helpers.h"
-#include "api_generator/StringfyHelper.h"
+#include "api_generator/StringifyHelper.h"
 #include "coreapi/ext/shared/Application.h"
 
 #include <algorithm>
@@ -1524,9 +1524,7 @@ void CRhodesApp::initAppUrls()
 {
     CRhodesAppBase::initAppUrls(); 
    
-#if defined( __SYMBIAN32__ ) || defined( OS_ANDROID )
-    m_strHomeUrl = "http://localhost:";
-#elif defined( OS_WINCE ) && !defined(OS_PLATFORM_MOTCE)
+#if defined( OS_WINCE ) && !defined(OS_PLATFORM_MOTCE)
     TCHAR oem[257];
     SystemParametersInfo(SPI_GETPLATFORMNAME, sizeof(oem), oem, 0);
     LOG(INFO) + "Device name: " + oem;
@@ -1538,7 +1536,6 @@ void CRhodesApp::initAppUrls()
     m_strHomeUrl = "http://127.0.0.1:";
 #endif
     m_strHomeUrl += getFreeListeningPort();
-    m_strHomeUrlLocalHost = String("http://localhost:") + getFreeListeningPort();
 
 #ifndef RHODES_EMULATOR
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
@@ -1552,9 +1549,8 @@ void CRhodesApp::initAppUrls()
 #ifdef OS_WINCE
     String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
     CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
-#endif
-
     modifyRhoApiFile();
+#endif
 }
 
 void CRhodesApp::modifyRhoApiFile()

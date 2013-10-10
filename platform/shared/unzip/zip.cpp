@@ -1,4 +1,7 @@
 #include "zip.h"
+#include <vector>
+#include <memory>
+
 // THIS FILE is almost entirely based upon code by info-zip.
 // It has been modified by Lucian Wischik. The modifications
 // were a complete rewrite of the bit of code that generates the
@@ -2951,3 +2954,119 @@ bool IsZipHandleZ(HZIP hz)
   return (han->flag==2);
 }
 
+ZRESULT GZipBuffer( const std::string& input, std::string& output )
+{
+    class MyMemWorker {
+        const std::string&  m_input;
+        std::string&        m_output;        
+        int                 m_inputPos;
+        
+    public:
+        MyMemWorker( const std::string& input, std::string& output ) :
+            m_input(input),
+            m_output(output),
+            m_inputPos(0)
+        {
+        }
+        
+        static unsigned sread(TState &state, char *buf,unsigned size)
+        {
+            MyMemWorker* thiz = (MyMemWorker*)state.param;
+            return thiz->read(buf, size);
+        }
+
+        static unsigned sflush(void *param, const char *buf, unsigned *size)
+        {
+            MyMemWorker* thiz = (MyMemWorker*)param;
+            if (*size==0) return 0;
+            unsigned int writ = thiz->write(buf,*size);
+            if (writ!=0) *size=0;
+            return writ;
+        }
+        
+    private:
+        unsigned read(char* buf, unsigned size)
+        {            
+            if (m_inputPos>=m_input.length()) return 0; // end of input
+            ulg red = m_input.length()-m_inputPos;
+            if (red>size) red=size;
+            memcpy(buf, &(m_input.c_str()[m_inputPos]), red);
+            m_inputPos += red;
+            return red;
+        }
+        
+        unsigned write(const char* buf, unsigned size)
+        {
+            int pos = m_output.size();
+            m_output.resize(pos + size);
+            memcpy((void*)&(m_output.c_str()[pos]), buf, size);
+            return size;
+        }
+    };
+    
+    TZipFileInfo zfi;
+
+    zfi.att = (ush)BINARY;
+    zfi.flg = 0;
+    
+    static const int headerSize = 10;
+    static const int footerSize = 8;
+    
+    output.erase();
+    //Average estimated GZIP compressed size for text data is about 20% of original data size.
+    output.reserve( headerSize + input.length() / 5 + footerSize);
+    
+    MyMemWorker memWorker(input,output);    
+    
+    /* See RFC1952 */
+    
+    /* write header */
+    output.resize(headerSize);
+    output[0] = 0x1f;   //magic1
+    output[1] = 0x8b;   //magic2
+    output[2] = 0x08;   //method
+    output[3] = 0x00;   //flags
+    output[4] = 0x00;   //timestamp
+    output[5] = 0x00;   //timestamp
+    output[6] = 0x00;   //timestamp
+    output[7] = 0x00;   //timestamp
+    output[8] = 0x02;   //extra flags
+    output[9] = 0xff;   //OS
+
+    /* write body */
+
+    std::auto_ptr<TState> state( new TState() );
+    std::vector<char> buf(16384);
+    
+    state->err=0;
+    state->readfunc=MyMemWorker::sread;
+    
+    state->flush_outbuf=MyMemWorker::sflush;
+    
+    state->param=&memWorker;
+    state->level=8;
+    state->seekable=/*iseekable*/false;
+    
+    // the following line will make ct_init realise it has to perform the init
+    state->ts.static_dtree[0].dl.len = 0;
+    // Thanks to Alvin77 for this crucial fix:
+    state->ds.window_size=0;
+    //  I think that covers everything that needs to be initted.
+    //
+    bi_init(*state,&buf[0], buf.size(), 1); // it used to be just 1024-size, not 16384 as here
+    ct_init(*state,&zfi.att);
+    lm_init(*state,state->level, &zfi.flg);
+    deflate(*state);
+
+    /*write footer*/
+    ulg crc = crc32(CRCVAL_INITIAL, (const unsigned char*)input.c_str(), input.size());
+    
+    output.resize(output.size() + footerSize);
+    char* pFooter = (char*)&(output.c_str()[output.size()-footerSize]);
+    *(ulg*)(pFooter) = crc;
+    pFooter += 4;
+    *(ulg*)(pFooter) = input.size();
+    
+    ZRESULT r=ZR_OK; if (state->err!=NULL) r=ZR_FLATE;
+    return r;
+}

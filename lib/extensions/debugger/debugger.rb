@@ -10,7 +10,7 @@ DEBUGGER_LOG_LEVEL_WARN  = 2
 DEBUGGER_LOG_LEVEL_ERROR = 3
 
 def debugger_log(level, msg)
-  if (level >= DEBUGGER_LOG_LEVEL_WARN)
+  if (level >= DEBUGGER_LOG_LEVEL_INFO) #DEBUGGER_LOG_LEVEL_WARN)
     puts "[Debugger] #{msg}"
   end
 end
@@ -28,14 +28,12 @@ def debug_read_cmd(io,wait)
       cmd = io.read_nonblock(4096)
       $_cmd << cmd if cmd !~ /^\s*$/
     end
-    # $_s.write("get data from front end" + $_cmd.to_s + "\n")
   rescue
     # puts $!.inspect
   end
 end
 
 def execute_cmd(cmd, advanced)
-  #$_s.write("execute_cmd start\n")
   cmd = unescape(cmd.gsub(/\+/,' ')) if advanced
   debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Executing: #{cmd.inspect}")
   result = ""
@@ -49,12 +47,9 @@ def execute_cmd(cmd, advanced)
   
   cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) if advanced
   $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
-  #$_s.write("execute_cmd end\n")
 end
 
 def get_variables(scope)  
-  #$_s.write("get_variables start\n")
-
   if (scope =~ /^GVARS/)
    cmd = "global_variables"
    prefix = ""
@@ -98,8 +93,6 @@ def get_variables(scope)
 end
 
 def debug_handle_cmd(inline)
-  #$_s.write("start of debug_handle_cmd wait=" + inline.to_s + "\n")
-
   cmd = $_cmd.match(/^([^\n\r]*)([\n\r]+|$)/)[0]
   processed = false
   wait = inline
@@ -185,7 +178,9 @@ def debug_handle_cmd(inline)
       log_command(cmd)
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Terminating...")
       processed = true
+      $_s.write("KILL start\n")
       System.exit
+      $_s.write("KILL end\n")
     elsif inline && (cmd =~ /^EVL?:/)
       log_command(cmd)
       processed = true
@@ -208,8 +203,6 @@ def debug_handle_cmd(inline)
     $_wait = wait if inline
   end
 
-  #$_s.write("end of debug_handle_cmd wait=" + $_wait.to_s + "cmd=" + cmd + "\n")
-
   processed
 end
 
@@ -219,26 +212,22 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_classname = classname;
   $_methodname = id;
   file = file.to_s.gsub('\\', '/')
-
-  #$_s.write('[Debugger][1] file = ' + file.to_s + ' line = ' + line.to_s + "\n")
-
-  if (file[0, $_app_path.length] == $_app_path) || (!(file.index("./").nil?)) || (!(file.index("framework").nil?)) || (!(file.index("extensions").nil?))
-
-    #$_s.write('[Debugger][2] file = ' + file.to_s + ' line = ' + line.to_s + "\n")
-
+  
+  if (file[0, $_app_path.length] == $_app_path) || (!(file.index("./").nil?)) || (!(file.index("framework").nil?)) || (!(file.index("extensions").nil?))    
+  
     if event =~ /^line/
       unhandled = true
       step_stop = ($_step > 0) && (($_step_level < 0) || ($_call_stack <= $_step_level))
-
-      #$_s.write('[Debugger][3] bp list = ' +  $_breakpoint.to_s + "\n")
 
       if (step_stop || ($_breakpoints_enabled && (!($_breakpoint.empty?))))
         filename = ""
          
         if !(file.index("./").nil?)
           filename = "/" + file[file.index("./") + 2, file.length]
+        elsif !(file.index("lib").nil?)
+          filename = "framework/" + file[file.index("lib") + 3, file.length]
         elsif !(file.index("framework").nil?)
-          filename = file[file.index("framework"), file.length]
+            filename = file[file.index("framework"), file.length]
         elsif !(file.index("extensions").nil?)
           filename = file[file.index("extensions"), file.length]
         else
@@ -247,13 +236,8 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 
         ln = line.to_i.to_s
 
-        #$_s.write('[Debugger][3] $_breakpoints_enabled = ' +  $_breakpoints_enabled.to_s + "\n")
-        #$_s.write('[Debugger][3] filename = ' +  filename.to_s + "\n")
-        #$_s.write('[Debugger][3] line = ' +  ln.to_s + "\n")
-        #$_s.write('[Debugger][3] flag = ' +  ($_breakpoint.has_key?(filename + ':' + ln)).to_s + "\n")
-
         if step_stop || ($_breakpoints_enabled && ($_breakpoint.has_key?(filename + ':' + ln)))
-          #$_s.write('[Debugger][3] stop on bp ' +  filename + ':' + ln + "\n")
+          $_s.write('[Debugger][3] stop on bp ' +  file.to_s + ':' + ln + "\n")
 
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
@@ -261,8 +245,6 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
           debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{ln}")
           $_step = 0
           $_step_level = -1
-
-          #$_s.write("start waiting\n")
 
           app_type = ENV["APP_TYPE"]
           $_wait = true
@@ -278,8 +260,6 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 
             sleep(0.1) if $_wait
           end
-
-          #$_s.write("end waiting\n")
 
           unhandled = false
         end
@@ -302,7 +282,6 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   end
 }
 
-
 $_s = nil
 
 begin
@@ -311,15 +290,24 @@ begin
   debug_port_env = ENV['rho_debug_port']
   debug_path_env = ENV['ROOT_PATH']
 
-  puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
-  
   debug_host = ((debug_host_env.nil?) || (debug_host_env == "")) ? '127.0.0.1' : debug_host_env
-  debug_host = ((RHOSTUDIO_REMOTE_HOST.to_s != nil) || (RHOSTUDIO_REMOTE_HOST.to_s != "")) ? RHOSTUDIO_REMOTE_HOST.to_s : "" 
-  debug_port = ((debug_port_env.nil?) || (debug_port_env == "")) ? 9000 : debug_port_env  
-
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host_env.to_s)
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "port=" + debug_port_env.to_s)
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "path=" + debug_path_env.to_s)
+  debug_port = ((debug_port_env.nil?) || (debug_port_env == "")) ? 9000 : debug_port_env
+  debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
+   
+  $is_rhosim = false
+  
+  if defined?(RHOSTUDIO_REMOTE_DEBUG) && RHOSTUDIO_REMOTE_DEBUG == true 
+    puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
+    debug_host = ((RHOSTUDIO_REMOTE_HOST.to_s != nil) || (RHOSTUDIO_REMOTE_HOST.to_s != "")) ? RHOSTUDIO_REMOTE_HOST.to_s : ""
+    debug_path = "apps/app/"
+  else
+    $is_rhosim = true
+    debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
+  end
+  
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host.to_s)
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "port=" + debug_port.to_s)
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "path=" + debug_path.to_s)
 
   $_s = timeout(30) { TCPSocket.open(debug_host, debug_port) }
 
@@ -335,7 +323,7 @@ begin
   $_cmd = ""
   $_app_path = ""
 
-  $_app_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env  
+  $_app_path = debug_path
   $_s.write("DEBUG PATH=" + $_app_path.to_s + "\n")
 
   at_exit {
@@ -349,7 +337,6 @@ begin
       debug_read_cmd($_s,true)
       while debug_handle_cmd(false) do end
       if ($_cmd !~ /^\s*$/) && (Thread.main.stop?)
-        #$_s.write("[manage thread] set wait = true\n")
         $_wait = true
         Thread.main.wakeup
       end

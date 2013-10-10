@@ -704,12 +704,5 @@ Parameters are the same as for ModelName.search with an additional parameter:
 
 * `:source_names` - Sends a list of source adapter names to RhoConnect to search across.
 
-## SyncEngine AJAX API
-[Sync engine AJAX API](syncengine-ajax-api) has been implemented to provide access to low-level control on
-synchronization process right from plain HTML/javascript UI pages.
-
-It isn't intended to be used in every application. It requires deep knowledge of SyncEngine functionality and operations.
-It may broke your application if used improperly so use it with care please.
-
 ## Backround synchronization on iOS
 On iOS, if application is put to background, it will be suspended. To allow application finish sync after application goes to background, you can use 'finish_sync_in_background' parameter in [`rhoconfig.txt`](/rhodes/configuration). When this parameter is set to '1', if sync is active in the time of background transition ( e.g. started from app_deactivate handler ), application will not be suspended until sync is finished.

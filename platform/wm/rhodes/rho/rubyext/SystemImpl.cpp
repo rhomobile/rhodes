@@ -24,6 +24,8 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
+#include "stdafx.h"
+
 #if defined(RHODES_EMULATOR_QMAKE)
 
 #include <windows.h>
@@ -38,7 +40,6 @@
 
 #else // RHODES_EMULATOR_QMAKE
 
-#include "stdafx.h"
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "MainWindow.h"

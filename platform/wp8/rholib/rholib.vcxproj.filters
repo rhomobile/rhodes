@@ -196,7 +196,7 @@
     <ClInclude Include="..\..\shared\api_generator\MethodResult.h">
       <Filter>api_generator</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\api_generator\StringfyHelper.h">
+    <ClInclude Include="..\..\shared\api_generator\StringifyHelper.h">
       <Filter>api_generator</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\net\ssl.h">
@@ -303,7 +303,7 @@
     <ClCompile Include="..\..\shared\api_generator\MethodResult.cpp">
       <Filter>api_generator</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\shared\api_generator\StringfyHelper.cpp">
+    <ClInclude Include="..\..\shared\api_generator\StringifyHelper.cpp">
       <Filter>api_generator</Filter>
     </ClInclude>
     <ClCompile Include="..\..\shared\net\ssl.cpp">

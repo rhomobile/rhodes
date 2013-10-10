@@ -498,10 +498,10 @@ namespace "config" do
         exit 1
       end
     end
-
-	  ENV["RHO_APP_PATH"] = $app_path.to_s
-    ENV["ROOT_PATH"] = $app_path.to_s + '/app/'
-    ENV["APP_TYPE"] = "rhodes"
+    
+    ENV["RHO_APP_PATH"] = $app_path.to_s
+    ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
+    ENV["APP_TYPE"]     = "rhodes"
 
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
 
@@ -715,10 +715,6 @@ namespace "config" do
         $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
     end
 
-    if $current_platform == "win32" && !$is_rho_simulator
-        $rhoelements_features += "- Windows Desktop platform support\n"
-    end
-    
     if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
         #$application_build_configs.delete('encrypt_database')
         $rhoelements_features += "- Database encryption\n"
@@ -813,9 +809,9 @@ namespace "config" do
     $rhologhostport = $config["log_host_port"] 
     $rhologhostport = 52363 unless $rhologhostport
     begin
-	    $rhologhostaddr = Jake.localip()
+      $rhologhostaddr = Jake.localip()
     rescue Exception => e      
-        puts "Jake.localip() error : #{e}"  
+      puts "Jake.localip() error : #{e}"  
     end
 
     obfuscate_js      = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
@@ -839,7 +835,15 @@ namespace "config" do
     $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
-    
+
+    if !$js_application && !Dir.exists?(File.join($app_path, "app"))
+        puts '********* ERROR ************************************************************************'
+        puts "Add javascript_application:true to build.yml, since application does not contain app folder."
+        puts "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
+        puts '****************************************************************************************'
+        exit(1)
+    end
+        
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
     
@@ -855,9 +859,18 @@ namespace "config" do
       make_application_build_capabilities_header_file
       update_rhodefs_header_file
     end
+      
+    $remote_debug = false
+    $remote_debug = Jake.getBool(ENV['rho_remote_debug'])  if ENV['rho_remote_debug']
 
-  end
+    if $remote_debug      
+      $app_config['extensions'] = $app_config['extensions'] | ['debugger']
+      $app_config['extensions'] = $app_config['extensions'] | ['uri']
+      $app_config['extensions'] = $app_config['extensions'] | ['timeout']
+    end
 
+  end # end of common:config 
+  
   task :qt do
     $qtdir = ENV['QTDIR']
     unless (!$qtdir.nil?) and ($qtdir !~/^\s*$/) and File.directory?($qtdir)
@@ -1415,6 +1428,12 @@ def common_bundle_start( startdir, dest)
   end
   
   copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
+ 
+  # modify rhoconfig for ruby debugger
+  if $remote_debug      
+    puts "$app_config=" + $app_config['extensions'].to_s    
+    Jake.modify_rhoconfig_for_debug()
+  end
 
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
