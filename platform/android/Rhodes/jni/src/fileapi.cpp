@@ -249,8 +249,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTabl
     st.ino = rho_ino--;
     st.mtime = (unsigned long)mtime;
 
-    __android_log_print(ANDROID_LOG_DEBUG, "fileapi", "Add to stat table: %s", path.c_str());
-
     rho_stat_map.insert(std::make_pair(path, st));
 
     if (st.type == rho_type_dir)
