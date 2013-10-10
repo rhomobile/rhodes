@@ -835,7 +835,15 @@ namespace "config" do
     $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
-    
+
+    if !$js_application && !Dir.exists?(File.join($app_path, "app"))
+        puts '********* ERROR ************************************************************************'
+        puts "Add javascript_application:true to build.yml, since application does not contain app folder."
+        puts "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
+        puts '****************************************************************************************'
+        exit(1)
+    end
+        
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
     
