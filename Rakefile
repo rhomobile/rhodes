@@ -715,10 +715,6 @@ namespace "config" do
         $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
     end
 
-    if $current_platform == "win32" && !$is_rho_simulator
-        $rhoelements_features += "- Windows Desktop platform support\n"
-    end
-    
     if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
         #$application_build_configs.delete('encrypt_database')
         $rhoelements_features += "- Database encryption\n"
