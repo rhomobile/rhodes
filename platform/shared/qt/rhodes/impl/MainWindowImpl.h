@@ -145,6 +145,8 @@ public:
     void lockSize(int locked);
     void setTitle(const char* title);
     void createCustomMenuCommand(void);
+    void minimizeWindowCommand();
+    void restoreWindowCommand();
 
 signals:
     void doExitCommand(void);
@@ -172,4 +174,11 @@ signals:
     void doLockSize(int locked);
     void doSetTitle(const char* title);
     void doCreateCustomMenu(void);
+    void doMinimizeWindow();
+    void doRestoreWindow();
+
+private slots:
+    void minimizeWindow(void);
+    void restoreWindow(void);
+    void createCustomMenuSlot(void);
 };
