@@ -364,16 +364,12 @@ MethodResultJni::MethodResultJni(const MethodResultJni& result) : m_bhasLocalFra
 {
     JNIEnv* env = result.m_env;
 
-    if(env->PushLocalFrame(256) >= 0)
-    {
-        m_bhasLocalFrame = true;
-    }
-
     if(result.m_bGlobalRef) {
         RAWTRACE1("Copying MethodResult with global JNI reference: 0x%.8x ---------------------------------------", result.m_jResult);
         m_jResult = result.m_jResult;
         result.m_bSlaveRef = true;
     } else {
+        JNIEnv* env = result.m_env;
         m_jResult = env->NewGlobalRef(result.m_jResult);
         RAWTRACE1("Copying MethodResult creating global JNI reference: 0x%.8x >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", m_jResult);
     }
