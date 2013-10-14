@@ -24,9 +24,7 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#ifndef RHODES_EMULATOR_QMAKE
 #include "stdafx.h"
-#endif
 
 #include "common/ExtManager.h"
 #include "rubyext/WebView.h"

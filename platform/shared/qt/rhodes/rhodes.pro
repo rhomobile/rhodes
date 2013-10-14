@@ -43,7 +43,8 @@ win32 {
   UI_DIR = ../../../win32/bin/RhoSimulator/generated_files
   OBJECTS_DIR = ../../../win32/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../win32/bin/RhoSimulator/resources
-  HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h
+  HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
+../../../wm/rhodes/stdafx.h
   SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp\
 ../../../wm/rhodes/rho/rubyext/SystemImpl.cpp\
 ../../../wm/rhodes/rho/common/ExtManager.cpp
