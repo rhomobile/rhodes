@@ -344,19 +344,13 @@ MethodResultJni::MethodResultJni(bool isRuby) : m_bhasLocalFrame(false), m_env(0
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_bhasLocalFrame(false), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
+MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_bhasLocalFrame(false), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0), m_jResult(jResult)
 {
     m_env = jniInit(env);
     if (!m_env) {
         RAWLOG_ERROR("ctor - JNI initialization failed");
         return;
     }
-
-    if(env->PushLocalFrame(256) >= 0)
-    {
-        m_bhasLocalFrame = true;
-    }
-
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -392,6 +386,11 @@ MethodResultJni::~MethodResultJni()
         {
             RAWTRACE1("Deleting MethodResult global JNI reference: 0x%.8x ==========================================", m_jResult);
             m_env->DeleteGlobalRef(m_jResult);
+        }
+    } else {
+        if (!m_bhasLocalFrame) {
+            RAWTRACE1("Deleting MethodResult local JNI reference: 0x%.8x ==========================================", m_jResult);
+            m_env->DeleteLocalRef(m_jResult);
         }
     }
 }
