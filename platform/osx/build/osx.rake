@@ -64,6 +64,7 @@ namespace "build" do
         ENV["BUILD_DIR"] = File.join(ENV['PWD'], "platform", "osx", "bin", "RhoSimulator", "tmp")
         ENV["ARCHS"] = "x86_64 -g -gdwarf-2 -Xarch_x86_64 -mmacosx-version-min=10.5 -DRHODES_EMULATOR"
         ENV["RHO_ROOT"] = $startdir
+        ENV["RHO_QMAKE"] = $qmake
 
         ENV["XCODEBUILD"] = $xcodebuild
         ENV["CONFIGURATION"] ||= $configuration
@@ -138,26 +139,6 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         puts Jake.run($macdeployqt, [app_path])
-
-        # Last version of macdeployqt correctly handles these paths, so in the future this code can be removed:
-        exe_path = File.join( app_path, 'Contents/MacOS/RhoSimulator' )
-        frm_path = File.join( app_path, 'Contents/Frameworks/' )
-        fw_path = ['@executable_path/../Frameworks/', '.framework/Versions/Current', '.framework/Versions/4']
-        libs = ['QtCore', 'QtGui', 'QtNetwork', 'QtWebKit', 'QtDBus', 'QtXml', 'phonon']
-        libs.each {|lib|
-          args = [ frm_path + lib + fw_path[1], frm_path + lib + fw_path[2] ]
-          puts Jake.run($move,args)
-          args = [ '-change', fw_path[0] + lib + fw_path[1] + '/' + lib, fw_path[0] + lib + fw_path[2] + '/' + lib, exe_path]
-          puts Jake.run($name_tool,args)
-        }
-        # end of the depricated macdeployqt fix code
-
-        puts Jake.run($remove,['-Rf', File.join(frm_path, 'QtDeclarative.framework' )])
-        puts Jake.run($remove,['-Rf', File.join(frm_path, 'QtOpenGL.framework' )])
-        puts Jake.run($remove,['-Rf', File.join(frm_path, 'QtScript.framework' )])
-        puts Jake.run($remove,['-Rf', File.join(frm_path, 'QtSql.framework' )])
-        puts Jake.run($remove,['-Rf', File.join(frm_path, 'QtSvg.framework' )])
-        puts Jake.run($remove,['-Rf', File.join(frm_path, 'QtXmlPatterns.framework' )])
 
         chdir $qt_project_dir
         puts Jake.run($make, ['clean'])
