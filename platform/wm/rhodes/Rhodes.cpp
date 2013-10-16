@@ -606,10 +606,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     m_appWindow.ShowWindow(nShowCmd);
 
-#ifndef RHODES_EMULATOR
-    rho_wm_impl_CheckLicense();
-#endif
-
 #else
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);

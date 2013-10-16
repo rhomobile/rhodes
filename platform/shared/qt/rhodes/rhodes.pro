@@ -44,10 +44,10 @@ win32 {
   OBJECTS_DIR = ../../../win32/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../win32/bin/RhoSimulator/resources
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
-impl/RhoThreadImpl.h
+../../../wm/rhodes/stdafx.h
   SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp\
 ../../../wm/rhodes/rho/rubyext/SystemImpl.cpp\
-impl/ExtManager.cpp
+../../../wm/rhodes/rho/common/ExtManager.cpp
   RESOURCES += resources/simulator.qrc
   INCLUDEPATH += ../../../wm/rhodes\
 ../../wtl80/include
@@ -120,6 +120,7 @@ impl/NativeTabbarImpl.h\
 DateTimeDialog.h\
 impl/DateTimePickerImpl.h\
 impl/AlertImpl.h\
+impl/RhoThreadImpl.h\
 RhoSimulator.h\
 RhoNativeApiCall.h
 
