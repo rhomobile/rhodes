@@ -1,4 +1,43 @@
 /* confdefs.h */
+
+#define GAI_STRERROR_CONST 1
+#define HAVE_TYPE_STRUCT_ADDRINFO 1
+
+#define HAVE_CONST_AF_INET 1
+#define HAVE_CONST_PF_INET6 1
+#define HAVE_CONST_TCP_MAXSEG 1
+#define HAVE_CONST_SOCK_STREAM 1
+#define HAVE_CONST_AI_PASSIVE 1
+#define HAVE_CONST_IPPROTO_TCP 1
+#define HAVE_CONST_IPPROTO_EGP 1
+#define HAVE_CONST_IPPROTO_PUP 1
+#define HAVE_CONST_IPPROTO_UDP 1
+#define HAVE_CONST_IPPROTO_IDP 1
+#define HAVE_CONST_IPPROTO_AH 1
+#define HAVE_CONST_IPPROTO_ESP 1
+#define HAVE_CONST_IPPROTO_RAW 1
+#define HAVE_CONST_IPPROTO_MAX 1
+#define HAVE_CONST_IPPORT_RESERVED 1
+#define HAVE_CONST_INADDR_ANY 1
+#define HAVE_CONST_INADDR_BROADCAST 1
+#define HAVE_CONST_INADDR_LOOPBACK 1
+#define HAVE_CONST_INADDR_UNSPEC_GROUP 1
+#define HAVE_CONST_INADDR_ALLHOSTS_GROUP 1
+#define HAVE_CONST_INADDR_MAX_LOCAL_GROUP 1
+#define HAVE_CONST_INADDR_NONE 1
+#define HAVE_CONST_IP_OPTIONS 1
+#define HAVE_CONST_IP_HDRINCL 1
+#define HAVE_CONST_IP_TOS 1
+#define HAVE_CONST_IP_TTL 1
+#define HAVE_CONST_IP_RECVOPTS 1
+#define HAVE_CONST_IP_RECVRETOPTS 1
+
+
+#define HAVE_SYS_UN_H 1
+#define HAVE_NETINET_TCP_H 1
+#define HAVE_NETINET_UDP_H 1
+#define HAVE_NET_IF_H 1
+
 #define CANONICALIZATION_FOR_MATHN 1
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
@@ -263,8 +302,8 @@
 
 #define HAVE_TELLDIR 1
 #define HAVE_SEEKDIR 1
-#  define HAVE_SYS_SYSCALL_H 1
-#  define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
+#define HAVE_SYS_SYSCALL_H 1
+#define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
 
 #  include <sys/select.h>
 #  include <asm/page.h>
@@ -274,9 +313,9 @@ typedef long int fd_mask;
 typedef unsigned long rlim_t;
 #endif
 
-#  ifndef howmany
-#    define howmany(x, y)  (((x) + ((y) - 1)) / (y))
-#  endif
+#ifndef howmany
+#define howmany(x, y)  (((x) + ((y) - 1)) / (y))
+#endif
 
 //RHO
 #define RUBY_EXPORT 1
