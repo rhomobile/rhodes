@@ -1,8 +1,7 @@
-#require 'fileutils'
 require File.join(pwd, '../../../../../build/jake.rb')
 
 def build_extension(name)
-  chdir File.join( $rootdir, 'lib/commonAPI/coreapi/ext/platform/osx/' )
+  chdir File.join( $rootdir, "lib/commonAPI/#{name}/ext/platform/osx/" )
   args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', "#{name}.pro", "QMAKE_MAC_SDK='#{$sdkroot}'"]
   puts Jake.run($qmake,args)
   fail "[qmake #{name}.pro]" unless $? == 0
