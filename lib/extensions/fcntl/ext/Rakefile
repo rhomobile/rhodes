@@ -1,6 +1,18 @@
 require 'fileutils'
+require File.join(pwd, '../../../build/jake.rb')
 
 def build_extension(name, arch)
+  if ENV['RHO_PLATFORM'] == 'osx'
+    args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', "#{name}.pro", "QMAKE_MAC_SDK='#{$sdkroot}'"]
+    puts Jake.run($qmake,args)
+    fail "[qmake #{name}.pro]" unless $? == 0
+    puts Jake.run($make, ['clean'])
+    fail "[make clean]" unless $? == 0
+    puts Jake.run($make, ['all'])
+    fail "[make all]" unless $? == 0
+    return
+  end
+
   objects = []
   mkdir_p $tempdir unless File.exists? $tempdir
 
@@ -18,7 +30,7 @@ def build_extension(name, arch)
       args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
       cc_compile f, $tempdir, args or exit 1
 
-    elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
+    elsif ENV['RHO_PLATFORM'] == 'iphone'
       args << "-I\"#{$rootdir}/platform/shared/ruby/iphone\""
       args << "-D_XOPEN_SOURCE"
       args << "-D_DARWIN_C_SOURCE"
@@ -94,14 +106,21 @@ namespace "build" do
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
 
     elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
-      $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
-      raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
       $sdkroot = ENV['SDKROOT']
       raise "SDKROOT is not set" if $sdkroot.nil?
-      $arch = ENV['ARCHS']
-      raise "ARCHS is not set" if $arch.nil?
-      $gccbin = $bindir + '/gcc'
-      $arbin = $bindir + '/ar'
+
+      if ENV['RHO_PLATFORM'] == 'iphone'
+        $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+        raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+        $arch = ENV['ARCHS']
+        raise "ARCHS is not set" if $arch.nil?
+        $gccbin = $bindir + '/gcc'
+        $arbin = $bindir + '/ar'
+      else
+        $qmake = ENV['RHO_QMAKE']
+        raise "RHO_QMAKE is not set" if $qmake.nil?
+        $make = "make"
+      end
 
     elsif ENV['RHO_PLATFORM'] == 'wm'
       $vcbuild = ENV['VCBUILD']
