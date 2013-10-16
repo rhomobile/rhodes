@@ -324,7 +324,7 @@ jobject RhoJniConvertor::getBooleanObject(bool val)
 {
     static jfieldID fidTRUE = getJNIClassStaticField(m_env, clsBoolean, "TRUE", "Ljava/lang/Boolean;");
     static jfieldID fidFALSE = getJNIClassStaticField(m_env, clsBoolean, "FALSE", "Ljava/lang/Boolean;");
-    jobject res = m_env->GetStaticObjectField(clsBoolean, val ? fidTRUE : fidFALSE);
+    return m_env->GetStaticObjectField(clsBoolean, val ? fidTRUE : fidFALSE);
 }
 //----------------------------------------------------------------------------------------------------------------------
 jobject RhoJniConvertor::getIntegerObject(int val)

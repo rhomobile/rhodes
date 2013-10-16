@@ -66,7 +66,7 @@ private:
     friend void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeReleaseRubyProcCallback(JNIEnv*, jclass, jlong);
 
     mutable JNIEnv* m_env;
-    jhobject m_jhResult;
+    jobject m_jResult;
     bool m_bGlobalRef;
     mutable bool m_bSlaveRef;
 	bool m_bhasLocalFrame;
@@ -239,7 +239,7 @@ public:
         setRubyProcCallback(env, static_cast<jlong>(rubyProc));
     }
 
-    operator jobject () { return m_jhResult.get(); }
+    operator jobject () { return m_jResult; }
     operator bool () const { return jobject(this) != 0; }
 
     void setError(const String& msg) {
