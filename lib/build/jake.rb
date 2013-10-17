@@ -384,7 +384,7 @@ class Jake
   end
 
   def self.run3(command, cd = nil, env = {})
-    fail "[#{cmd}]" unless self.run3_dont_fail(command, cd, env)
+    fail "[#{command}]" unless self.run3_dont_fail(command, cd, env)
   end
 
   def self.run4(command)
