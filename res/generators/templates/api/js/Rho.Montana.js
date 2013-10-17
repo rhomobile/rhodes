@@ -149,22 +149,22 @@ class TrueClass; def to_i; 1 end end
         fn_update_args << "hash"
     end
 %><%
-    entity.methods.each do |entity_mehtod|
-        next if !entity_mehtod.is_generated 
+    entity.methods.each do |entity_method|
+        next if !entity_method.is_generated 
 
-        params = entity_mehtod.params.map do |param|
+        params = entity_method.params.map do |param|
             "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
 
 %>    // function(<%= params %>)
-    var fn<%=entity_mehtod.name.camelcase%> = rhoUtil.methodAccessReqFunc(<%
-       %>'<%= entity_mehtod.name %>', <%= 
-        if entity_mehtod.has_callback != ModuleMethod::CALLBACK_NONE 
-            " #{entity_mehtod.params.size},"
+    var fn<%=entity_method.name.camelcase%> = rhoUtil.methodAccessReqFunc(<%
+       %>'<%= entity_method.name %>', <%= 
+        if entity_method.has_callback != ModuleMethod::CALLBACK_NONE 
+            " #{entity_method.params.size},"
         else
             "null," 
         end%> <%= 
-        entity_mehtod.params.size + (entity_mehtod.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>, apiReq); 
+        entity_method.params.size + (entity_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>, apiReq); 
 <%  end %>    // <%= entity.name %> push changes to native 
     <%=proto_name %>.save = function() {
         if (this.isInitialized) {
@@ -216,15 +216,13 @@ class TrueClass; def to_i; 1 end end
     <%=proto_name %>.save = function() { this.__impl.save(); }
 
 <%  
-    sorted_method_list = entity.methods.select{|m| !m.is_generated }.stable_sort{|a,b| (a.is_static_for_entity == b.is_static_for_entity) ? (a.name <=> b.name) : (a.is_static_for_entity ? 1 : -1)}
-
-    sorted_method_list.each do |entity_mehtod|
-        params = entity_mehtod.params.map do |param|
+    entity.methods.select{|m| !m.is_generated }.each do |entity_method|
+        params = entity_method.params.map do |param|
             "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
 
         call_params = []
-        if ( !entity_mehtod.is_static_for_entity)
+        if ( !entity_method.is_static_for_entity)
             if entity.binding_fields.size > 0 
                 call_params << "this.__impl.binding"
             else
@@ -234,21 +232,21 @@ class TrueClass; def to_i; 1 end end
             end
         end
 
-%>    // function <%=entity_mehtod.name.camelcase%> (<%= params %>)
-    var fn<%=entity_mehtod.name.camelcase%> = rhoUtil.methodAccessReqFunc(<%
-       %>'<%= entity_mehtod.name %>', <%= 
-        if entity_mehtod.has_callback != ModuleMethod::CALLBACK_NONE 
-            " #{entity_mehtod.params.size},"
+%>    // function <%=entity_method.name.camelcase%> (<%= params %>)
+    var fn<%=entity_method.binding_name.camelcase%> = rhoUtil.methodAccessReqFunc(<%
+       %>'<%= entity_method.binding_name %>', <%= 
+        if entity_method.has_callback != ModuleMethod::CALLBACK_NONE 
+            " #{entity_method.params.size},"
         else
             "null," 
         end%> <%= 
-        entity_mehtod.params.size + (entity_mehtod.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>, apiReq); <%
-    fn_call_params = entity_mehtod.params.select{|param| !param.is_generated}.map{|param| "#{param.name}"}
+        entity_method.params.size + (entity_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>, apiReq); <%
+    fn_call_params = entity_method.params.select{|param| !param.is_generated}.map{|param| "#{param.name}"}
     %>
-    <%= entity.name %><%=entity_mehtod.is_static_for_entity ? "" : ".prototype"%>.<%=entity_mehtod.name%> = function(<%= fn_call_params.join(', ')%>){
+    <%= entity.name %><%=entity_method.is_static_for_entity ? "" : ".prototype"%>.<%=entity_method.name%> = function(<%= fn_call_params.join(', ')%>){
         <%= "this.__impl.save();
-        " if !entity_mehtod.is_static_for_entity %><%= 
-        "return " if entity_mehtod.is_return_value %>fn<%=entity_mehtod.name.camelcase%>(<%= (call_params + fn_call_params).join(', ') %>);
+        " if !entity_method.is_static_for_entity %><%= 
+        "return " if entity_method.is_return_value %>fn<%=entity_method.binding_name.camelcase%>(<%= (call_params + fn_call_params).join(', ') %>);
     };
 
 <%   end  %>
@@ -289,7 +287,7 @@ end %>
             id = rhoUtil.nextId();
             // constructor methods are following:
             <% ($cur_module.methods.select{|m| m.is_constructor}).each do |module_method| %>
-                this.<%= js_compatible_name module_method.name %>.apply(this, arguments);
+                this.<%= js_compatible_name module_method.binding_name %>.apply(this, arguments);
             <% end %>
         }
     };
@@ -323,7 +321,7 @@ end %>
         end.push("/* optional function */ oResult").join(', ')
     %>
           // function(<%= params %>)
-        <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.name %>', nativeName: '<%= module_method.name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
+        <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.binding_name %>', nativeName: '<%= module_method.binding_name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
     <% first_method = false
        end %>
     ], apiReq, function(){ return this.getId(); });
@@ -377,7 +375,7 @@ end %>
         end.push("/* optional function */ oResult").join(', ')
     %>
           // function(<%= params %>)
-        <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.name %>', nativeName: '<%= module_method.name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
+        <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.binding_name %>', nativeName: '<%= module_method.binding_name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
     <% first_method = false
        end %>
     ], apiReq);
@@ -423,7 +421,7 @@ end %>
             end.push("/* optional function */ oResult").join(', ')
         %>
               // function(<%= params %>)
-            <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.name %>', nativeName: '<%= module_method.name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
+            <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.binding_name %>', nativeName: '<%= module_method.binding_name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
         <% first_method = false
            end %>
         ], apiReq, function(){ return this.getId(); });
