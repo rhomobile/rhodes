@@ -44,7 +44,7 @@ namespace rho {
             last_entity = ett
         end
 
-    %><% if module_method.desc.size > 0 
+    %><% if !module_method.desc.nil? 
 %>        // <%= module_method.name%> <%= module_method.desc %> <% end %>
         virtual void <%= module_method.native_name%>(<%= params%>) {
             // RAWLOGC_INFO("<%= module_method.native_name%>","<%= $cur_module.name %>");

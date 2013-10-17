@@ -16,6 +16,7 @@ class CMethodResult
 public:
     enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eStringHashVector, eArrayHash, eJSON, eBool, eInt, eDouble, eError, eArgError};
     enum ECallbackType { ctNone = 0, ctRubyStr, ctRubyProc, ctJavaScript };
+    enum EResultClassType { rctPlain = 0, rctClass, rctEntity };
 private:
     rho::String m_strRubyCallback, m_strCallbackParam, m_strParamName;
     rho::String m_strJSCallback;
@@ -35,6 +36,7 @@ private:
 
     rho::String m_strError;
     ETypes m_ResType, m_eRequestedType;
+    EResultClassType m_resClassType;
 
     unsigned long m_oRubyObjectClass;
     rho::String   m_strRubyObjectClassPath;
@@ -57,9 +59,10 @@ private:
 public:
 
     CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_synchronousCallback(false), m_iTabId(-1),
-        m_nRes(0), m_bRes(false), m_dRes(0), m_ResType(eNone), m_eRequestedType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode){}
+        m_nRes(0), m_bRes(false), m_dRes(0), m_ResType(eNone), m_eRequestedType(eNone), m_resClassType(rctPlain), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode){}
     
     ECallbackType getCallbackType();
+    EResultClassType getResultClassType() { return m_resClassType; }
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     const rho::String& getRubyCallback() const { return m_strRubyCallback; }
@@ -69,9 +72,10 @@ public:
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
     const rho::String& getCallbackParam() const { return m_strCallbackParam; }
     void setParamName(const rho::String& strParam){m_strParamName = strParam;}
-    void setRubyObjectClass(unsigned long val){ m_oRubyObjectClass = val; }
-    void setRubyObjectClassPath(const rho::String& strPath){ m_strRubyObjectClassPath = strPath; }
-    void setJSObjectClassPath(const rho::String& strPath){m_strRubyObjectClassPath = strPath;}
+    void setRubyObjectClass(unsigned long val){ m_oRubyObjectClass = val; m_resClassType = rctClass; }
+    void setRubyObjectClassPath(const rho::String& strPath){ m_strRubyObjectClassPath = strPath; m_resClassType = rctClass; }
+    void setJSObjectClassPath(const rho::String& strPath){m_strRubyObjectClassPath = strPath; m_resClassType = rctClass; }
+    bool setResultAsEntity() { if (m_resClassType == rctClass) { m_resClassType = rctEntity; } return (m_resClassType == rctEntity);}
     void setRequestedType( ETypes eRequestedType ){ m_eRequestedType = eRequestedType;}
 
     void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; setType(eStringHash); }
