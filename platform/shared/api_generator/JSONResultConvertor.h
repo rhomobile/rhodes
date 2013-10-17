@@ -130,7 +130,7 @@ public:
         unsigned idx = 0;
         
         // return class with object
-        if ( hasObjectClass() && m_oResult.getStringHash().size() > 0 && m_oResult.getStringHashL2().size() == 0 && m_oResult.getStringHashVector().size() == 0)
+        if (m_oResult.getResultClassType() == CMethodResult::rctEntity)
         {
             toString(m_oResult.getStringHash(), resHash);
             return getObjectOrString(resHash, true);
