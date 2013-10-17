@@ -25,7 +25,8 @@ win32 {
   release {
     DEFINES += _NDEBUG NDEBUG
   }
-  INCLUDEPATH += ../../../../platform/shared/ruby/win32
+  INCLUDEPATH += ../../../../platform/shared/ruby/win32\
+../../openssl.so/ext/win32/include
 }
 
 DEFINES += RHODES_EMULATOR _XOPEN_SOURCE _DARWIN_C_SOURCE
