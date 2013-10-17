@@ -172,9 +172,9 @@ namespace "config" do
     end
 
     task :qt do
-      $vscommontools = ENV['VS90COMNTOOLS']
+      $vscommontools = ENV['VS100COMNTOOLS']
       unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-        puts "\nPlease, set VS90COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2008"
+        puts "\nPlease, set VS100COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2010"
         exit 1
       end
       $qtdir = ENV['QTDIR']
@@ -182,6 +182,7 @@ namespace "config" do
         puts "\nPlease, set QTDIR environment variable to Qt root directory path"
         exit 1
       end
+      $qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
     end
 
     task :application do
@@ -500,6 +501,8 @@ namespace "build" do
     end
 
     task :extensions => "config:wm" do
+      extensions_lib = ''
+      pre_targetdeps = ''
 
       puts "$app_extensions_list : #{$app_extensions_list}"
 
@@ -515,6 +518,11 @@ namespace "build" do
           
           project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
           next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
+
+          if ext != 'openssl.so'
+            extensions_lib << " #{ext}.lib"
+            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+          end
 
           if (project_path)
           
@@ -549,11 +557,22 @@ namespace "build" do
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "extensions", ext)
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
+              ENV['RHO_QMAKE'] = $qmake
 
               clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
           end
       end
+
+      ext_dir = File.join($startdir, 'platform/win32/bin/extensions')
+      mkdir_p ext_dir if not File.exists? ext_dir
+      File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
+        fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
+LIBS += /LIBPATH:../../../win32/bin/extensions#{extensions_lib}
+PRE_TARGETDEPS += #{pre_targetdeps}
+})
+      end
+
     end
 
     #    desc "Build win32 rhobundle"
@@ -602,7 +621,7 @@ namespace "build" do
 
     end
 
-    task :rhosimulator => ["config:rhosimulator", "config:set_win32_platform", "config:wm", "build:rhosimulator_version", "config:win32:qt"] do
+    task :rhosimulator => ["config:rhosimulator", "config:set_win32_platform", "config:wm", "config:qt", "build:rhosimulator_version", "config:win32:qt"] do
       $config["platform"] = $current_platform
       chdir $startdir
       init_extensions(pwd, nil)
@@ -612,15 +631,18 @@ namespace "build" do
 
       chdir $config["build"]["wmpath"]
 
-      if $wm_win32_ignore_vsprops
-        Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
-          Jake.clean_vsprops(file)
-        end
-      end
+      #if $wm_win32_ignore_vsprops
+      #  Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
+      #    Jake.clean_vsprops(file)
+      #  end
+      #end
 
-      args = ['/M4', $build_solution, '"SimulatorRelease|Win32"']
-      puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
-      puts Jake.run($vcbuild,args)
+      #args = ['/M4', $build_solution, '"SimulatorRelease|Win32"']
+      #puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+      #puts Jake.run($vcbuild,args)
+
+      chdir $qt_project_dir
+      puts Jake.run(File.join($qt_project_dir, 'rhosimulator_win32_build.bat'), [])
 
       chdir $startdir
 
@@ -1020,7 +1042,7 @@ namespace "device" do
 
   namespace "win32" do
     desc "Build installer for Windows"
-    task :production => ["build:win32:set_release_config", "config:win32:qt", "build:win32"] do
+    task :production => ["build:win32:set_release_config", "config:qt", "config:win32:qt", "build:win32"] do
       createWin32Production
     end
   end
