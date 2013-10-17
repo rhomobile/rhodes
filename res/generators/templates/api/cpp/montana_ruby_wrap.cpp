@@ -87,6 +87,9 @@ if api_generator_isSelfModule( $cur_module, result_type) %>
     oRes.setRubyObjectClass( getRuby_<%= $cur_module.name %>_Module() );<%
 elsif result_type && result_type.length()>0 && !MethodParam::BASE_TYPES.include?(result_type) %>
     oRes.setRubyObjectClassPath( "<%= result_type %>" );<%
+    if !module_method.linked_entity.nil?%>
+    oRes.setResultAsEntity();
+<% end 
 end; end
 
 if module_method.linked_property && module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>

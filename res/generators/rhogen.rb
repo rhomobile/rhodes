@@ -39,7 +39,15 @@ end
 
 class String
   def capitalize_first
-    return self.slice(0, 1).capitalize + self.slice(1..-1)
+    self.slice(0, 1).capitalize + self.slice(1..-1)
+  end
+
+  def underscore
+    self.gsub(/::/, '/').
+        gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+        gsub(/([a-z\d])([A-Z])/,'\1_\2').
+        tr('- ', '_').
+        downcase
   end
 end
 
@@ -975,6 +983,7 @@ module Rhogen
       def initialize
         @name = ''
         @native_name = ''
+        @binding_name = ''
         @params = [] # array of MethodArgument
         @run_in_thread = RUN_IN_THREAD_UNDEFINED
         @is_factory_method = false
@@ -1005,8 +1014,9 @@ module Rhogen
         @desc = ''
       end
 
-      attr_accessor :name
+      attr_reader :name
       attr_accessor :native_name
+      attr_accessor :binding_name
       attr_accessor :params
       attr_accessor :run_in_thread
       attr_accessor :is_factory_method
@@ -1028,6 +1038,11 @@ module Rhogen
       attr_accessor :is_constructor
       attr_accessor :is_destructor
       attr_accessor :generateNativeAPI
+
+      def name=(val)
+        @name = val
+        @binding_name = val
+      end
 
       def is_accessor
         (@special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER) || (@special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER)
@@ -1732,7 +1747,6 @@ module Rhogen
       module_method = ModuleMethod.new()
 
       module_method.name = xml_module_method.attribute('name').to_s
-
       module_method.native_name = module_method.name.split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
 
       if xml_module_method.attribute('nativeName') != nil
@@ -2201,6 +2215,10 @@ module Rhogen
             end
           end
 
+          if xml_entity_field.attribute('default') != nil
+            entity_field.default_value = xml_entity_field.attribute('default').to_s
+          end
+
           if xml_entity_field.attribute('constructorParam') != nil
             entity_field.constructor_param = xml_entity_field.attribute('constructorParam').to_s
           end
@@ -2314,7 +2332,7 @@ module Rhogen
 
         ntt_init.name = 'init' + module_entity.name
         ntt_init.native_name = 'init' + module_entity.native_name.capitalize_first
-        ntt_init.desc = 'init for "' + module_entity.name
+        ntt_init.desc = 'init method for ' + module_entity.name
 
         if store_param
           ntt_init.params = [store_param]
@@ -2357,7 +2375,7 @@ module Rhogen
 
           ntt_update.name = 'update' + module_entity.name
           ntt_update.native_name = 'update' + module_entity.native_name.capitalize_first
-          ntt_update.desc = 'update for "' + module_entity.name
+          ntt_update.desc = 'update method for ' + module_entity.name
 
           ntt_update.params = update_args
 
@@ -2440,7 +2458,21 @@ module Rhogen
 
           # entity_method.name << module_entity.name + 'Entity'
           entity_method.native_name = (  entity_method.name + module_entity.name + (is_static ? "Static" : "") ).split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
+          entity_method.binding_name = (  entity_method.name + module_entity.name + (is_static ? "Static" : "") ).split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
           entity_method.access = ModuleMethod::ACCESS_STATIC
+        end
+
+        # generated methods first, then static, then sort by name
+        module_entity.methods = module_entity.methods.stable_sort do|a,b|
+          if a.is_generated == b.is_generated
+            if a.is_static_for_entity == b.is_static_for_entity
+              a.name <=> b.name
+            else
+              a.is_static_for_entity ? 1 : -1
+            end
+          else
+            a.is_generated ? 1 : -1
+          end
         end
       end
     end
