@@ -24,7 +24,7 @@ def api_generator_MakeRubyMethodDef(module_name, module_method, is_static, metho
     method_name += module_name + "_"
     method_name += method_suffix + "_" if method_suffix.length() > 0
     method_name += module_method.native_name
-    api_name = module_method.is_constructor ? "initialize" : module_method.name
+    api_name = module_method.is_constructor ? "initialize" : module_method.binding_name
 
     "    rb_define_#{(is_static) ? 'singleton_method':'method'}(rb_api_m#{module_name}, \"#{api_name}\", #{method_name}, -1);"
 end
