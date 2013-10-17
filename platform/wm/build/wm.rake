@@ -553,8 +553,8 @@ namespace "build" do
               ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
               ENV['PWD'] = $startdir
               ENV['RHO_ROOT'] = ENV['PWD']
-              ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
-              ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "extensions", ext)
+              ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
+              ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions", ext)
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
