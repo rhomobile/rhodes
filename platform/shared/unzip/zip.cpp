@@ -3063,10 +3063,11 @@ ZRESULT GZipBuffer( const std::string& input, std::string& output )
     
     output.resize(output.size() + footerSize);
     char* pFooter = (char*)&(output.c_str()[output.size()-footerSize]);
-    *(ulg*)(pFooter) = crc;
+    memcpy(pFooter, &crc, sizeof(ulg));
     pFooter += 4;
-    *(ulg*)(pFooter) = input.size();
-    
+    ulg inSize = (ulg)input.size();
+    memcpy(pFooter, &inSize, sizeof(ulg));
+
     ZRESULT r=ZR_OK; if (state->err!=NULL) r=ZR_FLATE;
     return r;
 }
