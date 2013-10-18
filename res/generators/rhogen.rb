@@ -1607,14 +1607,15 @@ module Rhogen
         param_item.linked_field = field
         field_list << param_item
       end
-      return field_list
+
+      field_list
     end
 
     def create_param_from_list(field_list, param_name, can_be_nil, can_be_simplified)
       param = nil
       if field_list.size > 0
         fields_param_list = param_list_from_fields(field_list, can_be_nil)
-        if fields_param_list.size == 1 && can_be_simplified
+        if can_be_simplified && fields_param_list.size == 1
           param = fields_param_list.at(0)
         else
           param = MethodParam.new()
@@ -1623,7 +1624,8 @@ module Rhogen
           param.sub_params = fields_param_list
         end
       end
-      return param
+
+      param
     end
 
     def process_constants(supported_simple_types, xml_module_item)
@@ -1918,7 +1920,7 @@ module Rhogen
 
     def process_methods(module_item, xml_module_item)
       xml_methods_item = xml_module_item.elements['METHODS']
-      self_type = [module_item.parents.join('.'), module_item.name].join('.')
+      self_type = [module_item.parents.join('::'), module_item.name].join('::')
       xml_module_item.elements.each('METHODS/METHOD') do |xml_module_method|
         module_method = process_method(xml_module_method, xml_methods_item, module_item, self_type)
 
@@ -1971,7 +1973,7 @@ module Rhogen
         end
       end
 
-      self_type = [module_item.parents.join('.'), module_item.name].join('.')
+      self_type = [module_item.parents.join('::'), module_item.name].join('::')
 
       xml_module_item.elements.each('PROPERTIES/PROPERTY') do |xml_module_property|
         module_property = ModuleProperty.new()
@@ -2174,7 +2176,7 @@ module Rhogen
           raise "ModuleEntity have invalid name !\n Module[#{module_item.name}].entity[#{module_entity.name}] is in the list of forbidden names:\n '#{unsupported_names.join("','")}'"
         end
         module_entity.native_name = (module_entity.name).split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
-        self_type = [module_item.parents.join('.'), module_item.name, module_entity.name].join('.')
+        self_type = [module_item.parents.join('::'), module_item.name, module_entity.name].join('::')
 
         module_entity.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
 
@@ -2852,6 +2854,17 @@ module Rhogen
       template.source = 'js/Rho.Montana.js'
       module_name = $cur_module.parents.clone()
       template.destination = "../public/api/generated/#{module_name.push($cur_module.name).join('.')}.js"
+    end
+
+    template :monana_entities_rb do |template|
+      template.source = 'rb/RhoMontanaEntities.rb'
+      module_name = $cur_module.parents.clone().push($cur_module.name).join('')
+      if $cur_module.entities.size > 0
+        template.destination = "../#{module_name}Entities.rb"
+      else
+        template.destination = "shared/generated/stub/#{module_name}EntitiesStub.rb"
+      end
+
     end
 
     def attributes?
