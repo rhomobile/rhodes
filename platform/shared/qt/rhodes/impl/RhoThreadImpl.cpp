@@ -35,6 +35,14 @@ using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThread");
 
+CRhoThreadImpl::CRhoThreadImpl(): m_Thread(0), m_waitThread(0) {}
+
+CRhoThreadImpl::~CRhoThreadImpl()
+{
+    if (m_Thread) delete m_Thread;
+    if (m_waitThread) delete m_waitThread;
+}
+
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
     if (m_Thread)

@@ -39,12 +39,8 @@ class CRhoThreadImpl : public IRhoThreadImpl
     DEFINE_LOGCLASS
 
 public:
-    CRhoThreadImpl(): m_Thread(0), m_waitThread(0) {}
-    ~CRhoThreadImpl()
-    {
-        if (m_Thread) delete m_Thread;
-        if (m_waitThread) delete m_waitThread;
-    }
+    CRhoThreadImpl();
+    virtual ~CRhoThreadImpl();
     virtual void start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority);
     virtual void stop(unsigned int nTimeoutToKill);
     virtual int wait(unsigned int nTimeout);
