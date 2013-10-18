@@ -469,6 +469,11 @@ void rho_ruby_callmethod(const char* szMethodPath)
     rb_funcall(Qnil, rbMethodCall, 0);
 }
 
+VALUE rho_ruby_callmethod_arg(VALUE classValue, const char *name, VALUE arg)
+{
+    return rb_funcall(classValue, rb_intern(name), 1, arg);
+}
+
 void rho_ruby_reset_db_on_sync_user_changed()
 {
     rb_funcall(framework, resetDBOnSyncUserChanged_mid, 0);
