@@ -473,31 +473,43 @@ namespace "build" do
   namespace "win32" do
     
     task :deployqt => "config:win32:qt" do
-      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.CRT")
-      cp File.join(vsredistdir, "msvcm90.dll"), $target_path
-      cp File.join(vsredistdir, "msvcp90.dll"), $target_path
-      cp File.join(vsredistdir, "msvcr90.dll"), $target_path
-      cp File.join(vsredistdir, "Microsoft.VC90.CRT.manifest"), $target_path
-      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
-      cp File.join(vsredistdir, "vcomp90.dll"), $target_path
-      cp File.join(vsredistdir, "Microsoft.VC90.OpenMP.manifest"), $target_path
+      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC100.CRT")
+      cp File.join(vsredistdir, "msvcp100.dll"), $target_path
+      cp File.join(vsredistdir, "msvcr100.dll"), $target_path
+      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC100.OPENMP")
+      cp File.join(vsredistdir, "vcomp100.dll"), $target_path
       cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
       cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
-      cp File.join($qtdir, "bin/phonon4.dll"), $target_path
-      cp File.join($qtdir, "bin/QtCore4.dll"), $target_path
-      cp File.join($qtdir, "bin/QtGui4.dll"), $target_path
-      cp File.join($qtdir, "bin/QtNetwork4.dll"), $target_path
-      cp File.join($qtdir, "bin/QtWebKit4.dll"), $target_path
+      cp File.join($qtdir, "bin/icudt51.dll"), $target_path
+      cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
+      cp File.join($qtdir, "bin/icudt51.dll"), $target_path
+      cp File.join($qtdir, "bin/libEGL.dll"), $target_path
+      cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5WebKit.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Multimedia.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Quick.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Qml.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Sql.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Sensors.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5V8.dll"), $target_path
       target_if_path = File.join($target_path, 'imageformats/')
       if not File.directory?(target_if_path)
         Dir.mkdir(target_if_path)
       end
-      cp File.join($qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qico4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qgif.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qico.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qjpeg.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qmng.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qsvg.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qtga.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qtiff.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qwbmp.dll"), target_if_path
     end
 
     task :extensions => "config:wm" do
@@ -655,7 +667,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       if not File.directory?($target_path)
         Dir.mkdir($target_path)
       end
-      cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), $target_path
+      cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), $target_path
 
       Rake::Task["build:win32:deployqt"].invoke
     end
