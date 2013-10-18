@@ -116,4 +116,8 @@ extern "C" void Init_<%= $cur_module.name %>_extension()
 {
     rho::C<%= $cur_module.name %>Factory::setInstance( new rho::C<%= $cur_module.name %>Factory() );
     rho::Init_<%= $cur_module.name %>_API();
+    <% if $cur_module.entities.size > 0 
+    module_name = $cur_module.parents.clone().push($cur_module.name).join('')
+%>RHODESAPP().getExtManager().requireRubyFile("<%=module_name%>Entities"); 
+<% end %>
 }
