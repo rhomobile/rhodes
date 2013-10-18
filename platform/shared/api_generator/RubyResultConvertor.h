@@ -2,7 +2,6 @@
 
 #include "logging/RhoLog.h"
 #include "ruby/ext/rho/rhoruby.h"
-#include "ruby/include/ruby.h"
 #include "MethodResult.h"
 #include "MethodResultConvertor.h"
 
@@ -126,7 +125,7 @@ public:
                 
                 if (m_oResult.getResultClassType() == CMethodResult::rctEntity)
                 {
-                    CHoldRubyValue resItem( rb_funcall(classValue, rb_intern("create_instance"), 1, valItem.getValue()) );
+                    CHoldRubyValue resItem( rho_ruby_callmethod_arg(classValue, "create_instance", valItem) );
                     
                     rho_ruby_add_to_array(valArray, resItem);
                 } else {
@@ -188,7 +187,7 @@ public:
                 addStrToHash(valHash, it->first.c_str(), it->second.c_str());
             }
             
-            CHoldRubyValue resItem( rb_funcall(classValue, rb_intern("create_instance"), 1, valHash.getValue()) );
+            CHoldRubyValue resItem( rho_ruby_callmethod_arg(classValue, "create_instance", valHash) );
             return resItem;
         }
     }

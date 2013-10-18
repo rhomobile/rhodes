@@ -66,7 +66,8 @@ void rho_ruby_start_threadidle();
 void rho_ruby_stop_threadidle();
 int  rho_ruby_is_started();
 void rho_ruby_callmethod(const char* szMethodPath);
-
+VALUE rho_ruby_callmethod_arg(VALUE classValue, const char *name, VALUE arg);
+    
 VALUE rho_ruby_createHash();
 VALUE addTimeToHash(VALUE hash, const char* key, time_t val);	
 VALUE addIntToHash(VALUE hash, const char* key, int val);	
