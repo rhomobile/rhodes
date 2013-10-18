@@ -2,7 +2,7 @@
 
 #include "logging/RhoLog.h"
 #include "ruby/ext/rho/rhoruby.h"
-#import "ruby/include/ruby.h"
+#include "ruby/include/ruby.h"
 #include "MethodResult.h"
 #include "MethodResultConvertor.h"
 
