@@ -655,6 +655,10 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       Rake::Task["build:win32:deployqt"].invoke
     end
 
+    desc 'prints Windows RhoSimulator build environment.'
+    task :rhosim_build_env do
+      puts 'VS2010'
+    end
   end
 
   #desc "Build rhodes for win32"
