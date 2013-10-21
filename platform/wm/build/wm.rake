@@ -519,6 +519,7 @@ namespace "build" do
       puts "$app_extensions_list : #{$app_extensions_list}"
 
       $app_extensions_list.each do |ext, commin_ext_path |      
+          puts "extension #{ext} [#{commin_ext_path}]"
           next unless commin_ext_path
           
           extpath = File.join(commin_ext_path, 'ext')
@@ -641,27 +642,9 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
       cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 
-      chdir $config["build"]["wmpath"]
-
-      #if $wm_win32_ignore_vsprops
-      #  Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
-      #    Jake.clean_vsprops(file)
-      #  end
-      #end
-
-      #args = ['/M4', $build_solution, '"SimulatorRelease|Win32"']
-      #puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
-      #puts Jake.run($vcbuild,args)
-
-      chdir $qt_project_dir
-      puts Jake.run(File.join($qt_project_dir, 'rhosimulator_win32_build.bat'), [])
+      Jake.run3('rhosimulator_win32_build.bat', $qt_project_dir)
 
       chdir $startdir
-
-      unless $? == 0
-        puts "Error building"
-        exit 1
-      end
 
       $target_path = File.join( $startdir, "platform/win32/RhoSimulator/")
       if not File.directory?($target_path)
