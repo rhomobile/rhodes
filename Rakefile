@@ -1179,7 +1179,11 @@ def init_extensions(dest, mode = "")
                 endJSModules << f if fBaseName == "rhoapi-native.#{$current_platform_bridge}.js"
                 next
               end
-              
+              if (fBaseName == "rhoapi-force.ajax.js")
+                endJSModules << f if Jake.getBuildBoolProp2("ajax_api_bridge", $current_platform_bridge, $app_config, nil)
+                next
+              end
+
               if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
                 startJSModules.unshift(f)
               elsif f.downcase().end_with?("rhoapi.js") 
@@ -2410,7 +2414,11 @@ namespace "run" do
                         endJSModules << f if fBaseName == "rhoapi-native.rhosim.js"
                         next
                       end
-                      
+                      if (fBaseName == "rhoapi-force.ajax.js")
+                        endJSModules << f if Jake.getBuildBoolProp2("ajax_api_bridge", "rhosim", $app_config, nil)
+                        next
+                      end
+
                       if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
                         startJSModules.unshift(f)
                       elsif f.downcase().end_with?("rhoapi.js")
