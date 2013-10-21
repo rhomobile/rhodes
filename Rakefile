@@ -180,7 +180,7 @@ $app_basedir = pwd
 $startdir = File.dirname(__FILE__)
 $startdir.gsub!('\\', '/')
 
-chdir File.dirname(__FILE__)
+chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 
 require File.join(pwd, 'lib/build/jake.rb')
 
