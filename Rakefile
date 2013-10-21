@@ -885,8 +885,6 @@ namespace "config" do
     $rhosimulator_build = true
   end
 
-  out = `javac -version 2>&1`
-  puts "\n\nYour java bin folder does not appear to be on your path.\nThis is required to use rhodes.\n\n" unless $? == 0
 end
 
 def copy_assets(asset)
