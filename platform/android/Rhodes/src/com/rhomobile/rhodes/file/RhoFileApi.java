@@ -43,6 +43,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.util.Utils;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -284,14 +285,42 @@ public class RhoFileApi {
 
     public static ParcelFileDescriptor openParcelFd(String path)
     {
-        forceFile(path);
         try {
-            Logger.D(TAG, "Opening file from file system: " + absolutePath(path));
+            if(needEmulate(path)) {
+                return null;
+            } else {
+                String absPath = absolutePath(path);
 
-            File file = new File(path);
-            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+                Logger.D(TAG, "Opening file from file system: " + absPath);
+    
+                File file = new File(absPath);
+                return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+            }
         } catch (FileNotFoundException e) {
             Logger.E(TAG, "Can not open ParcelFileDescriptor" + e.getMessage());
+            return null;
+        }
+    }
+    
+    public static AssetFileDescriptor openAssetFd(String path) {
+        try {
+            if(needEmulate(path)) {
+                String relPath = makeRelativePath(path);
+
+                Logger.D(TAG, "Opening file from assets: " + relPath);
+
+                return am.openFd(relPath);
+                
+            } else {
+                String absPath = absolutePath(path);
+
+                Logger.D(TAG, "Opening file from file system: " + absPath);
+
+                return am.openNonAssetFd(absPath);
+            }
+        } catch (IOException e) {
+            Logger.E(TAG, "Can not open AssetFileDescriptor: " + path);
+            Logger.E(TAG, e);
             return null;
         }
     }
