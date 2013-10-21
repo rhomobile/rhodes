@@ -47,6 +47,10 @@
 #if defined(OS_WINDOWS_DESKTOP)
 #undef null
 #include <QWebPage>
+#include <qglobal.h>
+#if QT_VERSION >= 0x050000
+#include <QtWebKit/qtwebkitversion.h>
+#endif
 #endif
 
 extern "C" HWND getMainWnd();
