@@ -427,6 +427,8 @@ namespace "config" do
       $use_motosol_api_classpath = true unless $app_config['capabilities'].index('motoroladev').nil?
       raise 'Cannot use Motorola SDK addon and Google SDK addon together!' if $use_google_addon_api
     end
+    
+    $no_compression = $app_config['android']['no_compression'] if $app_config['android']
 
     $applog_path = nil
     $applog_file = $app_config["applog"]
@@ -1860,6 +1862,13 @@ namespace "package" do
     #set_app_name_android($appname)
 
     args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-F", resourcepkg]
+    if $no_compression
+      $no_compression.each do |ext|
+        args << '-0'
+        args << ext
+      end
+    end
+    
     Jake.run($aapt, args)
     unless $?.success?
       raise "Error running AAPT (1)"
