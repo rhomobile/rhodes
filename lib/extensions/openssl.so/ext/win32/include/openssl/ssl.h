@@ -493,6 +493,9 @@ struct ssl_session_st
 	char *psk_identity_hint;
 	char *psk_identity;
 #endif
+	/* Used to indicate that session resumption is not allowed.
+	 * Applications can also set this bit for a new session via
+	 * not_resumable_session_cb to disable session caching and tickets. */
 	int not_resumable;
 
 	/* The cert is the certificate used to establish this connection */
@@ -535,7 +538,7 @@ struct ssl_session_st
 #endif /* OPENSSL_NO_EC */
 	/* RFC4507 info */
 	unsigned char *tlsext_tick;	/* Session ticket */
-	size_t	tlsext_ticklen;		/* Session ticket length */	
+	size_t tlsext_ticklen;		/* Session ticket length */
 	long tlsext_tick_lifetime_hint;	/* Session lifetime hint in seconds */
 #endif
 #ifndef OPENSSL_NO_SRP
@@ -556,7 +559,6 @@ struct ssl_session_st
 #define SSL_OP_SSLEAY_080_CLIENT_DH_BUG			0x00000080L
 #define SSL_OP_TLS_D5_BUG				0x00000100L
 #define SSL_OP_TLS_BLOCK_PADDING_BUG			0x00000200L
-#define SSL_OP_NO_TLSv1_1				0x00000400L
 
 /* Disable SSL 3.0/TLS 1.0 CBC vulnerability workaround that was added
  * in OpenSSL 0.9.6d.  Usually (depending on the application protocol)
@@ -604,6 +606,7 @@ struct ssl_session_st
 #define SSL_OP_NO_SSLv3					0x02000000L
 #define SSL_OP_NO_TLSv1					0x04000000L
 #define SSL_OP_NO_TLSv1_2				0x08000000L
+#define SSL_OP_NO_TLSv1_1				0x10000000L
 
 /* These next two were never actually used for anything since SSLeay
  * zap so we have some more flags.
@@ -927,6 +930,7 @@ struct ssl_ctx_st
 	/* Callback for status request */
 	int (*tlsext_status_cb)(SSL *ssl, void *arg);
 	void *tlsext_status_arg;
+
 	/* draft-rescorla-tls-opaque-prf-input-00.txt information */
 	int (*tlsext_opaque_prf_input_callback)(SSL *, void *peerinput, size_t len, void *arg);
 	void *tlsext_opaque_prf_input_callback_arg;
@@ -952,6 +956,7 @@ struct ssl_ctx_st
 #endif
 
 #ifndef OPENSSL_NO_TLSEXT
+
 # ifndef OPENSSL_NO_NEXTPROTONEG
 	/* Next protocol negotiation information */
 	/* (for experimental NPN extension). */
@@ -2058,6 +2063,7 @@ void ERR_load_SSL_strings(void);
 #define SSL_F_DTLS1_ACCEPT				 246
 #define SSL_F_DTLS1_ADD_CERT_TO_BUF			 295
 #define SSL_F_DTLS1_BUFFER_RECORD			 247
+#define SSL_F_DTLS1_CHECK_TIMEOUT_NUM			 316
 #define SSL_F_DTLS1_CLIENT_HELLO			 248
 #define SSL_F_DTLS1_CONNECT				 249
 #define SSL_F_DTLS1_ENC					 250
@@ -2205,6 +2211,7 @@ void ERR_load_SSL_strings(void);
 #define SSL_F_SSL_GET_NEW_SESSION			 181
 #define SSL_F_SSL_GET_PREV_SESSION			 217
 #define SSL_F_SSL_GET_SERVER_SEND_CERT			 182
+#define SSL_F_SSL_GET_SERVER_SEND_PKEY			 317
 #define SSL_F_SSL_GET_SIGN_PKEY				 183
 #define SSL_F_SSL_INIT_WBIO_BUFFER			 184
 #define SSL_F_SSL_LOAD_CLIENT_CA_FILE			 185
