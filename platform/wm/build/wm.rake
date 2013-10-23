@@ -333,6 +333,7 @@ namespace "build" do
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
+              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
 
               if File.exists? File.join(extpath, 'build.bat')
                 clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
@@ -572,6 +573,7 @@ namespace "build" do
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
+              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
 
               clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
@@ -643,7 +645,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
       cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 
-      Jake.run3('rhosimulator_win32_build.bat', $qt_project_dir)
+      Jake.run3('rhosimulator_win32_build.bat RHOSIMULATOR_BUILD=1', $qt_project_dir)
 
       chdir $startdir
 
@@ -670,8 +672,6 @@ PRE_TARGETDEPS += #{pre_targetdeps}
   #desc "Build rhodes for win32"
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
-
-    # TODO: add Win32-build capability to RhoSimulator.pro (qmake project)
 
     Jake.run3('rhosimulator_win32_build.bat', $qt_project_dir)
 

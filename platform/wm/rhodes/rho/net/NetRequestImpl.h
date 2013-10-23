@@ -26,7 +26,7 @@
 
 #pragma once
 
-#if defined(RHODES_EMULATOR_QMAKE)
+#if defined(RHODES_QT_PLATFORM)
 #include "stdafx.h"
 #endif
 

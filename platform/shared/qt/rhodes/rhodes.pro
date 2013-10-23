@@ -93,7 +93,11 @@ unix:!macx {
 ../../../linux/bin/syncengine/libsyncengine.a
 }
 
-DEFINES += RHODES_EMULATOR RHODES_EMULATOR_QMAKE
+DEFINES += RHODES_QT_PLATFORM
+
+!isEmpty(RHOSIMULATOR_BUILD) {
+  DEFINES += RHODES_EMULATOR
+}
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses

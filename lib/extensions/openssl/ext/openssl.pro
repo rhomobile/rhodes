@@ -29,7 +29,11 @@ win32 {
 ../../openssl.so/ext/win32/include
 }
 
-DEFINES += RHODES_EMULATOR _XOPEN_SOURCE _DARWIN_C_SOURCE
+DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
+
+!isEmpty(RHOSIMULATOR_BUILD) {
+  DEFINES += RHODES_EMULATOR
+}
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
