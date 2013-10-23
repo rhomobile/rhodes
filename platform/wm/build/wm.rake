@@ -332,6 +332,7 @@ namespace "build" do
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
+              ENV['RHO_QMAKE'] = $qmake
 
               if File.exists? File.join(extpath, 'build.bat')
                 clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
@@ -670,17 +671,13 @@ PRE_TARGETDEPS += #{pre_targetdeps}
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
 
-    args = ['/M4', $build_solution,  "\"" + $buildcfg + '|Win32"']
-    puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
-    puts Jake.run($vcbuild,args)
+    # TODO: add Win32-build capability to RhoSimulator.pro (qmake project)
+
+    Jake.run3('rhosimulator_win32_build.bat', $qt_project_dir)
 
     chdir $startdir
 
-    unless $? == 0
-      puts "Error building"
-      exit 1
-    end
-    
+    # TODO: copy result to expected place ?
   end
 end
 
@@ -1388,7 +1385,7 @@ namespace "run" do
   end
 
   desc "Run win32"
-  task :win32 => ["build:win32"] do
+  task :win32 => ["config:qt", "config:win32:qt", "build:win32"] do
   
     cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
 
