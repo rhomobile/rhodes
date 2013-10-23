@@ -2,7 +2,7 @@ require File.join(pwd, '../../../../../build/jake.rb')
 
 def build_extension(name)
   chdir File.join( $rootdir, "lib/commonAPI/#{name}/ext/platform/osx/" )
-  args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "#{name}.pro", "QMAKE_MAC_SDK='#{$sdkroot}'", 'CONFIG-=debug', 'CONFIG+=release']
+  args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "#{name}.pro", "QMAKE_MAC_SDK='#{$sdkroot}'", 'CONFIG-=debug', 'CONFIG+=release', $qmakevars]
   puts Jake.run($qmake,args)
   fail "[qmake #{name}.pro]" unless $? == 0
   puts Jake.run($make, ['clean'])
@@ -19,6 +19,7 @@ namespace "build" do
     raise "RHO_ROOT is not set" if $rootdir.nil?
     $qmake = ENV['RHO_QMAKE']
     raise "RHO_QMAKE is not set" if $qmake.nil?
+    $qmakevars = ENV['RHO_QMAKE_VARS']
     if $platform == 'win32'
       $qmake_spec = 'win32-msvc2010'
       $make = 'nmake'

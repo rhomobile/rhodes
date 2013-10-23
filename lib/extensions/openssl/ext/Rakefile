@@ -3,7 +3,7 @@ require File.join(pwd, '../../../build/jake.rb')
 
 def build_extension(name, arch)
   if (ENV['RHO_PLATFORM'] == 'osx') or (ENV['RHO_PLATFORM'] == 'win32')
-    args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "#{name}.pro", "QMAKE_MAC_SDK='#{$sdkroot}'", 'CONFIG-=debug', 'CONFIG+=release']
+    args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "#{name}.pro", "QMAKE_MAC_SDK='#{$sdkroot}'", 'CONFIG-=debug', 'CONFIG+=release', $qmakevars]
     puts Jake.run($qmake,args)
     fail "[qmake #{name}.pro]" unless $? == 0
     puts Jake.run($make, ['clean'])
@@ -93,6 +93,7 @@ namespace "build" do
     raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
     $rootdir = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rootdir.nil?
+    $qmakevars = ENV['RHO_QMAKE_VARS']
 
     if $platform == 'android'
       require File.join($rootdir, 'platform/android/build/androidcommon.rb')

@@ -65,6 +65,7 @@ namespace "build" do
         ENV["ARCHS"] = "x86_64 -g -gdwarf-2 -Xarch_x86_64 -mmacosx-version-min=10.5 -DRHODES_EMULATOR"
         ENV["RHO_ROOT"] = $startdir
         ENV["RHO_QMAKE"] = $qmake
+        ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
 
         ENV["XCODEBUILD"] = $xcodebuild
         ENV["CONFIGURATION"] ||= $configuration
@@ -128,7 +129,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         chdir $qt_project_dir
-        args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro', "QMAKE_MAC_SDK='#{$sdkroot}'"]
+        args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro', "QMAKE_MAC_SDK='#{$sdkroot}'", 'RHOSIMULATOR_BUILD=1']
         puts Jake.run($qmake,args)
         puts Jake.run($make, ['clean'])
         puts Jake.run($make, ['all'])
