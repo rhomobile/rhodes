@@ -27,12 +27,20 @@
 #ifndef RHOSIMULATOR_H
 #define RHOSIMULATOR_H
 
-#ifndef RHODES_WIN32
+#include "common/RhoDefs.h"
+
 #define RHOSIMULATOR_NAME "RhoSimulator"
-#endif
 
 #ifndef RHO_SYMBIAN
 #include "RhoSimulatorVersion.h"
+#endif // RHO_SYMBIAN
+
+#if defined(RHODES_EMULATOR)
+#define RHO_PLATFORM_NAME_AT "in "RHOSIMULATOR_NAME
+#elif defined(OS_WINDOWS_DESKTOP)
+#define RHO_PLATFORM_NAME_AT "on Win32"
+#else
+#define RHO_PLATFORM_NAME_AT "on OS X"
 #endif
 
 #endif // RHOSIMULATOR_H

@@ -17,7 +17,7 @@
 #include "vm_core.h"
 
 
-#if defined(__APPLE__) && !defined(RHODES_EMULATOR)
+#if defined(__APPLE__) && !defined(RHODES_QT_PLATFORM)
 #import <Availability.h>
 #ifdef __IPHONE_6_0
 #include <grp.h>

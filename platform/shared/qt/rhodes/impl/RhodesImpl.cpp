@@ -30,6 +30,7 @@
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
 #include "MainWindowImpl.h"
+#include "../RhoSimulator.h"
 
 using namespace std;
 using namespace rho;
@@ -49,7 +50,7 @@ void rho_title_change(const int, const char* strTitle)
 void rho_net_impl_network_indicator(int active)
 {
     //TODO: rho_net_impl_network_indicator
-    RAWLOGC_INFO("RhodesImpl", "rho_net_impl_network_indicator() has no implementation in RhoSimulator.");
+    RAWLOGC_INFO("RhodesImpl", "rho_net_impl_network_indicator() has no implementation " RHO_PLATFORM_NAME_AT ".");
 }
 
 void rho_map_location(char* query)
@@ -62,13 +63,13 @@ void rho_map_location(char* query)
 void rho_appmanager_load( void* httpContext, char* szQuery)
 {
     //TODO: rho_appmanager_load
-    RAWLOGC_INFO("RhodesImpl", "rho_appmanager_load() has no implementation in RhoSimulator.");
+    RAWLOGC_INFO("RhodesImpl", "rho_appmanager_load() has no implementation " RHO_PLATFORM_NAME_AT ".");
 }
 
 int rho_net_ping_network(const char* szHost)
 {
     //TODO: rho_net_ping_network
-    RAWLOGC_INFO("RhodesImpl", "rho_net_ping_network() has no implementation in RhoSimulator.");
+    RAWLOGC_INFO("RhodesImpl", "rho_net_ping_network() has no implementation " RHO_PLATFORM_NAME_AT ".");
     return 1;
 }
 

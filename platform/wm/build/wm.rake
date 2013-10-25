@@ -485,15 +485,14 @@ namespace "build" do
       cp File.join($qtdir, "bin/icudt51.dll"), $target_path
       cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
       cp File.join($qtdir, "bin/icudt51.dll"), $target_path
-      cp File.join($qtdir, "bin/libEGL.dll"), $target_path
-      cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
+      # cp File.join($qtdir, "bin/libEGL.dll"), $target_path
+      # cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5WebKit.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Multimedia.dll"), $target_path
-      cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Quick.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Qml.dll"), $target_path
@@ -645,7 +644,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
       cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 
-      Jake.run3('rhosimulator_win32_build.bat RHOSIMULATOR_BUILD=1', $qt_project_dir)
+      Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
 
       chdir $startdir
 
@@ -675,9 +674,15 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
     Jake.run3('rhosimulator_win32_build.bat', $qt_project_dir)
 
-    chdir $startdir
+    $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
+    if not File.directory?($target_path)
+      Dir.mkdir($target_path)
+    end
+    cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
 
-    # TODO: copy result to expected place ?
+    Rake::Task["build:win32:deployqt"].invoke
+
+    chdir $startdir
   end
 end
 

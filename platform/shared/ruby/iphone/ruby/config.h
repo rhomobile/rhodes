@@ -19,7 +19,7 @@
 #define HAVE_OFF_T 1
 #define SIZEOF_INT 4
 #define SIZEOF_SHORT 2
-#ifdef RHODES_EMULATOR
+#ifdef RHODES_QT_PLATFORM
 #define SIZEOF_LONG 8
 #else
 #define SIZEOF_LONG 4

@@ -39,6 +39,7 @@
 #if QT_VERSION >= 0x050000
 #include <QtWebKit/qtwebkitversion.h>
 #endif
+#include "../RhoSimulator.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -205,7 +206,7 @@ void rho_sys_open_url(const char* url)
 void rho_sys_run_app(const char *appname, VALUE params)
 {
     //TODO: rho_sys_run_app
-    RAWLOGC_INFO("SystemImpl", "rho_sys_run_app() has no implementation in RhoSimulator.");
+    RAWLOGC_INFO("SystemImpl", "rho_sys_run_app() has no implementation " RHO_PLATFORM_NAME_AT ".");
 }
 
 void rho_sys_bring_to_front()
@@ -217,14 +218,14 @@ void rho_sys_bring_to_front()
 void rho_sys_report_app_started()
 {
     // TODO: rho_sys_report_app_started
-    RAWLOGC_INFO("SystemImpl", "rho_sys_report_app_started() has no implementation in RhoSimulator.");
+    RAWLOGC_INFO("SystemImpl", "rho_sys_report_app_started() has no implementation " RHO_PLATFORM_NAME_AT ".");
 }
 
 int rho_sys_is_app_installed(const char *appname)
 {
     int nRet = 0;
     //TODO: rho_sys_is_app_installed
-    RAWLOGC_INFO("SystemImpl", "rho_sys_is_app_installed() has no implementation in RhoSimulator.");
+    RAWLOGC_INFO("SystemImpl", "rho_sys_is_app_installed() has no implementation " RHO_PLATFORM_NAME_AT ".");
     return nRet;
 }
 
@@ -236,7 +237,7 @@ void rho_sys_app_install(const char *url)
 void rho_sys_app_uninstall(const char *appname)
 {
     //TODO: rho_sys_app_uninstall
-    RAWLOGC_INFO("SystemImpl", "rho_sys_app_uninstall() has no implementation in RhoSimulator.");
+    RAWLOGC_INFO("SystemImpl", "rho_sys_app_uninstall() has no implementation " RHO_PLATFORM_NAME_AT ".");
 }
 
 #if !defined(OS_WINDOWS_DESKTOP) && !defined(OS_SYMBIAN)
@@ -261,7 +262,7 @@ void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 RHO_GLOBAL void rho_platform_restart_application()
 {
     //TODO: rho_platform_restart_application
-    RAWLOGC_INFO("SystemImpl", "rho_platform_restart_application() has no implementation in RhoSimulator.");
+    RAWLOGC_INFO("SystemImpl", "rho_platform_restart_application() has no implementation " RHO_PLATFORM_NAME_AT ".");
 }
 
 const char* rho_native_reruntimepath()

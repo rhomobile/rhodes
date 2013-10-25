@@ -1585,7 +1585,7 @@ void CRhodesApp::modifyRhoApiFile()
             common::InputStream* is = apiFile.getInputStream();
 
             char buffer[bufferLenght];
-            buffer[0] = '/0';
+            buffer[0] = '\0';
 
             while (is->available())
             {
@@ -1703,7 +1703,7 @@ String CRhodesApp::getAppName()
 {
     String strAppName;
 
-#if (defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)) && !defined(RHODES_EMULATOR)
+#if (defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)) && !defined(RHODES_EMULATOR) && !defined(RHODES_QT_PLATFORM)
     strAppName = rho_native_get_appname();
 #else
     //TODO: Android - get app name for shared runtime app
@@ -2685,9 +2685,10 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
     return res_check;
 }
     //TODO: remove it
-	void rho_sys_set_network_status_notify(const char* url, int poll_interval)
+    void rho_sys_set_network_status_notify(const char* /*url*/, int /*poll_interval*/)
 	{
-		RHODESAPP().setNetworkStatusNotify(url,poll_interval);
+        // commented out because first parameter should be a MethodResult, not char*; so this call will result in 100% app crash
+        //RHODESAPP().setNetworkStatusNotify(url,poll_interval);
 	}
 	
 	void rho_sys_clear_network_status_notify()

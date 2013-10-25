@@ -51,7 +51,7 @@ using namespace std;
 
 static String g_strCmdLine;
 
-static bool m_isJSApplication;
+static bool m_isJSApplication = false;
 static String m_strRootPath, m_strRhodesPath, m_logPort;
 static String m_strHttpProxy;
 
@@ -109,7 +109,9 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
+#ifdef RHODES_EMULATOR
     bool isJSApp;
+#endif
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
 
@@ -130,6 +132,7 @@ int main(int argc, char *argv[])
                 free(proxy);
             } else
                 RAWLOGC_INFO("Main", "invalid value for \"http_proxy_url\" cmd parameter");
+#ifdef RHODES_EMULATOR
         } else if ((strncasecmp("-approot",argv[i],8)==0) || (isJSApp = (strncasecmp("-jsapproot",argv[i],10)==0))) {
             char* path = parseToken(argv[i]);
             if (path) {
@@ -154,6 +157,7 @@ int main(int argc, char *argv[])
                     m_strRhodesPath.erase(0,7);
                 String_replace(m_strRhodesPath, '\\', '/');
             }
+#endif
         } else {
             RAWLOGC_INFO1("Main", "wrong cmd parameter: %s", argv[i]);
         }
@@ -161,6 +165,12 @@ int main(int argc, char *argv[])
 
 #if defined(RHO_SYMBIAN)
     m_strRootPath = (QDir::currentPath()+"/").toUtf8().data();
+#endif
+
+#ifndef RHODES_EMULATOR
+    const QByteArray dir = QFileInfo(QCoreApplication::applicationFilePath()).absolutePath().toLatin1();
+    m_strRootPath = std::string(dir.constData(), dir.length());
+    m_strRootPath += "/rho/";
 #endif
 
     // PreMessageLoop:
@@ -221,7 +231,7 @@ int main(int argc, char *argv[])
 #ifdef RHODES_EMULATOR
     m_appWindow->Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
 #else
-    m_appWindow->Initialize(L"Rhodes");
+    m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
 #endif
 
     RHODESAPP().startApp();
