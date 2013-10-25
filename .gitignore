@@ -244,6 +244,7 @@ platform/shared/qt/rhodes/GeneratedFiles/*
 platform/shared/qt/*/Makefile*
 platform/shared/qt/Makefile*
 lib/commonAPI/*/ext/platform/osx/Makefile*
+lib/extensions/*/ext/Makefile*
 platform/shared/qtrhodes/generatedfiles/*
 platform/wm/rhodes/emulator/generatedfiles/*
 platform/shared/RhoSimulator-build*
@@ -269,3 +270,4 @@ platform/osx/bin/sqlite3/*
 platform/osx/bin/syncengine/*
 platform/osx/bin/RhoSimulator/generated_files/*
 platform/osx/bin/RhoSimulator/tmp/*
+platform/build/*.build/*

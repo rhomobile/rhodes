@@ -96,7 +96,7 @@
 #define SHELL_AYGSHELL
 #endif
 
-#if !defined(RHODES_EMULATOR_QMAKE)
+#if !defined(RHODES_QT_PLATFORM)
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlwin.h>
@@ -166,7 +166,7 @@
 
 using namespace ATL;
 
-#if !defined(RHODES_EMULATOR_QMAKE)
+#if !defined(RHODES_QT_PLATFORM)
 /*#ifdef SHELL_AYGSHELL
 #include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
@@ -206,7 +206,7 @@ using namespace ATL;
 #include "logging/RhoLog.h"
 //#include <afxwin.h>
 
-#if defined(OS_WINDOWS_DESKTOP) && !defined(RHO_SYMBIAN) && !defined(RHODES_EMULATOR_QMAKE)
+#if defined(OS_WINDOWS_DESKTOP) && !defined(RHO_SYMBIAN) && !defined(RHODES_QT_PLATFORM)
 #include <atlapp.h>
 //#include <atlwin.h>
 //#include <atlcrack.h>

@@ -85,8 +85,8 @@
 
 #if !(defined(VMS) || defined(__VMS)) /* VMS uses logical names instead */
 #if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
-#define ENGINESDIR "D:\\Qt\\openssl/lib/engines"
-#define OPENSSLDIR "D:\\Qt\\openssl/ssl"
+#define ENGINESDIR "C:/workspaces/test_rhosimulator_win/lib/extensions/openssl.so/lib/engines"
+#define OPENSSLDIR "C:/workspaces/test_rhosimulator_win/lib/extensions/openssl.so/ssl"
 #endif
 #endif
 

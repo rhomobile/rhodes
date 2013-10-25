@@ -154,6 +154,16 @@ void CMainWindow::onCustomMenuItemCommand(int nItemPos)
     oMenuItem.processCommand();
 }
 
+void CMainWindow::minimizeWindow(void)
+{
+    ((QtMainWindow*)qtMainWindow)->showMinimized();
+}
+
+void CMainWindow::restoreWindow(void)
+{
+    ((QtMainWindow*)qtMainWindow)->showNormal();
+}
+
 void CMainWindow::DestroyUi(void)
 {
     rho_rhodesapp_callUiDestroyedCallback();
@@ -235,8 +245,12 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(lockSize(int)) );
     QObject::connect(this, SIGNAL(doSetTitle(const char*)),
         ((QtMainWindow*)qtMainWindow), SLOT(setTitle(const char*)) );
+    QObject::connect(this, SIGNAL(doMinimizeWindow(void)),
+        this, SLOT(minimizeWindow(void)) );
+    QObject::connect(this, SIGNAL(doRestoreWindow(void)),
+        this, SLOT(restoreWindow(void)) );
     QObject::connect(this, SIGNAL(doCreateCustomMenu(void)),
-        this, SLOT(createCustomMenu(void)) );
+        this, SLOT(createCustomMenuSlot(void)) );
     return true;
 }
 
@@ -701,6 +715,21 @@ void CMainWindow::setTitle(const char* title)
 void CMainWindow::createCustomMenuCommand(void)
 {
     emit doCreateCustomMenu();
+}
+
+void CMainWindow::minimizeWindowCommand(void)
+{
+    emit doMinimizeWindow();
+}
+
+void CMainWindow::restoreWindowCommand(void)
+{
+    emit doRestoreWindow();
+}
+
+void CMainWindow::createCustomMenuSlot(void)
+{
+    createCustomMenu();
 }
 
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)

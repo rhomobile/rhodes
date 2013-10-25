@@ -28,11 +28,19 @@
 
 #include "common/ExtManager.h"
 #include "rubyext/WebView.h"
-#include <common/RhodesApp.h>
+#include "common/RhodesApp.h"
 
+#ifndef RHODES_QT_PLATFORM
 #include "MainWindow.h"
+#endif
+
 #include "common/app_build_capabilities.h"
 
+#ifdef RHODES_QT_PLATFORM
+#include "../../../../shared/qt/rhodes/impl/MainWindowImpl.h"
+#endif
+
+#ifndef RHODES_QT_PLATFORM
 extern CMainWindow& getAppWindow();
 //#define IDM_NAVIGATE                    40022
 //#define IDM_EXECUTEJS                   40033
@@ -41,8 +49,11 @@ extern CMainWindow& getAppWindow();
 //#define IDM_ZOOMTEXT                    40036
 extern "C" HWND getMainWnd();
 extern "C" HINSTANCE rho_wmimpl_get_appinstance();
+#endif
 extern "C" void rho_sys_app_exit();
+#ifndef RHODES_QT_PLATFORM
 extern "C" WCHAR* rho_wmimpl_get_configfilepath();
+#endif
 
 namespace rho {
 namespace common {
@@ -62,8 +73,13 @@ IRhoExtension* CExtManager::getExtByName(const String& strName)
 CRhoExtData CExtManager::makeExtData()
 {
     CRhoExtData oData;
+#ifndef RHODES_QT_PLATFORM
     oData.m_hWnd = getMainWnd();
     oData.m_hInstance = rho_wmimpl_get_appinstance();
+#else
+    oData.m_hWnd = 0;
+    oData.m_hInstance = 0;
+#endif
     oData.m_iTabIndex = rho_webview_active_tab();
 #if !defined(OS_WINDOWS_DESKTOP)
     oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND(oData.m_iTabIndex);
@@ -219,8 +235,13 @@ void CExtManager::executeJavascript(const wchar_t* szJSFunction)
 {
     TNavigateData* nd = new TNavigateData();
     nd->index = rho_webview_active_tab();
+#ifndef RHODES_QT_PLATFORM
     nd->url = _tcsdup(szJSFunction);
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
+#else
+    nd->url = wcsdup(szJSFunction);
+    CMainWindow::getInstance()->executeJavaScriptCommand(nd);
+#endif
 }
 
 StringW CExtManager::getCurrentUrl()
@@ -250,7 +271,9 @@ void CExtManager::refreshPage(bool bFromCache)
 
 void CExtManager::stopNavigate()
 {
+#ifndef RHODES_QT_PLATFORM
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_STOPNAVIGATE, (LPARAM)rho_webview_active_tab() );
+#endif
 }
 
 void CExtManager::quitApp()
@@ -258,43 +281,61 @@ void CExtManager::quitApp()
     rho_sys_app_exit();
 }
 
+#ifndef RHODES_QT_PLATFORM
 static void __minimize_restoreApp(int nParam)
 {
     ::ShowWindow(getMainWnd(), nParam );
     SetForegroundWindow(getMainWnd());
 }
+#endif
 
 void CExtManager::minimizeApp()
 {
+#ifndef RHODES_QT_PLATFORM
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
     rho_callInUIThread(__minimize_restoreApp, SW_MINIMIZE);
 #else
     ::PostMessage( getMainWnd(), WM_WINDOW_MINIMIZE, 0, 0 );
 #endif
+#else
+    CMainWindow::getInstance()->minimizeWindowCommand();
+#endif
 }
 
 void CExtManager::restoreApp()
 {
+#ifndef RHODES_QT_PLATFORM
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
     rho_callInUIThread(__minimize_restoreApp, SW_RESTORE);
 #else
     rho_callInUIThread(__minimize_restoreApp, SW_SHOW);
 #endif
+#else
+    CMainWindow::getInstance()->restoreWindowCommand();
+#endif
 }
 
 void CExtManager::resizeBrowserWindow(RECT rc)
 {
+#ifndef RHODES_QT_PLATFORM
     //::MoveWindow( getMainWnd(), rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, TRUE );
+#else
+    CMainWindow::getInstance()->setFrame(rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top);
+#endif
 }
 
 void CExtManager::zoomPage(float fZoom)
 {
+#ifndef RHODES_QT_PLATFORM
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_ZOOMPAGE, (LPARAM)new CRhoFloatData(fZoom) );
+#endif
 }
 
 void CExtManager::zoomText(int nZoom)
 {
+#ifndef RHODES_QT_PLATFORM
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_ZOOMTEXT, (LPARAM)nZoom );
+#endif
 }
 
 int CExtManager::getTextZoom() //Enum (0 to 4)
@@ -490,4 +531,3 @@ void CExtManager::OnWindowChanged(LPVOID lparam)
 
 } //namespace common
 } //namespace rho
-

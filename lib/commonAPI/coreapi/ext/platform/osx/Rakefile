@@ -1,93 +1,36 @@
-require 'fileutils'
+require File.join(pwd, '../../../../../build/jake.rb')
 
-def build_extension(name, arch)
-  objects = []
-  mkdir_p $tempdir unless File.exists? $tempdir
+def build_extension(name)
+  dir = File.join($rootdir, "lib/commonAPI/#{name}/ext/platform/osx")
+  qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro QMAKE_MAC_SDK='#{$sdkroot}' CONFIG-=debug CONFIG+=release #{$qmakevars}"
 
-  files = []
-  Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/shared/**/*.c").each do |f|
-    files << f
-  end
-  Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/shared/**/*.cpp").each do |f|
-    files << f
-  end
-  Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/**/*.c").each do |f|
-    files << f
-  end
-  # CSystemImpl.cpp & CWebViewImpl.cpp must be compiled in Qt environment (see /platform/shared/qt/rhodes/rhodes.pro)
-  Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/**/CNative*Impl.cpp").each do |f|
-    files << f
-  end
-
-  files << "#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/src/CNetworkDetect.cpp"
-  files << "#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/src/CNotificationImpl.cpp"
-  files << "#{$rootdir}/lib/commonAPI/coreapi/ext/shared/qt/NavbarImpl.cpp"
-
-  files.each do |f|
-    objname = File.join( $tempdir, File.basename( f.gsub(/\.(c|cpp)$/, '.o') ) )
-    objects << ('"'+objname+'"')
-
-    args = []
-    args << "-I."
-    args << "-I\"#{$rootdir}/lib/commonAPI/coreapi/ext/shared\""
-    args << "-I\"#{$rootdir}/lib/commonAPI/coreapi/ext/shared/generated\""
-    args << "-I\"#{$rootdir}/lib/commonAPI/coreapi/ext/shared/generated/cpp\""
-    args << "-I\"#{$rootdir}/platform/shared/common\""
-    args << "-I\"#{$rootdir}/platform/shared/rubyext\""
-    args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
-    args << "-I\"#{$rootdir}/platform/shared/ruby/iphone\""
-    args << "-I\"#{$rootdir}/platform/shared\""
-    args << "-D_XOPEN_SOURCE"
-    args << "-D_DARWIN_C_SOURCE"
-    args << "-DRHODES_EMULATOR"
-    args << "-isysroot \"#{$sdkroot}\""
-    args << "-fno-common"
-    args << "-arch #{arch}"
-    args << "-O2"
-    args << "-o \"#{objname}\""
-    args << "-c"
-    args << f
-    cmdline = $gccbin + ' ' + args.join(' ')
-    puts cmdline
-    puts `#{cmdline}`
-    fail "[#{cmdline}]" unless $? == 0
-  end
-
-  mkdir_p $targetdir unless File.exist? $targetdir
-
-  args = []
-  args << 'rcs'
-  args << File.join( $targetdir, 'lib' + name + '.a' )
-  args += objects
-  cmdline = $arbin + ' ' + args.join(' ')
-  puts cmdline
-  puts `#{cmdline}`
-  fail "[#{cmdline}]" unless $? == 0
+  Jake.run3(qmake           , dir)
+  Jake.run3("#{$make} clean", dir)
+  Jake.run3("#{$make} all"  , dir)
 end
 
 namespace "build" do
   task :config do
     $platform = ENV['RHO_PLATFORM']
-
-    $targetdir = ENV['TARGET_TEMP_DIR']
-    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
-    $tempdir = ENV['TEMP_FILES_DIR']
-    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    raise "RHO_PLATFORM is not set" if $platform.nil?
     $rootdir = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rootdir.nil?
-
-    $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
-    raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
-    $sdkroot = ENV['SDKROOT']
-    raise "SDKROOT is not set" if $sdkroot.nil?
-    $arch = ENV['ARCHS']
-    raise "ARCHS is not set" if $arch.nil?
-    $gccbin = $bindir + '/gcc'
-    $arbin = $bindir + '/ar'
+    $qmake = ENV['RHO_QMAKE']
+    raise "RHO_QMAKE is not set" if $qmake.nil?
+    $qmakevars = ENV['RHO_QMAKE_VARS']
+    if $platform == 'win32'
+      $qmake_spec = 'win32-msvc2010'
+      $make = 'nmake'
+    else
+      $sdkroot = ENV['SDKROOT']
+      raise "SDKROOT is not set" if $sdkroot.nil?
+      $qmake_spec = 'macx-g++'
+      $make = "make"
+    end
   end
 
   task :all => :config do
-    build_extension('coreapi', $arch)
+    build_extension('coreapi')
   end
 end
 

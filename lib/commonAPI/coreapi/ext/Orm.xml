@@ -140,13 +140,13 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
               <PARAM name='enable("value")' type='STRING'>
                 <DESC>Enables Model Properties.</DESC>
                 <VALUES>
-                                <VALUE constName="" value ="sync">
+                                <VALUE value ="sync">
                                     <DESC>If set then model is set for RhoConnect Sync</DESC>
                                 </VALUE>
-                                <VALUE constName="" value ="propertyBag">
+                                <VALUE value ="propertyBag">
                                     <DESC>(Default) Model will be of type propertyBag.</DESC>
                                 </VALUE>
-                                <VALUE constName="" value ="fixedSchema">
+                                <VALUE value ="fixedSchema">
                                     <DESC>Model will be of type fixedSchema</DESC>
                                 </VALUE>
                              
@@ -218,10 +218,10 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                     <PARAM name="partition" type="STRING">
                         <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data seperate from synched models. Possible `values`</DESC>
                         <VALUES>
-                          <VALUE constName="" value ="local">
+                          <VALUE value ="local">
                               <DESC>This partition is used automatically if the model is not a sync model</DESC>
                           </VALUE>
-                          <VALUE constName="" value ="user">
+                          <VALUE value ="user">
                               <DESC>This partition is used automatically if the model is a sync model</DESC>
                           </VALUE>
                       </VALUES>
@@ -229,10 +229,10 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                     <PARAM name="sync_type" type="STRING">
                         <DESC>Sets the type of sync it will be. </DESC>
                       <VALUES>
-                        <VALUE constName="" value ="none">
+                        <VALUE value ="none">
                             <DESC>If data model is not a sync model</DESC>
                         </VALUE>
-                        <VALUE constName="" value ="incremental">
+                        <VALUE value ="incremental">
                             <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
                         </VALUE>
                       </VALUES>

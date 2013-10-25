@@ -35,6 +35,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -66,7 +67,7 @@ public class LocalFileProvider extends ContentProvider
     
     public static void revokeUriPermissions(Context ctx)
     {
-        String rootUri = PROTOCOL_PREFIX + '/' + ctx.getPackageName();
+        String rootUri = PROTOCOL_PREFIX + ctx.getPackageName();
 
         Logger.I(TAG, "Revoke URI permissions: " + rootUri);
 
@@ -82,32 +83,21 @@ public class LocalFileProvider extends ContentProvider
     }
     
     @Override
-    public ParcelFileDescriptor openFile(Uri uri, String mode)
-        throws FileNotFoundException, SecurityException
-    {
-        Logger.T(TAG, "Opening content: " + uri);
+    public AssetFileDescriptor openAssetFile(Uri uri, String mode) {
+        Logger.T(TAG, "Opening asset: " + uri);
         
         if(mode.compareTo("r") != 0)
         {
+            Logger.E(TAG, uri + " unacceptable mode: " + mode);
             throw new SecurityException("Unacceptable openFile mode: " + mode);
         }
+        File path = fileFromUri(uri);
         
-        try {
-            File path = fileFromUri(uri);
-            
-            Logger.D(TAG, "Opening content file: " + path.getPath());
-            
-            ParcelFileDescriptor fd = RhoFileApi.openParcelFd(path.getPath());
-            if(fd == null)
-                throw new IllegalArgumentException();
-            
-            return fd;
-        } catch(IllegalArgumentException error)
-        {
-            FileNotFoundException fileError = new FileNotFoundException("Cannot assign file for URI: " + uri.toString());
-            fileError.initCause(error);
-            throw fileError;
-        }
+        Logger.D(TAG, "Opening asset file: " + path.getPath());
+        
+        AssetFileDescriptor fd = RhoFileApi.openAssetFd(path.getPath());
+        
+        return fd;
     }
 
     @Override

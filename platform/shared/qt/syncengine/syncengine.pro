@@ -31,7 +31,11 @@ unix:!macx {
   DEFINES += _GNU_SOURCE
 }
 
-DEFINES += RHODES_EMULATOR
+DEFINES += RHODES_QT_PLATFORM
+
+!isEmpty(RHOSIMULATOR_BUILD) {
+  DEFINES += RHODES_EMULATOR
+}
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses

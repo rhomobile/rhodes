@@ -83,6 +83,7 @@ extern const char* rho_native_rhopath();
 extern const char* rho_native_reruntimepath();
 extern const char* rho_native_rhouserpath();
 extern const char* rho_get_remote_debug_host();
+extern const char* rho_native_rhopath();
 
 static VALUE  framework;
 static ID framework_mid;
@@ -253,7 +254,7 @@ void RhoRubyStart()
 //    Init_Alert();
 //#endif
 
-#if defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR)
+#if defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(RHODES_QT_PLATFORM)
     init_rhoext_Signature();
 #else
     //Init_SignatureCapture();
@@ -323,6 +324,7 @@ void RhoRubyStart()
     {
         rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_DEBUG"), Qtrue);
         rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_HOST"), rho_ruby_create_string(rho_get_remote_debug_host()));
+        rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_APPPATH"), rho_ruby_create_string(rho_native_rhopath()));
     }
     else
     {
@@ -467,6 +469,11 @@ void rho_ruby_callmethod(const char* szMethodPath)
     rb_funcall(Qnil, rbMethodCall, 0);
 }
 
+VALUE rho_ruby_callmethod_arg(VALUE classValue, const char *name, VALUE arg)
+{
+    return rb_funcall(classValue, rb_intern(name), 1, arg);
+}
+
 void rho_ruby_reset_db_on_sync_user_changed()
 {
     rb_funcall(framework, resetDBOnSyncUserChanged_mid, 0);
@@ -581,25 +588,23 @@ void rho_ruby_enum_strhash_json(VALUE hash, rho_hash_eachstr_func *func, void* d
 }
 
 static int
-hash_each(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
+hash_each(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
 {
     const char* szKey = "";
-    int keyLen = 0;
 
     if ( key != 0 && key != Qnil )
     {
         VALUE strKey = rb_funcall(key, rb_intern("to_s"), 0);
         szKey = RSTRING_PTR(strKey);
-        keyLen = RSTRING_LEN(strKey);
     }
 
-    (*pEnumData->func)(szKey, value, keyLen, pEnumData->data);
+    (*pEnumData->func)(szKey, value, pEnumData->data);
     return ST_CONTINUE;
 }
 
 void rho_ruby_enum_hash(VALUE hash, rho_hash_each_func * func, void* data)
 {
-    struct CHashEnumStrData enumData;
+    struct CHashEnumData enumData;
 
     if ( !hash || hash == Qnil )
         return;

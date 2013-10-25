@@ -1,6 +1,18 @@
 require 'fileutils'
+require File.join(pwd, '../../../build/jake.rb')
 
 def build_extension(name, arch)
+  if (ENV['RHO_PLATFORM'] == 'osx') or (ENV['RHO_PLATFORM'] == 'win32')
+    args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "#{name}.pro", "QMAKE_MAC_SDK='#{$sdkroot}'", 'CONFIG-=debug', 'CONFIG+=release', $qmakevars]
+    puts Jake.run($qmake,args)
+    fail "[qmake #{name}.pro]" unless $? == 0
+    puts Jake.run($make, ['clean'])
+    fail "[make clean]" unless $? == 0
+    puts Jake.run($make, ['all'])
+    fail "[make all]" unless $? == 0
+    return
+  end
+
   objects = []
   mkdir_p $tempdir unless File.exists? $tempdir
 
@@ -21,7 +33,7 @@ def build_extension(name, arch)
       args << "-I\"#{$rhoroot}/platform/shared/ruby/generated\""
       cc_compile f, $tempdir, args or exit 1
 
-    elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
+    elsif ENV['RHO_PLATFORM'] == 'iphone'
       args << "-I\"#{$rhoroot}/platform/shared/ruby/iphone\""
       args << "-D_XOPEN_SOURCE"
       args << "-D_DARWIN_C_SOURCE"
@@ -45,7 +57,7 @@ def build_extension(name, arch)
   if ENV['RHO_PLATFORM'] == 'android'
     cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
 
-  elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
+  elsif ENV['RHO_PLATFORM'] == 'iphone'
     args = []
     args << 'rcs'
     args << File.join( $targetdir, 'lib' + name + '.a' )
@@ -66,18 +78,6 @@ def build_extension(name, arch)
     fail "[#{cmdline}]" unless $? == 0
 
     cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
-
-  elsif ENV['RHO_PLATFORM'] == 'win32'
-    args = []
-    args << "/M4"
-    args << name + ".sln"
-    args << "\"#{ENV['RHO_BUILD_CONFIG']}|Win32\""
-    cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
-    puts cmdline
-    puts `#{cmdline}`
-    fail "[#{cmdline}]" unless $? == 0
-
-    cp_r File.join($tempdir, ENV['RHO_BUILD_CONFIG'], name + ".lib"), $targetdir
   end
 end
 
@@ -89,6 +89,7 @@ namespace "build" do
     raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
     $tempdir = ENV['TEMP_FILES_DIR']
     raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $qmakevars = ENV['RHO_QMAKE_VARS']
 
     if ENV['RHO_PLATFORM'] == 'android'
       require File.dirname(__FILE__) + '/../../../../platform/android/build/androidcommon.rb'
@@ -96,14 +97,22 @@ namespace "build" do
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
 
     elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
-      $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
-      raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
       $sdkroot = ENV['SDKROOT']
       raise "SDKROOT is not set" if $sdkroot.nil?
-      $arch = ENV['ARCHS']
-      raise "ARCHS is not set" if $arch.nil?
-      $gccbin = $bindir + '/gcc'
-      $arbin = $bindir + '/ar'
+
+      if ENV['RHO_PLATFORM'] == 'iphone'
+        $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+        raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+        $arch = ENV['ARCHS']
+        raise "ARCHS is not set" if $arch.nil?
+        $gccbin = $bindir + '/gcc'
+        $arbin = $bindir + '/ar'
+      else
+        $qmake = ENV['RHO_QMAKE']
+        raise "RHO_QMAKE is not set" if $qmake.nil?
+        $qmake_spec = 'macx-g++'
+        $make = "make"
+      end
 
     elsif ENV['RHO_PLATFORM'] == 'wm'
       $vcbuild = ENV['VCBUILD']
@@ -116,6 +125,11 @@ namespace "build" do
       raise "VCBUILD is not set" if $vcbuild.nil?
       $sdk = ENV['SDK']
       raise "SDK is not set" if $sdk.nil?
+
+      $qmake = ENV['RHO_QMAKE']
+      raise "RHO_QMAKE is not set" if $qmake.nil?
+      $qmake_spec = 'win32-msvc2010'
+      $make = 'nmake'
 
     end
   end

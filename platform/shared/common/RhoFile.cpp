@@ -56,7 +56,7 @@ extern "C"{
     extern "C" int _mkdir(const char * dir);
     extern "C" int _rmdir(const char * dir);
 
-#if !defined(OS_WP8) && !defined(RHODES_EMULATOR_QMAKE)
+#if !defined(OS_WP8) && !defined(RHODES_QT_PLATFORM)
     extern "C" int  _unlink(const char *path);
 #endif
 
@@ -64,7 +64,7 @@ extern "C"{
 
 #if defined(OS_WINCE)
     extern "C" int  _rename(const char *, const char *);
-#elif defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR_QMAKE)
+#elif defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_QT_PLATFORM)
     extern "C" int  rename(const char *, const char *);
 #endif
 
@@ -730,7 +730,7 @@ extern "C" void rho_file_set_fs_mode(int mode) {
     void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
         
     }
-#elif !defined(RHODES_EMULATOR_QMAKE)
+#elif !defined(RHODES_QT_PLATFORM)
 extern "C" {
     
     void rho_file_impl_delete_folder(const char* szFolderPath) {
