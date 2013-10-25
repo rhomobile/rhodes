@@ -3022,16 +3022,16 @@ ZRESULT GZipBuffer( const std::string& input, std::string& output )
     
     /* write header */
     output.resize(headerSize);
-    output[0] = 0x1f;   //magic1
-    output[1] = 0x8b;   //magic2
-    output[2] = 0x08;   //method
-    output[3] = 0x00;   //flags
-    output[4] = 0x00;   //timestamp
-    output[5] = 0x00;   //timestamp
-    output[6] = 0x00;   //timestamp
-    output[7] = 0x00;   //timestamp
-    output[8] = 0x02;   //extra flags
-    output[9] = 0xff;   //OS
+    output[0] = 0x1fu;   //magic1
+    output[1] = 0x8bu;   //magic2
+    output[2] = 0x08u;   //method
+    output[3] = 0x00u;   //flags
+    output[4] = 0x00u;   //timestamp
+    output[5] = 0x00u;   //timestamp
+    output[6] = 0x00u;   //timestamp
+    output[7] = 0x00u;   //timestamp
+    output[8] = 0x02u;   //extra flags
+    output[9] = 0xffu;   //OS
 
     /* write body */
 
