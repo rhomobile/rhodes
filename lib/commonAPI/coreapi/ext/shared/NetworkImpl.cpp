@@ -19,6 +19,7 @@
 #include "common/RhodesApp.h"
 #include "System.h"
 #include "common/RhoConf.h"
+#include "unzip/zip.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NetworkAcceess"
@@ -103,6 +104,7 @@ public:
 private:
 
     NetRequest& getCurRequest(NetRequest& oNetRequest, rho::apiGenerator::CMethodResult& oResult);
+    rho::String getEncodedBody(const rho::String& body, const rho::String& encoding);
 
     void readHeaders( const rho::Hashtable<rho::String, rho::String>& propertyMap, Hashtable<String,String>& mapHeaders );
     void createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult );
@@ -184,9 +186,14 @@ void CNetworkImpl::get( const rho::Hashtable<rho::String, rho::String>& property
     NetRequest oNetRequest;
     
     setupSecureConnection( propertyMap, oNetRequest, oResult );
-
+    
+    String body = propertyMap.get("body");
+    if ( propertyMap.containsKey("contentEncoding") ) {
+        body = getEncodedBody(body,propertyMap.get("contentEncoding"));
+    }
+    
     NetResponse resp = getNetRequest(&getCurRequest(oNetRequest, oResult)).doRequest( getStringProp(propertyMap, "httpVerb", "GET").c_str(),
-            propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
+            propertyMap.get("url"), body, null, &mapHeaders);
 
     if ( !getCurRequest(oNetRequest, oResult).isCancelled())
         createResult( resp, mapHeaders, oResult );
@@ -229,9 +236,14 @@ void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propert
     NetRequest oNetRequest;
 
     setupSecureConnection( propertyMap, oNetRequest, oResult );
-
+    
+    String body = propertyMap.get("body");
+    if ( propertyMap.containsKey("contentEncoding") ) {
+        body = getEncodedBody(body,propertyMap.get("contentEncoding"));
+    }
+    
     NetResponse resp = getNetRequest(&getCurRequest(oNetRequest, oResult)).doRequest( getStringProp(propertyMap, "httpVerb", "POST").c_str(),
-            propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
+            propertyMap.get("url"), body, null, &mapHeaders);
 
     if ( !getCurRequest(oNetRequest, oResult).isCancelled())
         createResult( resp, mapHeaders, oResult );
@@ -321,8 +333,28 @@ void CNetworkImpl::readHeaders( const rho::Hashtable<rho::String, rho::String>& 
     {
         mapHeaders["User-Agent"] = "Mozilla-5.0 (" + rho::System::getPlatform() + "; " + rho::System::getDeviceName() + "; " + rho::System::getOsVersion() + ")";
     }
-
+    
+    if ( propertyMap.containsKey("contentEncoding") )
+    {
+        mapHeaders["Content-Encoding"] = propertyMap.get("contentEncoding");
+    }
 }
+    
+rho::String CNetworkImpl::getEncodedBody(const rho::String& body, const rho::String& encoding)
+{
+    String ret = body;
+    
+    if ( encoding == "gzip" ) {
+        String encoded;
+        
+        if (ZR_OK==::GZipBuffer(body,encoded)) {
+            ret = encoded;
+        }
+    }
+    
+    return ret;    
+}
+
 
 void CNetworkImpl::createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult )
 {
@@ -605,7 +637,7 @@ void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho:
     RHOCONF().setString("clientSSLCertificate",clientCertificate,false);
     RHOCONF().setString("clientSSLCertificatePassword",clientCertificatePassword,false);
 }
-
+    
 
 ////////////////////////////////////////////////////////////////////////
 

@@ -384,7 +384,7 @@ class Jake
   end
 
   def self.run3(command, cd = nil, env = {})
-    fail "[#{cmd}]" unless self.run3_dont_fail(command, cd, env)
+    fail "[#{command}]" unless self.run3_dont_fail(command, cd, env)
   end
 
   def self.run4(command)
@@ -674,10 +674,16 @@ class Jake
   end
 
   def self.modify_rhoconfig_for_debug
-	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-	confpath_content += "\r\n" + "remotedebug=1"  if !confpath_content.include?("remotedebug=")
-  confpath_content += "\r\n" + "debughosturl=" + $rhologhostaddr  if !confpath_content.include?("debughosturl=")
-	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+    puts "confpath_content=" + confpath_content.to_s
+    
+    confpath_content += "\r\n" + "remotedebug=1"  if !confpath_content.include?("remotedebug=")
+    confpath_content += "\r\n" + "debughosturl=" + $rhologhostaddr  if !confpath_content.include?("debughosturl=")
+  
+ #   puts "confpath_content=" + confpath_content.to_s
+ #   puts  "$srcdir=" + $srcdir.to_s
+   
+    File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
   end
 
   def self.run_rho_log_server(app_path)

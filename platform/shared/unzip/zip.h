@@ -63,6 +63,8 @@ typedef time_t FILETIME;
 
 #endif
 
+#include <string>
+
 // ZIP functions -- for creating zip files
 // This file is a repackaged form of the Info-Zip source code available
 // at www.info-zip.org. The original copyright notice may be found in
@@ -78,7 +80,7 @@ DECLARE_HANDLE(HZIP);
 typedef DWORD ZRESULT;
 // return codes from any of the zip functions. Listed later.
 
-#if defined(OS_WP8) || defined(RHODES_EMULATOR)
+#if defined(OS_WP8) || defined(RHODES_QT_PLATFORM)
 extern "C"
 #endif
 HZIP CreateZip(const TCHAR *fn, const char *password);
@@ -114,14 +116,14 @@ HZIP CreateZipHandle(HANDLE h, const char *password);
 // but for real windows, the zip makes its own copy of your handle, so you
 // can close yours anytime.
 
-#if defined(OS_WP8) || defined(RHODES_EMULATOR)
+#if defined(OS_WP8) || defined(RHODES_QT_PLATFORM)
 extern "C"
 #endif
 ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, const TCHAR *fn);
 ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, void *src,unsigned int len);
 ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h);
 ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h, unsigned int len);
-#if defined(OS_WP8) || defined(RHODES_EMULATOR)
+#if defined(OS_WP8) || defined(RHODES_QT_PLATFORM)
 extern "C"
 #endif
 ZRESULT ZipAddFolder(HZIP hz,const TCHAR *dstzn, const TCHAR *fn);
@@ -151,6 +153,10 @@ unsigned int FormatZipMessage(ZRESULT code, TCHAR *buf,unsigned int len);
 // FormatZipMessage - given an error code, formats it as a string.
 // It returns the length of the error message. If buf/len points
 // to a real buffer, then it also writes as much as possible into there.
+
+
+
+ZRESULT GZipBuffer(const std::string& input, std::string& output );
 
 
 

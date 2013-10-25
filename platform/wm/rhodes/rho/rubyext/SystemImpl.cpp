@@ -26,7 +26,7 @@
 
 #include "stdafx.h"
 
-#if defined(RHODES_EMULATOR_QMAKE)
+#if defined(RHODES_QT_PLATFORM)
 
 #include <windows.h>
 #include "common/RhoDefs.h"
@@ -38,7 +38,7 @@
 #endif
 #include "../../qt/rhodes/impl/MainWindowImpl.h"
 
-#else // RHODES_EMULATOR_QMAKE
+#else // RHODES_QT_PLATFORM
 
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
@@ -47,12 +47,16 @@
 #if defined(OS_WINDOWS_DESKTOP)
 #undef null
 #include <QWebPage>
+#include <qglobal.h>
+#if QT_VERSION >= 0x050000
+#include <QtWebKit/qtwebkitversion.h>
+#endif
 #endif
 
 extern "C" HWND getMainWnd();
 CMainWindow& getAppWindow();
 
-#endif // RHODES_EMULATOR_QMAKE
+#endif // RHODES_QT_PLATFORM
 
 using namespace rho;
 using namespace rho::common;
@@ -131,7 +135,7 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
         CloseHandle(se.hProcess);
 }
 
-#if !defined(RHODES_EMULATOR_QMAKE)
+#if !defined(RHODES_QT_PLATFORM)
 
 void rho_sys_app_exit()
 {
@@ -270,7 +274,7 @@ void rho_sys_lock_window_size(int locked)
 }
 #endif
 
-#endif // RHODES_EMULATOR_QMAKE
+#endif // RHODES_QT_PLATFORM
 
 }
 #if 0

@@ -1,5 +1,5 @@
-#ifndef __RhoLib__StringfyHelper__
-#define __RhoLib__StringfyHelper__
+#ifndef __RhoLib__StringifyHelper__
+#define __RhoLib__StringifyHelper__
 
 #include "common/RhoStd.h"
 #include "common/RhoPort.h"
@@ -37,9 +37,16 @@ namespace rho
             void push_back(const char* value) { push_back(rho::common::convertToStringA(value), true); }
             void push_back(const IStringSerializable& value);
             
+            template<typename U>
+            void fromVector(const rho::Vector<U> &u) {
+                for(typename rho::Vector<U>::const_iterator iter = u.begin(); iter != u.end(); iter++ )
+                {
+                    push_back(*iter);
+                }
+            }
+            
             virtual void toString(rho::String &buffer) const;
         };
-        
         
         class StringifyHash : public IStringSerializable
         {
@@ -59,10 +66,18 @@ namespace rho
             void set(const rho::String& key, const char* value) { set(key, rho::common::convertToStringA(value), true); }
             void set(const rho::String& key, const IStringSerializable& value);
             
+            template<typename U>
+            void fromHash(const rho::Hashtable<rho::String, U> &u) {
+                for(typename rho::Hashtable<rho::String, U>::const_iterator iter = u.begin(); iter != u.end(); iter++ )
+                {
+                    set(iter->first,iter->second);
+                }
+            }
+            
             virtual void toString(rho::String &buffer) const;
         };
     }
 }
 
 
-#endif /* defined(__RhoLib__StringfyHelper__) */
+#endif /* defined(__RhoLib__StringifyHelper__) */

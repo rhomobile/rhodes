@@ -92,8 +92,6 @@ namespace "config" do
       $sdk = value if value      
     end
 
-    #$remote_debug = false
-    #$remote_debug = Jake.getBool(ENV['rho_remote_debug'])  if ENV['rho_remote_debug']
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"
@@ -174,9 +172,9 @@ namespace "config" do
     end
 
     task :qt do
-      $vscommontools = ENV['VS90COMNTOOLS']
+      $vscommontools = ENV['VS100COMNTOOLS']
       unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-        puts "\nPlease, set VS90COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2008"
+        puts "\nPlease, set VS100COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2010"
         exit 1
       end
       $qtdir = ENV['QTDIR']
@@ -184,6 +182,7 @@ namespace "config" do
         puts "\nPlease, set QTDIR environment variable to Qt root directory path"
         exit 1
       end
+      $qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
     end
 
     task :application do
@@ -333,6 +332,8 @@ namespace "build" do
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
+              ENV['RHO_QMAKE'] = $qmake
+              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
 
               if File.exists? File.join(extpath, 'build.bat')
                 clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
@@ -474,38 +475,53 @@ namespace "build" do
   namespace "win32" do
     
     task :deployqt => "config:win32:qt" do
-      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.CRT")
-      cp File.join(vsredistdir, "msvcm90.dll"), $target_path
-      cp File.join(vsredistdir, "msvcp90.dll"), $target_path
-      cp File.join(vsredistdir, "msvcr90.dll"), $target_path
-      cp File.join(vsredistdir, "Microsoft.VC90.CRT.manifest"), $target_path
-      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
-      cp File.join(vsredistdir, "vcomp90.dll"), $target_path
-      cp File.join(vsredistdir, "Microsoft.VC90.OpenMP.manifest"), $target_path
+      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC100.CRT")
+      cp File.join(vsredistdir, "msvcp100.dll"), $target_path
+      cp File.join(vsredistdir, "msvcr100.dll"), $target_path
+      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC100.OPENMP")
+      cp File.join(vsredistdir, "vcomp100.dll"), $target_path
       cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
       cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
-      cp File.join($qtdir, "bin/phonon4.dll"), $target_path
-      cp File.join($qtdir, "bin/QtCore4.dll"), $target_path
-      cp File.join($qtdir, "bin/QtGui4.dll"), $target_path
-      cp File.join($qtdir, "bin/QtNetwork4.dll"), $target_path
-      cp File.join($qtdir, "bin/QtWebKit4.dll"), $target_path
+      cp File.join($qtdir, "bin/icudt51.dll"), $target_path
+      cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
+      cp File.join($qtdir, "bin/icudt51.dll"), $target_path
+      cp File.join($qtdir, "bin/libEGL.dll"), $target_path
+      cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5WebKit.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Multimedia.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Quick.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Qml.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Sql.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5Sensors.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5V8.dll"), $target_path
       target_if_path = File.join($target_path, 'imageformats/')
       if not File.directory?(target_if_path)
         Dir.mkdir(target_if_path)
       end
-      cp File.join($qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qico4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
-      cp File.join($qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qgif.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qico.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qjpeg.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qmng.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qsvg.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qtga.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qtiff.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qwbmp.dll"), target_if_path
     end
 
     task :extensions => "config:wm" do
+      extensions_lib = ''
+      pre_targetdeps = ''
 
       puts "$app_extensions_list : #{$app_extensions_list}"
 
       $app_extensions_list.each do |ext, commin_ext_path |      
+          puts "extension #{ext} [#{commin_ext_path}]"
           next unless commin_ext_path
           
           extpath = File.join(commin_ext_path, 'ext')
@@ -517,6 +533,11 @@ namespace "build" do
           
           project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
           next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
+
+          if ext != 'openssl.so'
+            extensions_lib << " #{ext}.lib"
+            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+          end
 
           if (project_path)
           
@@ -547,15 +568,27 @@ namespace "build" do
               ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
               ENV['PWD'] = $startdir
               ENV['RHO_ROOT'] = ENV['PWD']
-              ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
-              ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "extensions", ext)
+              ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
+              ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions", ext)
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
+              ENV['RHO_QMAKE'] = $qmake
+              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
 
               clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
           end
       end
+
+      ext_dir = File.join($startdir, 'platform/win32/bin/extensions')
+      mkdir_p ext_dir if not File.exists? ext_dir
+      File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
+        fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
+LIBS += /LIBPATH:../../../win32/bin/extensions#{extensions_lib}
+PRE_TARGETDEPS += #{pre_targetdeps}
+})
+      end
+
     end
 
     #    desc "Build win32 rhobundle"
@@ -604,7 +637,7 @@ namespace "build" do
 
     end
 
-    task :rhosimulator => ["config:rhosimulator", "config:set_win32_platform", "config:wm", "build:rhosimulator_version", "config:win32:qt"] do
+    task :rhosimulator => ["config:rhosimulator", "config:set_win32_platform", "config:wm", "config:qt", "build:rhosimulator_version", "config:win32:qt"] do
       $config["platform"] = $current_platform
       chdir $startdir
       init_extensions(pwd, nil)
@@ -612,51 +645,45 @@ namespace "build" do
 
       cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 
-      chdir $config["build"]["wmpath"]
-
-      if $wm_win32_ignore_vsprops
-        Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
-          Jake.clean_vsprops(file)
-        end
-      end
-
-      args = ['/M4', $build_solution, '"SimulatorRelease|Win32"']
-      puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
-      puts Jake.run($vcbuild,args)
+      Jake.run3('rhosimulator_win32_build.bat RHOSIMULATOR_BUILD=1', $qt_project_dir)
 
       chdir $startdir
-
-      unless $? == 0
-        puts "Error building"
-        exit 1
-      end
 
       $target_path = File.join( $startdir, "platform/win32/RhoSimulator/")
       if not File.directory?($target_path)
         Dir.mkdir($target_path)
       end
-      cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), $target_path
+      cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), $target_path
 
       Rake::Task["build:win32:deployqt"].invoke
     end
 
+    desc 'prints toolchain is required by Windows RhoSimulator.'
+    task :rhosim_toolchain do
+      puts 'VS2010'
+    end
+
+    desc 'prints Qt version is required by Windows RhoSimulator.'
+    task :rhosim_qt_version do
+      puts '5.1.1'
+    end
   end
 
   #desc "Build rhodes for win32"
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
 
-    args = ['/M4', $build_solution,  "\"" + $buildcfg + '|Win32"']
-    puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
-    puts Jake.run($vcbuild,args)
+    Jake.run3('rhosimulator_win32_build.bat', $qt_project_dir)
+
+    $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
+    if not File.directory?($target_path)
+      Dir.mkdir($target_path)
+    end
+    cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
+
+    Rake::Task["build:win32:deployqt"].invoke
 
     chdir $startdir
-
-    unless $? == 0
-      puts "Error building"
-      exit 1
-    end
-    
   end
 end
 
@@ -1022,7 +1049,7 @@ namespace "device" do
 
   namespace "win32" do
     desc "Build installer for Windows"
-    task :production => ["build:win32:set_release_config", "config:win32:qt", "build:win32"] do
+    task :production => ["build:win32:set_release_config", "config:qt", "config:win32:qt", "build:win32"] do
       createWin32Production
     end
   end
@@ -1097,9 +1124,6 @@ namespace "run" do
 
   desc "Build and run on WM6 emulator"
   task :wm => ["device:wm:production"] do
-    #if $remote_debug
-    #  Jake.modify_rhoconfig_for_debug()
-    #end
 
     if $use_direct_deploy == "no" 
       Rake::Task["run:wm:cab"].execute
@@ -1367,7 +1391,7 @@ namespace "run" do
   end
 
   desc "Run win32"
-  task :win32 => ["build:win32"] do
+  task :win32 => ["config:qt", "config:win32:qt", "build:win32"] do
   
     cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
 

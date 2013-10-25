@@ -36,9 +36,9 @@ end
 extern "C" void Init_JSAPI_<%= $cur_module.name %>(void)
 {
 <% $cur_module.methods.each do |module_method|%>
-<%= api_generator_MakeJSMethodDef(module_method.name, module_method.native_name, module_method.access == ModuleMethod::ACCESS_STATIC) %>
+<%= api_generator_MakeJSMethodDef(module_method.binding_name, module_method.native_name, module_method.access == ModuleMethod::ACCESS_STATIC) %>
 <% if $cur_module.is_template_default_instance && (module_method.access == ModuleMethod::ACCESS_INSTANCE)
-%><%= "    //  should define static method ! "+api_generator_MakeJSMethodDef("def_"+module_method.name, "def_"+module_method.native_name, true) %>;
+%><%= "    //  should define static method ! "+api_generator_MakeJSMethodDef("def_"+module_method.binding_name, "def_"+module_method.native_name, true) %>;
 <% end
 end %>
 <% if $cur_module.is_template_default_instance %>

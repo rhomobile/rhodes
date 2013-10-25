@@ -1,6 +1,8 @@
 #ifndef RUBY_SOCKET_H
 #define RUBY_SOCKET_H 1
 
+#include "ruby/config.h"
+
 #include "ruby/ruby.h"
 #include "ruby/io.h"
 #include "ruby/util.h"
@@ -26,7 +28,9 @@
 #else
 # include <sys/socket.h>
 #endif
+
 #include <netinet/in.h>
+
 #ifdef HAVE_NETINET_IN_SYSTM_H
 # include <netinet/in_systm.h>
 #endif
@@ -41,6 +45,7 @@
 #endif
 #include <netdb.h>
 #endif
+
 #include <errno.h>
 #ifdef HAVE_SYS_UN_H
 #include <sys/un.h>

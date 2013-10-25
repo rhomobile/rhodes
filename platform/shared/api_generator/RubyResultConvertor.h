@@ -108,6 +108,12 @@ public:
         } else
         if(m_oResult.getType() == CMethodResult::eArrayHash)
         {
+            static VALUE classValue = 0;
+            if (m_oResult.getResultClassType() == CMethodResult::rctEntity)
+            {
+                classValue = rho_ruby_get_class_byname(m_oResult.getObjectClassPath().c_str());
+            }
+            
             for(size_t i = 0; i < m_oResult.getHashArray().size(); ++i)
             {
                 CHoldRubyValue valItem(rho_ruby_createHash());
@@ -116,8 +122,15 @@ public:
                 {
                     addStrToHash(valItem, it->first.c_str(), it->second.c_str());
                 }
-
-                rho_ruby_add_to_array(valArray, valItem);
+                
+                if (m_oResult.getResultClassType() == CMethodResult::rctEntity)
+                {
+                    CHoldRubyValue resItem( rho_ruby_callmethod_arg(classValue, "create_instance", valItem) );
+                    
+                    rho_ruby_add_to_array(valArray, resItem);
+                } else {
+                    rho_ruby_add_to_array(valArray, valItem);
+                }
             }
         }
 
@@ -126,44 +139,57 @@ public:
     VALUE getHash()
     {
         //RAWLOGC_INFO("CRubyResultConvertor", "getHash()");
-
-        CHoldRubyValue valHash(rho_ruby_createHash());
-
-        for(rho::Hashtable<rho::String, rho::String>::const_iterator it = m_oResult.getStringHash().begin(); it != m_oResult.getStringHash().end(); ++it)
-        {
-            //RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): %s->%s", it->first.c_str(), it->second.c_str());
-            addHashToHash(valHash, it->first.c_str(), getObjectOrString(it->second));
-        }
-
-        for(rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >::const_iterator it = m_oResult.getStringHashL2().begin(); it != m_oResult.getStringHashL2().end(); ++it)
-        {
-            CHoldRubyValue valHashL2(rho_ruby_createHash());
-
-            //RAWLOGC_INFO1("CRubyResultConvertor", "getHash(): %s->L2 HASH", it->first.c_str());
-
-            for(rho::Hashtable<rho::String, rho::String>::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
-            {
-                //RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): L2: %s->%s", it2->first.c_str(), it2->second.c_str());
-                addStrToHash(valHashL2, it2->first.c_str(), it2->second.c_str());
-            }
-
-            addHashToHash(valHash, it->first.c_str(), valHashL2 );
-        }
         
-        for(rho::Hashtable<rho::String, rho::Vector<rho::String> >::const_iterator it = m_oResult.getStringHashVector().begin(); it != m_oResult.getStringHashVector().end(); ++it)
+        if (m_oResult.getResultClassType() != CMethodResult::rctEntity)
         {
-            CHoldRubyValue valArray(rho_ruby_create_array());
-            
-            for(rho::Vector<rho::String>::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+            CHoldRubyValue valHash(rho_ruby_createHash());
+
+            for(rho::Hashtable<rho::String, rho::String>::const_iterator it = m_oResult.getStringHash().begin(); it != m_oResult.getStringHash().end(); ++it)
             {
-                //RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): L2: %s->%s", it2->first.c_str(), it2->second.c_str());
-                rho_ruby_add_to_array(valArray, getObjectOrString(*it2));
+                //RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): %s->%s", it->first.c_str(), it->second.c_str());
+                addHashToHash(valHash, it->first.c_str(), getObjectOrString(it->second));
+            }
+
+            for(rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >::const_iterator it = m_oResult.getStringHashL2().begin(); it != m_oResult.getStringHashL2().end(); ++it)
+            {
+                CHoldRubyValue valHashL2(rho_ruby_createHash());
+
+                //RAWLOGC_INFO1("CRubyResultConvertor", "getHash(): %s->L2 HASH", it->first.c_str());
+
+                for(rho::Hashtable<rho::String, rho::String>::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+                {
+                    //RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): L2: %s->%s", it2->first.c_str(), it2->second.c_str());
+                    addStrToHash(valHashL2, it2->first.c_str(), it2->second.c_str());
+                }
+
+                addHashToHash(valHash, it->first.c_str(), valHashL2 );
             }
             
-            addHashToHash(valHash, it->first.c_str(), valArray );
+            for(rho::Hashtable<rho::String, rho::Vector<rho::String> >::const_iterator it = m_oResult.getStringHashVector().begin(); it != m_oResult.getStringHashVector().end(); ++it)
+            {
+                CHoldRubyValue valArray(rho_ruby_create_array());
+                
+                for(rho::Vector<rho::String>::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+                {
+                    //RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): L2: %s->%s", it2->first.c_str(), it2->second.c_str());
+                    rho_ruby_add_to_array(valArray, getObjectOrString(*it2));
+                }
+                
+                addHashToHash(valHash, it->first.c_str(), valArray );
+            }
+            return valHash;
+        }  else {
+            static VALUE classValue = rho_ruby_get_class_byname(m_oResult.getObjectClassPath().c_str());
+            CHoldRubyValue valHash (rho_ruby_createHash());
+            
+            for(rho::Hashtable<rho::String, rho::String>::const_iterator it = m_oResult.getStringHash().begin(); it != m_oResult.getStringHash().end(); ++it)
+            { 
+                addStrToHash(valHash, it->first.c_str(), it->second.c_str());
+            }
+            
+            CHoldRubyValue resItem( rho_ruby_callmethod_arg(classValue, "create_instance", valHash) );
+            return resItem;
         }
-
-        return valHash;
     }
 
     VALUE getJSON()

@@ -40,7 +40,10 @@ if api_generator_isSelfModule( $cur_module, result_type) %>
     oRes.setJSObjectClassPath( "<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>" );<%
 elsif result_type && result_type.length()>0 && !MethodParam::BASE_TYPES.include?(result_type) %>
     oRes.setJSObjectClassPath( "<%= api_generator_getJSModuleName(result_type) %>" );<%
-end; end
+    if !module_method.linked_entity.nil?%>
+    oRes.setResultAsEntity();
+<% end 
+end; end 
 
 if module_method.linked_property && module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
     oRes.setRequestedType(<%= api_generator_cpp_makeMethodResultType(module_method.linked_property.type) %>);<%

@@ -48,7 +48,11 @@ unix:!macx {
 ../../net/ssl.cpp
 }
 
-DEFINES += RHODES_EMULATOR RHODES_EMULATOR_QMAKE
+DEFINES += RHODES_QT_PLATFORM
+
+!isEmpty(RHOSIMULATOR_BUILD) {
+  DEFINES += RHODES_EMULATOR
+}
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
@@ -110,7 +114,7 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../api_generator/GeneratorQueue.h\
 ../../api_generator/MethodResult.h\
 ../../api_generator/js_helpers.h\
-../../api_generator/StringfyHelper.h
+../../api_generator/StringifyHelper.h
 
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
@@ -149,4 +153,4 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/push/RhoPushManager.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\
-../../api_generator/StringfyHelper.cpp
+../../api_generator/StringifyHelper.cpp

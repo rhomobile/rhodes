@@ -37,7 +37,7 @@
 #ifdef OS_WP8
 extern "C" void createMenu();
 #endif
-#ifdef RHODES_EMULATOR_QMAKE
+#ifdef RHODES_QT_PLATFORM
 extern "C" void rho_symimpl_createMenu();
 #endif
 
@@ -255,7 +255,7 @@ void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bo
 #ifdef OS_WP8
 		createMenu();
 #endif
-#ifdef RHODES_EMULATOR_QMAKE
+#ifdef RHODES_QT_PLATFORM
         rho_symimpl_createMenu();
 #endif
     }

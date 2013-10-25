@@ -210,7 +210,7 @@ def cpp_def_args
     args << "-fvisibility-inlines-hidden"
     args << "-fno-exceptions"
     args << "-fno-rtti"
-    args << "-std=c++11"
+    args << "-std=c++0x"
     args << "-Wno-reorder"
     $cpp_def_args_val = args
   end

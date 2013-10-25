@@ -205,7 +205,7 @@ namespace "build" do
 
           if (project_path)
             ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
-            puts Jake.run("rake", [], File.join($startdir, "lib/build/extensions"))
+            Jake.run3('rake', File.join($startdir, 'lib/build/extensions'))
 
             if (!extconf_wp8['libraries'].nil?) && (extconf_wp8['libraries'].is_a? Array)
               extconf_wp8['libraries'].each do |lib|
@@ -213,7 +213,7 @@ namespace "build" do
                 if !extconf_wp8_lib['project_path'].nil?
                   setCSharpEnvironment( csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?) )
                   ENV['RHO_PROJECT_PATH'] = File.join(p, ext, extconf_wp8_lib['project_path'])
-                  puts Jake.run("rake", [], File.join($startdir, "lib/build/extensions"))
+                  Jake.run3('rake', File.join($startdir, 'lib/build/extensions'))
                 end
               end
             end
@@ -223,7 +223,7 @@ namespace "build" do
             extpath = File.join(p, ext, 'ext')
             next unless File.exists? File.join(extpath, "build.bat")
 
-            puts Jake.run("build.bat", [], extpath)
+            Jake.run3('build.bat', extpath)
             break
 
           end
