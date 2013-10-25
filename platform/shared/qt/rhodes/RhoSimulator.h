@@ -29,6 +29,8 @@
 
 #include "common/RhoDefs.h"
 
+#define RHOSIMULATOR_NAME "RhoSimulator"
+
 #ifndef RHO_SYMBIAN
 #include "RhoSimulatorVersion.h"
 #endif // RHO_SYMBIAN
