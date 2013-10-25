@@ -485,15 +485,14 @@ namespace "build" do
       cp File.join($qtdir, "bin/icudt51.dll"), $target_path
       cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
       cp File.join($qtdir, "bin/icudt51.dll"), $target_path
-      cp File.join($qtdir, "bin/libEGL.dll"), $target_path
-      cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
+      # cp File.join($qtdir, "bin/libEGL.dll"), $target_path
+      # cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5WebKit.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Multimedia.dll"), $target_path
-      cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Quick.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Qml.dll"), $target_path
