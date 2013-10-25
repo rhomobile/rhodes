@@ -675,9 +675,15 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
     Jake.run3('rhosimulator_win32_build.bat', $qt_project_dir)
 
-    chdir $startdir
+    $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
+    if not File.directory?($target_path)
+      Dir.mkdir($target_path)
+    end
+    cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
 
-    # TODO: copy result to expected place ?
+    Rake::Task["build:win32:deployqt"].invoke
+
+    chdir $startdir
   end
 end
 
