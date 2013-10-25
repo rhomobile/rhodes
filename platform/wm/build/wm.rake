@@ -644,7 +644,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
       cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 
-      Jake.run3('rhosimulator_win32_build.bat RHOSIMULATOR_BUILD=1', $qt_project_dir)
+      Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
 
       chdir $startdir
 
