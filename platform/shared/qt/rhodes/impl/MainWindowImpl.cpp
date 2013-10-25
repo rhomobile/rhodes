@@ -64,7 +64,11 @@ CMainWindow::CMainWindow():
 {
     int argc = 0;
     QCoreApplication::setOrganizationName("Rhomobile");
+#ifndef RHODES_EMULATOR
+    QCoreApplication::setApplicationName(RHODESAPP().getAppName().c_str());
+#else
     QCoreApplication::setApplicationName("RhoSimulator");
+#endif
     qtApplication = (void*)new QApplication(argc, 0);
 }
 
