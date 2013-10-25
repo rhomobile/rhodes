@@ -31,8 +31,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Vector;
 
+import android.app.KeyguardManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.app.Application;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.os.Handler;
 import android.os.Process;
@@ -46,7 +50,67 @@ import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.util.Utils.AssetsSource;
 import com.rhomobile.rhodes.util.Utils.FileSource;
 
+class ScreenReceiver extends BroadcastReceiver
+{
+	public enum DeviceScreenEvent
+	{
+		SCREEN_OFF(0),
+		SCREEN_ON(1),
+		SCREEN_LOCKED(2),
+		SCREEN_UNLOCKED(3);
+
+		/**
+		 * Value for this difficulty
+		 */
+		public final int Value;
+
+		private DeviceScreenEvent(int value)
+		{
+			Value = value;
+		}
+	}
+
+	public ScreenReceiver() {
+	}
+
+	private native static void notifyDeviceScreenEvent(int event);
+
+	@Override
+	public void onReceive(Context context, Intent intent)
+	{
+		// do not handle anything if there are no activities yet
+		if (BaseActivity.getActivitiesCount() < 1) {
+			return;
+		}
+
+		// device is locked
+		if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF))
+		{
+			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_OFF.Value);
+			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_LOCKED.Value);
+		}
+		// device is probably unlocked
+		else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON))
+		{
+			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_ON.Value);
+
+			// if keyguard is locked then unlock event should be called in ACTION_USER_PRESENT
+			KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+			if (!keyguardManager.inKeyguardRestrictedInputMode())
+			{
+				notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_UNLOCKED.Value);
+			}
+		}
+		// device is unlocked
+		else if(intent.getAction().equals(Intent.ACTION_USER_PRESENT))
+		{
+			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_UNLOCKED.Value);
+		}
+	}
+}
+
 public class RhodesApplication extends Application{
+	private BroadcastReceiver mReceiver;
 	
     private static final String TAG = RhodesApplication.class.getSimpleName();
     private static Handler mHandler;
@@ -195,6 +259,13 @@ public class RhodesApplication extends Application{
 
         //Signature.registerSignatureCaptureExtension();
         RhoExtManager.getImplementationInstance().createRhoListeners();
+
+	    IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+	    filter.addAction(Intent.ACTION_SCREEN_OFF);
+	    filter.addAction(Intent.ACTION_USER_PRESENT);
+
+	    mReceiver = new ScreenReceiver();
+	    registerReceiver(mReceiver, filter);
 
         Logger.I(TAG, "Initialized");
     }
