@@ -219,6 +219,25 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 <VALUE constName="APP_EVENT_UIDESTROYED" value ="UIDestroyed">
                                     <DESC>This event is triggered when the application is closing and the UI has been cleared.</DESC>
                                 </VALUE>
+                                <VALUE constName="APP_EVENT_SCREEN_OFF" value ="ScreenOff">
+                                    <DESC>Device screen was turned off when power button was pressed or due to idle timeout</DESC>
+                                    <PLATFORM>Android</PLATFORM>
+                                </VALUE>
+                                <VALUE constName="APP_EVENT_SCREEN_ON" value ="ScreenOn">
+                                    <DESC>Device screen was turned on. Note: on some devices screen could be locked unless user performs unlocking actions.</DESC>
+                                    <PLATFORM>Android</PLATFORM>
+                                </VALUE>
+                                <VALUE constName="APP_EVENT_SCREEN_LOCKED" value ="ScreenLocked">
+                                    <DESC>Device screen was locked.</DESC>
+                                    <PLATFORM>Android</PLATFORM>
+                                </VALUE>
+                                <VALUE constName="APP_EVENT_SCREEN_UNLOCKED" value ="ScreenUnlocked">
+                                    <DESC>Device screen was unlocked by user</DESC>
+                                    <PLATFORM>Android</PLATFORM>
+                                </VALUE>
+                                <VALUE constName="APP_EVENT_DEACTIVATED" value ="Deactivated">
+                                    <DESC>The application has been deactivated</DESC>
+                                </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged">
                                     <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only</DESC>
                                 </VALUE>
