@@ -90,7 +90,11 @@ void CRhoRuntime::updateSizeProperties(int width, int height)
 
 void CRhoRuntime::onActivate(int active)
 {
+	while(!RHODESAPP().getInstance())
+		Sleep(50);
+
 	RHODESAPP().callUiCreatedCallback();
+	rho_rhodesapp_callAppActiveCallback(1);
 }
 
 void CRhoRuntime::logEvent(::Platform::String^ message)
@@ -196,6 +200,7 @@ bool CRhoRuntime::Initialize(::Platform::String^ title)
 void CRhoRuntime::DestroyUi(void)
 {
 	rho_rhodesapp_callUiDestroyedCallback();
+	rho_rhodesapp_callAppActiveCallback(0);
 }
 
 void CRhoRuntime::setCryptoEngine(ICryptoEngine^ cryptoEngine)
@@ -373,7 +378,7 @@ extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
 
 extern "C" const char* rho_native_rhopath()
 {
-    return "rho/";
+    return "rho/"; //rho/apps?
 }
 
 
