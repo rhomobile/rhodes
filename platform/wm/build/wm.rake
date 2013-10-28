@@ -245,6 +245,9 @@ namespace "build" do
     task :extensions => "config:wm" do
       if $use_shared_runtime then next end
 
+      extensions_lib = ''
+      pre_targetdeps = ''
+
       if $additional_dlls_path.nil?
         puts 'new $additional_dlls_paths'
         $additional_dlls_paths = Array.new
@@ -288,6 +291,11 @@ namespace "build" do
               end
           end
           puts 'end read reg key'
+
+          if ext != 'openssl.so'
+            extensions_lib << " #{ext}.lib"
+            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+          end
 
           if (project_path)
           
@@ -352,6 +360,7 @@ namespace "build" do
           chdir $startdir
           
       end      
+      generate_extensions_pri(extensions_lib, pre_targetdeps)
     end
 
     #    desc "Build wm rhobundle"
@@ -578,7 +587,10 @@ namespace "build" do
               Jake.run3('build.bat', extpath)
           end
       end
+      generate_extensions_pri(extensions_lib, pre_targetdeps)
+    end
 
+    def generate_extensions_pri(extensions_lib, pre_targetdeps)
       ext_dir = File.join($startdir, 'platform/win32/bin/extensions')
       mkdir_p ext_dir if not File.exists? ext_dir
       File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
@@ -587,7 +599,6 @@ LIBS += /LIBPATH:../../../win32/bin/extensions#{extensions_lib}
 PRE_TARGETDEPS += #{pre_targetdeps}
 })
       end
-
     end
 
     #    desc "Build win32 rhobundle"
