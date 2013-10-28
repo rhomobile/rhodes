@@ -84,7 +84,7 @@ CDShowCam::CDShowCam(void)
 	
 	/*HKEY hKey = 0;
 	WCHAR buf[255] = {0};
-	DWORD dwType = 0;
+	DWORD dwType = 0;/
 	DWORD dwBufSize = sizeof(buf);
 	LPCWSTR subkey = L"Drivers\\BuiltIn\\DShowCam";
 
@@ -120,11 +120,12 @@ CDShowCam::~CDShowCam(void)
 	
 	EnterCriticalSection(&m_DSCamCriticalSection);
 	DeleteCriticalSection(&m_DSCamCriticalSection);
+	ReleaseGrp();
 	CloseHandle(m_hCamHdl);
 	m_hCamHdl = NULL;
 
 	//Closes the COM library 
-	CoUninitialize();
+	//CoUninitialize();
 
 	LOG(INFO) + __FUNCTION__ + "4299:CDShowCam destructor called.";
 }
@@ -297,7 +298,9 @@ HRESULT CDShowCam::InitFilterGrp()
 	{
 		//free resources
 		LOG(ERROR) + __FUNCTION__ + "CDShowCam::InitFilterGrp-7 CoCreateInstance error";
-		m_pGraphBuilder->Release();
+		if (m_pGraphBuilder != NULL) { 
+			m_pGraphBuilder->Release();
+		}
 		m_pGraphBuilder = NULL;
 	}
 		
@@ -426,6 +429,7 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 				break;
 			case E_FAIL:
 				LOG(ERROR) + "CDShowCam::BuildFilterGrp:-11-E_FAIL";
+				DEBUGMSG(TRUE, (L"The last error is %d", GetLastError()));
 				break;
 			case E_INVALIDARG:
 				LOG(ERROR) + "CDShowCam::BuildFilterGrp:-12-E_INVALIDARG";
@@ -832,10 +836,13 @@ BOOL CDShowCam::ReleaseGrp()
 
 	if (m_pGraphBuilder)
 	{
-		IEnumFilters* pFilters;
-		if (FAILED(m_pGraphBuilder->EnumFilters(&pFilters))) 
-		{
+		IEnumFilters* pFilters = NULL;
+		HRESULT hr = m_pGraphBuilder->EnumFilters(&pFilters);
+		if (FAILED(hr)) {
 			LOG(ERROR) + "CDShowCam::ReleaseGrp-1 EnumFilters failed";
+			m_pGraphBuilder->Release();
+			m_pGraphBuilder = NULL;
+			return TRUE;
 		}
 			
 		IBaseFilter *pFilter[10];
@@ -1994,7 +2001,6 @@ HRESULT CDShowCam::Set_Resolution(ImageRes* ptRes, PinType ePType)
 					wsprintf(szLog, L"Setting image output resolution to %i (width) x %i (height)", 
 						scc.MaxOutputSize.cx, scc.MaxOutputSize.cy);
 					LOG(INFO) + szLog;
-					//m_pModule->Log(PB_LOG_INFO, szLog, _T(__FUNCTION__), __LINE__);
 					// SPS
 					break;
 				}
@@ -2019,7 +2025,6 @@ HRESULT CDShowCam::Set_Resolution(ImageRes* ptRes, PinType ePType)
 				WCHAR szLog[512];
 				wsprintf(szLog, L"User specified image resolution is too high.  Setting image output resolution to %i (width) x %i (height)", 
 					scc.MaxOutputSize.cx, scc.MaxOutputSize.cy);
-				//m_pModule->Log(PB_LOG_WARNING, szLog, _T(__FUNCTION__), __LINE__);
 				LOG(WARNING) + szLog;
 				// SPS
 			}
