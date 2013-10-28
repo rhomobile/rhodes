@@ -672,7 +672,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
 
-    Jake.run3('rhosimulator_win32_build.bat', $qt_project_dir)
+    Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
 
     $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
     if not File.directory?($target_path)
