@@ -1093,7 +1093,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 #if defined(RHO_NO_RUBY_API)
     if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"file"])
 #else
-    if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"])
+    if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"file"])
 #endif
         external = YES;
     else {
