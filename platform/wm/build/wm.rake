@@ -691,8 +691,6 @@ PRE_TARGETDEPS += #{pre_targetdeps}
     end
     cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
 
-    Rake::Task["build:win32:deployqt"].invoke
-
     chdir $startdir
   end
 end
@@ -1404,6 +1402,7 @@ namespace "run" do
   task :win32 => ["config:qt", "config:win32:qt", "build:win32"] do
   
     cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
+    Rake::Task["build:win32:deployqt"].invoke
 
     args = [' ']
     #    chdir $config["build"]["wmpath"]
