@@ -106,8 +106,6 @@ namespace "build" do
     elsif $platform == 'osx'
       $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
       raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
-      $sdkroot = ENV['SDKROOT']
-      raise "SDKROOT is not set" if $sdkroot.nil?
       $arch = ENV['ARCHS']
       raise "ARCHS is not set" if $arch.nil?
       $gccbin = $bindir + '/gcc'

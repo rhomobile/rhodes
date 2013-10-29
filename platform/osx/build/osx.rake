@@ -40,12 +40,10 @@ namespace "config" do
 
     $devroot = '/Applications/Xcode.app/Contents/Developer'
     $devbin = $devroot + '/usr/bin'
-    $sdkroot = $devroot + '/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk'
     $xcodebuild = $devbin + '/xcodebuild'
     if !File.exists? $xcodebuild
       $devroot = '/Developer'
       $devbin = '/usr/bin'
-      $sdkroot = $devroot + '/MacOSX10.6.sdk'
       $xcodebuild = $devbin + '/xcodebuild'
     end
   end
@@ -57,7 +55,6 @@ namespace "build" do
     task :extensions do
         ENV['RHO_PLATFORM'] = 'osx'
         ENV["PLATFORM_DEVELOPER_BIN_DIR"] = $devbin
-        ENV["SDKROOT"] = $sdkroot
         ENV['PWD'] = $startdir
         ENV['RHO_ROOT'] = ENV['PWD']
         ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "osx", "bin", "extensions")
@@ -129,7 +126,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         chdir $qt_project_dir
-        args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro', "QMAKE_MAC_SDK='#{$sdkroot}'", 'RHOSIMULATOR_BUILD=1']
+        args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro', 'RHOSIMULATOR_BUILD=1']
         puts Jake.run($qmake,args)
         puts Jake.run($make, ['clean'])
         puts Jake.run($make, ['all'])
