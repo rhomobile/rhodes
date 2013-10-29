@@ -751,6 +751,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
     // encoded, encodedUrl will contain correct encoded version
     NSString *decodedUrl = [url stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *encodedUrl = [decodedUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    // additional check for anchor for file:// prefix
+    if ([encodedUrl hasPrefix:@"file://"]) {
+        encodedUrl = [encodedUrl stringByReplacingOccurrencesOfString:@"%23" withString:@"#"];
+    }
+    
     return encodedUrl;
 }
 
