@@ -71,8 +71,12 @@ public class SSLImpl {
     private static SSLSocketFactory secureFactory = null;
     private static SSLSocketFactory mutualAuthFactory = null;
 
+    private static List<Certificate> certs = null;
+    private static List<String>    aliases = null;
+
 	
 	private SSLSocket sock;
+
 
     //Used from jni
     @SuppressWarnings("unused")
@@ -226,9 +230,31 @@ public class SSLImpl {
         return cert;
     }
     
-    private static List<Certificate> loadAllCertificates() {
-        List<Certificate> certs = new ArrayList<Certificate>();
-        
+    private static String removeExtension(String s) {
+
+        String separator = System.getProperty("file.separator");
+        String filename;
+
+    // Remove the path upto the filename.
+        int lastSeparatorIndex = s.lastIndexOf(separator);
+        if (lastSeparatorIndex == -1) {
+            filename = s;
+        } else {
+            filename = s.substring(lastSeparatorIndex + 1);
+        }
+
+    // Remove the extension.
+        int extensionIndex = filename.lastIndexOf(".");
+        if (extensionIndex == -1)
+            return filename;
+
+        return filename.substring(0, extensionIndex);
+    }
+
+    private static void loadAllCertificates() {
+        certs = new ArrayList<Certificate>();
+        aliases = new ArrayList<String>();
+
         Logger.I(TAG, "Loading all SSL certificates from config");
 
         
@@ -244,6 +270,7 @@ public class SSLImpl {
                 Certificate c = loadCertificate(caFile);
                 if ( c != null ) {
                     certs.add( c );
+                    aliases.add(removeExtension(caFilePath));
                 }
             } else {
                 Logger.W(TAG, "CAFile config parameter exists, but file " + caFilePath + " not found." );
@@ -263,6 +290,7 @@ public class SSLImpl {
                     Certificate c = loadCertificate(f);
                     if ( c != null ) {
                         certs.add( c );
+                        aliases.add( removeExtension(f.getName()) );
                     }
                 }
                 
@@ -274,7 +302,6 @@ public class SSLImpl {
         Logger.I(TAG, "SSL certificates loaded: " + String.valueOf(certs.size()) );
 
 
-        return certs;
     }
     
     private static SSLSocketFactory getSecureFactory() throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
@@ -292,12 +319,12 @@ public class SSLImpl {
         KeyStore keystore = KeyStore.getInstance( KeyStore.getDefaultType() );
         keystore.load(null);
         
-        List<Certificate> certs = loadAllCertificates();
+        loadAllCertificates();
         
         // Add loaded custom certificates to keystore
-        if ( certs != null ) {
+        if ( certs != null && aliases != null) {
             for ( int i = 0; i < certs.size(); ++i ) {
-                keystore.setCertificateEntry("cert-alias"+ String.valueOf(i),certs.get(i));
+                keystore.setCertificateEntry(aliases.get(i),certs.get(i));
             }
         }
         
@@ -335,9 +362,9 @@ public class SSLImpl {
          * so we make our own wrapper which encapsulates both system installed and custom provided certificates
          */
         context.init( 
-        		(kmf==null)?null:kmf.getKeyManagers(), 
-        		new TrustManager[] { new MySecureTrustManager( systemTrustManager, customTrustManager ) }, 
-        		new SecureRandom()
+                (kmf==null)?null:kmf.getKeyManagers(), 
+                new TrustManager[] { new MySecureTrustManager( systemTrustManager, customTrustManager ) }, 
+                new SecureRandom()
         );
         
         Logger.I(TAG, "Secure SSL factory initialization completed");
