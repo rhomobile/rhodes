@@ -2212,9 +2212,11 @@ void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
                 const char* state = APP_EVENT_UNINITIALIZED;
                 switch (newState) {
                     case UIStateCreated:
+                        m_result.setSynchronousCallback(true);
                         state = APP_EVENT_UICREATED;
                         break;
                     case UIStateDestroyed:
+                        m_result.setSynchronousCallback(true);
                         state = APP_EVENT_UIDESTROYED;
                         break;
                     default:
@@ -2309,6 +2311,7 @@ void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
                     break;
             }
             callbackData.put(APP_EVENT, state);
+            m_result.setSynchronousCallback(true);
             m_result.set(callbackData);
             return true;
         }
