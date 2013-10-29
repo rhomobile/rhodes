@@ -2212,9 +2212,11 @@ void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
                 const char* state = APP_EVENT_UNINITIALIZED;
                 switch (newState) {
                     case UIStateCreated:
+                        m_result.setSynchronousCallback(true);
                         state = APP_EVENT_UICREATED;
                         break;
                     case UIStateDestroyed:
+                        m_result.setSynchronousCallback(true);
                         state = APP_EVENT_UIDESTROYED;
                         break;
                     default:
@@ -2309,6 +2311,7 @@ void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
                     break;
             }
             callbackData.put(APP_EVENT, state);
+            m_result.setSynchronousCallback(true);
             m_result.set(callbackData);
             return true;
         }
@@ -2553,12 +2556,30 @@ void rho_rhodesapp_callUiDestroyedCallback()
         RHODESAPP().callUiDestroyedCallback();
 }
 
-void rho_rhodesapp_callonDeviceScreenEventCallback(int event)
+void rho_rhodesapp_callScreenOffCallback()
 {
     if ( rho::common::CRhodesApp::getInstance() && RHODESAPP().getApplicationEventReceiver() )
-        RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(event);
+        RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(rho::common::screenOff);
 }
 
+void rho_rhodesapp_callScreenOnCallback()
+{
+    if ( rho::common::CRhodesApp::getInstance() && RHODESAPP().getApplicationEventReceiver() )
+        RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(rho::common::screenOn);
+}
+    
+void rho_rhodesapp_callScreenLockedCallback()
+{
+    if ( rho::common::CRhodesApp::getInstance() && RHODESAPP().getApplicationEventReceiver() )
+        RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(rho::common::screenLocked);
+}
+
+void rho_rhodesapp_callScreenUnlockedCallback()
+{
+    if ( rho::common::CRhodesApp::getInstance() && RHODESAPP().getApplicationEventReceiver() )
+        RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(rho::common::screenUnlocked);
+}
+    
 const char* rho_rhodesapp_getappbackurl()
 {
     return RHODESAPP().getAppBackUrl().c_str();
