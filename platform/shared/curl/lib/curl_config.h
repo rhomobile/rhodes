@@ -482,7 +482,7 @@
 #define HAVE_POSIX_STRERROR_R 1
 
 /* Define to 1 if you have the <pwd.h> header file. */
-#if defined(__APPLE__) && !defined(RHODES_EMULATOR)
+#if defined(__APPLE__) && !defined(RHODES_QT_PLATFORM)
 #import <Availability.h>
 #ifndef __IPHONE_6_0
 #define HAVE_PWD_H 1

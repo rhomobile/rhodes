@@ -1,6 +1,10 @@
 #if defined (WIN32)
+#ifndef _CRT_NON_CONFORMING_SWPRINTFS
 #define _CRT_NON_CONFORMING_SWPRINTFS
+#endif
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 #endif
 
 #if defined(WIN32) || defined(_WIN32_WCE)
