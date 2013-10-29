@@ -14,6 +14,7 @@ macx {
   DESTDIR = ../../../../platform/osx/bin/extensions
   OBJECTS_DIR = ../../../../platform/osx/bin/extensions/openssl
   INCLUDEPATH += ../../../../platform/shared/ruby/iphone macosx
+  HEADERS += macosx/extconf.h
 }
 win32 {
   DESTDIR = ../../../../platform/win32/bin/extensions
@@ -26,7 +27,9 @@ win32 {
     DEFINES += _NDEBUG NDEBUG
   }
   INCLUDEPATH += ../../../../platform/shared/ruby/win32\
-../../openssl.so/ext/win32/include
+../../openssl.so/ext/win32/include\
+windows
+  HEADERS += windows/extconf.h
 }
 
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
@@ -69,8 +72,7 @@ ossl_rand.h\
 ossl_ssl.h\
 ossl_version.h\
 ossl_x509.h\
-ruby_missing.h\
-macosx/extconf.h
+ruby_missing.h
 
 SOURCES += \
 openssl_missing.c\
