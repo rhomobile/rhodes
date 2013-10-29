@@ -3,7 +3,7 @@ require File.join(pwd, '../../../build/jake.rb')
 
 def build_extension(name, arch)
   if (ENV['RHO_PLATFORM'] == 'osx') or (ENV['RHO_PLATFORM'] == 'win32')
-    args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "#{name}.pro", "QMAKE_MAC_SDK='#{$sdkroot}'", 'CONFIG-=debug', 'CONFIG+=release', $qmakevars]
+    args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "#{name}.pro", 'CONFIG-=debug', 'CONFIG+=release', $qmakevars]
     puts Jake.run($qmake,args)
     fail "[qmake #{name}.pro]" unless $? == 0
     puts Jake.run($make, ['clean'])
@@ -100,23 +100,21 @@ namespace "build" do
 
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
 
-    elsif ($platform == 'iphone') or ($platform == 'osx')
+    elsif $platform == 'iphone'
       $sdkroot = ENV['SDKROOT']
       raise "SDKROOT is not set" if $sdkroot.nil?
+      $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+      raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+      $arch = ENV['ARCHS']
+      raise "ARCHS is not set" if $arch.nil?
+      $gccbin = $bindir + '/gcc'
+      $arbin = $bindir + '/ar'
 
-      if ENV['RHO_PLATFORM'] == 'iphone'
-        $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
-        raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
-        $arch = ENV['ARCHS']
-        raise "ARCHS is not set" if $arch.nil?
-        $gccbin = $bindir + '/gcc'
-        $arbin = $bindir + '/ar'
-      else
-        $qmake = ENV['RHO_QMAKE']
-        raise "RHO_QMAKE is not set" if $qmake.nil?
-        $qmake_spec = 'macx-g++'
-        $make = "make"
-      end
+    elsif $platform == 'osx'
+      $qmake = ENV['RHO_QMAKE']
+      raise "RHO_QMAKE is not set" if $qmake.nil?
+      $qmake_spec = 'macx-g++'
+      $make = "make"
 
     elsif $platform == 'wm'
       $vcbuild = ENV['VCBUILD']
