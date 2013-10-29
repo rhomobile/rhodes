@@ -86,8 +86,7 @@ win32 {
 }
 
 HEADERS += ../../ruby/ext/rho/rhoruby.h\
-../../ruby/ext/socket/addrinfo.h\
-../../ruby/ext/socket/sockport.h\
+../../ruby/ext/socket_192/rubysocket.h\
 ../../ruby/ext/calendar/event.h\
 ../../ruby/debug.h\
 ../../ruby/dln.h\
@@ -111,7 +110,21 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/stringio/stringio.c\
 ../../ruby/ext/geolocation/geolocation_wrap.c\
 ../../ruby/ext/asynchttp/asynchttp_wrap.c\
-../../ruby/ext/socket/socket.c\
+../../ruby/ext/socket_192/socket.c\
+../../ruby/ext/socket_192/ancdata.c\
+../../ruby/ext/socket_192/basicsocket.c\
+../../ruby/ext/socket_192/constants.c\
+../../ruby/ext/socket_192/init.c\
+../../ruby/ext/socket_192/ipsocket.c\
+../../ruby/ext/socket_192/option.c\
+../../ruby/ext/socket_192/raddrinfo.c\
+../../ruby/ext/socket_192/socket.c\
+../../ruby/ext/socket_192/sockssocket.c\
+../../ruby/ext/socket_192/tcpserver.c\
+../../ruby/ext/socket_192/tcpsocket.c\
+../../ruby/ext/socket_192/udpsocket.c\
+../../ruby/ext/socket_192/unixserver.c\
+../../ruby/ext/socket_192/unixsocket.c\
 ../../ruby/ext/ringtones/ringtones_wrap.c\
 ../../ruby/ext/calendar/calendar_wrap.c\
 ../../ruby/ext/calendar/event_wrap.c\

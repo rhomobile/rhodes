@@ -10,20 +10,20 @@
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
 * 
-* The above copyright notice and this permission notice shall be included in
+* The above copyright notice and this permission notice shall be included in 
 * all copies or substantial portions of the Software.
 * 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE     
 * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,    
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 * THE SOFTWARE.
-*  
+*        
 * http://rhomobile.com
-*------------------------------------------------------------------------*/
-using System;
+*------------------------------------------------------------------------*/   
+using System;        
 using System.Collections.Generic;
 using Microsoft.Phone.Info;
 using System.Threading;
@@ -132,21 +132,21 @@ namespace rhodes
         // toolbar items hash table
         private Dictionary<string, string>   toolbarItems     = new Dictionary<string, string>();
         private List<ApplicationBarMenuItem> toolbarMenuItems = new List<ApplicationBarMenuItem>();
-
+           
         public bool isBrowserInitialized(int index)
         {
             return (index == -1) || !_tabProps.ContainsKey(index) ? _isBrowserInitialized : _tabProps[index]._isInitialized;
         }
-
+                   
         private bool isUIThread
-        {
+        {   
             get { return _uiThreadID == System.Threading.Thread.CurrentThread.ManagedThreadId; }
-        } 
-              
+        }                         
+                                    
         private void raiseTabEvent( string eventName, int nOldTab, int nNewTab )
         {
             if ( _oTabResult != null)
-            {
+            {                          
                 Dictionary<string, string> mapRes = new Dictionary<string, string>();
                 mapRes["tab_index"] = Convert.ToString(nNewTab);
                 mapRes["newTabIndex"] = Convert.ToString(nNewTab);
@@ -176,18 +176,18 @@ namespace rhodes
             ApplicationBar.IsVisible = false;
             _screenOrientation = Orientation;
             try
-            {
+            {   
                 // initialize C# extensions factories
                 CSharpExtensions.InitializeExtensions();
                 // create rhodes runtime object
                 var _rhoruntime = CRhoRuntime.getInstance(new MainPageWrapper(this));
                 _rhoruntime.setCryptoEngine(new CryptoEngineWrapper(new RhoCrypt()));
-                // create and start rhodes main thread
+                // create and start rhodes main thread               
                 _rhoruntimeThread = new Thread(_rhoruntime.Execute);
                 _rhoruntimeThread.Start();
-
+                    
                 //temporary solutions, to do refactoring
-                Thread.Sleep(5000);
+                //Thread.Sleep(200);
                 _rhoruntime.onActivate(0);
             } 
             catch (Exception e)
@@ -261,7 +261,7 @@ namespace rhodes
 
         private void PhoneApplicationPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = CRhoRuntime.getInstance().onBackKeyPress();
+            //e.Cancel = CRhoRuntime.getInstance().onBackKeyPress();
         }
 
         private void updateOrientation(PageOrientation orientation)
@@ -325,6 +325,13 @@ namespace rhodes
            
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigate(url, index); }); return; }
 
+            /*if(url.Contains("http://") == false)
+            {
+                String appdir = Windows.Storage.ApplicationData.Current.LocalFolder.Path;
+                url = "file:///" + appdir.Replace(@"\", "/") +"/" + url;
+               
+            }*/
+
             if (_tabProps.Count == 0) index = -1;
 
             if (url == "") return;
@@ -336,28 +343,28 @@ namespace rhodes
             }
             else if (index > -1 && _tabProps.ContainsKey(index) && _tabProps[index]._isInitialized == false)
             {
-                _tabProps[index]._action = url;
-                return;
-            }
-
-            if (TabbarPivot.Items.Count == 0)
+                _tabProps[index]._action = url;                          
+                return;      
+            }                        
+                                     
+            if (TabbarPivot.Items.Count == 0)        
                 RhodesWebBrowser.Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
-            else
+            else           
                 ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
-        }
+        }      
 
         public string executeScriptFunc(string script, int index)
-        {
-            string[] codeString = { script };
+        {   
+            string[] codeString = { script };   
             if (TabbarPivot.Items.Count == 0 || _isCallbackFired)//_tabProps[index]._isInitialized == false)
-            {
-                _isCallbackFired = false;
+            {                  
+                _isCallbackFired = false;       
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
-            }
-            else
+            }                
+            else  
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
         } 
-
+               
         public string executeScript(string script, int index) 
         {
             return StringValueByStringIntReturnAgent(executeScriptFunc, script, index);
@@ -602,7 +609,7 @@ namespace rhodes
                     while (text.EndsWith("/"))
                         text.Remove(text.Length-1);
                     if (text.LastIndexOf('/') >= 0)
-                        text = text.Substring(text.LastIndexOf('/') + 1);
+                        text = text.Substring(text.LastIndexOf('/') + 1);  
                 }
             }
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddAction(icon, text, action); }); return; }
@@ -786,7 +793,7 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, background_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
             PivotItem tab = new PivotItem();
-            TabHeader th = new TabHeader();
+            TabHeader th = new TabHeader();    
             th.Label = label;
             th.Background = th.UnselectedBackground = new SolidColorBrush(
                 (background_color != null) && (background_color.Length > 0) ?

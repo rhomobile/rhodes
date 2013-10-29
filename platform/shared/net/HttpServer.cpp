@@ -588,7 +588,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 				continue;
 #endif
 
-#if defined(OS_WP8) || (defined(RHODES_EMULATOR) && defined(OS_WINDOWS_DESKTOP))
+#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP))
             if (e == EAGAIN || e == WSAEWOULDBLOCK) {
 #else
             if (e == EAGAIN) {

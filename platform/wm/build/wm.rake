@@ -245,6 +245,9 @@ namespace "build" do
     task :extensions => "config:wm" do
       if $use_shared_runtime then next end
 
+      extensions_lib = ''
+      pre_targetdeps = ''
+
       if $additional_dlls_path.nil?
         puts 'new $additional_dlls_paths'
         $additional_dlls_paths = Array.new
@@ -288,6 +291,11 @@ namespace "build" do
               end
           end
           puts 'end read reg key'
+
+          if ext != 'openssl.so'
+            extensions_lib << " #{ext}.lib"
+            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+          end
 
           if (project_path)
           
@@ -352,6 +360,7 @@ namespace "build" do
           chdir $startdir
           
       end      
+      generate_extensions_pri(extensions_lib, pre_targetdeps)
     end
 
     #    desc "Build wm rhobundle"
@@ -485,15 +494,14 @@ namespace "build" do
       cp File.join($qtdir, "bin/icudt51.dll"), $target_path
       cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
       cp File.join($qtdir, "bin/icudt51.dll"), $target_path
-      cp File.join($qtdir, "bin/libEGL.dll"), $target_path
-      cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
+      # cp File.join($qtdir, "bin/libEGL.dll"), $target_path
+      # cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5WebKit.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Multimedia.dll"), $target_path
-      cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Quick.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Qml.dll"), $target_path
@@ -579,7 +587,10 @@ namespace "build" do
               Jake.run3('build.bat', extpath)
           end
       end
+      generate_extensions_pri(extensions_lib, pre_targetdeps)
+    end
 
+    def generate_extensions_pri(extensions_lib, pre_targetdeps)
       ext_dir = File.join($startdir, 'platform/win32/bin/extensions')
       mkdir_p ext_dir if not File.exists? ext_dir
       File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
@@ -588,7 +599,6 @@ LIBS += /LIBPATH:../../../win32/bin/extensions#{extensions_lib}
 PRE_TARGETDEPS += #{pre_targetdeps}
 })
       end
-
     end
 
     #    desc "Build win32 rhobundle"
@@ -645,7 +655,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
       cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 
-      Jake.run3('rhosimulator_win32_build.bat RHOSIMULATOR_BUILD=1', $qt_project_dir)
+      Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
 
       chdir $startdir
 
@@ -673,15 +683,13 @@ PRE_TARGETDEPS += #{pre_targetdeps}
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
 
-    Jake.run3('rhosimulator_win32_build.bat', $qt_project_dir)
+    Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
 
     $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
     if not File.directory?($target_path)
       Dir.mkdir($target_path)
     end
     cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
-
-    Rake::Task["build:win32:deployqt"].invoke
 
     chdir $startdir
   end
@@ -1394,6 +1402,7 @@ namespace "run" do
   task :win32 => ["config:qt", "config:win32:qt", "build:win32"] do
   
     cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
+    Rake::Task["build:win32:deployqt"].invoke
 
     args = [' ']
     #    chdir $config["build"]["wmpath"]

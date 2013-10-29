@@ -95,6 +95,15 @@ jclass rho_find_class(JNIEnv *env, const char *c)
     return cls;
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_ScreenReceiver_notifyDeviceScreenEvent
+  (JNIEnv *env, jclass, int event)
+{
+    if (RHODESAPP().getApplicationEventReceiver())
+    {
+        RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(event);
+    }
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_initClassLoader
   (JNIEnv *env, jclass, jobject cl)
 {

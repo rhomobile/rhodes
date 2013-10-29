@@ -82,6 +82,7 @@ void rho_file_set_fs_mode(int mode);
 
 }
 
+// Copy-paste from ApplicationBase.cpp
 static const char APP_EVENT_ACTIVATED[] = "Activated";
 static const char APP_EVENT_DEACTIVATED[] = "Deactivated";
 static const char APP_EVENT_UICREATED[] = "UICreated";
@@ -90,6 +91,10 @@ static const char APP_EVENT_SYNCUSERCHANGED[] = "SyncUserChanged";
 static const char APP_EVENT_CONFIGCONFLICT[] = "ConfigConflict";
 static const char APP_EVENT_DBMIGRATESOURCE[] = "DBMigrateSource";
 static const char APP_EVENT_UNINITIALIZED[] = "Uninitialized";
+static const char APP_EVENT_SCREEN_ON[] = "ScreenOn";
+static const char APP_EVENT_SCREEN_OFF[] = "ScreenOff";
+static const char APP_EVENT_SCREEN_LOCKED[] = "ScreenLocked";
+static const char APP_EVENT_SCREEN_UNLOCKED[] = "ScreenUnlocked";
 
 static const char APP_EVENT[] = "applicationEvent";
 static const char APP_EVENT_DATA[] = "eventData";
@@ -1585,7 +1590,7 @@ void CRhodesApp::modifyRhoApiFile()
             common::InputStream* is = apiFile.getInputStream();
 
             char buffer[bufferLenght];
-            buffer[0] = '/0';
+            buffer[0] = '\0';
 
             while (is->available())
             {
@@ -2280,6 +2285,36 @@ void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
     bool ApplicationEventReceiver::onMigrateSource(){
         return false;
     }
+
+    bool ApplicationEventReceiver::onDeviceScreenEvent(const int newState) {
+        if (m_result.hasCallback())
+        {
+            rho::Hashtable<rho::String, rho::String> callbackData;
+            const char* state = APP_EVENT_UNINITIALIZED;
+            switch (newState) {
+                case screenOff:
+                    state = APP_EVENT_SCREEN_OFF;
+                    break;
+                case screenOn:
+                    state = APP_EVENT_SCREEN_ON;
+                    break;
+                case screenLocked:
+                    state = APP_EVENT_SCREEN_LOCKED;
+                    break;
+                case screenUnlocked:
+                    state = APP_EVENT_SCREEN_UNLOCKED;
+                    break;
+                default:
+                    state = APP_EVENT_UNINITIALIZED;
+                    break;
+            }
+            callbackData.put(APP_EVENT, state);
+            m_result.set(callbackData);
+            return true;
+        }
+
+        return true;
+    }
         
     bool ApplicationEventReceiver::isCallbackSet(){
         return m_result.hasCallback();
@@ -2518,6 +2553,12 @@ void rho_rhodesapp_callUiDestroyedCallback()
         RHODESAPP().callUiDestroyedCallback();
 }
 
+void rho_rhodesapp_callonDeviceScreenEventCallback(int event)
+{
+    if ( rho::common::CRhodesApp::getInstance() && RHODESAPP().getApplicationEventReceiver() )
+        RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(event);
+}
+
 const char* rho_rhodesapp_getappbackurl()
 {
     return RHODESAPP().getAppBackUrl().c_str();
@@ -2685,9 +2726,10 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
     return res_check;
 }
     //TODO: remove it
-	void rho_sys_set_network_status_notify(const char* url, int poll_interval)
+    void rho_sys_set_network_status_notify(const char* /*url*/, int /*poll_interval*/)
 	{
-		RHODESAPP().setNetworkStatusNotify(url,poll_interval);
+        // commented out because first parameter should be a MethodResult, not char*; so this call will result in 100% app crash
+        //RHODESAPP().setNetworkStatusNotify(url,poll_interval);
 	}
 	
 	void rho_sys_clear_network_status_notify()

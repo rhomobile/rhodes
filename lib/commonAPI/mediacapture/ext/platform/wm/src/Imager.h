@@ -234,13 +234,14 @@ public:
 	BOOL SetCompressionFormat(const char* cstr);
 	const char* GetCompressionFormat(void);
 
-	virtual bool onWndMsg(MSG& oMsg);
+	//virtual bool onWndMsg(MSG& oMsg);
 
 	bool m_bDisableDuringNavigate;
 private:
 	RECT m_rcWinPos;///<View Finder window position
 	HMODULE hModule;///<Image Capture device handle
 	HWND m_hWndViewer;///<Handle to ViewFinder window
+	HWND m_hwndTake;/// Handle to the Take button.
 	WNDCLASS WndCls; /// Window class structure for Message Window
 	MSG Msg; /// Message object for the Window
 	HWND m_hWndMessageWindow; /// Local window that can receive, but not send messages
@@ -273,9 +274,6 @@ private:
     HANDLE m_hTriggerThread;
 	HANDLE m_hTriggerNotification;
 	LPWSTR m_szCaptureSound;
-
-	// WindowProc
-	static LRESULT CALLBACK MessageWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 public:
 	//Msg Queue Options 

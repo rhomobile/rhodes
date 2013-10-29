@@ -6,7 +6,7 @@ cd /d "%~dp0"
 call "%VS100COMNTOOLS%..\..\VC\vcvarsall.bat" x86
 if ERRORLEVEL 1 exit /b %ERRORLEVEL%
 
-"%QTDIR%\bin\qmake" -o Makefile -r -spec win32-msvc2010 "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro %1
+"%QTDIR%\bin\qmake" -o Makefile -r -spec win32-msvc2010 "CONFIG-=debug" "CONFIG+=release" "%1" RhoSimulator.pro
 if ERRORLEVEL 1 exit /b %ERRORLEVEL%
 
 nmake clean

@@ -94,6 +94,12 @@ namespace common {
         UIStateDestroyed,
         UIStateCreated
     };
+    enum enScreenState {
+        screenOff = 0,
+        screenOn,
+        screenLocked,
+        screenUnlocked
+    };
     
     class IApplicationEventReceiver
     {
@@ -105,6 +111,7 @@ namespace common {
         virtual bool onSyncUserChanged() = 0;
         virtual bool onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts) = 0;
         virtual bool onMigrateSource() = 0;
+        virtual bool onDeviceScreenEvent(const int newState) = 0;
     };
     
     class ApplicationEventReceiver : public IApplicationEventReceiver
@@ -121,6 +128,7 @@ namespace common {
         virtual bool onSyncUserChanged();
         virtual bool onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts);
         virtual bool onMigrateSource();
+        virtual bool onDeviceScreenEvent(const int newState);
         
         virtual bool isCallbackSet();
         virtual void setCallback(apiGenerator::CMethodResult& oResult);

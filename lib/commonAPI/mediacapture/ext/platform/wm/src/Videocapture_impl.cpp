@@ -25,6 +25,11 @@ enum VC_STATE
 #define VC_MIN_DURATION		500
 #define VC_DEFAULT_FILENAME L"\\VideoCapture.wmv"
 
+#define ID_START (WM_USER + 1)
+#define ID_STOP (WM_USER + 2)
+#define ID_REDRAW (WM_USER + 3)
+#define WIN_CLASSNAME L"VideoPreview"
+
 namespace rho {
 
 using namespace apiGenerator;
@@ -36,6 +41,8 @@ private:
 	HWND			hwndMainWindow;
 	HINSTANCE		hInstance;
 	HWND			m_hWndViewer;
+	HWND			m_hwndStop;
+	HWND			m_hwndStart;
 	RECT			m_rcWinPos;
 	//CImager *m_pImager; // Main Imager object ported from RE2 plugin
 	ImgFmt*			m_pCapsArray;
@@ -111,15 +118,6 @@ private:
 	}
 
 public:
-	// Override the setDuration method
-	//void setDuration( int duration, rho::apiGenerator::CMethodResult& oResult)
-	//{ 
-	//	LOG(INFO) + __FUNCTION__ + "m_iMaxDuration is being set to " + duration;
-	//	setProperty( "duration", rho::common::convertToStringA(duration), oResult );
-	//	m_iMaxDuration = duration;
-	//}
-
-
     CVideocaptureImpl(const rho::String& strID): CVideocaptureBase()
     {
 		m_hashProps.put("ID", strID);
@@ -152,7 +150,44 @@ public:
 			delete m_pDSCam;
 			m_pDSCam = NULL;
 		}
+		//UnregisterClass(WIN_CLASSNAME, hInstance);
 		DeleteCriticalSection(&m_csLock);
+	}
+
+	// WndProc for Preview window.  Handles calls from Start and Stop buttons
+	static BOOL CALLBACK ViewerProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam)
+	{
+		CVideocaptureImpl *pObj;
+
+		switch(message)
+		{
+
+			case WM_COMMAND:
+				switch( LOWORD(wParam))
+				{
+					case ID_STOP:
+					pObj = (CVideocaptureImpl *)GetWindowLong(hWnd, GWL_USERDATA);
+					pObj->Stop();
+					break;
+
+					case ID_START:
+					pObj = (CVideocaptureImpl *)GetWindowLong(hWnd, GWL_USERDATA);
+					pObj->Start();
+					break;
+				
+					default:
+						break;
+				}
+				break;
+
+		case WM_CREATE:
+			break;
+
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+
+		return TRUE;
 	}
 
 	// Method required to show the imager preview.
@@ -172,7 +207,28 @@ public:
 			hwndMainWindow = rhodes_data.m_hBrowserWnd;
 			hInstance = (HINSTANCE) (rhodes_data.m_hInstance);
 
-			m_hWndViewer = CreateWindowEx(WS_EX_NOANIMATION|WS_EX_TOPMOST, L"static", NULL, WS_VISIBLE | WS_POPUP, 
+			WNDCLASS wc;
+			wc.style = CS_PARENTDC;
+			wc.lpfnWndProc = (WNDPROC) ViewerProc;
+			wc.cbClsExtra = 0;
+			wc.cbWndExtra = 0;
+			wc.hInstance = hInstance;
+			wc.hIcon = NULL;
+			wc.hCursor = LoadCursor(NULL, IDC_CROSS);
+			wc.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
+			wc.lpszMenuName = 0;
+			wc.lpszClassName = WIN_CLASSNAME;
+
+			// Need to put this here, otherwise we have an issue with the preview window.
+			if (RegisterClass(&wc) == 0) {
+				DWORD iErr = GetLastError();
+				if (iErr != ERROR_CLASS_ALREADY_EXISTS) {
+					DEBUGMSG (TRUE, (L"Could not set the Register Class [%d]\r\n", GetLastError()));
+					return;
+				}
+			}
+
+			m_hWndViewer = CreateWindowEx(WS_EX_NOANIMATION|WS_EX_TOPMOST, WIN_CLASSNAME, NULL, WS_VISIBLE | WS_CHILD, 
 					m_rcWinPos.left,
 					m_rcWinPos.top, 
 					m_rcWinPos.right,
@@ -286,12 +342,49 @@ public:
 							}
 
 							// move the preview window
-							SetWindowPos(m_hWndViewer, HWND_TOPMOST, m_rcWinPos.left, m_rcWinPos.top,
-								m_rcWinPos.right - m_rcWinPos.left, m_rcWinPos.bottom - m_rcWinPos.top, SWP_NOZORDER);
+							// Subtract 100 pixels from the viewer.
+							SetWindowPos(m_hWndViewer, HWND_TOPMOST, m_rcWinPos.left, m_rcWinPos.top-120,
+								m_rcWinPos.right - m_rcWinPos.left, m_rcWinPos.bottom - (m_rcWinPos.top), SWP_NOZORDER);
 
 							// resize the preview window - add 3 pixels to the bottom to get rid of the black line
 							m_pDSCam->ResizePreview(m_rcWinPos.right - m_rcWinPos.left, 
-								m_rcWinPos.bottom - m_rcWinPos.top + 3);
+								m_rcWinPos.bottom - m_rcWinPos.top - 40);
+
+							// Create the buttons to Start and Stop the capture of the video.
+							RECT rect;
+							int width = 128;
+							int height = 64;;
+							int top, left;
+
+							HWND hwnd = CreateWindow(L"BUTTON", L"", WS_CHILD, 0, 0, 0, 0, m_hWndViewer, (HMENU) 0, hInstance, NULL);
+							HDC hdc = GetDC (hwnd);
+
+							SIZE size;
+							GetTextExtentPoint32 (hdc, L"START", 6, &size);
+
+							ReleaseDC (hwnd, hdc);
+							DestroyWindow (hwnd);
+
+							DEBUGMSG (TRUE, (L"Button size %d x %d\r\n", size.cx, size.cy));
+							width = size.cx;
+							height = size.cy;
+
+							// Position buttons at the bottom of the video capture window
+							GetClientRect(m_hWndViewer, &rect);
+							top = rect.bottom - height;
+							left = 32;
+
+							// Create the actual button
+							m_hwndStop = CreateWindow(L"BUTTON", L"Stop", WS_CHILD | WS_VISIBLE, 
+								left, top, width, height, m_hWndViewer, (HMENU) ID_STOP, hInstance, NULL);
+							DEBUGMSG (TRUE, (L"Drawing Stop button at [%d,%d,%d,%d]\r\n", left, top, width, height));
+
+							left += (width + 16);
+
+							m_hwndStart = CreateWindow (L"BUTTON", L"Start", WS_CHILD | WS_VISIBLE,
+								left, top, width, height, m_hWndViewer, (HMENU) ID_START, hInstance, NULL);
+							DEBUGMSG (TRUE, (L"Drawing Start button at [%d,%d,%d,%d]\r\n", left, top, width, height));
+							left += (width + 16);
 
 							LOG(INFO) + __FUNCTION__ + "------FGraph Run OK------";
 
@@ -299,15 +392,36 @@ public:
 							LOG(INFO) + __FUNCTION__ + " Leaving critical section";
 							LeaveCriticalSection(&m_csLock);
 							LOG(INFO) + __FUNCTION__ + "Returning successfully from startPreview";
+
+							// Set the window handle the WndProc function
+							DWORD retValue = SetWindowLong(m_hWndViewer, GWL_USERDATA, (long) this);
+
+							if (retValue == 0) {
+								DEBUGMSG (TRUE, (L"Could not set the window long [%d]\r\n", GetLastError()));
+							}
+
 							return;
 						}
-						else OutputDebugString(L"------FGraph Capabilities Fail------");
+						else 
+						{
+							OutputDebugString(L"------FGraph Capabilities Fail------");
+						}
 					}
-					else OutputDebugString(L"------FGraph Run FAIL------");
+					else 
+					{
+						OutputDebugString(L"------FGraph Run FAIL------");
+					}
 				}
-				else OutputDebugString(L"------FGraph Build FAIL------");
+				else 
+				{
+					OutputDebugString(L"------FGraph Build FAIL------");
+				}
 			}
-			else OutputDebugString(L"------Init FGraph FAIL------");
+			else 
+			{
+				OutputDebugString(L"------Init FGraph FAIL------");
+				DEBUGMSG(TRUE, (L"The last error is %d", GetLastError()));
+			}
 		}
 		LOG(INFO) + __FUNCTION__ + "Destroying m_hWndViewer";
 		if (IsWindow(m_hWndViewer)) DestroyWindow(m_hWndViewer);
@@ -324,16 +438,14 @@ public:
 
     virtual void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult){}
 
-	virtual void start(CMethodResult& oResult) {
-		if (m_eState == STATE_INACTIVE)
-		{
-			startPreview();
-		}
-
+	// Private method called by the Start button on the camera display to actually start recording video.
+	void Start() {
 		LOG(INFO) + __FUNCTION__ + " Before entering CriticalSection";
 		EnterCriticalSection(&m_csLock);
 		if (m_eState == STATE_PREVIEW)
 		{
+			// Disable the start button as we don't want to try and start capturing while capturing.
+			EnableWindow(m_hwndStart, FALSE);
 			ASSERT(m_pDSCam);
 			LOG(INFO) + __FUNCTION__ + "WMV: Starting the video capture";
 			m_eState = STATE_CAPTURE;
@@ -345,7 +457,6 @@ public:
 			{
 				// Create a thread to kill the video player.
 				ResetEvent(m_hStopEvent);
-				CloseHandle(CreateThread(NULL, 0, &rho::CVideocaptureImpl::stopTimerProc, (LPVOID)this, 0, NULL));
 			}
 			else
 			{
@@ -355,6 +466,28 @@ public:
 		}
 		LeaveCriticalSection(&m_csLock);
 		LOG(INFO) + __FUNCTION__ + " After leaving CriticalSection";
+	}
+
+	// TODO.  When button code added.  Move the code after startPreview to another method that the start() button calls directly.
+	// That way the user can choose when to start recording.
+	virtual void start(CMethodResult& oResult) {
+		if (m_eState == STATE_INACTIVE)
+		{
+			// Check the registry to see if a camera has been enabled for this device.
+			HKEY key;
+			DWORD result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"System\\State\\Hardware", 0, 0, &key);
+			bool bExistsAndSuccess = (result == ERROR_SUCCESS);
+			// Query the camera value
+			DWORD dwBufferSize(sizeof(DWORD));
+			DWORD nResult(0);
+			// If this returns correctly, then the device has a camera.
+			LONG nError = ::RegQueryValueEx(key, L"Camera", 0, NULL, reinterpret_cast<LPBYTE>(&nResult), &dwBufferSize);
+			if (ERROR_SUCCESS == nError) {
+				startPreview();
+			} else {
+				// No camera attached to the device
+			}
+		}
 	}
 
     virtual void stop(CMethodResult& oResult) {
@@ -395,28 +528,8 @@ public:
 
 			LOG(INFO) + __FUNCTION__ + " Camera unloaded.";
 		}
-	}
 
-	// Thread function for start method
-	static DWORD WINAPI stopTimerProc(LPVOID lpParam)
-	{
-		LOG(INFO) + __FUNCTION__ + " Thread stop function called.";
-		CVideocaptureImpl *pVideoCapture = (CVideocaptureImpl*)lpParam;
-		if (pVideoCapture)
-		{
-			if (WaitForSingleObject(pVideoCapture->m_hStopEvent, pVideoCapture->m_iMaxDuration)
-				== WAIT_TIMEOUT)
-			{
-				if (pVideoCapture && (pVideoCapture->m_eState == STATE_CAPTURE))
-				{
-					LOG(INFO) + __FUNCTION__ + " m_eState = STATE_CAPTURE";
-					pVideoCapture->Stop();
-				}
-			}
-			if (pVideoCapture)
-				ResetEvent(pVideoCapture->m_hStopEvent);
-		}
-		return 0;
+		UnregisterClass(WIN_CLASSNAME, hInstance);
 	}
 };
 

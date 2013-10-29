@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 #ifndef RHODES_EMULATOR
     const QByteArray dir = QFileInfo(QCoreApplication::applicationFilePath()).absolutePath().toLatin1();
     m_strRootPath = std::string(dir.constData(), dir.length());
-    m_strRootPath += "\\rho\\";
+    m_strRootPath += "/rho/";
 #endif
 
     // PreMessageLoop:
@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
 #ifdef RHODES_EMULATOR
     m_appWindow->Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
 #else
-    m_appWindow->Initialize(L"Rhodes");
+    m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
 #endif
 
     RHODESAPP().startApp();

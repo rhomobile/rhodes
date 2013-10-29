@@ -22,8 +22,6 @@
  * General error codes
  */
 
-#define WM_STOPVIEWER (WM_APP + 500)
-
 enum errType
 {
 	SUCCESS = 0,				
@@ -41,6 +39,8 @@ enum errType
 	WND_DIM_ERR
 };
 // SPS
+
+#define ID_TAKE (WM_USER+1)
 
 // SPS - taken from PBUtils.cpp
 static const char base64_chars[] = 
@@ -253,7 +253,7 @@ CImager::CImager(HINSTANCE hInstance,HWND hParent,int iInstanceID) :m_iInstanceI
 	m_iDesiredHeight			= -1;
 	
 	//Initialize dev name to default dev
-	wcscpy(m_szDevName,L"IMG1:");
+	wcscpy(m_szDevName,L"CAM1:");
 
 	//Initialize it to ZERO to indicate no navigate string
 	memset(m_EnumIMGNav,0,sizeof(m_EnumIMGNav));
@@ -275,8 +275,8 @@ CImager::CImager(HINSTANCE hInstance,HWND hParent,int iInstanceID) :m_iInstanceI
 
 	// CDShowCam only used to allow device list to be created so we can
 	// get rid of it now to save memory.
-	if (m_pDSCam) delete m_pDSCam;
-	m_pDSCam = NULL;
+	//if (m_pDSCam) delete m_pDSCam;
+	//m_pDSCam = NULL;
 
 #endif
 	
@@ -306,50 +306,6 @@ CImager::CImager(HINSTANCE hInstance,HWND hParent,int iInstanceID) :m_iInstanceI
 	LOG(INFO) + "3099:CImager created ok.";
 
 	m_bSaveAsFile = true;
-}
-
-// Define the WindowProc to be used by this Imager.
-LRESULT CALLBACK CImager::MessageWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
-{
-	stringstream ss;
-	CImager *lImager;
-
-	ss << "HWND: " << hWnd << " Processing message: " << hex << Msg;
-
-	LOG(INFO) + ss.str();
-
-    switch(Msg)
-    {
-		case WM_STOPVIEWER:
-			LOG(INFO) + __FUNCTION__ + "Processing WM_STOPVIEWER message.";
-			lImager = (CImager *)GetWindowLong(hWnd, GWL_USERDATA);
-
-			lImager->StopViewer();
-			break;
-
-		case WM_PAINT:
-			break;
-
-		default:
-			return DefWindowProc(hWnd, Msg, wParam, lParam);
-    }
-    return 0;
-}
-
-bool CImager::onWndMsg(MSG& oMsg)
-{
-	bool handled = false;
-	std::stringstream ss;
-	ss << "Received message " << oMsg.message;
-	LOG(INFO) + __FUNCTION__ + ss.str();
-
-	if (oMsg.message == WM_STOPVIEWER)
-	{
-		LOG(INFO) + __FUNCTION__ + "Processing WM_STOPVIEWER in CImager";
-		handled = true;
-	}
-
-	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -462,39 +418,12 @@ DWORD CImager::StartViewer()
 	LOG(INFO) + "3300:Calling StartViewer ...";
 
 	// Create the viewer window
-	m_hWndViewer = CreateWindowEx(WS_EX_NOANIMATION|WS_EX_TOPMOST, L"static", NULL, WS_VISIBLE | WS_POPUP, 
+	m_hWndViewer = CreateWindowEx(WS_EX_NOANIMATION|WS_EX_TOPMOST, L"CameraPreview", NULL, WS_VISIBLE | WS_CHILD, 
 				m_rcWinPos.left,
 				m_rcWinPos.top,
 				m_rcWinPos.right,
 				m_rcWinPos.bottom, 
 				m_hParentWnd, NULL, m_hInst, NULL);
-
-	// Populate the Window message structure
-    WndCls.style         = 0;
-	WndCls.lpfnWndProc   = (WNDPROC)CImager::MessageWndProc;
-    WndCls.cbClsExtra    = 0;
-    WndCls.cbWndExtra    = 0;
-    WndCls.hInstance     = m_hInst;
-    WndCls.hIcon         = NULL;
-    WndCls.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    WndCls.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-    WndCls.lpszMenuName  = NULL;
-    WndCls.lpszClassName = L"messagewindow";
-
-    RegisterClass(&WndCls);
-
-	// Create the message window
-	m_hWndMessageWindow = CreateWindowEx(WS_EX_NOANIMATION|WS_EX_TOPMOST, L"messagewindow", NULL, WS_CHILD, 50, 50, 50, 50, m_hParentWnd, NULL, m_hInst, NULL);
-	SetWindowLong(m_hWndMessageWindow, GWL_USERDATA, (long)this);
-	ss << "Created Window handled " << m_hWndMessageWindow;
-	LOG(INFO) + __FUNCTION__ + ss.str();
-	ss.clear(); ss.str("");
-
-	// Post a message to the Window
-	ss << "Posting message WM_STOPVIEWER to Window Handle " << m_hWndMessageWindow;
-	LOG(INFO) + __FUNCTION__ + ss.str();
-	ss.clear(); ss.str("");
-	PostMessage(m_hWndMessageWindow, WM_STOPVIEWER, 1, 1);
 
 	wsprintf(tcString, L"3310:start viewer 1 ->left=%d, right=%d, top=%d, bottom=%d", m_rcWinPos.left, m_rcWinPos.right, m_rcWinPos.top, m_rcWinPos.bottom);
 	LOG(INFO) + tcString;
@@ -578,8 +507,8 @@ DWORD CImager::StartViewer()
 #ifndef STATIC_DSCAM
 		LOG(INFO) + "3355:Deleting m_pDSCam ...";
 		
-		if (m_pDSCam) delete m_pDSCam;
-		m_pDSCam = new CDShowCam();
+		//if (m_pDSCam) delete m_pDSCam;
+		//m_pDSCam = new CDShowCam();
 
 #endif
 		LOG(INFO) + "3360:InitFilterGrp() ...";
@@ -654,6 +583,36 @@ DWORD CImager::StartViewer()
 	}
 
 	m_PreviewOn = TRUE;
+
+	// Draw the capture button to take a picture.
+	RECT rect;
+	int width = 128;
+	int height = 64;;
+	int top, left;
+
+	HWND hwnd = CreateWindow(L"BUTTON", L"", WS_CHILD, 0, 0, 0, 0, m_hWndViewer, (HMENU) 0, m_hInst, NULL);
+	HDC hdc = GetDC (hwnd);
+
+	SIZE size;
+	GetTextExtentPoint32 (hdc, L"TAKE", 5, &size);
+
+	ReleaseDC (hwnd, hdc);
+	DestroyWindow (hwnd);
+
+	DEBUGMSG (TRUE, (L"Button size %d x %d\r\n", size.cx, size.cy));
+	width = size.cx;
+	height = size.cy;
+
+	// Position buttons at the bottom of the video capture window
+	GetClientRect(m_hWndViewer, &rect);
+	top = rect.bottom - height;
+	left = 32;
+
+	// Create the actual button
+	m_hwndTake = CreateWindow(L"BUTTON", L"Take", WS_CHILD | WS_VISIBLE, 
+		left, top, width, height, m_hWndViewer, (HMENU) ID_TAKE, m_hInst, NULL);
+	DEBUGMSG (TRUE, (L"Drawing Stop button at [%d,%d,%d,%d]\r\n", left, top, width, height));
+
 	LOG(INFO) + "3399:StartViewer called.";
 	
 	if (m_hParentWnd)
@@ -1322,8 +1281,6 @@ void CImager::StopTriggerWatch (void)
 
 void CImager::TriggerProc (void)
 {
-	stringstream ss;
-
 	if (!m_bRcmLoaded)
 	{
 		LOG(WARNING) + "Trigger functionality is not available on this device";
@@ -1350,16 +1307,8 @@ void CImager::TriggerProc (void)
 
         SaveImage();
 
-		// Send a message to the Window that Imager 
-		//SendMessage(m_hWndMessageWindow, WM_STOPVIEWER, 0, NULL);
-		ss << "PostMessage " << WM_STOPVIEWER << " to m_hWndMessageWindow:" << m_hWndMessageWindow;
-		LOG(INFO) + ss.str();
-		ss.str(""); ss.clear();
-		posterror = PostMessage(m_hWndMessageWindow, WM_STOPVIEWER, 0, 0);
-		ss << "PostMessage returned " << posterror;
-		LOG(INFO) + ss.str();
-		LOG(INFO) + "Posted Message WM_STOPVIEWER to m_hWndMessageWindow";
-        //StopViewer();
+		// This should be called by a button press instead.
+		StopViewer();
 		LOG(INFO) + "SaveImage done.";
 	}
 

@@ -128,7 +128,6 @@ Section %SECTION_NAME% appSection
   File /r "rho"
   File %APP_EXECUTABLE%
   File *.dll
-  File *.manifest
   File /r "imageformats"
   File "icon.ico"
 
