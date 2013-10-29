@@ -20,7 +20,7 @@ macx {
   RCC_DIR =  ../../../osx/bin/RhoSimulator/resources
   HEADERS += impl/SSLImpl.h
   SOURCES += impl/SSLImpl.cpp\
-../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CSystemImpl.cpp
+../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
   LIBS += -lcrypto -lssl -lz -lldap
   LIBS += -L../../../osx/bin/curl -lcurl
   LIBS += -L../../../osx/bin/rubylib -lrubylib
@@ -156,7 +156,7 @@ impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
 DateTimeDialog.cpp\
 RhoNativeApiCall.cpp\
-../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CWebViewImpl.cpp
+../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp
 
 FORMS += ExternalWebView.ui\
 QtMainWindow.ui\

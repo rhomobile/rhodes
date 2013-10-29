@@ -34,9 +34,8 @@ def build_extension(name, arch)
       cc_compile f, $tempdir, args or exit 1
 
     elsif $platform == 'iphone'
-      pldir = ($platform == 'iphone') ? 'iphone' : 'macosx'
       args << "-I\"#{$rootdir}/platform/shared/ruby/iphone\""
-      args << "-I\"#{$rootdir}/lib/extensions/openssl/ext/#{pldir}\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl/ext/#{$platform}\""
       args << "-D_XOPEN_SOURCE"
       args << "-D_DARWIN_C_SOURCE"
       args << "-isysroot \"#{$sdkroot}\""
