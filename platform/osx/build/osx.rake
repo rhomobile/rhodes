@@ -77,8 +77,7 @@ namespace "build" do
                     $extensions_lib << " -l#{ext}"
                     $pre_targetdeps << " ../../../osx/bin/extensions/lib#{ext}.a"
                 end
-                puts Jake.run('./build', [], extpath)
-                exit 1 unless $? == 0
+                Jake.run3('./build', extpath)
             end
         end
     end
@@ -101,7 +100,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         app_path = File.join( $build_dir, 'RhoSimulator/RhoSimulator.app' )
-        puts Jake.run($remove,['-Rf', app_path ])
+        Jake.run3("#{$remove} -Rf #{app_path}")
 
         File.open(File.join($startdir, 'platform/shared/qt/rhodes/resources/Info.plist'), "wb") do |fversion|
             fversion.write( %{<?xml version="1.0" encoding="UTF-8"?>
@@ -125,21 +124,12 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
 })
         end
 
-        chdir $qt_project_dir
-        args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro', 'RHOSIMULATOR_BUILD=1']
-        puts Jake.run($qmake,args)
-        puts Jake.run($make, ['clean'])
-        puts Jake.run($make, ['all'])
-
-        unless $? == 0
-          puts "Error building"
-          exit 1
-        end
-
-        puts Jake.run($macdeployqt, [app_path])
-
-        chdir $qt_project_dir
-        puts Jake.run($make, ['clean'])
+        qmake = "#{$qmake} -o Makefile -r -spec macx-g++ RhoSimulator.pro RHOSIMULATOR_BUILD=1"
+        Jake.run3(qmake                        , $qt_project_dir)
+        Jake.run3("#{$make} clean"             , $qt_project_dir)
+        Jake.run3("#{$make} all"               , $qt_project_dir)
+        Jake.run3("#{$macdeployqt} #{app_path}", $qt_project_dir)
+        Jake.run3("#{$make} clean"             , $qt_project_dir)
     end
   end
 end
