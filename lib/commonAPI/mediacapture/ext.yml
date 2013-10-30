@@ -9,11 +9,12 @@ android:
   adds: ext/platform/android/adds
 
 wp8:
-  libraries: ["Mediacapture"]
+  libraries: ["Camera"]
   camera:
     csharp_impl: yes
     root_namespace: rho
     project_path: ext/platform/wp8/Mediacapture.vcxproj
+    libname: Mediacapture
   
 project_paths:
   wp8: ext/platform/wp8/Mediacapture.vcxproj

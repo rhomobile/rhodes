@@ -210,7 +210,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         			<DESC>Camera with requested type or nil if not have requested type camera</DESC>
         		</RETURN>
 			</METHOD>
-            <METHOD name="takePicture" hasCallback="mandatory">
+            <METHOD name="takePicture" hasCallback="mandatory" runInThread="ui">
                 <DESC>Start the camera appliction to take a picture.  The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">

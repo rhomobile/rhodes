@@ -62,6 +62,7 @@ namespace CameraImpl
          
         public void getCameraType(IMethodResult oResult)
         {
+            oResult.set("back");
             // implement this method in C# here
         }
 
@@ -237,6 +238,7 @@ namespace CameraImpl
             cameraCaptureTask = new CameraCaptureTask();
             cameraCaptureTask.Completed += new EventHandler<PhotoResult>(cameraTask_Completed);
             cameraCaptureTask.Show();
+            //CameraPage page = new CameraPage();
         }
 
         public void getProperty(string propertyName, IMethodResult oResult)
@@ -279,7 +281,10 @@ namespace CameraImpl
 
         public void enumerate(IMethodResult oResult)
         {
-            // implement this method in C# here
+            rho.common.Vector<String> arIDs = new rho.common.Vector<String>();
+            arIDs.addElement("back");
+
+            oResult.set(arIDs);
         }
 
         public void getCameraByType(string cameraType, IMethodResult oResult)

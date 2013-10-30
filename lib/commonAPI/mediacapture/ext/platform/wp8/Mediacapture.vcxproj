@@ -161,6 +161,8 @@
     <ClCompile Include="..\..\shared\generated\camera_ruby_api.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
     <ClCompile Include="..\..\shared\generated\cpp\CameraBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Camera_js_wrap.cpp" />
@@ -180,6 +182,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <SubType>Designer</SubType>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
