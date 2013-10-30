@@ -1,8 +1,8 @@
 TEMPLATE = subdirs
 SUBDIRS = rubylib rholib sqlite3 syncengine \
-../../../lib/commonAPI/coreapi/ext/platform/osx/coreapi.pro \
-../../../lib/commonAPI/logCapture/ext/platform/osx/logCapture.pro \
-../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/osx/rhoconnect-client.pro \
+../../../lib/commonAPI/coreapi/ext/platform/qt/coreapi.pro \
+../../../lib/commonAPI/logCapture/ext/platform/qt/logCapture.pro \
+../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/qt/rhoconnect-client.pro \
 ../../../lib/extensions/digest/ext/digest.pro \
 ../../../lib/extensions/digest-md5/ext/digest-md5.pro \
 ../../../lib/extensions/digest-sha1/ext/digest-sha1.pro \

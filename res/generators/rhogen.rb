@@ -1684,7 +1684,7 @@ module Rhogen
       end
 
       #leave only unique consants
-      return constants.uniq { |x| x.name }
+      return constants.uniq { |x| x.name }.sort{ |a,b|  a.name <=> b.name}
     end
 
     def process_hash_keys(xml_module_item)

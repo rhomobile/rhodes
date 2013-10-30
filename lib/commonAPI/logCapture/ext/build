@@ -13,7 +13,7 @@ rake --trace
 
 elif [ "$RHO_PLATFORM" = "osx" ]; then
 
-cd platform/osx
+cd platform/qt
 rake --trace
 
 fi

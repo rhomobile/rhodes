@@ -1,8 +1,8 @@
 require File.join(pwd, '../../../../../build/jake.rb')
 
 def build_extension(name)
-  dir = File.join($rootdir, "lib/commonAPI/#{name}/ext/platform/osx")
-  qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro QMAKE_MAC_SDK='#{$sdkroot}' CONFIG-=debug CONFIG+=release #{$qmakevars}"
+  dir = File.join($rootdir, "lib/commonAPI/#{name}/ext/platform/qt")
+  qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro CONFIG-=debug CONFIG+=release #{$qmakevars}"
 
   Jake.run3(qmake           , dir)
   Jake.run3("#{$make} clean", dir)
@@ -22,8 +22,6 @@ namespace "build" do
       $qmake_spec = 'win32-msvc2010'
       $make = 'nmake'
     else
-      $sdkroot = ENV['SDKROOT']
-      raise "SDKROOT is not set" if $sdkroot.nil?
       $qmake_spec = 'macx-g++'
       $make = "make"
     end
