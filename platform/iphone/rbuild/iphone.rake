@@ -338,7 +338,7 @@ def prepare_production_plist (app_path, app_name)
     fAlx.close()
 end
 
-ICONS = [['icon', 'icon57'], ['icon57','icon57'], ['icon72','icon72'], ['icon114','icon114']]
+ICONS = [['icon', 'icon57'], ['icon29','icon29'], ['icon40','icon40'], ['icon50','icon50'], ['icon57','icon57'], ['icon58','icon58'], ['icon72','icon72'], ['icon73','icon73'], ['icon76','icon76'], ['icon80','icon80'], ['icon100','icon100'], ['icon120','icon120'], ['icon114','icon114'], ['icon144','icon144'], ['icon152','icon152'], ['icon512','icon512']]
 
 def copy_all_icons_to_production_folder
   ICONS.each do |pair|
