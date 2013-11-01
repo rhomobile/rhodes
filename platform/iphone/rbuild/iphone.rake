@@ -1011,8 +1011,8 @@ namespace "build" do
       restore_project_from_bak
 
       #fix issue with Application Base generated file - hardcoded !!!
-      xml_path = File.join($startdir, "/lib/commonAPI/coreapi/ext/Application.xml")
-      Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+      #xml_path = File.join($startdir, "/lib/commonAPI/coreapi/ext/Application.xml")
+      #Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
 
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
