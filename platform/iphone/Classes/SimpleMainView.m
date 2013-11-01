@@ -207,8 +207,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
 - (UIToolbar*)newToolbar:(NSDictionary*)bar_info frame:(CGRect)mainFrame {
     
     UIToolbar *tb = [UIToolbar new];
-    tb.barStyle = UIBarStyleBlack;//Opaque;
-	
+    if (!(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))) {
+         tb.barStyle = UIBarStyleBlack;//Opaque;
+    }
 
 	NSString *background_color = nil;
     NSString *icon_color = nil;
