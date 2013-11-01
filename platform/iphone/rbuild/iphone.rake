@@ -165,8 +165,8 @@ def set_ui_prerendered_icon(val)
     return ret_value
 end
 
-BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon57.png', 'icon60.png', 'icon72.png', 'icon76.png', 'icon114.png', 'icon120.png', 'icon144.png', 'icon152.png', 'Info.plist', 'Default.png']
-CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LadscapeLeft.png', 'Default-LadscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png']
+BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon57.png', 'icon60.png', 'icon72.png', 'icon76.png', 'icon114.png', 'icon120.png', 'icon144.png', 'icon152.png', 'Info.plist', 'Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png']
+CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png']
 
 def make_project_bakup
      BAKUP_FILES.each do |f|
@@ -1005,7 +1005,14 @@ namespace "build" do
     end
 
     task :setup_xcode_project => ["config:iphone"] do
+      
+      make_project_bakup
+
       restore_project_from_bak
+
+      #fix issue with Application Base generated file - hardcoded !!!
+      xml_path = File.join($startdir, "/lib/commonAPI/coreapi/ext/Application.xml")
+      Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
 
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
