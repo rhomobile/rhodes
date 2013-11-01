@@ -2,17 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>rhodes</string>
-			</array>
-			<key>CFBundleURLName</key>
-			<string>com.rhomobile.rhosyncclient</string>
-		</dict>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -20,9 +9,27 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>icon.png</string>
+	<string>icon72.png</string>
 	<key>CFBundleIconFiles</key>
 	<array>
+		<string>icon144</string>
+		<string>icon72</string>
+		<string>icon114</string>
+		<string>icon57</string>
+		<string>icon120</string>
+		<string>icon60</string>
+		<string>icon76</string>
+		<string>icon152</string>
+	</array>
+	<key>CFBundleIconFiles~ipad</key>
+	<array>
+		<string>icon152</string>
+		<string>icon76</string>
+		<string>icon144</string>
+		<string>icon72</string>
+		<string>icon120</string>
+		<string>icon57</string>
+		<string>icon</string>
 		<string>icon57.png</string>
 		<string>icon72.png</string>
 		<string>icon114.png</string>
@@ -37,12 +44,46 @@
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.rhomobile.rhosyncclient</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>rhodes</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>4.1.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchImageFile</key>
 	<string>Default</string>
+	<key>UILaunchImages~ipad</key>
+	<array>
+		<dict>
+			<key>UILaunchImageMinimumOSVersion</key>
+			<string>7.0</string>
+			<key>UILaunchImageName</key>
+			<string>Default-Landscape</string>
+			<key>UILaunchImageOrientation</key>
+			<string>Landscape</string>
+			<key>UILaunchImageSize</key>
+			<string>{768, 1024}</string>
+		</dict>
+		<dict>
+			<key>UILaunchImageMinimumOSVersion</key>
+			<string>7.0</string>
+			<key>UILaunchImageName</key>
+			<string>Default-Portrait</string>
+			<key>UILaunchImageOrientation</key>
+			<string>Portrait</string>
+			<key>UILaunchImageSize</key>
+			<string>{768, 1024}</string>
+		</dict>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
