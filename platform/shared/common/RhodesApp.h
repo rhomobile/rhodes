@@ -349,6 +349,10 @@ void rho_rhodesapp_callBluetoothCallback(const char* strCallbackUrl, const char*
 void rho_rhodesapp_callAppActiveCallback(int nActive);
 void rho_rhodesapp_callUiCreatedCallback();
 void rho_rhodesapp_callUiDestroyedCallback();
+void rho_rhodesapp_callScreenOffCallback();
+void rho_rhodesapp_callScreenOnCallback();
+void rho_rhodesapp_callScreenLockedCallback();
+void rho_rhodesapp_callScreenUnlockedCallback();
 unsigned long rho_rhodesapp_GetCallbackObject(int nIndex);
 
 //void rho_rhodesapp_setViewMenu(unsigned long valMenu);

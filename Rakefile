@@ -1010,11 +1010,13 @@ def init_extensions(dest, mode = "")
               libs.each do |lib|
                 extconf_wp8_lib = !extconf_wp8[lib.downcase].nil? ? extconf_wp8[lib.downcase] : Hash.new
                 csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?)
-                extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
+                if extconf_wp8_lib['libname'].nil?
+                    extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
+				end
                   
                 if csharp_impl
                   wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
-                  extcsharplibs << lib + "Lib.lib"
+                  extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
                   extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
                   extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />'
                   extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())"

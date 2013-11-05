@@ -207,8 +207,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
 - (UIToolbar*)newToolbar:(NSDictionary*)bar_info frame:(CGRect)mainFrame {
     
     UIToolbar *tb = [UIToolbar new];
-    tb.barStyle = UIBarStyleBlack;//Opaque;
-	
+    if (!(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))) {
+         tb.barStyle = UIBarStyleBlack;//Opaque;
+    }
 
 	NSString *background_color = nil;
     NSString *icon_color = nil;
@@ -751,6 +752,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
     // encoded, encodedUrl will contain correct encoded version
     NSString *decodedUrl = [url stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *encodedUrl = [decodedUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    // additional check for anchor for file:// prefix
+    if ([encodedUrl hasPrefix:@"file://"]) {
+        encodedUrl = [encodedUrl stringByReplacingOccurrencesOfString:@"%23" withString:@"#"];
+    }
+    
     return encodedUrl;
 }
 
