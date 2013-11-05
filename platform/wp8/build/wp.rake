@@ -251,38 +251,7 @@ namespace "build" do
 
     # create file with map of bundle files 
     task :rhobundlemap do
-      puts "rhobundlemap task started"
 
-      chdir $srcdir
-      file = File.open("RhoBundleMap.txt", "w+")
-      stamp = 0
-
-      Dir.glob(File.join("**", '*.*')).each do |f|
-        if #f.start_with?('db')          ||
-        f.end_with?('.rb') ||
-            f.end_with?('.erb') ||
-        File.directory?(f)
-           # ||
-           #f == "apps/app_manifest.txt" ||
-           #f == "apps/rhoconfig.txt"    ||
-           #f == "apps/rhoconfig.txt.timestamp" ||
-           #f == "RhoBundleMap.txt"
-          next;
-        end
-
-        if f.include?("app") ||
-            f.include?("db") ||
-            f.include?("lib")
-          dst_dir = File.join('rho', f)
-        else
-          dst_dir = File.join('rho', f)
-        end
-
-        file.puts dst_dir + "|" + dst_dir + "|"+ File.mtime(f).to_i.to_s
-        puts f + "|" + File.mtime(f).to_i.to_s
-      end
-
-      file.close
     end
 
     # build native code
@@ -296,11 +265,11 @@ namespace "build" do
 
       doc = REXML::Document.new(File.open($startdir+"/"+$config["build"]["wp8path"]+"/rhodes/Properties/WMAppManifest.xml"))
       doc.elements.each("Deployment/App") { |element|
-        element.attributes["ProductID"] = "{"+$app_config["wp"]["productid"]+"}"
-        element.attributes["Title"] = $app_config["name"]
+        element.attributes["ProductID"]   = "{"+$app_config["wp"]["productid"]+"}"
+        element.attributes["Title"]       = $app_config["name"]
         element.attributes["Description"] = $app_config["name"]
-        element.attributes["Author"] = $app_config["vendor"]
-        element.attributes["Publisher"] = $app_config["vendor"]
+        element.attributes["Author"]      = $app_config["vendor"]
+        element.attributes["Publisher"]   = $app_config["vendor"]
       }
 
       File.open($startdir + "/"+$config["build"]["wp8path"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
