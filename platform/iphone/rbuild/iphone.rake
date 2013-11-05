@@ -529,7 +529,9 @@ namespace "config" do
       if $app_config['capabilities'].index('push')
         $app_config['extensions'] << 'applePush' unless $app_config['extensions'].index('applePush')
       end
-    end
+      
+      $file_map_name = "rhofilelist.txt"
+    end    
   end
 
   task :set_iphone_platform do
@@ -661,8 +663,6 @@ namespace "build" do
 
       chdir $startdir
 
-
-
       Rake::Task["build:bundle:noxruby"].execute
 
       Rake::Task["build:iphone:extensions"].execute
@@ -673,7 +673,6 @@ namespace "build" do
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
 
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
-
     end
 
     task :upgrade_package => ["build:iphone:rhobundle"] do

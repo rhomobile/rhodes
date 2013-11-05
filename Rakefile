@@ -543,7 +543,6 @@ namespace "config" do
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
     #application build configs
-
     $application_build_configs_keys.each do |key|
       value = $app_config[key]
       if $app_config[$config["platform"]] != nil
@@ -687,12 +686,14 @@ namespace "config" do
       puts "Jake.localip() error : #{e}"  
     end
 
-    obfuscate_js      = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
-    obfuscate_css     = Jake.getBuildBoolProp2("obfuscate", "css", $app_config, nil)
+    $file_map_name     = "RhoBundleMap.txt" 
+
+    obfuscate_js       = Jake.getBuildBoolProp2("obfuscate", "js", $app_config, nil)
+    obfuscate_css      = Jake.getBuildBoolProp2("obfuscate", "css", $app_config, nil)
     $obfuscate_exclude = Jake.getBuildProp2("obfuscate", "exclude_dirs" )
 
-    minify_js      = Jake.getBuildBoolProp2("minify", "js", $app_config, nil)
-    minify_css     = Jake.getBuildBoolProp2("minify", "css", $app_config, nil)
+    minify_js       = Jake.getBuildBoolProp2("minify", "js", $app_config, nil)
+    minify_css      = Jake.getBuildBoolProp2("minify", "css", $app_config, nil)
     $minify_exclude = Jake.getBuildProp2("minify", "exclude_dirs" )
 
     $minify_types = []
@@ -708,7 +709,7 @@ namespace "config" do
     $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
-
+    
     if !$js_application && !Dir.exists?(File.join($app_path, "app"))
         puts '********* ERROR ************************************************************************'
         puts "Add javascript_application:true to build.yml, since application does not contain app folder."
@@ -716,9 +717,6 @@ namespace "config" do
         puts '****************************************************************************************'
         exit(1)
     end
-        
-    platform_task = "config:#{$current_platform}:app_config"
-    Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
     
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
@@ -726,7 +724,7 @@ namespace "config" do
     if $current_platform == "bb"  
       make_application_build_config_java_file()
       update_rhoprofiler_java_file()
-    elsif $current_platform == "wp"  
+    elsif $current_platform == "wp"
     else
       make_application_build_config_header_file    
       make_application_build_capabilities_header_file
@@ -741,6 +739,10 @@ namespace "config" do
       $app_config['extensions'] = $app_config['extensions'] | ['uri']
       $app_config['extensions'] = $app_config['extensions'] | ['timeout']
     end
+
+    # it`s should be in the end of common:config task
+    platform_task = "config:#{$current_platform}:app_config"
+    Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
 
   end # end of common:config 
   
@@ -1205,18 +1207,36 @@ def init_extensions(dest, mode = "")
   #exit
 end
 
-def public_folder_cp_r(src_dir,dst_dir,level)
+def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
+  
+  return if src_dir == dst_dir
+    
   mkdir_p dst_dir if not File.exists? dst_dir
+  
   Dir.foreach(src_dir) do |filename|
     next if filename.eql?('.') || filename.eql?('..')
     next if filename.eql?('api') && level == 0
-    
+          
     filepath = src_dir + '/' + filename
     dst_path = dst_dir + '/' + filename
+        
     if File.directory?(filepath)
-      public_folder_cp_r(filepath,dst_path,(level+1))
+      public_folder_cp_r(filepath, dst_path, (level+1), file_map, start_path)
     else
-      cp filepath, dst_path, :preserve => true
+      map_items = file_map.select {|f| f[:path] == filepath[start_path.size+8..-1] }
+
+      if map_items.size > 1
+        puts "WARRNING, duplicate file records."
+      end
+
+      if !map_items.nil? && map_items.size != 0
+        new_time = File.stat(filepath).mtime
+        old_time = Time.at(map_items[0][:time])
+        
+        next if new_time >= old_time
+      end
+      
+      cp filepath, dst_path, :preserve => true  
     end
   end
 end
@@ -1264,14 +1284,18 @@ def common_bundle_start( startdir, dest)
   app = $app_path
   rhodeslib = "lib/framework"
 
-  rm_rf $srcdir
+  puts $srcdir
+  puts dest
+  puts startdir
+  
+  #rm_rf $srcdir
   mkdir_p $srcdir
   mkdir_p dest if not File.exists? dest
   mkdir_p File.join($srcdir,'apps')
 
   start = pwd
-  chdir rhodeslib
-
+  chdir rhodeslib  
+  
   if !$js_application
     Dir.glob("*").each { |f|
       if f.to_s == "autocomplete"
@@ -1301,7 +1325,8 @@ def common_bundle_start( startdir, dest)
   end
   
   if File.exists? app + '/public'
-    public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0
+    file_map = Jake.build_file_map(File.join($srcdir,'apps/public'), $file_map_name, true)
+    public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, file_map, app 
   end
   
   copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
@@ -1344,36 +1369,32 @@ def common_bundle_start( startdir, dest)
   end
 
   copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
-      
+         
   replace_platform = $config['platform']
   replace_platform = "bb6" if $bb6
 
-  #if !$js_application
-    [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
-      next unless Dir.exists? folder
-      chdir folder
+  [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
+    next unless Dir.exists? folder
+    chdir folder
       
-      Dir.glob("**/*.#{replace_platform}.*").each do |file|
-        oldfile = file.gsub(Regexp.new(Regexp.escape('.') + replace_platform + Regexp.escape('.')),'.')
-        rm oldfile if File.exists? oldfile
-        mv file,oldfile
-      end
-      
-      Dir.glob("**/*.wm.*").each { |f| rm f }
-      Dir.glob("**/*.win32.*").each { |f| rm f }
-	    Dir.glob("**/*.wp.*").each { |f| rm f }
-	    Dir.glob("**/*.wp8.*").each { |f| rm f }
-	    Dir.glob("**/*.sym.*").each { |f| rm f }
-      Dir.glob("**/*.iphone.*").each { |f| rm f }
-      Dir.glob("**/*.bb.*").each { |f| rm f }
-      Dir.glob("**/*.bb6.*").each { |f| rm f }
-      Dir.glob("**/*.android.*").each { |f| rm f }
-      Dir.glob("**/.svn").each { |f| rm_rf f }
-      Dir.glob("**/CVS").each { |f| rm_rf f }
+    Dir.glob("**/*.#{replace_platform}.*").each do |file|
+      oldfile = file.gsub(Regexp.new(Regexp.escape('.') + replace_platform + Regexp.escape('.')),'.')
+      rm oldfile if File.exists? oldfile
+      mv file,oldfile
     end
-  #end  
-    
- # exit 1
+      
+    Dir.glob("**/*.wm.*").each { |f| rm f }
+    Dir.glob("**/*.win32.*").each { |f| rm f }
+    Dir.glob("**/*.wp.*").each { |f| rm f }
+    Dir.glob("**/*.wp8.*").each { |f| rm f }
+    Dir.glob("**/*.sym.*").each { |f| rm f }
+    Dir.glob("**/*.iphone.*").each { |f| rm f }
+    Dir.glob("**/*.bb.*").each { |f| rm f }
+    Dir.glob("**/*.bb6.*").each { |f| rm f }
+    Dir.glob("**/*.android.*").each { |f| rm f }
+    Dir.glob("**/.svn").each { |f| rm_rf f }
+    Dir.glob("**/CVS").each { |f| rm_rf f }
+  end
 end #end of common_bundle_start
 
 def create_manifest
@@ -1464,19 +1485,7 @@ namespace "build" do
       
       #create manifest
       create_manifest
-      
-      #"compile ERB"
-      #ext = ".erb"
-      #Find.find($srcdir) do |path|
-      #  if File.extname(path) == ext
-      #    rbText = ERB.new( IO.read(path) ).src
-      #    newName = File.basename(path).sub('.erb','_erb.rb')
-      #    fName = File.join(File.dirname(path), newName)
-      #    frb = File.new(fName, "w")
-      #    frb.write( rbText )
-      #    frb.close()
-      #  end
-      #end
+
       cp   compileERB, $srcdir
       puts "Running bb.rb"
 
@@ -1513,6 +1522,8 @@ namespace "build" do
       chdir $srcdir
 =end  
 
+      Jake.build_file_map($srcdir, $file_map_name)
+      
       puts `"#{File.join(jpath,'jar')}" uf ../RhoBundle.jar apps/#{$all_files_mask}`
       unless $? == 0
         puts "Error creating Rhobundle.jar"
@@ -1541,6 +1552,44 @@ namespace "build" do
 
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
+
+    def cp_if(src_dir, dst_dir)      
+      puts src_dir
+      
+      if !Dir.exist? src_dir
+        return
+      end
+      
+      chdir src_dir
+      
+      Dir.glob("**") { |f|
+        #puts 'f=' + f.to_s
+               
+        if File.file? File.join(src_dir, f.to_s)         
+          f_path        = File.join(src_dir, f.to_s)
+          src_file_time = File.mtime f_path 
+          dst_file      = File.join(dst_dir, f.to_s)
+          
+          if File.exist? dst_file  
+            dst_file_time = File.mtime dst_file.to_s 
+            
+            if src_file_time < dst_file_time
+              next  
+            end
+          end
+
+          cp f_path, dst_dir
+        else          
+          new_dst_dir = File.join(dst_dir, f.to_s)
+          
+          if !Dir.exist? new_dst_dir
+            mkdir new_dst_dir
+          end
+            
+          cp_if(File.join(src_dir, f.to_s), new_dst_dir) 
+        end 
+      }
+    end
     
     task :noxruby, :exclude_dirs do |t, args|
       exclude_dirs = args[:exclude_dirs]
@@ -1548,7 +1597,7 @@ namespace "build" do
       if (!exclude_dirs.nil?) && (exclude_dirs !~ /^\s*$/)
         excluded_dirs = exclude_dirs.split(':')
       end
-
+      
       app = $app_path
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"
       compileERB = "lib/build/compileERB/default.rb"
@@ -1582,7 +1631,7 @@ namespace "build" do
           exit 1
         end
       end
-     
+           
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
@@ -1590,10 +1639,12 @@ namespace "build" do
       if not $minify_types.empty?
           minify_js_and_css($srcdir,$minify_types)
       end
-        
-      chdir startdir
 
-      cp_r "platform/shared/db/res/db", $srcdir
+      chdir startdir
+      cp_r "platform/shared/db/res/db", File.join($srcdir, "db")
+
+      # create bundle map file with the final information
+      Jake.build_file_map($srcdir, $file_map_name)
     end # end of noxruby
       
     def is_exclude_folder(excludes, filename)  
@@ -1750,7 +1801,7 @@ namespace "build" do
       
       create_manifest
   
-	  cp   compileERB, $srcdir
+      cp compileERB, $srcdir
       puts "Running bb.rb"
 
       puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/bb.rb"`
@@ -1769,7 +1820,6 @@ namespace "build" do
     end
   end
 end
-
 
 task :get_ext_xml_paths, [:platform] do |t,args|
     throw "You must pass in platform(win32, wm, android, iphone, wp8)" if args.platform.nil?
