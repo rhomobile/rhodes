@@ -593,26 +593,44 @@ class Jake
     f.close
   end
 
-  def self.build_file_map(dir, file_name)
-    psize = dir.size + 1
-
-    File.open(File.join(dir, file_name), 'w') do |dat|
-        Dir.glob(File.join(dir, '**/*')).sort.each do |f|
-          relpath = f[psize..-1]
-
-          if File.directory?(f)
-            type = 'dir'
-          elsif File.file?(f)
-            type = 'file'
-          else
-            next
-          end
-          size = File.stat(f).size
-          tm = File.stat(f).mtime.to_i
-
-          dat.puts "#{relpath}\t#{type}\t#{size.to_s}\t#{tm.to_s}"
-        end
+  def self.build_file_map(dir, file_name, in_memory = false)
+    psize    = dir.size + 1
+    file_map = Array.new
+    file_map_name = File.join(dir, file_name)
+    dat      = nil
+    
+    if in_memory == false
+      dat = File.open(file_map_name, 'w')
     end
+    
+    Dir.glob(File.join(dir, '**/*')).sort.each do |f|
+      relpath = f[psize..-1]
+
+      if File.directory?(f)
+        type = 'dir'
+      elsif File.file?(f)
+        type = 'file'
+      else
+        next
+      end
+          
+      if File.basename(f) == file_name
+        next
+      end
+          
+      size = File.stat(f).size
+      tm   = File.stat(f).mtime.to_i
+
+      if in_memory == true
+        map_item = Hash.new 
+        map_item = { :path => relpath, :size => size, :time => tm }
+        file_map << map_item
+      else
+        dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}"
+      end
+    end
+    
+    return file_map
   end
 
   def self.zip_upgrade_bundle(folder_path, zip_file_path)
