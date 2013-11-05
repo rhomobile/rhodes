@@ -174,7 +174,7 @@ namespace "config" do
     task :qt do
       $vscommontools = ENV['VS110COMNTOOLS']
       unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-        puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2010"
+        puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2012"
         exit 1
       end
       $qtdir = ENV['QTDIR']
