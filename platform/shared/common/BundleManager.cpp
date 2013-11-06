@@ -369,7 +369,7 @@ unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath,
     {
 		String strLine = oTokenizer.nextToken();
 
-        CTokenizer oLineTok( strLine, "\t" );
+        CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
             continue;
         String strPath = oLineTok.nextToken();
