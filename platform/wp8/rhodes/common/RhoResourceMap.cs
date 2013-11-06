@@ -63,10 +63,11 @@ namespace rho.common
             {
                 String[] values = files[i].Split('|');
 
-                String strFile = values[0];
-                String strDstFile = values[1];
+                String strFile    = "rho/" + values[0];
+                String strDstFile = strFile
+                //String strDstFile = values[1];
 
-                System.Diagnostics.Debugger.Log(0, "", strDstFile + "\n");
+                //System.Diagnostics.Debugger.Log(0, "", strDstFile + "\n");
 
                 CRhoFile.recursiveCreateDir(strDstFile);
                 CRhoFile.writeDataToFile(strDstFile, CRhoFile.readResourceFile(strFile));

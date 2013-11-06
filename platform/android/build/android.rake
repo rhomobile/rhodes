@@ -290,19 +290,19 @@ namespace "config" do
     $shareddir = File.join($androidpath, "..", "shared")
     $coreapidir = File.join($androidpath, "..", "..", "lib", "commonAPI", "coreapi", "ext", "shared")
     $commonapidir = File.join($androidpath, "..", "..", "lib", "commonAPI")
-    $srcdir = File.join($bindir, "RhoBundle")
     $targetdir = File.join($bindir, 'target', 'android')
     $projectpath = File.join($app_path, 'project', 'android')
     $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
     $tmpdir = File.join($bindir, "tmp")
-
+    $srcdir = File.join $tmpdir,'assets' #File.join($bindir, "RhoBundle")
+        
     #$rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $rhomanifesterb = File.join $androidpath, "Rhodes", "AndroidManifest.xml.erb"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
 
     $rhores = File.join $androidpath, 'Rhodes','res'
     $appres = File.join $tmpdir,'res'
-    $appassets = File.join $tmpdir,'assets'
+    $appassets = $srcdir 
     $applibs = File.join $tmpdir,'lib','armeabi'
 
     $appincdir = File.join $tmpdir, "include"
@@ -556,9 +556,12 @@ namespace "config" do
       if $app_config['capabilities'].index('push')
         $app_config['extensions'] << 'gcm-push' unless $app_config['extensions'].index('gcm-push')
       end
+      
       if $app_config['capabilities'].index('native_browser')
         $app_config['extensions'].delete('rhoelements')
       end
+      
+      $file_map_name = "rho.dat"
     end
 
     task :extensions => ['config:android', 'build:bundle:noxruby'] do
@@ -766,24 +769,17 @@ namespace "build" do
     desc "Build RhoBundle for android"
     task :rhobundle => ["config:android", :extensions] do
 
+      $srcdir = $appassets      
       Rake::Task["build:bundle:noxruby"].invoke
 
-      rm_rf $appassets
-      mkdir_p $appassets
       hash = nil
       ["apps", "db", "lib"].each do |d|
-        cp_r File.join($srcdir, d), $appassets, :preserve => true
         # Calculate hash of directories
         hash = get_dir_hash(File.join($srcdir, d), hash)
       end
+      
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(hash.hexdigest) }
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($appname) }
-      Jake.build_file_map($srcdir, "rho.dat")
-
-      ["apps", "db", "lib", "hash", "name", "rho.dat"].each do |d|
-        cp_r File.join($srcdir, d), $appassets, :preserve => true
-      end
-
     end
 
     desc "Build RhoBundle for Eclipse project"

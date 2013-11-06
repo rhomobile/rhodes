@@ -99,17 +99,17 @@ public class RhoFileApi {
 				if (line == null)
 					break;
 				
-				int idx = line.indexOf('\t');
+				int idx = line.indexOf('|');
 				if (idx == -1)
 					continue;
 				String path = line.substring(0, idx);
 				line = line.substring(idx + 1);
-				idx = line.indexOf('\t');
+				idx = line.indexOf('|');
 				if (idx == -1)
 					continue;
 				String type = line.substring(0, idx);
 				line = line.substring(idx + 1);
-				idx = line.indexOf('\t');
+				idx = line.indexOf('|');
 				if (idx == -1)
 					continue;
 				long size = Long.parseLong(line.substring(0, idx));
