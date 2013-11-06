@@ -218,7 +218,7 @@ public class RhodesApplication extends Application{
         if (hashChanged) {
             Log.i(TAG, "Application hash was changed");
             
-            RhoFileApi.initialCopy(this, new String[] {"hash", "rho.dat", "apps/rhoconfig.txt"});
+            RhoFileApi.initialCopy(this, new String[] {"hash", "apps/rhoconfig.txt"});
         }
         
         try {
