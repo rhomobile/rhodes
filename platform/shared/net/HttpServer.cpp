@@ -114,7 +114,7 @@ static bool isfile(String const &path)
         const char *s;
         size_t len;
     } index_files[] = {
-        {"index"RHO_ERB_EXT, strlen("index"RHO_ERB_EXT)},
+        {"index" RHO_ERB_EXT, strlen("index" RHO_ERB_EXT)},
         {"index.html", 10},
         {"index.htm", 9},
         {"index.php", 9},
@@ -997,8 +997,8 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     //check if there is controller.rb to run
 	struct stat st;
 
-    String newfilename = CFilePath::join(m_root, route.application) + "/" + route.model + "/" + controllerName + "_controller"RHO_RB_EXT;
-    String filename = CFilePath::join(m_root, route.application) + "/" + route.model + "/controller"RHO_RB_EXT;
+    String newfilename = CFilePath::join(m_root, route.application) + "/" + route.model + "/" + controllerName + "_controller" RHO_RB_EXT;
+    String filename = CFilePath::join(m_root, route.application) + "/" + route.model + "/controller" RHO_RB_EXT;
 
     //look for controller.rb or model_name_controller.rb
     if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)))
@@ -1010,8 +1010,8 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
 		    String tok = oTokenizer.nextToken();
 		    tok = String_trim(tok);
 
-            newfilename = CFilePath::join(tok, route.application) + "/" + route.model + "/" + controllerName + "_controller"RHO_RB_EXT;
-            filename = CFilePath::join(tok, route.application) + "/" + route.model + "/controller"RHO_RB_EXT;
+            newfilename = CFilePath::join(tok, route.application) + "/" + route.model + "/" + controllerName + "_controller" RHO_RB_EXT;
+            filename = CFilePath::join(tok, route.application) + "/" + route.model + "/controller" RHO_RB_EXT;
 
             //look for controller.rb or model_name_controller.rb
             if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)))
@@ -1351,7 +1351,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             String q = query.empty() ? "" : "?" + query;
             
             HeaderList headers;
-            headers.push_back(Header("Location", CFilePath::join( uri, "index"RHO_ERB_EXT) + q));
+            headers.push_back(Header("Location", CFilePath::join( uri, "index" RHO_ERB_EXT) + q));
             
             send_response(create_response("301 Moved Permanently", headers), true);
             return false;
