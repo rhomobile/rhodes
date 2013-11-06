@@ -27,9 +27,9 @@
 package com.rhomobile.rhodes;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.ContextFactory;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -38,47 +38,60 @@ import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.webkit.MimeTypeMap;
 
 
 public class LocalFileProvider extends ContentProvider
 {
     private static final String TAG = LocalFileProvider.class.getSimpleName();
-    public static final String PATH_PREFIX = "/data/data/";
-    public static final String PROTOCOL_PREFIX = "content://";
+    private static final String PATH_PREFIX = "/data/data/";
+    private static String fullPathPrefix;
+    public static final String PROTOCOL_PREFIX = "content";
+    
+    private static String getPathPrefix() {
+        if (fullPathPrefix == null) {
+            fullPathPrefix = PATH_PREFIX + ContextFactory.getAppContext().getPackageName();
+        }
+        return fullPathPrefix;
+    }
 
     public static boolean isCorrectAuthority(String authority)
     {
-//        Logger.D(TAG, "Comparing authorities: "
-//                    + RhodesService.getInstance().getClass().getPackage().getName()
-//                    + " vs. " + authority);
-//        return authority.equals(RhodesService.getInstance().getClass().getPackage().getName());
-        return true;
+        
+        return authority.equals(ContextFactory.getAppContext().getPackageName());
     }
     
-    public static Uri uriFromLocalFile(File file)
+    public static Uri overrideUri(Uri uri)
     {
-        String path = file.getAbsolutePath();
-        String url = PROTOCOL_PREFIX +
-            path.substring(PATH_PREFIX.length(), path.length());
-        return Uri.parse(url);
+        String scheme = uri.getScheme();
+        if (scheme != null && scheme.equals("file")) {
+            String ssp = uri.getSchemeSpecificPart();//.getAbsolutePath();
+
+            String sspPrefix = "//" + getPathPrefix();
+            if(ssp.startsWith(sspPrefix)) {
+                ssp = "//" + ssp.substring(("//"+PATH_PREFIX).length(), ssp.length());
+                Logger.T(TAG, "Overriding URI: " + uri.toString());
+
+                return Uri.fromParts(PROTOCOL_PREFIX, ssp, uri.getFragment());
+            }
+        }
+        return null;
     }
     
     public static void revokeUriPermissions(Context ctx)
     {
-        String rootUri = PROTOCOL_PREFIX + ctx.getPackageName();
+        Uri uri = Uri.fromParts(PROTOCOL_PREFIX, "//" + ctx.getPackageName(), null);
+        
+        Logger.I(TAG, "Revoke URI permissions: " + uri);
 
-        Logger.I(TAG, "Revoke URI permissions: " + rootUri);
-
-        ctx.revokeUriPermission(Uri.parse(rootUri), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        ctx.revokeUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
     
     public static File fileFromUri(Uri uri) throws IllegalArgumentException
     {
         String authority = uri.getAuthority();
         if(isCorrectAuthority(authority))
-            return new File(PATH_PREFIX + authority + uri.getPath());
+            return new File(getPathPrefix() + uri.getPath());
         else throw new IllegalArgumentException("Unknown URI authority: " + authority);
     }
     
@@ -92,8 +105,6 @@ public class LocalFileProvider extends ContentProvider
             throw new SecurityException("Unacceptable openFile mode: " + mode);
         }
         File path = fileFromUri(uri);
-        
-        Logger.D(TAG, "Opening asset file: " + path.getPath());
         
         AssetFileDescriptor fd = RhoFileApi.openAssetFd(path.getPath());
         

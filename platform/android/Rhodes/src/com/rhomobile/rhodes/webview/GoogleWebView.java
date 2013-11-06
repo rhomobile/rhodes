@@ -153,15 +153,14 @@ public class GoogleWebView implements IRhoWebView {
 
     @Override
     public void loadUrl(String url) {
+        Logger.profStart("BROWSER_PAGE");
+        
         RhoExtManager.getImplementationInstance().onBeforeNavigate(mWebView, url);
 
-        if (URLUtil.isFileUrl(url)) {
-            String path = Uri.parse(url).getPath();
-            if(path.startsWith("/data/data")) {
-                Logger.T(TAG, "Local file URL, override using LocalFileProvider");
-                url = LocalFileProvider.uriFromLocalFile(new File(path)).toString();
-                Logger.T(TAG, "Overrided URL: " + url);
-            }
+        Uri uri = LocalFileProvider.overrideUri(Uri.parse(url));
+        if (uri != null) {
+            url = Uri.decode(uri.toString());
+            Logger.T(TAG, "Override URL: " + url);
         }
         mWebView.loadUrl(url);
     }
