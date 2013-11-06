@@ -762,12 +762,11 @@ namespace "config" do
 
 end
 
-def copy_assets(asset)
+def copy_assets(asset, file_map)
   
   dest = File.join($srcdir,'apps/public')
   
   cp_r asset + "/.", dest, :preserve => true, :remove_destination => true 
-  
 end
 
 def clear_linker_settings
@@ -1232,13 +1231,17 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
       if !map_items.nil? && map_items.size != 0
         new_time = File.stat(filepath).mtime
         old_time = Time.at(map_items[0][:time])
-        
-        next if new_time >= old_time
+
+        next if new_time == old_time
+                
+        puts "map_items=" + map_items.to_s if Rake.application.options.trace        
+        puts "new_time=" + new_time.to_s if Rake.application.options.trace
+        puts "old_time=" + old_time.to_s if Rake.application.options.trace
       end
       
       cp filepath, dst_path, :preserve => true  
     end
-  end
+  end  
 end
 
 def copy_rhoconfig(source, target)
@@ -1324,8 +1327,9 @@ def common_bundle_start( startdir, dest)
     cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
   end
   
+  file_map = Jake.build_file_map(File.join($srcdir,'apps/public'), $file_map_name, true)
+  
   if File.exists? app + '/public'
-    file_map = Jake.build_file_map(File.join($srcdir,'apps/public'), $file_map_name, true)
     public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, file_map, app 
   end
   
@@ -1368,7 +1372,7 @@ def common_bundle_start( startdir, dest)
     rm_rf $srcdir + "/apps/app/spec_runner.rb"
   end
 
-  copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
+  copy_assets($assetfolder, file_map) if ($assetfolder and File.exists? $assetfolder)
          
   replace_platform = $config['platform']
   replace_platform = "bb6" if $bb6
