@@ -26,7 +26,6 @@
 
 package com.rhomobile.rhodes.uri;
 
-import java.io.File;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
@@ -72,13 +71,12 @@ public class LocalFileHandler implements UriHandler
         Logger.D(TAG, "Handle URI externally: " + url);
 
         int intentFlags = 0;
-        String path = Uri.parse(url).getPath();
-        File file = new File(path);
+        Uri path = Uri.parse(url);
 
-        if(path.startsWith(LocalFileProvider.PATH_PREFIX))
-        {
-            url = LocalFileProvider.uriFromLocalFile(file).toString();
+        Uri newUri = LocalFileProvider.overrideUri(path);
+        if(newUri != null) {
             intentFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+            url = Uri.decode(newUri.toString());
         }
 
         Intent intent = Intent.parseUri(url, intentFlags);
