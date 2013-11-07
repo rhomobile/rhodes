@@ -629,6 +629,10 @@ class Jake
         dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}"
       end
     end
+
+    if in_memory == false
+      dat.close
+    end
     
     return file_map
   end
