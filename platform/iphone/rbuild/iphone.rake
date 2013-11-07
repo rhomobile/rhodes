@@ -522,7 +522,6 @@ def kill_iphone_simulator
   puts 'kill "iPhone Simulator"'
   `killall -9 "iPhone Simulator" 2> /dev/null`
   `killall -9 iphonesim 2> /dev/null`
-  `killall iphonesim_43 2> /dev/null`
 end
 
 namespace "config" do
