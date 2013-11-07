@@ -35,6 +35,7 @@ module Rhom
   end
 
   class Rhom
+
     attr_accessor :factory
   
     def initialize
@@ -62,7 +63,7 @@ module Rhom
         
         if ( Rho::RhoConfig.exists?('bulksync_state') )
             Rho::RhoConfig.bulksync_state='0'
-        end    
+        end 
         
         ::Rho::RHO.get_db_partitions().each do |partition, db|
             next if !reset_local_models && partition == 'local'
@@ -128,7 +129,6 @@ module Rhom
             db = ::Rho::RHO.get_src_db(src_name)
             src_partition = Rho::RhoConfig.sources[src_name]['partition']
             is_schema_source = !Rho::RhoConfig.sources[src_name]['schema'].nil?
-            
             next if !args[0][:reset_local_models] && src_partition == 'local'        
 
             if (src_partition != 'local')
@@ -146,7 +146,6 @@ module Rhom
               else
                 db.execute_sql("DELETE FROM object_values WHERE source_id=?", Rho::RhoConfig.sources[src_name]['source_id'].to_i)
               end
-              
               db.commit
  
             rescue Exception => e
@@ -160,7 +159,6 @@ module Rhom
 
         #hash_migrate = {}
         #::Rho::RHO.init_schema_sources(hash_migrate) 
-        
         if defined?(RHOCONNECT_CLIENT_PRESENT)
             Rho::RhoConnectClient.pollInterval = old_interval
         end
@@ -193,7 +191,7 @@ module Rhom
 
         if ( reset_client_info && Rho::RhoConfig.exists?('push_pin') )
             Rho::RhoConfig.push_pin=''
-        end    
+        end
       
         hash_migrate = {}
         ::Rho::RHO.init_schema_sources(hash_migrate) 
@@ -222,30 +220,30 @@ module Rhom
 		  if db
 			  db.export
 		  end
-      end
+    end
 	  
 	  def database_import(partition, zipName)
 		  db = ::Rho::RHO::get_db_partitions[partition]
 		  if db
 			  db.import(zipName)
 		  end
-      end
+    end
 		  
 
-        def search(args)
-          #TODO : remove it, use  Rho::RhoConnectClient.search
-if defined?(RHOCONNECT_CLIENT_PRESENT)
-          src_ar = args[:sources]
-          
-          #check sources
-          raise ArgumentError, "no sources on search" if src_ar.nil? or src_ar.length == 0
-          src_ar.each do |src_name|
-             raise ArgumentError, "no sources on search" if Rho::RhoConfig::sources[src_name].nil?
-          end
-          
-          Rho::RhoConnectClient.search(args)
-end
+    def search(args)
+      #TODO : remove it, use  Rho::RhoConnectClient.search
+      if defined?(RHOCONNECT_CLIENT_PRESENT)
+        src_ar = args[:sources]
+        
+        #check sources
+        raise ArgumentError, "no sources on search" if src_ar.nil? or src_ar.length == 0
+        src_ar.each do |src_name|
+           raise ArgumentError, "no sources on search" if Rho::RhoConfig::sources[src_name].nil?
         end
+        
+        Rho::RhoConnectClient.search(args)
+      end
+    end
 	  
 		def have_local_changes
 		    #TODO: enumerate all sync sources, create array of partitions and run query for all partition. 
@@ -253,6 +251,15 @@ end
 			return res.length > 0
 		end
       
+    alias_method :databaseFullReset, :database_full_reset
+    alias_method :haveLocalChanges, :have_local_changes
+    alias_method :databaseFullResetEx, :database_full_reset_ex
+    alias_method :databaseFullResetAndLogout, :database_full_reset_and_logout
+    alias_method :databaseFullclientResetAndLogout, :database_fullclient_reset_and_logout
+    alias_method :databaseLocalReset, :database_local_reset
+    alias_method :haveLocalChanges, :have_local_changes
     end #class methods
   end # Rhom
+  ORM = Rhom
 end # Rhom
+ORM = Rhom

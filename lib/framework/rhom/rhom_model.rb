@@ -90,7 +90,7 @@ module Rhom
   	  BaseModel.model_params['belongs_to'] ||= []
 
       if owner.is_a?(Array)    	  
-        owner.each do |src|        
+        owner.each do |src|
             BaseModel.model_params['belongs_to'] << {name.to_s => src.to_s}
         end
       else
@@ -141,3 +141,4 @@ module Rhom
   end
   
 end # Rhom
+ORM = Rhom

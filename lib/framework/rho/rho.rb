@@ -526,7 +526,6 @@ end
     # setup the sources table and model attributes for all applications
     def init_sources()
         return unless defined? Rho::RhoConfig::sources
-
         @all_models_loaded = true
     
         uniq_sources = Rho::RhoConfig::sources.values
@@ -538,7 +537,7 @@ end
         
         uniq_sources.each do |source|
           partition = source['partition']
-          @db_partitions[partition] = nil unless @db_partitions[partition]
+          @db_partitions[partition] = nil unless @db_partitions[partition] or partition.nil?
           
           if source['belongs_to']
             source['belongs_to'].each do |hash_pair|    
@@ -564,7 +563,6 @@ end
         #user partition should alwayse exist
         @db_partitions['user'] = nil unless @db_partitions['user']
         hash_migrate = {}
-        puts "@db_partitions : #{@db_partitions}"
         @db_partitions.each do |partition, db|
             db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition) unless db
             db.start_transaction
@@ -788,14 +786,13 @@ end
             src_id = db_src['source_id']
             start_id = src_id if src_id > start_id
         end        
-        
+       
         if start_id < Rho::RhoConfig.max_config_srcid()[db_partition]        
             start_id = Rho::RhoConfig.max_config_srcid()[db_partition]+2 
         else
             start_id += 1
         end
-            
-        puts "start_id: #{start_id}"
+       
         start_id
     end
     
