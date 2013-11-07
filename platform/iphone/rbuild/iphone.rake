@@ -519,9 +519,10 @@ def check_sdk(sdkname)
 end
 
 def kill_iphone_simulator
-  puts 'kill iPhone Simulator'
-  `killall -9 "iPhone Simulator"`
-  `killall -9 iphonesim`
+  puts 'kill "iPhone Simulator"'
+  `killall -9 "iPhone Simulator" 2> /dev/null`
+  `killall -9 iphonesim 2> /dev/null`
+  `killall iphonesim_43 2> /dev/null`
 end
 
 namespace "config" do
@@ -531,9 +532,9 @@ namespace "config" do
       if $app_config['capabilities'].index('push')
         $app_config['extensions'] << 'applePush' unless $app_config['extensions'].index('applePush')
       end
-      
+
       $file_map_name = "rhofilelist.txt"
-    end    
+    end
   end
 
   task :set_iphone_platform do
@@ -995,7 +996,7 @@ namespace "build" do
          target_dir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
             ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
       end
-      
+
       build_extension_libs($sdk, target_dir)
     end
 
@@ -1004,7 +1005,7 @@ namespace "build" do
     end
 
     task :setup_xcode_project => ["config:iphone"] do
-      
+
       make_project_bakup
 
       restore_project_from_bak
@@ -1212,10 +1213,10 @@ namespace "run" do
       #if someone runs against the wrong app, kill after 120 seconds
       Thread.new {
         sleep 300
-        `killall -9 rhorunner`
+        `killall -9 rhorunner 2> /dev/null`
       }
 
-      `killall -9 rhorunner`
+      `killall -9 rhorunner 2> /dev/null`
 
       # Run local http server
       $iphonespec = true
