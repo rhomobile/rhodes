@@ -64,8 +64,10 @@ namespace rho.common
                 String[] values = files[i].Split('|');
 
                 String strFile    = "rho/" + values[0];
-                String strDstFile = strFile
-                //String strDstFile = values[1];
+                String strDstFile = strFile;
+
+                if (values[1] == "dir")
+                   continue;
 
                 //System.Diagnostics.Debugger.Log(0, "", strDstFile + "\n");
 
