@@ -548,6 +548,10 @@ def start_emulator(cmd)
     # the time is out and there is no emulator in device list
     puts 'Warning: An emulator is not visible in adb device list. Lets start it again.'
     stop_emulator
+    # Restart adb server
+    `#{$adb} kill-server`
+    `#{$adb} start-server`
+
   end
   fail "Can't start an emulator."
 end
