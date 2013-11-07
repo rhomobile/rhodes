@@ -259,7 +259,7 @@ def  run_emulator(options = {})
     cmd << " -no-window" if options[:hidden]
     cmd << " -avd #{$avdname}"
     cmd << " -wipe-data" if options[:wipe]
-    cmd << " -verbose"
+    # cmd << " -verbose"
 
     start_emulator(cmd)
 
@@ -463,7 +463,7 @@ def kill_adb_and_emulator
     # Windows
     `taskkill /F /IM adb.exe`
   else
-    `killall -9 adb 2> /dev/null`
+    `killall -9 adb`
   end
   stop_emulator
 end
@@ -558,9 +558,9 @@ def stop_emulator
     Jake.run3_dont_fail('taskkill /F /IM emulator-arm.exe')
     Jake.run3_dont_fail('taskkill /F /IM emulator.exe')
   else
-    Jake.run3_dont_fail('killall emulator-arm 2> /dev/null')
-    Jake.run3_dont_fail('killall emulator64-arm 2> /dev/null')
-    Jake.run3_dont_fail('killall emulator 2> /dev/null')
+    Jake.run3_dont_fail('killall -9 emulator-arm')
+    Jake.run3_dont_fail('killall -9 emulator64-arm')
+    Jake.run3_dont_fail('killall -9 emulator')
   end
 end
 
