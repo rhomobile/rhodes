@@ -295,14 +295,14 @@ namespace "config" do
     $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
     $tmpdir = File.join($bindir, "tmp")
     $srcdir = File.join $tmpdir,'assets' #File.join($bindir, "RhoBundle")
-        
+
     #$rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $rhomanifesterb = File.join $androidpath, "Rhodes", "AndroidManifest.xml.erb"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
 
     $rhores = File.join $androidpath, 'Rhodes','res'
     $appres = File.join $tmpdir,'res'
-    $appassets = $srcdir 
+    $appassets = $srcdir
     $applibs = File.join $tmpdir,'lib','armeabi'
 
     $appincdir = File.join $tmpdir, "include"
@@ -427,7 +427,7 @@ namespace "config" do
       $use_motosol_api_classpath = true unless $app_config['capabilities'].index('motoroladev').nil?
       raise 'Cannot use Motorola SDK addon and Google SDK addon together!' if $use_google_addon_api
     end
-    
+
     $no_compression = $app_config['android']['no_compression'] if $app_config['android']
 
     $applog_path = nil
@@ -556,11 +556,11 @@ namespace "config" do
       if $app_config['capabilities'].index('push')
         $app_config['extensions'] << 'gcm-push' unless $app_config['extensions'].index('gcm-push')
       end
-      
+
       if $app_config['capabilities'].index('native_browser')
         $app_config['extensions'].delete('rhoelements')
       end
-      
+
       $file_map_name = "rho.dat"
     end
 
@@ -769,7 +769,7 @@ namespace "build" do
     desc "Build RhoBundle for android"
     task :rhobundle => ["config:android", :extensions] do
 
-      $srcdir = $appassets      
+      $srcdir = $appassets
       Rake::Task["build:bundle:noxruby"].invoke
 
       hash = nil
@@ -777,7 +777,7 @@ namespace "build" do
         # Calculate hash of directories
         hash = get_dir_hash(File.join($srcdir, d), hash)
       end
-      
+
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(hash.hexdigest) }
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($appname) }
     end
@@ -1864,7 +1864,7 @@ namespace "package" do
         args << ext
       end
     end
-    
+
     Jake.run($aapt, args)
     unless $?.success?
       raise "Error running AAPT (1)"
@@ -2045,7 +2045,8 @@ def run_as_spec(device_flag, uninstall_app)
   File.delete(log_name) if File.exist?(log_name)
 
   AndroidTools.logclear(device_flag)
-  AndroidTools.run_emulator(:hidden => true) if device_flag == '-e'
+  # Start emulator with options: hidden window display and wipe user data
+  AndroidTools.run_emulator(:hidden => true, :wipe => true) if device_flag == '-e'
   do_uninstall(device_flag)
 
   # Failsafe to prevent eternal hangs
@@ -2125,15 +2126,15 @@ end
 
 namespace "run" do
   namespace "android" do
-      
+
     def sleepRubyProcess
-      if $remote_debug == true      
+      if $remote_debug == true
         while 1
           sleep 1
         end
-      end    
-    end 
-    
+      end
+    end
+
     namespace "emulator" do
       task :spec, :uninstall_app do |t, args|
         Jake.decorate_spec { run_as_spec('-e', args.uninstall_app) }
@@ -2161,7 +2162,7 @@ namespace "run" do
       AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
 
       AndroidTools.logcat_process('-e')
-      
+
       sleepRubyProcess
     end
 
@@ -2279,7 +2280,7 @@ end
 namespace :stop do
   namespace :android do
     namespace :debug do
-    
+
       def killRuby
         if RUBY_PLATFORM =~ /windows|cygwin|mingw/
           # Windows
@@ -2288,18 +2289,18 @@ namespace :stop do
           `killall -9 ruby`
         end
       end
-      
+
       task :emulator do #=> "stop:android:emulator"do
         AndroidTools.kill_adb_logcat('-e')
-        killRuby        
+        killRuby
       end
-      
+
       task :device do #=> "stop:android:device" do
         AndroidTools.kill_adb_logcat('-d')
         killRuby
       end
-    end #end of debug 
-    
+    end #end of debug
+
     task :emulator do
       AndroidTools.kill_adb_and_emulator
     end
