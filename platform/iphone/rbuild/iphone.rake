@@ -520,8 +520,8 @@ end
 
 def kill_iphone_simulator
   puts 'kill "iPhone Simulator"'
-  `killall -9 "iPhone Simulator" 2> /dev/null`
-  `killall -9 iphonesim 2> /dev/null`
+  `killall -9 "iPhone Simulator"`
+  `killall -9 iphonesim`
 end
 
 namespace "config" do
@@ -1212,10 +1212,10 @@ namespace "run" do
       #if someone runs against the wrong app, kill after 120 seconds
       Thread.new {
         sleep 300
-        `killall -9 rhorunner 2> /dev/null`
+        `killall -9 rhorunner`
       }
 
-      `killall -9 rhorunner 2> /dev/null`
+      `killall -9 rhorunner`
 
       # Run local http server
       $iphonespec = true
