@@ -377,6 +377,11 @@ namespace "config" do
     ENV["APP_TYPE"]     = "rhodes"
 
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
+    if File.exists?(File.join($app_path, "app_rakefile"))
+      load File.join($app_path, "app_rakefile")
+      $app_rakefile_exist = true
+      Rake::Task["app:config"].invoke
+    end
 
     Jake.set_bbver($app_config["bbver"].to_s)
     
@@ -1601,7 +1606,9 @@ namespace "build" do
       if (!exclude_dirs.nil?) && (exclude_dirs !~ /^\s*$/)
         excluded_dirs = exclude_dirs.split(':')
       end
-      
+
+      Rake::Task["app:build_bundle"].invoke if $app_rakefile_exist
+
       app = $app_path
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"
       compileERB = "lib/build/compileERB/default.rb"

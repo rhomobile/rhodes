@@ -773,6 +773,10 @@ class Jake
     proc_list
   end
 
+  def self.setBuildProp(propName, propValue, config_yml=$app_config)
+    config_yml[propName] = propValue
+  end
+
   def self.getBuildProp(propName, config_yml=$app_config)
     res = nil
 
