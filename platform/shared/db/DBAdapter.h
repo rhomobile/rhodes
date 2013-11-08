@@ -357,7 +357,7 @@ public:
     void createTrigger(const String& strSQL);
     void dropTrigger(const String& strName);
 	
-    virtual DBResultPtr prepareStatement( const char* szSt );
+    DBResultPtr prepareStatement( const char* szSt );
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res, const char* szSt);
     void updateAllAttribChanges();
     void updateFullUpdateChanges(int nSrcID);
