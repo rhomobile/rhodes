@@ -322,6 +322,41 @@ namespace "build" do
       Rake::Task["build:wp8:extensions"].invoke
     end
 
+    task :extension_libs, [:sdk, :configuration] => :devrhobundle do
+      confdir = ($build_config.to_s.downcase == 'release') ? 'release' : 'debug'
+
+      app_builddir = File.join($targetdir, confdir)
+      chdir $startdir
+
+      libsrcdir = File.join($startdir, 'platform', $current_platform, 'bin', $sdk, 'rhoruntime', $build_config)
+
+      $app_extensions_list.each do |ext, commin_ext_path|
+        next if commin_ext_path == nil
+
+        extpath = File.join(commin_ext_path, 'ext')
+        extyml = File.join(commin_ext_path, 'ext.yml')
+        if File.file? extyml
+          prebuiltpath = Dir.glob(File.join(extpath, '**', 'wp8'))
+          if prebuiltpath != nil && prebuiltpath.count > 0
+            target = File.join(app_builddir, 'extensions', ext)
+            libdstdir = File.join(target, 'lib', $sdk)
+            mkdir_p libdstdir
+
+            Dir.glob(File.join(libsrcdir, '*.lib')).each do |lib|
+              cp(lib, libdstdir) if File.basename(lib, '.lib').downcase == ext.downcase
+            end
+
+            # copy all files from extension folder to extension binary folder
+            Dir.glob(File.join(commin_ext_path, '*')).each do |artefact|
+              if (artefact != extpath) && (artefact != extyml) && (File.file?(artefact) || File.directory?(artefact))
+                cp_r artefact, target
+              end
+            end
+          end
+        end
+      end
+    end
+
   end
 end
 

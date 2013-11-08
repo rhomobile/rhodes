@@ -247,7 +247,7 @@ void BaseMapView::MapFetch::delayedStop() {
 
 void BaseMapView::MapFetch::fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude)
 {
-    RHO_MAP_TRACE3("fetchTile: zoom=%d, latitude="PRINTF_UINT64", longitude="PRINTF_UINT64"", zoom, latitude, longitude);
+    RHO_MAP_TRACE3("fetchTile: zoom=%d, latitude=" PRINTF_UINT64 ", longitude=" PRINTF_UINT64 "", zoom, latitude, longitude);
     addQueueCommandToFront(new Command(baseUrl, zoom, latitude, longitude));
 }
 
@@ -582,7 +582,7 @@ void BaseMapView::MapFetch::processCommand(IQueueCommand *c)
 String BaseMapView::MapFetch::Command::toString()
 {
     char buf[64];
-    snprintf(buf, sizeof(buf), "%d/"PRINTF_INT64"/"PRINTF_INT64",  %d/%d", zoom, latitude, longitude, (int)row, (int)column);
+    snprintf(buf, sizeof(buf), "%d/" PRINTF_INT64 "/" PRINTF_INT64 ",  %d/%d", zoom, latitude, longitude, (int)row, (int)column);
     RHO_MAP_TRACE1("BaseMapView::MapFetch::Command::toString(): %s", buf);
     return String(&buf[0]);
 }
@@ -638,19 +638,19 @@ void BaseMapView::CacheUpdate::processCommand(IQueueCommand *c)
     int zoom = m_mapview->zoom();
     uint64 latitude = m_mapview->latitudeInt();
     uint64 longitude = m_mapview->longitudeInt();
-    RHO_MAP_TRACE3("CacheUpdate: zoom=%d, latitude="PRINTF_UINT64", longitude="PRINTF_UINT64"", zoom, latitude, longitude);
+    RHO_MAP_TRACE3("CacheUpdate: zoom=%d, latitude=" PRINTF_UINT64 ", longitude=" PRINTF_UINT64 "", zoom, latitude, longitude);
 
     uint64 ts = toMaxZoom(TILE_SIZE, zoom);
     uint64 w = toMaxZoom(m_mapview->width(), zoom);
     uint64 h = toMaxZoom(m_mapview->height(), zoom);
-    RHO_MAP_TRACE3("CacheUpdate: ts="PRINTF_UINT64", w="PRINTF_UINT64", h="PRINTF_UINT64"", ts, w, h);
+    RHO_MAP_TRACE3("CacheUpdate: ts=" PRINTF_UINT64 ", w=" PRINTF_UINT64 ", h=" PRINTF_UINT64 "", ts, w, h);
 
     // Coordinates of the most top-left tile visible on the screen
     uint64 tileIndex = latitude <= h/2 ? 0 : (latitude - h/2)/ts;
     int64 latBegin = tileIndex*ts + ts/2;
     tileIndex = longitude <= w/2 ? 0 : (longitude - w/2)/ts;
     int64 lonBegin = tileIndex*ts + ts/2;
-    RHO_MAP_TRACE2("CacheUpdate: latBegin="PRINTF_INT64", lonBegin="PRINTF_INT64"", latBegin, lonBegin);
+    RHO_MAP_TRACE2("CacheUpdate: latBegin=" PRINTF_INT64 ", lonBegin=" PRINTF_INT64 "", latBegin, lonBegin);
 
     // Coordinates of the most bottom-right tile visible on the screen
     int64 latEnd = latBegin;
@@ -659,7 +659,7 @@ void BaseMapView::CacheUpdate::processCommand(IQueueCommand *c)
     int64 lonEnd = lonBegin;
     while (lonEnd < lonBegin + (int64)w) lonEnd += ts;
     if (lonEnd - ts/2 < longitude + w/2) lonEnd += ts;
-    RHO_MAP_TRACE2("CacheUpdate: latEnd="PRINTF_INT64", lonEnd="PRINTF_INT64"", latEnd, lonEnd);
+    RHO_MAP_TRACE2("CacheUpdate: latEnd=" PRINTF_INT64 ", lonEnd=" PRINTF_INT64 "", latEnd, lonEnd);
 
     for (int64 lat = latEnd; lat >= latBegin; lat -= ts)
         for (int64 lon = lonEnd; lon >= lonBegin; lon -= ts)
@@ -680,7 +680,7 @@ void BaseMapView::CacheUpdate::processCommand(IQueueCommand *c)
 
             cache.put(Tile(drawingDevice, zoom, norm_lat, norm_lon));
 
-            RHO_MAP_TRACE3("CacheUpdate: fetch tile: zoom=%d, latitude="PRINTF_UINT64", longitude="PRINTF_UINT64"", zoom, norm_lat, norm_lon);
+            RHO_MAP_TRACE3("CacheUpdate: fetch tile: zoom=%d, latitude=" RINTF_UINT64 ", longitude=" RINTF_UINT64 "", zoom, norm_lat, norm_lon);
             if (m_mapview == NULL) {
             	return;
             }
@@ -735,7 +735,7 @@ BaseMapView::TilesCache::list BaseMapView::TilesCache::clone() const
 String BaseMapView::TilesCache::makeKey(int zoom, uint64 latitude, uint64 longitude)
 {
     char key[128];
-    snprintf(key, sizeof(key), "%d/"PRINTF_UINT64"/"PRINTF_UINT64"", zoom, latitude, longitude);
+    snprintf(key, sizeof(key), "%d/" PRINTF_UINT64 "/" PRINTF_UINT64 "", zoom, latitude, longitude);
     return key;
 }
 
@@ -981,7 +981,7 @@ double BaseMapView::longitude() const
 
 void BaseMapView::setCoordinates(int64 lat, int64 lon)
 {
-    RHO_MAP_TRACE2("setCoordinates: latitude="PRINTF_INT64", longitude="PRINTF_INT64"", lat, lon);
+    RHO_MAP_TRACE2("setCoordinates: latitude=" PRINTF_INT64 ", longitude=" PRINTF_INT64 "", lat, lon);
     m_latitude = normalize_latitude(lat);
     m_longitude = normalize_longitude(lon);
     updateCache();

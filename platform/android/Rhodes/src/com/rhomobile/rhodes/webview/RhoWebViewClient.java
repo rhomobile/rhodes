@@ -71,19 +71,17 @@ public class RhoWebViewClient extends WebViewClient
         Logger.I(TAG, "Loading URL: " + url);
         boolean res = RhodesService.getInstance().handleUrlLoading(url);
         if (!res) {
+            Logger.profStart("BROWSER_PAGE");
+            
             RhoExtManager.getImplementationInstance().onBeforeNavigate(view, url);
             
-            if (URLUtil.isFileUrl(url)) {
-                String path = Uri.parse(url).getPath();
-                if(path.startsWith("/data/data")) {
-                    Logger.T(TAG, "Local URL, override using LocalFileProvider");
-                    String contentUrl = LocalFileProvider.uriFromLocalFile(new File(path)).toString();
-                    Logger.T(TAG, "Overrided URL: " + contentUrl);
-                    view.loadUrl(contentUrl);
-                    return true;
-                }
+            Uri localUri = LocalFileProvider.overrideUri(Uri.parse(url));
+            if (localUri != null) {
+                url = Uri.decode(localUri.toString());
+                Logger.T(TAG, "Override URL: " + url);
+                view.loadUrl(url);
+                return true;
             }
-            
         }
         return res;
     }
@@ -91,8 +89,6 @@ public class RhoWebViewClient extends WebViewClient
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
-        
-        Logger.profStart("BROWSER_PAGE");
         
         RhoExtManager.getImplementationInstance().onNavigateStarted(view, url);
 
