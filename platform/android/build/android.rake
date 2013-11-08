@@ -427,7 +427,8 @@ namespace "config" do
       $use_motosol_api_classpath = true unless $app_config['capabilities'].index('motoroladev').nil?
       raise 'Cannot use Motorola SDK addon and Google SDK addon together!' if $use_google_addon_api
     end
-
+    
+    $no_compression = ['html','htm','js','css']
     $no_compression = $app_config['android']['no_compression'] if $app_config['android']
 
     $applog_path = nil
