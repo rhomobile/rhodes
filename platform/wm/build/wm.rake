@@ -492,11 +492,12 @@ namespace "build" do
       cp File.join(vsredistdir, "vcomp110.dll"), $target_path
       cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
       cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
-      cp File.join($qtdir, "bin/icudt51.dll"), $target_path
-      cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
-      cp File.join($qtdir, "bin/icuin51.dll"), $target_path
-      # cp File.join($qtdir, "bin/libEGL.dll"), $target_path
-      # cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
+      cp File.join($qtdir, "bin/icudt52.dll"), $target_path
+      cp File.join($qtdir, "bin/icuuc52.dll"), $target_path
+      cp File.join($qtdir, "bin/icuin52.dll"), $target_path
+      cp File.join($qtdir, "bin/d3dcompiler_46.dll"), $target_path
+      cp File.join($qtdir, "bin/libEGL.dll"), $target_path
+      cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
@@ -512,6 +513,11 @@ namespace "build" do
       cp File.join($qtdir, "bin/Qt5Sql.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Sensors.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5V8.dll"), $target_path
+      target_platforms_path = File.join($target_path, 'platforms/')
+      if not File.directory?(target_platforms_path)
+        Dir.mkdir(target_platforms_path)
+      end
+      cp File.join($qtdir, "plugins/platforms/qwindows.dll"), target_platforms_path
       target_if_path = File.join($target_path, 'imageformats/')
       if not File.directory?(target_if_path)
         Dir.mkdir(target_if_path)
