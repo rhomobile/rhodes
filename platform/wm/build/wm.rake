@@ -172,9 +172,9 @@ namespace "config" do
     end
 
     task :qt do
-      $vscommontools = ENV['VS100COMNTOOLS']
+      $vscommontools = ENV['VS110COMNTOOLS']
       unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-        puts "\nPlease, set VS100COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2010"
+        puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2012"
         exit 1
       end
       $qtdir = ENV['QTDIR']
@@ -484,30 +484,40 @@ namespace "build" do
   namespace "win32" do
     
     task :deployqt => "config:win32:qt" do
-      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC100.CRT")
-      cp File.join(vsredistdir, "msvcp100.dll"), $target_path
-      cp File.join(vsredistdir, "msvcr100.dll"), $target_path
-      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC100.OPENMP")
-      cp File.join(vsredistdir, "vcomp100.dll"), $target_path
+      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.CRT")
+      cp File.join(vsredistdir, "msvcp110.dll"), $target_path
+      cp File.join(vsredistdir, "msvcr110.dll"), $target_path
+      cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
+      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
+      cp File.join(vsredistdir, "vcomp110.dll"), $target_path
       cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
       cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
-      cp File.join($qtdir, "bin/icudt51.dll"), $target_path
-      cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
-      cp File.join($qtdir, "bin/icudt51.dll"), $target_path
-      # cp File.join($qtdir, "bin/libEGL.dll"), $target_path
-      # cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
+      cp File.join($qtdir, "bin/icudt52.dll"), $target_path
+      cp File.join($qtdir, "bin/icuuc52.dll"), $target_path
+      cp File.join($qtdir, "bin/icuin52.dll"), $target_path
+      cp File.join($qtdir, "bin/d3dcompiler_46.dll"), $target_path
+      cp File.join($qtdir, "bin/libEGL.dll"), $target_path
+      cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5WebKit.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Multimedia.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5MultimediaWidgets.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5OpenGL.dll"), $target_path
+      cp File.join($qtdir, "bin/Qt5PrintSupport.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Quick.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Qml.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Sql.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5Sensors.dll"), $target_path
       cp File.join($qtdir, "bin/Qt5V8.dll"), $target_path
+      target_platforms_path = File.join($target_path, 'platforms/')
+      if not File.directory?(target_platforms_path)
+        Dir.mkdir(target_platforms_path)
+      end
+      cp File.join($qtdir, "plugins/platforms/qwindows.dll"), target_platforms_path
       target_if_path = File.join($target_path, 'imageformats/')
       if not File.directory?(target_if_path)
         Dir.mkdir(target_if_path)
