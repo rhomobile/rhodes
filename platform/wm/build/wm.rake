@@ -680,7 +680,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
     desc 'prints toolchain is required by Windows RhoSimulator.'
     task :rhosim_toolchain do
-      puts 'VS2010'
+      puts 'VS2012'
     end
 
     desc 'prints Qt version is required by Windows RhoSimulator.'
