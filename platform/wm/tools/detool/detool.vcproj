@@ -183,7 +183,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\file_helper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\LogServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\rapi_helper.cpp"
 				>
 			</File>
 			<File
@@ -206,6 +214,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\wmdc_helper.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -218,6 +230,10 @@
 			</File>
 			<File
 				RelativePath=".\LogServer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\rapi_helper.h"
 				>
 			</File>
 			<File
