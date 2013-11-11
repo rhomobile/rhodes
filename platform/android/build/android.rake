@@ -429,7 +429,7 @@ namespace "config" do
     end
     
     $no_compression = ['html','htm','js','css']
-    $no_compression = $app_config['android']['no_compression'] if $app_config['android']
+    $no_compression = $app_config['android']['no_compression'] if $app_config['android'] and $app_config['android']['no_compression']
 
     $applog_path = nil
     $applog_file = $app_config["applog"]
