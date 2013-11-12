@@ -252,8 +252,21 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhosupport.c" />
-    <ClCompile Include="..\..\shared\ruby\ext\socket\socket.c" />
     <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\ancdata.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\basicsocket.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\constants.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\init.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\ipsocket.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\option.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\raddrinfo.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\socket.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\sockssocket.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\tcpserver.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\tcpsocket.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\udpsocket.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\unixserver.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\unixsocket.c" />
     <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c" />
     <ClCompile Include="..\..\shared\ruby\file.c" />
     <ClCompile Include="..\..\shared\ruby\gc.c" />

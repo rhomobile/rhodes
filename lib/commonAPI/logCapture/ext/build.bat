@@ -15,7 +15,7 @@ rake --trace
 
 if "%RHO_PLATFORM%" == "win32" (
 
-call "%VS100COMNTOOLS%..\..\VC\vcvarsall.bat" x86
+call "%VS110COMNTOOLS%..\..\VC\vcvarsall.bat" x86
 cd platform\qt
 rake --trace
 
