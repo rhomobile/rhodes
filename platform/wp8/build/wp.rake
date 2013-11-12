@@ -493,7 +493,7 @@ namespace "run" do
 
   namespace "wp8" do
 
-    task :get_log => "config:wp" do
+    task :get_log => "config:wp8" do
       puts "log_file=" + getLogPath
     end
 
