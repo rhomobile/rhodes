@@ -7,6 +7,7 @@ android:
   adds: ext/platform/android/adds
   manifest_changes: ext/platform/android/AndroidManifest.xml
   rhodes_listener: com.motorolasolutions.rho.notification.NotificationRhoListener
+  exttype: rakefile
 wp8:
   libraries: ["WebView", "NativeToolbar", "NativeTabbar"]
   webview:

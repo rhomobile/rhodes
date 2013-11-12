@@ -25,6 +25,8 @@
 #------------------------------------------------------------------------
 
 require 'tempfile'
+require 'open3'
+require 'stringio'
 
 #common functions for compiling android
 #
@@ -42,6 +44,8 @@ else
   $bat_ext = ""
   $exe_ext = ""
 end
+
+$output_lock = Mutex.new
 
 def num_cpus
   num = nil
@@ -233,6 +237,16 @@ def cc_get_ccbin(filename)
   end
 end
 
+#def deps_uptodate?(target, source, deps)
+#  deplist = [deps, source]
+#  if(File.exists? deps)
+#    deplist += File.read(deps).gsub(/(^\s+|\s+$)/, '').split(/\s+/)
+#    return File.exists?(target) and FileUtils.uptodate?(target, deplist)
+#  else
+#    return false
+#  end
+#end
+
 def cc_deps(filename, objdir, additional)
   #puts "Check #{filename}..."
   depfile = File.join objdir, File.basename(filename).gsub(/\.[cC]([cC]|[xXpP][xXpP])?$/, ".d")
@@ -263,24 +277,30 @@ def cc_run(command, args, chdir = nil)
   argv += args
   #cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
   cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '' + x + '' : x }.join(' ')
-  puts '-' * 80
-  puts "PWD: #{chdir}" unless chdir.nil?
-  puts cmdstr
-  $stdout.flush
-  argv = cmdstr if RUBY_VERSION =~ /^1\.[89]/
-  IO.popen(argv) do |f|
+
+  out = StringIO.new
+  ret = nil
+  Open3.popen2e(cmdstr) do |i,f,t|
     while data = f.gets
-      puts data
-      $stdout.flush
+      out.puts data
     end
+    ret = t.value
   end
-  ret = $?
-  FileUtils.cd save_cwd
+
+  $output_lock.synchronize {
+    puts '-' * 80
+    puts "PWD: " + FileUtils.pwd
+    puts cmdstr
+    puts out.string
+  }
+  out.close
+
+  FileUtils.cd save_cwd unless chdir.nil?
   ret.success?
 end
 
 def cc_compile(filename, objdir, additional = nil)
-  filename.chomp!
+  #filename.chomp!
   objname = File.join objdir, File.basename(filename) + ".o"
 
   return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename, objdir, additional)
@@ -344,7 +364,6 @@ end
 
 def cc_ar(libname, objects)
   return true if FileUtils.uptodate? libname, objects
-  rm_f libname
   cc_run($arbin, ["crs", libname] + objects)
 end
 
