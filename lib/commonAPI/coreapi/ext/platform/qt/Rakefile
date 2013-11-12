@@ -19,7 +19,7 @@ namespace "build" do
     raise "RHO_QMAKE is not set" if $qmake.nil?
     $qmakevars = ENV['RHO_QMAKE_VARS']
     if $platform == 'win32'
-      $qmake_spec = 'win32-msvc2010'
+      $qmake_spec = 'win32-msvc2012'
       $make = 'nmake'
     else
       $qmake_spec = 'macx-g++'
