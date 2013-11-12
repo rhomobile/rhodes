@@ -35,7 +35,8 @@ end
 
 def set_app_name(newname)
   ret_value = ''
-  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  #fname = $config["build"]["iphonepath"] + "/Info.plist"
+  fname = $app_path + "/project/iphone/Info.plist"
   nextline = false
   replaced = false
   buf = ""
@@ -57,7 +58,8 @@ end
 
 def set_app_version(newversion)
   ret_value = ''
-  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  #fname = $config["build"]["iphonepath"] + "/Info.plist"
+  fname = $app_path + "/project/iphone/Info.plist"
   nextline = false
   replaced = false
   buf = ""
@@ -78,10 +80,12 @@ def set_app_version(newversion)
 end
 
 
+
 def set_app_bundle_identifier(newname)
   name_cleared = newname.downcase.split(/[^a-zA-Z0-9\.\-]/).map{|w| w.downcase}.join("")
   ret_value = ''
-  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  #fname = $config["build"]["iphonepath"] + "/Info.plist"
+  fname = $app_path + "/project/iphone/Info.plist"
   nextline = false
   replaced = false
   buf = ""
@@ -104,7 +108,8 @@ end
 def set_app_url_scheme(newname)
   name_cleared = newname.downcase.split(/[^a-zA-Z0-9\.\-]/).map{|w| w.downcase}.join("")
   ret_value = ''
-  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  #fname = $config["build"]["iphonepath"] + "/Info.plist"
+  fname = $app_path + "/project/iphone/Info.plist"
   nextline = false
   nextnextline = false
   replaced = false
@@ -133,7 +138,8 @@ def set_ui_prerendered_icon(val)
 
     ret_value = nil
 
-    fname = $config["build"]["iphonepath"] + "/Info.plist"
+    #fname = $config["build"]["iphonepath"] + "/Info.plist"
+    fname = $app_path + "/project/iphone/Info.plist"
     nextline = false
     replaced = false
     dictcnt = 0
@@ -202,7 +208,8 @@ end
 
 def set_app_url_name(newname)
   ret_value = ''
-  fname = $config["build"]["iphonepath"] + "/Info.plist"
+  #fname = $config["build"]["iphonepath"] + "/Info.plist"
+  fname = $app_path + "/project/iphone/Info.plist"
   nextline = false
   replaced = false
   buf = ""
@@ -265,7 +272,8 @@ def prepare_production_ipa (app_path, app_name)
   #cp mprovision_in_app, mprovision_in_payload
 
 
-  itunes_artwork = File.join($config["build"]["iphonepath"], "iTunesArtwork.jpg")
+  itunes_artwork = File.join($app_path, "/project/iphone/iTunesArtwork")
+  #itunes_artwork = File.join($config["build"]["iphonepath"], "iTunesArtwork.jpg")
   itunes_artwork_dst = File.join(tmp_dir, "iTunesArtwork")
 
   if !$app_config["iphone"].nil?
@@ -348,7 +356,8 @@ end
 
 def restore_app_icon
   puts "restore icon"
-  ipath = $config["build"]["iphonepath"]
+  #ipath = $config["build"]["iphonepath"]
+  ipath = $app_path + "/project/iphone"
   ICONS.each do |pair|
     name = pair[0]
     ibak = File.join(ipath, name + '.bak')
@@ -362,18 +371,22 @@ end
 
 def set_app_icon(make_bak)
   puts "set icon"
-  ipath = $config["build"]["iphonepath"]
+  #ipath = $config["build"]["iphonepath"]
+  ipath = $app_path + "/project/iphone"
+
   begin
     ICONS.each do |pair|
       name = pair[0]
-      ibak = File.join(ipath, name + '.bak')
+      #ibak = File.join(ipath, name + '.bak')
       icon = File.join(ipath, name + '.png')
       appicon = File.join($app_path, 'icon', pair[1] + '.png')
-      if make_bak
-         cp icon, ibak unless File.exists? ibak
-      end
+      #if make_bak
+      #   cp icon, ibak unless File.exists? ibak
+      #end
       if File.exists? appicon
          cp appicon, ipath
+      else
+         puts "WARNING: application should have next icon file : "+ name + '.png !!!'
       end
     end
   rescue => e
@@ -385,7 +398,8 @@ LOADINGIMAGES = ['loading', 'loading@2x', 'loading-Portrait', 'loading-Portrait@
 
 def restore_default_images
   puts "restore_default_images"
-  ipath = $config["build"]["iphonepath"]
+  #ipath = $config["build"]["iphonepath"]
+  ipath = $app_path + "/project/iphone"
   LOADINGIMAGES.each do |name|
     defname = name.sub('loading', 'Default')
     ibak = File.join(ipath, defname + '.bak')
@@ -400,35 +414,72 @@ end
 
 def set_default_images(make_bak)
   puts "set_default_images"
-  ipath = $config["build"]["iphonepath"]
+  #ipath = $config["build"]["iphonepath"]
+  ipath = $app_path + "/project/iphone"
+  existing_loading_images = []
   begin
     LOADINGIMAGES.each do |name|
       defname = name.sub('loading', 'Default')
-      ibak = File.join(ipath, defname + '.bak')
+      #ibak = File.join(ipath, defname + '.bak')
       imag = File.join(ipath, defname + '.png')
       appimage = File.join($app_path, 'app', name + '.png')
       appsimage = File.join($app_path, 'app', name + '.iphone.png')
       if File.exists? imag
-        if make_bak
-           cp imag, ibak unless File.exists? ibak
-        end
+        #if make_bak
+        #   cp imag, ibak unless File.exists? ibak
+        #end
         rm_f imag
       end
       #bundlei = File.join($srcdir, defname + '.png')
       #cp appimage, bundlei unless !File.exist? appimage
       if File.exists? appsimage
           cp appsimage, imag
+          existing_loading_images << (defname + '.png')
       else
-          cp appimage, imag unless !File.exists? appimage
+          if File.exists? appimage
+             cp appimage, imag
+             existing_loading_images << (defname + '.png')
+          end
       end
     end
   rescue => e
     puts "WARNING!!! Can not change default image: #{e.to_s}"
   end
+
+  # remove missed loading images from project
+
+  images_to_remove = []
+  LOADINGIMAGES.each do |name|
+     if !existing_loading_images.include?(name.sub('loading', 'Default') + '.png')
+        images_to_remove << (name.sub('loading', 'Default') + '.png')
+     end
+  end
+
+  appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+  appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize) }.join("")
+
+  fname = $app_path + "/project/iphone" + "/" + appname_fixed + ".xcodeproj/project.pbxproj"
+  buf = ""
+  File.new(fname,"r").read.each_line do |line|
+      is_remove = false
+      images_to_remove.each do |rimg|
+          if line.include?(rimg)
+             is_remove = true
+          end
+      end
+      if !is_remove
+         buf << line
+      end
+  end
+
+  File.open(fname,"w") { |f| f.write(buf) }
+
 end
 
 def copy_entitlements_file_from_app
-  enti_rho_name = File.join($config["build"]["iphonepath"], "Entitlements.plist")
+  #enti_rho_name = File.join($config["build"]["iphonepath"], "Entitlements.plist")
+  enti_rho_name = File.join($app_path + "/project/iphone", "Entitlements.plist")
+
   enti_app_name = File.join($app_path, "Entitlements.plist")
 
   if !$app_config["iphone"].nil?
@@ -447,16 +498,17 @@ def copy_entitlements_file_from_app
     end
   end
 
-  if File.exists? enti_app_name
-    puts 'Copy Entitlements.plist from application ...'
-    cp enti_rho_name, (enti_rho_name + '_bak')
-    rm_f enti_rho_name
-    cp enti_app_name,enti_rho_name
-  end
+  #if File.exists? enti_app_name
+  #  puts 'Copy Entitlements.plist from application ...'
+  #  cp enti_rho_name, (enti_rho_name + '_bak')
+  #  rm_f enti_rho_name
+  #  cp enti_app_name,enti_rho_name
+  #end
 end
 
 def restore_entitlements_file
-  enti_rho_name = File.join($config["build"]["iphonepath"], "Entitlements.plist")
+  #enti_rho_name = File.join($config["build"]["iphonepath"], "Entitlements.plist")
+  enti_rho_name = File.join($app_path + "/project/iphone", "Entitlements.plist")
   if File.exists?(enti_rho_name + '_bak')
     puts 'restore Entitlements.plist ...'
     rm_f enti_rho_name
@@ -467,7 +519,12 @@ end
 
 
 def set_signing_identity(identity,profile,entitlements)
-  fname = $config["build"]["iphonepath"] + "/rhorunner.xcodeproj/project.pbxproj"
+
+  appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+  appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize) }.join("")
+
+  #fname = $config["build"]["iphonepath"] + "/rhorunner.xcodeproj/project.pbxproj"
+  fname = $app_path + "/project/iphone" + "/" + appname_fixed + ".xcodeproj/project.pbxproj"
   buf = ""
   File.new(fname,"r").read.each_line do |line|
       line.gsub!(/CODE_SIGN_ENTITLEMENTS = .*;/,"CODE_SIGN_ENTITLEMENTS = \"#{entitlements}\";")
@@ -542,9 +599,9 @@ namespace "config" do
 
   task :iphone => [:set_iphone_platform, "config:common", "switch_app"] do
     $rubypath = "res/build-tools/RubyMac" #path to RubyMac
-    iphonepath = $config["build"]["iphonepath"]
-    $builddir = iphonepath + "/rbuild"
-    $bindir = Jake.get_absolute(iphonepath) + "/bin"
+    iphonepath = $app_path + "/project/iphone" #$config["build"]["iphonepath"]
+    $builddir = $config["build"]["iphonepath"] + "/rbuild" #iphonepath + "/rbuild"
+    $bindir = File.join(iphonepath, "bin")#Jake.get_absolute(iphonepath) + "/bin"
     $srcdir =  $bindir + "/RhoBundle"
     $targetdir = $app_path + "/bin/target/iOS"
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
@@ -658,16 +715,23 @@ namespace "build" do
   namespace "iphone" do
 #    desc "Build iphone rhobundle"
     task :rhobundle => ["config:iphone"] do
-      chdir 'platform/iphone'
+      #chdir 'platform/iphone'
+      chdir File.join($app_path, 'project/iphone')
       rm_rf 'bin'
       rm_rf 'build/Debug-*'
       rm_rf 'build/Release-*'
 
       chdir $startdir
+      
+      ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
+
 
       Rake::Task["build:bundle:noxruby"].execute
 
       Rake::Task["build:iphone:extensions"].execute
+      
+      
+      ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "YES"
 
       # Store hash
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(get_dir_hash($srcdir).hexdigest) }
@@ -888,7 +952,8 @@ namespace "build" do
 
 
     task :extension_libs => ["config:iphone", "build:bundle:noxruby"] do
-      chdir 'platform/iphone'
+      #chdir 'platform/iphone'
+      chdir File.join($app_path, 'project/iphone')
       rm_rf 'bin'
       rm_rf 'build/Debug-*'
       rm_rf 'build/Release-*'
@@ -992,10 +1057,10 @@ namespace "build" do
       if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
          target_dir = ENV["TARGET_TEMP_DIR"]
       else
-         target_dir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+         target_dir = File.join($app_path, "/project/iphone") + "/build/rhorunner.build/#{$configuration}-" +
             ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
       end
-
+      
       build_extension_libs($sdk, target_dir)
     end
 
@@ -1005,15 +1070,22 @@ namespace "build" do
 
     task :setup_xcode_project => ["config:iphone"] do
 
-      make_project_bakup
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
-      restore_project_from_bak
+      chdir $app_path
+
+      puts 'prepare iphone XCode project for application'
+      Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+
+      #make_project_bakup
+
+      #restore_project_from_bak
 
       #fix issue with Application Base generated file - hardcoded !!!
       #xml_path = File.join($startdir, "/lib/commonAPI/coreapi/ext/Application.xml")
       #Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
 
-      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
       bundle_identifier = "com.#{vendor}.#{appname}"
       bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
@@ -1040,33 +1112,53 @@ namespace "build" do
 
     end
 
+
+    task :rhodes => "config:iphone" do
+
+       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+       iphone_project = File.join($app_path, "/project/iphone/#{appname_fixed}.xcodeproj")
+
+       if !File.exist?(iphone_project)
+            Rake::Task['build:iphone:setup_xcode_project'].invoke
+       end
+
+
+       Rake::Task['build:iphone:rhodes_old'].invoke
+
+    end
+
 #    desc "Build rhodes"
-    task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
+    task :rhodes_old => ["config:iphone", "build:iphone:rhobundle"] do
 
-      saved_name = ''
-      saved_version = ''
-      saved_identifier = ''
-      saved_url_scheme = ''
-      saved_url_name = ''
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
-      saved_name = set_app_name($app_config["name"]) unless $app_config["name"].nil?
-      saved_version = set_app_version($app_config["version"]) unless $app_config["version"].nil?
+      #saved_name = ''
+      #saved_version = ''
+      #saved_identifier = ''
+      #saved_url_scheme = ''
+      #saved_url_name = ''
+
+      #saved_name = set_app_name($app_config["name"]) unless $app_config["name"].nil?
+      #saved_version = set_app_version($app_config["version"]) unless $app_config["version"].nil?
 
 
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-      vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
-      bundle_identifier = "com.#{vendor}.#{appname}"
-      bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
-      saved_identifier = set_app_bundle_identifier(bundle_identifier)
+      #vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
+      #bundle_identifier = "com.#{vendor}.#{appname}"
+      #bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
+      #saved_identifier = set_app_bundle_identifier(bundle_identifier)
 
-      icon_has_gloss_effect = $app_config["iphone"]["IconHasGlossEffect"] unless $app_config["iphone"]["IconHasGlossEffect"].nil?
-      icon_has_gloss_effect = set_ui_prerendered_icon(icon_has_gloss_effect)
+      #icon_has_gloss_effect = $app_config["iphone"]["IconHasGlossEffect"] unless $app_config["iphone"]["IconHasGlossEffect"].nil?
+      #icon_has_gloss_effect = set_ui_prerendered_icon(icon_has_gloss_effect)
 
-      saved_url_scheme = set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
-      saved_url_name = set_app_url_name(bundle_identifier)
+      #saved_url_scheme = set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
+      #saved_url_name = set_app_url_name(bundle_identifier)
 
-      set_app_icon(true)
-      set_default_images(true)
+      #set_app_icon(true)
+      #set_default_images(true)
 
       if $entitlements == ""
           if $configuration == "Distribution"
@@ -1074,10 +1166,11 @@ namespace "build" do
           end
       end
 
-      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
-      copy_entitlements_file_from_app
+      #set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
+      #copy_entitlements_file_from_app
 
-      chdir $config["build"]["iphonepath"]
+      #chdir $config["build"]["iphonepath"]
+      chdir File.join($app_path, "/project/iphone")
 
       args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
 
@@ -1087,20 +1180,24 @@ namespace "build" do
       end
 
       puts Jake.run($xcodebuild,args)
+      
+      ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
+
+
       ret = $?
 
       chdir $startdir
 
-      set_app_name(saved_name) unless $app_config["name"].nil?
-      set_app_version(saved_version) unless $app_config["version"].nil?
-      set_app_bundle_identifier(saved_identifier) unless $app_config["iphone"]["BundleIdentifier"].nil?
-      set_app_url_scheme(saved_url_scheme) unless $app_config["iphone"]["BundleURLScheme"].nil?
-      set_app_url_name(saved_url_name) unless $app_config["iphone"]["BundleIdentifier"].nil?
-      set_ui_prerendered_icon(icon_has_gloss_effect)
+      #set_app_name(saved_name) unless $app_config["name"].nil?
+      #set_app_version(saved_version) unless $app_config["version"].nil?
+      #set_app_bundle_identifier(saved_identifier) unless $app_config["iphone"]["BundleIdentifier"].nil?
+      #set_app_url_scheme(saved_url_scheme) unless $app_config["iphone"]["BundleURLScheme"].nil?
+      #set_app_url_name(saved_url_name) unless $app_config["iphone"]["BundleIdentifier"].nil?
+      #set_ui_prerendered_icon(icon_has_gloss_effect)
 
-      restore_entitlements_file
-      restore_default_images
-      restore_app_icon
+      #restore_entitlements_file
+      #restore_default_images
+      #restore_app_icon
 
       unless ret == 0
         puts '************************************'
@@ -1143,7 +1240,7 @@ namespace "run" do
 
           Thread.new {
                 # run spec
-                rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
+                rhorunner = File.join(File.join($app_path, "/project/iphone"),"build/#{$configuration}-iphonesimulator/rhorunner.app")
                 #iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
                 commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
                 puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
@@ -1367,7 +1464,7 @@ namespace "run" do
 
          `plutil -convert binary1 -o #{binplist} #{xmlplist}`
 
-         rhorunner = $config["build"]["iphonepath"] + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
+         rhorunner = File.join($app_path, "/project/iphone") + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
          puts "rhorunner: #{rhorunner}"
 
          puts "our app name: #{$app_config['name']}"
@@ -1443,7 +1540,7 @@ namespace "run" do
     log_name  =   File.join($tmpdir, 'logout')
     File.delete(log_name) if File.exist?(log_name)
 
-    rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
+    rhorunner = File.join(File.join($app_path, "/project/iphone"),"build/#{$configuration}-iphonesimulator/rhorunner.app")
     commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
 
     kill_iphone_simulator
@@ -1525,7 +1622,7 @@ namespace "clean" do
       app_path = File.join($app_path, 'bin', 'target', 'iOS')
       rm_rf app_path
 
-      chdir $config["build"]["iphonepath"]
+      chdir File.join($app_path, "/project/iphone")
 
       args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
       puts Jake.run($xcodebuild,args)
@@ -1535,7 +1632,7 @@ namespace "clean" do
       end
       chdir $startdir
 
-      chdir 'platform/iphone'
+      chdir File.join($app_path, "/project/iphone")
        rm_rf 'build/Debug-*'
        rm_rf 'build/Release-*'
       chdir $startdir
@@ -1580,7 +1677,7 @@ namespace "device" do
 
     app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration)
 
-    iphone_path = $config["build"]["iphonepath"]
+    iphone_path = File.join($app_path, "/project/iphone")
     if $sdk =~ /iphonesimulator/
        iphone_path = File.join(iphone_path, 'build', $configuration+'-iphonesimulator')
     else

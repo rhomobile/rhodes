@@ -809,7 +809,7 @@ def add_linker_library(libraryname)
       if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
         tmpdir = ENV["TARGET_TEMP_DIR"]
       else
-        tmpdir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+        tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
           ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
       end
   $ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
@@ -818,12 +818,18 @@ end
 def set_linker_flags
   if $config["platform"] == "iphone"
       simulator = $sdk =~ /iphonesimulator/
-      if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
-        tmpdir = ENV["TARGET_TEMP_DIR"]
+      if ENV["TARGET_RHODESLIBS_DIR"] and ENV["TARGET_RHODESLIBS_DIR"] != ""
+          tmpdir = ENV["TARGET_RHODESLIBS_DIR"]
       else
-        tmpdir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
-          ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+          if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
+              tmpdir = ENV["TARGET_TEMP_DIR"]
+          else
+              tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
+               ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+          end
       end
+      mkdir_p tmpdir unless File.exist? tmpdir
+      tmpdir = File.join($app_path.to_s, "project/iphone")
       mkdir_p tmpdir unless File.exist? tmpdir
       File.open(tmpdir + "/rhodeslibs.txt","w") { |f| f.write $ldflags }
 #    ENV["EXTENSIONS_LDFLAGS"] = $ldflags
