@@ -363,8 +363,7 @@ def cc_build(sources, objdir, additional = nil)
 end
 
 def cc_ar(libname, objects)
-  return true if FileUtils.uptodate? libname, objects
-  cc_run($arbin, ["crs", libname] + objects)
+  FileUtils.uptodate?(libname, objects) or cc_run($arbin, ["crs", "\"#{libname}\""] + objects.collect { |x| "\"#{x}\"" })
 end
 
 def cc_link(outname, objects, additional = nil, deps = nil)
@@ -386,14 +385,12 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "--sysroot"
   args << $ndksysroot
   args << "-o"
-  args << ('"'+outname+'"')
-  args += objects
+  args << "\"#{outname}\""
+  args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  unless USE_OWN_STLPORT
-    args << "-L#{File.join($androidndkpath, "sources","cxx-stl","stlport","libs","armeabi")}"
-    args << "-L#{File.join($androidndkpath, "tmp","ndk-digit","build","install","sources","cxx-stl","stlport","libs","armeabi")}"
-    args << "-lstlport_static"
-  end
+  args << "-L#{File.join($androidndkpath, "sources","cxx-stl","stlport","libs","armeabi")}"
+  args << "-L#{File.join($androidndkpath, "tmp","ndk-digit","build","install","sources","cxx-stl","stlport","libs","armeabi")}"
+  args << "-lstlport_static"
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
   if $cxxlibs.nil?
