@@ -172,11 +172,39 @@ namespace "config" do
     end
 
     task :qt do
+      # read vcbuild directly from rhobuild.yml (ignore default value stored in $vcbuild variable)
+      vcbuild = $config["env"]["paths"]["vcbuild"]
+
+      # use Visual Studio 2012 by default
       $vscommontools = ENV['VS110COMNTOOLS']
-      unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-        puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2012"
-        exit 1
+      $qmake_makespec = 'win32-msvc2012'
+
+      # if vcbuild is not defined in rhobuild.yml, then automatically detect installed Visual Studio
+      if vcbuild.nil?
+        unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
+          $vscommontools = ENV['VS90COMNTOOLS']
+          $qmake_makespec = 'win32-msvc2008'
+        end
+        unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
+          puts "\nPlease, set either VS110COMNTOOLS or VS90COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2012 or 2008 respectively."
+          exit 1
+        end
+      elsif vcbuild =~ /vcbuild/i
+        # if vcbuild=='vcbuild', then it is Visual Studio 2008 setup
+        $vscommontools = ENV['VS90COMNTOOLS']
+        $qmake_makespec = 'win32-msvc2008'
+        unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
+          puts "\nPlease, set either VS90COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2008"
+          exit 1
+        end
+      else
+        # otherwise it's Visual Studio 2012 setup
+        unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
+          puts "\nPlease, set either VS110COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2012"
+          exit 1
+        end
       end
+
       $qtdir = ENV['QTDIR']
       unless !$qtdir.nil? && ($qtdir !~ /^\s*$/) && File.directory?($qtdir)
         puts "\nPlease, set QTDIR environment variable to Qt root directory path"
@@ -342,6 +370,8 @@ namespace "build" do
               ENV['SDK'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
               ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
+              ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
+              ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
               if File.exists? File.join(extpath, 'build.bat')
                 clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
@@ -592,6 +622,8 @@ namespace "build" do
               ENV['SDK'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
               ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
+              ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
+              ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
               clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
@@ -665,6 +697,8 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
       cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 
+      ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
+      ENV['RHO_VSCMNTOOLS'] = $vscommontools
       Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
 
       chdir $startdir
@@ -693,6 +727,8 @@ PRE_TARGETDEPS += #{pre_targetdeps}
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
 
+    ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
+    ENV['RHO_VSCMNTOOLS'] = $vscommontools
     Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
 
     $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)

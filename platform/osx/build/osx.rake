@@ -62,6 +62,7 @@ namespace "build" do
         ENV["ARCHS"] = "x86_64 -g -gdwarf-2 -Xarch_x86_64 -mmacosx-version-min=10.5 -DRHODES_EMULATOR"
         ENV["RHO_ROOT"] = $startdir
         ENV["RHO_QMAKE"] = $qmake
+        ENV['RHO_QMAKE_SPEC'] = 'macx-g++'
         ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
 
         ENV["XCODEBUILD"] = $xcodebuild

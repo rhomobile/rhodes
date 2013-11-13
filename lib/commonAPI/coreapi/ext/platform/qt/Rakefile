@@ -5,7 +5,7 @@ def build_extension(name)
   qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro CONFIG-=debug CONFIG+=release #{$qmakevars}"
 
   Jake.run3(qmake           , dir)
-  Jake.run3("#{$make} clean", dir)
+  #Jake.run3("#{$make} clean", dir)
   Jake.run3("#{$make} all"  , dir)
 end
 
@@ -17,13 +17,13 @@ namespace "build" do
     raise "RHO_ROOT is not set" if $rootdir.nil?
     $qmake = ENV['RHO_QMAKE']
     raise "RHO_QMAKE is not set" if $qmake.nil?
+    $qmake_spec = ENV['RHO_QMAKE_SPEC']
+    raise "RHO_QMAKE_SPEC is not set" if $qmake_spec.nil?
     $qmakevars = ENV['RHO_QMAKE_VARS']
     if $platform == 'win32'
-      $qmake_spec = 'win32-msvc2012'
       $make = 'nmake'
     else
-      $qmake_spec = 'macx-g++'
-      $make = "make"
+      $make = 'make'
     end
   end
 
