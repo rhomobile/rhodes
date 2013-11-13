@@ -67,7 +67,7 @@ module Rho
     end
 
     def initialize(app_manifest_filename=nil)
-      puts "Calling RHO.initialize"
+      puts "Calling RHO.initialize #{app_manifest_filename}"
 
       if app_manifest_filename
         load_models_from_file(app_manifest_filename)
@@ -81,6 +81,15 @@ module Rho
 
       partition = 'user'
       @db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
+
+      puts "Loading NewRHOM"
+      NewRhom::NewRhom.new
+      NewRhom::NewRhom.get_instance().load_models(app_manifest_filename)
+      puts "checking what we have"
+      models = Rho::NewORMModel.enumerate
+      models.each do |model|
+        puts " we have here #{model.class.name}, #{model.model_name}, #{model.loaded}"
+      end
     end
 
 =begin    
@@ -247,12 +256,13 @@ end
             puts "model file: #{str}"
             model_name = File.basename(File.dirname(str))
 
-            Rho::RhoConfig::add_source(model_name, {:loaded => false, :file_path => str})
+            Rho::RhoConfig::add_source(model_name, {:loaded => false, :file_path => str}) if model_name['New'].nil?
         end
         
       end
     end
-    
+
+=begin
     # Return the directories where we need to load configuration files
     def process_model_dirs(app_manifest_filename=nil)
       File.open(app_manifest_filename) do |f|
@@ -283,6 +293,7 @@ end
         end        
       end
     end
+=end
     
     # Return the directories where we need to load configuration files
 =begin
@@ -720,6 +731,7 @@ end
         strCreate = "" unless strCreate
         if schema_attr['property']
             arCols = schema_attr['property']
+            puts " we are here in arcols : #{arCols.class.name}, #{arCols.inspect}"
             strCols = arCols.collect do |col, type|
                 "\"#{col}\" " + 
                 case type[0]
