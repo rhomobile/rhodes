@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files (x86)\Windows Mobile 6 SDK\Activesync\inc&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files (x86)\Windows Mobile 6 SDK\Activesync\inc&quot;;..\..\..\shared\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -179,6 +179,34 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\DeployDevCabCommand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployDevCommand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployDevWebKitCommand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployEmuCabCommand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployEmuCommand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployEmuWebKitCommand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployLogCommand.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\detool.cpp"
 				>
 			</File>
@@ -225,6 +253,34 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\DeployDevCabCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployDevCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployDevWebKitCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployEmuCabCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployEmuCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployEmuWebKitCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DeployLogCommand.h"
+				>
+			</File>
+			<File
 				RelativePath=".\detool.h"
 				>
 			</File>
@@ -234,6 +290,10 @@
 			</File>
 			<File
 				RelativePath=".\rapi_helper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
@@ -250,6 +310,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\detool.rc"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
