@@ -1123,6 +1123,7 @@ namespace "device" do
     install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
     install_script = install_script.gsub(/%README_FILE%/, readme_line)
     install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
+    install_script = install_script.gsub(/%QT_VSPEC_FILES%/, ($qt_version == 4 ? 'File *.manifest' : 'File /r "platforms"'))
     install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
     File.open(app_script_name, "w") { |file| file.puts install_script }
 
@@ -1158,7 +1159,7 @@ namespace "device" do
 
   namespace "win32" do
     desc "Build installer for Windows"
-    task :production => ["build:win32:set_release_config", "config:qt", "config:win32:qt", "build:win32"] do
+    task :production => ["build:win32:set_release_config", "config:set_win32_platform", "config:wm", "config:qt", "config:win32:qt", "build:win32"] do
       createWin32Production
     end
   end
@@ -1500,7 +1501,7 @@ namespace "run" do
   end
 
   desc "Run win32"
-  task :win32 => ["config:qt", "config:win32:qt", "build:win32"] do
+  task :win32 => ["config:set_win32_platform", "config:wm", "config:qt", "config:win32:qt", "build:win32"] do
   
     cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
     Rake::Task["build:win32:deployqt"].invoke
