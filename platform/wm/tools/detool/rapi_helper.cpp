@@ -294,4 +294,171 @@ void wceDisconnect(void)
 }
 
 
+bool wceRunProcess(const char *process, const char *args)
+{
+#ifndef UNICODE
+    HRESULT hr;
+#endif
+    PROCESS_INFORMATION pi;    
+    WCHAR wszProgram[MAX_PATH];
+    WCHAR wszArgs[MAX_PATH];
+
+#ifdef UNICODE
+    int nResult = 0;
+    nResult = MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED, process, strlen(process)+1, wszProgram, ARRAYSIZE(wszProgram));
+    if(0 == nResult) { return false;}
+    if (args) {
+        nResult = MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED, args, strlen(args)+1, wszArgs, ARRAYSIZE(wszArgs));
+        if(0 == nResult) 
+            return false;
+    }
+#else
+    hr = StringCchCopy(wszProgram, ARRAYSIZE(wszProgram), argv[1]);
+    if(FAILED(hr)) return true;
+#endif
+    if (rapi::wceConnect()) {
+        if (!CeCreateProcess(wszProgram, wszArgs, NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi)) {
+            _tprintf( TEXT("CreateProcess failed with Errorcode = %ld\n"), CeGetLastError());
+            return false;
+        }
+        CeCloseHandle( pi.hProcess);
+        CeCloseHandle( pi.hThread);
+    }
+    rapi::wceDisconnect();
+    return true;
+}
+
+bool wceInvokeCabSetup(const char *wceload_params)
+{
+    HRESULT hr = S_OK;
+    WCHAR wszCabFile[MAX_PATH];
+
+    //convert pathname
+    int nResult = 0;
+    int len = strlen(wceload_params)+1;
+    nResult = MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED, wceload_params, len, wszCabFile, ARRAYSIZE(wszCabFile));
+    if(0 == nResult)
+        return false;
+
+    rapi::wceConnect();
+
+    DWORD dwInSize = sizeof(wszCabFile);
+    DWORD dwOutSize = 0;
+    BYTE *pInBuff = NULL;
+
+    pInBuff = (BYTE *)LocalAlloc(LPTR, dwInSize);
+    memcpy(pInBuff, &wszCabFile, dwInSize);
+
+    hr = CeRapiInvoke(TEXT("\\rhosetup"), TEXT("rhoCabSetup"), dwInSize, pInBuff, &dwOutSize, NULL, NULL, 0);
+    if(FAILED(hr)) {
+        //printf("Failed to setup cab!\r\n");
+        return false;
+    }
+    rapi::wceDisconnect();
+
+    return true ;
+}
+
+
+bool wcePutFile(const char *host_file, const char *wce_file)
+{
+    TCHAR tszSrcFile[MAX_PATH];
+    WCHAR wszDestFile[MAX_PATH];
+    BYTE  buffer[5120];
+    WIN32_FIND_DATA wfd;
+    HRESULT hr;
+    DWORD dwAttr, dwNumRead, dwNumWritten;
+    HANDLE hSrc, hDest, hFind;
+    int nResult;
+
+#ifdef UNICODE
+    nResult = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED,
+        host_file, strlen(host_file)+1,
+        tszSrcFile, ARRAYSIZE(tszSrcFile));
+    if(0 == nResult)
+        return false;
+#else
+    hr = StringCchCopy(tszSrcFile, ARRAYSIZE(tszSrcFile), argv[1]);
+    if(FAILED(hr))
+        return false;
+#endif
+    nResult = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED,
+        wce_file, strlen(wce_file)+1,
+        wszDestFile, ARRAYSIZE(wszDestFile));
+    if(0 == nResult)
+        return false;
+
+    hFind = FindFirstFile( tszSrcFile, &wfd);
+    if (INVALID_HANDLE_VALUE == hFind) {
+        _tprintf(TEXT("Host file does not exist\n"));
+        return false;
+    }
+    FindClose( hFind);
+    if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        _tprintf( TEXT("Host file specifies a directory\n"));
+        return false;
+    }
+
+    if (rapi::wceConnect()) {
+        dwAttr = CeGetFileAttributes( wszDestFile);
+        if (dwAttr & FILE_ATTRIBUTE_DIRECTORY) {
+            hr = StringCchCatW(wszDestFile, ARRAYSIZE(wszDestFile), L"\\");
+            if(FAILED(hr)) return false;
+#ifdef UNICODE
+            hr = StringCchCatW(wszDestFile, ARRAYSIZE(wszDestFile), wfd.cFileName);
+            if(FAILED(hr)) return false;
+#else
+            nResult = MultiByteToWideChar(
+                CP_ACP,    
+                MB_PRECOMPOSED,
+                wfd.cFileName,
+                strlen(wfd.cFileName)+1,
+                wszDestFile+wcslen(wszDestFile),
+                ARRAYSIZE(wszDestFile)-wcslen(wszDestFile));
+            if(0 == nResult)
+            {
+                return 1;
+            }
+#endif
+        }
+        hSrc = CreateFile(tszSrcFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (INVALID_HANDLE_VALUE == hSrc) {
+            _tprintf( TEXT("Unable to open host file\n"));
+            return false;
+        }
+
+        hDest = CeCreateFile(wszDestFile, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (INVALID_HANDLE_VALUE == hDest ) {
+            _tprintf( TEXT("Unable to open target WinCE file\n"));
+            return false;
+        }
+
+        //copy file
+        do {
+            if(ReadFile(hSrc, &buffer, sizeof(buffer), &dwNumRead, NULL)) {
+                if (!CeWriteFile(hDest, &buffer, dwNumRead, &dwNumWritten, NULL)) {
+                    _tprintf( TEXT("Error !!! Writing WinCE file\n"));
+                    goto FatalError;
+                }
+            } else {
+                _tprintf( TEXT("Error !!! Reading host file\n"));
+                goto FatalError;
+            }
+            _tprintf( TEXT("."));                                        
+        } while (dwNumRead);
+        //_tprintf( TEXT("\n"));
+
+        CeCloseHandle( hDest);
+        CloseHandle (hSrc);
+    }
+    rapi::wceDisconnect();
+    return true;
+
+FatalError:
+    CeCloseHandle( hDest);
+    CloseHandle (hSrc);
+    rapi::wceDisconnect();
+    return false;
+}
+
 } //end of rapi

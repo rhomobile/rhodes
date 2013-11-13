@@ -27,12 +27,54 @@
 #ifndef __RAPI_HELPER_H_
 #define __RAPI_HELPER_H_
 
+#include <common\IRhoThreadImpl.h>
+#include <rapi.h>
+#include <strsafe.h>
+
+#include <vector>
+#include <algorithm>
+#include <functional>
+
 #define ARRAYSIZE(x) (sizeof(x)/sizeof(x[0]))
+#define EMU "Windows Mobile 6 Professional Emulator"
+#define RHOSETUP_DLL "rhosetup.dll"
+#define RE2_RUNTIME TEXT("\\Program Files\\RhoElements\\RhoElements.exe")
 
 enum EAppType
 {
     eRuby,
     eJs,
+};
+
+class EmuCommand : public rho::common::IRhoRunnable
+{
+protected:
+    std::vector<TCHAR*> m_vecArgv;
+
+protected:
+    void releaseDeploy()
+    {
+        CoUninitialize();
+        ExitProcess(EXIT_FAILURE);
+    }
+
+    EAppType getAppTypeFromCmdLine()
+    {
+        USES_CONVERSION;
+        return (strcmp(T2A(m_vecArgv[1]), "js") == 0) ? eJs : eRuby;
+    }
+
+public:
+    EmuCommand(int argc, _TCHAR* argv[])
+    {
+        for(int i=0; i<argc; ++i)
+        {
+            m_vecArgv.push_back(argv[i]);
+        }
+    }    
+
+    virtual bool checkParameters() const = 0;
+    virtual void parseParameters() = 0;
 };
 
 namespace rapi
@@ -48,6 +90,9 @@ bool emuReset(const CComBSTR& deviceIdentifier);
 bool emuShutdown(const CComBSTR& deviceIdentifier);
 bool wceConnect (void);
 void wceDisconnect(void);
+bool wceRunProcess(const char *process, const char *args);
+bool wceInvokeCabSetup(const char *wceload_params);
+bool wcePutFile(const char *host_file, const char *wce_file);
 }
 
 namespace wmdc
