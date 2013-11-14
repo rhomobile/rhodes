@@ -1057,7 +1057,7 @@ def init_extensions(dest, mode = "")
           Dir.glob(extpath + "/public/api/*.js").each do |f|
               fBaseName = File.basename(f)
               if (fBaseName.start_with?("rhoapi-native") )
-                endJSModules << f if fBaseName == "rhoapi-native.#{$current_platform_bridge}.js"
+                endJSModules << f if fBaseName == "rhoapi-native.all.js"
                 next
               end
               if (fBaseName == "rhoapi-force.ajax.js")
@@ -2347,7 +2347,7 @@ namespace "run" do
                   Dir.glob(extpath + "/public/api/*.js").each do |f|
                       fBaseName = File.basename(f)
                       if (fBaseName.start_with?("rhoapi-native") )
-                        endJSModules << f if fBaseName == "rhoapi-native.rhosim.js"
+                        endJSModules << f if fBaseName == "rhoapi-native.all.js"
                         next
                       end
                       if (fBaseName == "rhoapi-force.ajax.js")
