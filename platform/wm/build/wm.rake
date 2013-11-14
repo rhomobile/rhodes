@@ -1206,6 +1206,7 @@ namespace "clean" do
     rm_rf $tmpdir
     rm_rf $targetdir
     rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
+    rm_rf File.join($startdir, 'platform/win32/bin')
     
     rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
     rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
