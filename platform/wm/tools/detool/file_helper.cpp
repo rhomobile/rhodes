@@ -164,17 +164,22 @@ bool wceRunProcess(const char *process, const char *args)
 	hr = StringCchCopy(wszProgram, ARRAYSIZE(wszProgram), argv[1]);
 	if(FAILED(hr)) return true;
 #endif
-    if (rapi::wceConnect()) {
-		if (!CeCreateProcess(wszProgram, wszArgs, NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi)) {
+    if (rapi::wceConnect()) 
+    {
+		if (!CeCreateProcess(wszProgram, wszArgs, NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi)) 
+        {
 			_tprintf( TEXT("CreateProcess failed with Errorcode = %ld\n"), CeGetLastError());
 			return false;
 		}
-		CeCloseHandle( pi.hProcess);
+		
+        CeCloseHandle( pi.hProcess);
 		CeCloseHandle( pi.hThread);
 	}
+
     rapi::wceDisconnect();
     return true;
 }
+
 bool wceInvokeCabSetup(const char *wceload_params)
 {
 	HRESULT hr = S_OK;
@@ -206,38 +211,6 @@ bool wceInvokeCabSetup(const char *wceload_params)
 	return true ;
 }
 
-
-#define EMU "Windows Mobile 6 Professional Emulator"
-
-/**
- * detool emu "<emu_name|vmid>" "app-name" rhobundle_path exe_name
- * or
- * detool emucab "<emu_name|vmid>" app.cab "app-name"
- * or
-   detool dev "app-name" rhobundle_path exe_name
-   or 
- * detool devcab app.cab "app-name"
- */
-void usage(void)
-{
-printf 
-	("Rhodes deployment tool for Windows Mobile:          \n  \
-	  detool emu \"<emu_name|vmid>\" app.cab \"app-name\" \n  \
-	  or                                                  \n  \
-	  detool dev app.cab \"app-name\"                     \n"
-	 );
-}
-
-enum {
-	DEPLOY_EMUCAB,
-	DEPLOY_DEVCAB,
-	DEPLOY_EMU,
-	DEPLOY_DEV,
-	DEPLOY_LOG,
-    DEPLOY_DEV_WEBKIT,
-    DEPLOY_EMU_WEBKIT
-};
-
 int copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool use_shared_runtime)
 {
 	TCHAR exe_fullpath[MAX_PATH];
@@ -253,46 +226,122 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool use_shared_runtime)
 	_tcscat(exe_fullpath, app_name);
 	_tcscat(exe_fullpath, (use_shared_runtime ? _T(".lnk") : _T(".exe")));
 
-	hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (INVALID_HANDLE_VALUE == hSrc) {
-		_tprintf( TEXT("Unable to open host file\n"));
-		return EXIT_FAILURE;
-	}
+    if (doMakeCopyFile(exe_fullpath, file_name))
+    {
+	    hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	    if (INVALID_HANDLE_VALUE == hSrc) 
+        {
+		    _tprintf( TEXT("Unable to open host file\n"));
+		    return EXIT_FAILURE;
+	    }
 
-	hDest = CeCreateFile(exe_fullpath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (INVALID_HANDLE_VALUE == hDest ) {
-		_tprintf( TEXT("Unable to open target WinCE file\n"));
-		return CeGetLastError();
-	}
+	    hDest = CeCreateFile(exe_fullpath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	    if (INVALID_HANDLE_VALUE == hDest ) 
+        {
+		    _tprintf( TEXT("Unable to open target WinCE file\n"));
+		    return CeGetLastError();
+	    }
 
-	do {
-		if(ReadFile(hSrc, &buffer, sizeof(buffer), &dwNumRead, NULL)) {
-			if (!CeWriteFile(hDest, &buffer, dwNumRead, &dwNumWritten, NULL)) {
-				_tprintf( TEXT("Error !!! Writing WinCE file\n"));
-				goto copyFailure;
-				}
-			} else {
-				_tprintf( TEXT("Error !!! Reading host file\n"));
-				goto copyFailure;
-		}
-		_tprintf( TEXT("."));                                        
-	} while (dwNumRead);
-	_tprintf( TEXT("\n"));
+	    do 
+        {
+		    if(ReadFile(hSrc, &buffer, sizeof(buffer), &dwNumRead, NULL)) 
+            {
+			    if (!CeWriteFile(hDest, &buffer, dwNumRead, &dwNumWritten, NULL)) 
+                {
+				    _tprintf( TEXT("Error !!! Writing WinCE file\n"));
+				    goto copyFailure;
+			    }
+		    }
+            else 
+            {
+				    _tprintf( TEXT("Error !!! Reading host file\n"));
+				    goto copyFailure;
+		    }
+		    _tprintf( TEXT("."));                                        
+	    }
+        while (dwNumRead);
+	    _tprintf( TEXT("\n"));
 
-	CeCloseHandle( hDest);
-	CloseHandle (hSrc);
+	    CeCloseHandle( hDest);
+	    CloseHandle (hSrc);
+
+        changeFileTimeInDest(exe_fullpath, file_name);
+    }
 
 	return EXIT_SUCCESS;
 
 copyFailure:
 	CeCloseHandle( hDest);
 	CloseHandle (hSrc);
-/*
 
-	if (wcePutFile (T2A(file_name), T2A(exe_fullpath)))
-		return EXIT_SUCCESS;
-*/
 	return EXIT_FAILURE;
+}
+
+bool doMakeCopyFile(TCHAR *deviceFilePath, TCHAR* hostFilePath)
+{
+    HANDLE hSrc = CreateFile(hostFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (INVALID_HANDLE_VALUE == hSrc) 
+    {
+        return false;
+    }
+
+    FILETIME hostCreateTime, hostLastAccessTime, hostLastWriteTime;
+    GetFileTime(hSrc, &hostCreateTime, &hostLastAccessTime, &hostLastWriteTime);
+    CloseHandle (hSrc);
+
+    HANDLE hDest = CeCreateFile(deviceFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    FILETIME deviceCreateTime, deviceLastAccessTime, deviceLastWriteTime;
+    CeGetFileTime(hDest, &deviceCreateTime, &deviceLastAccessTime, &deviceLastWriteTime);
+    CeCloseHandle(hDest);
+
+    if (INVALID_HANDLE_VALUE == hSrc) 
+    {
+        return true;
+    }
+
+    SYSTEMTIME stDeviceLastWriteTime, stHostLastWriteTime;
+    FileTimeToSystemTime(&deviceLastWriteTime, &stDeviceLastWriteTime);
+    FileTimeToSystemTime(&hostLastWriteTime, &stHostLastWriteTime);
+
+    if (stDeviceLastWriteTime.wYear <=  stHostLastWriteTime.wYear &&
+        stDeviceLastWriteTime.wMonth <= stHostLastWriteTime.wMonth &&
+        stDeviceLastWriteTime.wDay <= stHostLastWriteTime.wDay &&
+        stDeviceLastWriteTime.wHour <= stHostLastWriteTime.wHour && 
+        stDeviceLastWriteTime.wMinute <= stHostLastWriteTime.wMinute &&
+        stDeviceLastWriteTime.wSecond <= stHostLastWriteTime.wSecond)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool changeFileTimeInDest(TCHAR *deviceFilePath, TCHAR* hostFilePath)
+{
+    HANDLE hSrc = CreateFile(hostFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (INVALID_HANDLE_VALUE == hSrc) 
+    {
+        _tprintf( TEXT("Unable to open host file\n"));
+        return false;
+    }
+
+    FILETIME hostCreateTime, hostLastAccessTime, hostLastWriteTime;
+    GetFileTime(hSrc, &hostCreateTime, &hostLastAccessTime, &hostLastWriteTime);
+
+    HANDLE hDest = CeCreateFile(deviceFilePath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (INVALID_HANDLE_VALUE == hDest ) 
+    {
+        _tprintf( TEXT("Unable to open target WinCE file\n"));
+        return false;
+    }
+
+    CeSetFileTime(hDest, &hostCreateTime, &hostLastAccessTime, &hostLastWriteTime);
+
+    CeCloseHandle(hDest);
+    CloseHandle(hSrc);
+
+    return true;
 }
 
 int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
@@ -319,8 +368,6 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
 	_tcscpy(wildcard, fullpath);
 	_tcscat(wildcard, _T("\\*.*"));
 
-	//wceConnect ();
-
 	fileHandle = FindFirstFile(wildcard, &findData);
 
 	if (fileHandle == INVALID_HANDLE_VALUE) {
@@ -329,20 +376,12 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
 		return EXIT_FAILURE;
 	}
 
-	/*
-	if (_tcscmp (_T("."), findData.cFileName) != 0 && _tcscmp (_T(".."), findData.cFileName) != 0) {
-		printf("-- %s\n", T2A(findData.cFileName));
-		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-			copyBundle (fullpath, findData.cFileName, NULL);
-		}
-	}
-	*/
-
 	HANDLE hDest, hSrc;
 	BYTE  buffer[5120];
 	DWORD dwNumRead, dwNumWritten;
 
-	while (FindNextFile(fileHandle, &findData)) {
+	while (FindNextFile(fileHandle, &findData)) 
+    {
 		if (_tcscmp (_T("."), findData.cFileName) == 0 || _tcscmp (_T(".."), findData.cFileName) == 0)
 			continue;
 
@@ -354,13 +393,15 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
 		{	
 			//Check and create dir on device
 			hFind = CeFindFirstFile(new_app_item, &wceFindData);
-			if (INVALID_HANDLE_VALUE == hFind) {
+			if (INVALID_HANDLE_VALUE == hFind) 
+            {
 				if (!CeCreateDirectory(new_app_item, NULL)) {
 					_tprintf( TEXT("Create directory \"%s\" on device\n"), new_app_item);
 					printf ("Failed to create new directory on device\n");
 					return EXIT_FAILURE;
 				}
 			}
+
 			FindClose( hFind);
 			
 			copyBundle (fullpath, findData.cFileName, new_app_item);
@@ -373,42 +414,52 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
 
 			_tprintf( TEXT("Copy file \"%s\" to device"), new_app_item);
 
-			hSrc = CreateFile(host_file, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-			if (INVALID_HANDLE_VALUE == hSrc) {
-				_tprintf( TEXT("Unable to open host file\n"));
-				return false;
-			}
+            if (doMakeCopyFile(new_app_item, host_file))
+            {
+			    hSrc = CreateFile(host_file, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+			    if (INVALID_HANDLE_VALUE == hSrc) 
+                {
+				    _tprintf( TEXT("Unable to open host file\n"));
+				    return false;
+			    }
 
-			hDest = CeCreateFile(new_app_item, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-			if (INVALID_HANDLE_VALUE == hDest ) {
-				_tprintf( TEXT("Unable to open target WinCE file\n"));
-				return false;
-			}
+                hDest = CeCreateFile(new_app_item, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                if (INVALID_HANDLE_VALUE == hDest ) 
+                {
+                    _tprintf( TEXT("Unable to open target WinCE file\n"));
+                    return false;
+                }
 
-			do {
-				if(ReadFile(hSrc, &buffer, sizeof(buffer), &dwNumRead, NULL)) {
-					if (!CeWriteFile(hDest, &buffer, dwNumRead, &dwNumWritten, NULL)) {
-						_tprintf( TEXT("Error !!! Writing WinCE file\n"));
-						goto copyBundleFailure;
-					}
-				} else {
-					_tprintf( TEXT("Error !!! Reading host file\n"));
-					goto copyBundleFailure;
-				}
-				_tprintf( TEXT("."));                                        
-			} while (dwNumRead);
-			_tprintf( TEXT("\n"));
+                do
+                {
+                    if(ReadFile(hSrc, &buffer, sizeof(buffer), &dwNumRead, NULL)) 
+                    {
+                        if (!CeWriteFile(hDest, &buffer, dwNumRead, &dwNumWritten, NULL)) 
+                        {
+                            _tprintf( TEXT("Error !!! Writing WinCE file\n"));
+                            goto copyBundleFailure;
+                        }
+                    } 
+                    else 
+                    {
+                        _tprintf( TEXT("Error !!! Reading host file\n"));
+                        goto copyBundleFailure;
+                    }
+                    _tprintf( TEXT("."));                                        
+                } 
+                while (dwNumRead);
+                _tprintf( TEXT("\n"));
 
-			CeCloseHandle( hDest);
-			CloseHandle (hSrc);
-			/*
-			if(!wcePutFile (T2A(host_file), T2A(new_app_item))) {
-				printf("Failed to copy file.");
-				return EXIT_FAILURE;
-			}
-			*/
+                CeCloseHandle(hDest);
+                CloseHandle (hSrc);
+
+                changeFileTimeInDest(new_app_item, host_file);
+            }
+            else
+            {
+                _tprintf( TEXT(" PASSED\n"));
+            }
 		}
-
 	}
 
 	return EXIT_SUCCESS;
@@ -432,45 +483,55 @@ int copyLicenseDll (TCHAR *file_name, TCHAR *app_dir)
 	_tcscpy(fullpath, app_dir);
 	_tcscat(fullpath, _T("\\license_rc.dll"));
 
-	hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (INVALID_HANDLE_VALUE == hSrc) {
-		_tprintf( TEXT("Unable to open host file\n"));
-		return EXIT_FAILURE;
-	}
+    if (doMakeCopyFile(fullpath, file_name))
+    {
+        hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (INVALID_HANDLE_VALUE == hSrc) 
+        {
+            _tprintf( TEXT("Unable to open host file\n"));
+            return EXIT_FAILURE;
+        }
 
-	hDest = CeCreateFile(fullpath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (INVALID_HANDLE_VALUE == hDest ) {
-		_tprintf( TEXT("Unable to open target WinCE file\n"));
-		return CeGetLastError();
-	}
+        hDest = CeCreateFile(fullpath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (INVALID_HANDLE_VALUE == hDest ) 
+        {
+            _tprintf( TEXT("Unable to open target WinCE file\n"));
+            return CeGetLastError();
+        }
 
-	do {
-		if(ReadFile(hSrc, &buffer, sizeof(buffer), &dwNumRead, NULL)) {
-			if (!CeWriteFile(hDest, &buffer, dwNumRead, &dwNumWritten, NULL)) {
-				_tprintf( TEXT("Error !!! Writing WinCE file\n"));
-				goto copyFailure;
-				}
-			} else {
-				_tprintf( TEXT("Error !!! Reading host file\n"));
-				goto copyFailure;
-		}
-		_tprintf( TEXT("."));                                        
-	} while (dwNumRead);
-	_tprintf( TEXT("\n"));
+        do 
+        {
+            if(ReadFile(hSrc, &buffer, sizeof(buffer), &dwNumRead, NULL)) 
+            {
+                if (!CeWriteFile(hDest, &buffer, dwNumRead, &dwNumWritten, NULL)) 
+                {
+                    _tprintf( TEXT("Error !!! Writing WinCE file\n"));
+                    goto copyFailure;
+                }
+            } 
+            else 
+            {
+                _tprintf( TEXT("Error !!! Reading host file\n"));
+                goto copyFailure;
+            }
+            _tprintf( TEXT("."));                                        
+        } 
+        while (dwNumRead);
 
-	CeCloseHandle( hDest);
-	CloseHandle (hSrc);
+        _tprintf( TEXT("\n"));
+
+        CeCloseHandle( hDest);
+        CloseHandle (hSrc);
+
+        changeFileTimeInDest(fullpath, file_name);
+    }
 
 	return EXIT_SUCCESS;
 
 copyFailure:
 	CeCloseHandle( hDest);
 	CloseHandle (hSrc);
-/*
 
-	if (wcePutFile (T2A(file_name), T2A(exe_fullpath)))
-		return EXIT_SUCCESS;
-*/
 	return EXIT_FAILURE;
 }
 
