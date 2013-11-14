@@ -9,6 +9,8 @@ $rootdir = ENV['RHO_ROOT']
 raise "RHO_ROOT is not set" if $rootdir.nil?
 $appincdir = ENV["RHO_INC"]
 raise "RHO_INC is not set" if $appincdir.nil?
+$androidndkpath = ENV['ANDROID_NDK']
+raise 'ANDROID_NDK is not set' if $androidndkpath.nil?
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
@@ -29,7 +31,7 @@ ARGS = ["-I\"#{$curdir}/generated/jni\"",
 SRC = get_sources File.join($curdir, 'ext_native.files')
 OBJ = FileList.new(get_objects SRC, OBJDIR)
 
-TARGETLIB = File.join(TARGETDIR, 'libcoreapi.a')
+TARGETLIB = File.join(TARGETDIR, 'lib<%= namefixed %>.a')
 
 cd '../../..'
 

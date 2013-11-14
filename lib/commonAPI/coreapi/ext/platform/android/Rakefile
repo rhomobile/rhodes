@@ -9,6 +9,8 @@ $rootdir = ENV['RHO_ROOT']
 raise "RHO_ROOT is not set" if $rootdir.nil?
 $appincdir = ENV["RHO_INC"]
 raise "RHO_INC is not set" if $appincdir.nil?
+$androidndkpath = ENV['ANDROID_NDK']
+raise 'ANDROID_NDK is not set' if $androidndkpath.nil?
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
@@ -21,7 +23,6 @@ ARGS = ["-I\"#{$curdir}/generated/jni\"",
     "-I\"#{$rootdir}/platform/shared/common\"",
     "-I\"#{$rootdir}/platform/shared/api_generator\"",
     "-I\"#{$appincdir}\"",
-    "-I\"#{File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"}\"",
     "-I\"#{$rootdir}/platform/shared/ruby\"",
     "-I\"#{$rootdir}/platform/shared/ruby/android\"",
     "-I\"#{$rootdir}/platform/shared/ruby/generated\""]

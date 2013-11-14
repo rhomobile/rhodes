@@ -7,3 +7,6 @@ project_paths:
   wm: ext/platform/wm/LogCapture.vcproj
   
 xml_api_paths: ext/LogCapture.xml
+
+android:
+  exttype: rakefile
