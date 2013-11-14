@@ -29,7 +29,7 @@ class CJSONResultConvertor<CMethodResult>
             res = "{ \"__rhoID\": ";
             if (!complex_object)
             {
-                res += "\" str \" ";
+                res += "\"" + str + "\" ";
             }
             else
             {
