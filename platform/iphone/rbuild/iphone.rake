@@ -715,6 +715,9 @@ namespace "build" do
   namespace "iphone" do
 #    desc "Build iphone rhobundle"
     task :rhobundle => ["config:iphone"] do
+
+      ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
+
       #chdir 'platform/iphone'
       chdir File.join($app_path, 'project/iphone')
       rm_rf 'bin'
@@ -722,15 +725,11 @@ namespace "build" do
       rm_rf 'build/Release-*'
 
       chdir $startdir
-      
-      ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
-
 
       Rake::Task["build:bundle:noxruby"].execute
 
       Rake::Task["build:iphone:extensions"].execute
-      
-      
+
       ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "YES"
 
       # Store hash
