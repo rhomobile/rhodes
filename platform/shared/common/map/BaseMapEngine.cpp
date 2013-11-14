@@ -680,7 +680,7 @@ void BaseMapView::CacheUpdate::processCommand(IQueueCommand *c)
 
             cache.put(Tile(drawingDevice, zoom, norm_lat, norm_lon));
 
-            RHO_MAP_TRACE3("CacheUpdate: fetch tile: zoom=%d, latitude=" RINTF_UINT64 ", longitude=" RINTF_UINT64 "", zoom, norm_lat, norm_lon);
+            RHO_MAP_TRACE3("CacheUpdate: fetch tile: zoom=%d, latitude=" PRINTF_UINT64 ", longitude=" PRINTF_UINT64 "", zoom, norm_lat, norm_lon);
             if (m_mapview == NULL) {
             	return;
             }
