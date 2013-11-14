@@ -295,7 +295,7 @@ bool doMakeCopyFile(TCHAR *deviceFilePath, TCHAR* hostFilePath)
     CeGetFileTime(hDest, &deviceCreateTime, &deviceLastAccessTime, &deviceLastWriteTime);
     CeCloseHandle(hDest);
 
-    if (INVALID_HANDLE_VALUE == hSrc) 
+    if (INVALID_HANDLE_VALUE == hDest) 
     {
         return true;
     }
@@ -329,7 +329,7 @@ bool changeFileTimeInDest(TCHAR *deviceFilePath, TCHAR* hostFilePath)
     FILETIME hostCreateTime, hostLastAccessTime, hostLastWriteTime;
     GetFileTime(hSrc, &hostCreateTime, &hostLastAccessTime, &hostLastWriteTime);
 
-    HANDLE hDest = CeCreateFile(deviceFilePath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hDest = CeCreateFile(deviceFilePath, GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (INVALID_HANDLE_VALUE == hDest ) 
     {
         _tprintf( TEXT("Unable to open target WinCE file\n"));
@@ -457,7 +457,7 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
             }
             else
             {
-                _tprintf( TEXT(" PASSED\n"));
+                _tprintf( TEXT(" POSTPONE\n"));
             }
 		}
 	}
