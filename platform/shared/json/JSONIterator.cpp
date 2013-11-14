@@ -492,12 +492,9 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
         }
     } while(c);
 
-    if ( strRes.length() == 1 )
-        return "\"" + strValue + "\"";
-
     if ( pos - start_offset > 0 )
         strRes.append( str + start_offset, pos - start_offset);
-
+    
     strRes.append("\"");
     return strRes;
 }
