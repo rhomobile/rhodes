@@ -41,7 +41,7 @@
 #include "BarcodeCallbackHelper.h"
 
 static BarcodeViewController* bv = nil;
-
+static BOOL KbdUp = NO;
 
 
 @interface RhoCreateBarcodeViewTask : NSObject {}
@@ -235,15 +235,69 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 }
 
 - (void)doCancel:(id)sender {
+	
+    if ( KbdUp == YES ) {
+        [self.view endEditing:YES];
+    }
+    else {
 	if (callback_url == nil) {
 		return;
 	}
-    Barcode_executeRhoCallBackWithParams(callback_url, nil,0,
+        Barcode_executeRhoCallBackWithParams(callback_url, nil,0,
                                          @"status", @"cancel",
                                          nil, nil,
                                          nil, nil, nil, nil);
 
-    [BarcodeViewManager closeView];
+        [BarcodeViewManager closeView];
+    }
+}
+
+- (void)keyboardDidShow: (NSNotification *) notif{
+
+    KbdUp = YES;
+    CGRect srec = self.view.frame;
+    
+    NSDictionary* info = [notif userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+
+    CGRect trect = toolbar.frame;
+    if (srec.size.width == kbSize.width)
+        trect.origin.y -= kbSize.height;
+    else
+        trect.origin.y -= kbSize.width;
+	toolbar.frame = trect;
+
+    CGRect rrect = resultText.frame;
+    if (srec.size.width == kbSize.width)
+        rrect.origin.y -= kbSize.height;
+    else
+        rrect.origin.y -= kbSize.width;
+        
+    resultText.frame = rrect;
+}
+
+- (void)keyboardDidHide: (NSNotification *) notif{
+
+    KbdUp = NO;
+    CGRect srec = self.view.frame;
+    
+    NSDictionary* info = [notif userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+ 
+    CGRect trect = toolbar.frame;
+    if (srec.size.width == kbSize.width)
+        trect.origin.y += kbSize.height;
+    else
+        trect.origin.y += kbSize.width;
+	toolbar.frame = trect;
+    
+    CGRect rrect = resultText.frame;
+    if (srec.size.width == kbSize.width)
+        rrect.origin.y += kbSize.height;
+    else
+        rrect.origin.y += kbSize.width;
+
+    resultText.frame = rrect;
 }
 
 
@@ -253,10 +307,17 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // Listen for keyboard appearances and disappearances
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidShow:)
+                                                 name:UIKeyboardDidShowNotification
+                                               object:nil];
     
-    
-    
-	//[self.view 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidHide:)
+                                                 name:UIKeyboardDidHideNotification
+                                               object:nil];
+    //[self.view 
 }
 //*/
 
