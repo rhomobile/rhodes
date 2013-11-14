@@ -406,11 +406,17 @@ unsigned int CRhoFile::getFileSize( const char* szFilePath ){
     return 0;
 }
 
-void CRhoFile::loadTextFile(const char* szFilePath, String& strFile)
+bool CRhoFile::loadTextFile(const char* szFilePath, String& strFile)
 {
     common::CRhoFile oFile;
-    if ( oFile.open( szFilePath, common::CRhoFile::OpenReadOnly) )
+    bool result = false;
+    if ( oFile.open( szFilePath, common::CRhoFile::OpenReadOnly) ) {
         oFile.readString(strFile);
+        result = true;
+    } else {
+        strFile.clear();
+    }
+    return result;
 }
 
 unsigned int CRhoFile::deleteFile( const char* szFilePath ){
