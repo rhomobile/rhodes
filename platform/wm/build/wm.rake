@@ -538,6 +538,8 @@ namespace "build" do
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
         cp File.join(vsredistdir, "vcomp90.dll"), $target_path
         cp File.join(vsredistdir, "Microsoft.VC90.OpenMP.manifest"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/libeay32.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/ssleay32.dll"), $target_path
       else
         # Visual Studio 2012
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.CRT")
@@ -546,10 +548,9 @@ namespace "build" do
         cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
         cp File.join(vsredistdir, "vcomp110.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
       end
-
-      cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
-      cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
 
       if $qt_version == 4
         # Qt 4
