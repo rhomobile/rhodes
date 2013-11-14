@@ -686,19 +686,19 @@ namespace "config" do
                 libaddspath = File.join addspath, 'lib', 'armeabi'
                 mkdir_p targetpath
                 Dir.glob(File.join(prebuiltpath, 'lib*.a')).each do |lib|
-                  cp lib, targetpath
+                  Jake.copyIfNeeded lib, targetpath
                 end
                 Dir.glob(File.join(prebuiltpath, '*.jar')).each do |lib|
-                  cp lib, targetpath
+                  Jake.copyIfNeeded lib, targetpath
                 end
                 Dir.glob(File.join(prebuiltpath, '**', 'lib*.so')).each do |lib|
                   next if lib =~ /adds/
                   if lib =~ /noautoload/
                     mkdir_p File.join(libaddspath, 'noautoload')
-                    cp lib, File.join(libaddspath, 'noautoload')
+                    Jake.copyIfNeeded lib, File.join(libaddspath, 'noautoload')
                   else
                     mkdir_p libaddspath
-                    cp lib, libaddspath
+                    Jake.copyIfNeeded lib, libaddspath
                   end
                 end
               end
@@ -932,9 +932,6 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
@@ -955,9 +952,6 @@ namespace "build" do
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
@@ -977,9 +971,6 @@ namespace "build" do
 
       args = []
       args << "-I\"#{srcdir}/..\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
@@ -1000,9 +991,6 @@ namespace "build" do
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{$commonapidir}\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
@@ -1024,9 +1012,6 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
@@ -1048,9 +1033,6 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
@@ -1072,9 +1054,6 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
@@ -1188,10 +1167,7 @@ namespace "build" do
       # add licence lib to build
       lic_dst = File.join $app_builddir, 'librhodes', 'libMotorolaLicence.a'
       lic_src = $startdir + "/res/libs/motorolalicence/android/libMotorolaLicence.a"
-      unless FileUtils.identical? lic_dst, lic_src
-        rm_f lic_dst
-        cp lic_src, lic_dst
-      end
+      Jake.copyIfNeeded lic_src, lic_dst
 
       args = []
       args << "-I\"#{$appincdir}\""
@@ -1205,7 +1181,6 @@ namespace "build" do
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
       args << "-I\"#{$coreapidir}\""
-      args << "-I\"#{$std_includes}\""
   
       sources = get_sources sourcelist
 

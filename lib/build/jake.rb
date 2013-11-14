@@ -830,5 +830,17 @@ class Jake
 
     false
   end
+  
+  def self.copyIfNeeded src, dst
+    if File.directory? dst and !File.directory? src
+      dst_path = File.join dst, File.basename(src)
+    else
+      dst_path = dst
+    end
+    unless File.exists? dst_path and FileUtils.identical? src, dst_path
+      FileUtils.rm dst_path if File.exists? dst_path
+      FileUtils.cp src, dst
+    end
+  end
 
 end

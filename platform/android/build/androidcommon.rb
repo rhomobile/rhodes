@@ -216,6 +216,7 @@ def cpp_def_args
     args << "-fno-rtti"
     args << "-std=c++0x"
     args << "-Wno-reorder"
+    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     $cpp_def_args_val = args
   end
   $cpp_def_args_val.dup
@@ -363,6 +364,7 @@ def cc_build(sources, objdir, additional = nil)
 end
 
 def cc_ar(libname, objects)
+  puts "#{libname} is uptodate: #{FileUtils.uptodate?(libname, objects)}"
   FileUtils.uptodate?(libname, objects) or cc_run($arbin, ["crs", "\"#{libname}\""] + objects.collect { |x| "\"#{x}\"" })
 end
 
