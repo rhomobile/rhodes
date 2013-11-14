@@ -264,24 +264,34 @@ int CRhoFile::readData(void* buffer, int bufOffset, int bytesToRead)
 void CRhoFile::readString(String& strData){
     if ( !isOpened() )
         return;
-
-    int nSize = size();
-    strData.resize(nSize+1);
-    nSize = fread(&strData[0], 1, nSize, m_file);
-    strData[nSize] = 0;
+    
+    unsigned int nSize = size();
+    if (nSize > 0) {
+        Vector<char> buffer;
+        buffer.resize(nSize);
+        nSize = fread(&buffer[0], 1, nSize, m_file);
+        strData.assign(&buffer[0], nSize);
+    } else {
+        strData.clear();
+    }
 }
 
 void CRhoFile::readStringW(StringW& strTextW)
 {
     if ( !isOpened() )
         return;
-
-    int nSize = size();
-    char* buf = (char*)malloc(nSize+1);
-    nSize = fread(buf, 1, nSize, m_file);
-    buf[nSize] = 0;
-    common::convertToStringW(buf,strTextW);
-    free(buf);
+    
+    unsigned int nSize = size();
+    if (nSize > 0) {
+        Vector<char> buffer;
+        buffer.resize(nSize+1);
+        nSize = fread(&buffer[0], 1, nSize, m_file);
+        buffer[nSize] = 0;
+        // TODO: update converting function to use buffer size instead of \0
+        common::convertToStringW(&buffer[0],strTextW);
+    } else {
+        strTextW.clear();
+    }
 }
 
 InputStream* CRhoFile::getInputStream()
