@@ -118,7 +118,6 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/socket_192/ipsocket.c\
 ../../ruby/ext/socket_192/option.c\
 ../../ruby/ext/socket_192/raddrinfo.c\
-../../ruby/ext/socket_192/socket.c\
 ../../ruby/ext/socket_192/sockssocket.c\
 ../../ruby/ext/socket_192/tcpserver.c\
 ../../ruby/ext/socket_192/tcpsocket.c\

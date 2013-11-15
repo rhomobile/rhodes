@@ -35,6 +35,8 @@
 #include <qglobal.h>
 #if QT_VERSION >= 0x050000
 #include <QtWebKit/qtwebkitversion.h>
+#else
+#include <QtWebKit/qwebkitversion.h>
 #endif
 #include "../../qt/rhodes/impl/MainWindowImpl.h"
 
