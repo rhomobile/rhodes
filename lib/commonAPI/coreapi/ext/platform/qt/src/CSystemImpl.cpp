@@ -61,8 +61,8 @@ public:
     virtual void isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult);
     virtual void applicationUninstall( const rho::String& applicationName, CMethodResult& oResult);
     virtual void openUrl( const rho::String& url, CMethodResult& oResult);
-    virtual void setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
-    virtual void getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
+    //virtual void setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
+    //virtual void getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
     virtual void setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult);
     virtual void setWindowPosition( int x,  int y, CMethodResult& oResult);
     virtual void setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult);
@@ -206,6 +206,7 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
     //unsupported
 }
 
+/* use default implementation from SystemImplBase.cpp
 void CSystemImpl::setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
 {
 	//unsupported
@@ -215,6 +216,7 @@ void CSystemImpl::getRegistrySetting( int hive,  const rho::String& subKey,  con
 {
 	//unsupported
 }
+*/
 
 void CSystemImpl::setWindowFrame(int x,  int y,  int width,  int height, CMethodResult& oResult)
 {
