@@ -64,9 +64,12 @@ public:
         return convertToStringA(m_oResult.getInt());
     }
 
+    // we should not rely on default floating poing formatting
     rho::String getDouble()
     {
-        return convertToStringA(m_oResult.getDouble());
+        char buf[100];
+        sprintf( buf, "%.18lg", m_oResult.getDouble() );
+        return String(buf);
     }
     rho::String getString()
     {
