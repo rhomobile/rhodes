@@ -127,10 +127,16 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
 
         qmake = "#{$qmake} -o Makefile -r -spec macx-g++ RhoSimulator.pro RHOSIMULATOR_BUILD=1"
         Jake.run3(qmake                        , $qt_project_dir)
-        Jake.run3("#{$make} clean"             , $qt_project_dir)
+        #Jake.run3("#{$make} clean"             , $qt_project_dir)
         Jake.run3("#{$make} all"               , $qt_project_dir)
         Jake.run3("#{$macdeployqt} #{app_path}", $qt_project_dir)
-        Jake.run3("#{$make} clean"             , $qt_project_dir)
+        #Jake.run3("#{$make} clean"             , $qt_project_dir)
     end
+  end
+end
+
+namespace "clean" do
+  task :osx => ["config:rhosimulator", "config:set_osx_platform", "config:osx"] do
+    rm_rf File.join($startdir, 'platform/osx/bin')
   end
 end
