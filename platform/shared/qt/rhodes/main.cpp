@@ -110,7 +110,7 @@ char* parseToken(const char* start)
 int main(int argc, char *argv[])
 {
 #ifdef RHODES_EMULATOR
-     bool isJSApp = false;
+    bool isJSApp = false;
 #endif
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
