@@ -2554,6 +2554,14 @@ module Rhogen
         # methods
         process_methods(module_item, xml_module_item)
 
+        all_methods = module_item.methods.map{|m| (m.access == ModuleMethod::ACCESS_STATIC ? "static method " : "") + m.binding_name}
+
+        non_unique_methods = all_methods.group_by { |e| e }.select { |k, v| v.size > 1 }.map(&:first)
+        if non_unique_methods.size > 0
+          puts "ERROR: XML has following methods with the same name: #{non_unique_methods.join(', ')}"
+          return false
+        end
+
         xml_module_item.elements.each('ALIASES/ALIAS') do |xml_module_alias|
           addAlias(xml_module_alias, module_item.module_aliases)
         end
