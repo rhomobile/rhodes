@@ -57,15 +57,13 @@ class SensorSingleton extends SensorSingletonBase implements ISensorSingleton {
 		// the supported list
 		Logger.D(TAG, "Request sensor type " + type);
 		System.out.println("Request sensor type " + type);
-		if (type.equalsIgnoreCase(SENSOR_TYPE_ACCELEROMETER))
+		if (type.equalsIgnoreCase(SENSOR_TYPE_ACCELEROMETER) && (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null)
-				result.set((String) getIDs().get(0));
+            result.set((String) getIDs().get(0));
 		}
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_TILT_ANGLE))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_TILT_ANGLE) && (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null))  // Tilt angle is measured from the accelorometr data
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) // Tilt angle is measured from the accelorometr data
-				result.set((String) getIDs().get(1));
+			result.set((String) getIDs().get(1));
 		}
 		//else if (type == SENSOR_TYPE_DEVICE_ORIENTATION)
 			//result.set((String) getIDs().get(2));
@@ -73,59 +71,49 @@ class SensorSingleton extends SensorSingletonBase implements ISensorSingleton {
 			//result.set((String) getIDs().get(3));
 		//else if (type == SENSOR_TYPE_ECOMPASS)
 			//result.set((String) getIDs().get(4));
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_MAGNETOMETER))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_MAGNETOMETER) && (mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null)
-				result.set((String) getIDs().get(5));
+            result.set((String) getIDs().get(5));
 		}
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_GYROSCOPE))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_GYROSCOPE) && (mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null)
-				result.set((String) getIDs().get(6));
+			result.set((String) getIDs().get(6));
 		}
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_AMBIENT_LIGHT))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_AMBIENT_LIGHT) && (mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT) != null)
-				result.set((String) getIDs().get(7));
+            result.set((String) getIDs().get(7));
 		}
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_PROXIMITY))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_PROXIMITY) && (mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null)
-				result.set((String) getIDs().get(8));
+            result.set((String) getIDs().get(8));
 		}
 		//else if (type == SENSOR_TYPE_PROXIMITY_LONG_RANGE)
 			//result.set((String) getIDs().get(9));
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_PRESSURE))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_PRESSURE) && (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null)
-				result.set((String) getIDs().get(10));
+            result.set((String) getIDs().get(10));
 		}
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_TEMPERATURE))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_TEMPERATURE) && (mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE) != null)
-				result.set((String) getIDs().get(11));
+            result.set((String) getIDs().get(11));
 		}
 		//else if (type == SENSOR_TYPE_HUMIDITY)
 			//result.set((String) getIDs().get(12));
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_GRAVITY))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_GRAVITY) && (mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) != null)
-				result.set((String) getIDs().get(13));
+            result.set((String) getIDs().get(13));
 		}
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_LINEAR_ACCELERATION))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_LINEAR_ACCELERATION) && (mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null)
-				result.set((String) getIDs().get(14));
+            result.set((String) getIDs().get(14));
 		}
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_ROTATION))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_ROTATION) && (mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) != null)
-				result.set((String) getIDs().get(15));
+            result.set((String) getIDs().get(15));
 		}
-		else if (type.equalsIgnoreCase(SENSOR_TYPE_ORIENTATION))
+		else if (type.equalsIgnoreCase(SENSOR_TYPE_ORIENTATION) && (mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION) != null))
 		{
-			if (mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION) != null)
-				result.set((String) getIDs().get(16));
+            result.set((String) getIDs().get(16));
 		}
 		else
 		{
