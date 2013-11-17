@@ -719,7 +719,7 @@ ISensorSingleton* CSensorFactory::createModuleSingleton()
 
 ISensor* CSensorFactory::createModuleByID(const rho::String& strID)
 {
-    LOG(TRACE) + "Create sensor by id.";
+	LOG(TRACE) + "Create sensor by id: " + strID;
     return new CSensorImpl(strID);
 }
 } //namespace ends
