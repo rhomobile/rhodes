@@ -349,7 +349,13 @@ void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/, bool bByNam
         if (bNewTab || bByName)
             Sleep(200);
 
-        raiseTabEvent( "onTabFocus", nOldTab, m_nCurrentTab );
+        if(RHOCONF().getBool("useTabHeaders"))
+		{
+			RHOCONF().setString("title_text", m_arTabs[index].m_strLabel.c_str(), false);
+			PostMessage(getAppWindow().m_hWnd, WM_COMMAND, ID_TITLECHANGE, 0);
+		}
+
+		raiseTabEvent( "onTabFocus", nOldTab, m_nCurrentTab );
     }
 
     if (  m_arTabs[index].m_strAction.length() > 0 && (m_arTabs[index].m_bReloadPage || bNewTab) )
