@@ -126,7 +126,8 @@ namespace "config" do
     $build_persistent_cab = Jake.getBuildBoolProp("persistent")
     $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
-
+    $build_cab = true 
+      
     begin
       if $webkit_capability || $motorola_capability
         require "rhoelements-data"
@@ -1000,10 +1001,11 @@ namespace "device" do
         end
       end
 
-      builder_name = 'build_inf.js'
-      persistent_paths = []
+      if $build_cab == true
+        builder_name = 'build_inf.js'
+        persistent_paths = []
       
-      args = [builder_name.to_s, 
+        args = [builder_name.to_s, 
               $appname + ".inf",                        #0
               build_platform,                           #1
               '"' + $app_config["name"] +'"',           #2
@@ -1018,71 +1020,72 @@ namespace "device" do
               $srcdir,                                  #11
               ($build_persistent_cab ? "1" : "0")]      #12
       
-      if !$use_shared_runtime then
-        $additional_dlls_paths.each do |path|
-          args << path
-          persistent_paths << path
+        if !$use_shared_runtime then
+          $additional_dlls_paths.each do |path|
+            args << path
+            persistent_paths << path
+          end
         end
-      end
       
-      reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
-      puts 'remove file with registry keys'
-      if File.exists? reg_keys_filename  
-        rm reg_keys_filename 
-      end
-      
-      if $regkeys && $regkeys.size > 0
-        puts 'add registry keys to file'
-        $regkey_file = File.new(reg_keys_filename, "w+")
-      
-        $regkeys.each do |key|
-          $regkey_file.puts(key + "\n")
+        reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
+        puts 'remove file with registry keys'
+        if File.exists? reg_keys_filename  
+          rm reg_keys_filename 
         end
+      
+        if $regkeys && $regkeys.size > 0
+          puts 'add registry keys to file'
+          $regkey_file = File.new(reg_keys_filename, "w+")
+      
+          $regkeys.each do |key|
+            $regkey_file.puts(key + "\n")
+          end
         
-        $regkey_file.close   
-      end  
+          $regkey_file.close   
+        end  
       
-      if $build_persistent_cab && !$use_shared_runtime
-        if $webkit_capability
-          makePersistentFiles($srcdir, persistent_paths, $wk_data_dir, reg_keys_filename)
-        else
-          makePersistentFiles($srcdir, persistent_paths, nil, reg_keys_filename)
+        if $build_persistent_cab && !$use_shared_runtime
+          if $webkit_capability
+            makePersistentFiles($srcdir, persistent_paths, $wk_data_dir, reg_keys_filename)
+          else
+            makePersistentFiles($srcdir, persistent_paths, nil, reg_keys_filename)
+          end
         end
-      end
       
-      puts Jake.run('cscript',args)
-      unless $? == 0
-        puts "Error running build_inf"
-        exit 1
-      end
+        puts Jake.run('cscript',args)
+        unless $? == 0
+          puts "Error running build_inf"
+          exit 1
+        end
 
-      args = [$appname + ".inf"]
-      puts Jake.run($cabwiz, args)
-      unless $? == 0
-        puts "Error running cabwiz"
-        exit 1
-      end
+        args = [$appname + ".inf"]
+        puts Jake.run($cabwiz, args)
+        unless $? == 0
+          puts "Error running cabwiz"
+          exit 1
+        end
       
-      args = ['cleanup.js']
-      puts Jake.run('cscript',args)
-      unless $? == 0
-        puts "Error running cleanup.js"
-        exit 1
-      end
+        args = ['cleanup.js']
+        puts Jake.run('cscript',args)
+        unless $? == 0
+          puts "Error running cleanup.js"
+          exit 1
+        end
+       
+        mkdir_p $bindir if not File.exists? $bindir
+        mkdir_p $targetdir if not File.exists? $targetdir
+        mv $appname + ".inf", $targetdir
+        mv $appname + ".cab", $targetdir
 
-      mkdir_p $bindir if not File.exists? $bindir
-      mkdir_p $targetdir if not File.exists? $targetdir
-      mv $appname + ".inf", $targetdir
-      mv $appname + ".cab", $targetdir
+        File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + " " + $appname + "/" + $appname + ".exe") }
 
-      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + " " + $appname + "/" + $appname + ".exe") }
+        if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
+          sign $targetdir + '/' +  $appname + ".cab";
+        end
 
-      if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
-        sign $targetdir + '/' +  $appname + ".cab";
-      end
-
-      rm_f "cleanup.js"
-
+        rm_f "cleanup.js"
+      end #end of "if $build_cab" 
+      
       chdir $startdir
     end
   end
@@ -1331,12 +1334,11 @@ namespace "run" do
       Rake::Task["run:rhosimulator_debug"].invoke
     end
 
-    task :test do #, :log do |t, arg|
-      puts  #arg["log"].to_s
-    end
-
     desc "Build and run on the Windows Mobile device"
-    task :device => ["device:wm:production"] do
+    task :device  => ["config:wm"] do #=> ["device:wm:production"] do
+      $build_cab = false   
+      Rake::Task["device:wm:production"].invoke
+
       if $use_direct_deploy == "no" 
         Rake::Task["run:wm:device:cab"].execute
       else
