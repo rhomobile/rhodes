@@ -1335,13 +1335,15 @@ namespace "run" do
     end
 
     desc "Build and run on the Windows Mobile device"
-    task :device  => ["config:wm"] do #=> ["device:wm:production"] do
-      $build_cab = false   
-      Rake::Task["device:wm:production"].invoke
+    task :device  => ["config:wm"] do
 
       if $use_direct_deploy == "no" 
+        Rake::Task["device:wm:production"].invoke
         Rake::Task["run:wm:device:cab"].execute
       else
+        $build_cab = false   
+        Rake::Task["device:wm:production"].invoke
+
         # kill all running detool
         kill_detool
 
@@ -1408,7 +1410,6 @@ namespace "run" do
 
             args = [$detoolappflag, 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
      
-            #args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
             puts "\nStarting application on the WM6 emulator\n\n"
             log_file = gelLogPath
 
@@ -1428,7 +1429,6 @@ namespace "run" do
             Jake.before_run_spec
             start = Time.now
 
-            #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
             Jake.run2( detool, args, {:nowait => false})
 
             puts "waiting for log: " + log_file
