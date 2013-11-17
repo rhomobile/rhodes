@@ -113,7 +113,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
         <METHODS>
             
-            <METHOD name="makeSensorByType" access="STATIC" hasCallback="optional">
+            <METHOD name="makeSensorByType" access="STATIC">
                 <DESC>Return the new sensor object by type</DESC>
                 <PARAMS>
                     <PARAM name="type" type="STRING">
