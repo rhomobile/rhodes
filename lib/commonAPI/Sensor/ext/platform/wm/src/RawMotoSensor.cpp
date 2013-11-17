@@ -10,7 +10,7 @@
 
 namespace sensormodule
 {
-
+const char* SENSOR_NAME_INVALID = "Invalid";
 int const DEFAULT_TIME_GAP    = 200;
 
 CRawMotoSensor::CRawMotoSensor(const char* sensorType) :
@@ -1294,6 +1294,7 @@ const char* CRawMotoSensor::ConvertToTypeDescription(SENSOR_TYPE sensorType)
             type = rho::ISensor::SENSOR_TYPE_HUMIDITY;
             break;
         default:
+			type = SENSOR_NAME_INVALID;
             break;
         
     }
