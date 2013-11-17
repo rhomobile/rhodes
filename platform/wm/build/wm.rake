@@ -341,28 +341,35 @@ namespace "build" do
 
           if (project_path)
           
-                ENV['RHO_PLATFORM'] = $current_platform
-                ENV['RHO_ROOT'] = $startdir
-                ENV['SDK'] = $sdk
-                ENV['RHO_BUILD_CONFIG'] = $buildcfg
-                ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
-                ENV['VCBUILD'] = $vcbuild
-                ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
-	            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
-                ENV['RHO_EXT_NAME']=ext                
+              ENV['RHO_PLATFORM'] = $current_platform
+              ENV['RHO_ROOT'] = $startdir
+              ENV['SDK'] = $sdk
+              ENV['RHO_BUILD_CONFIG'] = $buildcfg
+              ENV['VCBUILD'] = $vcbuild
+              ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
 
-                if is_prebuilt
-                    file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
-                    puts "PREBUILD: #{file_mask}"
+              if $current_platform == 'win32'
+                ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
+                ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
+              else
+                ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
+                ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
+              end
+
+              ENV['RHO_EXT_NAME']=ext                
+
+              if is_prebuilt
+                  file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
+                  puts "PREBUILD: #{file_mask}"
                 
-                    mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
-                    Dir.glob( file_mask ).each do |lib|
-                        cp_r lib, ENV['TARGET_TEMP_DIR']
-                    end
-                else    
-                    clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
-                    Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
-                end    
+                  mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
+                  Dir.glob( file_mask ).each do |lib|
+                      cp_r lib, ENV['TARGET_TEMP_DIR']
+                  end
+              else    
+                  clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
+                  Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
+              end    
           
           else
               chdir $startdir
@@ -380,6 +387,12 @@ namespace "build" do
               ENV['RHO_EXT_NAME']=ext                
 
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
+
+              if $current_platform == 'win32'
+                ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
+                ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
+              end
+
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
@@ -538,6 +551,8 @@ namespace "build" do
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
         cp File.join(vsredistdir, "vcomp90.dll"), $target_path
         cp File.join(vsredistdir, "Microsoft.VC90.OpenMP.manifest"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/libeay32.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/ssleay32.dll"), $target_path
       else
         # Visual Studio 2012
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.CRT")
@@ -546,10 +561,9 @@ namespace "build" do
         cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
         cp File.join(vsredistdir, "vcomp110.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
       end
-
-      cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
-      cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
 
       if $qt_version == 4
         # Qt 4
@@ -644,26 +658,26 @@ namespace "build" do
 
           if (project_path)
           
-                ENV['RHO_PLATFORM'] = 'win32'
-                ENV['PWD'] = $startdir
-                ENV['RHO_ROOT'] = $startdir
-                ENV['SDK'] = $sdk
-                if ext.downcase() == "coreapi" && $rhosimulator_build
-                    ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
-                else    
-                    ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
-                    ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
-                end
+              ENV['RHO_PLATFORM'] = 'win32'
+              ENV['PWD'] = $startdir
+              ENV['RHO_ROOT'] = $startdir
+              ENV['SDK'] = $sdk
+              if ext.downcase() == "coreapi" && $rhosimulator_build
+                  ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
+              else    
+                  ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+                  ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
+              end
                     
-                ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
-                ENV['VCBUILD'] = $vcbuild
-                ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
-  	            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", ENV['RHO_BUILD_CONFIG'])
+              ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", "win32", "bin", "extensions", ext)
+              ENV['VCBUILD'] = $vcbuild
+              ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
+              ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", "win32", "bin", "extensions")
                 
-                ENV['RHO_EXT_NAME']=ext                
+              ENV['RHO_EXT_NAME']=ext                
 
-                clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
-                Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
+              clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
+              Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
           
           else
 
@@ -1205,6 +1219,7 @@ namespace "clean" do
     rm_rf $tmpdir
     rm_rf $targetdir
     rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
+    rm_rf File.join($startdir, 'platform/win32/bin')
     
     rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
     rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")

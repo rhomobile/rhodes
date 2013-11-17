@@ -69,7 +69,7 @@ public:
     static unsigned int deleteEmptyFolder( const char* szFilePath );
     static unsigned int renameFile( const char* szOldFilePath, const char* szNewFilePath );
     static void         deleteFilesInFolder(const char* szFolderPath);
-    static void         loadTextFile(const char* szFilePath, String& strFile);
+    static bool         loadTextFile(const char* szFilePath, String& strFile);
     static unsigned int createFolder(const char* szDirPath);
     static void         recursiveCreateDir(const char* szFolderPath, const char* szBasePath);
     static void         readStringFromFile( const char* szFilePath, String& strData );
