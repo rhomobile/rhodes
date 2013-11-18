@@ -73,7 +73,8 @@ def set_app_version(newversion)
     else
       buf << line
     end
-    nextline = true if line =~ /CFBundleVersion/
+    #nextline = true if line =~ /CFBundleVersion/
+    nextline = true if line =~ /CFBundleShortVersionString/
   end
   File.open(fname,"w") { |f| f.write(buf) }
   return ret_value
