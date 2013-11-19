@@ -443,61 +443,65 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
 
 /*static*/ String CJSONEntry::quoteValue(const String& strValue)
 {
-    int pos = 0, start_offset = 0;
-    unsigned char c;
+    // string for symbols
+    String sym;
+    sym.reserve(16);
+    
     String strRes;
     // \" + <1 char per symbol in an average case> + \"
     strRes.reserve(strValue.length()+2);
     strRes += "\"";
-    const char* str = strValue.c_str();
-    do 
+    
+    size_t pos = 0, start_offset = 0, len = strValue.length();
+    for(; pos < len; ++pos)
     {
-        c = str[pos];
-        switch(c) {
-        case '\0':
-            break;
-        case '\b':
-        case '\n':
-        case '\r':
-        case '\t':
-        case '"':
-        case '\\':
-        case '/':
-            if(pos - start_offset > 0)
-                strRes.append(str + start_offset, pos - start_offset);
-
-            if(c == '\b') strRes.append( "\\b", 2 );
-            else if(c == '\n') strRes.append( "\\n", 2);
-            else if(c == '\r') strRes.append( "\\r", 2);
-            else if(c == '\t') strRes.append( "\\t", 2);
-            else if(c == '"') strRes.append( "\\\"", 2);
-            else if(c == '\\') strRes.append( "\\\\", 2);
-            else if(c == '/') strRes.append( "\\/", 2);
-
-            start_offset = ++pos;
-            break;
-        default:
-            if(c < ' ') 
-            {
-                if(pos - start_offset > 0)
-                    strRes.append( str + start_offset, pos - start_offset);
-
-                char buf[128];
-                int nSize = snprintf(buf, 128, "\\u00%c%c", json_hex_chars[c >> 4], json_hex_chars[c & 0xf]);
-                strRes.append(buf, nSize);
-
-                start_offset = ++pos;
-            }else 
-                pos++;
+        unsigned char c = strValue[pos];
+        if (c < ' ') {
+            switch (c) {
+                case '\n':
+                    sym = "\\n";
+                    break;
+                case '\r':
+                    sym = "\\r";
+                    break;
+                case '\t':
+                    sym = "\\t";
+                    break;
+                case '\b':
+                    sym = "\\b";
+                    break;
+                case '\f':
+                    sym = "\\f";
+                    break;
+                default:
+                    sym = "\\u00";
+                    sym += json_hex_chars[c >> 4];
+                    sym += json_hex_chars[c & 0xf];
+                    break;
+            }
+        } else {
+            switch (c) {
+                case '"':
+                    sym = "\\\"";
+                    break;
+                case '\\':
+                    sym = "\\\\";
+                    break;
+            }
         }
-    } while(c);
-
-    if ( strRes.length() == 1 )
-        return "\"" + strValue + "\"";
+        if (sym.length() > 0) {
+            if(pos - start_offset > 0)
+                strRes.append(strValue.c_str() + start_offset, pos - start_offset);
+            
+            start_offset = pos+1;
+            strRes.append(sym);
+            sym.clear();
+        }
+    }
 
     if ( pos - start_offset > 0 )
-        strRes.append( str + start_offset, pos - start_offset);
-
+        strRes.append(strValue.c_str() + start_offset, pos - start_offset);
+    
     strRes.append("\"");
     return strRes;
 }

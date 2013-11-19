@@ -126,7 +126,8 @@ namespace "config" do
     $build_persistent_cab = Jake.getBuildBoolProp("persistent")
     $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
-
+    $build_cab = true 
+      
     begin
       if $webkit_capability || $motorola_capability
         require "rhoelements-data"
@@ -341,28 +342,35 @@ namespace "build" do
 
           if (project_path)
           
-                ENV['RHO_PLATFORM'] = $current_platform
-                ENV['RHO_ROOT'] = $startdir
-                ENV['SDK'] = $sdk
-                ENV['RHO_BUILD_CONFIG'] = $buildcfg
-                ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
-                ENV['VCBUILD'] = $vcbuild
-                ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
-	            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
-                ENV['RHO_EXT_NAME']=ext                
+              ENV['RHO_PLATFORM'] = $current_platform
+              ENV['RHO_ROOT'] = $startdir
+              ENV['SDK'] = $sdk
+              ENV['RHO_BUILD_CONFIG'] = $buildcfg
+              ENV['VCBUILD'] = $vcbuild
+              ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
 
-                if is_prebuilt
-                    file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
-                    puts "PREBUILD: #{file_mask}"
+              if $current_platform == 'win32'
+                ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
+                ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
+              else
+                ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
+                ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
+              end
+
+              ENV['RHO_EXT_NAME']=ext                
+
+              if is_prebuilt
+                  file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
+                  puts "PREBUILD: #{file_mask}"
                 
-                    mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
-                    Dir.glob( file_mask ).each do |lib|
-                        cp_r lib, ENV['TARGET_TEMP_DIR']
-                    end
-                else    
-                    clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
-                    Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
-                end    
+                  mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
+                  Dir.glob( file_mask ).each do |lib|
+                      cp_r lib, ENV['TARGET_TEMP_DIR']
+                  end
+              else    
+                  clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
+                  Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
+              end    
           
           else
               chdir $startdir
@@ -380,6 +388,12 @@ namespace "build" do
               ENV['RHO_EXT_NAME']=ext                
 
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
+
+              if $current_platform == 'win32'
+                ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
+                ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
+              end
+
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
@@ -538,6 +552,8 @@ namespace "build" do
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
         cp File.join(vsredistdir, "vcomp90.dll"), $target_path
         cp File.join(vsredistdir, "Microsoft.VC90.OpenMP.manifest"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/libeay32.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/ssleay32.dll"), $target_path
       else
         # Visual Studio 2012
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.CRT")
@@ -546,10 +562,9 @@ namespace "build" do
         cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
         cp File.join(vsredistdir, "vcomp110.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
       end
-
-      cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
-      cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
 
       if $qt_version == 4
         # Qt 4
@@ -644,26 +659,26 @@ namespace "build" do
 
           if (project_path)
           
-                ENV['RHO_PLATFORM'] = 'win32'
-                ENV['PWD'] = $startdir
-                ENV['RHO_ROOT'] = $startdir
-                ENV['SDK'] = $sdk
-                if ext.downcase() == "coreapi" && $rhosimulator_build
-                    ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
-                else    
-                    ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
-                    ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
-                end
+              ENV['RHO_PLATFORM'] = 'win32'
+              ENV['PWD'] = $startdir
+              ENV['RHO_ROOT'] = $startdir
+              ENV['SDK'] = $sdk
+              if ext.downcase() == "coreapi" && $rhosimulator_build
+                  ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
+              else    
+                  ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+                  ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
+              end
                     
-                ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
-                ENV['VCBUILD'] = $vcbuild
-                ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
-  	            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", ENV['RHO_BUILD_CONFIG'])
+              ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", "win32", "bin", "extensions", ext)
+              ENV['VCBUILD'] = $vcbuild
+              ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
+              ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", "win32", "bin", "extensions")
                 
-                ENV['RHO_EXT_NAME']=ext                
+              ENV['RHO_EXT_NAME']=ext                
 
-                clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
-                Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
+              clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
+              Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
           
           else
 
@@ -986,10 +1001,11 @@ namespace "device" do
         end
       end
 
-      builder_name = 'build_inf.js'
-      persistent_paths = []
+      if $build_cab == true
+        builder_name = 'build_inf.js'
+        persistent_paths = []
       
-      args = [builder_name.to_s, 
+        args = [builder_name.to_s, 
               $appname + ".inf",                        #0
               build_platform,                           #1
               '"' + $app_config["name"] +'"',           #2
@@ -1004,71 +1020,72 @@ namespace "device" do
               $srcdir,                                  #11
               ($build_persistent_cab ? "1" : "0")]      #12
       
-      if !$use_shared_runtime then
-        $additional_dlls_paths.each do |path|
-          args << path
-          persistent_paths << path
+        if !$use_shared_runtime then
+          $additional_dlls_paths.each do |path|
+            args << path
+            persistent_paths << path
+          end
         end
-      end
       
-      reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
-      puts 'remove file with registry keys'
-      if File.exists? reg_keys_filename  
-        rm reg_keys_filename 
-      end
-      
-      if $regkeys && $regkeys.size > 0
-        puts 'add registry keys to file'
-        $regkey_file = File.new(reg_keys_filename, "w+")
-      
-        $regkeys.each do |key|
-          $regkey_file.puts(key + "\n")
+        reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
+        puts 'remove file with registry keys'
+        if File.exists? reg_keys_filename  
+          rm reg_keys_filename 
         end
+      
+        if $regkeys && $regkeys.size > 0
+          puts 'add registry keys to file'
+          $regkey_file = File.new(reg_keys_filename, "w+")
+      
+          $regkeys.each do |key|
+            $regkey_file.puts(key + "\n")
+          end
         
-        $regkey_file.close   
-      end  
+          $regkey_file.close   
+        end  
       
-      if $build_persistent_cab && !$use_shared_runtime
-        if $webkit_capability
-          makePersistentFiles($srcdir, persistent_paths, $wk_data_dir, reg_keys_filename)
-        else
-          makePersistentFiles($srcdir, persistent_paths, nil, reg_keys_filename)
+        if $build_persistent_cab && !$use_shared_runtime
+          if $webkit_capability
+            makePersistentFiles($srcdir, persistent_paths, $wk_data_dir, reg_keys_filename)
+          else
+            makePersistentFiles($srcdir, persistent_paths, nil, reg_keys_filename)
+          end
         end
-      end
       
-      puts Jake.run('cscript',args)
-      unless $? == 0
-        puts "Error running build_inf"
-        exit 1
-      end
+        puts Jake.run('cscript',args)
+        unless $? == 0
+          puts "Error running build_inf"
+          exit 1
+        end
 
-      args = [$appname + ".inf"]
-      puts Jake.run($cabwiz, args)
-      unless $? == 0
-        puts "Error running cabwiz"
-        exit 1
-      end
+        args = [$appname + ".inf"]
+        puts Jake.run($cabwiz, args)
+        unless $? == 0
+          puts "Error running cabwiz"
+          exit 1
+        end
       
-      args = ['cleanup.js']
-      puts Jake.run('cscript',args)
-      unless $? == 0
-        puts "Error running cleanup.js"
-        exit 1
-      end
+        args = ['cleanup.js']
+        puts Jake.run('cscript',args)
+        unless $? == 0
+          puts "Error running cleanup.js"
+          exit 1
+        end
+       
+        mkdir_p $bindir if not File.exists? $bindir
+        mkdir_p $targetdir if not File.exists? $targetdir
+        mv $appname + ".inf", $targetdir
+        mv $appname + ".cab", $targetdir
 
-      mkdir_p $bindir if not File.exists? $bindir
-      mkdir_p $targetdir if not File.exists? $targetdir
-      mv $appname + ".inf", $targetdir
-      mv $appname + ".cab", $targetdir
+        File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + " " + $appname + "/" + $appname + ".exe") }
 
-      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + " " + $appname + "/" + $appname + ".exe") }
+        if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
+          sign $targetdir + '/' +  $appname + ".cab";
+        end
 
-      if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
-        sign $targetdir + '/' +  $appname + ".cab";
-      end
-
-      rm_f "cleanup.js"
-
+        rm_f "cleanup.js"
+      end #end of "if $build_cab" 
+      
       chdir $startdir
     end
   end
@@ -1205,6 +1222,7 @@ namespace "clean" do
     rm_rf $tmpdir
     rm_rf $targetdir
     rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
+    rm_rf File.join($startdir, 'platform/win32/bin')
     
     rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
     rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
@@ -1316,15 +1334,16 @@ namespace "run" do
       Rake::Task["run:rhosimulator_debug"].invoke
     end
 
-    task :test do #, :log do |t, arg|
-      puts  #arg["log"].to_s
-    end
-
     desc "Build and run on the Windows Mobile device"
-    task :device => ["device:wm:production"] do
+    task :device  => ["config:wm"] do
+
       if $use_direct_deploy == "no" 
+        Rake::Task["device:wm:production"].invoke
         Rake::Task["run:wm:device:cab"].execute
       else
+        $build_cab = false   
+        Rake::Task["device:wm:production"].invoke
+
         # kill all running detool
         kill_detool
 
@@ -1391,7 +1410,6 @@ namespace "run" do
 
             args = [$detoolappflag, 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
      
-            #args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
             puts "\nStarting application on the WM6 emulator\n\n"
             log_file = gelLogPath
 
@@ -1411,7 +1429,6 @@ namespace "run" do
             Jake.before_run_spec
             start = Time.now
 
-            #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
             Jake.run2( detool, args, {:nowait => false})
 
             puts "waiting for log: " + log_file
