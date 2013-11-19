@@ -18,9 +18,6 @@ void DeployDevCabCommand::parseParameters()
 
     if (strcmp(T2A(m_vecArgv[5]), "1") == 0)
         use_shared_runtime = true;
-
-    //if ((!use_shared_runtime) && app_exe)
-    //    use_shared_runtime = str_ends_with(app_exe, L".lnk");
 }
 
 void DeployDevCabCommand::runObject()
