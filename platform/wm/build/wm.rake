@@ -562,6 +562,7 @@ namespace "build" do
         cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
         cp File.join(vsredistdir, "vcomp110.dll"), $target_path
+        cp File.join($vscommontools, "../../VC/bin/D3Dcompiler_46.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
       end
@@ -594,7 +595,6 @@ namespace "build" do
           cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
           cp File.join($qtdir, "bin/icuin51.dll"), $target_path
         end
-        cp File.join($qtdir, "bin/d3dcompiler_46.dll"), $target_path
         cp File.join($qtdir, "bin/libEGL.dll"), $target_path
         cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
         cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
