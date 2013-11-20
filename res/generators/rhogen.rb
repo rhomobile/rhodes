@@ -490,12 +490,6 @@ module Rhogen
       template.destination = "project/iphone/Rhodes/Rhodes.xcodeproj/project.pbxproj"
     end
 
-    template :rhodes_project do |template|
-      template.options[:force] = true
-      template.source = 'Rhodes/Rhodes.xcodeproj/project.pbxproj'
-      template.destination = "project/iphone/Rhodes/Rhodes.xcodeproj/project.pbxproj"
-    end
-
     template :rhodes_project_01 do |template|
       template.options[:force] = true
       template.source = 'Rhodes/Rhodes/Rhodes-Prefix.pch'
