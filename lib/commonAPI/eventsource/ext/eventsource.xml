@@ -1,0 +1,30 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="EventSource" parent="Rho">
+        <HELP_OVERVIEW>Example extension api</HELP_OVERVIEW>
+        <MORE_HELP>This is example of API. Implementation contain in extension.</MORE_HELP>
+    
+
+        <METHODS>
+
+            <METHOD name="create" constructor="true" runInThread="none" access="static">
+                <DESC></DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC></DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="SELF_INSTANCE"/>
+            </METHOD>
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>    
