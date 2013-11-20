@@ -74,7 +74,6 @@ namespace rho {
         }
         
         virtual void create( const rho::String& url,  const rho::Hashtable<rho::String, rho::String>& settings, rho::apiGenerator::CMethodResult& oResult) {
-        
             LOG(INFO) + "CEventSourceImpl::create: + " + url;
             m_es = EventSource::create(url, this);
         }
