@@ -4,6 +4,7 @@ libraries: ["Mediaplayer"]
 android:
   source_list: ext/platform/android/ext_java.files
   rhodes_listener: com.rho.mediaplayer.MediaplayerRhoListener
+  exttype: rakefile
 wp8:
   csharp_impl: yes
   root_namespace: rho

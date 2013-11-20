@@ -5,14 +5,6 @@ def build_extension(name, arch, src_files)
   objects = []
   mkdir_p $tempdir unless File.exists? $tempdir
 
-  use_own_stlport = false
-  $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
-  unless File.directory? $std_includes
-      $stlport_includes = "#{$rootdir}/platform/shared/stlport/stlport"
-      use_own_stlport = true
-  end
-
-  #Dir.glob("*.c").each do |f|
   src_files.each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
     objects << ('"'+objname+'"')
@@ -22,11 +14,6 @@ def build_extension(name, arch, src_files)
     args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
     args << "-I\"#{$rootdir}/platform/shared\""
     args << "-I\"#{$rootdir}/platform/shared/common\""
-
-    args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-    args << "-D__NEW__" if use_own_stlport
-    args << "-I\"#{$stlport_includes}\"" if use_own_stlport
-    
     args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
     args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
     args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
@@ -69,30 +56,6 @@ namespace "build" do
 
     # build native part
     build_extension('Nfc', $arch, src_files)
-
-    #build java part
-    #javafiles = []	
-    #File.open('ext_build.files', "r") do |f|
-    #    while line = f.gets
-    #       javafiles << line
-    #    end
-    #end
-
-    #flname = $targetdir + '/ext_build.files'
-    #File.open(flname, "a") do |f|
-    #    javafiles.each do |j|
-    #        f.puts $nfcdir + '/' + j
-    #    end
-    #end
-
-    #mymaniname = $nfcdir + '/ext/nfc/platform/android/AndroidManifest.xml'  
-    #maniname = $targetdir + '/AndroidManifest.xml'
-
-    #cp_r mymaniname, maniname
-
-    # copy xml NFC filter
-    #myres = $nfcdir + '/ext/nfc/platform/android/res'  
-    #cp_r myres, $rho_build_dir
 
   end
 end
