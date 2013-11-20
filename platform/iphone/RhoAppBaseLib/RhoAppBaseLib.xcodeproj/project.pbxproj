@@ -1,0 +1,942 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FA20C2B0182B07810036D304 /* SignatureDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C215182B04140036D304 /* SignatureDelegate.h */; };
+		FA20C2B1182B07810036D304 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C216182B04140036D304 /* SignatureDelegate.m */; };
+		FA20C2B2182B07810036D304 /* SignatureView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C217182B04140036D304 /* SignatureView.h */; };
+		FA20C2B3182B07810036D304 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C218182B04140036D304 /* SignatureView.m */; };
+		FA20C2B4182B07810036D304 /* SignatureViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C219182B04140036D304 /* SignatureViewController.h */; };
+		FA20C2B5182B07810036D304 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C21A182B04140036D304 /* SignatureViewController.m */; };
+		FA20C2B6182B078C0036D304 /* PickImageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C21C182B04140036D304 /* PickImageDelegate.h */; };
+		FA20C2B7182B078C0036D304 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C21D182B04140036D304 /* PickImageDelegate.m */; };
+		FA20C2B8182B07A10036D304 /* CRhoURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C21F182B04140036D304 /* CRhoURLProtocol.h */; };
+		FA20C2B9182B07A10036D304 /* CRhoURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C220182B04140036D304 /* CRhoURLProtocol.m */; };
+		FA20C2BA182B07A50036D304 /* RhoAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C222182B04140036D304 /* RhoAlert.h */; };
+		FA20C2BB182B07A50036D304 /* RhoAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C223182B04140036D304 /* RhoAlert.m */; };
+		FA20C2BC182B07AA0036D304 /* AppLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C225182B04140036D304 /* AppLoader.h */; };
+		FA20C2BD182B07AA0036D304 /* AppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C226182B04140036D304 /* AppLoader.m */; };
+		FA20C2BE182B07AA0036D304 /* AppManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C227182B04140036D304 /* AppManager.h */; };
+		FA20C2BF182B07AA0036D304 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C228182B04140036D304 /* AppManager.m */; };
+		FA20C2C0182B07AA0036D304 /* AppManagerI.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C229182B04140036D304 /* AppManagerI.h */; };
+		FA20C2C1182B07AE0036D304 /* Bluetooth.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C22B182B04140036D304 /* Bluetooth.h */; };
+		FA20C2C2182B07AE0036D304 /* Bluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C22C182B04140036D304 /* Bluetooth.m */; };
+		FA20C2C3182B07B60036D304 /* DateTimePickerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C231182B04140036D304 /* DateTimePickerDelegate.h */; };
+		FA20C2C4182B07B60036D304 /* DateTimePickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C232182B04140036D304 /* DateTimePickerDelegate.m */; };
+		FA20C2C5182B07B60036D304 /* DateTime.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C233182B04140036D304 /* DateTime.h */; };
+		FA20C2C6182B07B60036D304 /* DateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C234182B04140036D304 /* DateTime.m */; };
+		FA20C2C7182B07B60036D304 /* DateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C235182B04140036D304 /* DateTimePicker.m */; };
+		FA20C2C8182B07B60036D304 /* DateTimePickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C236182B04140036D304 /* DateTimePickerViewController.h */; };
+		FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C237182B04140036D304 /* DateTimePickerViewController.m */; };
+		FA20C2CA182B07BA0036D304 /* Event.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C239182B04140036D304 /* Event.h */; };
+		FA20C2CB182B07BA0036D304 /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C23A182B04140036D304 /* Event.m */; };
+		FA20C2CC182B07BE0036D304 /* LocationController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C23C182B04140036D304 /* LocationController.h */; };
+		FA20C2CD182B07BE0036D304 /* LocationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C23D182B04140036D304 /* LocationController.m */; };
+		FA20C2CE182B07C40036D304 /* InitMemoryInfoCollector.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA20C23F182B04140036D304 /* InitMemoryInfoCollector.mm */; };
+		FA20C2CF182B07C50036D304 /* InitMemoryInfoCollector.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C240182B04140036D304 /* InitMemoryInfoCollector.h */; };
+		FA20C2D0182B07C50036D304 /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C241182B04140036D304 /* LogViewController.m */; };
+		FA20C2D1182B07C50036D304 /* LogViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C242182B04140036D304 /* LogViewController.h */; };
+		FA20C2D2182B07C50036D304 /* LogOptionsController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C243182B04140036D304 /* LogOptionsController.h */; };
+		FA20C2D3182B07C50036D304 /* LogOptionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C244182B04140036D304 /* LogOptionsController.m */; };
+		FA20C2D4182B07CB0036D304 /* LeftViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C246182B04140036D304 /* LeftViewController.h */; };
+		FA20C2D5182B07CB0036D304 /* LeftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C247182B04140036D304 /* LeftViewController.m */; };
+		FA20C2D6182B07CB0036D304 /* RightViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C248182B04140036D304 /* RightViewController.h */; };
+		FA20C2D7182B07CB0036D304 /* RightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C249182B04140036D304 /* RightViewController.m */; };
+		FA20C2D8182B07CB0036D304 /* SplittedMainView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C24A182B04140036D304 /* SplittedMainView.h */; };
+		FA20C2D9182B07CB0036D304 /* SplittedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C24B182B04140036D304 /* SplittedMainView.m */; };
+		FA20C2DA182B07CB0036D304 /* SplitViewDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C24C182B04140036D304 /* SplitViewDelegate.h */; };
+		FA20C2DB182B07CB0036D304 /* SplitViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C24D182B04140036D304 /* SplitViewDelegate.m */; };
+		FA20C2DC182B07CB0036D304 /* RhoMainView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C24F182B04140036D304 /* RhoMainView.h */; };
+		FA20C2DD182B07CB0036D304 /* SimpleMainView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C250182B04140036D304 /* SimpleMainView.h */; };
+		FA20C2DE182B07CB0036D304 /* SimpleMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C251182B04140036D304 /* SimpleMainView.m */; };
+		FA20C2DF182B07CB0036D304 /* TabbedMainView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C252182B04140036D304 /* TabbedMainView.h */; };
+		FA20C2E0182B07CB0036D304 /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C253182B04140036D304 /* TabbedMainView.m */; };
+		FA20C2E1182B07D10036D304 /* RhoMapViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C255182B04140036D304 /* RhoMapViewController.h */; };
+		FA20C2E2182B07D10036D304 /* RhoMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C256182B04140036D304 /* RhoMapViewController.m */; };
+		FA20C2E3182B07D10036D304 /* MapViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C257182B04140036D304 /* MapViewManager.h */; };
+		FA20C2E4182B07D10036D304 /* MapViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C258182B04140036D304 /* MapViewManager.m */; };
+		FA20C2E5182B07D10036D304 /* GoogleGeocoder.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C259182B04140036D304 /* GoogleGeocoder.h */; };
+		FA20C2E6182B07D10036D304 /* GoogleGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C25A182B04140036D304 /* GoogleGeocoder.m */; };
+		FA20C2E7182B07D10036D304 /* MapViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C25B182B04140036D304 /* MapViewController.h */; };
+		FA20C2E8182B07D10036D304 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C25C182B04140036D304 /* MapViewController.m */; };
+		FA20C2E9182B07D10036D304 /* MapAnnotation.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C25D182B04140036D304 /* MapAnnotation.h */; };
+		FA20C2EA182B07D10036D304 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C25E182B04140036D304 /* MapAnnotation.m */; };
+		FA20C2EB182B07D50036D304 /* NativeBar.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C260182B04140036D304 /* NativeBar.h */; };
+		FA20C2EC182B07D50036D304 /* NativeBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C261182B04140036D304 /* NativeBar.m */; };
+		FA20C2ED182B07DA0036D304 /* NVViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C263182B04140036D304 /* NVViewController.h */; };
+		FA20C2EE182B07DA0036D304 /* RhoNativeViewManagerOC.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C264182B04140036D304 /* RhoNativeViewManagerOC.h */; };
+		FA20C2EF182B07DA0036D304 /* NVDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C265182B04140036D304 /* NVDelegate.h */; };
+		FA20C2F0182B07DA0036D304 /* NVDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C266182B04140036D304 /* NVDelegate.m */; };
+		FA20C2F1182B07DA0036D304 /* NVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C267182B04140036D304 /* NVViewController.m */; };
+		FA20C2F2182B07DA0036D304 /* RhoNativeViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA20C268182B04140036D304 /* RhoNativeViewManager.mm */; };
+		FA20C2F3182B07DE0036D304 /* NavBar.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C26A182B04140036D304 /* NavBar.h */; };
+		FA20C2F4182B07DE0036D304 /* NavBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C26B182B04140036D304 /* NavBar.m */; };
+		FA20C2F5182B07E20036D304 /* phonebook.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C26D182B04140036D304 /* phonebook.h */; };
+		FA20C2F6182B07E20036D304 /* phonebook.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C26E182B04140036D304 /* phonebook.m */; };
+		FA20C2F7182B07EB0036D304 /* RhoCryptImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C270182B04140036D304 /* RhoCryptImpl.h */; };
+		FA20C2F8182B07EB0036D304 /* RhoCryptImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA20C271182B04140036D304 /* RhoCryptImpl.mm */; };
+		FA20C2F9182B07EB0036D304 /* RhoThreadImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C272182B04140036D304 /* RhoThreadImpl.m */; };
+		FA20C2FA182B07EB0036D304 /* RhoClassFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA20C273182B04140036D304 /* RhoClassFactory.cpp */; };
+		FA20C2FB182B07EB0036D304 /* RhoClassFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C274182B04140036D304 /* RhoClassFactory.h */; };
+		FA20C2FC182B07EB0036D304 /* RhoFileImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C275182B04140036D304 /* RhoFileImpl.m */; };
+		FA20C2FD182B07EB0036D304 /* SplashScreenImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C276182B04140036D304 /* SplashScreenImpl.h */; };
+		FA20C2FE182B07EB0036D304 /* SplashScreenImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA20C277182B04140036D304 /* SplashScreenImpl.cpp */; };
+		FA20C2FF182B07EE0036D304 /* sslimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA20C279182B04140036D304 /* sslimpl.cpp */; };
+		FA20C300182B07EE0036D304 /* sslimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C27A182B04140036D304 /* sslimpl.h */; };
+		FA20C301182B07EE0036D304 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C27B182B04140036D304 /* NetRequestImpl.m */; };
+		FA20C302182B07F20036D304 /* RingtoneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C27E182B04140036D304 /* RingtoneManager.h */; };
+		FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C27F182B04140036D304 /* RingtoneManager.m */; };
+		FA20C304182B08000036D304 /* ParamsWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C289182B04140036D304 /* ParamsWrapper.h */; };
+		FA20C305182B08000036D304 /* ParamsWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C28A182B04140036D304 /* ParamsWrapper.m */; };
+		FA20C306182B08040036D304 /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C28C182B04140036D304 /* WebView.m */; };
+		FA20C307182B08080036D304 /* NetworkStatusMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C28E182B04140036D304 /* NetworkStatusMonitor.h */; };
+		FA20C308182B08080036D304 /* NetworkStatusMonitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA20C28F182B04140036D304 /* NetworkStatusMonitor.mm */; };
+		FA20C309182B08080036D304 /* Reachability.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C290182B04140036D304 /* Reachability.h */; };
+		FA20C30A182B08080036D304 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C291182B04140036D304 /* Reachability.m */; };
+		FA20C30B182B08080036D304 /* RhoDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C292182B04140036D304 /* RhoDelegate.h */; };
+		FA20C30C182B08080036D304 /* RhoDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C293182B04140036D304 /* RhoDelegate.m */; };
+		FA20C30D182B08080036D304 /* Rhodes.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C294182B04140036D304 /* Rhodes.h */; };
+		FA20C30E182B08080036D304 /* Rhodes.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C295182B04140036D304 /* Rhodes.m */; };
+		FA20C30F182B08080036D304 /* RhoViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C296182B04140036D304 /* RhoViewController.h */; };
+		FA20C310182B08080036D304 /* RhoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C297182B04140036D304 /* RhoViewController.m */; };
+		FA20C311182B08080036D304 /* SplashViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C298182B04140036D304 /* SplashViewController.h */; };
+		FA20C312182B08080036D304 /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C299182B04140036D304 /* SplashViewController.m */; };
+		FA20C313182B08080036D304 /* IPushNotificationsReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C29A182B04140036D304 /* IPushNotificationsReceiver.h */; };
+		FAA5A5AE182B0E9B00590B1F /* rhorunner_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAA5A5AD182B0E9B00590B1F /* rhorunner_Prefix.pch */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D2AAC046055464E500DB518D /* librhoappbaselib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhoappbaselib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA20C215182B04140036D304 /* SignatureDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureDelegate.h; path = Signature.old/SignatureDelegate.h; sourceTree = "<group>"; };
+		FA20C216182B04140036D304 /* SignatureDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureDelegate.m; path = Signature.old/SignatureDelegate.m; sourceTree = "<group>"; };
+		FA20C217182B04140036D304 /* SignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureView.h; path = Signature.old/SignatureView.h; sourceTree = "<group>"; };
+		FA20C218182B04140036D304 /* SignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureView.m; path = Signature.old/SignatureView.m; sourceTree = "<group>"; };
+		FA20C219182B04140036D304 /* SignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureViewController.h; path = Signature.old/SignatureViewController.h; sourceTree = "<group>"; };
+		FA20C21A182B04140036D304 /* SignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureViewController.m; path = Signature.old/SignatureViewController.m; sourceTree = "<group>"; };
+		FA20C21C182B04140036D304 /* PickImageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickImageDelegate.h; path = Camera.old/PickImageDelegate.h; sourceTree = "<group>"; };
+		FA20C21D182B04140036D304 /* PickImageDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PickImageDelegate.m; path = Camera.old/PickImageDelegate.m; sourceTree = "<group>"; };
+		FA20C21F182B04140036D304 /* CRhoURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRhoURLProtocol.h; path = URLProtocol/CRhoURLProtocol.h; sourceTree = "<group>"; };
+		FA20C220182B04140036D304 /* CRhoURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRhoURLProtocol.m; path = URLProtocol/CRhoURLProtocol.m; sourceTree = "<group>"; };
+		FA20C222182B04140036D304 /* RhoAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoAlert.h; sourceTree = "<group>"; };
+		FA20C223182B04140036D304 /* RhoAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoAlert.m; sourceTree = "<group>"; };
+		FA20C225182B04140036D304 /* AppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppLoader.h; path = AppManager/AppLoader.h; sourceTree = "<group>"; };
+		FA20C226182B04140036D304 /* AppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppLoader.m; path = AppManager/AppLoader.m; sourceTree = "<group>"; };
+		FA20C227182B04140036D304 /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManager.h; path = AppManager/AppManager.h; sourceTree = "<group>"; };
+		FA20C228182B04140036D304 /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppManager.m; path = AppManager/AppManager.m; sourceTree = "<group>"; };
+		FA20C229182B04140036D304 /* AppManagerI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManagerI.h; path = AppManager/AppManagerI.h; sourceTree = "<group>"; };
+		FA20C22B182B04140036D304 /* Bluetooth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bluetooth.h; path = Bluetooth/Bluetooth.h; sourceTree = "<group>"; };
+		FA20C22C182B04140036D304 /* Bluetooth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Bluetooth.m; path = Bluetooth/Bluetooth.m; sourceTree = "<group>"; };
+		FA20C22E182B04140036D304 /* PickImageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PickImageDelegate.h; path = Camera/PickImageDelegate.h; sourceTree = "<group>"; };
+		FA20C22F182B04140036D304 /* PickImageDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PickImageDelegate.m; path = Camera/PickImageDelegate.m; sourceTree = "<group>"; };
+		FA20C231182B04140036D304 /* DateTimePickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePickerDelegate.h; sourceTree = "<group>"; };
+		FA20C232182B04140036D304 /* DateTimePickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePickerDelegate.m; sourceTree = "<group>"; };
+		FA20C233182B04140036D304 /* DateTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTime.h; sourceTree = "<group>"; };
+		FA20C234182B04140036D304 /* DateTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTime.m; sourceTree = "<group>"; };
+		FA20C235182B04140036D304 /* DateTimePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePicker.m; sourceTree = "<group>"; };
+		FA20C236182B04140036D304 /* DateTimePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePickerViewController.h; sourceTree = "<group>"; };
+		FA20C237182B04140036D304 /* DateTimePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePickerViewController.m; sourceTree = "<group>"; };
+		FA20C239182B04140036D304 /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Event.h; path = Event/Event.h; sourceTree = "<group>"; };
+		FA20C23A182B04140036D304 /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Event.m; path = Event/Event.m; sourceTree = "<group>"; };
+		FA20C23C182B04140036D304 /* LocationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationController.h; path = GeoLocation/LocationController.h; sourceTree = "<group>"; };
+		FA20C23D182B04140036D304 /* LocationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocationController.m; path = GeoLocation/LocationController.m; sourceTree = "<group>"; };
+		FA20C23F182B04140036D304 /* InitMemoryInfoCollector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InitMemoryInfoCollector.mm; sourceTree = "<group>"; };
+		FA20C240182B04140036D304 /* InitMemoryInfoCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitMemoryInfoCollector.h; sourceTree = "<group>"; };
+		FA20C241182B04140036D304 /* LogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogViewController.m; sourceTree = "<group>"; };
+		FA20C242182B04140036D304 /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
+		FA20C243182B04140036D304 /* LogOptionsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogOptionsController.h; sourceTree = "<group>"; };
+		FA20C244182B04140036D304 /* LogOptionsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogOptionsController.m; sourceTree = "<group>"; };
+		FA20C246182B04140036D304 /* LeftViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeftViewController.h; path = SplitView/LeftViewController.h; sourceTree = "<group>"; };
+		FA20C247182B04140036D304 /* LeftViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LeftViewController.m; path = SplitView/LeftViewController.m; sourceTree = "<group>"; };
+		FA20C248182B04140036D304 /* RightViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RightViewController.h; path = SplitView/RightViewController.h; sourceTree = "<group>"; };
+		FA20C249182B04140036D304 /* RightViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RightViewController.m; path = SplitView/RightViewController.m; sourceTree = "<group>"; };
+		FA20C24A182B04140036D304 /* SplittedMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplittedMainView.h; path = SplitView/SplittedMainView.h; sourceTree = "<group>"; };
+		FA20C24B182B04140036D304 /* SplittedMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SplittedMainView.m; path = SplitView/SplittedMainView.m; sourceTree = "<group>"; };
+		FA20C24C182B04140036D304 /* SplitViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplitViewDelegate.h; path = SplitView/SplitViewDelegate.h; sourceTree = "<group>"; };
+		FA20C24D182B04140036D304 /* SplitViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SplitViewDelegate.m; path = SplitView/SplitViewDelegate.m; sourceTree = "<group>"; };
+		FA20C24F182B04140036D304 /* RhoMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoMainView.h; sourceTree = "<group>"; };
+		FA20C250182B04140036D304 /* SimpleMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleMainView.h; sourceTree = "<group>"; };
+		FA20C251182B04140036D304 /* SimpleMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleMainView.m; sourceTree = "<group>"; };
+		FA20C252182B04140036D304 /* TabbedMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabbedMainView.h; sourceTree = "<group>"; };
+		FA20C253182B04140036D304 /* TabbedMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabbedMainView.m; sourceTree = "<group>"; };
+		FA20C255182B04140036D304 /* RhoMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMapViewController.h; path = MapView/RhoMapViewController.h; sourceTree = "<group>"; };
+		FA20C256182B04140036D304 /* RhoMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoMapViewController.m; path = MapView/RhoMapViewController.m; sourceTree = "<group>"; };
+		FA20C257182B04140036D304 /* MapViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapViewManager.h; path = MapView/MapViewManager.h; sourceTree = "<group>"; };
+		FA20C258182B04140036D304 /* MapViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapViewManager.m; path = MapView/MapViewManager.m; sourceTree = "<group>"; };
+		FA20C259182B04140036D304 /* GoogleGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleGeocoder.h; path = MapView/GoogleGeocoder.h; sourceTree = "<group>"; };
+		FA20C25A182B04140036D304 /* GoogleGeocoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GoogleGeocoder.m; path = MapView/GoogleGeocoder.m; sourceTree = "<group>"; };
+		FA20C25B182B04140036D304 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapViewController.h; path = MapView/MapViewController.h; sourceTree = "<group>"; };
+		FA20C25C182B04140036D304 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapViewController.m; path = MapView/MapViewController.m; sourceTree = "<group>"; };
+		FA20C25D182B04140036D304 /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapAnnotation.h; path = MapView/MapAnnotation.h; sourceTree = "<group>"; };
+		FA20C25E182B04140036D304 /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapAnnotation.m; path = MapView/MapAnnotation.m; sourceTree = "<group>"; };
+		FA20C260182B04140036D304 /* NativeBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeBar.h; sourceTree = "<group>"; };
+		FA20C261182B04140036D304 /* NativeBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NativeBar.m; sourceTree = "<group>"; };
+		FA20C263182B04140036D304 /* NVViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NVViewController.h; path = NativeView/NVViewController.h; sourceTree = "<group>"; };
+		FA20C264182B04140036D304 /* RhoNativeViewManagerOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoNativeViewManagerOC.h; path = NativeView/RhoNativeViewManagerOC.h; sourceTree = "<group>"; };
+		FA20C265182B04140036D304 /* NVDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NVDelegate.h; path = NativeView/NVDelegate.h; sourceTree = "<group>"; };
+		FA20C266182B04140036D304 /* NVDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NVDelegate.m; path = NativeView/NVDelegate.m; sourceTree = "<group>"; };
+		FA20C267182B04140036D304 /* NVViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NVViewController.m; path = NativeView/NVViewController.m; sourceTree = "<group>"; };
+		FA20C268182B04140036D304 /* RhoNativeViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoNativeViewManager.mm; path = NativeView/RhoNativeViewManager.mm; sourceTree = "<group>"; };
+		FA20C26A182B04140036D304 /* NavBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavBar.h; sourceTree = "<group>"; };
+		FA20C26B182B04140036D304 /* NavBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavBar.m; sourceTree = "<group>"; };
+		FA20C26D182B04140036D304 /* phonebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = phonebook.h; path = Phonebook/phonebook.h; sourceTree = "<group>"; };
+		FA20C26E182B04140036D304 /* phonebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = phonebook.m; path = Phonebook/phonebook.m; sourceTree = "<group>"; };
+		FA20C270182B04140036D304 /* RhoCryptImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoCryptImpl.h; path = ../../shared/common/iphone/RhoCryptImpl.h; sourceTree = "<group>"; };
+		FA20C271182B04140036D304 /* RhoCryptImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoCryptImpl.mm; path = ../../shared/common/iphone/RhoCryptImpl.mm; sourceTree = "<group>"; };
+		FA20C272182B04140036D304 /* RhoThreadImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoThreadImpl.m; path = ../../shared/common/iphone/RhoThreadImpl.m; sourceTree = "<group>"; };
+		FA20C273182B04140036D304 /* RhoClassFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoClassFactory.cpp; path = ../../shared/common/iphone/RhoClassFactory.cpp; sourceTree = "<group>"; };
+		FA20C274182B04140036D304 /* RhoClassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoClassFactory.h; path = ../../shared/common/iphone/RhoClassFactory.h; sourceTree = "<group>"; };
+		FA20C275182B04140036D304 /* RhoFileImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoFileImpl.m; path = ../../shared/common/iphone/RhoFileImpl.m; sourceTree = "<group>"; };
+		FA20C276182B04140036D304 /* SplashScreenImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplashScreenImpl.h; path = rho/common/SplashScreenImpl.h; sourceTree = "<group>"; };
+		FA20C277182B04140036D304 /* SplashScreenImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SplashScreenImpl.cpp; path = rho/common/SplashScreenImpl.cpp; sourceTree = "<group>"; };
+		FA20C279182B04140036D304 /* sslimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sslimpl.cpp; path = ../../shared/net/iphone/sslimpl.cpp; sourceTree = "<group>"; };
+		FA20C27A182B04140036D304 /* sslimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sslimpl.h; path = ../../shared/net/iphone/sslimpl.h; sourceTree = "<group>"; };
+		FA20C27B182B04140036D304 /* NetRequestImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetRequestImpl.m; path = rho/net/NetRequestImpl.m; sourceTree = "<group>"; };
+		FA20C27E182B04140036D304 /* RingtoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RingtoneManager.h; sourceTree = "<group>"; };
+		FA20C27F182B04140036D304 /* RingtoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RingtoneManager.m; sourceTree = "<group>"; };
+		FA20C281182B04140036D304 /* SignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureView.h; path = Signature/SignatureView.h; sourceTree = "<group>"; };
+		FA20C282182B04140036D304 /* SignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureView.m; path = Signature/SignatureView.m; sourceTree = "<group>"; };
+		FA20C283182B04140036D304 /* SignatureDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureDelegate.h; path = Signature/SignatureDelegate.h; sourceTree = "<group>"; };
+		FA20C284182B04140036D304 /* SignatureDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureDelegate.m; path = Signature/SignatureDelegate.m; sourceTree = "<group>"; };
+		FA20C285182B04140036D304 /* SignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureViewController.h; path = Signature/SignatureViewController.h; sourceTree = "<group>"; };
+		FA20C286182B04140036D304 /* SignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureViewController.m; path = Signature/SignatureViewController.m; sourceTree = "<group>"; };
+		FA20C287182B04140036D304 /* SignatureParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureParam.h; path = Signature/SignatureParam.h; sourceTree = "<group>"; };
+		FA20C289182B04140036D304 /* ParamsWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParamsWrapper.h; sourceTree = "<group>"; };
+		FA20C28A182B04140036D304 /* ParamsWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParamsWrapper.m; sourceTree = "<group>"; };
+		FA20C28C182B04140036D304 /* WebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebView.m; sourceTree = "<group>"; };
+		FA20C28E182B04140036D304 /* NetworkStatusMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkStatusMonitor.h; sourceTree = "<group>"; };
+		FA20C28F182B04140036D304 /* NetworkStatusMonitor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NetworkStatusMonitor.mm; sourceTree = "<group>"; };
+		FA20C290182B04140036D304 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		FA20C291182B04140036D304 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		FA20C292182B04140036D304 /* RhoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoDelegate.h; sourceTree = "<group>"; };
+		FA20C293182B04140036D304 /* RhoDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoDelegate.m; sourceTree = "<group>"; };
+		FA20C294182B04140036D304 /* Rhodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rhodes.h; sourceTree = "<group>"; };
+		FA20C295182B04140036D304 /* Rhodes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Rhodes.m; sourceTree = "<group>"; };
+		FA20C296182B04140036D304 /* RhoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoViewController.h; sourceTree = "<group>"; };
+		FA20C297182B04140036D304 /* RhoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoViewController.m; sourceTree = "<group>"; };
+		FA20C298182B04140036D304 /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
+		FA20C299182B04140036D304 /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
+		FA20C29A182B04140036D304 /* IPushNotificationsReceiver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IPushNotificationsReceiver.h; sourceTree = "<group>"; };
+		FAA5A5AD182B0E9B00590B1F /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhorunner_Prefix.pch; path = ../rhorunner_Prefix.pch; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D289987405E68DCB004EDB86 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* RhoAppBaseLib */ = {
+			isa = PBXGroup;
+			children = (
+				FAA5A5AD182B0E9B00590B1F /* rhorunner_Prefix.pch */,
+				08FB7795FE84155DC02AAC07 /* Source */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = RhoAppBaseLib;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C29B182B04140036D304 /* Classes */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2AAC046055464E500DB518D /* librhoappbaselib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+		FA20C21B182B04140036D304 /* Signature.old */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C215182B04140036D304 /* SignatureDelegate.h */,
+				FA20C216182B04140036D304 /* SignatureDelegate.m */,
+				FA20C217182B04140036D304 /* SignatureView.h */,
+				FA20C218182B04140036D304 /* SignatureView.m */,
+				FA20C219182B04140036D304 /* SignatureViewController.h */,
+				FA20C21A182B04140036D304 /* SignatureViewController.m */,
+			);
+			name = Signature.old;
+			sourceTree = "<group>";
+		};
+		FA20C21E182B04140036D304 /* Camera.old */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C21C182B04140036D304 /* PickImageDelegate.h */,
+				FA20C21D182B04140036D304 /* PickImageDelegate.m */,
+			);
+			name = Camera.old;
+			sourceTree = "<group>";
+		};
+		FA20C221182B04140036D304 /* URLProtocol */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C21F182B04140036D304 /* CRhoURLProtocol.h */,
+				FA20C220182B04140036D304 /* CRhoURLProtocol.m */,
+			);
+			name = URLProtocol;
+			sourceTree = "<group>";
+		};
+		FA20C224182B04140036D304 /* Alert */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C222182B04140036D304 /* RhoAlert.h */,
+				FA20C223182B04140036D304 /* RhoAlert.m */,
+			);
+			name = Alert;
+			sourceTree = "<group>";
+		};
+		FA20C22A182B04140036D304 /* AppManager */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C225182B04140036D304 /* AppLoader.h */,
+				FA20C226182B04140036D304 /* AppLoader.m */,
+				FA20C227182B04140036D304 /* AppManager.h */,
+				FA20C228182B04140036D304 /* AppManager.m */,
+				FA20C229182B04140036D304 /* AppManagerI.h */,
+			);
+			name = AppManager;
+			sourceTree = "<group>";
+		};
+		FA20C22D182B04140036D304 /* Bluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C22B182B04140036D304 /* Bluetooth.h */,
+				FA20C22C182B04140036D304 /* Bluetooth.m */,
+			);
+			name = Bluetooth;
+			sourceTree = "<group>";
+		};
+		FA20C230182B04140036D304 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C22E182B04140036D304 /* PickImageDelegate.h */,
+				FA20C22F182B04140036D304 /* PickImageDelegate.m */,
+			);
+			name = Camera;
+			sourceTree = "<group>";
+		};
+		FA20C238182B04140036D304 /* DateTimePicker */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C231182B04140036D304 /* DateTimePickerDelegate.h */,
+				FA20C232182B04140036D304 /* DateTimePickerDelegate.m */,
+				FA20C233182B04140036D304 /* DateTime.h */,
+				FA20C234182B04140036D304 /* DateTime.m */,
+				FA20C235182B04140036D304 /* DateTimePicker.m */,
+				FA20C236182B04140036D304 /* DateTimePickerViewController.h */,
+				FA20C237182B04140036D304 /* DateTimePickerViewController.m */,
+			);
+			name = DateTimePicker;
+			sourceTree = "<group>";
+		};
+		FA20C23B182B04140036D304 /* Event */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C239182B04140036D304 /* Event.h */,
+				FA20C23A182B04140036D304 /* Event.m */,
+			);
+			name = Event;
+			sourceTree = "<group>";
+		};
+		FA20C23E182B04140036D304 /* GeoLocation */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C23C182B04140036D304 /* LocationController.h */,
+				FA20C23D182B04140036D304 /* LocationController.m */,
+			);
+			name = GeoLocation;
+			sourceTree = "<group>";
+		};
+		FA20C245182B04140036D304 /* Log */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C23F182B04140036D304 /* InitMemoryInfoCollector.mm */,
+				FA20C240182B04140036D304 /* InitMemoryInfoCollector.h */,
+				FA20C241182B04140036D304 /* LogViewController.m */,
+				FA20C242182B04140036D304 /* LogViewController.h */,
+				FA20C243182B04140036D304 /* LogOptionsController.h */,
+				FA20C244182B04140036D304 /* LogOptionsController.m */,
+			);
+			name = Log;
+			sourceTree = "<group>";
+		};
+		FA20C24E182B04140036D304 /* SplitView */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C246182B04140036D304 /* LeftViewController.h */,
+				FA20C247182B04140036D304 /* LeftViewController.m */,
+				FA20C248182B04140036D304 /* RightViewController.h */,
+				FA20C249182B04140036D304 /* RightViewController.m */,
+				FA20C24A182B04140036D304 /* SplittedMainView.h */,
+				FA20C24B182B04140036D304 /* SplittedMainView.m */,
+				FA20C24C182B04140036D304 /* SplitViewDelegate.h */,
+				FA20C24D182B04140036D304 /* SplitViewDelegate.m */,
+			);
+			name = SplitView;
+			sourceTree = "<group>";
+		};
+		FA20C254182B04140036D304 /* MainView */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C24E182B04140036D304 /* SplitView */,
+				FA20C24F182B04140036D304 /* RhoMainView.h */,
+				FA20C250182B04140036D304 /* SimpleMainView.h */,
+				FA20C251182B04140036D304 /* SimpleMainView.m */,
+				FA20C252182B04140036D304 /* TabbedMainView.h */,
+				FA20C253182B04140036D304 /* TabbedMainView.m */,
+			);
+			name = MainView;
+			sourceTree = "<group>";
+		};
+		FA20C25F182B04140036D304 /* MapView */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C255182B04140036D304 /* RhoMapViewController.h */,
+				FA20C256182B04140036D304 /* RhoMapViewController.m */,
+				FA20C257182B04140036D304 /* MapViewManager.h */,
+				FA20C258182B04140036D304 /* MapViewManager.m */,
+				FA20C259182B04140036D304 /* GoogleGeocoder.h */,
+				FA20C25A182B04140036D304 /* GoogleGeocoder.m */,
+				FA20C25B182B04140036D304 /* MapViewController.h */,
+				FA20C25C182B04140036D304 /* MapViewController.m */,
+				FA20C25D182B04140036D304 /* MapAnnotation.h */,
+				FA20C25E182B04140036D304 /* MapAnnotation.m */,
+			);
+			name = MapView;
+			sourceTree = "<group>";
+		};
+		FA20C262182B04140036D304 /* NativeBar */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C260182B04140036D304 /* NativeBar.h */,
+				FA20C261182B04140036D304 /* NativeBar.m */,
+			);
+			name = NativeBar;
+			sourceTree = "<group>";
+		};
+		FA20C269182B04140036D304 /* NativeView */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C263182B04140036D304 /* NVViewController.h */,
+				FA20C264182B04140036D304 /* RhoNativeViewManagerOC.h */,
+				FA20C265182B04140036D304 /* NVDelegate.h */,
+				FA20C266182B04140036D304 /* NVDelegate.m */,
+				FA20C267182B04140036D304 /* NVViewController.m */,
+				FA20C268182B04140036D304 /* RhoNativeViewManager.mm */,
+			);
+			name = NativeView;
+			sourceTree = "<group>";
+		};
+		FA20C26C182B04140036D304 /* NavBar */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C26A182B04140036D304 /* NavBar.h */,
+				FA20C26B182B04140036D304 /* NavBar.m */,
+			);
+			name = NavBar;
+			sourceTree = "<group>";
+		};
+		FA20C26F182B04140036D304 /* Phonebook */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C26D182B04140036D304 /* phonebook.h */,
+				FA20C26E182B04140036D304 /* phonebook.m */,
+			);
+			name = Phonebook;
+			sourceTree = "<group>";
+		};
+		FA20C278182B04140036D304 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C270182B04140036D304 /* RhoCryptImpl.h */,
+				FA20C271182B04140036D304 /* RhoCryptImpl.mm */,
+				FA20C272182B04140036D304 /* RhoThreadImpl.m */,
+				FA20C273182B04140036D304 /* RhoClassFactory.cpp */,
+				FA20C274182B04140036D304 /* RhoClassFactory.h */,
+				FA20C275182B04140036D304 /* RhoFileImpl.m */,
+				FA20C276182B04140036D304 /* SplashScreenImpl.h */,
+				FA20C277182B04140036D304 /* SplashScreenImpl.cpp */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
+		FA20C27C182B04140036D304 /* net */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C279182B04140036D304 /* sslimpl.cpp */,
+				FA20C27A182B04140036D304 /* sslimpl.h */,
+				FA20C27B182B04140036D304 /* NetRequestImpl.m */,
+			);
+			name = net;
+			sourceTree = "<group>";
+		};
+		FA20C27D182B04140036D304 /* rho */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C278182B04140036D304 /* common */,
+				FA20C27C182B04140036D304 /* net */,
+			);
+			name = rho;
+			sourceTree = "<group>";
+		};
+		FA20C280182B04140036D304 /* Ringtones */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C27E182B04140036D304 /* RingtoneManager.h */,
+				FA20C27F182B04140036D304 /* RingtoneManager.m */,
+			);
+			name = Ringtones;
+			sourceTree = "<group>";
+		};
+		FA20C288182B04140036D304 /* Signature */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C281182B04140036D304 /* SignatureView.h */,
+				FA20C282182B04140036D304 /* SignatureView.m */,
+				FA20C283182B04140036D304 /* SignatureDelegate.h */,
+				FA20C284182B04140036D304 /* SignatureDelegate.m */,
+				FA20C285182B04140036D304 /* SignatureViewController.h */,
+				FA20C286182B04140036D304 /* SignatureViewController.m */,
+				FA20C287182B04140036D304 /* SignatureParam.h */,
+			);
+			name = Signature;
+			sourceTree = "<group>";
+		};
+		FA20C28B182B04140036D304 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C289182B04140036D304 /* ParamsWrapper.h */,
+				FA20C28A182B04140036D304 /* ParamsWrapper.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		FA20C28D182B04140036D304 /* WebView */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C28C182B04140036D304 /* WebView.m */,
+			);
+			name = WebView;
+			sourceTree = "<group>";
+		};
+		FA20C29B182B04140036D304 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FA20C21B182B04140036D304 /* Signature.old */,
+				FA20C21E182B04140036D304 /* Camera.old */,
+				FA20C221182B04140036D304 /* URLProtocol */,
+				FA20C224182B04140036D304 /* Alert */,
+				FA20C22A182B04140036D304 /* AppManager */,
+				FA20C22D182B04140036D304 /* Bluetooth */,
+				FA20C230182B04140036D304 /* Camera */,
+				FA20C238182B04140036D304 /* DateTimePicker */,
+				FA20C23B182B04140036D304 /* Event */,
+				FA20C23E182B04140036D304 /* GeoLocation */,
+				FA20C245182B04140036D304 /* Log */,
+				FA20C254182B04140036D304 /* MainView */,
+				FA20C25F182B04140036D304 /* MapView */,
+				FA20C262182B04140036D304 /* NativeBar */,
+				FA20C269182B04140036D304 /* NativeView */,
+				FA20C26C182B04140036D304 /* NavBar */,
+				FA20C26F182B04140036D304 /* Phonebook */,
+				FA20C27D182B04140036D304 /* rho */,
+				FA20C280182B04140036D304 /* Ringtones */,
+				FA20C288182B04140036D304 /* Signature */,
+				FA20C28B182B04140036D304 /* Utils */,
+				FA20C28D182B04140036D304 /* WebView */,
+				FA20C28E182B04140036D304 /* NetworkStatusMonitor.h */,
+				FA20C28F182B04140036D304 /* NetworkStatusMonitor.mm */,
+				FA20C290182B04140036D304 /* Reachability.h */,
+				FA20C291182B04140036D304 /* Reachability.m */,
+				FA20C292182B04140036D304 /* RhoDelegate.h */,
+				FA20C293182B04140036D304 /* RhoDelegate.m */,
+				FA20C294182B04140036D304 /* Rhodes.h */,
+				FA20C295182B04140036D304 /* Rhodes.m */,
+				FA20C296182B04140036D304 /* RhoViewController.h */,
+				FA20C297182B04140036D304 /* RhoViewController.m */,
+				FA20C298182B04140036D304 /* SplashViewController.h */,
+				FA20C299182B04140036D304 /* SplashViewController.m */,
+				FA20C29A182B04140036D304 /* IPushNotificationsReceiver.h */,
+			);
+			name = Classes;
+			path = ../Classes;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D2AAC043055464E500DB518D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA20C2D6182B07CB0036D304 /* RightViewController.h in Headers */,
+				FA20C2B2182B07810036D304 /* SignatureView.h in Headers */,
+				FA20C2C8182B07B60036D304 /* DateTimePickerViewController.h in Headers */,
+				FA20C2DA182B07CB0036D304 /* SplitViewDelegate.h in Headers */,
+				FA20C2E7182B07D10036D304 /* MapViewController.h in Headers */,
+				FA20C2D4182B07CB0036D304 /* LeftViewController.h in Headers */,
+				FA20C2EE182B07DA0036D304 /* RhoNativeViewManagerOC.h in Headers */,
+				FA20C2B4182B07810036D304 /* SignatureViewController.h in Headers */,
+				FA20C2E1182B07D10036D304 /* RhoMapViewController.h in Headers */,
+				FA20C2B6182B078C0036D304 /* PickImageDelegate.h in Headers */,
+				FA20C2BA182B07A50036D304 /* RhoAlert.h in Headers */,
+				FA20C300182B07EE0036D304 /* sslimpl.h in Headers */,
+				FA20C2CA182B07BA0036D304 /* Event.h in Headers */,
+				FA20C307182B08080036D304 /* NetworkStatusMonitor.h in Headers */,
+				FA20C2ED182B07DA0036D304 /* NVViewController.h in Headers */,
+				FA20C2EF182B07DA0036D304 /* NVDelegate.h in Headers */,
+				FA20C2F7182B07EB0036D304 /* RhoCryptImpl.h in Headers */,
+				FA20C309182B08080036D304 /* Reachability.h in Headers */,
+				FA20C30B182B08080036D304 /* RhoDelegate.h in Headers */,
+				FA20C2C0182B07AA0036D304 /* AppManagerI.h in Headers */,
+				FA20C2DF182B07CB0036D304 /* TabbedMainView.h in Headers */,
+				FA20C2FD182B07EB0036D304 /* SplashScreenImpl.h in Headers */,
+				FA20C311182B08080036D304 /* SplashViewController.h in Headers */,
+				FA20C30F182B08080036D304 /* RhoViewController.h in Headers */,
+				FA20C2C5182B07B60036D304 /* DateTime.h in Headers */,
+				FA20C2E9182B07D10036D304 /* MapAnnotation.h in Headers */,
+				FA20C2E3182B07D10036D304 /* MapViewManager.h in Headers */,
+				FA20C2D8182B07CB0036D304 /* SplittedMainView.h in Headers */,
+				FA20C2E5182B07D10036D304 /* GoogleGeocoder.h in Headers */,
+				FA20C2C1182B07AE0036D304 /* Bluetooth.h in Headers */,
+				FA20C2B0182B07810036D304 /* SignatureDelegate.h in Headers */,
+				FAA5A5AE182B0E9B00590B1F /* rhorunner_Prefix.pch in Headers */,
+				FA20C2CC182B07BE0036D304 /* LocationController.h in Headers */,
+				FA20C2D1182B07C50036D304 /* LogViewController.h in Headers */,
+				FA20C2F3182B07DE0036D304 /* NavBar.h in Headers */,
+				FA20C2F5182B07E20036D304 /* phonebook.h in Headers */,
+				FA20C30D182B08080036D304 /* Rhodes.h in Headers */,
+				FA20C304182B08000036D304 /* ParamsWrapper.h in Headers */,
+				FA20C2DD182B07CB0036D304 /* SimpleMainView.h in Headers */,
+				FA20C2DC182B07CB0036D304 /* RhoMainView.h in Headers */,
+				FA20C2BC182B07AA0036D304 /* AppLoader.h in Headers */,
+				FA20C2C3182B07B60036D304 /* DateTimePickerDelegate.h in Headers */,
+				FA20C2FB182B07EB0036D304 /* RhoClassFactory.h in Headers */,
+				FA20C2EB182B07D50036D304 /* NativeBar.h in Headers */,
+				FA20C313182B08080036D304 /* IPushNotificationsReceiver.h in Headers */,
+				FA20C2BE182B07AA0036D304 /* AppManager.h in Headers */,
+				FA20C2B8182B07A10036D304 /* CRhoURLProtocol.h in Headers */,
+				FA20C2D2182B07C50036D304 /* LogOptionsController.h in Headers */,
+				FA20C2CF182B07C50036D304 /* InitMemoryInfoCollector.h in Headers */,
+				FA20C302182B07F20036D304 /* RingtoneManager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D2AAC045055464E500DB518D /* RhoAppBaseLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB91EB08733DB70010E9CD /* Build configuration list for PBXNativeTarget "RhoAppBaseLib" */;
+			buildPhases = (
+				D2AAC043055464E500DB518D /* Headers */,
+				D2AAC044055464E500DB518D /* Sources */,
+				D289987405E68DCB004EDB86 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RhoAppBaseLib;
+			productName = RhoAppBaseLib;
+			productReference = D2AAC046055464E500DB518D /* librhoappbaselib.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+			};
+			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "RhoAppBaseLib" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* RhoAppBaseLib */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D2AAC045055464E500DB518D /* RhoAppBaseLib */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D2AAC044055464E500DB518D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA20C2B1182B07810036D304 /* SignatureDelegate.m in Sources */,
+				FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */,
+				FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */,
+				FA20C2EC182B07D50036D304 /* NativeBar.m in Sources */,
+				FA20C2CE182B07C40036D304 /* InitMemoryInfoCollector.mm in Sources */,
+				FA20C308182B08080036D304 /* NetworkStatusMonitor.mm in Sources */,
+				FA20C2DE182B07CB0036D304 /* SimpleMainView.m in Sources */,
+				FA20C2F0182B07DA0036D304 /* NVDelegate.m in Sources */,
+				FA20C305182B08000036D304 /* ParamsWrapper.m in Sources */,
+				FA20C30A182B08080036D304 /* Reachability.m in Sources */,
+				FA20C2B5182B07810036D304 /* SignatureViewController.m in Sources */,
+				FA20C2E0182B07CB0036D304 /* TabbedMainView.m in Sources */,
+				FA20C30C182B08080036D304 /* RhoDelegate.m in Sources */,
+				FA20C2F8182B07EB0036D304 /* RhoCryptImpl.mm in Sources */,
+				FA20C2C7182B07B60036D304 /* DateTimePicker.m in Sources */,
+				FA20C2FE182B07EB0036D304 /* SplashScreenImpl.cpp in Sources */,
+				FA20C2D7182B07CB0036D304 /* RightViewController.m in Sources */,
+				FA20C2FF182B07EE0036D304 /* sslimpl.cpp in Sources */,
+				FA20C2F6182B07E20036D304 /* phonebook.m in Sources */,
+				FA20C2D0182B07C50036D304 /* LogViewController.m in Sources */,
+				FA20C2C6182B07B60036D304 /* DateTime.m in Sources */,
+				FA20C2CD182B07BE0036D304 /* LocationController.m in Sources */,
+				FA20C2EA182B07D10036D304 /* MapAnnotation.m in Sources */,
+				FA20C2E4182B07D10036D304 /* MapViewManager.m in Sources */,
+				FA20C2D5182B07CB0036D304 /* LeftViewController.m in Sources */,
+				FA20C2F2182B07DA0036D304 /* RhoNativeViewManager.mm in Sources */,
+				FA20C2F1182B07DA0036D304 /* NVViewController.m in Sources */,
+				FA20C2E2182B07D10036D304 /* RhoMapViewController.m in Sources */,
+				FA20C2F4182B07DE0036D304 /* NavBar.m in Sources */,
+				FA20C2BD182B07AA0036D304 /* AppLoader.m in Sources */,
+				FA20C306182B08040036D304 /* WebView.m in Sources */,
+				FA20C2CB182B07BA0036D304 /* Event.m in Sources */,
+				FA20C310182B08080036D304 /* RhoViewController.m in Sources */,
+				FA20C2E6182B07D10036D304 /* GoogleGeocoder.m in Sources */,
+				FA20C301182B07EE0036D304 /* NetRequestImpl.m in Sources */,
+				FA20C312182B08080036D304 /* SplashViewController.m in Sources */,
+				FA20C2BF182B07AA0036D304 /* AppManager.m in Sources */,
+				FA20C2D3182B07C50036D304 /* LogOptionsController.m in Sources */,
+				FA20C2FA182B07EB0036D304 /* RhoClassFactory.cpp in Sources */,
+				FA20C30E182B08080036D304 /* Rhodes.m in Sources */,
+				FA20C2C2182B07AE0036D304 /* Bluetooth.m in Sources */,
+				FA20C2C4182B07B60036D304 /* DateTimePickerDelegate.m in Sources */,
+				FA20C2DB182B07CB0036D304 /* SplitViewDelegate.m in Sources */,
+				FA20C2B3182B07810036D304 /* SignatureView.m in Sources */,
+				FA20C2FC182B07EB0036D304 /* RhoFileImpl.m in Sources */,
+				FA20C2B7182B078C0036D304 /* PickImageDelegate.m in Sources */,
+				FA20C2BB182B07A50036D304 /* RhoAlert.m in Sources */,
+				FA20C2B9182B07A10036D304 /* CRhoURLProtocol.m in Sources */,
+				FA20C2F9182B07EB0036D304 /* RhoThreadImpl.m in Sources */,
+				FA20C2D9182B07CB0036D304 /* SplittedMainView.m in Sources */,
+				FA20C2E8182B07D10036D304 /* MapViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB91EC08733DB70010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					../../shared,
+					../../shared/ruby,
+					../../shared/ruby/include,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
+					"../Classes/**",
+					../../lib/commonAPI,
+					rhoextlib,
+					../../shared/common,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility=hidden",
+				);
+				PRODUCT_NAME = rhoappbaselib;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRIPFLAGS = "";
+				SYMROOT = ../build;
+				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
+				VALID_ARCHS = "armv7 i386";
+			};
+			name = Debug;
+		};
+		1DEB91ED08733DB70010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					../../shared,
+					../../shared/ruby,
+					../../shared/ruby/include,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
+					"../Classes/**",
+					../../lib/commonAPI,
+					rhoextlib,
+					../../shared/common,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility=hidden",
+				);
+				PRODUCT_NAME = rhoappbaselib;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRIPFLAGS = "";
+				SYMROOT = ../build;
+				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
+				VALID_ARCHS = "armv7 i386";
+			};
+			name = Release;
+		};
+		1DEB91F008733DB70010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../shared;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator3.2;
+			};
+			name = Debug;
+		};
+		1DEB91F108733DB70010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../shared;
+				PREBINDING = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		46B0042B10332DC400D0C2F4 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../shared;
+				PREBINDING = NO;
+				SDKROOT = macosx;
+			};
+			name = Distribution;
+		};
+		46B0042C10332DC400D0C2F4 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					../../shared,
+					../../shared/ruby,
+					../../shared/ruby/include,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
+					"../Classes/**",
+					../../lib/commonAPI,
+					rhoextlib,
+					../../shared/common,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility=hidden",
+				);
+				PRODUCT_NAME = rhoappbaselib;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRIPFLAGS = "";
+				SYMROOT = ../build;
+				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
+				VALID_ARCHS = armv7;
+			};
+			name = Distribution;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB91EB08733DB70010E9CD /* Build configuration list for PBXNativeTarget "RhoAppBaseLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91EC08733DB70010E9CD /* Debug */,
+				1DEB91ED08733DB70010E9CD /* Release */,
+				46B0042C10332DC400D0C2F4 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "RhoAppBaseLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91F008733DB70010E9CD /* Debug */,
+				1DEB91F108733DB70010E9CD /* Release */,
+				46B0042B10332DC400D0C2F4 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

@@ -25,6 +25,8 @@
 #------------------------------------------------------------------------
 
 require 'tempfile'
+require 'open3'
+require 'stringio'
 
 #common functions for compiling android
 #
@@ -42,6 +44,8 @@ else
   $bat_ext = ""
   $exe_ext = ""
 end
+
+$output_lock = Mutex.new
 
 def num_cpus
   num = nil
@@ -103,7 +107,7 @@ end
 
 def setup_ndk(ndkpath,apilevel)
   puts "setup_ndk(#{ndkpath}, #{apilevel})" if USE_TRACES
-
+  
   detect_toolchain ndkpath
 
   variants = []
@@ -151,6 +155,8 @@ def setup_ndk(ndkpath,apilevel)
     eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
   end
   
+  $androidndkpath = ndkpath unless $androidndkpath
+
   # Detect rlim_t
   if $have_rlim_t.nil?
     $have_rlim_t = false
@@ -212,6 +218,7 @@ def cpp_def_args
     args << "-fno-rtti"
     args << "-std=c++0x"
     args << "-Wno-reorder"
+    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     $cpp_def_args_val = args
   end
   $cpp_def_args_val.dup
@@ -232,6 +239,16 @@ def cc_get_ccbin(filename)
     $gppbin
   end
 end
+
+#def deps_uptodate?(target, source, deps)
+#  deplist = [deps, source]
+#  if(File.exists? deps)
+#    deplist += File.read(deps).gsub(/(^\s+|\s+$)/, '').split(/\s+/)
+#    return File.exists?(target) and FileUtils.uptodate?(target, deplist)
+#  else
+#    return false
+#  end
+#end
 
 def cc_deps(filename, objdir, additional)
   #puts "Check #{filename}..."
@@ -263,24 +280,30 @@ def cc_run(command, args, chdir = nil)
   argv += args
   #cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
   cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '' + x + '' : x }.join(' ')
-  puts '-' * 80
-  puts "PWD: #{chdir}" unless chdir.nil?
-  puts cmdstr
-  $stdout.flush
-  argv = cmdstr if RUBY_VERSION =~ /^1\.[89]/
-  IO.popen(argv) do |f|
+
+  out = StringIO.new
+  ret = nil
+  Open3.popen2e(cmdstr) do |i,f,t|
     while data = f.gets
-      puts data
-      $stdout.flush
+      out.puts data
     end
+    ret = t.value
   end
-  ret = $?
-  FileUtils.cd save_cwd
+
+  $output_lock.synchronize {
+    puts '-' * 80
+    puts "PWD: " + FileUtils.pwd
+    puts cmdstr
+    puts out.string
+  }
+  out.close
+
+  FileUtils.cd save_cwd unless chdir.nil?
   ret.success?
 end
 
 def cc_compile(filename, objdir, additional = nil)
-  filename.chomp!
+  #filename.chomp!
   objname = File.join objdir, File.basename(filename) + ".o"
 
   return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename, objdir, additional)
@@ -343,9 +366,8 @@ def cc_build(sources, objdir, additional = nil)
 end
 
 def cc_ar(libname, objects)
-  return true if FileUtils.uptodate? libname, objects
-  rm_f libname
-  cc_run($arbin, ["crs", libname] + objects)
+  puts "#{libname} is uptodate: #{FileUtils.uptodate?(libname, objects)}"
+  FileUtils.uptodate?(libname, objects) or cc_run($arbin, ["crs", "\"#{libname}\""] + objects.collect { |x| "\"#{x}\"" })
 end
 
 def cc_link(outname, objects, additional = nil, deps = nil)
@@ -367,14 +389,12 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "--sysroot"
   args << $ndksysroot
   args << "-o"
-  args << ('"'+outname+'"')
-  args += objects
+  args << "\"#{outname}\""
+  args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  unless USE_OWN_STLPORT
-    args << "-L#{File.join($androidndkpath, "sources","cxx-stl","stlport","libs","armeabi")}"
-    args << "-L#{File.join($androidndkpath, "tmp","ndk-digit","build","install","sources","cxx-stl","stlport","libs","armeabi")}"
-    args << "-lstlport_static"
-  end
+  args << "-L#{File.join($androidndkpath, "sources","cxx-stl","stlport","libs","armeabi")}"
+  args << "-L#{File.join($androidndkpath, "tmp","ndk-digit","build","install","sources","cxx-stl","stlport","libs","armeabi")}"
+  args << "-lstlport_static"
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
   if $cxxlibs.nil?

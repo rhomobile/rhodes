@@ -24,6 +24,9 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
+//fix include issue
+typedef long time_t;
+
 #include "ruby/ext/rho/rhoruby.h"
 #include "ruby/ext/phonebook/phonebook.h"
 #include "phonebook.h"

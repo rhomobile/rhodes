@@ -29,16 +29,16 @@
 #ifdef __IPHONE_4_0
 #import <EventKit/EventKit.h>
 #endif
-#import "AppManager.h"
+#import "AppManager/AppManager.h"
 #import "RhoMainView.h"
 
 #import "SplashViewController.h"
 #import "LogOptionsController.h"
 #import "LogViewController.h"
 #import "DateTimePickerDelegate.h"
-#import "PickImageDelegate.h"
-#import "SignatureDelegate.h"
-#import "NVDelegate.h"
+#import "Camera.old/PickImageDelegate.h"
+#import "Signature.old/SignatureDelegate.h"
+#import "NativeView/NVDelegate.h"
 #import "NetworkStatusMonitor.h"
 #import "IPushNotificationsReceiver.h"
 
