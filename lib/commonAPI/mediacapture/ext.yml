@@ -7,6 +7,7 @@ android:
   - ext/platform/android/AndroidManifest_rhomobile.xml
   - ext/platform/android/ApplicationCameraActivity.erb
   adds: ext/platform/android/adds
+  exttype: rakefile
 
 wp8:
   libraries: ["Camera"]

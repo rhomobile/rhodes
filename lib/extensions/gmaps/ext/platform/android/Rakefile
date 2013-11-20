@@ -28,8 +28,6 @@ directory OBJDIR
 
 task :build => [:config, OBJDIR] do
 
-    $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
-
     args = []
     args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
     args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\""
@@ -38,7 +36,6 @@ task :build => [:config, OBJDIR] do
     args << "-I\"#{$rootdir}/platform/shared/common\""
     args << "-I\"#{$rootdir}/platform/shared/api_generator\""
     args << "-I\"#{$appincdir}\""
-    args << "-I\"#{$std_includes}\""
     args << "-I\"#{$rootdir}/platform/shared/ruby\""
     args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
     args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
@@ -73,9 +70,7 @@ task :copylibs => TARGETDIR do
         end
         
     end
-    
-    
-    
+        
     cp File.join($androidsdk,'extras','google','google_play_services','libproject','google-play-services_lib','libs','google-play-services.jar'), TARGETDIR
     cp File.join($androidsdk,'extras','android','support','v4','android-support-v4.jar'), TARGETDIR
 end
