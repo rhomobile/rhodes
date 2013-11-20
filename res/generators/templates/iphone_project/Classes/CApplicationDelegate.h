@@ -1,7 +1,7 @@
 
-#import "Rhodes.h"
+#import "RhodesBaseDelegate.h"
 
-@interface CApplicationDelegate : Rhodes <UIApplicationDelegate,
+@interface CApplicationDelegate : RhodesBaseDelegate <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate>
 {
 

@@ -722,10 +722,17 @@ namespace "build" do
       #chdir 'platform/iphone'
       chdir File.join($app_path, 'project/iphone')
       rm_rf 'bin'
-      rm_rf 'build/Debug-*'
-      rm_rf 'build/Release-*'
+      #rm_rf 'build/Debug-*'
+      #rm_rf 'build/Release-*'
 
       chdir $startdir
+
+      if (ENV["SDK_NAME"] != nil) and (ENV["CONFIGURATION"] != nil)
+         #we should override build.yml parameters by parameters from XCode !
+         $sdk = ENV["SDK_NAME"]
+         $configuration = ENV["CONFIGURATION"]
+      end
+
 
       Rake::Task["build:bundle:noxruby"].execute
 
@@ -836,8 +843,134 @@ namespace "build" do
     end
 
 
-    def build_extension_lib(extpath, sdk, target_dir)
-     if sdk =~ /iphonesimulator/
+
+    def check_for_rebuild( result_lib_file, patternlist_file )
+
+      if patternlist_file == nil
+         return true
+      end
+
+      if !File.exist?(result_lib_file) || !File.exist?(patternlist_file)
+          return true
+      end
+
+      patterns = []
+      File.new(patternlist_file,"r").read.each_line do |line|
+         if line.size > 0
+            patterns << line.tr("\n","")
+         end
+      end
+
+      list_of_files = []
+
+      fillist = FileList.new
+      patterns.each do |p|
+         fillist.include(p)
+      end
+
+      fillist.each do |fil|
+         list_of_files << fil
+      end
+
+      if !FileUtils.uptodate?(result_lib_file, list_of_files)
+          return true
+
+      end
+      return false
+    end
+
+    def is_options_was_changed(options_hash, options_file)
+      if !File.exist?(options_file)
+         File.open(options_file,"w") {|f| f.write(YAML::dump(options_hash)) }
+         return true
+      else
+         saved_options = YAML.load_file(options_file)
+         if saved_options.to_a != options_hash.to_a
+            File.open(options_file,"w") {|f| f.write(YAML::dump(options_hash)) }
+            return true
+         end
+      end
+      return false
+    end
+
+
+
+
+    def run_build_for_extension(extpath, xcodeproject, xcodetarget, depfile)
+      # only depfile is optional parameter !
+
+      currentdir = Dir.pwd()
+      Dir.chdir File.join(extpath, "platform/iphone")
+
+      xcodeproject = File.basename(xcodeproject)
+      if depfile != nil
+         depfile = File.basename(depfile)
+      end
+
+      targetdir = ENV['TARGET_TEMP_DIR']
+      tempdir = ENV['TEMP_FILES_DIR']
+      rootdir = ENV['RHO_ROOT']
+      xcodebuild = ENV['XCODEBUILD']
+      configuration = ENV['CONFIGURATION']
+      sdk = ENV['SDK_NAME']
+      bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+      sdkroot = ENV['SDKROOT']
+      arch = ENV['ARCHS']
+      gccbin = bindir + '/gcc-4.2'
+      arbin = bindir + '/ar'
+
+      iphone_path = '.'
+
+      simulator = sdk =~ /iphonesimulator/
+
+      if configuration == 'Distribution'
+         configuration = 'Release'
+      end
+
+      result_lib = iphone_path + '/build/' + configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/lib'+xcodetarget+'.a'
+      target_lib = targetdir + '/lib'+xcodetarget+'.a'
+
+      if check_for_rebuild(result_lib, depfile) || is_options_was_changed({"configuration" => configuration,"sdk" => sdk}, "lastbuildoptions.yml")
+
+           rm_rf 'build'
+           rm_rf target_lib
+
+           args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
+
+           if simulator
+               args << '-arch'
+               args << 'i386'
+           end
+
+           require   rootdir + '/lib/build/jake.rb'
+
+           puts Jake.run(xcodebuild,args)
+           ret = $?
+      else
+
+        puts "ssskip rebuild because previous builded library is still actual !"
+        rm_rf target_lib
+
+      end
+
+      cp result_lib,target_lib
+
+      Dir.chdir currentdir
+
+
+    end
+
+
+
+
+    def build_extension_lib(extpath, sdk, target_dir, xcodeproject, xcodetarget, depfile)
+
+      puts "build extension START :" + extpath
+
+      #puts "xcodeproject = "+xcodeproject.to_s
+      #puts "xcodetarget = "+xcodetarget.to_s
+
+      if sdk =~ /iphonesimulator/
         $sdkver = sdk.gsub(/iphonesimulator/,"")
         $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + $sdkver + ".sdk"
       else
@@ -869,34 +1002,47 @@ namespace "build" do
 
       build_script = File.join(extpath, 'build')
 
-      # modify executable attribute
-      if File.exists? build_script
-          if !File.executable? build_script
-               #puts 'change executable attribute for build script in extension : '+build_script
-               begin
-                   #File.chmod 0700, build_script
-                   #puts 'executable attribute was writed for : '+build_script
-               rescue Exception => e
-                   puts 'ERROR: can not change attribute for build script in extension ! Try to run build command with sudo: prefix.'
-               end
-          else
-               puts 'build script in extension already executable : '+build_script
-          end
-          #puts '$$$$$$$$$$$$$$$$$$     START'
-          currentdir = Dir.pwd()
-          Dir.chdir extpath
-          sh %{$SHELL ./build}
-          Dir.chdir currentdir
-          #puts '$$$$$$$$$$$$$$$$$$     FINISH'
-          #if File.executable? build_script
-               #puts Jake.run('./build', [], extpath)
-               #exit 1 unless $? == 0
-          #else
-          #     puts 'ERROR: build script in extension is not executable !'
-          #end
+
+      if (xcodeproject != nil) and (xcodetarget != nil)
+
+          run_build_for_extension(extpath, xcodeproject, xcodetarget, depfile)
+
+      else
+
+        # modify executable attribute
+        if File.exists? build_script
+            if !File.executable? build_script
+                 #puts 'change executable attribute for build script in extension : '+build_script
+                 begin
+                     #File.chmod 0700, build_script
+                     #puts 'executable attribute was writed for : '+build_script
+                 rescue Exception => e
+                     puts 'ERROR: can not change attribute for build script in extension ! Try to run build command with sudo: prefix.'
+                 end
+            else
+                 puts 'build script in extension already executable : '+build_script
+            end
+            #puts '$$$$$$$$$$$$$$$$$$     START'
+            currentdir = Dir.pwd()
+            Dir.chdir extpath
+            sh %{$SHELL ./build}
+            Dir.chdir currentdir
+            #puts '$$$$$$$$$$$$$$$$$$     FINISH'
+            #if File.executable? build_script
+                 #puts Jake.run('./build', [], extpath)
+                 #exit 1 unless $? == 0
+            #else
+            #     puts 'ERROR: build script in extension is not executable !'
+            #end
         else
-          puts 'build script in extension not found => pure ruby extension'
+            puts 'build script in extension not found => pure ruby extension'
+        end
+
       end
+
+      puts "build extension FINISH :" + extpath
+
+
     end
 
 
@@ -911,12 +1057,21 @@ namespace "build" do
 
             prebuilt_copy = false
 
+            xcodeproject = nil  #xcodeproject
+            xcodetarget = nil   #xcodetarget
+            depfile = nil       #rebuild_deplist
+
             extyml = File.join(commin_ext_path,"ext.yml")
             if File.file? extyml
               extconf = Jake.config(File.open(extyml))
               extconf_iphone = extconf['iphone']
               exttype = 'build'
               exttype = extconf_iphone['exttype'] if extconf_iphone and extconf_iphone['exttype']
+
+              xcodeproject = extconf_iphone['xcodeproject'] if extconf_iphone and extconf_iphone['xcodeproject']
+              xcodetarget = extconf_iphone['xcodetarget'] if extconf_iphone and extconf_iphone['xcodetarget']
+              depfile = extconf_iphone['rebuild_deplist'] if extconf_iphone and extconf_iphone['rebuild_deplist']
+
               if exttype == 'prebuilt'
                 prebuiltpath = Dir.glob(File.join(extpath, '**', 'iphone'))
                 if prebuiltpath.count > 0
@@ -943,7 +1098,7 @@ namespace "build" do
 
             end
             if ! prebuilt_copy
-              build_extension_lib(extpath, sdk, target_dir)
+              build_extension_lib(extpath, sdk, target_dir, xcodeproject, xcodetarget, depfile)
             end
           end
       end
@@ -1011,13 +1166,13 @@ namespace "build" do
                  ENV["ARCHS"] = "i386"
                  ENV["SDK_NAME"] = simsdk
 
-                 build_extension_lib(extpath, simsdk, prebuiltpath)
+                 build_extension_lib(extpath, simsdk, prebuiltpath, nil, nil, nil)
                  cp libpath, libsimpath
                  rm_f libpath
 
                  ENV["ARCHS"] = "armv6"
                  ENV["SDK_NAME"] = devsdk
-                 build_extension_lib(extpath, devsdk, prebuiltpath)
+                 build_extension_lib(extpath, devsdk, prebuiltpath, nil, nil, nil)
                  cp libpath, libdevpath
                  rm_f libpath
 
@@ -1068,7 +1223,21 @@ namespace "build" do
        restore_project_from_bak
     end
 
-    task :setup_xcode_project => ["config:iphone"] do
+    task :update_rhodes_reference_in_xcode_project => ["config:iphone"] do
+
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+      chdir $app_path
+
+      puts 'prepare iphone XCode project for application'
+      Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+
+    end
+
+
+
+    task :make_xcode_project => ["config:iphone"] do
 
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
@@ -1121,7 +1290,9 @@ namespace "build" do
        iphone_project = File.join($app_path, "/project/iphone/#{appname_fixed}.xcodeproj")
 
        if !File.exist?(iphone_project)
-            Rake::Task['build:iphone:setup_xcode_project'].invoke
+            Rake::Task['build:iphone:make_xcode_project'].invoke
+       else
+            Rake::Task['build:iphone:update_rhodes_reference_in_xcode_project'].invoke
        end
 
 
