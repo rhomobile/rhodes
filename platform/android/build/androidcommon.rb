@@ -107,7 +107,7 @@ end
 
 def setup_ndk(ndkpath,apilevel)
   puts "setup_ndk(#{ndkpath}, #{apilevel})" if USE_TRACES
-
+  
   detect_toolchain ndkpath
 
   variants = []
@@ -155,6 +155,8 @@ def setup_ndk(ndkpath,apilevel)
     eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
   end
   
+  $androidndkpath = ndkpath unless $androidndkpath
+
   # Detect rlim_t
   if $have_rlim_t.nil?
     $have_rlim_t = false
