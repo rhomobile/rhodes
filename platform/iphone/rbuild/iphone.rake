@@ -1233,30 +1233,42 @@ namespace "build" do
        restore_project_from_bak
     end
 
-    task :update_rhodes_reference_in_xcode_project => ["config:iphone"] do
-
+    task :setup_xcode_project => ["config:iphone"] do
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
-      chdir $app_path
+      iphone_project = File.join($app_path, "/project/iphone/#{appname_fixed}.xcodeproj")
 
-      puts 'prepare iphone XCode project for application'
-      Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+      if !File.exist?(iphone_project)
 
+        Rake::Task['build:iphone:make_xcode_project'].invoke
 
-      rm_rf 'project/iphone/toremoved'
-      rm_rf 'project/iphone/toremovef'
+      else
 
+        chdir $app_path
+
+        puts 'prepare iphone XCode project for application'
+        Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+
+        Rake::Task['build:bundle:prepare_native_generated_files'].invoke
+
+        rm_rf 'project/iphone/toremoved'
+        rm_rf 'project/iphone/toremovef'
+
+      end
     end
 
 
 
     task :make_xcode_project => ["config:iphone"] do
 
+
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
       chdir $app_path
+
+      rm_rf 'project/iphone'
 
       puts 'prepare iphone XCode project for application'
       Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
@@ -1293,6 +1305,8 @@ namespace "build" do
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
       copy_entitlements_file_from_app
 
+      Rake::Task['build:bundle:prepare_native_generated_files'].invoke
+
       rm_rf 'project/iphone/toremoved'
       rm_rf 'project/iphone/toremovef'
 
@@ -1304,14 +1318,7 @@ namespace "build" do
        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
-       iphone_project = File.join($app_path, "/project/iphone/#{appname_fixed}.xcodeproj")
-
-       if !File.exist?(iphone_project)
-            Rake::Task['build:iphone:make_xcode_project'].invoke
-       else
-            Rake::Task['build:iphone:update_rhodes_reference_in_xcode_project'].invoke
-       end
-
+       Rake::Task['build:iphone:setup_xcode_project'].invoke
 
        Rake::Task['build:iphone:rhodes_old'].invoke
 

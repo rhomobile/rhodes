@@ -1477,6 +1477,28 @@ end
 
 namespace "build" do
   namespace "bundle" do
+
+    task :prepare_native_generated_files do
+
+         currentdir = Dir.pwd()
+
+         chdir $startdir
+
+         Rake::Task["app:build_bundle"].invoke if $app_rakefile_exist
+
+         app = $app_path
+         rhodeslib = File.dirname(__FILE__) + "/lib/framework"
+         compileERB = "lib/build/compileERB/default.rb"
+         compileRB = "lib/build/compileRB/compileRB.rb"
+         startdir = pwd
+         dest = $srcdir + "/lib"
+
+         common_bundle_start(startdir,dest)
+
+         Dir.chdir currentdir
+    end
+
+
     task :xruby do
       if $js_application
         return
