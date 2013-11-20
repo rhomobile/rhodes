@@ -55,15 +55,17 @@ win32 {
   DEFINES += WIN32 _WINDOWS UNICODE QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
   debug {
     DEFINES += _DEBUG DEBUG
+    LIBS += comsuppwd.lib
   }
   release {
     DEFINES += _NDEBUG NDEBUG QT_NO_DEBUG
+    LIBS += comsuppw.lib
   }
   LIBS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
 ../../../win32/bin/sqlite3/sqlite3.lib\
 ../../../win32/bin/syncengine/syncengine.lib\
-oldnames.lib wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+oldnames.lib wininet.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
   PRE_TARGETDEPS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
 ../../../win32/bin/sqlite3/sqlite3.lib\

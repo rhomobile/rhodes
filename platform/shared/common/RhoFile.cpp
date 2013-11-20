@@ -264,24 +264,34 @@ int CRhoFile::readData(void* buffer, int bufOffset, int bytesToRead)
 void CRhoFile::readString(String& strData){
     if ( !isOpened() )
         return;
-
-    int nSize = size();
-    strData.resize(nSize+1);
-    nSize = fread(&strData[0], 1, nSize, m_file);
-    strData[nSize] = 0;
+    
+    unsigned int nSize = size();
+    if (nSize > 0) {
+        Vector<char> buffer;
+        buffer.resize(nSize);
+        nSize = fread(&buffer[0], 1, nSize, m_file);
+        strData.assign(&buffer[0], nSize);
+    } else {
+        strData.clear();
+    }
 }
 
 void CRhoFile::readStringW(StringW& strTextW)
 {
     if ( !isOpened() )
         return;
-
-    int nSize = size();
-    char* buf = (char*)malloc(nSize+1);
-    nSize = fread(buf, 1, nSize, m_file);
-    buf[nSize] = 0;
-    common::convertToStringW(buf,strTextW);
-    free(buf);
+    
+    unsigned int nSize = size();
+    if (nSize > 0) {
+        Vector<char> buffer;
+        buffer.resize(nSize+1);
+        nSize = fread(&buffer[0], 1, nSize, m_file);
+        buffer[nSize] = 0;
+        // TODO: update converting function to use buffer size instead of \0
+        common::convertToStringW(&buffer[0],strTextW);
+    } else {
+        strTextW.clear();
+    }
 }
 
 InputStream* CRhoFile::getInputStream()
@@ -406,11 +416,17 @@ unsigned int CRhoFile::getFileSize( const char* szFilePath ){
     return 0;
 }
 
-void CRhoFile::loadTextFile(const char* szFilePath, String& strFile)
+bool CRhoFile::loadTextFile(const char* szFilePath, String& strFile)
 {
     common::CRhoFile oFile;
-    if ( oFile.open( szFilePath, common::CRhoFile::OpenReadOnly) )
+    bool result = false;
+    if ( oFile.open( szFilePath, common::CRhoFile::OpenReadOnly) ) {
         oFile.readString(strFile);
+        result = true;
+    } else {
+        strFile.clear();
+    }
+    return result;
 }
 
 unsigned int CRhoFile::deleteFile( const char* szFilePath ){

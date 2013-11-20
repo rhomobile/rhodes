@@ -390,7 +390,7 @@ rb_zlib_crc32_combine(VALUE klass, VALUE crc1, VALUE crc2, VALUE len2)
 static VALUE
 rb_zlib_crc_table(VALUE obj)
 {
-    const unsigned long *crctbl;
+    const z_crc_t *crctbl;
     VALUE dst;
     int i;
 

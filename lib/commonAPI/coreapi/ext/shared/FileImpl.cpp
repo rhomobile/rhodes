@@ -89,8 +89,12 @@ public:
     
     virtual void read( const rho::String& path, rho::apiGenerator::CMethodResult& oResult) {
         String data;
-        CRhoFile::loadTextFile( path.c_str(), data );
-        oResult.set(data);
+        if ( CRhoFile::loadTextFile( path.c_str(), data )) {
+            oResult.set(data);
+        } else {
+            data = "Could not read file: '" + path + "'";
+            oResult.setError(data);
+        }
     }
 };
     
@@ -101,7 +105,11 @@ public:
     virtual ~CRhoFileImpl() {}
     
     virtual void open( const rho::String& path,  int mode, rho::apiGenerator::CMethodResult& oResult) {
-        m_oFile.open(path.c_str(), (CRhoFile::EOpenModes)mode);
+        if(!m_oFile.open(path.c_str(), (CRhoFile::EOpenModes)mode)) {
+            String error("Could not open file: '");
+            error += path + "'";
+            oResult.setError(error);
+        }
     }
     
     virtual void close(rho::apiGenerator::CMethodResult& oResult) {
