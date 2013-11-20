@@ -686,19 +686,19 @@ namespace "config" do
                 libaddspath = File.join addspath, 'lib', 'armeabi'
                 mkdir_p targetpath
                 Dir.glob(File.join(prebuiltpath, 'lib*.a')).each do |lib|
-                  cp lib, targetpath
+                  Jake.copyIfNeeded lib, targetpath
                 end
                 Dir.glob(File.join(prebuiltpath, '*.jar')).each do |lib|
-                  cp lib, targetpath
+                  Jake.copyIfNeeded lib, targetpath
                 end
                 Dir.glob(File.join(prebuiltpath, '**', 'lib*.so')).each do |lib|
                   next if lib =~ /adds/
                   if lib =~ /noautoload/
                     mkdir_p File.join(libaddspath, 'noautoload')
-                    cp lib, File.join(libaddspath, 'noautoload')
+                    Jake.copyIfNeeded lib, File.join(libaddspath, 'noautoload')
                   else
                     mkdir_p libaddspath
-                    cp lib, libaddspath
+                    Jake.copyIfNeeded lib, libaddspath
                   end
                 end
               end
@@ -871,8 +871,8 @@ namespace "build" do
       libname = $libname["sqlite"]
       sourcelist = File.join($builddir, 'libsqlite_build.files')
 
-      mkdir_p objdir
-      mkdir_p File.dirname(libname)
+      libdir = File.dirname(libname) 
+      mkdir_p libdir unless File.directory? libdir
 
       args = ["-I\"#{srcdir}\"", "-I\"#{$shareddir}\""]
 
@@ -880,7 +880,7 @@ namespace "build" do
       objects = get_objects sources, objdir
 
       cc_build sources, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
+      cc_ar libname, objects or exit 1
     end
 
     task :libcurl => "config:android" do
@@ -897,8 +897,8 @@ namespace "build" do
       libname = $libname["curl"]
       sourcelist = File.join($builddir, 'libcurl_build.files')
 
-      mkdir_p objdir
-      mkdir_p File.dirname(libname)
+      libdir = File.dirname(libname) 
+      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-DHAVE_CONFIG_H"
@@ -910,7 +910,7 @@ namespace "build" do
       objects = get_objects sources, objdir
 
       cc_build sources, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
+      cc_ar libname, objects or exit 1
     end
 
     task :libruby => "config:android" do
@@ -919,8 +919,8 @@ namespace "build" do
       libname = $libname["ruby"]
       sourcelist = File.join($builddir, 'libruby_build.files')
 
-      mkdir_p objdir
-      mkdir_p File.dirname(libname)
+      libdir = File.dirname(libname) 
+      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-Wno-uninitialized"
@@ -932,15 +932,12 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
 
       cc_build sources, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
+      cc_ar libname, objects or exit 1
     end
 
     task :libjson => "config:android" do
@@ -949,51 +946,18 @@ namespace "build" do
       libname = $libname["json"]
       sourcelist = File.join($builddir, 'libjson_build.files')
 
-      mkdir_p objdir
-      mkdir_p File.dirname(libname)
+      libdir = File.dirname(libname) 
+      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
 
       cc_build sources, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
-    end
-
-    task :libstlport => "config:android" do
-      if USE_OWN_STLPORT
-        objdir = $objdir["stlport"]
-        libname = $libname["stlport"]
-        sourcelist = File.join($builddir, 'libstlport_build.files')
-
-        mkdir_p objdir
-        mkdir_p File.dirname(libname)
-
-        args = []
-        args << "-I\"#{$stlport_includes}\""
-        args << "-DTARGET_OS=android"
-        args << "-DOSNAME=android"
-        args << "-DCOMPILER_NAME=gcc"
-        args << "-DBUILD_OSNAME=android"
-        args << "-D_REENTRANT"
-        args << "-D__NEW__"
-        args << "-ffunction-sections"
-        args << "-fdata-sections"
-        args << "-fno-rtti"
-        args << "-fno-exceptions"
-
-        sources = get_sources sourcelist
-        objects = get_objects sources, objdir
-
-        cc_build sources, objdir, args or exit 1
-        cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
-      end
+      cc_ar libname, objects or exit 1
     end
 
     task :librholog => "config:android" do
@@ -1002,20 +966,17 @@ namespace "build" do
       libname = $libname["rholog"]
       sourcelist = File.join($builddir, 'librholog_build.files')
 
-      mkdir_p objdir
-      mkdir_p File.dirname(libname)
+      libdir = File.dirname(libname) 
+      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}/..\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
 
       cc_build sources, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
+      cc_ar libname, objects or exit 1
     end
 
     task :librhomain => "config:android" do
@@ -1024,21 +985,18 @@ namespace "build" do
       libname = $libname["rhomain"]
       sourcelist = File.join($builddir, 'librhomain_build.files')
 
-      mkdir_p objdir
-      mkdir_p File.dirname(libname)
+      libdir = File.dirname(libname) 
+      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{$commonapidir}\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
 
       cc_build sources, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
+      cc_ar libname, objects or exit 1
     end
 
     task :librhocommon => "config:android" do
@@ -1046,23 +1004,20 @@ namespace "build" do
       libname = $libname["rhocommon"]
       sourcelist = File.join($builddir, 'librhocommon_build.files')
 
-      mkdir_p objdir
-      mkdir_p File.dirname(libname)
+      libdir = File.dirname(libname) 
+      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{$shareddir}\""
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
 
       cc_build sources, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
+      cc_ar libname, objects or exit 1
     end
 
     task :librhodb => "config:android" do
@@ -1071,22 +1026,19 @@ namespace "build" do
       libname = $libname["rhodb"]
       sourcelist = File.join($builddir, 'librhodb_build.files')
 
-      mkdir_p objdir
-      mkdir_p File.dirname(libname)
+      libdir = File.dirname(libname) 
+      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
 
       cc_build sources, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
+      cc_ar libname, objects or exit 1
     end
 
     task :librhosync => "config:android" do
@@ -1095,25 +1047,22 @@ namespace "build" do
       libname = $libname["rhosync"]
       sourcelist = File.join($builddir, 'librhosync_build.files')
 
-      mkdir_p objdir
-      mkdir_p File.dirname(libname)
+      libdir = File.dirname(libname) 
+      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
       sources = get_sources sourcelist
       objects = get_objects sources, objdir
 
       cc_build sources, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), objects.collect { |x| '"'+x+'"' } or exit 1
+      cc_ar libname, objects or exit 1
     end
 
-    task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
+    task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
     task :genconfig => "config:android" do
       mkdir_p $appincdir unless File.directory? $appincdir
@@ -1214,13 +1163,11 @@ namespace "build" do
       sourcelist = File.join($builddir, 'librhodes_build.files')
 
       mkdir_p libdir
-      mkdir_p objdir
 
       # add licence lib to build
       lic_dst = File.join $app_builddir, 'librhodes', 'libMotorolaLicence.a'
       lic_src = $startdir + "/res/libs/motorolalicence/android/libMotorolaLicence.a"
-      rm_f lic_dst
-      cp lic_src, lic_dst
+      Jake.copyIfNeeded lic_src, lic_dst
 
       args = []
       args << "-I\"#{$appincdir}\""
@@ -1234,11 +1181,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
       args << "-I\"#{$coreapidir}\""
-      args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-      args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_OWN_STLPORT
-      args << "-D__NEW__" if USE_OWN_STLPORT
-      args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
-
+  
       sources = get_sources sourcelist
 
       cc_build sources, objdir, args or exit 1
@@ -1285,7 +1228,7 @@ namespace "build" do
 
       objects = get_objects sources, objdir
       #mkdir_p File.dirname(libname) unless File.directory? File.dirname(libname)
-      cc_link libname, objects.collect { |x| '"'+x+'"' }, args, deps+extlibs or exit 1
+      cc_link libname, objects, args, deps+extlibs or exit 1
 
       destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
       mkdir_p destdir unless File.exists? destdir
