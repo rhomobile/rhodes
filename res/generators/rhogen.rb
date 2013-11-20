@@ -426,30 +426,45 @@ module Rhogen
       #@options[:force] = true
       directory.source = 'root'
       directory.destination = 'project/iphone'
-    end
+      if File.exists?(directory.destination)
+        @options[:skip] = true
+      end    end
 
     directory :classes do |directory|
       #@options[:force] = true
       directory.source = 'Classes'
       directory.destination = 'project/iphone/Classes'
+      if File.exists?(directory.destination)
+        @options[:skip] = true
+      end
     end
 
     directory :resources do |directory|
       #@options[:force] = true
       directory.source = 'Resources'
       directory.destination = 'project/iphone/Resources'
+      if File.exists?(directory.destination)
+        @options[:skip] = true
+      end
     end
 
     directory :settings do |directory|
       #@options[:force] = true
       directory.source = 'Settings.bundle'
       directory.destination = 'project/iphone/Settings.bundle'
+      if File.exists?(directory.destination)
+        @options[:skip] = true
+      end
     end
 
     template :project do |template|
       #@options[:force] = true
+      #@options[:skip] = true
       template.source = 'Bremen.xcodeproj/project.pbxproj'
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
+      if File.exists?(template.destination)
+        @options[:skip] = true
+      end
     end
 
     $build_script_full_path = ''
@@ -461,13 +476,42 @@ module Rhogen
 
 
     template :build do |template|
-      #@options[:force] = true
+      @options[:force] = true
       template.source = 'buildRhoBundle'
       template.destination = "project/iphone/buildRhoBundle"
       $build_script_full_path = template.destination
       template.options = {:after => :callback_after_make_build}
     end
 
+    template :rhodes_project do |template|
+      @options[:force] = true
+      template.source = 'Rhodes/Rhodes.xcodeproj/project.pbxproj'
+      template.destination = "project/iphone/Rhodes/Rhodes.xcodeproj/project.pbxproj"
+    end
+
+    template :rhodes_project do |template|
+      @options[:force] = true
+      template.source = 'Rhodes/Rhodes.xcodeproj/project.pbxproj'
+      template.destination = "project/iphone/Rhodes/Rhodes.xcodeproj/project.pbxproj"
+    end
+
+    template :rhodes_project_01 do |template|
+      @options[:force] = true
+      template.source = 'Rhodes/Rhodes/Rhodes-Prefix.pch'
+      template.destination = "project/iphone/Rhodes/Rhodes/Rhodes-Prefix.pch"
+    end
+
+    template :rhodes_project_02 do |template|
+      @options[:force] = true
+      template.source = 'Rhodes/RhodesBaseDelegate.h'
+      template.destination = "project/iphone/Rhodes/RhodesBaseDelegate.h"
+    end
+
+    template :rhodes_project_03 do |template|
+      @options[:force] = true
+      template.source = 'Rhodes/RhodesBaseDelegate.m'
+      template.destination = "project/iphone/Rhodes/RhodesBaseDelegate.m"
+    end
 
 
     def attributes?
