@@ -45,6 +45,9 @@ public:
 	virtual void stop() = 0;
 	virtual int set_pollinterval( int interval ) = 0;
 	virtual int get_pollinterval() = 0;
+	virtual void set_bulksyncstate( int new_state ) = 0;
+	virtual bool has_bulksyncstate() = 0;
+	virtual int get_bulksyncstate() = 0;
 	virtual void set_syncserver( const char* syncserver ) = 0;
 	virtual int get_pagesize() = 0;
 	virtual void set_pagesize(int nPageSize) = 0;
@@ -105,6 +108,9 @@ public:
 	static void stop() { m_pImpl->stop(); }
 	static int set_pollinterval( int interval ) { return m_pImpl->set_pollinterval(interval); }
 	static int get_pollinterval() { return m_pImpl->get_pollinterval(); }
+	static void set_bulksyncstate( int new_state ) { m_pImpl->set_bulksyncstate(new_state); }
+	static bool has_bulksyncstate() { return m_pImpl->has_bulksyncstate(); }
+	static int get_bulksyncstate() { return m_pImpl->get_bulksyncstate(); }
 	static void set_syncserver( const char* syncserver ) { m_pImpl->set_syncserver(syncserver); }
 	static int get_pagesize() { return m_pImpl->get_pagesize(); }
 	static void set_pagesize(int nPageSize) { m_pImpl->set_pagesize(nPageSize); }

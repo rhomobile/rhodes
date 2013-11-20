@@ -79,8 +79,10 @@ module Rho
       @@rho_framework = self
       @db_partitions = {}
 
-      partition = 'user'
-      @db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
+      partitions = ['app','user','local']
+      partitions.each do |partition|
+        @db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
+      end
 
       puts "Loading NewRHOM"
       NewRhom::NewRhom.new

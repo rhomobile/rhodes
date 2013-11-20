@@ -35,7 +35,7 @@ module NewRhom
         models.values.each do |src|
           next if src.loaded
                 
-          _load_model(src.model_name,false)
+          _load_model(src.model_name)
         end
             
         _init_models
@@ -82,7 +82,7 @@ end
    		# create DbTables
     end
 
-    def _load_model(model_name, init_db = true)
+    def _load_model(model_name)
       return if !models.has_key?(model_name) || models[model_name].loaded
       models[model_name].loaded = true
 
@@ -115,6 +115,11 @@ end
         else
           puts "ERROR: cannot load model : #{modelClass}"
         end         
+      end
+
+      # after all is done - create blob attrib triggers
+      ::Rho::RHO.get_db_partitions() do |partition, db|
+        System.update_blob_attribs(partition, -1)
       end
     end
 	end
