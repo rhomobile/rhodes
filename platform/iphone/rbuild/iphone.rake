@@ -1144,12 +1144,22 @@ namespace "build" do
 
           extpath = File.join( commin_ext_path, 'ext')
           extyml = File.join( commin_ext_path, "ext.yml")
+
+          xcodeproject = nil  #xcodeproject
+          xcodetarget = nil   #xcodetarget
+          depfile = nil       #rebuild_deplist
+
           if File.file? extyml
             extconf = Jake.config(File.open(extyml))
             #extconf_iphone = extconf['iphone']
             exttype = 'build'
             extconf_iphone = extconf['iphone']
             exttype = extconf_iphone['exttype'] if extconf_iphone and extconf_iphone['exttype']
+
+            xcodeproject = extconf_iphone['xcodeproject'] if extconf_iphone and extconf_iphone['xcodeproject']
+            xcodetarget = extconf_iphone['xcodetarget'] if extconf_iphone and extconf_iphone['xcodetarget']
+            depfile = extconf_iphone['rebuild_deplist'] if extconf_iphone and extconf_iphone['rebuild_deplist']
+
             libes = extconf["libraries"]
             if (libes != nil) && (exttype != 'prebuilt')
               libname = libes.first
@@ -1166,13 +1176,13 @@ namespace "build" do
                  ENV["ARCHS"] = "i386"
                  ENV["SDK_NAME"] = simsdk
 
-                 build_extension_lib(extpath, simsdk, prebuiltpath, nil, nil, nil)
+                 build_extension_lib(extpath, simsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libsimpath
                  rm_f libpath
 
                  ENV["ARCHS"] = "armv6"
                  ENV["SDK_NAME"] = devsdk
-                 build_extension_lib(extpath, devsdk, prebuiltpath, nil, nil, nil)
+                 build_extension_lib(extpath, devsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libdevpath
                  rm_f libpath
 
