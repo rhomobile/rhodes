@@ -1,0 +1,7 @@
+deplist.txt
+CoreAPI_Prefix.pch
+Coreapi.xcodeproj/project.pbxproj
+impl/*.*
+cpp_based_impl/*.*
+../../shared/*.*
+../../shared/qt/*.*

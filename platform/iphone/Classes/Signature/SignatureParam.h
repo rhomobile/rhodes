@@ -43,7 +43,7 @@ enum ComporessionFormat {
 struct SignatureParam {    
     unsigned int compressionFormat;
     const char* outputFormat;
-    NSString* fileName;
+    __unsafe_unretained NSString* fileName;
     
     bool border;
     

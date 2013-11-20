@@ -26,7 +26,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import "RhoDelegate.h"
+#import "../RhoDelegate.h"
 #import "SignatureView.h"
 #import "SignatureViewController.h"
 
