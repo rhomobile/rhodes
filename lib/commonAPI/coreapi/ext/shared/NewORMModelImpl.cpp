@@ -37,10 +37,31 @@ namespace rho {
                 {}
         };
 
+        struct ModelPropertyDef
+        {
+            rho::String name_;
+            rho::String type_;
+            rho::String option_;
+
+            ModelPropertyDef()
+                : name_(),
+                  type_(),
+                  option_()
+                {}
+
+            ModelPropertyDef(const rho::String& name,
+                     const rho::String& propType,
+                     const rho::String& option)
+                : name_(name),
+                  type_(propType),
+                  option_(option)
+                {}
+        };
+
         CNewORMModelImpl(const rho::String& strID)
         : id_(strID),
             name_(),
-            schemaProperties_(),
+            modelProperties_(),
             schemaIndices_(),
             belongsTo_()
         {
@@ -79,7 +100,7 @@ namespace rho {
             models_.remove(name_);
             name_ = "";
             id_ = "";
-            schemaProperties_.clear();
+            modelProperties_.clear();
             schemaIndices_.clear();
             belongsTo_.clear();
             clearAllProperties(oResult);
@@ -92,9 +113,12 @@ namespace rho {
             belongsTo_[propName] = sourceName;
         }
 
-        void setSchemaProperty(const rho::String& propName, const rho::String& propType, rho::apiGenerator::CMethodResult&)
+        void setModelProperty(const rho::String& propName, 
+                              const rho::String& propType, 
+                              const rho::String& option,
+                              rho::apiGenerator::CMethodResult&)
         {
-            schemaProperties_[propName] = propType;
+            modelProperties_[propName] = ModelPropertyDef(propName, propType, option);
         }
 
         void setSchemaIndex(const rho::String& indexName, const rho::Vector<rho::String>& indexColumns, bool bUniqueIndex, rho::apiGenerator::CMethodResult& oResult)
@@ -103,17 +127,6 @@ namespace rho {
             for(int i = 0; i < indexColumns.size(); ++i) 
                 LOG(INFO) + "indexCol: " + indexColumns[i]; 
             schemaIndices_[indexName] = SchemaIndexDef(indexName, indexColumns, bUniqueIndex);
-        }
-
-        void getSchemaProperties(rho::apiGenerator::CMethodResult& oResult)
-        {
-            rho::Hashtable<rho::String, rho::String> res;
-            // user defined properties
-            for ( rho::Hashtable<rho::String, rho::String>::const_iterator it = schemaProperties_.begin();  
-                    it != schemaProperties_.end(); ++it ) {
-                res[it->first] = it->second;
-            }
-            oResult.set(res);
         }
 
         static int get_start_id(const rho::String& partition)
@@ -134,9 +147,75 @@ namespace rho {
             return start_id;
         }
 
+        void initModel(rho::apiGenerator::CMethodResult& oResult)
+        {
+            initAssociations(oResult);
+            if(oResult.isError())
+                return;
+            initBlobAttributes(oResult);
+            if(oResult.isError())
+                return;
+            initDbSource(oResult);
+            if(oResult.isError())
+                return;
+            initDbSchema(oResult);
+            if(oResult.isError())
+                return;
+        }
+
+        void initAssociations(rho::apiGenerator::CMethodResult& oResult)
+        {
+            LOG(INFO) +  "initAssociations: " + name();
+
+            for(Hashtable<rho::String, rho::String>::const_iterator cIt = belongsTo_.begin(); 
+                cIt != belongsTo_.end(); ++cIt) 
+            {
+                const rho::String& property_name = cIt -> first;
+                const rho::String& source_name = cIt -> second;
+
+                HashtablePtr<rho::String, CNewORMModelImpl*>::iterator modelIt = CNewORMModelImpl::models().find(source_name);
+                if(modelIt == CNewORMModelImpl::models().end())
+                {
+                    LOG(ERROR) + "Invalid belongs_to : source name '" + source_name + "' does not exist.";
+                    continue;
+                }
+
+                CNewORMModelImpl* associate_with_model = modelIt -> second;
+                associate_with_model -> getProperty("associations", oResult);
+                rho::String existing_associations = oResult.getString();
+                if(existing_associations.size() > 0)
+                    existing_associations += ",";
+                existing_associations += name() + "," + property_name;
+                associate_with_model -> setProperty("associations", existing_associations, oResult);
+            }
+        }
+
+        void initBlobAttributes(rho::apiGenerator::CMethodResult& oResult)
+        {
+            LOG(INFO) +  "initBlobAttributes: " + name();
+
+            setProperty("blob_attribs", "", oResult);
+            rho::String blob_attribs;
+            for(Hashtable<rho::String, ModelPropertyDef>::const_iterator cIt = modelProperties_.begin();
+                cIt != modelProperties_.end();
+                ++cIt)
+            {
+                const ModelPropertyDef& prop_def = cIt -> second;
+                if(prop_def.type_ == "blob") 
+                {
+                    if(blob_attribs.size() > 0)
+                        blob_attribs += ",";
+                    blob_attribs += prop_def.name_;
+                    blob_attribs += (prop_def.option_ == "overwrite" ? "1" : "0");
+
+                }
+            }
+            setProperty("blob_attribs", blob_attribs, oResult);
+        }
+
         void initDbSource(rho::apiGenerator::CMethodResult& oResult)
         {
-            LOG(INFO) +  "initDbSource:" + name();
+            LOG(INFO) +  "initDbSource: " + name();
             getPartition(oResult);
             rho::String partition = oResult.getString();
             getSync_priority(oResult);
@@ -306,15 +385,16 @@ namespace rho {
         const rho::String _make_create_sql_script() const
         {
             rho::String strCols;
-            for(Hashtable<rho::String, rho::String>::const_iterator cIt = schemaProperties_.begin();
-                cIt != schemaProperties_.end();
+            for(Hashtable<rho::String, ModelPropertyDef>::const_iterator cIt = modelProperties_.begin();
+                cIt != modelProperties_.end();
                 ++cIt)
             {
-                rho::String strDBType = _get_db_type(cIt -> second);
+                const ModelPropertyDef& prop_def = cIt -> second;
+                rho::String strDBType = _get_db_type(prop_def.type_);
                 if(strCols.size())
                     strCols += ",";
                 strCols += "\"";
-                strCols += cIt -> first + "\" " + strDBType + " default null";
+                strCols += prop_def.name_ + "\" " + strDBType + " default null";
             }
 
             if(strCols.size())
@@ -365,7 +445,7 @@ namespace rho {
 
         rho::String id_;
         rho::String name_;
-        Hashtable<rho::String, rho::String> schemaProperties_;
+        Hashtable<rho::String, ModelPropertyDef> modelProperties_;
         Hashtable<rho::String, SchemaIndexDef > schemaIndices_;
         Hashtable<rho::String, rho::String> belongsTo_;
     };
@@ -387,12 +467,6 @@ namespace rho {
 
             oResult.set(ret_models);
         } 
-
-        virtual void getStartId( const rho::String& partitionName, rho::apiGenerator::CMethodResult& oResult)
-        {
-            int start_id = CNewORMModelImpl::get_start_id(partitionName);
-            oResult.set(start_id);
-        }
 
     };
     

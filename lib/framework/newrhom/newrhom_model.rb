@@ -3,79 +3,7 @@ module NewRhom
   module NewRhomBaseModel
     def init_model
       puts "Model '#{klass_model.model_name}': init_model"
-      partition = klass_model.partition                
-      db = ::Rho::RHO.get_db_partitions()[partition]
-      if !db
-        db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
-        ::Rho::RHO.get_db_partitions()[partition] = db
-      end
-
-      _load_associations
-      _init_db(db)
-    end
-
-    def _load_associations
-=begin
-      if source['belongs_to']
-        source['belongs_to'].each do |hash_pair|    
-        attrib = hash_pair.keys[0]
-        src_name = hash_pair.values[0]
-                
-        associationsSrc = find_src_byname(uniq_sources, src_name)
-        if !associationsSrc
-          puts "Error: belongs_to '#{source['name']}' : source name '#{src_name}' does not exist."
-          next
-        end
-                
-        str_associations = associationsSrc['str_associations']
-        str_associations = "" unless str_associations
-        str_associations += ',' if str_associations.length() > 0
-                
-        str_associations += source['name'] + ',' + attrib
-        associationsSrc['str_associations'] = str_associations
-      end
-=end
-    end
-
-    def _init_db(db)
-      migrate_schema = ""
-
-      #db.start_transaction
-      begin
-        _init_db_source(db)
-        _init_schema(db)
-        #db.commit
-      rescue Exception => e
-        trace_msg = e.backtrace.join("\n")
-        puts "exception when _init_db: #{e}; Trace:" + trace_msg
-                
-        #db.rollback
-      end
-    end
-
-    def _init_db_source(db)
-      puts "_init_db_source '#{klass_model.model_name}"
-      
-      db_data = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema, schema_version, associations, blob_attribs, name')
-      puts "_init_db_source has this already: #{db_data.inspect}"
-
-      existing_attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema, schema_version, associations, blob_attribs, name', {'name' => klass_model.model_name} )[0]
-      puts "_init_db_source '#{klass_model.model_name}': #{existing_attribs.inspect}"
-
-      klass_model.initDbSource
-
-      existing_attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema, schema_version, associations, blob_attribs, name', {'name' => klass_model.model_name} )[0]
-      puts "_init_db_source after update '#{klass_model.model_name}': #{existing_attribs.inspect}"
-    end
-
-    def _init_schema(db)
-      db_data = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema, schema_version, associations, blob_attribs, name')
-      puts "_init_db_schema has this already: #{db_data.inspect}"
-
-      klass_model.initDbSchema
-
-      existing_attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema, schema_version, associations, blob_attribs, name', {'name' => klass_model.model_name} )[0]
-      puts "_init_db_schema after update '#{klass_model.model_name}': tableExists : #{db.table_exist?(klass_model.model_name)}, sql : #{existing_attribs.inspect}"
+      klass_model.initModel
     end
 
     def set(name,value)
@@ -100,8 +28,8 @@ module NewRhom
       klass_model.fixed_schema == true
     end
 
-    def property(name,type=:string)
-      klass_model.setSchemaProperty(name.to_s, type.to_s)
+    def property(name,type=:string, option=nil)
+      klass_model.setModelProperty(name.to_s, type.to_s, option.to_s)
     end
 
     def belongs_to(name, owner)
