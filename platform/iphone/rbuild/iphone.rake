@@ -1233,6 +1233,10 @@ namespace "build" do
       puts 'prepare iphone XCode project for application'
       Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
 
+
+      rm_rf 'project/iphone/toremoved'
+      rm_rf 'project/iphone/toremovef'
+
     end
 
 
@@ -1278,6 +1282,9 @@ namespace "build" do
 
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
       copy_entitlements_file_from_app
+
+      rm_rf 'project/iphone/toremoved'
+      rm_rf 'project/iphone/toremovef'
 
     end
 
