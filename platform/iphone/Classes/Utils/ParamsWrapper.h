@@ -25,7 +25,7 @@
 *------------------------------------------------------------------------*/
 
 #import <Foundation/Foundation.h>
-#import "syscall.h"
+#import "../rhoextlib/syscall.h"
 
 
 @interface ParamsWrapper : NSObject {

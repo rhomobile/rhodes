@@ -67,7 +67,7 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
 	rb_api_m<%= $cur_module.name %> = rb_define_class_under(rb_api_mParent, "<%= $cur_module.name %>", rb_cObject);
 <% else %>
     rb_api_mParent = rho_ruby_get_NIL();
-	rb_api_m<%= $cur_module.name %> = rb_define_class_under(rb_api_mParent, "<%= $cur_module.name %>", rb_cObject);
+	rb_api_m<%= $cur_module.name %> = rb_define_class("<%= $cur_module.name %>", rb_cObject);
 <% end %>
 	rb_define_alloc_func(rb_api_m<%= $cur_module.name %>, _allocate_class_object);
     //Constructor should be not available in case of static members

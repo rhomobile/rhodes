@@ -1,0 +1,26 @@
+#!/bin/sh
+
+
+if [ "$RHO_BUNDLE_ALREADY_BUILDED" = "YES" ]; then
+
+RHO_BUNDLE_ALREADY_BUILDED="NO"
+
+echo "RhoBundle already builded !"
+
+elif [ "$ACTION" = "build" -o "$ACTION" = "" ]; then
+
+source ~/.profile
+cd ../..
+
+RHO_BUNDLE_ALREADY_BUILDED="NO"
+rake switch_app
+TARGET_RHODESLIBS_DIR=${SRCROOT}
+cd <%= rhodes_root_path %>
+rake build:iphone:rhobundle
+
+RHO_BUNDLE_ALREADY_BUILDED="NO"
+
+fi
+
+
+
