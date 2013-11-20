@@ -63,8 +63,9 @@ def build_extension(name, arch)
     cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/wm/lib/libopenssl.lib"), $targetdir
 
   elsif $platform == 'win32'
-    cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/win32/lib/libeay32.lib"), $targetdir
-    cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/win32/lib/ssleay32.lib"), $targetdir
+    libs_subdir = ($qmake_spec =~ /msvc2008/) ? 'msvc2008/' : ''
+    cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/win32/#{libs_subdir}lib/libeay32.lib"), $targetdir
+    cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/win32/#{libs_subdir}lib/ssleay32.lib"), $targetdir
   end
 end
 
@@ -125,6 +126,8 @@ namespace "build" do
       raise "VCBUILD is not set" if $vcbuild.nil?
       $sdk = ENV['SDK']
       raise "SDK is not set" if $sdk.nil?
+      $qmake_spec = ENV['RHO_QMAKE_SPEC']
+      raise "RHO_QMAKE_SPEC is not set" if $qmake_spec.nil?
 
     end
   end

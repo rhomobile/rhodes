@@ -116,7 +116,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		launchData.cbData = (ilen+1);
 
 
-
+		SetForegroundWindow(hwndRunningRE);
 		ShowWindow(hwndRunningRE, SW_RESTORE);
 		
 		SendMessage(hwndRunningRE,PB_WINDOW_RESTORE,(WPARAM) NULL,(LPARAM)TRUE);
@@ -127,11 +127,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 
 		delete [] pTabNameMB;
-
-
-		//  switch to it
-		
-		SetForegroundWindow(hwndRunningRE);
 	
 	}
 	else{

@@ -131,7 +131,7 @@ public:
     const rho::String& getErrorString() const { return m_strError; }
 
     rho::String toString();
-    void convertToType(ETypes eType);
+    void convertToType(const ETypes& eType);
 
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
 

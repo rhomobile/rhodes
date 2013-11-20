@@ -221,11 +221,6 @@ static VALUE eventToRuby(EKEvent *event)
             }
         }
     }
-    else {
-        rule = [event recurrenceRule];
-    }
-#else
-    rule = [event recurrenceRule];
 #endif
     if (rule != nil) {
         
@@ -353,11 +348,6 @@ static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
         if ([event respondsToSelector:@selector(addRecurrenceRule:)]) {
             [event addRecurrenceRule:rule];
         }
-        else {
-            [event setRecurrenceRule:rule];
-        }
-#else
-        [event setRecurrenceRule:rule];
 #endif
         
         if (recurrenceEnd != nil)
@@ -426,12 +416,7 @@ VALUE event_fetch(VALUE rParams)
                 hasRecurRules = YES;
             }
         }
-        else {
-            hasRecurRules = [event recurrenceRule] != nil;
-        }
-#else
-        hasRecurRules = [event recurrenceRule] != nil;
-#endif        
+#endif
         
         if (!include_repeating && hasRecurRules)
             continue;
