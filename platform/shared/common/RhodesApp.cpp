@@ -303,12 +303,30 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         case ui_created:
             {
+                rho::String startPath = RHOCONF().getString("start_path");
+
+                // handle security token validation
+                #ifndef OS_WP8
+                rho::String invalidSecurityTokenStartPath =  RHOCONF().getString("invalid_security_token_start_path");
+
+                if (RHODESAPP().isSecurityTokenNotPassed()) {
+                    if (invalidSecurityTokenStartPath.length() > 0) {
+                        startPath = invalidSecurityTokenStartPath;
+                    } else {
+                        // exit from application - old way
+                        LOGC(FATAL, "EROOR" ) + "processApplicationEvent: security_token is not passed - application will closed";
+                        rho_sys_app_exit();
+                    }
+                }
+                #endif
+                
+                // at this point JS app is unlikely to set its own handler, just navigate to overriden start path
                 if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
                 {
                     if ( rho_ruby_is_started() )
                         callCallback("/system/uicreated");
                     else
-                        rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0);
+                        rho_webview_navigate(startPath.c_str(), 0);
                 }
                 m_expected = app_activated;
             }
