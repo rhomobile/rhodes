@@ -143,7 +143,7 @@ typedef unsigned __int64 uint64;
 #  include <string.h>
 #  include <pthread.h>
 #  include <fcntl.h>
-#  include <common/stat.h>
+#  include "common/stat.h"
 
 #undef ASSERT
 #define ASSERT RHO_ASSERT

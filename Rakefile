@@ -809,7 +809,7 @@ def add_linker_library(libraryname)
       if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
         tmpdir = ENV["TARGET_TEMP_DIR"]
       else
-        tmpdir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+        tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
           ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
       end
   $ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
@@ -818,12 +818,18 @@ end
 def set_linker_flags
   if $config["platform"] == "iphone"
       simulator = $sdk =~ /iphonesimulator/
-      if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
-        tmpdir = ENV["TARGET_TEMP_DIR"]
+      if ENV["TARGET_RHODESLIBS_DIR"] and ENV["TARGET_RHODESLIBS_DIR"] != ""
+          tmpdir = ENV["TARGET_RHODESLIBS_DIR"]
       else
-        tmpdir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
-          ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+          if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
+              tmpdir = ENV["TARGET_TEMP_DIR"]
+          else
+              tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
+               ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+          end
       end
+      mkdir_p tmpdir unless File.exist? tmpdir
+      tmpdir = File.join($app_path.to_s, "project/iphone")
       mkdir_p tmpdir unless File.exist? tmpdir
       File.open(tmpdir + "/rhodeslibs.txt","w") { |f| f.write $ldflags }
 #    ENV["EXTENSIONS_LDFLAGS"] = $ldflags
@@ -1057,7 +1063,7 @@ def init_extensions(dest, mode = "")
           Dir.glob(extpath + "/public/api/*.js").each do |f|
               fBaseName = File.basename(f)
               if (fBaseName.start_with?("rhoapi-native") )
-                endJSModules << f if fBaseName == "rhoapi-native.#{$current_platform_bridge}.js"
+                endJSModules << f if fBaseName == "rhoapi-native.all.js"
                 next
               end
               if (fBaseName == "rhoapi-force.ajax.js")
@@ -1471,6 +1477,28 @@ end
 
 namespace "build" do
   namespace "bundle" do
+
+    task :prepare_native_generated_files do
+
+         currentdir = Dir.pwd()
+
+         chdir $startdir
+
+         Rake::Task["app:build_bundle"].invoke if $app_rakefile_exist
+
+         app = $app_path
+         rhodeslib = File.dirname(__FILE__) + "/lib/framework"
+         compileERB = "lib/build/compileERB/default.rb"
+         compileRB = "lib/build/compileRB/compileRB.rb"
+         startdir = pwd
+         dest = $srcdir + "/lib"
+
+         common_bundle_start(startdir,dest)
+
+         Dir.chdir currentdir
+    end
+
+
     task :xruby do
       if $js_application
         return
@@ -2347,7 +2375,7 @@ namespace "run" do
                   Dir.glob(extpath + "/public/api/*.js").each do |f|
                       fBaseName = File.basename(f)
                       if (fBaseName.start_with?("rhoapi-native") )
-                        endJSModules << f if fBaseName == "rhoapi-native.rhosim.js"
+                        endJSModules << f if fBaseName == "rhoapi-native.all.js"
                         next
                       end
                       if (fBaseName == "rhoapi-force.ajax.js")

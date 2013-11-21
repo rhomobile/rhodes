@@ -3,6 +3,7 @@ javaentry: com.javascriptvm.JavascriptVM
 libraries: ["JavascriptVM"]
 android:
   source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
 
 project_paths:
   wp8: ext/platform/wp8/JavascriptVM.vcxproj
