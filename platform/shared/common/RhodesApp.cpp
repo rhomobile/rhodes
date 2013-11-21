@@ -2502,10 +2502,10 @@ const char* rho_rhodesapp_getdbdirpath()
     return RHODESAPP().getDBDirPath().c_str();
 }
 
-const char* rho_rhodesapp_getapprootpath() {
+const char* rho_rhodesapp_getapprootpath() 
+{
     return RHODESAPP().getAppRootPath().c_str();
 }
-
 
 void rho_rhodesapp_navigate_back()
 {
