@@ -84,7 +84,7 @@ def detect_toolchain(ndkpath)
       ndkhostvariants = [`uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, `uname -s`.downcase!.chomp! + '-x86']
   end
 
-  ["arm-linux-androideabi-4.6", "arm-linux-androideabi-4.4.3", "arm-eabi-4.4.0", "arm-eabi-4.2.1"].each do |abi|
+  ["arm-linux-androideabi-4.6"].each do |abi|
     variants = []
     ndkhostvariants.each do |ndkhost|
       variants << File.join(ndkpath,'build','prebuilt',ndkhost,abi)
@@ -183,7 +183,7 @@ def cc_def_args
     args << "-fPIC"
     args << "-Wall"
     args << "-Wextra"
-    args << "-Wno-psabi" if $ndkgccver != "4.2.1"
+    #args << "-Wno-psabi" if $ndkgccver != "4.2.1"
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
     args << "-mandroid"
@@ -218,7 +218,10 @@ def cpp_def_args
     args << "-fno-rtti"
     args << "-std=c++0x"
     args << "-Wno-reorder"
-    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
+    #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
+    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
+    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include','backward')}\""
+    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')}\""
     $cpp_def_args_val = args
   end
   $cpp_def_args_val.dup
@@ -392,21 +395,17 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "\"#{outname}\""
   args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  args << "-L#{File.join($androidndkpath, "sources","cxx-stl","stlport","libs","armeabi")}"
-  args << "-L#{File.join($androidndkpath, "tmp","ndk-digit","build","install","sources","cxx-stl","stlport","libs","armeabi")}"
-  args << "-lstlport_static"
+  #args << "-L#{File.join($androidndkpath, "sources","cxx-stl","stlport","libs","armeabi")}"
+  #args << "-L#{File.join($androidndkpath, "tmp","ndk-digit","build","install","sources","cxx-stl","stlport","libs","armeabi")}"
+  args << "-L#{File.join($androidndkpath, "sources","cxx-stl","gnu-libstdc++",$ndkgccver,'libs','armeabi')}"
+  args << "-lgnustl_static"
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
-  if $cxxlibs.nil?
-    $cxxlibs = []
-    $cxxlibs << File.join($ndksysroot, "usr/lib/libstdc++.so")
-  end
-  args += $cxxlibs
-  $libgcc = `#{$gccbin} -mthumb-interwork -print-file-name=libgcc.a`.gsub("\n", "") if $libgcc.nil?
-  args << $libgcc if $ndkgccver != "4.2.1"
+  #$libgcc = `#{$gccbin} -mthumb-interwork -print-file-name=libgcc.a`.gsub("\n", "") if $libgcc.nil?
+  #args << $libgcc if $ndkgccver != "4.2.1"
   args << "#{$ndksysroot}/usr/lib/libc.so"
   args << "#{$ndksysroot}/usr/lib/libm.so"
-  args << $libgcc if $ndkgccver == "4.2.1"
+  #args << $libgcc if $ndkgccver == "4.2.1"
   cc_run($gccbin, args)
 end
 
