@@ -342,14 +342,23 @@ void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/, bool bByNam
 
     if ( m_nCurrentTab != index && !bCreateOnly)
     {
-        getAppWindow().getWebKitEngine()->SwitchTab(m_arTabs[index].m_nTabID);        
+		if(m_nCurrentTab != -1)
+			m_arTabs[m_nCurrentTab].m_strTitle = RHOCONF().getString("title_text");
+
+		getAppWindow().getWebKitEngine()->SwitchTab(m_arTabs[index].m_nTabID);        
         int nOldTab = m_nCurrentTab; 
         m_nCurrentTab = index;
 
         if (bNewTab || bByName)
             Sleep(200);
 
-        raiseTabEvent( "onTabFocus", nOldTab, m_nCurrentTab );
+        if(m_nCurrentTab != -1)
+		{
+			RHOCONF().setString("title_text", m_arTabs[index].m_strTitle.c_str(), false);
+			PostMessage(getAppWindow().m_hWnd, WM_COMMAND, ID_TITLECHANGE, 0);
+		}
+
+		raiseTabEvent( "onTabFocus", nOldTab, m_nCurrentTab );
     }
 
     if (  m_arTabs[index].m_strAction.length() > 0 && (m_arTabs[index].m_bReloadPage || bNewTab) )
