@@ -612,9 +612,15 @@
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
 
+#if defined(__APPLE__) && !defined(RHODES_EMULATOR)
+#import <Availability.h>
+#ifndef __IPHONE_7_0
 /* Define to 1 if you have the strlcat function. */
 #define HAVE_STRLCAT 1
-
+#endif
+#else
+#define HAVE_STRLCAT 1
+#endif
 /* Define to 1 if you have the `strlcpy' function. */
 /* #undef HAVE_STRLCPY */
 

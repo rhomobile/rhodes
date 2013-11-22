@@ -158,6 +158,9 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 	const char* background_color_enable = NULL;
     
     const char* on_change_tab_callback = NULL;
+
+	const char* ios_7_icon_color = NULL;
+	const char* ios_7_selected_color = NULL;
 	
 	rho_param *params = NULL;
     switch (p->type) {
@@ -173,6 +176,14 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 					background_color = value->v.string;
 					background_color_enable = "true";
                 }
+
+                if (strcasecmp(name, "iOS7IconColor") == 0) {
+					ios_7_icon_color = value->v.string;
+                }
+                if (strcasecmp(name, "iOS7SelectedColor") == 0) {
+					ios_7_selected_color = value->v.string;
+                }
+
 
                 if (strcasecmp(name, "on_change_tab_callback") == 0) {
 					on_change_tab_callback = value->v.string;
@@ -297,6 +308,13 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 	if (background_color != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:background_color] forKey:NATIVE_BAR_BACKGOUND_COLOR];	
 	}
+    if (ios_7_icon_color != NULL) {
+		[properties setObject:[NSString stringWithUTF8String:ios_7_icon_color] forKey:NATIVE_BAR_ICON_COLOR];
+    }
+    if (ios_7_selected_color != NULL) {
+		[properties setObject:[NSString stringWithUTF8String:ios_7_selected_color] forKey:NATIVE_BAR_SELECTED_COLOR];
+    }
+
     if (on_change_tab_callback != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:on_change_tab_callback] forKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];	
     }

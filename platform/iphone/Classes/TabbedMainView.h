@@ -55,6 +55,7 @@
     NSArray *tabbarData;
     int tabindex;
     NSString* on_change_tab_callback;
+    CGRect rootFrame;
 }
 
 @property (nonatomic,retain) RhoUITabBarController *tabbar;

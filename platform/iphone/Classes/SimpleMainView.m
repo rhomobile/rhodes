@@ -197,19 +197,33 @@ static BOOL makeHiddenUntilLoadContent = YES;
     return btn;
 }
 
+
+
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
+
+
+
 - (UIToolbar*)newToolbar:(NSDictionary*)bar_info frame:(CGRect)mainFrame {
     
     UIToolbar *tb = [UIToolbar new];
-    tb.barStyle = UIBarStyleBlack;//Opaque;
-	
+    if (!(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))) {
+         tb.barStyle = UIBarStyleBlack;//Opaque;
+    }
 
 	NSString *background_color = nil;
+    NSString *icon_color = nil;
 
 	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
 	if (global_properties != nil) {
 		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
+		icon_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_ICON_COLOR];
 	}
-	
+#ifdef __IPHONE_7_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        tb.translucent = NO;
+    }
+#endif	
 	
 	if (background_color != nil) {
 		tb.barStyle = UIBarStyleDefault;
@@ -217,7 +231,28 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		int cR = (c & 0xFF0000) >> 16;
 		int cG = (c & 0xFF00) >> 8;
 		int cB = (c & 0xFF);
+#ifdef __IPHONE_7_0
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+            tb.barTintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        }
+        else {
+            tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        }
+#else
 		tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+#endif
+	}
+    
+	if (icon_color != nil) {
+		int c = [icon_color intValue];
+		int cR = (c & 0xFF0000) >> 16;
+		int cG = (c & 0xFF00) >> 8;
+		int cB = (c & 0xFF);
+#ifdef __IPHONE_7_0
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+            tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+        }
+#endif
 	}
 	
 	
@@ -372,6 +407,25 @@ static BOOL makeHiddenUntilLoadContent = YES;
     
 	CGRect wFrame = frame;
     wFrame.origin.y = 0;
+    
+#ifdef __IPHONE_7_0
+    
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        const char* fs = get_app_build_config_item("iphone_use_new_ios7_status_bar_style");
+        if (fs == NULL) {
+            fs = "0";
+        }
+        
+        if ((fs[0] == '0')) {
+            wFrame.origin.y += 20;
+            wFrame.size.height -= 20;
+            root.backgroundColor = [UIColor grayColor];
+        }
+    }
+    
+#endif
+    
+    
     webView.frame = wFrame;
     
     webView.autoresizesSubviews = YES;
@@ -925,10 +979,14 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if (nvHeight < 44) {
 		nvHeight = 44;
 	}
+    CGRect wFrame = [self getContentRect];
+
 	nFrame.size.height = nvHeight;
+#ifdef __IPHONE_7_0
+    nFrame.origin.y = wFrame.origin.y;
+#endif
 	navbar.frame = nFrame;
 	
-    CGRect wFrame = [self getContentRect];
     wFrame.origin.y += nFrame.size.height;
     wFrame.size.height -= nFrame.size.height;
 

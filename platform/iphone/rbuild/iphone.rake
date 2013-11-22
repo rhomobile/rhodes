@@ -71,7 +71,8 @@ def set_app_version(newversion)
     else
       buf << line
     end
-    nextline = true if line =~ /CFBundleVersion/
+    #nextline = true if line =~ /CFBundleVersion/
+    nextline = true if line =~ /CFBundleShortVersionString/
   end
   File.open(fname,"w") { |f| f.write(buf) }
   return ret_value
@@ -128,8 +129,8 @@ def set_app_url_scheme(newname)
   return ret_value
 end
 
-BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon.png', 'icon114.png', 'icon57.png', 'icon72.png', 'Info.plist']
-CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-PortraitUpsideDown.png', 'Default-Landscape.png', 'Default-LadscapeLeft.png', 'Default-LandscapeRight.png', 'Default-568h@2x.png']
+BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon57.png', 'icon60.png', 'icon72.png', 'icon76.png', 'icon114.png', 'icon120.png', 'icon144.png', 'icon152.png', 'Info.plist', 'Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png']
+CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png']
 
 def make_project_bakup
      BAKUP_FILES.each do |f|
@@ -147,6 +148,12 @@ def make_project_bakup
 end
 
 def restore_project_from_bak
+    CLEAR_FILES.each do |f|
+        filename = $config["build"]["iphonepath"] + "/" +f
+        if File.exists? filename
+            rm_rf filename
+        end
+    end
      BAKUP_FILES.each do |f|
            filename_origin = $config["build"]["iphonepath"] + "/" +f
            filename_bak = $config["build"]["iphonepath"] + "/project_bakup/" +f
@@ -155,12 +162,7 @@ def restore_project_from_bak
                    cp_r filename_bak,filename_origin                      
            end        
      end
-     CLEAR_FILES.each do |f|
-           filename = $config["build"]["iphonepath"] + "/" +f
-           if File.exists? filename
-                   rm_rf filename                      
-           end        
-     end
+
 end
 
 def set_app_url_name(newname)
@@ -301,7 +303,7 @@ def prepare_production_plist (app_path, app_name)
     fAlx.close()
 end
 
-ICONS = [['icon', 'icon57'], ['icon57','icon57'], ['icon72','icon72'], ['icon114','icon114']]
+ICONS = [['icon152','icon152'], ['icon76','icon76'], ['icon60','icon60'], ['icon120','icon120'], ['icon144','icon144'], ['icon57','icon57'], ['icon72','icon72'], ['icon114','icon114']]
 
 def copy_all_icons_to_production_folder
   ICONS.each do |pair|
@@ -335,6 +337,11 @@ def set_app_icon(make_bak)
       if make_bak 
          cp icon, ibak unless File.exists? ibak
       end
+     if File.exists? appicon
+         cp appicon, ipath
+      else
+         puts "WARNING: application should have next icon file : "+ name + '.png !!!'
+      end
       cp appicon, ipath
     end
   rescue => e
@@ -342,7 +349,7 @@ def set_app_icon(make_bak)
   end
 end
 
-LOADINGIMAGES = ['loading', 'loading@2x', 'loading-Portrait', 'loading-PortraitUpsideDown', 'loading-Landscape', 'loading-LadscapeLeft', 'loading-LandscapeRight', 'loading-568h@2x']
+LOADINGIMAGES = ['loading', 'loading@2x', 'loading-Portrait', 'loading-Portrait@2x', 'loading-PortraitUpsideDown', 'loading-PortraitUpsideDown@2x', 'loading-Landscape', 'loading-Landscape@2x', 'loading-LandscapeLeft', 'loading-LandscapeLeft@2x', 'loading-LandscapeRight', 'loading-LandscapeRight@2x', 'loading-568h@2x']
 
 def restore_default_images
   puts "restore_default_images"
