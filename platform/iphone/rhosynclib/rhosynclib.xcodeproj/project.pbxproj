@@ -318,6 +318,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -342,6 +343,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = ../../shared;
@@ -384,7 +386,7 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 			};
 			name = Release;
@@ -399,7 +401,7 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 			};
 			name = Distribution;
@@ -409,6 +411,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = ../../shared;

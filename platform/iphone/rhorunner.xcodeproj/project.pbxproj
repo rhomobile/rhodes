@@ -44,16 +44,12 @@
 		BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F59F16000E9449B8004103B4 /* librhorubylib.a */; };
 		BDB373661144220F006EA6DA /* SimpleMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB373651144220F006EA6DA /* SimpleMainView.m */; };
 		BDB373C511444A8F006EA6DA /* Rhodes.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB373C411444A8F006EA6DA /* Rhodes.m */; };
-		BDC6F34911F4ABBF0056C1C3 /* icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC6F34611F4ABBF0056C1C3 /* icon57.png */; };
-		BDC6F34A11F4ABBF0056C1C3 /* icon72.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC6F34711F4ABBF0056C1C3 /* icon72.png */; };
-		BDC6F34B11F4ABBF0056C1C3 /* icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = BDC6F34811F4ABBF0056C1C3 /* icon114.png */; };
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
 		BDFBD99F10B1B9B900BAAFAB /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99E10B1B9B900BAAFAB /* gears.png */; };
 		BDFBD9A110B1B9CD00BAAFAB /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A010B1B9CD00BAAFAB /* back_btn.png */; };
 		BDFBD9A410B1B9E500BAAFAB /* forward_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */; };
 		BDFBD9A510B1B9E500BAAFAB /* home_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A310B1B9E500BAAFAB /* home_btn.png */; };
-		BDFBD9A710B1BA2000BAAFAB /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD9A610B1BA2000BAAFAB /* icon.png */; };
 		C5D0D0C1153F279A00B8BF21 /* InitMemoryInfoCollector.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5D0D0C0153F279A00B8BF21 /* InitMemoryInfoCollector.mm */; };
 		C5D90EF815F4F58D005F7C86 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C5D90EF715F4F58D005F7C86 /* Reachability.m */; };
 		C5D90EFB15F4FC92005F7C86 /* NetworkStatusMonitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5D90EFA15F4FC92005F7C86 /* NetworkStatusMonitor.mm */; };
@@ -91,6 +87,14 @@
 		FA52317C12E7511700AB55CC /* esri@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317512E7511700AB55CC /* esri@2x.png */; };
 		FA52330112E9204300AB55CC /* BluePushpin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52330012E9204300AB55CC /* BluePushpin@2x.png */; };
 		FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA673A5615FCD787005CAD64 /* CoreMotion.framework */; };
+		FA6DFCE618232A2C00A3B595 /* icon144.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCDE18232A2C00A3B595 /* icon144.png */; };
+		FA6DFCE718232A2C00A3B595 /* icon72.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCDF18232A2C00A3B595 /* icon72.png */; };
+		FA6DFCE818232A2C00A3B595 /* icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE018232A2C00A3B595 /* icon114.png */; };
+		FA6DFCE918232A2C00A3B595 /* icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE118232A2C00A3B595 /* icon57.png */; };
+		FA6DFCEA18232A2C00A3B595 /* icon120.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE218232A2C00A3B595 /* icon120.png */; };
+		FA6DFCEB18232A2C00A3B595 /* icon60.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE318232A2C00A3B595 /* icon60.png */; };
+		FA6DFCEC18232A2C00A3B595 /* icon76.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE418232A2C00A3B595 /* icon76.png */; };
+		FA6DFCED18232A2C00A3B595 /* icon152.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE518232A2C00A3B595 /* icon152.png */; };
 		FAC6EE6D143B3AF100B8E352 /* RhoMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE6C143B3AF100B8E352 /* RhoMapViewController.m */; };
 		FACA4C781270AC0900777CFF /* LeftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C711270AC0900777CFF /* LeftViewController.m */; };
 		FACA4C791270AC0900777CFF /* RightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C731270AC0900777CFF /* RightViewController.m */; };
@@ -230,16 +234,12 @@
 		BDB373651144220F006EA6DA /* SimpleMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleMainView.m; sourceTree = "<group>"; };
 		BDB373C3114449B6006EA6DA /* Rhodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rhodes.h; sourceTree = "<group>"; };
 		BDB373C411444A8F006EA6DA /* Rhodes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Rhodes.m; sourceTree = "<group>"; };
-		BDC6F34611F4ABBF0056C1C3 /* icon57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon57.png; sourceTree = SOURCE_ROOT; };
-		BDC6F34711F4ABBF0056C1C3 /* icon72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon72.png; sourceTree = SOURCE_ROOT; };
-		BDC6F34811F4ABBF0056C1C3 /* icon114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon114.png; sourceTree = SOURCE_ROOT; };
 		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		BDFBD99910B1B9A900BAAFAB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		BDFBD99E10B1B9B900BAAFAB /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gears.png; sourceTree = "<group>"; };
 		BDFBD9A010B1B9CD00BAAFAB /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
 		BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
 		BDFBD9A310B1B9E500BAAFAB /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
-		BDFBD9A610B1BA2000BAAFAB /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		C5D0D0BF153F279300B8BF21 /* InitMemoryInfoCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitMemoryInfoCollector.h; sourceTree = "<group>"; };
 		C5D0D0C0153F279A00B8BF21 /* InitMemoryInfoCollector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InitMemoryInfoCollector.mm; sourceTree = "<group>"; };
 		C5D90EF615F4F58D005F7C86 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -303,6 +303,14 @@
 		FA52317512E7511700AB55CC /* esri@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "esri@2x.png"; path = "ESRI/esri@2x.png"; sourceTree = "<group>"; };
 		FA52330012E9204300AB55CC /* BluePushpin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "BluePushpin@2x.png"; path = "ESRI/BluePushpin@2x.png"; sourceTree = "<group>"; };
 		FA673A5615FCD787005CAD64 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
+		FA6DFCDE18232A2C00A3B595 /* icon144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon144.png; sourceTree = "<group>"; };
+		FA6DFCDF18232A2C00A3B595 /* icon72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon72.png; sourceTree = "<group>"; };
+		FA6DFCE018232A2C00A3B595 /* icon114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon114.png; sourceTree = "<group>"; };
+		FA6DFCE118232A2C00A3B595 /* icon57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon57.png; sourceTree = "<group>"; };
+		FA6DFCE218232A2C00A3B595 /* icon120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon120.png; sourceTree = "<group>"; };
+		FA6DFCE318232A2C00A3B595 /* icon60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon60.png; sourceTree = "<group>"; };
+		FA6DFCE418232A2C00A3B595 /* icon76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon76.png; sourceTree = "<group>"; };
+		FA6DFCE518232A2C00A3B595 /* icon152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon152.png; sourceTree = "<group>"; };
 		FAC6EE6B143B3AF100B8E352 /* RhoMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMapViewController.h; path = MapView/RhoMapViewController.h; sourceTree = "<group>"; };
 		FAC6EE6C143B3AF100B8E352 /* RhoMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoMapViewController.m; path = MapView/RhoMapViewController.m; sourceTree = "<group>"; };
 		FACA4C701270AC0900777CFF /* LeftViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeftViewController.h; path = SplitView/LeftViewController.h; sourceTree = "<group>"; };
@@ -363,10 +371,6 @@
 				C5D90EF615F4F58D005F7C86 /* Reachability.h */,
 				C5D90EF715F4F58D005F7C86 /* Reachability.m */,
 				FA522E6C12DEA74F00AB55CC /* NativeView */,
-				BDC6F34611F4ABBF0056C1C3 /* icon57.png */,
-				BDC6F34711F4ABBF0056C1C3 /* icon72.png */,
-				BDC6F34811F4ABBF0056C1C3 /* icon114.png */,
-				BDFBD9A610B1BA2000BAAFAB /* icon.png */,
 				BD97AC1E1160EE7A006960F9 /* Alert */,
 				FACC20C4123A60800088A447 /* Bluetooth */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
@@ -738,6 +742,14 @@
 		FA52317212E750F300AB55CC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				FA6DFCDE18232A2C00A3B595 /* icon144.png */,
+				FA6DFCDF18232A2C00A3B595 /* icon72.png */,
+				FA6DFCE018232A2C00A3B595 /* icon114.png */,
+				FA6DFCE118232A2C00A3B595 /* icon57.png */,
+				FA6DFCE218232A2C00A3B595 /* icon120.png */,
+				FA6DFCE318232A2C00A3B595 /* icon60.png */,
+				FA6DFCE418232A2C00A3B595 /* icon76.png */,
+				FA6DFCE518232A2C00A3B595 /* icon152.png */,
 				FA52330012E9204300AB55CC /* BluePushpin@2x.png */,
 				FA52317312E7511700AB55CC /* BluePushpin.png */,
 				FA52317412E7511700AB55CC /* esri.png */,
@@ -894,15 +906,19 @@
 				BDFBD99F10B1B9B900BAAFAB /* gears.png in Resources */,
 				BDFBD9A110B1B9CD00BAAFAB /* back_btn.png in Resources */,
 				BDFBD9A410B1B9E500BAAFAB /* forward_btn.png in Resources */,
+				FA6DFCE618232A2C00A3B595 /* icon144.png in Resources */,
 				BDFBD9A510B1B9E500BAAFAB /* home_btn.png in Resources */,
-				BDFBD9A710B1BA2000BAAFAB /* icon.png in Resources */,
-				BDC6F34911F4ABBF0056C1C3 /* icon57.png in Resources */,
-				BDC6F34A11F4ABBF0056C1C3 /* icon72.png in Resources */,
-				BDC6F34B11F4ABBF0056C1C3 /* icon114.png in Resources */,
 				FA52317A12E7511700AB55CC /* BluePushpin.png in Resources */,
+				FA6DFCE918232A2C00A3B595 /* icon57.png in Resources */,
 				FA52317B12E7511700AB55CC /* esri.png in Resources */,
 				FA52317C12E7511700AB55CC /* esri@2x.png in Resources */,
+				FA6DFCED18232A2C00A3B595 /* icon152.png in Resources */,
+				FA6DFCEA18232A2C00A3B595 /* icon120.png in Resources */,
+				FA6DFCEB18232A2C00A3B595 /* icon60.png in Resources */,
 				FA52330112E9204300AB55CC /* BluePushpin@2x.png in Resources */,
+				FA6DFCE718232A2C00A3B595 /* icon72.png in Resources */,
+				FA6DFCEC18232A2C00A3B595 /* icon76.png in Resources */,
+				FA6DFCE818232A2C00A3B595 /* icon114.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -974,7 +990,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "RHO_SOURCE_DIR=${SRCROOT}\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\necho \"Create dir $RHO_TARGET_DIR\"\nmkdir -p ${RHO_TARGET_DIR}\n\nif [ -e ${RHO_SOURCE_DIR}/Default.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default@2x.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Portrait.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Portrait.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Portrait.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Landscape.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Landscape.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Landscape.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-568h@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-568h@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-568h@2x.png ${RHO_TARGET_DIR}\nfi";
+			shellScript = "RHO_SOURCE_DIR=${SRCROOT}\nRHO_TARGET_DIR=${TARGET_BUILD_DIR}/${TARGET_NAME}.app\necho \"Create dir $RHO_TARGET_DIR\"\nmkdir -p ${RHO_TARGET_DIR}\n\nif [ -e ${RHO_SOURCE_DIR}/Default.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default@2x.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Portrait.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Portrait.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Portrait.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Portrait@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Portrait@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Portrait@2x.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-PortraitUpsideDown@2x.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Landscape.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Landscape.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Landscape.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-Landscape@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-Landscape@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-Landscape@2x.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeLeft@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeLeft@2x.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-LandscapeRight@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-LandscapeRight@2x.png ${RHO_TARGET_DIR}\nfi\n\nif [ -e ${RHO_SOURCE_DIR}/Default-568h@2x.png ]; then\necho \"cp -Rf ${RHO_SOURCE_DIR}/Default-568h@2x.png ${RHO_TARGET_DIR}\"\ncp -Rf ${RHO_SOURCE_DIR}/Default-568h@2x.png ${RHO_TARGET_DIR}\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1073,6 +1089,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1110,6 +1127,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1187,6 +1205,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
