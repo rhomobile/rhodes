@@ -5,6 +5,11 @@
 
 #include <pm.h>
 
+//TODO: read: http://msdn.microsoft.com/en-us/library/ms894059.aspx ; there is no  POWER_STATE_UNATTENDED on CE
+#ifndef POWER_STATE_UNATTENDED
+#define POWER_STATE_UNATTENDED   (DWORD)(0x00400000)        // Unattended state.
+#endif 
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "PowerManagement"
 
