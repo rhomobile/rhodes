@@ -52,7 +52,13 @@
     <activity android:name='com.rhomobile.rhodes.camera.FileList' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.camera.ImageCapture' android:screenOrientation='landscape'/>
     <activity android:name='com.rhomobile.rhodes.signature.ImageCapture' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
-    <activity android:name='com.rhomobile.rhodes.datetime.DateTimePickerScreen' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
+    <activity android:name='com.rhomobile.rhodes.datetime.DateTimePickerScreen'
+      <% if @dateTimePickerDialog %>
+        android:theme="@android:style/Theme.Dialog" 
+      <% end %>
+      android:configChanges='orientation'
+      android:screenOrientation='<%= @screenOrientation %>'
+    />
     <activity android:name='com.rhomobile.rhodes.mapview.MapView' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.mapview.GoogleMapView' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
