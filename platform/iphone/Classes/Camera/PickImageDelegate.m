@@ -29,7 +29,7 @@
 #import "PickImageDelegate.h"
 #import "AppManager.h"
 #import "common/RhodesApp.h"
-
+#import "UIImage+Resize.h"
 
 //#include "ruby/ext/rho/rhoruby.h"
 
@@ -202,6 +202,9 @@
             k = kh;
         }
 
+        int curWidth = img.size.width;
+        int curHeight = img.size.height; 
+
         //if (([theImage imageOrientation] == UIImageOrientationLeft) ||
         //    ([theImage imageOrientation] == UIImageOrientationRight) ||
         //    ([theImage imageOrientation] == UIImageOrientationLeftMirrored) ||
@@ -213,16 +216,21 @@
         //}
 
         
-        CGImageRef cgImage = [img CGImage];
+        /*CGImageRef cgImage = [img CGImage];
         CGColorSpaceRef rgb_space = CGColorSpaceCreateDeviceRGB();
         
         int curWidth = CGImageGetWidth(cgImage);//(int)img.size.width;
-        int curHeight = CGImageGetHeight(cgImage);//(int)img.size.height;
+        int curHeight = CGImageGetHeight(cgImage);//(int)img.size.height;*/
         
         int newWidth = curWidth*k;
         int newHeight = curHeight*k;
         
-        void * data = malloc(newWidth*newHeight*4);
+        CGSize newSize = CGSizeMake (newWidth,newHeight);
+        CGInterpolationQuality InterpQual = kCGInterpolationHigh;
+
+        UIImage* newImg = [img resizedImage:newSize interpolationQuality:InterpQual];
+        
+        /*void * data = malloc(newWidth*newHeight*4);
         
         CGContextRef cgContext = CGBitmapContextCreate( data,
                                                        newWidth,
@@ -237,16 +245,16 @@
         
         CGImageRef rgbImage = CGBitmapContextCreateImage(cgContext);
         //[img release];
-        UIImage* newImg = [UIImage imageWithCGImage:rgbImage scale:1.0 orientation:[theImage imageOrientation]];
+        UIImage* newImg = [UIImage imageWithCGImage:rgbImage scale:1.0 orientation:[theImage imageOrientation]];*/
         if (img != theImage) {
             //[img release];
         }
         img = newImg;
         
-        CGColorSpaceRelease(rgb_space);
+        /*CGColorSpaceRelease(rgb_space);
         CGImageRelease(rgbImage);
         CGContextRelease(cgContext);
-        free(data);
+        free(data);*/
         
         
         
