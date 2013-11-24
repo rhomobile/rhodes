@@ -114,7 +114,12 @@ rho::String js_entry_point(const char* szJSON)
     CJSONArray oParams(oEntry.getEntry("params"));
 
     RAWTRACE3("Calling API: object: %s, method: %s, callback id: %s", strObjID.c_str(), strMethod.c_str(), strCallbackID.c_str());
-    return "{\"jsonrpc\": \"2.0\", " + pMethod( strObjID, oParams, strCallbackID, strJsVmID, strCallbackParam ) + ", \"id\": " + strReqId + "}";
+    String methodResult = pMethod( strObjID, oParams, strCallbackID, strJsVmID, strCallbackParam );
+    #ifdef RHO_DEBUG
+    String res = "{"+methodResult+"}";
+    CJSONEntry jsonValidator(res.c_str());
+    #endif
+    return "{\"jsonrpc\": \"2.0\", " + methodResult + ", \"id\": " + strReqId + "}";
 }
 
 void rho_http_js_entry_point(void *arg, rho::String const &query )

@@ -28,9 +28,7 @@
 #include "MainWindow.h"
 #include "IEBrowserEngine.h"
 #include "CEBrowserEngine.h"
-//#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
 #include "LogMemory.h"
-//#endif
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
@@ -60,6 +58,7 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
 extern "C" void registerRhoExtension();
 extern "C" void rho_webview_navigate(const char* url, int index);
+extern "C" void createPowerManagementThread();
 static void rho_platform_check_restart_application();
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
@@ -557,6 +556,10 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		return S_FALSE;
     }
 
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
+    createPowerManagementThread();
+#endif
+
     if (RHOCONF().getBool("Application.autoStart"))
         createAutoStartShortcut();
 
@@ -709,17 +712,11 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 #endif
     rho_ringtone_manager_stop();
 
-//#if !defined(_WIN32_WCE)
-//    rho::sync::CClientRegister::Destroy();
-//#endif
-
 #if defined(OS_WINDOWS_DESKTOP)
     m_appWindow.DestroyUi();
 #endif
 
     rho::common::CRhodesApp::Destroy();
-
-//    net::CNetRequestImpl::deinitConnection();
 
 #if !defined(OS_WINDOWS_DESKTOP)
 //	ReleaseMutex(m_hMutex);
