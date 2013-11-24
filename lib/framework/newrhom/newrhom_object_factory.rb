@@ -1,5 +1,5 @@
-module NewRhom         
-  class NewRhomObjectFactory
+module Rhom         
+  class RhomObjectFactory
     
     # Initialize new object with dynamic attributes
     def self.init_object(klass_model_obj)

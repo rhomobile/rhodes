@@ -60,6 +60,7 @@ public:
 	virtual void setobjectnotify_url(const char* szUrl) = 0;
 	virtual void cleanobjectnotify() = 0;
 	virtual void clear_notification(int srcID) = 0;
+	virtual void set_source_property(int srcID, const char* propName, const char* propVal) = 0;
 
 };
 
@@ -123,6 +124,7 @@ public:
 	static void setobjectnotify_url(const char* szUrl) { m_pImpl->setobjectnotify_url(szUrl); }
 	static void cleanobjectnotify() { m_pImpl->cleanobjectnotify(); }
 	static void clear_notification(int srcID) { m_pImpl->clear_notification(srcID); }
+	static void set_source_property(int srcID, const char* propName, const char* propVal) { m_pImpl->set_source_property(srcID, propName, propVal); }
 };
 
 }
