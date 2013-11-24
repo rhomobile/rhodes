@@ -42,6 +42,7 @@ class CNativeTabbar
     {
         String m_strAction;
         String m_strLabel;
+		String m_strTitle;
         bool m_bUseCurrentViewForTab;
         bool m_bReloadPage;
         bool m_bPerishable;
