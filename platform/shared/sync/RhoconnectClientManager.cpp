@@ -51,6 +51,7 @@ namespace sync {
         virtual void setobjectnotify_url(const char* szUrl) {}
         virtual void cleanobjectnotify() {}
         virtual void clear_notification(int srcID) {}
+        virtual void set_source_property(int srcID, const char* propName, const char* propVal) {}
     };
 
     IMPLEMENT_LOGCLASS(RhoconnectClientManager, "RhoconnectClientManager");

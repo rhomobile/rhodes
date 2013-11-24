@@ -1,6 +1,5 @@
-module NewRhom
-
-  module NewRhomBaseModel
+module Rhom
+  module BaseModel
     def init_model
       puts "Model '#{klass_model.model_name}': init_model"
       klass_model.initModel
@@ -55,21 +54,21 @@ module NewRhom
     end
   end
   
-  module NewRhomFixedSchema
-    include NewRhomBaseModel
+  module FixedSchema
+    include BaseModel
 
     def self.included(model)
       puts " we are in included and #{model.klass_model.model_name}, #{model.klass_model.fixed_schema}"
-      model.extend NewRhomFixedSchema
+      model.extend FixedSchema
       model.klass_model.fixed_schema = true
     end
   end
 
-  module NewRhomPropertyBag
-    include NewRhomBaseModel
+  module PropertyBag
+    include BaseModel
     
     def self.included(model)
-      model.extend NewRhomPropertyBag
+      model.extend PropertyBag
       model.klass_model.fixed_schema = false
     end
   end

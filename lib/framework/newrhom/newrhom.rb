@@ -2,19 +2,18 @@ require 'newrhom/newrhom_object_factory'
 require 'newrhom/newrhom_model'
 
 
-module NewRhom
-	class NewRhom
+module Rhom
+	class Rhom
 
 		attr_accessor :models
 		@@newrhom = nil
   
 		def self.get_instance
-			@@newrhom
+			@@newrhom ||= self.new
 		end
 
     def initialize
     	puts "Calling NewRhom.initialize"
-    	@@newrhom = self
       @models = {}
     end
 
@@ -67,7 +66,7 @@ end
         str = line.chomp
         if str != nil and str.length > 0 
             model_name = File.basename(File.dirname(str))
-            _add_model(model_name, str) unless model_name['New'].nil?
+            _add_model(model_name, str)
         end
       end
 
@@ -88,7 +87,7 @@ end
 
       puts "_load_model: #{model_name}, #{models[model_name].getProperty('file_path')}"
 
-      NewRhomObjectFactory.init_object(models[model_name])
+      RhomObjectFactory.init_object(models[model_name])
       require "#{models[model_name].getProperty('file_path')}"
 
       modelClass = nil
@@ -120,6 +119,17 @@ end
       # after all is done - create blob attrib triggers
       ::Rho::RHO.get_db_partitions() do |partition, db|
         System.update_blob_attribs(partition, -1)
+      end
+    end
+
+
+    class << Rhom
+      def client_id
+        ::Rho::NewORM.getClientId
+      end
+
+      def have_local_changes
+        ::Rho::NewORM.haveLocalChanges
       end
     end
 	end

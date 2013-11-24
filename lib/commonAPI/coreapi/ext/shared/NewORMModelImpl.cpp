@@ -7,6 +7,7 @@
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
 #include "db/DBAdapter.h"
+#include "sync/RhoconnectClientManager.h"
 
 namespace rho {
     
@@ -161,6 +162,9 @@ namespace rho {
             initDbSchema(oResult);
             if(oResult.isError())
                 return;
+            initSyncSourceProperties(oResult);
+            if(oResult.isError())
+                return;
         }
 
         void initAssociations(rho::apiGenerator::CMethodResult& oResult)
@@ -211,6 +215,53 @@ namespace rho {
                 }
             }
             setProperty("blob_attribs", blob_attribs, oResult);
+        }
+
+        void initSyncSourceProperties(rho::apiGenerator::CMethodResult& oResult)
+        {
+            LOG(INFO) +  "initSyncSourceProperties: " + name();
+            if(!rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+                return;
+
+            getProperty("source_id", oResult);
+            int source_id = -1;
+            convertFromStringA(oResult.getString().c_str(), source_id);
+            if(source_id == -1) {
+                oResult.setError("Invalid SourceID -1");
+                return;
+            }
+            Vector<String> sync_options;
+            sync_options.push_back("pass_through");
+            sync_options.push_back("full_update");
+            for(int i = 0; i < sync_options.size(); ++i)
+            {
+                getProperty(sync_options[i], oResult);
+                bool optValue = false;
+                convertFromStringA(oResult.getString().c_str(), optValue);
+                if(optValue)
+                   rho::sync::RhoconnectClientManager::set_source_property(source_id, sync_options[i].c_str(), oResult.getString().c_str());   
+            }
+
+            getProperty("freezed", oResult);
+            bool optValue = false;
+            convertFromStringA(oResult.getString().c_str(), optValue);
+            if(!optValue)
+                return;
+
+            rho::String modelProps;
+            for(Hashtable<rho::String, ModelPropertyDef>::const_iterator cIt = modelProperties_.begin();
+                cIt != modelProperties_.end();
+                ++cIt)
+            {
+                const ModelPropertyDef& prop_def = cIt -> second;
+                if(modelProps.size())
+                    modelProps += ",";
+                modelProps += prop_def.name_;
+            }
+            LOG(INFO) +  "initSyncSourceProperties1: " + name();
+            rho::sync::RhoconnectClientManager::set_source_property(source_id, "freezed", modelProps.c_str());
+
+            LOG(INFO) +  "initSyncSourceProperties2: " + name();
         }
 
         void initDbSource(rho::apiGenerator::CMethodResult& oResult)
@@ -278,12 +329,10 @@ namespace rho {
                 }
             }
             else {
-                int start_id = get_start_id(partition);
-                if(!RHOCONF().getBool("use_bulk_model")) {
-                    if(!source_id.size()) {
-                        source_id = convertToStringA(start_id);
-                        setProperty("source_id", source_id, oResult);
-                    }
+                if(!source_id.size()) {
+                    int start_id = get_start_id(partition);
+                    source_id = convertToStringA(start_id);
+                    setProperty("source_id", source_id, oResult);
                 }
                 res = db.executeSQL("INSERT INTO sources (source_id,name,sync_priority,sync_type,partition,associations,blob_attribs) VALUES(?,?,?,?,?,?,?)", 
                     source_id, name(), sync_priority, sync_type, partition, associations, blob_attribs);
@@ -298,6 +347,8 @@ namespace rho {
             if(!fixed_schema())
                 return; 
 
+            // Schema models are freezed by default
+            setProperty("freezed", "true", oResult);
             getProperty("schema_version", oResult);
             rho::String schema_version = oResult.getString();
             getProperty("partition", oResult);

@@ -27,10 +27,10 @@
 #require 'time'
 require 'rho/render'
 require 'rho/rhoapplication'
-require 'rhom'
+#require 'rhom'
 #require 'rhofsconnector'
 require 'rho/rhoerror'
-require 'rhom/rhom_source'
+#require 'rhom/rhom_source'
 require 'rhodes'
 
 module Rho
@@ -61,36 +61,48 @@ module Rho
     
     @@rho_framework = nil
     @@native_bar_initialized = nil
+    @@use_new_rhom = false
     
     def self.get_instance
         @@rho_framework
     end
 
-    def initialize(app_manifest_filename=nil)
-      puts "Calling RHO.initialize #{app_manifest_filename}"
+    def self.use_new_rhom
+      return @@use_new_rhom
+    end
 
-      if app_manifest_filename
-        load_models_from_file(app_manifest_filename)
+    def initialize(app_manifest_filename=nil)
+      puts "Calling RHO.initialize #{app_manifest_filename}, use_new_rhom: #{Rho::RhoConfig.use_new_rhom.to_i}"
+      @@use_new_rhom = (Rho::RhoConfig.use_new_rhom.to_i > 0 ? true : false)
+      if(@@use_new_rhom)
+        puts " we are in use_new_rhom true #{@@use_new_rhom}"
       else
-        load_models_from_file(Rho::RhoFSConnector::get_app_manifest_filename)
+        puts " we are in use_new_rhom false #{@@use_new_rhom}"
       end
 
       # Initialize application and sources
       @@rho_framework = self
       @db_partitions = {}
-
       partitions = ['app','user','local']
       partitions.each do |partition|
         @db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
       end
+      require 'rhom'
 
-      puts "Loading NewRHOM"
-      NewRhom::NewRhom.new
-      NewRhom::NewRhom.get_instance().load_models(app_manifest_filename)
-      puts "checking what we have"
-      models = Rho::NewORMModel.enumerate
-      models.each do |model|
-        puts " we have here #{model.class.name}, #{model.model_name}, #{model.loaded}"
+      unless @@use_new_rhom
+        if app_manifest_filename
+          load_models_from_file(app_manifest_filename)
+        else
+          load_models_from_file(Rho::RhoFSConnector::get_app_manifest_filename)
+        end
+      else
+        puts "Loading NewRHOM"
+        Rhom::Rhom.get_instance().load_models(app_manifest_filename)
+        puts "checking what we have"
+        models = Rho::NewORMModel.enumerate
+        models.each do |model|
+          puts " we have here #{model.class.name}, #{model.model_name}, #{model.loaded}"
+        end
       end
     end
 
@@ -258,7 +270,7 @@ end
             puts "model file: #{str}"
             model_name = File.basename(File.dirname(str))
 
-            Rho::RhoConfig::add_source(model_name, {:loaded => false, :file_path => str}) if model_name['New'].nil?
+            Rho::RhoConfig::add_source(model_name, {:loaded => false, :file_path => str})
         end
         
       end
@@ -446,11 +458,14 @@ end
     end
 
     def self.load_all_sources
+      unless @@use_new_rhom
         Rho::RHO.get_instance().load_all_sync_sources()
+      end
     end
     
     @all_models_loaded = false
     def load_all_sync_sources()
+      unless Rho::RHO.use_new_rhom
         return if @all_models_loaded
         puts "load_all_sync_sources"
 
@@ -467,6 +482,9 @@ end
             puts "Error load_all_sync_sources: #{e}"
             puts "Trace: #{e.backtrace}"
         end
+      else
+        @all_models_loaded = true
+      end 
     end
 
     def load_model(modelName, init_db = true)
