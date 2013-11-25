@@ -1251,9 +1251,11 @@ namespace "run" do
   end
 
   desc "Build and run on WM6 emulator"
-  task :wm => ["device:wm:production"] do
+  task :wm => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do #["device:wm:production"] do
+#>>>>>>>>>>>>>>>>>>
 
     if $use_direct_deploy == "no" 
+      Rake::Task["device:wm:production"].execute
       Rake::Task["run:wm:cab"].execute
     else
       # kill all running detool
