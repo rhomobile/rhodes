@@ -86,7 +86,7 @@
                 <PLATFORM>WM, Android</PLATFORM>
             </METHOD>        
             
-            <METHOD name="releaseHandle" hasCallback="optional">
+            <METHOD name="close" hasCallback="optional">
                 <DESC>release resources</DESC>
                 <RETURN type="STRING">
                     <DESC>return NFC_SUCCESS if OK</DESC>

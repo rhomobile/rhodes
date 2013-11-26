@@ -285,7 +285,7 @@
         
         <METHODS>
 
-            <METHOD name="init" access="STATIC" hasCallback="optional">
+            <METHOD name="intitialize" access="STATIC" hasCallback="optional">
                 <DESC>init NFC</DESC>
                 <RETURN type="STRING">
                     <DESC>return NFC_SUCCESS if OK</DESC>
@@ -293,7 +293,7 @@
                 <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
 
-            <METHOD name="deInit" access="STATIC" hasCallback="optional">
+            <METHOD name="deIntitialize" access="STATIC" hasCallback="optional">
                 <DESC>deinit NFC</DESC>
                 <RETURN type="STRING">
                     <DESC>return NFC_SUCCESS if OK</DESC>
@@ -397,7 +397,7 @@
                 <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             
-            <METHOD name="makeMessage" access="STATIC" hasCallback="optional">
+            <METHOD name="createMessage" access="STATIC" hasCallback="optional">
                 <DESC>make new Message object, if payloadByteArray is setted, then Message make from this byte array</DESC>
                 <PARAMS>
                     <PARAM name="payloadByteArray" type="ARRAY">
@@ -413,7 +413,7 @@
                 <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             
-            <METHOD name="makeRecord" access="STATIC" hasCallback="optional">
+            <METHOD name="createRecord" access="STATIC" hasCallback="optional">
                 <DESC>make new Record object from byte array or string (you can set only one of payload parameter)</DESC>
                 <PARAMS>
                     <PARAM name="TNF" type="INTEGER">
