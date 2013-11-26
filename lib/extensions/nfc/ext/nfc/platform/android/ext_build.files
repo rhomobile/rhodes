@@ -1,6 +1,0 @@
-ext/nfc/platform/android/src/com/rhomobile/nfc/Nfc.java
-ext/nfc/platform/android/src/com/rhomobile/nfc/NfcActivity.java
-ext/nfc/platform/android/src/com/rhomobile/nfc/NfcTechActivity.java
-ext/nfc/platform/android/src/com/rhomobile/nfc/NfcMessagePack.java
-ext/nfc/platform/android/src/com/rhomobile/nfc/NfcMessage.java
-ext/nfc/platform/android/src/com/rhomobile/nfc/NfcRecord.java
