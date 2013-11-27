@@ -27,4 +27,5 @@ public interface IMethodResult {
     void setError(String mesage);
     void setArgError(String message);
 
+    boolean hasCallback();
 }
