@@ -817,7 +817,8 @@ namespace "build" do
 
         puts "Executing extension build script: #{ext}"
         if RUBY_PLATFORM =~ /(win|w)32$/ || (builddata[1] == 'rake')
-          Jake.run(builddata[1], [], builddata[0])
+          puts Jake.run2(builddata[1], [], {:directory=>builddata[0], :hideerrors=>true, :hide_output=>true})
+          $stdout.flush
         else
           currentdir = Dir.pwd()
           Dir.chdir builddata[0]

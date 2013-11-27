@@ -24,7 +24,7 @@ def build_extension(name, arch, src_files)
 
   mkdir_p $targetdir unless File.exist? $targetdir
 
-  cc_ar File.join($targetdir, 'lib' + name + '.a'), objects or exit 1
+  cc_ar File.join($targetdir,'lib'+name+'.a' ), objects or exit 1
 
 end
 
