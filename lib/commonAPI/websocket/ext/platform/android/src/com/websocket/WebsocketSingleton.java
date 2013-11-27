@@ -1,4 +1,4 @@
-package com.rho.websocket;
+package com.websocket;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,8 +16,8 @@ class WebsocketSingleton extends WebsocketSingletonBase implements IWebsocketSin
         mFactory = factory;
     }
 
-    @Override
-    public void create(String url, IMethodResult res) {
-        res.set(mFactory.create(url));
-    }
+//    @Override
+//    public void create(String url, IMethodResult res) {
+//        res.set(mFactory.create(url));
+//    }
 }
