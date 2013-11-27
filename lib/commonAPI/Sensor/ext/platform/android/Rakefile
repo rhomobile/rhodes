@@ -43,7 +43,7 @@ directory OBJDIR
 
 rule '.o' => lambda {|obj| find_source(obj) } do |t|
     Rake::Task[:config].invoke
-    cc_compile find_source(t.name), OBJDIR, ARGS
+    cc_compile find_source(t.name), OBJDIR, ARGS or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
 end
 
 task OBJ => OBJDIR
@@ -56,7 +56,7 @@ end
 
 file TARGETLIB => TARGETDIR do |t|
     Rake::Task[:config].invoke
-    cc_ar ('"'+t.name+'"'), OBJ.collect{|x| '"'+x+'"'}
+    cc_ar t.name, OBJ or raise "\e[31mCreating library failed: #{t.name}\e[0m"
 end
 multitask TARGETLIB => OBJ
 

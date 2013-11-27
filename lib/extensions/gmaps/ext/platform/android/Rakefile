@@ -76,9 +76,7 @@ task :copylibs => TARGETDIR do
 end
 
 file TARGETLIB => [TARGETDIR, :build] do |t|
-    puts "objects: " + $objects.inspect
-    
-    cc_ar ('"'+t.name+'"'), $objects.collect{|x| '"'+x+'"'} or raise "Static library is failed"
+    cc_ar t.name, $objects or raise "Static library is failed"
 end
 
 task :default => [:copylibs, TARGETLIB]
