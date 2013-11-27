@@ -303,7 +303,7 @@ namespace "config" do
     $rhores = File.join $androidpath, 'Rhodes','res'
     $appres = File.join $tmpdir,'res'
     $appassets = $srcdir
-    $applibs = File.join $tmpdir,'lib','armeabi'
+    $applibs = File.join $tmpdir,'lib'
 
     $appincdir = File.join $tmpdir, "include"
 
@@ -1414,13 +1414,16 @@ namespace "build" do
         cp $config_xml, File.join(rawres_path, 'config.xml')
       end
 
-      mkdir_p File.join($applibs)
+      mkdir_p File.join($applibs,'armeabi')
+      mkdir_p File.join($applibs,'armeabi-v7a')
       # Add .so libraries
       Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
-        cp_r lib, $applibs
+        arch = File.basename(File.dirname(lib))
+        cp_r lib, File.join($applibs, arch)
       end
       $ext_android_additional_lib.each do |lib|
-        cp_r lib, $applibs
+        arch = File.basename(File.dirname(lib))
+        cp_r lib, File.join($applibs,arch)
       end
 #      Dir.glob($tmpdir + "/lib/armeabi/lib*.so").each do |lib|
 #        cc_run($stripbin, ['"'+lib+'"'])
@@ -1829,9 +1832,10 @@ namespace "package" do
     puts "Packaging Native Libs"
 
     args = ["uf", resourcepkg]
-    Dir.glob(File.join($applibs, "lib*.so")).each do |lib|
+    Dir.glob(File.join($applibs,'**','lib*.so')).each do |lib|
       cc_run($stripbin, ['"'+lib+'"'])
-      args << "lib/armeabi/#{File.basename(lib)}"
+      arch = File.basename(File.dirname(lib))
+      args << "lib/#{arch}/#{File.basename(lib)}"
     end
     Jake.run($jarbin, args, $tmpdir)
     unless $?.success?
