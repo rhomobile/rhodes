@@ -1,4 +1,4 @@
-package com.rho.websocket;
+package com.websocket;
 
 import android.os.Handler;
 import android.os.HandlerThread;

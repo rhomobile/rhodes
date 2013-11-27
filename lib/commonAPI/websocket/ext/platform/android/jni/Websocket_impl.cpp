@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Websocket_impl"
 
-#define WEBSOCKET_FACTORY_CLASS "com.rho.websocket.WebsocketFactory"
+#define WEBSOCKET_FACTORY_CLASS "com.websocket.WebsocketFactory"
 
 extern "C" void Init_Websocket_API(void);
 
@@ -37,7 +37,7 @@ extern "C" void Init_Websocket(void)
         
         RAWTRACE("Initializing Java factory");
 
-        rho::CWebsocketBase::setJavaFactory(env, jFactory);
+        CWebsocketBase::setJavaFactory(env, jFactory);
 
         RAWTRACE("Deleting JNI reference");
 
