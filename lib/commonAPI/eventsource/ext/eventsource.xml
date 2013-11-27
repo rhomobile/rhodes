@@ -1,22 +1,80 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="EventSource" parent="Rho">
+    <MODULE name="EventSource">
         <HELP_OVERVIEW>Example extension api</HELP_OVERVIEW>
         <MORE_HELP>This is example of API. Implementation contain in extension.</MORE_HELP>
+        
+         <CONSTANTS>
+        
+            <CONSTANT name="CONNECTING" value="0" type="INTEGER">
+                <DESC>The connection has not yet been established.</DESC>
+            </CONSTANT>
+            
+            <CONSTANT name="OPEN" value="1" type="INTEGER">
+                <DESC>The WebSocket connection is established and communication is possible.</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="CLOSED" value="2" type="INTEGER">
+                <DESC>The connection has been closed or could not be opened.</DESC>
+            </CONSTANT>
+            
+        </CONSTANTS>
+        
+        <PROPERTIES>
+
+            <PROPERTY name="onopen" type="CALLBACK">
+                <DESC></DESC>
+            </PROPERTY>
+            
+            <PROPERTY name="onmessage" type="CALLBACK">
+                <DESC></DESC>
+            </PROPERTY>
+            
+            <PROPERTY name="onerror" type="CALLBACK">
+                <DESC></DESC>
+            </PROPERTY>
+            
+            
+            
+            <PROPERTY name="url" type="STRING" readOnly="true">
+                <DESC>URL passed to EventSource constructor.</DESC>
+            </PROPERTY>
+            
+            <PROPERTY name="readyState" type="INTEGER">
+                <DESC>Represents the state of the connection.</DESC>
+            </PROPERTY>
+            
+            <PROPERTY name="withCredentials" type="BOOLEAN">
+                <DESC>Currently will return empty string.</DESC>
+            </PROPERTY>
+
+        </PROPERTIES>
+
     
 
         <METHODS>
 
-            <METHOD name="create" constructor="true" runInThread="none" access="static">
+            <METHOD name="create" constructor="true" runInThread="none" generateDoc="false">
                 <DESC></DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC></DESC>
                     </PARAM>
+                    
+                    <PARAM name="settings" type="HASH" optional="true">
+                        <DESC></DESC>
+                    </PARAM>
+
                 </PARAMS>
                 <RETURN type="SELF_INSTANCE"/>
             </METHOD>
+            
+            
+             <METHOD name="close" hasCallback="none" destructor="true">
+                <PLATFORM>Android</PLATFORM>
+            </METHOD>
+            
 
         </METHODS>
         
