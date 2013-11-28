@@ -7,13 +7,21 @@ class TrueClass; def to_i; 1 end end
         name
     end
 
-    def capitalize_safely(str)
-        str[0..0].upcase + str[1..-1]
-    end
-
     def namespace(a_module)
         a_module.parents.clone().push(a_module.name).join(".")
     end
+
+    valid_module_properties = $cur_module.properties.select {|value| 
+        !(
+             (value.name.nil? || value.name.empty?) ||
+             (value.is_deprecated) ||
+             (value.readonly && value.writeonly) ||
+             (value.type == MethodParam::TYPE_CALLBACK)
+        )
+    }
+
+    instance_module_properties = valid_module_properties.select {|value| value.access != ModuleMethod::ACCESS_STATIC}
+    static_module_properties = valid_module_properties.select {|value| value.access == ModuleMethod::ACCESS_STATIC} 
 %>
 (function ($, rho, rhoUtil) {
     'use strict';
@@ -298,12 +306,11 @@ end %>
 
     rhoUtil.createPropsProxy(<%= $cur_module.name %>.prototype, [
     <% first_prop = true
-       $cur_module.properties.each do |module_property|
-         next if module_property.name.nil? || module_property.name.empty?
-         next if module_property.access == ModuleMethod::ACCESS_STATIC
-         next if module_property.is_deprecated
-         next if module_property.readonly && module_property.writeonly
-    %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= module_property.name %>', propAccess: '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>' }
+        instance_module_properties.each do |module_property|
+            rw_mode = ''
+            rw_mode += 'r' if !module_property.writeonly
+            rw_mode += 'w' if !module_property.readonly 
+    %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= module_property.name %>', propAccess: '<%= rw_mode %>' }
     <% first_prop = false
        end %>], apiReq, function(){ return this.getId(); });
 
@@ -325,6 +332,34 @@ end %>
     <% first_method = false
        end %>
     ], apiReq, function(){ return this.getId(); });
+
+    <%
+    callback_accessors = $cur_module.methods.select{ |m| m.is_callback_accessor }
+
+    callback_accessors.each do |module_method|
+        fn_signature = "#{$cur_module.name}.prototype.#{module_method.native_name.capitalize_first}"
+        fn_calling = "";
+
+    %><%= fn_signature %> = rhoUtil.methodAccessReqFunc(<%
+       %>'<%= module_method.binding_name %>', <%= 
+        if module_method.has_callback != ModuleMethod::CALLBACK_NONE 
+            " #{module_method.params.size},"
+        else
+            "null," 
+        end%> <%= 
+        module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>, apiReq, function(){ return this.getId(); } );
+    <% end %>
+
+    rhoUtil.createEntityPropsProxy(<%= $cur_module.name %>.prototype, [<% 
+        first_prop = true
+        callback_accessors.each do |m|
+            fn_signature = "#{$cur_module.name}.prototype.#{m.native_name.capitalize_first}"        
+%>
+         <%= first_prop ? '  ' : ', ' %>{ propName: '<%= m.linked_property.name %>'<%
+    %>, propSetter : <%=fn_signature  %>} <% 
+            first_prop = false
+        end %>
+    ]);
 
     // === <%= $cur_module.name %> constants ===
 
@@ -351,12 +386,11 @@ end %>
 
     rhoUtil.createPropsProxy(<%= $cur_module.name %>, [
     <% first_prop = true
-       $cur_module.properties.each do |module_property|
-         next if module_property.name.nil? || module_property.name.empty?
-         next if module_property.access != ModuleMethod::ACCESS_STATIC
-         next if module_property.is_deprecated
-         next if module_property.readonly && module_property.writeonly
-    %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= module_property.name %>', propAccess: '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>' }
+        static_module_properties.each do |module_property|
+            rw_mode = ''
+            rw_mode += 'r' if !module_property.writeonly
+            rw_mode += 'w' if !module_property.readonly
+    %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= module_property.name %>', propAccess: '<%= rw_mode %>' }
     <% first_prop = false
        end %>], apiReq);
 
@@ -425,6 +459,18 @@ end %>
         <% first_method = false
            end %>
         ], apiReq, function(){ return this.getId(); });
+
+        // will reuse already defined methods
+        rhoUtil.createEntityPropsProxy(<%= $cur_module.name %>, [<% 
+            first_prop = true
+            callback_accessors.each do |m|
+                fn_signature = "#{$cur_module.name}.prototype.#{m.native_name.capitalize_first}"        
+    %>
+             <%= first_prop ? '  ' : ', ' %>{ propName: '<%= m.linked_property.name %>'<%
+        %>, propSetter : <%=fn_signature  %>} <% 
+                first_prop = false
+            end %>
+        ]);
 
     <% end %>
 
