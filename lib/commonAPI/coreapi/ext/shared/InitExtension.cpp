@@ -16,6 +16,7 @@ extern "C" void Init_RhoFile();
 extern "C" void Init_NativeMenuBar();
 extern "C" void Init_Led();
 extern "C" void Init_Push();
+extern "C" void Init_Local();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -62,5 +63,9 @@ extern "C" void Init_CoreAPI_Extension()
 
 #if defined(OS_ANDROID) || defined(OS_WINCE) || defined(OS_MACOSX)
 	Init_Push();
+#endif
+
+#if defined(OS_ANDROID)
+	Init_Local();
 #endif
 }

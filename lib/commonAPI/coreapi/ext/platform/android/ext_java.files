@@ -36,3 +36,13 @@ ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationFact
 ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationSingleton.java
 ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationRhoListener.java
 ext/platform/android/src/com/motorolasolutions/rho/notification/PopupActivity.java
+ext/platform/android/generated/src/com/rho/push/local/LocalBase.java
+ext/platform/android/generated/src/com/rho/push/local/LocalFactorySingleton.java
+ext/platform/android/generated/src/com/rho/push/local/LocalSingletonBase.java
+ext/platform/android/generated/src/com/rho/push/local/ILocal.java
+ext/platform/android/generated/src/com/rho/push/local/ILocalFactory.java
+ext/platform/android/generated/src/com/rho/push/local/ILocalSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/push/local/Local.java
+ext/platform/android/src/com/motorolasolutions/rho/push/local/LocalFactory.java
+ext/platform/android/src/com/motorolasolutions/rho/push/local/LocalSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/push/local/LocalWebServer.java
