@@ -195,7 +195,7 @@ namespace "config" do
           puts "\nPlease, set either VS110COMNTOOLS or VS90COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2012 or 2008 respectively."
           exit 1
         end
-      elsif vcbuild =~ /vcbuild/i
+      elsif vcbuild.downcase == 'vcbuild'
         # if vcbuild=='vcbuild', then it is Visual Studio 2008 setup
         $vs_version = 2008
         $vscommontools = ENV['VS90COMNTOOLS']
