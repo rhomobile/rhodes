@@ -931,10 +931,12 @@ module Rhogen
       TYPE_INT = 'INTEGER'
       TYPE_BOOL = 'BOOLEAN'
       TYPE_DOUBLE = 'FLOAT'
+      TYPE_CALLBACK = 'CALLBACK'
       TYPE_SELF = 'SELF_INSTANCE'
 
       SIMPLE_TYPES = [TYPE_STRING, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE]
       BASE_TYPES = [TYPE_STRING, TYPE_ARRAY, TYPE_HASH, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE]
+      ALL_TYPES = [TYPE_STRING, TYPE_ARRAY, TYPE_HASH, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE, TYPE_CALLBACK, TYPE_SELF]
 
       TYPE_TRAITS = {
           TYPE_STRING => {'default' => '""', 'cpp_type' => 'rho::String'},
@@ -1168,10 +1170,13 @@ module Rhogen
         @binding_name = val
       end
 
-      def is_accessor
-        (@special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER) || (@special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER)
+      def is_callback_accessor
+        (@linked_property != nil && @linked_property.type == MethodParam::TYPE_CALLBACK )
       end
 
+      def is_accessor
+        (@special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER) || (@special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER) || is_callback_accessor
+      end
     end
 
     class EntityField
@@ -2121,22 +2126,27 @@ module Rhogen
         if xml_module_property.attribute('default') != nil
           module_property.default_value = xml_module_property.attribute('default').to_s
         end
-        if xml_module_property.attribute('readOnly') != nil
-          module_property.readonly = xml_module_property.attribute('readOnly').to_s.downcase != 'false'
-        else
-          if xml_properties.attribute('readOnly') != nil
-            module_property.readonly = xml_properties.attribute('readOnly').to_s.downcase != 'false'
-          end
-        end
 
-        if xml_module_property.attribute('writeOnly') != nil
-          module_property.writeonly = xml_module_property.attribute('writeOnly').to_s.downcase != 'false'
-        else
-          if xml_properties.attribute('writeOnly') != nil
-            module_property.writeonly = xml_properties.attribute('writeOnly').to_s.downcase != 'false'
+        # callback is property with wrtieonly logic, it sets result with CALLBACK type
+        if module_property.type != MethodParam::TYPE_CALLBACK
+          if xml_module_property.attribute('readOnly') != nil
+            module_property.readonly = xml_module_property.attribute('readOnly').to_s.downcase != 'false'
+          else
+            if xml_properties.attribute('readOnly') != nil
+              module_property.readonly = xml_properties.attribute('readOnly').to_s.downcase != 'false'
+            end
           end
-        end
 
+          if xml_module_property.attribute('writeOnly') != nil
+            module_property.writeonly = xml_module_property.attribute('writeOnly').to_s.downcase != 'false'
+          else
+            if xml_properties.attribute('writeOnly') != nil
+              module_property.writeonly = xml_properties.attribute('writeOnly').to_s.downcase != 'false'
+            end
+          end
+        else
+          module_property.writeonly = true
+        end
 
         if xml_module_property.attribute('generateAPI') != nil
           module_property.generateAPI = xml_module_property.attribute('generateAPI').to_s.downcase != 'false'
@@ -2240,50 +2250,70 @@ module Rhogen
       #prepare getters and setters for property
       module_item.properties.each do |module_property|
         if module_property.generate_accessors
-          if  !module_property.writeonly
-            getter_method = ModuleMethod.new()
+          if module_property.type != MethodParam::TYPE_CALLBACK
+            if  !module_property.writeonly
+              getter_method = ModuleMethod.new()
 
-            getter_method.name = module_property.name
-            getter_method.native_name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
-            getter_method.desc = 'getter for "' + module_property.name + '" property'
-            getter_method.params = []
-            getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
-            getter_method.is_factory_method = false
-            getter_method.is_return_value = true
-            getter_method.access = module_property.access
-            getter_method.has_callback = ModuleMethod::CALLBACK_NONE
-            getter_method.linked_property = module_property
-            getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
-            getter_method.generateAPI = module_property.generateAPI
-            module_property.getter = getter_method
-            module_item.methods << getter_method
-          end
+              getter_method.name = module_property.name
+              getter_method.native_name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
+              getter_method.desc = 'getter for "' + module_property.name + '" property'
+              getter_method.params = []
+              getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
+              getter_method.is_factory_method = false
+              getter_method.is_return_value = true
+              getter_method.access = module_property.access
+              getter_method.has_callback = ModuleMethod::CALLBACK_NONE
+              getter_method.linked_property = module_property
+              getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
+              getter_method.generateAPI = module_property.generateAPI
+              module_property.getter = getter_method
+              module_item.methods << getter_method
+            end
 
-          if !module_property.readonly
+            if !module_property.readonly
+              setter_method = ModuleMethod.new()
+
+              setter_method.name = module_property.name + "="
+              setter_method.native_name = 'set' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
+              setter_method.desc = 'setter for "'+ module_property.name + '" property'
+              unless (module_property.param)
+                param = MethodParam.new()
+                param.name = 'value'
+                param.can_be_nil = false
+                param.type = module_property.type
+                module_property.param = param
+              end
+              setter_method.params = [module_property.param]
+              setter_method.run_in_thread = module_property.run_in_thread
+              setter_method.is_factory_method = false
+              setter_method.is_return_value = false
+              setter_method.access = module_property.access
+              setter_method.has_callback = ModuleMethod::CALLBACK_NONE
+              setter_method.linked_property = module_property
+              setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
+              setter_method.generateAPI = module_property.generateAPI
+              module_property.setter = setter_method
+
+              module_item.methods << setter_method
+            end
+          else
             setter_method = ModuleMethod.new()
 
             setter_method.name = module_property.name + "="
             setter_method.native_name = 'set' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
             setter_method.desc = 'setter for "'+ module_property.name + '" property'
-            unless (module_property.param)
-              param = MethodParam.new()
-              param.name = 'value'
-              param.can_be_nil = false
-              param.type = module_property.type
-              module_property.param = param
-            end
-            setter_method.params = [module_property.param]
+            setter_method.params = []
             setter_method.run_in_thread = module_property.run_in_thread
             setter_method.is_factory_method = false
             setter_method.is_return_value = false
             setter_method.access = module_property.access
-            setter_method.has_callback = ModuleMethod::CALLBACK_NONE
+            setter_method.has_callback = ModuleMethod::CALLBACK_MANDATORY
             setter_method.linked_property = module_property
-            setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
+            setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_NONE
             setter_method.generateAPI = module_property.generateAPI
             module_property.setter = setter_method
 
-            module_item.methods << setter_method
+            module_item.methods << setter_method           
           end
         end
       end
