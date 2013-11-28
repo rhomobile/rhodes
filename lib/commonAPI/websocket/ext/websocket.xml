@@ -30,11 +30,6 @@
         <PROPERTIES>
             <DESC>list of properties supported by instance of object</DESC>
 
-            <PROPERTY name="listener" type="CALLBACK">
-                <DESC></DESC>
-            </PROPERTY>
-            
-
             <PROPERTY name="onopen" type="CALLBACK">
                 <DESC></DESC>
             </PROPERTY>
@@ -57,15 +52,15 @@
                 <DESC>URL passed to Websocket constructor.</DESC>
             </PROPERTY>
             
-            <PROPERTY name="readyState" type="INTEGER">
+            <PROPERTY name="readyState" type="INTEGER" readOnly="true">
                 <DESC>Represents the state of the connection.</DESC>
             </PROPERTY>
             
-            <PROPERTY name="extensions" type="STRING">
+            <PROPERTY name="extensions" type="STRING" readOnly="true">
                 <DESC>Currently will return empty string.</DESC>
             </PROPERTY>
 
-            <PROPERTY name="protocol" type="STRING">
+            <PROPERTY name="protocol" type="STRING" readOnly="true">
                 <DESC>Currently will return empty string.</DESC>
             </PROPERTY>
             
@@ -81,7 +76,8 @@
                         <DESC>Specifies the URL to which to connect.</DESC>
                     </PARAM>
                     
-                    <PARAM name="protocols" type="STRING" optional="true">
+                    <PARAM name="protocols" type="STRING">
+                        <CAN_BE_NIL/>
                         <DESC>Currently not supported.</DESC>
                     </PARAM>
                 </PARAMS>

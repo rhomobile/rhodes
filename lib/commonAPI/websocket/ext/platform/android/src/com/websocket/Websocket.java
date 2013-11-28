@@ -8,88 +8,117 @@ import java.net.URI;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.api.MethodResult;
 import com.rhomobile.rhodes.Logger;
-//import com.rhomobile.rhodes.websockets.WebSocketClient;
 
 public class Websocket extends WebsocketBase implements IWebsocket {
+
+    private static final int STATE_CONNECTING   = 0;
+    private static final int STATE_OPEN         = 1;
+    private static final int STATE_CLOSING      = 2;
+    private static final int STATE_CLOSED       = 3;
+    
+    private int mState = -1;
+
+
     
     private static final String TAG = "Websocket";
     
-    private IMethodResult mListener;
+    private IMethodResult mOnOpen;
+    private IMethodResult mOnMessage;
+    private IMethodResult mOnError;
+    private IMethodResult mOnClose;
+    
+    
     private WebSocketClient mClient;
     private WebsocketFactory mFactory;
+    private String mURL;
     
-    public Websocket(WebsocketFactory factory, String id/*, String url*/) {
-    
+    public Websocket(WebsocketFactory factory, String id) {
         super(id);
         
-        Logger.I(TAG,"Websocket ctor, id: " + id /*+ " url: " + url */);
-        
-        mListener = null;
+        Logger.I(TAG,"Websocket ctor, id: " + id);
         mFactory = factory;
-        mClient = null;
-        
     }
     
-    public void setListener(String str, IMethodResult listener) {
-        Logger.I(TAG,"Websocket setListener, str:" + str);
-        mListener = listener;
+    public void setOnopen(IMethodResult result) {
+        Logger.I(TAG,"Websocket setOnopen");
+        mOnOpen = result;
     }
     
-    public void callListener(IMethodResult listener) {
-        Logger.I(TAG,"Websocket callListener");
-
-        if ( mListener != null ) {
-            mListener.set("test");
-        }
+    public void setOnmessage(IMethodResult result) {
+        Logger.I(TAG,"Websocket setOnmessage");
+        mOnMessage = result;
     }
-
     
-    public void getListener(IMethodResult listener) {
+    public void setOnerror(IMethodResult result) {
+        Logger.I(TAG,"Websocket setOnerror");
+        mOnError = result;
     }
-
-        
-//    public void destroy(IMethodResult result) {
-//        mFactory.destroy(this);
-//    }
+    
+    public void setOnclose(IMethodResult result) {
+        Logger.I(TAG,"Websocket setOnclose");
+        mOnClose = result;
+    }
+    
+    public void getUrl(IMethodResult result) {
+        result.set(mURL);
+    }
+    
+    public void getReadyState(IMethodResult result) {
+        result.set(mState);
+    }
+    
+    public void getExtensions(IMethodResult result) {
+        result.set("");
+    }
+    
+    public void getProtocol(IMethodResult result) {
+        result.set("");
+    }
     
     @Override
-    public void create(String url, IMethodResult result) {
+    public void create(String url, String protocols, IMethodResult result) {
+        Logger.I(TAG,"Websocket create, url:" + url);
+        
+        mURL = url;
+
         mClient = new WebSocketClient(URI.create(url),new WebSocketClient.Listener() {
             @Override
             public void onConnect() {
-                if ( mListener != null ) {
+                mState = STATE_OPEN;
+            
+                if ( mOnOpen != null ) {
                     Map<String,Object> result = new HashMap<String,Object>();
-                    result.put("event","onConnect");
-                    mListener.set(result);
+                    mOnOpen.set(result);
                 }
             }
             
             @Override
             public void onMessage(String message) {
-                if ( mListener != null ) {
+                if ( mOnMessage != null ) {
                     Map<String,Object> result = new HashMap<String,Object>();
-                    result.put("event","onMessage");
-                    result.put("message",message);
-                    mListener.set(result);
+                    result.put("data",message);
+                    mOnMessage.set(result);
                 }
             }
             
             @Override
             public void onMessage(byte[] data) {
-                if ( mListener != null ) {
+                if ( mOnMessage != null ) {
                     Map<String,Object> result = new HashMap<String,Object>();
-                    result.put("event","onMessage");
-                    result.put("message",new String(data));
-                    mListener.set(result);
+                    result.put("data",new String(data));
+                    mOnMessage.set(result);
                 }
             }
                       
             @Override
             public void onDisconnect(int code, String reason) {
-                if ( mListener != null ) {
+                mState = STATE_CLOSED;
+                
+                if ( mOnClose != null ) {
                     Map<String,Object> result = new HashMap<String,Object>();
-                    result.put("event","onDisconnect");
-                    mListener.set(result);
+                    result.put("code",code);
+                    result.put("reason",reason);
+                    mOnClose.set(result);
                 }
             }
                       
@@ -100,10 +129,13 @@ public class Websocket extends WebsocketBase implements IWebsocket {
             },
             null
         );
+        
+        connect();
     }
 
-    @Override
-    public void connect(IMethodResult result) {
+    public void connect() {
+        mState = STATE_CONNECTING;
+
         try {
             mClient.connect();
         } catch (Exception e) {
@@ -113,7 +145,9 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     
 
     @Override
-    public void disconnect(IMethodResult result) {
+    public void close(IMethodResult result) {
+        mState = STATE_CLOSING;
+        
         try {
             mClient.disconnect();
         } catch (Exception e) {
@@ -131,11 +165,12 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     }
     
     private void reportError(Exception e) {
-        if ( mListener != null ) {
+        Logger.E(TAG,"Websocket error: " + e.getMessage());
+
+        if ( mOnError != null ) {
             Map<String,Object> result = new HashMap<String,Object>();
-            result.put("event","onError");
-            result.put("error",e.getMessage());
-            mListener.set(result);
+            result.put("message",e.getMessage());
+            mOnError.set(result);
         }
     }
 }
