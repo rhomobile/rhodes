@@ -14,3 +14,5 @@ project_paths:
   win32: ext/platform/wm/Websocket.vcproj
   
 xml_api_paths: ext/Websocket.xml
+
+platforms: ["android"]
