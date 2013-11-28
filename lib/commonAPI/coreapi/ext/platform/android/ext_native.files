@@ -109,3 +109,10 @@ ext/platform/android/jni/Intent_impl.cpp
 ext/shared/generated/intent_api_init.cpp
 ext/shared/generated/intent_js_api.cpp
 ext/shared/generated/intent_ruby_api.c
+ext/platform/android/generated/jni/Local.cpp
+ext/platform/android/generated/jni/local_ruby_wrap.cpp
+ext/platform/android/generated/jni/local_js_wrap.cpp
+ext/platform/android/jni/Local_impl.cpp
+ext/shared/generated/local_api_init.cpp
+ext/shared/generated/local_js_api.cpp
+ext/shared/generated/local_ruby_api.c

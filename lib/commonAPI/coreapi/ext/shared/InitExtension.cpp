@@ -18,6 +18,7 @@ extern "C" void Init_Led();
 extern "C" void Init_Push();
 extern "C" void Init_NewORM_extension();
 extern "C" void Init_Intent();
+extern "C" void Init_Local();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -71,5 +72,9 @@ extern "C" void Init_CoreAPI_Extension()
 
 #if defined(OS_ANDROID) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR)) || defined(OS_WINCE)
     Init_Intent();
+#endif
+
+#if defined(OS_ANDROID)
+	Init_Local();
 #endif
 }

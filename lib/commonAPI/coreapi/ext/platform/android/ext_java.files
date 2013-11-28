@@ -45,3 +45,13 @@ ext/platform/android/generated/src/com/rho/intent/IIntentFactory.java
 ext/platform/android/generated/src/com/rho/intent/IIntentSingleton.java
 ext/platform/android/src/com/rho/intent/IntentSingleton.java
 ext/platform/android/src/com/rho/intent/IntentReceiver.java
+ext/platform/android/generated/src/com/rho/push/local/LocalBase.java
+ext/platform/android/generated/src/com/rho/push/local/LocalFactorySingleton.java
+ext/platform/android/generated/src/com/rho/push/local/LocalSingletonBase.java
+ext/platform/android/generated/src/com/rho/push/local/ILocal.java
+ext/platform/android/generated/src/com/rho/push/local/ILocalFactory.java
+ext/platform/android/generated/src/com/rho/push/local/ILocalSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/push/local/Local.java
+ext/platform/android/src/com/motorolasolutions/rho/push/local/LocalFactory.java
+ext/platform/android/src/com/motorolasolutions/rho/push/local/LocalSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/push/local/LocalWebServer.java

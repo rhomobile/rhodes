@@ -1,0 +1,99 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Local" parent="Rho.Push">
+        <HELP_OVERVIEW>TODO</HELP_OVERVIEW>
+        <MORE_HELP>TODO</MORE_HELP>
+    
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/>
+			<!--PROPERTY_BAG/-->
+			<!--TODO Add default explanations to all of the properties/-->
+        </TEMPLATES>
+
+         <PROPERTIES access="INSTANCE">
+            <PROPERTY name="port" type="INTEGER" default="8081">
+                <DESC>Port number to which the Push server listens for push requests. Range between 0-65535 in Windows, 1025-65535 in Android</DESC>
+            </PROPERTY>
+            <PROPERTY name="passKey" type="STRING" default="">
+                <DESC>If specified, the client must include "passkey=value" in the passed parameters. Case sensitive. To disable passKey functionality, set the value to null, nil, or the empty string</DESC>
+            </PROPERTY>
+            <PROPERTY name="response" type="HASH">
+                <DESC>The path of the HTML file to return to the client as part of the Push HTTP response.</DESC>
+				<PARAMS>
+					<PARAM name="pass" type="STRING" default="">
+						<DESC>A string which is sent as the body of the successful Push HTTP Response.</DESC>
+					</PARAM>
+					<PARAM name="fail" type="STRING" default="">
+						<DESC>A string which is sent as the body of the failed Push HTTP Response.</DESC>
+					</PARAM>
+				</PARAMS>
+            </PROPERTY>
+            <PROPERTY name="path" type="STRING" default="">
+                <DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="corsOrigins" type="ARRAY">
+                <DESC>An array of acceptable values for the Access-Control-Allow-Origin HTTP response header. This needs to be set to enable Cross Origin Resource Sharing (CORS). CORS is required to be able to send a push notification by using AJAX within a web browser. A value of "*" within this array will allow any HTTP request.</DESC>
+				<PARAM type="STRING">
+                    <DESC>A URL from which CORS HTTP request will be allowed. '*' will allow all requests. 'null' will allow requests from files served using the file protocol.</DESC>
+                </PARAM>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS>
+            <METHOD name="createNew" access="STATIC" hasCallback="optional">
+				<PARAMS>
+					<PARAM name="propertyMap" type="HASH">
+						<DESC>TODO</DESC>
+						<PARAMS>
+							<PARAM name="port" type="INTEGER" default="8081">
+								<DESC>TODO</DESC>
+							</PARAM>
+							<PARAM name="passKey" type="STRING" default="">
+								<DESC>TODO</DESC>
+							</PARAM>
+							<PARAM name="response" type="HASH" default="">
+								<DESC>TODO</DESC>
+								<PARAMS>
+									<PARAM name="pass" type="STRING" default="Empty (a short default HTML response is sent)">
+										<DESC>A string which is sent as the body of the successful Push HTTP Response.</DESC>
+									</PARAM>
+									<PARAM name="fail" type="STRING" default="Empty (a short default HTML response is sent)">
+										<DESC>A string which is sent as the body of the failed Push HTTP Response.</DESC>
+									</PARAM>
+								</PARAMS>
+							</PARAM>
+							<PARAM name="path" type="STRING" default="">
+								<DESC>TODO</DESC>
+							</PARAM>
+							<PARAM name="corsOrigins" type="ARRAY" default="">
+								<DESC>An array of acceptable values for the Access-Control-Allow-Origin HTTP response header. This needs to be set to enable Cross Origin Resource Sharing (CORS). CORS is required to be able to send a push notification by using AJAX within a web browser. A value of "*" within this array will allow any HTTP request.</DESC>
+								<PARAM type="STRING">
+									<DESC>A URL from which CORS HTTP request will be allowed. '*' will allow all requests. 'null' will allow requests from files served using the file protocol.</DESC>
+								</PARAM>
+							</PARAM>
+						</PARAMS>
+					</PARAM>
+				</PARAMS>
+                <RETURN type="SELF_INSTANCE"></RETURN>
+            </METHOD>
+    
+            <METHOD name="start" access="INSTANCE">
+                <DESC>Starts the Push server.</DESC>
+                <CALLBACK type="STRING"><!-- CALLBACK type="HASH" -->
+                    <DESC>TODO</DESC>
+                </CALLBACK>
+            </METHOD>
+    
+            <METHOD name="stop" access="INSTANCE">
+                <DESC>Stops the Push server</DESC>
+            </METHOD>
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>Android</PLATFORM>
+    </MODULE>
+</API>    
