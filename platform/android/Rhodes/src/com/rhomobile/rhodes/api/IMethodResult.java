@@ -27,5 +27,11 @@ public interface IMethodResult {
     void setError(String mesage);
     void setArgError(String message);
 
+    // hasCallback is used for backward compartability with some API's
+    // use-cases are:
+    // - if callback is set then return values on event or timer
+    // - if callback is not set then just return current values
+    // in general case it should not be used. there should be
+    // two different methods for getting values and setting callbacks
     boolean hasCallback();
 }
