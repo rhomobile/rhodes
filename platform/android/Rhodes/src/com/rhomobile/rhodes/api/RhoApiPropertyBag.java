@@ -87,7 +87,7 @@ public class RhoApiPropertyBag implements
     public void setProperty(String name, String val, IMethodResult result) {
         if (isAllowed(name)) {
             getPropertiesMap().put(name, val);
-        } else {
+        } else if (result != null) {
             result.setArgError("Unknown property: '" + name + "'");
         }
     }
@@ -99,7 +99,7 @@ public class RhoApiPropertyBag implements
             for(String name: names) {
                 setProperty(name, props.get(name), result);
             }
-        } else {
+        } else if (result != null) {
             names.removeAll(mAllowedNames);
             StringBuffer strNames = new StringBuffer();
             for (String name: names) {
