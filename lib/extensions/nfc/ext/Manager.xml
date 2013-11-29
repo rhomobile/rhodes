@@ -125,10 +125,10 @@
                 <DESC>The buffer to be written to a Tag is large than the Tag capacity.</DESC>
             </CONSTANT>
             <CONSTANT name="NFC_BATTERY_CRITICAL" value="NFC_BATTERY_CRITICAL">
-                <DESC>Battery percentage is below 6% and polling can’t be started.</DESC>
+                <DESC>Battery percentage is below 6% and polling can't be started.</DESC>
             </CONSTANT>
             <CONSTANT name="NFC_STATUS_FLIGHT_MODE_ON" value="NFC_STATUS_FLIGHT_MODE_ON">
-                <DESC>Flight mode is ON and polling can’t be started.</DESC>
+                <DESC>Flight mode is ON and polling can't be started.</DESC>
             </CONSTANT>
             <CONSTANT name="NFC_NOTIFY_TARGET_LOST" value="NFC_NOTIFY_TARGET_LOST">
                 <DESC>Target moved out of the proximity.</DESC>
