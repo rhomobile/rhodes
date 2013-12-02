@@ -1,0 +1,30 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="AudioCapture" parent="Rho">
+        <HELP_OVERVIEW>Audio capture API</HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+    
+        <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+        <PLATFORM>Android</PLATFORM>
+        <METHODS>
+
+            <METHOD name="start" access="STATIC" hasCallback="optional">
+                <DESC>start audio recording</DESC>
+            </METHOD>
+    
+            <METHOD name="stop" access="STATIC" >
+                <DESC>stop audio recording</DESC>
+            </METHOD>
+    
+            <METHOD name="cancel" access="STATIC" >
+                <DESC>cancel audio recording</DESC>
+            </METHOD>
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+    </MODULE>
+</API>    
