@@ -540,10 +540,10 @@ namespace "config" do
         
     end
 
-    if $app_config['extensions'].index('rhoelementsext')
-        #$app_config["extensions"].delete("rawsensors")
-        $app_config["extensions"].delete("audiocapture")
-    end
+    #if $app_config['extensions'].index('rhoelementsext')
+    #    #$app_config["extensions"].delete("rawsensors")
+    #    $app_config["extensions"].delete("audiocapture")
+    #end
     
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
@@ -645,9 +645,9 @@ namespace "config" do
                 if $app_config['extensions'].index('nfc')
                     $app_config['extensions'].delete('nfc')
                 end
-                if $app_config['extensions'].index('audiocapture')
-                    $app_config['extensions'].delete('audiocapture')
-                end
+                #if $app_config['extensions'].index('audiocapture')
+                #    $app_config['extensions'].delete('audiocapture')
+                #end
                 if $app_config['extensions'].index('rho-javascript')
                     $app_config['extensions'].delete('rho-javascript')
                 end
