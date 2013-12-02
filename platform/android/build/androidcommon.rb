@@ -284,8 +284,27 @@ def cc_run(command, args, chdir = nil)
   out = StringIO.new
   ret = nil
   Open3.popen2e(cmdstr) do |i,f,t|
+    warning = false
+    error = false
     while data = f.gets
-      out.puts data
+      if data =~ /error:/
+        error = true
+      elsif data =~ /warning:/
+        warning = true
+      elsif data =~ /note:/
+      else
+        warning = false
+        error = false
+      end
+
+      if error
+        out.write "\e[31m#{data}\e[0m"
+      elsif warning
+        out.write "\e[33m#{data}\e[0m"
+      else
+        out.puts data
+      end
+
     end
     ret = t.value
   end

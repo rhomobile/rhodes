@@ -90,6 +90,17 @@ DWORD WINAPI runThreadDiscoverDevices(LPVOID data) {
 	return 0;
 }
 
+DWORD WINAPI runThreadDiscoverDevicesByName(LPVOID data) 
+{
+    const char* server_name = reinterpret_cast<const char*>(data);
+    
+    int iRetVal=RhoBluetoothManager::getInstance()->DiscoverDevices();
+    RhoBluetoothManager::getInstance()->onDiscoverSelectDevice(server_name);
+    RhoBluetoothManager::getInstance()->terminateDiscoverByNameThread();
+
+    return 0;
+}
+
 /*
 iRetVal=objBthUtils.OpenServerConnection(rgbSdpRecord, SDP_RECORD_SIZE, SDP_CHANNEL_OFFSET, DisplayMessage);
 if(iRetVal!=0)
@@ -250,8 +261,6 @@ int RhoBluetoothManager::RegisterService(BYTE *rgbSdpRecord, int cSdpRecord, int
 	}
 }
 
-
-
 static RhoBluetoothManager* ourRhoBluetoothManager = NULL;
 
 RhoBluetoothManager::RhoBluetoothManager() {
@@ -261,8 +270,6 @@ RhoBluetoothManager::RhoBluetoothManager() {
 RhoBluetoothManager::~RhoBluetoothManager() {
 	freeAll();
 }
-
-
 
 RhoBluetoothManager* RhoBluetoothManager::getInstance() {
 	if (ourRhoBluetoothManager == NULL) {
@@ -296,6 +303,18 @@ const char* RhoBluetoothManager::rho_bluetooth_get_device_name() {
 
 const char* RhoBluetoothManager::rho_bluetooth_get_last_error() {
 	return RHO_BT_OK;
+}
+
+const char* RhoBluetoothManager::rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url) 
+{
+    freeAll();
+    init();
+
+    strcpy(mCreateSessionCallback, callback_url);
+   
+    CreateThread(NULL, 0, runThreadDiscoverDevicesByName, (LPVOID)server_name, 0, NULL);
+
+    return RHO_BT_OK;
 }
 
 const char* RhoBluetoothManager::rho_bluetooth_create_session(const char* role, const char* callback_url) {
@@ -450,6 +469,14 @@ void RhoBluetoothManager::init() {
 	strcpy(mSessionCallback,"");
 }
 
+void RhoBluetoothManager::terminateDiscoverByNameThread() {
+    //if (m_hDiscoverThred) {
+    //    DWORD dwExitCode = 0;
+    //    TerminateThread(m_hDiscoverThred, dwExitCode);
+    //    m_hDiscoverThred = NULL;
+    //}
+}
+
 
 void RhoBluetoothManager::terminateDiscoverThread() {
 	if (m_hDiscoverThred) {
@@ -579,8 +606,6 @@ int RhoBluetoothManager::getBlocksSummarySizeFromBlock(RhoDataBlock* block) {
 }
 
 
-
-
 int RhoBluetoothManager::DiscoverDevices() {
 	LOG(INFO)  + "RhoBluetoothManager::DiscoverDevices() START";
 	WSAQUERYSET		wsaq;
@@ -612,6 +637,7 @@ int RhoBluetoothManager::DiscoverDevices() {
 	pwsaResults->dwNameSpace = NS_BTH;
 	pwsaResults->lpBlob = NULL;
 
+    //remove items from old list
 	if(m_pStart)
 	{
 		for(m_pCurrentDevice=m_pStart;m_pCurrentDevice;)
@@ -621,6 +647,7 @@ int RhoBluetoothManager::DiscoverDevices() {
 			free(temp);
 		}
 	}
+    //fill new list of devices
 	m_pEnd=m_pStart=NULL;
 	m_iNumDevices=0;
 	while (true)
@@ -769,6 +796,61 @@ int RhoBluetoothManager::makeConnection(BT_ADDR bt_addr) {
 	return 0;
 }
 
+void RhoBluetoothManager::onDiscoverSelectDevice(const char* server_name)
+{
+    LOG(INFO)  + "RhoBluetoothManager::onDiscoverSelectDevice() START";
+    if (server_name == 0) {
+        fireCreateSessionCallBack(RHO_BT_CANCEL, "");
+        LOG(INFO)  + "RhoBluetoothManager::onDiscoverDlgSelectDevice() invalid index";
+        return;
+    }
+
+    // make client connection
+    m_pCurrentDevice=m_pStart;
+    if (m_pStart == NULL) {
+        LOG(INFO)  + "RhoBluetoothManager::onDiscoverSelectDevice() empty device list";
+        fireCreateSessionCallBack(RHO_BT_ERROR, "");
+        return;
+    }
+
+    TCHAR text_server_name[1024];
+    rho::String tmp(server_name);
+    rho::String::size_type end = tmp.find(':');
+
+    if (end != rho::String::npos)
+        tmp.resize(end);
+
+    USES_CONVERSION;
+    _tcscpy(text_server_name, A2T(tmp.c_str()));
+
+    for (;m_pCurrentDevice;m_pCurrentDevice=m_pCurrentDevice->NextDevice)
+    {        
+        if (_tcscmp(text_server_name, m_pCurrentDevice->bthName) == 0) 
+            break;
+    }
+
+    BT_ADDR bt_addr = m_pCurrentDevice->bthAddress;
+
+    if (makeConnection(bt_addr) == 0) 
+    {
+        // get connected_device_name
+        RhoDeviceInfo devInfo;
+
+        RhoDeviceInfo* pPeerDeviceInfo = &devInfo;
+        StringCchPrintf(pPeerDeviceInfo[0].szDeviceNameAddr, ARRAYSIZE(pPeerDeviceInfo[0].szDeviceNameAddr), L"%s:(%04x%08x)", 
+            m_pCurrentDevice->bthName, GET_NAP(m_pCurrentDevice->bthAddress), GET_SAP(m_pCurrentDevice->bthAddress));
+
+        WideCharToMultiByte(CP_UTF8, 0, devInfo.szDeviceNameAddr, -1, mConnectedDeviceName, MAX_NAME_SIZE, 0, 0);
+        // fire callback
+        LOG(INFO)  + "RhoBluetoothManager::onDiscoverDlgSelectDevice() FINISH OK";
+        fireCreateSessionCallBack(RHO_BT_OK, mConnectedDeviceName);
+        return;
+    }
+    LOG(INFO)  + "RhoBluetoothManager::onDiscoverSelectDevice() cannot make connection !";
+
+    // fire callback
+    fireCreateSessionCallBack(RHO_BT_ERROR, "");
+}
 
 void RhoBluetoothManager::onDiscoverDlgSelectDevice(int index) {
 	LOG(INFO)  + "RhoBluetoothManager::onDiscoverDlgSelectDevice() START";
@@ -814,8 +896,6 @@ void RhoBluetoothManager::onDiscoveredDlgCancel() {
 	fireCreateSessionCallBack(RHO_BT_CANCEL, "");
 }
 
-
-
 //Function: GetDeviceInfo
 //Purpose:	Returns name and address of all the devices in the link list in DeviceInfo. This is used by the UI to display the names and addresses of the devices found
 //Output:	DeviceInfo: name and address
@@ -843,14 +923,12 @@ int RhoBluetoothManager::GetDeviceInfo(RhoDeviceInfo *pPeerDeviceInfo, int iSele
 	{ 
 		if(iCtr==iSelectedItem)
 		{
-			StringCchPrintf(pPeerDeviceInfo[0].szDeviceNameAddr, ARRAYSIZE(pPeerDeviceInfo[0].szDeviceNameAddr), L"%s:(%04x%08x)", m_pCurrentDevice->bthName, GET_NAP(m_pCurrentDevice->bthAddress), GET_SAP(m_pCurrentDevice->bthAddress));		
+			StringCchPrintf(pPeerDeviceInfo[0].szDeviceNameAddr, ARRAYSIZE(pPeerDeviceInfo[0].szDeviceNameAddr), L"%s:(%04x%08x)", m_pCurrentDevice->bthName, GET_NAP(m_pCurrentDevice->bthAddress), GET_SAP(m_pCurrentDevice->bthAddress));
 			return 0;
 		}
 	} 
 	return -1;
 }
-
-
 
 //Function: GetGUID
 //Purpose:	Conversts a string containing the GUID into a GUID datatype.
@@ -903,19 +981,6 @@ int RhoBluetoothManager::GetLocalDeviceName(RhoDeviceInfo *pLocalDeviceInfo)
 	}
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 RhoDiscoverDlg::RhoDiscoverDlg() {
@@ -1008,49 +1073,6 @@ void RhoDiscoveredDlg::closeDialog() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 int rho_bluetooth_is_bluetooth_available() {
 	return RhoBluetoothManager::getInstance()->rho_bluetooth_is_bluetooth_available();
 }
@@ -1081,8 +1103,7 @@ const char* rho_bluetooth_create_custom_server_session(const char* client_name, 
 }
 
 const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url) {
-
-    return NULL;
+    return RhoBluetoothManager::getInstance()->rho_bluetooth_create_custom_client_session(server_name, callback_url);
 }
 
 const char* rho_bluetooth_stop_current_connection_process() {
@@ -1133,8 +1154,6 @@ void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE d
 	RhoBluetoothManager::getInstance()->rho_bluetooth_session_write_data(connected_device_name, buf, size);
 	free(buf);
 }
-
-
 
 // CRhoBluetoothDiscoverDlg dialog
 
@@ -1198,11 +1217,6 @@ LRESULT CRhoBluetoothDiscoverDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND 
 	return 0;
 }
 
-
-
-
-
-
 // CRhoBluetoothDiscoveredDlg dialog
 
 CRhoBluetoothDiscoveredDlg::CRhoBluetoothDiscoveredDlg ()
@@ -1259,15 +1273,6 @@ LRESULT CRhoBluetoothDiscoveredDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWN
 	EndDialog(wID);
 	return 0;
 }
-
-
-
-
-
-
-
-
-
 
 #else // OS_WINDOWS_DESKTOP
 
