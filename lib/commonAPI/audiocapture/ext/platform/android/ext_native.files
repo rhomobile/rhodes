@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/AudioCapture.cpp
+ext/platform/android/generated/jni/audiocapture_ruby_wrap.cpp
+ext/platform/android/generated/jni/audiocapture_js_wrap.cpp
+ext/platform/android/jni/AudioCapture_impl.cpp
+ext/shared/generated/audiocapture_api_init.cpp
+ext/shared/generated/audiocapture_js_api.cpp
+ext/shared/generated/audiocapture_ruby_api.c
