@@ -120,17 +120,17 @@
 /* Begin PBXFileReference section */
 		FA2A0E9B183C415A00C11E7F /* RhodesBaseDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhodesBaseDelegate.h; sourceTree = SOURCE_ROOT; };
 		FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhodesBaseDelegate.m; sourceTree = SOURCE_ROOT; };
-		FAAFCD75183C40030068F3D3 /* libMotorolaLicence.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMotorolaLicence.a; path = <%= rhodes_root_path %>/res/libs/motorolalicence/iphone/libMotorolaLicence.a; sourceTree = "<absolute>"; };
+		FAAFCD75183C40030068F3D3 /* libMotorolaLicence.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMotorolaLicence.a; path = "<%= rhodes_root_path %>/res/libs/motorolalicence/iphone/libMotorolaLicence.a"; sourceTree = "<absolute>"; };
 		FAED7864183C3A8100BC7028 /* libRhodes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRhodes.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAED7867183C3A8100BC7028 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FAED786B183C3A8100BC7028 /* Rhodes-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rhodes-Prefix.pch"; sourceTree = "<group>"; };
 		FAED7878183C3A8100BC7028 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhoextlib.xcodeproj; path = <%= rhodes_root_path %>/platform/iphone/rhoextlib/rhoextlib.xcodeproj; sourceTree = "<absolute>"; };
-		FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = <%= rhodes_root_path %>/platform/iphone/rhosynclib/rhosynclib.xcodeproj; sourceTree = "<absolute>"; };
-		FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = <%= rhodes_root_path %>/platform/iphone/rhorubylib/rhorubylib.xcodeproj; sourceTree = "<absolute>"; };
-		FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = <%= rhodes_root_path %>/platform/iphone/RhoLib/RhoLib.xcodeproj; sourceTree = "<absolute>"; };
-		FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoAppBaseLib.xcodeproj; path = <%= rhodes_root_path %>/platform/iphone/RhoAppBaseLib/RhoAppBaseLib.xcodeproj; sourceTree = "<absolute>"; };
-		FAED78A5183C3B2100BC7028 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = <%= rhodes_root_path %>/platform/iphone/curl/curl.xcodeproj; sourceTree = "<absolute>"; };
+		FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhoextlib.xcodeproj; path = "<%= rhodes_root_path %>/platform/iphone/rhoextlib/rhoextlib.xcodeproj"; sourceTree = "<absolute>"; };
+		FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = "<%= rhodes_root_path %>/platform/iphone/rhosynclib/rhosynclib.xcodeproj"; sourceTree = "<absolute>"; };
+		FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = "<%= rhodes_root_path %>/platform/iphone/rhorubylib/rhorubylib.xcodeproj"; sourceTree = "<absolute>"; };
+		FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = "<%= rhodes_root_path %>/platform/iphone/RhoLib/RhoLib.xcodeproj"; sourceTree = "<absolute>"; };
+		FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoAppBaseLib.xcodeproj; path = "<%= rhodes_root_path %>/platform/iphone/RhoAppBaseLib/RhoAppBaseLib.xcodeproj"; sourceTree = "<absolute>"; };
+		FAED78A5183C3B2100BC7028 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = "<%= rhodes_root_path %>/platform/iphone/curl/curl.xcodeproj"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -514,7 +514,7 @@
 				GCC_PREFIX_HEADER = "Rhodes/Rhodes-Prefix.pch";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					<%= rhodes_root_path %>/res/libs/motorolalicence/iphone,
+					"<%= rhodes_root_path %>/res/libs/motorolalicence/iphone",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
@@ -533,7 +533,7 @@
 				GCC_PREFIX_HEADER = "Rhodes/Rhodes-Prefix.pch";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					<%= rhodes_root_path %>/res/libs/motorolalicence/iphone,
+					"<%= rhodes_root_path %>/res/libs/motorolalicence/iphone",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";

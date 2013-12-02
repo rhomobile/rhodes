@@ -16,7 +16,10 @@ iphone:
 
 android:
   version: 2.3.3
-  
+
+win32:
+  extensions: ["serialport"]
+
 extensions: ["mspec", "fileutils", "zlib", "hmac", "digest", "digest-md5", "digest-sha1", "digest-sha2", "test-libs", "set", "thread", "timeout", "uri", "net-http", "fcntl", "rexml", "zlib", "openssl.so", "openssl", "ezcrypto", "logCapture" ]
 
 paths:

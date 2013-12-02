@@ -490,4 +490,9 @@ public class MethodResult implements IMethodResult {
             nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
+
+    @Override
+    public boolean hasCallback() {
+        return (mStrCallback.length() > 0 || mRubyProcCallback != 0);
+    }
 }
