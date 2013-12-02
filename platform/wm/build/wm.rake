@@ -173,8 +173,7 @@ namespace "config" do
     end
 
     task :qt do
-      # read vcbuild directly from rhobuild.yml (ignore default value stored in $vcbuild variable)
-      vcbuild = $config["env"]["paths"]["vcbuild"]
+      $msvc_version = $app_config["win32"]["msvc"] if $app_config["win32"] && $app_config["win32"]["msvc"]
 
       # use Visual Studio 2012 by default
       $vs_version = 2012
@@ -184,33 +183,33 @@ namespace "config" do
       # use Qt 5 by default
       $qt_version = 5
 
-      # if vcbuild is not defined in rhobuild.yml, then automatically detect installed Visual Studio
-      if vcbuild.nil?
+      # if win32:msvc is not defined in build.yml, then automatically detect installed Visual Studio
+      if $msvc_version.nil?
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           $vs_version = 2008
           $vscommontools = ENV['VS90COMNTOOLS']
           $qmake_makespec = 'win32-msvc2008'
         end
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-          puts "\nPlease, set either VS110COMNTOOLS or VS90COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2012 or 2008 respectively."
+          puts "\nPlease, set either VS110COMNTOOLS or VS90COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012 or 2008 respectively."
           exit 1
         end
-      elsif vcbuild =~ /vcbuild/i
-        # if vcbuild=='vcbuild', then it is Visual Studio 2008 setup
+      elsif $msvc_version == "2008"
         $vs_version = 2008
         $vscommontools = ENV['VS90COMNTOOLS']
         $qmake_makespec = 'win32-msvc2008'
-        $qt_version = 4
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-          puts "\nPlease, set either VS90COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2008"
+          puts "\nPlease, set VS90COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2008"
+          exit 1
+        end
+      elsif $msvc_version == "2012"
+        unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
+          puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012"
           exit 1
         end
       else
-        # otherwise it's Visual Studio 2012 setup
-        unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-          puts "\nPlease, set either VS110COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2012"
-          exit 1
-        end
+        puts "\nPlease, specify Visual Studio version as either 2008 or 2012 in win32:msvc section of build.yml"
+        exit 1
       end
 
       $qtdir = ENV['QTDIR']
@@ -1251,9 +1250,10 @@ namespace "run" do
   end
 
   desc "Build and run on WM6 emulator"
-  task :wm => ["device:wm:production"] do
+  task :wm => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do 
 
     if $use_direct_deploy == "no" 
+      Rake::Task["device:wm:production"].execute
       Rake::Task["run:wm:cab"].execute
     else
       # kill all running detool
@@ -1335,15 +1335,12 @@ namespace "run" do
     end
 
     desc "Build and run on the Windows Mobile device"
-    task :device  => ["config:wm"] do
+    task :device  => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do 
 
       if $use_direct_deploy == "no" 
         Rake::Task["device:wm:production"].invoke
         Rake::Task["run:wm:device:cab"].execute
       else
-        $build_cab = false   
-        Rake::Task["device:wm:production"].invoke
-
         # kill all running detool
         kill_detool
 

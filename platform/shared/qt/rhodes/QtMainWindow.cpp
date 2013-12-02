@@ -1055,14 +1055,26 @@ void QtMainWindow::takeSignature(void*) //TODO: Signature::Params*
 
 void QtMainWindow::fullscreenCommand(int enable)
 {
+#if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
+    if ((enable && !isFullScreen()) || (!enable && isFullScreen())) {
+        ui->menubar->setVisible(RHOCONF().getBool("w32_fullscreen_menu") || (!enable));
+        setWindowModality(enable ? Qt::ApplicationModal : Qt::NonModal);
+        setWindowState(windowState() ^ Qt::WindowFullScreen);
+    }
+#else
     if ((enable && !isMaximized()) || (!enable && isMaximized()))
         setWindowState(windowState() ^ Qt::WindowMaximized);
+#endif
     LOG(INFO) + (enable ? "Switched to Fullscreen mode" : "Switched to Normal mode" );
 }
 
 bool QtMainWindow::getFullScreen()
 {
-    return windowState()&Qt::WindowMaximized;
+#if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
+    return windowState() & Qt::WindowFullScreen;
+#else
+    return windowState() & Qt::WindowMaximized;
+#endif
 }
 
 void QtMainWindow::setCookie(const char* url, const char* cookie)

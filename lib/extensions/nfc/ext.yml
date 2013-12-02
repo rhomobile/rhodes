@@ -6,3 +6,7 @@ android:
   adds: ext/nfc/platform/android/additional_files
   source_list: ext/nfc/platform/android/ext_build.files
 libraries: ["Nfc"]
+
+xml_api_paths: ext/Manager.xml, ext/Tag.xml, ext/Message.xml, ext/Record.xml
+
+platforms: ["android"]
