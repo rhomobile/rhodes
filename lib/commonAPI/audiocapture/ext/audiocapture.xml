@@ -7,17 +7,70 @@
     
         <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
         <PLATFORM>Android</PLATFORM>
+        <PROPERTIES>
+
+			<ALIASES>
+				<ALIAS new="codec" existing="encoder" deprecated="true"/>
+				<ALIAS new="duration" existing="maxDuration" deprecated="true"/>
+			</ALIASES>
+
+            <PROPERTY name="source" access="STATIC" type="STRING">
+                <DESC>audio source</DESC>
+                <VALUES>
+                    <VALUE constName="MIC" value="mic">
+                        <DESC>embedded microphone</DESC>
+                    </VALUE>
+                    <VALUE constName="CAMCORDER" value="camcorder">
+                        <DESC>microphone with same orientation as camera if available, the main device microphone otherwise</DESC>
+                    </VALUE>
+                    <VALUE constName="CALL_FULLDUPLEX" value="call">
+                        <DESC>voice call uplink and downlink audio</DESC>
+                    </VALUE>
+                    <VALUE constName="CALL_DOWNLINK" value="call">
+                        <DESC>voice call downlink audio</DESC>
+                    </VALUE>
+                    <VALUE constName="CALL_UPLINK" value="call">
+                        <DESC>voice call uplink audio</DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
+            <PROPERTY name="encoder" access="STATIC" type="STRING">
+                <DESC>Encoder to compress recorded audio</DESC>
+                <VALUES>
+                    <VALUE constName="AAC_LC" value="AAC_LC">
+                        <DESC>AAC low complexity</DESC></VALUE>
+                    <VALUE constName="AAC" value="AAC">
+                        <DESC>AAC low complexity (same as AAC_LC)</DESC></VALUE>
+                    <VALUE constName="AAC_ELD" value="AAC_ELD">
+                        <DESC>AAC enhanced low delay</DESC></VALUE>
+                    <VALUE constName="AAC_HE" value="AAC_HE">
+                        <DESC>AAC high efficiency</DESC></VALUE>
+                    <VALUE constName="AMR_NB" value="AMR_NB">
+                        <DESC>AMR narrow-band</DESC></VALUE>
+                    <VALUE constName="AMR_WB" value="AMR_WB">
+                        <DESC>AMR wide-band</DESC></VALUE>
+                </VALUES>
+            </PROPERTY>
+            <PROPERTY name="maxDuration" access="STATIC" type="INTEGER">
+                <DESC>Maximum duration (in milli seconds) of the recording session</DESC>
+            </PROPERTY>
+        </PROPERTIES>
         <METHODS>
 
-            <METHOD name="start" access="STATIC" hasCallback="optional">
+            <METHOD name="start" access="STATIC" hasCallback="optional" runInThread="separate">
+                <PARAMS>
+                    <PARAM name="fileName" type="STRING">
+                        <DESC>The path without filename extension to store captured audio. The filename extension will be added automatically according to format.</DESC>
+                    </PARAM>
+                </PARAMS>
                 <DESC>start audio recording</DESC>
             </METHOD>
     
-            <METHOD name="stop" access="STATIC" >
+            <METHOD name="stop" access="STATIC" runInThread="none">
                 <DESC>stop audio recording</DESC>
             </METHOD>
     
-            <METHOD name="cancel" access="STATIC" >
+            <METHOD name="cancel" access="STATIC" runInThread="none">
                 <DESC>cancel audio recording</DESC>
             </METHOD>
 
