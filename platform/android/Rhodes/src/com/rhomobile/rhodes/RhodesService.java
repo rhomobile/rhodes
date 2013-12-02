@@ -134,6 +134,7 @@ public class RhodesService extends Service {
 	
 	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
 	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
+    private static final String CATEGORY_APP_MESSAGE = "com.rhomobile.rhodes.ACTION_APP_MESSAGE";
 
     private static final String NOTIFICATION_NONE = "none";
     private static final String NOTIFICATION_BACKGROUND = "background";
@@ -402,6 +403,7 @@ public class RhodesService extends Service {
 			return;
 		}
 		String source = intent.getStringExtra(INTENT_SOURCE);
+		Set<String> categories = intent.getCategories();
 		Logger.I(TAG, "handleCommand: startId=" + startId + ", source=" + source);
 		if (source == null)
 			throw new IllegalArgumentException("Service command received from empty source");
@@ -458,7 +460,19 @@ public class RhodesService extends Service {
             default:
                 Logger.W(TAG, "Unknown command type received from " + source + ": " + type);
             }
-		}
+        } else if (categories.contains(CATEGORY_APP_MESSAGE)) {
+            final Bundle extras = intent.getExtras();
+            Logger.D(TAG, "Received application message: " + extras);
+            RhodesApplication.runWhen(
+                    RhodesApplication.AppState.AppStarted,
+                    new RhodesApplication.StateHandler(true) {
+                        @Override
+                        public void run()
+                        {
+                            handleAppMessage(extras);
+                        }
+                    });
+        }
 	}
 	
 	public void startServiceForeground(int id, Notification notification) {
@@ -911,6 +925,39 @@ public class RhodesService extends Service {
 		}
 	}
 	
+    public static void sendApplicationMessage(String appName, String params) throws NameNotFoundException {
+
+        Intent intent = new Intent();
+        intent.setClassName(appName, RhodesService.class.getCanonicalName());
+        intent.addCategory(CATEGORY_APP_MESSAGE);
+        
+        intent.putExtra(INTENT_SOURCE, ContextFactory.getAppContext().getPackageName());
+
+        if (params != null) {
+            Bundle startParams = new Bundle();
+            if (params instanceof String) {
+                if (((String)params).length() != 0) {
+                    String[] paramStrings = ((String)params).split("&");
+                    for(int i = 0; i < paramStrings.length; ++i) {
+                        String key = paramStrings[i];
+                        String value = "";
+                        int splitIdx = key.indexOf('=');
+                        if (splitIdx != -1) {
+                            value = key.substring(splitIdx + 1); 
+                            key = key.substring(0, splitIdx);
+                        }
+                        startParams.putString(key, value);
+                    }
+                }
+            }
+            else
+                throw new IllegalArgumentException("Unknown type of incoming parameter");
+
+            intent.putExtras(startParams);
+        }
+
+        ContextFactory.getContext().startService(intent);
+    }
 	public static boolean isAppInstalled(String appName) {
 		try {
 			RhodesService.getContext().getPackageManager().getPackageInfo(appName, 0);
@@ -1170,8 +1217,6 @@ public class RhodesService extends Service {
      * @throws URISyntaxException, ActivityNotFoundException */
     public static void openExternalUrl(String url) throws URISyntaxException, ActivityNotFoundException
     {
-//        try
-//        {
             if(url.charAt(0) == '/')
                 url = "file://" + RhoFileApi.absolutePath(url);
 
@@ -1185,13 +1230,9 @@ public class RhodesService extends Service {
                 Intent intent = Intent.parseUri(url, 0);
                 ctx.startActivity(Intent.createChooser(intent, "Open in..."));
             }
-//        }
-//        catch (Exception e) {
-//            Logger.E(TAG, "Can't open url :'" + url + "': " + e.getMessage());
-//        }
     }
 
-	public native void setPushRegistrationId(String type, String id);
+    public native void setPushRegistrationId(String type, String id);
 
     private native boolean callPushCallback(String type, String json);
 
@@ -1346,6 +1387,10 @@ public class RhodesService extends Service {
                 Logger.E(TAG, "Error parsing JSON payload in push message: " + e.getMessage());
             }
         }
+    }
+    
+    private void handleAppMessage(Bundle extras) {
+        
     }
 
 	private void restartGeoLocationIfNeeded() {

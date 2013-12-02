@@ -420,4 +420,66 @@ void CSystemImplBase::getMain_window_closed(rho::apiGenerator::CMethodResult& oR
     //windows only
 }
 
+void CSystemImplBase::addApplicationMessage(const rho::String& msg)
+{
+    common::CMutexLock lock(m_appMessageMutex);
+    if(!m_appMessageWait && !m_appMessageNotifications)
+    {
+        m_appMessageQueue.push_back(msg);
+    }
+    else
+    {
+        if(m_appMessageWait)
+        {
+            m_appMessageResult.set(msg);
+            m_appMessageWait = false;
+        }
+
+        if(m_appMessageNotifications)
+        {
+            m_appMessageHandler.set(msg);
+        }
+    }
+}
+
+void CSystemImplBase::getApplicationMessage(rho::apiGenerator::CMethodResult& oResult)
+{
+    common::CMutexLock lock(m_appMessageMutex);
+    if(m_appMessageQueue.size() != 0)
+    {
+        oResult.set(m_appMessageQueue.front());
+        m_appMessageQueue.erase(m_appMessageQueue.begin());
+    }
+    else
+    {
+        m_appMessageResult = oResult;
+        m_appMessageWait = true;
+    }
+
+}
+
+void CSystemImplBase::startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult)
+{
+    common::CMutexLock lock(m_appMessageMutex);
+    m_appMessageNotifications = true;
+    m_appMessageHandler = oResult;
+    for(Vector<String>::const_iterator It = m_appMessageQueue.begin(); It != m_appMessageQueue.end(); ++It)
+    {
+        m_appMessageHandler.set(*It);
+    }
+    m_appMessageQueue.clear();
+}
+
+void CSystemImplBase::stopApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult)
+{
+    common::CMutexLock lock(m_appMessageMutex);
+    m_appMessageNotifications = false;
+}
+
+void CSystemImplBase::sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
+{
+    // Android only so far
+}
+
+
 }
