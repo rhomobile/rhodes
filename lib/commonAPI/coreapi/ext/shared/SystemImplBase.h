@@ -7,7 +7,7 @@ using namespace apiGenerator;
 class CSystemImplBase: public CSystemSingletonBase
 {
 public:
-    CSystemImplBase(): CSystemSingletonBase(){}
+    CSystemImplBase(): CSystemSingletonBase(), m_appMessageNotifications(false) {}
 
     virtual void getPlatform(CMethodResult& oResult);
     virtual void getHasCamera(CMethodResult& oResult);
@@ -62,6 +62,20 @@ public:
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
     virtual void set_application_icon_badge( int badgeNumber, rho::apiGenerator::CMethodResult& oResult);
     virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getApplicationMessage(rho::apiGenerator::CMethodResult& oResult);
+    virtual void startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
+    virtual void stopApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
+
+    void addApplicationMessage(const rho::String& msg);
+protected:
+    Vector<String> m_appMessageQueue;
+    common::CMutex m_appMessageMutex;
+    bool m_appMessageNotifications;
+    CMethodResult m_appMessageHandler;
+    bool m_appMessageWait;
+    CMethodResult m_appMessageResult;
 };
 
 }

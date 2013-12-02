@@ -60,6 +60,7 @@ public:
     virtual void setWindowSize(int, int, rho::apiGenerator::CMethodResult& result);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& result);
     virtual void runApplication(const rho::String&, const rho::String&, bool, rho::apiGenerator::CMethodResult& result);
+    virtual void sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
     virtual void getHasCamera(rho::apiGenerator::CMethodResult& result);
     virtual void getPhoneNumber(rho::apiGenerator::CMethodResult& result);
     virtual void getHasNetwork(rho::apiGenerator::CMethodResult& result);
@@ -258,13 +259,12 @@ void CSystemImpl::applicationUninstall(const rho::String& appname, rho::apiGener
 void CSystemImpl::openUrl(const rho::String& url, rho::apiGenerator::CMethodResult& result)
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
-    if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "openExternalUrl", "(Ljava/lang/String;)V");
-    if (!mid) return;
+    jclass clsRhodesService = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    jmethodID midOpenExternalUrl = getJNIClassStaticMethod(env, clsRhodesService, "openExternalUrl", "(Ljava/lang/String;)V");
+    JNI_EXCEPTION_CHECK(env, result);
 
     jhstring jhUrl = rho_cast<jstring>(env, url);
-    env->CallStaticVoidMethod(cls, mid, jhUrl.get());
+    env->CallStaticVoidMethod(clsRhodesService, midOpenExternalUrl, jhUrl.get());
 
     JNI_EXCEPTION_CHECK(env, result);
 }
@@ -349,7 +349,22 @@ void CSystemImpl::getIsMotorolaDevice(rho::apiGenerator::CMethodResult& result)
 {
     rho_sysimpl_get_property("is_motorola_device", result);
 }
+//----------------------------------------------------------------------------------------------------------------------
+void CSystemImpl::sendApplicationMessage(const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& result)
+{
+    JNIEnv *env = jnienv();
+    jclass clsRhodesService = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    jmethodID midSendApplicationMessage = getJNIClassStaticMethod(env, clsRhodesService, "sendApplicationMessage", "(Ljava/lang/String;Ljava/lang/String;)V");
+    JNI_EXCEPTION_CHECK(env, result);
 
+    jhstring jhAppName = rho_cast<jstring>(env, appName);
+    jhstring jhParams = rho_cast<jstring>(env, params);
+
+    env->CallStaticVoidMethod(clsRhodesService, midSendApplicationMessage, jhAppName.get(), jhParams.get());
+
+    JNI_EXCEPTION_CHECK(env, result);
+}
+//----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 
