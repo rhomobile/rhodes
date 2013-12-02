@@ -1,0 +1,136 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Tag" parent="Rho.NFC">
+        <HELP_OVERVIEW>NFC Tag</HELP_OVERVIEW>
+        <MORE_HELP>This calss representative NFC Tag object</MORE_HELP>
+    
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <PROPERTIES access="INSTANCE" generateAccessors="true">
+            
+            <DESC>list of properties supported by class</DESC>
+            
+            <PROPERTY name="type" type="STRING" readOnly="true">
+                <DESC>see NFC_TAG_xxx constants in Rho.NFC.Manager</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="serialNumber" type="INTEGER">
+                <DESC></DESC>
+                <PLATFORM>WM, Android</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="tagSize" type="INTEGER" readOnly="true">
+                <DESC>size in bytes</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="tagFreeSize" type="INTEGER" readOnly="true">
+                <DESC>free size in bytes</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="isReadOnly" type="BOOLEAN" readOnly="true">
+                <DESC>free size in bytes</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="isConnected" type="BOOLEAN" readOnly="true">
+                <DESC>free size in bytes</DESC>
+                <PLATFORM>Android</PLATFORM>
+            </PROPERTY>
+            
+        </PROPERTIES>
+        
+        <METHODS>
+
+            <METHOD name="getSupportedTechs" hasCallback="optional">
+                <DESC>return array of techs - see NFC_TAG_xxx constants</DESC>
+                <RETURN type="ARRAY">
+                    <PARAM type="STRING"/>
+                    <DESC></DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>
+            
+            <METHOD name="getID" hasCallback="optional">
+                <DESC>return array of bytes - id</DESC>
+                <RETURN type="ARRAY">
+                    <PARAM type="INTEGER"/>
+                    <DESC></DESC>
+                </RETURN>
+                <PLATFORM>Android</PLATFORM>
+            </METHOD>            
+            
+            <METHOD name="makeReadOnly" hasCallback="optional">
+                <DESC>make Tag read only</DESC>
+                <RETURN type="STRING">
+                    <DESC>return NFC_SUCCESS if OK</DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>
+            
+            <METHOD name="formatNDEF" hasCallback="optional">
+                <DESC>format Tag to NDEF type</DESC>
+                <RETURN type="STRING">
+                    <DESC>return NFC_SUCCESS if OK</DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>
+
+            <METHOD name="writeMessages" hasCallback="optional">
+                <DESC>format Tag to NDEF type</DESC>
+                <PARAMS>
+                    <PARAM name="messages" type="ARRAY">
+                        <DESC></DESC>
+                        <PARAM type="Rho.NFC.Message">
+                        </PARAM>    
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>return NFC_SUCCESS if OK</DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>
+            
+            <METHOD name="exchangeData" hasCallback="optional">
+                <DESC>write data to Tag and receive responce</DESC>
+                <PARAMS>
+                    <PARAM name="data" type="ARRAY">
+                        <DESC></DESC>
+                        <PARAM type="INTEGER">
+                        </PARAM>    
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="HASH">
+                    <DESC></DESC>
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>NFC_SUCCESS if OK</DESC>
+                        </PARAM>
+                        <PARAM name="data" type="ARRAY">
+                            <DESC></DESC>
+                            <PARAM type="INTEGER">
+                            </PARAM>    
+                        </PARAM>
+                    </PARAMS>	
+                </RETURN>
+                <PLATFORM>WM</PLATFORM>
+            </METHOD>
+            
+            
+            <METHOD name="close" hasCallback="optional">
+                <DESC>release resources, close connection</DESC>
+                <RETURN type="STRING">
+                    <DESC>return NFC_SUCCESS if OK</DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>
+            
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>    

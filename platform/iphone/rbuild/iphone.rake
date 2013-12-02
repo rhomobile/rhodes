@@ -1817,20 +1817,26 @@ namespace "clean" do
       app_path = File.join($app_path, 'bin', 'target', 'iOS')
       rm_rf app_path
 
-      chdir File.join($app_path, "/project/iphone")
+      iphone_project_folder = File.join($app_path, "/project/iphone")
 
-      args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
-      puts Jake.run($xcodebuild,args)
-      unless $? == 0
-        puts "Error cleaning"
-        exit 1
+      if File.exists?(iphone_project_folder)
+
+        chdir iphone_project_folder
+
+        args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
+        puts Jake.run($xcodebuild,args)
+        unless $? == 0
+          puts "Error cleaning"
+          exit 1
+        end
+        chdir $startdir
+
+        chdir File.join($app_path, "/project/iphone")
+         rm_rf 'build/Debug-*'
+         rm_rf 'build/Release-*'
+        chdir $startdir
+
       end
-      chdir $startdir
-
-      chdir File.join($app_path, "/project/iphone")
-       rm_rf 'build/Debug-*'
-       rm_rf 'build/Release-*'
-      chdir $startdir
 
       found = true
 
@@ -1856,7 +1862,9 @@ namespace "clean" do
 
 #    desc "Clean rhobundle"
     task :rhobundle => ["config:iphone"] do
-      rm_rf $bindir
+      if File.exists?($bindir)
+        rm_rf $bindir
+      end
     end
 
     task :all => ["clean:iphone:rhodes", "clean:iphone:rhobundle"]

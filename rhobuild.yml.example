@@ -6,6 +6,7 @@ env:
     android-ndk: C:/android-ndk-r4b
     cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
     msbuild: C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe
+    vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
     
 build:
   bbpath: platform/bb
