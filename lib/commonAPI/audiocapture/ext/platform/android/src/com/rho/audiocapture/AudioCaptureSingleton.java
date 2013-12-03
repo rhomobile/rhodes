@@ -8,7 +8,7 @@ class AudioCaptureSingleton extends AudioCaptureSingletonBase implements IAudioC
 
     @Override
     protected String getInitialDefaultID() {
-        return "";
+        return "id";
     }
 
     

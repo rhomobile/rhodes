@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Audiocapture_impl"
 
-#define AUDIOCAPTURE_FACTORY_CLASS "com.rho.audiocapture.AudiocaptureFactory"
+#define AUDIOCAPTURE_FACTORY_CLASS "com.rho.audiocapture.AudioCaptureFactory"
 
 extern "C" void Init_AudioCapture_API(void);
 
