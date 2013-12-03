@@ -9,7 +9,7 @@
         <PLATFORM>Android</PLATFORM>
 
         <TEMPLATES>
-            <DEFAILT_INSTANCE/>
+            <DEFAULT_INSTANCE/>
             <PROPERTY_BAG/>
         </TEMPLATES>
 

@@ -8,7 +8,7 @@ public class AudioCaptureFactory implements IAudioCaptureFactory {
     @Override
     public AudioCaptureSingleton getApiSingleton() {
         if (mSingleton == null)
-            mSingleton = new AudioCaptureSingleton();
+            mSingleton = new AudioCaptureSingleton(this);
         return mSingleton;
     }
 

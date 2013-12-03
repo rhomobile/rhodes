@@ -1,5 +1,15 @@
 package com.rho.audiocapture;
 
-class AudioCaptureSingleton implements IAudioCaptureSingleton {
+class AudioCaptureSingleton extends AudioCaptureSingletonBase implements IAudioCaptureSingleton {
+
+    public AudioCaptureSingleton(IAudioCaptureFactory factory) {
+        super(factory);
+    }
+
+    @Override
+    protected String getInitialDefaultID() {
+        return "";
+    }
+
     
 }
