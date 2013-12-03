@@ -3,17 +3,20 @@ package com.rho.audiocapture;
 public class AudioCaptureFactory implements IAudioCaptureFactory {
 
     AudioCaptureSingleton mSingleton;
+    AudioCapture mInstance;
     
     @Override
     public AudioCaptureSingleton getApiSingleton() {
-        if(mSingleton == null)
+        if (mSingleton == null)
             mSingleton = new AudioCaptureSingleton();
         return mSingleton;
     }
 
     @Override
     public AudioCapture getApiObject(String id) {
-        return null;
+        if (mInstance == null)
+            mInstance = new AudioCapture("");
+        return mInstance;
     }
 
 }
