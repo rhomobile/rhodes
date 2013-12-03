@@ -29,13 +29,13 @@
                     <VALUE constName="CAMCORDER" value="camcorder">
                         <DESC>microphone with same orientation as camera if available, the main device microphone otherwise</DESC>
                     </VALUE>
-                    <VALUE constName="CALL_FULLDUPLEX" value="call">
+                    <VALUE constName="CALL_FULLDUPLEX" value="call_fullduplex">
                         <DESC>voice call uplink and downlink audio</DESC>
                     </VALUE>
-                    <VALUE constName="CALL_DOWNLINK" value="call">
+                    <VALUE constName="CALL_DOWNLINK" value="call_downlink">
                         <DESC>voice call downlink audio</DESC>
                     </VALUE>
-                    <VALUE constName="CALL_UPLINK" value="call">
+                    <VALUE constName="CALL_UPLINK" value="call_uplink">
                         <DESC>voice call uplink audio</DESC>
                     </VALUE>
                 </VALUES>
