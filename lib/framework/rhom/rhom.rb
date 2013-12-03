@@ -43,8 +43,32 @@ module Rhom
     
     class << Rhom
       def client_id
-        c_id = ::Rho::RHO.get_user_db().select_from_table('client_info','client_id')[0]
-        c_id.nil? ? nil : c_id['client_id']
+        ::Rho::NewORM.getClientId
+      end
+
+      def have_local_changes
+        ::Rho::NewORM.haveLocalChanges
+        #TODO: enumerate all sync sources, create array of partitions and run query for all partition. 
+        #res = ::Rho::RHO.get_user_db().execute_sql("SELECT object FROM changed_values WHERE sent<=1 LIMIT 1 OFFSET 0")
+        #return res.length > 0
+      end
+
+      def database_local_reset()
+        puts "database_local_reset"
+        
+        #load all partitions
+        Rho::RHO.load_all_sources
+
+        ::Rho::RHO.get_db_partitions().each do |partition, db|
+        
+            next if partition != 'local'        
+            
+            db.destroy_tables( :exclude => ['sources','client_info'] )
+        end
+      
+        hash_migrate = {}
+        ::Rho::RHO.init_schema_sources(hash_migrate) 
+        
       end
 
       def database_client_reset(reset_local_models=true)
@@ -77,24 +101,6 @@ module Rhom
         if defined?(RHOCONNECT_CLIENT_PRESENT)
             Rho::RhoConnectClient.set_pollinterval(old_interval)
         end
-      end
-
-      def database_local_reset()
-        puts "database_local_reset"
-        
-		    #load all partitions
-		    Rho::RHO.load_all_sources
-
-        ::Rho::RHO.get_db_partitions().each do |partition, db|
-        
-            next if partition != 'local'        
-            
-            db.destroy_tables( :exclude => ['sources','client_info'] )
-        end
-      
-        hash_migrate = {}
-        ::Rho::RHO.init_schema_sources(hash_migrate) 
-        
       end
 
       def database_full_reset_ex(*args)
@@ -216,23 +222,22 @@ module Rhom
             Rho::RhoConnectClient.logout
         end
       end
-	  
-	  def database_export(partition)
-		  db = ::Rho::RHO::get_db_partitions[partition]
-		  if db
-			  db.export
-		  end
-      end
-	  
-	  def database_import(partition, zipName)
-		  db = ::Rho::RHO::get_db_partitions[partition]
-		  if db
-			  db.import(zipName)
-		  end
-      end
-		  
 
-        def search(args)
+      def database_export(partition)
+        db = ::Rho::RHO::get_db_partitions[partition]
+        if db
+          db.export
+        end
+      end
+    
+      def database_import(partition, zipName)
+        db = ::Rho::RHO::get_db_partitions[partition]
+        if db
+          db.import(zipName)
+        end
+      end
+
+      def search(args)
           #TODO : remove it, use  Rho::RhoConnectClient.search
 if defined?(RHOCONNECT_CLIENT_PRESENT)
           src_ar = args[:sources]
@@ -246,12 +251,6 @@ if defined?(RHOCONNECT_CLIENT_PRESENT)
           Rho::RhoConnectClient.search(args)
 end
         end
-	  
-		def have_local_changes
-		    #TODO: enumerate all sync sources, create array of partitions and run query for all partition. 
-			res = ::Rho::RHO.get_user_db().execute_sql("SELECT object FROM changed_values WHERE sent<=1 LIMIT 1 OFFSET 0")
-			return res.length > 0
-		end
       
     end #class methods
   end # Rhom
