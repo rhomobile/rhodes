@@ -130,7 +130,7 @@ public class Websocket extends WebsocketBase implements IWebsocket {
             null
         );
         
-        connect();
+        connect(result);
     }
 
     public void connect( IMethodResult result ) {
