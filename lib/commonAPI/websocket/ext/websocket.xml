@@ -2,8 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="Websocket">
-        <HELP_OVERVIEW>Websocket extension api</HELP_OVERVIEW>
-
+        <HELP_OVERVIEW>This API provides access to the WebSocket protocol for two-way communication with a remote host.</HELP_OVERVIEW>
         <TEMPLATES>
         </TEMPLATES>
         
@@ -27,23 +26,22 @@
             
         </CONSTANTS>
 
-        <PROPERTIES>
-            <DESC>list of properties supported by instance of object</DESC>
+         <PROPERTIES >
 
             <PROPERTY name="onopen" type="CALLBACK">
-                <DESC></DESC>
+                <DESC>This callback is fired when connection is established.</DESC>
             </PROPERTY>
             
             <PROPERTY name="onmessage" type="CALLBACK">
-                <DESC></DESC>
+                <DESC>This callback is fired when message is received. Use callback argument's 'data' attribute to access received message.</DESC>
             </PROPERTY>
             
             <PROPERTY name="onerror" type="CALLBACK">
-                <DESC></DESC>
+                <DESC>This callback is fired if error occurs. Use callback argument's 'message' attribute to access error message.</DESC>
             </PROPERTY>
             
             <PROPERTY name="onclose" type="CALLBACK">
-                <DESC></DESC>
+                <DESC>This callback is fired when connection is closed. It's argument provides two members - 'code' and 'reason'.'</DESC>
             </PROPERTY>            
             
             
@@ -56,11 +54,11 @@
                 <DESC>Represents the state of the connection.</DESC>
             </PROPERTY>
             
-            <PROPERTY name="extensions" type="STRING" readOnly="true">
+            <PROPERTY name="extensions" type="STRING" readOnly="true" generateDoc="false">
                 <DESC>Currently will return empty string.</DESC>
             </PROPERTY>
 
-            <PROPERTY name="protocol" type="STRING" readOnly="true">
+            <PROPERTY name="protocol" type="STRING" readOnly="true" generateDoc="false">
                 <DESC>Currently will return empty string.</DESC>
             </PROPERTY>
             
@@ -86,8 +84,9 @@
                     <DESC>Websocket object</DESC>
                 </RETURN>
             </METHOD>
-
-            <METHOD name="setListener" hasCallback="mandatory">
+            
+            <METHOD name="close" hasCallback="none" destructor="true">
+                <DESC>Closes the connection.</DESC>
                 <PLATFORM>Android</PLATFORM>
                 <DESC></DESC>
                 <CALLBACK type="HASH">
@@ -108,9 +107,10 @@
 
             <METHOD name="send" hasCallback="none">
                 <PLATFORM>Android</PLATFORM>
+                <DESC>Transmits data using the connection.</DESC>
                 <PARAMS>
                     <PARAM name="message" type="STRING">
-                        <DESC></DESC>
+                        <DESC>Data to transmit.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>

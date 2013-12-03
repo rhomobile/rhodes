@@ -133,13 +133,13 @@ public class Websocket extends WebsocketBase implements IWebsocket {
         connect();
     }
 
-    public void connect() {
+    public void connect( IMethodResult result ) {
         mState = STATE_CONNECTING;
 
         try {
             mClient.connect();
         } catch (Exception e) {
-            reportError(e);
+            result.setError( e.getMessage() );
         }
     }
     
@@ -151,7 +151,7 @@ public class Websocket extends WebsocketBase implements IWebsocket {
         try {
             mClient.disconnect();
         } catch (Exception e) {
-            reportError(e);
+            result.setError( e.getMessage() );
         }
     }
     
@@ -160,7 +160,7 @@ public class Websocket extends WebsocketBase implements IWebsocket {
         try {
             mClient.send(message);
         } catch (Exception e) {
-            reportError(e);
+            result.setError( e.getMessage() );
         }
     }
     
