@@ -258,7 +258,7 @@ class TrueClass; def to_i; 1 end end
     };
 
 <%   end  %>
-    rhoUtil.createEntityPropsProxy(<%= entity.name %>.prototype, [<% 
+    rhoUtil.createRawPropsProxy(<%= entity.name %>.prototype, [<% 
         first_prop = true
         entity.fields.each do |f|
             next if f.name.nil? || f.name.empty?
@@ -350,7 +350,7 @@ end %>
         module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>, apiReq, function(){ return this.getId(); } );
     <% end %>
 
-    rhoUtil.createEntityPropsProxy(<%= $cur_module.name %>.prototype, [<% 
+    rhoUtil.createRawPropsProxy(<%= $cur_module.name %>.prototype, [<% 
         first_prop = true
         callback_accessors.each do |m|
             fn_signature = "#{$cur_module.name}.prototype.#{m.native_name}"        
@@ -461,7 +461,7 @@ end %>
         ], apiReq, function(){ return this.getId(); });
 
         // will reuse already defined methods
-        rhoUtil.createEntityPropsProxy(<%= $cur_module.name %>, [<% 
+        rhoUtil.createRawPropsProxy(<%= $cur_module.name %>, [<% 
             first_prop = true
             callback_accessors.each do |m|
                 fn_signature = "#{$cur_module.name}.prototype.#{m.native_name}"        
