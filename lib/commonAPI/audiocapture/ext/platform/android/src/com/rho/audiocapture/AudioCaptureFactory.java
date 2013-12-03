@@ -15,7 +15,7 @@ public class AudioCaptureFactory implements IAudioCaptureFactory {
     @Override
     public AudioCapture getApiObject(String id) {
         if (mInstance == null)
-            mInstance = new AudioCapture("");
+            mInstance = new AudioCapture("id");
         return mInstance;
     }
 

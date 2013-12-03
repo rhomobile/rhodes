@@ -6,9 +6,12 @@ import java.util.Map;
 
 import android.media.MediaRecorder;
 
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.api.IMethodResult;
 
-public class AudioCapture extends AudioCaptureBase implements IAudioCapture{
+public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
+    
+    private static final String TAG = AudioCapture.class.getSimpleName();
     
     private Map<String, String> mActualPropertyMap = new HashMap<String, String>();
     
@@ -73,11 +76,14 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture{
     
     private int getMaxDuration(Map<String, String> props) {
         String maxDurationProp = props.get("maxDuration");
-        return Integer.parseInt(maxDurationProp);
+        return (maxDurationProp != null && maxDurationProp.length() != 0) ? Integer.parseInt(maxDurationProp) : 0;
         
     }
     
     private static int getOutputFormat(String path) {
+        
+        Logger.T(TAG, "Output format for: " + path);
+        
         File file = new File(path);
         String filename = file.getName();
         String ext = filename.substring(filename.lastIndexOf('.'));
@@ -105,6 +111,10 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture{
             Map<String, String> actualPropertyMap = makeActualPropertyMap(props);
 
             String path = actualPropertyMap.get("fileName");
+            if (path == null || path.length() == 0) {
+                Logger.E(TAG, "fileName property cannot be empty!");
+                throw new RuntimeException("fileName property is empty");
+            }
 
             MediaRecorder recorder = getRecorder();
             recorder.setAudioSource(getAudioSource(actualPropertyMap));
