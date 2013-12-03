@@ -11,12 +11,12 @@ def build_extension(name, arch, src_files)
 
     args = []
     args << "-I."
-    args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
     args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
     args << "-I\"#{$rootdir}/platform/shared\""
     args << "-I\"#{$rootdir}/platform/shared/common\""
     args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
     args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
+    args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
 
     cc_compile f, $tempdir, args or exit 1
 
@@ -24,20 +24,22 @@ def build_extension(name, arch, src_files)
 
   mkdir_p $targetdir unless File.exist? $targetdir
 
-  cc_ar File.join($targetdir,'lib'+name+'.a'), objects or exit 1
+  cc_ar File.join($targetdir,'lib'+name+'.a' ), objects or exit 1
 
 end
 
 namespace "build" do
   task :config do
     curdir = pwd
-    $videocapturedir = curdir.gsub('/ext/videocapture/platform/android','');
+    $nfcdir = curdir.gsub('/ext/nfc/platform/android','');
     $targetdir = ENV['TARGET_TEMP_DIR']
     raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
     $tempdir = ENV['TEMP_FILES_DIR']
     raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
     $rootdir = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rootdir.nil?
+    $rho_build_dir = ENV['RHO_ANDROID_TMP_DIR']
+    raise "RHO_ANDROID_TMP_DIR is not set" if $rho_build_dir.nil?
 
     require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
@@ -49,14 +51,11 @@ namespace "build" do
 
     src_files = []
 
-    src_files << $videocapturedir + '/ext/videocapture/platform/android/jni/src/videocapture.cpp'
-    src_files << $videocapturedir + '/ext/videocapture/shared/ruby/videocapture_wrap.c'
-    src_files << $videocapturedir + '/ext/videocapture/shared/src/videocapture.c'
+    src_files << $nfcdir + '/ext/nfc/platform/android/jni/src/nfc.cpp'
+    src_files << $nfcdir + '/ext/nfc/shared/ruby/nfc_wrap.c'
 
     # build native part
-    build_extension('Videocapture', $arch, src_files)
-
-    # java part will be builded automatically (java files should be listed in ext_build.files ans ext. yml should be configured)
+    build_extension('Nfc', $arch, src_files)
 
   end
 end
