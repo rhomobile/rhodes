@@ -29,11 +29,13 @@ static const String RHO_CALLBACK_PARAM("optParams");
 void js_define_static_method(const char* szMethodPath, Func_JS pFunc )
 {
     g_hashJSStaticMethods[szMethodPath] = pFunc;
+    RAWTRACE1("Static method: %s", szMethodPath);
 }
     
 void js_define_instance_method(const char* szMethodPath, Func_JS pFunc )
 {
     g_hashJSInstanceMethods[szMethodPath] = pFunc;
+    RAWTRACE1("Instance method: %s", szMethodPath);
 }
 
 rho::String js_entry_point(const char* szJSON)
@@ -99,17 +101,22 @@ rho::String js_entry_point(const char* szJSON)
     if (strObjID == "0")
     {
         pMethod = g_hashJSStaticMethods[strMethod];
+        if (!pMethod)
+        {
+            RAWLOG_ERROR1("Static API method is not found: %s", strMethod.c_str());
+            return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Static method not found.\"}, \"id\": " + strReqId + "}";
+        }
     }
     else
     {
         pMethod = g_hashJSInstanceMethods[strMethod];
+        if (!pMethod)
+        {
+            RAWLOG_ERROR1("Instance API method is not found: %s", strMethod.c_str());
+            return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Instance method not found.\"}, \"id\": " + strReqId + "}";
+        }
     }
     
-    if (!pMethod)
-    {
-        RAWLOG_ERROR1("API method does not found: %s", strMethod.c_str());
-        return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Method not found.\"}, \"id\": " + strReqId + "}";
-    }
 
     CJSONArray oParams(oEntry.getEntry("params"));
 

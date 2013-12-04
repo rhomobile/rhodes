@@ -204,7 +204,8 @@ public :
 	int rho_bluetooth_session_get_status(const char* connected_device_name);
 	const char* rho_bluetooth_session_read_string(const char* connected_device_name);
 	void rho_bluetooth_session_write_data(const char* connected_device_name, void* buf, int datasize);
-	
+	const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url);
+
 	// access API
 	static RhoBluetoothManager* getInstance();
 	static void releaseAll();
@@ -227,6 +228,7 @@ public:
 
 	void fireCreateSessionCallBack(const char* status, const char* connected_device_name, bool in_thread = false);
 
+    void onDiscoverSelectDevice(const char* device_name);
 	void onDiscoverDlgSelectDevice(int index);
 	void onDiscoverDlgCancel();
 	void onDiscoveredDlgCancel();
@@ -240,7 +242,8 @@ public:
 	int getBlocksSummarySize();
 
 	void terminateDiscoverThread();
-	void terminateDiscoveredThread();
+	void terminateDiscoverByNameThread();
+    void terminateDiscoveredThread();    
 
 private:
 
@@ -284,35 +287,6 @@ private:
 	static DWORD WINAPI runThreadDiscovered(LPVOID data);
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif // OS_WINDOWS_DESKTOP
 

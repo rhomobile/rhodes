@@ -1,0 +1,105 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Record" parent="Rho.NFC">
+        <HELP_OVERVIEW>NFC Record</HELP_OVERVIEW>
+        <MORE_HELP>This class representative Record object</MORE_HELP>
+    
+        <TEMPLATES>
+         </TEMPLATES>
+
+        <PROPERTIES access="INSTANCE" generateAccessors="true">
+            
+            <DESC>list of properties supported by class</DESC>
+            
+            <PROPERTY name="TNF" type="STRING" readOnly="true">
+                <DESC>see NFC_TNF_xxx constants in Rho.NFC.Manager</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="type" type="STRING" readOnly="true">
+                <DESC>see NFC_RTD_xxx constants in Rho.NFC.Manager</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
+            </PROPERTY>
+            
+        </PROPERTIES>
+        
+        <METHODS>
+        
+            <METHOD name="getID" hasCallback="optional">
+                <DESC>return array of bytes - id</DESC>
+                <RETURN type="ARRAY">
+                    <PARAM type="INTEGER"/>
+                    <DESC></DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>        
+            
+            <METHOD name="getPayload" hasCallback="optional">
+                <DESC>return array of bytes</DESC>
+                <RETURN type="ARRAY">
+                    <PARAM type="INTEGER"/>
+                    <DESC></DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>        
+            
+            <METHOD name="setPayload" hasCallback="optional">
+                <PARAMS>
+                    <PARAM name="payload" type="ARRAY">
+                        <DESC></DESC>
+                        <PARAM type="INTEGER">
+                        </PARAM>    
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>return NFC_SUCCESS if OK</DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>        
+
+            <METHOD name="getPayloadAsString" hasCallback="optional">
+                <DESC>return array of bytes</DESC>
+                <RETURN type="STRING">
+                    <DESC></DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>        
+            
+            <METHOD name="setPayloadAsString" hasCallback="optional">
+                <PARAMS>
+                    <PARAM name="payload" type="STRING">
+                        <DESC></DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>return NFC_SUCCESS if OK</DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>        
+            
+            <METHOD name="getEnclosedMessages" hasCallback="optional">
+                <DESC>return array of Messages which placed in this record</DESC>
+                <RETURN type="ARRAY">
+                    <PARAM type="Rho.NFC.Message"/>
+                    <DESC></DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>        
+            
+            <METHOD name="close" hasCallback="optional">
+                <DESC>release resources</DESC>
+                <RETURN type="STRING">
+                    <DESC>return NFC_SUCCESS if OK</DESC>
+                </RETURN>
+                <PLATFORM>WM, Android</PLATFORM>
+            </METHOD>
+            
+        </METHODS>        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>    
