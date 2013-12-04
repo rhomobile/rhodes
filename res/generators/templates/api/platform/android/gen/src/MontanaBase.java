@@ -120,9 +120,13 @@ end %>
 
         @Override
         public void run() {
-            mApiObject.<%= method.native_name %>(<%
+            try {
+                mApiObject.<%= method.native_name %>(<%
 method.params.each do |param| %>
-                <%= param.name %>, <% end %>mResult);
+                    <%= param.name %>, <% end %>mResult);
+            } catch (Throwable ex) {
+                mResult.set(ex);
+            }
         }
     }
 <% end %>
