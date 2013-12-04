@@ -1,6 +1,7 @@
 package com.rho.audiocapture;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -124,11 +125,14 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             recorder.setAudioEncoder(getAudioEncoder(actualPropertyMap));
             recorder.prepare();
             recorder.start();
-        } catch (Throwable ex) {
+        } catch (IllegalStateException ex) {
+            throw new RuntimeException(ex);
+        } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-        
+       
     }
+
     @Override
     public synchronized void stop(IMethodResult res) {
         MediaRecorder recorder = getRecorder();
@@ -136,27 +140,22 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         recorder.release();
         clearActualPropertyMap();
     }
+
     @Override
     public synchronized void cancel(IMethodResult res) {
-        Throwable pending = null;
         try {
             MediaRecorder recorder = getRecorder();
             recorder.stop();
             recorder.release();
-        } catch(Throwable ex) {
-            pending = ex;
-        }
-        String path = getActualPropertyMap().get("fileName");
-        if (path != null && !path.isEmpty()) {
-            File file = new File(path);
-            if (file.exists()) {
-                file.delete();
+        } finally {
+            String path = getActualPropertyMap().get("fileName");
+            if (path != null && !path.isEmpty()) {
+                File file = new File(path);
+                if (file.exists()) {
+                    file.delete();
+                }
             }
         }
-        if (pending != null) {
-            res.setError(pending.getMessage());
-        }
     }
-
 
 }
