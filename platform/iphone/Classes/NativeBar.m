@@ -176,6 +176,7 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 
 	const char* ios_7_icon_color = NULL;
 	const char* ios_7_selected_color = NULL;
+    const char* detail_color = NULL;
 
 	
     
@@ -205,6 +206,11 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
             NSNumber* obj_num = (NSNumber*)obj;
             ios_7_selected_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
         }
+        obj = [p_properties objectForKey:NATIVE_BAR_DETAIL_COLOR];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            detail_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
+        }
     }
     
 
@@ -231,6 +237,7 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
         }
         
         const char *label = NULL;
+        const char *detailLabel = NULL;
         const char *action = NULL;
         const char *icon = NULL;
         const char *reload = NULL;
@@ -254,6 +261,11 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
         if (obj != nil) {
             NSString* obj_str = (NSString*)obj;
             label = [obj_str UTF8String];
+        }
+        obj = [hash objectForKey:@"detailLabel"];
+        if (obj != nil) {
+            NSString* obj_str = (NSString*)obj;
+            detailLabel = [obj_str UTF8String];
         }
         obj = [hash objectForKey:@"action"];
         if (obj != nil) {
@@ -329,6 +341,9 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 			NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:10];	
 			
 			[item setObject:[NSString stringWithUTF8String:label] forKey:NATIVE_BAR_ITEM_LABEL];
+            if (detailLabel != NULL) {
+                [item setObject:[NSString stringWithUTF8String:detailLabel] forKey:NATIVE_BAR_ITEM_DETAIL_LABEL];
+            }
 			[item setObject:[NSString stringWithUTF8String:action] forKey:NATIVE_BAR_ITEM_ACTION];
 			[item setObject:[NSString stringWithUTF8String:(icon ? icon : "")] forKey:NATIVE_BAR_ITEM_ICON];
 			[item setObject:[NSString stringWithUTF8String:(reload ? reload : "false")] forKey:NATIVE_BAR_ITEM_RELOAD];
@@ -354,6 +369,9 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
     }
     if (ios_7_selected_color != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:ios_7_selected_color] forKey:NATIVE_BAR_SELECTED_COLOR];
+    }
+    if (detail_color != NULL) {
+		[properties setObject:[NSString stringWithUTF8String:detail_color] forKey:NATIVE_BAR_DETAIL_COLOR];
     }
     
     //COMMONAPI

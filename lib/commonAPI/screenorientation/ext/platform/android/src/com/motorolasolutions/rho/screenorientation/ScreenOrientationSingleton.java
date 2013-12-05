@@ -228,7 +228,7 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 	{
 		Logger.D(TAG, "setScreenOrientationEvent() -- Setting screen orientation event to: " + result);
 		mScreenOrientationCallback = result;
-		if (result.toString().contains("Callback: ,")) // No callback is set
+		if (result == null || !result.hasCallback()) // No callback is set
 		{
 			cleanUp();
 		}
