@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/audiocapture/AudioCaptureBase.java
+ext/platform/android/generated/src/com/rho/audiocapture/AudioCaptureFactorySingleton.java
+ext/platform/android/generated/src/com/rho/audiocapture/AudioCaptureSingletonBase.java
+ext/platform/android/generated/src/com/rho/audiocapture/IAudioCapture.java
+ext/platform/android/generated/src/com/rho/audiocapture/IAudioCaptureFactory.java
+ext/platform/android/generated/src/com/rho/audiocapture/IAudioCaptureSingleton.java
+ext/platform/android/src/com/rho/audiocapture/AudioCapture.java
+ext/platform/android/src/com/rho/audiocapture/AudioCaptureFactory.java
+ext/platform/android/src/com/rho/audiocapture/AudioCaptureSingleton.java
