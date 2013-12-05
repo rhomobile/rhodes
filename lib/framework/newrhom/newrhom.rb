@@ -131,6 +131,14 @@ end
       def have_local_changes
         ::Rho::NewORM.haveLocalChanges
       end
+
+      def database_local_reset
+        ::Rho::NewORM.databaseLocalReset
+      end
+
+      def database_client_reset(reset_local_models=true)
+        ::Rho::NewORM.databaseClientReset(reset_local_models)
+      end
     end
 	end
 end
