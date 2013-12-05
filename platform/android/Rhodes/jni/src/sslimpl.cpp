@@ -31,6 +31,8 @@
 
 #include <arpa/inet.h>
 
+#include <cstring>
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SSLImpl"
 

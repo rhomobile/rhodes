@@ -39,9 +39,13 @@ module_method.params.each do |param| %>
 
         @Override
         public void run() {
-            mApiSingleton.<%= module_method.native_name %>(<%
+            try {
+                mApiSingleton.<%= module_method.native_name %>(<%
 module_method.params.each do |param| %>
-                <%= param.name %>, <% end %> mResult);
+                    <%= param.name %>, <% end %> mResult);
+            } catch (Throwable ex) {
+                mResult.set(ex);
+            }
         }
     }
 <% end %>

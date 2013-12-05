@@ -455,8 +455,7 @@ public class MethodResult implements IMethodResult {
         case typeInteger:
         case typeDouble:
         case typeString:
-            result.setError("Cannot merge result of simple type: " + mResultType);
-            break;
+            throw new RuntimeException("Cannot merge result of simple type: " + mResultType);
         }
     }
 
@@ -471,9 +470,11 @@ public class MethodResult implements IMethodResult {
     
     @Override
     public void setArgError(String message) {
-        Logger.T(TAG, toString());
         mStrResult = message;
         mResultType = ResultType.typeArgError;
+
+        Logger.E(TAG, toString());
+
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mIsRuby, mSingleShot);
@@ -481,10 +482,26 @@ public class MethodResult implements IMethodResult {
     }
 
     @Override
+    public void set(Throwable ex) {
+        mStrResult = ex.getMessage();
+        mResultType = ResultType.typeError;
+
+        Logger.E(TAG, ex);
+        Logger.E(TAG, toString());
+        
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
+        }
+    }
+    
+    @Override
     public void setError(String message) {
-        Logger.T(TAG, toString());
         mStrResult = message;
         mResultType = ResultType.typeError;
+
+        Logger.E(TAG, toString());
+
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mIsRuby, mSingleShot);
