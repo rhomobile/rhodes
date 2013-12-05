@@ -618,11 +618,7 @@ public class Sensor extends SensorBase implements ISensor {
 
 	private boolean isCallback(IMethodResult result)
 	{
-
-		if ((result == null) || result.toString().contains("Callback: ,")) // No callback is set
-			return false;
-
-		return true;
+		return (result != null && result.hasCallback());
 	}
 
 }

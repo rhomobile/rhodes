@@ -24,6 +24,7 @@ public interface IMethodResult {
     void forceIntegerType();
     void forceDoubleType();
 
+    void set(Throwable ex);
     void setError(String mesage);
     void setArgError(String message);
 
