@@ -39,8 +39,8 @@ Dir.chdir dir
 Find.find(dir) do |path| 
   if File.extname(path) == ext && path != fselfname
     begin
-      atime = File.atime(path.to_s) # last access time
-      mtime = File.mtime(path.to_s) # modification time
+      #atime = File.atime(path.to_s) # last access time
+      #mtime = File.mtime(path.to_s) # modification time
       
       relPath = path[dir.length+1,path.length - dir.length]
 	    seq = RubyVM::InstructionSequence.compile_file(relPath)
@@ -54,7 +54,7 @@ Find.find(dir) do |path|
     	
 	    fseq.close()
       
-	    File.utime(atime, mtime, fName)    
+	    #File.utime(atime, mtime, fName)    
 	rescue Exception => e
 	    puts 'rb compilation failed: ' + path
 	    raise
