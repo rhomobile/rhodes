@@ -5,6 +5,7 @@
 #include "common/AutoPointer.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
+#include "common/RhoTime.h"
 #include "logging/RhoLog.h"
 #include "db/DBAdapter.h"
 #include "sync/RhoconnectClientManager.h"
@@ -351,9 +352,7 @@ namespace rho {
             setProperty("freezed", "true", oResult);
             getProperty("schema_version", oResult);
             rho::String schema_version = oResult.getString();
-            getProperty("partition", oResult);
-            rho::String partition = oResult.getString();
-            db::CDBAdapter& db = db::CDBAdapter::getDB(partition.c_str());
+            db::CDBAdapter& db = _get_db(oResult);
             IDBResult res = db.executeSQL("SELECT  schema_version FROM sources WHERE name=?", name().c_str());
             rho::String existing_schema_version;
             if(!res.isEnd())
@@ -396,6 +395,71 @@ namespace rho {
                 db.endTransaction();
         }
 
+        void getCount(rho::apiGenerator::CMethodResult& oResult)
+        { 
+            db::CDBAdapter& db = _get_db(oResult);
+            oResult.set(0);
+            if(fixed_schema()) {
+                rho::String strSQL("SELECT COUNT(*) FROM ");
+                strSQL += name();
+                IDBResult res = db.executeSQL(strSQL.c_str());
+                if(!res.isEnd())
+                    oResult.set(res.getIntByIdx(0));
+            }
+            else
+            {
+                IDBResult res = db.executeSQL("SELECT COUNT(DISTINCT object) FROM object_values WHERE source_id=?", name().c_str());
+                if(!res.isEnd())
+                    oResult.set(res.getIntByIdx(0));
+            }
+
+            LOG(INFO) + name() + ", getCount: " +  oResult.getInt();
+        }
+
+        void getBackendRefreshTime(rho::apiGenerator::CMethodResult& oResult)
+        { 
+            db::CDBAdapter& db = _get_db(oResult);
+            int nTime = 0;
+            IDBResult res = db.executeSQL("SELECT backend_refresh_time FROM sources WHERE source_id=?", name().c_str());
+            if(!res.isEnd())
+                nTime = res.getIntByIdx(0);
+            oResult.set(CLocalTime(nTime).formatStr("%Y-%m-%d %H:%M:%S %z"));
+        }
+
+        void find(const rho::String& args, rho::apiGenerator::CMethodResult& oResult)
+        {
+            LOG(INFO) + name() + ", find: Params are: " + args;
+            //for(size_t i = 0; i < args.size(); ++i) 
+            //    LOG(INFO) + args[i];
+
+            rho::Vector<rho::Hashtable<rho::String, rho::String> > retVals;
+            if(!fixed_schema()) {
+                oResult.set(retVals);
+                return;
+            }
+
+            rho::String attribs("*");
+            rho::String strSQL("SELECT ");
+            strSQL += attribs;
+            strSQL += " FROM ";
+            strSQL += name();
+            db::CDBAdapter& db = _get_db(oResult);
+            IDBResult res = db.executeSQL(strSQL.c_str());
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                return;
+            }
+            for(; !res.isEnd(); res.next()) {
+                int ncols = res.getColCount();
+                Hashtable<rho::String, rho::String> obj_hash;
+                for(int i = 0; i < ncols; ++i) {
+                    obj_hash.put(res.getColName(i), res.getStringByIdx(i));
+                }
+                retVals.push_back(obj_hash);
+            }
+            oResult.set(retVals);
+        }
+
     private:
         void init_defaults()
         {
@@ -405,6 +469,13 @@ namespace rho {
             setSync_type("none", oRes);
             setSync_priority(1000, oRes);
             setPartition("local", oRes);
+        }
+
+        db::CDBAdapter& _get_db(rho::apiGenerator::CMethodResult& oResult)
+        {
+            getProperty("partition", oResult);
+            rho::String partition = oResult.getString();
+            return db::CDBAdapter::getDB(partition.c_str());
         }
 
         static int _get_partition_start_id(const rho::String& partition)

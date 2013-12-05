@@ -30,6 +30,11 @@
                 <DESC>resets client info and sync models (optionally, local models as well)</DESC>
             </METHOD>
 
+            <METHOD name="generateId" access="STATIC">
+                <DESC>returns newly generated unique object Id</DESC>
+                <RETURN type="INTEGER"/>    
+            </METHOD>
+
         </METHODS>
         
         <USER_OVERVIEW>
