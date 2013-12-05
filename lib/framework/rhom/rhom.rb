@@ -48,29 +48,29 @@ module Rhom
     
     class << Rhom
       def client_id
-        #if ::Rho::RHO.use_new_rhom
-        #  ::Rho::NewORM.getClientId
-        #else
+        if ::Rho::RHO.use_new_rhom
+          ::Rho::NewORM.getClientId
+        else
           c_id = ::Rho::RHO.get_user_db().select_from_table('client_info','client_id')[0]
           c_id.nil? ? nil : c_id['client_id']
-        #end
+        end
       end
 
       def have_local_changes
-        #if ::Rho::RHO.use_new_rhom
-        #  ::Rho::NewORM.haveLocalChanges
-        #else
+        if ::Rho::RHO.use_new_rhom
+          ::Rho::NewORM.haveLocalChanges
+        else
           #TODO: enumerate all sync sources, create array of partitions and run query for all partition. 
           res = ::Rho::RHO.get_user_db().execute_sql("SELECT object FROM changed_values WHERE sent<=1 LIMIT 1 OFFSET 0")
           return res.length > 0
-        #end
+        end
       end
 
       def database_local_reset()
         puts "database_local_reset"
         
         #load all partitions
-        if ::Rho::RHO.use_new_rhom
+        unless ::Rho::RHO.use_new_rhom
           Rho::RHO.load_all_sources
 
           ::Rho::RHO.get_db_partitions().each do |partition, db|

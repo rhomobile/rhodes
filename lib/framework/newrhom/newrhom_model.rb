@@ -1,7 +1,7 @@
 module Rhom
   module BaseModel
     def init_model
-      puts "Model '#{klass_model.model_name}': init_model"
+      puts "MZV_DEBUG: Model '#{klass_model.model_name}': init_model"
       klass_model.initModel
     end
 
@@ -58,7 +58,6 @@ module Rhom
     include BaseModel
 
     def self.included(model)
-      puts " we are in included and #{model.klass_model.model_name}, #{model.klass_model.fixed_schema}"
       model.extend FixedSchema
       model.klass_model.fixed_schema = true
     end

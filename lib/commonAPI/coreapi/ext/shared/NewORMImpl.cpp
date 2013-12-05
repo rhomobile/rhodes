@@ -1,6 +1,7 @@
 #include "generated/cpp/NewORMBase.h"
 #include "common/RhoAppAdapter.h"
 #include "db/DBAdapter.h"
+#include "common/RhoTime.h"
 #include "logging/RhoLog.h"
 #include "sync/RhoconnectClientManager.h"
 #include "NewORMModelImpl.cpp"
@@ -20,9 +21,35 @@ public:
 
 class CNewORMSingleton: public CNewORMSingletonBase
 {
-    ~CNewORMSingleton(){}
+public:
+    CNewORMSingleton()
+    {
+        struct tm bench_time;
+        bench_time.tm_sec = 0;
+        bench_time.tm_min = 0;
+        bench_time.tm_hour = 0;
+        bench_time.tm_mday = 1;
+        bench_time.tm_mon = 0;
+        bench_time.tm_year = 2009 - 1900;
+        time_t bench_time_ms = mktime(&bench_time)*1000;
+        unsigned long now_time_ms = CTimeInterval::getCurrentTime().toULong();
+        LOG(INFO) + "Times in ms are: " + bench_time_ms + ", " + now_time_ms;
+        CNewORMSingleton::base_temp_obj_id_ = now_time_ms - bench_time_ms;
+    }
 
-    virtual void getClientId(rho::apiGenerator::CMethodResult& oResult) {
+    ~CNewORMSingleton()
+    {
+    }
+
+    virtual void generateId(rho::apiGenerator::CMethodResult& oResult) 
+    {
+        CNewORMSingleton::base_temp_obj_id_ += 1;
+        LOG(INFO) + "Generated id is : " + CNewORMSingleton::base_temp_obj_id_;
+        oResult.set(CNewORMSingleton::base_temp_obj_id_);
+    }
+    
+    virtual void getClientId(rho::apiGenerator::CMethodResult& oResult) 
+    {
         LOG(INFO) + "calling getClientId";
         db::CDBAdapter& db = db::CDBAdapter::getUserDB();
         String clientID = "";
@@ -31,7 +58,8 @@ class CNewORMSingleton: public CNewORMSingletonBase
             oResult.set(res.getStringByIdx(0));
     }
 
-    virtual void haveLocalChanges(rho::apiGenerator::CMethodResult& oResult) {
+    virtual void haveLocalChanges(rho::apiGenerator::CMethodResult& oResult) 
+    {
         LOG(INFO) + "calling haveLocalChanges";
         db::CDBAdapter& db = db::CDBAdapter::getUserDB();
         IDBResult res = db.executeSQL("SELECT object FROM changed_values WHERE sent<=1 LIMIT 1 OFFSET 0");
@@ -41,7 +69,8 @@ class CNewORMSingleton: public CNewORMSingletonBase
             oResult.set(res.getStringByIdx(0).length() > 0 ? true : false);
     }
 
-    virtual void databaseLocalReset(rho::apiGenerator::CMethodResult& oResult) {
+    virtual void databaseLocalReset(rho::apiGenerator::CMethodResult& oResult) 
+    {
 
         LOG(INFO) + " Calling databaseLocalReset";
         Vector<String> exclude_tables;
@@ -72,8 +101,8 @@ class CNewORMSingleton: public CNewORMSingletonBase
         }
     }
 
-    virtual void databaseClientReset(bool resetLocalSources, rho::apiGenerator::CMethodResult& oResult) {
-
+    virtual void databaseClientReset(bool resetLocalSources, rho::apiGenerator::CMethodResult& oResult) 
+    {
         LOG(INFO) + " Calling databaseClientReset";
         Vector<String> exclude_tables;
         exclude_tables.push_back("sources");
@@ -138,7 +167,11 @@ class CNewORMSingleton: public CNewORMSingletonBase
             rho::sync::RhoconnectClientManager::set_pollinterval(old_poll_interval);
         }
     }
+
+private:
+    static unsigned long base_temp_obj_id_;
 };
+unsigned long CNewORMSingleton::base_temp_obj_id_;
 
 
 class CNewORMFactory: public CNewORMFactoryBase
