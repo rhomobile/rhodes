@@ -31,7 +31,8 @@
 #include <dlfcn.h>
 #include <android/log.h>
 
-#include <hash_map>
+#include <cstring>
+#include <unordered_map>
 
 #include "rhodes/fileapi.h"
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
@@ -72,7 +73,7 @@ struct rho_stat_t
     unsigned long mtime;
 };
 
-typedef std::hash_map<std::string, rho_stat_t> rho_stat_map_t;
+typedef std::unordered_map<std::string, rho_stat_t> rho_stat_map_t;
 static rho_stat_map_t rho_stat_map;
 
 struct rho_fd_data_t

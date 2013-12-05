@@ -218,6 +218,12 @@ public class RhodesApplication extends Application{
         if (hashChanged) {
             Log.i(TAG, "Application hash was changed");
             
+            File rho_dat = new File(rootPath, "rho.dat");
+            if (rho_dat.exists()) {
+                Log.i(TAG, "Removing rho.dat from file system");
+                rho_dat.delete();
+            }
+            
             RhoFileApi.initialCopy(this, new String[] {"hash", "apps/rhoconfig.txt"});
         }
         

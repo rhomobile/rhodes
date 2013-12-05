@@ -304,14 +304,19 @@ bool doMakeCopyFile(TCHAR *deviceFilePath, TCHAR* hostFilePath)
     FileTimeToSystemTime(&deviceLastWriteTime, &stDeviceLastWriteTime);
     FileTimeToSystemTime(&hostLastWriteTime, &stHostLastWriteTime);
 
-    if (stDeviceLastWriteTime.wYear <=  stHostLastWriteTime.wYear &&
-        stDeviceLastWriteTime.wMonth <= stHostLastWriteTime.wMonth &&
-        stDeviceLastWriteTime.wDay <= stHostLastWriteTime.wDay &&
-        stDeviceLastWriteTime.wHour <= stHostLastWriteTime.wHour && 
-        stDeviceLastWriteTime.wMinute <= stHostLastWriteTime.wMinute &&
-        stDeviceLastWriteTime.wSecond <= stHostLastWriteTime.wSecond)
-    {
-        return false;
+    if (stDeviceLastWriteTime.wYear >=  stHostLastWriteTime.wYear) {
+        if (stDeviceLastWriteTime.wMonth >= stHostLastWriteTime.wMonth) {
+            if (stDeviceLastWriteTime.wDay >= stHostLastWriteTime.wDay) {
+                if (stDeviceLastWriteTime.wHour >= stHostLastWriteTime.wHour) {
+                    if (stDeviceLastWriteTime.wMinute >= stHostLastWriteTime.wMinute) {
+                        if ((stDeviceLastWriteTime.wSecond + 1 >= stHostLastWriteTime.wSecond) && 
+                            (stDeviceLastWriteTime.wSecond - 1 <= stHostLastWriteTime.wSecond)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     return true;
