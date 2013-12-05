@@ -1256,6 +1256,9 @@ namespace "run" do
       Rake::Task["device:wm:production"].execute
       Rake::Task["run:wm:cab"].execute
     else
+      $build_cab = false
+      Rake::Task["device:wm:production"].execute
+      
       # kill all running detool
       kill_detool
 
@@ -1336,11 +1339,15 @@ namespace "run" do
 
     desc "Build and run on the Windows Mobile device"
     task :device  => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do 
+        
 
       if $use_direct_deploy == "no" 
         Rake::Task["device:wm:production"].invoke
         Rake::Task["run:wm:device:cab"].execute
       else
+        $build_cab = false
+        Rake::Task["device:wm:production"].invoke
+          
         # kill all running detool
         kill_detool
 
