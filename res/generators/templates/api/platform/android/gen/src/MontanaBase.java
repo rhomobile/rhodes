@@ -42,7 +42,6 @@ if $cur_module.is_property_bag_limit_to_only_declared_properties %>
 $cur_module.properties.each do |property| %>
         sAllowedPropertyNames.add("<%= property.name %>");<%
 end %>
-        sAllowedPropertyNames.add("id");
     }<%
 end
 end %>
@@ -52,8 +51,7 @@ end %>
 if $cur_module.is_template_propertybag %>
         mPropertyBag = new RhoApiPropertyBag(<%
 if $cur_module.is_property_bag_limit_to_only_declared_properties %>sAllowedPropertyNames<%
-end %>);
-        setProperty("id", id, null); <%
+end %>);<%
 end %>
     }
 <% $cur_module.methods.each do |method|
