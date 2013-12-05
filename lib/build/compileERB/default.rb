@@ -33,13 +33,14 @@ ext = ".erb"
 Find.find(dir) do |path| 
   if File.extname(path) == ext
     begin
-        strFile = IO.read(path)
-        #strFile.force_encoding('utf-8')
+      atime = File.atime(path.to_s) # last access time
+      mtime = File.mtime(path.to_s) # modification time
+      
+      strFile = IO.read(path)
+      #strFile.force_encoding('utf-8')
 
       rbText = ERB.new(strFile).src
 	  
-    	
-
 	    seq = __rho_compile(rbText)
 	    arr = seq.to_a
     	
@@ -50,6 +51,8 @@ Find.find(dir) do |path|
 	    Marshal.dump(arr,fseq)
     	
 	    fseq.close()
+	    
+      File.utime(atime, mtime, fName)
 	rescue Exception => e
 	    puts "\nYou have a syntax error in your ERB: " + path
       puts "See log above for the line number following the string \"(eval):\"\n\n"
