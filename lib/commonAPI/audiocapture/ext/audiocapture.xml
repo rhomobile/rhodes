@@ -58,10 +58,10 @@
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="maxDuration" type="INTEGER">
-                <DESC>Maximum duration (in milli seconds) of the recording session</DESC>
+                <DESC>Maximum duration (in milliseconds) of the recording session. Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 20000 milli seconds.</DESC>
             </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
-                <DESC></DESC>
+                <DESC>Sets the destination path and name for the captured file. </DESC>
             </PROPERTY>
         </PROPERTIES>
         <METHODS>
@@ -72,7 +72,7 @@
                         <DESC>The path to store captured audio. The filename extension is used to define file output format. Supported extensions are ".3gpp", ".mp4"</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>start audio recording</DESC>
+                <DESC>Starts capturing audio until either 'stop' is received, or 'duration' is reached (i.e. until the buffer is full).</DESC>
             </METHOD>
     
             <METHOD name="stop" runInThread="none">
