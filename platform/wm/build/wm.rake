@@ -211,6 +211,8 @@ namespace "config" do
         puts "\nPlease, specify Visual Studio version as either 2008 or 2012 in win32:msvc section of build.yml"
         exit 1
       end
+
+      $vscommontools = $vscommontools.dup
       $vscommontools << '\\' unless $vscommontools.end_with?('\\') || $vscommontools.end_with?('/')
 
       $qtdir = ENV['QTDIR']
