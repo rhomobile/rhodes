@@ -228,11 +228,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_LOCKED" value ="ScreenLocked">
-                                    <DESC>Device screen was locked.</DESC>
+                                    <DESC>Device screen was locked. On WM platform this event call only in pair with APP_EVENT_SCREEN_OFF and doesn't call separately.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_UNLOCKED" value ="ScreenUnlocked">
-                                    <DESC>Device screen was unlocked by user</DESC>
+                                    <DESC>Device screen was unlocked by user. On WM platform this event call only in pair with APP_EVENT_SCREEN_ON and doesn't call separately.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_DEACTIVATED" value ="Deactivated">
