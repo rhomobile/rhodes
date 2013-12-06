@@ -592,7 +592,8 @@ namespace "config" do
               extconf_android = extconf['android']
               exttype = 'build'
               exttype = extconf_android['exttype'] if extconf_android and extconf_android['exttype']
-              addspath = File.join($app_builddir, 'extensions', ext, 'adds')
+              targetpath = File.join $app_builddir, 'extensions', ext
+              addspath = File.join targetpath,'adds'
               prebuiltpath = nil
               if exttype == 'prebuilt'
                 prebuiltpath = Dir.glob(File.join(extpath, '**', 'android'))
@@ -682,8 +683,6 @@ namespace "config" do
               end
 
               if prebuiltpath
-                targetpath = File.join $app_builddir, 'extensions', ext
-                libaddspath = File.join addspath, 'lib', 'armeabi'
                 mkdir_p targetpath
                 Dir.glob(File.join(prebuiltpath, 'lib*.a')).each do |lib|
                   Jake.copyIfNeeded lib, targetpath
@@ -691,15 +690,17 @@ namespace "config" do
                 Dir.glob(File.join(prebuiltpath, '*.jar')).each do |lib|
                   Jake.copyIfNeeded lib, targetpath
                 end
+                libdirpath = nil
                 Dir.glob(File.join(prebuiltpath, '**', 'lib*.so')).each do |lib|
                   next if lib =~ /adds/
+                  arch = File.basename(File.dirname(lib))
                   if lib =~ /noautoload/
-                    mkdir_p File.join(libaddspath, 'noautoload')
-                    Jake.copyIfNeeded lib, File.join(libaddspath, 'noautoload')
+                    libdirpath = File.join(targetpath,'noautoload','lib',arch)
                   else
-                    mkdir_p libaddspath
-                    Jake.copyIfNeeded lib, libaddspath
+                    libdirpath = File.join(targetpath,'lib',arch)
                   end
+                  mkdir_p libdirpath unless File.directory? libdirpath
+                  Jake.copyIfNeeded lib, libdirpath
                 end
               end
 
