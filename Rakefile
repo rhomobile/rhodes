@@ -1873,6 +1873,7 @@ task :get_ext_xml_paths, [:platform] do |t,args|
     puts res_xmls
 end
 
+desc "Generate rhoapi-modules.js file with coreapi and javascript parts of extensions"
 task :update_rho_modules_js, [:platform] do |t,args|
     throw "You must pass in platform(win32, wm, android, iphone, wp8, all)" if args.platform.nil?
 
