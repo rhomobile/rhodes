@@ -1839,6 +1839,15 @@ module Rhogen
 
       const_mapping = {}
       constants.each do |x|
+        #check for constnants without names
+        if !x.name || (x.name.strip.size  < 1) 
+          if !x.value || (x.value.strip.size < 1)
+            next
+          else
+            x.name = x.value.underscore.upcase
+            puts "Notification: Constant with value #{x.value.bold} had no name, set name to: #{x.name.bold}"
+          end
+        end
         if !const_mapping.has_key?(x.name)
           const_mapping[x.name] = [x.value]
         else
