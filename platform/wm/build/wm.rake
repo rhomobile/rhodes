@@ -212,7 +212,10 @@ namespace "config" do
         exit 1
       end
 
-      $vscommontools = $vscommontools.dup
+      if $vscommontools.frozen?
+        $vscommontools = $vscommontools.dup
+      end
+
       $vscommontools << '\\' unless $vscommontools.end_with?('\\') || $vscommontools.end_with?('/')
 
       $qtdir = ENV['QTDIR']
