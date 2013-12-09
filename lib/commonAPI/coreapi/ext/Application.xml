@@ -202,7 +202,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Set application activation/deactivation callback.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
-                    <DESC>Information related to the activation/deactivation of application. Please note that events are platform dependant.</DESC>
+                    <DESC>Information related to the activation/deactivation of application. Events are fired on the most of platforms only if application is in the foreground mode (activated). Please note that events are platform dependant.</DESC>
                     <PARAMS>
                         <PARAM name="applicationEvent" type="STRING">
                             <DESC></DESC>
