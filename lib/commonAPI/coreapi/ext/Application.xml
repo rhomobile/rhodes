@@ -228,15 +228,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_LOCKED" value ="ScreenLocked">
-                                    <DESC>Device screen was locked. On WM platform this event call only in pair with APP_EVENT_SCREEN_OFF and doesn't call separately.</DESC>
+                                    <DESC>Device screen was locked. On iOS and WM platform this event call only in pair with APP_EVENT_SCREEN_OFF and doesn't call separately.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_UNLOCKED" value ="ScreenUnlocked">
-                                    <DESC>Device screen was unlocked by user. On WM platform this event call only in pair with APP_EVENT_SCREEN_ON and doesn't call separately.</DESC>
+                                    <DESC>Device screen was unlocked by user. On iOS and WM platform this event call only in pair with APP_EVENT_SCREEN_ON and doesn't call separately.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
-                                </VALUE>
-                                <VALUE constName="APP_EVENT_DEACTIVATED" value ="Deactivated">
-                                    <DESC>The application has been deactivated</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged">
                                     <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only</DESC>
