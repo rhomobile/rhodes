@@ -97,6 +97,11 @@ double rho_geo_latitude();
 double rho_geo_longitude();
 float  rho_geo_accuracy();
 
+double rho_geo_altitude();
+double rho_geo_speed();
+int rho_geo_satellites();
+
+
 void rho_geo_set_notification( const char *url, char* params, int timeout_sec);
 void rho_geo_set_view_notification( const char *url, char* params, int timeout_sec);
 
