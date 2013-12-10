@@ -39,13 +39,6 @@ Dir.chdir dir
 Find.find(dir) do |path| 
   if File.extname(path) == ext && path != fselfname
     begin
-      atime = nil
-      mtime = nil
-
-      if RUBY_PLATFORM =~ /windows|cygwin|mingw/
-        atime = File.atime(path.to_s) # last access time
-        mtime = File.mtime(path.to_s) # modification time
-      end
       
       relPath = path[dir.length+1,path.length - dir.length]
       seq = RubyVM::InstructionSequence.compile_file(relPath)
@@ -58,10 +51,6 @@ Find.find(dir) do |path|
       Marshal.dump(arr,fseq)
     	
       fseq.close()
-
-      if RUBY_PLATFORM =~ /windows|cygwin|mingw/
-        File.utime(atime, mtime, fName)    
-      end
     rescue Exception => e
       puts 'rb compilation failed: ' + path
       raise
