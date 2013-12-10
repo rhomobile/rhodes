@@ -36,6 +36,11 @@ module Rhom
 
   class Rhom
     attr_accessor :factory
+
+    @@orm_instance = nil
+    def self.get_instance
+      @@orm_instance ||= self.new
+    end
   
     def initialize
       @factory = RhomObjectFactory.new
@@ -43,32 +48,42 @@ module Rhom
     
     class << Rhom
       def client_id
-        ::Rho::NewORM.getClientId
+        #if ::Rho::RHO.use_new_rhom
+        #  ::Rho::NewORM.getClientId
+        #else
+          c_id = ::Rho::RHO.get_user_db().select_from_table('client_info','client_id')[0]
+          c_id.nil? ? nil : c_id['client_id']
+        #end
       end
 
       def have_local_changes
-        ::Rho::NewORM.haveLocalChanges
-        #TODO: enumerate all sync sources, create array of partitions and run query for all partition. 
-        #res = ::Rho::RHO.get_user_db().execute_sql("SELECT object FROM changed_values WHERE sent<=1 LIMIT 1 OFFSET 0")
-        #return res.length > 0
+        #if ::Rho::RHO.use_new_rhom
+        #  ::Rho::NewORM.haveLocalChanges
+        #else
+          #TODO: enumerate all sync sources, create array of partitions and run query for all partition. 
+          res = ::Rho::RHO.get_user_db().execute_sql("SELECT object FROM changed_values WHERE sent<=1 LIMIT 1 OFFSET 0")
+          return res.length > 0
+        #end
       end
 
       def database_local_reset()
         puts "database_local_reset"
         
         #load all partitions
-        Rho::RHO.load_all_sources
+        if ::Rho::RHO.use_new_rhom
+          Rho::RHO.load_all_sources
 
-        ::Rho::RHO.get_db_partitions().each do |partition, db|
-        
+          ::Rho::RHO.get_db_partitions().each do |partition, db|
             next if partition != 'local'        
             
             db.destroy_tables( :exclude => ['sources','client_info'] )
-        end
+          end
       
-        hash_migrate = {}
-        ::Rho::RHO.init_schema_sources(hash_migrate) 
-        
+          hash_migrate = {}
+          ::Rho::RHO.init_schema_sources(hash_migrate)
+        else
+          ::Rho::NewORM.databaseLocalReset
+        end
       end
 
       def database_client_reset(reset_local_models=true)
