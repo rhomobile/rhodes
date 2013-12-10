@@ -103,6 +103,10 @@ void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, const char* 
             strBody += "&latitude=" + convertToStringA(rho_geo_latitude());
             strBody += "&longitude=" + convertToStringA(rho_geo_longitude());
             strBody += "&accuracy=" + convertToStringA(rho_geo_accuracy());
+            strBody += "&altitude=" + convertToStringA(rho_geo_altitude());
+            strBody += "&speed=" + convertToStringA(rho_geo_speed());
+            strBody += "&satellites=" + convertToStringA(rho_geo_satellites());
+        
         } else {
             strBody += "&available=0&known_position=0&latitude=0.0&longitude=0.0&accuracy=0.0";
         }
@@ -113,6 +117,9 @@ void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, const char* 
         strBody += "&latitude=" + convertToStringA(rho_geo_latitude());
         strBody += "&longitude=" + convertToStringA(rho_geo_longitude());
         strBody += "&accuracy=" + convertToStringA(rho_geo_accuracy());
+        strBody += "&altitude=" + convertToStringA(rho_geo_altitude());
+        strBody += "&speed=" + convertToStringA(rho_geo_speed());
+        strBody += "&satellites=" + convertToStringA(rho_geo_satellites());
     }
 
     if ( oNotify.m_strParams.length() > 0 )

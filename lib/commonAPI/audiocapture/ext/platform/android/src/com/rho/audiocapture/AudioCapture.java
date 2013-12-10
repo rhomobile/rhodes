@@ -33,6 +33,14 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         return mRecorder;
     }
     
+    private void releaseRecorder() {
+        if (mRecorder != null) {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+        }
+    }
+    
     private int getAudioSource(Map<String, String> props) {
         String sourceProp = props.get("source");
         int source;
@@ -117,12 +125,19 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
                 throw new RuntimeException("fileName property is empty");
             }
 
+            int audioSource = getAudioSource(actualPropertyMap);
+            int maxDuration = getMaxDuration(actualPropertyMap);
+            int outputFormat = getOutputFormat(path);
+            int audioEncoder = getAudioEncoder(actualPropertyMap);
+            
+            Logger.T(TAG, "Start audio recording: source: " + audioSource + ", max duration: " + maxDuration + ", encoder: " + audioEncoder + ", format: " + outputFormat + ", path: " + path);
+            
             MediaRecorder recorder = getRecorder();
-            recorder.setAudioSource(getAudioSource(actualPropertyMap));
-            recorder.setMaxDuration(getMaxDuration(actualPropertyMap));
-            recorder.setOutputFormat(getOutputFormat(path));
+            recorder.setAudioSource(audioSource);
+            recorder.setMaxDuration(maxDuration);
+            recorder.setOutputFormat(outputFormat);
             recorder.setOutputFile(path);
-            recorder.setAudioEncoder(getAudioEncoder(actualPropertyMap));
+            recorder.setAudioEncoder(audioEncoder);
             recorder.prepare();
             recorder.start();
         } catch (IllegalStateException ex) {
@@ -135,18 +150,17 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
 
     @Override
     public synchronized void stop(IMethodResult res) {
-        MediaRecorder recorder = getRecorder();
-        recorder.stop();
-        recorder.release();
-        clearActualPropertyMap();
+        try {
+            releaseRecorder();
+        } finally {
+            clearActualPropertyMap();
+        }
     }
 
     @Override
     public synchronized void cancel(IMethodResult res) {
         try {
-            MediaRecorder recorder = getRecorder();
-            recorder.stop();
-            recorder.release();
+            releaseRecorder();
         } finally {
             String path = getActualPropertyMap().get("fileName");
             if (path != null && !path.isEmpty()) {
@@ -155,6 +169,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
                     file.delete();
                 }
             }
+            clearActualPropertyMap();
         }
     }
 

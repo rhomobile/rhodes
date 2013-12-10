@@ -56,7 +56,7 @@ $startdir.gsub!('\\', '/')
 chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 
 require File.join(pwd, 'lib/build/jake.rb')
-require File.join(pwd, 'lib/build/gen_time_check.rb')
+require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -1227,8 +1227,8 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
     next if filename.eql?('.') || filename.eql?('..')
     next if filename.eql?('api') && level == 0
           
-    filepath = src_dir + '/' + filename
-    dst_path = dst_dir + '/' + filename
+    filepath = File.join(src_dir, filename)
+    dst_path = File.join(dst_dir, filename)
         
     if File.directory?(filepath)
       public_folder_cp_r(filepath, dst_path, (level+1), file_map, start_path)
@@ -1873,6 +1873,7 @@ task :get_ext_xml_paths, [:platform] do |t,args|
     puts res_xmls
 end
 
+desc "Generate rhoapi-modules.js file with coreapi and javascript parts of extensions"
 task :update_rho_modules_js, [:platform] do |t,args|
     throw "You must pass in platform(win32, wm, android, iphone, wp8, all)" if args.platform.nil?
 
