@@ -17,6 +17,19 @@
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
+            <METHOD name="databaseLocalReset" access="STATIC">
+                <DESC>resets local database</DESC>
+            </METHOD>
+
+            <METHOD name="databaseClientReset" access="STATIC">
+                <PARAMS>
+                    <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
+                        <DESC>Whether or not to reset Local Models</DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>resets client info and sync models (optionally, local models as well)</DESC>
+            </METHOD>
+
         </METHODS>
         
         <USER_OVERVIEW>

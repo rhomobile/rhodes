@@ -2,6 +2,8 @@
 #include "common/RhoAppAdapter.h"
 #include "db/DBAdapter.h"
 #include "logging/RhoLog.h"
+#include "sync/RhoconnectClientManager.h"
+#include "NewORMModelImpl.cpp"
 
 namespace rho {
 
@@ -42,42 +44,102 @@ class CNewORMSingleton: public CNewORMSingletonBase
     virtual void databaseLocalReset(rho::apiGenerator::CMethodResult& oResult) {
 
         LOG(INFO) + " Calling databaseLocalReset";
-        // retrieve all available sources
-        //HashtablePtr<String, INewormSource*>& sources = ((CNewormSourceFactory*)CNewormSourceFactoryBase::getInstance()) -> get_all_sources();
-        //for(HashtablePtr<String, INewormSource*>::iterator it = sources.begin(); it != sources.end(); ++it) {
-        //    const String& name = (*it).first;
-        //    LOG(INFO) + " and we have here in reset : source " + name;
-        //}
-        /*
-        db::CDBAdapter& db = db::CDBAdapter::getUserDB();
-        IDBResult res = db.executeSQL("SELECT object FROM changed_values WHERE sent<=1 LIMIT 1 OFFSET 0");
-        if ( !res.isEnd() )
-            oResult.set(true);
-        else
-            oResult.set(res.getStringByIdx(0).length() > 0 ? true : false);
-
-        //puts "database_local_reset"
-        
-        // load all partitions
-        RhoAppAdapter.loadAllSyncSources();
-        
         Vector<String> exclude_tables;
         exclude_tables.push_back("sources");
         exclude_tables.push_back("client_info");
-        
-        HashtablePtr<String,db::CDBAdapter*>& partitions = db::CDBAdapter::getDBPartitions();
-        for ( HashtablePtr<String,db::CDBAdapter*>::iterator it = partitions.begin();  it != partitions.end(); ++it ) {
-            if((*it).first == "local")
+
+        // clean all tables
+        db::CDBAdapter& db = db::CDBAdapter::getDB("local");
+        db.destroy_tables(Vector<String>(), exclude_tables);
+
+        // restore schemas
+        for(HashtablePtr<String, CNewORMModelImpl*>::iterator cIt = CNewORMModelImpl::models().begin(); 
+            cIt != CNewORMModelImpl::models().end(); 
+            ++cIt)
+        {
+            CNewORMModelImpl* model = cIt -> second;
+            model -> getProperty("partition", oResult);
+            rho::String partition = oResult.getString();
+            if(partition != "local")
                 continue;
-            db::CDBAdapter* db = (*it).second;
+
+            model -> initDbSource(oResult);
+            if(oResult.isError())
+                return;
+            model -> initDbSchema(oResult);
+            if(oResult.isError())
+                return;
+        }
+    }
+
+    virtual void databaseClientReset(bool resetLocalSources, rho::apiGenerator::CMethodResult& oResult) {
+
+        LOG(INFO) + " Calling databaseClientReset";
+        Vector<String> exclude_tables;
+        exclude_tables.push_back("sources");
+        exclude_tables.push_back("client_info");
+
+        int old_poll_interval = -1;
+        if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        {
+            old_poll_interval = rho::sync::RhoconnectClientManager::set_pollinterval(0);
+            rho::sync::RhoconnectClientManager::stop();
+            if(rho::sync::RhoconnectClientManager::has_bulksyncstate())
+                rho::sync::RhoconnectClientManager::set_bulksyncstate(0);
+        }
+
+        // clean client info
+        db::CDBAdapter& userdb = db::CDBAdapter::getUserDB();
+        IDBResult res = userdb.executeSQL("UPDATE client_info SET client_id=?, token=?, token_sent=?", "", "", 0);
+        if(!res.getDBError().isOK()) {
+            oResult.setError(res.getDBError().getError());
+            return;
+        }
+
+        // clean the db's
+        for(HashtablePtr<String,db::CDBAdapter*>::iterator cDbIt = db::CDBAdapter::getDBPartitions().begin();
+            cDbIt != db::CDBAdapter::getDBPartitions().end();
+            ++cDbIt)
+        {
+            db::CDBAdapter* db = cDbIt -> second;
+            const rho::String& partition = cDbIt -> first;
+            if(!resetLocalSources && partition == "local")
+                continue;
+
+            res = db -> executeSQL("UPDATE sources SET token=0");
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                return;
+            }
             db -> destroy_tables(Vector<String>(), exclude_tables);
         }
-      
-        //hash_migrate = {}
-        //::Rho::RHO.init_schema_sources(hash_migrate) 
-        */
+
+        // restore schemas
+        for(HashtablePtr<String, CNewORMModelImpl*>::iterator cIt = CNewORMModelImpl::models().begin(); 
+            cIt != CNewORMModelImpl::models().end(); 
+            ++cIt)
+        {
+            CNewORMModelImpl* model = cIt -> second;
+            model -> getProperty("partition", oResult);
+            rho::String partition = oResult.getString();
+            if(!resetLocalSources && partition == "local")
+                continue;
+
+            model -> initDbSource(oResult);
+            if(oResult.isError())
+                return;
+            model -> initDbSchema(oResult);
+            if(oResult.isError())
+                return;
+        }
+
+        if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        {
+            rho::sync::RhoconnectClientManager::set_pollinterval(old_poll_interval);
+        }
     }
 };
+
 
 class CNewORMFactory: public CNewORMFactoryBase
 {
