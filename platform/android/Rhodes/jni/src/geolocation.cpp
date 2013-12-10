@@ -30,6 +30,10 @@
 
 #include "rubyext/GeoLocation.h"
 
+#include "ruby/ext/rho/rhoruby.h"
+
+
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "GeoLocationJNI"
 
@@ -93,6 +97,24 @@ RHO_GLOBAL float rho_geo_accuracy()
     if (!mid) return 0;
     return env->CallStaticFloatMethod(cls, mid);
 }
+
+
+RHO_GLOBAL double rho_geo_speed() {
+    //TODO:
+	return 0.0;
+}
+
+RHO_GLOBAL int rho_geo_satellites() {
+    //TODO:
+	return 0;
+}
+
+RHO_GLOBAL void rho_geo_set_notification_ex(const char *url, rho_param* p, char* params) {
+    //TODO:
+}
+
+
+
 
 RHO_GLOBAL int rho_geo_known_position()
 {
