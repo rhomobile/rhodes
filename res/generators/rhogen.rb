@@ -49,6 +49,27 @@ class String
         tr('- ', '_').
         downcase
   end
+
+  def black;          "\033[30m#{self}\033[0m" end
+  def red;            "\033[31m#{self}\033[0m" end
+  def green;          "\033[32m#{self}\033[0m" end
+  def brown;          "\033[33m#{self}\033[0m" end
+  def blue;           "\033[34m#{self}\033[0m" end
+  def magenta;        "\033[35m#{self}\033[0m" end
+  def cyan;           "\033[36m#{self}\033[0m" end
+  def gray;           "\033[37m#{self}\033[0m" end
+  def bg_black;       "\033[40m#{self}\0330m"  end
+  def bg_red;         "\033[41m#{self}\033[0m" end
+  def bg_green;       "\033[42m#{self}\033[0m" end
+  def bg_brown;       "\033[43m#{self}\033[0m" end
+  def bg_blue;        "\033[44m#{self}\033[0m" end
+  def bg_magenta;     "\033[45m#{self}\033[0m" end
+  def bg_cyan;        "\033[46m#{self}\033[0m" end
+  def bg_gray;        "\033[47m#{self}\033[0m" end
+  def bold;           "\033[1m#{self}\033[22m" end
+  def underline;      "\033[4m#{self}\033[24m" end
+  def reverse_color;  "\033[7m#{self}\033[27m" end
+
 end
 
 module Rhogen
@@ -830,27 +851,31 @@ module Rhogen
 
       def old_step_through_templates
         @generator.all_actions.each do |action|
-          puts action.source.inspect
-          if @options[:delete]
-            action.revoke! unless @options[:pretend]
-            say_status('deleted', action, :red)
-          else
-            if action.identical?
-              say_status('identical', action, :blue)
-            elsif action.exists?
-              if @options[:force]
-                action.invoke! unless @options[:pretend]
-                say_status('forced', action, :yellow)
-              elsif @options[:skip]
-                say_status('skipped', action, :yellow)
-              else
-                say_status('conflict', action, :red)
-                conflict_menu(action)
-              end
+          begin
+            if @options[:delete]
+              action.revoke! unless @options[:pretend]
+              say_status('deleted', action, :red)
             else
-              action.invoke! unless @options[:pretend]
-              say_status('added', action, :green)
+              if action.identical?
+                say_status('identical', action, :blue)
+              elsif action.exists?
+                if @options[:force]
+                  action.invoke! unless @options[:pretend]
+                  say_status('forced', action, :yellow)
+                elsif @options[:skip]
+                  say_status('skipped', action, :yellow)
+                else
+                  say_status('conflict', action, :red)
+                  conflict_menu(action)
+                end
+              else
+                action.invoke! unless @options[:pretend]
+                say_status('added', action, :green)
+              end
             end
+          rescue 
+            puts "Error processing: #{action.source.inspect}".bold.red
+            raise
           end
         end
       end
@@ -1418,7 +1443,7 @@ module Rhogen
     $possible_values['generateNativeAPI'] = ['true', 'false']
 
     def xml_error(error_desc, path)
-      puts 'XML WARNING: [ '+error_desc+' ] in Element '+path
+      puts "XML WARNING: #{error_desc.magenta} in Element #{path.magenta}"
     end
 
 
@@ -1665,7 +1690,7 @@ module Rhogen
           end
           if param.sub_param == nil
             param.sub_param = MethodParam.new()
-            puts "WARNING: <ARRAY> do not have specified item type - set to STRING by default ! in Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
+            puts "WARNING: <ARRAY> do not have specified item type - set to STRING by default ! in Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]".magenta
           end
         end
 
@@ -1683,7 +1708,7 @@ module Rhogen
         end
 
       else
-        raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
+        raise "ERROR: #{"Parameter in method must have specified type".red} ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
       end
 
       xml_param_item.elements.each('CAN_BE_NIL') do |canbenil|
@@ -1810,6 +1835,42 @@ module Rhogen
           module_constant.desc = xml_desc.text
         end
         constants << module_constant
+      end
+
+      const_mapping = {}
+      constants.each do |x|
+        #check for constnants without names
+        if !x.name || (x.name.strip.size  < 1) 
+          if !x.value || (x.value.strip.size < 1)
+            next
+          else
+            x.name = x.value.underscore.upcase
+            puts "Notification: Constant with value #{x.value.bold} had no name, set name to: #{x.name.bold}"
+          end
+        end
+        if !const_mapping.has_key?(x.name)
+          const_mapping[x.name] = [x.value]
+        else
+          const_mapping[x.name] << x.value
+        end
+      end
+
+      has_error = false;
+
+      const_mapping.each do |k,v|
+        if v.size > 1
+          unique_values = v.uniq
+          if unique_values.size > 1
+            puts "ERROR: Constant with name #{k.bold} has several definitions with distinct values: #{v.join(', ').bold}".red
+            has_error = true
+          else
+            puts "WARNING: Constant with name #{k.bold} is defined #{v.size.to_s.bold} times".magenta
+          end
+        end
+      end
+
+      if has_error
+        raise "Constant with multiple values defined"
       end
 
       #leave only unique consants
@@ -1999,10 +2060,10 @@ module Rhogen
           # set default STRING type and show WARNING
           method_result.sub_param = MethodParam.new()
           method_result.item_type = MethodParam::TYPE_STRING
-          puts "you use ARRAY type without specified item type - set to STRING by default ! Module[#{module_item.name}].method[#{module_method.name}].RETURN"
+          puts "WARNING: Use of ARRAY type without specified item type - set to STRING by default ! Module[#{module_item.name}].method[#{module_method.name}].RETURN".magenta
         end
         if (method_result.type == MethodParam::TYPE_HASH) && (method_result.sub_params == nil)
-          puts "you use HASH type without specified items ! Module[#{module_item.name}].method[#{module_method.name}].RETURN"
+          puts "WARNING: Use of HASH type without specified items ! Module[#{module_item.name}].method[#{module_method.name}].RETURN".magenta
         end
 
 
@@ -2651,7 +2712,7 @@ module Rhogen
 
       if !check_xml_element_for_children_and_attributes(xml_api_root, '')
         if skipwarnings == false
-          puts 'ERROR: XML has parsing WARNINGS - stop generation process ! Use "--skipwarnings" option when you run generator for skip parsing warnings.'
+          puts 'ERROR: XML has parsing WARNINGS - stop generation process ! Use "--skipwarnings" option when you run generator for skip parsing warnings.'.red
           return false
         end
       end
@@ -2712,8 +2773,14 @@ module Rhogen
 
         non_unique_methods = all_methods.group_by { |e| e }.select { |k, v| v.size > 1 }.map(&:first)
         if non_unique_methods.size > 0
-          puts "ERROR: XML has following methods with the same name: #{non_unique_methods.join(', ')}"
+          puts "ERROR: XML has following methods with the same name: #{non_unique_methods.join(', ')}".red
           return false
+        end
+
+        module_item.methods.each do |method|
+          if method.has_callback != ModuleMethod::CALLBACK_NONE && method.result.nil?
+            puts "WARNING: Method #{method.name} has callback, but does not have definition of callback result".magenta
+          end
         end
 
         xml_module_item.elements.each('ALIASES/ALIAS') do |xml_module_alias|

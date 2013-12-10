@@ -148,23 +148,11 @@ public class RhodesApplication extends Application{
         sRhodesAppActiveWatcher = AppState.AppStarted.addObserver("RhodesAppActiveObserver", true);
         
         RhodesApplication.runWhen(
-                UiState.MainActivityStarted,
-                new StateHandler(false) {
-                    @Override
-                    public void run() {
-                        rhodesActivityStarted(true);
-                    }
-                });
-        RhodesApplication.runWhen(
                 UiState.MainActivityPaused,
                 new StateHandler(false) {
                     @Override
                     public void run() {
-                        if (isRhodesActivityStarted()) {
-                            Logger.T(TAG, "callUiDestroyedCallback");
-                            rhodesActivityStarted(false);
-                            RhodesService.callUiDestroyedCallback();
-                        }
+                        RhodesService.callUiDestroyedCallback();
                     }
                 });
         RhodesApplication.runWhen(
@@ -275,15 +263,6 @@ public class RhodesApplication extends Application{
 
         Logger.I(TAG, "Initialized");
     }
-    private static boolean sRhodesActivityStarted = false;
-
-    synchronized
-    static void rhodesActivityStarted(boolean started) {
-        sRhodesActivityStarted = started;
-    }
-
-    synchronized
-    public static boolean isRhodesActivityStarted() { return sRhodesActivityStarted; }
 
     private native static void initClassLoader(ClassLoader c);
     private native static void setupRhodesApp();
@@ -560,6 +539,10 @@ public class RhodesApplication extends Application{
             @Override
             public boolean canHandle(UiState state) { return (state == this) || (state == MainActivityCreated); }
         },
+        MainActivityResumed("MainActivitiResumed") {
+            @Override
+            public boolean canHandle(UiState state) { return (state == this) || (state == MainActivityStarted) || (state == MainActivityCreated); }
+        },
         MainActivityPaused("MainActivityPaused") {
             @Override
             public boolean canHandle(UiState state) { return (state == this) || (state == MainActivityCreated); }
@@ -607,8 +590,22 @@ public class RhodesApplication extends Application{
     private static AppState sAppState = AppState.Undefined;
     private static UiState sUiState = UiState.Undefined;
     
-    public static boolean canHandleNow(AppState state) { return sAppState.canHandle(state); }
-    public static boolean canHandleNow(UiState state) { return sUiState.canHandle(state); }
+    public static boolean canHandleNow(AppState state) {
+        boolean res = false;
+        synchronized (AppState.class) {
+            res = sAppState.canHandle(state);
+        }
+        Logger.T(sAppState.name(), (res?"Can":"Can not") + " handle App state: " + state.name());
+        return res;
+    }
+    public static boolean canHandleNow(UiState state) {
+        boolean res = false;
+        synchronized (UiState.class) {
+            res = sUiState.canHandle(state);
+        }
+        Logger.T(sUiState.name(), (res?"Can":"Can not") + " handle UI state: " + state.name());
+        return res;
+    }
     
     public static void runWhen(AppState state, StateHandler handler) {
         Logger.T(TAG, "Current AppState : " + sAppState.TAG);
@@ -637,12 +634,16 @@ public class RhodesApplication extends Application{
 
     public static void stateChanged(AppState state)
     {
-        AppState.handleState(state);
+        synchronized (AppState.class) {
+            AppState.handleState(state);
+        }
         Logger.I(TAG, "New AppState: " + sAppState.TAG);
     }
     public static void stateChanged(UiState state)
     {
-        UiState.handleState(state);
+        synchronized (UiState.class) {
+            UiState.handleState(state);
+        }
         Logger.I(TAG, "New UiState: " + sUiState.TAG);
     }
 

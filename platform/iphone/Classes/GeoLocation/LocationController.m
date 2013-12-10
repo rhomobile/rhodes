@@ -13,6 +13,8 @@
 #import "LocationController.h"
 #import "logging/RhoLog.h"
 #include "rubyext/GeoLocation.h"
+#include "ruby/ext/rho/rhoruby.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Location"
@@ -325,7 +327,24 @@ float rho_geo_accuracy() {
 	geo_update();
 	return (float)[[LocationController sharedInstance] getAccuracy ];
 }
-	
+
+double rho_geo_speed() {
+	geo_update();
+    //TODO:
+	return 0.0;
+}
+
+int rho_geo_satellites() {
+	geo_update();
+    //TODO:
+	return 0;
+}
+
+void rho_geo_set_notification_ex(const char *url, rho_param* p, char* params) {
+    //TODO:
+}
+
+
 int rho_geo_known_position() {
 	geo_update();
 	return [[LocationController sharedInstance] isKnownPosition] ? 1 : 0;
