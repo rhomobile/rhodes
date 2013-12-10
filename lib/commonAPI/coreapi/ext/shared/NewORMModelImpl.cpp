@@ -63,19 +63,64 @@ namespace rho {
         CNewORMModelImpl(const rho::String& strID)
         : id_(strID),
             name_(),
+            freezed_(false),
+            fixed_schema_(false),
             modelProperties_(),
             schemaIndices_(),
             belongsTo_()
         {
+            rho::apiGenerator::CMethodAccessor< INewORMModel >* fixedSchemaAccessor = new rho::apiGenerator::CMethodAccessor<INewORMModel>(&INewORMModel::getFixed_schema);
+            fixedSchemaAccessor -> addSetter(new rho::apiGenerator::CMethodAccessor<INewORMModel>::CSetter<bool, bool>(&INewORMModel::setFixed_schema));
+            rho::apiGenerator::CMethodAccessor< INewORMModel >* freezedModelAccessor = new rho::apiGenerator::CMethodAccessor<INewORMModel>(&INewORMModel::getFreezed);
+            freezedModelAccessor -> addSetter(new rho::apiGenerator::CMethodAccessor<INewORMModel>::CSetter<bool, bool>(&INewORMModel::setFreezed));
+            
+            m_mapPropAccessors["fixed_schema"] = fixedSchemaAccessor;
+            m_mapPropAccessors["freezed"] = freezedModelAccessor;
+        }
+
+        static CNewORMModelImpl::init_once()
+        {
+            if(reserved_names_.empty())
+            {
+                reserved_names_["object"] = 1;
+                reserved_names_["source_id"] = 1;
+                reserved_names_["update_type"] = 1;
+                reserved_names_["attrib_type"] = 1;
+                reserved_names_["set_notification"] = 1;
+                reserved_names_["clear_notification"] = 1;
+            }
         }
 
         bool fixed_schema()
         {
-            rho::apiGenerator::CMethodResult oResult;
-            getProperty("fixed_schema", oResult);
-            bool retVal = false;
-            convertFromStringA(oResult.getString().c_str(), retVal);
-            return retVal;
+            return fixed_schema_;
+        }
+
+        bool freezed_model()
+        {
+            return freezed_;
+        }
+
+        void setFreezed(const bool newVal, rho::apiGenerator::CMethodResult& oResult)
+        {
+            freezed_ = newVal;
+            m_hashProps["freezed"] = rho::common::convertToStringA(newVal);
+        }
+
+        void setFixed_schema(const bool newVal, rho::apiGenerator::CMethodResult& oResult)
+        {
+            fixed_schema_ = newVal;
+            m_hashProps["fixed_schema"] = rho::common::convertToStringA(newVal);
+        }
+
+        void getFixed_schema(rho::apiGenerator::CMethodResult& oResult)
+        {
+            oResult.set(fixed_schema_);
+        }
+
+        void getFreezed(rho::apiGenerator::CMethodResult& oResult)
+        {
+            oResult.set(freezed_);
         }
 
         virtual ~CNewORMModelImpl() {}
@@ -129,6 +174,43 @@ namespace rho {
             for(int i = 0; i < indexColumns.size(); ++i) 
                 LOG(INFO) + "indexCol: " + indexColumns[i]; 
             schemaIndices_[indexName] = SchemaIndexDef(indexName, indexColumns, bUniqueIndex);
+        }
+
+        void validateFreezedAttributes(const rho::Hashtable<rho::String, rho::String>& attrs, rho::apiGenerator::CMethodResult& oResult)
+        {
+            oResult.set(true);
+            if(!fixed_schema() && !freezed_model()) 
+                return;
+
+            for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin();
+                cIt != attrs.end();
+                ++cIt)
+            {
+                validateFreezedAttribute(cIt -> first, oResult);
+                if(oResult.isError())
+                    return;
+            }
+        }
+
+        void validateFreezedAttribute(const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult)
+        {
+            oResult.set(true);
+            if(!fixed_schema() && !freezed_model()) 
+                return;
+
+            if(attrName == "object")
+                return;
+
+            // non-reserved attr name must exist
+            if(!modelProperties_.containsKey(attrName)) 
+            {
+                rho::String errStr("Non-exist property : ");
+                errStr += attrName;
+                errStr += ". For model:  ";
+                errStr += name();
+                oResult.setError(errStr);
+                return;
+            }  
         }
 
         static int get_start_id(const rho::String& partition)
@@ -243,10 +325,7 @@ namespace rho {
                    rho::sync::RhoconnectClientManager::set_source_property(source_id, sync_options[i].c_str(), oResult.getString().c_str());   
             }
 
-            getProperty("freezed", oResult);
-            bool optValue = false;
-            convertFromStringA(oResult.getString().c_str(), optValue);
-            if(!optValue)
+            if(!freezed_model())
                 return;
 
             rho::String modelProps;
@@ -460,6 +539,55 @@ namespace rho {
             oResult.set(retVals);
         }
 
+        void createObject(const Hashtable<rho::String, rho::String>& attrs, rho::apiGenerator::CMethodResult& oResult)
+        {
+            getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+            getProperty("sync_type", oResult);
+            bool is_sync_source = (sync_type != "none");
+            db::CDBAdapter& db = _get_db(oResult);
+            db.startTransaction();
+            if(is_sync_source) {
+                IDBResult res = db.executeSQL("INSERT INTO changed_values update_type=create attrib=object source_id=? object=?", source_id.c_str(), attrs["object"].c_str());
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }
+            }
+
+            if(fixed_schema()) {
+                rho::Vector<rho::String> quests;
+                rho::String strSQL = _make_insert_attrs_sql_script(attrs["object"], attrs, quests);
+                IDBResult res = db.executeSQLEx(strSQL, quests);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }    
+            }
+            else
+            {
+                rho::String strCols, strQuests;
+                quests.push_back(objectId);
+                for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin();
+                    cIt != attrs.end();
+                    ++cIt)
+                {
+                    if(_is_reserved_name(cIt -> first))
+                        continue;   
+                    strSQL = "INSERT INTO object_values (source_id,object,attrib,value) VALUES(?,?,?,?);\r\n";
+                    IDBResult res = db.executeSQL(strSQL.c_str(), source_id, attrs["object"], cIt -> first, cIt -> second);
+                    if(!res.getDBError().isOK()) {
+                        oResult.setError(res.getDBError().getError());
+                        db.rollback();
+                        return;
+                } 
+            }
+
+            db.endTransaction();
+        }
+
     private:
         void init_defaults()
         {
@@ -502,6 +630,39 @@ namespace rho {
             if(propType == "time")
                 strType = "integer"; 
             return strType;  
+        }
+
+        static bool _is_reserved_name(const rho::String& attrName)
+        {
+            return reserved_namesif(attrName == "source_id"
+                || attrName == "clear_notification"
+                || attrName == "set_notification"
+            return false;
+        }
+
+        const rho::String _make_insert_attrs_sql_script(const rho::String& objectId, 
+                                                        const Hashtable<rho::String, rho::String>& attrs, 
+                                                        Vector<rho::String>& quests) const
+        {
+            rho::String strCols, strQuests;
+            quests.push_back(objectId);
+            for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin();
+                cIt != attrs.end();
+                ++cIt)
+            {
+                if(_is_reserved_name(cIt -> first))
+                    continue;
+                if(strCols.size())
+                    strCols += ",";
+                strCols += "\"";
+                strCols += cIt -> first + "\"";
+                if(strQuests.size())
+                    strQuests += ",";
+                strQuests += "?";
+                quests.push_back(cIt -> second);
+            }
+
+            return rho::String("INSERT INTO ") + name() + "(object," + strCols + ") VALUES (?" + strQuests + ");\r\n";   
         }
 
         const rho::String _make_create_sql_script() const
@@ -564,19 +725,26 @@ namespace rho {
         }
         
         static HashtablePtr<rho::String, CNewORMModelImpl*> models_;
+        static Hashtable<rho::String, int> reserved_names_;
 
         rho::String id_;
         rho::String name_;
+        bool fixed_schema_;
+        bool freezed_;
         Hashtable<rho::String, ModelPropertyDef> modelProperties_;
         Hashtable<rho::String, SchemaIndexDef > schemaIndices_;
         Hashtable<rho::String, rho::String> belongsTo_;
     };
     HashtablePtr<rho::String, CNewORMModelImpl*> CNewORMModelImpl::models_;
+    Hashtable<rho::String, int> reserved_names_;
 
     class CNewORMModelSingletonImpl: public CNewORMModelSingletonBase
     {
     public:
-        CNewORMModelSingletonImpl(): CNewORMModelSingletonBase(){}
+        CNewORMModelSingletonImpl(): CNewORMModelSingletonBase()
+        {
+            CNewORMMOdelImpl::init_once();
+        }
         
         //methods
         // enumerate  
@@ -588,7 +756,9 @@ namespace rho {
             }
 
             oResult.set(ret_models);
-        } 
+        }
+
+
 
     };
     

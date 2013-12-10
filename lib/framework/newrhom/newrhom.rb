@@ -92,7 +92,7 @@ end
 
       modelClass = nil
       modelClass = Object.const_get(model_name) if Object.const_defined?(model_name)
-      puts "MZV_DBEUG: _load_model: #{model_name}, #{modelClass.klass_model.model_name}, #{modelClass.klass_model.getAllProperties.inspect}"
+      puts "MZV_DEBUG: _load_model: #{model_name}, #{modelClass.klass_model.model_name}, #{modelClass.klass_model.getAllProperties.inspect}"
       if modelClass
         puts "MZV_DEBUG: model class found"                            
         unless modelClass.respond_to?( :klass_model )

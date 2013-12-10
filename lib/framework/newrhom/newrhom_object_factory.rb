@@ -24,47 +24,57 @@ module Rhom
           end
         end
 
-=begin
-        def self.generate_id
-          Rho::RhoConfig.generate_id()
+        def self.create(obj)
+          obj_inst = self.new(obj)
+          self.klass_model.createObject(obj_inst.vars)
+          obj_inst
         end
-=end
+
+        def self.find(*args)
+          puts "MZV_DEBUG: we are in find  #{args.inspect}"
+          args.collect! { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
+          objs = klass_model.find(*args)
+          puts "MZV_DEBUG: find has returned : #{objs.inspect}"
+          orm_objs = []
+          objs.each do |obj|
+            orm_objs << self.new(obj)
+          end  
+          puts "MZV_DEBUG: orm_objs : #{orm_objs.inspect}"
+          orm_objs
+        end
         
         # This holds the attributes for an instance of
         # the rhom object
         attr_accessor :vars
-=begin     
+    
         def initialize(obj=nil)
-          #klass_model.check_freezing_model(obj)
-              
           @vars = {}
-          self.rhom_init(@vars)
-          self.vars[:object] = "#{generate_id()}" unless obj && obj[:object]
-          self.vars[:source_id] = self.get_inst_source_id.to_i
-                
           if obj
+            self.class.klass_model.validateFreezedAttributes(obj)
             obj.each do |key,value|
               self.vars[key.to_sym()] = value if key && key.length > 0
             end
           end
+          
+          self.vars[:object] = "#{::Rho::NewORM.generateId}" unless self.vars[:object]
+          self.vars[:source_id] = self.class.klass_model.source_id
         end
 
         def method_missing(method_sym, *args, &block)
-          unless name == Fixnum
-            if name[name.length()-1] == '='
-              s_name = name.to_s.chop
-              #check_freezing_model(s_name)
+          puts "MZV_DEBUG: we are in #{self.class.name} method missing and #{method_sym}, #{args.inspect}"
+          unless method_sym == Fixnum
+            if method_sym[-1] == '='
+              s_name = method_sym.to_s.chop
+              self.class.klass_model.validateFreezedAttribute(s_name)
               @vars[s_name.to_sym()] = args[0]  
             else
-              @vars[name]
+              @vars[method_sym]
             end
           else
             super
           end
         end
-=end
 
-=begin
         def object
           @vars[:object]                
         end
@@ -72,7 +82,7 @@ module Rhom
         def source_id
           @vars[:source_id]                
         end
-
+=begin
         def to_s
           @vars.to_s if @vars
         end
