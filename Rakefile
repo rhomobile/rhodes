@@ -1676,18 +1676,15 @@ namespace "build" do
       Find.find($srcdir) do |path| 
         atime = File.atime(path.to_s) # last access time
         mtime = File.mtime(path.to_s) # modification time
-        newName = nil
         fName   = nil
 
         if File.extname(path) == ".rb"
           newName = File.basename(path).sub('.rb','.iseq')
+          fName = File.join(File.dirname(path), newName)
         end
 
         if File.extname(path) == ".erb"
           newName = File.basename(path).sub('.erb','_erb.iseq')
-        end
-
-        if !path.nil?
           fName = File.join(File.dirname(path), newName)
         end
 
