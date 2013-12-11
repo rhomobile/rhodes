@@ -33,14 +33,15 @@ module Rhom
         def self.find(*args)
           puts "MZV_DEBUG: we are in find  #{args.inspect}"
           args.collect! { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
-          objs = klass_model.find(*args)
-          puts "MZV_DEBUG: find has returned : #{objs.inspect}"
+          retVal = klass_model.find(*args)
+          puts "MZV_DEBUG: find has returned : #{retVal.inspect}"
           orm_objs = []
-          objs.each do |obj|
+          retVal.each do |obj|
             orm_objs << self.new(obj)
           end  
           puts "MZV_DEBUG: orm_objs : #{orm_objs.inspect}"
-          orm_objs
+
+          args[0] == 'all' ? orm_objs : orm_objs[0] 
         end
         
         # This holds the attributes for an instance of
