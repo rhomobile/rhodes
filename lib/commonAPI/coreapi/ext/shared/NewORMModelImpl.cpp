@@ -505,25 +505,27 @@ namespace rho {
             oResult.set(CLocalTime(nTime).formatStr("%Y-%m-%d %H:%M:%S %z"));
         }
 
-        void find(const rho::String& args, rho::apiGenerator::CMethodResult& oResult)
+        void find(const rho::String& arg, rho::apiGenerator::CMethodResult& oResult)
         {
-            LOG(INFO) + name() + ", find: Params are: " + args;
-            //for(size_t i = 0; i < args.size(); ++i) 
-            //    LOG(INFO) + args[i];
-
+            LOG(INFO) + name() + ", find: Params are: " + arg;
+            
             rho::Vector<rho::Hashtable<rho::String, rho::String> > retVals;
             if(!fixed_schema()) {
                 oResult.set(retVals);
                 return;
             }
 
-            rho::String attribs("*");
-            rho::String strSQL("SELECT ");
-            strSQL += attribs;
-            strSQL += " FROM ";
-            strSQL += name();
-            db::CDBAdapter& db = _get_db(oResult);
-            IDBResult res = db.executeSQL(strSQL.c_str());
+            IDBResult res(0);
+            if(arg == "all")
+                res = find_all(oResult);
+            else if(arg == "count") {
+                getCount(oResult);
+                return;
+            }
+            // find object by ID
+            else
+                res = find_one(arg, oResult);
+
             if(!res.getDBError().isOK()) {
                 oResult.setError(res.getDBError().getError());
                 return;
@@ -537,6 +539,30 @@ namespace rho {
                 retVals.push_back(obj_hash);
             }
             oResult.set(retVals);
+        }
+
+        IDBResult find_all(rho::apiGenerator::CMethodResult& oResult)
+        {
+            rho::String attribs("*");
+            rho::String strSQL("SELECT ");
+            strSQL += attribs;
+            strSQL += " FROM ";
+            strSQL += name();
+            db::CDBAdapter& db = _get_db(oResult);
+            return db.executeSQL(strSQL.c_str());
+        }
+
+        IDBResult find_one(const rho::String& objId, rho::apiGenerator::CMethodResult& oResult)
+        {
+            rho::String strippedObjId = _strip_braces(objId);
+            rho::String attribs("*");
+            rho::String strSQL("SELECT ");
+            strSQL += attribs;
+            strSQL += " FROM ";
+            strSQL += name();
+            strSQL += " WHERE object=?";
+            db::CDBAdapter& db = _get_db(oResult);
+            return db.executeSQL(strSQL.c_str(), strippedObjId);
         }
 
         void createObject(const Hashtable<rho::String, rho::String>& attrs, rho::apiGenerator::CMethodResult& oResult)
@@ -560,11 +586,8 @@ namespace rho {
             if(fixed_schema()) {
                 rho::Vector<rho::String> quests;
                 rho::String strSQL = _make_insert_attrs_sql_script(attrs.get("object"), attrs, quests);
+                LOG(INFO) + "MZV_DEBUG, createObject: MZV_DEBUG: we have the following sqlSQL:" + strSQL;
 
-                LOG(INFO) + "createObject: MZV_DEBUG: we have the following sqlSQL:" + strSQL;
-                for(size_t i = 0; i < quests.size(); ++i)
-                    LOG(INFO) + quests[i];
-            
                 IDBResult res = db.executeSQLEx(strSQL.c_str(), quests);
                 if(!res.getDBError().isOK()) {
                     oResult.setError(res.getDBError().getError());
@@ -725,6 +748,16 @@ namespace rho {
             LOG(INFO) + "_create_sql_schema_indices: " + name() + ", sql: " + strSQLIndices;
 
             return strSQLIndices;
+        }
+
+        static const rho::String _strip_braces(const rho::String& str) 
+        {
+            rho::String retStr = str;
+            if(retStr.size() && retStr[0] == '{')
+                retStr = retStr.substr(1);
+            if(retStr.size() && retStr[retStr.size() - 1] == '}')
+                retStr = retStr.substr(0, retStr.size() - 1);
+            return retStr;
         }
         
         static HashtablePtr<rho::String, CNewORMModelImpl*> models_;
