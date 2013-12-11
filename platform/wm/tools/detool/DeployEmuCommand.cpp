@@ -8,17 +8,18 @@ extern bool str_ends_with(const TCHAR* str, const TCHAR* suffix);
 bool DeployEmuCommand::checkParameters() const
 {
     USES_CONVERSION;
-    return (m_vecArgv.size() > 6) && (strcmp(T2A(m_vecArgv[2]), "emu") == 0);
+    return (m_vecArgv.size() > 7) && (strcmp(T2A(m_vecArgv[2]), "emu") == 0);
 }
 
 void DeployEmuCommand::parseParameters()
 {
-    emu_name    = m_vecArgv[3];
-    app_name    = m_vecArgv[4];
-    bundle_path = m_vecArgv[5];
-    app_exe     = m_vecArgv[6];
-    log_port    = m_vecArgv[7];
-    lcdll_path  = m_vecArgv[8];
+    exe_change  = _tcscmp(m_vecArgv[3], L"1") == 0 ? true : false;
+    emu_name    = m_vecArgv[4];
+    app_name    = m_vecArgv[5];
+    bundle_path = m_vecArgv[6];
+    app_exe     = m_vecArgv[7];
+    log_port    = m_vecArgv[8];
+    lcdll_path  = m_vecArgv[9];
 
     if ((!use_shared_runtime) && app_exe)
         use_shared_runtime = str_ends_with(app_exe, L".lnk");
@@ -98,13 +99,22 @@ void DeployEmuCommand::runObject()
             }
             FindClose( hFind);
 
-            int retval = file::copyExecutable (app_exe, app_dir, use_shared_runtime);
-            if (retval != EXIT_SUCCESS) {
-                printf ("Failed to copy application executable\n");
-                if (retval == 32) {
-                    printf ("Please, stop application on device and try again.\n");
+            int retval = EXIT_SUCCESS;
+
+            if (exe_change)
+            {
+                retval = file::copyExecutable (app_exe, app_dir, use_shared_runtime);
+                if (retval != EXIT_SUCCESS) {
+                    printf ("Failed to copy application executable\n");
+                    if (retval == 32) {
+                        printf ("Please, stop application on device and try again.\n");
+                    }
+                    releaseDeploy();
                 }
-                releaseDeploy();
+            }
+            else
+            {
+                printf ("%s executable POSTPONE.\n", app_exe);
             }
 
             if (lcdll_path) {
