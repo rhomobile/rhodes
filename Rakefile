@@ -1687,7 +1687,10 @@ namespace "build" do
           newName = File.basename(path).sub('.erb','_erb.iseq')
         end
 
-        fName = File.join(File.dirname(path), newName)
+        if !path.nil?
+          fName = File.join(File.dirname(path), newName)
+        end
+
         File.utime(atime, mtime, fName) unless fName.nil? || !File.exist?(fName)
       end
 
