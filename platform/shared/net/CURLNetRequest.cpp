@@ -554,7 +554,7 @@ void CURLNetRequest::ProxySettings::initFromConfig() {
         host = RHOCONF().getString("http_proxy_host");
 
         if (RHOCONF().isExist("http_proxy_port")) {
-            port += RHOCONF().getInt("http_proxy_port");
+            port = RHOCONF().getInt("http_proxy_port");
         }
 
         LOG(INFO) + "PROXY: " + host;
