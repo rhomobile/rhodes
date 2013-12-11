@@ -78,7 +78,7 @@ namespace rho {
             m_mapPropAccessors["freezed"] = freezedModelAccessor;
         }
 
-        static CNewORMModelImpl::init_once()
+        static void init_once()
         {
             if(reserved_names_.empty())
             {
@@ -544,11 +544,12 @@ namespace rho {
             getProperty("source_id", oResult);
             rho::String source_id = oResult.getString();
             getProperty("sync_type", oResult);
-            bool is_sync_source = (sync_type != "none");
+            bool is_sync_source = (oResult.getString() != "none");
             db::CDBAdapter& db = _get_db(oResult);
+
             db.startTransaction();
             if(is_sync_source) {
-                IDBResult res = db.executeSQL("INSERT INTO changed_values update_type=create attrib=object source_id=? object=?", source_id.c_str(), attrs["object"].c_str());
+                IDBResult res = db.executeSQL("INSERT INTO changed_values(update_type,attrib,source_id,object) VALUES(?,?,?,?)", "create", "object", source_id, attrs.get("object"));
                 if(!res.getDBError().isOK()) {
                     oResult.setError(res.getDBError().getError());
                     db.rollback();
@@ -558,8 +559,13 @@ namespace rho {
 
             if(fixed_schema()) {
                 rho::Vector<rho::String> quests;
-                rho::String strSQL = _make_insert_attrs_sql_script(attrs["object"], attrs, quests);
-                IDBResult res = db.executeSQLEx(strSQL, quests);
+                rho::String strSQL = _make_insert_attrs_sql_script(attrs.get("object"), attrs, quests);
+
+                LOG(INFO) + "createObject: MZV_DEBUG: we have the following sqlSQL:" + strSQL;
+                for(size_t i = 0; i < quests.size(); ++i)
+                    LOG(INFO) + quests[i];
+            
+                IDBResult res = db.executeSQLEx(strSQL.c_str(), quests);
                 if(!res.getDBError().isOK()) {
                     oResult.setError(res.getDBError().getError());
                     db.rollback();
@@ -568,20 +574,20 @@ namespace rho {
             }
             else
             {
-                rho::String strCols, strQuests;
-                quests.push_back(objectId);
+                rho::String strSQL("INSERT INTO object_values (source_id,object,attrib,value) VALUES(?,?,?,?);\r\n");
                 for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin();
                     cIt != attrs.end();
                     ++cIt)
                 {
                     if(_is_reserved_name(cIt -> first))
                         continue;   
-                    strSQL = "INSERT INTO object_values (source_id,object,attrib,value) VALUES(?,?,?,?);\r\n";
-                    IDBResult res = db.executeSQL(strSQL.c_str(), source_id, attrs["object"], cIt -> first, cIt -> second);
+                    
+                    IDBResult res = db.executeSQL(strSQL.c_str(), source_id, attrs.get("object"), cIt -> first, cIt -> second);
                     if(!res.getDBError().isOK()) {
                         oResult.setError(res.getDBError().getError());
                         db.rollback();
                         return;
+                    }
                 } 
             }
 
@@ -634,10 +640,7 @@ namespace rho {
 
         static bool _is_reserved_name(const rho::String& attrName)
         {
-            return reserved_namesif(attrName == "source_id"
-                || attrName == "clear_notification"
-                || attrName == "set_notification"
-            return false;
+            return reserved_names_.containsKey(attrName);
         }
 
         const rho::String _make_insert_attrs_sql_script(const rho::String& objectId, 
@@ -662,7 +665,7 @@ namespace rho {
                 quests.push_back(cIt -> second);
             }
 
-            return rho::String("INSERT INTO ") + name() + "(object," + strCols + ") VALUES (?" + strQuests + ");\r\n";   
+            return rho::String("INSERT INTO ") + name() + "(\"object\"," + strCols + ") VALUES (?," + strQuests + ");\r\n";   
         }
 
         const rho::String _make_create_sql_script() const
@@ -736,14 +739,14 @@ namespace rho {
         Hashtable<rho::String, rho::String> belongsTo_;
     };
     HashtablePtr<rho::String, CNewORMModelImpl*> CNewORMModelImpl::models_;
-    Hashtable<rho::String, int> reserved_names_;
+    Hashtable<rho::String, int> CNewORMModelImpl::reserved_names_;
 
     class CNewORMModelSingletonImpl: public CNewORMModelSingletonBase
     {
     public:
         CNewORMModelSingletonImpl(): CNewORMModelSingletonBase()
         {
-            CNewORMMOdelImpl::init_once();
+            CNewORMModelImpl::init_once();
         }
         
         //methods
