@@ -25,6 +25,7 @@
 *------------------------------------------------------------------------*/
 
 #include "rubyext/GeoLocation.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 extern "C" {
 
@@ -72,6 +73,20 @@ int rho_geo_is_available()
 {
     //TODO: rho_geo_is_available
     return 0;
+}
+
+double rho_geo_speed() {
+    //TODO: rho_geo_speed
+    return 0.0;
+}
+
+int rho_geo_satellites() {
+    //TODO: rho_geo_satellites
+    return 0;
+}
+
+void rho_geo_set_notification_ex(const char *url, rho_param* p, char* params) {
+    //TODO: rho_geo_set_notification_ex
 }
 
 } //extern "C"
