@@ -57,6 +57,7 @@ chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
+require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -1670,7 +1671,26 @@ namespace "build" do
           exit 1
         end
       end
-           
+
+      # change modification time for improvement of performance on WM platform
+      Find.find($srcdir) do |path| 
+        atime = File.atime(path.to_s) # last access time
+        mtime = File.mtime(path.to_s) # modification time
+        fName   = nil
+
+        if File.extname(path) == ".rb"
+          newName = File.basename(path).sub('.rb','.iseq')
+          fName = File.join(File.dirname(path), newName)
+        end
+
+        if File.extname(path) == ".erb"
+          newName = File.basename(path).sub('.erb','_erb.iseq')
+          fName = File.join(File.dirname(path), newName)
+        end
+
+        File.utime(atime, mtime, fName) unless fName.nil? || !File.exist?(fName)
+      end
+
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
