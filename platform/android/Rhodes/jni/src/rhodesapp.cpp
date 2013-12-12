@@ -353,7 +353,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeAddAppMess
     std::string strAppName = rho_cast<std::string>(env, jAppName);
     std::string strMessage = jMessage ? rho_cast<std::string>(env, jMessage) : "";
 
-    static_cast<rho::CSystemImplBase*>(rho::CSystemFactoryBase::getSystemSingletonS())->addApplicationMessage(strMessage);
+    static_cast<rho::CSystemImplBase*>(rho::CSystemFactoryBase::getSystemSingletonS())->addApplicationMessage(strAppName, strMessage);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_resetHttpLogging
