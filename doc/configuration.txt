@@ -193,10 +193,6 @@ Turn on Persistent Storage usage mode for Blackberry
 
 	use_persistent_storage = 1
 
-To use only models from bulk database. If true, application will not create models and will use models from bulk sync database
-
-	use_bulk_model = true
-
 Disable WebView to check SSL certificate (Android). Used to allow proceed with self signed certificates. Use at your own risk. This configuration option works well for any Android version except 2.3.3/2.3.4 (due to Android WebView behavior).
 
 	no_ssl_verify_peer = 1
