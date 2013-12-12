@@ -1,4 +1,5 @@
 #include "generated/cpp/SystemBase.h"
+#include "logging/RhoLog.h"
 
 namespace rho {
 
@@ -7,7 +8,7 @@ using namespace apiGenerator;
 class CSystemImplBase: public CSystemSingletonBase
 {
 public:
-    CSystemImplBase(): CSystemSingletonBase(), m_appMessageNotifications(false) {}
+    CSystemImplBase(): CSystemSingletonBase(), m_appMessageNotifications(false), m_appMessageWait(false) {}
 
     virtual void getPlatform(CMethodResult& oResult);
     virtual void getHasCamera(CMethodResult& oResult);
@@ -76,6 +77,8 @@ protected:
     CMethodResult m_appMessageHandler;
     bool m_appMessageWait;
     CMethodResult m_appMessageResult;
+
+    DEFINE_LOGCLASS
 };
 
 }
