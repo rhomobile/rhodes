@@ -68,9 +68,9 @@ public:
     virtual void startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
     virtual void stopApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
 
-    void addApplicationMessage(const rho::String& msg);
+    void addApplicationMessage(const rho::String& appName, const rho::String& msg);
 protected:
-    Vector<String> m_appMessageQueue;
+    Vector<Hashtable<String, String> > m_appMessageQueue;
     common::CMutex m_appMessageMutex;
     bool m_appMessageNotifications;
     CMethodResult m_appMessageHandler;

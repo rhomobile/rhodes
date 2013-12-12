@@ -420,24 +420,29 @@ void CSystemImplBase::getMain_window_closed(rho::apiGenerator::CMethodResult& oR
     //windows only
 }
 
-void CSystemImplBase::addApplicationMessage(const rho::String& msg)
+void CSystemImplBase::addApplicationMessage(const rho::String& appName, const rho::String& msg)
 {
     common::CMutexLock lock(m_appMessageMutex);
     if(!m_appMessageWait && !m_appMessageNotifications)
     {
-        m_appMessageQueue.push_back(msg);
+        m_appMessageQueue.push_back(Hashtable<String, String>());
+        m_appMessageQueue.back()["appName"] = appName;
+        m_appMessageQueue.back()["message"] = msg;
     }
     else
     {
+        Hashtable<String, String> res;
+        res["appName"] = appName;
+        res["message"] = msg;
         if(m_appMessageWait)
         {
-            m_appMessageResult.set(msg);
+            m_appMessageResult.set(res);
             m_appMessageWait = false;
         }
 
         if(m_appMessageNotifications)
         {
-            m_appMessageHandler.set(msg);
+            m_appMessageHandler.set(res);
         }
     }
 }
@@ -463,7 +468,7 @@ void CSystemImplBase::startApplicationMessageNotifications(rho::apiGenerator::CM
     common::CMutexLock lock(m_appMessageMutex);
     m_appMessageNotifications = true;
     m_appMessageHandler = oResult;
-    for(Vector<String>::const_iterator It = m_appMessageQueue.begin(); It != m_appMessageQueue.end(); ++It)
+    for(Vector<Hashtable<String, String> >::const_iterator It = m_appMessageQueue.begin(); It != m_appMessageQueue.end(); ++It)
     {
         m_appMessageHandler.set(*It);
     }
