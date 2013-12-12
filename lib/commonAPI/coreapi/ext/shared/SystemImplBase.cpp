@@ -1,7 +1,6 @@
 #include "SystemImplBase.h"
 
 #include "common/RhoConf.h"
-#include "logging/RhoLog.h"
 #include "common/RhodesApp.h"
 #include "sync/RhoconnectClientManager.h"
 #include "common/RhoFilePath.h"
@@ -60,6 +59,8 @@ int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char 
 namespace rho {
 
 using namespace apiGenerator;
+
+IMPLEMENT_LOGCLASS(CSystemImplBase, "System");
 
 void CSystemImplBase::getPlatform(CMethodResult& oResult)
 {
@@ -425,6 +426,7 @@ void CSystemImplBase::addApplicationMessage(const rho::String& appName, const rh
     common::CMutexLock lock(m_appMessageMutex);
     if(!m_appMessageWait && !m_appMessageNotifications)
     {
+        LOG(TRACE) + "Push " + appName + " mesage to queue: " + msg;
         m_appMessageQueue.push_back(Hashtable<String, String>());
         m_appMessageQueue.back()["appName"] = appName;
         m_appMessageQueue.back()["message"] = msg;
@@ -436,12 +438,14 @@ void CSystemImplBase::addApplicationMessage(const rho::String& appName, const rh
         res["message"] = msg;
         if(m_appMessageWait)
         {
+            LOG(TRACE) + "Pass " + appName + " mesage to callback (once): " + msg;
             m_appMessageResult.set(res);
             m_appMessageWait = false;
         }
 
         if(m_appMessageNotifications)
         {
+            LOG(TRACE) + "Pass " + appName + " mesage to callback (subscription): " + msg;
             m_appMessageHandler.set(res);
         }
     }
@@ -452,11 +456,14 @@ void CSystemImplBase::getApplicationMessage(rho::apiGenerator::CMethodResult& oR
     common::CMutexLock lock(m_appMessageMutex);
     if(m_appMessageQueue.size() != 0)
     {
+        LOG(TRACE) + "src: " + m_appMessageQueue.front()["appName"] + ", msg: " + m_appMessageQueue.front()["message"];
+
         oResult.set(m_appMessageQueue.front());
         m_appMessageQueue.erase(m_appMessageQueue.begin());
     }
     else
     {
+        LOG(TRACE) + "There is no pending app msg";
         m_appMessageResult = oResult;
         m_appMessageWait = true;
     }

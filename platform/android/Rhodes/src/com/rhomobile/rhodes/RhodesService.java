@@ -1381,6 +1381,9 @@ public class RhodesService extends Service {
     private void handleAppMessage(Bundle extras) {
         String sourceAppName = extras.getString(INTENT_SOURCE);
         String message = extras.getString(INTENT_EXTRA_MESSAGE);
+        if (message != null) {
+            message = Uri.decode(message);
+        }
         
         Logger.T(TAG, "App message from: " + sourceAppName + ", message: " + message);
         
