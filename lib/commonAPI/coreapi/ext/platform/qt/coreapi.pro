@@ -75,8 +75,6 @@ HEADERS += \
 ../../shared/generated/cpp/INativeToolbar.h\
 ../../shared/generated/cpp/INavbar.h\
 ../../shared/generated/cpp/INetwork.h\
-../../shared/generated/cpp/INewORM.h\
-../../shared/generated/cpp/INewORMModel.h\
 ../../shared/generated/cpp/INotification.h\
 ../../shared/generated/cpp/IProcess.h\
 ../../shared/generated/cpp/IPush.h\
@@ -90,8 +88,6 @@ HEADERS += \
 ../../shared/generated/cpp/NativeToolbarBase.h\
 ../../shared/generated/cpp/NavbarBase.h\
 ../../shared/generated/cpp/NetworkBase.h\
-../../shared/generated/cpp/NewORMBase.h\
-../../shared/generated/cpp/NewORMModelBase.h\
 ../../shared/generated/cpp/NotificationBase.h\
 ../../shared/generated/cpp/ProcessBase.h\
 ../../shared/generated/cpp/PushBase.h\
@@ -109,8 +105,6 @@ SOURCES += \
 ../../shared/MenubarImpl.cpp\
 ../../shared/NetworkDetectBase.cpp\
 ../../shared/NetworkImpl.cpp\
-../../shared/NewORMImpl.cpp\
-../../shared/NewORMModelImpl.cpp\
 ../../shared/PushImpl.cpp\
 ../../shared/SQLite3Impl.cpp\
 ../../shared/SystemImplBase.cpp\
@@ -138,12 +132,6 @@ SOURCES += \
 ../../shared/generated/network_api_init.cpp\
 ../../shared/generated/network_js_api.cpp\
 ../../shared/generated/network_ruby_api.c\
-../../shared/generated/neworm_api_init.cpp\
-../../shared/generated/neworm_js_api.cpp\
-../../shared/generated/neworm_ruby_api.c\
-../../shared/generated/newormmodel_api_init.cpp\
-../../shared/generated/newormmodel_js_api.cpp\
-../../shared/generated/newormmodel_ruby_api.c\
 ../../shared/generated/notification_api_init.cpp\
 ../../shared/generated/notification_js_api.cpp\
 ../../shared/generated/notification_ruby_api.c\
@@ -189,12 +177,6 @@ SOURCES += \
 ../../shared/generated/cpp/NetworkBase.cpp\
 ../../shared/generated/cpp/Network_js_wrap.cpp\
 ../../shared/generated/cpp/Network_ruby_wrap.cpp\
-../../shared/generated/cpp/NewORMBase.cpp\
-../../shared/generated/cpp/NewORMModelBase.cpp\
-../../shared/generated/cpp/NewORMModel_js_wrap.cpp\
-../../shared/generated/cpp/NewORMModel_ruby_wrap.cpp\
-../../shared/generated/cpp/NewORM_js_wrap.cpp\
-../../shared/generated/cpp/NewORM_ruby_wrap.cpp\
 ../../shared/generated/cpp/NotificationBase.cpp\
 ../../shared/generated/cpp/Notification_js_wrap.cpp\
 ../../shared/generated/cpp/Notification_ruby_wrap.cpp\
