@@ -24,9 +24,13 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+#require 'time'
 require 'rho/render'
 require 'rho/rhoapplication'
+require 'rhom'
+#require 'rhofsconnector'
 require 'rho/rhoerror'
+require 'rhom/rhom_source'
 require 'rhodes'
 
 module Rho
@@ -57,52 +61,44 @@ module Rho
     
     @@rho_framework = nil
     @@native_bar_initialized = nil
-    @@use_new_rhom = false
     
     def self.get_instance
         @@rho_framework
     end
 
-    def self.use_new_rhom
-      return @@use_new_rhom
-    end
-
     def initialize(app_manifest_filename=nil)
-      puts "Calling RHO.initialize #{app_manifest_filename}, use_new_rhom: #{Rho::RhoConfig.use_new_rhom.to_i}"
-      @@use_new_rhom = (Rho::RhoConfig.use_new_rhom.to_i > 0 ? true : false)
-      if(@@use_new_rhom)
-        puts "MZV_DEBUG: we are in use_new_rhom true #{@@use_new_rhom}"
+      puts "Calling RHO.initialize"
+
+      if app_manifest_filename
+        load_models_from_file(app_manifest_filename)
       else
-        puts "MZV_DEBUG: we are in use_new_rhom false #{@@use_new_rhom}"
+        load_models_from_file(Rho::RhoFSConnector::get_app_manifest_filename)
       end
 
       # Initialize application and sources
       @@rho_framework = self
       @db_partitions = {}
-      partitions = ['app','user','local']
-      partitions.each do |partition|
-        @db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
-      end
-      require 'rhom'
 
-      unless @@use_new_rhom
-        if app_manifest_filename
-          load_models_from_file(app_manifest_filename)
-        else
-          load_models_from_file(Rho::RhoFSConnector::get_app_manifest_filename)
-        end
-      else
-        puts "MZV_DEBUG: Loading NewRHOM"
-        Rhom::Rhom.get_instance().load_models(app_manifest_filename)
-        puts "MZV_DBEUG: checking what we have"
-        models = Rho::NewORMModel.enumerate
-        models.each do |model|
-          puts "MZV_DEBUG: we have here #{model.class.name}, #{model.model_name}, #{model.loaded}"
-        end
-        puts " some generated id is : #{Rho::NewORM.generateId}"
-      end
+      partition = 'user'
+      @db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
     end
 
+=begin    
+    def initialize(app_manifest_filename=nil)
+      puts "Calling RHO.initialize"
+      
+      if app_manifest_filename
+        process_model_dirs(app_manifest_filename)
+      else
+        process_model_dirs(Rho::RhoFSConnector::get_app_manifest_filename)
+      end
+      
+      # Initialize application and sources
+      @@rho_framework = self
+      @db_partitions = {}
+      init_sources()
+    end
+=end    
     attr_reader :db_partitions
     
     def self.get_src_db(src_name=nil)
@@ -121,6 +117,10 @@ module Rho
     def self.get_db_partitions
         @@rho_framework.db_partitions
     end
+    
+    #def self.get_application_db
+    #    @@rho_framework.db_application
+    #end
     
     def init_app
       puts "init_app"
@@ -189,6 +189,18 @@ module Rho
         puts '"UI destroyed" callback failed: ' + e.inspect + ";Trace: #{trace_msg}"
       end
     end
+
+    # make sure we close the database file
+    #def self.finalize
+      #Rhom::RhomDbAdapter::close
+      #puts 'finalize'
+      #if @@rho_framework
+      #  @@rho_framework.db_application.close()
+      #  @@rho_framework.db_user.close()
+        
+      #  @@rho_framework = nil
+      #end
+    #end
     
     def raise_rhoerror(errCode)
         raise Rho::RhoError.new(errCode)
@@ -200,7 +212,8 @@ module Rho
     
     def get_app(appname)
       if (APPLICATIONS[appname].nil?)
-        require 'application'
+        require 'application' #RhoApplication::get_app_path(appname)+'application'
+        #APPLICATIONS[appname] = Object.const_get('AppApplication').new
         Object.const_get('AppApplication').new
         unless APPLICATIONS[appname].initialized?
           msg = "RhoApplication was not correctly initialized (forget to call 'super' in AppApplication.initialize ?)"
@@ -239,7 +252,71 @@ end
         
       end
     end
+    
+    # Return the directories where we need to load configuration files
+    def process_model_dirs(app_manifest_filename=nil)
+      File.open(app_manifest_filename) do |f|
+        f.each do |line|
+            str = line.chomp
+            if str != nil and str.length > 0 
+                #puts "model file: #{str}"
+                modelName = File.basename(File.dirname(str))
+                Rhom::RhomObjectFactory.init_object(modelName)
+                require str
 
+                puts "model name: #{modelName}"            
+
+                modelClass = nil 
+                modelClass = Object.const_get(modelName) if Object.const_defined?(modelName)
+                if modelClass
+                    puts "model class found"                            
+                    if modelClass.respond_to?( :get_model_params )
+                        Rho::RhoConfig::add_loaded_source(modelName,modelClass.get_model_params())
+                        modelClass.reset_model_params()
+                    else
+                        puts "ERROR: Invalid model definition. Add 'include Rhom::PropertyBag' or 'include Rhom::FixedSchema' to model class"
+                    end    
+                else
+                    puts "ERROR: cannot load model : #{modelClass}"
+                end    
+            end
+        end        
+      end
+    end
+    
+    # Return the directories where we need to load configuration files
+=begin
+    def self.process_rhoconfig
+      begin
+        File.open(Rho::RhoFSConnector.get_rhoconfig_filename) do |f|
+          f.each do |line|
+              # Skip empty or commented out lines
+              next if line =~ /^\s*(#|$)/
+              parts = line.chomp.split('=', 2)
+              key = parts[0]
+              value = nil
+              if key and defined? RHO_ME
+                value = rho_get_app_property(key.strip)
+              end
+              
+              if !value
+                value = parts[1] if parts[1]
+              end
+                
+              if key and value
+                val = value.strip.gsub(/\'|\"/,'')
+                val = val == 'nil' ? nil : val
+                puts "rhoconfig: #{key} => #{val}"
+                Rho::RhoConfig.add_config(key.strip,val)
+              end  
+          end                
+        end
+      rescue Exception => e
+        puts "Error opening rhoconfig.txt: #{e}, using defaults."
+      end
+    end
+=end
+    
     def self.check_sources_migration(uniq_sources)
       uniq_sources.each do |source|
           check_source_migration(source)
@@ -356,14 +433,11 @@ end
     end
 
     def self.load_all_sources
-      unless @@use_new_rhom
         Rho::RHO.get_instance().load_all_sync_sources()
-      end
     end
     
     @all_models_loaded = false
     def load_all_sync_sources()
-      unless Rho::RHO.use_new_rhom
         return if @all_models_loaded
         puts "load_all_sync_sources"
 
@@ -380,9 +454,6 @@ end
             puts "Error load_all_sync_sources: #{e}"
             puts "Trace: #{e.backtrace}"
         end
-      else
-        @all_models_loaded = true
-      end 
     end
 
     def load_model(modelName, init_db = true)
@@ -649,7 +720,6 @@ end
         strCreate = "" unless strCreate
         if schema_attr['property']
             arCols = schema_attr['property']
-            puts " we are here in arcols : #{arCols.class.name}, #{arCols.inspect}"
             strCols = arCols.collect do |col, type|
                 "\"#{col}\" " + 
                 case type[0]
