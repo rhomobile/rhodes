@@ -38,6 +38,7 @@ import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Calendar;
@@ -126,6 +127,8 @@ public class RhodesService extends Service {
 	
 	public static final String INTENT_SOURCE = INTENT_EXTRA_PREFIX + ".intent_source";
 	
+	public static final String INTENT_EXTRA_MESSAGE = INTENT_EXTRA_PREFIX + ".message";
+ 	
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static boolean ANDROID_TITLE = true;
@@ -134,7 +137,9 @@ public class RhodesService extends Service {
 	
 	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
 	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
-    private static final String CATEGORY_APP_MESSAGE = "com.rhomobile.rhodes.ACTION_APP_MESSAGE";
+
+    private static final String ACTION_APP_MESSAGE_RECEIVE = "com.rhomobile.rhodes.ApplicationMessage.Receive";
+    private static final String CATEGORY_APP_MESSAGE = "com.rhomobile.rhodes.ApplicationMessage";
 
     private static final String NOTIFICATION_NONE = "none";
     private static final String NOTIFICATION_BACKGROUND = "background";
@@ -926,7 +931,8 @@ public class RhodesService extends Service {
 	}
 	
     public static void sendApplicationMessage(String appName, String params) throws NameNotFoundException {
-
+        Logger.T(TAG,  "App message to " + appName);
+        
         Intent intent = new Intent();
         intent.setClassName(appName, RhodesService.class.getCanonicalName());
         intent.addCategory(CATEGORY_APP_MESSAGE);
@@ -934,26 +940,8 @@ public class RhodesService extends Service {
         intent.putExtra(INTENT_SOURCE, ContextFactory.getAppContext().getPackageName());
 
         if (params != null) {
-            Bundle startParams = new Bundle();
-            if (params instanceof String) {
-                if (((String)params).length() != 0) {
-                    String[] paramStrings = ((String)params).split("&");
-                    for(int i = 0; i < paramStrings.length; ++i) {
-                        String key = paramStrings[i];
-                        String value = "";
-                        int splitIdx = key.indexOf('=');
-                        if (splitIdx != -1) {
-                            value = key.substring(splitIdx + 1); 
-                            key = key.substring(0, splitIdx);
-                        }
-                        startParams.putString(key, value);
-                    }
-                }
-            }
-            else
-                throw new IllegalArgumentException("Unknown type of incoming parameter");
-
-            intent.putExtras(startParams);
+            String encodedParams = Uri.encode(params);
+            intent.putExtra(INTENT_EXTRA_MESSAGE, encodedParams);
         }
 
         ContextFactory.getContext().startService(intent);
@@ -1389,8 +1377,14 @@ public class RhodesService extends Service {
         }
     }
     
+    private static native void nativeAddAppMessage(String sourceAppName, String message);
     private void handleAppMessage(Bundle extras) {
+        String sourceAppName = extras.getString(INTENT_SOURCE);
+        String message = extras.getString(INTENT_EXTRA_MESSAGE);
         
+        Logger.T(TAG, "App message from: " + sourceAppName + ", message: " + message);
+        
+        nativeAddAppMessage(sourceAppName, message);
     }
 
 	private void restartGeoLocationIfNeeded() {
