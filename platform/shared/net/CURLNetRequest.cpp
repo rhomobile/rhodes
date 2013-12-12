@@ -549,16 +549,18 @@ static int curl_trace(CURL *curl, curl_infotype type, char *data, size_t size, v
 }
 
 void CURLNetRequest::ProxySettings::initFromConfig() {
+    port = 0;
     
     if (RHOCONF().isExist("http_proxy_host")) {
         host = RHOCONF().getString("http_proxy_host");
+        
+        String strPort;
 
         if (RHOCONF().isExist("http_proxy_port")) {
-            port = RHOCONF().getInt("http_proxy_port");
+            strPort = RHOCONF().getString("http_proxy_port");
+            port = atoi(strPort.c_str());
         }
-
-        LOG(INFO) + "PROXY: " + host;
-        
+                
         if (RHOCONF().isExist("http_proxy_login")) {
             username = RHOCONF().getString ("http_proxy_login");
         }
@@ -566,6 +568,8 @@ void CURLNetRequest::ProxySettings::initFromConfig() {
         if (RHOCONF().isExist("http_proxy_password")) {
             password = RHOCONF().getString("http_proxy_password");
         }
+        
+        LOG(INFO) + "PROXY: " + host + " PORT: " + strPort + " USERNAME: " + username + " PASSWORD: " + password;
     }
 }
 

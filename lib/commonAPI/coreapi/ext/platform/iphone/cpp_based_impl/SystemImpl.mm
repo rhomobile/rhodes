@@ -82,19 +82,6 @@ namespace rho {
         ::rho_sys_set_do_not_bakup_attribute(pathToFile.c_str(), (int)doNotBackup);
     }
     
-    void SystemImplIphone::getHttpProxyURI(rho::apiGenerator::CMethodResult& result)
-    {
-        //result.setError("not implemented at iOS platform");
-        result.set("");
-    }
-    
-    void SystemImplIphone::setHttpProxyURI(const rho::String&, rho::apiGenerator::CMethodResult& result)
-    {
-        //result.setError("not implemented at iOS platform");
-    }
-    
-    
-    
     void SystemImplIphone::getScreenWidth(rho::apiGenerator::CMethodResult& result)
     {
         getIphoneProperty("screen_width", result);
