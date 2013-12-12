@@ -684,7 +684,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
             }
         }
         
-        curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);        
+        curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC);
     }
     
 #ifdef OS_WP8
