@@ -145,7 +145,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
                 <DESC>Client HTTP proxy. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
-                <PLATFORM>WM, Win32</PLATFORM>
+                <PLATFORM>WM, Win32, iOS, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
                 <DESC>Lock/unlock the window size change by the user. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
@@ -606,11 +606,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PARAMS>
                     <PARAM name="proxyURI" type="STRING"/>
                 </PARAMS>
-                <PLATFORM>WM, WIN32</PLATFORM>
+                <PLATFORM>WM, WIN32, iOS, Android</PLATFORM>
             </METHOD>
             <METHOD name="unset_http_proxy" deprecated="true">
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
-                <PLATFORM>WM, WIN32</PLATFORM>
+                <PLATFORM>WM, WIN32, iOS, Android</PLATFORM>
             </METHOD>
             <METHOD name="set_application_icon_badge" deprecated="true">
                 <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>

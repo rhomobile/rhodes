@@ -107,8 +107,6 @@ public:
 	bool populateUUID(UNITID_EX* uuid);
 	void bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize);
 #endif
-    virtual void getHttpProxyURI(CMethodResult& oResult);
-    virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
     virtual void getKeyboardState(CMethodResult& oResult);
@@ -134,8 +132,6 @@ public:
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
     virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
 
-    virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
-    virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
 	virtual long OnSIPState(bool bSIPState, const CRhoExtData& oExtData)
 	{
 #if defined( OS_WINCE )
@@ -998,33 +994,6 @@ void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
 {
     rho_sys_bring_to_front();
 }
-
-extern "C" void rho_sys_set_http_proxy_url(const char* url);
-void CSystemImpl::set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult)
-{
-    rho_sys_set_http_proxy_url( proxyURI.c_str() );
-}
-
-extern "C" void rho_sys_unset_http_proxy();
-void CSystemImpl::unset_http_proxy(rho::apiGenerator::CMethodResult& oResult)
-{
-    rho_sys_unset_http_proxy();
-}
-
-extern "C" const char* rho_sys_get_http_proxy_url();
-void CSystemImpl::getHttpProxyURI(CMethodResult& oResult)
-{
-    oResult.set(rho_sys_get_http_proxy_url());
-}
-
-void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oResult)
-{
-    if ( value.length() )
-        rho_sys_set_http_proxy_url( value.c_str() );
-    else
-        rho_sys_unset_http_proxy();
-}
-
 
 void CSystemImpl::getHasCamera(CMethodResult& oResult)
 {
