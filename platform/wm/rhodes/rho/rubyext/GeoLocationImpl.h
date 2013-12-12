@@ -87,6 +87,9 @@ class CGPSController : public IGPSController {
 	CRITICAL_SECTION m_critical_section;
 	double m_latitude;
 	double m_longitude;
+	double m_altitude;			//flAltitudeWRTSeaLevel - Altitute with regards to sea level, in meters
+	double m_speed;				//flSpeed - Speed in knots
+	int	   m_satelliteCount;	//dwSatelliteCount - Number of satellites used in solution
 	bool   m_knownPosition;
 	bool   m_gpsIsOn;
 	time_t m_timeout;
@@ -108,6 +111,9 @@ public:
 	virtual bool IsKnownPosition();
 	virtual double GetLatitude();
 	virtual double GetLongitude();
+	virtual double GetAltitude();
+	virtual double GetSpeed();
+	virtual int GetSatelliteCount();
 	virtual time_t UpdateTimeout();
 
 	virtual void TurnGpsOn();
