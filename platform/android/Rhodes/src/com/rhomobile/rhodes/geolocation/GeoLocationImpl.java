@@ -34,6 +34,7 @@ import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.content.Context;
+import android.location.GpsSatellite;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -53,6 +54,10 @@ public class GeoLocationImpl {
 	private List<RhoLocationListener> mListeners = new LinkedList<RhoLocationListener>();
     private List<RhoLocationListener> mSwitchedOffListeners = new LinkedList<RhoLocationListener>();
 	
+	private boolean exMode = false;
+	private double minDistance = 0;
+	private long minTime = 0;
+
 	public class RhoLocationListener implements LocationListener {
 		private String providerName;
 		private LocationManager manager;
@@ -76,7 +81,12 @@ public class GeoLocationImpl {
 				this.provider = this.manager.getProvider(this.providerName);
 			}
 			if(this.provider != null) {
-				this.manager.requestLocationUpdates(providerName, UPDATE_PERIOD_IN_MILLISECONDS, 0, this, Looper.getMainLooper());
+				if (exMode) {
+					this.manager.requestLocationUpdates(providerName, minTime, (float)minDistance, this);
+				}
+				else {
+					this.manager.requestLocationUpdates(providerName, UPDATE_PERIOD_IN_MILLISECONDS, 0, this, Looper.getMainLooper());
+				}
 				available = this.manager.isProviderEnabled(this.providerName);
 			}
 			return available;
@@ -141,6 +151,9 @@ public class GeoLocationImpl {
 			Logger.E(TAG, "createListeners() : Location Manager is NULL !");
 			return;
 		}
+		
+		mListeners = new LinkedList<RhoLocationListener>();
+	    mSwitchedOffListeners = new LinkedList<RhoLocationListener>();		
 
 		List<String> providers = man.getAllProviders();
 		Iterator<String> it = providers.iterator();
@@ -240,6 +253,15 @@ public class GeoLocationImpl {
 			}
 
 			lastLocation = location;
+			
+			if (exMode) {
+				PerformOnUiThread.exec(new Runnable() {
+					public void run() {
+						GeoLocation.onGeoCallback();
+					}
+				});
+			}
+			
 		} catch (Exception e) {
 			lastLocation = null;
 			GeoLocation.onGeoCallbackError();
@@ -292,6 +314,9 @@ public class GeoLocationImpl {
 	}
 	
 	void start() {
+		exMode = false;
+		minDistance = 0;
+		minTime = 0;
 		registerListeners();
 	}
 	
@@ -300,6 +325,33 @@ public class GeoLocationImpl {
 		unregisterListeners(null);
 	}
 
+	void restartNormal() {
+		exMode = false;
+		minDistance = 0;
+		minTime = 0;
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				unregisterListeners(null);
+				createListeners();
+				registerListeners();
+			}
+		});
+	}
+	
+	void restartEx(double _minDistance, int _minTime) {
+		exMode = true;
+		this.minDistance = _minDistance;
+		this.minTime = _minTime;
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				unregisterListeners(null);
+				createListeners();
+				registerListeners();
+			}
+		});
+	}
+	
+	
 	synchronized boolean isAvailable() {
 		Iterator<RhoLocationListener> it;
 		int available = 0;
@@ -337,6 +389,22 @@ public class GeoLocationImpl {
 		return (lastLocation != null && lastLocation.hasSpeed()) ? lastLocation.getSpeed() : 0;
 	}
 
+	synchronized int getSatellities() {
+		if ((lastLocation == null) || (locationManager == null)) {
+			return 0;
+		}
+		int Satellites = 0;
+	    int SatellitesInFix = 0;
+	    //int timetofix = locationManager.getGpsStatus(null).getTimeToFirstFix();
+	    for (GpsSatellite sat : locationManager.getGpsStatus(null).getSatellites()) {
+	        if(sat.usedInFix()) {
+	            SatellitesInFix++;              
+	        }
+	        Satellites++;
+	    }		
+		return Satellites;
+	}
+	
 	synchronized double getAltitude() {
 		return (lastLocation != null && lastLocation.hasAltitude()) ? lastLocation.getAltitude() : 0;
 	}
