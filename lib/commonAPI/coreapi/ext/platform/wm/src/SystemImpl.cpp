@@ -3,18 +3,21 @@
 #include <windows.h>
 #include <atlbase.h>
 #include <atlstr.h>
+
 #include "common/app_build_capabilities.h"
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "common/RhoDefs.h"
+
 #if defined( OS_WINCE )
 #include "EmdkDefines.h"
 #include "Keyboard.h"
 #endif
 #include <algorithm>
 #include "Registry.h"
+#include "Interprocess.h"
 
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
 #include <cfgmgrapi.h>
@@ -133,6 +136,7 @@ public:
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
     virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
+    virtual void sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
 
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
@@ -1034,6 +1038,43 @@ void CSystemImpl::getHasCamera(CMethodResult& oResult)
     oResult.set(true);
 #endif
 
+}
+
+void CSystemImpl::sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
+{
+    COPYDATASTRUCT cds;
+
+    rho::String strAppName = appName + ".MainWindow";
+
+    USES_CONVERSION;
+    HWND appWindow = FindWindow(A2W(strAppName.c_str()), NULL);
+
+    if (appWindow == NULL)
+    {
+        oResult.setError("application if not running");
+        return;
+
+        //rho::apiGenerator::CMethodResult runResult;
+        //runApplication(appName, "", false, runResult);
+
+        //appWindow = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
+        //
+        //if (appWindow == INVALID_HANDLE_VALUE)
+        //{
+        //    //TODO write error message
+        //    return;
+        //}
+    }
+
+    rho::InterprocessMessage msg;
+    strcpy(msg.params, params.c_str());
+    strcpy(msg.appName, appName.c_str());
+
+    cds.dwData = COPYDATA_INTERPROCESSMESSAGE;
+    cds.cbData = sizeof(rho::InterprocessMessage);
+    cds.lpData = &msg;
+
+    SendMessage(appWindow, WM_COPYDATA, (WPARAM)(HWND)0, (LPARAM) (LPVOID) &cds);
 }
 
 extern "C" bool rho_rhosim_window_closed();

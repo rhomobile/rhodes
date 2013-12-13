@@ -56,6 +56,8 @@
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
 #include "statistic/RhoProfiler.h"
+#include "Interprocess.h"
+#include "System.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
@@ -2082,12 +2084,21 @@ LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 
 LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    //if ( wParam != WM_WINDOW_SWITCHTAB)
-    //    return 0;
-
     COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
-    if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))
+
+    if (pcds->dwData == COPYDATA_INTERPROCESSMESSAGE)
+    {
+        InterprocessMessage *ipmsg = reinterpret_cast<InterprocessMessage*>(pcds->lpData);
+        LOG(INFO) + "INTERPROCESSMESSAGE : " + rho::String(ipmsg->appName) + rho::String(ipmsg->params);
+
+
+        rho::System::addApplicationMessage(ipmsg->appName, ipmsg->params);
+        return 0;
+    }
+    else if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))
+    {
         m_oTabBar.SwitchTabByName((LPCSTR)(pcds->lpData), true);
+    }
 
     return 0;
 }
