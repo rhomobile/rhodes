@@ -658,6 +658,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="appName" type="STRING">
                         <DESC>The name of the application on the device to run. It depends from platform. On iOS it is BundleURLScheme of executed application.</DESC>
                     </PARAM>
+                    <PARAM name="runApp" type="BOOLEAN">
+                        <DESC>If the required applicaton is not started and runApp parameter is true then the application start before send message.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
                     <PARAM name="params" type="STRING">
                         <DESC>Message payload string. Executed Application can receive this string by getApplicationMessage method. Parameter could be just value, or key-value pair separated by '&#61;' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by "&#38;", on other platforms by '&#044;' or '&#032;'.</DESC>
                     </PARAM>
