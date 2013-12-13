@@ -136,7 +136,7 @@ public:
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
     virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
-    virtual void sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
+    virtual void sendApplicationMessage( const rho::String& appName,  bool runApp,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
 
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
@@ -1040,30 +1040,33 @@ void CSystemImpl::getHasCamera(CMethodResult& oResult)
 
 }
 
-void CSystemImpl::sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::sendApplicationMessage(const rho::String& appName, bool runApp, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
 {
     COPYDATASTRUCT cds;
 
     rho::String strAppName = appName + ".MainWindow";
+    rho::StringW strAppNameW = rho::convertToStringW(strAppName);
 
-    USES_CONVERSION;
-    HWND appWindow = FindWindow(A2W(strAppName.c_str()), NULL);
+    HWND appWindow = FindWindow(strAppNameW.c_str(), NULL);
 
-    if (appWindow == NULL)
+    if (appWindow == NULL && runApp == true)
     {
-        oResult.setError("application if not running");
-        return;
+        rho::apiGenerator::CMethodResult runResult;
+        runApplication(appName, "", false, runResult);
 
-        //rho::apiGenerator::CMethodResult runResult;
-        //runApplication(appName, "", false, runResult);
+        if (runResult.isError())
+        {
+            oResult.setError(runResult.getErrorString());
+            return;
+        }
 
-        //appWindow = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
-        //
-        //if (appWindow == INVALID_HANDLE_VALUE)
-        //{
-        //    //TODO write error message
-        //    return;
-        //}
+        appWindow = FindWindow(strAppNameW.c_str(), NULL);
+        
+        if (appWindow == INVALID_HANDLE_VALUE)
+        {
+            oResult.setError("application is not running");
+            return;
+        }
     }
 
     rho::InterprocessMessage msg;

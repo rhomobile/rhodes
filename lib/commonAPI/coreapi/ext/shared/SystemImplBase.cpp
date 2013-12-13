@@ -488,7 +488,7 @@ void CSystemImplBase::stopApplicationMessageNotifications(rho::apiGenerator::CMe
     m_appMessageNotifications = false;
 }
 
-void CSystemImplBase::sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::sendApplicationMessage( const rho::String& appName,  bool runApp,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
 {
     // Android only so far
 }
