@@ -804,6 +804,11 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     [mNetworkPollCondition signal];
 }
 
+- (void) setAppMessageReceiver:(id<IAppMessageReceiver>)receiver
+{
+    appMessageReceiver = receiver;
+}
+
 
 - (void) monitorNetworkStatus
 {
@@ -1003,6 +1008,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
     [self doStartUp];
     [self processDoSync:launchOptions];
+    
+    [appMessageReceiver onAppMessageReceived:start_parameter app:@""];
 
     if ( !rho_rhodesapp_canstartapp([start_parameter UTF8String], ", ") )
     {
@@ -1239,6 +1246,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
         if ((range.location > 0) && (range.length > 0)) {
             startparams = [fullurl substringFromIndex:range.location + 1];
         }
+        
+        [appMessageReceiver onAppMessageReceived:startparams app:[url scheme]];
 
         // set start params
         rho_rhodesapp_canstartapp([startparams UTF8String], ", ");

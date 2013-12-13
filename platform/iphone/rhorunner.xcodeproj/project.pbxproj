@@ -252,6 +252,7 @@
 		C5D90EF715F4F58D005F7C86 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		C5D90EF915F4FC92005F7C86 /* NetworkStatusMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkStatusMonitor.h; sourceTree = "<group>"; };
 		C5D90EFA15F4FC92005F7C86 /* NetworkStatusMonitor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NetworkStatusMonitor.mm; sourceTree = "<group>"; };
+		C5DFBB28185B6C2700DB6BDB /* IAppMessageReceiver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAppMessageReceiver.h; sourceTree = "<group>"; };
 		F5128ADB1069752F002F00E5 /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapAnnotation.h; path = MapView/MapAnnotation.h; sourceTree = "<group>"; };
 		F5128ADC1069752F002F00E5 /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapAnnotation.m; path = MapView/MapAnnotation.m; sourceTree = "<group>"; };
 		F5128C2A106C1FF3002F00E5 /* GoogleGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleGeocoder.h; path = Classes/MapView/GoogleGeocoder.h; sourceTree = SOURCE_ROOT; };
@@ -422,6 +423,7 @@
 				BD5B7448113BE2DB00C6070A /* SplashViewController.h */,
 				BD5B7449113BE2DB00C6070A /* SplashViewController.m */,
 				C52563B01781C53C008D394D /* IPushNotificationsReceiver.h */,
+				C5DFBB28185B6C2700DB6BDB /* IAppMessageReceiver.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
