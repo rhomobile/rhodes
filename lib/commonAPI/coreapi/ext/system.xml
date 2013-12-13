@@ -250,12 +250,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
             <METHOD name="getApplicationMessage" hasCallback="optional">
                 <DESC>Return last message sent by another applcation by Rho.System.sendApplicationMessage. At Android message is returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
-                <RETURN type="STRING"/>
+                <RETURN type="HASH"/>
                 <PLATFORM>Android, WM</PLATFORM>
             </METHOD>
             <METHOD name="startApplicationMessageNotifications" hasCallback="mandatory">
                 <DESC>Start message notifications sent by another applcation by Rho.System.sendApplicationMessage. At Android messages are returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
-                <CALLBACK type="STRING"/>
+                <CALLBACK type="HASH"/>
                 <PLATFORM>Android, WM</PLATFORM>
             </METHOD>
             <METHOD name="stopApplicationMessageNotifications" hasCallback="none">
@@ -660,7 +660,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                     <PARAM name="runApp" type="BOOLEAN">
                         <DESC>If the required applicaton is not started and runApp parameter is true then the application start before send message.</DESC>
-                        <CAN_BE_NIL/>
                     </PARAM>
                     <PARAM name="params" type="STRING">
                         <DESC>Message payload string. Executed Application can receive this string by getApplicationMessage method. Parameter could be just value, or key-value pair separated by '&#61;' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by "&#38;", on other platforms by '&#044;' or '&#032;'.</DESC>
