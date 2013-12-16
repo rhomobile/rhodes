@@ -35,13 +35,37 @@ extern "C" BOOL rho_sys_app_install(const char *url);
 extern "C" BOOL rho_sys_run_app_iphone(const char* appname, char* params);
 
 
+@implementation AppMessageReceiverHolder
+    rho::SystemImplIphone *mReceiver = nil;
+
+    - (id) init : (rho::SystemImplIphone*)receiver
+    {
+        mReceiver = receiver;
+    }
+
+    - (void) onAppMessageReceived:(NSString *)message app:(NSString *)app
+    {
+        if (mReceiver != 0 )
+        {
+            mReceiver->addApplicationMessage([app UTF8String],[message UTF8String]);
+        }
+    }
+
+@end
+
+
+
+
 using namespace rho::common;
 
 namespace rho {
     
     using namespace apiGenerator;
     
-    
+    SystemImplIphone::SystemImplIphone()
+    {
+        m_pAppMessageReceiverHolder = [[AppMessageReceiverHolder alloc]init];
+    }
     
     void SystemImplIphone::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)
     {
@@ -370,7 +394,29 @@ namespace rho {
     
     
     
+    void SystemImplIphone::sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult) {
+        
+        NSString* app_name = [NSString stringWithUTF8String:appName.c_str()];
+        app_name = [app_name stringByAppendingString:@":"];
     
+        NSString* param = [NSString stringWithUTF8String:params.c_str()];
+        app_name = [app_name stringByAppendingString:param];
+
+        const char* full_url = [app_name UTF8String];
+        RAWLOG_INFO1("SystemImplIphone::sendApplicationMessage: %s", full_url);
+	    
+        BOOL res = FALSE;
+    
+        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:app_name]]) {
+            res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:app_name]];
+        }
+	
+        if ( res)
+            RAWLOG_INFO("sendApplicationMessage suceeded.");
+        else
+            RAWLOG_INFO("sendApplicationMessage failed.");
+    }
+
     
     
     
