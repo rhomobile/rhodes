@@ -52,6 +52,7 @@ extern "C"
 {
 void rho_sys_bring_to_front();
 void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
+void rho_wmsys_run_app_with_show(const wchar_t* szPath, const wchar_t* szParams, bool bShow);
 int rho_sys_get_screen_width();
 int rho_sys_get_screen_height();
 const char* rho_sys_win32_getWebviewFramework();
@@ -134,9 +135,10 @@ public:
     virtual void setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult);
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
+    virtual void runApplicationShowWindow( const rho::String& appName,  const rho::String& params, bool bShow, bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
     virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
-    virtual void sendApplicationMessage( const rho::String& appName,  bool runApp,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
+    virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
 
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
@@ -823,7 +825,7 @@ void CSystemImpl::openUrl( const rho::String& url, CMethodResult& oResult)
         oResult.setError("System.openUrl failed for: " + url);
 }
 
-void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::runApplicationShowWindow( const rho::String& appName,  const rho::String& params, bool bShow, bool blockingCall, rho::apiGenerator::CMethodResult& oResult)
 {
     CRegKey oKey;
     StringW strKeyPath;
@@ -851,18 +853,23 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
             if ( strFullPath[strFullPath.length()-1] != '/' && strFullPath[strFullPath.length()-1] != '\\' )
                 strFullPath += L"\\";
 
-			StringW strBaseName;
+            StringW strBaseName;
             CFilePath oPath(appName);
             convertToStringW(oPath.getBaseName(), strBaseName);
             strFullPath += strBaseName;
 
-            rho_wmsys_run_appW( strFullPath.c_str(), convertToStringW(params).c_str());
+            rho_wmsys_run_app_with_show(strFullPath.c_str(), convertToStringW(params).c_str(), bShow);
 
             if (GetLastError() == -1 )
                 oResult.setError( "System.runApplication failed for: " + appName);
 
         }
     }
+}
+
+void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult)
+{
+    runApplicationShowWindow(appName, params, true, blockingCall, oResult);
 }
 
 void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
@@ -1040,19 +1047,23 @@ void CSystemImpl::getHasCamera(CMethodResult& oResult)
 
 }
 
-void CSystemImpl::sendApplicationMessage(const rho::String& appName, bool runApp, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::sendApplicationMessage(const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
 {
+    CFilePath oPath(appName);    
+    rho::String appNamePath = oPath.getBaseName();
+    appNamePath.resize(appNamePath.length() - 4);
+
     COPYDATASTRUCT cds;
 
-    rho::String strAppName = appName + ".MainWindow";
+    rho::String strAppName = appNamePath + ".MainWindow";
     rho::StringW strAppNameW = rho::convertToStringW(strAppName);
 
     HWND appWindow = FindWindow(strAppNameW.c_str(), NULL);
 
-    if (appWindow == NULL && runApp == true)
+    if (appWindow == NULL)
     {
         rho::apiGenerator::CMethodResult runResult;
-        runApplication(appName, "", false, runResult);
+        runApplicationShowWindow(appName, "", false, false, runResult);
 
         if (runResult.isError())
         {
@@ -1060,13 +1071,28 @@ void CSystemImpl::sendApplicationMessage(const rho::String& appName, bool runApp
             return;
         }
 
+        int maxTimeout = 5000;
+        int currTime = 0;
+
+        for (currTime = 0; currTime < maxTimeout; currTime += 100)
+        {
+            Sleep(100);
+
+            appWindow = FindWindow(strAppNameW.c_str(), NULL);
+
+            if (appWindow != NULL)
+                break;
+        }
+
         appWindow = FindWindow(strAppNameW.c_str(), NULL);
         
-        if (appWindow == INVALID_HANDLE_VALUE)
+        if (appWindow == NULL)
         {
             oResult.setError("application is not running");
             return;
         }
+
+        Sleep(10000);
     }
 
     rho::InterprocessMessage msg;
