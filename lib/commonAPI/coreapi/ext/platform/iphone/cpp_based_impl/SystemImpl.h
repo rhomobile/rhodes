@@ -1,14 +1,14 @@
 
 #include "SystemImplBase.h"
 
-#import "IAppMessageReceiver.h"
+//#import "IAppMessageReceiver.h"
 
 namespace rho
 {
     class SystemImplIphone;
 }
 
-@interface AppMessageReceiverHolder : NSObject<IAppMessageReceiver>
+@interface AppMessageReceiverHolder// : NSObject<IAppMessageReceiver>
 {
     rho::SystemImplIphone* mReceiver;
 }
