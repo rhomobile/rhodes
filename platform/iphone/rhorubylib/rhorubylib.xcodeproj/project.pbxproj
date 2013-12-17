@@ -840,6 +840,7 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhorubylib;
 				SDKROOT = iphoneos;
@@ -866,6 +867,7 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhorubylib;
 				SDKROOT = iphoneos;
@@ -933,6 +935,7 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhorubylib;
 				SDKROOT = iphoneos;

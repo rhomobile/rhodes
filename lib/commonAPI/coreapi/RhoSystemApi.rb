@@ -8,7 +8,7 @@ class System
        return screenWidth if prop_name == 'screen_width'
        return screenHeight if prop_name == 'screen_height'
        
-       return realScreenHeight if prop_name == 'real_screen_width'
+       return realScreenWidth if prop_name == 'real_screen_width'
        return realScreenHeight if prop_name == 'real_screen_height'
        
        return ppiX if prop_name == 'ppi_x'

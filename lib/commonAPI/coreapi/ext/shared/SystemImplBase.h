@@ -29,7 +29,7 @@ public:
     virtual void setApplicationIconBadge( int value, CMethodResult& oResult);
     virtual void getIsRhoSimulator(rho::apiGenerator::CMethodResult& oResult);
     virtual void getKeyboardState(CMethodResult& oResult);
-	virtual void setKeyboardState( const rho::String &, CMethodResult& oResult);
+    virtual void setKeyboardState( const rho::String &, CMethodResult& oResult);
 
     virtual void getStartParams(rho::apiGenerator::CMethodResult& oResult);
     virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult);
@@ -63,6 +63,9 @@ public:
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
     virtual void set_application_icon_badge( int badgeNumber, rho::apiGenerator::CMethodResult& oResult);
     virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void getHttpProxyURI(rho::apiGenerator::CMethodResult& oResult);
+    virtual void setHttpProxyURI( const rho::String& httpProxyURI, rho::apiGenerator::CMethodResult& oResult);
 
     virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult) = 0;    
     virtual void getApplicationMessage(rho::apiGenerator::CMethodResult& oResult);
