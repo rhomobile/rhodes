@@ -512,6 +512,7 @@
 				DSTROOT = /tmp/Rhodes.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Rhodes/Rhodes-Prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"<%= rhodes_root_path %>/res/libs/motorolalicence/iphone",
@@ -531,6 +532,7 @@
 				DSTROOT = /tmp/Rhodes.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Rhodes/Rhodes-Prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"<%= rhodes_root_path %>/res/libs/motorolalicence/iphone",

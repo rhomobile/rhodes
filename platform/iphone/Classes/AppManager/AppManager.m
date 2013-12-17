@@ -1110,13 +1110,20 @@ void rho_platform_restart_application() {
 //    [Rhodes restart_app];
 }
 
+//#ifndef __IPHONE_5_1
+//#define NSURLIsExcludedFromBackupKey @"NSURLIsExcludedFromBackupKey"
+//#endif
+
 int rho_sys_set_do_not_bakup_attribute(const char* path, int value) {
     const char* attrName = "com.apple.MobileBackup";
     NSString* pathString = [NSString stringWithUTF8String:path];
     u_int8_t attrValue = value;
     int result = -1;
     
-    if (SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(@"5.01") || &NSURLIsExcludedFromBackupKey == nil) {
+    // HACK !!!
+    // We can not use NSURLIsExcludedFromBackupKey external const from CoreFoundation because app crash on load stage (can not resolve links)
+    // So if we want to launch on 5.0 iOS we must hardcore this const value to @"NSURLIsExcludedFromBackupKey"
+    if (SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(@"5.1")  /*|| &NSURLIsExcludedFromBackupKey == nil*/ ) {
         // iOS 5.0.1 and lower
         result = setxattr(path, attrName, &attrValue, sizeof(attrValue), 0, 0);
         
@@ -1125,9 +1132,6 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value) {
         }
     }
     else {
-#ifndef __IPHONE_5_1
-#define NSURLIsExcludedFromBackupKey @"NSURLIsExcludedFromBackupKey"
-#endif
         
         // Remove old style attribute if it exists
         int result = getxattr(path, attrName, NULL, sizeof(u_int8_t), 0, 0);
@@ -1141,7 +1145,7 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value) {
         NSError *error = nil;
         NSURL* url = [NSURL fileURLWithPath:pathString];
         BOOL success = [url setResourceValue: [NSNumber numberWithBool: (value == 1)]
-                                      forKey: NSURLIsExcludedFromBackupKey
+                                      forKey: @"NSURLIsExcludedFromBackupKey"
                                        error: &error];
         
         result = success ? 0 : -1;
