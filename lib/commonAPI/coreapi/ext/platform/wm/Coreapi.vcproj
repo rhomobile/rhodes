@@ -1216,7 +1216,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\Interprocess.h"
+				RelativePath=".\src\Intents.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Intents.h"
 				>
 			</File>
 			<File

@@ -17,7 +17,7 @@
 #endif
 #include <algorithm>
 #include "Registry.h"
-#include "Interprocess.h"
+#include "Intents.h"
 
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
 #include <cfgmgrapi.h>
@@ -1084,6 +1084,8 @@ void CSystemImpl::sendApplicationMessage(const rho::String& appName, const rho::
                 break;
         }
 
+        waitIntentEvent(appName);
+
         appWindow = FindWindow(strAppNameW.c_str(), NULL);
         
         if (appWindow == NULL)
@@ -1091,8 +1093,6 @@ void CSystemImpl::sendApplicationMessage(const rho::String& appName, const rho::
             oResult.setError("application is not running");
             return;
         }
-
-        Sleep(10000);
     }
 
     rho::InterprocessMessage msg;
