@@ -145,7 +145,7 @@ VALUE CMethodResult::toRuby(bool bForCallback/* = false*/)
 {
 #ifndef RHORC_NO_RUBY
     VALUE valRes = CMethodResultConvertor().toRuby(*this, bForCallback);
-#elif
+#else
     VALUE valRes = 0;
 #endif //RHORC_NO_RUBY
     return valRes;
