@@ -42,6 +42,16 @@ class CURLNetRequest : public INetRequestImpl
 {
     DEFINE_LOGCLASS;
     
+    struct ProxySettings
+    {
+        void initFromConfig();
+        
+        String  host;
+        int     port;
+        String  username;
+        String  password;
+    };
+    
     class CURLHolder
     {
     public:
@@ -51,7 +61,7 @@ class CURLNetRequest : public INetRequestImpl
         CURL *curl() {return m_curl;}
         
         curl_slist *set_options(const char *method, const String& strUrl, const String& strBody,
-                                IRhoSession* pSession, Hashtable<String,String>* pHeaders);
+                                IRhoSession* pSession, Hashtable<String,String>* pHeaders, const ProxySettings& pProxySettings );
         CURLcode perform();
         
         void cancel() {deactivate();}
@@ -100,7 +110,7 @@ private:
     INetResponse *makeResponse(Vector<char> const &body, int nErrorCode);
     INetResponse *makeResponse(char const *body, size_t bodysize, int nErrorCode);
 	CURLcode doCURLPerform(const String& strUrl);
-	
+
     CURLHolder m_curl;
 };
 
