@@ -242,7 +242,10 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
         Vector<char> respChunk;
-		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
+        
+        ProxySettings proxySettings;
+        proxySettings.initFromConfig();
+		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings );
 
         CURL *curl = m_curl.curl();
         if (pHeaders) {
@@ -252,7 +255,8 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
 		//curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 2);
-		//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2);
+		//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2);        
+        
         if (nStartFrom > 0)
 		{
 			RAWLOG_INFO1("CURLNetRequest::doPull - resuming from %d",nStartFrom);
@@ -331,7 +335,9 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     RAWLOG_INFO1("POST request (Push): %s", strUrl.c_str());
     rho_net_impl_network_indicator(1);
     
-    curl_slist *hdrs = m_curl.set_options("POST", strUrl, String(), oSession, pHeaders);
+    ProxySettings proxySettings;
+    proxySettings.initFromConfig();
+    curl_slist *hdrs = m_curl.set_options("POST", strUrl, String(), oSession, pHeaders, proxySettings );
     CURL *curl = m_curl.curl();
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
@@ -542,8 +548,34 @@ static int curl_trace(CURL *curl, curl_infotype type, char *data, size_t size, v
     return 0;
 }
 
+void CURLNetRequest::ProxySettings::initFromConfig() {
+    port = 0;
+    
+    if (RHOCONF().isExist("http_proxy_host")) {
+        host = RHOCONF().getString("http_proxy_host");
+        
+        String strPort;
+
+        if (RHOCONF().isExist("http_proxy_port")) {
+            strPort = RHOCONF().getString("http_proxy_port");
+            port = atoi(strPort.c_str());
+        }
+                
+        if (RHOCONF().isExist("http_proxy_login")) {
+            username = RHOCONF().getString ("http_proxy_login");
+        }
+
+        if (RHOCONF().isExist("http_proxy_password")) {
+            password = RHOCONF().getString("http_proxy_password");
+        }
+        
+        LOG(INFO) + "PROXY: " + host + " PORT: " + strPort + " USERNAME: " + username + " PASSWORD: " + password;
+    }
+}
+
+
 curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const String& strUrl, const String& strBody,
-                             IRhoSession* pSession, Hashtable<String,String>* pHeaders)
+                             IRhoSession* pSession, Hashtable<String,String>* pHeaders, const ProxySettings& proxySettings)
 {
     if (method != NULL) {
         mStrMethod = method;
@@ -638,6 +670,21 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         curl_easy_setopt(m_curl, CURLOPT_DEBUGFUNCTION, &curl_trace);
         curl_easy_setopt(m_curl, CURLOPT_DEBUGDATA, NULL);
         curl_easy_setopt(m_curl, CURLOPT_VERBOSE, 1L);
+    }
+    
+    if (proxySettings.host.length() > 0) {
+        curl_easy_setopt(m_curl, CURLOPT_PROXY, proxySettings.host.c_str());
+        curl_easy_setopt(m_curl, CURLOPT_PROXYPORT, proxySettings.port);
+        
+        if ( proxySettings.username.length() > 0 ) {
+            curl_easy_setopt(m_curl, CURLOPT_PROXYUSERNAME, proxySettings.username.c_str());
+            
+            if ( proxySettings.password.length() > 0 ) {
+                curl_easy_setopt(m_curl, CURLOPT_PROXYPASSWORD, proxySettings.password.c_str());
+            }
+        }
+        
+        curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC);
     }
     
 #ifdef OS_WP8
