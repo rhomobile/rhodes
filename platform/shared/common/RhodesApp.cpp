@@ -93,8 +93,6 @@ static const char APP_EVENT_DBMIGRATESOURCE[] = "DBMigrateSource";
 static const char APP_EVENT_UNINITIALIZED[] = "Uninitialized";
 static const char APP_EVENT_SCREEN_ON[] = "ScreenOn";
 static const char APP_EVENT_SCREEN_OFF[] = "ScreenOff";
-static const char APP_EVENT_SCREEN_LOCKED[] = "ScreenLocked";
-static const char APP_EVENT_SCREEN_UNLOCKED[] = "ScreenUnlocked";
 
 static const char APP_EVENT[] = "applicationEvent";
 static const char APP_EVENT_DATA[] = "eventData";
@@ -2318,12 +2316,6 @@ void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
                 case screenOn:
                     state = APP_EVENT_SCREEN_ON;
                     break;
-                case screenLocked:
-                    state = APP_EVENT_SCREEN_LOCKED;
-                    break;
-                case screenUnlocked:
-                    state = APP_EVENT_SCREEN_UNLOCKED;
-                    break;
                 default:
                     state = APP_EVENT_UNINITIALIZED;
                     break;
@@ -2584,18 +2576,6 @@ void rho_rhodesapp_callScreenOnCallback()
 {
     if ( rho::common::CRhodesApp::getInstance() && RHODESAPP().getApplicationEventReceiver() )
         RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(rho::common::screenOn);
-}
-    
-void rho_rhodesapp_callScreenLockedCallback()
-{
-    if ( rho::common::CRhodesApp::getInstance() && RHODESAPP().getApplicationEventReceiver() )
-        RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(rho::common::screenLocked);
-}
-
-void rho_rhodesapp_callScreenUnlockedCallback()
-{
-    if ( rho::common::CRhodesApp::getInstance() && RHODESAPP().getApplicationEventReceiver() )
-        RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(rho::common::screenUnlocked);
 }
     
 const char* rho_rhodesapp_getappbackurl()
