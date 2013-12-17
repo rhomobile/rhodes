@@ -202,7 +202,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Set application activation/deactivation callback.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
-                    <DESC>Information related to the activation/deactivation of application. Events are fired on the most of platforms only if application is in the foreground mode (activated). Please note that events are platform dependant.</DESC>
+                    <DESC>Application evens are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start/shut down activites. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. NB: Event firing behaviour depends on platform.</DESC>
                     <PARAMS>
                         <PARAM name="applicationEvent" type="STRING">
                             <DESC></DESC>
@@ -220,19 +220,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <DESC>This event is triggered when the application is closing and the UI has been cleared.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_OFF" value ="ScreenOff">
-                                    <DESC>Device screen was turned off when power button was pressed or due to idle timeout</DESC>
+                                    <DESC>Device screen was turned off when power button was pressed or due to idle timeout. NB: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_ON" value ="ScreenOn">
-                                    <DESC>Device screen was turned on. Note: on some devices screen could be locked unless user performs unlocking actions.</DESC>
-                                    <PLATFORM>Android, iOS, WM</PLATFORM>
-                                </VALUE>
-                                <VALUE constName="APP_EVENT_SCREEN_LOCKED" value ="ScreenLocked">
-                                    <DESC>Device screen was locked. On iOS and WM platform this event call only in pair with APP_EVENT_SCREEN_OFF and doesn't call separately.</DESC>
-                                    <PLATFORM>Android, iOS, WM</PLATFORM>
-                                </VALUE>
-                                <VALUE constName="APP_EVENT_SCREEN_UNLOCKED" value ="ScreenUnlocked">
-                                    <DESC>Device screen was unlocked by user. On iOS and WM platform this event call only in pair with APP_EVENT_SCREEN_ON and doesn't call separately.</DESC>
+                                    <DESC>Device screen was turned on and unlocked.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged">

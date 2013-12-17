@@ -68,7 +68,6 @@
     BOOL rotationLocked;
     BOOL mBlockExit;
     BOOL mIsFullScreen;
-    BOOL mLockStateChanged;
     BOOL mScreenStateChanged;
 }
 
@@ -78,7 +77,6 @@
 @property (nonatomic, copy) SignatureDelegate* signatureDelegate;
 @property (nonatomic, copy) NVDelegate* nvDelegate;
 @property (nonatomic, assign) BOOL mBlockExit;
-@property (atomic,assign) BOOL mLockStateChanged;
 @property (atomic,assign) BOOL mScreenStateChanged;
 @property (nonatomic, retain) NSCondition* mNetworkPollCondition;
 
