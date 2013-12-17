@@ -4,6 +4,7 @@
 #include "RhoStd.h"
 #include "common/RhoFilePath.h"
 #include "common/StringConverter.h"
+#include "common/RhodesApp.h"
 
 #include "Intents.h"
 
@@ -38,10 +39,10 @@ void waitIntentEvent(const rho::String& appName)
 
 bool createIntentEvent()
 {
-    rho::StringW eventName = rho_wmimpl_get_window_nameW();
-    eventName += EVENTNAME_PREFIX;
+    rho::String eventName = RHODESAPP().getAppName() + ".MainWindow";//rho_wmimpl_get_window_nameW();
+    rho::StringW eventNameW = common::convertToStringW(eventName) + EVENTNAME_PREFIX;
 
-    g_intentEvent = CreateEvent( NULL, false, false, eventName.c_str() );
+    g_intentEvent = CreateEvent( NULL, false, false, eventNameW.c_str() );
 
     if (g_intentEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
     {

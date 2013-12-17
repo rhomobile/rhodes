@@ -989,6 +989,20 @@ extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
     PostMessage( rho_wmimpl_get_mainwnd(),WM_COMMAND, ID_TITLECHANGE, (LPARAM)_tcsdup(convertToStringW(strTitle).c_str()) );
 }
 
+extern "C" void rho_win32_unset_window_proxy()
+{
+    #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+        _AtlModule.GetAppWindow().setProxy();
+    #endif    
+}
+
+extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
+{
+    #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+        _AtlModule.GetAppWindow().setProxy(host, port, login, password);
+    #endif    
+}
+
 //Hook for ruby call to refresh web view
 
 extern "C" void rho_net_impl_network_indicator(int active)
