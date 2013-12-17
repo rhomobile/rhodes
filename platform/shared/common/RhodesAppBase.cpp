@@ -161,7 +161,7 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
         {
             String retPath = strUrl;
             retPath.erase(findIt, appRootTag.size());
-            retPath.insert(findIt, rho_rhodesapp_getapprootpath());
+            retPath.insert(findIt, getAppRootPath());
 #if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8)
             return retPath.substr(7);
 #else
