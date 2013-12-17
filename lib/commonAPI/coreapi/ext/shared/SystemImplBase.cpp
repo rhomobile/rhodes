@@ -511,10 +511,15 @@ void CSystemImplBase::sendApplicationMessage( const rho::String& appName, const 
 
 }
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+extern "C" void rho_win32_unset_window_proxy();
+extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password);
+#endif
+
 extern "C" void rho_sys_unset_http_proxy()
 {
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-	_AtlModule.GetAppWindow().setProxy();
+	rho_win32_unset_window_proxy();
 #endif
 	RHOCONF().removeProperty("http_proxy_host", false);
 	RHOCONF().removeProperty("http_proxy_port", false);
@@ -633,7 +638,7 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 
 	if (host.length()) {
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-		_AtlModule.GetAppWindow().setProxy(host, port, login, password);
+		rho_win32_set_window_proxy(host.c_str(), port.c_str(), login.c_str(), password.c_str());
 #endif
 		RHOCONF().setString ("http_proxy_host", host, false);
 
