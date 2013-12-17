@@ -29,6 +29,9 @@
 #include "GeoLocationImpl.h"
 #include "rubyext/GeoLocation.h"
 
+#include "ruby/ext/rho/rhoruby.h"
+
+
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 IMPLEMENT_LOGCLASS(CGPSDevice,"GPSDevice");
 IMPLEMENT_LOGCLASS(CGPSController,"GPSController");
@@ -476,6 +479,23 @@ int rho_geo_known_position()
 	return 0;
 #endif
 }
+
+double rho_geo_speed() {
+    //TODO:
+    return 0.0;
+}
+
+int rho_geo_satellites() {
+    //TODO:
+    return 0;
+}
+
+void rho_geo_set_notification_ex(const char *url, rho_param* p, char* params) {
+    //TODO:
+}
+
+
+
 
 void rho_geoimpl_settimeout(int nTimeoutSec)
 {

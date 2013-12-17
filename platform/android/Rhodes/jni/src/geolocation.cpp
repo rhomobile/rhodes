@@ -24,11 +24,20 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
+
+
 #include "rhodes/JNIRhodes.h"
+#include "rhodes/JNIRhoRuby.h"
+
+#include <common/rhoparams.h>
 
 #include "rhodes/jni/com_rhomobile_rhodes_geolocation_GeoLocationImpl.h"
 
 #include "rubyext/GeoLocation.h"
+
+#include "ruby/ext/rho/rhoruby.h"
+
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "GeoLocationJNI"
@@ -93,6 +102,42 @@ RHO_GLOBAL float rho_geo_accuracy()
     if (!mid) return 0;
     return env->CallStaticFloatMethod(cls, mid);
 }
+
+
+RHO_GLOBAL double rho_geo_speed() {
+    JNIEnv *env = jnienv();
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    if (!cls) return 0;
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "getSpeed", "()D");
+    if (!mid) return 0;
+    return env->CallStaticFloatMethod(cls, mid);
+}
+
+RHO_GLOBAL int rho_geo_satellites() {
+    JNIEnv *env = jnienv();
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    if (!cls) return 0;
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "getSatellities", "()I");
+    if (!mid) return 0;
+    return env->CallStaticFloatMethod(cls, mid);
+}
+
+RHO_GLOBAL void rho_geo_set_notification_ex(const char *url, rho_param* p, char* params) {
+    rho_geo_set_notification(url, params, 60*60*24*365);
+   
+    JNIEnv *env = jnienv();
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    if (!cls) return;
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "setNotificationEx", "(Ljava/lang/Object;)V");
+    if (!mid) return;
+    
+    jhobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(cls, mid, paramsObj.get());
+
+}
+
+
+
 
 RHO_GLOBAL int rho_geo_known_position()
 {

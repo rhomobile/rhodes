@@ -34,13 +34,20 @@
     NSArray *itemsData;
 	int preferredSize;
 	UIFont* myFont;
+    UIColor* iconColor;
+    UIColor* detailColor;
+    UIColor* backgrounColor;
+    
 }
 
 @property (nonatomic,retain) NSArray *itemsData;
 @property (nonatomic,assign) int preferredSize;
 @property (nonatomic,retain) UIFont *myFont;
+@property (nonatomic,retain) UIColor *iconColor;
+@property (nonatomic,retain) UIColor *detailColor;
+@property (nonatomic,retain) UIColor *backgroundColor;
 
-- (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)p;
+- (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent;
 - (void)setSelection:(int)index;
 
 - (int)getPreferredWidth;

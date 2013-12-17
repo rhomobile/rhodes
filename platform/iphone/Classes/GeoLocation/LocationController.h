@@ -35,8 +35,10 @@
     BOOL isEnabled;
 	
 @public	
-	double _dLatitude, _dLongitude, _dAccuracy, _dAltitude;
+	double _dLatitude, _dLongitude, _dAccuracy, _dAltitude, _dMinDistance, _dSpeed;
+    int _iSatellites;
 	bool _bKnownPosition;
+    bool _bMinDistanceMode;
 	
 	//SEL onUpdateLocation;	
 }
@@ -53,6 +55,8 @@
 - (double) getLongitude;
 - (double) getAccuracy;
 - (double) getAltitude;
+- (double) getSpeed;
+- (int) getSatellites;
 - (bool) isKnownPosition;
 - (bool) isAvailable;
 
@@ -66,6 +70,8 @@
 - (void)onTimerFired:(NSTimer*)theTimer; 
 
 - (void)resetTimerWithNewInterval:(int)interval;
+
+- (void)resetUpdateWithMinDistance:(double)minDistance;
 
 + (LocationController *)sharedInstance;
 

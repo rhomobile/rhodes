@@ -39,9 +39,11 @@
 #define NATIVE_BAR_ON_CHANGE_TAB_CALLBACK           @"on_change_tab_callback"
 #define NATIVE_BAR_ICON_COLOR                       @"iOS7IconColor"
 #define NATIVE_BAR_SELECTED_COLOR					@"iOS7SelectedColor"
+#define NATIVE_BAR_DETAIL_COLOR                     @"detailColor"
 
 
 #define NATIVE_BAR_ITEM_LABEL						@"label"
+#define NATIVE_BAR_ITEM_DETAIL_LABEL				@"detailLabel"
 #define NATIVE_BAR_ITEM_ACTION						@"action"
 #define NATIVE_BAR_ITEM_ICON						@"icon"
 #define NATIVE_BAR_ITEM_RELOAD						@"reload"
@@ -58,6 +60,7 @@ struture of data with Toolbar/TabBar description
 NSDictioanry
   "properties" - NSDictionary
                    "bkg_color" - NSString
+ 
   "items" - NSArray
 			  NSDictionary
                 "label" - NSString

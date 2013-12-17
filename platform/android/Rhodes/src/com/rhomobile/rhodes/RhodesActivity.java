@@ -271,6 +271,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         pauseWebViews(false);
         super.onResume();
 
+        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityResumed);
         RhoExtManager.getImplementationInstance().onResumeActivity(this);
     }
 

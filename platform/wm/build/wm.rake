@@ -103,6 +103,7 @@ namespace "config" do
     $buildcfg = $app_config["buildcfg"] unless $buildcfg
     $buildcfg = "Release" unless $buildcfg
     $detoolappflag = $js_application == true ? "js" : "ruby" 
+    $tmp_dir = File.join($bindir, "tmp")
 
     if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
         $targetdir = $bindir + "/target/wm6p"
@@ -211,6 +212,12 @@ namespace "config" do
         puts "\nPlease, specify Visual Studio version as either 2008 or 2012 in win32:msvc section of build.yml"
         exit 1
       end
+
+      if $vscommontools.frozen?
+        $vscommontools = $vscommontools.dup
+      end
+
+      $vscommontools << '\\' unless $vscommontools.end_with?('\\') || $vscommontools.end_with?('/')
 
       $qtdir = ENV['QTDIR']
       unless !$qtdir.nil? && ($qtdir !~ /^\s*$/) && File.directory?($qtdir)
@@ -1256,6 +1263,9 @@ namespace "run" do
       Rake::Task["device:wm:production"].execute
       Rake::Task["run:wm:cab"].execute
     else
+      $build_cab = false
+      Rake::Task["device:wm:production"].execute
+      
       # kill all running detool
       kill_detool
 
@@ -1275,6 +1285,9 @@ namespace "run" do
         sleep(1)
       end
 
+      cs = CheckSumComparer.new($tmp_dir, File.join($startdir, $vcbindir, $sdk) )
+      exe_changed = cs.compare
+
       if $webkit_capability and !$use_shared_runtime
         wk_args   = [$detoolappflag, 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
         Jake.run2( detool, wk_args, {:nowait => false})
@@ -1287,7 +1300,7 @@ namespace "run" do
         end
       end
 
-      args = [$detoolappflag, 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+      args = [$detoolappflag, 'emu', exe_changed ? "1" : "0", "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
       Jake.run2( detool, args, {:nowait => false})
     end
   end
@@ -1336,11 +1349,15 @@ namespace "run" do
 
     desc "Build and run on the Windows Mobile device"
     task :device  => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do 
+        
 
       if $use_direct_deploy == "no" 
         Rake::Task["device:wm:production"].invoke
         Rake::Task["run:wm:device:cab"].execute
       else
+        $build_cab = false
+        Rake::Task["device:wm:production"].invoke
+          
         # kill all running detool
         kill_detool
 
@@ -1376,7 +1393,10 @@ namespace "run" do
           end
         end
 
-        args = [$detoolappflag, 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+        cs = CheckSumComparer.new($tmp_dir, File.join($startdir, $vcbindir, $sdk) )
+        exe_changed = cs.compare
+
+        args = [$detoolappflag, 'dev', exe_changed ? "1" : "0", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
         Jake.run2( detool, args, {:nowait => false})
       end
     end
