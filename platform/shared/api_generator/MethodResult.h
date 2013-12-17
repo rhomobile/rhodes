@@ -41,7 +41,7 @@ private:
     unsigned long m_oRubyObjectClass;
     rho::String   m_strRubyObjectClassPath;
     bool m_bCollectionMode;
-#ifndef RHO_NO_RUBY
+#ifndef RHORC_NO_RUBY
     struct CMethodRubyValue
     {
         unsigned long m_value;
@@ -53,7 +53,7 @@ private:
     };
 
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
-#endif //RHO_NO_RUBY
+#endif //RHORC_NO_RUBY
 
     void setType(ETypes eType){ m_ResType = eType; convertToType(m_eRequestedType); callCallback(); }
 
