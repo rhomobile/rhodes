@@ -41,6 +41,7 @@
 #import "NativeView/NVDelegate.h"
 #import "NetworkStatusMonitor.h"
 #import "IPushNotificationsReceiver.h"
+#import "IAppMessageReceiver.h"
 
 @interface Rhodes : NSObject <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate>
@@ -59,6 +60,8 @@
 	SignatureDelegate* signatureDelegate;
 	NVDelegate* nvDelegate;
     id<IPushNotificationsReceiver> pushReceiver;
+    id<IAppMessageReceiver> appMessageReceiver;
+    
 #ifdef __IPHONE_4_0
     EKEventStore *eventStore;
 	__block UIBackgroundTaskIdentifier syncBackgroundTask;
@@ -126,6 +129,8 @@
 - (void) registerForPushNotifications:(id<IPushNotificationsReceiver>)receiver;
 
 - (void) signalNetworkStatusPollIntervalChanged;
+
+- (void) setAppMessageReceiver:(id<IAppMessageReceiver>)receiver;
 #ifdef __IPHONE_4_0
 - (EKEventStore*) getEventStore;
 #endif
