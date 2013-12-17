@@ -143,20 +143,20 @@ void CMethodResult::convertToType(const ETypes& eType)
 
 VALUE CMethodResult::toRuby(bool bForCallback/* = false*/)
 {
-#ifndef RHO_NO_RUBY
+#ifndef RHORC_NO_RUBY
     VALUE valRes = CMethodResultConvertor().toRuby(*this, bForCallback);
-#else
+#elif
     VALUE valRes = 0;
-#endif //RHO_NO_RUBY
+#endif //RHORC_NO_RUBY
     return valRes;
 }
 
 bool CMethodResult::hasCallback()
 {
     return m_strRubyCallback.length() != 0 ||
-#ifndef RHO_NO_RUBY
+#ifndef RHORC_NO_RUBY
         m_pRubyCallbackProc ||
-#endif //RHO_NO_RUBY
+#endif //RHORC_NO_RUBY
         m_strJSCallback.length() != 0;
 
 }
@@ -172,7 +172,7 @@ bool CMethodResult::isEqualCallback(CMethodResult& oResult)
     {
         return m_strRubyCallback == oResult.m_strRubyCallback;
     }
-#ifndef RHO_NO_RUBY
+#ifndef RHORC_NO_RUBY
     if ( m_pRubyCallbackProc )
     {
         return m_pRubyCallbackProc == oResult.m_pRubyCallbackProc;
@@ -189,7 +189,7 @@ CMethodResult::ECallbackType CMethodResult::getCallbackType()
     {
         cbType = ctRubyStr;
     }
-#ifndef RHO_NO_RUBY
+#ifndef RHORC_NO_RUBY
     else if ( m_pRubyCallbackProc )
     {
         cbType = ctRubyProc;
@@ -216,7 +216,7 @@ void CMethodResult::callCallback()
         {
             switch (cbType)
             {
-#ifndef RHO_NO_RUBY
+#ifndef RHORC_NO_RUBY
                 case ctRubyStr:
                 {
                     rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "__rho_inline");
@@ -239,7 +239,7 @@ void CMethodResult::callCallback()
                     RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
                     break;
                 }
-#endif //RHO_NO_RUBY                                    
+#endif //RHORC_NO_RUBY                                    
                 case ctJavaScript:
                 {
                     String strRes(CMethodResultConvertor().toJSON(*this));
@@ -270,7 +270,7 @@ void CMethodResult::callCallback()
     }
 }
 
-#ifndef RHO_NO_RUBY 
+#ifndef RHORC_NO_RUBY 
 CMethodResult::CMethodRubyValue::CMethodRubyValue(unsigned long val) : m_value(val)
 { 
     rho_ruby_holdValue(m_value); 
@@ -280,14 +280,14 @@ CMethodResult::CMethodRubyValue::~CMethodRubyValue()
 { 
     rho_ruby_releaseValue(m_value); 
 }
-#endif //RHO_NO_RUBY
+#endif //RHORC_NO_RUBY
 
 void CMethodResult::setRubyCallbackProc(unsigned long oRubyCallbackProc)
 {
     LOG(TRACE) + "setRubyCallbackProc";
-#ifndef RHO_NO_RUBY 
+#ifndef RHORC_NO_RUBY 
     m_pRubyCallbackProc = new CMethodRubyValue(oRubyCallbackProc);
-#endif //RHO_NO_RUBY
+#endif //RHORC_NO_RUBY
 }
 
 
