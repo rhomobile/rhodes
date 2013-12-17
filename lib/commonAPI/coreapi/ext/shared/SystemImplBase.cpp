@@ -518,7 +518,7 @@ extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, c
 
 extern "C" void rho_sys_unset_http_proxy()
 {
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+#if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
 	rho_win32_unset_window_proxy();
 #endif
 	RHOCONF().removeProperty("http_proxy_host", false);
@@ -637,7 +637,7 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 	RAWLOG_INFO1("HTTP proxy port     = %s", port.c_str());
 
 	if (host.length()) {
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+#if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
 		rho_win32_set_window_proxy(host.c_str(), port.c_str(), login.c_str(), password.c_str());
 #endif
 		RHOCONF().setString ("http_proxy_host", host, false);
