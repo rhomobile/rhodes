@@ -82,13 +82,13 @@ bool rho_rhosim_window_closed()
 #endif
 }
 
-void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
+void rho_wmsys_run_app_with_show(const wchar_t* szPath, const wchar_t* szParams, bool bShow )
 {
     SHELLEXECUTEINFO se = {0};
     se.cbSize = sizeof(SHELLEXECUTEINFO);
-    se.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
+    se.fMask  = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
     se.lpVerb = L"Open";
-    se.nShow = SW_SHOWNORMAL;
+    se.nShow  = (bShow == true) ? SW_SHOWNORMAL : SW_HIDE;
 
     StringW strAppNameW = szPath;
     String_replace(strAppNameW, '/', '\\' );
@@ -135,6 +135,11 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
 
     if(se.hProcess)
         CloseHandle(se.hProcess);
+}
+
+void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
+{
+    rho_wmsys_run_app_with_show(szPath, szParams, true);
 }
 
 #if !defined(RHODES_QT_PLATFORM)

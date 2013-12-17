@@ -245,9 +245,22 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
             <METHOD name="getStartParams">
                 <DESC>Return the command line parameters. At Android start parameters are returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
-                <RETURN type="STRING"/>
+                <CALLBACK type="STRING"/>
                 <PLATFORM>WM, Win32, Android</PLATFORM>
-                
+            </METHOD>
+            <METHOD name="getApplicationMessage" hasCallback="optional">
+                <DESC>Return last message sent by another applcation by Rho.System.sendApplicationMessage. At Android message is returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
+                <RETURN type="HASH"/>
+                <PLATFORM>Android, WM, iOS</PLATFORM>
+            </METHOD>
+            <METHOD name="startApplicationMessageNotifications" hasCallback="mandatory">
+                <DESC>Start message notifications sent by another applcation by Rho.System.sendApplicationMessage. At Android messages are returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
+                <CALLBACK type="HASH"/>
+                <PLATFORM>Android, WM, iOS</PLATFORM>
+            </METHOD>
+            <METHOD name="stopApplicationMessageNotifications" hasCallback="none">
+                <DESC>Stop message notifications sent by another applcation by Rho.System.sendApplicationMessage.</DESC>
+                <PLATFORM>Android, WM, iOS</PLATFORM>
             </METHOD>
             <METHOD name="openUrl">
                 <DESC>Open the application associated with the URL. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix will execute the Web Browser installed on system and open URL in executed browser..</DESC>
@@ -627,17 +640,28 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>The name of the application on the device to run. It depends from platform. On iOS it is BundleURLScheme of executed application.</DESC>
                     </PARAM>
                     <PARAM name="params" type="STRING">
-                        <DESC>String with any content. Executed Application can receive this string by getStartParams method. Parameter could be just value, or key-value pair separated by '&#61;' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by "&#38;", on other platforms by '&#044;' or '&#032;'.</DESC>
+                        <DESC>Start parameters string. Executed Application can receive this string by getStartParams method. Parameter could be just value, or key-value pair separated by '&#61;' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by "&#38;", on other platforms by '&#044;' or '&#032;'.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                     <PARAM name="blockingCall" type="BOOLEAN">
-                        <DESC>The name of the application on the device to run.Not Implemented.</DESC>
+                        <DESC>Not Implemented.</DESC>
                         <CAN_BE_NIL>
                             <DESC>False by default</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-
+            </METHOD>
+            <METHOD name="sendApplicationMessage" hasCallback="none">
+                <DESC>Send data to an application.</DESC>
+                <PLATFORM>Android, WM, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="appName" type="STRING">
+                        <DESC>The name of the application on the device to run. It depends from platform. On iOS it is BundleURLScheme of executed application.</DESC>
+                    </PARAM>
+                    <PARAM name="params" type="STRING">
+                        <DESC>Message payload string. Executed Application can receive this string by getApplicationMessage method. Parameter could be just value, or key-value pair separated by '&#61;' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by "&#38;", on other platforms by '&#044;' or '&#032;'.</DESC>
+                    </PARAM>
+                </PARAMS>
             </METHOD>
         </METHODS>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
