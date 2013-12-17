@@ -38,8 +38,6 @@ public:
     virtual void getHasCalendar(rho::apiGenerator::CMethodResult& result);
     virtual void getOemInfo(rho::apiGenerator::CMethodResult& result);
     virtual void getUuid(rho::apiGenerator::CMethodResult& result);
-    virtual void getHttpProxyURI(rho::apiGenerator::CMethodResult& result);
-    virtual void setHttpProxyURI(const rho::String&, rho::apiGenerator::CMethodResult& result);
     virtual void getLockWindowSize(rho::apiGenerator::CMethodResult& result);
     virtual void setLockWindowSize(bool, rho::apiGenerator::CMethodResult& result);
     virtual void getKeyboardState(rho::apiGenerator::CMethodResult& result);
@@ -154,18 +152,6 @@ void CSystemImpl::getOemInfo(rho::apiGenerator::CMethodResult& result)
 void CSystemImpl::getUuid(rho::apiGenerator::CMethodResult& result)
 {
 	rho_sysimpl_get_property("uuid", result);
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-void CSystemImpl::getHttpProxyURI(rho::apiGenerator::CMethodResult& result)
-{
-//    result.setError("not implemented at Android platform");
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-void CSystemImpl::setHttpProxyURI(const rho::String&, rho::apiGenerator::CMethodResult& result)
-{
-//    result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
