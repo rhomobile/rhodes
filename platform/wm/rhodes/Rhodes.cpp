@@ -991,14 +991,14 @@ extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
 
 extern "C" void rho_win32_unset_window_proxy()
 {
-    #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+    #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
         _AtlModule.GetAppWindow().setProxy();
     #endif    
 }
 
 extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
 {
-    #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+    #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
         _AtlModule.GetAppWindow().setProxy(host, port, login, password);
     #endif    
 }
