@@ -202,7 +202,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Set application activation/deactivation callback.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
-                    <DESC>Information related to the activation/deactivation of application. Please note that events are platform dependant.</DESC>
+                    <DESC>Information related to the activation/deactivation of application. Events are fired on the most of platforms only if application is in the foreground mode (activated). Please note that events are platform dependant.</DESC>
                     <PARAMS>
                         <PARAM name="applicationEvent" type="STRING">
                             <DESC></DESC>
@@ -228,15 +228,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_LOCKED" value ="ScreenLocked">
-                                    <DESC>Device screen was locked.</DESC>
+                                    <DESC>Device screen was locked. On iOS and WM platform this event call only in pair with APP_EVENT_SCREEN_OFF and doesn't call separately.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_UNLOCKED" value ="ScreenUnlocked">
-                                    <DESC>Device screen was unlocked by user</DESC>
+                                    <DESC>Device screen was unlocked by user. On iOS and WM platform this event call only in pair with APP_EVENT_SCREEN_ON and doesn't call separately.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
-                                </VALUE>
-                                <VALUE constName="APP_EVENT_DEACTIVATED" value ="Deactivated">
-                                    <DESC>The application has been deactivated</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged">
                                     <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only</DESC>

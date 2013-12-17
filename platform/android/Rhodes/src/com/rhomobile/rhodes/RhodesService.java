@@ -1501,37 +1501,15 @@ public class RhodesService extends Service {
 		callActivationCallback(false);
 	}
 
-	@Override
-	public void startActivity(Intent intent) {
-
+    @Override
+    public void startActivity(Intent intent) {
         RhodesActivity ra = RhodesActivity.getInstance();
-        if(intent.getComponent() != null && intent.getComponent().compareTo(new ComponentName(this, RhodesActivity.class.getName())) == 0) {
-            Logger.T(TAG, "Start or bring main activity: " + RhodesActivity.class.getName() + ".");
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            if (ra == null) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                super.startActivity(intent);
-                return;
-            }
+        if (ra == null ||
+            (intent.getComponent() != null && intent.getComponent().compareTo(new ComponentName(this, RhodesActivity.class.getName())) == 0)) {
+            super.startActivity(intent);
         }
-
-        if (ra != null) {
-            Logger.T(TAG, "Starting new activity on top.");
-            if (DEBUG) {
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    for (String key: extras.keySet()) {
-                        Object val = extras.get(key);
-                        if(val != null)
-                            Log.d(TAG, key + ": " + val.toString());
-                        else
-                            Log.d(TAG, key + ": <empty>");
-                    }
-                }
-            }
+        else {
             ra.startActivity(intent);
-        } else {
-            throw new IllegalStateException("Trying to start activity, but there is no main activity instance (we are in background, no UI active)");
         }
     }
 
@@ -1563,7 +1541,7 @@ public class RhodesService extends Service {
 	}
 
     public static void bringToFront() {
-        if (RhodesApplication.isRhodesActivityStarted()) {
+        if (RhodesApplication.canHandleNow(RhodesApplication.UiState.MainActivityResumed)) {
             Logger.T(TAG, "Main activity is already at front, do nothing");
             return;
         }
@@ -1574,7 +1552,10 @@ public class RhodesService extends Service {
 
         Logger.T(TAG, "Bring main activity to front");
 
-        Intent intent = new Intent(srv, RhodesActivity.class);
+        Intent intent = new Intent();
+        intent.setClassName(srv.getPackageName(), RhodesActivity.class.getCanonicalName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        
         srv.startActivity(intent);
     }
 

@@ -56,7 +56,8 @@ $startdir.gsub!('\\', '/')
 chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 
 require File.join(pwd, 'lib/build/jake.rb')
-require File.join(pwd, 'lib/build/gen_time_check.rb')
+require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
+require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -580,10 +581,10 @@ namespace "config" do
         #$app_config['extensions'].delete('nfc')
         $rhoelements_features += "- NFC extension\n"
     end
-    if $app_config['extensions'].index('audiocapture')
-        #$app_config['extensions'].delete('audiocapture')
-        $rhoelements_features += "- Audio Capture\n"
-    end
+    #if $app_config['extensions'].index('audiocapture')
+    #    #$app_config['extensions'].delete('audiocapture')
+    #    $rhoelements_features += "- Audio Capture\n"
+    #end
     if ($app_config['extensions'].index('signature') || $app_config['capabilities'].index('signature')) && (($current_platform == "iphone") || ($current_platform == "android"))
         $rhoelements_features += "- Signature Capture\n"
     end
@@ -1227,8 +1228,8 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
     next if filename.eql?('.') || filename.eql?('..')
     next if filename.eql?('api') && level == 0
           
-    filepath = src_dir + '/' + filename
-    dst_path = dst_dir + '/' + filename
+    filepath = File.join(src_dir, filename)
+    dst_path = File.join(dst_dir, filename)
         
     if File.directory?(filepath)
       public_folder_cp_r(filepath, dst_path, (level+1), file_map, start_path)
@@ -1670,7 +1671,26 @@ namespace "build" do
           exit 1
         end
       end
-           
+
+      # change modification time for improvement of performance on WM platform
+      Find.find($srcdir) do |path| 
+        atime = File.atime(path.to_s) # last access time
+        mtime = File.mtime(path.to_s) # modification time
+        fName   = nil
+
+        if File.extname(path) == ".rb"
+          newName = File.basename(path).sub('.rb','.iseq')
+          fName = File.join(File.dirname(path), newName)
+        end
+
+        if File.extname(path) == ".erb"
+          newName = File.basename(path).sub('.erb','_erb.iseq')
+          fName = File.join(File.dirname(path), newName)
+        end
+
+        File.utime(atime, mtime, fName) unless fName.nil? || !File.exist?(fName)
+      end
+
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
@@ -1873,6 +1893,7 @@ task :get_ext_xml_paths, [:platform] do |t,args|
     puts res_xmls
 end
 
+desc "Generate rhoapi-modules.js file with coreapi and javascript parts of extensions"
 task :update_rho_modules_js, [:platform] do |t,args|
     throw "You must pass in platform(win32, wm, android, iphone, wp8, all)" if args.platform.nil?
 

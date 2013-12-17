@@ -414,9 +414,10 @@ static BOOL makeHiddenUntilLoadContent = YES;
 #ifdef __IPHONE_7_0
     
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        const char fsc[] = "0";
         const char* fs = get_app_build_config_item("iphone_use_new_ios7_status_bar_style");
         if (fs == NULL) {
-            fs = "0";
+            fs = fsc;
         }
         
         if ((fs[0] == '0')) {

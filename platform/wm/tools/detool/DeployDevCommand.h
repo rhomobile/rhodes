@@ -5,6 +5,7 @@
 class DeployDevCommand : public EmuCommand
 {
 private:
+    bool   exe_change;
     TCHAR *emu_name;
     TCHAR *bundle_path;
     TCHAR *app_exe;

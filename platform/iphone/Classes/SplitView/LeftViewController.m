@@ -44,11 +44,16 @@
     NSString *url;
     UIImage* image;
     NSString *title;
+    NSString *detail;
+    UIColor *selectColor;
 }
 
 @property (retain) NSString *url;
 @property (retain) UIImage *image;
 @property (retain) NSString *title;
+@property (retain) NSString *detail;
+@property (retain) UIColor *selectColor;
+
 
 - (id)init;
 - (void)dealloc;
@@ -57,12 +62,14 @@
 
 @implementation RhoLeftItem
 
-@synthesize url, image, title;
+@synthesize url, image, title, detail, selectColor;
 
 - (id)init {
     url = nil;
     image = nil;
     title = nil;
+    detail = nil;
+    selectColor = nil;
     return self;
 }
 
@@ -70,6 +77,8 @@
     [url release];
     [image release];
     [title release];
+    [detail release];
+    [selectColor release];
     [super dealloc];
 }
 
@@ -79,14 +88,53 @@
 
 @implementation LeftViewController
 
-@synthesize itemsData, preferredSize, myFont;
+@synthesize itemsData, preferredSize, myFont, iconColor, detailColor, backgroundColor;
 
-- (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent {
+- (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent  {
 	self = [self initWithStyle:UITableViewStylePlain];
 	
 	splittedView = parent;
 	
 	
+	NSString *background_color = nil;
+    NSString *icon_color = nil;
+    NSString *detail_color = nil;
+    
+	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
+	if (global_properties != nil) {
+		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
+		icon_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_ICON_COLOR];
+		detail_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_DETAIL_COLOR];
+	}
+    
+    if (background_color != nil) {
+        int c = [background_color intValue];
+        int cR = (c & 0xFF0000) >> 16;
+        int cG = (c & 0xFF00) >> 8;
+        int cB = (c & 0xFF);
+        self.backgroundColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+    }
+    
+    if (icon_color != nil) {
+        int c = [icon_color intValue];
+        int cR = (c & 0xFF0000) >> 16;
+        int cG = (c & 0xFF00) >> 8;
+        int cB = (c & 0xFF);
+        self.iconColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+    }
+
+    if (detail_color != nil) {
+        int c = [detail_color intValue];
+        int cR = (c & 0xFF0000) >> 16;
+        int cG = (c & 0xFF00) >> 8;
+        int cB = (c & 0xFF);
+        self.detailColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+    }
+    
+    
+    
+    
+    
 	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
 
     int count = [items count];
@@ -95,7 +143,7 @@
     
     NSString *initUrl = nil;
     
-	self.myFont = [UIFont fontWithName:@"Helvetica-Bold" size:20.0];
+	self.myFont = [UIFont fontWithName:@"Helvetica-Bold" size:16.0];
 	[self.myFont release];
 	
 	self.preferredSize = 0;
@@ -104,9 +152,10 @@
 		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
         
         NSString *label = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_LABEL];
+        NSString *detailLabel = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_DETAIL_LABEL];
         NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
         NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
-        
+        NSString *selected_color = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_SELECTED_COLOR];
         if (!initUrl)
             initUrl = url;
         
@@ -114,13 +163,23 @@
             RhoLeftItem *td = [[RhoLeftItem alloc] init];
             td.url = url;
 			td.title = label;
+            if (detailLabel != nil) {
+                td.detail = detailLabel;
+            }
+            if (selected_color != nil) {
+                int c = [selected_color intValue];
+                int cR = (c & 0xFF0000) >> 16;
+                int cG = (c & 0xFF00) >> 8;
+                int cB = (c & 0xFF);
+                td.selectColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
+            }
             
 			NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
 			td.image = [UIImage imageWithContentsOfFile:imagePath];
             [tabs addObject:td];
 
 			CGSize textSize = [label sizeWithFont:myFont];
-			int pref_size = td.image.size.width + textSize.width + 32;
+			int pref_size = td.image.size.width + textSize.width + 32 + 16;
 			if (self.preferredSize < pref_size) {
 				self.preferredSize = pref_size;
 			}
@@ -130,15 +189,25 @@
         
 		}
     }
+    
 
 
     self.itemsData = tabs;
     [tabs release];
-	
+
+    
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight;
 
 	[self.tableView reloadData];
-	[self setSelection:0];
+    
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+
+    if (self.backgroundColor != nil) {
+        self.tableView.backgroundView.backgroundColor = self.backgroundColor;
+        self.tableView.backgroundColor = self.backgroundColor;
+    }
+	
+    [self setSelection:0];
 	
 	return self;
 }
@@ -170,13 +239,34 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
     
-	cell.imageView.image = [[self.itemsData objectAtIndex:indexPath.row] image];
-	cell.textLabel.text = [NSString stringWithFormat:[[self.itemsData objectAtIndex:indexPath.row] title], indexPath.section, indexPath.row];
-    cell.textLabel.font = myFont; 
-	
+    RhoLeftItem* td =   [self.itemsData objectAtIndex:indexPath.row];
+    
+	cell.imageView.image = [td image];
+    cell.imageView.clipsToBounds = YES;
+	cell.textLabel.text = [NSString stringWithFormat:[td title], indexPath.section, indexPath.row];
+    cell.textLabel.font = myFont;
+    if (self.iconColor != nil) {
+        cell.textLabel.textColor = self.iconColor;
+    }
+    if (td.detail != nil) {
+        cell.detailTextLabel.text = [NSString stringWithFormat:[td detail], indexPath.section, indexPath.row];
+        if (self.detailColor != nil) {
+            cell.detailTextLabel.textColor = self.detailColor;
+        }
+    }
+    if (self.backgroundColor != nil) {
+        cell.backgroundView = [[UIView alloc] initWithFrame:cell.frame];
+        cell.backgroundView.backgroundColor = self.backgroundColor;
+        //cell.contentView.backgroundColor = self.backgroundColor;
+    }
+    if (td.selectColor != nil) {
+        //cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.selectedBackgroundView = [[UIView alloc] initWithFrame:cell.frame];
+        cell.selectedBackgroundView.backgroundColor = td.selectColor;
+    }
 	
     return cell;
 }
