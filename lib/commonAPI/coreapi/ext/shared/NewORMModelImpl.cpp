@@ -5,6 +5,7 @@
 #include "common/AutoPointer.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
+#include "common/RhoTime.h"
 #include "logging/RhoLog.h"
 #include "db/DBAdapter.h"
 #include "sync/RhoconnectClientManager.h"
@@ -62,19 +63,64 @@ namespace rho {
         CNewORMModelImpl(const rho::String& strID)
         : id_(strID),
             name_(),
+            freezed_(false),
+            fixed_schema_(false),
             modelProperties_(),
             schemaIndices_(),
             belongsTo_()
         {
+            rho::apiGenerator::CMethodAccessor< INewORMModel >* fixedSchemaAccessor = new rho::apiGenerator::CMethodAccessor<INewORMModel>(&INewORMModel::getFixed_schema);
+            fixedSchemaAccessor -> addSetter(new rho::apiGenerator::CMethodAccessor<INewORMModel>::CSetter<bool, bool>(&INewORMModel::setFixed_schema));
+            rho::apiGenerator::CMethodAccessor< INewORMModel >* freezedModelAccessor = new rho::apiGenerator::CMethodAccessor<INewORMModel>(&INewORMModel::getFreezed);
+            freezedModelAccessor -> addSetter(new rho::apiGenerator::CMethodAccessor<INewORMModel>::CSetter<bool, bool>(&INewORMModel::setFreezed));
+            
+            m_mapPropAccessors["fixed_schema"] = fixedSchemaAccessor;
+            m_mapPropAccessors["freezed"] = freezedModelAccessor;
+        }
+
+        static void init_once()
+        {
+            if(reserved_names_.empty())
+            {
+                reserved_names_["object"] = 1;
+                reserved_names_["source_id"] = 1;
+                reserved_names_["update_type"] = 1;
+                reserved_names_["attrib_type"] = 1;
+                reserved_names_["set_notification"] = 1;
+                reserved_names_["clear_notification"] = 1;
+            }
         }
 
         bool fixed_schema()
         {
-            rho::apiGenerator::CMethodResult oResult;
-            getProperty("fixed_schema", oResult);
-            bool retVal = false;
-            convertFromStringA(oResult.getString().c_str(), retVal);
-            return retVal;
+            return fixed_schema_;
+        }
+
+        bool freezed_model()
+        {
+            return freezed_;
+        }
+
+        void setFreezed(const bool newVal, rho::apiGenerator::CMethodResult& oResult)
+        {
+            freezed_ = newVal;
+            m_hashProps["freezed"] = rho::common::convertToStringA(newVal);
+        }
+
+        void setFixed_schema(const bool newVal, rho::apiGenerator::CMethodResult& oResult)
+        {
+            fixed_schema_ = newVal;
+            m_hashProps["fixed_schema"] = rho::common::convertToStringA(newVal);
+        }
+
+        void getFixed_schema(rho::apiGenerator::CMethodResult& oResult)
+        {
+            oResult.set(fixed_schema_);
+        }
+
+        void getFreezed(rho::apiGenerator::CMethodResult& oResult)
+        {
+            oResult.set(freezed_);
         }
 
         virtual ~CNewORMModelImpl() {}
@@ -128,6 +174,43 @@ namespace rho {
             for(int i = 0; i < indexColumns.size(); ++i) 
                 LOG(INFO) + "indexCol: " + indexColumns[i]; 
             schemaIndices_[indexName] = SchemaIndexDef(indexName, indexColumns, bUniqueIndex);
+        }
+
+        void validateFreezedAttributes(const rho::Hashtable<rho::String, rho::String>& attrs, rho::apiGenerator::CMethodResult& oResult)
+        {
+            oResult.set(true);
+            if(!fixed_schema() && !freezed_model()) 
+                return;
+
+            for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin();
+                cIt != attrs.end();
+                ++cIt)
+            {
+                validateFreezedAttribute(cIt -> first, oResult);
+                if(oResult.isError())
+                    return;
+            }
+        }
+
+        void validateFreezedAttribute(const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult)
+        {
+            oResult.set(true);
+            if(!fixed_schema() && !freezed_model()) 
+                return;
+
+            if(attrName == "object")
+                return;
+
+            // non-reserved attr name must exist
+            if(!modelProperties_.containsKey(attrName)) 
+            {
+                rho::String errStr("Non-exist property : ");
+                errStr += attrName;
+                errStr += ". For model:  ";
+                errStr += name();
+                oResult.setError(errStr);
+                return;
+            }  
         }
 
         static int get_start_id(const rho::String& partition)
@@ -242,10 +325,7 @@ namespace rho {
                    rho::sync::RhoconnectClientManager::set_source_property(source_id, sync_options[i].c_str(), oResult.getString().c_str());   
             }
 
-            getProperty("freezed", oResult);
-            bool optValue = false;
-            convertFromStringA(oResult.getString().c_str(), optValue);
-            if(!optValue)
+            if(!freezed_model())
                 return;
 
             rho::String modelProps;
@@ -351,9 +431,7 @@ namespace rho {
             setProperty("freezed", "true", oResult);
             getProperty("schema_version", oResult);
             rho::String schema_version = oResult.getString();
-            getProperty("partition", oResult);
-            rho::String partition = oResult.getString();
-            db::CDBAdapter& db = db::CDBAdapter::getDB(partition.c_str());
+            db::CDBAdapter& db = _get_db(oResult);
             IDBResult res = db.executeSQL("SELECT  schema_version FROM sources WHERE name=?", name().c_str());
             rho::String existing_schema_version;
             if(!res.isEnd())
@@ -396,6 +474,149 @@ namespace rho {
                 db.endTransaction();
         }
 
+        void getCount(rho::apiGenerator::CMethodResult& oResult)
+        { 
+            db::CDBAdapter& db = _get_db(oResult);
+            oResult.set(0);
+            if(fixed_schema()) {
+                rho::String strSQL("SELECT COUNT(*) FROM ");
+                strSQL += name();
+                IDBResult res = db.executeSQL(strSQL.c_str());
+                if(!res.isEnd())
+                    oResult.set(res.getIntByIdx(0));
+            }
+            else
+            {
+                IDBResult res = db.executeSQL("SELECT COUNT(DISTINCT object) FROM object_values WHERE source_id=?", name().c_str());
+                if(!res.isEnd())
+                    oResult.set(res.getIntByIdx(0));
+            }
+
+            LOG(INFO) + name() + ", getCount: " +  oResult.getInt();
+        }
+
+        void getBackendRefreshTime(rho::apiGenerator::CMethodResult& oResult)
+        { 
+            db::CDBAdapter& db = _get_db(oResult);
+            int nTime = 0;
+            IDBResult res = db.executeSQL("SELECT backend_refresh_time FROM sources WHERE source_id=?", name().c_str());
+            if(!res.isEnd())
+                nTime = res.getIntByIdx(0);
+            oResult.set(CLocalTime(nTime).formatStr("%Y-%m-%d %H:%M:%S %z"));
+        }
+
+        void find(const rho::String& arg, rho::apiGenerator::CMethodResult& oResult)
+        {
+            LOG(INFO) + name() + ", find: Params are: " + arg;
+            
+            rho::Vector<rho::Hashtable<rho::String, rho::String> > retVals;
+            if(!fixed_schema()) {
+                oResult.set(retVals);
+                return;
+            }
+
+            IDBResult res(0);
+            if(arg == "all")
+                res = find_all(oResult);
+            else if(arg == "count") {
+                getCount(oResult);
+                return;
+            }
+            // find object by ID
+            else
+                res = find_one(arg, oResult);
+
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                return;
+            }
+            for(; !res.isEnd(); res.next()) {
+                int ncols = res.getColCount();
+                Hashtable<rho::String, rho::String> obj_hash;
+                for(int i = 0; i < ncols; ++i) {
+                    obj_hash.put(res.getColName(i), res.getStringByIdx(i));
+                }
+                retVals.push_back(obj_hash);
+            }
+            oResult.set(retVals);
+        }
+
+        IDBResult find_all(rho::apiGenerator::CMethodResult& oResult)
+        {
+            rho::String attribs("*");
+            rho::String strSQL("SELECT ");
+            strSQL += attribs;
+            strSQL += " FROM ";
+            strSQL += name();
+            db::CDBAdapter& db = _get_db(oResult);
+            return db.executeSQL(strSQL.c_str());
+        }
+
+        IDBResult find_one(const rho::String& objId, rho::apiGenerator::CMethodResult& oResult)
+        {
+            rho::String strippedObjId = _strip_braces(objId);
+            rho::String attribs("*");
+            rho::String strSQL("SELECT ");
+            strSQL += attribs;
+            strSQL += " FROM ";
+            strSQL += name();
+            strSQL += " WHERE object=?";
+            db::CDBAdapter& db = _get_db(oResult);
+            return db.executeSQL(strSQL.c_str(), strippedObjId);
+        }
+
+        void createObject(const Hashtable<rho::String, rho::String>& attrs, rho::apiGenerator::CMethodResult& oResult)
+        {
+            getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+            getProperty("sync_type", oResult);
+            bool is_sync_source = (oResult.getString() != "none");
+            db::CDBAdapter& db = _get_db(oResult);
+
+            db.startTransaction();
+            if(is_sync_source) {
+                IDBResult res = db.executeSQL("INSERT INTO changed_values(update_type,attrib,source_id,object) VALUES(?,?,?,?)", "create", "object", source_id, attrs.get("object"));
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }
+            }
+
+            if(fixed_schema()) {
+                rho::Vector<rho::String> quests;
+                rho::String strSQL = _make_insert_attrs_sql_script(attrs.get("object"), attrs, quests);
+                LOG(INFO) + "MZV_DEBUG, createObject: MZV_DEBUG: we have the following sqlSQL:" + strSQL;
+
+                IDBResult res = db.executeSQLEx(strSQL.c_str(), quests);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }    
+            }
+            else
+            {
+                rho::String strSQL("INSERT INTO object_values (source_id,object,attrib,value) VALUES(?,?,?,?);\r\n");
+                for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin();
+                    cIt != attrs.end();
+                    ++cIt)
+                {
+                    if(_is_reserved_name(cIt -> first))
+                        continue;   
+                    
+                    IDBResult res = db.executeSQL(strSQL.c_str(), source_id, attrs.get("object"), cIt -> first, cIt -> second);
+                    if(!res.getDBError().isOK()) {
+                        oResult.setError(res.getDBError().getError());
+                        db.rollback();
+                        return;
+                    }
+                } 
+            }
+
+            db.endTransaction();
+        }
+
     private:
         void init_defaults()
         {
@@ -405,6 +626,13 @@ namespace rho {
             setSync_type("none", oRes);
             setSync_priority(1000, oRes);
             setPartition("local", oRes);
+        }
+
+        db::CDBAdapter& _get_db(rho::apiGenerator::CMethodResult& oResult)
+        {
+            getProperty("partition", oResult);
+            rho::String partition = oResult.getString();
+            return db::CDBAdapter::getDB(partition.c_str());
         }
 
         static int _get_partition_start_id(const rho::String& partition)
@@ -431,6 +659,36 @@ namespace rho {
             if(propType == "time")
                 strType = "integer"; 
             return strType;  
+        }
+
+        static bool _is_reserved_name(const rho::String& attrName)
+        {
+            return reserved_names_.containsKey(attrName);
+        }
+
+        const rho::String _make_insert_attrs_sql_script(const rho::String& objectId, 
+                                                        const Hashtable<rho::String, rho::String>& attrs, 
+                                                        Vector<rho::String>& quests) const
+        {
+            rho::String strCols, strQuests;
+            quests.push_back(objectId);
+            for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin();
+                cIt != attrs.end();
+                ++cIt)
+            {
+                if(_is_reserved_name(cIt -> first))
+                    continue;
+                if(strCols.size())
+                    strCols += ",";
+                strCols += "\"";
+                strCols += cIt -> first + "\"";
+                if(strQuests.size())
+                    strQuests += ",";
+                strQuests += "?";
+                quests.push_back(cIt -> second);
+            }
+
+            return rho::String("INSERT INTO ") + name() + "(\"object\"," + strCols + ") VALUES (?," + strQuests + ");\r\n";   
         }
 
         const rho::String _make_create_sql_script() const
@@ -491,21 +749,38 @@ namespace rho {
 
             return strSQLIndices;
         }
+
+        static const rho::String _strip_braces(const rho::String& str) 
+        {
+            rho::String retStr = str;
+            if(retStr.size() && retStr[0] == '{')
+                retStr = retStr.substr(1);
+            if(retStr.size() && retStr[retStr.size() - 1] == '}')
+                retStr = retStr.substr(0, retStr.size() - 1);
+            return retStr;
+        }
         
         static HashtablePtr<rho::String, CNewORMModelImpl*> models_;
+        static Hashtable<rho::String, int> reserved_names_;
 
         rho::String id_;
         rho::String name_;
+        bool fixed_schema_;
+        bool freezed_;
         Hashtable<rho::String, ModelPropertyDef> modelProperties_;
         Hashtable<rho::String, SchemaIndexDef > schemaIndices_;
         Hashtable<rho::String, rho::String> belongsTo_;
     };
     HashtablePtr<rho::String, CNewORMModelImpl*> CNewORMModelImpl::models_;
+    Hashtable<rho::String, int> CNewORMModelImpl::reserved_names_;
 
     class CNewORMModelSingletonImpl: public CNewORMModelSingletonBase
     {
     public:
-        CNewORMModelSingletonImpl(): CNewORMModelSingletonBase(){}
+        CNewORMModelSingletonImpl(): CNewORMModelSingletonBase()
+        {
+            CNewORMModelImpl::init_once();
+        }
         
         //methods
         // enumerate  
@@ -517,7 +792,9 @@ namespace rho {
             }
 
             oResult.set(ret_models);
-        } 
+        }
+
+
 
     };
     
