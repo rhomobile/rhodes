@@ -25,12 +25,16 @@
 *------------------------------------------------------------------------*/
 package com.rhomobile.rhodes.geolocation;
 
+import java.util.Map;
+
+import android.graphics.Color;
 import android.location.Location;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Utils;
 
 public class GeoLocation {
 
@@ -43,6 +47,9 @@ public class GeoLocation {
 	private static double ourLongitude = 0;
 	private static double ourAltitude = 0;
 	private static double ourAccuracy = 0;
+	private static double ourSpeed = 0;
+	private static int ourSatellities = 0;
+	
 	private static boolean ourIsKnownPosition = false;
 	private static boolean ourIsEnable = true;
 	private static boolean ourIsErrorState = false;
@@ -59,6 +66,8 @@ public class GeoLocation {
 				ourLongitude = loc.getLongitude();
 				ourAltitude = loc.getAltitude();
 				ourAccuracy = loc.getAccuracy();
+				ourSpeed = loc.getSpeed();
+				ourSatellities = getImpl().getSatellities();
 				ourIsKnownPosition = true;
 			}
 			else {
@@ -66,6 +75,8 @@ public class GeoLocation {
 				ourLongitude = 0;
 				ourAltitude = 0;
 				ourAccuracy = 0;
+				ourSpeed = 0;
+				ourSatellities = 0;
 				ourIsKnownPosition = false;
 			}
 		}
@@ -165,6 +176,33 @@ public class GeoLocation {
 		}
 		return 0.0;
 	}
+	
+	public static double getSpeed() {
+		onUpdateLocation();
+		try {
+			checkState();
+			Logger.T(TAG, "getSpeed");
+			return ourSpeed;
+		}
+		catch (Exception e) {
+            Logger.E(TAG, e);
+		}
+		return 0.0;
+	}
+	
+	public static int getSatellities() {
+		onUpdateLocation();
+		try {
+			checkState();
+			Logger.T(TAG, "getSpeed");
+			return ourSatellities;
+		}
+		catch (Exception e) {
+            Logger.E(TAG, e);
+		}
+		return 0;
+	}
+	
 
 	public static double getLongitude() {
 		onUpdateLocation();
@@ -267,6 +305,38 @@ public class GeoLocation {
 		
 	}
 	
+	public static void setNotificationEx(Object options) {
+		if ((options != null) && (options instanceof Map<?,?>)) 
+		{
+			Map<Object,Object> settings = (Map<Object,Object>)options;
+			
+			double minDistance = 10;
+			int minTime = 1000;
+			
+			
+			Object minDistObj = settings.get("minimumDistance");
+			Object minTimeObj = settings.get("minimumTimeInterval");
+			
+			
+			try {
+				checkState();
+			}
+			catch (Exception e) {
+	            Logger.E(TAG, e);
+			}			ourIsEnable = true;
+
+			if ((minDistObj != null) && (minDistObj instanceof String)) {
+				minDistance = Double.parseDouble(((String)minDistObj));
+			}
+			if ((minTimeObj != null) && (minTimeObj instanceof String)) {
+				minTime = Integer.parseInt(((String)minTimeObj));
+			}
+			
+			getImpl().restartEx(minDistance, minTime);
+			
+		}		
+	}
+	
 	public static void setTimeout(int nsec) {
 		try {
 			int p = nsec*1000;
@@ -282,6 +352,7 @@ public class GeoLocation {
 				p = 250;
 			}
 			resetCallbackThread(p);
+			getImpl().restartNormal();
 		
 		}
 		catch (Exception e) {
