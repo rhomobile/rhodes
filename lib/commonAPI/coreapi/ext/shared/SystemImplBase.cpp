@@ -508,11 +508,6 @@ void CSystemImplBase::stopApplicationMessageNotifications(rho::apiGenerator::CMe
     m_appMessageNotifications = false;
 }
 
-void CSystemImplBase::sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
-{
-    // Android only so far
-}
-
 }
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
