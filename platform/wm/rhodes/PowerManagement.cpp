@@ -71,7 +71,11 @@ void PowerNotificationThread::run()
             {
                 LOG(TRACE) + "[PMT] receive PBT_TRANSITION message";
 
+#if defined(OS_PLATFORM_MOTCE)
+                if (ppb->Flags == (POWER_STATE_ON | POWER_STATE_PASSWORD))
+#else
                 if (ppb->Flags == (POWER_STATE_ON | POWER_STATE_PASSWORD | POWER_STATE_BACKLIGHTON))
+#endif
                 {
                     LOG(TRACE) + "[PMT] POWER_STATE_ON | POWER_STATE_PASSWORD | POWER_STATE_BACKLIGHTON";
                     rho_rhodesapp_callScreenOnCallback();
