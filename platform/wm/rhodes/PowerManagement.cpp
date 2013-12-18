@@ -15,6 +15,7 @@
 
 extern "C" void createPowerManagementThread()
 {  
+    LOG(TRACE) + "start power management thread";
     rho::common::PowerNotificationThread* g_powerManageThread = new rho::common::PowerNotificationThread();
     g_powerManageThread->start(rho::common::IRhoRunnable::epNormal);
 };
@@ -31,11 +32,11 @@ void PowerNotificationThread::run()
     MSGQUEUEOPTIONS mqo;
     mqo.dwSize        = sizeof(MSGQUEUEOPTIONS); 
     mqo.dwFlags       = MSGQUEUE_NOPRECOMMIT;
-    mqo.dwMaxMessages = 4;
+    mqo.dwMaxMessages = 50;
     mqo.cbMaxMessage  = cbPowerMsgSize;
     mqo.bReadAccess   = TRUE;              
 
-    // Create a message queue to receive power notifications
+    LOG(TRACE) + "[PMT] Create a message queue to receive power notifications";    
     m_powerMsgQ = CreateMsgQueue(NULL, &mqo);
     if (NULL == m_powerMsgQ) 
     {
@@ -44,8 +45,9 @@ void PowerNotificationThread::run()
         return;
     }
 
-    // Request power notifications 
+    LOG(TRACE) + "[PMT] Request power notifications";
     m_powerNotifications = RequestPowerNotifications(m_powerMsgQ, PBT_TRANSITION);
+
     if (NULL == m_powerNotifications) 
     {
         RAWLOG_ERROR1("RequestPowerNotifications failed: %x", GetLastError());
@@ -53,27 +55,44 @@ void PowerNotificationThread::run()
         return;
     }
 
-    // Wait for a power notification or for the app to exit
+    LOG(TRACE) + "[PMT] Wait for a power notification or for the app to exit";
     while(WaitForSingleObject(m_powerMsgQ, INFINITE) == WAIT_OBJECT_0)
     {
         DWORD cbRead;
         DWORD dwFlags;
-        POWER_BROADCAST *ppb = (POWER_BROADCAST*) new BYTE[cbPowerMsgSize];
+        POWER_BROADCAST *ppb = reinterpret_cast<POWER_BROADCAST*>(new BYTE[cbPowerMsgSize]);
 
         // loop through in case there is more than 1 msg 
-        while(ReadMsgQueue(m_powerMsgQ, ppb, cbPowerMsgSize, &cbRead, 
-            0, &dwFlags))
+        while(ReadMsgQueue(m_powerMsgQ, ppb, cbPowerMsgSize, &cbRead, 0, &dwFlags))
         {
+            LOG(TRACE) + "[PMT] receive messages: " + cbRead;
+
             if (ppb->Message == PBT_TRANSITION)
             {
-                if (ppb->Flags & POWER_STATE_ON)
+                LOG(TRACE) + "[PMT] receive PBT_TRANSITION message";
+
+#if defined(OS_PLATFORM_MOTCE)
+                if (ppb->Flags == (POWER_STATE_ON | POWER_STATE_PASSWORD))
+#else
+                if (ppb->Flags == (POWER_STATE_ON | POWER_STATE_PASSWORD | POWER_STATE_BACKLIGHTON))
+#endif
                 {
+                    LOG(TRACE) + "[PMT] POWER_STATE_ON | POWER_STATE_PASSWORD | POWER_STATE_BACKLIGHTON";
                     rho_rhodesapp_callScreenOnCallback();
-                    rho_rhodesapp_callScreenUnlockedCallback();
                 }
-                else if (ppb->Flags & POWER_STATE_UNATTENDED)
+                else if (ppb->Flags == (POWER_STATE_ON | POWER_STATE_PASSWORD))
                 {
-                    rho_rhodesapp_callScreenLockedCallback();
+                    LOG(TRACE) + "[PMT] POWER_STATE_ON | POWER_STATE_PASSWORD";
+                    rho_rhodesapp_callScreenOffCallback();
+                }
+                else if (ppb->Flags == POWER_STATE_ON)
+                {
+                    LOG(TRACE) + "[PMT] POWER_STATE_ON";
+                    rho_rhodesapp_callScreenOnCallback();
+                }
+                else if (ppb->Flags == POWER_STATE_UNATTENDED)
+                {
+                    LOG(TRACE) + "[PMT] POWER_STATE_UNATTENDED";
                     rho_rhodesapp_callScreenOffCallback();
                 }
             }
@@ -87,6 +106,8 @@ void PowerNotificationThread::run()
 
 void PowerNotificationThread::closePowerManQueue()
 {
+    LOG(INFO) + "[PMT] stop power notofication";
+
     if (m_powerNotifications)
         StopPowerNotifications(m_powerNotifications);
 

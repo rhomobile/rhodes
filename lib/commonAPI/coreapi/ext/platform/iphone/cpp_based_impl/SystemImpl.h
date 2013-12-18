@@ -1,12 +1,32 @@
 
 #include "SystemImplBase.h"
 
+//#import "IAppMessageReceiver.h"
+
+namespace rho
+{
+    class SystemImplIphone;
+}
+
+@interface AppMessageReceiverHolder// : NSObject<IAppMessageReceiver>
+{
+    rho::SystemImplIphone* mReceiver;
+}
+    - (id) init : (rho::SystemImplIphone*)receiver;
+@end
+
 namespace rho {
     
     using namespace apiGenerator;
 
 class SystemImplIphone: public CSystemImplBase {
-  
+
+    AppMessageReceiverHolder* m_pAppMessageReceiverHolder;
+
+public:
+    SystemImplIphone();
+
+private:
     virtual void getHasCamera(CMethodResult& oResult);
     virtual void getPhoneNumber(CMethodResult& oResult);
     virtual void getOsVersion(CMethodResult& oResult);
@@ -41,8 +61,6 @@ class SystemImplIphone: public CSystemImplBase {
     virtual void getHasCalendar(CMethodResult& oResult);
     virtual void getOemInfo(CMethodResult& oResult);
     virtual void getUuid(CMethodResult& oResult);
-    virtual void getHttpProxyURI(CMethodResult& oResult);
-    virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
     virtual void getKeyboardState(CMethodResult& oResult);
@@ -62,6 +80,9 @@ class SystemImplIphone: public CSystemImplBase {
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
+    
+    virtual void sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
+
     
     //virtual void getFullScreen(rho::apiGenerator::CMethodResult& result);
     //virtual void setFullScreen(bool, rho::apiGenerator::CMethodResult& result);

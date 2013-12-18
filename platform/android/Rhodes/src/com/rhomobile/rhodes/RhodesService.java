@@ -38,6 +38,7 @@ import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Calendar;
@@ -126,6 +127,8 @@ public class RhodesService extends Service {
 	
 	public static final String INTENT_SOURCE = INTENT_EXTRA_PREFIX + ".intent_source";
 	
+	public static final String INTENT_EXTRA_MESSAGE = INTENT_EXTRA_PREFIX + ".message";
+ 	
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static boolean ANDROID_TITLE = true;
@@ -134,6 +137,9 @@ public class RhodesService extends Service {
 	
 	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
 	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
+
+    private static final String ACTION_APP_MESSAGE_RECEIVE = "com.rhomobile.rhodes.ApplicationMessage.Receive";
+    private static final String CATEGORY_APP_MESSAGE = "com.rhomobile.rhodes.ApplicationMessage";
 
     private static final String NOTIFICATION_NONE = "none";
     private static final String NOTIFICATION_BACKGROUND = "background";
@@ -402,6 +408,7 @@ public class RhodesService extends Service {
 			return;
 		}
 		String source = intent.getStringExtra(INTENT_SOURCE);
+		Set<String> categories = intent.getCategories();
 		Logger.I(TAG, "handleCommand: startId=" + startId + ", source=" + source);
 		if (source == null)
 			throw new IllegalArgumentException("Service command received from empty source");
@@ -458,7 +465,19 @@ public class RhodesService extends Service {
             default:
                 Logger.W(TAG, "Unknown command type received from " + source + ": " + type);
             }
-		}
+        } else if (categories.contains(CATEGORY_APP_MESSAGE)) {
+            final Bundle extras = intent.getExtras();
+            Logger.D(TAG, "Received application message: " + extras);
+            RhodesApplication.runWhen(
+                    RhodesApplication.AppState.AppStarted,
+                    new RhodesApplication.StateHandler(true) {
+                        @Override
+                        public void run()
+                        {
+                            handleAppMessage(extras);
+                        }
+                    });
+        }
 	}
 	
 	public void startServiceForeground(int id, Notification notification) {
@@ -911,6 +930,22 @@ public class RhodesService extends Service {
 		}
 	}
 	
+    public static void sendApplicationMessage(String appName, String params) throws NameNotFoundException {
+        Logger.T(TAG,  "App message to " + appName);
+        
+        Intent intent = new Intent();
+        intent.setClassName(appName, RhodesService.class.getCanonicalName());
+        intent.addCategory(CATEGORY_APP_MESSAGE);
+        
+        intent.putExtra(INTENT_SOURCE, ContextFactory.getAppContext().getPackageName());
+
+        if (params != null) {
+            String encodedParams = Uri.encode(params);
+            intent.putExtra(INTENT_EXTRA_MESSAGE, encodedParams);
+        }
+
+        ContextFactory.getContext().startService(intent);
+    }
 	public static boolean isAppInstalled(String appName) {
 		try {
 			RhodesService.getContext().getPackageManager().getPackageInfo(appName, 0);
@@ -1170,8 +1205,6 @@ public class RhodesService extends Service {
      * @throws URISyntaxException, ActivityNotFoundException */
     public static void openExternalUrl(String url) throws URISyntaxException, ActivityNotFoundException
     {
-//        try
-//        {
             if(url.charAt(0) == '/')
                 url = "file://" + RhoFileApi.absolutePath(url);
 
@@ -1185,13 +1218,9 @@ public class RhodesService extends Service {
                 Intent intent = Intent.parseUri(url, 0);
                 ctx.startActivity(Intent.createChooser(intent, "Open in..."));
             }
-//        }
-//        catch (Exception e) {
-//            Logger.E(TAG, "Can't open url :'" + url + "': " + e.getMessage());
-//        }
     }
 
-	public native void setPushRegistrationId(String type, String id);
+    public native void setPushRegistrationId(String type, String id);
 
     private native boolean callPushCallback(String type, String json);
 
@@ -1346,6 +1375,19 @@ public class RhodesService extends Service {
                 Logger.E(TAG, "Error parsing JSON payload in push message: " + e.getMessage());
             }
         }
+    }
+    
+    private static native void nativeAddAppMessage(String sourceAppName, String message);
+    private void handleAppMessage(Bundle extras) {
+        String sourceAppName = extras.getString(INTENT_SOURCE);
+        String message = extras.getString(INTENT_EXTRA_MESSAGE);
+        if (message != null) {
+            message = Uri.decode(message);
+        }
+        
+        Logger.T(TAG, "App message from: " + sourceAppName + ", message: " + message);
+        
+        nativeAddAppMessage(sourceAppName, message);
     }
 
 	private void restartGeoLocationIfNeeded() {

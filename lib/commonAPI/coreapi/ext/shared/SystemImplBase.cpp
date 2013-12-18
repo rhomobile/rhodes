@@ -1,7 +1,6 @@
 #include "SystemImplBase.h"
 
 #include "common/RhoConf.h"
-#include "logging/RhoLog.h"
 #include "common/RhodesApp.h"
 #include "sync/RhoconnectClientManager.h"
 #include "common/RhoFilePath.h"
@@ -60,6 +59,8 @@ int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char 
 namespace rho {
 
 using namespace apiGenerator;
+
+IMPLEMENT_LOGCLASS(CSystemImplBase, "System");
 
 void CSystemImplBase::getPlatform(CMethodResult& oResult)
 {
@@ -394,14 +395,30 @@ void CSystemImplBase::stopTimer( const rho::String& url, rho::apiGenerator::CMet
     RHODESAPP().getTimer().stopTimer( url.c_str());
 }
 
+extern "C" void rho_sys_set_http_proxy_url(const char* url);
 void CSystemImplBase::set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult)
 {
-    //windows only
+    rho_sys_set_http_proxy_url( proxyURI.c_str() );
 }
 
+extern "C" void rho_sys_unset_http_proxy();
 void CSystemImplBase::unset_http_proxy(rho::apiGenerator::CMethodResult& oResult)
 {
-    //windows only
+    rho_sys_unset_http_proxy();
+}
+
+extern "C" const char* rho_sys_get_http_proxy_url();
+void CSystemImplBase::getHttpProxyURI(CMethodResult& oResult)
+{
+    oResult.set(rho_sys_get_http_proxy_url());
+}
+
+void CSystemImplBase::setHttpProxyURI( const rho::String& value, CMethodResult& oResult)
+{
+    if ( value.length() )
+        rho_sys_set_http_proxy_url( value.c_str() );
+    else
+        rho_sys_unset_http_proxy();
 }
 
 void CSystemImplBase::getKeyboardState(CMethodResult& oResult)
@@ -420,4 +437,235 @@ void CSystemImplBase::getMain_window_closed(rho::apiGenerator::CMethodResult& oR
     //windows only
 }
 
+void CSystemImplBase::addApplicationMessage(const rho::String& appName, const rho::String& msg)
+{
+    common::CMutexLock lock(m_appMessageMutex);
+    if(!m_appMessageWait && !m_appMessageNotifications)
+    {
+        LOG(TRACE) + "Push " + appName + " mesage to queue: " + msg;
+        m_appMessageQueue.push_back(Hashtable<String, String>());
+        m_appMessageQueue.back()["appName"] = appName;
+        m_appMessageQueue.back()["message"] = msg;
+    }
+    else
+    {
+        Hashtable<String, String> res;
+        res["appName"] = appName;
+        res["message"] = msg;
+        if(m_appMessageWait)
+        {
+            LOG(TRACE) + "Pass " + appName + " mesage to callback (once): " + msg;
+            m_appMessageResult.set(res);
+            m_appMessageWait = false;
+        }
+
+        if(m_appMessageNotifications)
+        {
+            LOG(TRACE) + "Pass " + appName + " mesage to callback (subscription): " + msg;
+            m_appMessageHandler.set(res);
+        }
+    }
+}
+
+void CSystemImplBase::sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
+{
+}
+
+void CSystemImplBase::getApplicationMessage(rho::apiGenerator::CMethodResult& oResult)
+{
+    common::CMutexLock lock(m_appMessageMutex);
+    if(m_appMessageQueue.size() != 0)
+    {
+        LOG(TRACE) + "src: " + m_appMessageQueue.front()["appName"] + ", msg: " + m_appMessageQueue.front()["message"];
+
+        oResult.set(m_appMessageQueue.front());
+        m_appMessageQueue.erase(m_appMessageQueue.begin());
+    }
+    else
+    {
+        LOG(TRACE) + "There is no pending app msg";
+        m_appMessageResult = oResult;
+        m_appMessageWait = true;
+    }
+
+}
+
+void CSystemImplBase::startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult)
+{
+    common::CMutexLock lock(m_appMessageMutex);
+    m_appMessageNotifications = true;
+    m_appMessageHandler = oResult;
+    for(Vector<Hashtable<String, String> >::const_iterator It = m_appMessageQueue.begin(); It != m_appMessageQueue.end(); ++It)
+    {
+        m_appMessageHandler.set(*It);
+    }
+    m_appMessageQueue.clear();
+}
+
+void CSystemImplBase::stopApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult)
+{
+    common::CMutexLock lock(m_appMessageMutex);
+    m_appMessageNotifications = false;
+}
+
+}
+
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+extern "C" void rho_win32_unset_window_proxy();
+extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password);
+#endif
+
+extern "C" void rho_sys_unset_http_proxy()
+{
+#if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
+	rho_win32_unset_window_proxy();
+#endif
+	RHOCONF().removeProperty("http_proxy_host", false);
+	RHOCONF().removeProperty("http_proxy_port", false);
+	RHOCONF().removeProperty("http_proxy_login", false);
+	RHOCONF().removeProperty("http_proxy_password", false);
+	RAWLOG_INFO("Unsetting HTTP proxy");
+}
+
+void parseHttpProxyURI(const rho::String &http_proxy)
+{
+	// http://<login>:<passwod>@<host>:<port>
+	const char *default_port = "8080";
+
+	if (http_proxy.length() == 0)
+		rho_sys_unset_http_proxy();
+
+	if (http_proxy.length() < 8) {
+		RAWLOG_ERROR("invalid http proxy url");
+		return;
+	}
+
+	int index = http_proxy.find("http://", 0, 7);
+	if (index == std::string::npos) {
+		RAWLOG_ERROR("http proxy url should starts with \"http://\"");
+		return;
+	}
+	index = 7;
+
+	enum {
+		ST_START,
+		ST_LOGIN,
+		ST_PASSWORD,
+		ST_HOST,
+		ST_PORT,
+		ST_FINISH
+	};
+
+	rho::String token, login, password, host, port;
+	char c, state = ST_START, prev_state = state;
+	int length = http_proxy.length();
+
+	for (int i = index; i < length; i++) {
+		c = http_proxy[i];
+
+		switch (state) {
+		case ST_START:
+			if (c == '@') {
+				prev_state = state; state = ST_HOST;
+			} else if (c == ':') {
+				prev_state = state; state = ST_PASSWORD;
+			} else {
+				token +=c;
+				state = ST_HOST;
+			}
+			break;
+		case ST_HOST:
+			if (c == ':') {
+				host = token; token.clear();			
+				prev_state = state; state = ST_PORT;
+			} else if (c == '@') {
+				host = token; token.clear();		
+				prev_state = state;	state = ST_LOGIN;					
+			} else {
+				token += c;
+				if (i == (length - 1)) {
+					host = token; token.clear();								
+				}
+			}
+			break;
+		case ST_PORT:
+			if (c == '@') {
+				port = token; token.clear();			
+				prev_state = state; state = ST_LOGIN;
+			} else {
+				token += c;
+				if (i == (length - 1)) {
+					port = token; token.clear();
+				}
+			}
+			break;
+		case ST_LOGIN:
+			if (prev_state == ST_PORT || prev_state == ST_HOST) {
+				login    = host; host.clear();
+				password = port; port.clear();
+				prev_state = state; state = ST_HOST;
+				token += c;
+			} else {
+				token += c;
+				if (i == (length - 1)) {
+					login = token; token.clear();								
+				}
+			}
+			break;
+		case ST_PASSWORD:
+			if (c == '@') {
+				password = token; token.clear();			
+				prev_state = state; state = ST_HOST;
+			} else {
+				token += c;
+				if (i == (length - 1)) {
+					password = token; token.clear();								
+				}
+			}
+			break;
+		default:
+			;
+		}
+	}
+
+	RAWLOG_INFO("Setting up HTTP proxy:");
+	RAWLOG_INFO1("URI: %s", http_proxy.c_str());
+	RAWLOG_INFO1("HTTP proxy login    = %s", login.c_str());
+	RAWLOG_INFO1("HTTP proxy password = %s", password.c_str());
+	RAWLOG_INFO1("HTTP proxy host     = %s", host.c_str());
+	RAWLOG_INFO1("HTTP proxy port     = %s", port.c_str());
+
+	if (host.length()) {
+#if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
+		rho_win32_set_window_proxy(host.c_str(), port.c_str(), login.c_str(), password.c_str());
+#endif
+		RHOCONF().setString ("http_proxy_host", host, false);
+
+		if (port.length()){
+			RHOCONF().setString ("http_proxy_port", port, false);
+		} else {
+			RAWLOG_WARNING("there is no proxy port defined");
+		}
+
+		if (login.length())
+			RHOCONF().setString ("http_proxy_login", login, false);
+
+		if (password.length())
+			RHOCONF().setString ("http_proxy_password", password, false);
+
+	} else {
+		RAWLOG_ERROR("empty host name in HTTP-proxy URL");
+	}
+}
+
+rho::String g_strHttpProxy;
+extern "C" void rho_sys_set_http_proxy_url(const char* url)
+{
+	g_strHttpProxy = url;
+    parseHttpProxyURI(g_strHttpProxy);
+}
+
+extern "C" const char* rho_sys_get_http_proxy_url()
+{
+    return g_strHttpProxy.c_str();
 }

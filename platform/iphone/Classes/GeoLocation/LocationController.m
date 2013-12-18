@@ -60,7 +60,16 @@ static LocationController *sharedLC = nil;
             return false;
         isEnabled = YES;
         _locationManager.delegate = self; // Tells the location manager to send updates to this object
-        [_locationManager startUpdatingLocation];
+        if (_bMinDistanceMode) {
+            _locationManager.distanceFilter = _dMinDistance;
+            _locationManager.desiredAccuracy = _dMinDistance;
+            [_locationManager startUpdatingLocation];
+        }
+        else {
+            _locationManager.distanceFilter = kCLDistanceFilterNone;
+            _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+            [_locationManager startUpdatingLocation];
+        }
     }
     return true;
 }
@@ -80,6 +89,7 @@ static LocationController *sharedLC = nil;
         }
         gps_callback_interval = [value integerValue];
         isFirstUpdateFromPlatform = YES;
+        _bMinDistanceMode = false;
         if (gps_callback_interval > 0) {
             timer = [NSTimer scheduledTimerWithTimeInterval:gps_callback_interval target:self selector:@selector(onTimerFired:) userInfo:nil repeats:YES];
         }
@@ -88,6 +98,38 @@ static LocationController *sharedLC = nil;
 
 - (void)resetTimerWithNewInterval:(int)interval {
     [self performSelectorOnMainThread:@selector(resetTimerCommand:) withObject:[NSNumber numberWithInt:interval] waitUntilDone:NO];
+}
+
+
+-(void) stopCommand:(NSNumber*)number {
+    @synchronized(self) {
+        isEnabled = NO;
+        if (!_locationManager)
+            return;
+        [_locationManager stopUpdatingLocation];
+        _locationManager.delegate = nil;
+        
+        if (timer != nil) {
+            [timer invalidate];
+            timer = nil;
+        }
+    }
+}
+
+- (void)resetUpdateWithMinDistanceCommand:(NSNumber*)value {
+    @synchronized(self){
+        _dMinDistance = [value doubleValue];
+        if (_dMinDistance <= 0) {
+            _dMinDistance = kCLDistanceFilterNone;
+        }
+        _bMinDistanceMode = true;
+    }
+    [self stopCommand:nil];
+    [self update];
+}
+
+- (void)resetUpdateWithMinDistance:(double)minDistance {
+    [self performSelectorOnMainThread:@selector(resetUpdateWithMinDistanceCommand:) withObject:[NSNumber numberWithDouble:minDistance] waitUntilDone:NO];
 }
 
 
@@ -113,7 +155,11 @@ static LocationController *sharedLC = nil;
 		_dLongitude = 0;
 		_dAltitude = 0;
         _dAccuracy = 0;
+        _iSatellites = 0;
+        _dMinDistance = 0;
+        _dSpeed = 0;
 		_bKnownPosition = false;
+        _bMinDistanceMode = false;
 		isErrorState = false;
         gps_callback_interval = 0;
         isFirstUpdateFromPlatform = YES;
@@ -123,20 +169,7 @@ static LocationController *sharedLC = nil;
 	return self;
 }
 
--(void) stopCommand:(NSNumber*)number {
-    @synchronized(self) {
-        isEnabled = NO;
-        if (!_locationManager)
-            return;
-        [_locationManager stopUpdatingLocation];
-        _locationManager.delegate = nil;
-        
-        if (timer != nil) {
-            [timer invalidate];
-            timer = nil;
-        }
-    }
-}
+
 
 - (void) stop {
     isEnabled = NO;
@@ -152,17 +185,24 @@ static LocationController *sharedLC = nil;
 	if (!newLocation)
 		return;
 	
-	@synchronized(self){
+	@synchronized(self) {
 		
 		_dLatitude = newLocation.coordinate.latitude;
 		_dLongitude = newLocation.coordinate.longitude;
-        	_dAccuracy = newLocation.horizontalAccuracy;//sqrt(newLocation.horizontalAccuracy*newLocation.horizontalAccuracy + newLocation.verticalAccuracy*newLocation.verticalAccuracy);
+        _dAccuracy = newLocation.horizontalAccuracy;//sqrt(newLocation.horizontalAccuracy*newLocation.horizontalAccuracy + newLocation.verticalAccuracy*newLocation.verticalAccuracy);
 		_dAltitude = newLocation.altitude;
+        _dSpeed = newLocation.speed;
+        _iSatellites = 0;
 		_bKnownPosition = true;	
 	}
-    if (isFirstUpdateFromPlatform && isEnabled) {
-        isFirstUpdateFromPlatform = NO;
+    if (_bMinDistanceMode) {
         rho_geo_callcallback();
+    }
+    else {
+        if (isFirstUpdateFromPlatform && isEnabled) {
+            isFirstUpdateFromPlatform = NO;
+            rho_geo_callcallback();
+        }
     }
 }
 
@@ -196,6 +236,25 @@ static LocationController *sharedLC = nil;
 	double res = 0; 
 	@synchronized(self){
 		res = _dAltitude;
+	}
+	
+	return res;
+}
+
+
+- (double) getSpeed {
+	double res = 0;
+	@synchronized(self){
+		res = _dSpeed;
+	}
+	
+	return res;
+}
+
+- (int) getSatellites {
+	int res = 0;
+	@synchronized(self){
+		res = _iSatellites;
 	}
 	
 	return res;
@@ -330,18 +389,35 @@ float rho_geo_accuracy() {
 
 double rho_geo_speed() {
 	geo_update();
-    //TODO:
-	return 0.0;
+	return (float)[[LocationController sharedInstance] getSpeed ];
 }
 
 int rho_geo_satellites() {
 	geo_update();
-    //TODO:
-	return 0;
+	return (float)[[LocationController sharedInstance] getSatellites ];
 }
 
 void rho_geo_set_notification_ex(const char *url, rho_param* p, char* params) {
-    //TODO:
+    double minDistance = kCLDistanceFilterNone;
+
+    // setup callback url
+    rho_geo_set_notification(url, params, 60*60*24*365);
+    
+    if (p && p->type == RHO_PARAM_HASH) {
+        for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
+            char *name = p->v.hash->name[i];
+            rho_param *value = p->v.hash->value[i];
+            if (!name || !value)
+                continue;
+            
+            if (strcasecmp(name, "minimumDistance") == 0)
+                if (value->type != RHO_PARAM_STRING)
+                    continue;
+            char *strMinDistance = value->v.string;
+            minDistance = strtod(strMinDistance, NULL);
+        }
+    }
+    [[LocationController sharedInstance] resetUpdateWithMinDistance:minDistance];
 }
 
 

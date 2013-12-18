@@ -1,4 +1,5 @@
 #include "generated/cpp/SystemBase.h"
+#include "logging/RhoLog.h"
 
 namespace rho {
 
@@ -7,7 +8,7 @@ using namespace apiGenerator;
 class CSystemImplBase: public CSystemSingletonBase
 {
 public:
-    CSystemImplBase(): CSystemSingletonBase(){}
+    CSystemImplBase(): CSystemSingletonBase(), m_appMessageNotifications(false), m_appMessageWait(false) {}
 
     virtual void getPlatform(CMethodResult& oResult);
     virtual void getHasCamera(CMethodResult& oResult);
@@ -28,7 +29,7 @@ public:
     virtual void setApplicationIconBadge( int value, CMethodResult& oResult);
     virtual void getIsRhoSimulator(rho::apiGenerator::CMethodResult& oResult);
     virtual void getKeyboardState(CMethodResult& oResult);
-	virtual void setKeyboardState( const rho::String &, CMethodResult& oResult);
+    virtual void setKeyboardState( const rho::String &, CMethodResult& oResult);
 
     virtual void getStartParams(rho::apiGenerator::CMethodResult& oResult);
     virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult);
@@ -62,6 +63,25 @@ public:
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
     virtual void set_application_icon_badge( int badgeNumber, rho::apiGenerator::CMethodResult& oResult);
     virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void getHttpProxyURI(rho::apiGenerator::CMethodResult& oResult);
+    virtual void setHttpProxyURI( const rho::String& httpProxyURI, rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getApplicationMessage(rho::apiGenerator::CMethodResult& oResult);
+    virtual void startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
+    virtual void stopApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
+
+    void addApplicationMessage(const rho::String& appName, const rho::String& msg);
+protected:
+    Vector<Hashtable<String, String> > m_appMessageQueue;
+    common::CMutex m_appMessageMutex;
+    bool m_appMessageNotifications;
+    CMethodResult m_appMessageHandler;
+    bool m_appMessageWait;
+    CMethodResult m_appMessageResult;
+
+    DEFINE_LOGCLASS
 };
 
 }

@@ -55,9 +55,7 @@ class ScreenReceiver extends BroadcastReceiver
 	public enum DeviceScreenEvent
 	{
 		SCREEN_OFF(0),
-		SCREEN_ON(1),
-		SCREEN_LOCKED(2),
-		SCREEN_UNLOCKED(3);
+		SCREEN_ON(1);
 
 		/**
 		 * Value for this difficulty
@@ -87,24 +85,21 @@ class ScreenReceiver extends BroadcastReceiver
 		if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF))
 		{
 			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_OFF.Value);
-			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_LOCKED.Value);
 		}
 		// device is probably unlocked
 		else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON))
 		{
-			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_ON.Value);
-
 			// if keyguard is locked then unlock event should be called in ACTION_USER_PRESENT
 			KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
 			if (!keyguardManager.inKeyguardRestrictedInputMode())
 			{
-				notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_UNLOCKED.Value);
+				notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_ON.Value);
 			}
 		}
 		// device is unlocked
 		else if(intent.getAction().equals(Intent.ACTION_USER_PRESENT))
 		{
-			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_UNLOCKED.Value);
+			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_ON.Value);
 		}
 	}
 }

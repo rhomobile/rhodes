@@ -43,6 +43,7 @@ CGPSDevice * CGPSDevice::s_pInstance = NULL;
 #define MAX_WAIT    5000
 #define MAX_AGE     3000
 #define GPS_CONTROLLER_EVENT_COUNT 3
+#define KNOTS_TO_METRESPERSECOND (1852/3600)
 
 CGPSDevice::CGPSDevice(void)
 {
@@ -328,7 +329,9 @@ CGPSController::CGPSController() {
 	m_gpsIsOn = false;
 	m_latitude = 0;
 	m_longitude = 0;
-
+	m_altitude = 0;
+	m_speed = 0;
+	m_satelliteCount = 0;
 }
 
 void CGPSController::TurnGpsOn() {
@@ -356,6 +359,9 @@ void CGPSController::CheckTimeout() {
 			gps->m_knownPosition = false;
 	    gps->m_latitude = 0;
 	    gps->m_longitude = 0;
+		gps->m_altitude = 0;
+		gps->m_speed = 0;
+		gps->m_satelliteCount = 0;
 		}
 	}
 }
@@ -372,6 +378,9 @@ void CGPSController::TurnGpsOff() {
 			gps->m_knownPosition = false;
 	    gps->m_latitude = 0;
 	    gps->m_longitude = 0;
+		gps->m_altitude = 0;
+		gps->m_speed = 0;
+		gps->m_satelliteCount = 0;
 		}
 	}
 }
@@ -383,11 +392,14 @@ CGPSController::~CGPSController() {
 
 HRESULT CGPSController::SetGPSPosition( GPS_POSITION gps_Position ) {
 	Lock();
-    boolean bNotify = m_knownPosition==false || m_latitude != gps_Position.dblLatitude || m_longitude != gps_Position.dblLongitude;
+	boolean bNotify = m_knownPosition==false || m_latitude != gps_Position.dblLatitude || m_longitude != gps_Position.dblLongitude || m_altitude != gps_Position.flAltitudeWRTSeaLevel || m_speed != gps_Position.flSpeed || m_satelliteCount != gps_Position.dwSatelliteCount;
 
 	m_knownPosition = true;
 	m_latitude = gps_Position.dblLatitude;
 	m_longitude = gps_Position.dblLongitude;
+	m_altitude = gps_Position.flAltitudeWRTSeaLevel;
+	m_speed = gps_Position.flSpeed;
+	m_satelliteCount = gps_Position.dwSatelliteCount;
 	Unlock();
 
     if ( bNotify )
@@ -423,6 +435,24 @@ double CGPSController::GetLongitude() {
 	return ret;
 }
 
+double CGPSController::GetAltitude() {
+	Lock();
+	double ret = m_altitude;
+	Unlock();
+	return ret;
+}
+double CGPSController::GetSpeed(){
+	Lock();
+	double ret = (m_speed * KNOTS_TO_METRESPERSECOND);
+	Unlock();
+	return ret;
+}
+int CGPSController::GetSatelliteCount(){
+	Lock();
+	int ret = m_satelliteCount;
+	Unlock();
+	return ret;
+}
 time_t CGPSController::UpdateTimeout(){
 	m_timeout = time(NULL)+GPS_TIMEOUT;
 	return m_timeout;
@@ -462,7 +492,12 @@ double rho_geo_longitude()
 
 double rho_geo_altitude() 
 {
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+	CGPSController* gps = CGPSController::startInstance();
+	return gps->GetAltitude();
+#else
 	return 0.0;
+#endif
 }
 
 float rho_geo_accuracy() 
@@ -481,13 +516,21 @@ int rho_geo_known_position()
 }
 
 double rho_geo_speed() {
-    //TODO:
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+    CGPSController* gps = CGPSController::startInstance();
+	return gps->GetSpeed();
+#else
     return 0.0;
+#endif
 }
 
 int rho_geo_satellites() {
-    //TODO:
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+    CGPSController* gps = CGPSController::startInstance();
+	return gps->GetSatelliteCount();
+#else
     return 0;
+#endif
 }
 
 void rho_geo_set_notification_ex(const char *url, rho_param* p, char* params) {

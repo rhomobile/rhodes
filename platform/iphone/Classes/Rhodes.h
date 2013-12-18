@@ -41,6 +41,7 @@
 #import "NativeView/NVDelegate.h"
 #import "NetworkStatusMonitor.h"
 #import "IPushNotificationsReceiver.h"
+//#import "IAppMessageReceiver.h"
 
 @interface Rhodes : NSObject <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate>
@@ -59,6 +60,8 @@
 	SignatureDelegate* signatureDelegate;
 	NVDelegate* nvDelegate;
     id<IPushNotificationsReceiver> pushReceiver;
+    //id<IAppMessageReceiver> appMessageReceiver;
+    
 #ifdef __IPHONE_4_0
     EKEventStore *eventStore;
 	__block UIBackgroundTaskIdentifier syncBackgroundTask;
@@ -68,7 +71,6 @@
     BOOL rotationLocked;
     BOOL mBlockExit;
     BOOL mIsFullScreen;
-    BOOL mLockStateChanged;
     BOOL mScreenStateChanged;
 }
 
@@ -78,7 +80,6 @@
 @property (nonatomic, copy) SignatureDelegate* signatureDelegate;
 @property (nonatomic, copy) NVDelegate* nvDelegate;
 @property (nonatomic, assign) BOOL mBlockExit;
-@property (atomic,assign) BOOL mLockStateChanged;
 @property (atomic,assign) BOOL mScreenStateChanged;
 @property (nonatomic, retain) NSCondition* mNetworkPollCondition;
 
@@ -128,6 +129,8 @@
 - (void) registerForPushNotifications:(id<IPushNotificationsReceiver>)receiver;
 
 - (void) signalNetworkStatusPollIntervalChanged;
+
+//- (void) setAppMessageReceiver:(id<IAppMessageReceiver>)receiver;
 #ifdef __IPHONE_4_0
 - (EKEventStore*) getEventStore;
 #endif
