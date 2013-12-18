@@ -1,0 +1,47 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="NewORM" parent="Rho">
+        <HELP_OVERVIEW>NewORM CoreAPI module</HELP_OVERVIEW>
+        <MORE_HELP>New implementation of the RHOM.</MORE_HELP>
+
+        <METHODS>
+
+            <METHOD name="getClientId" access="STATIC">
+                <DESC>returns current Client Id</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="haveLocalChanges" access="STATIC">
+                <DESC>returns TRUE whenever there are any local (non-synced) changes</DESC>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="databaseLocalReset" access="STATIC">
+                <DESC>resets local database</DESC>
+            </METHOD>
+
+            <METHOD name="databaseClientReset" access="STATIC">
+                <PARAMS>
+                    <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
+                        <DESC>Whether or not to reset Local Models</DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>resets client info and sync models (optionally, local models as well)</DESC>
+            </METHOD>
+
+            <METHOD name="generateId" access="STATIC">
+                <DESC>returns newly generated unique object Id</DESC>
+                <RETURN type="INTEGER"/>    
+            </METHOD>
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>    
