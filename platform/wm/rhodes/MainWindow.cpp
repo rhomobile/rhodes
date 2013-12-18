@@ -56,6 +56,9 @@
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
 #include "statistic/RhoProfiler.h"
+#include "Intents.h"
+#include "System.h"
+#include "Intents.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
@@ -339,6 +342,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	rho_rhodesapp_callUiCreatedCallback();
 
 	RHODESAPP().setNetworkStatusMonitor(&m_networkStatusMonitor);
+
+    rho::createIntentEvent();
 
     return 0;
 }
@@ -634,6 +639,8 @@ LRESULT CMainWindow::OnTitleChangeCommand (WORD /*wNotifyCode*/, WORD /*wID*/, H
 #if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
 LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    rho::fireIntentEvent();
+
     ProcessDocumentComplete( (LPCTSTR)lParam );
 
     free((void*)lParam);
@@ -2082,13 +2089,26 @@ LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 
 LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    //if ( wParam != WM_WINDOW_SWITCHTAB)
-    //    return 0;
-
     COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
-    if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))
+
+    if (pcds->dwData == COPYDATA_INTERPROCESSMESSAGE)
+    {
+        InterprocessMessage *ipmsg = reinterpret_cast<InterprocessMessage*>(pcds->lpData);
+        LOG(INFO) + "INTERPROCESSMESSAGE : " + rho::String(ipmsg->appName) + rho::String(ipmsg->params);
+
+
+        rho::System::addApplicationMessage(ipmsg->appName, ipmsg->params);
+        return 0;
+    }
+    else if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))
+    {
         m_oTabBar.SwitchTabByName((LPCSTR)(pcds->lpData), true);
+    }
 
     return 0;
 }
 
+extern "C" const wchar_t* rho_wmimpl_get_window_nameW()
+{
+    return CMainWindow::GetWndClassInfo().m_wc.lpszClassName;
+}

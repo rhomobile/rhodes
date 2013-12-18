@@ -7,11 +7,11 @@
 			<DESC>This method will return the value of the propertyName that is passed in. The propertyName must be a valid property of the API class.</DESC>
 			<PARAMS>
 				<PARAM name="propertyName" type="STRING">
-					<DESC>The one property that I want to know about</DESC>
+					<DESC>The property to return info about</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="STRING">
-                <DESC>The one property that I want to know about</DESC>
+                <DESC>The property to return info about</DESC>
             </RETURN>
             <PLATFORM usemodule="true"></PLATFORM>
             
@@ -22,11 +22,11 @@
             <PARAMS>
                 <PARAM name="arrayofNames" type="ARRAY">
                     <PARAM type="STRING"/>
-                    <DESC>List of properties I want to know about</DESC>
+                    <DESC>List of properties to return info about</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="HASH">
-                <DESC>Map of properties I want to know about</DESC>
+                <DESC>Map of properties to return info about</DESC>
                 <PARAMS>
                     <PARAM type="STRING"/>
                 </PARAMS>
@@ -51,10 +51,10 @@
             <DESC>This method will set the value of a property for the API class. The propertyName must be a valid property for the class and must also not be read only.</DESC>
             <PARAMS>
                 <PARAM name="propertyName" type="STRING">
-                    <DESC>The one property name that I want to set</DESC>
+                    <DESC>The one property name to set</DESC>
                 </PARAM>
                 <PARAM name="propertyValue" type="STRING">
-                    <DESC>The one property value that I want to set</DESC>
+                    <DESC>The one property value to set</DESC>
                 </PARAM>
             </PARAMS>
              <PLATFORM usemodule="true"></PLATFORM>
@@ -64,7 +64,7 @@
             <DESC>This method will set the values of a list of properties for the API class. The propertyName must be a valid property for the class and must also not be read only.</DESC>
             <PARAMS>
                 <PARAM name="propertyMap" type="HASH">
-                    <DESC>Map of properties I want to set</DESC>
+                    <DESC>Map of properties to set</DESC>
                     <PARAM type="STRING"/>
                 </PARAM>
             </PARAMS>

@@ -64,10 +64,35 @@ extern "C" {
         return m_strRootPath.c_str();
     }
 
-    const char* rho_sys_get_http_proxy_url()
+    void rho_win32_unset_window_proxy()
+    {
+        #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
+            //CMainWindow* m_appWindow = CMainWindow::getInstance();
+            //if (m_appWindow)
+            //    m_appWindow->setProxy();
+        #endif    
+    }
+
+    void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
+    {
+        #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
+            //CMainWindow* m_appWindow = CMainWindow::getInstance();
+            //if (m_appWindow)
+            //    m_appWindow->setProxy(host, port, login, password);
+        #endif    
+    }
+
+    /*const char* rho_sys_get_http_proxy_url()
     {
         return m_strHttpProxy.c_str();
-    }
+    }*/
+}
+
+
+namespace rho
+{
+    //TODO: include intents to Win RhoSIm
+    void waitIntentEvent(const rho::String& appName){}
 }
 
 char* parseToken(const char* start)

@@ -3,18 +3,21 @@
 #include <windows.h>
 #include <atlbase.h>
 #include <atlstr.h>
+
 #include "common/app_build_capabilities.h"
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "common/RhoDefs.h"
+
 #if defined( OS_WINCE )
 #include "EmdkDefines.h"
 #include "Keyboard.h"
 #endif
 #include <algorithm>
 #include "Registry.h"
+#include "Intents.h"
 
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
 #include <cfgmgrapi.h>
@@ -49,6 +52,7 @@ extern "C"
 {
 void rho_sys_bring_to_front();
 void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
+void rho_wmsys_run_app_with_show(const wchar_t* szPath, const wchar_t* szParams, bool bShow);
 int rho_sys_get_screen_width();
 int rho_sys_get_screen_height();
 const char* rho_sys_win32_getWebviewFramework();
@@ -107,8 +111,6 @@ public:
 	bool populateUUID(UNITID_EX* uuid);
 	void bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize);
 #endif
-    virtual void getHttpProxyURI(CMethodResult& oResult);
-    virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
     virtual void getKeyboardState(CMethodResult& oResult);
@@ -131,11 +133,11 @@ public:
     virtual void setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult);
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
+    virtual void runApplicationShowWindow( const rho::String& appName,  const rho::String& params, bool bShow, bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
     virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
+    virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
 
-    virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
-    virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
 	virtual long OnSIPState(bool bSIPState, const CRhoExtData& oExtData)
 	{
 #if defined( OS_WINCE )
@@ -819,7 +821,7 @@ void CSystemImpl::openUrl( const rho::String& url, CMethodResult& oResult)
         oResult.setError("System.openUrl failed for: " + url);
 }
 
-void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::runApplicationShowWindow( const rho::String& appName,  const rho::String& params, bool bShow, bool blockingCall, rho::apiGenerator::CMethodResult& oResult)
 {
     CRegKey oKey;
     StringW strKeyPath;
@@ -847,18 +849,23 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
             if ( strFullPath[strFullPath.length()-1] != '/' && strFullPath[strFullPath.length()-1] != '\\' )
                 strFullPath += L"\\";
 
-			StringW strBaseName;
+            StringW strBaseName;
             CFilePath oPath(appName);
             convertToStringW(oPath.getBaseName(), strBaseName);
             strFullPath += strBaseName;
 
-            rho_wmsys_run_appW( strFullPath.c_str(), convertToStringW(params).c_str());
+            rho_wmsys_run_app_with_show(strFullPath.c_str(), convertToStringW(params).c_str(), bShow);
 
             if (GetLastError() == -1 )
                 oResult.setError( "System.runApplication failed for: " + appName);
 
         }
     }
+}
+
+void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult)
+{
+    runApplicationShowWindow(appName, params, true, blockingCall, oResult);
 }
 
 void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
@@ -999,33 +1006,6 @@ void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
     rho_sys_bring_to_front();
 }
 
-extern "C" void rho_sys_set_http_proxy_url(const char* url);
-void CSystemImpl::set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult)
-{
-    rho_sys_set_http_proxy_url( proxyURI.c_str() );
-}
-
-extern "C" void rho_sys_unset_http_proxy();
-void CSystemImpl::unset_http_proxy(rho::apiGenerator::CMethodResult& oResult)
-{
-    rho_sys_unset_http_proxy();
-}
-
-extern "C" const char* rho_sys_get_http_proxy_url();
-void CSystemImpl::getHttpProxyURI(CMethodResult& oResult)
-{
-    oResult.set(rho_sys_get_http_proxy_url());
-}
-
-void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oResult)
-{
-    if ( value.length() )
-        rho_sys_set_http_proxy_url( value.c_str() );
-    else
-        rho_sys_unset_http_proxy();
-}
-
-
 void CSystemImpl::getHasCamera(CMethodResult& oResult)
 {
 #if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
@@ -1034,6 +1014,65 @@ void CSystemImpl::getHasCamera(CMethodResult& oResult)
     oResult.set(true);
 #endif
 
+}
+
+void CSystemImpl::sendApplicationMessage(const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
+{
+    CFilePath oPath(appName);    
+    rho::String appNamePath = oPath.getBaseName();
+    appNamePath.resize(appNamePath.length() - 4);
+
+    COPYDATASTRUCT cds;
+
+    rho::String strAppName = appNamePath + ".MainWindow";
+    rho::StringW strAppNameW = rho::convertToStringW(strAppName);
+
+    HWND appWindow = FindWindow(strAppNameW.c_str(), NULL);
+
+    if (appWindow == NULL)
+    {
+        rho::apiGenerator::CMethodResult runResult;
+        runApplicationShowWindow(appName, "", false, false, runResult);
+
+        if (runResult.isError())
+        {
+            oResult.setError(runResult.getErrorString());
+            return;
+        }
+
+        int maxTimeout = 5000;
+        int currTime = 0;
+
+        for (currTime = 0; currTime < maxTimeout; currTime += 100)
+        {
+            Sleep(100);
+
+            appWindow = FindWindow(strAppNameW.c_str(), NULL);
+
+            if (appWindow != NULL)
+                break;
+        }
+
+        waitIntentEvent(appName);
+
+        appWindow = FindWindow(strAppNameW.c_str(), NULL);
+        
+        if (appWindow == NULL)
+        {
+            oResult.setError("application is not running");
+            return;
+        }
+    }
+
+    rho::InterprocessMessage msg;
+    strcpy(msg.params, params.c_str());
+    strcpy(msg.appName, appName.c_str());
+
+    cds.dwData = COPYDATA_INTERPROCESSMESSAGE;
+    cds.cbData = sizeof(rho::InterprocessMessage);
+    cds.lpData = &msg;
+
+    SendMessage(appWindow, WM_COPYDATA, (WPARAM)(HWND)0, (LPARAM) (LPVOID) &cds);
 }
 
 extern "C" bool rho_rhosim_window_closed();

@@ -88,11 +88,6 @@ static BOOL app_created = NO;
         rho_rhodesapp_callScreenOnCallback();
         [[Rhodes sharedInstance] setMScreenStateChanged:NO];
     }
-    if ([[Rhodes sharedInstance] mLockStateChanged])
-    {
-        rho_rhodesapp_callScreenUnlockedCallback();
-        [[Rhodes sharedInstance] setMLockStateChanged:NO];
-    }
     rho_rhodesapp_callAppActiveCallback(1);
 }
 @end
@@ -134,7 +129,7 @@ static BOOL app_created = NO;
 
 @implementation Rhodes
 
-@synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit, mLockStateChanged, mScreenStateChanged, mNetworkPollCondition;
+@synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit,  mScreenStateChanged, mNetworkPollCondition;
 
 
 static Rhodes *instance = NULL;
@@ -693,24 +688,12 @@ static Rhodes *instance = NULL;
                                     CFSTR("com.apple.iokit.hid.displayStatus"), // event name
                                     NULL, // object
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    
-    
-    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
-                                    NULL, // observer
-                                    displayStatusChanged, // callback
-                                    CFSTR("com.apple.springboard.lockstate"), // event name
-                                    NULL, // object
-                                    CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
 static void displayStatusChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     if ([Rhodes sharedInstance])
     {
         NSString* notificationName = (__bridge NSString*)name;
-        
-        if ([notificationName isEqualToString:@"com.apple.springboard.lockstate"]) {
-            [[Rhodes sharedInstance] setMLockStateChanged:YES];
-        }
         
         if ([notificationName isEqualToString:@"com.apple.iokit.hid.displayStatus"]) {
             [[Rhodes sharedInstance] setMScreenStateChanged:YES];
@@ -803,6 +786,11 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 {
     [mNetworkPollCondition signal];
 }
+
+/*- (void) setAppMessageReceiver:(id<IAppMessageReceiver>)receiver
+{
+    appMessageReceiver = receiver;
+}*/
 
 
 - (void) monitorNetworkStatus
@@ -1003,6 +991,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
     [self doStartUp];
     [self processDoSync:launchOptions];
+    
+    //[appMessageReceiver onAppMessageReceived:start_parameter app:@""];
 
     if ( !rho_rhodesapp_canstartapp([start_parameter UTF8String], ", ") )
     {
@@ -1135,11 +1125,6 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
         rho_rhodesapp_callScreenOffCallback();
         [self setMScreenStateChanged:NO];
     }
-    if (mLockStateChanged)
-    {
-        rho_rhodesapp_callScreenLockedCallback();
-        [self setMLockStateChanged:NO];
-    }
     rho_rhodesapp_callAppActiveCallback(0);
     rho_rhodesapp_canstartapp("", ", ");
     [self saveLastUsedTime];
@@ -1239,6 +1224,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
         if ((range.location > 0) && (range.length > 0)) {
             startparams = [fullurl substringFromIndex:range.location + 1];
         }
+        
+        //[appMessageReceiver onAppMessageReceived:startparams app:[url scheme]];
 
         // set start params
         rho_rhodesapp_canstartapp([startparams UTF8String], ", ");

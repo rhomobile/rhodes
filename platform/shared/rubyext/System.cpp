@@ -287,16 +287,4 @@ void rho_sys_lock_window_size(int locked)
 }
 #endif
 
-#if (!defined(OS_WINCE) && !defined(OS_WINDOWS) && !defined(OS_WINDOWS_DESKTOP)) || defined(RHODES_QT_PLATFORM)
-void rho_sys_set_http_proxy_url(const char* url)
-{
-    LOG(INFO) + "System.set_http_proxy_url is unsupported on current platform.";
-}
-
-void rho_sys_unset_http_proxy()
-{
-    LOG(INFO) + "System.unset_http_proxy is unsupported on current platform.";
-}
-#endif
-
 } //extern "C"
