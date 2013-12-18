@@ -45,7 +45,6 @@ public:
     virtual void getUuid(CMethodResult& oResult);
     virtual void getHttpProxyURI(CMethodResult& oResult);
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
-    virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
     //virtual void getKeyboardState(CMethodResult& oResult);
@@ -252,10 +251,6 @@ void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oRes
         rho_sys_set_http_proxy_url( value.c_str() );
     else
         rho_sys_unset_http_proxy();
-}
-
-void CSystemImpl::sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
-{
 }
 
 void CSystemImpl::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)

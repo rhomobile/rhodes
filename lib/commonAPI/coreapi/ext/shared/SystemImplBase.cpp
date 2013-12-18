@@ -467,6 +467,10 @@ void CSystemImplBase::addApplicationMessage(const rho::String& appName, const rh
     }
 }
 
+void CSystemImplBase::sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
+{
+}
+
 void CSystemImplBase::getApplicationMessage(rho::apiGenerator::CMethodResult& oResult)
 {
     common::CMutexLock lock(m_appMessageMutex);
@@ -502,11 +506,6 @@ void CSystemImplBase::stopApplicationMessageNotifications(rho::apiGenerator::CMe
 {
     common::CMutexLock lock(m_appMessageMutex);
     m_appMessageNotifications = false;
-}
-
-void CSystemImplBase::sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
-{
-    // Android only so far
 }
 
 }

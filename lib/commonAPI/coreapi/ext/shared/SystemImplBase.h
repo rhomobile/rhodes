@@ -67,7 +67,7 @@ public:
     virtual void getHttpProxyURI(rho::apiGenerator::CMethodResult& oResult);
     virtual void setHttpProxyURI( const rho::String& httpProxyURI, rho::apiGenerator::CMethodResult& oResult);
 
-    virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult) = 0;    
+    virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
     virtual void getApplicationMessage(rho::apiGenerator::CMethodResult& oResult);
     virtual void startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
     virtual void stopApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
