@@ -67,18 +67,18 @@ extern "C" {
     void rho_win32_unset_window_proxy()
     {
         #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-            CMainWindow* m_appWindow = CMainWindow::getInstance();
-            if (m_appWindow)
-                m_appWindow->setProxy();
+            //CMainWindow* m_appWindow = CMainWindow::getInstance();
+            //if (m_appWindow)
+            //    m_appWindow->setProxy();
         #endif    
     }
 
     void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
     {
         #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-            CMainWindow* m_appWindow = CMainWindow::getInstance();
-            if (m_appWindow)
-                m_appWindow->setProxy(host, port, login, password);
+            //CMainWindow* m_appWindow = CMainWindow::getInstance();
+            //if (m_appWindow)
+            //    m_appWindow->setProxy(host, port, login, password);
         #endif    
     }
 
