@@ -254,7 +254,7 @@ void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oRes
         rho_sys_unset_http_proxy();
 }
 
-void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
 {
 }
 
