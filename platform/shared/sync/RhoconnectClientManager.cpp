@@ -36,6 +36,9 @@ namespace sync {
         virtual void stop() {}
         virtual int set_pollinterval( int interval ) { return 0; }
         virtual int get_pollinterval() { return 0; }
+        virtual void set_bulksyncstate( int new_state ) {}
+        virtual int get_bulksyncstate() { return -1; }
+        virtual bool has_bulksyncstate() { return false; }
         virtual void set_syncserver( const char* syncserver ) {}
         virtual int get_pagesize() { return 0; }
         virtual void set_pagesize(int nPageSize) {}
@@ -48,6 +51,7 @@ namespace sync {
         virtual void setobjectnotify_url(const char* szUrl) {}
         virtual void cleanobjectnotify() {}
         virtual void clear_notification(int srcID) {}
+        virtual void set_source_property(int srcID, const char* propName, const char* propVal) {}
     };
 
     IMPLEMENT_LOGCLASS(RhoconnectClientManager, "RhoconnectClientManager");
