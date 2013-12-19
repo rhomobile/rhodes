@@ -64,7 +64,7 @@ namespace rho {
     
     SystemImplIphone::SystemImplIphone()
     {
-        //m_pAppMessageReceiverHolder = [[AppMessageReceiverHolder alloc]init];
+        m_pAppMessageReceiverHolder = [[AppMessageReceiverHolder alloc]init];
     }
     
     void SystemImplIphone::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)
