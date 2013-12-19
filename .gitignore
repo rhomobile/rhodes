@@ -272,3 +272,5 @@ platform/osx/bin/syncengine/*
 platform/osx/bin/RhoSimulator/generated_files/*
 platform/osx/bin/RhoSimulator/tmp/*
 platform/build/*.build/*
+
+.qmake.stash
