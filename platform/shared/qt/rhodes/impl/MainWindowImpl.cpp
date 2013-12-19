@@ -168,6 +168,16 @@ void CMainWindow::restoreWindow(void)
     ((QtMainWindow*)qtMainWindow)->showNormal();
 }
 
+void CMainWindow::setProxy()
+{
+    ((QtMainWindow*)qtMainWindow)->setProxy();
+}
+
+void CMainWindow::setProxy(const char* host, const char* port, const char* login, const char* password)
+{
+    ((QtMainWindow*)qtMainWindow)->setProxy(QString(host ? host : ""), QString(port ? port : ""), QString(login ? login : ""), QString(password ? password : ""));
+}
+
 void CMainWindow::DestroyUi(void)
 {
     rho_rhodesapp_callUiDestroyedCallback();
@@ -255,6 +265,10 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         this, SLOT(restoreWindow(void)) );
     QObject::connect(this, SIGNAL(doCreateCustomMenu(void)),
         this, SLOT(createCustomMenuSlot(void)) );
+    QObject::connect(this, SIGNAL(doSetProxy()),
+        this, SLOT(setProxy()) );
+    QObject::connect(this, SIGNAL(doSetProxy(const char*, const char*, const char*, const char*)),
+        this, SLOT(setProxy(const char*, const char*, const char*, const char*)) );
     return true;
 }
 
@@ -729,6 +743,16 @@ void CMainWindow::minimizeWindowCommand(void)
 void CMainWindow::restoreWindowCommand(void)
 {
     emit doRestoreWindow();
+}
+
+void CMainWindow::setProxyCommand()
+{
+    emit doSetProxy();
+}
+
+void CMainWindow::setProxyCommand(const char* host, const char* port, const char* login, const char* password)
+{
+    emit doSetProxy(host, port, login, password);
 }
 
 void CMainWindow::createCustomMenuSlot(void)

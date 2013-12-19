@@ -55,37 +55,14 @@ static bool m_isJSApplication = false;
 static String m_strRootPath, m_strRhodesPath, m_logPort;
 static String m_strHttpProxy;
 
+extern void parseHttpProxyURI(const String &http_proxy);
 extern "C" {
-    void parseHttpProxyURI(const String &http_proxy);
     void rho_ringtone_manager_stop();
 
     const char* rho_native_rhopath() 
     {
         return m_strRootPath.c_str();
     }
-
-    void rho_win32_unset_window_proxy()
-    {
-        #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-            //CMainWindow* m_appWindow = CMainWindow::getInstance();
-            //if (m_appWindow)
-            //    m_appWindow->setProxy();
-        #endif    
-    }
-
-    void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
-    {
-        #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-            //CMainWindow* m_appWindow = CMainWindow::getInstance();
-            //if (m_appWindow)
-            //    m_appWindow->setProxy(host, port, login, password);
-        #endif    
-    }
-
-    /*const char* rho_sys_get_http_proxy_url()
-    {
-        return m_strHttpProxy.c_str();
-    }*/
 }
 
 
