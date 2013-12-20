@@ -74,11 +74,7 @@ class RhoBluetoothManager;
 
 // CRhoBluetoothDiscoverDlg dialog
 class CRhoBluetoothDiscoverDlg : public //CDialog
-#if defined(OS_WINDOWS_DESKTOP)
-	COkCancelModalDialog<CRhoBluetoothDiscoverDlg>
-#else
 	CDialogImpl <CRhoBluetoothDiscoverDlg>
-#endif	
 {
 public:
 	CRhoBluetoothDiscoverDlg  ();
@@ -104,11 +100,7 @@ public:
 
 // CRhoBluetoothDiscoveredDlg dialog
 class CRhoBluetoothDiscoveredDlg : public //CDialog
-#if defined(OS_WINDOWS_DESKTOP)
-	COkCancelModalDialog<CRhoBluetoothDiscoveredDlg>
-#else
 	CDialogImpl <CRhoBluetoothDiscoveredDlg>
-#endif	
 {
 public:
 	CRhoBluetoothDiscoveredDlg  ();
@@ -288,7 +280,7 @@ private:
 
 };
 
-#endif // OS_WINDOWS_DESKTOP
+#endif
 
 extern "C" int rho_bluetooth_is_bluetooth_available();
 

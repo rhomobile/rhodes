@@ -26,8 +26,6 @@
 
 #pragma once
 
-#if !defined(OS_WINDOWS_DESKTOP)
-
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE )
 #include <exdispid.h>
 #include <exdisp.h>
@@ -44,10 +42,6 @@
 #include "rho/rubyext/NativeTabbar.h"
 #include "IBrowserEngine.h"
 #include "common/app_build_capabilities.h"
-
-#if defined(OS_WINDOWS_DESKTOP)
-#include "menubar.h"
-#endif
 
 #include "LogView.h"
 
@@ -178,9 +172,6 @@ public:
 	void closeNativeView();
     rho::IBrowserEngine* getWebKitEngine(){return m_pBrowserEng; }
 
-#if defined(OS_WINDOWS_DESKTOP)
-    DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
-#else
 	static ATL::CWndClassInfo& GetWndClassInfo() 
 	{ 
         static rho::StringW strAppName = RHODESAPP().getAppNameW() + L".MainWindow";
@@ -192,7 +183,6 @@ public:
 		}; 
 		return wc; 
 	}
-#endif
     
 	BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -221,13 +211,10 @@ public:
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_TOOLBAR_ITEM_FIRST, ID_CUSTOM_TOOLBAR_ITEM_LAST, OnCustomToolbarItemCommand)
-#if defined(OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
+#if defined( OS_PLATFORM_MOTCE )
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP)
-		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnPosChanged)
-#endif
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
 		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
 		//MESSAGE_HANDLER(WM_TAKESIGNATURE, OnTakeSignature)
@@ -296,12 +283,8 @@ private:
 	LRESULT OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     
-#if defined(OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
+#if defined( OS_PLATFORM_MOTCE )
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-#endif
-
-#if defined(OS_WINDOWS_DESKTOP)
-	LRESULT OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 #endif
 
 	LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -400,10 +383,6 @@ private:
     // main menu bar for application
     CWindow m_menuBar;
     CMenu   m_mainMenu;
-#elif defined (OS_WINDOWS_DESKTOP)
-	CMenuBar m_menuBar;
-//	int m_menuBarHeight;
-	CLogView m_logView;
 #endif //_WIN32_WCE
 
 // #if defined( OS_PLATFORM_MOTCE )
@@ -444,10 +423,4 @@ private:
 
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE ) 
 HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );
-#endif
-
-#else
-
-#include "simulator\MainWindowQt.h"
-
 #endif
