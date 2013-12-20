@@ -68,6 +68,7 @@ public class MethodResult implements IMethodResult {
         mTabId = -1;
     }
     
+    @Override
     public void keepAlive() { mSingleShot = false; }
     
     @Override
@@ -85,6 +86,7 @@ public class MethodResult implements IMethodResult {
         mForceType = ResultType.typeDouble;
     }
     
+    @Override
     public void release() {
         if (mRubyProcCallback != 0) {
             nativeReleaseRubyProcCallback(mRubyProcCallback);
