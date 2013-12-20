@@ -36,11 +36,7 @@ public:
 	CLogOptionsDlg() : m_hWndCommandBar(0) {}
 	~CLogOptionsDlg(){}
 
-#if defined(OS_WINDOWS_DESKTOP)
-	enum { IDD = IDD_SIMULATOR_LOGOPTIONS };
-#else
 	enum { IDD = IDD_LOGOPTIONS };
-#endif
 
 BEGIN_MSG_MAP(CLogOptionsDlg)
 	MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)

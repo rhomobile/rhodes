@@ -340,11 +340,7 @@ namespace rho {
     
     void SystemImplIphone::getOsVersion(rho::apiGenerator::CMethodResult& result)
     {
-#ifdef RHODES_EMULATOR
-        oResult.set( RHOSIMCONF().getString("os_version") );
-#else
         getIphoneProperty("os_version", result);
-#endif
     }
     
     

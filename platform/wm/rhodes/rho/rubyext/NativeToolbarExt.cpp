@@ -76,43 +76,18 @@ VALUE nativebar_started()
 //Tabbar
 void remove_native_tabbar()
 {
-#if defined(OS_WINDOWS_DESKTOP)
-    getAppWindow().performOnUiThread(new CNativeTabbar::CRemoveTask() );
-#endif
 }
 
 void create_native_tabbar(int bar_type, rho_param *p)
 {
-#if defined(OS_WINDOWS_DESKTOP)
-    // check for iPad SplitTabBar type -> redirect to TabBar
-    if (bar_type == VTABBAR_TYPE) {
-        bar_type = TABBAR_TYPE;
-    }
-
-	if ( bar_type == NOBAR_TYPE )
-        remove_native_tabbar();
-    else if ( bar_type == TABBAR_TYPE )
-    {
-        getAppWindow().performOnUiThread(new CNativeTabbar::CCreateTask(bar_type, p) );
-    } else
-    {
-    	RAWLOGC_ERROR("NativeTabbar", "Only Tabbar control is supported.");
-    }
-#endif
 }
 
 void native_tabbar_switch_tab(int index)
 {
-#if defined(OS_WINDOWS_DESKTOP)
-    getAppWindow().performOnUiThread(new CNativeTabbar::CSwitchTask(index) );
-#endif
 }
 
 void native_tabbar_set_tab_badge(int index,char *val)
 {
-#if defined(OS_WINDOWS_DESKTOP)
-    getAppWindow().performOnUiThread(new CNativeTabbar::CBadgeTask(index, val) );
-#endif
 }
 
 void nativebar_set_tab_badge(int index,char* val)
@@ -123,11 +98,7 @@ void nativebar_set_tab_badge(int index,char* val)
 
 int native_tabbar_get_current_tab() 
 {
-#if defined(OS_WINDOWS_DESKTOP)
-	return getAppWindow().tabbarGetCurrent();
-#else
 	return 0;
-#endif
 }
 
 void nativebar_switch_tab(int index)
