@@ -5,6 +5,7 @@
 
 #import "api_generator/iphone/CRubyConverter.h"
 #import "api_generator/iphone/CMethodResult.h"
+#import "Rhodes.h"
 
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
@@ -40,7 +41,16 @@ extern "C" BOOL rho_sys_run_app_iphone(const char* appname, char* params);
 
     - (id) init : (rho::SystemImplIphone*)receiver
     {
-        mReceiver = receiver;
+        self = [super init];
+        if (self)
+        {
+            mReceiver = receiver;
+            if ([Rhodes sharedInstance])
+            {
+                [[Rhodes sharedInstance] setAppMessageReceiver:self];
+            }
+        }
+        return self;
     }
 
     - (void) onAppMessageReceived:(NSString *)message app:(NSString *)app
@@ -64,7 +74,7 @@ namespace rho {
     
     SystemImplIphone::SystemImplIphone()
     {
-        m_pAppMessageReceiverHolder = [[AppMessageReceiverHolder alloc]init];
+        m_pAppMessageReceiverHolder = [[AppMessageReceiverHolder alloc]init:this];
     }
     
     void SystemImplIphone::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)
