@@ -26,10 +26,10 @@ win32 {
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
   DEFINES -= _UNICODE UNICODE
   DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS
-  debug {
+  Debug {
     DEFINES += _DEBUG DEBUG
   }
-  release {
+  Release {
     DEFINES += _NDEBUG NDEBUG
   }
   HEADERS += ../../rubyext/WebView.h
