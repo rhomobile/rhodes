@@ -22,10 +22,10 @@ win32 {
   DESTDIR = ../../../win32/bin/curl
   OBJECTS_DIR = ../../../win32/bin/curl/tmp
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
-  debug {
+  Debug {
     DEFINES += _DEBUG DEBUG
   }
-  release {
+  Release {
     DEFINES += _NDEBUG NDEBUG
   }
 }
