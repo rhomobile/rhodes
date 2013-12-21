@@ -282,8 +282,10 @@ namespace "build" do
       end
 
       $buildcfg = args.configuration
-      
-      Rake::Task["build:wm:rhobundle"].invoke  
+	 	  
+	  Rake::Task["config:qt"].invoke() if $current_platform == "win32"
+	  Rake::Task["config:win32:qt"].invoke() if $current_platform == "win32"	
+	  Rake::Task["build:wm:rhobundle"].invoke  
       Rake::Task["config:win32:application"].invoke() if $current_platform == "win32"
       Rake::Task["build:win32:after_bundle"].invoke  
     end
