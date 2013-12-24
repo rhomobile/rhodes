@@ -1443,7 +1443,7 @@ module Rhogen
     $possible_values['generateNativeAPI'] = ['true', 'false']
 
     def xml_error(error_desc, path)
-      puts "XML WARNING: #{error_desc.magenta} in Element #{path.magenta}"
+      puts "XML WARNING: #{error_desc.bold} in Element #{path.bold}"
     end
 
 
@@ -1559,7 +1559,7 @@ module Rhogen
       end
     end
 
-    def addAlias(xml_alias, dst_collection)
+    def add_alias(xml_alias, dst_collection)
       module_alias = ModuleAlias.new()
 
       module_alias.existing_name = xml_alias.attribute('existing').to_s
@@ -1690,7 +1690,7 @@ module Rhogen
           end
           if param.sub_param == nil
             param.sub_param = MethodParam.new()
-            puts "WARNING: <ARRAY> do not have specified item type - set to STRING by default ! in Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]".magenta
+            puts "WARNING: <ARRAY> do not have specified item type - set to STRING by default ! in Module[#{module_item.name.bold}].method[#{method_name.bold}].param_index[#{param_index.to_s.bold}]".brown
           end
         end
 
@@ -1708,7 +1708,7 @@ module Rhogen
         end
 
       else
-        raise "ERROR: #{"Parameter in method must have specified type".red} ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
+        raise "ERROR: #{"Parameter in method must have specified type".red} ! Module[#{module_item.name}].method[#{method_name.bold}].param_index[#{param_index.to_s.bold}]"
       end
 
       xml_param_item.elements.each('CAN_BE_NIL') do |canbenil|
@@ -1782,6 +1782,70 @@ module Rhogen
       param
     end
 
+    def check_unique_names(element_type, elements)
+      element_mapping = {}
+      elements.each do |x|
+        #check for elements without names
+        next if !x.value || (x.value.strip.size < 1)
+
+        if !element_mapping.has_key?(x.name)
+          element_mapping[x.name] = [x.value]
+        else
+          element_mapping[x.name] << x.value
+        end
+      end
+
+      element_mapping.each do |k,v|
+        if v.size > 1
+          unique_values = v.uniq
+          if unique_values.size > 1
+            puts "ERROR: #{element_type} with name #{k.bold} has several definitions with distinct values: #{v.join(', ').bold}".red
+            has_error = true
+          else
+            puts "WARNING: #{element_type} with name #{k.bold} is defined #{v.size.to_s.bold} times".brown
+          end
+        end
+      end
+    end
+
+    def check_unique_names_and_values(element_type, elements)
+      element_mapping = {}
+      elements.each do |x|
+        #check for constnants without names
+        if !x.name || (x.name.strip.size  < 1) 
+          if !x.value || (x.value.strip.size < 1)
+            next
+          else
+            x.name = x.value.underscore.upcase
+            puts "Notification: #{element_type} with value #{x.value.bold} had no name, set name to: #{x.name.bold}"
+          end
+        end
+        if !element_mapping.has_key?(x.name)
+          element_mapping[x.name] = [x.value]
+        else
+          element_mapping[x.name] << x.value
+        end
+      end
+
+      has_error = false;
+
+      element_mapping.each do |k,v|
+        if v.size > 1
+          unique_values = v.uniq
+          if unique_values.size > 1
+            puts "ERROR: #{element_type} with name #{k.bold} has several definitions with distinct values: #{v.join(', ').bold}".red
+            has_error = true
+          else
+            puts "WARNING: #{element_type} with name #{k.bold} is defined #{v.size.to_s.bold} times".brown
+          end
+        end
+      end
+
+      if has_error
+        raise "#{element_type} with multiple values defined"
+      end
+    end
+
     def process_constants(supported_simple_types, xml_module_item)
       constants = []
 
@@ -1837,41 +1901,7 @@ module Rhogen
         constants << module_constant
       end
 
-      const_mapping = {}
-      constants.each do |x|
-        #check for constnants without names
-        if !x.name || (x.name.strip.size  < 1) 
-          if !x.value || (x.value.strip.size < 1)
-            next
-          else
-            x.name = x.value.underscore.upcase
-            puts "Notification: Constant with value #{x.value.bold} had no name, set name to: #{x.name.bold}"
-          end
-        end
-        if !const_mapping.has_key?(x.name)
-          const_mapping[x.name] = [x.value]
-        else
-          const_mapping[x.name] << x.value
-        end
-      end
-
-      has_error = false;
-
-      const_mapping.each do |k,v|
-        if v.size > 1
-          unique_values = v.uniq
-          if unique_values.size > 1
-            puts "ERROR: Constant with name #{k.bold} has several definitions with distinct values: #{v.join(', ').bold}".red
-            has_error = true
-          else
-            puts "WARNING: Constant with name #{k.bold} is defined #{v.size.to_s.bold} times".magenta
-          end
-        end
-      end
-
-      if has_error
-        raise "Constant with multiple values defined"
-      end
+      check_unique_names_and_values("Constnat", constants)
 
       #leave only unique consants
       return constants.uniq { |x| x.name }.sort{ |a,b|  a.name <=> b.name}
@@ -1912,7 +1942,7 @@ module Rhogen
       end
 
       hash_objs.reject! { |p| p.name.empty? }
-      hash_objs.uniq! { |p| p.name }
+      hash_objs.uniq! { |p| p.name + (p.deprecated ? "_dep" : "") }
 
       hash_objs.each do |hash_key|
         const_key = hash_key.name.dup
@@ -2060,10 +2090,10 @@ module Rhogen
           # set default STRING type and show WARNING
           method_result.sub_param = MethodParam.new()
           method_result.item_type = MethodParam::TYPE_STRING
-          puts "WARNING: Use of ARRAY type without specified item type - set to STRING by default ! Module[#{module_item.name}].method[#{module_method.name}].RETURN".magenta
+          puts "WARNING: Use of ARRAY type without specified item type - set to STRING by default ! Module[#{module_item.name.bold}].method[#{module_method.name.bold}].RETURN".brown
         end
         if (method_result.type == MethodParam::TYPE_HASH) && (method_result.sub_params == nil)
-          puts "WARNING: Use of HASH type without specified items ! Module[#{module_item.name}].method[#{module_method.name}].RETURN".magenta
+          puts "WARNING: Use of HASH type without specified items ! Module[#{module_item.name.bold}].method[#{module_method.name.bold}].RETURN".brown
         end
 
 
@@ -2717,6 +2747,77 @@ module Rhogen
         end
       end
 
+
+      #get compund name for ease of comparation
+      def compound_name(xml_item, default_access)
+        if !xml_item.nil? && !xml_item.attribute('name').nil?
+          name = xml_item.attribute('name').to_s
+
+          if !default_access.nil?
+            access = default_access
+          else
+            if xml_item.name == 'PROPERTY'
+              access = ModuleMethod::ACCESS_INSTANCE
+            else
+              access = ModuleMethod::ACCESS_STATIC
+            end
+          end
+
+          if !xml_item.attribute('access').nil?
+            access = xml_item.attribute('access').to_s
+          end
+
+          "#{name}_#{access}"
+        else
+          'undefined'
+        end
+      end
+
+      #put item from include_module to item_dict if it is not defined in current_module or item_dict
+      def include_module_items(include_module, current_module, item_dict, section, subsection)
+        # fill item_dict with items from curren_module in the first run
+        if item_dict.size == 0
+          current_module.elements.each("#{section}/#{subsection}") do |current_item|
+            default_access = nil
+            if !current_item.parent.nil?
+              default_access = current_item.parent.attribute('access')
+            end
+            item_name = compound_name(current_item, default_access)
+            item_dict[item_name] = { :item => current_item, :index => item_dict.size, :current => true }
+          end
+        end
+
+        include_module.elements.each("#{section}/#{subsection}") do |include_item|
+          default_access = nil
+          if !include_item.parent.nil?
+            default_access = include_item.parent.attribute('access')
+          end
+          include_item_name = compound_name(include_item, default_access)
+          if !item_dict.has_key?(include_item_name)
+            item_dict[include_item_name] = { :item => include_item, :index => item_dict.size, :current => true }
+          end
+        end
+      end
+
+      # add items from item_dict to current_module
+      def update_current_module(current_module, item_dict, section, subsection)
+        xml_module_item_methods = current_module.elements[section]
+        existing_methods = current_module.get_elements("#{section}/#{subsection}")
+
+        # since we want to get base methods be be first, we need to remove existing methods and then insert them back in the last turn
+        existing_methods.each do |method|
+          xml_module_item_methods.delete(method)
+        end
+
+        list_size = item_dict.size
+        item_list = item_dict.sort_by { |k, v| v[:index] + (v[:current] ? list_size : 0) }
+
+        item_list.each do |item|
+          xml_module_item_methods.add_element item[1][:item]
+        end
+      end
+
+
       # ===============================================================
       # those property types could be mapped to corresponding constants
       supported_simple_types = MethodParam::SIMPLE_TYPES.map(&:upcase)
@@ -2739,6 +2840,50 @@ module Rhogen
         module_item.is_template_default_instance = (xml_module_item.elements['TEMPLATES/DEFAULT_INSTANCE'] != nil)
         module_item.is_template_singletone_id = (xml_module_item.elements['TEMPLATES/SINGLETON_INSTANCES'] != nil)
         module_item.is_template_propertybag = (xml_module_item.elements['TEMPLATES/PROPERTY_BAG'] != nil)
+
+        ## process includes
+        includes = xml_module_item.elements['TEMPLATES/INCLUDE']
+        if (includes != nil)
+          property_dict = {}
+          const_dict = {}
+          method_dict = {}
+
+          xml_module_item.elements.each('TEMPLATES/INCLUDE') do |include_xml|
+            base_path = include_xml.attribute('path').to_s
+            include_file_name = File.expand_path(base_path)
+
+            puts "Including #{base_path}"
+
+            if File.exists?(include_file_name)
+              xml_f = File.new(include_file_name)
+              template_xml = REXML::Document.new(xml_f)
+              xml_f.close
+              base_modules = template_xml.elements['API'].get_elements('MODULE')
+
+              base_modules.each do |base_module|
+                if !base_module.nil?
+                  include_module_items(base_module, xml_module_item, property_dict, 'PROPERTIES', 'PROPERTY')
+
+                  include_module_items(base_module, xml_module_item, const_dict, 'CONSTANTS', 'CONSTANT')
+
+                  include_module_items(base_module, xml_module_item, method_dict, 'METHODS', 'METHOD')
+               end
+              end
+            else
+              puts "Include file does not exists: #{include_file_name.bold}".red
+              return false
+            end
+          end
+          if property_dict.size > 0
+            update_current_module(xml_module_item, property_dict, 'PROPERTIES', 'PROPERTY')
+          end
+          if const_dict.size > 0
+            update_current_module(xml_module_item, const_dict, 'CONSTANTS', 'CONSTANT')
+          end
+          if method_dict.size > 0
+            update_current_module(xml_module_item, method_dict, 'METHODS', 'METHOD')
+          end
+        end
 
         if module_item.is_template_propertybag
           apply_templates_to_module(xml_module_item, TEMPLATE_PROPERTY_BAG)
@@ -2773,26 +2918,26 @@ module Rhogen
 
         non_unique_methods = all_methods.group_by { |e| e }.select { |k, v| v.size > 1 }.map(&:first)
         if non_unique_methods.size > 0
-          puts "ERROR: XML has following methods with the same name: #{non_unique_methods.join(', ')}".red
+          puts "ERROR: XML has following methods with the same name: #{non_unique_methods.join(', ').bold}".red
           return false
         end
 
         module_item.methods.each do |method|
           if method.has_callback != ModuleMethod::CALLBACK_NONE && method.result.nil?
-            puts "WARNING: Method #{method.name} has callback, but does not have definition of callback result".magenta
+            puts "WARNING: Method #{method.name.bold} has callback, but does not have definition of callback result".brown
           end
         end
 
         xml_module_item.elements.each('ALIASES/ALIAS') do |xml_module_alias|
-          addAlias(xml_module_alias, module_item.module_aliases)
+          add_alias(xml_module_alias, module_item.module_aliases)
         end
 
         xml_module_item.elements.each('PROPERTIES/ALIASES/ALIAS') do |xml_property_alias|
-          addAlias(xml_property_alias, module_item.property_aliases)
+          add_alias(xml_property_alias, module_item.property_aliases)
         end
 
         xml_module_item.elements.each('METHODS/ALIASES/ALIAS') do |xml_method_alias|
-          addAlias(xml_method_alias, module_item.method_aliases)
+          add_alias(xml_method_alias, module_item.method_aliases)
         end
 
 
