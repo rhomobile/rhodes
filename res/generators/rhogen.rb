@@ -1877,6 +1877,9 @@ module Rhogen
       descriptions = {}
       xml_module_item.elements.each(".//#{element.upcase}/DESC") do |constant|
         const_desc = constant.text
+        next if const_desc.nil?
+        next if const_desc.strip.size < 1
+
         if !descriptions.has_key?(const_desc)
           descriptions[const_desc] = [constant]
         else
