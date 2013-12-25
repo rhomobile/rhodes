@@ -1558,6 +1558,20 @@ public class RhodesService extends Service {
         
         srv.startActivity(intent);
     }
+    
+    public static void minimize() {
+        if (!RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated)) {
+            Logger.T(TAG, "Application is already deactivated, do nothing");
+            return;
+        }
+        
+        try {
+            RhodesActivity.safeGetInstance().moveTaskToBack(true);
+        } catch (RuntimeException ex) {
+            Logger.E(TAG, "Minimize failed");
+            Logger.E(TAG, ex);
+        }
+    }
 
     public static String getNativeMenu() {
         List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
