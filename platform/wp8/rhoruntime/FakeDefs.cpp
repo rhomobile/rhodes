@@ -37,7 +37,7 @@ RHO_GLOBAL void rho_conf_show_log()
 {
 }
 
-RHO_GLOBAL const char* rho_sys_get_http_proxy_url()
+/*RHO_GLOBAL const char* rho_sys_get_http_proxy_url()
 {
 	return "";
 }
@@ -48,7 +48,7 @@ RHO_GLOBAL void rho_sys_set_http_proxy_url(const char* url)
 
 RHO_GLOBAL void rho_sys_unset_http_proxy()
 {
-}
+}*/
 
 RHO_GLOBAL HWND getMainWnd()
 {
@@ -58,4 +58,16 @@ RHO_GLOBAL HWND getMainWnd()
 
 RHO_GLOBAL void rho_platform_restart_application()
 {
+}
+
+RHO_GLOBAL double rho_geo_speed() {
+    return 0.0;
+}
+
+RHO_GLOBAL int rho_geo_satellites() {
+	return 0;    
+}
+
+RHO_GLOBAL void rho_geo_set_notification_ex(const char *url, rho_param* p, char* params) {
+   
 }
