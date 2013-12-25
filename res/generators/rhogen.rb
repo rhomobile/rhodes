@@ -2850,7 +2850,7 @@ module Rhogen
 
           xml_module_item.elements.each('TEMPLATES/INCLUDE') do |include_xml|
             base_path = include_xml.attribute('path').to_s
-            include_file_name = File.expand_path(base_path)
+            include_file_name = File.expand_path(File.join(File.dirname(xmlpath),base_path))
 
             puts "Including #{base_path}"
 
