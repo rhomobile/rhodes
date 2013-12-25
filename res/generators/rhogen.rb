@@ -1836,6 +1836,7 @@ module Rhogen
 
     def check_unique_names_and_values(element_type, elements)
       element_mapping = {}
+      value_mapping = {}
       elements.each do |x|
         #check for constnants without names
         if !x.name || (x.name.strip.size  < 1) 
@@ -1851,6 +1852,12 @@ module Rhogen
         else
           element_mapping[x.name] << x.value
         end
+        if !value_mapping.has_key?(x.value)
+          value_mapping[x.value] = [x.name]
+        else
+          value_mapping[x.value] << x.name
+        end
+
       end
 
       has_error = false;
@@ -1863,6 +1870,25 @@ module Rhogen
             has_error = true
           else
             puts "WARNING: #{element_type} with name #{k.bold} is defined #{v.size.to_s.bold} times".brown
+          end
+        end
+      end
+
+
+      value_mapping.each do |k,v|
+        if v.size > 1
+          unique_values = v.uniq
+          if unique_values.size > 1
+            wrong_paste = []
+
+            v.each do |elem|
+              if !((elem.downcase.include?(k.downcase)) || (k.downcase.include?(elem.downcase)))
+                wrong_paste << elem
+              end
+            end
+            if wrong_paste.size >= 1
+              puts "WARNING: #{element_type} value #{k.bold} is probably wrong for elements with name #{wrong_paste.join(', ').to_s.bold} ".magenta
+            end
           end
         end
       end
