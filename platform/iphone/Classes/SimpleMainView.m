@@ -101,6 +101,13 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	makeHiddenUntilLoadContent = YES;
 }
 
+-(CGRect)getContentBounds {
+	if (nativeViewView != nil) {
+		return nativeViewView.bounds;
+	}
+	return webView.bounds;
+}
+
 -(CGRect)getContentRect {
 	if (nativeViewView != nil) {
 		return nativeViewView.frame;
@@ -1022,6 +1029,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 #ifdef __IPHONE_7_0
     nFrame.origin.y = wFrame.origin.y;
 #endif
+    nFrame.size.width = webView.bounds.size.width;
 	navbar.frame = nFrame;
 	
     wFrame.origin.y += nFrame.size.height;
@@ -1029,7 +1037,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
     [root addSubview:navbar];
     assert([navbar retainCount] > 1);
-
+    
     [self setContentRect:wFrame];
 }
 
@@ -1045,12 +1053,14 @@ static BOOL makeHiddenUntilLoadContent = YES;
     NSArray *btns[] = {left, right};
     for (int i = 0, lim = sizeof(btns)/sizeof(btns[0]); i < lim; ++i) {
         NSArray *btn = btns[i];
-        if ([btn count] < 3)
+        if ([btn count] < 4)
             continue;
         NSString *action = [btn objectAtIndex:0];
         NSString *label = [btn objectAtIndex:1];
         NSString *icon = [btn objectAtIndex:2];
-        UIBarButtonItem *button = [self newButton:action label:label icon:icon colored_icon:NO];
+        NSString *colored_icon = [btn objectAtIndex:3];
+       
+        UIBarButtonItem *button = [self newButton:action label:label icon:icon colored_icon:[colored_icon isEqualToString:@"true"]];
         
         if (btn == left)
             [ni setLeftBarButtonItem:button];
@@ -1073,7 +1083,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     }
 
     [navbar removeFromSuperview];
-    assert(!navbar || [navbar retainCount] == 1);
+    //assert(!navbar || [navbar retainCount] == 1);
     self.navbar = nil;
 }
 

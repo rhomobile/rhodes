@@ -40,7 +40,7 @@
 #define NATIVE_BAR_ICON_COLOR                       @"iOS7IconColor"
 #define NATIVE_BAR_SELECTED_COLOR					@"iOS7SelectedColor"
 #define NATIVE_BAR_DETAIL_COLOR                     @"detailColor"
-
+#define NATIVE_BAR_MAX_WIDTH                        @"maxWidth"
 
 #define NATIVE_BAR_ITEM_LABEL						@"label"
 #define NATIVE_BAR_ITEM_DETAIL_LABEL				@"detailLabel"

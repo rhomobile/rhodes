@@ -177,8 +177,7 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 	const char* ios_7_icon_color = NULL;
 	const char* ios_7_selected_color = NULL;
     const char* detail_color = NULL;
-
-	
+	NSNumber* nMaxWidth = NULL;
     
     NSObject* obj = nil;
     
@@ -211,6 +210,11 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
             NSNumber* obj_num = (NSNumber*)obj;
             detail_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
         }
+        obj = [p_properties objectForKey:NATIVE_BAR_MAX_WIDTH];
+        if (obj != nil) {
+            nMaxWidth = (NSNumber*)obj;
+        }
+        
     }
     
 
@@ -364,6 +368,9 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 	if (background_color != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:background_color] forKey:NATIVE_BAR_BACKGOUND_COLOR];	
 	}
+    if (nMaxWidth != NULL)
+        [properties setObject: nMaxWidth forKey:NATIVE_BAR_MAX_WIDTH];
+    
     if (ios_7_icon_color != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:ios_7_icon_color] forKey:NATIVE_BAR_ICON_COLOR];
     }
