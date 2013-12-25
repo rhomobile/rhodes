@@ -1587,7 +1587,7 @@ module Rhogen
 
       if methods_item != nil
         methods_item.elements.each('METHOD') do |method|
-          method.add_attribute TEMPLATE_NAME, template_name
+          method.add_attribute(TEMPLATE_NAME, template_name)
 
           if !base_section.nil?
             base_section.add_element method
@@ -1871,6 +1871,30 @@ module Rhogen
         raise "#{element_type} with multiple values defined"
       end
     end
+
+
+    def check_duplicate_descriptions(xml_module_item, element)
+      descriptions = {}
+      xml_module_item.elements.each(".//#{element.upcase}/DESC") do |constant|
+        const_desc = constant.text
+        if !descriptions.has_key?(const_desc)
+          descriptions[const_desc] = [constant]
+        else
+          descriptions[const_desc] << constant
+        end
+      end
+
+      descriptions.each do |k, v|
+        if v.size > 1
+          constant_names = v.map{|c| c.parent.attribute('name').to_s.downcase + (c.parent.attribute(TEMPLATE_NAME).nil? ? '' : " (#{c.parent.attribute(TEMPLATE_NAME).to_s})")}
+          constant_names.uniq!
+          if constant_names.size > 1
+            puts "Warning: Elements #{element.upcase.bold} with different names: #{constant_names.join(', ').bold} have same description \"#{k.bold}\"".magenta
+          end
+        end
+      end
+    end
+
 
 
     def process_constants(supported_simple_types, xml_module_item)
@@ -2769,7 +2793,7 @@ module Rhogen
       end
 
       #put item from include_module to item_dict if it is not defined in current_module or item_dict
-      def include_module_items(include_module, current_module, item_dict, section, subsection)
+      def include_module_items(include_module, current_module, item_dict, section, subsection, template)
         # fill item_dict with items from curren_module in the first run
         if item_dict.size == 0
           current_module.elements.each("#{section}/#{subsection}") do |current_item|
@@ -2787,6 +2811,7 @@ module Rhogen
           if !include_item.parent.nil?
             default_access = include_item.parent.attribute('access')
           end
+          include_item.add_attribute( TEMPLATE_NAME, template)
           include_item_name = compound_name(include_item, default_access)
           if !item_dict.has_key?(include_item_name)
             item_dict[include_item_name] = { :item => include_item, :index => item_dict.size, :current => false }
@@ -2857,11 +2882,11 @@ module Rhogen
 
               base_modules.each do |base_module|
                 if !base_module.nil?
-                  include_module_items(base_module, xml_module_item, property_dict, 'PROPERTIES', 'PROPERTY')
+                  include_module_items(base_module, xml_module_item, property_dict, 'PROPERTIES', 'PROPERTY', include_file_name)
 
-                  include_module_items(base_module, xml_module_item, const_dict, 'CONSTANTS', 'CONSTANT')
+                  include_module_items(base_module, xml_module_item, const_dict, 'CONSTANTS', 'CONSTANT', include_file_name)
 
-                  include_module_items(base_module, xml_module_item, method_dict, 'METHODS', 'METHOD')
+                  include_module_items(base_module, xml_module_item, method_dict, 'METHODS', 'METHOD', include_file_name)
                 end
               end
             else
@@ -2889,6 +2914,10 @@ module Rhogen
         if module_item.is_template_default_instance
           #apply_templates_to_module(xml_module_item, 'default_instance')
         end
+
+        check_duplicate_descriptions(xml_module_item,'CONSTANT')
+        check_duplicate_descriptions(xml_module_item,'PROPERTY')
+        check_duplicate_descriptions(xml_module_item,'METHOD')
 
         #constants in module
         module_item.constants = process_constants(supported_simple_types, xml_module_item)
