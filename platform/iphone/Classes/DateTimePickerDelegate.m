@@ -132,6 +132,7 @@ static NSString* ourChangeValueCallback = nil;
         frame.size.height = 220;
         frame.origin.y = parentFrame.origin.y + parentFrame.size.height - frame.size.height;
 		self.pickerView = [[UIDatePicker alloc] initWithFrame:frame];
+        self.pickerView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
     }
     
     if (self.pickerView.superview == nil) {
@@ -190,7 +191,7 @@ static NSString* ourChangeValueCallback = nil;
         
         
         [self.pickerView setFrame:pickerFrame];
-
+        
         
         
         /*

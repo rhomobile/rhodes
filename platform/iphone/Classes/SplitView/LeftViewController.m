@@ -99,12 +99,14 @@
 	NSString *background_color = nil;
     NSString *icon_color = nil;
     NSString *detail_color = nil;
-    
+    int nMaxWidth = 1000000;
 	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
 	if (global_properties != nil) {
 		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
 		icon_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_ICON_COLOR];
 		detail_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_DETAIL_COLOR];
+        if ([global_properties objectForKey:@"maxWidth"])
+            nMaxWidth = [(NSNumber*)[global_properties objectForKey:NATIVE_BAR_MAX_WIDTH] intValue];
 	}
     
     if (background_color != nil) {
@@ -179,9 +181,12 @@
             [tabs addObject:td];
 
 			CGSize textSize = [label sizeWithFont:myFont];
-			int pref_size = td.image.size.width + textSize.width + 32 + 16;
-			if (self.preferredSize < pref_size) {
-				self.preferredSize = pref_size;
+			int pref_size = td.image.size.width + textSize.width + 32;// + 16;
+			if (self.preferredSize < pref_size ) {
+                if ( pref_size < nMaxWidth)
+                    self.preferredSize = pref_size;
+                else
+                    self.preferredSize = nMaxWidth;
 			}
             
 			
@@ -247,7 +252,18 @@
 	cell.imageView.image = [td image];
     cell.imageView.clipsToBounds = YES;
 	cell.textLabel.text = [NSString stringWithFormat:[td title], indexPath.section, indexPath.row];
-    cell.textLabel.font = myFont;
+
+    if ( [td.url  isEqual: @"separator"] )
+    {
+        //cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:10.0];
+        cell.userInteractionEnabled = NO;
+        //cell.textLabel.text = @"_____________";
+        //cell.backgroundColor = [UIColor blackColor];
+        cell.backgroundView = [[UIView alloc] initWithFrame:cell.frame];
+        cell.backgroundView.backgroundColor = [UIColor blackColor];
+    }
+    else
+        cell.textLabel.font = myFont;
     if (self.iconColor != nil) {
         cell.textLabel.textColor = self.iconColor;
     }
@@ -295,6 +311,17 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	int selectedItem = indexPath.row;
 	[splittedView switchTab:selectedItem];
+}
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    int index = indexPath.row;
+    RhoLeftItem* td =   [self.itemsData objectAtIndex:index];
+    if ( [td.url  isEqual: @"separator"] )
+        return 2;
+    
+    
+    return tableView.rowHeight;
 }
 
 
