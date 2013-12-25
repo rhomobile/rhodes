@@ -2794,7 +2794,7 @@ module Rhogen
           end
           include_item_name = compound_name(include_item, default_access)
           if !item_dict.has_key?(include_item_name)
-            item_dict[include_item_name] = { :item => include_item, :index => item_dict.size, :current => true }
+            item_dict[include_item_name] = { :item => include_item, :index => item_dict.size, :current => false }
           end
         end
       end
