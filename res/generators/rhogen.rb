@@ -1418,11 +1418,12 @@ module Rhogen
     $possible_attributes['APPLIES'] = ['msiOnly', 'rubyOnly', 'jsOnly']
     $possible_attributes['ENTITY'] = ['name', 'runInThread']
     $possible_attributes['FIELD'] = ['name', 'type', 'binding', 'readOnly']
+    $possible_attributes['INCLUDE'] = ['path']
 
     $possible_children = {}
     $possible_children['API'] = ['MODULE']
     $possible_children['MODULE'] = ['HELP_OVERVIEW', 'MORE_HELP', 'TEMPLATES', 'CONSTANTS', 'PROPERTIES', 'METHODS', 'ENTITIES', 'USER_OVERVIEW', 'VER_INTRODUCED', 'PLATFORM', 'ALIASES', 'EXAMPLES']
-    $possible_children['TEMPLATES'] = ['SINGLETON_INSTANCES', 'DEFAULT_INSTANCE', 'PROPERTY_BAG']
+    $possible_children['TEMPLATES'] = ['SINGLETON_INSTANCES', 'DEFAULT_INSTANCE', 'PROPERTY_BAG', 'INCLUDE']
     $possible_children['CONSTANTS'] = ['CONSTANT']
     $possible_children['CONSTANT'] = ['DESC']
     $possible_children['PROPERTIES'] = ['DESC', 'PROPERTY', 'ALIASES']
@@ -2821,27 +2822,46 @@ module Rhogen
         end
       end
 
+      #check if element name is defined and not empty
+      def valid_element_name?(current_item)
+        name_attr = current_item.attribute('name')
+
+        is_valid = !name_attr.nil? && name_attr.to_s.strip.size > 0
+        if !is_valid
+          puts "Warning: Element has no name and will be skipped: \n #{current_item.to_s.bold} ".red
+        end
+
+        is_valid
+      end
+
       #put item from include_module to item_dict if it is not defined in current_module or item_dict
       def include_module_items(include_module, current_module, item_dict, section, subsection, template)
         # fill item_dict with items from curren_module in the first run
         if item_dict.size == 0
           current_module.elements.each("#{section}/#{subsection}") do |current_item|
+            next if !valid_element_name?(current_item)
+
             default_access = nil
             if !current_item.parent.nil?
               default_access = current_item.parent.attribute('access')
             end
+
             item_name = compound_name(current_item, default_access)
             item_dict[item_name] = { :item => current_item, :index => item_dict.size, :current => true }
           end
         end
 
         include_module.elements.each("#{section}/#{subsection}") do |include_item|
+          next if !valid_element_name?(include_item)
+
           default_access = nil
           if !include_item.parent.nil?
             default_access = include_item.parent.attribute('access')
           end
+
           include_item.add_attribute( TEMPLATE_NAME, template)
           include_item_name = compound_name(include_item, default_access)
+
           if !item_dict.has_key?(include_item_name)
             item_dict[include_item_name] = { :item => include_item, :index => item_dict.size, :current => false }
           end
