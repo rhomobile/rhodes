@@ -12,6 +12,9 @@ require File.join(File.dirname(__FILE__), '/../../lib/build/jake.rb')
 
 require File.dirname(__FILE__) + '/../../lib/rhodes'
 
+# =================================================================
+# helper utilities
+
 class Array
   def stable_sort
     n = -1
@@ -71,6 +74,9 @@ class String
   def reverse_color;  "\033[7m#{self}\033[27m" end
 
 end
+
+# =================================================================
+# Generator
 
 module Rhogen
   extend Templater::Manifold
@@ -844,6 +850,8 @@ module Rhogen
 
   end
 
+  # =================================================================
+  # ApiGenerator
 
   class ApiGenerator < BaseGenerator
 
@@ -1113,19 +1121,33 @@ module Rhogen
     end
 
     class ModuleMethod
-
       ACCESS_STATIC = 'STATIC'
       ACCESS_INSTANCE = 'INSTANCE'
+      ACCESS_MODULE = 'MODULE'
 
       CALLBACK_MANDATORY = 'MANDATORY'
       CALLBACK_OPTIONAL = 'OPTIONAL'
       CALLBACK_NONE = 'NONE'
+
+      ATTRIBUTE_CALLBACK_MAPPING = {
+          'none'.downcase => CALLBACK_NONE,
+          'mandatory'.downcase => CALLBACK_MANDATORY,
+          'optional'.downcase => CALLBACK_OPTIONAL
+      }
 
       RUN_IN_THREAD_UNDEFINED = 'UNDEFINED'
       RUN_IN_THREAD_NONE = 'NONE'
       RUN_IN_THREAD_MODULE = 'MODULE'
       RUN_IN_THREAD_SEPARATED = 'SEPARATED'
       RUN_IN_THREAD_UI = 'UI'
+
+      ATTRIBUTE_THREAD_MAPPING = {
+          'undefined'.downcase => RUN_IN_THREAD_UNDEFINED,
+          'none'.downcase => RUN_IN_THREAD_NONE,
+          'module'.downcase => RUN_IN_THREAD_MODULE,
+          'separate'.downcase => RUN_IN_THREAD_SEPARATED,
+          'ui'.downcase => RUN_IN_THREAD_UI
+      }
 
       SPECIAL_BEHAVIOUR_NONE = 'NONE'
       SPECIAL_BEHAVIOUR_GETTER = 'GETTER'
@@ -1434,8 +1456,6 @@ module Rhogen
     $possible_values['reverseLogic'] = ['true', 'false']
     $possible_values['rubyOnly'] = ['true', 'false']
     $possible_values['generateAccessors'] = ['true', 'false']
-    $possible_values['generateUnderscoreRubyNames'] = ['true', 'false']
-    $possible_values['generateUnderscoreRubyNames'] = ['true', 'false']
     $possible_values['generateAPI'] = ['true', 'false']
     $possible_values['generateDoc'] = ['true', 'false']
     $possible_values['constructor'] = ['true', 'false']
@@ -1550,12 +1570,32 @@ module Rhogen
       template_xml = REXML::Document.new(xml_f)
       xml_f.close
 
+      elements = xml_module_item.get_elements('METHODS')
+
+      base_section = nil
+
+      if elements.size == 0
+        puts "Module have no its own METHODS section but is using templates".red
+      else
+        base_section = elements[0]
+        if elements.size > 1
+          puts "Module have more than one METHODS section, using first one to insert template methods"
+        end
+      end
+
       methods_item = template_xml.elements['*/METHODS']
+
       if methods_item != nil
         methods_item.elements.each('METHOD') do |method|
           method.add_attribute TEMPLATE_NAME, template_name
+
+          if !base_section.nil?
+            base_section.add_element method
+          end
         end
-        xml_module_item.add_element methods_item
+        if base_section.nil?
+          xml_module_item.add_element methods_item
+        end
       end
     end
 
@@ -1736,20 +1776,6 @@ module Rhogen
       return params
     end
 
-    def get_attribute_value_inherited(xml_child_node, xml_parent_node, attribute)
-      result = nil
-
-      if xml_child_node.attribute(attribute) != nil
-        result = xml_child_node.attribute(attribute).to_s.downcase
-      else
-        if xml_parent_node.attribute(attribute) != nil
-          result = xml_parent_node.attribute(attribute).to_s.downcase
-        end
-      end
-
-      return result
-    end
-
     def param_list_from_fields(fields, can_be_nil)
       field_list = []
       fields.each do |field|
@@ -1845,6 +1871,7 @@ module Rhogen
         raise "#{element_type} with multiple values defined"
       end
     end
+
 
     def process_constants(supported_simple_types, xml_module_item)
       constants = []
@@ -1942,21 +1969,11 @@ module Rhogen
       end
 
       hash_objs.reject! { |p| p.name.empty? }
-      hash_objs.uniq! { |p| p.name + (p.deprecated ? "_dep" : "") }
 
       hash_objs.each do |hash_key|
-        const_key = hash_key.name.dup
-        const_key.gsub!(/::/, '/')
-        const_key.gsub!(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
-        const_key.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
-        const_key.tr!('-', '_')
-
-        const_key = 'HK_' + const_key
-        if hash_key.deprecated
-          const_key += '_DEPRECATED'
-        end
+        # transform hash key name to constant (camelcase to underscore)
+        const_key = 'HK_' + hash_key.name.dup.underscore + ( hash_key.deprecated ? '_DEPRECATED' : '' )
         const_key.upcase!
-
         hash_key.const_tag = const_key
       end
 
@@ -1965,64 +1982,76 @@ module Rhogen
       hash_objs
     end
 
-    def process_method(xml_module_method, xml_methods_item, module_item, self_type)
+    # retun hash filled with attribute=value pairs
+    # if include_inherited is true then all partent node attributes will be also included
+    # if include_inherited is an array of strings then only attributes with names in that array will be included from parent node
+    def collect_inherited_attributes(item, include_inherited = false)
+      attributes = {}
+      if !item.nil?
+        if include_inherited.is_a?(Array)
+          item.parent.attributes.each do |k, v|
+            if include_inherited.index(k)
+              attributes[k] = v.to_s
+            end
+          end
+        else
+          if include_inherited
+            item.parent.attributes.each do |k, v|
+              attributes[k] = v.to_s
+            end
+          end
+        end
+        item.attributes.each do |k, v|
+          attributes[k] = v.to_s
+        end
+      end
+
+      attributes
+    end
+
+    def process_method(xml_module_method, module_item, self_type)
       module_method = ModuleMethod.new()
+
+      item_attributes = collect_inherited_attributes(xml_module_method, ['deprecated', 'generateAPI','generateDoc','runInThread', 'hasCallback'])
 
       module_method.name = xml_module_method.attribute('name').to_s
       module_method.native_name = module_method.name.split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
 
-      if xml_module_method.attribute('nativeName') != nil
-        module_method.native_name = xml_module_method.attribute('nativeName').to_s
+      if item_attributes['nativeName'] != nil
+        module_method.native_name = item_attributes['nativeName']
       end
 
-      attr_deprecated = get_attribute_value_inherited(xml_module_method, xml_methods_item, 'deprecated')
-      if attr_deprecated != nil
-        module_method.is_deprecated = attr_deprecated != 'false'
+      if item_attributes['deprecated'] != nil
+        module_method.is_deprecated = item_attributes['deprecated'].downcase != 'false'
       end
 
-      attr_generateAPI = get_attribute_value_inherited(xml_module_method, xml_methods_item, 'generateAPI')
-      if attr_generateAPI != nil
-        module_method.generateAPI = attr_generateAPI != 'false'
+      if item_attributes['generateAPI'] != nil
+        module_method.generateAPI = item_attributes['generateAPI'].downcase != 'false'
       end
 
-      attr_generateDoc = get_attribute_value_inherited(xml_module_method, xml_methods_item, 'generateDoc')
-      if attr_generateDoc != nil
-        module_method.generateDoc = attr_generateDoc != 'false'
+      if item_attributes['generateDoc'] != nil
+        module_method.generateDoc = item_attributes['generateDoc'].downcase != 'false'
       end
 
-      attr_run_in_thread = get_attribute_value_inherited(xml_module_method, xml_methods_item, 'runInThread')
+      attr_run_in_thread = item_attributes['runInThread']
       if attr_run_in_thread != nil
-        run_in_thread = nil
+        run_in_thread = ModuleMethod::ATTRIBUTE_THREAD_MAPPING[attr_run_in_thread.downcase]
 
-        case attr_run_in_thread
-          when 'none'.downcase
-            run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
-          when 'module'.downcase
-            run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
-          when 'separate'.downcase
-            run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
-          when 'ui'.downcase
-            run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
-        end
         if run_in_thread != nil
           module_method.run_in_thread = run_in_thread
+        else
+          puts "Invalid attribute 'run_in_thread' == #{attr_run_in_thread.bold} for method #{module_method.name.bold}".red
         end
       end
 
-      attr_has_callback = get_attribute_value_inherited(xml_module_method, xml_methods_item, 'hasCallback')
+      attr_has_callback = item_attributes['hasCallback']
       if attr_has_callback != nil
-        has_callback = nil
+        has_callback = ModuleMethod::ATTRIBUTE_CALLBACK_MAPPING[attr_has_callback.downcase]
 
-        case attr_has_callback
-          when 'none'.downcase
-            has_callback = ModuleMethod::CALLBACK_NONE
-          when 'mandatory'.downcase
-            has_callback = ModuleMethod::CALLBACK_MANDATORY
-          when 'optional'.downcase
-            has_callback = ModuleMethod::CALLBACK_OPTIONAL
-        end
         if has_callback != nil
           module_method.has_callback = has_callback
+        else
+          puts "Invalid attribute 'has_callback' == #{attr_run_in_thread.bold} for method #{module_method.name.bold}".red
         end
       end
 
@@ -2096,7 +2125,6 @@ module Rhogen
           puts "WARNING: Use of HASH type without specified items ! Module[#{module_item.name.bold}].method[#{module_method.name.bold}].RETURN".brown
         end
 
-
         module_method.result = method_result
       end
 
@@ -2139,14 +2167,15 @@ module Rhogen
     end
 
     def process_methods(module_item, xml_module_item)
-      xml_methods_item = xml_module_item.elements['METHODS']
       self_type = [module_item.parents.join('::'), module_item.name].join('::')
       xml_module_item.elements.each('METHODS/METHOD') do |xml_module_method|
-        module_method = process_method(xml_module_method, xml_methods_item, module_item, self_type)
+        module_method = process_method(xml_module_method, module_item, self_type)
 
-        attr_access = get_attribute_value_inherited(xml_module_method, xml_methods_item, 'access')
+        method_attributes = collect_inherited_attributes(xml_module_method, ['access'])
+
+        attr_access = method_attributes['access']
         if attr_access != nil
-          if attr_access == 'static'
+          if attr_access.downcase == 'static'
             module_method.access = ModuleMethod::ACCESS_STATIC
           else
             module_item.has_instance_methods = true
@@ -2156,18 +2185,18 @@ module Rhogen
         if xml_module_method.attribute(TEMPLATE_NAME) != nil
           module_method.generated_by_template = xml_module_method.attribute(TEMPLATE_NAME).to_s
         end
-        if xml_module_method.attribute('constructor') != nil
-          module_method.is_constructor = xml_module_method.attribute('constructor').to_s.downcase != 'false'
+        if method_attributes['constructor'] != nil
+          module_method.is_constructor = method_attributes['constructor'].downcase != 'false'
         end
-        if xml_module_method.attribute('destructor') != nil
-          module_method.is_destructor = xml_module_method.attribute('destructor').to_s.downcase != 'false'
+        if method_attributes['destructor'] != nil
+          module_method.is_destructor = method_attributes['destructor'].downcase != 'false'
         end
-        if xml_module_method.attribute('generateNativeAPI') != nil
-          module_method.generateNativeAPI = xml_module_method.attribute('generateNativeAPI').to_s.downcase != 'false'
+        if method_attributes['generateNativeAPI'] != nil
+          module_method.generateNativeAPI = method_attributes['generateNativeAPI'].downcase != 'false'
         end
 
-        if xml_module_method.attribute('factory') != nil
-          if xml_module_method.attribute('factory').to_s.downcase != 'false'
+        if method_attributes['factory'] != nil
+          if method_attributes['factory'].downcase != 'false'
             module_method.is_factory_method = true
             module_item.has_factory_methods = true
           end
@@ -2181,7 +2210,10 @@ module Rhogen
     end
 
     def process_properties(module_item, unsupported_names, xml_module_item)
+      properties = []
+
       xml_properties = xml_module_item.elements['PROPERTIES']
+
       if xml_properties != nil
         if xml_properties.attribute('limitPropertyBag') != nil
           module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute('limitPropertyBag').to_s.downcase != 'false'
@@ -2198,18 +2230,15 @@ module Rhogen
       xml_module_item.elements.each('PROPERTIES/PROPERTY') do |xml_module_property|
         module_property = ModuleProperty.new()
         module_property.name = xml_module_property.attribute('name').to_s
+
+        property_attributes = collect_inherited_attributes(xml_module_property, ['generateAccessors', 'readOnly', 'writeOnly', 'generateAPI', 'generateDoc', 'access', 'runInThread', 'usePropertyBag'])
+
+
         if unsupported_names.include?(module_property.name.upcase)
           raise "Property have invalid name !\n Module[#{module_item.name}].property[#{module_property.name}] is in the list of forbidden names:\n '#{unsupported_names.join("','")}'"
         end
         module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
         module_property.param = process_param(xml_module_property, module_property.native_name, module_item, 'property_'+module_property.name, 0, self_type)
-        if xml_module_property.attribute('generateAccessors') != nil
-          module_property.generate_accessors = xml_module_property.attribute('generateAccessors').to_s.downcase != 'false'
-        else
-          if xml_properties.attribute('generateAccessors') != nil
-            module_property.generate_accessors = xml_properties.attribute('generateAccessors').to_s.downcase != 'false'
-          end
-        end
 
         if xml_module_property.attribute('type') != nil
           module_property.type = xml_module_property.attribute('type').to_s.upcase
@@ -2218,107 +2247,67 @@ module Rhogen
           module_property.default_value = xml_module_property.attribute('default').to_s
         end
 
+        if property_attributes['generateAccessors'] != nil
+          module_property.generate_accessors = property_attributes['generateAccessors'].downcase != 'false'
+        end
+
         # callback is property with wrtieonly logic, it sets result with CALLBACK type
         if module_property.type != MethodParam::TYPE_CALLBACK
-          if xml_module_property.attribute('readOnly') != nil
-            module_property.readonly = xml_module_property.attribute('readOnly').to_s.downcase != 'false'
-          else
-            if xml_properties.attribute('readOnly') != nil
-              module_property.readonly = xml_properties.attribute('readOnly').to_s.downcase != 'false'
-            end
+          if property_attributes['readOnly'] != nil
+            module_property.readonly = property_attributes['readOnly'].downcase != 'false'
           end
 
-          if xml_module_property.attribute('writeOnly') != nil
-            module_property.writeonly = xml_module_property.attribute('writeOnly').to_s.downcase != 'false'
-          else
-            if xml_properties.attribute('writeOnly') != nil
-              module_property.writeonly = xml_properties.attribute('writeOnly').to_s.downcase != 'false'
-            end
+          if property_attributes['writeOnly'] != nil
+            module_property.writeonly = property_attributes['writeOnly'].downcase != 'false'
           end
         else
           module_property.writeonly = true
         end
 
-        if xml_module_property.attribute('generateAPI') != nil
-          module_property.generateAPI = xml_module_property.attribute('generateAPI').to_s.downcase != 'false'
-        else
-          if xml_properties.attribute('generateAPI') != nil
-            module_property.generateAPI = xml_properties.attribute('generateAPI').to_s.downcase != 'false'
-          end
+        if property_attributes['generateAPI'] != nil
+          module_property.generateAPI = property_attributes['generateAPI'].downcase != 'false'
         end
 
-        if xml_module_property.attribute('generateDoc') != nil
-          module_property.generateDoc = xml_module_property.attribute('generateDoc').to_s.downcase != 'false'
-        else
-          if xml_properties.attribute('generateDoc') != nil
-            module_property.generateDoc = xml_properties.attribute('generateDoc').to_s.downcase != 'false'
-          end
+        if property_attributes['generateDoc'] != nil
+          module_property.generateDoc =property_attributes['generateDoc'].downcase != 'false'
         end
 
-        if xml_module_property.attribute('access') != nil
-          if xml_module_property.attribute('access').to_s.downcase == 'static'
+        if property_attributes['access'] != nil
+          if property_attributes['access'].downcase == 'static'
             module_property.access = ModuleMethod::ACCESS_STATIC
           end
         else
           module_property.access = module_item.properties_access
         end
 
-        if xml_module_property.attribute('runInThread') != nil
-          if xml_module_property.attribute('runInThread').to_s.downcase == 'none'.downcase
+        if property_attributes['runInThread'] != nil
+          if property_attributes['runInThread'].downcase == 'none'.downcase
             module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
           end
-          if xml_module_property.attribute('runInThread').to_s.downcase == 'module'.downcase
+          if property_attributes['runInThread'].downcase == 'module'.downcase
             module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
           end
-          if xml_module_property.attribute('runInThread').to_s.downcase == 'separate'.downcase
+          if property_attributes['runInThread'].downcase == 'separate'.downcase
             module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
           end
-          if xml_module_property.attribute('runInThread').to_s.downcase == 'ui'.downcase
+          if property_attributes['runInThread'].downcase == 'ui'.downcase
             module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
-          end
-        else
-          if xml_properties.attribute('runInThread') != nil
-            if xml_properties.attribute('runInThread').to_s.downcase == 'none'.downcase
-              module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
-            end
-            if xml_properties.attribute('runInThread').to_s.downcase == 'module'.downcase
-              module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
-            end
-            if xml_properties.attribute('runInThread').to_s.downcase == 'separate'.downcase
-              module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
-            end
-            if xml_properties.attribute('runInThread').to_s.downcase == 'ui'.downcase
-              module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
-            end
           end
         end
 
-        if xml_module_property.attribute('usePropertyBag') != nil
-          if xml_module_property.attribute('usePropertyBag').to_s.downcase == 'none'.downcase
+        if property_attributes['usePropertyBag'] != nil
+          if property_attributes['usePropertyBag'].downcase == 'none'.downcase
             module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_NONE
           end
-          if xml_module_property.attribute('usePropertyBag').to_s.downcase == 'accessorsViaPropertyBag'.downcase
+          if property_attributes['usePropertyBag'].downcase == 'accessorsViaPropertyBag'.downcase
             module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
           end
-          if xml_module_property.attribute('usePropertyBag').to_s.downcase == 'PropertyBagViaAccessors'.downcase
+          if property_attributes['usePropertyBag'].downcase == 'PropertyBagViaAccessors'.downcase
             module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
             module_item.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
           end
-        else
-          if xml_properties.attribute('usePropertyBag') != nil
-            if xml_properties.attribute('usePropertyBag').to_s.downcase == 'none'.downcase
-              module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_NONE
-            end
-            if xml_properties.attribute('usePropertyBag').to_s.downcase == 'accessorsViaPropertyBag'.downcase
-              module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
-            end
-            if xml_properties.attribute('usePropertyBag').to_s.downcase == 'PropertyBagViaAccessors'.downcase
-              module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
-              module_item.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
-            end
-          end
         end
-        # if default is not setted - set it to default for types
+        # if default is not set - set it to default for types
         if module_property.default_value == nil
           if module_property.type == MethodParam::TYPE_BOOL
             module_property.default_value = 'false'
@@ -2334,12 +2323,16 @@ module Rhogen
           end
         end
 
-        module_item.properties << module_property
-
+        properties << module_property
       end
+      properties
+    end
+
+    def generate_property_methods(properties)
+      property_methods = []
 
       #prepare getters and setters for property
-      module_item.properties.each do |module_property|
+      properties.each do |module_property|
         if module_property.generate_accessors
           if module_property.type != MethodParam::TYPE_CALLBACK
             if  !module_property.writeonly
@@ -2358,7 +2351,7 @@ module Rhogen
               getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
               getter_method.generateAPI = module_property.generateAPI
               module_property.getter = getter_method
-              module_item.methods << getter_method
+              property_methods << getter_method
             end
 
             if !module_property.readonly
@@ -2385,7 +2378,7 @@ module Rhogen
               setter_method.generateAPI = module_property.generateAPI
               module_property.setter = setter_method
 
-              module_item.methods << setter_method
+              property_methods << setter_method
             end
           else
             setter_method = ModuleMethod.new()
@@ -2404,10 +2397,12 @@ module Rhogen
             setter_method.generateAPI = module_property.generateAPI
             module_property.setter = setter_method
 
-            module_item.methods << setter_method           
+            property_methods << setter_method
           end
         end
       end
+
+      property_methods
     end
 
 
@@ -2671,7 +2666,7 @@ module Rhogen
         xml_entity_methods_item = xml_module_entity.elements['METHODS']
         xml_module_entity.elements.each('METHODS/METHOD') do |xml_module_method|
 
-          entity_method = process_method(xml_module_method, xml_entity_methods_item, module_item, self_type)
+          entity_method = process_method(xml_module_method, module_item, self_type)
           module_entity.methods << entity_method
           entity_method.linked_entity = module_entity
           module_item.methods << entity_method
@@ -2867,7 +2862,7 @@ module Rhogen
                   include_module_items(base_module, xml_module_item, const_dict, 'CONSTANTS', 'CONSTANT')
 
                   include_module_items(base_module, xml_module_item, method_dict, 'METHODS', 'METHOD')
-               end
+                end
               end
             else
               puts "Include file does not exists: #{include_file_name.bold}".red
@@ -2904,7 +2899,9 @@ module Rhogen
 
         # ===============================================================
         # properties
-        process_properties(module_item, unsupported_names, xml_module_item)
+        properties = process_properties(module_item, unsupported_names, xml_module_item)
+        module_item.properties.concat( properties )
+        module_item.methods.concat( generate_property_methods(properties) )
 
         # ===============================================================
         # entities
