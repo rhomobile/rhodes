@@ -725,7 +725,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
     #task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
     #end
 
-    task :rhobundle => ["config:set_win32_platform", "build:wm:rhobundle", :after_bundle] do
+    task :rhobundle => ["config:set_win32_platform", "config:wm", "config:qt", "config:win32:qt", "build:wm:rhobundle", :after_bundle] do
     end
 
     task :upgrade_package => ["build:win32:rhobundle"] do        
@@ -1184,7 +1184,7 @@ namespace "device" do
 
   namespace "win32" do
     desc "Build installer for Windows"
-    task :production => ["build:win32:set_release_config", "config:set_win32_platform", "config:wm", "config:qt", "config:win32:qt", "build:win32"] do
+    task :production => ["build:win32:set_release_config", "build:win32"] do
       createWin32Production
     end
   end
@@ -1537,8 +1537,8 @@ namespace "run" do
   end
 
   desc "Run win32"
-  task :win32 => ["config:set_win32_platform", "config:wm", "config:qt", "config:win32:qt", "build:win32"] do
-  
+  task :win32 => ["build:win32"] do
+				  
     cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
     Rake::Task["build:win32:deployqt"].invoke
 
