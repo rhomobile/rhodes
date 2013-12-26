@@ -1813,7 +1813,7 @@ module Rhogen
       element_mapping = {}
       elements.each do |x|
         #check for elements without names
-        next if !x.value || (x.value.strip.size < 1)
+        next if !x.value || (x.value.strip.empty?)
 
         if !element_mapping.has_key?(x.name)
           element_mapping[x.name] = [x.value]
@@ -1840,8 +1840,8 @@ module Rhogen
       value_mapping = {}
       elements.each do |x|
         #check for constnants without names
-        if !x.name || (x.name.strip.size  < 1) 
-          if !x.value || (x.value.strip.size < 1)
+        if !x.name || (x.name.strip.empty?)
+          if !x.value || (x.value.strip.empty?)
             next
           else
             x.name = x.value.underscore.upcase
@@ -1905,7 +1905,7 @@ module Rhogen
       xml_module_item.elements.each(".//#{element.upcase}/DESC") do |constant|
         const_desc = constant.text
         next if const_desc.nil?
-        next if const_desc.strip.size < 1
+        next if const_desc.strip.empty?
 
         if !descriptions.has_key?(const_desc)
           descriptions[const_desc] = [constant]
@@ -1989,6 +1989,7 @@ module Rhogen
     end
 
     def process_hash_keys(xml_module_item)
+      # gather all possible elements with hash keys
       hash_elems = []
 
       xml_module_item.elements.each('.//PARAMS/PARAM') do |xml_param|
@@ -2009,26 +2010,49 @@ module Rhogen
         end
       end
 
+      # process hash key names
       hash_objs = []
-
       hash_elems.each do |xml_param|
         xml_param.elements.each('.//PARAM') do |param_key|
+          name_attr = param_key.attribute('name')
+          next if name_attr.nil?
+          next if name_attr.to_s.strip.empty?
+
           key = ModuleHashKey.new()
-          key.name = param_key.attribute('name').to_s
+          key.name = name_attr.to_s
+
           if (param_key.attribute('deprecated').to_s.downcase == 'true')
             key.deprecated = true
           end
+
+          # transform hash key name to constant (camelcase to underscore)
+          const_key = 'HK_' + key.name.dup.underscore + ( key.deprecated ? '_DEPRECATED' : '' )
+          const_key.upcase!
+          key.const_tag = const_key
+
           hash_objs << key
         end
       end
 
-      hash_objs.reject! { |p| p.name.empty? }
+      # process property names
+      xml_module_item.elements.each('.//PROPERTY') do |xml_property|
+        name_attr = xml_property.attribute('name')
+        next if name_attr.nil?
+        next if name_attr.to_s.strip.empty?
 
-      hash_objs.each do |hash_key|
+        key = ModuleHashKey.new()
+        key.name = name_attr.to_s
+
+        if (xml_property.attribute('deprecated').to_s.downcase == 'true')
+          key.deprecated = true
+        end
+
         # transform hash key name to constant (camelcase to underscore)
-        const_key = 'HK_' + hash_key.name.dup.underscore + ( hash_key.deprecated ? '_DEPRECATED' : '' )
+        const_key = 'PROPERTY_' + key.name.dup.underscore + ( key.deprecated ? '_DEPRECATED' : '' )
         const_key.upcase!
-        hash_key.const_tag = const_key
+        key.const_tag = const_key
+
+        hash_objs << key
       end
 
       hash_objs.uniq! { |p| p.const_tag }
@@ -2826,7 +2850,7 @@ module Rhogen
       def valid_element_name?(current_item)
         name_attr = current_item.attribute('name')
 
-        is_valid = !name_attr.nil? && name_attr.to_s.strip.size > 0
+        is_valid = !name_attr.nil? && !name_attr.to_s.strip.empty?
         if !is_valid
           puts "Warning: Element has no name and will be skipped: \n #{current_item.to_s.bold} ".red
         end
