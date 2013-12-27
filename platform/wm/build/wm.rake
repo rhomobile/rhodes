@@ -397,9 +397,11 @@ namespace "build" do
 
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
 
-              if $current_platform == 'win32'
-                ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
-                ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
+              unless ENV["TARGET_EXT_DIR"]
+                if $current_platform == 'win32'
+                  ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
+                  ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
+                end
               end
 
               ENV['VCBUILD'] = $vcbuild
