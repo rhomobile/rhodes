@@ -67,7 +67,7 @@ typedef struct ISTSystemConfig
 	BOOL				bPersist;	//Enable Persist Configuration setting
 }ISTSYSTEMCONFIG, *pISTSYSTEMCONFIG;
 
-namespace screenorientation
+namespace ScreenOrientationExt
 {
 	class CSensor
 	{
