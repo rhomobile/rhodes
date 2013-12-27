@@ -1,16 +1,19 @@
-package com.motorolasolutions.rho.notification;
+package com.rho.notification;
 
 import com.rho.notification.INotification;
 import com.rho.notification.INotificationFactory;
 import com.rho.notification.INotificationSingleton;
+import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
+import com.rhomobile.rhodes.extmanager.IRhoExtManager;
+import com.rhomobile.rhodes.extmanager.IRhoListener;
 
-public class NotificationFactory implements INotificationFactory
+public class NotificationFactory extends AbstractRhoListener implements INotificationFactory, IRhoListener
 {
 	private NotificationSingleton singleton;
 	
 	public NotificationFactory()
 	{
-		NotificationRhoListener.registerListener(this);
 	}
 	
 	@Override
@@ -26,7 +29,8 @@ public class NotificationFactory implements INotificationFactory
 		return null;
 	}
 
-	public void onPause()
+	@Override
+	public void onPause(RhodesActivity activity)
 	{
 		if(singleton != null)
 		{
@@ -34,7 +38,8 @@ public class NotificationFactory implements INotificationFactory
 		}
 	}
 
-	public void onStop()
+	@Override
+	public void onStop(RhodesActivity activity)
 	{
 		if(singleton != null)
 		{
@@ -42,11 +47,17 @@ public class NotificationFactory implements INotificationFactory
 		}
 	}
 
-	public void onDestroy()
+	@Override
+	public void onDestroy(RhodesActivity activity)
 	{
 		if(singleton != null)
 		{
 			singleton.onDestroy();
 		}
 	}
+
+    @Override
+    public void onCreateApplication(IRhoExtManager extManager) {
+        extManager.addRhoListener(this);
+    }
 }
