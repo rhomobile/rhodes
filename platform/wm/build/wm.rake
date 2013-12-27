@@ -321,7 +321,7 @@ namespace "build" do
           end
 
           puts "#{ext_config}"
-          is_prebuilt = ext_config && ext_config['wm'] && ext_config['wm']['exttype'] && ext_config['wm']['exttype'] == 'prebuilt'
+          is_prebuilt = ext_config && ext_config[$current_platform] && ext_config[$current_platform]['exttype'] && ext_config[$current_platform]['exttype'] == 'prebuilt'
 		  project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
           
           next unless (File.exists?( File.join(extpath, "build.bat") ) || is_prebuilt || project_path)
@@ -368,7 +368,7 @@ namespace "build" do
               ENV['RHO_EXT_NAME']=ext                
 
               if is_prebuilt
-                  file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
+                  file_mask = File.join(extpath, $current_platform + '/lib/*.lib' ) 
                   puts "PREBUILD: #{file_mask}"
                 
                   mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
@@ -413,7 +413,7 @@ namespace "build" do
                 clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('build.bat', extpath)
               elsif is_prebuilt
-                file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
+                file_mask = File.join(extpath, $current_platform + '/lib/*.lib' ) 
                 puts "PREBUILD: #{file_mask}"
                 
                 mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
