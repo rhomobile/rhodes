@@ -13,7 +13,7 @@ const wchar_t* const SENSOR_MODULE_NAME = L"\\Windows\\SensorApi.dll";
  * 
  * @return bool 
  */
-bool screenorientation::CSensor::IsPresent()
+bool ScreenOrientationExt::CSensor::IsPresent()
 {
 	DWORD dwAttribs = ::GetFileAttributes(SENSOR_MODULE_NAME);
 	if (0xFFFFFFFF == dwAttribs)
@@ -45,7 +45,7 @@ bool screenorientation::CSensor::IsPresent()
  * 
  * @return bool 
  */
-bool screenorientation::CSensor::IsSupported()
+bool ScreenOrientationExt::CSensor::IsSupported()
 {
 	bool supported = false;
 #if 0	
@@ -85,7 +85,7 @@ bool screenorientation::CSensor::IsSupported()
  * 
  * @return bool true if the operation succeeds
  */
-bool screenorientation::CSensor::EnableAutoRotate(bool enable)
+bool ScreenOrientationExt::CSensor::EnableAutoRotate(bool enable)
 {
 	bool done = false;
 			
@@ -149,7 +149,7 @@ bool screenorientation::CSensor::EnableAutoRotate(bool enable)
  *              there is an error.                                 
  *  
  */
-bool screenorientation::CSensor::IsAutoRotateEnabled()
+bool ScreenOrientationExt::CSensor::IsAutoRotateEnabled()
 {
 	bool enabled  = false;
 
