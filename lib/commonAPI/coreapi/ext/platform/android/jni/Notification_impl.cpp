@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Notification_impl"
 
-#define NOTIFICATION_FACTORY_CLASS "com.motorolasolutions.rho.notification.NotificationFactory"
+#define NOTIFICATION_FACTORY_CLASS "com.rho.notification.NotificationFactory"
 
 extern "C" void Init_Notification_API(void);
 
@@ -53,10 +53,5 @@ extern "C" void Init_Notification(void)
     {
         RAWLOG_ERROR("Failed to initialize Notification API: jnienv() is failed");
     }
-    RHODESAPP().getExtManager().requireRubyFile("RhoNotificationApi");
-}
-
-extern "C" void Init_Notification_extension() {
-    Init_Notification();
     RHODESAPP().getExtManager().requireRubyFile("RhoNotificationApi");
 }

@@ -75,6 +75,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
 				<PARAMS>
 					<PARAM name="title" type="STRING">
+					    <CAN_BE_NIL/>
 						<DESC>The title on the status message popup window.</DESC>
 					</PARAM>
 					<PARAM name="status_text" type="STRING">

@@ -10,8 +10,8 @@ iphone:
 android:
   source_list: ext/platform/android/ext_java.files
   adds: ext/platform/android/adds
-  manifest_changes: ext/platform/android/AndroidManifest.xml
-  rhodes_listener: com.motorolasolutions.rho.notification.NotificationRhoListener
+  manifest_changes: ext/platform/android/ApplicationManifestAdds.erb
+  rhodes_listener: com.rho.notification.NotificationFactory
   exttype: rakefile
 wp8:
   libraries: ["WebView", "NativeToolbar", "NativeTabbar"]

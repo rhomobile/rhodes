@@ -32,7 +32,7 @@ ext/platform/android/generated/src/com/rho/notification/NotificationSingletonBas
 ext/platform/android/generated/src/com/rho/notification/INotification.java
 ext/platform/android/generated/src/com/rho/notification/INotificationFactory.java
 ext/platform/android/generated/src/com/rho/notification/INotificationSingleton.java
-ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationFactory.java
-ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationSingleton.java
-ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationRhoListener.java
-ext/platform/android/src/com/motorolasolutions/rho/notification/PopupActivity.java
+ext/platform/android/src/com/rho/notification/NotificationFactory.java
+ext/platform/android/src/com/rho/notification/NotificationSingleton.java
+ext/platform/android/src/com/rho/notification/Notification.java
+ext/platform/android/src/com/rho/notification/NotificationIntentService.java
