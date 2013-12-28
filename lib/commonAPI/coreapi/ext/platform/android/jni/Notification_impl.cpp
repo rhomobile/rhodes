@@ -55,3 +55,8 @@ extern "C" void Init_Notification(void)
     }
     RHODESAPP().getExtManager().requireRubyFile("RhoNotificationApi");
 }
+
+extern "C" void alert_show_status(const char* title, const char* message, const char* szHide)
+{
+    //Stab for rhoconnect-client extension
+}
