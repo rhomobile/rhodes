@@ -368,7 +368,8 @@ namespace "build" do
               ENV['RHO_EXT_NAME']=ext                
 
               if is_prebuilt
-                  file_mask = File.join(extpath, $current_platform + '/lib/*.lib' ) 
+				  file_mask = File.join(extpath, $current_platform + ($current_platform=='wm' ? '/lib' : '' ) + '/*.lib' ) 
+ 
                   puts "PREBUILD: #{file_mask}"
                 
                   mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
@@ -415,7 +416,7 @@ namespace "build" do
                 clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('build.bat', extpath)
               elsif is_prebuilt
-                file_mask = File.join(extpath, $current_platform + '/lib/*.lib' ) 
+                file_mask = File.join(extpath, $current_platform + ($current_platform=='wm' ? '/lib' : '' ) + '/*.lib' ) 
                 puts "PREBUILD: #{file_mask}"
                 
                 mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
