@@ -1,6 +1,5 @@
 package com.rho.notification;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +14,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -26,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.R;
@@ -48,9 +48,9 @@ public class Notification {
     String title;
     String message;
     ArrayList<ActionData> actions = new ArrayList<ActionData>();
-    //Drawable icon;
     int iconResourceId;
     String iconPath;
+    List<String> kinds = new ArrayList<String>();;
     
     Dialog dialog;
 
@@ -108,49 +108,43 @@ public class Notification {
                 actions.add(new ActionData(i, itemId, itemTitle, result));
             }
         }
-        else
-        {
-            Logger.W(TAG, "Unknown button description object. Will not show dialog without buttons");
-            throw new RuntimeException("Unknown button description object. Will not show dialog without buttons");
-        }
+//        else
+//        {
+//            Logger.W(TAG, "Unknown button description object. Will not show dialog without buttons");
+//            throw new RuntimeException("Unknown button description object. Will not show dialog without buttons");
+//        }
 
         if (iconName != null)
         {
             Resources res = ctx.getResources();
             if (iconName.equalsIgnoreCase("alert")) {
                 iconResourceId = android.R.drawable.ic_dialog_alert;
-                //icon = res.getDrawable(iconResourceId);
             }
             else if (iconName.equalsIgnoreCase("question")) {
-                //iconResourceId = android.R.drawable.ic;
                 iconResourceId = R.drawable.alert_question;
-                //icon = res.getDrawable(iconResourceId);
             }
             else if (iconName.equalsIgnoreCase("info")) {
                 iconResourceId = android.R.drawable.ic_dialog_info;
-                //icon = res.getDrawable(iconResourceId);
             }
             else {
                 iconResourceId = -1;
-                //InputStream iconStream = null;
                 iconPath = RhoFileApi.normalizePath(iconName);
-                //iconStream = RhoFileApi.open(iconPath);
-                //Bitmap bitmap = BitmapFactory.decodeStream(iconStream);
-                //if (iconStream != null)
-                //    icon = Drawable.createFromStream(iconStream, null);
-                //try
-                //{
-                //    iconStream.close();
-                //}
-                //catch(Throwable e)
-                //{
-                //    Logger.W(TAG, "Couldnt close the icon stream");
-                //    Logger.W(TAG, e);
-                //}
             }
         }
         else {
             iconResourceId = -1;
+        }
+        Object kindsObj = props.get(NotificationSingleton.HK_KINDS);
+        if (kindsObj != null && kindsObj instanceof List<?>) {
+            for (Object kind: (List<?>)kindsObj) {
+                if (kind != null && kind instanceof String) {
+                    kinds.add((String)kind);
+                }
+            }
+        }
+        else {
+            kinds.add(INotificationSingleton.KIND_DIALOG);
+            kinds.add(INotificationSingleton.KIND_NOTIFICATION);
         }
     }
     
@@ -193,7 +187,7 @@ public class Notification {
         else
         {
             dialog.setTitle(title);
-            nTopPadding = 0;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) nTopPadding = 0;
         }
 
         dialog.setCancelable(false);
@@ -237,22 +231,23 @@ public class Notification {
             top.addView(textView);
         }
 
-        LinearLayout bottom = new LinearLayout(ctx);
-        bottom.setOrientation(actions.size() > 3 ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
-        bottom.setGravity(Gravity.CENTER);
-        bottom.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        main.addView(bottom);
-
-        int lim = actions.size();
-        for (ActionData btn: actions)
-        {
-            Button button = new Button(ctx);
-            OnClickListener clickListener = new DialogActionListener(dialog);
-            button.setText(btn.title);
-            button.setTag(btn);
-            button.setOnClickListener(clickListener);
-            button.setLayoutParams(new LinearLayout.LayoutParams(lim > 3 ? LayoutParams.MATCH_PARENT : LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-            bottom.addView(button);
+        if (actions.size() > 0) {
+            LinearLayout bottom = new LinearLayout(ctx);
+            bottom.setOrientation(actions.size() > 3 ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+            bottom.setGravity(Gravity.CENTER);
+            bottom.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+            main.addView(bottom);
+    
+            for (ActionData btn: actions)
+            {
+                Button button = new Button(ctx);
+                OnClickListener clickListener = new DialogActionListener(dialog);
+                button.setText(btn.title);
+                button.setTag(btn);
+                button.setOnClickListener(clickListener);
+                button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
+                bottom.addView(button);
+            }
         }
 
         dialog.setContentView(main);
@@ -292,31 +287,32 @@ public class Notification {
         builder.setSmallIcon(R.drawable.icon);
         builder.setContentIntent(PendingIntent.getActivity(ctx, id, new Intent(ctx, RhodesActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
         
-        for (ActionData action: actions) {
-            
-            Logger.T(TAG, "Adding action: " + action.index + ", " + action.id + ", " + action.title);
-            
-            Intent actionIntent = new Intent(ctx, NotificationIntentService.class);
-            
-            //Next two lines are needed in order to make intents unique
-            actionIntent.setAction(action.id);
-            actionIntent.addCategory(String.valueOf(id));
-            
-            actionIntent.putExtra(INotificationSingleton.HK_BUTTON_INDEX, action.index);
-            actionIntent.putExtra(NOTIFICATION_ID, id);
-
-            
-            int resId = R.drawable.ic_action_star;
-            if (action.id.equalsIgnoreCase("accept")) {
-                resId = R.drawable.ic_action_accept;
+        if (kinds.contains(INotificationSingleton.KIND_NOTIFICATION_DIALOG)) {
+            for (ActionData action: actions) {
+                
+                Logger.T(TAG, "Adding action: " + action.index + ", " + action.id + ", " + action.title);
+                
+                Intent actionIntent = new Intent(ctx, NotificationIntentService.class);
+                
+                //Next two lines are needed in order to make intents unique
+                actionIntent.setAction(action.id);
+                actionIntent.addCategory(String.valueOf(id));
+                
+                actionIntent.putExtra(INotificationSingleton.HK_BUTTON_INDEX, action.index);
+                actionIntent.putExtra(NOTIFICATION_ID, id);
+    
+                
+                int resId = R.drawable.ic_action_star;
+                if (action.id.equalsIgnoreCase("accept")) {
+                    resId = R.drawable.ic_action_accept;
+                }
+                else if (action.id.equalsIgnoreCase("cancel")) {
+                    resId = R.drawable.ic_action_cancel;
+                }
+                
+                builder.addAction(resId, action.title, PendingIntent.getService(ctx, id, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT));
             }
-            else if (action.id.equalsIgnoreCase("cancel")) {
-                resId = R.drawable.ic_action_cancel;
-            }
-            
-            builder.addAction(resId, action.title, PendingIntent.getService(ctx, id, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT));
         }
-        
         
         NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         android.app.Notification notification = builder.build();
@@ -341,8 +337,12 @@ public class Notification {
         });
     }
     
-    public void showForegroundStatus() {
-        
+    public void showForegroundToast() {
+        PerformOnUiThread.exec(new Runnable() {
+            @Override public void run() {
+                Toast.makeText(ContextFactory.getContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     
     public void dismiss() {
@@ -369,15 +369,16 @@ public class Notification {
     }
 
     public boolean isDialogNeeded() {
-        return true;
+        return kinds.contains(INotificationSingleton.KIND_DIALOG) || kinds.contains(INotificationSingleton.KIND_NOTIFICATION_DIALOG);
     }
     
-    public boolean isForegroundStatusNeeded() {
-        return true;
+    public boolean isForegroundToastNeeded() {
+        boolean foregroundDialog = RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && isDialogNeeded();
+        return kinds.contains(INotificationSingleton.KIND_TOAST) && !foregroundDialog;
     }
     
     public boolean isNotificationAreaNeeded() {
-        return true;
+        return !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && (kinds.contains(INotificationSingleton.KIND_NOTIFICATION) || kinds.contains(INotificationSingleton.KIND_NOTIFICATION_DIALOG));
     }
 
     private static class ActionData

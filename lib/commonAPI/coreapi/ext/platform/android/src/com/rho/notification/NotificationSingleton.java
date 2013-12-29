@@ -71,14 +71,14 @@ public class NotificationSingleton implements INotificationSingleton
         synchronized (notifications) {
             ++lastNotificationId;
             
-            Logger.I(TAG, "Add notification: " + lastNotificationId + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            Logger.T(TAG, "Add notification: " + lastNotificationId);
             
             notification = new Notification(lastNotificationId, propertyMap, result);
             notifications.append(lastNotificationId, notification);
         }
         
-        if (notification.isForegroundStatusNeeded()) {
-            notification.showForegroundStatus();
+        if (notification.isForegroundToastNeeded()) {
+            notification.showForegroundToast();
         }
         if (notification.isNotificationAreaNeeded()) {
             notification.showNotification();
@@ -102,7 +102,7 @@ public class NotificationSingleton implements INotificationSingleton
             if (notification != null) {
                 notification.dismiss();
                 notifications.removeAt(notificationId);
-                Logger.I(TAG, "Remove notification: " + notification.id);
+                Logger.T(TAG, "Remove notification: " + notification.id);
             }
         }
     }
@@ -122,6 +122,10 @@ public class NotificationSingleton implements INotificationSingleton
             buttons.add(hideLabel);
             propertyMap.put(HK_BUTTONS, buttons);
         }
+        ArrayList<String> kinds = new ArrayList<String>();
+        kinds.add(KIND_DIALOG);
+        kinds.add(KIND_TOAST);
+        propertyMap.put(HK_KINDS, kinds);
         showPopup(propertyMap, result);
     }
     
