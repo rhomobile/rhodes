@@ -45,6 +45,28 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                   Using string example: ['Yes', 'No']. Note: in case of buttons has been specified using strings an id and a title of each button will have same value.
                                 </DESC>
 							</PARAM>
+							<PARAM name="kinds" type="Array">
+							    <DESC>List which notification kinds will be shown. Several kinds may be listed at same time.
+							      'notification' and 'notificationDialog' take no effect if application is at foreground.
+							      By default ['dialog','notification'] is used.
+							      Example: ['dialog', 'toast']
+							    </DESC>
+							    <PLATFORMS>Android</PLATFORMS>
+							    <VALUES>
+							      <VALUE constName="KIND_DIALOG" value="dialog">
+							        <DESC>show common dialog window with buttons visible if application is active</DESC>
+							      </VALUE>  
+							      <VALUE constName="KIND_NOTIFICATION" value="notification">
+							        <DESC>show message in Android notification bar if application is at background. Touch the message opens the application.</DESC>
+							      </VALUE>  
+							      <VALUE constName="KIND_NOTIFICATION_DIALOG" value="notificationDialog">
+							        <DESC>Means 'dialog' + 'notification'. At Android 4.1 and above buttons is also added to notification message so user can interact with the application without application activation (dialog window is not shown if user pressed button at notification).</DESC>
+							      </VALUE>  
+							      <VALUE constName="KIND_TOAST" value="toast">
+							        <DESC>show toast window with message at foreground for a short time. The toast is visible nevertheless the application is at background or foreground but is not shown same time with dialog.</DESC>
+							      </VALUE>  
+							    </VALUES>
+							</PARAM>
 						</PARAMS>
 					</PARAM>
 				</PARAMS>
@@ -71,10 +93,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 		
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
-                <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button.</DESC>
+                <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button.
+                  At Android in addition to dialog window a toast is shown at foreground for a short time.
+                </DESC>
 				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
 				<PARAMS>
 					<PARAM name="title" type="STRING">
+					    <CAN_BE_NIL/>
 						<DESC>The title on the status message popup window.</DESC>
 					</PARAM>
 					<PARAM name="status_text" type="STRING">
@@ -106,7 +131,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <METHOD name="beep" access="STATIC" hasCallback="none">
                 <DESC>If the device is equipped with a beeper then a beep will be emitted. Not supported on iOS devices.</DESC>
 				<PLATFORM>Android, WM</PLATFORM>
-				<APPLIES msiOnly="true"></APPLIES>
 				<PARAMS>
 					<PARAM name="propertyMap" type="HASH">
 						<DESC>The properties associated with the beep.</DESC>
@@ -126,9 +150,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="vibrate" access="STATIC" hasCallback="none">
-                <DESC>Vibrate the device's pager hardware</DESC>
+                <DESC>Vibrate the device's pager hardware. Need 'vibrate' capability set at build.yml for Android</DESC>
 				<PLATFORM>iOS, Android, WM</PLATFORM>
-				<APPLIES msiOnly="false"></APPLIES>
 				<PARAMS>
 					<PARAM name="duration" type="Integer" default="1000">
 					    <CAN_BE_NIL/>
