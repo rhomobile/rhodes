@@ -18,9 +18,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesApplication.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/WebView.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/alert/Alert.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/alert/PopupActivity.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/alert/StatusNotification.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/IMethodResult.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/IRhoApiDefaultId.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/IRhoApiFactory.java
