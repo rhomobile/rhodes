@@ -1789,9 +1789,19 @@ namespace "package" do
     args << $dxjar
     args << "--dex"
     args << "--output=#{$bindir}/classes.dex"
+    
+    jarnames = []
 
     Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
-      args << jar
+    
+        jarname = Pathname.new(jar).basename
+        
+        if not jarnames.include?(jarname) then
+            args << jar
+            jarnames << jarname
+        else
+            puts "Skipping duplicated jar: #{jar}"
+        end
     end
 
     Jake.run(File.join($java, 'java'+$exe_ext), args)
