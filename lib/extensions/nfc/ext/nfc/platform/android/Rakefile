@@ -7,8 +7,10 @@ def build_extension(name, arch, src_files)
 
   src_files.each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
-    objects << objname
-
+    
+    #objects << objname
+    objects << ('"'+objname+'"')
+    
     args = []
     args << "-I."
     args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
@@ -24,7 +26,8 @@ def build_extension(name, arch, src_files)
 
   mkdir_p $targetdir unless File.exist? $targetdir
 
-  cc_ar File.join($targetdir,'lib'+name+'.a' ), objects or exit 1
+  #cc_ar File.join($targetdir, 'lib' + name + '.a'), objects or exit 1
+  cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
 
 end
 
