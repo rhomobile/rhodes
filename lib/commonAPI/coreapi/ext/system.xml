@@ -86,10 +86,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <PROPERTY name="ppiY" type="INTEGER" readOnly="true">
                 <DESC>Vertical PPI (Pixels Per Inch).</DESC>
             </PROPERTY>
-            <PROPERTY name="phoneNumber" type="STRING" readOnly="true" deprecated="true">
-                <DESC>Device phone number.</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
-            </PROPERTY>
+            
             <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
                 <DESC>Primary email of phone owner. To access this property 'pim' capability must be enabled in your build.yml.</DESC>
                 <PLATFORM>Android</PLATFORM>
