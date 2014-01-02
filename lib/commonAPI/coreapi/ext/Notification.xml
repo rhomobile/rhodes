@@ -93,8 +93,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 		
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
-                <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button.
-                  At Android in addition to dialog window a toast is shown at foreground for a short time.
+                <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button. Note: Android will show a toast message for a short time in addition to a dialog window.
                 </DESC>
 				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
 				<PARAMS>
@@ -239,12 +238,12 @@ function show_alert()
 	   <REMARKS>
             <REMARK title="Maximum vibrate duration">
                 <DESC>
-					On Android, the maximum duration for vibrate is 15 seconds (15000ms).
+On Android, the maximum duration for vibrate is 15 seconds (15000ms).
 				</DESC>
 			</REMARK>
             <REMARK title="Spuriously reported hardware">
                 <DESC>
-					Some Windows Mobile or CE devices may report hardware which is not present on the device such as a pager or LEDs.  This is a limitation of the underlying driver layer reporting spurious results to the application, though all real hardware will be controllable.
+Some Windows Mobile or CE devices may report hardware which is not present on the device such as a pager or LEDs.  This is a limitation of the underlying driver layer reporting spurious results to the application, though all real hardware will be controllable.
 				</DESC>
 			</REMARK>
 	   </REMARKS>
