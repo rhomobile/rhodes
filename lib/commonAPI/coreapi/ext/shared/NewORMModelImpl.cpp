@@ -1,5 +1,6 @@
 //
 //  NewORMModelImpl.cpp
+#include "generated/cpp/NewORMBase.h"
 #include "generated/cpp/NewORMModelBase.h"
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
@@ -78,6 +79,8 @@ namespace rho {
             m_mapPropAccessors["freezed"] = freezedModelAccessor;
         }
 
+        static HashtablePtr<rho::String, CNewORMModelImpl*>& models() { return models_; }
+
         static void init_once()
         {
             if(reserved_names_.empty())
@@ -153,7 +156,39 @@ namespace rho {
             clearAllProperties(oResult);
         }
 
-        static HashtablePtr<rho::String, CNewORMModelImpl*>& models() { return models_; }
+        void set(const rho::String& propName, const rho::String& propValue, rho::apiGenerator::CMethodResult& oResult)
+        {
+            // 'sync' property require special processing
+            LOG(INFO) + ",set :" + propName + ":" + propValue;
+            if(propName == "sync")
+            {
+                if(propValue == "true")
+                {
+                    getSync_type(oResult);
+                    if(oResult.getString() == "none") 
+                        setSync_type("incremental", oResult);
+                    // sync type also controls the partition name
+                    getPartition(oResult);
+                    if(oResult.getString() == "local") 
+                        setPartition("user", oResult);    
+                }
+                else
+                {
+                    setSync_type("none", oResult);
+                    setPartition("local", oResult);     
+                }
+                
+            }
+            // all other properties
+            else 
+                setProperty(propName, propValue, oResult);
+        }
+
+        void enable(const rho::String& propName, rho::apiGenerator::CMethodResult& oResult)
+        {
+            LOG(INFO) + ",enable :" + propName;
+            set(propName, "true", oResult);
+        }
 
         void setBelongsTo(const rho::String& propName, const rho::String& sourceName, rho::apiGenerator::CMethodResult&)
         {
@@ -565,8 +600,31 @@ namespace rho {
             return db.executeSQL(strSQL.c_str(), strippedObjId);
         }
 
-        void createObject(const Hashtable<rho::String, rho::String>& attrs, rho::apiGenerator::CMethodResult& oResult)
+        void createInstance(const Hashtable<rho::String, rho::String>& attrs, rho::apiGenerator::CMethodResult& oResult)
         {
+            validateFreezedAttributes(attrs, oResult);
+            if(oResult.isError())
+                return;
+            Hashtable<rho::String, rho::String> retInstance(attrs);
+            if(!retInstance.containsKey("object"))
+            {
+                rho::CNewORMFactoryBase::getNewORMSingletonS()->generateId(oResult);
+                if(oResult.isError())
+                    return;
+                retInstance["object"] = rho::common::convertToStringA(oResult.getInt());
+            }
+            getProperty("source_id", oResult); 
+            retInstance["source_id"] = oResult.getString();
+            oResult.set(retInstance);
+        }
+
+        void createObject(const Hashtable<rho::String, rho::String>& objHash, rho::apiGenerator::CMethodResult& oResult)
+        {
+            createInstance(objHash, oResult);
+            if(oResult.isError())
+                return;
+            Hashtable<rho::String, rho::String>& attrs = oResult.getStringHash();
+
             getProperty("source_id", oResult);
             rho::String source_id = oResult.getString();
             getProperty("sync_type", oResult);
@@ -585,8 +643,16 @@ namespace rho {
 
             if(fixed_schema()) {
                 rho::Vector<rho::String> quests;
+                for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin();
+                    cIt != attrs.end();
+                    ++cIt)
+                {
+                    LOG(INFO) + "MZV_DEBUG: attrs are : " + cIt -> first + " : " + cIt -> second;
+                }
                 rho::String strSQL = _make_insert_attrs_sql_script(attrs.get("object"), attrs, quests);
                 LOG(INFO) + "MZV_DEBUG, createObject: MZV_DEBUG: we have the following sqlSQL:" + strSQL;
+                for(size_t i = 0; i < quests.size(); ++i)
+                    LOG(INFO) + "MZV_DEBUG: quest " + i + " is : " + quests[i];
 
                 IDBResult res = db.executeSQLEx(strSQL.c_str(), quests);
                 if(!res.getDBError().isOK()) {
@@ -620,6 +686,7 @@ namespace rho {
     private:
         void init_defaults()
         {
+            CNewORMModelImpl::init_once();
             rho::apiGenerator::CMethodResult oRes;
             setLoaded(false, oRes);
             setFixed_schema(false, oRes);
@@ -779,6 +846,7 @@ namespace rho {
     public:
         CNewORMModelSingletonImpl(): CNewORMModelSingletonBase()
         {
+            LOG(INFO) + "MZV_DEBUG: calling init_once";
             CNewORMModelImpl::init_once();
         }
         
@@ -793,9 +861,6 @@ namespace rho {
 
             oResult.set(ret_models);
         }
-
-
-
     };
     
     ////////////////////////////////////////////////////////////////////////
