@@ -38,11 +38,8 @@
 #include "Vibrate.h"
 #include "common/RhoAppAdapter.h"
 
-//#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-//#include <sstream>
 #include "json/JSONIterator.h"
 using namespace rho::json;
-//#endif
 
 extern "C" HWND getMainWnd();
 

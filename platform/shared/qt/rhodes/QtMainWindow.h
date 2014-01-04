@@ -40,6 +40,7 @@
 #include <QAction>
 #include <QMessageBox>
 #include <QBasicTimer>
+#include <QNetworkProxy>
 #include "QtWebInspector.h"
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
@@ -79,6 +80,8 @@ public:
     void GoForward(void);
     void Refresh(int index);
     bool isStarted(void);
+    void setProxy();
+    void setProxy(QString host, QString port, QString login, QString password);
     // toolbar
     void toolbarRemoveAllButtons(void);
     void toolbarShow(void);
@@ -110,6 +113,7 @@ private:
     bool internalUrlProcessing(const QUrl& url);
     void setUpWebPage(QWebPage* page);
     void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
+    void internalSetProxy();
 
 private:
     Ui::QtMainWindow *ui;
@@ -129,6 +133,7 @@ private:
     QBasicTimer m_SplashTimer;
     rho::apiGenerator::CMethodResult m_oTabBarSwitchCallback;
     int toolBarSeparatorWidth;
+    QNetworkProxy m_proxy;
 
 private slots:
     void on_webView_urlChanged(QUrl );

@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace screenorientation
+namespace ScreenOrientationExt
 {
 	enum ScreenOrientationModes
 	{
@@ -32,6 +32,6 @@ namespace screenorientation
 	private:
 		
 	}; // CDisplaySettings
-} // screenorientation
+} // ScreenOrientationExt
 
 #endif	// DISPLAYSETTINGS_H_34612E1C_97AA_43C1_B1E1_61EB28C378DE

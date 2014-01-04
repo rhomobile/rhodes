@@ -179,13 +179,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     bool m_startAtBoot, m_bJSApplication;
     String m_strTabName;
 
-#ifndef RHODES_EMULATOR
 	HANDLE m_hMutex;
-#endif
-
-#ifdef OS_WINDOWS_DESKTOP
-    String m_strHttpProxy;
-#endif
 
 public :
     static HINSTANCE GetModuleInstance(){return m_hInstance;}
@@ -193,12 +187,7 @@ public :
     HWND GetMainWindow() { return m_appWindow.m_hWnd;}
 	CMainWindow* GetMainWindowObject() { return &m_appWindow;}
 	CMainWindow& GetAppWindow() { return m_appWindow; }
-	HWND GetWebViewWindow(int index) {	return m_appWindow.getWebViewHWND(
-#if defined(OS_WINDOWS_DESKTOP)
-            index
-#endif
-        );
-	}
+	HWND GetWebViewWindow(int index) { return m_appWindow.getWebViewHWND(); }
 
     bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( );
     HRESULT PreMessageLoop(int nShowCmd) throw();
@@ -218,7 +207,6 @@ HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
 
-#if !defined(OS_WINDOWS_DESKTOP)
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 {
 #if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
@@ -229,7 +217,6 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
     return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 }
-#endif //!OS_WINDOWS_DESKTOP
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw()
 {
@@ -343,38 +330,6 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			}
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-#if defined(OS_WINDOWS_DESKTOP)
-			else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
-			{
-				if (value) {
-					m_strHttpProxy = convertToStringA(value);
-				}
-				else 
-					LOG(WARNING) + "invalid value for \"http_proxy_url\" cmd parameter";
-
-			} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
-			{
-				if (value) {
-					m_strRhodesPath = convertToStringA(value);
-					String_replace(m_strRhodesPath, '\\', '/');
-				}
-			} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
-			{
-				if (value) {
-					m_strAppNameW = convertToStringW(value);
-				}
-			} else if (wcsncmp(lpszToken, _T("debughost"),9)==0) 
-			{
-				if (value) {
-					m_strDebugHost = convertToStringA(value);
-				}
-			} else if (wcsncmp(lpszToken, _T("debugport"),9)==0) 
-			{
-				if (value) {
-					m_strDebugPort = convertToStringA(value);
-				}
-			} */
-#endif
 		}
 		if (value) free(value);
 		lpszToken = nextToken;
@@ -411,7 +366,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
     // Note: In this sample, we don't respond differently to different hr success codes.
 
-#if !defined(OS_WINDOWS_DESKTOP)
     SetLastError(0);
     HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
 
@@ -434,7 +388,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
         return S_FALSE;
     }
-#endif
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
     {
@@ -460,59 +413,20 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
 
-#ifdef RHODES_EMULATOR
-    RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
-    RHOSIMCONF().loadFromFile();
-    if ( m_strRhodesPath.length() > 0 )
-        RHOSIMCONF().setString("rhodes_path", m_strRhodesPath, false );
-    RHOCONF().setString("rhosim_platform", RHOSIMCONF().getString("platform"), false);
-    RHOCONF().setString("app_version", RHOSIMCONF().getString("app_version"), false);
-	String start_path = RHOSIMCONF().getString("start_path");
-    if ( start_path.length() > 0 )
-	    RHOCONF().setString("start_path", start_path, false);
-    RHOSIMCONF().setString("ext_path", RHOSIMCONF().getString("ext_path") + CFilePath::join( m_strRhodesPath, "/lib/extensions/debugger;"), false);
-    RHOSIMCONF().setString("ext_path", RHOSIMCONF().getString("ext_path") + CFilePath::join( m_strRhodesPath, "/lib/extensions/uri;"), false);
-    RHOSIMCONF().setString("ext_path", RHOSIMCONF().getString("ext_path") + CFilePath::join( m_strRhodesPath, "/lib/extensions/timeout;"), false);
-    RHOSIMCONF().setString("ext_path", RHOSIMCONF().getString("ext_path") + CFilePath::join( m_strRhodesPath, "/lib/extensions/digest;"), false);
-    RHOSIMCONF().setString("ext_path", RHOSIMCONF().getString("ext_path") + CFilePath::join( m_strRhodesPath, "/lib/extensions/openssl;"), false);
-#endif
-
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
 		LOG(INFO) + "This is hidden app and can be started only with security key.";
 		if (RHOCONF().getString("invalid_security_token_start_path").length() <= 0)
         {
-#ifdef OS_WINDOWS_DESKTOP
-	    ::MessageBoxW(0, L"This is hidden app and can be started only with security key.", L"Security Token Verification Failed", MB_ICONERROR | MB_OK);
-#endif
 			return S_FALSE;
         }
     }
 
 	LOG(INFO) + "Rhodes started";
-#ifdef OS_WINDOWS_DESKTOP
-	if (m_strHttpProxy.length() > 0) {
-		parseHttpProxyURI(m_strHttpProxy);
-	} else
-#endif
-	{
-		if (RHOCONF().isExist("http_proxy_url")) {
-			parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-		} else {
-			// it's important to call this method from here to perform
-			// a proper initialization of proxy implementation for Win32
-			GetAppWindow().setProxy();
-#endif
-		}
+	if (RHOCONF().isExist("http_proxy_url")) {
+		parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
 	}
 
-#ifdef RHODES_EMULATOR
-    if (RHOSIMCONF().getString("debug_host").length() > 0)
-        SetEnvironmentVariableA("RHOHOST", RHOSIMCONF().getString("debug_host").c_str() );
-    if (RHOSIMCONF().getString("debug_port").length() > 0)
-        SetEnvironmentVariableA("rho_debug_port", RHOSIMCONF().getString("debug_port").c_str() );
-#endif
 
 	//Check for bundle directory is exists.
 	HANDLE hFind;
@@ -556,9 +470,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		return S_FALSE;
     }
 
-#if !defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
     createPowerManagementThread();
-#endif
 
     if (RHOCONF().getBool("Application.autoStart"))
         createAutoStartShortcut();
@@ -593,23 +505,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     dwStyle |= WS_OVERLAPPEDWINDOW;
 #endif
     // Create the main application window
-#if defined(OS_WINDOWS_DESKTOP)
-#ifdef RHODES_EMULATOR
-    StringW windowTitle = convertToStringW(RHOSIMCONF().getString("app_name"));
-#else
-    StringW windowTitle = convertToStringW(RHODESAPP().getAppTitle());
-#endif
-    m_appWindow.Initialize(windowTitle.c_str());
-    if (NULL == m_appWindow.m_hWnd)
-    {
-        return S_FALSE;
-    }
-    if (m_bMinimized)
-        nShowCmd = SW_MINIMIZE;
-
-    m_appWindow.ShowWindow(nShowCmd);
-
-#else
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
 
@@ -625,7 +520,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if (m_bMinimized)
         m_appWindow.ShowWindow(SW_MINIMIZE);
-#endif
 
 /*
     if (bRE1App)
@@ -694,11 +588,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
 void CRhodesModule::RunMessageLoop( ) throw( )
 {
-#if defined(OS_WINDOWS_DESKTOP)
-    m_appWindow.MessageLoop();
-#else
     m_appWindow.getWebKitEngine()->RunMessageLoop(m_appWindow);
-#endif
 
 #if defined(OS_WINCE)&& !defined( OS_PLATFORM_MOTCE )
     if (g_hNotify)
@@ -712,15 +602,9 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 #endif
     rho_ringtone_manager_stop();
 
-#if defined(OS_WINDOWS_DESKTOP)
-    m_appWindow.DestroyUi();
-#endif
-
     rho::common::CRhodesApp::Destroy();
 
-#if !defined(OS_WINDOWS_DESKTOP)
 //	ReleaseMutex(m_hMutex);
-#endif
 
     rho_platform_check_restart_application();
 }
@@ -885,13 +769,8 @@ extern "C" void rho_wm_impl_CheckLicense()
 
     if(hLicenseInstance)
     {
-#ifdef OS_WINDOWS_DESKTOP
-        PCL pCheckLicense = (PCL) ::GetProcAddress(hLicenseInstance, "_CheckLicense@16");
-        FUNC_IsLicenseOK pIsOK = (FUNC_IsLicenseOK) ::GetProcAddress(hLicenseInstance, "_IsLicenseOK@0");
-#else
         PCL pCheckLicense = (PCL) GetProcAddress(hLicenseInstance, L"CheckLicense");
         FUNC_IsLicenseOK pIsOK = (FUNC_IsLicenseOK) GetProcAddress(hLicenseInstance, L"IsLicenseOK");
-#endif
         LPCWSTR szLogText = 0;
         if(pCheckLicense)
         {
@@ -991,16 +870,10 @@ extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
 
 extern "C" void rho_win32_unset_window_proxy()
 {
-    #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-        _AtlModule.GetAppWindow().setProxy();
-    #endif    
 }
 
 extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
 {
-    #if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-        _AtlModule.GetAppWindow().setProxy(host, port, login, password);
-    #endif    
 }
 
 //Hook for ruby call to refresh web view
@@ -1018,11 +891,9 @@ extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
 {
 }
 
-#if !defined(OS_WINDOWS_DESKTOP)
 extern "C" void Init_fcntl(void)
 {
 }
-#endif
 
 //parseToken will allocate extra byte at the end of the 
 //returned token value

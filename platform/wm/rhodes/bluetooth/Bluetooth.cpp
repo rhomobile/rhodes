@@ -1274,7 +1274,7 @@ LRESULT CRhoBluetoothDiscoveredDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWN
 	return 0;
 }
 
-#else // OS_WINDOWS_DESKTOP
+#else // defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
 
 int rho_bluetooth_is_bluetooth_available() {
 	return 0;
@@ -1340,5 +1340,5 @@ void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE d
 }
 
 
-#endif // OS_WINDOWS_DESKTOP
+#endif // defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
 

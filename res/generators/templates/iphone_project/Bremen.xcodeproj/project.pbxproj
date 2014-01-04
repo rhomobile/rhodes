@@ -20,6 +20,7 @@
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
 		C0539BFE1767169700D53DF7 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0539BFD1767169700D53DF7 /* MediaPlayer.framework */; };
+		C076329B186DDD24005019BA /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C076329A186DDD24005019BA /* ExternalAccessory.framework */; };
 		F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
 		F51669600FFD78770079F023 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F516695F0FFD78770079F023 /* AVFoundation.framework */; };
 		F563D4140EA6D10F0062DA57 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F563D4130EA6D10F0062DA57 /* CoreLocation.framework */; };
@@ -97,6 +98,7 @@
 		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		BDFBD99910B1B9A900BAAFAB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		C0539BFD1767169700D53DF7 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/MediaPlayer.framework; sourceTree = DEVELOPER_DIR; };
+		C076329A186DDD24005019BA /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/ExternalAccessory.framework; sourceTree = DEVELOPER_DIR; };
 		F51668DF0FFD5F740079F023 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		F516695F0FFD78770079F023 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		F563D4130EA6D10F0062DA57 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -147,6 +149,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C076329B186DDD24005019BA /* ExternalAccessory.framework in Frameworks */,
 				FAED78CE183C3CF400BC7028 /* libRhodes.a in Frameworks */,
 				FAA5A5BC182B11EB00590B1F /* libstdc++.dylib in Frameworks */,
 				C0539BFE1767169700D53DF7 /* MediaPlayer.framework in Frameworks */,
@@ -224,6 +227,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C076329A186DDD24005019BA /* ExternalAccessory.framework */,
 				FA6A403318319D0E00794752 /* MapKit.framework */,
 				FAA5A5BB182B11EB00590B1F /* libstdc++.dylib */,
 				FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */,
@@ -323,6 +327,15 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0500;
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Bremen" */;
 			compatibilityVersion = "Xcode 3.2";

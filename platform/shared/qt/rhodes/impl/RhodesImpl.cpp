@@ -73,127 +73,18 @@ int rho_net_ping_network(const char* szHost)
     return 1;
 }
 
-void parseHttpProxyURI(const rho::String &http_proxy)
+void rho_win32_unset_window_proxy()
 {
-    // http://<login>:<passwod>@<host>:<port>
-    const char *default_port = "8080";
+    CMainWindow* m_appWindow = CMainWindow::getInstance();
+    if (m_appWindow)
+        m_appWindow->setProxyCommand();
+}
 
-    if (http_proxy.length() < 8) {
-        RAWLOGC_ERROR("RhodesImpl", "invalid http proxy url");
-        return;
-    }
-
-    int index = http_proxy.find("http://", 0, 7);
-    if (index == string::npos) {
-        RAWLOGC_ERROR("RhodesImpl", "http proxy url should starts with \"http://\"");
-        return;
-    }
-    index = 7;
-
-    enum {
-        ST_START,
-        ST_LOGIN,
-        ST_PASSWORD,
-        ST_HOST,
-        ST_PORT,
-        ST_FINISH
-    };
-
-    String token, login, password, host, port;
-    char c, state = ST_START, prev_state = state;
-    int length = http_proxy.length();
-
-    for (int i = index; i < length; i++) {
-        c = http_proxy[i];
-
-        switch (state) {
-        case ST_START:
-            if (c == '@') {
-                prev_state = state; state = ST_HOST;
-            } else if (c == ':') {
-                prev_state = state; state = ST_PASSWORD;
-            } else {
-                token +=c;
-                state = ST_HOST;
-            }
-            break;
-        case ST_HOST:
-            if (c == ':') {
-                host = token; token.clear();            
-                prev_state = state; state = ST_PORT;
-            } else if (c == '@') {
-                host = token; token.clear();        
-                prev_state = state;    state = ST_LOGIN;                    
-            } else {
-                token += c;
-                if (i == (length - 1)) {
-                    host = token; token.clear();                                
-                }
-            }
-            break;
-        case ST_PORT:
-            if (c == '@') {
-                port = token; token.clear();            
-                prev_state = state; state = ST_LOGIN;
-            } else {
-                token += c;
-                if (i == (length - 1)) {
-                    port = token; token.clear();
-                }
-            }
-            break;
-        case ST_LOGIN:
-            if (prev_state == ST_PORT || prev_state == ST_HOST) {
-                login    = host; host.clear();
-                password = port; port.clear();
-                prev_state = state; state = ST_HOST;
-                token += c;
-            } else {
-                token += c;
-                if (i == (length - 1)) {
-                    login = token; token.clear();                                
-                }
-            }
-            break;
-        case ST_PASSWORD:
-            if (c == '@') {
-                password = token; token.clear();            
-                prev_state = state; state = ST_HOST;
-            } else {
-                token += c;
-                if (i == (length - 1)) {
-                    password = token; token.clear();                                
-                }
-            }
-            break;
-        default:
-            ;
-        }
-    }
-
-    RAWLOGC_INFO("RhodesImpl", "Setting up HTTP proxy:");
-    RAWLOGC_INFO1("RhodesImpl", "URI: %s", http_proxy.c_str());
-    RAWLOGC_INFO1("RhodesImpl", "HTTP proxy login    = %s", login.c_str());
-    RAWLOGC_INFO1("RhodesImpl", "HTTP proxy password = %s", password.c_str());
-    RAWLOGC_INFO1("RhodesImpl", "HTTP proxy host     = %s", host.c_str());
-    RAWLOGC_INFO1("RhodesImpl", "HTTP proxy port     = %s", port.c_str());
-    
-    if (host.length()) {
-        RHOCONF().setString ("http_proxy_host", host, false);
-
-        if (port.length()){
-            RHOCONF().setString ("http_proxy_port", port, false);
-        } else {
-            RAWLOGC_INFO("RhodesImpl", "there is no proxy port defined");
-        }
-
-        if (login.length())
-            RHOCONF().setString ("http_proxy_login", login, false);
-        if (password.length())
-            RHOCONF().setString ("http_proxy_password", password, false);
-    } else {
-        RAWLOGC_ERROR("RhodesImpl", "empty host name in HTTP-proxy URL");
-    }
+void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
+{
+    CMainWindow* m_appWindow = CMainWindow::getInstance();
+    if (m_appWindow)
+        m_appWindow->setProxyCommand(host, port, login, password);
 }
 
 } //extern "C"

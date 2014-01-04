@@ -24,7 +24,6 @@ class CNotificationImpl: public CNotificationSingletonBase
 public:
 	CNotificationImpl(): CNotificationSingletonBase() 
 	{
-//#ifndef RHODES_EMULATOR
 #if defined(OS_WINCE)
 		m_bNotificationsLoaded = FALSE;
 		m_pNotifications = new CNotificationLoader();
