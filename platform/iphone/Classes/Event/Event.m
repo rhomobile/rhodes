@@ -298,6 +298,18 @@ static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
         event.notes = [NSString stringWithUTF8String:RSTRING_PTR(rNotes)];
     }
     
+    VALUE rReminder = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_REMINDER));
+    if (!NIL_P(rReminder)) {
+        rReminder = rb_funcall(rReminder, rb_intern("to_i"), 0);
+        int nReminder = NUM2INT(rReminder);
+        
+        NSTimeInterval intervalRem = -(nReminder*60);
+        EKAlarm *new_alarm = [EKAlarm alarmWithRelativeOffset:intervalRem];
+
+        [event addAlarm:new_alarm];
+        
+    }
+    
     VALUE rRecurrence = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_RECURRENCE));
     if (!NIL_P(rRecurrence)) {
         Check_Type(rRecurrence, T_HASH);

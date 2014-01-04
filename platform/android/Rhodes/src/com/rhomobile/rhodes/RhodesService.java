@@ -38,7 +38,6 @@ import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Calendar;
@@ -52,13 +51,8 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.Vector;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
-
-import com.rhomobile.rhodes.alert.Alert;
-import com.rhomobile.rhodes.alert.StatusNotification;
 import com.rhomobile.rhodes.event.EventStore;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
@@ -808,7 +802,7 @@ public class RhodesService extends Service {
                 if (context != null) {
                     TelephonyManager manager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
                     number = manager.getLine1Number();
-                    Logger.I(TAG, "Phone number: " + number + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                    Logger.I(TAG, "Phone number: " + number);
                 }
 				return number;
 			}
@@ -1243,138 +1237,15 @@ public class RhodesService extends Service {
         String json = new JSONGenerator(extras).toString();
 
         Logger.D(TAG, "Received PUSH message: " + json);
-        if (callPushCallback(pushType, json)) {
-            Logger.T(TAG, "Push message completely handled in callback");
-            return;
-        }
-
-        final String alert = extras.getString("alert");
-
-        boolean statusNotification = false;
-        if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
-            statusNotification = true;
-        else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
-            statusNotification = !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated);
-        
-        if (statusNotification) {
-            Intent intent = new Intent(getContext(), RhodesActivity.class);
-            StatusNotification.simpleNotification(TAG, 0, getContext(), intent, getBuildConfig("name"), alert);
-        }
-
-		if (alert != null) {
-			Logger.D(TAG, "PUSH: Alert: " + alert);
-            Alert.showPopup(alert);
-		}
-		final String sound = extras.getString("sound");
-		if (sound != null) {
-			Logger.D(TAG, "PUSH: Sound file name: " + sound);
-            Alert.playFile("/public/alerts/" + sound, null);
-		}
-		String vibrate = extras.getString("vibrate");
-		if (vibrate != null) {
-			Logger.D(TAG, "PUSH: Vibrate: " + vibrate);
-			int duration;
-			try {
-				duration = Integer.parseInt(vibrate);
-			}
-			catch (NumberFormatException e) {
-				duration = 5;
-			}
-			final int arg_duration = duration;
-			Logger.D(TAG, "Vibrate " + duration + " seconds");
-            Alert.vibrate(arg_duration);
-		}
-		
-		String syncSources = extras.getString("do_sync");
-		if ((syncSources != null) && (syncSources.length() > 0)) {
-			Logger.D(TAG, "PUSH: Sync:");
-			boolean syncAll = false;
-			for (String source : syncSources.split(",")) {
-				Logger.D(TAG, "url = " + source);
-				if (source.equalsIgnoreCase("all")) {
-					syncAll = true;
-				    break;
-				} else {
-				    final String arg_source = source.trim();
-                    doSyncSource(arg_source);
-				}
-			}
-			
-			if (syncAll) {
-                doSyncAllSources(true); 
-			}
-		}
-	}
+        callPushCallback(pushType, json);
+    }
 
     private void handlePushMessage(String type, String json) {
         Logger.T(TAG, "Handle push message");
         
         Logger.D(TAG, "Push message JSON: " + json);
         
-        if (callPushCallback(type, json)) {
-            Logger.T(TAG, "Push message completely handled in callback");
-            return;
-        }
-        if (json != null) {
-            JSONObject jsonObject;
-            try {
-                jsonObject = (JSONObject)new JSONTokener(json).nextValue();
-    
-                final String alert = jsonObject.optString("alert");
-    
-                boolean statusNotification = false;
-                if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS)) {
-                    Logger.D(TAG, "Show push notification always");
-                    statusNotification = true;
-                } else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND)) {
-                    Logger.D(TAG, "Show push notification from background");
-                    statusNotification = !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated);
-                }
-    
-                if (statusNotification) {
-                    Logger.D(TAG, "Showing status push notification");
-                    Intent intent = new Intent(getContext(), RhodesActivity.class);
-                    StatusNotification.simpleNotification(TAG, 0, getContext(), intent, getBuildConfig("name"), alert);
-                }
-    
-                if (alert.length() > 0) {
-                    Logger.D(TAG, "PUSH: Alert: " + alert);
-                    Alert.showPopup(alert);
-                }
-                final String sound = jsonObject.optString("sound");
-                if (sound.length() > 0) {
-                    Logger.D(TAG, "PUSH: Sound file name: " + sound);
-                    Alert.playFile("/public/alerts/" + sound, null);
-                }
-                int vibrate = jsonObject.optInt("vibrate");
-                if (vibrate > 0) {
-                    Logger.D(TAG, "PUSH: Vibrate: " + vibrate);
-                    Logger.D(TAG, "Vibrate " + vibrate + " seconds");
-                    Alert.vibrate(vibrate);
-                }
-                JSONArray syncSources = jsonObject.optJSONArray("do_sync");
-                if ((syncSources != null) && (syncSources.length() > 0)) {
-                    Logger.D(TAG, "PUSH: Sync:");
-                    boolean syncAll = false;
-                    for (int i = 0; i < syncSources.length(); ++i) {
-                        String source = syncSources.optString(i);
-                        Logger.D(TAG, "source = " + source);
-                        if (source.equalsIgnoreCase("all")) {
-                            syncAll = true;
-                            break;
-                        } else {
-                            doSyncSource(source);
-                        }
-                    }
-                    
-                    if (syncAll) {
-                        doSyncAllSources(true); 
-                    }
-                }
-            } catch (JSONException e) {
-                Logger.E(TAG, "Error parsing JSON payload in push message: " + e.getMessage());
-            }
-        }
+        callPushCallback(type, json);
     }
     
     private static native void nativeAddAppMessage(String sourceAppName, String message);
@@ -1445,22 +1316,19 @@ public class RhodesService extends Service {
 		    {
 				BufferedReader reader = new BufferedReader(new FileReader("/sys/hardware_id/uuid"));
 				uuid = reader.readLine();
-				Logger.E(TAG, "uuid: " + uuid);
+				Logger.T(TAG, "uuid: " + uuid);
 		    }
 		    else
 		    {
 				uuid = computeUUID();
-				Logger.E(TAG, "uuid: " + uuid);
+				Logger.T(TAG, "uuid: " + uuid);
 		    }
 		}
-		catch (Exception e)
+		catch (Throwable e)
 		{
 		    Logger.E(TAG, "Cannot determine device UUID");
 		}
-		finally
-		{
-			return uuid;
-		}
+		return uuid;
 	}
 	
 	/**
@@ -1557,6 +1425,20 @@ public class RhodesService extends Service {
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         
         srv.startActivity(intent);
+    }
+    
+    public static void minimize() {
+        if (!RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated)) {
+            Logger.T(TAG, "Application is already deactivated, do nothing");
+            return;
+        }
+        
+        try {
+            RhodesActivity.safeGetInstance().moveTaskToBack(true);
+        } catch (RuntimeException ex) {
+            Logger.E(TAG, "Minimize failed");
+            Logger.E(TAG, ex);
+        }
     }
 
     public static String getNativeMenu() {

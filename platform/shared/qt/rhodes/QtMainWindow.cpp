@@ -90,7 +90,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_LogicalDpiX(0),
     m_LogicalDpiY(0),
     firstShow(true), m_bFirstLoad(true),
-    toolBarSeparatorWidth(0)
+    toolBarSeparatorWidth(0),
+    m_proxy(QNetworkProxy(QNetworkProxy::DefaultProxy))
     //TODO: m_SyncStatusDlg
 {
 #ifdef OS_WINDOWS_DESKTOP
@@ -158,6 +159,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 #if defined(RHODES_EMULATOR)
     webInspectorWindow->show();
 #endif
+    internalSetProxy();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -253,6 +255,26 @@ bool QtMainWindow::isStarted(void)
       ( (ui->toolBar->isVisible() || ui->toolBarRight->isVisible()) &&
         ((ui->toolBar->actions().size() > 0) || (ui->toolBarRight->actions().size() > 0))
       );
+}
+
+void QtMainWindow::setProxy()
+{
+    m_proxy = QNetworkProxy(QNetworkProxy::DefaultProxy);
+    internalSetProxy();
+}
+
+void QtMainWindow::setProxy(QString host, QString port, QString login, QString password)
+{
+    m_proxy = QNetworkProxy(QNetworkProxy::HttpProxy, host, port.toUInt(), login, password);
+    internalSetProxy();
+}
+
+void QtMainWindow::internalSetProxy()
+{
+    for (int i=0; i<tabViews.size(); ++i) {
+        tabViews[i]->page()->networkAccessManager()->setProxy(m_proxy);
+    }
+    ui->webView->page()->networkAccessManager()->setProxy(m_proxy);
 }
 
 void QtMainWindow::on_actionBack_triggered()
@@ -498,6 +520,7 @@ void QtMainWindow::tabbarInitialize()
 
 void QtMainWindow::setUpWebPage(QWebPage* page)
 {
+    page->networkAccessManager()->setProxy(m_proxy);
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
     quint16 webkit_debug_port = 

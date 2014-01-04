@@ -98,6 +98,7 @@ void create_navbar(NSDictionary *p)
             const char *label = NULL;
             const char *icon = NULL;
             const char *action = NULL;
+            const char *colored_icon = NULL;
             
             NSDictionary* dict = (NSDictionary*)objValue;
             NSObject* objLabel = [dict objectForKey:@"label"];
@@ -112,11 +113,16 @@ void create_navbar(NSDictionary *p)
             if (objAction != nil) {
                 action = [((NSString*)objAction) UTF8String];
             }
+            Boolean* objColoredIcon = (Boolean*)[dict objectForKey:@"coloredIcon"];
+            if (objColoredIcon != nil) {
+                colored_icon = (*objColoredIcon)? "true" : "";
+            }
             
             NSMutableArray *button = strcasecmp(name, "left") == 0 ? left : right;
             [button addObject:[NSString stringWithUTF8String:(action ? action : "")]];
             [button addObject:[NSString stringWithUTF8String:(label ? label : "")]];
             [button addObject:[NSString stringWithUTF8String:(icon ? icon : "")]];
+            [button addObject:[NSString stringWithUTF8String:(colored_icon ? colored_icon : "")]];
         }
 
     }

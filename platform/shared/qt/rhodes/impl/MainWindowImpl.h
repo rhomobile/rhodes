@@ -147,6 +147,8 @@ public:
     void createCustomMenuCommand(void);
     void minimizeWindowCommand();
     void restoreWindowCommand();
+    void setProxyCommand();
+    void setProxyCommand(const char* host, const char* port, const char* login, const char* password);
 
 signals:
     void doExitCommand(void);
@@ -176,9 +178,13 @@ signals:
     void doCreateCustomMenu(void);
     void doMinimizeWindow();
     void doRestoreWindow();
+    void doSetProxy();
+    void doSetProxy(const char* host, const char* port, const char* login, const char* password);
 
 private slots:
     void minimizeWindow(void);
     void restoreWindow(void);
     void createCustomMenuSlot(void);
+    void setProxy();
+    void setProxy(const char* host, const char* port, const char* login, const char* password);
 };

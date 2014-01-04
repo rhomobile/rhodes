@@ -41,7 +41,7 @@ public:
     
 protected:
 	void setDefaults();
-	rho::String modesToString(screenorientation::ScreenOrientationModes& modes);
+	rho::String modesToString(ScreenOrientationExt::ScreenOrientationModes& modes);
 private:	
 	bool										m_isISTEnabled;					// state of availability Motorola Solutions IST api's
 	bool										m_isSensorEnabled;				// state of availability Motorola Solutions Sensor api's
@@ -49,8 +49,8 @@ private:
 	bool										m_hasFocus;						// whether the app has focus
 	bool										m_autoRotate;					// current auto rate state
 	bool										m_defaultAutoRotate;			// the autorotate state during startup
-	screenorientation::ScreenOrientationModes	m_currentOrientation;			// the current device orientation
-	screenorientation::ScreenOrientationModes	m_defaultOrientation;			// the default orientation during first access, when destryed destroys the device to this state
+	ScreenOrientationExt::ScreenOrientationModes	m_currentOrientation;			// the current device orientation
+	ScreenOrientationExt::ScreenOrientationModes	m_defaultOrientation;			// the default orientation during first access, when destryed destroys the device to this state
 	common::CMutex*								m_syncLock;						// a lock to protect the cached callback object, from the javascript thread and ui thread. subject to debate?
 	CMethodResult*								m_methodResult;					// synchronized (not sure if this is necessary). Does this object need to be cleaned up?
 	DWORD										m_dwLastSettingChangeTime;		// the time when the window received the last screen orientation change event.
@@ -79,14 +79,14 @@ IScreenOrientationSingleton* CScreenOrientationFactory::createModuleSingleton()
  * @author GXV738 (6/15/2013)
  */
 CScreenOrientationSingleton::CScreenOrientationSingleton() : 
-									m_isISTEnabled(screenorientation::CIstDll::IsPresent()),
-									m_isSensorEnabled(screenorientation::CSensor::IsSupported()),
-									m_supportsScreenOrientation(screenorientation::COrientationSettings::IsSupported()),
+									m_isISTEnabled(ScreenOrientationExt::CIstDll::IsPresent()),
+									m_isSensorEnabled(ScreenOrientationExt::CSensor::IsSupported()),
+									m_supportsScreenOrientation(ScreenOrientationExt::COrientationSettings::IsSupported()),
 									m_hasFocus(true),
 									m_autoRotate(false),
 									m_defaultAutoRotate(false),
-									m_currentOrientation(screenorientation::COrientationSettings::GetOrientation()),
-									m_defaultOrientation(screenorientation::SOM_BAD_ORIENTATION),
+									m_currentOrientation(ScreenOrientationExt::COrientationSettings::GetOrientation()),
+									m_defaultOrientation(ScreenOrientationExt::SOM_BAD_ORIENTATION),
 									m_syncLock(new common::CMutex()),
 									m_methodResult(NULL),
 									m_dwLastSettingChangeTime(0)
@@ -97,7 +97,7 @@ CScreenOrientationSingleton::CScreenOrientationSingleton() :
 	VERIFY(NULL != m_syncLock);
 	if (m_supportsScreenOrientation)
 	{
-		m_defaultOrientation = screenorientation::COrientationSettings::GetOrientation();
+		m_defaultOrientation = ScreenOrientationExt::COrientationSettings::GetOrientation();
 	}
 
 	// save the autoroate state during startup
@@ -105,7 +105,7 @@ CScreenOrientationSingleton::CScreenOrientationSingleton() :
 	{
 		// when the license page is active a call to the 
 		// IST api always returns a disabled		
-		screenorientation::CIstDll ist;
+		ScreenOrientationExt::CIstDll ist;
 		if(ist.Open())
 		{
 			m_defaultAutoRotate = ist.IsAutoRotateEnabled();
@@ -115,7 +115,7 @@ CScreenOrientationSingleton::CScreenOrientationSingleton() :
 	}
 	else if (m_isSensorEnabled)
 	{
-		m_defaultAutoRotate = screenorientation::CSensor::IsAutoRotateEnabled();
+		m_defaultAutoRotate = ScreenOrientationExt::CSensor::IsAutoRotateEnabled();
 		
 	}
 
@@ -134,7 +134,7 @@ CScreenOrientationSingleton::~CScreenOrientationSingleton()
 	//when exiting rho app set the screen orientation to how it was during the startup
 	if (m_supportsScreenOrientation && (m_defaultOrientation != m_currentOrientation))
 	{
-		screenorientation::COrientationSettings::SetOrientation(m_defaultOrientation);
+		ScreenOrientationExt::COrientationSettings::SetOrientation(m_defaultOrientation);
 	}
 
 	// restore the autoroate state during shutdown
@@ -142,7 +142,7 @@ CScreenOrientationSingleton::~CScreenOrientationSingleton()
 	{
 		// when the license page is active a call to the 
 		// IST api always returns a disabled		
-		screenorientation::CIstDll ist;
+		ScreenOrientationExt::CIstDll ist;
 		if(ist.Open())
 		{
 			ist.EnableAutoRotate(m_defaultAutoRotate);
@@ -152,7 +152,7 @@ CScreenOrientationSingleton::~CScreenOrientationSingleton()
 	}
 	else if (m_isSensorEnabled)
 	{		
-		screenorientation::CSensor::EnableAutoRotate(m_defaultAutoRotate);
+		ScreenOrientationExt::CSensor::EnableAutoRotate(m_defaultAutoRotate);
 		
 	}
 
@@ -187,7 +187,7 @@ void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult
 		}
 		else
 		{
-			screenorientation::CIstDll ist;
+			ScreenOrientationExt::CIstDll ist;
 			if(ist.Open())
 			{
 				autoRotateState = ist.IsAutoRotateEnabled();
@@ -205,7 +205,7 @@ void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult
 		}
 		else
 		{
-			autoRotateState = screenorientation::CSensor::IsAutoRotateEnabled();
+			autoRotateState = ScreenOrientationExt::CSensor::IsAutoRotateEnabled();
 		}
 	}
 	else
@@ -232,7 +232,7 @@ void CScreenOrientationSingleton::setAutoRotate( bool autoRotate, rho::apiGenera
 	bool bDone = false;
 	if (this->m_isISTEnabled)
 	{
-		screenorientation::CIstDll ist;
+		ScreenOrientationExt::CIstDll ist;
 		if(ist.Open())
 		{
 			ist.EnableAutoRotate(autoRotate);
@@ -244,7 +244,7 @@ void CScreenOrientationSingleton::setAutoRotate( bool autoRotate, rho::apiGenera
 	}
 	else if (this->m_isSensorEnabled)
 	{
-		bDone = screenorientation::CSensor::EnableAutoRotate(autoRotate);
+		bDone = ScreenOrientationExt::CSensor::EnableAutoRotate(autoRotate);
 		this->m_autoRotate = autoRotate;
         oResult.set(bDone);
 	}
@@ -270,7 +270,7 @@ void CScreenOrientationSingleton::normal(rho::apiGenerator::CMethodResult& oResu
 	bool bDone = false;
 	if (this->m_supportsScreenOrientation)
 	{
-		bDone = screenorientation::COrientationSettings::SetOrientation(screenorientation::SOM_NORMAL);
+		bDone = ScreenOrientationExt::COrientationSettings::SetOrientation(ScreenOrientationExt::SOM_NORMAL);
 		if (bDone)		{
 			LOG(INFO) + " Screen orientation changed to normal"; 			
 		}
@@ -295,7 +295,7 @@ void CScreenOrientationSingleton::rightHanded(rho::apiGenerator::CMethodResult& 
 	bool bDone = false;
 	if (this->m_supportsScreenOrientation)
 	{
-		bDone = screenorientation::COrientationSettings::SetOrientation(screenorientation::SOM_RIGHT_HANDED);
+		bDone = ScreenOrientationExt::COrientationSettings::SetOrientation(ScreenOrientationExt::SOM_RIGHT_HANDED);
 		if (bDone)
 		{
 			LOG(INFO) + " Screen orientation changed to right handed";
@@ -320,7 +320,7 @@ void CScreenOrientationSingleton::leftHanded(rho::apiGenerator::CMethodResult& o
 	bool bDone = false;
 	if (this->m_supportsScreenOrientation)
 	{
-		bDone = screenorientation::COrientationSettings::SetOrientation(screenorientation::SOM_LEFT_HANDED);
+		bDone = ScreenOrientationExt::COrientationSettings::SetOrientation(ScreenOrientationExt::SOM_LEFT_HANDED);
 		if (bDone)
 		{
 			LOG(INFO) + " Screen orientation changed to left handed";
@@ -345,7 +345,7 @@ void CScreenOrientationSingleton::upsideDown(rho::apiGenerator::CMethodResult& o
 	bool bDone = false;
 	if (this->m_supportsScreenOrientation)
 	{
-		bDone = screenorientation::COrientationSettings::SetOrientation(screenorientation::SOM_UPSIDE_DOWN);
+		bDone = ScreenOrientationExt::COrientationSettings::SetOrientation(ScreenOrientationExt::SOM_UPSIDE_DOWN);
 		if (bDone)
 		{
 			LOG(INFO) + " Screen orientation changed to upside down";
@@ -392,7 +392,7 @@ void CScreenOrientationSingleton::setScreenOrientationEvent(rho::apiGenerator::C
  *  
  * The function contains code borrowed from the earlier scan 
  * orientation plugin to filter out filter repeated screen 
- * orientation change messages for a single screenorientation 
+ * orientation change messages for a single ScreenOrientationExt 
  * set call, using a hardcoded timeout value. 
  *  
  * QUESTIONS: 
@@ -413,7 +413,7 @@ bool CScreenOrientationSingleton::onWndMsg(MSG& msg)
 	// only WM_SETTINGCHANGE aad SETTINGCHANGE_RESET for screen orientation change
 	if ((WM_SETTINGCHANGE == msg.message) && (SETTINGCHANGE_RESET == msg.wParam))
 	{
-		screenorientation::ScreenOrientationModes modes = screenorientation::COrientationSettings::GetOrientation();
+		ScreenOrientationExt::ScreenOrientationModes modes = ScreenOrientationExt::COrientationSettings::GetOrientation();
 
 		//  The ScreenOrientation has Changed
 		//  Need to use a Debounce duration here as we don't get 
@@ -432,7 +432,7 @@ bool CScreenOrientationSingleton::onWndMsg(MSG& msg)
 			this->m_dwLastSettingChangeTime = msg.time;
 			LOG(INFO) +  " orientation changed event received."; 			
 			rho::String state = this->modesToString(modes);
-			if ((modes != screenorientation::SOM_BAD_ORIENTATION) && (this->m_currentOrientation != modes))
+			if ((modes != ScreenOrientationExt::SOM_BAD_ORIENTATION) && (this->m_currentOrientation != modes))
 			{
 				LOG(INFO) + "Orientation changed to " + state;
 				this->m_currentOrientation = modes;
@@ -473,7 +473,7 @@ void CScreenOrientationSingleton::setDefaults()
 	// device alone
 	if (this->m_isISTEnabled)
 	{
-		screenorientation::CIstDll ist;
+		ScreenOrientationExt::CIstDll ist;
 		if(ist.Open())
 		{
 			ist.EnableAutoRotate(true);
@@ -483,7 +483,7 @@ void CScreenOrientationSingleton::setDefaults()
 	}
 	else if (this->m_isSensorEnabled)
 	{
-		if(screenorientation::CSensor::EnableAutoRotate(true))
+		if(ScreenOrientationExt::CSensor::EnableAutoRotate(true))
 			this->m_autoRotate = true;
 		
 	}
@@ -520,8 +520,8 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 		if (this->m_supportsScreenOrientation)
 		{
 			// cache the last known orientation mode
-			screenorientation::ScreenOrientationModes orientationMode = screenorientation::COrientationSettings::GetOrientation();
-			this->m_currentOrientation = (orientationMode != screenorientation::SOM_BAD_ORIENTATION)? orientationMode : screenorientation::SOM_NORMAL;
+			ScreenOrientationExt::ScreenOrientationModes orientationMode = ScreenOrientationExt::COrientationSettings::GetOrientation();
+			this->m_currentOrientation = (orientationMode != ScreenOrientationExt::SOM_BAD_ORIENTATION)? orientationMode : ScreenOrientationExt::SOM_NORMAL;
 			LOG(INFO) + " Orientation cached : " + this->modesToString(this->m_currentOrientation);
 		}
 		// app has just lost focus
@@ -530,7 +530,7 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 			
 			//cache the last auto 
 			
-			screenorientation::CIstDll ist;
+			ScreenOrientationExt::CIstDll ist;
 			if(ist.Open())
 			{
 				this->m_autoRotate = ist.IsAutoRotateEnabled();
@@ -547,7 +547,7 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 		}
 		else if (this->m_isSensorEnabled)
 		{
-			this->m_autoRotate = screenorientation::CSensor::IsAutoRotateEnabled();			
+			this->m_autoRotate = ScreenOrientationExt::CSensor::IsAutoRotateEnabled();			
 			LOG(INFO) + " AutoRotate cached : " + (this->m_autoRotate?"on" : "off");
 		}
 		
@@ -561,21 +561,21 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 
 		if (m_supportsScreenOrientation)
 		{
-			screenorientation::ScreenOrientationModes orientationMode = screenorientation::COrientationSettings::GetOrientation();
-			if(screenorientation::SOM_BAD_ORIENTATION == orientationMode)
-				screenorientation::SOM_NORMAL;
+			ScreenOrientationExt::ScreenOrientationModes orientationMode = ScreenOrientationExt::COrientationSettings::GetOrientation();
+			if(ScreenOrientationExt::SOM_BAD_ORIENTATION == orientationMode)
+				ScreenOrientationExt::SOM_NORMAL;
 			
 			if (orientationMode != this->m_currentOrientation)
 			{
 				// on getting the focus restore the orientation
-				screenorientation::COrientationSettings::SetOrientation(this->m_currentOrientation);//SetOrientation(pData->storedOrientation);
+				ScreenOrientationExt::COrientationSettings::SetOrientation(this->m_currentOrientation);//SetOrientation(pData->storedOrientation);
 				LOG(INFO) + " Orientation back to : " + this->modesToString(this->m_currentOrientation);
 			}
 		}
 
 		if (this->m_isISTEnabled)
 		{
-			screenorientation::CIstDll ist;
+			ScreenOrientationExt::CIstDll ist;
 			if(ist.Open())
 			{
 				bool autoRotate = ist.IsAutoRotateEnabled();
@@ -590,10 +590,10 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 		}		
 		else if (this->m_isSensorEnabled)
 		{
-			bool autoRotate = screenorientation::CSensor::IsAutoRotateEnabled();
+			bool autoRotate = ScreenOrientationExt::CSensor::IsAutoRotateEnabled();
 			if (autoRotate != m_autoRotate)
 			{
-				screenorientation::CSensor::EnableAutoRotate(this->m_autoRotate);
+				ScreenOrientationExt::CSensor::EnableAutoRotate(this->m_autoRotate);
 				LOG(INFO) + " AutoRotate back to : " + (this->m_autoRotate?"on" : "off");
 			}
 		}
@@ -608,20 +608,20 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
  * 
  * @return rho::String 
  */
-rho::String CScreenOrientationSingleton::modesToString(screenorientation::ScreenOrientationModes& modes)
+rho::String CScreenOrientationSingleton::modesToString(ScreenOrientationExt::ScreenOrientationModes& modes)
 {
 	rho::String state = g_normal;
 	switch (modes)
 	{
-		case screenorientation::SOM_NORMAL:
+		case ScreenOrientationExt::SOM_NORMAL:
 			break;
-		case screenorientation::SOM_RIGHT_HANDED:
+		case ScreenOrientationExt::SOM_RIGHT_HANDED:
 			state = g_rightHanded;
 			break;
-		case screenorientation::SOM_UPSIDE_DOWN:
+		case ScreenOrientationExt::SOM_UPSIDE_DOWN:
 			state = g_upsideDown;
 			break;
-		case screenorientation::SOM_LEFT_HANDED:
+		case ScreenOrientationExt::SOM_LEFT_HANDED:
 			state = g_leftHanded;
 			break;
 		default:

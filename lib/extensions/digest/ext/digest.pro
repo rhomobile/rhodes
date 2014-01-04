@@ -19,10 +19,10 @@ win32 {
   DESTDIR = ../../../../platform/win32/bin/extensions
   OBJECTS_DIR = ../../../../platform/win32/bin/extensions/digest
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
-  debug {
+  Debug {
     DEFINES += _DEBUG DEBUG
   }
-  release {
+  Release {
     DEFINES += _NDEBUG NDEBUG
   }
   INCLUDEPATH += ../../../../platform/shared/ruby/win32

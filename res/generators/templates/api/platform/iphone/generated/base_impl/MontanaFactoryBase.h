@@ -15,6 +15,8 @@
 
 -(id<I<%= $cur_module.name %>>)create<%= $cur_module.name %>ByID:(NSString*)ID;
 
+-(NSArray*) enumerate<%= $cur_module.name %>Instances;
+
 -(void)dealloc;
 
 @end

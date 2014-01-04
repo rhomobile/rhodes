@@ -62,7 +62,7 @@ extern "C" void Init_CoreAPI_Extension()
 	//Init_Led();
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_WINCE) || defined(OS_MACOSX)
+#if defined(OS_ANDROID) || defined(OS_WINCE) || defined(OS_MACOSX) || (defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR))
 	Init_Push();
 #endif
 }
