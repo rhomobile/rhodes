@@ -11,7 +11,7 @@
  * 
  * @return bool true if screen orientation is supported
  */
-bool screenorientation::COrientationSettings::IsSupported()
+bool ScreenOrientationExt::COrientationSettings::IsSupported()
 {
 	DEVMODE dm;
 	bool bSupported = false;
@@ -31,11 +31,11 @@ bool screenorientation::COrientationSettings::IsSupported()
 	return bSupported;
 }
 
-screenorientation::COrientationSettings::COrientationSettings()
+ScreenOrientationExt::COrientationSettings::COrientationSettings()
 {
 }
 
-screenorientation::COrientationSettings::~COrientationSettings()
+ScreenOrientationExt::COrientationSettings::~COrientationSettings()
 {
 }
 
@@ -44,9 +44,9 @@ screenorientation::COrientationSettings::~COrientationSettings()
  * 
  * @author GXV738 (6/12/2013)
  * 
- * @return screenorientation::ScreenOrientationModes 
+ * @return ScreenOrientationExt::ScreenOrientationModes 
  */
-screenorientation::ScreenOrientationModes screenorientation::COrientationSettings::GetOrientation()
+ScreenOrientationExt::ScreenOrientationModes ScreenOrientationExt::COrientationSettings::GetOrientation()
 {
 	DEVMODE dm;
 	ScreenOrientationModes orientationMode = SOM_BAD_ORIENTATION;
@@ -97,7 +97,7 @@ screenorientation::ScreenOrientationModes screenorientation::COrientationSetting
  * 
  * @return bool 
  */
-bool screenorientation::COrientationSettings::SetOrientation(ScreenOrientationModes orientationMode)
+bool ScreenOrientationExt::COrientationSettings::SetOrientation(ScreenOrientationModes orientationMode)
 {
 	DEVMODE dm;
 	bool opStatus = true;
@@ -154,7 +154,7 @@ bool screenorientation::COrientationSettings::SetOrientation(ScreenOrientationMo
 	return opStatus;
 }
 
-void screenorientation::COrientationSettings::PersistSettingsToRegistry(DWORD dwAngle, DWORD dwLandscapeMode)
+void ScreenOrientationExt::COrientationSettings::PersistSettingsToRegistry(DWORD dwAngle, DWORD dwLandscapeMode)
 {
 	HKEY hRegKey = NULL;
 	DWORD dwRetVal = 0;

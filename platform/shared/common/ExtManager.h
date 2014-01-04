@@ -31,6 +31,11 @@
 
 #include "logging/RhoLog.h"
 
+#ifdef OS_ANDROID
+extern "C" void rho_sys_bring_to_front();
+extern "C" void rho_sys_minimize();
+#endif
+
 #if defined(WINDOWS_PLATFORM)
 
 namespace rho {
@@ -217,9 +222,15 @@ public:
     }
     
     virtual void minimizeApp() {
+#ifdef OS_ANDROID
+        rho_sys_minimize();
+#endif
         //UNSUPPORTED
     }
     virtual void restoreApp() {
+#ifdef OS_ANDROID
+        rho_sys_bring_to_front();
+#endif
         //UNSUPPORTED
     }
 

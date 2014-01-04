@@ -87,9 +87,6 @@ public:
 
 void CSystemImpl::getOsVersion(CMethodResult& oResult)
 {
-#ifdef RHODES_EMULATOR
-    CSystemImpl::getOsVersion(oResult)
-#else
 	OSVERSIONINFO osv;
 	osv.dwOSVersionInfoSize = sizeof(osv);
 	if (!GetVersionEx(&osv))
@@ -106,7 +103,6 @@ void CSystemImpl::getOsVersion(CMethodResult& oResult)
 
         oResult.set(StringW(buf));
     }
-#endif
 }
 
 void CSystemImpl::getShowKeyboard(rho::apiGenerator::CMethodResult& oResult)
@@ -127,12 +123,7 @@ void CSystemImpl::getRegistrySetting( int hive,  const rho::String& subKey,  con
 
 void CSystemImpl::getIsEmulator(CMethodResult& oResult)
 {
-#ifdef RHODES_EMULATOR
-    CSystemImpl::getIsEmulator(oResult);
-#else
-	//TODO: getIsEmulator
 	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->isEmulator());
-#endif
 }
 
 void CSystemImpl::getScreenWidth(CMethodResult& oResult)

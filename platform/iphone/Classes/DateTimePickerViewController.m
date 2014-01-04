@@ -48,7 +48,7 @@
 
 -(void)makeTransparencyBackground
 {
-    self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0];
+    self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.0];
     [self.view setNeedsDisplay];
 }
 

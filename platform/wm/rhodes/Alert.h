@@ -30,10 +30,6 @@
 #include <common/RhoStd.h>
 #include <logging/RhoLog.h>
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-#include "api_generator/MethodResult.h"
-#endif
-
 using namespace rho;
 using namespace rho::common;
 

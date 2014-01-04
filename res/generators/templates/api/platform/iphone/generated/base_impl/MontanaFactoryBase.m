@@ -47,6 +47,10 @@
     return m<%= $cur_module.name %>Singleton;
 }
 
+-(NSArray*) enumerate<%= $cur_module.name %>Instances {
+    return [m<%= $cur_module.name %>Instances allKeys];
+}
+
 -(void)dealloc {
     [m<%= $cur_module.name %>Instances release];
     [super dealloc];

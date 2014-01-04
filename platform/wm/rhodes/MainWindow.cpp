@@ -39,11 +39,6 @@
 #include <string>
 #include <hash_map>
 
-#if defined(OS_WINDOWS_DESKTOP)
-#pragma warning(disable : 4995)
-#include <strsafe.h>
-#endif
-
 #include "resource.h"
 #include "MainWindow.h"
 #include "common/StringConverter.h"
@@ -250,42 +245,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	RECT rcMainWindow = { 0,0,320,470 };
 
-#if defined(OS_WINDOWS_DESKTOP)    
-//TODO: remove Desktop code from this file. QT window used instead.
-	LOGCONF().setLogView(&m_logView);
-
-	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
-	rcMainWindow.top = getIniInt(_T("main_view_top"),0);
-    if ( rcMainWindow.left < 0 || rcMainWindow.left > xScreenSize )
-        rcMainWindow.left = 0;
-    if ( rcMainWindow.top < 0 || rcMainWindow.top > yScreenSize )
-        rcMainWindow.top = 0;
-
-	int width = RHOCONF().getInt("client_area_width");
-    if (width <= 0) 
-        width = rcMainWindow.right;
-	rcMainWindow.right = rcMainWindow.left+width;
-	int height = RHOCONF().getInt("client_area_height");
-	if (height <= 0) 
-        height = rcMainWindow.bottom;
-	rcMainWindow.bottom = rcMainWindow.top+height;
-
-    //m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
-
-	m_menuBar.Create(m_hWnd,CWindow::rcDefault);
-
-	NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
-	SystemParametersInfo ( SPI_GETNONCLIENTMETRICS, 0, &ncm, false );
-	m_menuBarHeight = ncm.iMenuHeight+ncm.iBorderWidth*4+2;
-	rcMainWindow.bottom += ncm.iCaptionHeight+ncm.iBorderWidth*8+m_menuBarHeight;
-	rcMainWindow.right += ncm.iScrollWidth;
-	rcMainWindow.right += ncm.iBorderWidth*6;
-
-	m_screenWidth = rcMainWindow.right - rcMainWindow.left;
-	m_screenHeight = rcMainWindow.bottom - rcMainWindow.top;
-
-    MoveWindow(&rcMainWindow);
-#elif defined(OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
+#if defined(OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 
     if(m_mainMenu.CreateMenu())
     {
@@ -476,13 +436,6 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 #endif
     
 
-#if defined(OS_WINDOWS_DESKTOP)
-	if(m_logView.IsWindow()) {
-		m_logView.DestroyWindow();
-	}
-	LOGCONF().setLogView(NULL);
-#endif
-
 #if !defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) && !defined(OS_PLATFORM_MOTCE)
     // Tear down connection points while controls are still alive.
     RHO_ASSERT(SUCCEEDED(AtlAdviseSinkMap(this, false)));
@@ -522,22 +475,6 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
 {
     LOG(INFO)  + "resizeWindow: xSize=" + xSize + ";ySize=" + ySize;
 
-#if defined(OS_WINDOWS_DESKTOP)
-	USES_CONVERSION;
-    LOG(TRACE) + "Seting browser client area size to: " + xSize + " x " + (ySize-m_menuBarHeight-m_toolbar.getHeight());
-    //m_browser.MoveWindow(0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight());
-    RECT rect = {0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight()};
-
-    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()) )
-        m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabIndex(), rect);
-
-    if (m_menuBar.m_hWnd) {
-		m_menuBar.MoveWindow(0, ySize-m_menuBarHeight, xSize, m_menuBarHeight);
-    }
-    if ( m_toolbar.m_hWnd )
-        m_toolbar.MoveWindow(0, ySize-m_menuBarHeight-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
-#else
-
 //#if defined(_WIN32_WCE)
 //	int SIPtop = getSIPVisibleTop();
 //	if (m_bFullScreen && (SIPtop>=0))
@@ -570,7 +507,6 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
 
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, ySize-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
-#endif
 
 }
 
@@ -1113,16 +1049,8 @@ LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 
 LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-#if defined(OS_WINDOWS_DESKTOP)
-	if ( !m_logView.IsWindow() ) {
-		LoadLibrary(_T("riched20.dll"));
-		m_logView.Create(NULL);
-	}
-	m_logView.ShowWindow(SW_SHOWNORMAL);
-#else
 	CLogView oLogView;
     oLogView.DoModal(m_hWnd);
-#endif
 
     return 0;
 }
@@ -1218,21 +1146,10 @@ LRESULT CMainWindow::OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
     return 0;
 }
 
-#if defined (OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
+#if defined( OS_PLATFORM_MOTCE )
 LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
 	createCustomMenu();
-	return 0;
-}
-#endif
-
-#if defined(OS_WINDOWS_DESKTOP)
-LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) 
-{
-	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
-	setIniInt(_T("main_view_left"),lp->x);
-	setIniInt(_T("main_view_top"),lp->y);
-	bHandled = FALSE;
 	return 0;
 }
 #endif
@@ -1831,7 +1748,7 @@ void CMainWindow::showMenuBarMenu(const CAppMenuItem& menuButton, bool isLeft)
         else
         {
             HMENU hMenu = CreatePopupMenu();
-#if !defined (OS_WINDOWS_DESKTOP) && !defined( OS_PLATFORM_MOTCE )
+#if !defined( OS_PLATFORM_MOTCE )
             createCustomMenuEx( hMenu, m_arAppMenuItems );
 #endif
             RECT  rcBar = {0}; 
@@ -1871,7 +1788,7 @@ LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     return 0;
 }
 
-#if defined (OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
+#if defined( OS_PLATFORM_MOTCE )
 
 void CMainWindow::createCustomMenu()
 {

@@ -22,7 +22,6 @@ platform/shared/ruby/enum.c
 platform/shared/ruby/enumerator.c
 platform/shared/ruby/error.c
 platform/shared/ruby/eval.c
-platform/shared/ruby/ext/alert/alert_wrap.c
 platform/shared/ruby/ext/bluetooth/bluetooth_wrap.c
 platform/shared/ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c
 platform/shared/ruby/ext/calendar/calendar_wrap.c

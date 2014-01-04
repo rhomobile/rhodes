@@ -282,8 +282,10 @@ namespace "build" do
       end
 
       $buildcfg = args.configuration
-      
-      Rake::Task["build:wm:rhobundle"].invoke  
+	 	  
+	  Rake::Task["config:qt"].invoke() if $current_platform == "win32"
+	  Rake::Task["config:win32:qt"].invoke() if $current_platform == "win32"	
+	  Rake::Task["build:wm:rhobundle"].invoke  
       Rake::Task["config:win32:application"].invoke() if $current_platform == "win32"
       Rake::Task["build:win32:after_bundle"].invoke  
     end
@@ -319,7 +321,7 @@ namespace "build" do
           end
 
           puts "#{ext_config}"
-          is_prebuilt = ext_config && ext_config['wm'] && ext_config['wm']['exttype'] && ext_config['wm']['exttype'] == 'prebuilt'
+          is_prebuilt = ext_config && ext_config[$current_platform] && ext_config[$current_platform]['exttype'] && ext_config[$current_platform]['exttype'] == 'prebuilt'
 		  project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
           
           next unless (File.exists?( File.join(extpath, "build.bat") ) || is_prebuilt || project_path)
@@ -366,7 +368,8 @@ namespace "build" do
               ENV['RHO_EXT_NAME']=ext                
 
               if is_prebuilt
-                  file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
+				  file_mask = File.join(extpath, $current_platform + ($current_platform=='wm' ? '/lib' : '' ) + '/*.lib' ) 
+ 
                   puts "PREBUILD: #{file_mask}"
                 
                   mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
@@ -395,9 +398,11 @@ namespace "build" do
 
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
 
-              if $current_platform == 'win32'
-                ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
-                ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
+              unless ENV["TARGET_EXT_DIR"]
+                if $current_platform == 'win32'
+                  ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
+                  ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
+                end
               end
 
               ENV['VCBUILD'] = $vcbuild
@@ -411,7 +416,7 @@ namespace "build" do
                 clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('build.bat', extpath)
               elsif is_prebuilt
-                file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
+                file_mask = File.join(extpath, $current_platform + ($current_platform=='wm' ? '/lib' : '' ) + '/*.lib' ) 
                 puts "PREBUILD: #{file_mask}"
                 
                 mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
@@ -723,7 +728,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
     #task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
     #end
 
-    task :rhobundle => ["config:set_win32_platform", "build:wm:rhobundle", :after_bundle] do
+    task :rhobundle => ["config:set_win32_platform", "config:wm", "config:qt", "config:win32:qt", "build:wm:rhobundle", :after_bundle] do
     end
 
     task :upgrade_package => ["build:win32:rhobundle"] do        
@@ -1182,7 +1187,7 @@ namespace "device" do
 
   namespace "win32" do
     desc "Build installer for Windows"
-    task :production => ["build:win32:set_release_config", "config:set_win32_platform", "config:wm", "config:qt", "config:win32:qt", "build:win32"] do
+    task :production => ["build:win32:set_release_config", "build:win32"] do
       createWin32Production
     end
   end
@@ -1535,8 +1540,8 @@ namespace "run" do
   end
 
   desc "Run win32"
-  task :win32 => ["config:set_win32_platform", "config:wm", "config:qt", "config:win32:qt", "build:win32"] do
-  
+  task :win32 => ["build:win32"] do
+				  
     cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
     Rake::Task["build:win32:deployqt"].invoke
 

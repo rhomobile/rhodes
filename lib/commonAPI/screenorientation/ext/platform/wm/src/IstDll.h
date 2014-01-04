@@ -13,7 +13,7 @@
 #define IST_AUTO_ROTATION				(0x01 << 1)
 #define IST_ERROR_SUCCESS				ERROR_SUCCESS
 
-namespace screenorientation
+namespace ScreenOrientationExt
 {
 	class CIstDll 
 	{

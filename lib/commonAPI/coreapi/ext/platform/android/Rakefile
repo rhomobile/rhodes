@@ -31,6 +31,7 @@ SRC = get_sources File.join($curdir, 'ext_native.files')
 OBJ = FileList.new(get_objects SRC, OBJDIR)
 
 TARGETLIB = File.join(TARGETDIR, 'libcoreapi.a')
+V4JAR = File.join(TARGETDIR, 'android-support-v4.jar')
 
 cd '../../..'
 
@@ -60,4 +61,8 @@ file TARGETLIB => TARGETDIR do |t|
 end
 multitask TARGETLIB => OBJ
 
-task :default => TARGETLIB
+file V4JAR => [TARGETDIR, :config] do
+    cp File.join(ENV['ANDROID_SDK'],'extras','android','support','v4','android-support-v4.jar'), TARGETDIR
+end
+
+task :default => [TARGETLIB, V4JAR]

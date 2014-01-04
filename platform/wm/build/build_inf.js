@@ -279,7 +279,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     if (is_persistent)
     {
         p("CopyFiles=CopyToInstallDir,CopyPersistent" +
-           (!usereruntime && webkit ? ",CopyWebKitBinPers,CopyNPAPIPers,CopyConfigPers,CopySystemFiles" : "")+
+           (!usereruntime && webkit ? ",CopyWebKitBinPers,CopyNPAPIPers,CopyConfigPers,CopySystemFilesPers" : "")+
            (!usereruntime && !webkit && include_motocaps? ",CopyConfigPers" : "")+
            get_copyfiles_sections(es,is_persistent));
     }
@@ -385,6 +385,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("CopyWebKitBinPers=0,\"Application\\" + name + "\"");
             p("CopyNPAPIPers=0,\"Application\\" + name + "\\NPAPI\"");
             p("CopyConfigPers=0,\"Application\\" + name + "\\Config\"");
+			p("CopySystemFilesPers=0,\"Application\\" + name + "\"");
+			
         }
         else {
             p("CopyWebKitBin=0,\"%InstallDir%\"");
