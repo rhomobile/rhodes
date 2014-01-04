@@ -124,11 +124,7 @@ public:
 */
 
 class CRhoMapViewDlg : public //CDialog
-#if defined(OS_WINDOWS_DESKTOP)
-	CDialogImpl<CRhoMapViewDlg>
-#else
 	CDialogImpl <CRhoMapViewDlg>
-#endif	
 {
     HBRUSH m_hBrush;
     HBITMAP m_hMemBitmap;

@@ -30,9 +30,6 @@
 #include "OkCancelModalDialog.h"
 #include "resource.h"
 
-#if defined(OS_WINDOWS_DESKTOP)
-#include "qt/rhodes/impl/DateTimePickerImpl.h"
-#else
 //TODO: delegates
 class CDateTimeMessage 
 {
@@ -70,10 +67,9 @@ public:
 	long  m_min_time;
 	long  m_max_time;
 };
-#endif
 
 class CDateTimePickerDialog : public 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_PLATFORM_MOTCE)
+#if defined(OS_PLATFORM_MOTCE)
 	COkCancelModalDialog<CDateTimePickerDialog>
 #else
 	CDialogImpl <CDateTimePickerDialog>
@@ -110,7 +106,7 @@ private:
 
 
 class CTimePickerDialog : public
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_PLATFORM_MOTCE)
+#if defined(OS_PLATFORM_MOTCE)
 	COkCancelModalDialog<CTimePickerDialog>
 #else
 	CDialogImpl <CTimePickerDialog>

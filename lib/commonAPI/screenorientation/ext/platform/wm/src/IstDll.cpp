@@ -6,19 +6,19 @@
 
 const wchar_t* const IST_MODULE_NAME = L"\\Windows\\ISTAPI32.dll";
 
-bool screenorientation::CIstDll::IsPresent()
+bool ScreenOrientationExt::CIstDll::IsPresent()
 {
 	DWORD attribs = ::GetFileAttributes(IST_MODULE_NAME);
 	return ((0xFFFFFFFF != attribs) && ((attribs & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY));
 }
 
-screenorientation::CIstDll::CIstDll() :	m_hISTModule(NULL),
+ScreenOrientationExt::CIstDll::CIstDll() :	m_hISTModule(NULL),
 						m_hIST(NULL)
 {
 
 }
 
-screenorientation::CIstDll::~CIstDll()
+ScreenOrientationExt::CIstDll::~CIstDll()
 {
 	Close();
 }
@@ -30,7 +30,7 @@ screenorientation::CIstDll::~CIstDll()
  * 
  * @return bool 
  */
-bool screenorientation::CIstDll::Open()
+bool ScreenOrientationExt::CIstDll::Open()
 {
 	bool opStatus = false;
 	if (this->IsPresent())
@@ -54,7 +54,7 @@ bool screenorientation::CIstDll::Open()
  * 
  * @return bool 
  */
-bool screenorientation::CIstDll::Close()
+bool ScreenOrientationExt::CIstDll::Close()
 {
 	bool opStatus = false;
 	if (this->ISTClose())
@@ -74,7 +74,7 @@ bool screenorientation::CIstDll::Close()
  * @param enable if true turns on the AutoRotate feature, false 
  *  			 turns it off
  */
-void screenorientation::CIstDll::EnableAutoRotate(bool enable)
+void ScreenOrientationExt::CIstDll::EnableAutoRotate(bool enable)
 {
 	DWORD dwConfig = 0;
 	if (this->ISTGetSystemConfig(dwConfig))
@@ -110,7 +110,7 @@ void screenorientation::CIstDll::EnableAutoRotate(bool enable)
  *  	   autorotate is disabled. A false is returned when
  *  	   there is an error.
  */
-bool screenorientation::CIstDll::IsAutoRotateEnabled()
+bool ScreenOrientationExt::CIstDll::IsAutoRotateEnabled()
 {
 	bool enabled = false;
 	DWORD dwConfig = 0;
@@ -130,7 +130,7 @@ bool screenorientation::CIstDll::IsAutoRotateEnabled()
  * 
  * @return bool 
  */
-bool screenorientation::CIstDll::LoadDll(const wchar_t *szDll)
+bool ScreenOrientationExt::CIstDll::LoadDll(const wchar_t *szDll)
 {
 	if ((NULL == szDll) || (0 == *szDll))
 	{
@@ -152,7 +152,7 @@ bool screenorientation::CIstDll::LoadDll(const wchar_t *szDll)
  * 
  * @author GXV738 (6/16/2013)
  */
-void screenorientation::CIstDll::UnloadDll()
+void ScreenOrientationExt::CIstDll::UnloadDll()
 {
 	if (NULL != m_hISTModule)
 	{
@@ -171,7 +171,7 @@ void screenorientation::CIstDll::UnloadDll()
  * 
  * @return bool 
  */
-bool screenorientation::CIstDll::ISTOpen(const wchar_t *pszDev)
+bool ScreenOrientationExt::CIstDll::ISTOpen(const wchar_t *pszDev)
 {
 	bool opStatus = false;
 	typedef DWORD (*PFN_IST_OPEN)(TCHAR*, HANDLE*);
@@ -221,7 +221,7 @@ bool screenorientation::CIstDll::ISTOpen(const wchar_t *pszDev)
  * 
  * @return bool 
  */
-bool screenorientation::CIstDll::ISTClose()
+bool ScreenOrientationExt::CIstDll::ISTClose()
 {
 	typedef DWORD (*PFN_IST_CLOSE)(HANDLE);
 
@@ -266,7 +266,7 @@ bool screenorientation::CIstDll::ISTClose()
  * 
  * @return bool 
  */
-bool screenorientation::CIstDll::ISTGetSystemConfig(DWORD& dwConfig)
+bool ScreenOrientationExt::CIstDll::ISTGetSystemConfig(DWORD& dwConfig)
 {
 	typedef DWORD (*PFN_IST_GET_SYSTEM_CONFIG)(HANDLE, DWORD*);
 
@@ -311,7 +311,7 @@ bool screenorientation::CIstDll::ISTGetSystemConfig(DWORD& dwConfig)
  * 
  * @return bool 
  */
-bool screenorientation::CIstDll::ISTSetSystemConfig(DWORD dwConfig)
+bool ScreenOrientationExt::CIstDll::ISTSetSystemConfig(DWORD dwConfig)
 {
 	typedef DWORD (*PFN_IST_SET_SYSTEM_CONFIG)(HANDLE, DWORD);
 

@@ -53,11 +53,11 @@ win32 {
 ../../wtl80/include
   DEFINES -= _UNICODE
   DEFINES += WIN32 _WINDOWS UNICODE QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
-  debug {
+  Debug {
     DEFINES += _DEBUG DEBUG
     LIBS += comsuppwd.lib
   }
-  release {
+  Release {
     DEFINES += _NDEBUG NDEBUG QT_NO_DEBUG
     LIBS += comsuppw.lib
   }

@@ -445,7 +445,7 @@ namespace "config" do
     # Look for Motorola SDK addon
     if $use_motosol_api_classpath
       puts "Looking for Motorola API SDK add-on..." if USE_TRACES
-      motosol_jars = ['com.motorolasolutions.scanner', 'com.motorolasolutions.msr']
+      motosol_jars = ['com.motorolasolutions.scanner', 'com.motorolasolutions.msr', 'com.motorolasolutions.dpx']
       $motosol_classpath = AndroidTools::get_addon_classpath(motosol_jars)
     end
 
@@ -1789,9 +1789,19 @@ namespace "package" do
     args << $dxjar
     args << "--dex"
     args << "--output=#{$bindir}/classes.dex"
+    
+    jarnames = []
 
     Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
-      args << jar
+    
+        jarname = Pathname.new(jar).basename
+        
+        if not jarnames.include?(jarname) then
+            args << jar
+            jarnames << jarname
+        else
+            puts "Skipping duplicated jar: #{jar}"
+        end
     end
 
     Jake.run(File.join($java, 'java'+$exe_ext), args)

@@ -1,108 +1,150 @@
-package com.motorolasolutions.rho.notification;
+package com.rho.notification;
 
+import java.io.InputStream;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
+import android.util.SparseArray;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.rho.notification.INotificationSingleton;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.api.MethodResult;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 /**
  * Singleton for the Notification extension. Holds all of the implementation for this extension.
  * Uses code from both RhoElements2 and Rhodes3
- * @author Ben Kennedy (reauthor)
+ * @authors Ben Kennedy (reauthor), Alexey Tikhvinsky (aat103)
  */
+
 public class NotificationSingleton implements INotificationSingleton
 {
-	protected static String TAG = "NotificationSingleton";
-	protected AudioTrack audioTrack = null;
+    protected static String TAG = NotificationSingleton.class.getSimpleName();
+
+    //private static SparseArray<MethodResult> callbackMap = new SparseArray<MethodResult>();
+    //private static int callbackIdCount = 0;
+
+    private SparseArray<Notification> notifications = new SparseArray<Notification> ();
+    private int lastNotificationId = -1;
+    protected AudioTrack audioTrack = null;
 	private Vibrator vibrator;
 	private MediaPlayer currentMP;
 
-	@Override
-	public void showPopup(final Map<String, Object> propertyMap, final IMethodResult result)
-	{
-		RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true)
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					Logger.T(TAG, "showPopup");
-					PopupActivity.showDialog(propertyMap, result);
-				}
-				catch (Exception e)
-				{
-					Logger.E(TAG, e);
-					result.setError(e.getLocalizedMessage());
-				}
-			}
-		});
-	}
+    @Override
+    public void showPopup(final Map<String, Object> propertyMap, final IMethodResult result) {
+        Logger.T(TAG, "showPopup");
 
-	@Override
-	public void hidePopup(final IMethodResult result)
-	{
-		RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true)
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					Logger.T(TAG, "hidePopup");
-					PopupActivity.hidePopup();
-				}
-				catch (Exception e)
-				{
-					Logger.E(TAG, e);
-					result.setError(e.getLocalizedMessage());
-				}
-			}
-		});
-	}
+        Notification notification;
+        synchronized (notifications) {
+            ++lastNotificationId;
+            
+            Logger.T(TAG, "Add notification: " + lastNotificationId);
+            
+            notification = new Notification(lastNotificationId, propertyMap, result);
+            notifications.append(lastNotificationId, notification);
+        }
+        
+        if (notification.isForegroundToastNeeded()) {
+            notification.showForegroundToast();
+        }
+        if (notification.isNotificationAreaNeeded()) {
+            notification.showNotification();
+        }
+        if (notification.isDialogNeeded()) {
+            notification.showDialog();
+        }
+    }
 
-	@Override
-	public void showStatus(final String titleText, final String statusText, final String hideLabelText, final IMethodResult result)
-	{
-		RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true)
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					Logger.I(TAG, "showStatusPopup");
-					PerformOnUiThread.exec(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							PopupActivity.showStatusDialog(titleText, statusText, hideLabelText);
-						}
-					});
-				}
-				catch (Exception e)
-				{
-					Logger.E(TAG, e);
-					result.setError(e.getLocalizedMessage());
-				}
-			}
-		});
-	}
+    @Override
+    public void hidePopup(final IMethodResult result) {
+        synchronized (notifications) {
+            if (notifications.size() == 0) {
+                throw new RuntimeException("There are no active notifications.");
+            }
+
+            int notificationId = notifications.size() - 1;
+            
+            Notification notification = notifications.valueAt(notificationId);
+            
+            if (notification != null) {
+                notification.dismiss();
+                notifications.removeAt(notificationId);
+                Logger.T(TAG, "Remove notification: " + notification.id);
+            }
+        }
+    }
+
+    @Override
+    public void showStatus(String title, String status, String hideLabel, final IMethodResult result)
+    {
+        Map<String, Object> propertyMap = new HashMap<String, Object> ();
+        if (title != null) {
+            propertyMap.put(HK_TITLE, title);
+        }
+        if (status != null) {
+            propertyMap.put(HK_MESSAGE, status);
+        }
+        if (hideLabel != null) {
+            List<String> buttons = new ArrayList<String>();
+            buttons.add(hideLabel);
+            propertyMap.put(HK_BUTTONS, buttons);
+        }
+        ArrayList<String> kinds = new ArrayList<String>();
+        kinds.add(KIND_DIALOG);
+        kinds.add(KIND_TOAST);
+        propertyMap.put(HK_KINDS, kinds);
+        showPopup(propertyMap, result);
+    }
+    
+    void onAction(int notificationId, int actionIdx) {
+        Logger.T(TAG, "Notification action: notificationID: " + notificationId + ", action index: " + actionIdx);
+        Notification notification = null;
+        synchronized (notifications) {
+            notification = notifications.get(notificationId);
+            if (notification != null) {
+                notification.dismiss();
+                notifications.delete(notificationId);
+                Logger.I(TAG, "Remove notification: " + notification.id);
+            }
+        }
+        if (notification != null) {
+            notification.dismiss();
+            notification.onAction(actionIdx);
+        }
+    }
 
 	@Override
 	public void playFile(String path, String mediaType, final IMethodResult result)
@@ -343,4 +385,6 @@ public class NotificationSingleton implements INotificationSingleton
 	{
 		cleanUpResources();
 	}
+
+
 }
