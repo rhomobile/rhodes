@@ -233,7 +233,7 @@ namespace rho {
             if(!fixed_schema() && !freezed_model()) 
                 return;
 
-            if(attrName == "object")
+            if(_is_reserved_name(attrName))
                 return;
 
             // non-reserved attr name must exist
@@ -625,11 +625,15 @@ namespace rho {
                 return;
             Hashtable<rho::String, rho::String>& attrs = oResult.getStringHash();
 
-            getProperty("source_id", oResult);
-            rho::String source_id = oResult.getString();
-            getProperty("sync_type", oResult);
-            bool is_sync_source = (oResult.getString() != "none");
-            db::CDBAdapter& db = _get_db(oResult);
+            // use another CMethodResult for intermediate operations
+            // to preserve attrs hash
+            // (except when we're returning errors)
+            rho::apiGenerator::CMethodResult createResult;
+            getProperty("source_id", createResult);
+            rho::String source_id = createResult.getString();
+            getProperty("sync_type", createResult);
+            bool is_sync_source = (createResult.getString() != "none");
+            db::CDBAdapter& db = _get_db(createResult);
 
             db.startTransaction();
             if(is_sync_source) {
@@ -678,6 +682,231 @@ namespace rho {
                         return;
                     }
                 } 
+            }
+
+            db.endTransaction();
+        }
+
+        void updateObject(const rho::String& objId, 
+                          const Hashtable<rho::String, rho::String>& oldAttrs,
+                          const Hashtable<rho::String, rho::String>& newAttrs, 
+                          rho::apiGenerator::CMethodResult& oResult)
+        {
+            Hashtable<rho::String, rho::String> retAttrs;
+            validateFreezedAttributes(newAttrs, oResult);
+            if(oResult.isError())
+                return;
+
+            LOG(INFO) + "MZV_DEBUG, we have here : " + objId;
+            for(Hashtable<rho::String, rho::String>::const_iterator cNIt = newAttrs.begin(); cNIt != newAttrs.end(); ++cNIt)
+            {
+                LOG(INFO) + "MZV_DEBUG, newAttr : " + cNIt -> first + " : " + cNIt -> second;     
+            }
+            for(Hashtable<rho::String, rho::String>::const_iterator cOIt = oldAttrs.begin(); cOIt != oldAttrs.end(); ++cOIt)
+            {
+                LOG(INFO) + "MZV_DEBUG, oldAttr : " + cOIt -> first + " : " + cOIt -> second;     
+            }
+
+
+            getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+            int iSrcId = -1;
+            convertFromStringA(source_id.c_str(), iSrcId);
+
+            db::CDBAdapter& db = _get_db(oResult);
+            bool createOrUpdate = false;
+            bool ignore_changed_values = true;
+            getProperty("sync_type", oResult);
+            bool is_sync_source = (oResult.getString() != "none");
+            rho::String update_type("update");
+            rho::String existing_update_type;
+
+            db.startTransaction();
+            if(is_sync_source) {
+                IDBResult res = db.executeSQL("SELECT update_type FROM changed_values WHERE object=? AND source_id=? AND sent=0",
+                                                objId, source_id);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }
+                LOG(INFO) + "MZV_DEBUG: update_type ret is : " + res.isEnd();
+                if(!res.isEnd())
+                {
+                    existing_update_type = res.getStringByIdx(0); 
+                }
+                ignore_changed_values = (update_type == "create");
+            }
+
+            for(Hashtable<rho::String, rho::String>::const_iterator cIt = newAttrs.begin(); cIt != newAttrs.end(); ++cIt)
+            {
+                const rho::String& attrKey = cIt -> first;
+                if(_is_reserved_name(attrKey))
+                    continue;
+                const rho::String& attrValue = cIt -> second;
+                bool is_modified = false;
+                Hashtable<rho::String, rho::String>::const_iterator cOldIt = oldAttrs.find(attrKey);
+                if(cOldIt != oldAttrs.end())
+                {
+                    const rho::String& oldAttrValue = cOldIt -> second;
+                    is_modified = (attrValue != oldAttrValue);
+                }
+                else
+                    is_modified = (attrValue.size() > 0);
+                              
+                // if the object's value doesn't match the database record
+                // then we procede with update
+                if(is_modified) 
+                {
+                    Vector<rho::String> quests;
+                    rho::String sqlScript = _make_insert_or_update_attr_sql_script(source_id, objId, attrKey, attrValue, quests);
+                    LOG(INFO) + "MZV_DEBUG: attrScript is : " + sqlScript;
+                    for(int i = 0; i < quests.size(); ++i)
+                        LOG(INFO) + "MZV_DEBUG: attrQuests are : " + quests[i];
+                    IDBResult res = db.executeSQLEx(sqlScript.c_str(), quests);
+                    if(!res.getDBError().isOK()) {
+                        oResult.setError(res.getDBError().getError());
+                        db.rollback();
+                        return;
+                    }
+                    LOG(INFO) + "MZV_DEBUG: attribute has been updated";
+ 
+                    if(!ignore_changed_values) 
+                    {
+                        if(existing_update_type.size() > 0)
+                        {
+                            rho::String sqlStr("DELETE FROM changed_values WHERE object=? AND attrib=? AND source_id=? AND sent=0");
+                            res = db.executeSQL(sqlScript.c_str(), objId, attrKey, source_id);
+                            if(!res.getDBError().isOK()) {
+                                oResult.setError(res.getDBError().getError());
+                                db.rollback();
+                                return;
+                            }
+                            LOG(INFO) + "MZV_DEBUG: prev_changed_values are deleted";
+                        }
+
+                        rho::String attrib_type = (db.getAttrMgr().isBlobAttr(iSrcId, attrKey.c_str()) ? "blob.file" : "");
+                        rho::String insertScript("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type) VALUES (?,?,?,?,?,?)");
+                        res = db.executeSQL(insertScript.c_str(), source_id, objId, attrKey, attrValue, update_type, attrib_type);
+                        if(!res.getDBError().isOK()) {
+                            oResult.setError(res.getDBError().getError());
+                            db.rollback();
+                            return;
+                        }
+                        LOG(INFO) + "MZV_DEBUG: changed_values are updated";   
+                    }
+
+                    // to update in-memory object
+                    retAttrs[attrKey] = attrValue;
+                }
+            }
+
+            db.endTransaction();
+            oResult.set(retAttrs);
+        }
+
+        void saveObject(const rho::String& objId,
+                        const Hashtable<rho::String, rho::String>& attrs,
+                        rho::apiGenerator::CMethodResult& oResult)
+        {
+            validateFreezedAttributes(attrs, oResult);
+            if(oResult.isError())
+                return;
+
+            db::CDBAdapter& db = _get_db(oResult);
+            db.Lock();
+            Hashtable<rho::String, rho::String> oldAttrs;
+            bool object_exists = _get_object_attrs(objId, oldAttrs, oResult);
+            if(!object_exists) {
+                createObject(attrs, oResult);
+                db.Unlock();
+                return;
+            }
+            else
+            {
+                updateObject(objId, oldAttrs, attrs, oResult);
+                db.Unlock();
+                return;
+            }
+        }
+
+        void deleteObject(const rho::String& objId, 
+                          rho::apiGenerator::CMethodResult& oResult)
+        {
+            Hashtable<rho::String, rho::String> attrs;
+            bool object_exists = _get_object_attrs(objId, attrs, oResult);
+            LOG(INFO) + "MZV_DEBUG, we have here : " + objId + ", obj_exists : " + object_exists;
+            for(Hashtable<rho::String, rho::String>::const_iterator cNIt = attrs.begin(); cNIt != attrs.end(); ++cNIt)
+            {
+                LOG(INFO) + "MZV_DEBUG, exist attr : " + cNIt -> first + " : " + cNIt -> second;     
+            }
+            if(!object_exists)
+                return;
+            
+            getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+
+            // delete all attrs first
+            db::CDBAdapter& db = _get_db(oResult);
+            db.startTransaction();
+            if(fixed_schema()) {
+                rho::String deleteSql("DELETE FROM ");
+                deleteSql += name() + " WHERE object=?";
+                IDBResult res = db.executeSQL(deleteSql.c_str(), objId);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }
+            }
+            else
+            {
+                rho::String deleteSql("DELETE FROM object_values WHERE object=? AND source_id=?");
+                IDBResult res = db.executeSQL(deleteSql.c_str(), objId, source_id);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }    
+            }
+
+            getProperty("sync_type", oResult);
+            bool is_sync_source = (oResult.getString() != "none");
+            bool ignore_changed_values = true;
+
+            if(is_sync_source) {
+                IDBResult res = db.executeSQL("SELECT update_type FROM changed_values WHERE object=? AND update_type=\"create\" AND sent=0", objId);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }
+                // if object hasn't been created - then, no need to queue delete to changed values, just do the cleanup
+                ignore_changed_values = !res.isEnd();
+                res = db.executeSQL("DELETE FROM changed_values WHERE object=? AND source_id=? AND sent=0", objId, source_id);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }
+
+                // update changed values with delete request
+                if(!ignore_changed_values) {
+                    for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin(); cIt != attrs.end(); ++cIt)
+                    {
+                        const rho::String& attrKey = cIt -> first;
+                        if(_is_reserved_name(attrKey))
+                            continue;
+                        const rho::String& attrValue = cIt -> second;
+                        res = db.executeSQL("INSERT INTO changed_values (source_id,object,attrib,value,update_type) VALUES (?,?,?,?,?)",
+                                            source_id, objId, attrKey, attrValue, "delete");
+                        if(!res.getDBError().isOK()) {
+                            oResult.setError(res.getDBError().getError());
+                            db.rollback();
+                            return;
+                        }
+                    }   
+                }
             }
 
             db.endTransaction();
@@ -733,7 +962,7 @@ namespace rho {
             return reserved_names_.containsKey(attrName);
         }
 
-        const rho::String _make_insert_attrs_sql_script(const rho::String& objectId, 
+        const rho::String _make_insert_attrs_sql_script(const rho::String& objectId,
                                                         const Hashtable<rho::String, rho::String>& attrs, 
                                                         Vector<rho::String>& quests) const
         {
@@ -815,6 +1044,101 @@ namespace rho {
             LOG(INFO) + "_create_sql_schema_indices: " + name() + ", sql: " + strSQLIndices;
 
             return strSQLIndices;
+        }
+
+        const rho::String _make_insert_or_update_attr_sql_script(const rho::String srcId, 
+                                                                const rho::String& objId, 
+                                                                const rho::String& attrKey,
+                                                                const rho::String& attrValue,
+                                                                Vector<rho::String>& quests)
+        {
+            rho::apiGenerator::CMethodResult oResult;
+            db::CDBAdapter& db = _get_db(oResult); 
+            rho::String retScript;
+            if(fixed_schema())
+            {
+                rho::String checkObjScript = rho::String("SELECT object FROM ") + name() + " WHERE object=?";
+                IDBResult res = db.executeSQL(checkObjScript.c_str(), objId);
+                bool insert_or_update = false;
+                insert_or_update = res.isEnd();
+                if(insert_or_update) {
+                    retScript = rho::String("INSERT INTO ") + name() + " (object," + attrKey + ") VALUES (?,?)"; 
+                    quests.push_back(objId);
+                    quests.push_back(attrValue);  
+                }
+                else
+                {
+                    retScript = rho::String("UPDATE ") + name() + " SET " + attrKey + "=\"" + attrValue + "\" WHERE object=?"; 
+                    quests.push_back(objId);
+                }
+            } 
+            else
+            {
+                rho::String checkObjScript("SELECT source_id FROM object_values WHERE object=? AND attrib=? AND source_id=?");
+                IDBResult res = db.executeSQL(checkObjScript.c_str(), objId, attrKey, srcId);
+                bool insert_or_update = false;
+                insert_or_update = res.isEnd();
+                if(insert_or_update) {
+                    retScript = rho::String("INSERT INTO object_values (source_id,object,attrib,value) VALUES (?,?,?,?)"); 
+                    quests.push_back(srcId);
+                    quests.push_back(objId);
+                    quests.push_back(attrKey);
+                    quests.push_back(attrValue); 
+                }
+                else {
+                    retScript = rho::String("UPDATE object_values SET value=\"") + attrValue + "\" WHERE object=? AND source_id=? AND attrib=?";
+                    quests.push_back(objId);
+                    quests.push_back(srcId);
+                    quests.push_back(attrKey);
+                }
+            }
+
+            return retScript;
+        }
+
+        bool _get_object_attrs(const rho::String& objId, 
+                                Hashtable<rho::String, rho::String>& attrs,
+                                rho::apiGenerator::CMethodResult& oResult)
+        {
+            if(objId.empty())
+                return false;
+
+            getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+            int iSrcId = -1;
+            convertFromStringA(source_id.c_str(), iSrcId);
+
+            db::CDBAdapter& db = _get_db(oResult);
+            bool object_exists = false;
+            if(fixed_schema()) {
+                rho::String checkSql("SELECT * FROM ");
+                checkSql += name() + " WHERE object=? LIMIT 1 OFFSET 0";
+                IDBResult res = db.executeSQL(checkSql.c_str(), objId);
+                object_exists = !res.isEnd();
+                if(object_exists) 
+                {
+                    int ncols = res.getColCount();
+                    for(int i = 0; i < ncols; ++i) 
+                    {
+                        attrs[res.getColName(i)] = res.getStringByIdx(i);
+                    }
+                }
+            }
+            else
+            {
+                rho::String checkSql("SELECT attrib,value FROM object_values WHERE object=? AND source_id=?");
+                IDBResult res = db.executeSQL(checkSql.c_str(), objId, source_id);
+                object_exists = !res.isEnd();
+                if(object_exists) 
+                {
+                    for(; !res.isEnd(); res.next()) 
+                    {
+                        attrs[res.getStringByIdx(0)] = res.getStringByIdx(1);
+                    }
+                }
+            }
+
+            return object_exists;
         }
 
         static const rho::String _strip_braces(const rho::String& str) 

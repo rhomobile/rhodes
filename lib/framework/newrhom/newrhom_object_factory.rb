@@ -50,12 +50,37 @@ module Rhom
         def initialize(obj={})
           @vars = {}
           objHash = obj
-          unless obj[:object]
+          unless obj[:object] or obj['object']
             objHash = self.class.klass_model.createInstance(obj)
           end
           objHash.each do |key,value|
             self.vars[key.to_sym()] = value
           end
+        end
+
+        def update_attributes(attrs)
+          #attrs.collect! { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
+          #oldAttrs = @vars.collect { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
+          objHash = self.class.klass_model.updateObject(self.object, @vars, attrs)
+          objHash.each do |key, value|
+            self.vars[key.to_sym()] = value
+          end
+          true
+        end
+
+        def save
+          objId = self.object
+          attrs = @vars.collect { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
+          objHash = self.class.klass_model.saveObject(self.object, attrs)
+          objHash.each do |key, value|
+            self.vars[key.to_sym()] = value
+          end
+          true
+        end
+
+        def destroy
+          self.class.klass_model.deleteObject(self.object)
+          true
         end
 
         def method_missing(method_sym, *args, &block)
