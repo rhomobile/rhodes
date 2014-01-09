@@ -180,6 +180,9 @@ extern int rho_webview_active_tab();
 
 
 -(void) setRubyCallback:(NSString*)url {
+    if (mRubyCallbackURL) {
+        [mRubyCallbackURL release];
+    }
     mRubyCallbackURL = [url retain];
 }
 
@@ -194,12 +197,21 @@ extern int rho_webview_active_tab();
 }
 
 -(void) setJSCallback:(NSString*)uid webViewUID:(NSString*)webViewUID {
+    if (mJSCallbackUID) {
+        [mJSCallbackUID release];
+    }
+    if (mJSWebViewUID) {
+        [mJSWebViewUID release];
+    }
     mJSCallbackUID = [uid retain];
     mJSWebViewUID = [webViewUID retain];
     mJSTabIndex = rho_webview_active_tab();
 }
 
 -(void) setCallbackParam:(NSString*)param {
+    if (mCallbackParam) {
+        [mCallbackParam release];
+    }
     mCallbackParam = [param retain];
 }
 
@@ -242,8 +254,61 @@ extern int rho_webview_active_tab();
     }
 }
 
+-(NSString*) getRubyCallbackURL {
+    return mRubyCallbackURL;
+}
+
+-(unsigned long) getRubyCallbackMethod {
+    return mRubyCallbackMethod;
+}
+
+-(NSString*) getJSCallbackUID {
+    return mJSCallbackUID;
+}
+
+-(int) getJSTabIndex {
+    return mJSTabIndex;
+}
+
+-(BOOL) isEqualCallback:(id<IMethodResult>) oCallback {
+    BOOL isCallbackSet = [self hasCallback];
+    if ( !isCallbackSet ) {
+        return ![oCallback hasCallback];
+    } else if (oCallback != nil) {
+        if ([oCallback isKindOfClass:[CMethodResult class]]) {
+            CMethodResult* thatCallback = (CMethodResult*)oCallback;
+            
+            if (mRubyCallbackURL != nil) {
+                return [mRubyCallbackURL isEqualToString:[thatCallback getRubyCallbackURL]];
+            }
+            
+            if (mRubyCallbackMethod != 0 ) {
+                return ([thatCallback getRubyCallbackMethod] == mRubyCallbackMethod );
+            }
+            
+            if (mJSCallbackUID != nil) {
+                return ([mJSCallbackUID isEqualToString:[thatCallback getJSCallbackUID]] && (mJSTabIndex == [thatCallback getJSTabIndex]) );
+            }
+        }
+    }
+    return NO;
+}
+
 -(BOOL) hasCallback {
     return ((mRubyCallbackURL != nil) || (mRubyCallbackMethod != 0) || (mJSCallbackUID != nil));
+}
+
+-(NSString*) callbackAsString {
+    if (mRubyCallbackURL != nil) {
+        return [NSString stringWithFormat:@"rb:%@",mRubyCallbackURL];
+    }
+    if (mRubyCallbackMethod != 0) {
+        return [NSString stringWithFormat:@"rbid:%lu",mRubyCallbackMethod];
+    }
+    if (mRubyCallbackURL != nil) {
+        return [NSString stringWithFormat:@"js:%@_%d",mJSCallbackUID,mJSTabIndex];
+    }
+    return @"";
 }
 
 + (NSObject*) getObjectiveCNULL {

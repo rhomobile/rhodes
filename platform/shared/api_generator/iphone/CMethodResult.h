@@ -31,6 +31,13 @@
 
 -(void) setResult:(NSObject*)value;
 -(BOOL) hasCallback;
+-(NSString*) callbackAsString;
+-(BOOL) isEqualCallback:(id<IMethodResult>) oCallback;
+
+-(NSString*) getRubyCallbackURL;
+-(unsigned long) getRubyCallbackMethod;
+-(NSString*) getJSCallbackUID;
+-(int) getJSTabIndex;
 
 -(void) setMethodSignature:(NSString*)methodSignature;
 
