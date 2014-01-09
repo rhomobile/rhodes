@@ -318,7 +318,7 @@ As this extension returns the raw sensor values reported by the operating system
             <![CDATA[
 #/app/Model
 def index
-    @accelerometer_sensor = Rho.Sensor.makeSensorByType(Rho::Sensor::SENSOR_TYPE_ACCELEROMETER)
+    @accelerometer_sensor = Rho::Sensor.makeSensorByType(Rho::Sensor::SENSOR_TYPE_ACCELEROMETER)
     if @accelerometer_sensor != nil
         @accelerometer_sensor.minimumGap = 500
         @accelerometer_sensor.start(url_for(:action => :myevent))
