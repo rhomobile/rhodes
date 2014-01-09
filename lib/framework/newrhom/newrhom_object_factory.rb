@@ -32,7 +32,7 @@ module Rhom
         def self.find(*args)
           puts "MZV_DEBUG: we are in find  #{args.inspect}"
           args.collect! { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
-          retVal = klass_model.find(*args)
+          retVal = klass_model.findObjects(*args)
           puts "MZV_DEBUG: find has returned : #{retVal.inspect}"
           orm_objs = []
           retVal.each do |obj|
