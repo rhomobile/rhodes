@@ -540,9 +540,9 @@ namespace rho {
             oResult.set(CLocalTime(nTime).formatStr("%Y-%m-%d %H:%M:%S %z"));
         }
 
-        void find(const rho::String& arg, rho::apiGenerator::CMethodResult& oResult)
+        void findObjects(const rho::String& arg, rho::apiGenerator::CMethodResult& oResult)
         {
-            LOG(INFO) + name() + ", find: Params are: " + arg;
+            LOG(INFO) + name() + ", findObjects: Params are: " + arg;
             
             rho::Vector<rho::Hashtable<rho::String, rho::String> > retVals;
             if(!fixed_schema()) {

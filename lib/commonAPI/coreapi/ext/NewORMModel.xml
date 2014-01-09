@@ -154,7 +154,7 @@
                 <RETURN type="STRING"/>
             </METHOD>
 
-            <METHOD name="find">
+            <METHOD name="findObjects">
                 <DESC>Returns array of objects for the given model queried according to the specified conditions</DESC>
                 <PARAMS>
                     <PARAM name="queryParams" type="STRING"/>
