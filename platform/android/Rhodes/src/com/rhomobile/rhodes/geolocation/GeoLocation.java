@@ -67,7 +67,9 @@ public class GeoLocation {
 				ourAltitude = loc.getAltitude();
 				ourAccuracy = loc.getAccuracy();
 				ourSpeed = loc.getSpeed();
-				ourSatellities = getImpl().getSatellities();
+				//The  way of getiing satellites is changed
+				//ourSatellities = getImpl().getSatellities();
+				ourSatellities = loc.getExtras().getInt("satellites");
 				ourIsKnownPosition = true;
 			}
 			else {
@@ -194,7 +196,7 @@ public class GeoLocation {
 		onUpdateLocation();
 		try {
 			checkState();
-			Logger.T(TAG, "getSpeed");
+			Logger.T(TAG, "getSatellities");
 			return ourSatellities;
 		}
 		catch (Exception e) {
