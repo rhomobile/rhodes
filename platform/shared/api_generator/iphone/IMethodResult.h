@@ -19,7 +19,9 @@
 
 - (void) setResult:(NSObject*)value;
 
--(BOOL) hasCallback;
+- (BOOL) hasCallback;
+
+- (NSString*) callbackAsString;
 
 @end
 
@@ -30,12 +32,13 @@
     NSObject* resultObject;
 }
 
--(id) init;
+- (id) init;
 
-+(CMethodResult_SimpleHolder*) makeEmptyHolder;
++ (CMethodResult_SimpleHolder*) makeEmptyHolder;
 
 - (void) setResult:(NSObject*)value;
--(BOOL) hasCallback;
+- (BOOL) hasCallback;
+- (NSString*) callbackAsString;
 
 - (NSObject*) getResult;
 
