@@ -180,6 +180,9 @@ extern int rho_webview_active_tab();
 
 
 -(void) setRubyCallback:(NSString*)url {
+    if (mRubyCallbackURL) {
+        [mRubyCallbackURL release];
+    }
     mRubyCallbackURL = [url retain];
 }
 
@@ -194,12 +197,21 @@ extern int rho_webview_active_tab();
 }
 
 -(void) setJSCallback:(NSString*)uid webViewUID:(NSString*)webViewUID {
+    if (mJSCallbackUID) {
+        [mJSCallbackUID release];
+    }
+    if (mJSWebViewUID) {
+        [mJSWebViewUID release];
+    }
     mJSCallbackUID = [uid retain];
     mJSWebViewUID = [webViewUID retain];
     mJSTabIndex = rho_webview_active_tab();
 }
 
 -(void) setCallbackParam:(NSString*)param {
+    if (mCallbackParam) {
+        [mCallbackParam release];
+    }
     mCallbackParam = [param retain];
 }
 
