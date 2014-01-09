@@ -77,14 +77,7 @@ class AndroidFunctionality01 implements AndroidFunctionality {
     
     @SuppressWarnings("deprecation")
     protected void setWebPlugins(WebSettings settings) {
-        if(RhoConf.getBool("enable_web_plugins")) {
-            settings.setPluginsEnabled(true);
-            Logger.I(TAG, "Set web plugins enabled");
-        }
-        else {
-            settings.setPluginsEnabled(false);
-            Logger.I(TAG, "Set web plugins disabled");
-        }
+        Logger.W(TAG, "Web Plug-ins are not supported on old Android versions");
     }
 
     @Override
