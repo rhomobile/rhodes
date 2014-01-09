@@ -110,7 +110,7 @@ RHO_GLOBAL double rho_geo_speed() {
     if (!cls) return 0;
     static jmethodID mid = getJNIClassStaticMethod(env, cls, "getSpeed", "()D");
     if (!mid) return 0;
-    return env->CallStaticFloatMethod(cls, mid);
+    return env->CallStaticDoubleMethod(cls, mid);
 }
 
 RHO_GLOBAL int rho_geo_satellites() {
@@ -119,7 +119,7 @@ RHO_GLOBAL int rho_geo_satellites() {
     if (!cls) return 0;
     static jmethodID mid = getJNIClassStaticMethod(env, cls, "getSatellities", "()I");
     if (!mid) return 0;
-    return env->CallStaticFloatMethod(cls, mid);
+    return env->CallStaticIntMethod(cls, mid);
 }
 
 RHO_GLOBAL void rho_geo_set_notification_ex(const char *url, rho_param* p, char* params) {

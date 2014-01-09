@@ -388,8 +388,9 @@ public class GeoLocationImpl {
 	synchronized float getSpeed() {
 		return (lastLocation != null && lastLocation.hasSpeed()) ? lastLocation.getSpeed() : 0;
 	}
-
-	synchronized int getSatellities() {
+	//This method is no longer needed as it is the wrong way to collect the satellites.locationManger.getSpsStatus should ONLY be called from onGpsStatusChanged(int)
+	// Hence commenting out the whole method
+	/*synchronized int getSatellities() {
 		if ((lastLocation == null) || (locationManager == null)) {
 			return 0;
 		}
@@ -404,7 +405,7 @@ public class GeoLocationImpl {
 	    }		
 		return Satellites;
 	}
-	
+	*/
 	synchronized double getAltitude() {
 		return (lastLocation != null && lastLocation.hasAltitude()) ? lastLocation.getAltitude() : 0;
 	}
