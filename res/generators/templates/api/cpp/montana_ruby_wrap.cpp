@@ -35,10 +35,10 @@ VALUE rb_<%= $cur_module.name %>_s_setDefault(VALUE klass, VALUE valObj)
 }
 <% end %>
 
-static void string_iter(const char* szVal, void* par)
+static void string_iter(const char* szVal, int valueLen, void* par)
 {
     rho::Vector<rho::String>& ar = *((rho::Vector<rho::String>*)(par));
-    ar.addElement( szVal );
+    ar.addElement( rho::String(szVal,valueLen) );
 }
 
 static void getStringArrayFromValue(VALUE val, rho::Vector<rho::String>& res)
@@ -46,18 +46,23 @@ static void getStringArrayFromValue(VALUE val, rho::Vector<rho::String>& res)
     rho_ruby_enum_strary_json(val, string_iter, &res);
 }
 
-static void hash_eachstr(const char* szName, const char* szVal, void* par)
+static void hash_eachstr(const char* szName, const char* szVal, int valueLen, void* par)
 {
     rho::Hashtable<rho::String, rho::String>& hash = *((rho::Hashtable<rho::String, rho::String>*)(par));
-    hash.put( szName, szVal );
+    hash.put( szName, rho::String(szVal,valueLen) );
 }
 
 static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::String, rho::String>& res)
 {
     rho_ruby_enum_strhash_json(val, hash_eachstr, &res);
 }
+    
+static rho::String getStringObjectFromValue(VALUE val)
+{
+    return rho::String(getStringFromValue(val),getStringLenFromValue(val));
+}
 
-<% $cur_module.methods.each do |module_method| 
+<% $cur_module.methods.each do |module_method|
    if module_method.generateNativeAPI
    if module_method.access == ModuleMethod::ACCESS_STATIC %>
 <%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, true)%><%
@@ -110,7 +115,7 @@ if param.type == MethodParam::TYPE_STRING %>
     {
         if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
         {
-            arg<%= first_arg %> = getStringFromValue(argv[<%= first_arg %>]);
+            arg<%= first_arg %> = getStringObjectFromValue(argv[<%= first_arg %>]);
         }
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
@@ -222,7 +227,7 @@ else %>
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
         {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+            oRes.setRubyCallback( getStringObjectFromValue(argv[nCallbackArg]) );
         }else
         {
             oRes.setArgError("Type error: callback should be String");
@@ -240,7 +245,7 @@ else %>
                     return oRes.toRuby();
                 }
 
-                oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
+                oRes.setCallbackParam( getStringObjectFromValue(argv[nCallbackArg + 1]) );
             }
         }
         
