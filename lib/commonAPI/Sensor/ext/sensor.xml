@@ -309,7 +309,7 @@ As this extension returns the raw sensor values reported by the operating system
             <REMARK title="Supporting Sensors">
                 <DESC>
                     <![CDATA[
-In Android, refer to  Device's PRD for the list of supported sensors  in that particular device
+In Android, as supported sensors could vary from product to product so please refer to Device's PRD/TRD for the list of supported sensors in that particular device.
                     ]]>
                 </DESC>
             </REMARK>    
