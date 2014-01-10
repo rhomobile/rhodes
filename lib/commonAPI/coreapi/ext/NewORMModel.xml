@@ -45,7 +45,7 @@
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
-    
+
             <METHOD name="init" constructor="true">
                 <DESC>Initializes new model's instance</DESC>
                 <PARAMS>
@@ -65,8 +65,23 @@
                 </PARAMS>
             </METHOD>
 
+            <METHOD name="set">
+                <DESC>Sets model's property to value with additional processing for :sync property</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                    <PARAM name="propertyValue" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="enable">
+                <DESC>Sets model's Boolean property to true (enables model's property)</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
             <METHOD name="setModelProperty">
-                <DESC>Initializes new model's property</DESC>
+                <DESC>Initializes new model's field property</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="propertyType" type="STRING"/>
@@ -92,6 +107,41 @@
                 <PARAMS>
                     <PARAM name="attrs" type="HASH"/>
                 </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="createInstance">
+                <DESC>Initializes model's object</DESC>
+                <PARAMS>
+                    <PARAM name="attrs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="updateObject">
+                <DESC>updates object's attributes in the DB</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="oldAttrs" type="HASH"/>
+                    <PARAM name="newAttrs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="saveObject">
+                <DESC>saves (creates if necessary or updates if already exists) object's attributes in the DB</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="attrs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="deleteObject">
+                <DESC>deletes object's attributes from the DB</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                </PARAMS>
             </METHOD>
 
             <METHOD name="getCount">
@@ -104,7 +154,7 @@
                 <RETURN type="STRING"/>
             </METHOD>
 
-            <METHOD name="find">
+            <METHOD name="findObjects">
                 <DESC>Returns array of objects for the given model queried according to the specified conditions</DESC>
                 <PARAMS>
                     <PARAM name="queryParams" type="STRING"/>
