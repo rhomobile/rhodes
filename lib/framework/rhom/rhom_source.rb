@@ -64,11 +64,21 @@ module Rhom
     end
     
     def distinct_objects
-        ::Rho::RHO.get_src_db(@name).select_from_table(
-            'object_values',
-            'object',
-            {"source_id"=>@source_id},
-            {"distinct"=>true}).length
+      db = ::Rho::RHO.get_src_db(@name)
+      if @schema.nil?
+        res = db.select_from_table('object_values','object', {"source_id"=>@source_id}, {"distinct"=>true}).length
+
+      else
+        db_res =  db.execute_sql("SELECT COUNT(*) FROM \"#{@name}\"")
+        #puts "db_res : #{db_res}"
+        if db_res && db_res.length() > 0 
+            res = db_res[0].values[0] 
+        else
+            res = 0
+        end    
+      end
+      
+      res.to_i()
     end    
 
     def get_lastsync_objectcount
