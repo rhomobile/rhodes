@@ -25,15 +25,14 @@ module Rhom
         end
 
         def self.create(obj)
-          obj_inst = self.new(obj)
-          self.klass_model.createObject(obj_inst.vars)
-          obj_inst
+          objHash = self.klass_model.createObject(obj)
+          self.new(objHash);
         end
 
         def self.find(*args)
           puts "MZV_DEBUG: we are in find  #{args.inspect}"
           args.collect! { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
-          retVal = klass_model.find(*args)
+          retVal = klass_model.findObjects(*args)
           puts "MZV_DEBUG: find has returned : #{retVal.inspect}"
           orm_objs = []
           retVal.each do |obj|
@@ -48,17 +47,40 @@ module Rhom
         # the rhom object
         attr_accessor :vars
     
-        def initialize(obj=nil)
+        def initialize(obj={})
           @vars = {}
-          if obj
-            self.class.klass_model.validateFreezedAttributes(obj)
-            obj.each do |key,value|
-              self.vars[key.to_sym()] = value if key && key.length > 0
-            end
+          objHash = obj
+          unless obj[:object] or obj['object']
+            objHash = self.class.klass_model.createInstance(obj)
           end
-          
-          self.vars[:object] = "#{::Rho::NewORM.generateId}" unless self.vars[:object]
-          self.vars[:source_id] = self.class.klass_model.source_id
+          objHash.each do |key,value|
+            self.vars[key.to_sym()] = value
+          end
+        end
+
+        def update_attributes(attrs)
+          #attrs.collect! { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
+          #oldAttrs = @vars.collect { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
+          objHash = self.class.klass_model.updateObject(self.object, @vars, attrs)
+          objHash.each do |key, value|
+            self.vars[key.to_sym()] = value
+          end
+          true
+        end
+
+        def save
+          objId = self.object
+          attrs = @vars.collect { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
+          objHash = self.class.klass_model.saveObject(self.object, attrs)
+          objHash.each do |key, value|
+            self.vars[key.to_sym()] = value
+          end
+          true
+        end
+
+        def destroy
+          self.class.klass_model.deleteObject(self.object)
+          true
         end
 
         def method_missing(method_sym, *args, &block)

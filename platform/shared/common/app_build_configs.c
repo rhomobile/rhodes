@@ -9,7 +9,7 @@ static const char* keys[] = { ""
 };
 
 static const char* values[] = { ""
-,"testrh1"
+,"js-store"
 };
 
 #define APP_BUILD_CONFIG_COUNT 2

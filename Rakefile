@@ -1080,6 +1080,8 @@ def init_extensions(dest, mode = "")
                 endJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
                 endJSModules << f
+              elsif f.downcase().end_with?("rho.newormhelper.js")
+                endJSModules << f
               else
                 extjsmodulefiles << f
               end  
@@ -2411,6 +2413,8 @@ namespace "run" do
                       elsif f.downcase().end_with?("rho.application.js")
                         endJSModules << f
                       elsif f.downcase().end_with?("rho.database.js")
+                        endJSModules << f
+                      elsif f.downcase().end_with?("rho.newormhelper.js")
                         endJSModules << f
                       else
                         extjsmodulefiles << f

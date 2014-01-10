@@ -6,21 +6,7 @@ module Rhom
     end
 
     def set(name,value)
-  	  if ( name == :sync )
-  	    if ( value )
-  	        klass_model.sync_type = 'incremental' unless klass_model.sync_type != 'none'
-            klass_model.partition = 'user' unless klass_model.partition != 'local'
-  	    else
-  	        klass_model.sync_type = 'none'
-            klass_model.partition = 'local'
-  	    end        
-  	  else
-  	    klass_model.setProperty(name.to_s, value.to_s)
-  	  end
-    end
-
-    def enable(name)
-      set(name,true)
+  	  klass_model.set(name.to_s, value.to_s)
     end
 
     def fixed_schema?
