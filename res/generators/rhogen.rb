@@ -1982,7 +1982,7 @@ module Rhogen
         constants << module_constant
       end
 
-      check_unique_names_and_values("Constnat", constants)
+      check_unique_names_and_values("Constant", constants)
 
       #leave only unique consants
       return constants.uniq { |x| x.name }.sort{ |a,b|  a.name <=> b.name}
