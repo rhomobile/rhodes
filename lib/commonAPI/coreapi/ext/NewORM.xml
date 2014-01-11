@@ -7,6 +7,11 @@
 
         <METHODS>
 
+            <METHOD name="useNewOrm" access="STATIC">
+                <DESC>returns TRUE if NewORM is enabled in rhoconfig.txt</DESC>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
             <METHOD name="getClientId" access="STATIC">
                 <DESC>returns current Client Id</DESC>
                 <RETURN type="STRING"/>

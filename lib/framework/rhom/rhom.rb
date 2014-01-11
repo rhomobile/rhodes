@@ -48,7 +48,7 @@ module Rhom
     
     class << Rhom
       def client_id
-        if ::Rho::RHO.use_new_rhom
+        if ::Rho::RHO.use_new_orm
           ::Rho::NewORM.getClientId
         else
           c_id = ::Rho::RHO.get_user_db().select_from_table('client_info','client_id')[0]
@@ -57,7 +57,7 @@ module Rhom
       end
 
       def have_local_changes
-        if ::Rho::RHO.use_new_rhom
+        if ::Rho::RHO.use_new_orm
           ::Rho::NewORM.haveLocalChanges
         else
           #TODO: enumerate all sync sources, create array of partitions and run query for all partition. 
@@ -70,7 +70,7 @@ module Rhom
         puts "database_local_reset"
         
         #load all partitions
-        unless ::Rho::RHO.use_new_rhom
+        unless ::Rho::RHO.use_new_orm
           Rho::RHO.load_all_sources
 
           ::Rho::RHO.get_db_partitions().each do |partition, db|
