@@ -305,7 +305,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 As this extension returns the raw sensor values reported by the operating system the values might differ between platforms. Also as some of the sensor values change rapidly the minimum gap between two updates should be specified as a reasonable value, otherwise there can be a performance impact.
                     ]]>
                 </DESC>
-            </REMARK>            
+            </REMARK>
+            <REMARK title="Supporting Sensors">
+                <DESC>
+                    <![CDATA[
+In Android, as supported sensors could vary from product to product so please refer to Device's PRD/TRD for the list of supported sensors in that particular device.
+                    ]]>
+                </DESC>
+            </REMARK>    
 		</REMARKS>
 		<EXAMPLES >
             <EXAMPLE title="Basic Example">
