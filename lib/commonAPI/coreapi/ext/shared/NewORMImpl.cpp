@@ -3,6 +3,7 @@
 #include "db/DBAdapter.h"
 #include "common/RhoTime.h"
 #include "logging/RhoLog.h"
+#include "common/RhoConf.h"
 #include "sync/RhoconnectClientManager.h"
 #include "NewORMModelImpl.cpp"
 
@@ -48,6 +49,12 @@ public:
         oResult.set(CNewORMSingleton::base_temp_obj_id_);
     }
     
+    virtual void useNewOrm(rho::apiGenerator::CMethodResult& oResult) 
+    {
+        LOG(INFO) + "MZV_DEBUG: calling useNewOrm";
+        oResult.set( RHOCONF().getInt("use_new_orm") ? true : false );
+    }
+
     virtual void getClientId(rho::apiGenerator::CMethodResult& oResult) 
     {
         LOG(INFO) + "calling getClientId";
