@@ -134,7 +134,7 @@ public class Notification {
         else {
             iconResourceId = -1;
         }
-        Object kindsObj = props.get(NotificationSingleton.HK_KINDS);
+        Object kindsObj = props.get(NotificationSingleton.HK_TYPES);
         if (kindsObj != null && kindsObj instanceof List<?>) {
             for (Object kind: (List<?>)kindsObj) {
                 if (kind != null && kind instanceof String) {
@@ -143,8 +143,8 @@ public class Notification {
             }
         }
         else {
-            kinds.add(INotificationSingleton.KIND_DIALOG);
-            kinds.add(INotificationSingleton.KIND_NOTIFICATION);
+            kinds.add(INotificationSingleton.TYPE_DIALOG);
+            kinds.add(INotificationSingleton.TYPE_NOTIFICATION);
         }
     }
     
@@ -287,7 +287,7 @@ public class Notification {
         builder.setSmallIcon(R.drawable.icon);
         builder.setContentIntent(PendingIntent.getActivity(ctx, id, new Intent(ctx, RhodesActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
         
-        if (kinds.contains(INotificationSingleton.KIND_NOTIFICATION_DIALOG)) {
+        if (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG)) {
             for (ActionData action: actions) {
                 
                 Logger.T(TAG, "Adding action: " + action.index + ", " + action.id + ", " + action.title);
@@ -369,16 +369,16 @@ public class Notification {
     }
 
     public boolean isDialogNeeded() {
-        return kinds.contains(INotificationSingleton.KIND_DIALOG) || kinds.contains(INotificationSingleton.KIND_NOTIFICATION_DIALOG);
+        return kinds.contains(INotificationSingleton.TYPE_DIALOG) || kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG);
     }
     
     public boolean isForegroundToastNeeded() {
         boolean foregroundDialog = RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && isDialogNeeded();
-        return kinds.contains(INotificationSingleton.KIND_TOAST) && !foregroundDialog;
+        return kinds.contains(INotificationSingleton.TYPE_TOAST) && !foregroundDialog;
     }
     
     public boolean isNotificationAreaNeeded() {
-        return !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && (kinds.contains(INotificationSingleton.KIND_NOTIFICATION) || kinds.contains(INotificationSingleton.KIND_NOTIFICATION_DIALOG));
+        return !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION) || kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG));
     }
 
     private static class ActionData
