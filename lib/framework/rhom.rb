@@ -1,4 +1,4 @@
-if Rho::RHO.use_new_rhom
+if Rho::RHO.use_new_orm
 	puts "loading newrhom"
 	require 'newrhom/newrhom'
 else

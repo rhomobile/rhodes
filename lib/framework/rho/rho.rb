@@ -57,23 +57,23 @@ module Rho
     
     @@rho_framework = nil
     @@native_bar_initialized = nil
-    @@use_new_rhom = false
+    @@use_new_orm = false
     
     def self.get_instance
         @@rho_framework
     end
 
-    def self.use_new_rhom
-      return @@use_new_rhom
+    def self.use_new_orm
+      return @@use_new_orm
     end
 
     def initialize(app_manifest_filename=nil)
-      puts "Calling RHO.initialize #{app_manifest_filename}, use_new_rhom: #{Rho::RhoConfig.use_new_rhom.to_i}"
-      @@use_new_rhom = (Rho::RhoConfig.use_new_rhom.to_i > 0 ? true : false)
-      if(@@use_new_rhom)
-        puts "MZV_DEBUG: we are in use_new_rhom true #{@@use_new_rhom}"
+      puts "Calling RHO.initialize #{app_manifest_filename}, use_new_orm: #{Rho::RhoConfig.use_new_orm.to_i}"
+      @@use_new_orm = (Rho::RhoConfig.use_new_orm.to_i > 0 ? true : false)
+      if(@@use_new_orm)
+        puts "MZV_DEBUG: we are in use_new_orm true #{@@use_new_orm}"
       else
-        puts "MZV_DEBUG: we are in use_new_rhom false #{@@use_new_rhom}"
+        puts "MZV_DEBUG: we are in use_new_orm false #{@@use_new_orm}"
       end
 
       # Initialize application and sources
@@ -85,7 +85,7 @@ module Rho
       end
       require 'rhom'
 
-      unless @@use_new_rhom
+      unless @@use_new_orm
         if app_manifest_filename
           load_models_from_file(app_manifest_filename)
         else
@@ -356,14 +356,14 @@ end
     end
 
     def self.load_all_sources
-      unless @@use_new_rhom
+      unless @@use_new_orm
         Rho::RHO.get_instance().load_all_sync_sources()
       end
     end
     
     @all_models_loaded = false
     def load_all_sync_sources()
-      unless Rho::RHO.use_new_rhom
+      unless Rho::RHO.use_new_orm
         return if @all_models_loaded
         puts "load_all_sync_sources"
 
