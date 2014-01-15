@@ -454,8 +454,6 @@ def java_compile(outpath, classpath, srclist)
 end
 
 def java_build(jarpath, buildpath, classpath, srclists)
-    
-
     deps = []
 
     fullsrclist = nil
@@ -465,7 +463,7 @@ def java_build(jarpath, buildpath, classpath, srclists)
       File.open(fullsrclist, "r") do |f|
           while line = f.gets
               line.chomp!
-              deps << line
+              deps << line.delete("\"")
           end
       end
     else
@@ -475,7 +473,7 @@ def java_build(jarpath, buildpath, classpath, srclists)
         File.open(srclist, "r") do |f|
           while line = f.gets
             line.chomp!
-            deps << line
+            deps << line.delete("\"")
             fullsrclist.write "#{line}\n"
           end
         end
@@ -484,8 +482,8 @@ def java_build(jarpath, buildpath, classpath, srclists)
       fullsrclist = fullsrclist.path
     end
     
-    puts "jar deps:"
-    puts deps.inspect
+    #puts "jar deps:"
+    #puts deps.inspect
 
     return true if FileUtils.uptodate?(jarpath, deps)
 

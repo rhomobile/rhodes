@@ -1590,7 +1590,7 @@ namespace "build" do
           line.chomp!
           next if line =~ /\/AndroidR\.java\s*$/
 
-          lines << line
+          lines << "\"#{line}\""
         end
       end
       Dir.glob(File.join($tmpdir,'gen','**','*.java')) do |filepath|
@@ -1638,7 +1638,7 @@ namespace "build" do
         File.open(list, "r") do |f|
           while line = f.gets
             line.chomp!
-            srclist.write "#{File.join(extpath, line)}\n"
+            srclist.write "\"#{File.join(extpath, line)}\"\n"
             #srclist.write "#{line}\n"
           end
         end
