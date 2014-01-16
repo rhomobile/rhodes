@@ -24,6 +24,8 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require 'artii'
+require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 
 def extract_value_from_strings(line)
    pre_str = '<string>'
@@ -551,7 +553,6 @@ def app_expanded_path(appname)
   File.expand_path(File.join(basedir,'spec',appname))
 end
 
-
 def check_sdk(sdkname)
 
       puts 'Check SDK :'
@@ -944,8 +945,7 @@ namespace "build" do
 
            require   rootdir + '/lib/build/jake.rb'
 
-           puts Jake.run(xcodebuild,args)
-           ret = $?
+           ret = IPhoneBuild.run_and_trace(xcodebuild,args)
       else
 
         puts "ssskip rebuild because previous builded library is still actual !"
@@ -1050,8 +1050,11 @@ namespace "build" do
 
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
+      a = Artii::Base.new 
       $app_extensions_list.each do |ext, commin_ext_path |
           if commin_ext_path != nil
+            puts "Building"
+            puts a.asciify("#{ext.to_s}") 
             #puts '########################  ext='+ext.to_s+'        path='+commin_ext_path.to_s
             extpath = File.join( commin_ext_path, 'ext')
 
@@ -1139,8 +1142,11 @@ namespace "build" do
 
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
+      a = Artii::Base.new 
       $app_extensions_list.each do |ext, commin_ext_path |
         if commin_ext_path != nil
+          puts "Building"
+          puts a.asciify("#{ext.to_s}") 
 
           extpath = File.join( commin_ext_path, 'ext')
           extyml = File.join( commin_ext_path, "ext.yml")
@@ -1192,7 +1198,7 @@ namespace "build" do
                  args << libpath
                  args << libsimpath
                  args << libdevpath
-                 Jake.run("lipo",args)
+                 IPhoneBuild.run_and_trace("lipo",args)
 
                  mkdir_p File.join($app_builddir, "extensions", ext, "lib")
                  cp libpath, libbinpath
@@ -1374,12 +1380,9 @@ namespace "build" do
          args << 'i386'
       end
 
-      puts Jake.run($xcodebuild,args)
+      ret = IPhoneBuild.run_and_trace($xcodebuild,args)
       
       ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
-
-
-      ret = $?
 
       chdir $startdir
 
@@ -1824,8 +1827,8 @@ namespace "clean" do
         chdir iphone_project_folder
 
         args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
-        puts Jake.run($xcodebuild,args)
-        unless $? == 0
+        ret = IPhoneBuild.run_and_trace($xcodebuild,args)
+        unless ret == 0
           puts "Error cleaning"
           exit 1
         end
