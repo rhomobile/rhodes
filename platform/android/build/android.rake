@@ -1644,11 +1644,13 @@ namespace "build" do
         end
         srclist.close
 
-        mkdir_p File.join($tmpdir, ext)
+        buildpath = File.join($tmpdir, ext)
+        
+        mkdir_p buildpath unless File.exists? buildpath
 
         extjar = File.join $app_builddir, 'extensions', ext, ext + '.jar'
 
-        java_build(extjar, File.join($tmpdir, ext), classpath, [srclist.path])
+        java_build(extjar, buildpath, classpath, [srclist.path])
 
         $android_jars << extjar
 

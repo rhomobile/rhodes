@@ -485,7 +485,12 @@ def java_build(jarpath, buildpath, classpath, srclists)
     #puts "jar deps:"
     #puts deps.inspect
 
-    return true if FileUtils.uptodate?(jarpath, deps)
+    if FileUtils.uptodate?(jarpath, deps)
+      puts "#{jarpath} is uptodate: true"
+      #puts deps.inspect
+      #puts ""
+      return
+    end
 
     puts "Compiling java sources: #{srclists.inspect}"
 
