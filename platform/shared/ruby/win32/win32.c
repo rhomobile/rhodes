@@ -30,7 +30,7 @@
 #include <wincon.h>
 #include <share.h>
 
-#ifndef _WP8_LIB
+#if !defined(_WP8_LIB) && !defined(_WINRT_LIB)
 #include <shlobj.h>
 #endif
 

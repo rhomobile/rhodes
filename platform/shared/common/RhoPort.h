@@ -44,6 +44,10 @@
 
 #if defined( WINDOWS_PLATFORM )
 
+#if defined(OS_WINRT)
+#include <WinSock2.h>
+#endif // OS_WINRT
+
 #include <windows.h>
 #include <time.h>
 #ifdef _MSC_VER
@@ -77,7 +81,7 @@ extern long _timezone;
 #define _USE_MATH_DEFINES
 #endif
 
-#if defined(OS_WINCE) || defined(OS_WP8)
+#if defined(OS_WINCE) || defined(OS_WP8) || defined(OS_WINRT)
 #define M_PI 3.14159265358979323846
 #define M_LN2 0.69314718055994530942
 #endif
@@ -171,7 +175,7 @@ RHO_GLOBAL int vswnprintf(wchar_t *, size_t, const wchar_t *, void *);
 #  define	vswnprintf vswprintf
 #endif //OS_WINCE
 
-#if defined( OS_WP8 )
+#if defined( OS_WP8 ) || defined(OS_WINRT)
 #  include <stdlib.h>
 #  include <errno.h>
 
@@ -196,6 +200,7 @@ void WINAPI TlsShutdownWP8();
 
 VOID WINAPI SleepWP8(_In_ DWORD dwMilliseconds);
 
+#if !defined(OS_WINRT)
 int
 wsprintfA(
     _Out_ LPSTR,
@@ -570,7 +575,6 @@ typedef struct _BY_HANDLE_FILE_INFORMATION {
     DWORD nFileIndexLow;
 } BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION, *LPBY_HANDLE_FILE_INFORMATION;
 
-
 BOOL
 WINAPI
 GetFileInformationByHandle(
@@ -884,6 +888,7 @@ SetFileTime(
     _In_opt_ CONST FILETIME * lpLastAccessTime,
     _In_opt_ CONST FILETIME * lpLastWriteTime
     );
+#endif // OS_WINRT
 
 #ifdef __cplusplus
 }

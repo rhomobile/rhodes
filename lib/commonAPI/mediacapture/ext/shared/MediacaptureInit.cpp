@@ -1,6 +1,6 @@
 #include "common/RhodesApp.h"
 
-#ifndef OS_WP8
+#if !defined(OS_WP8) && !defined(OS_WINRT)
 extern "C" void Init_Camera_API();
 extern "C" void Init_Videocapture_API();
 extern "C" void Init_camera_extension();
@@ -11,7 +11,7 @@ extern "C" void Init_Camera_extension();
 
 extern "C" void Init_Mediacapture_extension()
 {
-#ifndef OS_WP8
+#if !defined(OS_WP8) && !defined(OS_WINRT)
 	Init_Camera_API();
 #ifndef RHO_NO_RUBY_API
     RHODESAPP().getExtManager().requireRubyFile("RhoCameraApi");

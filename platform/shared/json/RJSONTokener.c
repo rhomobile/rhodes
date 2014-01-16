@@ -19,7 +19,7 @@
 
 #include <common/RhoDefs.h>
 
-#if defined(_WIN32_WCE) || defined(WIN32) || defined(OS_WP8)
+#if defined(_WIN32_WCE) || defined(WIN32) || defined(OS_WP8) || defined(OS_WINRT)
 //#define strdup _strdup
 //extern int _shttpd_strncasecmp(register const char *,register const char *, size_t);
 //#define strncasecmp _shttpd_strncasecmp

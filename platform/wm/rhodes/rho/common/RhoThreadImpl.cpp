@@ -48,7 +48,7 @@ static DWORD WINAPI runProc(void* pv) throw()
 {
 	IRhoRunnable* p = static_cast<IRhoRunnable*>(pv);
 	p->runObject();
-#if !defined(OS_WP8)
+#if !defined(OS_WP8) && !defined(OS_WINRT)
     ::ExitThread(0);
 #endif
 	return 0;

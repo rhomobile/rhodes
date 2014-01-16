@@ -74,7 +74,7 @@
 # include "addrinfo.h"
 #endif
 
-#ifdef _WP8_LIB
+#if defined(_WP8_LIB) || defined(_WINRT_LIB)
 #include <ws2tcpip.h>
 #endif
 

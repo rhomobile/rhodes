@@ -41,7 +41,7 @@ namespace common{
 
 IMPLEMENT_LOGCLASS(CRhodesAppBase,"RhodesApp");
 CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_WINRT)
 	String CRhodesAppBase::m_strHomeUrl = "";
 #endif
 
@@ -87,7 +87,7 @@ void CRhodesAppBase::initAppUrls()
     m_strBlobsDirPath = db_dir + "db/db-files";
 	m_strDBDirPath = db_dir + "db";
 
-//#ifndef OS_WP8
+//#if !defined(OS_WP8) && !defined(OS_WINRT)
     m_strAppRootPath = getRhoRootPath() + "apps";
 //#else
 //    m_strAppRootPath = getRhoRootPath();
@@ -162,13 +162,13 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
             String retPath = strUrl;
             retPath.erase(findIt, appRootTag.size());
             retPath.insert(findIt, getAppRootPath());
-#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8)
+#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8) || defined(OS_WINRT)
             return retPath.substr(7);
 #else
             return retPath;
 #endif
         }
-#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8)
+#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8) || defined(OS_WINRT)
         return strUrl.substr(7);
 #else
         return strUrl;
@@ -334,7 +334,7 @@ int rho_sys_unzip_file(const char* szZipPath, const char* psw)
     SetUnzipBaseDir(hz,strBaseDir.c_str() );
 #endif
 
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_WINRT)
 	static ZIPENTRY ze;
 #else
 	ZIPENTRY ze;
@@ -409,6 +409,8 @@ const char* rho_rhodesapp_getplatform()
 #elif defined(WINDOWS_PLATFORM)
 #if defined(OS_WP8)
 	return "WP8";
+#elif defined(OS_WINRT)
+	return "WINRT";
 #else
 	return "WINDOWS";
 #endif

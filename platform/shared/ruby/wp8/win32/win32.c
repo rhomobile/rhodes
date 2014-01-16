@@ -25,7 +25,7 @@
 #include <assert.h>
 #include <ctype.h>
 
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_WINRT)
 #include <wincon.h>
 #include <processthreadsapi.h>
 #include <wtypesbase.h>
@@ -381,7 +381,7 @@ flock_win95(uintptr_t self, int argc, uintptr_t* argv)
 
 #undef LK_ERR
 
-#ifndef OS_WP8
+#if !defined(OS_WP8) && !defined(OS_WINRT)
 int
 flock(int fd, int oper)
 {
@@ -673,7 +673,7 @@ StartSockets(void)
 void
 rb_w32_sysinit(int *argc, char ***argv)
 {
-#if RT_VER >= 80 && !defined(OS_WP8)
+#if (RT_VER >= 80) && !defined(OS_WP8) && !defined(OS_WINRT)
     static void set_pioinfo_extra(void);
 
     _CrtSetReportMode(_CRT_ASSERT, 0);
@@ -2045,7 +2045,7 @@ EXTERN_C _CRTIMP ioinfo * __pioinfo[];
 #define _osfile(i)  (_pioinfo(i)->osfile)
 #define _pipech(i)  (_pioinfo(i)->pipech)
 
-#if RT_VER >= 80 && !defined(OS_WP8)
+#if (RT_VER >= 80) && !defined(OS_WP8) && !defined(OS_WINRT)
 static size_t pioinfo_extra = 0;	/* workaround for VC++8 SP1 */
 
 static void
@@ -2448,7 +2448,7 @@ is_pipe(SOCKET sock) /* DONT call this for SOCKET! it clains it is PIPE. */
 static int
 is_readable_pipe(SOCKET sock) /* call this for pipe only */
 {
-#if defined( _WIN32_WCE ) || defined( OS_WP8)
+#if defined( _WIN32_WCE ) || defined( OS_WP8) || defined(OS_WINRT)
     return 0;
 #else
 
@@ -2471,7 +2471,7 @@ is_readable_pipe(SOCKET sock) /* call this for pipe only */
 static int
 is_console(SOCKET sock) /* DONT call this for SOCKET! */
 {
-#if defined( _WIN32_WCE ) || defined( OS_WP8)
+#if defined( _WIN32_WCE ) || defined( OS_WP8) || defined( OS_WINRT )
     return 0;
 #else
     int ret;
@@ -2489,7 +2489,7 @@ is_console(SOCKET sock) /* DONT call this for SOCKET! */
 static int
 is_readable_console(SOCKET sock) /* call this for console only */
 {
-#if defined( _WIN32_WCE ) || defined( OS_WP8)
+#if defined( _WIN32_WCE ) || defined( OS_WP8 ) || defined( OS_WINRT )
     return 0;
 #else
 
@@ -2572,7 +2572,7 @@ compare(const struct timeval *t1, const struct timeval *t2)
     return 0;
 }
 
-#if !defined(OS_WP8)
+#if !defined(OS_WP8) && !defined(OS_WINRT)
 #undef Sleep
 #endif
 int WSAAPI
@@ -2704,7 +2704,7 @@ rb_w32_select(int nfds, fd_set *rd, fd_set *wr, fd_set *ex,
 int WSAAPI
 rb_w32_accept(int s, struct sockaddr *addr, int *addrlen)
 {
-#if defined( _WIN32_WCE ) || defined( OS_WP8)
+#if defined( _WIN32_WCE ) || defined( OS_WP8) || defined(OS_WINRT)
     return 0;
 #else
     SOCKET r;
@@ -4140,7 +4140,7 @@ isUNCRoot(const WCHAR *path)
 	(dest).st_ctime = (src).st_ctime;	\
     } while (0)
 
-#if defined __BORLANDC__ || defined _WIN32_WCE  || defined (OS_WP8)
+#if defined __BORLANDC__ || defined _WIN32_WCE  || defined (OS_WP8) || defined(OS_WINRT)
 #undef fstat
 int
 rb_w32_fstat(int fd, struct stat *st)
@@ -4661,7 +4661,7 @@ call_asynchronous(PVOID argp)
     return ret;
 }
 
-#ifndef OS_WP8
+#if !defined(OS_WP8) && !defined(OS_WINRT)
 uintptr_t
 rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self,
 		    int argc, uintptr_t* argv, uintptr_t intrval)
@@ -4834,7 +4834,7 @@ rb_w32_uopen(const char *file, int oflag, ...)
     free(wfile);        
     return ret;
 }
-#if !defined( _WIN32_WCE ) && !defined (OS_WP8)
+#if !defined( _WIN32_WCE ) && !defined (OS_WP8) && !defined(OS_WINRT)
 int
 rb_w32_open(const char *file, int oflag, ...)
 {
@@ -5163,7 +5163,7 @@ rb_w32_close(int fd)
     return 0;
 }
 
-#if !defined( _WIN32_WCE ) && !defined(OS_WP8)
+#if !defined( _WIN32_WCE ) && !defined(OS_WP8) && !defined(OS_WINRT)
 #undef read
 size_t
 rb_w32_read(int fd, void *buf, size_t size)
@@ -5709,7 +5709,7 @@ rb_w32_uchmod(const char *path, int mode)
     return ret;
 }
 
-#if !defined(__BORLANDC__)&& !defined(_WIN32_WCE) && !defined(OS_WP8)
+#if !defined(__BORLANDC__)&& !defined(_WIN32_WCE) && !defined(OS_WP8) && !defined(OS_WINRT)
 int
 rb_w32_isatty(int fd)
 {

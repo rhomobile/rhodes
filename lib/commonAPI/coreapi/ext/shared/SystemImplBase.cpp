@@ -18,7 +18,7 @@ int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char 
 	ZRESULT res;
 	HZIP hz = 0;
 	
-#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8)
+#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8) && !defined(OS_WINRT)
 	hz = CreateZip( convertToStringW(szZipFilePath).c_str(), psw);
 #else
 	hz = CreateZip((TCHAR*)szZipFilePath, psw);

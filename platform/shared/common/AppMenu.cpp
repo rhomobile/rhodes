@@ -34,7 +34,7 @@
 #include <algorithm>
 #include <functional>
 
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_WINRT)
 extern "C" void createMenu();
 #endif
 #ifdef RHODES_QT_PLATFORM
@@ -252,7 +252,7 @@ void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bo
             setEnableMenuItem(label, !isDisable, bLeftMenu);
 
         }
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_WINRT)
 		createMenu();
 #endif
 #ifdef RHODES_QT_PLATFORM

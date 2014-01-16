@@ -8,7 +8,6 @@ rakefile.rb
 rhobuild.yml
 rhobuild.*.yml
 lastbuildoptions.yml
-*.filters
 
 #platform/iphone/Info.plist
 lib/commonAPI/*/*/*/generated/
@@ -275,3 +274,7 @@ platform/osx/bin/RhoSimulator/tmp/*
 platform/build/*.build/*
 
 .qmake.stash
+
+*.vcxproj*.cache
+
+platform/winrt/bin

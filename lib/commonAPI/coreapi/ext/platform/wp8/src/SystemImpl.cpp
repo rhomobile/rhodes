@@ -13,7 +13,11 @@ using namespace Windows::Graphics::Display;
 using namespace Windows::Devices::Input;
 using namespace Windows::UI::Core;
 using namespace Windows::Foundation;
+#if defined(OS_WP8)
 using namespace Windows::Phone::Management::Deployment;
+#else
+using namespace Windows::Management::Deployment;
+#endif
 using namespace Windows::ApplicationModel;
 using namespace Windows::Foundation::Collections;
 

@@ -4,7 +4,7 @@
 #include "common/RhoDefs.h"
 
 //RHO
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_WINRT)
 #include "wp8.h"
 #endif
 //RHO
@@ -149,7 +149,7 @@ extern DWORD rb_w32_osid(void);
 #define getpid()		rb_w32_getpid()
 #define getppid()		rb_w32_getppid()
 #define sleep(x)		rb_w32_Sleep((x)*1000)
-#if !defined(OS_WP8)
+#if !defined(OS_WP8) && !defined(OS_WINRT)
 #define Sleep(msec)		(void)rb_w32_Sleep(msec)
 #endif
 #ifdef __BORLANDC__

@@ -8,13 +8,15 @@
   the whole contents.
 ***************************************************************/
 
+#if defined(_WP8_LIB)
 #include <windows.h>
+#endif
 #include <tchar.h>
 
 #include "../../common/RhoDefs.h"
 
 #include "ruby\config.h"
-#include "ruby/defines.h"
+#include "ruby\defines.h"
 
 #include <errno.h>
 #include <process.h>
@@ -23,6 +25,8 @@
 char *_commandLine;
 
 extern char _currentdir[];
+
+#if !defined(OS_WINRT)
 
 /* ---------------  files functions. ------------------- */
 BOOL
@@ -352,6 +356,8 @@ int wsprintfW( LPWSTR p1,  LPCWSTR p2,  ...)
 
 	return nRes;
 }
+
+#endif // OS_WINRT
 
 
 int rb_w32_open( const char *file, int mode, ... )

@@ -16,7 +16,7 @@
 #define CURL_DISABLE_TELNET 1
 #define CURL_DISABLE_TFTP 1
 
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_WINRT)
 #define _WIN32_WINNT  0x0600 
 #endif 
 

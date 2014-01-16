@@ -30,8 +30,10 @@
 #if defined(__SYMBIAN32__)
 # define OS_SYMBIAN
 # undef UNICODE
-#elif defined(_WINRT_DLL) || defined(_WP8_LIB)
+#elif defined(_WP8_DLL) || defined(_WP8_LIB)
 #define OS_WP8
+#elif defined(_WINRT_DLL) || defined(_WINRT_LIB)
+#define OS_WINRT
 #elif defined(_WIN32_WCE)
 # define OS_WINCE _WIN32_WINCE
 #elif defined(WIN32)
@@ -47,7 +49,7 @@
 #else
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8) || defined(OS_WINRT)
 #define WINDOWS_PLATFORM
 #endif
 
