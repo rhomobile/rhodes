@@ -63,10 +63,9 @@ namespace "build" do
         args << 'i386'
     end
 
-    require   $rootdir + '/lib/build/jake.rb'
+    require File.join(ENV['RHO_ROOT'], 'platform','iphone','rbuild','iphonecommon')
 
-    puts Jake.run($xcodebuild,args)
-    ret = $?
+    ret = IPhoneBuild.run_and_trace($xcodebuild,args)
 
     # copy result to $targetdir
     cp result_lib,target_lib
