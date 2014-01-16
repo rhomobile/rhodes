@@ -24,7 +24,6 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-require 'artii'
 require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 
 def extract_value_from_strings(line)
@@ -1050,11 +1049,8 @@ namespace "build" do
 
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
-      a = Artii::Base.new 
       $app_extensions_list.each do |ext, commin_ext_path |
           if commin_ext_path != nil
-            puts "Building"
-            puts a.asciify("#{ext.to_s}") 
             #puts '########################  ext='+ext.to_s+'        path='+commin_ext_path.to_s
             extpath = File.join( commin_ext_path, 'ext')
 
@@ -1142,11 +1138,8 @@ namespace "build" do
 
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
-      a = Artii::Base.new 
       $app_extensions_list.each do |ext, commin_ext_path |
         if commin_ext_path != nil
-          puts "Building"
-          puts a.asciify("#{ext.to_s}") 
 
           extpath = File.join( commin_ext_path, 'ext')
           extyml = File.join( commin_ext_path, "ext.yml")
