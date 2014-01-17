@@ -32,7 +32,7 @@
 @interface LeftViewController : UITableViewController {
 	SplittedMainView* splittedView;
     NSArray *itemsData;
-	int preferredSize;
+	int preferredSize, groupBottomIndex, groupBottomHeight;
 	UIFont* myFont;
     UIColor* iconColor;
     UIColor* detailColor;
@@ -46,10 +46,14 @@
 @property (nonatomic,retain) UIColor *iconColor;
 @property (nonatomic,retain) UIColor *detailColor;
 @property (nonatomic,retain) UIColor *backgroundColor;
+@property (nonatomic,assign) int groupBottomIndex;
+@property (nonatomic,assign) int groupBottomHeight;
 
 - (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent;
 - (void)setSelection:(int)index;
 
 - (int)getPreferredWidth;
+- (int)getFirstActiveItem;
+- (void)updateViewHeight:(int) height;
 
 @end
