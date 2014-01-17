@@ -100,6 +100,8 @@ module Rho
           puts "MZV_DEBUG: we have here #{model.class.name}, #{model.model_name}, #{model.loaded}"
         end
         puts " some generated id is : #{Rho::NewORM.generateId}"
+        puts " and getModel returns : " + Rhom::Rhom.getModel("Product").model_name.inspect
+        puts " and invalid returns : " + Rhom::Rhom.getModel("some_invalid_name").inspect
       end
     end
 

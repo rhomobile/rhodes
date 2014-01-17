@@ -128,6 +128,10 @@ end
         ::Rho::NewORM.getClientId
       end
 
+      def getModel(modelname)
+        ::Rho::NewORMModel.getModel(modelname)
+      end
+
       def have_local_changes
         ::Rho::NewORM.haveLocalChanges
       end
@@ -138,6 +142,25 @@ end
 
       def database_client_reset(reset_local_models=true)
         ::Rho::NewORM.databaseClientReset(reset_local_models)
+      end
+
+      def database_full_reset_ex(argsHash = {})
+        reset_client_info = argsHash[:reset_client_info] || false
+        reset_local_models = argsHash[:reset_local_models] || false
+        reset_models = argsHash[:models] || []
+        ::Rho::NewORM.databaseFullResetEx(reset_models, reset_client_info, reset_local_models)
+      end
+
+      def database_full_reset(reset_client_info=false, reset_local_models=true)
+        ::Rho::NewORM.databaseFullReset(reset_client_info, reset_local_models)
+      end
+
+      def database_full_reset_and_logout
+        ::Rho::NewORM.databaseFullResetAndLogout
+      end
+
+      def database_fullclient_reset_and_logout
+        ::Rho::NewORM.databaseFullClientResetAndLogout
       end
     end
 	end
