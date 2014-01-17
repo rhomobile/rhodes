@@ -27,7 +27,7 @@
 class IPhoneBuild
   class << self
       def process_output(input,options = {})
-        lines = input.split(/\r?\n/)
+        lines = input.encode('UTF-8', :invalid => :replace).split(/\r?\n/) 
         result = []
         lines.each do |data|
           # highligh "error:", "warning:", and "note" messages by adding colored messages
