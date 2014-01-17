@@ -84,7 +84,13 @@ String clearException(JNIEnv* env)
     env->ExceptionClear();
     jholder<jclass> jhclass = env->GetObjectClass(jhexc.get());
     jmethodID mid = env->GetMethodID(jhclass.get(), "toString", "()Ljava/lang/String;");
+
+    jmethodID midDump = env->GetMethodID(jhclass.get(), "printStackTrace", "()V");
+    
     jhstring jhmsg = (jstring)env->CallObjectMethod(jhexc.get(), mid);
+
+    env->CallVoidMethod(jhexc.get(), midDump);
+    
     return rho_cast<rho::String>(env, jhmsg);
 }
 
