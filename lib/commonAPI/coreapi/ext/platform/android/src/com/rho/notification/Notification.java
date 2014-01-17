@@ -250,6 +250,9 @@ public class Notification {
             }
         }
 
+        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(id);
+
         dialog.setContentView(main);
         dialog.show();
     }
