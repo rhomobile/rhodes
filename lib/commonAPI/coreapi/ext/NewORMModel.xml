@@ -45,6 +45,15 @@
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
+            <METHOD name="getModel" access="STATIC">
+                <PARAMS>
+                    <PARAM type="STRING"/>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>NewORMModel object</DESC>
+                    <PARAM type="SELF_INSTANCE"/>
+                </RETURN>
+            </METHOD>
 
             <METHOD name="init" constructor="true">
                 <DESC>Initializes new model's instance</DESC>
@@ -157,7 +166,11 @@
             <METHOD name="findObjects">
                 <DESC>Returns array of objects for the given model queried according to the specified conditions</DESC>
                 <PARAMS>
-                    <PARAM name="queryParams" type="STRING"/>
+                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="options" type="HASH"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="select_attrs" type="ARRAY"/>
+                    <PARAM name="order_attrs" type="HASH"/>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
@@ -176,6 +189,17 @@
                     <PARAM name="attrHash" type="HASH"/>
                 </PARAMS>
                 <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="buildCondWhereEx">
+                <DESC>Aux function</DESC>
+                <PARAMS>
+                    <PARAM name="attrKey" type="STRING"/>
+                    <PARAM name="attrValues" type="ARRAY"/>
+                    <PARAM name="valOp" type="STRING"/>
+                    <PARAM name="valFunc" type="STRING"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
             </METHOD>
 
 
