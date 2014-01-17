@@ -153,7 +153,9 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
 }
 
 -(void) command_<%= module_method.native_name %>:(rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params*)caller_params {
+<% if module_method.params.size > 0 %>
     NSArray* params = caller_params.params;
+<% end %>
     id<<%= interface_name %>> objItem = caller_params.item;
     CMethodResult* methodResult = caller_params.methodResult;
 

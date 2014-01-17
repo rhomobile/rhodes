@@ -414,17 +414,13 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "\"#{outname}\""
   args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  #args << "-L#{File.join($androidndkpath, "sources","cxx-stl","stlport","libs","armeabi")}"
-  #args << "-L#{File.join($androidndkpath, "tmp","ndk-digit","build","install","sources","cxx-stl","stlport","libs","armeabi")}"
   args << "-L#{File.join($androidndkpath, "sources","cxx-stl","gnu-libstdc++",$ndkgccver,'libs','armeabi')}"
   args << "-lgnustl_static"
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
-  #$libgcc = `#{$gccbin} -mthumb-interwork -print-file-name=libgcc.a`.gsub("\n", "") if $libgcc.nil?
-  #args << $libgcc if $ndkgccver != "4.2.1"
   args << "#{$ndksysroot}/usr/lib/libc.so"
   args << "#{$ndksysroot}/usr/lib/libm.so"
-  #args << $libgcc if $ndkgccver == "4.2.1"
+
   cc_run($gccbin, args)
 end
 
@@ -434,33 +430,8 @@ def cc_clean(name)
   end
 end
 
-def java_compile(outpath, classpath, srclists)
+def java_compile(outpath, classpath, srclist)
     javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
-
-    #puts '@@@@@@@@@@@@@@   BEGIN'
-    if srclists.count == 1
-      fullsrclist = srclists.first
-      #  File.open(fullsrclist, "r") do |f|
-      #    while line = f.gets
-      #      puts line
-      #    end
-      #  end
-    else
-      fullsrclist = Tempfile.new 'RhodesSRC_build'
-      srclists.each do |srclist|
-        lines = []
-        File.open(srclist, "r") do |f|
-          while line = f.gets
-            line.chomp!
-            #puts line
-            fullsrclist.write "#{line}\n"
-          end
-        end
-      end
-      fullsrclist.close
-      fullsrclist = fullsrclist.path
-    end
-    #puts '@@@@@@@@@@@@@@   END'
 
     args = []
     args << "-g"
@@ -475,11 +446,60 @@ def java_compile(outpath, classpath, srclists)
     args << "latin1"
     args << "-classpath"
     args << classpath
-    args << "@#{fullsrclist}"
+    args << "@#{srclist}"
     puts Jake.run(javac, args)
     unless $?.success?
-        puts "Error compiling java code"
-        exit 1
+        raise "Error compiling java code"
+    end
+end
+
+def java_build(jarpath, buildpath, classpath, srclists)
+    deps = []
+
+    fullsrclist = nil
+
+    if srclists.count == 1
+      fullsrclist = srclists.first
+      File.open(fullsrclist, "r") do |f|
+          while line = f.gets
+              line.chomp!
+              deps << line.delete("\"")
+          end
+      end
+    else
+      fullsrclist = Tempfile.new 'RhodesSRC_build'
+      srclists.each do |srclist|
+        lines = []
+        File.open(srclist, "r") do |f|
+          while line = f.gets
+            line.chomp!
+            deps << line.delete("\"")
+            fullsrclist.write "#{line}\n"
+          end
+        end
+      end
+      fullsrclist.close
+      fullsrclist = fullsrclist.path
+    end
+    
+    #puts "jar deps:"
+    #puts deps.inspect
+
+    if FileUtils.uptodate?(jarpath, deps)
+      puts "#{jarpath} is uptodate: true"
+      #puts deps.inspect
+      #puts ""
+      return
+    end
+
+    puts "Compiling java sources: #{srclists.inspect}"
+
+    java_compile(buildpath, classpath, fullsrclist)
+    
+    args = ["cf", jarpath, '.']
+    Jake.run($jarbin, args, buildpath)
+    unless $?.success?
+        raise "Error creating #{jarpath}"
     end
 
 end
@@ -488,7 +508,7 @@ def apk_build(sdk, apk_name, res_name, dex_name, debug)
     puts "Building APK file..."
     prev_dir = Dir.pwd
     Dir.chdir File.join(sdk, "tools")
-    #"-classpath", File.join("lib", "sdklib.jar"), "com.android.sdklib.build.ApkBuilderMain", 
+
     params = ['-Xmx1024m', '-classpath', $sdklibjar, 'com.android.sdklib.build.ApkBuilderMain', apk_name]
     if debug
         params += ['-z', res_name, '-f', dex_name]
@@ -496,13 +516,6 @@ def apk_build(sdk, apk_name, res_name, dex_name, debug)
         params += ['-u', '-z', res_name, '-f', dex_name]
     end
     
-#    if RUBY_PLATFORM =~ /(win|w)32$/
-#        apkbuilder = "apkbuilder" + $bat_ext
-#    else
-#        apkbuilder = File.join(".", "apkbuilder" + $bat_ext)
-#    end
-#    Jake.run apkbuilder, params
-
     Jake.run File.join($java, 'java'+$exe_ext), params
     unless $?.success?
         Dir.chdir prev_dir
