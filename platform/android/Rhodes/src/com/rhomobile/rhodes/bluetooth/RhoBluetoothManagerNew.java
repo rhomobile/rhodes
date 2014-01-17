@@ -388,10 +388,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	
 	public int is_bluetooth_available() {
 		//SREMBPD00122615
-	if (!mBluetoothIsEnabled) return 0;
-		else
-		{
-			BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 			if (bluetoothAdapter != null) {
 				if (!bluetoothAdapter.isEnabled())
 					return 0;
@@ -400,7 +397,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 			}
 			else
 					return 0;
-		}
+		
 	}
 	
 	public void off_bluetooth() {
