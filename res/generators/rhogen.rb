@@ -2751,9 +2751,11 @@ module Rhogen
 
           # static methods are not taking hashes as parameters
           is_static = false
-          attr_access = get_attribute_value_inherited(xml_module_method, xml_entity_methods_item, 'access')
+          method_attributes = collect_inherited_attributes(xml_module_method, ['access'])
+          attr_access = method_attributes['access']
+
           if attr_access != nil
-            if attr_access == 'static'
+            if attr_access.downcase == 'static'
               is_static = true
             end
           end
