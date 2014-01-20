@@ -199,10 +199,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
-                <DESC>Set application activation/deactivation callback.</DESC>
+                <DESC>This method allows your application to register for application specific events like application activation/deactivation, UI creation/destruction as well as others. Check the Callback tab for details.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
-                    <DESC>Application evens are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start/shut down activites. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. NB: Event firing behaviour depends on platform.</DESC>
+                    <DESC>Application events are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start/shut down activities. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. NB: Event firing behavior depends on platform.</DESC>
                     <PARAMS>
                         <PARAM name="applicationEvent" type="STRING">
                             <DESC></DESC>

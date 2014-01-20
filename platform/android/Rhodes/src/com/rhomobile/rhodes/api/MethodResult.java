@@ -491,6 +491,8 @@ public class MethodResult implements IMethodResult {
         Logger.E(TAG, ex);
         Logger.E(TAG, toString());
         
+        ex.printStackTrace();
+        
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mIsRuby, mSingleShot);
