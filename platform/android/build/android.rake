@@ -1590,18 +1590,12 @@ namespace "build" do
           line.chomp!
           next if line =~ /\/AndroidR\.java\s*$/
 
-          lines << line
+          lines << "\"#{line}\""
         end
       end
       Dir.glob(File.join($tmpdir,'gen','**','*.java')) do |filepath|
         lines << "\"#{filepath}\""
       end
-      #lines << "\"" +File.join($app_rjava_dir, "R.java")+"\""
-      #lines << "\"" +File.join($app_rjava_dir, "R", "R.java")+"\""
-      #lines << "\"" +$app_native_libs_java+"\""
-      #lines << "\"" +$app_capabilities_java+"\""
-      #lines << "\"" +$app_push_java+"\""
-      #lines << "\"" +$app_startup_listeners_java+"\""
 
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist
@@ -1619,39 +1613,25 @@ namespace "build" do
         javafilelists << extlist
       end
 
-      java_compile(File.join($tmpdir, 'Rhodes'), classpath, javafilelists)
+      jar = File.join($app_builddir, 'librhodes', 'Rhodes.jar')
+      java_build(jar, File.join($tmpdir, 'Rhodes'), classpath, javafilelists)
 
-      files = []
-      Dir.glob(File.join($tmpdir, "Rhodes", "*")).each do |f|
-        relpath = Pathname.new(f).relative_path_from(Pathname.new(File.join($tmpdir, "Rhodes"))).to_s
-        files << relpath
-      end
-      unless files.empty?
-        jar = File.join($app_builddir, 'librhodes', 'Rhodes.jar')
-        args = ["cf", jar]
-        args += files
-        Jake.run($jarbin, args, File.join($tmpdir, "Rhodes"))
-        unless $?.success?
-          raise "Error creating #{jar}"
-        end
-        $android_jars = [jar]
-      end
+      $android_jars = [jar]
     end
 
     task :extensions_java => [:rhodes, :extensions] do
-      puts 'Compile additional java files:'
+      puts 'Compile extensions java code'
 
       classpath = $androidjar
       classpath += $path_separator + $google_classpath if $google_classpath
       classpath += $path_separator + $motosol_classpath if $motosol_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
-        classpath += $path_separator + jar
+          classpath += $path_separator + jar
       end
 
       $ext_android_additional_sources.each do |extpath, list|
         ext = File.basename(extpath)
-        puts "Compiling '#{ext}' extension java sources: #{list}"
 
         srclist = Tempfile.new "#{ext}SRC_build"
         lines = []
@@ -1664,17 +1644,16 @@ namespace "build" do
         end
         srclist.close
 
-        mkdir_p File.join($tmpdir, ext)
-
-        java_compile(File.join($tmpdir, ext), classpath, [srclist.path])
+        buildpath = File.join($tmpdir, ext)
+        
+        mkdir_p buildpath unless File.exists? buildpath
 
         extjar = File.join $app_builddir, 'extensions', ext, ext + '.jar'
-        args = ["cf", extjar, '.']
-        Jake.run($jarbin, args, File.join($tmpdir, ext))
-        unless $?.success?
-          raise "Error creating #{extjar}"
-        end
+
+        java_build(extjar, buildpath, classpath, [srclist.path])
+
         $android_jars << extjar
+
         classpath += $path_separator + extjar
       end
     end

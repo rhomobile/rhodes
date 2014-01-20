@@ -122,10 +122,10 @@ public class NotificationSingleton implements INotificationSingleton
             buttons.add(hideLabel);
             propertyMap.put(HK_BUTTONS, buttons);
         }
-        ArrayList<String> kinds = new ArrayList<String>();
-        kinds.add(KIND_DIALOG);
-        kinds.add(KIND_TOAST);
-        propertyMap.put(HK_KINDS, kinds);
+        ArrayList<String> types = new ArrayList<String>();
+        types.add(TYPE_DIALOG);
+        types.add(TYPE_TOAST);
+        propertyMap.put(HK_TYPES, types);
         showPopup(propertyMap, result);
     }
     
