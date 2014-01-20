@@ -84,7 +84,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
         </METHODS>
         <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
-        <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
+        <PLATFORM>Android</PLATFORM>
         <EXAMPLES >
         </EXAMPLES>
     </MODULE>
