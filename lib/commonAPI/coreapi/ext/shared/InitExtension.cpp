@@ -16,6 +16,7 @@ extern "C" void Init_RhoFile();
 extern "C" void Init_NativeMenuBar();
 extern "C" void Init_Led();
 extern "C" void Init_Push();
+extern "C" void Init_Intent();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -57,10 +58,14 @@ extern "C" void Init_CoreAPI_Extension()
 
 
 #if defined(OS_WINCE) || defined(OS_ANDROID)
-	//Init_Led();
+    //Init_Led();
 #endif
 
 #if defined(OS_ANDROID) || defined(OS_WINCE) || defined(OS_MACOSX) || (defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR))
-	Init_Push();
+    Init_Push();
+#endif
+
+#if defined(OS_ANDROID)
+    Init_Intent();
 #endif
 }
