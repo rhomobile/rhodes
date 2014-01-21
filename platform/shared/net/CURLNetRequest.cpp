@@ -276,8 +276,10 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 		{
 			//Do nothing, file is already loaded
 		}else if (statusCode == 206) {
-            if (oFile)
+            if (oFile) {
                 oFile->write(&respChunk[0], respChunk.size());
+                oFile->flush();
+            }
             else
                 std::copy(respChunk.begin(), respChunk.end(), std::back_inserter(respBody));
             // Clear counter of attempts because 206 response does not considered to be failed attempt
@@ -289,6 +291,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 				{
 					oFile->movePosToStart();
 					oFile->write(&respChunk[0], respChunk.size());
+                    oFile->flush();
 				}
             }
             else
