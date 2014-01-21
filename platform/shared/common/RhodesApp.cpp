@@ -1712,7 +1712,9 @@ void CRhodesApp::navigateBack()
     if((nIndex < static_cast<int>(m_arAppBackUrlOrig.size()))
         && (m_arAppBackUrlOrig[nIndex].length() > 0))
     {
-        loadUrl(m_arAppBackUrlOrig[nIndex]);
+        String backUrl = m_arAppBackUrlOrig[nIndex];
+        setAppBackUrl("");
+        loadUrl(backUrl);
     }
     else// if(strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0)
     {
