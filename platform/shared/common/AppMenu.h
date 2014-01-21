@@ -67,6 +67,7 @@ public:
     void getMenuButtonEx(Hashtable<String, String>& hashRes, bool bLeftItem = false);
     //void setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu = false );
     void setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bool bLeftMenu = false);
+    void setAppBackUrlWithJSONItems( const rho::Vector<rho::String>& arMenu );
 
     void copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems, bool bLeftMenu = false);
 
