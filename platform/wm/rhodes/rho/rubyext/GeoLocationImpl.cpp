@@ -43,7 +43,7 @@ CGPSDevice * CGPSDevice::s_pInstance = NULL;
 #define MAX_WAIT    5000
 #define MAX_AGE     3000
 #define GPS_CONTROLLER_EVENT_COUNT 3
-#define KNOTS_TO_METRESPERSECOND (1852/3600)
+#define KNOTS_TO_METRESPERSECOND (double)(1852.00/3600.00)
 
 CGPSDevice::CGPSDevice(void)
 {

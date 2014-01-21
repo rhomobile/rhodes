@@ -944,7 +944,7 @@ namespace "build" do
 
            require   rootdir + '/lib/build/jake.rb'
 
-           ret = IPhoneBuild.run_and_trace(xcodebuild,args)
+           ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir})
       else
 
         puts "ssskip rebuild because previous builded library is still actual !"
@@ -1191,7 +1191,7 @@ namespace "build" do
                  args << libpath
                  args << libsimpath
                  args << libdevpath
-                 IPhoneBuild.run_and_trace("lipo",args)
+                 IPhoneBuild.run_and_trace("lipo",args,{:rootdir => $startdir})
 
                  mkdir_p File.join($app_builddir, "extensions", ext, "lib")
                  cp libpath, libbinpath
@@ -1373,7 +1373,7 @@ namespace "build" do
          args << 'i386'
       end
 
-      ret = IPhoneBuild.run_and_trace($xcodebuild,args)
+      ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
       
       ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
 
@@ -1820,7 +1820,7 @@ namespace "clean" do
         chdir iphone_project_folder
 
         args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
-        ret = IPhoneBuild.run_and_trace($xcodebuild,args)
+        ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
         unless ret == 0
           puts "Error cleaning"
           exit 1
