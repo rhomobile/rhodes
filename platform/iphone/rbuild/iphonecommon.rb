@@ -27,7 +27,7 @@
 class IPhoneBuild
   class << self
       def process_output(input,options = {})
-        lines = input.split(/\r?\n/)
+        lines = input.encode('UTF-8', :invalid => :replace).split(/\r?\n/) 
         result = []
         lines.each do |data|
           # highligh "error:", "warning:", and "note" messages by adding colored messages
@@ -53,8 +53,19 @@ class IPhoneBuild
         result.join($/)
       end
 
-      def run_and_trace(cmd,args)
-        require File.join(ENV['RHO_ROOT'], 'lib','build','jake')
+      def run_and_trace(cmd,args,options = {})
+        if options[:rootdir]
+          $rootdir = options[:rootdir]
+        else
+          $rootdir = ENV['RHO_ROOT']
+        end
+
+        if $rootdir.nil?
+          $rootdir = File.expand_path(File.join(File.dirname(__FILE__), '..','..','..'))
+          puts "== iphonecommon.rb: setting $rootdir to #{$rootdir} =="
+        end 
+
+        require File.join($rootdir, 'lib','build','jake')
 
         Jake.run2(cmd,args,{}) do |line|
           puts process_output(line)
