@@ -421,7 +421,7 @@ namespace "config" do
     extpaths << File.join($startdir, "lib","extensions")
     $app_config["extpaths"] = extpaths
     
-    if $app_config["build"] and $app_config["build"] == "release"
+    if $app_config["build"] and $app_config["build"].casecmp("release") == 0
       $debug = false
     else
       $debug = true
@@ -1694,7 +1694,7 @@ namespace "build" do
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
-        
+
       if not $minify_types.empty?
           minify_js_and_css($srcdir,$minify_types)
       end
