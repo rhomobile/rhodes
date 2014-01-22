@@ -917,7 +917,9 @@ def init_extensions(dest, mode = "")
   nativelib = []
   extlibs = []
   extjsmodulefiles = []
+  extjsmodulefiles_opt = []
   startJSModules = []
+  startJSModules_opt = []
   endJSModules = []
   extcsharplibs = []
   extcsharpentries = []
@@ -1080,13 +1082,22 @@ def init_extensions(dest, mode = "")
                 endJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
                 endJSModules << f
+              elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                puts "add #{f} to startJSModules_opt.."
+                startJSModules_opt << f
               else
                 extjsmodulefiles << f
               end  
           end
           
           Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-              extjsmodulefiles << f
+              if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                puts "add #{f} to extjsmodulefiles_opt.."
+                extjsmodulefiles_opt << f
+              else
+                puts "add #{f} to extjsmodulefiles.."
+                extjsmodulefiles << f
+              end
           end
               
         end
@@ -1112,16 +1123,24 @@ def init_extensions(dest, mode = "")
   
   puts "exts " + exts
 
+  # deploy Common API JS implementation
   extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
   extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
-
-  # deploy Common API JS implementation
-  if extjsmodulefiles.count > 0
-    puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-  
+  extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
+  #
+  if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
     rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
     mkdir_p rhoapi_js_folder
+  end
+  #
+  if extjsmodulefiles.count > 0
+    puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
     write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+  end
+  #
+  if extjsmodulefiles_opt.count > 0
+    puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
+    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-optional.js"), extjsmodulefiles_opt)
   end
   
   return if mode == "update_rho_modules_js"
@@ -1906,6 +1925,7 @@ task :update_rho_modules_js, [:platform] do |t,args|
     init_extensions( nil, "update_rho_modules_js")
 
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules.js" ), "js" ) if $minify_types.include?('js')
+    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-optional.js" ), "js" ) if $minify_types.include?('js')
 end
     
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
@@ -2317,7 +2337,9 @@ namespace "run" do
         config_ext_paths = ""
         extpaths = $app_config["extpaths"]
         extjsmodulefiles = []
+        extjsmodulefiles_opt = []
         startJSModules = []
+        startJSModules_opt = []
         endJSModules = []
         
         rhoapi_js_folder = File.join( $app_path, "public/api" )
@@ -2412,12 +2434,21 @@ namespace "run" do
                         endJSModules << f
                       elsif f.downcase().end_with?("rho.database.js")
                         endJSModules << f
+                      elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                        puts "add #{f} to startJSModules_opt.."
+                        startJSModules_opt << f
                       else
                         extjsmodulefiles << f
                       end  
                   end
                   Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
+                    if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                      puts "add #{f} to extjsmodulefiles_opt.."
+                      extjsmodulefiles_opt << f
+                    else
+                      puts "add #{f} to extjsmodulefiles.."
                       extjsmodulefiles << f
+                    end
                   end
 
                 end
@@ -2431,11 +2462,21 @@ namespace "run" do
         # deploy Common API JS implementation
         extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
         extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
-        if extjsmodulefiles.count > 0
+        extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
+        #
+        if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
+          rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
           mkdir_p rhoapi_js_folder
-          
+        end
+        #
+        if extjsmodulefiles.count > 0
           puts "extjsmodulefiles: #{extjsmodulefiles}"
           write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+        end
+        #
+        if extjsmodulefiles_opt.count > 0
+          puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
+          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-optional.js"), extjsmodulefiles_opt)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
