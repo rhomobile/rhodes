@@ -682,6 +682,22 @@ namespace rho {
             return limit_str;   
         }
 
+        void buildSimpleWhereEx(const rho::String& what,
+                                const rho::Vector<rho::String>& conditions,
+                                rho::apiGenerator::CMethodResult& oResult)
+        {
+            if(conditions.size() > 0) {
+                oResult.set(conditions);
+                return;
+            }
+            // if conditions are empty - check if what is objId
+            if(what != "all" && what != "count" && what != "first") {
+                buildCondWhereEx("object", rho::Vector<rho::String>(1, what), "", "", oResult);
+                return;
+            }
+            oResult.set(conditions);    
+        }
+
         void buildCondWhereEx(const rho::String& key, 
                               const Vector<rho::String>& values, 
                               const rho::String& val_op, 
@@ -692,6 +708,50 @@ namespace rho {
             retVals.push_back(rho::String());
             rho::String strSQL = _make_cond_where_ex(key, values, val_op, val_func, retVals);
             retVals[0] = strSQL;
+            oResult.set(retVals);
+        }
+
+        void buildFindLimits(const rho::String& whatArg, 
+                             const Hashtable<rho::String, rho::String>& options,
+                             rho::apiGenerator::CMethodResult& oResult)
+        {
+            rho::Vector<rho::String> retVals;
+            if(whatArg == "count") {
+                oResult.set(retVals);
+                return;
+            }
+            int iLimit = -1, iOffset = -1;
+            if(whatArg == "first") {
+                iLimit = 1;
+                iOffset = 0;
+            }
+            Hashtable<rho::String, rho::String>::const_iterator cIt = options.find("per_page");
+            if(cIt != options.end())
+                rho::common::convertFromStringA(cIt -> second, iLimit);
+            cIt = options.find("offset");
+            if(cIt != options.end())
+                rho::common::convertFromStringA(cIt -> second, iOffset);
+            if(iLimit != -1)
+                retVals["per_page"] = rho::common::convertToStringA(iLimit);
+            if(iOffset != -1)
+                retVals["offset"] = rho::common::convertToStringA(iOffset);
+            oResult.set(retVals);
+        }
+
+        void buildFindOrder(const Vector<rho::String>& orderAttrs,
+                            const Vector<rho::String>& orderOps,
+                            rho::apiGenerator::CMethodResult& oResult)
+        {
+            // if ORDER DIRECTION array is smaller - pad it
+            Vector<rho::String> orderDirections(orderOps);
+            int pad_number = orderAttrs.size() - orderOps.size();
+            for(size_t i = 0; i < pad_number; ++i)
+                orderDirections.push_back("ASC");
+            Hashtable<rho::String, rho::Vector<rho::String> > retVals;
+            if(orderAttrs.size()) {
+                retVals["order_attrs"] = orderAttrs;
+                retVals["order_dirs"] = orderDirections;
+            }
             oResult.set(retVals);
         }
 
@@ -752,21 +812,21 @@ namespace rho {
         }
 
         void findObjectsFixedSchema(const rho::String& what, 
-                         const Hashtable<rho::String, rho::String>& options,
-                         const Vector<rho::String>& quests,
-                         const Vector<rho::String>& select_attrs,
-                         const Hashtable<rho::String, rho::String>& order_attrs,
-                         rho::apiGenerator::CMethodResult& oResult)
+                                    const Hashtable<rho::String, rho::Vector<rho::String> >& options,
+                                    rho::apiGenerator::CMethodResult& oResult)
         {
             Hashtable<rho::String, rho::String> attrsSet;
-            rho::String attrs_str = _make_select_attrs_str(select_attrs, attrsSet);
+            rho::String attrs_str = _make_select_attrs_str(options, attrsSet);
             rho::String where_str;
-            Hashtable<rho::String, rho::String>::const_iterator cIt = options.find("conditions");
+            Hashtable<rho::String, Vector<rho::String> >::const_iterator cIt = options.find("conditions");
             if(cIt != options.end())
-                where_str = cIt -> second;
-            rho::String order_str = _make_order_str(order_attrs);
+                where_str = (cIt -> second)[0];
+            rho::String order_str = _make_order_str(options);
             rho::String limit_str = _make_limit_str(options);
-            rho::Vector<rho::String> questParams(quests);
+            rho::Vector<rho::String> questParams;
+            cIt = options.find("quests");
+            if(cIt != options.end())
+                questsParams = cIt -> second;
 
             rho::String strSQL("SELECT ");
             strSQL += attrs_str + " FROM " + name();
