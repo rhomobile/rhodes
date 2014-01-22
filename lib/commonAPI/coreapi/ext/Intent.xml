@@ -42,6 +42,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     </VALUE>
                                 </VALUES>
                             </PARAM>
+                            <PARAM name="permission" type="STRING">
+                                <PLATFORM>Android</PLATFORM>
+                                <DESC>Permission used yo send a broadcast intent</DESC>
+                            </PARAM>
                             <PARAM name="action" type="STRING">
                                 <DESC>Intent action. See android docs for possible values: http://developer.android.com/reference/android/content/Intent.html#setAction(java.lang.String)</DESC>
                             </PARAM>
@@ -72,13 +76,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <DESC>Same data as 'params' argument</DESC>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="startListening" callback="mandatory">
+            <METHOD name="startListening" hasCallback="mandatory">
                 <DESC>Start listening for custom intents</DESC>
                 <CALLBACK>
                     <DESC>Same data as 'params' argument passed to Rho.Inetnt.send method</DESC>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="stopListening" callback="none">
+            <METHOD name="stopListening" hasCallback="none">
                 <DESC>Stop listening for custom intents</DESC>
             </METHOD>
 
