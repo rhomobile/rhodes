@@ -24,40 +24,60 @@ module Rhom
           end
         end
 
-        def self._make_conditions_no_op(conditions,op)
-          if conditions.is_a?String
-            return conditions, []
-          end
-          if conditions.is_a?Array && !op
-            return conditions[0], conditions[1..-1]
-          end        
-          nil
-        end
-
-        def self._make_conditions_with_op(conditions, op, sql, vals)
+        def self._make_complex_where_conditions(what, conditions, op)
+          return ["", []] unless conditions
+          op ||= 'AND'
+          sqlRes = ""
+          quests = []
           if conditions.is_a?(Array)
-            return unless op
-                    
-            sqlRes = ""
-            valsRes = []
             conditions.each do |item|
               sqlRes += ' ' + op + ' ' if sqlRes.length() > 0
-                            
-              sqlCond = ""
-              valsCond = []
-              convertConditionToStatement(item[:conditions], item[:op], sqlCond, valsCond )
-                            
-              sqlRes << "(" + sqlCond + ")"
-              valsRes.concat(valsCond)
+              sqlCond, condQuests = _make_complex_where_cond(item[:conditions], item[:op])
+              sqlRes += '(' + sqlCond + ')'
+              quests.concat(condQuests)
             end
-
-            sql << sqlRes
-            vals.concat(valsRes)
-                    
-            return
+          else
+            sqlRes, quests = _make_complex_where_cond(conditions, op)
           end
+          [sqlRes, quests]
+        end
 
-          return if !cond.is_a?(Hash)
+        def self._make_complex_where_cond(conditions, op)
+          bSimpleHash = true
+          normalized_condition_hash = {}
+          normalized_values = []
+          op ||= "AND"
+          sqlRes = ""
+          condQuests = []
+          conditions.each do |key, value|
+            retVal = nil
+            if key.is_a?(Hash)
+              if value.is_a?(String)
+                value = value.split(",")
+                value.each do |item|
+                  item.strip!
+                  if item.start_with?("\"") && item.end_with?("\"")
+                    item.slice!(0)
+                    item.chop!
+                  end
+                end             
+              end
+
+              retVal = self.klass_model.buildComplexWhereCond(key, values)
+            else # key is a String
+              normalized_cond_hash = {:name => key, :val_op => '=', :val_func => ''}
+              values = (value && value.length > 0 ? [value] : [])
+              retVal = self.klass_model.buildComplexWhereCond(key, values)
+            end
+            if retVal
+              sqlRes << ' ' + op + ' ' if sqlRes.length > 0
+              sqlRes += retV[0]
+              condQuests.concat(retV[1..-1])
+            end
+          end
+          [sqlRes, condQuests]  
+        end
+
 
           bSimpleHash = true
           op = "AND" unless op
@@ -92,17 +112,6 @@ module Rhom
             attrib_name = key
           end
 
-          if value.is_a?(String)
-            value = value.split(",")
-            value.each do |item|
-              item.strip!
-              if item.start_with?("\"") && item.end_with?("\"")
-                item.slice!(0)
-                item.chop!
-              end
-            end             
-          end
-
           puts " make_cond_where_ex: #{attrib_name}, #{value}, #{val_op}, #{val_func}"
           retV = klass_model.buildCondWhereEx(attrib_name, value, val_op, val_func)
           puts " and retVal is : #{retV.inspect}"
@@ -132,24 +141,52 @@ module Rhom
 
         def self._make_conditions(what, conditions, op)
           puts "MZV_DEBUG : make_conditions : #{what}, #{conditions}, #{op}"
-          unless conditions && conditions.length > 0
-            arg_what = what.to_sym
-            if(arg_what == :all || arg_what == :first || arg_what == :count)
-              return _make_cond_where_ex("", "")
-            else
-              return _make_cond_where_ex("object", what)
+          if !op
+            if !conditions or conditions.is_a?String
+              return buildSimpleWhereCond(what, [conditions]) 
+            elsif conditions.is_a?Array
+              return buildSimpleWhereCond(what, conditions)
             end
           end
-          cond_str,quests = _make_conditions_no_op(conditions, op)
-          if !cond_str
-            cond_str,quests = make_conditions_with_op(conditions, op)
-          end
-          [cond_str,quests]
+          _make_complex_where_conditions(conditions, op)
         end
 
         def self.create(obj)
           objHash = self.klass_model.createObject(obj)
           self.new(objHash);
+        end
+
+        def self._normalize_args_for_find(what, args_hash = {})
+          # 1) Normalize LIMITS
+          normalized_hash = self.klass_model.buildFindLimits(what, args_hash)
+          puts "MZV_DEBUG: we have here limits_hash : #{limits_hash.inspect}"
+
+          # 2) Normalize ORDER BY
+          order_dir = []
+          order_dir ||= args_hash[:orderdir]
+          order_attr = []
+          order_attr ||= args_hash[1][:order]
+          # normalize ORDER BY attrs
+          if(order_attr.is_a?String)
+            order_attr = [order_attr]
+          end
+          if(order_dir.is_a?String)
+            order_dir = [order_dir]
+          end
+
+          order_hash = self.klass_model.buildFindOrder(what, order_dir, order_attr)
+          normalized_hash.merge!(order_hash)
+          
+          # 3) Normalize SELECT
+          select_arr = args_hash[:select]
+          normalized_hash.merge!({:select => select_arr})
+
+          # 4) Build Where Conditions
+          c, q = _make_conditions(what, args_hash[:conditions], args_hash[:op])
+          conditions_str = c if (c && c.length > 0)
+          quests = q if (q && q.length > 0)
+          normalized_hash[:conditions] = conditions_str
+          normalized_hash[:quests] = quests
         end
 
         def self.find(*args)
@@ -159,65 +196,21 @@ module Rhom
           end
 
           # prepare arguments
-          select_arr = []
-          order_dir = []
-          order_attr = []
-          conditions_str = ""
-          quests = []
-          options = {}
-          if args[1]
-            c, q = _make_conditions(args[0], args[1][:conditions], args[1][:op])
-            conditions_str = c if (c && c.length > 0)
-            quests = q if (q && q.length > 0)
-          else
-            c, q = _make_conditions(args[0], nil, nil)
-            conditions_str = c if (c && c.length > 0)
-            quests = q if (q && q.length > 0)
-          end
-          options[:conditions] = conditions_str
-          if(args[1])
-            if args[1][:per_page]
-              options[:per_page] = args[1][:per_page].to_i
-              options[:offset] = args[1][:offset] ? args[1][:offset].to_i : 0
-            end
-                    
-            select_arr ||= args[1][:select]
-            order_dir ||= args[1][:orderdir]
-            order_attr ||= args[1][:order]
-          end
-          if args[0] == :first
-            options[:per_page] = 1                    
-            options[:offset] = 0 unless options[:offset]
-          end
-
-          # normalize ORDER BY attrs
-          if(order_attr.is_a?String)
-            order_attr = [order_attr]
-          end
-          if(order_dir.is_a?String)
-            order_dir = [order_dir]
-          end
-          # if ORDER DIRECTION array is smaller - pad it
-          pad_number = order_attr.size - order_dir.size
-          pad_number.times do
-            order_dir << "ASC"
-          end
-          # merge 2 arrays
-          orders_hash = {}
-          order_attr.zip(order_dir) do |oattr, odir|
-            orders_hash[oattr] = odir 
-          end
-
+          normalized_args = _normalize_args_for_find(args[0], args[1])
           # call API function
-          retVal = klass_model.findObjects(args[0], options, quests, select_arr, orders_hash)
+          retVal = klass_model.findObjects(args[0], options)
           puts "MZV_DEBUG: find has returned : #{retVal.inspect}"
           if retVal.is_a?Array
+            return retVal unless retVal.size() > 0
+            # if arg[0] is :first or objId return one object
+            return self.new(retVal[0]) if (args[0] != 'all')
+            # otherwise - return an array 
             orm_objs = []
             retVal.each do |obj|
               orm_objs << self.new(obj)
             end  
             puts "MZV_DEBUG: orm_objs : #{orm_objs.inspect}"
-            return (args[0] == 'all' ? orm_objs : orm_objs[0])
+            return orm_objs
           end
           retVal
         end

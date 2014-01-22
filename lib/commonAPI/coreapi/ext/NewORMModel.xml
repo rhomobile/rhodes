@@ -202,6 +202,32 @@
                 <RETURN type="ARRAY"/>
             </METHOD>
 
+            <METHOD name="buildFindLimits">
+                <DESC>Aux function</DESC>
+                <PARAMS>
+                    <PARAM name="whatArg" type="STRING"/>
+                    <PARAM name="hashArgs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="buildFindOrder">
+                <DESC>Aux function</DESC>
+                <PARAMS>
+                    <PARAM name="order_attrs" type="ARRAY"/>
+                    <PARAM name="order_ops" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="buildSimpleWhereEx">
+                <DESC>Aux function</DESC>
+                <PARAMS>
+                    <PARAM name="what" type="STRING"/>
+                    <PARAM name="conditions" type="ARRAY"/>
+                <PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
 
             <ALIASES>
                 <ALIAS new="count" existing="getCount"/>
