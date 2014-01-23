@@ -585,7 +585,7 @@ namespace "config" do
     #    #$app_config['extensions'].delete('audiocapture')
     #    $rhoelements_features += "- Audio Capture\n"
     #end
-    if ($app_config['extensions'].index('signature') || $app_config['capabilities'].index('signature')) && (($current_platform == "iphone") || ($current_platform == "android"))
+    if $app_config['extensions'].index('signature')
         $rhoelements_features += "- Signature Capture\n"
     end
     
@@ -649,17 +649,17 @@ namespace "config" do
                 #if $app_config['extensions'].index('audiocapture')
                 #    $app_config['extensions'].delete('audiocapture')
                 #end
-                if $app_config['extensions'].index('rho-javascript')
-                    $app_config['extensions'].delete('rho-javascript')
-                end
+                #if $app_config['extensions'].index('rho-javascript')
+                #    $app_config['extensions'].delete('rho-javascript')
+                #end
                 
                 if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
                     $application_build_configs.delete('encrypt_database')
                 end
                 
-                if $app_config['extensions'].index('signature')
-                  $app_config['extensions'].delete('signature')
-                end
+                #if $app_config['extensions'].index('signature')
+                #  $app_config['extensions'].delete('signature')
+                #end
             end
         end
     end
