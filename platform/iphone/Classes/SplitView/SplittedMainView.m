@@ -42,7 +42,7 @@
 
 
 #import "TabbedMainView.h"
-#import "SignatureViewController.h"
+#import "Signature/SignatureViewController.h"
 
 
 static void updateViewRect(CGRect* pRect)
