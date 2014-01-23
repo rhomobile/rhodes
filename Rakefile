@@ -524,7 +524,7 @@ namespace "config" do
         
         if $current_platform == "iphone"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
-            #$app_config['extensions'] = $app_config['extensions'] | ['signature']
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
             $app_config['extensions'] = $app_config['extensions'] | ['sensor']
@@ -532,7 +532,7 @@ namespace "config" do
 
         if $current_platform == "android"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
-            #$app_config['extensions'] = $app_config['extensions'] | ['signature']
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
@@ -664,10 +664,10 @@ namespace "config" do
         end
     end
 
-    if $app_config['extensions'].index('signature') && (($current_platform == 'iphone') || ($current_platform == 'android'))
-        $app_config['capabilities'] << 'signature'
-        $app_config['extensions'].delete('signature')
-    end
+    #if $app_config['extensions'].index('signature') && (($current_platform == 'iphone') || ($current_platform == 'android'))
+    #    $app_config['capabilities'] << 'signature'
+    #    $app_config['extensions'].delete('signature')
+    #end
 
     if $current_platform == "win32" && $winxpe_build == true
       $app_config['capabilities'] << 'winxpe'
