@@ -1140,7 +1140,7 @@ def init_extensions(dest, mode = "")
   #
   if extjsmodulefiles_opt.count > 0
     puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-optional.js"), extjsmodulefiles_opt)
+    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
   end
   
   return if mode == "update_rho_modules_js"
@@ -1925,7 +1925,7 @@ task :update_rho_modules_js, [:platform] do |t,args|
     init_extensions( nil, "update_rho_modules_js")
 
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules.js" ), "js" ) if $minify_types.include?('js')
-    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-optional.js" ), "js" ) if $minify_types.include?('js')
+    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORM.js" ), "js" ) if $minify_types.include?('js')
 end
     
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
@@ -2476,7 +2476,7 @@ namespace "run" do
         #
         if extjsmodulefiles_opt.count > 0
           puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
-          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-optional.js"), extjsmodulefiles_opt)
+          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
