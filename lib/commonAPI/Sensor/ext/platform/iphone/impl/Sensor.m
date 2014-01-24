@@ -65,7 +65,7 @@
 
 -(void) postResultTo:(id<IMethodResult>)methodResult {
     NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:4];
-    [dict setObject:@"ok" forKey:HK_STATUS];
+    [dict setObject:ready?@"ok":@"error" forKey:HK_STATUS];
     [dict setObject:[NSNumber numberWithFloat:(float)acceleration_x] forKey:HK_ACCELEROMETER_X];
     [dict setObject:[NSNumber numberWithFloat:(float)acceleration_y] forKey:HK_ACCELEROMETER_Y];
     [dict setObject:[NSNumber numberWithFloat:(float)acceleration_z] forKey:HK_ACCELEROMETER_Z];
@@ -186,7 +186,7 @@
 
 -(void) postResultTo:(id<IMethodResult>)methodResult {
     NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:4];
-    [dict setObject:@"ok" forKey:HK_STATUS];
+    [dict setObject:ready?@"ok":@"error" forKey:HK_STATUS];
     [dict setObject:[NSNumber numberWithFloat:(float)magnetometer_x] forKey:HK_MAGNETOMETER_X];
     [dict setObject:[NSNumber numberWithFloat:(float)magnetometer_y] forKey:HK_MAGNETOMETER_Y];
     [dict setObject:[NSNumber numberWithFloat:(float)magnetometer_z] forKey:HK_MAGNETOMETER_Z];
