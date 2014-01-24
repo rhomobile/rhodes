@@ -80,15 +80,7 @@ public:
     {
 
         LOG(INFO) + " Calling databaseLocalReset";
-        Vector<String> exclude_tables;
-        exclude_tables.push_back("sources");
-        exclude_tables.push_back("client_info");
-
-        // clean all tables
-        db::CDBAdapter& db = db::CDBAdapter::getDB("local");
-        db.destroy_tables(Vector<String>(), exclude_tables);
-
-        // restore schemas
+        // clean local data
         for(HashtablePtr<String, CNewORMModelImpl*>::iterator cIt = CNewORMModelImpl::models().begin(); 
             cIt != CNewORMModelImpl::models().end(); 
             ++cIt)
@@ -96,15 +88,32 @@ public:
             CNewORMModelImpl* model = cIt -> second;
             model -> getProperty("partition", oResult);
             rho::String partition = oResult.getString();
+            model -> getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
             if(partition != "local")
                 continue;
 
-            model -> initDbSource(oResult);
-            if(oResult.isError())
-                return;
-            model -> initDbSchema(oResult);
-            if(oResult.isError())
-                return;
+            db::CDBAdapter& db = model -> _get_db(oResult);
+            db.startTransaction();
+
+            if(model -> fixed_schema()) {
+                rho::String sqlStr = rho::String("DELETE FROM ") + model -> name();
+                IDBResult res = db.executeSQL(sqlStr.c_str());
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }      
+            }
+            else {
+                rho::String sqlStr = rho::String("DELETE FROM object_values WHERE source_id=?");
+                IDBResult res = db.executeSQL(sqlStr.c_str(), source_id);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }       
+            } 
         }
     }
 
@@ -123,7 +132,6 @@ public:
             if(rho::sync::RhoconnectClientManager::has_bulksyncstate())
                 rho::sync::RhoconnectClientManager::set_bulksyncstate(0);
         }
-
         // clean client info
         db::CDBAdapter& userdb = db::CDBAdapter::getUserDB();
         IDBResult res = userdb.executeSQL("UPDATE client_info SET client_id=?, token=?, token_sent=?", "", "", 0);
@@ -143,11 +151,199 @@ public:
                 continue;
 
             res = db -> executeSQL("UPDATE sources SET token=0");
+        }
+
+        // clean the data
+        for(HashtablePtr<String, CNewORMModelImpl*>::iterator cIt = CNewORMModelImpl::models().begin(); 
+            cIt != CNewORMModelImpl::models().end(); 
+            ++cIt)
+        {
+            CNewORMModelImpl* model = cIt -> second;
+            model -> getProperty("partition", oResult);
+            rho::String partition = oResult.getString();
+            model -> getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+            if(!resetLocalSources && partition == "local")
+                continue;
+
+            db::CDBAdapter& db = model -> _get_db(oResult);
+            db.startTransaction();
+
+            if(model -> fixed_schema()) {
+                rho::String sqlStr = rho::String("DELETE FROM ") + model -> name();
+                res = db.executeSQL(sqlStr.c_str());
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }      
+            }
+            else {
+                rho::String sqlStr = rho::String("DELETE FROM object_values WHERE source_id=?");
+                res = db.executeSQL(sqlStr.c_str(), source_id);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }       
+            } 
+        }
+
+        if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        {
+            rho::sync::RhoconnectClientManager::set_pollinterval(old_poll_interval);
+        }
+    }
+
+    void databaseFullResetEx(const Vector<rho::String>& modelNames,
+                             const bool resetClientInfo,
+                             const bool resetLocalModels,
+                             rho::apiGenerator::CMethodResult& oResult)
+    {
+        LOG(INFO) + "MZV_DEBUG, databaseFullResetEx params are : ";
+        for(size_t i = 0; i < modelNames.size(); ++i) {
+            LOG(INFO) + "MZV_DEBUG, model is : " + modelNames[i];
+        }
+        
+        if(modelNames.empty()) {
+            databaseFullReset(resetClientInfo, resetLocalModels, oResult);
+            return;
+        }
+        
+        if(modelNames.size() && resetClientInfo) {
+            oResult.setError("reset_client_info should not be true if reset selected models");
+            return;
+        }
+
+        int old_poll_interval = -1;
+        if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        {
+            old_poll_interval = rho::sync::RhoconnectClientManager::set_pollinterval(0);
+            rho::sync::RhoconnectClientManager::stop();
+            if(rho::sync::RhoconnectClientManager::has_bulksyncstate())
+                rho::sync::RhoconnectClientManager::set_bulksyncstate(0);
+        }
+
+        // clean client info
+        db::CDBAdapter& userdb = db::CDBAdapter::getUserDB();
+        IDBResult res = userdb.executeSQL("UPDATE client_info SET reset=1");
+        if(!res.getDBError().isOK()) {
+            oResult.setError(res.getDBError().getError());
+            return;
+        }
+        
+        RHOCONF().setString("reset_models", "", true);
+        rho::String resetModelStr;
+
+        for(size_t i = 0; i < modelNames.size(); ++i) {
+            HashtablePtr<String, CNewORMModelImpl*>::iterator cModIt = CNewORMModelImpl::models().find(modelNames[i]);
+            if(cModIt == CNewORMModelImpl::models().end()) {
+                rho::String errStr = rho::String("model: ") + modelNames[i] + " doesn't exist.";
+                oResult.setError(errStr);
+                return;
+            }
+            
+            CNewORMModelImpl* model = cModIt -> second;
+            model -> getProperty("partition", oResult);
+            rho::String partition = oResult.getString();
+            model -> getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+            if(partition == "local" && !resetLocalModels)
+                continue;
+
+            if(partition != "local") {
+                if(resetModelStr.size())
+                    resetModelStr += ",";
+                resetModelStr += modelNames[i];
+            }
+
+            db::CDBAdapter& db = model -> _get_db(oResult);
+            db.startTransaction();
+
+            res = db.executeSQL("UPDATE sources SET token=0 WHERE name=?", modelNames[i]);
+            if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+            } 
+
+            if(model -> fixed_schema()) {
+                rho::String sqlStr = rho::String("DELETE FROM ") + modelNames[i];
+                res = db.executeSQL(sqlStr.c_str());
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }      
+            }
+            else {
+                rho::String sqlStr = rho::String("DELETE FROM object_values WHERE source_id=?");
+                res = db.executeSQL(sqlStr.c_str(), source_id);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }       
+            }
+
+            RHOCONF().setString("reset_models", resetModelStr, true);
+            db.endTransaction();
+
+        }
+
+        if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        {
+            rho::sync::RhoconnectClientManager::set_pollinterval(old_poll_interval);
+        }
+    }
+
+    void databaseFullReset(const bool resetClientInfo, const bool resetLocalModels, rho::apiGenerator::CMethodResult& oResult)
+    {
+        LOG(INFO) + ", databaseFullReset : MZV_DEBUG: resetClientInfo : " + resetClientInfo + ", resetLocalModels : " + resetLocalModels;
+    
+        int old_poll_interval = -1;
+        if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        {
+            old_poll_interval = rho::sync::RhoconnectClientManager::set_pollinterval(0);
+            rho::sync::RhoconnectClientManager::stop();
+            if(rho::sync::RhoconnectClientManager::has_bulksyncstate())
+                rho::sync::RhoconnectClientManager::set_bulksyncstate(0);
+        }
+        if(resetClientInfo && RHOCONF().isExist("push_pin")) {
+            RHOCONF().setString("push_pin", "", false);
+        } 
+        
+        // clean client info
+        db::CDBAdapter& userdb = db::CDBAdapter::getUserDB();
+        IDBResult res = userdb.executeSQL("UPDATE client_info SET reset=1");
+        if(!res.getDBError().isOK()) {
+            oResult.setError(res.getDBError().getError());
+            return;
+        }
+
+        // clean the db's
+        if(resetClientInfo) {
+            res = userdb.executeSQL("DELETE FROM client_info");
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                return;
+            }    
+        }
+
+        for(HashtablePtr<String,db::CDBAdapter*>::iterator cDbIt = db::CDBAdapter::getDBPartitions().begin();
+            cDbIt != db::CDBAdapter::getDBPartitions().end();
+            ++cDbIt)
+        {
+            db::CDBAdapter* db = cDbIt -> second;
+            const rho::String& partition = cDbIt -> first;
+            if(!resetLocalModels && partition == "local")
+                continue;
+
+            res = db -> executeSQL("UPDATE sources SET token=0");
             if(!res.getDBError().isOK()) {
                 oResult.setError(res.getDBError().getError());
                 return;
             }
-            db -> destroy_tables(Vector<String>(), exclude_tables);
         }
 
         // restore schemas
@@ -158,15 +354,30 @@ public:
             CNewORMModelImpl* model = cIt -> second;
             model -> getProperty("partition", oResult);
             rho::String partition = oResult.getString();
-            if(!resetLocalSources && partition == "local")
+            model -> getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+            if(!resetLocalModels && partition == "local")
                 continue;
 
-            model -> initDbSource(oResult);
-            if(oResult.isError())
-                return;
-            model -> initDbSchema(oResult);
-            if(oResult.isError())
-                return;
+            db::CDBAdapter& db = model -> _get_db(oResult);
+            if(model -> fixed_schema()) {
+                rho::String sqlStr = rho::String("DELETE FROM ") + model -> name();
+                res = db.executeSQL(sqlStr.c_str());
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }      
+            }
+            else {
+                rho::String sqlStr = rho::String("DELETE FROM object_values WHERE source_id=?");
+                res = db.executeSQL(sqlStr.c_str(), source_id);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                }       
+            }
         }
 
         if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
@@ -175,6 +386,24 @@ public:
         }
     }
 
+    void databaseFullResetAndLogout(rho::apiGenerator::CMethodResult& oResult)
+    {
+        databaseFullReset(false, true, oResult);
+        if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        {
+            rho::sync::RhoconnectClientManager::logout();
+        }
+    }
+    
+    void databaseFullClientResetAndLogout(rho::apiGenerator::CMethodResult& oResult)
+    {
+        databaseFullReset(true, true, oResult);
+        if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        {
+            rho::sync::RhoconnectClientManager::logout();
+        }    
+    }
+    
 private:
     static unsigned long base_temp_obj_id_;
 };
