@@ -44,12 +44,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             </PARAM>
                             <PARAM name="permission" type="STRING">
                                 <PLATFORM>Android</PLATFORM>
-                                <DESC>Permission used yo send a broadcast intent</DESC>
+                                <DESC>Permission used to send a broadcast intent</DESC>
                             </PARAM>
                             <PARAM name="action" type="STRING">
+                                <PLATFORM>Android</PLATFORM>
                                 <DESC>Intent action. See android docs for possible values: http://developer.android.com/reference/android/content/Intent.html#setAction(java.lang.String)</DESC>
                             </PARAM>
                             <PARAM name="categories" type="ARRAY">
+                                <PLATFORM>Android</PLATFORM>
                                 <DESC>List of intent categories. See android docs for possible values: http://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String)</DESC>
                                 <PARAM type="STRING"/>
                             </PARAM>
@@ -72,14 +74,22 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                          </PARAMS>
                     </PARAM>
                 </PARAMS>
-                <CALLBACK>
-                    <DESC>Same data as 'params' argument</DESC>
+                <CALLBACK type="HASH">
+                    <DESC>Same format as 'params' argument and some additional values described below.
+                          Android: Developer has to ensure that the response is addressed to this call because of possible conflicts in integer request code with other extensions.</DESC>
+                    <PARAMS>
+                        <PARAM name="responseCode" type="INTEGER">
+                            <PLATFORM>Android</PLATFORM>
+                            <DESC>Response code passed to Android Activity.setResult() method</DESC>
+                        </PARAM>
+                    </PARAMS>
                 </CALLBACK>
             </METHOD>
             <METHOD name="startListening" hasCallback="mandatory">
                 <DESC>Start listening for custom intents</DESC>
-                <CALLBACK>
-                    <DESC>Same data as 'params' argument passed to Rho.Inetnt.send method</DESC>
+                <CALLBACK type="HASH">
+                    <DESC>Same format as 'params' argument passed to Rho.Intent.send method
+                    Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
                 </CALLBACK>
             </METHOD>
             <METHOD name="stopListening" hasCallback="none">

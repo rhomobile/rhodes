@@ -1,5 +1,6 @@
 package com.rho.intent;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.api.IMethodResult;
@@ -19,8 +21,12 @@ import com.rhomobile.rhodes.extmanager.IRhoListener;
 import com.rhomobile.rhodes.util.ContextFactory;
 
 public class IntentSingleton extends AbstractRhoListener implements IIntentSingleton, IIntentFactory, IRhoListener {
+    private static final String TAG = IntentSingleton.class.getSimpleName();
     
     private IMethodResult methodResult;
+    
+    private int lastRequest = 0;
+    private List<Map.Entry<Integer, IMethodResult>> localMethodResults = new ArrayList<Map.Entry<Integer, IMethodResult>>();
 
     private Intent makeIntent(Map<String, Object> params) {
         Intent intent = new Intent();
@@ -206,7 +212,19 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
             ContextFactory.getContext().sendBroadcast(intent, permission);
         }
         else if (type.equals(START_ACTIVITY)) {
-            ContextFactory.getUiContext().startActivity(intent);
+            if (result.hasCallback()) {
+                int request;
+                synchronized (localMethodResults) {
+                    request = lastRequest;
+                    Map.Entry<Integer, IMethodResult> entry = new AbstractMap.SimpleEntry<Integer, IMethodResult>(Integer.valueOf(request), result);
+                    localMethodResults.add(entry);
+                    ++lastRequest;
+                }
+                RhodesActivity.safeGetInstance().startActivityForResult(intent, request);
+            }
+            else {
+                ContextFactory.getUiContext().startActivity(intent);
+            }
         }
         else if (type.equals(START_SERVICE)) {
             ContextFactory.getContext().startService(intent);
@@ -257,9 +275,23 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     
     synchronized public void onNewIntent(String type, Intent intent) {
         if (methodResult != null) {
+            Logger.T(TAG, "New Intent: " + type);
             Map<String, Object> params = parseIntent(intent);
             params.put(HK_INTENT_TYPE, type);
             methodResult.set(params);
+        }
+    }
+    
+    @Override
+    public void onActivityResult(RhodesActivity activity, int requestCode, int resCode, Intent intent) {
+        for (Map.Entry<Integer, IMethodResult> resultEntry : localMethodResults) {
+            if(resultEntry.getKey().intValue() == requestCode) {
+                Logger.T(TAG, "Activity result request: " + requestCode);
+                Map<String, Object> params = parseIntent(intent);
+                params.put(HK_INTENT_TYPE, START_ACTIVITY);
+                params.put(HK_RESPONSE_CODE, Integer.valueOf(resCode));
+                methodResult.set(params);
+            }
         }
     }
 
