@@ -517,7 +517,7 @@ namespace "config" do
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
-            #$app_config['extensions'] = $app_config['extensions'] | ['signature']
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
             $app_config['extensions'] = $app_config['extensions'] | ['sensor']
         end    
