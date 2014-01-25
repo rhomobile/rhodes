@@ -1070,7 +1070,9 @@ def init_extensions(dest, mode = "")
                 next
               end
               if (fBaseName == "rhoapi-force.ajax.js")
-                endJSModules << f if Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, nil)
+                add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
+                add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
+                endJSModules << f if add
                 next
               end
 
@@ -2422,7 +2424,9 @@ namespace "run" do
                         next
                       end
                       if (fBaseName == "rhoapi-force.ajax.js")
-                        endJSModules << f if Jake.getBuildBoolProp2("rhosim", "ajax_api_bridge", $app_config, nil)
+                        add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
+                        add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
+                        endJSModules << f if add
                         next
                       end
 
