@@ -680,14 +680,24 @@ static Rhodes *instance = NULL;
     
 }
 
+static char* myObserver="anObserver";
+
 - (void)registerForNotifications {
     //Screen lock notifications
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
-                                    NULL, // observer
+                                    (void*)myObserver, // observer
                                     displayStatusChanged, // callback
                                     CFSTR("com.apple.iokit.hid.displayStatus"), // event name
                                     NULL, // object
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
+}
+
+- (void)unregisterNotifications {
+    CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
+                                    (void*)myObserver, // observer
+                                    CFSTR("com.apple.iokit.hid.displayStatus"), // event name
+                                    NULL // object
+    );
 }
 
 static void displayStatusChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
@@ -1116,6 +1126,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     }
     else
         [Rhodes performOnUiThread:[RhoActivateTask class] wait:NO];
+    
+    [self registerForNotifications];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -1128,6 +1140,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     rho_rhodesapp_callAppActiveCallback(0);
     rho_rhodesapp_canstartapp("", ", ");
     [self saveLastUsedTime];
+    
+    [self unregisterNotifications];
 }
 
 #ifdef __IPHONE_4_0
