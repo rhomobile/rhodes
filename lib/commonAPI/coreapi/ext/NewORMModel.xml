@@ -167,10 +167,10 @@
                 <DESC>Returns array of objects for the given model queried according to the specified conditions</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING"/>
-                    <PARAM name="options" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH"/>
                     <PARAM name="quests" type="ARRAY"/>
-                    <PARAM name="select_attrs" type="ARRAY"/>
-                    <PARAM name="order_attrs" type="HASH"/>
+                    <PARAM name="selectAttrs" type="ARRAY"/>
+                    <PARAM name="orderAttrs" type="ARRAY"/>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
@@ -191,7 +191,7 @@
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="buildCondWhereEx">
+            <METHOD name="buildComplexWhereCond">
                 <DESC>Aux function</DESC>
                 <PARAMS>
                     <PARAM name="attrKey" type="STRING"/>
@@ -220,12 +220,12 @@
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="buildSimpleWhereEx">
+            <METHOD name="buildSimpleWhereCond">
                 <DESC>Aux function</DESC>
                 <PARAMS>
                     <PARAM name="what" type="STRING"/>
                     <PARAM name="conditions" type="ARRAY"/>
-                <PARAMS>
+                </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
 
