@@ -19,6 +19,7 @@ wp:
 symbian:
   uid: '<%=@uid%>'
 android:
+  manifest_template: 'AndroidManifest.erb'
   version: 2.3.3
 
 extensions: [<%=@rhoconnectclient_ext%>]
