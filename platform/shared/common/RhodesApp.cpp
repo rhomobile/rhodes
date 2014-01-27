@@ -2774,7 +2774,7 @@ extern "C"
 }
 #endif
 
-extern "C" bool rho_is_remote_debug()
+extern "C" int rho_is_remote_debug()
 {
     return RHOCONF().getBool("remotedebug");
 }
