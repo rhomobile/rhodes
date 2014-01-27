@@ -51,12 +51,6 @@
             android:name="com.rhomobile.rhodes.camera.ImageCapture"
             android:screenOrientation="landscape" />
         
-        <activity
-            android:name="com.rhomobile.rhodes.signature.ImageCapture"
-            android:screenOrientation="unspecified"
-            android:configChanges="orientation"
-         />
-
         
         <activity
             android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen"

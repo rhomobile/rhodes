@@ -374,7 +374,7 @@ end %>
         end %>
     <% end %>
 
-<% if $cur_module.hash_key_names.size > 0 %>
+<% if false && $cur_module.hash_key_names.size > 0 %>
     // === <%= $cur_module.name %> hash keys ===
     
     <% $cur_module.hash_key_names.each do |key_names| %>
