@@ -51,7 +51,6 @@
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
 #include "statistic/RhoProfiler.h"
-#include "Intents.h"
 #include "System.h"
 #include "Intents.h"
 

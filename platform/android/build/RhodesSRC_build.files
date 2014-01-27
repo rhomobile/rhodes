@@ -77,10 +77,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactAccessorNew.ja
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactAccessorOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactField.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Phonebook.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/ImageCapture.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/Signature.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/SignatureView.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/SignatureProperties.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSockAddr.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocket.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocketImpl.java

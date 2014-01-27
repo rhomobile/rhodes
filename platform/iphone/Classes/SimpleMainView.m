@@ -36,7 +36,7 @@
 
 #include "NativeBar.h"
 
-#import "SignatureDelegate.h"
+#import "Signature/SignatureDelegate.h"
 
 #include "statistic/RhoProfiler.h"
 
