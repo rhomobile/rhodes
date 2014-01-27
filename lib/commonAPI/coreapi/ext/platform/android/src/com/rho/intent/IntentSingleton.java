@@ -1,5 +1,6 @@
 package com.rho.intent;
 
+import java.lang.reflect.Field;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,16 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     private int lastRequest = 0;
     private List<Map.Entry<Integer, IMethodResult>> localMethodResults = new ArrayList<Map.Entry<Integer, IMethodResult>>();
 
+    private String constant(String name) {
+        try {
+            Class<?> rClass = Class.forName("android.content.Intent");
+            Field field = rClass.getDeclaredField(name);
+            return (String)field.get(null);
+        } catch (Throwable e) {
+            return name;
+        }
+    }
+    
     private Intent makeIntent(Map<String, Object> params) {
         Intent intent = new Intent();
         
@@ -53,14 +64,17 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
             if (!String.class.isInstance(actionObj)) {
                 throw new RuntimeException("Wrong intent action: " + actionObj.toString());
             }
-            action = (String)actionObj;
+            action = constant((String)actionObj);
         }
 
         if (categoriesObj != null) {
             if (!List.class.isInstance(categoriesObj)) {
                 throw new RuntimeException("Wrong intent categories: " + categoriesObj.toString());
             }
-            categories = (List<String>)categoriesObj;
+            categories = new ArrayList<String>();
+            for (String cat:(List<String>)categoriesObj) {
+                categories.add(constant(cat));
+            }
         }
 
         if (appNameObj != null) {
@@ -209,6 +223,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                     return;
                 }
             }
+            Logger.T(TAG, "Send broadcast: " + intent);
             ContextFactory.getContext().sendBroadcast(intent, permission);
         }
         else if (type.equals(START_ACTIVITY)) {
@@ -221,12 +236,15 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                     ++lastRequest;
                 }
                 RhodesActivity.safeGetInstance().startActivityForResult(intent, request);
+                Logger.T(TAG, "Start activity for result: " + intent);
             }
             else {
+                Logger.T(TAG, "Start activity: " + intent);
                 ContextFactory.getUiContext().startActivity(intent);
             }
         }
         else if (type.equals(START_SERVICE)) {
+            Logger.T(TAG, "Start service: " + intent);
             ContextFactory.getContext().startService(intent);
         }
         else {
