@@ -80,11 +80,15 @@ module Rhom
         def self._make_conditions(what, conditions, op)
           puts "MZV_DEBUG : make_conditions : #{what}, #{conditions}, #{op}"
           if !op
-            if !conditions or conditions.is_a?String
-              return self.klass_model.buildSimpleWhereCond(what, [conditions]) 
+            retV = []
+            if !conditions
+              retV = self.klass_model.buildSimpleWhereCond(what, []) 
+            elsif conditions.is_a?String
+              retV = self.klass_model.buildSimpleWhereCond(what, [conditions]) 
             elsif conditions.is_a?Array
-              return self.klass_model.buildSimpleWhereCond(what, conditions)
+              retV = self.klass_model.buildSimpleWhereCond(what, conditions)
             end
+            return [retV[0], retV[1..-1]]
           end
           _make_complex_where_conditions(conditions, op)
         end
@@ -96,7 +100,7 @@ module Rhom
 
         def self._normalize_args_for_find(what, args_hash = {}, normalized_string_args, normalized_vector_args)
           # 1) Normalize LIMITS
-          normalized_string_args = self.klass_model.buildFindLimits(what, args_hash)
+          normalized_string_args.merge!(self.klass_model.buildFindLimits(what, args_hash))
 
           # 2) Normalize ORDER BY
           order_dir = []
@@ -110,8 +114,7 @@ module Rhom
           if(order_dir.is_a?String)
             order_dir = [order_dir]
           end
-          normalized_vector_args = {}
-          normalized_vector_args[:order] = self.klass_model.buildFindOrder(what, order_dir, order_attr)
+          normalized_vector_args[:order] = self.klass_model.buildFindOrder(order_dir, order_attr)
           
           # 3) Normalize SELECT
           select_arr = args_hash[:select] || []
@@ -119,20 +122,20 @@ module Rhom
 
           # 4) Build Where Conditions
           cond_str, quests = _make_conditions(what, args_hash[:conditions], args_hash[:op])
+          puts " we have here : #{cond_str}, #{quests.inspect}"
           normalized_string_args[:conditions] = cond_str || ""
           normalized_vector_args[:quests] = quests || []
         end
 
         def self.find(*args)
           puts "MZV_DEBUG: we are in find  #{args.inspect}"
-          #if args[0] == :count && !args[1]
-          #  return klass_model.count
-          #end
+          args[0] = args[0].to_s
 
           # prepare arguments
           normalized_vector_args = {}
           normalized_string_args = {}
-          _normalize_args_for_find(args[0], args[1], normalized_string_args, normalized_vector_args)
+          _normalize_args_for_find(args[0], args[1] || {}, normalized_string_args, normalized_vector_args)
+          puts " before passing #{args[0]}, #{args[1]}, #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
           # call API function
           retVal = klass_model.findObjects(args[0], 
                                            normalized_string_args, 
