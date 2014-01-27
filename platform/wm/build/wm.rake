@@ -145,6 +145,7 @@ namespace "config" do
     end
         
     unless $build_solution
+      #$build_solution = ($js_application and $app_config["capabilities"].index('shared_runtime')) ? 'rhodes_js.sln' : 'rhodes.sln'
       $build_solution = 'rhodes.sln'
     end
 

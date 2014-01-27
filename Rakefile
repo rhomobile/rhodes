@@ -723,6 +723,7 @@ namespace "config" do
         puts '****************************************************************************************'
         exit(1)
     end
+    #$app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime') 
     
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
@@ -1001,7 +1002,10 @@ def init_extensions(dest, mode = "")
                 $ruby_only_extensions_list = [] unless $ruby_only_extensions_list
                 $ruby_only_extensions_list << extname
             
-                if !$js_application
+                if ("rhoelementsext" == extname && ($config["platform"] == "wm"||$config["platform"] == "android"))
+                    extentries << entry
+                    extentries_init << entry
+                elsif !$js_application
                     extentries << entry
                     entry =  "if (rho_ruby_is_started()) #{entry}" 
                     extentries_init << entry
