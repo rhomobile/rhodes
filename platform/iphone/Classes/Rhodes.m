@@ -1126,8 +1126,6 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     }
     else
         [Rhodes performOnUiThread:[RhoActivateTask class] wait:NO];
-    
-    [self registerForNotifications];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -1136,12 +1134,12 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     {
         rho_rhodesapp_callScreenOffCallback();
         [self setMScreenStateChanged:NO];
+    } else {
+        [self unregisterNotifications];
     }
     rho_rhodesapp_callAppActiveCallback(0);
     rho_rhodesapp_canstartapp("", ", ");
     [self saveLastUsedTime];
-    
-    [self unregisterNotifications];
 }
 
 #ifdef __IPHONE_4_0
@@ -1149,7 +1147,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     RAWLOG_INFO("Application go to background");
     rho_rhodesapp_callUiDestroyedCallback();
     rho_rhodesapp_canstartapp("", ", ");
-	
+    
 	if (rho_rcclient_have_rhoconnect_client()) {
 	
 	if (rho_conf_getBool("finish_sync_in_background")/* && (rho_rcclient_issyncing()==1)*/) {
@@ -1187,7 +1185,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    // Nothing right now
+    [self registerForNotifications];
 }
 #endif
 
