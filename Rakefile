@@ -2440,14 +2440,11 @@ namespace "run" do
                         endJSModules << f
                       elsif f.downcase().end_with?("rho.database.js")
                         endJSModules << f
-<<<<<<< HEAD
                       elsif f.downcase().end_with?("rho.newormhelper.js")
                         endJSModules << f
-=======
                       elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
                         puts "add #{f} to startJSModules_opt.."
                         startJSModules_opt << f
->>>>>>> a127cf4fa7e2802c2b196f85b34d78bdc8038189
                       else
                         extjsmodulefiles << f
                       end  
