@@ -283,6 +283,7 @@ namespace rho {
             initSyncSourceProperties(oResult);
             if(oResult.isError())
                 return;
+            setLoaded(true, oResult);
         }
 
         void initAssociations(rho::apiGenerator::CMethodResult& oResult)
@@ -541,7 +542,6 @@ namespace rho {
             else
             {
                 rho::String strSQL("SELECT COUNT(DISTINCT object) FROM object_values");
-                strSQL += name();
                 if(conditionsStr.size()) {
                     strSQL += rho::String(" WHERE ") + conditionsStr;
                 }
@@ -582,6 +582,12 @@ namespace rho {
             LOG(INFO) + name() + ", findObjects: Params are: " + what;
             for(Hashtable<rho::String, rho::String>::const_iterator cIt = strOptions.begin(); cIt != strOptions.end(); ++cIt)
                 LOG(INFO) + ", option is : " + cIt -> first + " : " + cIt -> second;
+            for(size_t i = 0; i < quests.size(); ++i)
+                LOG(INFO) + ", quest is : " + quests[i];
+            for(size_t i = 0; i < select_attrs.size(); ++i)
+                LOG(INFO) + ", select_attr is : " + select_attrs[i];
+            for(size_t i = 0; i < order_attrs.size(); ++i)
+                LOG(INFO) + ", order_attr is : " + order_attrs[i];
 
             if(what.empty()) {
                 oResult.setError("findObjects: Invalid Empty First Argument passed.");
@@ -715,6 +721,8 @@ namespace rho {
                                   const rho::Vector<rho::String>& conditions,
                                   rho::apiGenerator::CMethodResult& oResult)
         {
+            for(size_t i = 0; i < conditions.size(); ++i)
+                LOG(INFO) + "MZV_DEBUG, simplecond : " + conditions[i];
             if(conditions.size() > 0) {
                 oResult.set(conditions);
                 return;
@@ -811,6 +819,7 @@ namespace rho {
                          const rho::Vector<rho::String>& order_attrs,
                          rho::apiGenerator::CMethodResult& oResult)
         {
+            LOG(INFO) + "MZV_DEBUG: findObjectsFixedSchema";
             Hashtable<rho::String, rho::String> attrsSet;
             rho::String attrs_str = _make_select_attrs_str(select_attrs, attrsSet);
             rho::String order_str = _make_order_str(order_attrs);
@@ -818,7 +827,7 @@ namespace rho {
             rho::String where_str;
             Hashtable<rho::String, rho::String>::const_iterator cIt = strOptions.find("conditions");
             if(cIt != strOptions.end())
-                where_str = (cIt -> second)[0];
+                where_str = cIt -> second;
             rho::Vector<rho::String> questParams(quests);
             // build the SQL
             rho::String strSQL("SELECT ");
@@ -829,6 +838,7 @@ namespace rho {
                 strSQL += order_str;
             if(limit_str.size())
                 strSQL += limit_str;
+            LOG(INFO) + "MZV_DEBUG: findObjects SQL: " + strSQL;
 
             db::CDBAdapter& db = _get_db(oResult);
             IDBResult res = db.executeSQLEx(strSQL.c_str(), questParams);
