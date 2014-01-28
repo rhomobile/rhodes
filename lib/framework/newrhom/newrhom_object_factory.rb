@@ -114,7 +114,7 @@ module Rhom
           if(order_dir.is_a?String)
             order_dir = [order_dir]
           end
-          normalized_vector_args[:order] = self.klass_model.buildFindOrder(order_dir, order_attr)
+          normalized_vector_args[:order] = self.klass_model.buildFindOrder(order_attr, order_dir)
           
           # 3) Normalize SELECT
           select_arr = args_hash[:select] || []
@@ -158,6 +158,26 @@ module Rhom
           retVal
         end
 
+        def self.find_by_sql(sql_query)
+          retVal = klass_model.find_by_sql(sql_query)
+          orm_objs = []
+          retVal.each do |obj|
+            orm_objs << self.new(obj)
+          end  
+          return orm_objs
+        end
+
+        # Returns a set of rhom objects, limiting the set to length :per_page
+        # If no :per_page is specified, the default size is 10
+        def self.paginate(args = {})
+          # Default to 10 items per page
+          args ||= {}
+          args[:page] ||= 0
+          args[:per_page] ||= 10
+          args[:offset] = args[:page] * args[:per_page]
+          find(:all, args)
+        end
+        
         # This holds the attributes for an instance of
         # the rhom object
         attr_accessor :vars

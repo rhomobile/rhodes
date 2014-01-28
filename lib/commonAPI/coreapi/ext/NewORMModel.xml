@@ -175,6 +175,14 @@
                 <RETURN type="ARRAY"/>
             </METHOD>
 
+            <METHOD name="find_by_sql">
+                <DESC>Returns array of objects for the given model queried according to the specified SQL</DESC>
+                <PARAMS>
+                    <PARAM name="sqlQuery" type="STRING"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
             <METHOD name="validateFreezedAttribute">
                 <DESC>Validates object's freezed attribute</DESC>
                 <PARAMS>
