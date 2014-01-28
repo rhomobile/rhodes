@@ -615,6 +615,31 @@ namespace rho {
             }
         }
 
+        void find_by_sql(const rho::String& sqlQuery, rho::apiGenerator::CMethodResult& oResult)
+        {
+            if(!fixed_schema()) {
+                oResult.setError("find_by_sql only works with FixedSchema models");
+                return;
+            }
+
+            db::CDBAdapter& db = _get_db(oResult);
+            IDBResult res = db.executeSQL(sqlQuery.c_str());
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                return;
+            }
+            Vector<Hashtable<rho::String, rho::String> > retVals;
+            for(; !res.isEnd(); res.next()) {
+                int ncols = res.getColCount();
+                Hashtable<rho::String, rho::String> obj_hash;
+                for(int i = 0; i < ncols; ++i) {
+                    obj_hash.put(res.getColName(i), res.getStringByIdx(i));
+                }
+                retVals.push_back(obj_hash);
+            }
+            oResult.set(retVals);
+        }
+
         rho::String _make_select_attrs_str(const rho::Vector<rho::String>& select_attrs,
                                            rho::Hashtable<rho::String, rho::String>& attrsSet)
         {
