@@ -640,6 +640,48 @@ namespace rho {
             oResult.set(retVals);
         }
 
+        void deleteObjects(const rho::String& what, const Hashtable<rho::String, rho::String>& strOptions, const Vector<rho::String>& quests, rho::apiGenerator::CMethodResult& oResult)
+        {
+            if(what.empty()) {
+                oResult.setError("findObjects: Invalid Empty First Argument passed.");
+                return;
+            }
+            getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+            getProperty("sync_type", oResult);
+            bool is_sync_source = (oResult.getString() != "none");
+            db::CDBAdapter& db = _get_db(oResult);
+            db.startTransaction();
+            if(fixed_schema()) {
+                findObjectsFixedSchema(what, strOptions, quests, rho::Vector<rho::String>(), rho::Vector<rho::String>(), oResult);
+            }
+            else {
+                findObjectsPropertyBag(what, strOptions, quests, rho::Vector<rho::String>(), rho::Vector<rho::String>(), oResult);
+            }
+            if(oResult.isError()) {
+                db.rollback();
+                return;
+            }
+            const rho::Vector<Hashtable<rho::String, rho::String> >& listObjs = oResult.getHashArray();
+            for(size_t i = 0; i < listObjs.size(); ++i) {
+                const Hashtable<rho::String, rho::String>& obj_data = listObjs[i];
+                Hashtable<rho::String, rho::String>::const_iterator cObjIt = obj_data.find("object");
+                if(cObjIt == obj_data.end()) {
+                    oResult.setError("Cannot delete an object without Object ID");
+                    db.rollback();
+                    return;
+                }
+                const rho::String& objId = cObjIt -> second;
+                _deleteObject(db, is_sync_source, source_id, objId, obj_data, oResult);
+                if(oResult.isError()) 
+                {
+                    db.rollback();
+                    return;
+                }
+            }
+            db.endTransaction();
+        }
+
         rho::String _make_select_attrs_str(const rho::Vector<rho::String>& select_attrs,
                                            rho::Hashtable<rho::String, rho::String>& attrsSet)
         {
@@ -1163,6 +1205,13 @@ namespace rho {
         void deleteObject(const rho::String& objId, 
                           rho::apiGenerator::CMethodResult& oResult)
         {
+            // delete all attrs first
+            getProperty("source_id", oResult);
+            rho::String source_id = oResult.getString();
+            getProperty("sync_type", oResult);
+            bool is_sync_source = (oResult.getString() != "none");
+            db::CDBAdapter& db = _get_db(oResult);
+            db.startTransaction();
             Hashtable<rho::String, rho::String> attrs;
             bool object_exists = _get_object_attrs(objId, attrs, oResult);
             LOG(INFO) + "MZV_DEBUG, we have here : " + objId + ", obj_exists : " + object_exists;
@@ -1170,22 +1219,28 @@ namespace rho {
             {
                 LOG(INFO) + "MZV_DEBUG, exist attr : " + cNIt -> first + " : " + cNIt -> second;     
             }
-            if(!object_exists)
-                return;
-            
-            getProperty("source_id", oResult);
-            rho::String source_id = oResult.getString();
+            if(object_exists)
+                _deleteObject(db, is_sync_source, source_id, objId, attrs, oResult);
+            if(oResult.isError())
+                db.rollback();
+            else
+                db.endTransaction();
+        }
 
+        void _deleteObject(db::CDBAdapter& db,
+                           const bool is_sync_source, 
+                           const rho::String& source_id,
+                           const rho::String& objId,
+                           const Hashtable<rho::String, rho::String>& attrs,
+                           rho::apiGenerator::CMethodResult& oResult)
+        {
             // delete all attrs first
-            db::CDBAdapter& db = _get_db(oResult);
-            db.startTransaction();
             if(fixed_schema()) {
                 rho::String deleteSql("DELETE FROM ");
                 deleteSql += name() + " WHERE object=?";
                 IDBResult res = db.executeSQL(deleteSql.c_str(), objId);
                 if(!res.getDBError().isOK()) {
                     oResult.setError(res.getDBError().getError());
-                    db.rollback();
                     return;
                 }
             }
@@ -1195,20 +1250,15 @@ namespace rho {
                 IDBResult res = db.executeSQL(deleteSql.c_str(), objId, source_id);
                 if(!res.getDBError().isOK()) {
                     oResult.setError(res.getDBError().getError());
-                    db.rollback();
                     return;
                 }    
             }
 
-            getProperty("sync_type", oResult);
-            bool is_sync_source = (oResult.getString() != "none");
             bool ignore_changed_values = true;
-
             if(is_sync_source) {
                 IDBResult res = db.executeSQL("SELECT update_type FROM changed_values WHERE object=? AND update_type=\"create\" AND sent=0", objId);
                 if(!res.getDBError().isOK()) {
                     oResult.setError(res.getDBError().getError());
-                    db.rollback();
                     return;
                 }
                 // if object hasn't been created - then, no need to queue delete to changed values, just do the cleanup
@@ -1216,7 +1266,6 @@ namespace rho {
                 res = db.executeSQL("DELETE FROM changed_values WHERE object=? AND source_id=? AND sent=0", objId, source_id);
                 if(!res.getDBError().isOK()) {
                     oResult.setError(res.getDBError().getError());
-                    db.rollback();
                     return;
                 }
 
@@ -1232,14 +1281,12 @@ namespace rho {
                                             source_id, objId, attrKey, attrValue, "delete");
                         if(!res.getDBError().isOK()) {
                             oResult.setError(res.getDBError().getError());
-                            db.rollback();
                             return;
                         }
                     }   
                 }
             }
-
-            db.endTransaction();
+            oResult.set(true);
         }
 
         db::CDBAdapter& _get_db(rho::apiGenerator::CMethodResult& oResult)

@@ -24,7 +24,7 @@ module Rhom
           end
         end
 
-        def self._make_complex_where_conditions(what, conditions, op)
+        def self._normalize_complex_conditions(what, conditions, op)
           return ["", []] unless conditions
           op ||= 'AND'
           sqlRes = ""
@@ -32,17 +32,17 @@ module Rhom
           if conditions.is_a?(Array)
             conditions.each do |item|
               sqlRes += ' ' + op + ' ' if sqlRes.length() > 0
-              sqlCond, condQuests = _make_complex_where_cond(item[:conditions], item[:op])
+              sqlCond, condQuests = _normalize_complex_condition(item[:conditions], item[:op])
               sqlRes += '(' + sqlCond + ')'
               quests.concat(condQuests)
             end
           else
-            sqlRes, quests = _make_complex_where_cond(conditions, op)
+            sqlRes, quests = _normalize_complex_condition(conditions, op)
           end
           [sqlRes, quests]
         end
 
-        def self._make_complex_where_cond(conditions, op)
+        def self._normalize_complex_condition(conditions, op)
           bSimpleHash = true
           normalized_condition_hash = {}
           normalized_values = []
@@ -77,7 +77,7 @@ module Rhom
           [sqlRes, condQuests]  
         end
 
-        def self._make_conditions(what, conditions, op)
+        def self._normalize_conditions(what, conditions, op)
           puts "MZV_DEBUG : make_conditions : #{what}, #{conditions}, #{op}"
           if !op
             retV = []
@@ -90,7 +90,7 @@ module Rhom
             end
             return [retV[0], retV[1..-1]]
           end
-          _make_complex_where_conditions(conditions, op)
+          _normalize_complex_conditions(conditions, op)
         end
 
         def self.create(obj)
@@ -121,7 +121,7 @@ module Rhom
           normalized_vector_args.merge!({:select => select_arr})
 
           # 4) Build Where Conditions
-          cond_str, quests = _make_conditions(what, args_hash[:conditions], args_hash[:op])
+          cond_str, quests = _normalize_conditions(what, args_hash[:conditions], args_hash[:op])
           puts " we have here : #{cond_str}, #{quests.inspect}"
           normalized_string_args[:conditions] = cond_str || ""
           normalized_vector_args[:quests] = quests || []
@@ -177,7 +177,27 @@ module Rhom
           args[:offset] = args[:page] * args[:per_page]
           find(:all, args)
         end
-        
+
+        # deletes all records matching conditions (optionally nil)
+        def self.delete_all(*args)
+          puts "MZV_DEBUG: we are in delete_all  #{args.inspect}"
+          args[0] = args[0].to_s
+          args[1] ||= {}
+
+          # prepare arguments
+          # prepare arguments
+          normalized_vector_args = {}
+          normalized_string_args = {}
+          _normalize_args_for_find(args[0], args[1] || {}, normalized_string_args, normalized_vector_args)
+          puts " before passing to delete_all #{args[0]}, #{args[1]}, #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
+          # call API function
+          retVal = klass_model.deleteObjects(args[0], 
+                                             normalized_string_args, 
+                                             quests || [])
+          puts "MZV_DEBUG: delete_all has returned : #{retVal.inspect}"
+          retVal
+        end
+
         # This holds the attributes for an instance of
         # the rhom object
         attr_accessor :vars
