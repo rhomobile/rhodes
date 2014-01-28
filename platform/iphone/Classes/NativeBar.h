@@ -41,6 +41,7 @@
 #define NATIVE_BAR_SELECTED_COLOR					@"iOS7SelectedColor"
 #define NATIVE_BAR_DETAIL_COLOR                     @"detailColor"
 #define NATIVE_BAR_MAX_WIDTH                        @"maxWidth"
+#define NATIVE_BAR_FIXED_WIDTH                      @"fixedWidth"
 
 #define NATIVE_BAR_ITEM_LABEL						@"label"
 #define NATIVE_BAR_ITEM_DETAIL_LABEL				@"detailLabel"
@@ -52,6 +53,12 @@
 #define NATIVE_BAR_ITEM_DISABLED					@"disabled"
 #define NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR		@"backgroundColor"
 #define NATIVE_BAR_ITEM_USE_CURRENT_VIEW_FOR_TAB	@"useCurrentViewForTab"
+#define NATIVE_BAR_ITEM_BACK_IMAGE                  @"backgroundImage"
+#define NATIVE_BAR_ITEM_BACK_SEL_IMAGE              @"backgroundSelectedImage"
+#define NATIVE_BAR_ITEM_GROUP_BOTTOM                @"groupBottom"
+#define NATIVE_BAR_ITEM_INDENT_WIDTH                @"indentWidth"
+#define NATIVE_BAR_ITEM_LABEL_SEL_COLOR             @"labelSelectedColor"
+#define NATIVE_BAR_ITEM_DETAIL_SEL_COLOR            @"detailSelectedColor"
 
 /*
  

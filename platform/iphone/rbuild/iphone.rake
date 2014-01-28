@@ -24,6 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 
 def extract_value_from_strings(line)
    pre_str = '<string>'
@@ -551,7 +552,6 @@ def app_expanded_path(appname)
   File.expand_path(File.join(basedir,'spec',appname))
 end
 
-
 def check_sdk(sdkname)
 
       puts 'Check SDK :'
@@ -944,8 +944,7 @@ namespace "build" do
 
            require   rootdir + '/lib/build/jake.rb'
 
-           puts Jake.run(xcodebuild,args)
-           ret = $?
+           ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir})
       else
 
         puts "ssskip rebuild because previous builded library is still actual !"
@@ -1192,7 +1191,7 @@ namespace "build" do
                  args << libpath
                  args << libsimpath
                  args << libdevpath
-                 Jake.run("lipo",args)
+                 IPhoneBuild.run_and_trace("lipo",args,{:rootdir => $startdir})
 
                  mkdir_p File.join($app_builddir, "extensions", ext, "lib")
                  cp libpath, libbinpath
@@ -1374,12 +1373,9 @@ namespace "build" do
          args << 'i386'
       end
 
-      puts Jake.run($xcodebuild,args)
+      ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
       
       ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
-
-
-      ret = $?
 
       chdir $startdir
 
@@ -1824,8 +1820,8 @@ namespace "clean" do
         chdir iphone_project_folder
 
         args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
-        puts Jake.run($xcodebuild,args)
-        unless $? == 0
+        ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
+        unless ret == 0
           puts "Error cleaning"
           exit 1
         end

@@ -421,7 +421,7 @@ namespace "config" do
     extpaths << File.join($startdir, "lib","extensions")
     $app_config["extpaths"] = extpaths
     
-    if $app_config["build"] and $app_config["build"] == "release"
+    if $app_config["build"] and $app_config["build"].casecmp("release") == 0
       $debug = false
     else
       $debug = true
@@ -517,14 +517,14 @@ namespace "config" do
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
-            #$app_config['extensions'] = $app_config['extensions'] | ['signature']
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
             $app_config['extensions'] = $app_config['extensions'] | ['sensor']
         end    
         
         if $current_platform == "iphone"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
-            #$app_config['extensions'] = $app_config['extensions'] | ['signature']
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
             $app_config['extensions'] = $app_config['extensions'] | ['sensor']
@@ -532,7 +532,7 @@ namespace "config" do
 
         if $current_platform == "android"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
-            #$app_config['extensions'] = $app_config['extensions'] | ['signature']
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
@@ -585,7 +585,7 @@ namespace "config" do
     #    #$app_config['extensions'].delete('audiocapture')
     #    $rhoelements_features += "- Audio Capture\n"
     #end
-    if ($app_config['extensions'].index('signature') || $app_config['capabilities'].index('signature')) && (($current_platform == "iphone") || ($current_platform == "android"))
+    if $app_config['extensions'].index('signature')
         $rhoelements_features += "- Signature Capture\n"
     end
     
@@ -649,25 +649,25 @@ namespace "config" do
                 #if $app_config['extensions'].index('audiocapture')
                 #    $app_config['extensions'].delete('audiocapture')
                 #end
-                if $app_config['extensions'].index('rho-javascript')
-                    $app_config['extensions'].delete('rho-javascript')
-                end
+                #if $app_config['extensions'].index('rho-javascript')
+                #    $app_config['extensions'].delete('rho-javascript')
+                #end
                 
                 if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
                     $application_build_configs.delete('encrypt_database')
                 end
                 
-                if $app_config['extensions'].index('signature')
-                  $app_config['extensions'].delete('signature')
-                end
+                #if $app_config['extensions'].index('signature')
+                #  $app_config['extensions'].delete('signature')
+                #end
             end
         end
     end
 
-    if $app_config['extensions'].index('signature') && (($current_platform == 'iphone') || ($current_platform == 'android'))
-        $app_config['capabilities'] << 'signature'
-        $app_config['extensions'].delete('signature')
-    end
+    #if $app_config['extensions'].index('signature') && (($current_platform == 'iphone') || ($current_platform == 'android'))
+    #    $app_config['capabilities'] << 'signature'
+    #    $app_config['extensions'].delete('signature')
+    #end
 
     if $current_platform == "win32" && $winxpe_build == true
       $app_config['capabilities'] << 'winxpe'
@@ -723,6 +723,7 @@ namespace "config" do
         puts '****************************************************************************************'
         exit(1)
     end
+    #$app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime') 
     
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
@@ -917,7 +918,9 @@ def init_extensions(dest, mode = "")
   nativelib = []
   extlibs = []
   extjsmodulefiles = []
+  extjsmodulefiles_opt = []
   startJSModules = []
+  startJSModules_opt = []
   endJSModules = []
   extcsharplibs = []
   extcsharpentries = []
@@ -999,7 +1002,10 @@ def init_extensions(dest, mode = "")
                 $ruby_only_extensions_list = [] unless $ruby_only_extensions_list
                 $ruby_only_extensions_list << extname
             
-                if !$js_application
+                if ("rhoelementsext" == extname && ($config["platform"] == "wm"||$config["platform"] == "android"))
+                    extentries << entry
+                    extentries_init << entry
+                elsif !$js_application
                     extentries << entry
                     entry =  "if (rho_ruby_is_started()) #{entry}" 
                     extentries_init << entry
@@ -1068,7 +1074,9 @@ def init_extensions(dest, mode = "")
                 next
               end
               if (fBaseName == "rhoapi-force.ajax.js")
-                endJSModules << f if Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, nil)
+                add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
+                add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
+                endJSModules << f if add
                 next
               end
 
@@ -1082,13 +1090,22 @@ def init_extensions(dest, mode = "")
                 endJSModules << f
               elsif f.downcase().end_with?("rho.newormhelper.js")
                 endJSModules << f
+              elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                puts "add #{f} to startJSModules_opt.."
+                startJSModules_opt << f
               else
                 extjsmodulefiles << f
               end  
           end
           
           Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-              extjsmodulefiles << f
+              if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                puts "add #{f} to extjsmodulefiles_opt.."
+                extjsmodulefiles_opt << f
+              else
+                puts "add #{f} to extjsmodulefiles.."
+                extjsmodulefiles << f
+              end
           end
               
         end
@@ -1114,16 +1131,24 @@ def init_extensions(dest, mode = "")
   
   puts "exts " + exts
 
+  # deploy Common API JS implementation
   extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
   extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
-
-  # deploy Common API JS implementation
-  if extjsmodulefiles.count > 0
-    puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-  
+  extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
+  #
+  if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
     rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
     mkdir_p rhoapi_js_folder
+  end
+  #
+  if extjsmodulefiles.count > 0
+    puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
     write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+  end
+  #
+  if extjsmodulefiles_opt.count > 0
+    puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
+    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
   end
   
   return if mode == "update_rho_modules_js"
@@ -1696,7 +1721,7 @@ namespace "build" do
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
-        
+
       if not $minify_types.empty?
           minify_js_and_css($srcdir,$minify_types)
       end
@@ -1908,6 +1933,7 @@ task :update_rho_modules_js, [:platform] do |t,args|
     init_extensions( nil, "update_rho_modules_js")
 
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules.js" ), "js" ) if $minify_types.include?('js')
+    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORM.js" ), "js" ) if $minify_types.include?('js')
 end
     
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
@@ -2319,7 +2345,9 @@ namespace "run" do
         config_ext_paths = ""
         extpaths = $app_config["extpaths"]
         extjsmodulefiles = []
+        extjsmodulefiles_opt = []
         startJSModules = []
+        startJSModules_opt = []
         endJSModules = []
         
         rhoapi_js_folder = File.join( $app_path, "public/api" )
@@ -2402,7 +2430,9 @@ namespace "run" do
                         next
                       end
                       if (fBaseName == "rhoapi-force.ajax.js")
-                        endJSModules << f if Jake.getBuildBoolProp2("rhosim", "ajax_api_bridge", $app_config, nil)
+                        add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
+                        add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
+                        endJSModules << f if add
                         next
                       end
 
@@ -2416,12 +2446,21 @@ namespace "run" do
                         endJSModules << f
                       elsif f.downcase().end_with?("rho.newormhelper.js")
                         endJSModules << f
+                      elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                        puts "add #{f} to startJSModules_opt.."
+                        startJSModules_opt << f
                       else
                         extjsmodulefiles << f
                       end  
                   end
                   Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
+                    if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                      puts "add #{f} to extjsmodulefiles_opt.."
+                      extjsmodulefiles_opt << f
+                    else
+                      puts "add #{f} to extjsmodulefiles.."
                       extjsmodulefiles << f
+                    end
                   end
 
                 end
@@ -2435,11 +2474,21 @@ namespace "run" do
         # deploy Common API JS implementation
         extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
         extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
-        if extjsmodulefiles.count > 0
+        extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
+        #
+        if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
+          rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
           mkdir_p rhoapi_js_folder
-          
+        end
+        #
+        if extjsmodulefiles.count > 0
           puts "extjsmodulefiles: #{extjsmodulefiles}"
           write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+        end
+        #
+        if extjsmodulefiles_opt.count > 0
+          puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
+          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 

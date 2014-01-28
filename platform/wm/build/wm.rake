@@ -66,6 +66,10 @@ def clean_ext_vsprops(ext_path)
   end
 end
 
+def ext_add_reg_key(ext, key)
+  puts "extension " + ext + " add regkey to cab. key: " + key
+  $regkeys << key
+end
 
 namespace "config" do
   task :set_wince_platform do
@@ -141,6 +145,7 @@ namespace "config" do
     end
         
     unless $build_solution
+      #$build_solution = ($js_application and $app_config["capabilities"].index('shared_runtime')) ? 'rhodes_js.sln' : 'rhodes.sln'
       $build_solution = 'rhodes.sln'
     end
 
@@ -335,11 +340,23 @@ namespace "build" do
           end
             
           puts 'start read reg key'
-          if ext_config != nil && ext_config["regkeys"] != nil
+          if !(ext_config.nil?)
+            if !(ext_config["regkeys"].nil?)
               ext_config["regkeys"].each do |key|
-                puts "extension " + ext + " add regkey to cab. key: " + key
-                $regkeys << key
+                if key.kind_of?(String)
+                  ext_add_reg_key(ext, key)
+                end
               end
+            end
+            if ($app_config["wm"]["regkeys"] != nil) && $app_config["wm"]["regkeys"].kind_of?(Array)
+              $app_config["wm"]["regkeys"].each do |keygroup|
+                if (ext_config["regkeys_#{keygroup}"] != nil)
+                  ext_config["regkeys_#{keygroup}"].each do |key|
+                    ext_add_reg_key(ext, key)
+                  end
+                end
+              end
+            end
           end
           puts 'end read reg key'
 
