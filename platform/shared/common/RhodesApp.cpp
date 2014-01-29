@@ -419,13 +419,14 @@ void CRhodesApp::RhoJsStart()
 void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
-
+#ifndef RHO_NO_RUBY_API
     if (!isJSApplication())
     {
         RhoRubyStart();
         rubyext::CGeoLocation::Create();
     }
     else
+#endif
         RhoJsStart();
     
 
@@ -433,7 +434,7 @@ void CRhodesApp::run()
 		LOG(INFO) + "Starting sync engine...";
 		sync::RhoconnectClientManager::syncThreadCreate();
 	}
-
+#ifndef RHO_NO_RUBY_API
     if (!isJSApplication())
     {
         LOG(INFO) + "RhoRubyInitApp...";
@@ -451,7 +452,7 @@ void CRhodesApp::run()
             rho_ruby_call_config_conflicts();
         }
     }
-
+#endif
     RHOCONF().conflictsResolved();
 
     PROF_CREATE_COUNTER("READ_FILE");
@@ -487,11 +488,12 @@ void CRhodesApp::run()
     }
 
     db::CDBAdapter::closeAll();
-
+#ifndef RHO_NO_RUBY_API
     if (!isJSApplication())
     {
         RhoRubyStop();
     }
+#endif
 }
 
 CRhodesApp::~CRhodesApp(void)
@@ -569,8 +571,10 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 
 static void callback_activateapp(void *arg, String const &strQuery)
 {
+#ifndef RHO_NO_RUBY_API
     if (!RHODESAPP().isJSApplication())
         rho_ruby_activateApp();
+#endif
 
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -578,8 +582,10 @@ static void callback_activateapp(void *arg, String const &strQuery)
 
 static void callback_deactivateapp(void *arg, String const &strQuery)
 {
+#ifndef RHO_NO_RUBY_API
     if (!RHODESAPP().isJSApplication())
         rho_ruby_deactivateApp();
+#endif
 
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -587,16 +593,20 @@ static void callback_deactivateapp(void *arg, String const &strQuery)
 
 static void callback_uicreated(void *arg, String const &strQuery)
 {
+#ifndef RHO_NO_RUBY_API
     if (!RHODESAPP().isJSApplication())
         rho_ruby_uiCreated();
+#endif
 
     rho_http_sendresponse(arg, "");
 }
 
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
+#ifndef RHO_NO_RUBY_API
     if (!RHODESAPP().isJSApplication())
         rho_ruby_uiDestroyed();
+#endif
 
     rho_http_sendresponse(arg, "");
 }
@@ -678,7 +688,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // TODO: Support stop_local_server command to be parsed from callback result
         if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateDeactivated))
         {
-            // 
+#ifndef RHO_NO_RUBY_API 
             if ( rho_ruby_is_started() )
             {
                 String strUrl = m_strHomeUrl + "/system/deactivateapp";
@@ -700,6 +710,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
                     }
                 }
             }
+#endif
         }
 
         m_bDeactivationMode = false;
@@ -778,6 +789,7 @@ class CJsonResponse : public rho::ICallbackObject
 public:
     CJsonResponse(const String& strJson) : m_strJson(strJson) { }
     CJsonResponse(const char* szJson) : m_strJson(szJson) { }
+#ifndef RHO_NO_RUBY_API
     virtual unsigned long getObjectValue()
     {
         char* szError = 0;
@@ -791,6 +803,13 @@ public:
 
         return rho_ruby_get_NIL();
     }
+#else
+    virtual unsigned long getObjectValue()
+    {
+        return 0;
+    }
+
+#endif
 };
 
 void CRhodesApp::callCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse)
@@ -976,6 +995,7 @@ static void callback_AppManager_load(void *arg, String const &query )
 static void callback_getrhomessage(void *arg, String const &strQuery)
 {
     String strMsg;
+#ifndef RHO_NO_RUBY_API
     size_t nErrorPos = strQuery.find("error=");
     if ( nErrorPos != String::npos )
     {
@@ -992,7 +1012,7 @@ static void callback_getrhomessage(void *arg, String const &strQuery)
             strMsg = rho_ruby_internal_getMessageText(strName.c_str());
         }
     }
-
+#endif
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
@@ -1712,7 +1732,9 @@ void CRhodesApp::navigateBack()
     if((nIndex < static_cast<int>(m_arAppBackUrlOrig.size()))
         && (m_arAppBackUrlOrig[nIndex].length() > 0))
     {
-        loadUrl(m_arAppBackUrlOrig[nIndex]);
+        String backUrl = m_arAppBackUrlOrig[nIndex];
+        setAppBackUrl("");
+        loadUrl(backUrl);
     }
     else// if(strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0)
     {
@@ -1830,6 +1852,7 @@ String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String st
 
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
+#ifndef RHO_NO_RUBY_API
     synchronized(m_mxCallbackObjects)
     {
         if ( nIndex < 0 || nIndex > (int)m_arCallbackObjects.size() )
@@ -1847,6 +1870,9 @@ unsigned long CRhodesApp::getCallbackObject(int nIndex)
 
         return valRes;
     }
+#else
+    return 0;
+#endif
 }
 
 void CRhodesApp::initPushClients()
@@ -2070,6 +2096,7 @@ extern "C" unsigned long rho_ruby_safe_require(const char *fname);
 
 void CExtManager::requireRubyFile( const char* szFilePath )
 {
+#ifndef RHO_NO_RUBY_API	
     if( rho_ruby_is_started() )
     {
         RAWTRACEC1("CExtManager", "Require ruby file: %s", szFilePath);
@@ -2077,6 +2104,7 @@ void CExtManager::requireRubyFile( const char* szFilePath )
         if ( rho_ruby_is_NIL(val) )
             RAWLOGC_WARNING1("CExtManager", "requireRubyFile cannot find file: %s", szFilePath);
     }
+#endif
 }
 	
 void CRhodesApp::setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval)
@@ -2772,7 +2800,7 @@ extern "C"
 }
 #endif
 
-extern "C" bool rho_is_remote_debug()
+extern "C" int rho_is_remote_debug()
 {
     return RHOCONF().getBool("remotedebug");
 }
