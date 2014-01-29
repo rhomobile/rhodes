@@ -348,7 +348,7 @@ namespace "build" do
                 end
               end
             end
-            if ($app_config["wm"]["regkeys"] != nil) && $app_config["wm"]["regkeys"].kind_of?(Array)
+            if $app_config["wm"] && ($app_config["wm"]["regkeys"] != nil) && $app_config["wm"]["regkeys"].kind_of?(Array)
               $app_config["wm"]["regkeys"].each do |keygroup|
                 if (ext_config["regkeys_#{keygroup}"] != nil)
                   ext_config["regkeys_#{keygroup}"].each do |key|
