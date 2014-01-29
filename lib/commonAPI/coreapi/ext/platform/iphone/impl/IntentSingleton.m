@@ -59,22 +59,30 @@
     NSString* mimeType  = [o=[params objectForKey:@"mimeType"]isKindOfClass:[NSString class]]?(NSString*)o:@"";
     NSString* data      = [o=[params objectForKey:@"data"]isKindOfClass:[NSString class]]?(NSString*)o:@"";
     
-    NSString* strFullUrl   = [NSString stringWithFormat:@"%s://?appName=%s&uri=%s&mimeType=%s&data=%s",
-                            [appName UTF8String],
-                            [appName UTF8String],
-                            [uri UTF8String],
-                            [mimeType UTF8String],
-                            [data UTF8String]
-                        ];
-    
-    NSURL* fullUrl = [NSURL URLWithString:[strFullUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    
-    RAWLOG_INFO1("IntentSingleton::send: %s", [strFullUrl UTF8String]);
-	    
     BOOL res = FALSE;
     
-    if ([[UIApplication sharedApplication] canOpenURL:fullUrl]) {
-        res = [[UIApplication sharedApplication] openURL:fullUrl];
+    if ( [appName count] == 0 ) {
+        if ([[UIApplication sharedApplication] canOpenURL:uri]) {
+            res = [[UIApplication sharedApplication] openURL:uri];
+        }
+    } else {
+    
+        NSString* strFullUrl   = [NSString stringWithFormat:@"%s://?appName=%s&uri=%s&mimeType=%s&data=%s",
+                                  [appName UTF8String],
+                                  [appName UTF8String],
+                                  [uri UTF8String],
+                                  [mimeType UTF8String],
+                                  [data UTF8String]
+                                  ];
+        
+        NSURL* fullUrl = [NSURL URLWithString:[strFullUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        
+        RAWLOG_INFO1("IntentSingleton::send: %s", [strFullUrl UTF8String]);
+        
+        
+        if ([[UIApplication sharedApplication] canOpenURL:fullUrl]) {
+            res = [[UIApplication sharedApplication] openURL:fullUrl];
+        }
     }
     
     NSMutableDictionary* ret = [[NSMutableDictionary alloc] initWithDictionary:params];
