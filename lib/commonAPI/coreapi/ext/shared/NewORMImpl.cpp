@@ -5,7 +5,7 @@
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
 #include "sync/RhoconnectClientManager.h"
-#include "NewORMModelImpl.cpp"
+#include "NewORMModelImpl.h"
 
 namespace rho {
 
