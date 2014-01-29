@@ -417,7 +417,7 @@ class CNewORMFactory: public CNewORMFactoryBase
     virtual INewORM* createModuleByID(const rho::String& strID);
 };
 
-extern "C" void Init_NewORMModel_extension();
+//extern "C" void Init_NewORMModel_extension();
 extern "C" void Init_NewORM_extension()
 {
     Init_NewORMModel_extension();

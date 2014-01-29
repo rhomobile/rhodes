@@ -7,6 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46959DB01888ACD6001DABE0 /* NewORMImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46959DAE1888ACD6001DABE0 /* NewORMImpl.cpp */; };
+		46959DB11888ACD6001DABE0 /* NewORMModelImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46959DAF1888ACD6001DABE0 /* NewORMModelImpl.cpp */; };
+		46959DB81888ACF4001DABE0 /* neworm_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46959DB21888ACF4001DABE0 /* neworm_api_init.cpp */; };
+		46959DB91888ACF4001DABE0 /* neworm_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46959DB31888ACF4001DABE0 /* neworm_js_api.cpp */; };
+		46959DBA1888ACF4001DABE0 /* neworm_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = 46959DB41888ACF4001DABE0 /* neworm_ruby_api.c */; };
+		46959DBB1888ACF4001DABE0 /* newormmodel_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46959DB51888ACF4001DABE0 /* newormmodel_api_init.cpp */; };
+		46959DBC1888ACF4001DABE0 /* newormmodel_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46959DB61888ACF4001DABE0 /* newormmodel_js_api.cpp */; };
+		46959DBD1888ACF4001DABE0 /* newormmodel_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = 46959DB71888ACF4001DABE0 /* newormmodel_ruby_api.c */; };
+		46E672E918987B28002A060F /* NewORM_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46E672E118987B28002A060F /* NewORM_js_wrap.cpp */; };
+		46E672EA18987B28002A060F /* NewORM_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46E672E218987B28002A060F /* NewORM_ruby_wrap.cpp */; };
+		46E672EB18987B28002A060F /* NewORMBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46E672E318987B28002A060F /* NewORMBase.cpp */; };
+		46E672ED18987B28002A060F /* NewORMModel_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46E672E518987B28002A060F /* NewORMModel_js_wrap.cpp */; };
+		46E672EE18987B28002A060F /* NewORMModel_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46E672E618987B28002A060F /* NewORMModel_ruby_wrap.cpp */; };
+		46E672EF18987B28002A060F /* NewORMModelBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46E672E718987B28002A060F /* NewORMModelBase.cpp */; };
+		46F244E91888AE54003E5D17 /* INewORM.h in Headers */ = {isa = PBXBuildFile; fileRef = 46F244E71888AE54003E5D17 /* INewORM.h */; };
+		46F244EA1888AE54003E5D17 /* INewORMModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 46F244E81888AE54003E5D17 /* INewORMModel.h */; };
 		C00E09821761424A00ADA93E /* MenubarImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09811761424A00ADA93E /* MenubarImpl.cpp */; };
 		C00E098A1761429200ADA93E /* INativeMenubar.h in Headers */ = {isa = PBXBuildFile; fileRef = C00E09851761429200ADA93E /* INativeMenubar.h */; };
 		C00E098B1761429200ADA93E /* NativeMenubar_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09861761429200ADA93E /* NativeMenubar_js_wrap.cpp */; };
@@ -181,6 +197,22 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		46959DAE1888ACD6001DABE0 /* NewORMImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMImpl.cpp; path = ../../shared/NewORMImpl.cpp; sourceTree = "<group>"; };
+		46959DAF1888ACD6001DABE0 /* NewORMModelImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMModelImpl.cpp; path = ../../shared/NewORMModelImpl.cpp; sourceTree = "<group>"; };
+		46959DB21888ACF4001DABE0 /* neworm_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = neworm_api_init.cpp; path = ../../shared/generated/neworm_api_init.cpp; sourceTree = "<group>"; };
+		46959DB31888ACF4001DABE0 /* neworm_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = neworm_js_api.cpp; path = ../../shared/generated/neworm_js_api.cpp; sourceTree = "<group>"; };
+		46959DB41888ACF4001DABE0 /* neworm_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = neworm_ruby_api.c; path = ../../shared/generated/neworm_ruby_api.c; sourceTree = "<group>"; };
+		46959DB51888ACF4001DABE0 /* newormmodel_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = newormmodel_api_init.cpp; path = ../../shared/generated/newormmodel_api_init.cpp; sourceTree = "<group>"; };
+		46959DB61888ACF4001DABE0 /* newormmodel_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = newormmodel_js_api.cpp; path = ../../shared/generated/newormmodel_js_api.cpp; sourceTree = "<group>"; };
+		46959DB71888ACF4001DABE0 /* newormmodel_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = newormmodel_ruby_api.c; path = ../../shared/generated/newormmodel_ruby_api.c; sourceTree = "<group>"; };
+		46E672E118987B28002A060F /* NewORM_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORM_js_wrap.cpp; path = ../../shared/generated/cpp/NewORM_js_wrap.cpp; sourceTree = "<group>"; };
+		46E672E218987B28002A060F /* NewORM_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORM_ruby_wrap.cpp; path = ../../shared/generated/cpp/NewORM_ruby_wrap.cpp; sourceTree = "<group>"; };
+		46E672E318987B28002A060F /* NewORMBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMBase.cpp; path = ../../shared/generated/cpp/NewORMBase.cpp; sourceTree = "<group>"; };
+		46E672E518987B28002A060F /* NewORMModel_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMModel_js_wrap.cpp; path = ../../shared/generated/cpp/NewORMModel_js_wrap.cpp; sourceTree = "<group>"; };
+		46E672E618987B28002A060F /* NewORMModel_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMModel_ruby_wrap.cpp; path = ../../shared/generated/cpp/NewORMModel_ruby_wrap.cpp; sourceTree = "<group>"; };
+		46E672E718987B28002A060F /* NewORMModelBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMModelBase.cpp; path = ../../shared/generated/cpp/NewORMModelBase.cpp; sourceTree = "<group>"; };
+		46F244E71888AE54003E5D17 /* INewORM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INewORM.h; path = ../../shared/generated/cpp/INewORM.h; sourceTree = "<group>"; };
+		46F244E81888AE54003E5D17 /* INewORMModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INewORMModel.h; path = ../../shared/generated/cpp/INewORMModel.h; sourceTree = "<group>"; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C00E09811761424A00ADA93E /* MenubarImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MenubarImpl.cpp; path = ../../shared/MenubarImpl.cpp; sourceTree = "<group>"; };
 		C00E09851761429200ADA93E /* INativeMenubar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INativeMenubar.h; path = ../../shared/generated/cpp/INativeMenubar.h; sourceTree = "<group>"; };
@@ -399,6 +431,7 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				46959DAB1888ACAB001DABE0 /* NewORM */,
 				C5F48AD6177DEAD20071BFE2 /* Push */,
 				C08B5DF01774C3D70021B5BA /* Notification */,
 				C5B99D7F174E688C00D8D02E /* File */,
@@ -423,6 +456,53 @@
 				FAD45FD51225FED600141873 /* CoreAPI_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		46959DAB1888ACAB001DABE0 /* NewORM */ = {
+			isa = PBXGroup;
+			children = (
+				46F244E61888AE42003E5D17 /* api */,
+				46959DAD1888ACC0001DABE0 /* impl */,
+				46959DAC1888ACB8001DABE0 /* generated */,
+			);
+			name = NewORM;
+			sourceTree = "<group>";
+		};
+		46959DAC1888ACB8001DABE0 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				46E672E118987B28002A060F /* NewORM_js_wrap.cpp */,
+				46E672E218987B28002A060F /* NewORM_ruby_wrap.cpp */,
+				46E672E318987B28002A060F /* NewORMBase.cpp */,
+				46E672E518987B28002A060F /* NewORMModel_js_wrap.cpp */,
+				46E672E618987B28002A060F /* NewORMModel_ruby_wrap.cpp */,
+				46E672E718987B28002A060F /* NewORMModelBase.cpp */,
+				46959DB21888ACF4001DABE0 /* neworm_api_init.cpp */,
+				46959DB31888ACF4001DABE0 /* neworm_js_api.cpp */,
+				46959DB41888ACF4001DABE0 /* neworm_ruby_api.c */,
+				46959DB51888ACF4001DABE0 /* newormmodel_api_init.cpp */,
+				46959DB61888ACF4001DABE0 /* newormmodel_js_api.cpp */,
+				46959DB71888ACF4001DABE0 /* newormmodel_ruby_api.c */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		46959DAD1888ACC0001DABE0 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				46959DAE1888ACD6001DABE0 /* NewORMImpl.cpp */,
+				46959DAF1888ACD6001DABE0 /* NewORMModelImpl.cpp */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		46F244E61888AE42003E5D17 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				46F244E71888AE54003E5D17 /* INewORM.h */,
+				46F244E81888AE54003E5D17 /* INewORMModel.h */,
+			);
+			name = api;
 			sourceTree = "<group>";
 		};
 		C00E0980176141F500ADA93E /* NativeMenuBar */ = {
@@ -1199,6 +1279,7 @@
 				C06A0F0316F21C880065EF81 /* ILog.h in Headers */,
 				C06A0F0D16F21C880065EF81 /* LogBase.h in Headers */,
 				FA1C7FAF16FBCAF00024FB5C /* ApplicationBase.h in Headers */,
+				46F244E91888AE54003E5D17 /* INewORM.h in Headers */,
 				FA1C7FB016FBCAF00024FB5C /* IApplication.h in Headers */,
 				FAEB2B901743C486001AE032 /* INativeToolbar.h in Headers */,
 				FAEB2B971743C498001AE032 /* NativeToolbarBase.h in Headers */,
@@ -1227,6 +1308,7 @@
 				C08B5E151774C4CA0021B5BA /* Notification.h in Headers */,
 				C08B5E191774C4CA0021B5BA /* NotificationSingleton.h in Headers */,
 				C5F48ADB177DEB080071BFE2 /* Push.h in Headers */,
+				46F244EA1888AE54003E5D17 /* INewORMModel.h in Headers */,
 				C5F48AEA177DEB260071BFE2 /* PushBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1256,6 +1338,8 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Coreapi" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -1286,6 +1370,8 @@
 				FA7C85BD16E4126C0000EAE6 /* network_ruby_api.c in Sources */,
 				FA7C85C416E4127D0000EAE6 /* Network_js_wrap.cpp in Sources */,
 				FA7C85C516E4127D0000EAE6 /* Network_ruby_wrap.cpp in Sources */,
+				46E672EE18987B28002A060F /* NewORMModel_ruby_wrap.cpp in Sources */,
+				46959DBC1888ACF4001DABE0 /* newormmodel_js_api.cpp in Sources */,
 				FA7C85C616E4127D0000EAE6 /* NetworkBase.cpp in Sources */,
 				FA7C85CA16E412950000EAE6 /* InitExtension.cpp in Sources */,
 				FA7C85CB16E412950000EAE6 /* NetworkImpl.cpp in Sources */,
@@ -1308,7 +1394,9 @@
 				FA340B8916F0E3FE000094DD /* webview_api_init.cpp in Sources */,
 				FA340B8A16F0E3FE000094DD /* webview_js_api.cpp in Sources */,
 				FA340B8B16F0E3FE000094DD /* webview_ruby_api.c in Sources */,
+				46E672E918987B28002A060F /* NewORM_js_wrap.cpp in Sources */,
 				FA340B9516F0E42F000094DD /* WebViewBase.m in Sources */,
+				46E672EB18987B28002A060F /* NewORMBase.cpp in Sources */,
 				FA340B9716F0E42F000094DD /* WebViewFactoryBase.m in Sources */,
 				FA340B9916F0E42F000094DD /* WebViewSingletonBase.m in Sources */,
 				FA340B9C16F0E442000094DD /* webview_js_wrap.mm in Sources */,
@@ -1318,13 +1406,17 @@
 				FA340BA716F0E455000094DD /* WebViewSetup.m in Sources */,
 				FA340BA916F0E455000094DD /* WebViewSingleton.m in Sources */,
 				C06A0F0A16F21C880065EF81 /* Log_js_wrap.cpp in Sources */,
+				46959DB01888ACD6001DABE0 /* NewORMImpl.cpp in Sources */,
 				C06A0F0B16F21C880065EF81 /* Log_ruby_wrap.cpp in Sources */,
 				C06A0F0C16F21C880065EF81 /* LogBase.cpp in Sources */,
+				46959DBB1888ACF4001DABE0 /* newormmodel_api_init.cpp in Sources */,
 				C06A0F2616F21C880065EF81 /* log_api_init.cpp in Sources */,
 				C06A0F2716F21C880065EF81 /* log_js_api.cpp in Sources */,
 				C06A0F2816F21C880065EF81 /* log_ruby_api.c in Sources */,
 				C06A0F3C16F21C880065EF81 /* LogImpl.cpp in Sources */,
+				46959DBA1888ACF4001DABE0 /* neworm_ruby_api.c in Sources */,
 				FA1C7FA416FBCAC50024FB5C /* application_api_init.cpp in Sources */,
+				46E672EA18987B28002A060F /* NewORM_ruby_wrap.cpp in Sources */,
 				FA1C7FA516FBCAC50024FB5C /* application_js_api.cpp in Sources */,
 				FA1C7FA616FBCAC50024FB5C /* application_ruby_api.c in Sources */,
 				FA1C7FAC16FBCAF00024FB5C /* Application_js_wrap.cpp in Sources */,
@@ -1344,10 +1436,12 @@
 				FAEB2BAE1743C4E0001AE032 /* NativeToolbar.m in Sources */,
 				FAEB2BAF1743C4E0001AE032 /* NativeToolbarFactorySingleton.m in Sources */,
 				FAEB2BB01743C4E0001AE032 /* NativeToolbarSetup.m in Sources */,
+				46959DBD1888ACF4001DABE0 /* newormmodel_ruby_api.c in Sources */,
 				FAEB2BB21743C4E0001AE032 /* NativeToolbarSingleton.m in Sources */,
 				FAEB2BC11743C584001AE032 /* NativeTabbar.m in Sources */,
 				FAEB2BC21743C584001AE032 /* NativeTabbarFactorySingleton.m in Sources */,
 				FAEB2BC31743C584001AE032 /* NativeTabbarSetup.m in Sources */,
+				46E672ED18987B28002A060F /* NewORMModel_js_wrap.cpp in Sources */,
 				FAEB2BC51743C584001AE032 /* NativeTabbarSingleton.m in Sources */,
 				FAEB2BC91743C596001AE032 /* nativetabbar_api_init.cpp in Sources */,
 				FAEB2BCA1743C596001AE032 /* nativetabbar_js_api.cpp in Sources */,
@@ -1369,15 +1463,18 @@
 				FA4EC300174D109B00969368 /* NavbarFactorySingleton.m in Sources */,
 				FA4EC301174D109B00969368 /* NavbarSetup.m in Sources */,
 				FA4EC303174D109B00969368 /* NavbarSingleton.m in Sources */,
+				46959DB91888ACF4001DABE0 /* neworm_js_api.cpp in Sources */,
 				C57BD8F8174FD25500494EA3 /* FileImpl.cpp in Sources */,
 				C57BD8FC175392E700494EA3 /* rhofile_api_init.cpp in Sources */,
 				C57BD8FD175392E700494EA3 /* rhofile_js_api.cpp in Sources */,
+				46959DB81888ACF4001DABE0 /* neworm_api_init.cpp in Sources */,
 				C57BD8FE175392E700494EA3 /* rhofile_ruby_api.c in Sources */,
 				C57BD902175392F200494EA3 /* RhoFile_js_wrap.cpp in Sources */,
 				C57BD903175392F200494EA3 /* RhoFile_ruby_wrap.cpp in Sources */,
 				C57BD904175392F200494EA3 /* RhoFileBase.cpp in Sources */,
 				C00E09821761424A00ADA93E /* MenubarImpl.cpp in Sources */,
 				C00E098B1761429200ADA93E /* NativeMenubar_js_wrap.cpp in Sources */,
+				46959DB11888ACD6001DABE0 /* NewORMModelImpl.cpp in Sources */,
 				C00E098C1761429200ADA93E /* NativeMenubar_ruby_wrap.cpp in Sources */,
 				C00E098D1761429200ADA93E /* NativeMenubarBase.cpp in Sources */,
 				C00E0994176142C900ADA93E /* nativemenubar_api_init.cpp in Sources */,
@@ -1386,6 +1483,7 @@
 				C08B5DFD1774C45C0021B5BA /* NotificationBase.m in Sources */,
 				C08B5DFF1774C45C0021B5BA /* NotificationFactoryBase.m in Sources */,
 				C08B5E011774C45C0021B5BA /* NotificationSingletonBase.m in Sources */,
+				46E672EF18987B28002A060F /* NewORMModelBase.cpp in Sources */,
 				C08B5E041774C47C0021B5BA /* notification_js_wrap.mm in Sources */,
 				C08B5E061774C4870021B5BA /* notification_ruby_wrap.m in Sources */,
 				C08B5E0B1774C4A80021B5BA /* notification_api_init.cpp in Sources */,

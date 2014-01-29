@@ -11,6 +11,9 @@
 #include "db/DBAdapter.h"
 #include "sync/RhoconnectClientManager.h"
 
+#ifndef _NewORMModel_included
+#define _NewORMModel_included
+
 namespace rho {
     
     using namespace apiGenerator;
@@ -1532,3 +1535,5 @@ extern "C" void Init_NewORMModel_extension()
     rho::CNewORMModelFactory::setInstance( new rho::CNewORMModelFactory() );
     rho::Init_NewORMModel_API();
 }
+
+#endif
