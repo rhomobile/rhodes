@@ -132,6 +132,11 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         Jake.run3("#{$macdeployqt} #{app_path}", $qt_project_dir)
         #Jake.run3("#{$make} clean"             , $qt_project_dir)
     end
+
+    desc 'prints Qt version is required by Mac RhoSimulator.'
+    task :rhosim_qt_version do
+      puts '5.1.1'
+    end
   end
 end
 

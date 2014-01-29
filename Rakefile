@@ -31,12 +31,16 @@ require 'digest/sha2'
 require 'rexml/document'
 require 'pathname'
 
+# It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
+# NB: server build scripts depend on proper rake -T functioning.
+=begin
 #Look, another big fat hack. Make it so we can remove tasks from rake -T by setting comment to nil
 module Rake
   class Task
     attr_accessor :comment
   end
 end
+=end
 
 # Restore process error mode on Windows.
 # Error mode controls wether system error message boxes will be shown to user.
