@@ -488,7 +488,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Bring application window to the top of the screen.</DESC>
             <PLATFORM>WM</PLATFORM>
           </METHOD>
-            <METHOD name="replaceCurrentBundle">
+            <METHOD name="replaceCurrentBundle"  deprecated="true">
                 <DESC>Replace application bundle.</DESC>
                 <PARAMS>
                     <PARAM name="pathToBundle" type="STRING">

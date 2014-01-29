@@ -8,12 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C5DFBB31185B6FB400DB6BDB /* IAppMessageReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */; };
-		FA20C2B0182B07810036D304 /* SignatureDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C215182B04140036D304 /* SignatureDelegate.h */; };
-		FA20C2B1182B07810036D304 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C216182B04140036D304 /* SignatureDelegate.m */; };
-		FA20C2B2182B07810036D304 /* SignatureView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C217182B04140036D304 /* SignatureView.h */; };
-		FA20C2B3182B07810036D304 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C218182B04140036D304 /* SignatureView.m */; };
-		FA20C2B4182B07810036D304 /* SignatureViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C219182B04140036D304 /* SignatureViewController.h */; };
-		FA20C2B5182B07810036D304 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C21A182B04140036D304 /* SignatureViewController.m */; };
 		FA20C2B6182B078C0036D304 /* PickImageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C21C182B04140036D304 /* PickImageDelegate.h */; };
 		FA20C2B7182B078C0036D304 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C21D182B04140036D304 /* PickImageDelegate.m */; };
 		FA20C2B8182B07A10036D304 /* CRhoURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C21F182B04140036D304 /* CRhoURLProtocol.h */; };
@@ -108,6 +102,13 @@
 		FA20C311182B08080036D304 /* SplashViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C298182B04140036D304 /* SplashViewController.h */; };
 		FA20C312182B08080036D304 /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C299182B04140036D304 /* SplashViewController.m */; };
 		FA20C313182B08080036D304 /* IPushNotificationsReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C29A182B04140036D304 /* IPushNotificationsReceiver.h */; };
+		FA89817818917EA900AF5E39 /* SignatureView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C281182B04140036D304 /* SignatureView.h */; };
+		FA89817918917EAD00AF5E39 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C282182B04140036D304 /* SignatureView.m */; };
+		FA89817A18917EAF00AF5E39 /* SignatureDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C283182B04140036D304 /* SignatureDelegate.h */; };
+		FA89817B18917EB200AF5E39 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C284182B04140036D304 /* SignatureDelegate.m */; };
+		FA89817C18917EB400AF5E39 /* SignatureViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C285182B04140036D304 /* SignatureViewController.h */; };
+		FA89817D18917EB700AF5E39 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C286182B04140036D304 /* SignatureViewController.m */; };
+		FA89817E18917EBA00AF5E39 /* SignatureParam.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C287182B04140036D304 /* SignatureParam.h */; };
 		FAA5A5AE182B0E9B00590B1F /* rhorunner_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAA5A5AD182B0E9B00590B1F /* rhorunner_Prefix.pch */; };
 /* End PBXBuildFile section */
 
@@ -597,13 +598,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA20C2D6182B07CB0036D304 /* RightViewController.h in Headers */,
-				FA20C2B2182B07810036D304 /* SignatureView.h in Headers */,
+				FA89817C18917EB400AF5E39 /* SignatureViewController.h in Headers */,
 				FA20C2C8182B07B60036D304 /* DateTimePickerViewController.h in Headers */,
 				FA20C2DA182B07CB0036D304 /* SplitViewDelegate.h in Headers */,
 				FA20C2E7182B07D10036D304 /* MapViewController.h in Headers */,
 				FA20C2D4182B07CB0036D304 /* LeftViewController.h in Headers */,
 				FA20C2EE182B07DA0036D304 /* RhoNativeViewManagerOC.h in Headers */,
-				FA20C2B4182B07810036D304 /* SignatureViewController.h in Headers */,
 				FA20C2E1182B07D10036D304 /* RhoMapViewController.h in Headers */,
 				FA20C2B6182B078C0036D304 /* PickImageDelegate.h in Headers */,
 				FA20C2BA182B07A50036D304 /* RhoAlert.h in Headers */,
@@ -623,16 +623,18 @@
 				FA20C30F182B08080036D304 /* RhoViewController.h in Headers */,
 				FA20C2C5182B07B60036D304 /* DateTime.h in Headers */,
 				FA20C2E9182B07D10036D304 /* MapAnnotation.h in Headers */,
+				FA89817818917EA900AF5E39 /* SignatureView.h in Headers */,
 				FA20C2E3182B07D10036D304 /* MapViewManager.h in Headers */,
 				FA20C2D8182B07CB0036D304 /* SplittedMainView.h in Headers */,
 				FA20C2E5182B07D10036D304 /* GoogleGeocoder.h in Headers */,
 				FA20C2C1182B07AE0036D304 /* Bluetooth.h in Headers */,
-				FA20C2B0182B07810036D304 /* SignatureDelegate.h in Headers */,
 				FAA5A5AE182B0E9B00590B1F /* rhorunner_Prefix.pch in Headers */,
 				FA20C2CC182B07BE0036D304 /* LocationController.h in Headers */,
+				FA89817A18917EAF00AF5E39 /* SignatureDelegate.h in Headers */,
 				FA20C2D1182B07C50036D304 /* LogViewController.h in Headers */,
 				FA20C2F3182B07DE0036D304 /* NavBar.h in Headers */,
 				FA20C2F5182B07E20036D304 /* phonebook.h in Headers */,
+				FA89817E18917EBA00AF5E39 /* SignatureParam.h in Headers */,
 				FA20C30D182B08080036D304 /* Rhodes.h in Headers */,
 				FA20C304182B08000036D304 /* ParamsWrapper.h in Headers */,
 				FA20C2DD182B07CB0036D304 /* SimpleMainView.h in Headers */,
@@ -702,7 +704,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA20C2B1182B07810036D304 /* SignatureDelegate.m in Sources */,
 				FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */,
 				FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */,
 				FA20C2EC182B07D50036D304 /* NativeBar.m in Sources */,
@@ -712,13 +713,14 @@
 				FA20C2F0182B07DA0036D304 /* NVDelegate.m in Sources */,
 				FA20C305182B08000036D304 /* ParamsWrapper.m in Sources */,
 				FA20C30A182B08080036D304 /* Reachability.m in Sources */,
-				FA20C2B5182B07810036D304 /* SignatureViewController.m in Sources */,
 				FA20C2E0182B07CB0036D304 /* TabbedMainView.m in Sources */,
 				FA20C30C182B08080036D304 /* RhoDelegate.m in Sources */,
 				FA20C2F8182B07EB0036D304 /* RhoCryptImpl.mm in Sources */,
 				FA20C2C7182B07B60036D304 /* DateTimePicker.m in Sources */,
 				FA20C2FE182B07EB0036D304 /* SplashScreenImpl.cpp in Sources */,
+				FA89817918917EAD00AF5E39 /* SignatureView.m in Sources */,
 				FA20C2D7182B07CB0036D304 /* RightViewController.m in Sources */,
+				FA89817D18917EB700AF5E39 /* SignatureViewController.m in Sources */,
 				FA20C2FF182B07EE0036D304 /* sslimpl.cpp in Sources */,
 				FA20C2F6182B07E20036D304 /* phonebook.m in Sources */,
 				FA20C2D0182B07C50036D304 /* LogViewController.m in Sources */,
@@ -730,6 +732,7 @@
 				FA20C2F2182B07DA0036D304 /* RhoNativeViewManager.mm in Sources */,
 				FA20C2F1182B07DA0036D304 /* NVViewController.m in Sources */,
 				FA20C2E2182B07D10036D304 /* RhoMapViewController.m in Sources */,
+				FA89817B18917EB200AF5E39 /* SignatureDelegate.m in Sources */,
 				FA20C2F4182B07DE0036D304 /* NavBar.m in Sources */,
 				FA20C2BD182B07AA0036D304 /* AppLoader.m in Sources */,
 				FA20C306182B08040036D304 /* WebView.m in Sources */,
@@ -745,7 +748,6 @@
 				FA20C2C2182B07AE0036D304 /* Bluetooth.m in Sources */,
 				FA20C2C4182B07B60036D304 /* DateTimePickerDelegate.m in Sources */,
 				FA20C2DB182B07CB0036D304 /* SplitViewDelegate.m in Sources */,
-				FA20C2B3182B07810036D304 /* SignatureView.m in Sources */,
 				FA20C2FC182B07EB0036D304 /* RhoFileImpl.m in Sources */,
 				FA20C2B7182B078C0036D304 /* PickImageDelegate.m in Sources */,
 				FA20C2BB182B07A50036D304 /* RhoAlert.m in Sources */,
@@ -784,7 +786,7 @@
 					../../shared/common,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -823,7 +825,7 @@
 					../../shared/common,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -903,7 +905,7 @@
 					../../shared/common,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
