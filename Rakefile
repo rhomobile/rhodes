@@ -259,6 +259,18 @@ def update_rhodefs_header_file
     end
 end
 
+def target_ruby(args)
+  # Run RhoRuby with resetting Bundler environment
+
+  raise "$rubypath is not configured yet" unless $rubypath
+
+  if defined? Bundler.clean_system
+    Bundler.clean_system $rubypath, *args
+  else
+    system $rubypath, *args
+  end
+end
+
 namespace "config" do
   task :common do
     
@@ -1048,7 +1060,7 @@ namespace "build" do
       cp   compileERB, $srcdir
       puts "Running bb.rb"
 
-      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/bb.rb"`
+      target_ruby %W{-I #{rhodeslib} #{$srcdir}/bb.rb}
       unless $? == 0
         puts "Error interpreting erb code"
         exit 1
@@ -1128,7 +1140,7 @@ namespace "build" do
       cp   compileERB, $srcdir
       puts "Running default.rb"
 
-      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/default.rb"`
+      target_ruby %W{-I #{rhodeslib} #{$srcdir}/default.rb}
       unless $? == 0
         puts "Error interpreting erb code"
         exit 1
@@ -1138,7 +1150,7 @@ namespace "build" do
 
       cp   compileRB, $srcdir
       puts "Running compileRB"
-      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/compileRB.rb"`
+      target_ruby %W{-I #{rhodeslib} #{$srcdir}/compileRB.rb}
       unless $? == 0
         puts "Error interpreting ruby code"
         exit 1
@@ -1231,7 +1243,7 @@ namespace "build" do
 	  cp   compileERB, $srcdir
       puts "Running bb.rb"
 
-      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/bb.rb"`
+      target_ruby %W{-I #{rhodeslib} #{$srcdir}/bb.rb}
       unless $? == 0
         puts "Error interpreting erb code"
         exit 1
