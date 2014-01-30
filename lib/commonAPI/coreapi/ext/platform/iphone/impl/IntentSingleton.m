@@ -49,15 +49,25 @@
     }
 }
 
+-(NSString*) safeGetDictString:(NSString*)key dict:(NSDictionary*)dict defaultVal:(NSString*)defaultVal {
+
+    if ((dict!=[NSNull null])&&([dict count]>0)){
+        id o = [dict objectForKey:key];
+        if ( (o!=nil) && ( [o isKindOfClass:[NSString class]]) ) {
+            return (NSString*)o;
+        }
+    }
+    
+    return defaultVal;
+}
+
 
 -(void) send:(NSDictionary*)params methodResult:(id<IMethodResult>)methodResult {
 
-    NSObject* o;
-    
-    NSString* appName   = [o=[params objectForKey:@"appName"]isKindOfClass:[NSString class]]?(NSString*)o:@"";
-    NSString* uri       = [o=[params objectForKey:@"uri"]isKindOfClass:[NSString class]]?(NSString*)o:@"";
-    NSString* mimeType  = [o=[params objectForKey:@"mimeType"]isKindOfClass:[NSString class]]?(NSString*)o:@"";
-    NSString* data      = [o=[params objectForKey:@"data"]isKindOfClass:[NSString class]]?(NSString*)o:@"";
+    NSString* appName   = [self safeGetDictString:@"appName" dict:params defaultVal:@""];
+    NSString* uri       = [self safeGetDictString:@"uri" dict:params defaultVal:@""];
+    NSString* mimeType  = [self safeGetDictString:@"mimeType" dict:params defaultVal:@""];
+    NSString* data      = [self safeGetDictString:@"data" dict:params defaultVal:@""];
     
     BOOL res = FALSE;
     
@@ -87,7 +97,12 @@
         }
     }
     
-    NSMutableDictionary* ret = [[NSMutableDictionary alloc] initWithDictionary:params];
+    NSMutableDictionary* ret = nil;
+    if ([NSNull null]==params) {
+        ret = [[NSMutableDictionary alloc] init];
+    } else {
+        ret = [[NSMutableDictionary alloc] initWithDictionary:params];
+    }
 	
     if ( res) {
         RAWLOG_INFO("sendApplicationMessage suceeded.");
