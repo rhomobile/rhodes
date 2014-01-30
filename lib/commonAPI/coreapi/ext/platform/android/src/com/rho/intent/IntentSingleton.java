@@ -214,7 +214,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     public void send(Map<String, Object> params, IMethodResult result) {
         Intent intent = makeIntent(params);
         Object type = params.get(HK_INTENT_TYPE);
-        if (type.equals(BROADCAST)) {
+        if (BROADCAST.equals(type)) {
             Object permissionObj = params.get(HK_PERMISSION);
             String permission = null;
             if (permissionObj != null) {
@@ -229,7 +229,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
             Logger.T(TAG, "Send broadcast: " + intent);
             ContextFactory.getContext().sendBroadcast(intent, permission);
         }
-        else if (type.equals(START_ACTIVITY)) {
+        else if (START_ACTIVITY.equals(type)) {
             if (result.hasCallback()) {
                 int request;
                 synchronized (localMethodResults) {
@@ -246,12 +246,12 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                 ContextFactory.getUiContext().startActivity(intent);
             }
         }
-        else if (type.equals(START_SERVICE)) {
+        else if (START_SERVICE.equals(type)) {
             Logger.T(TAG, "Start service: " + intent);
             ContextFactory.getContext().startService(intent);
         }
         else {
-            result.setArgError("Wrong intent type: " + type.toString());
+            result.setArgError("Wrong intent type: " + type);
         }
     }
 

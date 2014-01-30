@@ -20,7 +20,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </TEMPLATES>
         <METHODS  access="STATIC">
             <METHOD name="send" hasCallback="optional">
-                <DESC>Send intent.</DESC>
+                <DESC>Send intent. At android passing callback is actual for intentType = START_ACTIVITY only.</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="params" type="HASH">
@@ -85,7 +85,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="startListening" hasCallback="mandatory">
+            <METHOD name="startListening" hasCallback="mandatory" runInThread="none">
                 <DESC>Start listening for custom intents</DESC>
                 <CALLBACK type="HASH">
                     <DESC>Same format as 'params' argument passed to Rho.Intent.send method
