@@ -61,9 +61,11 @@
     
     BOOL res = FALSE;
     
-    if ( [appName count] == 0 ) {
-        if ([[UIApplication sharedApplication] canOpenURL:uri]) {
-            res = [[UIApplication sharedApplication] openURL:uri];
+    if ( appName.length == 0 ) {
+    
+        NSURL* url = [NSURL URLWithString:[uri stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            res = [[UIApplication sharedApplication] openURL:url];
         }
     } else {
     
