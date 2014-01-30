@@ -141,7 +141,7 @@ public class MethodResult implements IMethodResult {
             break;
         case typeError:
         case typeArgError:
-            res.append("error: ").append(mStrResult);
+            res.append('"').append(mStrResult).append('"');
             break;
         }
         return res.toString();
@@ -487,12 +487,13 @@ public class MethodResult implements IMethodResult {
     @Override
     public void set(Throwable ex) {
         mStrResult = ex.getMessage();
+        if(mStrResult.length() == 0) {
+            mStrResult = ex.getClass().getSimpleName();
+        }
         mResultType = ResultType.typeError;
 
         Logger.E(TAG, ex);
         Logger.E(TAG, toString());
-        
-        ex.printStackTrace();
         
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
