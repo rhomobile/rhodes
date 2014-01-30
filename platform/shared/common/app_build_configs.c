@@ -9,7 +9,7 @@ static const char* keys[] = { ""
 };
 
 static const char* values[] = { ""
-,"new_orm_spec"
+,"new_orm_spec_js"
 };
 
 #define APP_BUILD_CONFIG_COUNT 2
