@@ -4,6 +4,7 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
+#include "SystemImpl.h"
 
 namespace rho {
     
@@ -16,21 +17,27 @@ namespace rho {
         
         CIntentSingletonImpl(): CIntentSingletonBase(){}
         
-        //methods
-        // send Send intent. 
         virtual void send( const rho::Hashtable<rho::String, rho::String>& params, rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("send","Intent");
-            
+			// TODO: support all other appropriate params
+			String appName = params.get("appName");
+			String data = params.get("data");
+			if (appName.length() <= 0) {
+				oResult.setError("\"appName\" can't be empty");
+				return;
+			}
+			if (data.length() <= 0) {
+				oResult.setError("\"data\" can't be empty");
+				return;
+			}
+			CSystemFactory::getSystemSingletonS()->sendApplicationMessage(appName, data, oResult);
         } 
-        // startListening Start listening for custom intents 
+
         virtual void startListening(rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("startListening","Intent");
-            
+			CSystemFactory::getSystemSingletonS()->startApplicationMessageNotifications(oResult);
         } 
-        // stopListening Stop listening for custom intents 
+
         virtual void stopListening(rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("stopListening","Intent");
-            
+			CSystemFactory::getSystemSingletonS()->stopApplicationMessageNotifications(oResult);
         } 
 
     };
