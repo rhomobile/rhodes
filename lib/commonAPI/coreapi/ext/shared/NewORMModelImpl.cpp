@@ -135,6 +135,18 @@ void rho::CNewORMModelImpl::setModelProperty(const rho::String& propName,
     modelProperties_[propName] = ModelPropertyDef(propName, propType, option);
 }
 
+void rho::CNewORMModelImpl::getModelProperty(const rho::String& propName, rho::apiGenerator::CMethodResult& oResult)
+{
+    Hashtable<rho::String, ModelPropertyDef>::const_iterator cIt = modelProperties_.find(propName);
+    if(cIt != modelProperties_.end()) {
+        Hashtable<rho::String, rho::String> retVals;
+        retVals["name"] = propName;
+        retVals["type"] = cIt -> second.type_;
+        retVals["option"] = cIt -> second.option_;
+        oResult.set(retVals);
+    }
+}
+
 void rho::CNewORMModelImpl::setSchemaIndex(const rho::String& indexName, const rho::Vector<rho::String>& indexColumns, bool bUniqueIndex, rho::apiGenerator::CMethodResult& oResult)
 {
     LOG(INFO) + "setSchemaIndex: " + indexName + ", is_unique: " + bUniqueIndex;
@@ -421,9 +433,14 @@ void rho::CNewORMModelImpl::initDbSchema(rho::apiGenerator::CMethodResult& oResu
     setProperty("sql", strCreateSQL, oResult);
     if(bMigrateSchema) {
         // destroy previous version of the table
-        rho::Vector<rho::String> arIncludeTables;
-        arIncludeTables.push_back(name());
-        db.destroy_tables(arIncludeTables, rho::Vector<rho::String>());
+        rho::String dropTableSql("DROP TABLE ");
+        dropTableSql += name();
+        res = db.executeSQL(dropTableSql.c_str());
+        if(!res.getDBError().isOK()) {
+            oResult.setError(res.getDBError().getError());
+            db.rollback();
+            return;
+        }
     }
     // create new table
     res = db.executeSQL(strCreateSQL.c_str());
@@ -431,6 +448,16 @@ void rho::CNewORMModelImpl::initDbSchema(rho::apiGenerator::CMethodResult& oResu
         oResult.setError(res.getDBError().getError());
         db.rollback();
         return;
+    }
+    // create all indices
+    rho::Vector<rho::String> indices = _create_sql_schema_indices();
+    for(size_t i = 0; i < indices.size(); ++i) {
+        res = db.executeSQL(indices[i].c_str());
+        if(!res.getDBError().isOK()) {
+            oResult.setError(res.getDBError().getError());
+            db.rollback();
+            return;
+        }
     }
     // update attribs
     res = db.executeSQL("UPDATE sources SET schema=?, schema_version=? WHERE name=?", strCreateSQL, schema_version, name());
@@ -1318,16 +1345,15 @@ rho::String rho::CNewORMModelImpl::_make_create_sql_script() const
     
     if(strCreate.size() > 0)
         strCreate += ";\r\n";
-    strCreate += _create_sql_schema_indices();
 
     LOG(INFO) + "_make_createsql_script: " + name() + ", sql: " + strCreate;
 
     return strCreate;
 }
 
-rho::String rho::CNewORMModelImpl::_create_sql_schema_indices() const
+rho::Vector<rho::String> rho::CNewORMModelImpl::_create_sql_schema_indices() const
 {
-    rho::String strSQLIndices;
+    rho::Vector<rho::String> retIndices;
     for(Hashtable<rho::String, SchemaIndexDef>::const_iterator cIt = schemaIndices_.begin();
         cIt != schemaIndices_.end();
         ++cIt) 
@@ -1345,13 +1371,13 @@ rho::String rho::CNewORMModelImpl::_create_sql_schema_indices() const
         rho::String strIndex("CREATE ");
         if(index_def.unique_)
             strIndex += "UNIQUE ";
-        strIndex += rho::String("INDEX ") + "\"" + index_def.name_ + "\" ON \"" + name() + "(" + strCols + ");\r\n";
-        strSQLIndices += strIndex; 
+        strIndex += rho::String("INDEX ") + index_def.name_ + " ON " + name() + " (" + strCols + ");\r\n";
+        retIndices.push_back(strIndex);
+        LOG(INFO) + "_create_sql_schema_indices: " + name() + ", sql: " + strIndex;
+        //strSQLIndices += strIndex; 
     }
 
-    LOG(INFO) + "_create_sql_schema_indices: " + name() + ", sql: " + strSQLIndices;
-
-    return strSQLIndices;
+    return retIndices;
 }
 
 rho::String rho::CNewORMModelImpl::_make_insert_or_update_attr_sql_script(const rho::String srcId, 

@@ -95,6 +95,8 @@ namespace rho {
                               const rho::String& propType, 
                               const rho::String& option,
                               rho::apiGenerator::CMethodResult&);
+        void getModelProperty(const rho::String& propName, 
+                              rho::apiGenerator::CMethodResult&);
         void setSchemaIndex(const rho::String& indexName, const rho::Vector<rho::String>& indexColumns, bool bUniqueIndex, rho::apiGenerator::CMethodResult& oResult);
 
         // Model initialization methods
@@ -190,7 +192,7 @@ namespace rho {
                                                         const Hashtable<rho::String, rho::String>& attrs, 
                                                         Vector<rho::String>& quests) const;
         rho::String _make_create_sql_script() const;
-        rho::String _create_sql_schema_indices() const;
+        rho::Vector<rho::String> _create_sql_schema_indices() const;
         rho::String _make_insert_or_update_attr_sql_script(const rho::String srcId, 
                                                                 const rho::String& objId, 
                                                                 const rho::String& attrKey,

@@ -98,6 +98,14 @@
                 </PARAMS>
             </METHOD>
 
+            <METHOD name="getModelProperty">
+                <DESC>returns info about model's field property</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
             <METHOD name="setSchemaIndex">
                 <DESC>Initializes new model's schema index</DESC>
                 <PARAMS>
