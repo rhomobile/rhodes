@@ -382,7 +382,12 @@ namespace "build" do
                 ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
               end
 
-              ENV['RHO_EXT_NAME']=ext                
+              #This is temporary fix! Need to provide libraries list to common rakefile
+              if $current_platform == 'wm' && ext == 'printing_zebra'
+                ENV['RHO_EXT_NAME'] = "PrintingZebra"
+              else
+                ENV['RHO_EXT_NAME']=ext
+              end
 
               if is_prebuilt
 				  file_mask = File.join(extpath, $current_platform + ($current_platform=='wm' ? '/lib' : '' ) + '/*.lib' ) 
