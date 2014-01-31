@@ -97,27 +97,33 @@
         }
     }
     
-    NSMutableDictionary* ret = nil;
-    if ([NSNull null]==params) {
-        ret = [[NSMutableDictionary alloc] init];
-    } else {
-        ret = [[NSMutableDictionary alloc] initWithDictionary:params];
-    }
-	
+    
     if ( res) {
-        RAWLOG_INFO("sendApplicationMessage suceeded.");
+        RAWLOG_INFO("IntentSingleton::send suceeded.");
+        
+        NSMutableDictionary* ret = nil;
+        if ([NSNull null]==params) {
+            ret = [[NSMutableDictionary alloc] init];
+        } else {
+            ret = [[NSMutableDictionary alloc] initWithDictionary:params];
+        }
+        
+        [methodResult setResult: ret];
     } else {
-        RAWLOG_INFO("sendApplicationMessage failed.");
-        [ret setValue: res forKey:@"responseCode"];
+        RAWLOG_INFO("IntentSingleton::send failed.");
+        [methodResult setResult: [ [CMethodResultError alloc] init:-1 description:@"Error sending intent: non-existing app name or bad URI" ] ];
     }
     
-    [methodResult setResult: ret];
     
 
 }
 
 -(void) startListening:(id<IMethodResult>)methodResult {
-    mIntentListener = methodResult;
+    if (![methodResult hasCallback]) {
+        [methodResult setResult: [ [CMethodResultError alloc] init:-1 description:@"Callback is expected" ] ];
+    } else {
+        mIntentListener = methodResult;
+    }
 }
 
 -(void) stopListening:(id<IMethodResult>)methodResult {
