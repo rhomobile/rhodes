@@ -220,11 +220,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <DESC>This event is triggered when the application is closing and the UI has been cleared.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_OFF" value ="ScreenOff">
-                                    <DESC>Device screen was turned off when power button was pressed or due to idle timeout. NB: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.</DESC>
+                                    <DESC>Device screen was turned off when power button was pressed or due to idle timeout. NB: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.Not supported on Windows CE.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_ON" value ="ScreenOn">
-                                    <DESC>Device screen was turned on and unlocked.</DESC>
+                                    <DESC>Device screen was turned on and unlocked.Not supported on Windows CE.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged">

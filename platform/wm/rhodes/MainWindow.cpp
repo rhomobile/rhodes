@@ -51,9 +51,8 @@
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
 #include "statistic/RhoProfiler.h"
-#include "Intents.h"
-#include "System.h"
-#include "Intents.h"
+#include "coreapi/ext/shared/System.h"
+#include "coreapi/ext/platform/wm/src/Intents.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"

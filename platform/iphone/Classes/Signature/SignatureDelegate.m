@@ -306,10 +306,10 @@ void init_signature_param( struct SignatureParam* sigparam )
     sigparam->penColor = 0x000000FF;
     sigparam->penWidth = 3.0;
     sigparam->bgColor = 0xFFFFFFFF;
-    sigparam->left = 0;
-    sigparam->top = 0;
-    sigparam->width = 100;
-    sigparam->height = 100;
+    sigparam->left = 15;
+    sigparam->top = 60;
+    sigparam->width = 200;
+    sigparam->height = 150;
     sigparam->setFullscreen = false;
     sigparam->fileName = @"signature";
 }

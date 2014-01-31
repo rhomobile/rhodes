@@ -38,8 +38,11 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 {
 	if ( (!sync::RhoconnectClientManager::haveRhoconnectClientImpl()) || (!sync::RhoconnectClientManager::syncEngineNotifyIsReportingEnabled()) )
         return String();
-
+#ifndef RHO_NO_RUBY_API
     return rho_ruby_getMessageText(szName);
+#else
+    return String();
+#endif
 }
 
 /*static*/ String _CRhoAppAdapter::getErrorText(int nError)
@@ -47,8 +50,11 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 //    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() || !sync::CSyncThread::getInstance()->getSyncEngine().getNotify().isReportingEnabled() )
 	if ( (!sync::RhoconnectClientManager::haveRhoconnectClientImpl()) || (!sync::RhoconnectClientManager::syncEngineNotifyIsReportingEnabled()) )
         return String();
-
+#ifndef RHO_NO_RUBY_API
     return rho_ruby_getErrorText(nError);
+#else
+    return String();
+#endif
 }
 
 /*static*/ int  _CRhoAppAdapter::getErrorFromResponse(NetResponse& resp)
@@ -67,28 +73,36 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 
 /*static*/ void  _CRhoAppAdapter::loadServerSources(const String& strSources)
 {
+#ifndef RHO_NO_RUBY_API
     if (rho_ruby_is_started())
         rho_ruby_loadserversources(strSources.c_str());
+#endif
 }
 
 /*static*/ void  _CRhoAppAdapter::loadAllSyncSources()
 {
+#ifndef RHO_NO_RUBY_API
     if (rho_ruby_is_started())
         rho_ruby_loadallsyncsources();
+#endif
 }
 
 /*static*/ const char* _CRhoAppAdapter::getRhoDBVersion()
 {
+#ifndef RHO_NO_RUBY_API
     if (rho_ruby_is_started())
 	    return rho_ruby_getRhoDBVersion();
     else
+#endif
         return "2.2.0";
 }
 
 /*static*/ void  _CRhoAppAdapter::resetDBOnSyncUserChanged()
 {
+#ifndef RHO_NO_RUBY_API
     if (rho_ruby_is_started())
         rho_ruby_reset_db_on_sync_user_changed();
+#endif
 }
 
 /*static*/ bool  _CRhoAppAdapter::callCallbackOnSyncUserChanged()
