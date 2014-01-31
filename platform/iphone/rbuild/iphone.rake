@@ -1466,7 +1466,7 @@ namespace "run" do
           puts "Processing spec results ..."
           Jake.process_spec_results(start)
 
-          File.delete(log_name) if File.exist?(log_name)
+          # File.delete(log_name) if File.exist?(log_name)
           # kill_iphone_simulator
           $stdout.flush
       end
