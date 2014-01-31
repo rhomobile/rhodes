@@ -1,8 +1,10 @@
 package com.rho.intent;
 
+import java.lang.reflect.Field;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +30,16 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     private int lastRequest = 0;
     private List<Map.Entry<Integer, IMethodResult>> localMethodResults = new ArrayList<Map.Entry<Integer, IMethodResult>>();
 
+    private String constant(String name) {
+        try {
+            Class<?> rClass = Class.forName("android.content.Intent");
+            Field field = rClass.getDeclaredField(name);
+            return (String)field.get(null);
+        } catch (Throwable e) {
+            return name;
+        }
+    }
+    
     private Intent makeIntent(Map<String, Object> params) {
         Intent intent = new Intent();
         
@@ -53,14 +65,17 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
             if (!String.class.isInstance(actionObj)) {
                 throw new RuntimeException("Wrong intent action: " + actionObj.toString());
             }
-            action = (String)actionObj;
+            action = constant((String)actionObj);
         }
 
         if (categoriesObj != null) {
             if (!List.class.isInstance(categoriesObj)) {
                 throw new RuntimeException("Wrong intent categories: " + categoriesObj.toString());
             }
-            categories = (List<String>)categoriesObj;
+            categories = new ArrayList<String>();
+            for (String cat:(List<String>)categoriesObj) {
+                categories.add(constant(cat));
+            }
         }
 
         if (appNameObj != null) {
@@ -136,16 +151,16 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
         if (extras != null) {
             for (Map.Entry<String, Object> entry: extras.entrySet()) {
                 if (String.class.isInstance(entry.getValue())) {
-                    intent.putExtra(entry.getKey(), (String)entry.getValue());
+                    intent.putExtra(constant(entry.getKey()), (String)entry.getValue());
                 }
                 else if (Boolean.class.isInstance(entry.getValue())) {
-                    intent.putExtra(entry.getKey(), ((Boolean)entry.getValue()).booleanValue());
+                    intent.putExtra(constant(entry.getKey()), ((Boolean)entry.getValue()).booleanValue());
                 }
                 else if (Integer.class.isInstance(entry.getValue())) {
-                    intent.putExtra(entry.getKey(), ((Integer)entry.getValue()).intValue());
+                    intent.putExtra(constant(entry.getKey()), ((Integer)entry.getValue()).intValue());
                 }
                 else if (Double.class.isInstance(entry.getValue())) {
-                    intent.putExtra(entry.getKey(), ((Double)entry.getValue()).doubleValue());
+                    intent.putExtra(constant(entry.getKey()), ((Double)entry.getValue()).doubleValue());
                 }
                 else {
                     throw new RuntimeException("Wrong intent data: " + entry.getValue().getClass().getName() + " is not supported as value");
@@ -159,35 +174,37 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     private Map<String, Object> parseIntent(Intent intent) {
         Map<String, Object> params = new HashMap<String, Object>();
         
-        String action = intent.getAction();
-        if (action != null) {
-            params.put(HK_ACTION, action);
-        }
-        
-        Set<String> categories = intent.getCategories();
-        if (categories != null) {
-            params.put(HK_CATEGORIES, categories);
-        }
-        
-        String appName = intent.getPackage();
-        if (appName != null) {
-            params.put(HK_APP_NAME, appName);
-        }
-        
-        String uri = intent.getDataString();
-        if (uri != null) {
-            uri = Uri.decode(uri);
-            params.put(HK_URI, uri);
-        }
-        
-        String mime = intent.getType();
-        if (mime != null) {
-            params.put(HK_MIME_TYPE, mime);
-        }
-        
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            params.put(HK_DATA, extras);
+        if (intent != null) {
+            String action = intent.getAction();
+            if (action != null) {
+                params.put(HK_ACTION, action);
+            }
+            
+            Set<String> categories = intent.getCategories();
+            if (categories != null) {
+                params.put(HK_CATEGORIES, categories);
+            }
+            
+            String appName = intent.getPackage();
+            if (appName != null) {
+                params.put(HK_APP_NAME, appName);
+            }
+            
+            String uri = intent.getDataString();
+            if (uri != null) {
+                uri = Uri.decode(uri);
+                params.put(HK_URI, uri);
+            }
+            
+            String mime = intent.getType();
+            if (mime != null) {
+                params.put(HK_MIME_TYPE, mime);
+            }
+            
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                params.put(HK_DATA, extras);
+            }
         }
         
         return params;
@@ -209,6 +226,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                     return;
                 }
             }
+            Logger.T(TAG, "Send broadcast: " + intent);
             ContextFactory.getContext().sendBroadcast(intent, permission);
         }
         else if (type.equals(START_ACTIVITY)) {
@@ -221,12 +239,15 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                     ++lastRequest;
                 }
                 RhodesActivity.safeGetInstance().startActivityForResult(intent, request);
+                Logger.T(TAG, "Start activity for result: " + intent);
             }
             else {
+                Logger.T(TAG, "Start activity: " + intent);
                 ContextFactory.getUiContext().startActivity(intent);
             }
         }
         else if (type.equals(START_SERVICE)) {
+            Logger.T(TAG, "Start service: " + intent);
             ContextFactory.getContext().startService(intent);
         }
         else {
@@ -236,7 +257,11 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
 
     @Override
     synchronized public void startListening(IMethodResult result) {
+        if (methodResult!= null) {
+            methodResult.release();
+        }
         methodResult = result;
+        methodResult.keepAlive();
     }
 
     @Override
@@ -284,14 +309,24 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     
     @Override
     public void onActivityResult(RhodesActivity activity, int requestCode, int resCode, Intent intent) {
-        for (Map.Entry<Integer, IMethodResult> resultEntry : localMethodResults) {
-            if(resultEntry.getKey().intValue() == requestCode) {
-                Logger.T(TAG, "Activity result request: " + requestCode);
-                Map<String, Object> params = parseIntent(intent);
-                params.put(HK_INTENT_TYPE, START_ACTIVITY);
-                params.put(HK_RESPONSE_CODE, Integer.valueOf(resCode));
-                methodResult.set(params);
+        IMethodResult result = null;
+        synchronized (localMethodResults) {
+            Iterator<Map.Entry<Integer, IMethodResult> > iter = localMethodResults.iterator();
+            while (iter.hasNext()) {
+            //for (Map.Entry<Integer, IMethodResult> resultEntry : localMethodResults) {
+                Map.Entry<Integer, IMethodResult> resultEntry = iter.next();
+                if(resultEntry.getKey().intValue() == requestCode) {
+                    Logger.T(TAG, "Activity result request: " + requestCode);
+                    result = resultEntry.getValue();
+                    iter.remove();
+                }
             }
+        }
+        if (result != null) {
+            Map<String, Object> params = parseIntent(intent);
+            params.put(HK_INTENT_TYPE, START_ACTIVITY);
+            params.put(HK_RESPONSE_CODE, Integer.valueOf(resCode));
+            result.set(params);
         }
     }
 
