@@ -159,7 +159,7 @@ end
       end
 
       def database_fullclient_reset_and_logout
-        ::Rho::NewORM.databaseFullClientResetAndLogout
+        ::Rho::NewORM.databaseFullclientResetAndLogout
       end
     end
 	end

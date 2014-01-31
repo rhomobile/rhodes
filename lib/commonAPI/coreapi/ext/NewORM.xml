@@ -53,9 +53,11 @@
             <METHOD name="databaseFullReset" access="STATIC">
                 <PARAMS>
                     <PARAM name="resetClientInfo" type="BOOLEAN" default="false">
+                        <CAN_BE_NIL/>
                         <DESC>Whether or not to reset Client Info</DESC>
                     </PARAM>
                     <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
+                        <CAN_BE_NIL/>
                         <DESC>Whether or not to reset Local Models</DESC>
                     </PARAM>
                 </PARAMS>
@@ -66,7 +68,7 @@
                 <DESC>resets sync models, client info and local models and does the user logout</DESC>
             </METHOD>
 
-            <METHOD name="databaseFullClientResetAndLogout" access="STATIC">
+            <METHOD name="databaseFullclientResetAndLogout" access="STATIC">
                 <DESC>resets sync models, client info and local models and does the user logout</DESC>
             </METHOD>
 

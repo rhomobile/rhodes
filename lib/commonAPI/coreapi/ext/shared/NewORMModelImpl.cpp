@@ -124,7 +124,15 @@ void rho::CNewORMModelImpl::enable(const rho::String& propName, rho::apiGenerato
 
 void rho::CNewORMModelImpl::setBelongsTo(const rho::String& propName, const rho::String& sourceName, rho::apiGenerator::CMethodResult&)
 {
-    belongsTo_[propName] = sourceName;
+    belongsTo_[propName].push_back(sourceName);
+}
+
+void rho::CNewORMModelImpl::getBelongsTo(const rho::String& propName, rho::apiGenerator::CMethodResult& oResult)
+{
+    Hashtable<rho::String, rho::Vector<rho::String> >::const_iterator cIt = belongsTo_.find(propName);
+    if(cIt != belongsTo_.end()) {
+        oResult.set(cIt -> second);
+    }
 }
 
 void rho::CNewORMModelImpl::setModelProperty(const rho::String& propName, 
@@ -234,26 +242,32 @@ void rho::CNewORMModelImpl::initAssociations(rho::apiGenerator::CMethodResult& o
 {
     LOG(INFO) +  "initAssociations: " + name();
 
-    for(Hashtable<rho::String, rho::String>::const_iterator cIt = belongsTo_.begin(); 
+    for(Hashtable<rho::String, rho::Vector<rho::String> >::const_iterator cIt = belongsTo_.begin(); 
         cIt != belongsTo_.end(); ++cIt) 
     {
         const rho::String& property_name = cIt -> first;
-        const rho::String& source_name = cIt -> second;
+        const rho::Vector<rho::String>& sources = cIt -> second;
 
-        HashtablePtr<rho::String, CNewORMModelImpl*>::iterator modelIt = CNewORMModelImpl::models().find(source_name);
-        if(modelIt == CNewORMModelImpl::models().end())
+        for(size_t i = 0; i < sources.size(); ++i) 
         {
-            LOG(ERROR) + "Invalid belongs_to : source name '" + source_name + "' does not exist.";
-            continue;
+            const rho::String& source_name = sources[i];
+            HashtablePtr<rho::String, CNewORMModelImpl*>::iterator modelIt = CNewORMModelImpl::models().find(source_name);
+            if(modelIt == CNewORMModelImpl::models().end())
+            {
+                LOG(ERROR) + "Invalid belongs_to : source name '" + source_name + "' does not exist.";
+                continue;
+            }
+
+            CNewORMModelImpl* associate_with_model = modelIt -> second;
+            associate_with_model -> getProperty("associations", oResult);
+            rho::String existing_associations = oResult.getString();
+            if(existing_associations.size() > 0)
+                existing_associations += ",";
+            existing_associations += name() + "," + property_name;
+            associate_with_model -> setProperty("associations", existing_associations, oResult);
         }
 
-        CNewORMModelImpl* associate_with_model = modelIt -> second;
-        associate_with_model -> getProperty("associations", oResult);
-        rho::String existing_associations = oResult.getString();
-        if(existing_associations.size() > 0)
-            existing_associations += ",";
-        existing_associations += name() + "," + property_name;
-        associate_with_model -> setProperty("associations", existing_associations, oResult);
+
     }
 }
 
