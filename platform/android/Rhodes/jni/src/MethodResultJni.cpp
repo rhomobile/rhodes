@@ -120,7 +120,7 @@ JNIEnv* MethodResultJni::jniInit(JNIEnv *env)
             return NULL;
         }
         RAWTRACE("mListResult");
-        s_fidList = env->GetFieldID(s_methodResultClass, "mListResult", "Ljava/util/List;");
+        s_fidList = env->GetFieldID(s_methodResultClass, "mListResult", "Ljava/util/Collection;");
         if(env->ExceptionCheck() == JNI_TRUE)
         {
             RAWLOG_ERROR2("Failed to get field %s.mListResult: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
