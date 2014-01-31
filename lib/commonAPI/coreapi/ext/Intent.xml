@@ -1,0 +1,105 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Intent" parent="Rho">
+        <HELP_OVERVIEW>The Intent API provides an inter-application broadcast message-passing framework.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+
+        </MORE_HELP>
+        <TEMPLATES>
+        </TEMPLATES>
+        <METHODS  access="STATIC">
+            <METHOD name="send" hasCallback="optional">
+                <DESC>Send intent. At android passing callback is actual for intentType = START_ACTIVITY only.</DESC>
+                <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
+                <PARAMS>
+                    <PARAM name="params" type="HASH">
+                        <DESC>A hash-map with intent parameters</DESC>
+                        <PARAMS>
+                            <PARAM name="intentType" type="STRING">
+                                <DESC>Type of Intent.</DESC>
+                                <VALUES>
+                                    <VALUE constName="BROADCAST" value ="broadcast">
+                                        <DESC>Use the intent as broadcast intent</DESC>
+                                    </VALUE>
+                                    <VALUE constName="START_ACTIVITY" value ="startActivity">
+                                        <DESC>Use the intent to start a UI activity</DESC>
+                                        <PLATFORM>Android</PLATFORM>
+                                    </VALUE>
+                                    <VALUE constName="START_SERVICE" value ="startService">
+                                        <DESC>Use the intent to start a background service</DESC>
+                                        <PLATFORM>Android</PLATFORM>
+                                    </VALUE>
+                                </VALUES>
+                            </PARAM>
+                            <PARAM name="permission" type="STRING">
+                                <PLATFORM>Android</PLATFORM>
+                                <DESC>Permission used to send a broadcast intent</DESC>
+                            </PARAM>
+                            <PARAM name="action" type="STRING">
+                                <PLATFORM>Android</PLATFORM>
+                                <DESC>Intent action. See android docs for possible values: http://developer.android.com/reference/android/content/Intent.html#setAction(java.lang.String)</DESC>
+                            </PARAM>
+                            <PARAM name="categories" type="ARRAY">
+                                <PLATFORM>Android</PLATFORM>
+                                <DESC>List of intent categories. See android docs for possible values: http://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String)</DESC>
+                                <PARAM type="STRING"/>
+                            </PARAM>
+                            <PARAM name="appName" type="STRING">
+                                <DESC>Explicit name of the application on the device to run. It depends from platform. On iOS it is BundleURLScheme of executed application. On Android it is application package name.</DESC>
+                            </PARAM>
+                            <PARAM name="targetClass" type="STRING">
+                                <PLATFORM>Android</PLATFORM>
+                                <DESC>Explicit name of the class in the application wich will receive the intent. Must be specified if and only if 'appName' is defined.</DESC>
+                            </PARAM>
+                            <PARAM name="uri" type="STRING">
+                                <DESC>Open the application associated with the URI. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix usually executes the Web Browser installed on system and open URL in executed browser.</DESC>
+                            </PARAM>
+                            <PARAM name="mimeType" type="STRING">
+                                <DESC>MIME type of data defined in the intent.</DESC>
+                            </PARAM>
+                            <PARAM name="data" type="HASH">
+                                <DESC>Data which will be sent within the intent.</DESC>
+                            </PARAM>
+                         </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="HASH">
+                    <DESC>Same format as 'params' argument and some additional values described below.
+                          Android: Developer has to ensure that the response is addressed to this call because of possible conflicts in integer request code with other extensions.</DESC>
+                    <PARAMS>
+                        <PARAM name="responseCode" type="INTEGER">
+                            <PLATFORM>Android</PLATFORM>
+                            <DESC>Response code passed to Android Activity.setResult() method</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+            <METHOD name="startListening" hasCallback="mandatory" runInThread="none">
+                <DESC>Start listening for custom intents</DESC>
+                <CALLBACK type="HASH">
+                    <DESC>Same format as 'params' argument passed to Rho.Intent.send method
+                    Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
+                </CALLBACK>
+            </METHOD>
+            <METHOD name="stopListening" hasCallback="none">
+                <DESC>Stop listening for custom intents</DESC>
+            </METHOD>
+
+        </METHODS>
+        <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+        <PLATFORM>Android</PLATFORM>
+        <EXAMPLES >
+        </EXAMPLES>
+    </MODULE>
+</API>    
