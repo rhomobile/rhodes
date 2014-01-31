@@ -23,13 +23,13 @@ def build_extension()
   puts `#{cmdline}`
   
   fail "[#{cmdline}]" unless $? == 0
-
-  if !($targetext_dir.nil?) && $targetext_dir.is_a?(String) && $targetext_dir.length()>0
+  #WP8 extensions build to rhoruntime directly
+  if ENV['RHO_PLATFORM'] != 'wp8'&& !($targetext_dir.nil?) && $targetext_dir.is_a?(String) && $targetext_dir.length()>0
     $targetext_dir = File.join($targetext_dir,$extname) unless $copy_csharp_files
     mkdir_p $targetext_dir
     file_to_copy = File.join($target_temp_dir, $extname + ($copy_csharp_files ? "Lib" : "") + ".lib")
     puts "copy file #{file_to_copy} to #{$targetext_dir}"
-    cp_r file_to_copy, $targetext_dir if File.exist?(file_to_copy)
+    cp_r file_to_copy, $targetext_dir
   end
 
   if !($targetext_dir2.nil?) && $targetext_dir2.is_a?(String) && $targetext_dir2.length()>0
