@@ -153,6 +153,15 @@
                 </PARAMS>
             </METHOD>
 
+            <METHOD name="deleteObjects">
+                <DESC>deletes all object's according to specified conditions</DESC>
+                <PARAMS>
+                    <PARAM name="whatStr" type="STRING"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                </PARAMS>
+            </METHOD>
+
             <METHOD name="getCount">
                 <DESC>Returns total number of objects for the model</DESC>
                 <RETURN type="INTEGER"/>
@@ -167,10 +176,18 @@
                 <DESC>Returns array of objects for the given model queried according to the specified conditions</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING"/>
-                    <PARAM name="options" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH"/>
                     <PARAM name="quests" type="ARRAY"/>
-                    <PARAM name="select_attrs" type="ARRAY"/>
-                    <PARAM name="order_attrs" type="HASH"/>
+                    <PARAM name="selectAttrs" type="ARRAY"/>
+                    <PARAM name="orderAttrs" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="find_by_sql">
+                <DESC>Returns array of objects for the given model queried according to the specified SQL</DESC>
+                <PARAMS>
+                    <PARAM name="sqlQuery" type="STRING"/>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
@@ -191,7 +208,7 @@
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="buildCondWhereEx">
+            <METHOD name="buildComplexWhereCond">
                 <DESC>Aux function</DESC>
                 <PARAMS>
                     <PARAM name="attrKey" type="STRING"/>
@@ -202,6 +219,32 @@
                 <RETURN type="ARRAY"/>
             </METHOD>
 
+            <METHOD name="buildFindLimits">
+                <DESC>Aux function</DESC>
+                <PARAMS>
+                    <PARAM name="whatArg" type="STRING"/>
+                    <PARAM name="hashArgs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="buildFindOrder">
+                <DESC>Aux function</DESC>
+                <PARAMS>
+                    <PARAM name="order_attrs" type="ARRAY"/>
+                    <PARAM name="order_ops" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="buildSimpleWhereCond">
+                <DESC>Aux function</DESC>
+                <PARAMS>
+                    <PARAM name="what" type="STRING"/>
+                    <PARAM name="conditions" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
 
             <ALIASES>
                 <ALIAS new="count" existing="getCount"/>
