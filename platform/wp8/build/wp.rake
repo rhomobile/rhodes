@@ -216,7 +216,7 @@ namespace "build" do
                 if !extconf_wp8_lib['project_path'].nil?
                   setCSharpEnvironment( csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?) )
                   ENV['RHO_PROJECT_PATH'] = File.join(p, ext, extconf_wp8_lib['project_path'])
-                  Jake.run3('rake', File.join($startdir, 'lib/build/extensions'))
+                  Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
                 end
               end
             end
