@@ -27,6 +27,7 @@
 package com.rhomobile.rhodes.extmanager;
 
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesService;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -42,6 +43,7 @@ public interface IRhoListener {
     void onStop(RhodesActivity activity);
     void onDestroy(RhodesActivity activity);
     void onNewIntent(RhodesActivity activity, Intent intent);
+    void onNewIntent(RhodesService service, Intent intent);
     void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent);
     Dialog onCreateDialog(RhodesActivity activity, int id/*, Bundle args*/);
     void onConfigurationChanged(RhodesActivity activity, Configuration newConfig);

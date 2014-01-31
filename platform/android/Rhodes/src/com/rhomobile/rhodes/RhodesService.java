@@ -404,16 +404,14 @@ public class RhodesService extends Service {
 		String source = intent.getStringExtra(INTENT_SOURCE);
 		Set<String> categories = intent.getCategories();
 		Logger.I(TAG, "handleCommand: startId=" + startId + ", source=" + source);
-		if (source == null)
-			throw new IllegalArgumentException("Service command received from empty source");
-		
-		if (source.equals(BaseActivity.INTENT_SOURCE)) {
+
+		if (BaseActivity.INTENT_SOURCE.equals(source)) {
 			Logger.D(TAG, "New activity was created");
 		}
-		else if (source.equals(PushContract.INTENT_SOURCE)) {
+		else if (PushContract.INTENT_SOURCE.equals(source)) {
 			int type = intent.getIntExtra(PushContract.INTENT_TYPE, PushContract.INTENT_TYPE_UNKNOWN);
 			switch (type) {
-			case PushContract.INTENT_TYPE_REGISTRATION_ID:
+			case PushContract.INTENT_TYPE_REGISTRATION_ID: 
 			{
 				String id = intent.getStringExtra(PushContract.INTENT_REGISTRATION_ID);
                 String pushType = intent.getStringExtra(PushContract.INTENT_PUSH_CLIENT);
@@ -459,18 +457,8 @@ public class RhodesService extends Service {
             default:
                 Logger.W(TAG, "Unknown command type received from " + source + ": " + type);
             }
-        } else if (categories.contains(CATEGORY_APP_MESSAGE)) {
-            final Bundle extras = intent.getExtras();
-            Logger.D(TAG, "Received application message: " + extras);
-            RhodesApplication.runWhen(
-                    RhodesApplication.AppState.AppStarted,
-                    new RhodesApplication.StateHandler(true) {
-                        @Override
-                        public void run()
-                        {
-                            handleAppMessage(extras);
-                        }
-                    });
+        } else {
+            RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
         }
 	}
 	

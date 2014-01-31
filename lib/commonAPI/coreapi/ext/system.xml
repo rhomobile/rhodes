@@ -246,7 +246,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, Win32, Android</PLATFORM>
             </METHOD>
             <METHOD name="getApplicationMessage" hasCallback="optional">
-                <DESC>Return last message sent by another applcation by Rho.System.sendApplicationMessage. Rho.System.getApplicationMessage() and Rho.System.startApplicationMessageNotifications share single message queue. In synchronous mode (without callback) returns null if there is no message or application messages is not supported at current platform. In case a callback is passed the callback will be called just once as the message is received or immediately with first message in message queue.</DESC>
+                <DESC>Return last message sent by another application by Rho.System.sendApplicationMessage. Rho.System.getApplicationMessage() and Rho.System.startApplicationMessageNotifications share single message queue. In synchronous mode (without callback) returns null if there is no message or application messages is not supported at current platform. In case a callback is passed the callback will be called just once as the message is received or immediately with first message in message queue.</DESC>
                 <RETURN type="HASH">
                     <PARAMS>
                         <PARAM name="appName" type="STRING">
@@ -260,7 +260,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>Android, WM, iOS</PLATFORM>
             </METHOD>
             <METHOD name="startApplicationMessageNotifications" hasCallback="mandatory">
-                <DESC>Start message notifications sent by another applcation by Rho.System.sendApplicationMessage. Rho.System.getApplicationMessage() and Rho.System.startApplicationMessageNotifications share single message queue.</DESC>
+                <DESC>Start message notifications sent by another application by Rho.System.sendApplicationMessage. Rho.System.getApplicationMessage() and Rho.System.startApplicationMessageNotifications share single message queue.</DESC>
                 <CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="appName" type="STRING">
@@ -274,7 +274,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>Android, WM, iOS</PLATFORM>
             </METHOD>
             <METHOD name="stopApplicationMessageNotifications" hasCallback="none">
-                <DESC>Stop message notifications sent by another applcation by Rho.System.sendApplicationMessage.</DESC>
+                <DESC>Stop message notifications sent by another application by Rho.System.sendApplicationMessage.</DESC>
                 <PLATFORM>Android, WM, iOS</PLATFORM>
             </METHOD>
             <METHOD name="openUrl">
