@@ -1784,6 +1784,72 @@
 			</Filter>
 		</Filter>
 		<Filter
+			Name="Intent"
+			>
+			<Filter
+				Name="shared"
+				>
+				<File
+					RelativePath="..\..\Intent.xml"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(InputDir)shared/generated3"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\IntentImpl.cpp"
+					>
+				</File>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\..\shared\generated\intent_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\intent_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\intent_ruby_api.c"
+						>
+					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\IIntent.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\IntentBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Intent_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Intent_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\IntentBase.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
+			</Filter>
+		</Filter>
+		<Filter
 			Name="WebView"
 			>
 			<File
