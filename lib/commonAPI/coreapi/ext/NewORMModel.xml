@@ -35,6 +35,9 @@
             <PROPERTY name="freezed" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag">
                 <DESC>returns whether the model is freezed.</DESC>
             </PROPERTY>
+            <PROPERTY name="associations" type="STRING" usePropertyBag="accessorsViaPropertyBag">
+                <DESC>returns model's associations.</DESC>
+            </PROPERTY>
         </PROPERTIES>
 
         <METHODS>
@@ -72,6 +75,14 @@
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="sourceName" type="STRING"/>
                 </PARAMS>
+            </METHOD>
+
+            <METHOD name="getBelongsTo">
+                <DESC>returns info about model's relationships with other models</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
             </METHOD>
 
             <METHOD name="set">
@@ -252,6 +263,10 @@
                     <PARAM name="conditions" type="ARRAY"/>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="clear" access="STATIC">
+                <DESC>Very, very dangerious method - only to be used in specs!!!</DESC>
             </METHOD>
 
             <ALIASES>

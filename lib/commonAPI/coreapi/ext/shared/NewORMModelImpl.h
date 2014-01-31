@@ -91,6 +91,8 @@ namespace rho {
         void set(const rho::String& propName, const rho::String& propValue, rho::apiGenerator::CMethodResult& oResult);
         void enable(const rho::String& propName, rho::apiGenerator::CMethodResult& oResult);
         void setBelongsTo(const rho::String& propName, const rho::String& sourceName, rho::apiGenerator::CMethodResult&);
+        void getBelongsTo(const rho::String& propName, rho::apiGenerator::CMethodResult&);
+        
         void setModelProperty(const rho::String& propName, 
                               const rho::String& propType, 
                               const rho::String& option,
@@ -216,7 +218,7 @@ namespace rho {
         bool freezed_;
         Hashtable<rho::String, ModelPropertyDef> modelProperties_;
         Hashtable<rho::String, SchemaIndexDef > schemaIndices_;
-        Hashtable<rho::String, rho::String> belongsTo_;
+        Hashtable<rho::String, rho::Vector<rho::String> > belongsTo_;
     };
 
     class CNewORMModelSingletonImpl: public CNewORMModelSingletonBase
@@ -241,7 +243,7 @@ namespace rho {
         }
 
         virtual void getModel(const rho::String& source_name, rho::apiGenerator::CMethodResult& oResult) {
-            rho::String ret_model("");
+            //rho::String ret_model("");
             HashtablePtr<rho::String, CNewORMModelImpl*>& models = CNewORMModelImpl::models();
             HashtablePtr<rho::String, CNewORMModelImpl*>::iterator it = models.find(source_name);
             if(it != models.end())
@@ -249,6 +251,11 @@ namespace rho {
             else {
                 oResult = rho::apiGenerator::CMethodResult();
             }
+        }
+
+        virtual void clear(rho::apiGenerator::CMethodResult&) 
+        {  
+          CNewORMModelImpl::models().clear();
         }
     };
     

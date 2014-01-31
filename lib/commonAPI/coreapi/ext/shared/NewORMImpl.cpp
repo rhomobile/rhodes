@@ -395,7 +395,7 @@ public:
         }
     }
     
-    void databaseFullClientResetAndLogout(rho::apiGenerator::CMethodResult& oResult)
+    void databaseFullclientResetAndLogout(rho::apiGenerator::CMethodResult& oResult)
     {
         databaseFullReset(true, true, oResult);
         if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
