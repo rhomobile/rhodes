@@ -328,6 +328,7 @@ namespace "build" do
           puts "#{ext_config}"
           is_prebuilt = ext_config && ext_config[$current_platform] && ext_config[$current_platform]['exttype'] && ext_config[$current_platform]['exttype'] == 'prebuilt'
 		  project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
+          target_lib_name = Jake.getBuildProp('target_lib_name', ext_config) if ext_config
           
           next unless (File.exists?( File.join(extpath, "build.bat") ) || is_prebuilt || project_path)
 
@@ -382,8 +383,10 @@ namespace "build" do
                 ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
               end
 
-              ENV['RHO_EXT_NAME']=ext                
-
+              ENV['RHO_EXT_NAME']=ext
+              ENV['RHO_EXT_LIB_NAME'] = target_lib_name
+              #ENV["TARGET_EXT_DIR"] = File.join $startdir,'bin','target','wm','release','extensions'
+              
               if is_prebuilt
 				  file_mask = File.join(extpath, $current_platform + ($current_platform=='wm' ? '/lib' : '' ) + '/*.lib' ) 
  

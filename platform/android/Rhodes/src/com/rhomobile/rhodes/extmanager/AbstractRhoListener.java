@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.view.KeyEvent;
 
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesService;
 
 public abstract class AbstractRhoListener implements IRhoListener {
 
@@ -29,6 +30,9 @@ public abstract class AbstractRhoListener implements IRhoListener {
 
     @Override
     public void onNewIntent(RhodesActivity activity, Intent intent) { }
+
+    @Override
+    public void onNewIntent(RhodesService activity, Intent intent) { }
 
     @Override
     public void onActivityResult(RhodesActivity activity, int reqCode, int resCode, Intent intent) { }
