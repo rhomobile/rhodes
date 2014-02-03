@@ -58,6 +58,7 @@ public class NotificationFactory extends AbstractRhoListener implements INotific
 
     @Override
     public void onCreateApplication(IRhoExtManager extManager) {
+        NotificationFactorySingleton.setInstance(this);
         extManager.addRhoListener(this);
     }
 }
