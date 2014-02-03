@@ -467,8 +467,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				258D5F26189980BD007A6F14 /* NewORM */,
 				C53D6BCF1897FB40001E4FA2 /* Intent */,
+				258D5F26189980BD007A6F14 /* NewORM */,
 				C5F48AD6177DEAD20071BFE2 /* Push */,
 				C08B5DF01774C3D70021B5BA /* Notification */,
 				C5B99D7F174E688C00D8D02E /* File */,
@@ -1492,8 +1492,8 @@
 				C06A0F3C16F21C880065EF81 /* LogImpl.cpp in Sources */,
 				FA1C7FA416FBCAC50024FB5C /* application_api_init.cpp in Sources */,
 				FA1C7FA516FBCAC50024FB5C /* application_js_api.cpp in Sources */,
-				258D5F491899815C007A6F14 /* NewORM_ruby_wrap.cpp in Sources */,
 				C53284B51898001C0039193D /* IntentFactoryBase.m in Sources */,
+				258D5F491899815C007A6F14 /* NewORM_ruby_wrap.cpp in Sources */,
 				FA1C7FA616FBCAC50024FB5C /* application_ruby_api.c in Sources */,
 				FA1C7FAC16FBCAF00024FB5C /* Application_js_wrap.cpp in Sources */,
 				FA1C7FAD16FBCAF00024FB5C /* Application_ruby_wrap.cpp in Sources */,
@@ -1505,8 +1505,8 @@
 				C53D6BD71897FB99001E4FA2 /* intent_js_api.cpp in Sources */,
 				FAEB2B981743C498001AE032 /* NativeToolbarBase.m in Sources */,
 				FAEB2B9A1743C498001AE032 /* NativeToolbarFactoryBase.m in Sources */,
-				258D5F461899815C007A6F14 /* NewORMModel_js_wrap.cpp in Sources */,
 				C50050BF1898015C000C4A15 /* IntentFactorySingleton.m in Sources */,
+				258D5F461899815C007A6F14 /* NewORMModel_js_wrap.cpp in Sources */,
 				FAEB2B9C1743C498001AE032 /* NativeToolbarSingletonBase.m in Sources */,
 				FAEB2B9E1743C4AC001AE032 /* nativetoolbar_ruby_wrap.m in Sources */,
 				FAEB2BA01743C4B6001AE032 /* nativetoolbar_js_wrap.mm in Sources */,

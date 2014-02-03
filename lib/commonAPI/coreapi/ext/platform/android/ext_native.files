@@ -109,4 +109,3 @@ ext/platform/android/jni/Intent_impl.cpp
 ext/shared/generated/intent_api_init.cpp
 ext/shared/generated/intent_js_api.cpp
 ext/shared/generated/intent_ruby_api.c
-
