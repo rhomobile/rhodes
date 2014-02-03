@@ -1224,7 +1224,7 @@ namespace "build" do
          target_dir = File.join($app_path, "/project/iphone") + "/build/rhorunner.build/#{$configuration}-" +
             ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
       end
-      
+
       build_extension_libs($sdk, target_dir)
     end
 
@@ -1374,7 +1374,7 @@ namespace "build" do
       end
 
       ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
-      
+
       ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
 
       chdir $startdir
@@ -1413,14 +1413,12 @@ namespace "run" do
           $iphonespec = true
           #httpserver = false
           #httpserver = true if File.exist? "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server.rb"
-
           #if httpserver
           #  require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
           #  NetHTTPSpecs.start_server
           #end
 
           Jake.before_run_spec
-
           kill_iphone_simulator
 
           mkdir_p $tmpdir
@@ -1428,47 +1426,49 @@ namespace "run" do
           File.delete(log_name) if File.exist?(log_name)
 
           $iphone_end_spec = false
-
           Thread.new {
-                # run spec
-                rhorunner = File.join(File.join($app_path, "/project/iphone"),"build/#{$configuration}-iphonesimulator/rhorunner.app")
-                #iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
-                commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
-                puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
-                puts 'execute command : ' + commandis
-                system(commandis)
-                $iphone_end_spec = true
+            # run spec
+            rhorunner = File.join(File.join($app_path, "/project/iphone"),"build/#{$configuration}-iphonesimulator/rhorunner.app")
+            #iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
+            commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+            puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad) '
+            puts 'execute command : ' + commandis
+            system(commandis)
+            $iphone_end_spec = true
           }
 
           start = Time.now
-          puts "waiting for log"
+          puts "Waiting for iphone app log ..."
           while (!File.exist?(log_name)) && (!$iphone_end_spec)
             sleep(1)
           end
 
-          puts "start read log"
+          puts "Start reading log ..."
+          io = File.new(log_name, 'r:UTF-8')
           while !$iphone_end_spec do
-              io = File.new(log_name, "r")
-              io.each do |line|
-                  puts line
-                  if line.class.method_defined? "valid_encoding?"
-                      $iphone_end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
-                  else
-                      $iphone_end_spec = !Jake.process_spec_output(line)
-                  end
-                  break if $iphone_end_spec
+            io.each do |line|
+              puts line
+              if line.class.method_defined? "valid_encoding?"
+                $iphone_end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
+              else
+                $iphone_end_spec = !Jake.process_spec_output(line)
               end
-              io.close
-              sleep(5) unless $iphone_end_spec
+              # FIXME: Workaround to avoid endless loop in the case of System.exit
+              # seg. fault: (SEGV received in SEGV handler)
+              # Looking at log end marker from mspec runner
+              $iphone_end_spec = true if line =~ /MSpec runner stopped/
+              break if $iphone_end_spec
+            end
+            sleep(5) unless $iphone_end_spec
           end
+          io.close
 
-          puts 'spec logging is finished'
+          puts "Processing spec results ..."
           Jake.process_spec_results(start)
 
           File.delete(log_name) if File.exist?(log_name)
-          $stdout.flush
           # kill_iphone_simulator
-          # $stdout.flush
+          $stdout.flush
       end
 
       unless $dont_exit_on_failure

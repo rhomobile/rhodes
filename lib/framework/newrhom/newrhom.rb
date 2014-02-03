@@ -83,7 +83,6 @@ end
 
     def _load_model(model_name)
       return if !models.has_key?(model_name) || models[model_name].loaded
-      models[model_name].loaded = true
 
       puts "MZV_DEBUG: _load_model: #{model_name}, #{models[model_name].getProperty('file_path')}"
 
