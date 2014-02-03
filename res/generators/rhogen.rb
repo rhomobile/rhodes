@@ -252,6 +252,11 @@ module Rhogen
       template.source = 'app/Settings/wait.erb'
       template.destination = "#{name}/app/Settings/wait.erb"
     end
+    
+    file :androidmanifesterb do |file|
+      file.source = 'AndroidManifest.erb'
+      file.destination = "#{name}/AndroidManifest.erb"
+    end
 
 =begin
     directory :settings do |directory|

@@ -102,3 +102,10 @@ ext/shared/generated/newormmodel_api_init.cpp
 ext/shared/generated/newormmodel_js_api.cpp
 ext/shared/generated/newormmodel_ruby_api.c
 ext/shared/NewORMModelImpl.cpp
+ext/platform/android/generated/jni/Intent.cpp
+ext/platform/android/generated/jni/intent_ruby_wrap.cpp
+ext/platform/android/generated/jni/intent_js_wrap.cpp
+ext/platform/android/jni/Intent_impl.cpp
+ext/shared/generated/intent_api_init.cpp
+ext/shared/generated/intent_js_api.cpp
+ext/shared/generated/intent_ruby_api.c
