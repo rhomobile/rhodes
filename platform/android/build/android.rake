@@ -297,7 +297,9 @@ namespace "config" do
     $srcdir = File.join $tmpdir,'assets' #File.join($bindir, "RhoBundle")
 
     #$rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
-    $rhomanifesterb = File.join $androidpath, "Rhodes", "AndroidManifest.xml.erb"
+    $rhomanifesterb = File.join($app_path, $app_config['android']['manifest_template']) unless $app_config["android"].nil? || $app_config['android']['manifest_template'].nil?
+    $rhomanifesterb = File.join $androidpath, "Rhodes", "AndroidManifest.xml.erb" if $rhomanifesterb.nil?
+    
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
 
     $rhores = File.join $androidpath, 'Rhodes','res'

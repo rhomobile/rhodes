@@ -1,6 +1,6 @@
 package com.rhomobile.rhodes.api;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 public interface IMethodResult {
@@ -8,7 +8,7 @@ public interface IMethodResult {
     void set(int res);
     void set(double res);
     void set(String res);
-    void set(List<Object> res);
+    void set(Collection<Object> res);
     void set(Map<String, Object> res);
     
     void collect(Object value);

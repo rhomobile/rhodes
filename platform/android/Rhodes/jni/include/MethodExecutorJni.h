@@ -7,9 +7,12 @@ namespace apiGenerator {
 
 class MethodResultJni;
 
+enum ForceThread { NOT_FORCE_THREAD, FORCE_CURRENT_THREAD, FORCE_NEW_THREAD, FORCE_MODULE_THREAD, FORCE_UI_THREAD };
+
 class MethodExecutorJni
 {
     static const char * const METHOD_EXECUTOR_CLASS;
+
 
     static jclass s_MethodExecutorClass;
     static jmethodID s_midRun;
@@ -22,7 +25,7 @@ protected:
     static jclass loadClass(JNIEnv* env, const char* const name);
 
 public:
-    static void run(JNIEnv* env, jobject jTask, MethodResultJni& result, bool thread, bool uiThread);
+    static void run(JNIEnv* env, jobject jTask, MethodResultJni& result, ForceThread forceThread);
 
     virtual ~MethodExecutorJni() {}
 };
