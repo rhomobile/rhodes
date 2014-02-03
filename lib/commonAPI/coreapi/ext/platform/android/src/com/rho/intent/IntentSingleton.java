@@ -11,6 +11,7 @@ import java.util.Set;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.rhomobile.rhodes.Logger;
@@ -116,12 +117,12 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
         //--- Fill intent fields ---
         
         if (action != null) { 
-            intent.setAction((String)action);
+            intent.setAction(action);
         }
 
         if (categories != null) {
             for(String category : categories) {
-                intent.addCategory((String)category);
+                intent.addCategory(category);
             }
         }
         
@@ -129,23 +130,35 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
             if (appName == null) {
                 throw new RuntimeException("Wrong intent appName: cannot be nil if targetClass is set");
             }
-            intent.setClassName((String)appName, (String)targetClass);
+            intent.setClassName(appName, targetClass);
         }
         else if (appName != null){
-            intent.setPackage((String)appName);
+            intent.setPackage(appName);
         }
 
         if (uri != null) {
-            Uri data = Uri.parse((String)uri);
+            Uri data = Uri.parse(uri);
             if (mime == null) {
                 intent.setData(data);
             }
             else {
-                intent.setDataAndTypeAndNormalize(data, mime);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                {
+                    intent.setDataAndTypeAndNormalize(data, mime);
+                }
+                else {
+                    intent.setDataAndType(data, mime);
+                }
             }
         }
         else if (mime != null) {
-            intent.setTypeAndNormalize((String)mime);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            {
+                intent.setTypeAndNormalize(mime);
+            }
+            else {
+                intent.setType(mime);
+            }
         }
         
         if (extras != null) {
@@ -211,7 +224,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     }
     
     @Override
-    public void send(Map<String, Object> params, IMethodResult result) {
+    public void send(Map<String, Object> params, final IMethodResult result) {
         Intent intent = makeIntent(params);
         Object type = params.get(HK_INTENT_TYPE);
         if (BROADCAST.equals(type)) {
@@ -234,7 +247,14 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                 int request;
                 synchronized (localMethodResults) {
                     request = lastRequest;
-                    Map.Entry<Integer, IMethodResult> entry = new AbstractMap.SimpleEntry<Integer, IMethodResult>(Integer.valueOf(request), result);
+                    final Integer finalKey = Integer.valueOf(request);
+                    Map.Entry<Integer, IMethodResult> entry = new Map.Entry<Integer, IMethodResult>() {
+                        Integer key = finalKey;
+                        IMethodResult value = result;
+                        @Override public Integer getKey() { return key; }
+                        @Override public IMethodResult getValue() { return value; }
+                        @Override public IMethodResult setValue(IMethodResult v) { return result; }
+                    };
                     localMethodResults.add(entry);
                     ++lastRequest;
                 }
