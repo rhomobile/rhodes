@@ -16,6 +16,7 @@ iphone:
 wp8:
   productid: '<%=@productid%>'
 android:
+  manifest_template: 'AndroidManifest.erb'
   version: 2.3.3
 
 wm:

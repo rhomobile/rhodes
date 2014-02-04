@@ -839,6 +839,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             listener.onNewIntent(activity, intent);
         }
     }
+    public void onNewIntent(RhodesService service, Intent intent) {
+        for (IRhoListener listener: mListeners) {
+            listener.onNewIntent(service, intent);
+        }
+    }
     public void onActivityResult(RhodesActivity activity, int reqCode, int resCode, Intent intent) {
         for (IRhoListener listener: mListeners) {
             listener.onActivityResult(activity, reqCode, resCode, intent);

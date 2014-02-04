@@ -12,47 +12,10 @@ extern "C" void Init_Notification_API(void);
 extern "C" void Init_Notification(void)
 {
     RAWTRACE(__FUNCTION__);
+    RAWTRACE("Initializing API");
+    Init_Notification_API();
+    RAWTRACE("Init_Notification succeeded");
 
-    JNIEnv *env = jnienv();
-    if(env)
-    {
-        jclass cls = rho_find_class(env, NOTIFICATION_FACTORY_CLASS);
-        if(!cls)
-        {
-            RAWLOG_ERROR1("Failed to find java class: %s", NOTIFICATION_FACTORY_CLASS);
-            return;
-        }
-        jmethodID midFactory = env->GetMethodID(cls, "<init>", "()V");
-        if(!midFactory)
-        {
-            RAWLOG_ERROR1("Failed to get constructor for java class %s", NOTIFICATION_FACTORY_CLASS);
-            return;
-        }
-        jobject jFactory = env->NewObject(cls, midFactory);
-        if(env->IsSameObject(jFactory, NULL))
-        {
-            RAWLOG_ERROR1("Failed to create %s instance", NOTIFICATION_FACTORY_CLASS);
-            return;
-        }
-        
-        RAWTRACE("Initializing Java factory");
-
-        rho::CNotificationBase::setJavaFactory(env, jFactory);
-
-        RAWTRACE("Deleting JNI reference");
-
-        env->DeleteLocalRef(jFactory);
-
-        RAWTRACE("Initializing API");
-
-        Init_Notification_API();
-
-        RAWTRACE("Init_Notification succeeded");
-    }
-    else
-    {
-        RAWLOG_ERROR("Failed to initialize Notification API: jnienv() is failed");
-    }
     RHODESAPP().getExtManager().requireRubyFile("RhoNotificationApi");
 }
 

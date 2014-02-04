@@ -105,7 +105,9 @@
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="propertyType" type="STRING"/>
-                    <PARAM name="propOption" type="STRING"/>
+                    <PARAM name="propOption" type="STRING" default="">
+                        <CAN_BE_NIL/>
+                    </PARAM>
                 </PARAMS>
             </METHOD>
 
@@ -175,10 +177,28 @@
             <METHOD name="deleteObjects">
                 <DESC>deletes all object's according to specified conditions</DESC>
                 <PARAMS>
-                    <PARAM name="whatStr" type="STRING"/>
                     <PARAM name="strOptions" type="HASH"/>
                     <PARAM name="quests" type="ARRAY"/>
                 </PARAMS>
+            </METHOD>
+
+            <METHOD name="deleteObjectsPropertyBagByCondHash">
+                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions</DESC>
+                <PARAMS>
+                    <PARAM name="conditions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="deleteObjectsPropertyBagByCondArray">
+                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions</DESC>
+                <PARAMS>
+                    <PARAM name="conditions" type="STRING"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
             </METHOD>
 
             <METHOD name="getCount">
@@ -199,6 +219,29 @@
                     <PARAM name="quests" type="ARRAY"/>
                     <PARAM name="selectAttrs" type="ARRAY"/>
                     <PARAM name="orderAttrs" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="findObjectsPropertyBagByCondHash">
+                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions</DESC>
+                <PARAMS>
+                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="conditions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="selectAttrs" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="findObjectsPropertyBagByCondArray">
+                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions</DESC>
+                <PARAMS>
+                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="conditions" type="STRING"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="selectAttrs" type="ARRAY"/>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
