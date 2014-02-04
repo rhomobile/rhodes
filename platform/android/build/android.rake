@@ -2031,23 +2031,23 @@ def run_as_spec(device_flag, uninstall_app)
   end
 
   puts "Start reading log ..."
-  io = File.new(log_name, 'r:UTF-8')
-  end_spec = false
-  while !end_spec do
-    io.each do |line|
-      puts line
-      if line.class.method_defined? "valid_encoding?"
-        end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
-      else
-        end_spec = !Jake.process_spec_output(line)
+  File.open(log_name, 'r:UTF-8') do |io|
+    end_spec = false
+    while !end_spec do
+      io.each do |line|
+        puts line
+        if line.class.method_defined? "valid_encoding?"
+          end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
+        else
+          end_spec = !Jake.process_spec_output(line)
+        end
+        end_spec = true if line =~ /MSpec runner stopped/
+        break if end_spec
       end
-      end_spec = true if line =~ /MSpec runner stopped/
-      break if end_spec
+      break unless AndroidTools.application_running(device_flag, $app_package_name)
+      sleep(5) unless end_spec
     end
-    break unless AndroidTools.application_running(device_flag, $app_package_name)
-    sleep(5) unless end_spec
   end
-  io.close
 
   puts "Processing spec results ..."
   Jake.process_spec_results(start)
