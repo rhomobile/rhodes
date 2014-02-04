@@ -19,17 +19,7 @@ namespace rho {
         
         virtual void send( const rho::Hashtable<rho::String, rho::String>& params, rho::apiGenerator::CMethodResult& oResult) {
 			// TODO: support all other appropriate params
-			String appName = params.get("appName");
-			String data = params.get("data");
-			if (appName.length() <= 0) {
-				oResult.setError("\"appName\" can't be empty");
-				return;
-			}
-			if (data.length() <= 0) {
-				oResult.setError("\"data\" can't be empty");
-				return;
-			}
-			CSystemFactory::getSystemSingletonS()->sendApplicationMessage(appName, data, oResult);
+			CSystemFactory::getSystemSingletonS()->sendApplicationMessage(params.get("appName"), params.get("data"), oResult);
         } 
 
         virtual void startListening(rho::apiGenerator::CMethodResult& oResult) {
