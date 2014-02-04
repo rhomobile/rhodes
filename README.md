@@ -1,9 +1,9 @@
 Rhodes
 ===
 
-[Rhodes](http://github.com/rhomobile/rhodes) is a framework for building locally executing, device-optimized mobile applications for smartphone devices. These applications are optimized for interacting with transactional enterprise application backends (with synced local data via [RhoConnect](http://rhomobile.com/products/rhoconnect)). Rhodes is available for iOS, Android, Windows Mobile, Symbian, and Research in Motion (Blackberry) smartphones.  
+[Rhodes](http://github.com/rhomobile/rhodes) is a framework for building locally executing, device-optimized mobile applications for smartphone devices. These applications are optimized for interacting with transactional enterprise application backends (with synced local data via [RhoConnect](http://rhomobile.com/products/rhoconnect)). Rhodes is available for iOS, Android, Windows Mobile, Windows Phone 8, Windows CE, and BIG Windows (XP, 7, 8).  
 
-Rhodes is available as an open source product under the MIT license.  For developers interested a commercial license is still [available](http://rhomobile.com/products/rhodes/license/).
+Rhodes is available as an open source product under the MIT license.  Commercial support for Rhodes is included in the [RhoMobile Suite](www.motorolasolutions.com/rhomobile).
 
 ## Introduction  
 
@@ -41,6 +41,6 @@ There is a [tutorial available](http://docs.rhomobile.com/rhodes/tutorial) on th
 
 The [Rhodes Developer Reference](http://docs.rhomobile.com/rhodes/introduction) for full documentation on the Rhodes framework.
 
-For further questions [email us](mailto:info@rhomobile.com) or join the [Google Group](http://groups.google.com/group/rhomobile).
+For further questions join us on [Launchpad](https://developer.motorolasolutions.com/community/rhomobile-suite).
 
-For questions on commercial support contact [our sales team](mailto:sales@rhomobile.com).
+For questions on commercial support contact [our sales team](mailto:sales@rhomobile.com) or reach out to the [local Motorola Solution Office](http://www.motorolasolutions.com/US-EN/About/Company+Overview/Office+Locations).
