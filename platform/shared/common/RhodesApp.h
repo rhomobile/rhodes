@@ -221,7 +221,7 @@ public:
     void callBarcodeCallback(String strCallbackUrl, const String& strBarcode, bool isError);
     void callCallbackWithData(String strCallbackUrl, String strBody, const String& strCallbackData, bool bWaitForResponse);
     void callCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse);
-    void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
+    void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel, const String& strFileName=NULL );
     void callSignatureCallback(String strCallbackUrl, const String& strSignaturePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 	void callBluetoothCallback(String strCallbackUrl, const char* body);
@@ -339,7 +339,7 @@ char* rho_http_normalizeurl(const char* szUrl);
 void rho_http_free(void* data);
 
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
-    const char* strError, int bCancel );
+        const char* strError, int bCancel ,const char* strFileFullPath);
 void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath, 
   const char* strError, int bCancel );
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
