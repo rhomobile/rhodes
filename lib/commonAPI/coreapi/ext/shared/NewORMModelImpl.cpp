@@ -605,19 +605,16 @@ void rho::CNewORMModelImpl::find_by_sql(const rho::String& sqlQuery, rho::apiGen
     oResult.set(retVals);
 }
 
-void rho::CNewORMModelImpl::deleteObjects(const rho::String& what, const Hashtable<rho::String, rho::String>& strOptions, const Vector<rho::String>& quests, rho::apiGenerator::CMethodResult& oResult)
+void rho::CNewORMModelImpl::deleteObjects(const Hashtable<rho::String, rho::String>& strOptions, const Vector<rho::String>& quests, rho::apiGenerator::CMethodResult& oResult)
 {
-    if(what.empty()) {
-        oResult.setError("findObjects: Invalid Empty First Argument passed.");
-        return;
-    }
     getProperty("source_id", oResult);
     rho::String source_id = oResult.getString();
     getProperty("sync_type", oResult);
     bool is_sync_source = (oResult.getString() != "none");
     db::CDBAdapter& db = _get_db(oResult);
     db.startTransaction();
-    findObjectsFixedSchema(what, strOptions, quests, rho::Vector<rho::String>(), rho::Vector<rho::String>(), oResult);
+    LOG(INFO) + " we are here in findObjects " + strOptions.size() + ", " + quests.size();
+    findObjectsFixedSchema("all", strOptions, quests, rho::Vector<rho::String>(), rho::Vector<rho::String>(), oResult);
     if(oResult.isError()) {
         db.rollback();
         return;
@@ -642,15 +639,10 @@ void rho::CNewORMModelImpl::deleteObjects(const rho::String& what, const Hashtab
     db.endTransaction();
 }
 
-void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const rho::String& what, 
-                    const Hashtable<rho::String, rho::String>& conditions, 
+void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const Hashtable<rho::String, rho::String>& conditions, 
                     const Hashtable<rho::String, rho::String>& strOptions, 
                     rho::apiGenerator::CMethodResult& oResult)
 {
-    if(what.empty()) {
-        oResult.setError("findObjects: Invalid Empty First Argument passed.");
-        return;
-    }
     getProperty("source_id", oResult);
     rho::String source_id = oResult.getString();
     getProperty("sync_type", oResult);
@@ -658,7 +650,7 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const rho::String
     db::CDBAdapter& db = _get_db(oResult);
     db.startTransaction();
     Vector<rho::String> selectAttrs;
-    findObjectsPropertyBagByCondHash(what, conditions, strOptions, selectAttrs, oResult);
+    findObjectsPropertyBagByCondHash("all", conditions, strOptions, selectAttrs, oResult);
     if(oResult.isError()) {
         db.rollback();
         return;
@@ -683,16 +675,11 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const rho::String
     db.endTransaction();
 }
 
-void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondArray(const rho::String& what, 
-                                                                const rho::String& conditions,
+void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondArray(const rho::String& conditions,
                                     const Vector<rho::String>& quests,
                                     const Hashtable<rho::String, rho::String>& strOptions, 
                                     rho::apiGenerator::CMethodResult& oResult)
 {
-    if(what.empty()) {
-        oResult.setError("findObjects: Invalid Empty First Argument passed.");
-        return;
-    }
     getProperty("source_id", oResult);
     rho::String source_id = oResult.getString();
     getProperty("sync_type", oResult);
@@ -700,7 +687,7 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondArray(const rho::Strin
     db::CDBAdapter& db = _get_db(oResult);
     db.startTransaction();
     Vector<rho::String> selectAttrs;
-    findObjectsPropertyBagByCondArray(what, conditions, quests, strOptions, selectAttrs, oResult);
+    findObjectsPropertyBagByCondArray("all", conditions, quests, strOptions, selectAttrs, oResult);
     if(oResult.isError()) {
         db.rollback();
         return;
