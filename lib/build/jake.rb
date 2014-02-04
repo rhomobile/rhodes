@@ -222,14 +222,9 @@ class Jake
   end
 
   def self.process_spec_output(line)
+      # Print MSpec example description
       puts line if line =~ /\| - it/ or line =~ /\| describe/ or line =~ /\|   - /
-      puts line if line =~ /Jasmine specRunner\|/ # FIXME: BAB
-
-      #strip android trace tag
-      if line =~ /^I\/APP\s+\(\s+[0-9]+\)\:\s+(.*)/
-        line = $1
-      end
-
+      line = $1 if line =~ /^I\/APP\s+\(\s+[0-9]+\)\:\s+(.*)/
       if $getdump
         if line =~ /^I/
           $getdump = false
@@ -248,7 +243,7 @@ class Jake
       elsif line =~ /\| \*\*\*Passed:\s+(.*)/ # | ***Passed:
         $passed += $1.to_i
       end
-
+      # Faillog for MSpec
       if line =~ /\| FAIL:/
         line = line.gsub(/I.*APP\|/,"\n\n***")
         if !$faillog.include?(line)
@@ -256,7 +251,14 @@ class Jake
         end
         $getdump = true
       end
-
+      # Faillog for Jusmine
+      if line =~ /I.* Jasmine specRunner\| .*Failed\./
+        line = line.gsub(/I.*Jasmine specRunner\|/,"\n\n***")
+        if !$faillog.include?(line)
+          $faillog << line
+        end
+        $getdump = true
+      end
       return true
   end
 
