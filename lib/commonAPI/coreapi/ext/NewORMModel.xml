@@ -35,6 +35,9 @@
             <PROPERTY name="freezed" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag">
                 <DESC>returns whether the model is freezed.</DESC>
             </PROPERTY>
+            <PROPERTY name="associations" type="STRING" usePropertyBag="accessorsViaPropertyBag">
+                <DESC>returns model's associations.</DESC>
+            </PROPERTY>
         </PROPERTIES>
 
         <METHODS>
@@ -74,6 +77,14 @@
                 </PARAMS>
             </METHOD>
 
+            <METHOD name="getBelongsTo">
+                <DESC>returns info about model's relationships with other models</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
             <METHOD name="set">
                 <DESC>Sets model's property to value with additional processing for :sync property</DESC>
                 <PARAMS>
@@ -94,8 +105,18 @@
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="propertyType" type="STRING"/>
-                    <PARAM name="propOption" type="STRING"/>
+                    <PARAM name="propOption" type="STRING" default="">
+                        <CAN_BE_NIL/>
+                    </PARAM>
                 </PARAMS>
+            </METHOD>
+
+            <METHOD name="getModelProperty">
+                <DESC>returns info about model's field property</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
             </METHOD>
 
             <METHOD name="setSchemaIndex">
@@ -156,10 +177,28 @@
             <METHOD name="deleteObjects">
                 <DESC>deletes all object's according to specified conditions</DESC>
                 <PARAMS>
-                    <PARAM name="whatStr" type="STRING"/>
                     <PARAM name="strOptions" type="HASH"/>
                     <PARAM name="quests" type="ARRAY"/>
                 </PARAMS>
+            </METHOD>
+
+            <METHOD name="deleteObjectsPropertyBagByCondHash">
+                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions</DESC>
+                <PARAMS>
+                    <PARAM name="conditions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="deleteObjectsPropertyBagByCondArray">
+                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions</DESC>
+                <PARAMS>
+                    <PARAM name="conditions" type="STRING"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
             </METHOD>
 
             <METHOD name="getCount">
@@ -180,6 +219,29 @@
                     <PARAM name="quests" type="ARRAY"/>
                     <PARAM name="selectAttrs" type="ARRAY"/>
                     <PARAM name="orderAttrs" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="findObjectsPropertyBagByCondHash">
+                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions</DESC>
+                <PARAMS>
+                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="conditions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="selectAttrs" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="findObjectsPropertyBagByCondArray">
+                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions</DESC>
+                <PARAMS>
+                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="conditions" type="STRING"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="selectAttrs" type="ARRAY"/>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
@@ -244,6 +306,10 @@
                     <PARAM name="conditions" type="ARRAY"/>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="clear" access="STATIC">
+                <DESC>Very, very dangerious method - only to be used in specs!!!</DESC>
             </METHOD>
 
             <ALIASES>
