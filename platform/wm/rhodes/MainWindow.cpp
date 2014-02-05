@@ -1163,7 +1163,7 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 	RHODESAPP().m_cameraOpened = true;
 #endif
-	status = camera.takePicture(this->m_hWnd,image_uri,file_name);
+	status = camera.takePicture(this->m_hWnd,image_uri);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 	RHODESAPP().m_cameraOpened = false;
 #endif
@@ -1174,7 +1174,7 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 #endif
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
-       (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE, rho::common::convertToStringA(file_name));
+       (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
 
     free ((void *)lParam);
 	return 0;
@@ -1212,10 +1212,10 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 	TCHAR file_name[MAX_PATH];
     HRESULT status = S_OK;
 	Camera camera;
-	status = camera.selectPicture(this->m_hWnd,image_uri,file_name);
+	status = camera.selectPicture(this->m_hWnd,image_uri);
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
-         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE, rho::common::convertToStringA(file_name));
+         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
     
     free ((void *)lParam);
     
