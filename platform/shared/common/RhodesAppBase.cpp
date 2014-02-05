@@ -156,22 +156,22 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
         const rho::String appRootTag = "%APP_PATH%";
 
         String::size_type findIt = strUrl.find(appRootTag);
+        String retPath = strUrl;
 
         if (findIt != String::npos)
         {
-            String retPath = strUrl;
             retPath.erase(findIt, appRootTag.size());
             retPath.insert(findIt, getAppRootPath());
-#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8)
+        }
+#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP)
+			if ( !String_startsWith(retPath, "file:///")) 
+				retPath.insert( 5, "/");
+
+			return retPath;
+#elif defined(OS_WP8)
             return retPath.substr(7);
 #else
             return retPath;
-#endif
-        }
-#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8)
-        return strUrl.substr(7);
-#else
-        return strUrl;
 #endif
 
     }
