@@ -91,9 +91,13 @@ namespace rho {
         void set(const rho::String& propName, const rho::String& propValue, rho::apiGenerator::CMethodResult& oResult);
         void enable(const rho::String& propName, rho::apiGenerator::CMethodResult& oResult);
         void setBelongsTo(const rho::String& propName, const rho::String& sourceName, rho::apiGenerator::CMethodResult&);
+        void getBelongsTo(const rho::String& propName, rho::apiGenerator::CMethodResult&);
+        
         void setModelProperty(const rho::String& propName, 
                               const rho::String& propType, 
                               const rho::String& option,
+                              rho::apiGenerator::CMethodResult&);
+        void getModelProperty(const rho::String& propName, 
                               rho::apiGenerator::CMethodResult&);
         void setSchemaIndex(const rho::String& indexName, const rho::Vector<rho::String>& indexColumns, bool bUniqueIndex, rho::apiGenerator::CMethodResult& oResult);
 
@@ -129,11 +133,28 @@ namespace rho {
                          const rho::Vector<rho::String>& select_attrs,
                          const rho::Vector<rho::String>& order_attrs,
                          rho::apiGenerator::CMethodResult& oResult);
+        void findObjectsPropertyBagByCondHash(const rho::String& what, 
+                    const Hashtable<rho::String, rho::String>& conditions, 
+                    const Hashtable<rho::String, rho::String>& strOptions,
+                    const Vector<rho::String>& selectAttrs, 
+                    rho::apiGenerator::CMethodResult& oResult);
+        void findObjectsPropertyBagByCondArray(const rho::String& what, 
+                    const rho::String& conditions,
+                    const Vector<rho::String>& quests, 
+                    const Hashtable<rho::String, rho::String>& strOptions,
+                    const Vector<rho::String>& selectAttrs, 
+                    rho::apiGenerator::CMethodResult& oResult);
         void find_by_sql(const rho::String& sqlQuery, rho::apiGenerator::CMethodResult& oResult);
-        void deleteObjects(const rho::String& what, 
-                           const Hashtable<rho::String, rho::String>& strOptions, 
+        void deleteObjects(const Hashtable<rho::String, rho::String>& strOptions, 
                            const Vector<rho::String>& quests, 
                            rho::apiGenerator::CMethodResult& oResult);
+        void deleteObjectsPropertyBagByCondHash(const Hashtable<rho::String, rho::String>& conditions,
+                    const Hashtable<rho::String, rho::String>& strOptions, 
+                    rho::apiGenerator::CMethodResult& oResult);
+        void deleteObjectsPropertyBagByCondArray(const rho::String& conditions,
+                    const Vector<rho::String>& quests, 
+                    const Hashtable<rho::String, rho::String>& strOptions, 
+                    rho::apiGenerator::CMethodResult& oResult);
 
         // Aux methods
         void _findCount(const rho::String& conditionsStr, 
@@ -169,12 +190,6 @@ namespace rho {
                          const rho::Vector<rho::String>& select_attrs,
                          const rho::Vector<rho::String>& order_attrs,
                          rho::apiGenerator::CMethodResult& oResult);
-        void findObjectsPropertyBag(const rho::String& what, 
-                         const Hashtable<rho::String, rho::String>& strOptions,
-                         const rho::Vector<rho::String>& quests,
-                         const rho::Vector<rho::String>& select_attrs,
-                         const rho::Vector<rho::String>& order_atts,
-                         rho::apiGenerator::CMethodResult& oResult);
         void _deleteObject(db::CDBAdapter& db,
                            const bool is_sync_source, 
                            const rho::String& source_id,
@@ -190,7 +205,7 @@ namespace rho {
                                                         const Hashtable<rho::String, rho::String>& attrs, 
                                                         Vector<rho::String>& quests) const;
         rho::String _make_create_sql_script() const;
-        rho::String _create_sql_schema_indices() const;
+        rho::Vector<rho::String> _create_sql_schema_indices() const;
         rho::String _make_insert_or_update_attr_sql_script(const rho::String srcId, 
                                                                 const rho::String& objId, 
                                                                 const rho::String& attrKey,
@@ -198,6 +213,7 @@ namespace rho {
                                                                 Vector<rho::String>& quests);
         bool _get_object_attrs(const rho::String& objId, 
                                 Hashtable<rho::String, rho::String>& attrs,
+                                const Hashtable<rho::String, rho::String>& selectAttrs, 
                                 rho::apiGenerator::CMethodResult& oResult);
 
         static int _get_partition_start_id(const rho::String& partition);
@@ -214,7 +230,7 @@ namespace rho {
         bool freezed_;
         Hashtable<rho::String, ModelPropertyDef> modelProperties_;
         Hashtable<rho::String, SchemaIndexDef > schemaIndices_;
-        Hashtable<rho::String, rho::String> belongsTo_;
+        Hashtable<rho::String, rho::Vector<rho::String> > belongsTo_;
     };
 
     class CNewORMModelSingletonImpl: public CNewORMModelSingletonBase
@@ -239,7 +255,7 @@ namespace rho {
         }
 
         virtual void getModel(const rho::String& source_name, rho::apiGenerator::CMethodResult& oResult) {
-            rho::String ret_model("");
+            //rho::String ret_model("");
             HashtablePtr<rho::String, CNewORMModelImpl*>& models = CNewORMModelImpl::models();
             HashtablePtr<rho::String, CNewORMModelImpl*>::iterator it = models.find(source_name);
             if(it != models.end())
@@ -247,6 +263,11 @@ namespace rho {
             else {
                 oResult = rho::apiGenerator::CMethodResult();
             }
+        }
+
+        virtual void clear(rho::apiGenerator::CMethodResult&) 
+        {  
+          CNewORMModelImpl::models().clear();
         }
     };
     

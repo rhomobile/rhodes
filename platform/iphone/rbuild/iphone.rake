@@ -1444,29 +1444,29 @@ namespace "run" do
           end
 
           puts "Start reading log ..."
-          io = File.new(log_name, 'r:UTF-8')
-          while !$iphone_end_spec do
-            io.each do |line|
-              puts line
-              if line.class.method_defined? "valid_encoding?"
-                $iphone_end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
-              else
-                $iphone_end_spec = !Jake.process_spec_output(line)
+          File.open(log_name, 'r+') { |io|
+            while !$iphone_end_spec do
+              io.each do |line|
+                puts line
+                if line.class.method_defined? "valid_encoding?"
+                  $iphone_end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
+                else
+                  $iphone_end_spec = !Jake.process_spec_output(line)
+                end
+                # FIXME: Workaround to avoid endless loop in the case of System.exit
+                # seg. fault: (SEGV received in SEGV handler)
+                # Looking at log end marker from mspec runner
+                $iphone_end_spec = true if line =~ /MSpec runner stopped/
+                break if $iphone_end_spec
               end
-              # FIXME: Workaround to avoid endless loop in the case of System.exit
-              # seg. fault: (SEGV received in SEGV handler)
-              # Looking at log end marker from mspec runner
-              $iphone_end_spec = true if line =~ /MSpec runner stopped/
-              break if $iphone_end_spec
+              sleep(3) unless $iphone_end_spec
             end
-            sleep(5) unless $iphone_end_spec
-          end
-          io.close
+          }
 
           puts "Processing spec results ..."
           Jake.process_spec_results(start)
 
-          File.delete(log_name) if File.exist?(log_name)
+          #File.delete(log_name) if File.exist?(log_name)
           # kill_iphone_simulator
           $stdout.flush
       end
