@@ -62,7 +62,10 @@ end
 multitask TARGETLIB => OBJ
 
 file V4JAR => [TARGETDIR, :config] do
-    cp File.join(ENV['ANDROID_SDK'],'extras','android','support','v4','android-support-v4.jar'), TARGETDIR
+    v4jar = Dir.glob(File.join(ENV['ANDROID_SDK'],'extras','android','**','v4','android-support-v4.jar'))
+    raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
+    v4jar = v4jar.first
+    cp v4jar, TARGETDIR
 end
 
 task :default => [TARGETLIB, V4JAR]
