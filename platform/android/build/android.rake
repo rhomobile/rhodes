@@ -871,20 +871,20 @@ namespace "build" do
 
     task :libsqlite => "config:android" do
       srcdir = File.join($shareddir, "sqlite")
-      objdir = $objdir["sqlite"]
-      libname = $libname["sqlite"]
-      sourcelist = File.join($builddir, 'libsqlite_build.files')
-
-      libdir = File.dirname(libname) 
-      mkdir_p libdir unless File.directory? libdir
-
       args = ["-I\"#{srcdir}\"", "-I\"#{$shareddir}\""]
 
-      sources = get_sources sourcelist
-      objects = get_objects sources, objdir
-
-      cc_build sources, objdir, args or exit 1
-      cc_ar libname, objects or exit 1
+      ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
+      ENV['SOURCELIST'] = File.join($builddir, 'libsqlite_build.files')
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["RHO_ROOT"] = $startdir
+      ENV["RHO_INC"] = $appincdir
+      ENV["TARGETPATH"] = File.dirname($libname["sqlite"])
+      ENV['TARGETLIB'] = File.basename($libname["sqlite"])
+      ENV['TEMP_FILES_DIR'] = $objdir["sqlite"]
+      ENV['BUILDARGS'] = args.join(' ')
+    
+      sh %{rake -f #{File.join($builddir,'Rakefile')} --trace}
     end
 
     task :libcurl => "config:android" do
@@ -897,12 +897,6 @@ namespace "build" do
       #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
 
       srcdir = File.join $shareddir, "curl", "lib"
-      objdir = $objdir["curl"]
-      libname = $libname["curl"]
-      sourcelist = File.join($builddir, 'libcurl_build.files')
-
-      libdir = File.dirname(libname) 
-      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-DHAVE_CONFIG_H"
@@ -910,21 +904,22 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{$shareddir}\""
 
-      sources = get_sources sourcelist
-      objects = get_objects sources, objdir
-
-      cc_build sources, objdir, args or exit 1
-      cc_ar libname, objects or exit 1
+      ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
+      ENV['SOURCELIST'] = File.join($builddir, 'libcurl_build.files')
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["RHO_ROOT"] = $startdir
+      ENV["RHO_INC"] = $appincdir
+      ENV["TARGETPATH"] = File.dirname($libname["curl"])
+      ENV['TARGETLIB'] = File.basename($libname["curl"])
+      ENV['TEMP_FILES_DIR'] = $objdir["curl"]
+      ENV['BUILDARGS'] = args.join(' ')
+    
+      sh %{rake -f #{File.join($builddir,'Rakefile')} --trace}
     end
 
     task :libruby => "config:android" do
       srcdir = File.join $shareddir, "ruby"
-      objdir = $objdir["ruby"]
-      libname = $libname["ruby"]
-      sourcelist = File.join($builddir, 'libruby_build.files')
-
-      libdir = File.dirname(libname) 
-      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-Wno-uninitialized"
@@ -937,79 +932,83 @@ namespace "build" do
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
 
-      sources = get_sources sourcelist
-      objects = get_objects sources, objdir
-
-      cc_build sources, objdir, args or exit 1
-      cc_ar libname, objects or exit 1
+      ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
+      ENV['SOURCELIST'] = File.join($builddir, 'libruby_build.files')
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["RHO_ROOT"] = $startdir
+      ENV["RHO_INC"] = $appincdir
+      ENV["TARGETPATH"] = File.dirname($libname["ruby"])
+      ENV['TARGETLIB'] = File.basename($libname["ruby"])
+      ENV['TEMP_FILES_DIR'] = $objdir["ruby"]
+      ENV['BUILDARGS'] = args.join(' ')
+    
+      sh %{rake -f #{File.join($builddir,'Rakefile')} --trace}
     end
 
     task :libjson => "config:android" do
       srcdir = File.join $shareddir, "json"
-      objdir = $objdir["json"]
-      libname = $libname["json"]
-      sourcelist = File.join($builddir, 'libjson_build.files')
-
-      libdir = File.dirname(libname) 
-      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
 
-      sources = get_sources sourcelist
-      objects = get_objects sources, objdir
-
-      cc_build sources, objdir, args or exit 1
-      cc_ar libname, objects or exit 1
+      ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
+      ENV['SOURCELIST'] = File.join($builddir, 'libjson_build.files')
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["RHO_ROOT"] = $startdir
+      ENV["RHO_INC"] = $appincdir
+      ENV["TARGETPATH"] = File.dirname($libname["json"])
+      ENV['TARGETLIB'] = File.basename($libname["json"])
+      ENV['TEMP_FILES_DIR'] = $objdir["json"]
+      ENV['BUILDARGS'] = args.join(' ')
+    
+      sh %{rake -f #{File.join($builddir,'Rakefile')} --trace}
     end
 
     task :librholog => "config:android" do
       srcdir = File.join $shareddir, "logging"
-      objdir = $objdir["rholog"]
-      libname = $libname["rholog"]
-      sourcelist = File.join($builddir, 'librholog_build.files')
-
-      libdir = File.dirname(libname) 
-      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}/..\""
 
-      sources = get_sources sourcelist
-      objects = get_objects sources, objdir
-
-      cc_build sources, objdir, args or exit 1
-      cc_ar libname, objects or exit 1
+      ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
+      ENV['SOURCELIST'] = File.join($builddir, 'librholog_build.files')
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["RHO_ROOT"] = $startdir
+      ENV["RHO_INC"] = $appincdir
+      ENV["TARGETPATH"] = File.dirname($libname['rholog'])
+      ENV['TARGETLIB'] = File.basename($libname['rholog'])
+      ENV['TEMP_FILES_DIR'] = $objdir['rholog']
+      ENV['BUILDARGS'] = args.join(' ')
+    
+      sh %{rake -f #{File.join($builddir,'Rakefile')} --trace}
     end
 
     task :librhomain => "config:android" do
       srcdir = $shareddir
-      objdir = $objdir["rhomain"]
-      libname = $libname["rhomain"]
-      sourcelist = File.join($builddir, 'librhomain_build.files')
-
-      libdir = File.dirname(libname) 
-      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{$commonapidir}\""
 
-      sources = get_sources sourcelist
-      objects = get_objects sources, objdir
-
-      cc_build sources, objdir, args or exit 1
-      cc_ar libname, objects or exit 1
+      ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
+      ENV['SOURCELIST'] = File.join($builddir, 'librhomain_build.files')
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["RHO_ROOT"] = $startdir
+      ENV["RHO_INC"] = $appincdir
+      ENV["TARGETPATH"] = File.dirname($libname['rhomain'])
+      ENV['TARGETLIB'] = File.basename($libname['rhomain'])
+      ENV['TEMP_FILES_DIR'] = $objdir['rhomain']
+      ENV['BUILDARGS'] = args.join(' ')
+    
+      sh %{rake -f #{File.join($builddir,'Rakefile')} --trace}
     end
 
     task :librhocommon => "config:android" do
-      objdir = $objdir["rhocommon"]
-      libname = $libname["rhocommon"]
-      sourcelist = File.join($builddir, 'librhocommon_build.files')
-
-      libdir = File.dirname(libname) 
-      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{$shareddir}\""
@@ -1017,53 +1016,62 @@ namespace "build" do
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
 
-      sources = get_sources sourcelist
-      objects = get_objects sources, objdir
-
-      cc_build sources, objdir, args or exit 1
-      cc_ar libname, objects or exit 1
+      ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
+      ENV['SOURCELIST'] = File.join($builddir, 'librhocommon_build.files')
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["RHO_ROOT"] = $startdir
+      ENV["RHO_INC"] = $appincdir
+      ENV["TARGETPATH"] = File.dirname($libname['rhocommon'])
+      ENV['TARGETLIB'] = File.basename($libname['rhocommon'])
+      ENV['TEMP_FILES_DIR'] = $objdir['rhocommon']
+      ENV['BUILDARGS'] = args.join(' ')
+    
+      sh %{rake -f #{File.join($builddir,'Rakefile')} --trace}
     end
 
     task :librhodb => "config:android" do
       srcdir = File.join $shareddir, "db"
-      objdir = $objdir["rhodb"]
-      libname = $libname["rhodb"]
-      sourcelist = File.join($builddir, 'librhodb_build.files')
-
-      libdir = File.dirname(libname) 
-      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
 
-      sources = get_sources sourcelist
-      objects = get_objects sources, objdir
-
-      cc_build sources, objdir, args or exit 1
-      cc_ar libname, objects or exit 1
+      ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
+      ENV['SOURCELIST'] = File.join($builddir, 'librhodb_build.files')
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["RHO_ROOT"] = $startdir
+      ENV["RHO_INC"] = $appincdir
+      ENV["TARGETPATH"] = File.dirname($libname['rhodb'])
+      ENV['TARGETLIB'] = File.basename($libname['rhodb'])
+      ENV['TEMP_FILES_DIR'] = $objdir['rhodb']
+      ENV['BUILDARGS'] = args.join(' ')
+    
+      sh %{rake -f #{File.join($builddir,'Rakefile')} --trace}
     end
 
     task :librhosync => "config:android" do
       srcdir = File.join $shareddir, "sync"
-      objdir = $objdir["rhosync"]
-      libname = $libname["rhosync"]
-      sourcelist = File.join($builddir, 'librhosync_build.files')
-
-      libdir = File.dirname(libname) 
-      mkdir_p libdir unless File.directory? libdir
 
       args = []
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
 
-      sources = get_sources sourcelist
-      objects = get_objects sources, objdir
-
-      cc_build sources, objdir, args or exit 1
-      cc_ar libname, objects or exit 1
+      ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
+      ENV['SOURCELIST'] = File.join($builddir, 'librhosync_build.files')
+      ENV["ANDROID_NDK"] = $androidndkpath
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["RHO_ROOT"] = $startdir
+      ENV["RHO_INC"] = $appincdir
+      ENV["TARGETPATH"] = File.dirname($libname['rhosync'])
+      ENV['TARGETLIB'] = File.basename($libname['rhosync'])
+      ENV['TEMP_FILES_DIR'] = $objdir['rhosync']
+      ENV['BUILDARGS'] = args.join(' ')
+    
+      sh %{rake -f #{File.join($builddir,'Rakefile')} --trace}
     end
 
     task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
@@ -1133,30 +1141,6 @@ namespace "build" do
         $stdout.flush
       end
 
-      # Generate rhocaps.inc
-      #rhocaps_inc = File.join($appincdir, 'rhocaps.inc')
-      #caps_already_defined = []
-      #if File.exists? rhocaps_inc
-      #  File.open(rhocaps_inc, 'r') do |f|
-      #    while line = f.gets
-      #      next unless line =~ /^\s*RHO_DEFINE_CAP\s*\(\s*([A-Z_]*)\s*\)\s*\s*$/
-      #      caps_already_defined << $1.downcase
-      #    end
-      #  end
-      #end
-      #
-      #if caps_already_defined.sort.uniq != ANDROID_PERMISSIONS.keys.sort.uniq
-      #  puts "Need to regenerate rhocaps.inc"
-      #  $stdout.flush
-      #  File.open(rhocaps_inc, 'w') do |f|
-      #    ANDROID_PERMISSIONS.keys.sort.each do |k|
-      #      f.puts "RHO_DEFINE_CAP(#{k.upcase})"
-      #    end
-      #  end
-      #else
-      #  puts "No need to regenerate rhocaps.inc"
-      #  $stdout.flush
-      #end
     end
 
     task :librhodes => [:libs, :extensions, :genconfig] do
