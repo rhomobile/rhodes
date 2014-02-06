@@ -34,7 +34,7 @@ def debug_read_cmd(io,wait)
 end
 
 def execute_cmd(cmd, advanced)
-  cmd = unescape(cmd.gsub(/\+/,' ')) if advanced
+  cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
   debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Executing: #{cmd.inspect}")
   result = ""
   error = '0';
