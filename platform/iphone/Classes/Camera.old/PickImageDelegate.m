@@ -368,7 +368,7 @@
         [self useImage:image];
     }
     else {
-        rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1, "");
+        rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
     }
     // Remove the picker interface and release the picker object. 
     [picker dismissModalViewControllerAnimated:YES];
@@ -406,7 +406,7 @@
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
 { 
     // Notify view about cancel
-    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1, "");
+    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
     
     // Remove the picker interface and release the picker object. 
     [picker dismissModalViewControllerAnimated:YES]; 
@@ -421,7 +421,7 @@
 #ifdef __IPHONE_3_2
 // UIPopoverControllerDelegate implementation
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1, "");
+    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
 }
 #endif // __IPHONE_3_2
 
