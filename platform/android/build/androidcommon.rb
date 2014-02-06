@@ -71,7 +71,7 @@ def get_objects(sources, objdir)
     sources.map { |src| File.join(objdir, File.basename(src) + ".o") }    
 end
 
-def detect_toolchain(ndkpath)
+def detect_toolchain(ndkpath, abi)
   $ndktools = nil
   $ndkabi = "unknown"
   $ndkgccver = "unknown"
@@ -84,38 +84,57 @@ def detect_toolchain(ndkpath)
       ndkhostvariants = [`uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, `uname -s`.downcase!.chomp! + '-x86']
   end
 
-  ["arm-linux-androideabi-4.6"].each do |abi|
-    variants = []
-    ndkhostvariants.each do |ndkhost|
-      variants << File.join(ndkpath,'build','prebuilt',ndkhost,abi)
-      variants << File.join(ndkpath,'toolchains',abi,'prebuilt',ndkhost)
+  toolchain = 'unknown-toolchain'
+  if abi == 'arm'
+    toolchain = 'arm-linux-androideabi-4.6'
+  elsif abi == 'x86'
+    toolchain = 'x86-4.6'
+  elsif abi == 'mips'
+    toolchain = 'mipsel-linux-android-4.6'
+  else
+    raise "Unknown ABI: {abi}";
+  end
+
+  variants = []
+  ndkhostvariants.each do |ndkhost|
+      variants << File.join(ndkpath,'build','prebuilt',ndkhost,toolchain)
+      variants << File.join(ndkpath,'toolchains',toolchain,'prebuilt',ndkhost)
       variants.each do |variant|
-        puts "Check toolchain path: #{variant}" if USE_TRACES    
+        puts "Check toolchain path: #{variant}" #if USE_TRACES    
         next unless File.directory? variant
         $ndktools = variant
-        $ndkabi = abi.gsub(/^(.*)-([^-]*)$/, '\1')
-        $ndkgccver = abi.gsub(/^(.*)-([^-]*)$/, '\2')
+        $ndkabi = toolchain.gsub(/^(.*)-([^-]*)$/, '\1')
+        $ndkgccver = toolchain.gsub(/^(.*)-([^-]*)$/, '\2')
+        
+        $ndkabi = 'i686-linux-android' if $ndkabi == 'x86'
+
+        puts "Toolchain is detected: #{$ndktools}, abi: #{$ndkabi}, version: #{$ndkgccver}"# if USE_TRACES
+        
+        ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
+            name = tool.gsub('+', 'p')
+            eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
+        end
+
         return
       end
-    end
-    break unless $ndktools.nil?
   end
+
   if $ndktools.nil?
     raise "Can't detect NDK toolchain path (corrupted NDK installation?)"
   end
+  
 end
 
-def setup_ndk(ndkpath,apilevel)
-  puts "setup_ndk(#{ndkpath}, #{apilevel})" if USE_TRACES
+def setup_ndk(ndkpath,apilevel,abi)
+  puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})"# if USE_TRACES
   
-  detect_toolchain ndkpath
+  detect_toolchain ndkpath, abi
 
   variants = []
   variants << "platforms"
   variants << File.join("build", "platforms")
 
   api_levels = Array.new
-  variant = "platforms"
 
   variants.each do |variant|
     puts "Check NDK folder: #{variant}" if USE_TRACES
@@ -140,7 +159,7 @@ def setup_ndk(ndkpath,apilevel)
   end
 
   variants.each do |variant|
-    sysroot = File.join(ndkpath, variant, "android-#{last_api_level}/arch-arm")
+    sysroot = File.join(ndkpath, variant, "android-#{last_api_level}/arch-#{abi}")
     next unless File.directory? sysroot
     $ndksysroot = sysroot
     break
@@ -150,11 +169,6 @@ def setup_ndk(ndkpath,apilevel)
   end
   puts "NDK sysroot: #{$ndksysroot}"
 
-  ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
-    name = tool.gsub('+', 'p')
-    eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
-  end
-  
   $androidndkpath = ndkpath unless $androidndkpath
 
   # Detect rlim_t
@@ -179,11 +193,9 @@ def cc_def_args
     args = []
     args << "--sysroot"
     args << $ndksysroot
-    #args << "-fvisibility=hidden"
     args << "-fPIC"
     args << "-Wall"
     args << "-Wextra"
-    #args << "-Wno-psabi" if $ndkgccver != "4.2.1"
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
     args << "-mandroid"

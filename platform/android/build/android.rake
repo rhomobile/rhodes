@@ -458,7 +458,7 @@ namespace "config" do
       $google_classpath = AndroidTools::get_addon_classpath(google_jars, $found_api_level)
     end
 
-    setup_ndk($androidndkpath, $found_api_level)
+    setup_ndk($androidndkpath, $found_api_level, 'arm')
 
     $std_includes = File.join $androidndkpath, "sources", "cxx-stl", "stlport", "stlport"
     unless File.directory? $std_includes
