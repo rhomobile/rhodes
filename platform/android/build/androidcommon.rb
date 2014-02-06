@@ -189,7 +189,6 @@ def setup_ndk(ndkpath,apilevel,abi)
 end
 
 def cc_def_args
-  if $cc_def_args_val.nil?
     args = []
     args << "--sysroot"
     args << $ndksysroot
@@ -217,14 +216,11 @@ def cc_def_args
       args << "-Wvla"
       args << "-Wstack-protector"
     end
-    $cc_def_args_val = args
-  end
-  $cc_def_args_val.dup
+    args
 end
 
 def cpp_def_args
-  if $cpp_def_args_val.nil?
-    args = []
+    args = cc_def_args()
     args << "-fvisibility-inlines-hidden"
     args << "-fno-exceptions"
     args << "-fno-rtti"
@@ -234,9 +230,7 @@ def cpp_def_args
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include','backward')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')}\""
-    $cpp_def_args_val = args
-  end
-  $cpp_def_args_val.dup
+    args
 end
 
 def get_def_args(filename)
