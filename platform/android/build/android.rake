@@ -1281,7 +1281,7 @@ namespace "build" do
       #cc_run($stripbin, ['"'+File.join(destdir, File.basename(libname))+'"'])
         args = ['-f', File.join($builddir,'Rakefile'), "link:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        Jake.run3("rake #{args.join(' ')}")
       end
     end
 
