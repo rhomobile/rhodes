@@ -821,7 +821,7 @@ void CRhodesApp::callCallbackWithJsonBody( const char* szCallback, const char* s
 }
 
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
-    const String& strError, boolean bCancel ) 
+    const String& strError, boolean bCancel )
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
     String strBody;
@@ -833,6 +833,7 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
             strBody = "status=error&message=" + strError;
     }else
         strBody = "status=ok&image_uri=db%2Fdb-files%2F" + strImagePath;
+
 
     strBody += "&rho_callback=1";
     getNetRequest().pushData( strCallbackUrl, strBody, null );

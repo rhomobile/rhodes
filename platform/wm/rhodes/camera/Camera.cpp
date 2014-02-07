@@ -82,7 +82,7 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
     if (S_OK == hResult) 
     {
         LOG(INFO) + "takePicture get file: " + shcc.szFile;
-
+        
         LPTSTR fname = get_file_name( shcc.szFile, imageDir.c_str() );
 		if (fname) {
 
@@ -189,28 +189,34 @@ bool Camera::copy_file(LPCTSTR from, LPCTSTR to)
 
 LPTSTR Camera::get_file_name(LPCTSTR from, LPCTSTR to) 
 {
-	int len = wcslen(to);
-
-	LPCTSTR fname = from+len;
-	if ( (wcsncmp(L"\\",fname,1)==0) || 
-		 (wcsncmp(L"/",fname,1)==0) ) {
-		fname++;
-	}
-	len = wcslen(fname);
-	wchar_t* name = (wchar_t*) malloc(len*sizeof(wchar_t)+1);
-	wcscpy(name,fname);
-
+	int len; 
+    StringW destinationString = convertToStringW(from);
+	size_t found;
+	len = destinationString.find_last_of('\\');
+	LOG(INFO) + "Test Check: " + len;
+	StringW name = destinationString.substr(len+1);
+	int length1 = wcslen(name.c_str());
+    wchar_t* returnName = (wchar_t*) malloc(length1*sizeof(wchar_t)+1); 
+	wcscpy(returnName,name.c_str());
+     len = wcslen(to);
 	if (wcsncmp( to, from, len )!=0) 
     {
         StringW strPathTo = to;
         strPathTo += L"\\";
-        strPathTo += fname;
+        strPathTo += name;
 
         if ( !copy_file( from, strPathTo.c_str() ) )
             return 0;
-    }
+    } 
+    if (wcsncmp( to, from, len )!=0) 
+	{
+		if( DeleteFile(from) != 0 )
+    LOG(INFO) + "File Deletion Failed " ;
+  else
+    LOG(INFO) + "File Deleted Successfull " ;
+	}
 
-	return name;
+	return returnName;
 }
 
 StringW Camera::generate_filename(LPCTSTR szExt) 
