@@ -277,39 +277,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         return Capabilities.SHARED_RUNTIME_ENABLED;
     }
 
-    private String mLicenseToken;
-    private String mLicenseCompany;
-    private String mAppName;
-    private LicenseStatus mLicenseStatus = LicenseStatus.LICENSE_MISSED;
-
-    public void setLicenseCredentials(String token, String company, String appName) {
-        Logger.T(TAG, "New license credentials");
-        Logger.D(TAG, "License token: " + token);
-        Logger.D(TAG, "License company: " + company);
-        Logger.D(TAG, "App name: " + appName);
-
-        mLicenseToken = token;
-        mLicenseCompany = company;
-        mAppName = appName;
-        
-        mLicenseStatus = checkLicence();
-    }
-
-    public LicenseStatus getLicenseStatus() {
-        return mLicenseStatus;
-    }
-
-    private LicenseStatus checkLicence() {
-        if (mLicenseToken == null || mLicenseToken.length() == 0) {
-            return LicenseStatus.LICENSE_MISSED;
-        }
-        if (RhodesService.isMotorolaLicencePassed(mLicenseToken, mLicenseCompany, mAppName)) {
-            return LicenseStatus.LICENSE_PASSED;
-        }
-        else {
-            return LicenseStatus.LICENSE_FAILED;
-        }
-    }
 
     //-----------------------------------------------------------------------------------------------------------------
     // Rhodes implementation related methods are below
