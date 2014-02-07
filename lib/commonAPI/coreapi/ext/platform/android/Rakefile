@@ -31,7 +31,6 @@ OBJDIR_ARM = File.join(OBJDIR,'arm')
 OBJDIR_x86 = File.join(OBJDIR,'x86')
 OBJDIR_MIPS = File.join(OBJDIR,'mips')
 
-    
 SRC = get_sources File.join($curdir, 'ext_native.files')
 
 OBJ_ARM = FileList.new(get_objects(SRC, OBJDIR_ARM))
@@ -45,8 +44,6 @@ TARGETDIR_MIPS = File.join(TARGETDIR,'mips')
 TARGETLIB_ARM = File.join(TARGETDIR_ARM,'libcoreapi.a')
 TARGETLIB_x86 = File.join(TARGETDIR_x86,'libcoreapi.a')
 TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,'libcoreapi.a')
-
-V4JAR = File.join(TARGETDIR, 'android-support-v4.jar')
 
 cd '../../..'
 
@@ -105,8 +102,8 @@ file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
 end
 multitask TARGETLIB_MIPS => OBJ_MIPS
 
-file V4JAR => TARGETDIR do
-    cp File.join(ENV['ANDROID_SDK'],'extras','android','support','v4','android-support-v4.jar'), TARGETDIR
-end
+task :arm => TARGETLIB_ARM
+task :x86 => TARGETLIB_x86
+task :mips => TARGETLIB_MIPS
 
-task :default => [TARGETLIB_ARM, V4JAR]
+task :default => [:arm, :x86]

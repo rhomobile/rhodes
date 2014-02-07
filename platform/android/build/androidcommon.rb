@@ -398,10 +398,21 @@ def cc_ar(libname, objects)
   FileUtils.uptodate?(libname, objects) or cc_run($arbin, ["crs", "\"#{libname}\""] + objects.collect { |x| "\"#{x}\"" })
 end
 
+def get_stl_link_args(abi)
+  args = []
+  args << "-L#{File.join($androidndkpath, "sources","cxx-stl","gnu-libstdc++",$ndkgccver,'libs',abi)}"
+  args << "-lgnustl_static"
+  args
+end
+
 def cc_link(outname, objects, additional = nil, deps = nil)
   dependencies = objects
   dependencies += deps unless deps.nil?
   return true if FileUtils.uptodate? outname, dependencies
+
+  puts '>>>>>>>>>>>>>>>'
+  puts additional.inspect
+  
   args = []
   if $ndkabi == "arm-eabi"
     args << "-nostdlib"
@@ -420,8 +431,6 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "\"#{outname}\""
   args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  args << "-L#{File.join($androidndkpath, "sources","cxx-stl","gnu-libstdc++",$ndkgccver,'libs','armeabi')}"
-  args << "-lgnustl_static"
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
   args << "#{$ndksysroot}/usr/lib/libc.so"
