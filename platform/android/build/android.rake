@@ -882,7 +882,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), abi]
+        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
       end
