@@ -14,6 +14,7 @@ For APNS or GCM:
 For RhoConnect Push Service:
     :::ruby
     extensions: ["rhoconnect-push", "rhoconnect-client"]
+    For Win32(XPE) MSMQ(Microsoft Message Queue) and .Net Framework 3.5 must be installed on device to get it work.
 
 ## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
