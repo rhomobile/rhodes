@@ -1245,7 +1245,11 @@ namespace "build" do
         rlibs.map! { |x| "-l#{x}" }
 
         elibs = []
-        extlibs = Dir.glob(File.join($app_builddir,'**',abi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")
+
+        abi_hacked = abi
+        abi_hacked = 'armeabi' if abi == 'arm'
+
+        extlibs = Dir.glob(File.join($app_builddir,'**',abi_hacked,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")
 
         extlibs.each do |lib|
           args << "-L\"#{File.dirname(lib)}\""
