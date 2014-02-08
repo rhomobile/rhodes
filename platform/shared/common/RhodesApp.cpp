@@ -52,9 +52,6 @@
 #include <algorithm>
 
 // licence lib
-#ifdef OS_ANDROID
-#include "../../../res/libs/motorolalicence/android/MotorolaLicence.h" 
-#endif
 #ifdef OS_MACOSX
 #include "../../../res/libs/motorolalicence/iphone/MotorolaLicence.h" 
 #endif

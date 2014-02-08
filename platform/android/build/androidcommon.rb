@@ -100,7 +100,7 @@ def detect_toolchain(ndkpath, abi)
       variants << File.join(ndkpath,'build','prebuilt',ndkhost,toolchain)
       variants << File.join(ndkpath,'toolchains',toolchain,'prebuilt',ndkhost)
       variants.each do |variant|
-        puts "Check toolchain path: #{variant}" #if USE_TRACES    
+        puts "Check toolchain path: #{variant}" if USE_TRACES    
         next unless File.directory? variant
         $ndktools = variant
         $ndkabi = toolchain.gsub(/^(.*)-([^-]*)$/, '\1')
@@ -108,7 +108,7 @@ def detect_toolchain(ndkpath, abi)
         
         $ndkabi = 'i686-linux-android' if $ndkabi == 'x86'
 
-        puts "Toolchain is detected: #{$ndktools}, abi: #{$ndkabi}, version: #{$ndkgccver}"# if USE_TRACES
+        puts "Toolchain is detected: #{$ndktools}, abi: #{$ndkabi}, version: #{$ndkgccver}" if USE_TRACES
         
         ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
             name = tool.gsub('+', 'p')
@@ -126,7 +126,7 @@ def detect_toolchain(ndkpath, abi)
 end
 
 def setup_ndk(ndkpath,apilevel,abi)
-  puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})"# if USE_TRACES
+  puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})" if USE_TRACES
   
   detect_toolchain ndkpath, abi
 
@@ -410,9 +410,6 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   dependencies += deps unless deps.nil?
   return true if FileUtils.uptodate? outname, dependencies
 
-  puts '>>>>>>>>>>>>>>>'
-  puts additional.inspect
-  
   args = []
   if $ndkabi == "arm-eabi"
     args << "-nostdlib"
@@ -497,13 +494,8 @@ def java_build(jarpath, buildpath, classpath, srclists)
       fullsrclist = fullsrclist.path
     end
     
-    #puts "jar deps:"
-    #puts deps.inspect
-
     if FileUtils.uptodate?(jarpath, deps)
       puts "#{jarpath} is uptodate: true"
-      #puts deps.inspect
-      #puts ""
       return
     end
 
