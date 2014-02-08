@@ -102,8 +102,10 @@ file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
 end
 multitask TARGETLIB_MIPS => OBJ_MIPS
 
-task :arm => TARGETLIB_ARM
-task :x86 => TARGETLIB_x86
-task :mips => TARGETLIB_MIPS
+namespace 'arch' do
+  task :arm => TARGETLIB_ARM
+  task :x86 => TARGETLIB_x86
+  task :mips => TARGETLIB_MIPS
+end
 
-task :default => [:arm, :x86]
+task :default => ["arch:arm", "arch:x86"]
