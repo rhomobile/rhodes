@@ -561,9 +561,9 @@ namespace "config" do
         $app_config['extensions'].delete('rhoelementsext')
         $app_config['extensions'].delete('rhoelements')
         $app_config['extensions'].delete('shared-runtime')
+        $app_config['extensions'].delete('motoapi')
           
         $app_config['capabilities'].delete('motorola')
-        $app_config['capabilities'].delete('motoroladev')
         $app_config['capabilities'].delete('motorola_browser')
         $app_config['capabilities'].delete('webkit_browser')
         $app_config['capabilities'].delete('shared_runtime')
@@ -863,15 +863,15 @@ namespace "build" do
               args << '--trace' if USE_TRACES
             end
             
-            puts Jake.run2(builddata[1], args, {:directory=>builddata[0], :hideerrors=>true, :hide_output=>true})
-            $stdout.flush
+            cc_run(builddata[1], args, builddata[0], false) or raise "Extension build failed: #{builddata[0]}"
           else
             currentdir = Dir.pwd()
             Dir.chdir builddata[0]
             sh %{$SHELL #{builddata[1]} #{abi}}
+            result = $?
             Dir.chdir currentdir
+            raise "Cannot build #{builddata[0]}" unless result.success?
           end
-          raise "Cannot build #{builddata[0]}" unless $?.success?
           puts "Extension build completed"
         end
       end
@@ -931,7 +931,7 @@ namespace "build" do
       $abis.each do |abi|
         args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        cc_run('rake', args, nil, false) or raise "Build failed: sqlite"
       end
     end
 
@@ -966,7 +966,7 @@ namespace "build" do
       $abis.each do |abi|
         args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        cc_run('rake', args, nil, false) or raise "Build failed: curl"
       end
     end
 
@@ -998,7 +998,7 @@ namespace "build" do
       $abis.each do |abi|
         args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        cc_run('rake', args, nil, false) or raise "Build failed: ruby"
       end
     end
 
@@ -1023,7 +1023,7 @@ namespace "build" do
       $abis.each do |abi|
         args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        cc_run('rake', args, nil, false) or raise "Build failed: json"
       end
     end
 
@@ -1047,7 +1047,7 @@ namespace "build" do
       $abis.each do |abi|
         args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        cc_run('rake', args, nil, false) or raise "Build failed: rholog"
       end
     end
 
@@ -1072,7 +1072,7 @@ namespace "build" do
       $abis.each do |abi|
         args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        cc_run('rake', args, nil, false) or raise "Build failed: rhomain"
       end
     end
 
@@ -1098,7 +1098,7 @@ namespace "build" do
       $abis.each do |abi|
         args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        cc_run('rake', args, nil, false) or raise "Build failed: rhocommon"
       end
     end
 
@@ -1124,7 +1124,7 @@ namespace "build" do
       $abis.each do |abi|
         args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        cc_run('rake', args, nil, false) or raise "Build failed: rhodb"
       end
     end
 
@@ -1150,7 +1150,7 @@ namespace "build" do
       $abis.each do |abi|
         args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
         args << '--trace' if USE_TRACES
-        puts Jake.run2('rake', args, {:directory=>'.', :hideerrors=>true, :hide_output=>true})
+        cc_run('rake', args, nil, false) or raise "Build failed: rhosync"
       end
     end
 
@@ -1299,7 +1299,8 @@ namespace "build" do
 
         args = ['-f', File.join($builddir,'Rakefile'), "link:#{abi}"]
         args << '--trace' if USE_TRACES
-        Jake.run3("rake #{args.join(' ')}")
+        cc_run('rake', args, nil, false) or raise "Build failed: rhodes"
+        #Jake.run3("rake #{args.join(' ')}")
       end
     end
 
@@ -1595,7 +1596,7 @@ namespace "build" do
     task :genrjava => [:manifest, :resources] do
       mkdir_p $app_rjava_dir
 
-      puts "Generate initial R.java at #{$app_rjava_dir} >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      puts "Generate initial R.java at #{$app_rjava_dir}"
 
       args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
       Jake.run($aapt, args)

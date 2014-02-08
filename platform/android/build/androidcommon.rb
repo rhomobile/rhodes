@@ -282,12 +282,11 @@ def cc_deps(filename, objdir, additional)
   out.split(/\s+/)
 end
 
-def cc_run(command, args, chdir = nil)
+def cc_run(command, args, chdir = nil, coloring = true)
   save_cwd = FileUtils.pwd
   FileUtils.cd chdir unless chdir.nil?
   argv = [command]
   argv += args
-  #cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
   cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '' + x + '' : x }.join(' ')
 
   out = StringIO.new
@@ -306,9 +305,9 @@ def cc_run(command, args, chdir = nil)
         error = false
       end
 
-      if error
+      if error && coloring
         out.write "\e[31m#{data}\e[0m"
-      elsif warning
+      elsif warning && coloring
         out.write "\e[33m#{data}\e[0m"
       else
         out.puts data
