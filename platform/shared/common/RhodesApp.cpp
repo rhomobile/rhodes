@@ -818,7 +818,7 @@ void CRhodesApp::callCallbackWithJsonBody( const char* szCallback, const char* s
 }
 
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
-    const String& strError, boolean bCancel, const String& strFileName )
+    const String& strError, boolean bCancel )
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
     String strBody;
@@ -829,7 +829,8 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
         else
             strBody = "status=error&message=" + strError;
     }else
-        strBody = "status=ok&image_uri=db%2Fdb-files%2F" + strImagePath + "&filename=" + strFileName;
+        strBody = "status=ok&image_uri=db%2Fdb-files%2F" + strImagePath;
+
 
     strBody += "&rho_callback=1";
     getNetRequest().pushData( strCallbackUrl, strBody, null );
@@ -2548,9 +2549,9 @@ void rho_rhodesapp_navigate_back()
 }
 
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
-    const char* strError, int bCancel, const char* strFileFullPath )
+    const char* strError, int bCancel )
 {
-    RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0, strFileFullPath);
+    RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
 }
 
 void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath, 
