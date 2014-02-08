@@ -108,11 +108,4 @@ namespace 'arch' do
   task :mips => TARGETLIB_MIPS
 end
 
-file V4JAR => [TARGETDIR, :config] do
-    v4jar = Dir.glob(File.join(ENV['ANDROID_SDK'],'extras','android','**','v4','android-support-v4.jar'))
-    raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
-    v4jar = v4jar.first
-    cp v4jar, TARGETDIR
-end
-
 task :default => ["arch:arm", "arch:x86"]
