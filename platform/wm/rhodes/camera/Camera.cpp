@@ -49,7 +49,7 @@ Camera::Camera(void) {
 Camera::~Camera(void) {
 }
 
-HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename, LPTSTR pszFileFullname)
+HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) 
 {
     HRESULT         hResult = S_OK;
 #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
@@ -82,8 +82,7 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename, LPTSTR pszFileFul
     if (S_OK == hResult) 
     {
         LOG(INFO) + "takePicture get file: " + shcc.szFile;
-        StringCchCopy( pszFileFullname, MAX_PATH, shcc.szFile );
-        LOG(INFO) + "takePicture full filename: " + pszFileFullname;
+        
         LPTSTR fname = get_file_name( shcc.szFile, imageDir.c_str() );
 		if (fname) {
 
@@ -103,7 +102,7 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename, LPTSTR pszFileFul
     return hResult;
 }
 
-HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename, LPTSTR pszFileFullname)
+HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) 
 {
 	RHO_ASSERT(pszFilename);
 #if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_MOTCE )
