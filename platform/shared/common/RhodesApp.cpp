@@ -52,9 +52,6 @@
 #include <algorithm>
 
 // licence lib
-#ifdef OS_ANDROID
-#include "../../../res/libs/motorolalicence/android/MotorolaLicence.h" 
-#endif
 #ifdef OS_MACOSX
 #include "../../../res/libs/motorolalicence/iphone/MotorolaLicence.h" 
 #endif
@@ -2735,6 +2732,8 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
     return result; 
 }
     
+#ifndef OS_ANDROID
+
 int rho_is_motorola_licence_checked(const char* szMotorolaLicence, const char* szMotorolaLicenceCompany, const char* szAppName)
 {
 
@@ -2773,6 +2772,9 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
 #endif        
     return res_check;
 }
+
+#endif
+
     //TODO: remove it
     void rho_sys_set_network_status_notify(const char* /*url*/, int /*poll_interval*/)
 	{

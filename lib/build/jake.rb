@@ -393,6 +393,14 @@ class Jake
       out
   end
 
+  def self.edit_yml(file, out_file = nil)
+    out_file = file if out_file.nil?
+
+    yml = YAML::load_file(file)
+    yield yml
+    File.open(out_file, 'w') {|f| f.write yml.to_yaml}
+  end
+
   def self.edit_xml(file, out_file = nil)
     out_file = file if out_file.nil?
 
