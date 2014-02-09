@@ -432,6 +432,11 @@ void QtMainWindow::navigate(QString url, int index)
                 const QByteArray asc_url = url.toLatin1();
                 mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
             }
+			QUrl test(url);
+			QString errStr = test.errorString();
+			if (errStr.length() > 0 )
+				LOG(ERROR) + "WebView navigate: failed to parse URL: " + errStr.toStdString();
+
             wv->load(QUrl(url));
         }
     }
