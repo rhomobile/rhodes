@@ -93,6 +93,10 @@ module Rhom
           _normalize_complex_conditions(conditions, op)
         end
 
+        def self.changed?
+          self.klass_model.anyChangedObjects
+        end
+
         def self.create(obj)
           objHash = self.klass_model.createObject(obj)
           self.new(objHash);
@@ -234,6 +238,14 @@ module Rhom
         def destroy
           self.class.klass_model.deleteObject(self.object)
           true
+        end
+
+        def can_modify
+          self.class.klass_model.canModify(self.object)
+        end
+
+        def changed?
+          self.class.klass_model.hasChanges(self.object)
         end
 
         def method_missing(method_sym, *args, &block)

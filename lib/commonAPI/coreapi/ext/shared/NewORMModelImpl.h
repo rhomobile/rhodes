@@ -123,8 +123,11 @@ namespace rho {
                         rho::apiGenerator::CMethodResult& oResult);
         void deleteObject(const rho::String& objId, 
                           rho::apiGenerator::CMethodResult& oResult);
+        void hasChanges(const rho::String& objId, rho::apiGenerator::CMethodResult& oResult);
+        void canModify(const rho::String& objId, rho::apiGenerator::CMethodResult& oResult);
 
         // Model instance methods
+        void anyChangedObjects(rho::apiGenerator::CMethodResult& oResult);
         void getCount(rho::apiGenerator::CMethodResult& oResult);
         void getBackendRefreshTime(rho::apiGenerator::CMethodResult& oResult);
         void findObjects(const rho::String& what, 
