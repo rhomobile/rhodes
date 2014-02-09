@@ -11,6 +11,8 @@ $appincdir = ENV["RHO_INC"]
 raise "RHO_INC is not set" if $appincdir.nil?
 $androidndkpath = ENV['ANDROID_NDK']
 raise 'ANDROID_NDK is not set' if $androidndkpath.nil?
+TARGETLIB = ENV['TARGETLIB']
+raise 'TARGETLIB is not set' if ENV['TARGETLIB'].nil?
 
 require File.join($rootdir,'platform','android','build','androidcommon.rb')
 require File.join($rootdir,'lib','build','jake.rb')
@@ -42,9 +44,9 @@ TARGETDIR_ARM = File.join(TARGETDIR,'armeabi')
 TARGETDIR_x86 = File.join(TARGETDIR,'x86')
 TARGETDIR_MIPS = File.join(TARGETDIR,'mips')
 
-TARGETLIB_ARM = File.join(TARGETDIR_ARM,'libcoreapi.a')
-TARGETLIB_x86 = File.join(TARGETDIR_x86,'libcoreapi.a')
-TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,'libcoreapi.a')
+TARGETLIB_ARM = File.join(TARGETDIR_ARM,TARGETLIB)
+TARGETLIB_x86 = File.join(TARGETDIR_x86,TARGETLIB)
+TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,TARGETLIB)
 PLAYSERVICESJAR = File.join(TARGETDIR,'google-play-services.jar')
 
 cd '../../..'
