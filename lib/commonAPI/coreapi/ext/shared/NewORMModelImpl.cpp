@@ -1096,6 +1096,40 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     oResult.set(retVals);
 }
 
+void rho::CNewORMModelImpl::hasChanges(const rho::String& objId, rho::apiGenerator::CMethodResult& oResult)
+{
+    db::CDBAdapter& db = _get_db(oResult);
+    getProperty("source_id", oResult);
+    rho::String source_id = oResult.getString();
+    IDBResult res = db.executeSQL("SELECT object from changed_values WHERE source_id=? and object=? LIMIT 1 OFFSET 0", source_id, objId);
+    bool has_changes = false;
+    if(!res.isEnd())
+        has_changes = (res.getStringByIdx(0).size() > 0);
+    oResult.set(has_changes);
+}
+
+void rho::CNewORMModelImpl::anyChangedObjects(rho::apiGenerator::CMethodResult& oResult)
+{
+    db::CDBAdapter& db = _get_db(oResult);
+    getProperty("source_id", oResult);
+    rho::String source_id = oResult.getString();
+    IDBResult res = db.executeSQL("SELECT object from changed_values WHERE source_id=? LIMIT 1 OFFSET 0", source_id);
+    bool has_changes = false;
+    if(!res.isEnd())
+        has_changes = (res.getStringByIdx(0).size() > 0);
+    oResult.set(has_changes);
+}
+
+void rho::CNewORMModelImpl::canModify(const rho::String& objId, rho::apiGenerator::CMethodResult& oResult)
+{
+    db::CDBAdapter& db = _get_db(oResult);
+    getProperty("source_id", oResult);
+    rho::String source_id = oResult.getString();
+    IDBResult res = db.executeSQL("SELECT object from changed_values WHERE source_id=? and object=? and sent>1 LIMIT 1 OFFSET 0", source_id, objId);
+    bool can_modify = res.isEnd();
+    oResult.set(can_modify);
+}
+
 void rho::CNewORMModelImpl::createInstance(const Hashtable<rho::String, rho::String>& attrs, rho::apiGenerator::CMethodResult& oResult)
 {
     validateFreezedAttributes(attrs, oResult);
