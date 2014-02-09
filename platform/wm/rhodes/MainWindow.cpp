@@ -1156,6 +1156,7 @@ LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
 	TCHAR image_uri[MAX_PATH];
+	TCHAR file_name[MAX_PATH];
     HRESULT status;
 #if defined (_WIN32_WCE)
 	Camera camera;
@@ -1173,7 +1174,7 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 #endif
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
-        (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
+       (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
 
     free ((void *)lParam);
 	return 0;
@@ -1208,12 +1209,13 @@ LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPAR
 LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
 	TCHAR image_uri[MAX_PATH];
+	TCHAR file_name[MAX_PATH];
     HRESULT status = S_OK;
 	Camera camera;
 	status = camera.selectPicture(this->m_hWnd,image_uri);
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
-        (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
+         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
     
     free ((void *)lParam);
     

@@ -221,6 +221,8 @@ def  run_emulator(options = {})
 
     puts $androidtargets.inspect
 
+    raise "Target platform for Android #{$emuversion} is not installed. Please, install corresponding packages in Android SDK Manager or correct build.yml values." if $androidtargets[get_api_level($emuversion)].nil?
+
     targetid = $androidtargets[get_api_level($emuversion)][:id]
 
     puts "Using Android SDK target: #{$androidtargets[get_api_level($emuversion)].inspect}" if USE_TRACES
