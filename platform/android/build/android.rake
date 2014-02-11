@@ -1120,7 +1120,6 @@ namespace "build" do
 
       libdir = File.dirname(libname)
       mkdir_p libdir unless File.directory? libdir
->>>>>>> master
 
       args = []
       args << "-I\"#{$shareddir}\""
