@@ -422,7 +422,7 @@ namespace "config" do
       $use_motosol_api_classpath = true unless $app_config['capabilities'].index('motoroladev').nil?
       raise 'Cannot use Motorola SDK addon and Google SDK addon together!' if $use_google_addon_api
     end
-    
+
     $no_compression = ['html','htm','js','css']
     $no_compression = $app_config['android']['no_compression'] if $app_config['android'] and $app_config['android']['no_compression']
 
@@ -915,6 +915,16 @@ namespace "build" do
 
     task :libsqlite => "config:android" do
       srcdir = File.join($shareddir, "sqlite")
+<<<<<<< HEAD
+=======
+      objdir = $objdir["sqlite"]
+      libname = $libname["sqlite"]
+      sourcelist = File.join($builddir, 'libsqlite_build.files')
+
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+
+>>>>>>> master
       args = ["-I\"#{srcdir}\"", "-I\"#{$shareddir}\""]
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
@@ -945,6 +955,15 @@ namespace "build" do
       #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
 
       srcdir = File.join $shareddir, "curl", "lib"
+<<<<<<< HEAD
+=======
+      objdir = $objdir["curl"]
+      libname = $libname["curl"]
+      sourcelist = File.join($builddir, 'libcurl_build.files')
+
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+>>>>>>> master
 
       args = []
       args << "-DHAVE_CONFIG_H"
@@ -972,6 +991,15 @@ namespace "build" do
 
     task :libruby => "config:android" do
       srcdir = File.join $shareddir, "ruby"
+<<<<<<< HEAD
+=======
+      objdir = $objdir["ruby"]
+      libname = $libname["ruby"]
+      sourcelist = File.join($builddir, 'libruby_build.files')
+
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+>>>>>>> master
 
       args = []
       args << "-Wno-uninitialized"
@@ -1004,6 +1032,15 @@ namespace "build" do
 
     task :libjson => "config:android" do
       srcdir = File.join $shareddir, "json"
+<<<<<<< HEAD
+=======
+      objdir = $objdir["json"]
+      libname = $libname["json"]
+      sourcelist = File.join($builddir, 'libjson_build.files')
+
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+>>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}\""
@@ -1029,6 +1066,15 @@ namespace "build" do
 
     task :librholog => "config:android" do
       srcdir = File.join $shareddir, "logging"
+<<<<<<< HEAD
+=======
+      objdir = $objdir["rholog"]
+      libname = $libname["rholog"]
+      sourcelist = File.join($builddir, 'librholog_build.files')
+
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+>>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}/..\""
@@ -1053,6 +1099,15 @@ namespace "build" do
 
     task :librhomain => "config:android" do
       srcdir = $shareddir
+<<<<<<< HEAD
+=======
+      objdir = $objdir["rhomain"]
+      libname = $libname["rhomain"]
+      sourcelist = File.join($builddir, 'librhomain_build.files')
+
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+>>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}\""
@@ -1077,6 +1132,15 @@ namespace "build" do
     end
 
     task :librhocommon => "config:android" do
+<<<<<<< HEAD
+=======
+      objdir = $objdir["rhocommon"]
+      libname = $libname["rhocommon"]
+      sourcelist = File.join($builddir, 'librhocommon_build.files')
+
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+>>>>>>> master
 
       args = []
       args << "-I\"#{$shareddir}\""
@@ -1104,6 +1168,15 @@ namespace "build" do
 
     task :librhodb => "config:android" do
       srcdir = File.join $shareddir, "db"
+<<<<<<< HEAD
+=======
+      objdir = $objdir["rhodb"]
+      libname = $libname["rhodb"]
+      sourcelist = File.join($builddir, 'librhodb_build.files')
+
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+>>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}\""
@@ -1130,6 +1203,15 @@ namespace "build" do
 
     task :librhosync => "config:android" do
       srcdir = File.join $shareddir, "sync"
+<<<<<<< HEAD
+=======
+      objdir = $objdir["rhosync"]
+      libname = $libname["rhosync"]
+      sourcelist = File.join($builddir, 'librhosync_build.files')
+
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+>>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}\""
@@ -1239,6 +1321,11 @@ namespace "build" do
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
       args << "-I\"#{$coreapidir}\""
+<<<<<<< HEAD
+=======
+
+      sources = get_sources sourcelist
+>>>>>>> master
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodes_build.files')
@@ -1713,7 +1800,7 @@ namespace "build" do
         srclist.close
 
         buildpath = File.join($tmpdir, ext)
-        
+
         mkdir_p buildpath unless File.exists? buildpath
 
         extjar = File.join $app_builddir, 'extensions', ext, ext + '.jar'
@@ -1838,13 +1925,13 @@ namespace "package" do
     args << $dxjar
     args << "--dex"
     args << "--output=#{$bindir}/classes.dex"
-    
+
     jarnames = []
 
     Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
-    
+
         jarname = Pathname.new(jar).basename
-        
+
         if not jarnames.include?(jarname) then
             args << jar
             jarnames << jarname
@@ -2100,22 +2187,23 @@ def run_as_spec(device_flag, uninstall_app)
   end
 
   puts "Start reading log ..."
-  io = File.new(log_name, 'r:UTF-8')
-  end_spec = false
-  while !end_spec do
-    io.each do |line|
-      if line.class.method_defined? "valid_encoding?"
-        end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
-      else
-        end_spec = !Jake.process_spec_output(line)
+  File.open(log_name, 'r:UTF-8') do |io|
+    end_spec = false
+    while !end_spec do
+      io.each do |line|
+        puts line
+        if line.class.method_defined? "valid_encoding?"
+          end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
+        else
+          end_spec = !Jake.process_spec_output(line)
+        end
+        end_spec = true if line =~ /MSpec runner stopped/
+        break if end_spec
       end
-      break if end_spec
+      break unless AndroidTools.application_running(device_flag, $app_package_name)
+      sleep(5) unless end_spec
     end
-
-    break unless AndroidTools.application_running(device_flag, $app_package_name)
-    sleep(5) unless end_spec
   end
-  io.close
 
   puts "Processing spec results ..."
   Jake.process_spec_results(start)
