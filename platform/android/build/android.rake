@@ -1295,8 +1295,6 @@ namespace "build" do
       args << "-I\"#{$shareddir}/ruby/android\""
       args << "-I\"#{$coreapidir}\""
 
-      sources = get_sources sourcelist
-
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodes_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
