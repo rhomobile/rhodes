@@ -45,6 +45,9 @@ public:
 	virtual void stop() = 0;
 	virtual int set_pollinterval( int interval ) = 0;
 	virtual int get_pollinterval() = 0;
+	virtual void set_bulksyncstate( int new_state ) = 0;
+	virtual bool has_bulksyncstate() = 0;
+	virtual int get_bulksyncstate() = 0;
 	virtual void set_syncserver( const char* syncserver ) = 0;
 	virtual int get_pagesize() = 0;
 	virtual void set_pagesize(int nPageSize) = 0;
@@ -57,6 +60,7 @@ public:
 	virtual void setobjectnotify_url(const char* szUrl) = 0;
 	virtual void cleanobjectnotify() = 0;
 	virtual void clear_notification(int srcID) = 0;
+	virtual void set_source_property(int srcID, const char* propName, const char* propVal) = 0;
 
 };
 
@@ -105,6 +109,9 @@ public:
 	static void stop() { m_pImpl->stop(); }
 	static int set_pollinterval( int interval ) { return m_pImpl->set_pollinterval(interval); }
 	static int get_pollinterval() { return m_pImpl->get_pollinterval(); }
+	static void set_bulksyncstate( int new_state ) { m_pImpl->set_bulksyncstate(new_state); }
+	static bool has_bulksyncstate() { return m_pImpl->has_bulksyncstate(); }
+	static int get_bulksyncstate() { return m_pImpl->get_bulksyncstate(); }
 	static void set_syncserver( const char* syncserver ) { m_pImpl->set_syncserver(syncserver); }
 	static int get_pagesize() { return m_pImpl->get_pagesize(); }
 	static void set_pagesize(int nPageSize) { m_pImpl->set_pagesize(nPageSize); }
@@ -117,6 +124,7 @@ public:
 	static void setobjectnotify_url(const char* szUrl) { m_pImpl->setobjectnotify_url(szUrl); }
 	static void cleanobjectnotify() { m_pImpl->cleanobjectnotify(); }
 	static void clear_notification(int srcID) { m_pImpl->clear_notification(srcID); }
+	static void set_source_property(int srcID, const char* propName, const char* propVal) { m_pImpl->set_source_property(srcID, propName, propVal); }
 };
 
 }
