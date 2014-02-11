@@ -4,7 +4,7 @@
     <MODULE name="NewORMModel" parent="Rho">
         <HELP_OVERVIEW>NewORMModel CoreAPI module</HELP_OVERVIEW>
         <MORE_HELP>New implementation of the RHOM Model.</MORE_HELP>
-    
+
         <TEMPLATES>
             <PROPERTY_BAG/>
         </TEMPLATES>
@@ -50,7 +50,9 @@
             </METHOD>
             <METHOD name="getModel" access="STATIC">
                 <PARAMS>
-                    <PARAM type="STRING"/>
+                    <PARAM name="modelName" type="STRING">
+                        <DESC>Name of the model you want returned.</DESC>
+                    </PARAM>
                 </PARAMS>
                 <RETURN type="STRING">
                     <DESC>NewORMModel object</DESC>
@@ -318,7 +320,7 @@
             </ALIASES>
 
         </METHODS>
-        
+
         <USER_OVERVIEW>
         </USER_OVERVIEW>
 
@@ -326,4 +328,4 @@
         <PLATFORM>
          </PLATFORM>
     </MODULE>
-</API>    
+</API>
