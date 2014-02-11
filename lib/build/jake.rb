@@ -222,13 +222,9 @@ class Jake
   end
 
   def self.process_spec_output(line)
+      # Print MSpec example description
       puts line if line =~ /\| - it/ or line =~ /\| describe/ or line =~ /\|   - /
-
-      #strip android trace tag
-      if line =~ /^I\/APP\s+\(\s+[0-9]+\)\:\s+(.*)/
-        line = $1
-      end
-
+      line = $1 if line =~ /^I\/APP\s+\(\s+[0-9]+\)\:\s+(.*)/
       if $getdump
         if line =~ /^I/
           $getdump = false
@@ -247,7 +243,7 @@ class Jake
       elsif line =~ /\| \*\*\*Passed:\s+(.*)/ # | ***Passed:
         $passed += $1.to_i
       end
-
+      # Faillog for MSpec
       if line =~ /\| FAIL:/
         line = line.gsub(/I.*APP\|/,"\n\n***")
         if !$faillog.include?(line)
@@ -255,7 +251,14 @@ class Jake
         end
         $getdump = true
       end
-
+      # Faillog for Jusmine
+      if line =~ /I.* Jasmine specRunner\| .*Failed\./
+        line = line.gsub(/I.*Jasmine specRunner\|/,"\n\n***")
+        if !$faillog.include?(line)
+          $faillog << line
+        end
+        $getdump = true
+      end
       return true
   end
 
@@ -598,11 +601,11 @@ class Jake
     file_map = Array.new
     file_map_name = File.join(dir, file_name)
     dat      = nil
-    
+
     if in_memory == false
       dat = File.open(file_map_name, 'w')
     end
-    
+
     Dir.glob(File.join(dir, '**/*')).sort.each do |f|
       relpath = f[psize..-1]
 
@@ -613,16 +616,16 @@ class Jake
       else
         next
       end
-          
+
       if File.basename(f) == file_name
         next
       end
-          
+
       size = File.stat(f).size
       tm   = File.stat(f).mtime.to_i
 
       if in_memory == true
-        map_item = Hash.new 
+        map_item = Hash.new
         map_item = { :path => relpath, :size => size, :time => tm }
         file_map << map_item
       else
@@ -633,7 +636,7 @@ class Jake
     if in_memory == false
       dat.close
     end
-    
+
     return file_map
   end
 
@@ -698,13 +701,13 @@ class Jake
   def self.modify_rhoconfig_for_debug
     confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
     puts "confpath_content=" + confpath_content.to_s
-    
+
     confpath_content += "\r\n" + "remotedebug=1"  if !confpath_content.include?("remotedebug=")
     confpath_content += "\r\n" + "debughosturl=" + $rhologhostaddr  if !confpath_content.include?("debughosturl=")
-  
+
  #   puts "confpath_content=" + confpath_content.to_s
  #   puts  "$srcdir=" + $srcdir.to_s
-   
+
     File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
   end
 
@@ -830,7 +833,7 @@ class Jake
 
     false
   end
-  
+
   def self.copyIfNeeded src, dst
     if File.directory? dst and !File.directory? src
       dst_path = File.join dst, File.basename(src)
