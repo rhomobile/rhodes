@@ -833,6 +833,7 @@ namespace "build" do
         ENV['TARGETLIB'] = "lib#{ext}.a"
         ENV['TEMP_FILES_DIR'] = File.join($tmpdir, ext)
         buildargs = ["-I\"#{builddata[0]}/ext/platform/android/generated/jni\"",
+            "-I\"#{builddata[0]}/ext/shared\"",
             "-I\"#{builddata[0]}/ext/shared/include\"",
             "-I\"#{$startdir}/platform/android/Rhodes/jni/include\"",
             "-I\"#{$startdir}/platform/android/Rhodes/jni/include/rhodes/details\"",
@@ -840,6 +841,7 @@ namespace "build" do
             "-I\"#{$startdir}/platform/shared\"",
             "-I\"#{$startdir}/platform/shared/common\"",
             "-I\"#{$startdir}/platform/shared/api_generator\"",
+            "-I\"#{$commonapidir}/coreapi/ext/shared\"",
             "-I\"#{$appincdir}\"",
             "-I\"#{$startdir}/platform/shared/ruby\"",
             "-I\"#{$startdir}/platform/shared/ruby/android\"",
