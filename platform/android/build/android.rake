@@ -915,8 +915,6 @@ namespace "build" do
 
     task :libsqlite => "config:android" do
       srcdir = File.join($shareddir, "sqlite")
-<<<<<<< HEAD
-=======
       objdir = $objdir["sqlite"]
       libname = $libname["sqlite"]
       sourcelist = File.join($builddir, 'libsqlite_build.files')
@@ -924,7 +922,6 @@ namespace "build" do
       libdir = File.dirname(libname)
       mkdir_p libdir unless File.directory? libdir
 
->>>>>>> master
       args = ["-I\"#{srcdir}\"", "-I\"#{$shareddir}\""]
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
@@ -955,15 +952,12 @@ namespace "build" do
       #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
 
       srcdir = File.join $shareddir, "curl", "lib"
-<<<<<<< HEAD
-=======
       objdir = $objdir["curl"]
       libname = $libname["curl"]
       sourcelist = File.join($builddir, 'libcurl_build.files')
 
       libdir = File.dirname(libname)
       mkdir_p libdir unless File.directory? libdir
->>>>>>> master
 
       args = []
       args << "-DHAVE_CONFIG_H"
@@ -991,15 +985,12 @@ namespace "build" do
 
     task :libruby => "config:android" do
       srcdir = File.join $shareddir, "ruby"
-<<<<<<< HEAD
-=======
       objdir = $objdir["ruby"]
       libname = $libname["ruby"]
       sourcelist = File.join($builddir, 'libruby_build.files')
 
       libdir = File.dirname(libname)
       mkdir_p libdir unless File.directory? libdir
->>>>>>> master
 
       args = []
       args << "-Wno-uninitialized"
@@ -1032,15 +1023,12 @@ namespace "build" do
 
     task :libjson => "config:android" do
       srcdir = File.join $shareddir, "json"
-<<<<<<< HEAD
-=======
       objdir = $objdir["json"]
       libname = $libname["json"]
       sourcelist = File.join($builddir, 'libjson_build.files')
 
       libdir = File.dirname(libname)
       mkdir_p libdir unless File.directory? libdir
->>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}\""
@@ -1066,15 +1054,12 @@ namespace "build" do
 
     task :librholog => "config:android" do
       srcdir = File.join $shareddir, "logging"
-<<<<<<< HEAD
-=======
       objdir = $objdir["rholog"]
       libname = $libname["rholog"]
       sourcelist = File.join($builddir, 'librholog_build.files')
 
       libdir = File.dirname(libname)
       mkdir_p libdir unless File.directory? libdir
->>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}/..\""
@@ -1099,15 +1084,12 @@ namespace "build" do
 
     task :librhomain => "config:android" do
       srcdir = $shareddir
-<<<<<<< HEAD
-=======
       objdir = $objdir["rhomain"]
       libname = $libname["rhomain"]
       sourcelist = File.join($builddir, 'librhomain_build.files')
 
       libdir = File.dirname(libname)
       mkdir_p libdir unless File.directory? libdir
->>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}\""
@@ -1132,8 +1114,6 @@ namespace "build" do
     end
 
     task :librhocommon => "config:android" do
-<<<<<<< HEAD
-=======
       objdir = $objdir["rhocommon"]
       libname = $libname["rhocommon"]
       sourcelist = File.join($builddir, 'librhocommon_build.files')
@@ -1168,15 +1148,12 @@ namespace "build" do
 
     task :librhodb => "config:android" do
       srcdir = File.join $shareddir, "db"
-<<<<<<< HEAD
-=======
       objdir = $objdir["rhodb"]
       libname = $libname["rhodb"]
       sourcelist = File.join($builddir, 'librhodb_build.files')
 
       libdir = File.dirname(libname)
       mkdir_p libdir unless File.directory? libdir
->>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}\""
@@ -1203,15 +1180,12 @@ namespace "build" do
 
     task :librhosync => "config:android" do
       srcdir = File.join $shareddir, "sync"
-<<<<<<< HEAD
-=======
       objdir = $objdir["rhosync"]
       libname = $libname["rhosync"]
       sourcelist = File.join($builddir, 'librhosync_build.files')
 
       libdir = File.dirname(libname)
       mkdir_p libdir unless File.directory? libdir
->>>>>>> master
 
       args = []
       args << "-I\"#{srcdir}\""
@@ -1321,11 +1295,8 @@ namespace "build" do
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
       args << "-I\"#{$coreapidir}\""
-<<<<<<< HEAD
-=======
 
       sources = get_sources sourcelist
->>>>>>> master
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodes_build.files')
