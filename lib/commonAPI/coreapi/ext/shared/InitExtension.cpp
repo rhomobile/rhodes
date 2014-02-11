@@ -16,6 +16,7 @@ extern "C" void Init_RhoFile();
 extern "C" void Init_NativeMenuBar();
 extern "C" void Init_Led();
 extern "C" void Init_Push();
+extern "C" void Init_NewORM_extension();
 extern "C" void Init_Intent();
 
 extern "C" void Init_CoreAPI_Extension()
@@ -25,6 +26,9 @@ extern "C" void Init_CoreAPI_Extension()
 
 	Init_Network();
     Init_SQLite3();
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
+    Init_NewORM_extension();
+#endif
     Init_Log();
 #if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_ANDROID)
     Init_WebView();
