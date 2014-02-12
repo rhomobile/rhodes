@@ -4,6 +4,6 @@ android:
   manifest_changes: 
   - ext/android/AndroidManifest.rb
   - ext/android/ApplicationManifestAdds.erb
-  source_list: ext/android/ext_build.files
+  source_list: ext/android/ext_java.files
 libraries: ['gcm-push']
 xml_api_paths: ext/gcm.xml

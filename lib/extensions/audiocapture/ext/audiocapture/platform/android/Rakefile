@@ -24,7 +24,7 @@ def build_extension(name, arch, src_files)
 
   mkdir_p $targetdir unless File.exist? $targetdir
 
-   cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+   cc_ar (File.join( $targetdir,'armeabi','lib' + name + '.a' )), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
 
 end
 
