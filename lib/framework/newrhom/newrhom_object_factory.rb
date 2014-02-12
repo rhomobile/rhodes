@@ -1,10 +1,10 @@
-module Rhom         
+module Rhom
   class RhomObjectFactory
-    
+
     # Initialize new object with dynamic attributes
     def self.init_object(klass_model_obj)
       return if Object.const_defined?(klass_model_obj.model_name.intern)
-      
+
       klass_instance = Class.new do
 
         @klass_model = klass_model_obj
@@ -60,7 +60,7 @@ module Rhom
                     item.slice!(0)
                     item.chop!
                   end
-                end             
+                end
               end
 
               retVal = self.klass_model.buildComplexWhereCond(key[:name], values, key[:val_op], key[:val_func])
@@ -74,7 +74,7 @@ module Rhom
               condQuests.concat(retV[1..-1])
             end
           end
-          [sqlRes, condQuests]  
+          [sqlRes, condQuests]
         end
 
         def self._normalize_conditions(what, conditions, op)
@@ -82,9 +82,9 @@ module Rhom
           if !op
             retV = []
             if !conditions
-              retV = self.klass_model.buildSimpleWhereCond(what, []) 
+              retV = self.klass_model.buildSimpleWhereCond(what, [])
             elsif conditions.is_a?String
-              retV = self.klass_model.buildSimpleWhereCond(what, [conditions]) 
+              retV = self.klass_model.buildSimpleWhereCond(what, [conditions])
             elsif conditions.is_a?Array
               retV = self.klass_model.buildSimpleWhereCond(what, conditions)
             end
@@ -107,19 +107,13 @@ module Rhom
           normalized_string_args.merge!(self.klass_model.buildFindLimits(what, args_hash))
 
           # 2) Normalize ORDER BY
-          order_dir = []
-          order_dir ||= args_hash[:orderdir]
-          order_attr = []
-          order_attr ||= args_hash[:order]
+          order_dir = args_hash[:orderdir] || []
+          order_attr = args_hash[:order] || []
           # normalize ORDER BY attrs
-          if(order_attr.is_a?String)
-            order_attr = [order_attr]
-          end
-          if(order_dir.is_a?String)
-            order_dir = [order_dir]
-          end
+          order_attr = [order_attr] if(order_attr.is_a?String)
+          order_dir = [order_dir] if(order_dir.is_a?String)
           normalized_vector_args[:order] = self.klass_model.buildFindOrder(order_attr, order_dir)
-          
+
           # 3) Normalize SELECT
           select_arr = args_hash[:select] || []
           normalized_vector_args.merge!({:select => select_arr})
@@ -183,11 +177,11 @@ module Rhom
             return retVal unless retVal.size() > 0
             # if arg[0] is :first or objId return one object
             return self.new(retVal[0]) if (args[0] != 'all')
-            # otherwise - return an array 
+            # otherwise - return an array
             orm_objs = []
             retVal.each do |obj|
               orm_objs << self.new(obj)
-            end  
+            end
             puts "MZV_DEBUG: orm_objs : #{orm_objs.inspect}"
             return orm_objs
           end
@@ -199,7 +193,7 @@ module Rhom
           orm_objs = []
           retVal.each do |obj|
             orm_objs << self.new(obj)
-          end  
+          end
           return orm_objs
         end
 
@@ -227,9 +221,9 @@ module Rhom
           _normalize_args_for_find(args[0], args[1] || {}, normalized_string_args, normalized_vector_args)
           puts " before passing to delete_all #{args[0]}, #{args[1]}, #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
           # call API function
-          retVal = klass_model.deleteObjects(args[0], 
-                                             normalized_string_args, 
-                                             quests || [])
+          retVal = klass_model.deleteObjects(normalized_string_args,
+                                             normalized_vector_args[:quests])
+
           puts "MZV_DEBUG: delete_all has returned : #{retVal.inspect}"
           retVal
         end
@@ -237,7 +231,7 @@ module Rhom
         # This holds the attributes for an instance of
         # the rhom object
         attr_accessor :vars
-    
+
         def initialize(obj={})
           @vars = {}
           objHash = obj
@@ -286,7 +280,7 @@ module Rhom
             if method_sym[-1] == '='
               s_name = method_sym.to_s.chop
               self.class.klass_model.validateFreezedAttribute(s_name)
-              @vars[s_name.to_sym()] = args[0]  
+              @vars[s_name.to_sym()] = args[0]
             else
               @vars[method_sym]
             end
@@ -296,18 +290,18 @@ module Rhom
         end
 
         def object
-          @vars[:object]                
+          @vars[:object]
         end
-              
+
         def source_id
-          @vars[:source_id]                
+          @vars[:source_id]
         end
 =begin
         def to_s
           @vars.to_s if @vars
         end
-              
-        def to_json(*args) 
+
+        def to_json(*args)
           @vars.to_json(*args) if @vars
         end
 =end
