@@ -134,18 +134,50 @@ module Rhom
         def self.find(*args)
           puts "MZV_DEBUG: we are in find  #{args.inspect}"
           args[0] = args[0].to_s
+          args[1] = args[1] || {}
+          retVal = nil
 
           # prepare arguments
-          normalized_vector_args = {}
-          normalized_string_args = {}
-          _normalize_args_for_find(args[0], args[1] || {}, normalized_string_args, normalized_vector_args)
-          puts " before passing #{args[0]}, #{args[1]}, #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
-          # call API function
-          retVal = klass_model.findObjects(args[0], 
+          if klass_model.fixed_schema
+            normalized_vector_args = {}
+            normalized_string_args = {}
+            _normalize_args_for_find(args[0], args[1], normalized_string_args, normalized_vector_args)
+            puts "MZV_DEBUG: we have here options before find as #{args[0]} , #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
+            retVal = klass_model.findObjects(args[0], 
                                            normalized_string_args, 
                                            normalized_vector_args[:quests],
                                            normalized_vector_args[:select],
                                            normalized_vector_args[:order])
+          else
+            # property bag
+            # only LIMIT is supported
+            normalized_string_args = {};
+            limitArgs = klass_model.buildFindLimits(args[0], args[1])
+            normalized_string_args.merge!(limitArgs)
+            # 3) Normalize SELECT
+            select_arr = args[1][:select] || []
+            if select_arr.is_a?String
+              select_arr = [select_arr]
+            end
+            normalized_string_args[:op] = args[1] || 'AND';
+            if args[1][:conditions].is_a?Hash
+              retVal = klass_model.findObjectsPropertyBagByCondHash(args[0], args[1][:conditions], normalized_string_args, select_arr)
+            else # the only other supported case is simple string (WHERE sql) or array (WHERE sql + quests)
+              args[1][:conditions] = args[1][:conditions] || [""]
+              args[1][:quests] = []
+              if args[1][:conditions].is_a?Array
+                args[1][:quests] = args[1][:conditions][1..-1]
+                args[1][:conditions] = args[1][:conditions][0]
+              end
+              puts "MZV_DEBUG: we are here and #{args[0]}, #{args[1][:conditions].inspect}, #{args[1][:quests].inspect}"
+              retVal = klass_model.findObjectsPropertyBagByCondArray(args[0], 
+                                                                    args[1][:conditions],
+                                                                    args[1][:quests],
+                                                                    normalized_string_args, 
+                                                                    select_arr)
+            end
+          end
+          
           puts "MZV_DEBUG: find has returned : #{retVal.inspect}"
           if retVal.is_a?Array
             return retVal unless retVal.size() > 0
