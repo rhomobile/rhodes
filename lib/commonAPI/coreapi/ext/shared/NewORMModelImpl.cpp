@@ -970,8 +970,6 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
     rho::String source_id = oResult.getString();
     // we do not support select attrs for PropertyBag
     rho::String attrs_str = "object,attrib,value";
-    rho::String where_str;
-
     Hashtable<rho::String, rho::String> attrSet;
     rho::String selStr = _make_select_attrs_str(select_attr, attrSet);
     LOG(INFO) + "MZV_DEBUG: " + selStr; 
@@ -1066,8 +1064,8 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     strSQL += attrs_str + " FROM object_values";
     strSQL += " WHERE source_id=";
     strSQL += source_id;
-    if(conditions.size())
-        strSQL += rho::String(" AND ") + conditions;
+    if(where_str.size())
+        strSQL += rho::String(" AND ") + where_str;
     if(limit_str.size())
         strSQL += limit_str;
 
@@ -1267,7 +1265,7 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
         {
             existing_update_type = res.getStringByIdx(0); 
         }
-        ignore_changed_values = (update_type == "create");
+        ignore_changed_values = (existing_update_type == "create");
     }
 
     for(Hashtable<rho::String, rho::String>::const_iterator cIt = newAttrs.begin(); cIt != newAttrs.end(); ++cIt)
@@ -1307,8 +1305,8 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
             {
                 if(existing_update_type.size() > 0)
                 {
-                    rho::String sqlStr("DELETE FROM changed_values WHERE object=? AND attrib=? AND source_id=? AND sent=0");
-                    res = db.executeSQL(sqlScript.c_str(), objId, attrKey, source_id);
+                    rho::String sqlDelStr("DELETE FROM changed_values WHERE object=? AND attrib=? AND source_id=? AND sent=0");
+                    res = db.executeSQL(sqlDelStr.c_str(), objId, attrKey, source_id);
                     if(!res.getDBError().isOK()) {
                         oResult.setError(res.getDBError().getError());
                         db.rollback();
