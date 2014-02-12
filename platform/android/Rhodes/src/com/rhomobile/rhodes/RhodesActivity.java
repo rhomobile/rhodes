@@ -347,7 +347,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 				return false;
 			
 			// If the RhoConf setting of disable_back_button is set to 1, pretend we did something.
-			if (RhoConf.isExist("disable_back_button") && RhoConf.getString("disable_back_button") == "1") {
+			if (RhoConf.isExist("disable_back_button") && RhoConf.getInt("disable_back_button") == 1) {
 				Logger.D(TAG, "Back button pressed, but back button is disabled in RhoConfig.");
 				return true;
 			} else {
