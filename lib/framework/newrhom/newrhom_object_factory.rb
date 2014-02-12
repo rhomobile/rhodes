@@ -24,7 +24,7 @@ module Rhom
           end
         end
 
-        def self._normalize_complex_conditions(what, conditions, op)
+        def self._normalize_complex_conditions(conditions, op)
           return ["", []] unless conditions
           op ||= 'AND'
           sqlRes = ""
@@ -63,15 +63,15 @@ module Rhom
                 end
               end
 
-              retVal = self.klass_model.buildComplexWhereCond(key[:name], values, key[:val_op], key[:val_func])
+              retVal = self.klass_model.buildComplexWhereCond(key[:name], value, key[:op], key[:func])
             else # key is a String
               values = (value && value.length > 0 ? [value] : [])
               retVal = self.klass_model.buildComplexWhereCond(key, values, '=', '')
             end
             if retVal
               sqlRes << ' ' + op + ' ' if sqlRes.length > 0
-              sqlRes += retV[0]
-              condQuests.concat(retV[1..-1])
+              sqlRes += retVal[0]
+              condQuests.concat(retVal[1..-1])
             end
           end
           [sqlRes, condQuests]
@@ -83,12 +83,16 @@ module Rhom
             retV = []
             if !conditions
               retV = self.klass_model.buildSimpleWhereCond(what, [])
+              return [retV[0], retV[1..-1]]
             elsif conditions.is_a?String
               retV = self.klass_model.buildSimpleWhereCond(what, [conditions])
+              return [retV[0], retV[1..-1]]
             elsif conditions.is_a?Array
               retV = self.klass_model.buildSimpleWhereCond(what, conditions)
+              return [retV[0], retV[1..-1]]
+            else
+              return _normalize_complex_conditions(conditions, 'AND')
             end
-            return [retV[0], retV[1..-1]]
           end
           _normalize_complex_conditions(conditions, op)
         end
@@ -213,16 +217,35 @@ module Rhom
           puts "MZV_DEBUG: we are in delete_all  #{args.inspect}"
           args[0] = args[0].to_s
           args[1] ||= {}
+          retVal = nil
 
           # prepare arguments
-          # prepare arguments
-          normalized_vector_args = {}
-          normalized_string_args = {}
-          _normalize_args_for_find(args[0], args[1] || {}, normalized_string_args, normalized_vector_args)
-          puts " before passing to delete_all #{args[0]}, #{args[1]}, #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
-          # call API function
-          retVal = klass_model.deleteObjects(normalized_string_args,
-                                             normalized_vector_args[:quests])
+          if klass_model.fixed_schema
+            normalized_vector_args = {}
+            normalized_string_args = {}
+            _normalize_args_for_find("all", args[1], normalized_string_args, normalized_vector_args)
+            puts " before passing to delete_all #{args[1]}, #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
+            # call API function
+            retVal = klass_model.deleteObjects(normalized_string_args,
+                                               normalized_vector_args[:quests])
+          else # property bag
+            normalized_string_args = {}
+            limitArgs = klass_model.buildFindLimits("all", args[1])
+            normalized_string_args.merge!(limitArgs)
+            normalized_string_args[:op] = args[1][:op] || 'AND'
+            if args[1][:conditions].is_a?Hash
+                retVal = klass_model.deleteObjectsPropertyBagByCondHash(args[1][:conditions], normalized_string_args)
+            else # the only other supported case is simple string (WHERE sql) or array (WHERE sql + quests)
+              conditions = args[1][:conditions] || [""]
+              quests = []
+              if conditions.is_a?Array
+                quests = conditions[1..-1]
+                conditions = conditions[0]
+              end
+              puts "we are here and #{conditions.inspect}, #{quests.inspect}"
+              retVal = klass_model.deleteObjectsPropertyBagByCondArray(conditions, quests, normalized_string_args)
+            end
+          end
 
           puts "MZV_DEBUG: delete_all has returned : #{retVal.inspect}"
           retVal
