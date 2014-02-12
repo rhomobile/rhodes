@@ -45,6 +45,8 @@ TARGETLIB_ARM = File.join(TARGETDIR_ARM,'libcoreapi.a')
 TARGETLIB_x86 = File.join(TARGETDIR_x86,'libcoreapi.a')
 TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,'libcoreapi.a')
 
+V4JAR = File.join(TARGETDIR, 'android-support-v4.jar')
+
 cd '../../..'
 
 namespace 'config' do
@@ -100,12 +102,19 @@ file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
     Rake::Task["config:mips"].invoke
     cc_ar t.name, OBJ_MIPS or raise "\e[31mCreating library failed: #{t.name}\e[0m"
 end
+
 multitask TARGETLIB_MIPS => OBJ_MIPS
+file V4JAR => [TARGETDIR] do
+    v4jar = Dir.glob(File.join(ENV['ANDROID_SDK'],'extras','android','**','v4','android-support-v4.jar'))
+    raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
+    v4jar = v4jar.first
+    cp v4jar, TARGETDIR
+end
 
 namespace 'arch' do
-  task :arm => TARGETLIB_ARM
-  task :x86 => TARGETLIB_x86
-  task :mips => TARGETLIB_MIPS
+  task :arm => [TARGETLIB_ARM, V4JAR]
+  task :x86 => [TARGETLIB_x86, V4JAR]
+  task :mips => [TARGETLIB_MIPS, V4JAR]
 end
 
 task :default => ["arch:arm", "arch:x86"]
