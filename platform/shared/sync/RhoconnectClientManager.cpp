@@ -28,7 +28,6 @@ namespace sync {
         virtual bool haveSyncThread() { return false; }
         virtual unsigned int syncThreadGetThreadID() { return (unsigned int)-1; }
         virtual bool syncEngineNotifyIsReportingEnabled() { return false; }
-        virtual int rho_sync_issyncing() { return 0; }
 
         virtual int logged_in() { return 0; }
         virtual unsigned long login(const char* szLogin, const char* password, const char* callback) { return 0; }
