@@ -141,8 +141,8 @@ module Rhom
             normalized_string_args = {}
             _normalize_args_for_find(args[0], args[1], normalized_string_args, normalized_vector_args)
             puts "MZV_DEBUG: we have here options before find as #{args[0]} , #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
-            retVal = klass_model.findObjects(args[0], 
-                                           normalized_string_args, 
+            retVal = klass_model.findObjects(args[0],
+                                           normalized_string_args,
                                            normalized_vector_args[:quests],
                                            normalized_vector_args[:select],
                                            normalized_vector_args[:order])
@@ -168,14 +168,14 @@ module Rhom
                 args[1][:conditions] = args[1][:conditions][0]
               end
               puts "MZV_DEBUG: we are here and #{args[0]}, #{args[1][:conditions].inspect}, #{args[1][:quests].inspect}"
-              retVal = klass_model.findObjectsPropertyBagByCondArray(args[0], 
+              retVal = klass_model.findObjectsPropertyBagByCondArray(args[0],
                                                                     args[1][:conditions],
                                                                     args[1][:quests],
-                                                                    normalized_string_args, 
+                                                                    normalized_string_args,
                                                                     select_arr)
             end
           end
-          
+
           puts "MZV_DEBUG: find has returned : #{retVal.inspect}"
           if retVal.is_a?Array
             return retVal unless retVal.size() > 0
@@ -199,6 +199,11 @@ module Rhom
             orm_objs << self.new(obj)
           end
           return orm_objs
+        end
+
+        # Alias for find(:all, args)
+        def self.find_all(args=nil)
+          find(:all, args)
         end
 
         # Returns a set of rhom objects, limiting the set to length :per_page
