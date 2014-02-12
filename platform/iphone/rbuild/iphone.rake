@@ -1034,8 +1034,8 @@ namespace "build" do
 
       # Set UIApplicationExitsOnSuspend.
       if $app_config["iphone"]["UIApplicationExitsOnSuspend"].nil?
-        puts "UIApplicationExitsOnSuspend not configured, using default of true"
-        set_app_exit_on_suspend(true)
+        puts "UIApplicationExitsOnSuspend not configured, using default of false"
+        set_app_exit_on_suspend(false)
       elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "true" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "1"
         set_app_exit_on_suspend(true)
       elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "false" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "0"
@@ -1086,8 +1086,8 @@ namespace "build" do
 
       # Set UIApplicationExitsOnSuspend.
       if $app_config["iphone"]["UIApplicationExitsOnSuspend"].nil?
-        puts "UIApplicationExitsOnSuspend not configured, using default of true"
-        set_app_exit_on_suspend(true)
+        puts "UIApplicationExitsOnSuspend not configured, using default of false"
+        set_app_exit_on_suspend(false)
       elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "true" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "1"
         set_app_exit_on_suspend(true)
       elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "false" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "0"
@@ -1137,8 +1137,8 @@ namespace "build" do
 
       # Set UIApplicationExitsOnSuspend.
       if $app_config["iphone"]["UIApplicationExitsOnSuspend"].nil?
-        puts "UIApplicationExitsOnSuspend not configured, using default of true"
-        set_app_exit_on_suspend(true)
+        puts "UIApplicationExitsOnSuspend not configured, using default of false"
+        set_app_exit_on_suspend(false)
       elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "true" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "1"
         set_app_exit_on_suspend(true)
       elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "false" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "0"
