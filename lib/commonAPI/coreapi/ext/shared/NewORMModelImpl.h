@@ -223,6 +223,7 @@ namespace rho {
         static rho::String _get_db_type(const rho::String& propType);
         static bool _is_reserved_name(const rho::String& attrName);
         static rho::String _strip_braces(const rho::String& str);
+        static bool _is_non_str_func_where(const rho::String& val_func);
         
         static HashtablePtr<rho::String, CNewORMModelImpl*> models_;
         static Hashtable<rho::String, int> reserved_names_;

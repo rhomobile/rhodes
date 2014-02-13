@@ -853,6 +853,17 @@ void rho::CNewORMModelImpl::buildComplexWhereCond(const rho::String& key,
     oResult.set(retVals);
 }
 
+bool rho::CNewORMModelImpl::_is_non_str_func_where(const rho::String& val_func)
+{
+    if(!val_func.size())
+        return false;
+    if(!strcasecmp(val_func.c_str(), "length"))
+        return true;
+    if(!strcasecmp(val_func.c_str(), "count"))
+        return true;
+    return false;
+}
+
 rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key, 
                                 const Vector<rho::String>& values, 
                                 const rho::String& val_op, 
@@ -903,8 +914,15 @@ rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
             strSQL += " IS NULL";
         else 
         {
-            strSQL += val_op + "?";
-            quests.push_back(values[0]);
+            // do not add embedded \" in case of Integer Func like COUNT
+            if(_is_non_str_func_where(val_func))
+            {
+                strSQL += val_op + rho::String(" ") + values[0];
+            }
+            else {
+                strSQL += val_op + "?";
+                quests.push_back(values[0]);
+            }
         }
     }
     LOG(INFO) + "MZV_DEBUG: make_cond_where_ex: in the end : " + strSQL + ", quests.size(): " + quests.size();
@@ -1428,21 +1446,23 @@ void rho::CNewORMModelImpl::_deleteObject(db::CDBAdapter& db,
             oResult.setError(res.getDBError().getError());
             return;
         }
+        LOG(INFO) + "MZV_DEBUG: " + ignore_changed_values;
 
         // update changed values with delete request
         if(!ignore_changed_values) {
             for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin(); cIt != attrs.end(); ++cIt)
             {
                 const rho::String& attrKey = cIt -> first;
-                if(_is_reserved_name(attrKey))
-                    continue;
                 const rho::String& attrValue = cIt -> second;
+                if(_is_reserved_name(attrKey) || !attrValue.size())
+                    continue;
                 res = db.executeSQL("INSERT INTO changed_values (source_id,object,attrib,value,update_type) VALUES (?,?,?,?,?)",
                                     source_id, objId, attrKey, attrValue, "delete");
                 if(!res.getDBError().isOK()) {
                     oResult.setError(res.getDBError().getError());
                     return;
                 }
+                LOG(INFO) + "MZV_DEBUG: " + objId + ", " + attrKey + ", " + attrValue;
             }   
         }
     }
