@@ -265,7 +265,7 @@ public class RhodesService extends Service {
 	public static native void resetHttpLogging(String http_log_url);
 	public static native void resetFileLogging(String log_path);
 	
-	public static native boolean isMotorolaLicencePassed(String license, String company, String appName);
+	//public static native boolean isMotorolaLicencePassed(String license, String company, String appName);
 	
 	public native void notifyNetworkStatusChanged( int status );
 	

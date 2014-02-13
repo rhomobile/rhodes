@@ -2,7 +2,7 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "common/RhoFilePath.h"
-#include "json/jsonIterator.h"
+#include "json/JSONIterator.h"
 #include "rubyext/WebView.h"
 
 #ifdef RHODES_EMULATOR
