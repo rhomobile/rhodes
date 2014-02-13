@@ -728,9 +728,6 @@ namespace "config" do
         exit(1)
     end
     #$app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime') 
-    
-    puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
-    puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
 
     if $current_platform == "bb"  
       make_application_build_config_java_file()
@@ -754,6 +751,9 @@ namespace "config" do
     # it`s should be in the end of common:config task
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
+
+    puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"
+    puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"
 
   end # end of common:config 
   
