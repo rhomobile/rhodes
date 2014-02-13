@@ -691,8 +691,11 @@ namespace "config" do
 
               if prebuiltpath
                 mkdir_p targetpath
-                Dir.glob(File.join(prebuiltpath, 'lib*.a')).each do |lib|
-                  Jake.copyIfNeeded lib, targetpath
+                Dir.glob(File.join(prebuiltpath,'**','lib*.a')).each do |lib|
+                  arch = File.basename(File.dirname(lib))
+                  libdirpath = File.join(targetpath,arch)
+                  mkdir_p libdirpath unless File.directory?(libdirpath)
+                  Jake.copyIfNeeded lib, libdirpath
                 end
                 Dir.glob(File.join(prebuiltpath, '*.jar')).each do |lib|
                   Jake.copyIfNeeded lib, targetpath
