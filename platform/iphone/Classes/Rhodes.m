@@ -1093,6 +1093,7 @@ static Rhodes *instance = NULL;
 
 #ifdef __IPHONE_4_0
 - (void)applicationDidEnterBackground:(UIApplication *)app {
+
     RAWLOG_INFO("Application go to background");
     rho_rhodesapp_callUiDestroyedCallback();
     rho_rhodesapp_canstartapp("", ", ");
@@ -1119,18 +1120,18 @@ static Rhodes *instance = NULL;
                         
                         do
                         {
-                            NSLog(@"Check sync");
+                            NSLog(@"Check sync, rho_rcclient_issyncing = %d", rho_rcclient_issyncing());
                             [NSThread sleepForTimeInterval:1];
                         } while (rho_rcclient_issyncing() == 1);
                         
-                        NSLog(@"Sync is finished");
+                        NSLog(@"Sync is finished, rho_rcclient_issyncing = %d", rho_rcclient_issyncing());
                         
                         // If the background task is already invalid, don't try to end it.
                         if (syncBackgroundTask != UIBackgroundTaskInvalid) {
                             [app endBackgroundTask: syncBackgroundTask]; //End the task so the system knows that you are done with what you need to perform
                             syncBackgroundTask = UIBackgroundTaskInvalid; //Invalidate the background_task
                         }
-                    }); 
+                    });
                 }
             }
         }
