@@ -42,6 +42,41 @@ module Rhom
           [sqlRes, quests]
         end
 
+=begin
+        def self._normalize_hash_condition(item, op)
+          # Simple Hash condition can be of two forms:
+          # 1) {'key1':'value'1, 'key2':'value2' ... }, 'op':'OP1' => translates into : key1=value1 OP1 key2=value2
+          # 2) or full form { 'op':'OP1', 'func':'FUNC1', 'attrib':'key1', 'value(s)':'value1' } => translates into FUNC1(key1) OP1 value1
+          if item.has_key?(:op)
+            itemOp = item[:op] || "="
+            itemFunc = item[:func] || ""
+            itemName = item[:name] || ""
+            itemValues = item[:value] || item[:values] || []
+            if itemValues.is_a?String
+              itemValues = [itemValues]
+            end
+
+            subCond = klass_model.buildComplexWhereCond(itemName.to_s, itemValues, itemOp, itemFunc)
+            return [subCond[0], subCond[1..-1]]
+          else
+            puts "MZV_DEBUG : _normalize_hash_condition : #{item.inspect} , #{op}"
+            sqlRes = ""
+            condQuests = []
+            item.each do |k, v|
+              subCond = klass_model.buildComplexWhereCond(k.to_s, [v], "=", '')
+              puts "MZV_DEBUG : _received back : #{subCond.inspect}"
+              if sqlRes.length > 0
+                sqlRes += " " + op + " "
+              end
+              sqlRes += subCond[0]
+              condQuests += subCond[1..-1]
+            end
+            puts "MZV_DEBUG : _and in the end we have : #{sqlRes} ,  #{condQuests}"
+            return [sqlRes, condQuests];
+          end
+        end
+=end
+
         def self._normalize_complex_condition(conditions, op)
           bSimpleHash = true
           normalized_condition_hash = {}
@@ -52,7 +87,13 @@ module Rhom
           conditions.each do |key, value|
             retVal = nil
             if key.is_a?(Hash)
-              if value.is_a?(String)
+              if value.is_a?Integer
+                value = [value.to_s]
+              elsif value.is_a?Float
+                value = [value.to_s]
+              elsif value.is_a?Time
+                value = [value.to_s]
+              elsif value.is_a?(String)
                 value = value.split(",")
                 value.each do |item|
                   item.strip!
@@ -63,10 +104,10 @@ module Rhom
                 end
               end
 
-              retVal = self.klass_model.buildComplexWhereCond(key[:name], value, key[:op], key[:func])
-            else # key is a String
-              values = (value && value.length > 0 ? [value] : [])
-              retVal = self.klass_model.buildComplexWhereCond(key, values, '=', '')
+              retVal = self.klass_model.buildComplexWhereCond(key[:name], value, key[:op] || '=', key[:func])
+            else # key is a String - simple Hash
+              values = (value && value.to_s.length > 0 ? [value] : [])
+              retVal = self.klass_model.buildComplexWhereCond(key.to_s, values, '=', '')
             end
             if retVal
               sqlRes << ' ' + op + ' ' if sqlRes.length > 0
@@ -121,15 +162,47 @@ module Rhom
           # 3) Normalize SELECT
           select_arr = args_hash[:select] || []
           normalized_vector_args.merge!({:select => select_arr})
-
-          # 4) Build Where Conditions
-          cond_str, quests = _normalize_conditions(what, args_hash[:conditions], args_hash[:op])
-          puts " we have here : #{cond_str}, #{quests.inspect}"
-          normalized_string_args[:conditions] = cond_str || ""
-          normalized_vector_args[:quests] = quests || []
         end
 
-        def self.find(*args)
+        def self._order_array(ret_list, order_attr, order_dir, &block)
+          if order_attr
+            ret_list.sort! { |x,y| 
+              res = 0
+              if order_attr.is_a?(Array)
+                order_attr.each_index { |i|
+                  vx = x.vars[order_attr[i].to_sym()]
+                  vy = y.vars[order_attr[i].to_sym()]
+                  res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
+
+                  dir = 'ASC'
+                  if order_dir && order_dir.is_a?(Array) && i < order_dir.length()
+                    dir = order_dir[i].upcase()
+                  else
+                    dir = order_dir.upcase() if order_dir && order_dir.is_a?(String)
+                  end
+                         
+                  res *= -1 if dir && dir == 'DESC'
+                  break if res != 0
+                }
+              else
+                vx = x.vars[order_attr.to_sym()]
+                vy = y.vars[order_attr.to_sym()]
+                res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
+                res *= -1 if order_dir && order_dir.upcase() == 'DESC'
+              end    
+                  
+              res
+            }
+          elsif block_given?
+            ret_list.sort! { |x,y| 
+              res = yield(x,y)
+              res *= -1 if order_dir && order_dir.upcase() == 'DESC'
+              res
+            }
+          end  
+        end
+
+        def self.find(*args, &block)
           puts "MZV_DEBUG: we are in find  #{args.inspect}"
           args[0] = args[0].to_s
           args[1] = args[1] || {}
@@ -140,6 +213,11 @@ module Rhom
             normalized_vector_args = {}
             normalized_string_args = {}
             _normalize_args_for_find(args[0], args[1], normalized_string_args, normalized_vector_args)
+            # Build Where Conditions
+            cond_str, quests = _normalize_conditions(args[0], args[1][:conditions], args[1][:op])
+            puts " we have here : #{cond_str}, #{quests.inspect}"
+            normalized_string_args[:conditions] = cond_str || ""
+            normalized_vector_args[:quests] = quests || []
             puts "MZV_DEBUG: we have here options before find as #{args[0]} , #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
             retVal = klass_model.findObjects(args[0],
                                            normalized_string_args,
@@ -150,16 +228,14 @@ module Rhom
             # property bag
             # only LIMIT is supported
             normalized_string_args = {};
-            limitArgs = klass_model.buildFindLimits(args[0], args[1])
-            normalized_string_args.merge!(limitArgs)
-            # 3) Normalize SELECT
-            select_arr = args[1][:select] || []
-            if select_arr.is_a?String
-              select_arr = [select_arr]
-            end
+            normalized_vector_args = {}
+            _normalize_args_for_find(args[0], args[1], normalized_string_args, normalized_vector_args)
             normalized_string_args[:op] = args[1] || 'AND';
             if args[1][:conditions].is_a?Hash
-              retVal = klass_model.findObjectsPropertyBagByCondHash(args[0], args[1][:conditions], normalized_string_args, select_arr)
+              retVal = klass_model.findObjectsPropertyBagByCondHash(args[0], 
+                                                                    args[1][:conditions], 
+                                                                    normalized_string_args, 
+                                                                    normalized_vector_args[:select])
             else # the only other supported case is simple string (WHERE sql) or array (WHERE sql + quests)
               args[1][:conditions] = args[1][:conditions] || [""]
               args[1][:quests] = []
@@ -172,13 +248,14 @@ module Rhom
                                                                     args[1][:conditions],
                                                                     args[1][:quests],
                                                                     normalized_string_args,
-                                                                    select_arr)
+                                                                    normalized_vector_args[:select])
             end
           end
 
           puts "MZV_DEBUG: find has returned : #{retVal.inspect}"
           if retVal.is_a?Array
             return retVal unless retVal.size() > 0
+
             # if arg[0] is :first or objId return one object
             return self.new(retVal[0]) if (args[0] != 'all')
             # otherwise - return an array
@@ -186,6 +263,7 @@ module Rhom
             retVal.each do |obj|
               orm_objs << self.new(obj)
             end
+            _order_array(orm_objs, args[1][:order], args[1][:orderdir], &block)
             puts "MZV_DEBUG: orm_objs : #{orm_objs.inspect}"
             return orm_objs
           end
@@ -220,28 +298,32 @@ module Rhom
         # deletes all records matching conditions (optionally nil)
         def self.delete_all(*args)
           puts "MZV_DEBUG: we are in delete_all  #{args.inspect}"
-          args[0] = args[0].to_s
-          args[1] ||= {}
+          args[0] ||= {}
           retVal = nil
 
           # prepare arguments
           if klass_model.fixed_schema
             normalized_vector_args = {}
             normalized_string_args = {}
-            _normalize_args_for_find("all", args[1], normalized_string_args, normalized_vector_args)
+            _normalize_args_for_find("all", args[0], normalized_string_args, normalized_vector_args)
+            # Build Where Conditions
+            cond_str, quests = _normalize_conditions("all", args[0][:conditions], args[0][:op])
+            puts " we have here : #{cond_str}, #{quests.inspect}"
+            normalized_string_args[:conditions] = cond_str || ""
+            normalized_vector_args[:quests] = quests || []
             puts " before passing to delete_all #{args[1]}, #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
             # call API function
             retVal = klass_model.deleteObjects(normalized_string_args,
                                                normalized_vector_args[:quests])
           else # property bag
+            normalized_vector_args = {}
             normalized_string_args = {}
-            limitArgs = klass_model.buildFindLimits("all", args[1])
-            normalized_string_args.merge!(limitArgs)
-            normalized_string_args[:op] = args[1][:op] || 'AND'
-            if args[1][:conditions].is_a?Hash
-                retVal = klass_model.deleteObjectsPropertyBagByCondHash(args[1][:conditions], normalized_string_args)
+            _normalize_args_for_find("all", args[0], normalized_string_args, normalized_vector_args)
+            normalized_string_args[:op] = args[0][:op] || 'AND'
+            if args[0][:conditions].is_a?Hash
+                retVal = klass_model.deleteObjectsPropertyBagByCondHash(args[0][:conditions], normalized_string_args)
             else # the only other supported case is simple string (WHERE sql) or array (WHERE sql + quests)
-              conditions = args[1][:conditions] || [""]
+              conditions = args[0][:conditions] || [""]
               quests = []
               if conditions.is_a?Array
                 quests = conditions[1..-1]
@@ -322,9 +404,9 @@ module Rhom
         end
 
         def source_id
-          @vars[:source_id]
+          @vars[:source_id] ||= self.class.klass_model.source_id
         end
-=begin
+
         def to_s
           @vars.to_s if @vars
         end
@@ -332,7 +414,6 @@ module Rhom
         def to_json(*args)
           @vars.to_json(*args) if @vars
         end
-=end
       end
       Object.const_set(klass_model_obj.model_name.intern, klass_instance)
     end
