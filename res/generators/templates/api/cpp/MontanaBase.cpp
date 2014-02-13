@@ -22,9 +22,15 @@ rho::common::CAutoPtr< C<%= $cur_module.name %>FactoryBase> C<%= $cur_module.nam
 ///////////////////////////////////////
 //string constants definiton <%
 $cur_module.constants.each do |module_constant|
-    if module_constant.type == MethodParam::TYPE_STRING && module_constant.name && module_constant.name.length() > 0%>
+    if module_constant.type == MethodParam::TYPE_STRING 
+        if module_constant.name && module_constant.name.length() > 0
+%>
 const char <%= propBaseI %>::<%= module_constant.name %>[] = "<%= module_constant.value %>"; <%
-end; end %>
+        end
+    else %>
+const <%= api_generator_cpp_makeNativeType(module_constant.type) %> <%= propBaseI %>::<%= module_constant.name %> = <%= module_constant.value %>; <%
+    end; 
+end %>
 
 ////////////////////////////////////////////////
 <% if $cur_module.is_template_propertybag %>
