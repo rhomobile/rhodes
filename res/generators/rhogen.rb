@@ -2902,7 +2902,14 @@ module Rhogen
       # add items from item_dict to current_module
       def update_current_module(current_module, item_dict, section, subsection)
         xml_module_item_methods = current_module.elements[section]
-        existing_methods = current_module.get_elements("#{section}/#{subsection}")
+        existing_methods = []
+
+        #check if xml_module_item_methods section exists
+        if xml_module_item_methods.nil?
+          xml_module_item_methods = current_module.add_element(section)  
+        else
+          existing_methods = current_module.get_elements("#{section}/#{subsection}")
+        end
 
         # since we want to get base methods be be first, we need to remove existing methods and then insert them back in the last turn
         existing_methods.each do |method|
@@ -2910,9 +2917,11 @@ module Rhogen
         end
 
         list_size = item_dict.size
+        # generate key/value pairs
         item_list = item_dict.sort_by { |k, v| v[:index] + (v[:current] ? list_size : 0) }
 
         item_list.each do |item|
+          # get sorted value, not the key
           xml_module_item_methods.add_element item[1][:item]
         end
       end
