@@ -166,7 +166,7 @@ module Rhom
 
         def self._order_array(ret_list, order_attr, order_dir, &block)
           if order_attr
-            ret_list.sort! { |x,y| 
+            ret_list.sort! { |x,y|
               res = 0
               if order_attr.is_a?(Array)
                 order_attr.each_index { |i|
@@ -180,7 +180,7 @@ module Rhom
                   else
                     dir = order_dir.upcase() if order_dir && order_dir.is_a?(String)
                   end
-                         
+
                   res *= -1 if dir && dir == 'DESC'
                   break if res != 0
                 }
@@ -189,20 +189,21 @@ module Rhom
                 vy = y.vars[order_attr.to_sym()]
                 res = vx && vy ? (block_given? ? yield(vx,vy): vx <=> vy) : 0
                 res *= -1 if order_dir && order_dir.upcase() == 'DESC'
-              end    
-                  
+              end
+
               res
             }
           elsif block_given?
-            ret_list.sort! { |x,y| 
+            ret_list.sort! { |x,y|
               res = yield(x,y)
               res *= -1 if order_dir && order_dir.upcase() == 'DESC'
               res
             }
-          end  
+          end
         end
 
         def self.find(*args, &block)
+          raise "OrmFindError: invalid arguments" if args[0].nil? or args.length == 0
           puts "MZV_DEBUG: we are in find  #{args.inspect}"
           args[0] = args[0].to_s
           args[1] = args[1] || {}
@@ -232,9 +233,9 @@ module Rhom
             _normalize_args_for_find(args[0], args[1], normalized_string_args, normalized_vector_args)
             normalized_string_args[:op] = args[1] || 'AND';
             if args[1][:conditions].is_a?Hash
-              retVal = klass_model.findObjectsPropertyBagByCondHash(args[0], 
-                                                                    args[1][:conditions], 
-                                                                    normalized_string_args, 
+              retVal = klass_model.findObjectsPropertyBagByCondHash(args[0],
+                                                                    args[1][:conditions],
+                                                                    normalized_string_args,
                                                                     normalized_vector_args[:select])
             else # the only other supported case is simple string (WHERE sql) or array (WHERE sql + quests)
               args[1][:conditions] = args[1][:conditions] || [""]
