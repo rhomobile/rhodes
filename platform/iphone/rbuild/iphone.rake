@@ -1444,7 +1444,7 @@ namespace "run" do
           end
 
           puts "Start reading log ..."
-          File.open(log_name, 'r+') { |io|
+          File.open(log_name, 'r:UTF-8') do |io|
             while !$iphone_end_spec do
               io.each do |line|
                 puts line
@@ -1461,7 +1461,7 @@ namespace "run" do
               end
               sleep(3) unless $iphone_end_spec
             end
-          }
+          end
 
           puts "Processing spec results ..."
           Jake.process_spec_results(start)
