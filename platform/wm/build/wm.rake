@@ -324,7 +324,7 @@ namespace "build" do
           if File.exist? ext_config_path
             ext_config = Jake.config(File.open(ext_config_path))
           end
-          nlib = ext_config['nativelibs']
+          nlib = ext_config['nativelibs'] if ext_config
           nlib = [] unless nlib
 
           puts "#{ext_config}"
@@ -406,7 +406,7 @@ namespace "build" do
                     nlib.each do |lib|
                       lib_file = File.join(commin_ext_path, lib)
 
-                      cp(lib_file, ENV['TARGET_EXT_DIR']) if File.exists? lib_file
+                      cp(lib_file, File.join(ENV['TARGET_EXT_DIR'], ext)) if File.exists? lib_file
                     end
                   end
               end    
