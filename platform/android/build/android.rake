@@ -863,7 +863,7 @@ namespace "build" do
               args << "arch:#{abi}"
               if !File.file?(File.join(builddata[0],'Rakefile'))
                 args << "-f"
-                args << File.join($startdir,'platform','android','build','Rakefile')
+                args << "\"#{File.join($startdir,'platform','android','build','Rakefile')}\""
               end
               args << '--trace' if USE_TRACES
             end
@@ -941,7 +941,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: sqlite"
       end
@@ -982,7 +982,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: curl"
       end
@@ -1020,7 +1020,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: ruby"
       end
@@ -1051,7 +1051,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: json"
       end
@@ -1081,7 +1081,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rholog"
       end
@@ -1112,7 +1112,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhomain"
       end
@@ -1144,7 +1144,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhocommon"
       end
@@ -1176,7 +1176,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhodb"
       end
@@ -1208,7 +1208,7 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        args = ['-f', File.join($builddir,'Rakefile'), "arch:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhosync"
       end
@@ -1369,7 +1369,7 @@ namespace "build" do
         ENV['LINKARGS'] = args.join(' ')
         ENV['LINKDEPS'] = (deps+extlibs).join(' ')
 
-        args = ['-f', File.join($builddir,'Rakefile'), "link:#{abi}"]
+        args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "link:#{abi}"]
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhodes"
         #Jake.run3("rake #{args.join(' ')}")
