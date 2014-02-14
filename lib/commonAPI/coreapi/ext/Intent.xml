@@ -69,7 +69,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 <DESC>MIME type of data defined in the intent.</DESC>
                             </PARAM>
                             <PARAM name="data" type="HASH">
-                                <DESC>Data which will be sent within the intent.</DESC>
+                                <DESC>Data which will be sent within the intent. We don't support data like data:image/jpeg;base64,/9j/4AAQSkZ</DESC>
                             </PARAM>
                          </PARAMS>
                     </PARAM>
