@@ -459,7 +459,7 @@ namespace "config" do
     $abis = $app_config['android']['abis'] if $app_config["android"]
     $abis = ['arm','x86'] unless $abis
 
-    $native_libs = ["sqlite", "curl", "stlport", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
+    $native_libs = ["sqlite", "curl", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
     if $build_release
       $confdir = "release"
@@ -1312,10 +1312,6 @@ namespace "build" do
       ENV['BUILDARGS'] = args.join(' ')
     
       $abis.each do |abi|
-        deps = []
-        $libname.each do |k, v|
-          deps << v
-        end
 
         args = []
 
@@ -1326,32 +1322,48 @@ namespace "build" do
 
         rlibs.map! { |x| "-l#{x}" }
 
-        elibs = []
+        realabi = abi
+        realabi = 'armeabi' if abi == 'arm'
 
-        abi_hacked = abi
-        abi_hacked = 'armeabi' if abi == 'arm'
-
-        extlibs = Dir.glob(File.join($app_builddir,'**',abi_hacked,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")
+        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")
 
         extlibs.each do |lib|
           args << "-L\"#{File.dirname(lib)}\""
         end
+        
+        deps = []
+        libs = []
+        $libname.each do |name, lib|
+          deps << lib
+          libs << name
+          args << "-L\"#{File.dirname(lib)}/#{realabi}\""
+        end
+        libs.map! { |x| "-l#{x}" }
 
-        stub = []
-        extlibs.reverse.each do |f|
-          lparam = "-l" + File.basename(f).gsub(/^lib/, "").gsub(/\.(a|so)$/, "")
-          elibs << lparam
+        if extlibs && extlibs.size > 0
+          args << '-Wl,--whole-archive'
+          extlibs.each do |lib|
+            args << '-l' + File.basename(lib).gsub(/^lib/, "").gsub(/\.(a|so)$/, "")
+          end
+          args << '-Wl,--no-whole-archive'
+        end
+
+        deps.each do |dep|
+          args << '-l' + File.basename(dep).gsub(/^lib/, "").gsub(/\.(a|so)$/, "")
+        end
+
         # Workaround for GNU ld: this way we have specified one lib multiple times
         # command line so ld's dependency mechanism will find required functions
         # independently of its position in command line
+        stub = []
+        libs.each do |lib|
+          args << lib
           stub.each do |s|
             args << s
           end
-          stub << lparam
+          stub << lib
         end
 
-        args += elibs
-        args += elibs
         args += rlibs
         
         ENV['LINKARGS'] = args.join(' ')
