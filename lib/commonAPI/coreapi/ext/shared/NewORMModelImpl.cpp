@@ -24,7 +24,7 @@ rho::CNewORMModelImpl::CNewORMModelImpl(const rho::String& strID)
     fixedSchemaAccessor -> addSetter(new rho::apiGenerator::CMethodAccessor<INewORMModel>::CSetter<bool, bool>(&INewORMModel::setFixed_schema));
     rho::apiGenerator::CMethodAccessor< INewORMModel >* freezedModelAccessor = new rho::apiGenerator::CMethodAccessor<INewORMModel>(&INewORMModel::getFreezed);
     freezedModelAccessor -> addSetter(new rho::apiGenerator::CMethodAccessor<INewORMModel>::CSetter<bool, bool>(&INewORMModel::setFreezed));
-    
+
     m_mapPropAccessors["fixed_schema"] = fixedSchemaAccessor;
     m_mapPropAccessors["freezed"] = freezedModelAccessor;
 }
@@ -98,22 +98,22 @@ void rho::CNewORMModelImpl::set(const rho::String& propName, const rho::String& 
         if(propValue == "true")
         {
             getSync_type(oResult);
-            if(oResult.getString() == "none") 
+            if(oResult.getString() == "none")
                 setSync_type("incremental", oResult);
             // sync type also controls the partition name
             getPartition(oResult);
-            if(oResult.getString() == "local") 
-                setPartition("user", oResult);    
+            if(oResult.getString() == "local")
+                setPartition("user", oResult);
         }
         else
         {
             setSync_type("none", oResult);
-            setPartition("local", oResult);     
+            setPartition("local", oResult);
         }
-        
+
     }
     // all other properties
-    else 
+    else
         setProperty(propName, propValue, oResult);
 }
 
@@ -136,8 +136,8 @@ void rho::CNewORMModelImpl::getBelongsTo(const rho::String& propName, rho::apiGe
     }
 }
 
-void rho::CNewORMModelImpl::setModelProperty(const rho::String& propName, 
-                      const rho::String& propType, 
+void rho::CNewORMModelImpl::setModelProperty(const rho::String& propName,
+                      const rho::String& propType,
                       const rho::String& option,
                       rho::apiGenerator::CMethodResult&)
 {
@@ -159,15 +159,15 @@ void rho::CNewORMModelImpl::getModelProperty(const rho::String& propName, rho::a
 void rho::CNewORMModelImpl::setSchemaIndex(const rho::String& indexName, const rho::Vector<rho::String>& indexColumns, bool bUniqueIndex, rho::apiGenerator::CMethodResult& oResult)
 {
     LOG(INFO) + "setSchemaIndex: " + indexName + ", is_unique: " + bUniqueIndex;
-    for(int i = 0; i < indexColumns.size(); ++i) 
-        LOG(INFO) + "indexCol: " + indexColumns[i]; 
+    for(int i = 0; i < indexColumns.size(); ++i)
+        LOG(INFO) + "indexCol: " + indexColumns[i];
     schemaIndices_[indexName] = SchemaIndexDef(indexName, indexColumns, bUniqueIndex);
 }
 
 void rho::CNewORMModelImpl::validateFreezedAttributes(const rho::Hashtable<rho::String, rho::String>& attrs, rho::apiGenerator::CMethodResult& oResult)
 {
     oResult.set(true);
-    if(!fixed_schema() && !freezed_model()) 
+    if(!fixed_schema() && !freezed_model())
         return;
 
     for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrs.begin();
@@ -183,14 +183,14 @@ void rho::CNewORMModelImpl::validateFreezedAttributes(const rho::Hashtable<rho::
 void rho::CNewORMModelImpl::validateFreezedAttribute(const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult)
 {
     oResult.set(true);
-    if(!fixed_schema() && !freezed_model()) 
+    if(!fixed_schema() && !freezed_model())
         return;
 
     if(_is_reserved_name(attrName))
         return;
 
     // non-reserved attr name must exist
-    if(!modelProperties_.containsKey(attrName)) 
+    if(!modelProperties_.containsKey(attrName))
     {
         rho::String errStr("Non-exist property : ");
         errStr += attrName;
@@ -198,7 +198,7 @@ void rho::CNewORMModelImpl::validateFreezedAttribute(const rho::String& attrName
         errStr += name();
         oResult.setError(errStr);
         return;
-    }  
+    }
 }
 
 int rho::CNewORMModelImpl::get_start_id(const rho::String& partition)
@@ -214,7 +214,7 @@ int rho::CNewORMModelImpl::get_start_id(const rho::String& partition)
     }
 
     start_id += 1;
-  
+
     LOG(INFO) + "_get_start_id:" + start_id;
     return start_id;
 }
@@ -243,13 +243,13 @@ void rho::CNewORMModelImpl::initAssociations(rho::apiGenerator::CMethodResult& o
 {
     LOG(INFO) +  "initAssociations: " + name();
 
-    for(Hashtable<rho::String, rho::Vector<rho::String> >::const_iterator cIt = belongsTo_.begin(); 
-        cIt != belongsTo_.end(); ++cIt) 
+    for(Hashtable<rho::String, rho::Vector<rho::String> >::const_iterator cIt = belongsTo_.begin();
+        cIt != belongsTo_.end(); ++cIt)
     {
         const rho::String& property_name = cIt -> first;
         const rho::Vector<rho::String>& sources = cIt -> second;
 
-        for(size_t i = 0; i < sources.size(); ++i) 
+        for(size_t i = 0; i < sources.size(); ++i)
         {
             const rho::String& source_name = sources[i];
             HashtablePtr<rho::String, CNewORMModelImpl*>::iterator modelIt = CNewORMModelImpl::models().find(source_name);
@@ -283,7 +283,7 @@ void rho::CNewORMModelImpl::initBlobAttributes(rho::apiGenerator::CMethodResult&
         ++cIt)
     {
         const ModelPropertyDef& prop_def = cIt -> second;
-        if(prop_def.type_ == "blob") 
+        if(prop_def.type_ == "blob")
         {
             if(blob_attribs.size() > 0)
                 blob_attribs += ",";
@@ -317,7 +317,7 @@ void rho::CNewORMModelImpl::initSyncSourceProperties(rho::apiGenerator::CMethodR
         bool optValue = false;
         convertFromStringA(oResult.getString().c_str(), optValue);
         if(optValue)
-           rho::sync::RhoconnectClientManager::set_source_property(source_id, sync_options[i].c_str(), oResult.getString().c_str());   
+           rho::sync::RhoconnectClientManager::set_source_property(source_id, sync_options[i].c_str(), oResult.getString().c_str());
     }
 
     if(!freezed_model())
@@ -356,21 +356,21 @@ void rho::CNewORMModelImpl::initDbSource(rho::apiGenerator::CMethodResult& oResu
     rho::String source_id = oResult.getString();
 
     LOG(INFO) + "initDbSource: model attribs: " + "name:" + name()
-        + ". source_id:" + source_id 
+        + ". source_id:" + source_id
         + ", partition:" + partition
         + ", sync_type:" + sync_type
         + ", sync_priority:" + sync_priority
         + ", associations: " + associations
-        + ", blob_attribs:" + blob_attribs; 
+        + ", blob_attribs:" + blob_attribs;
 
     db::CDBAdapter& db = db::CDBAdapter::getDB(partition.c_str());
     IDBResult res = db.executeSQL("SELECT sync_priority,source_id,partition,sync_type,associations,blob_attribs,name FROM sources WHERE name=?", name().c_str());
-    
+
     bool hasExistingAttribs = !res.isEnd();
     if(hasExistingAttribs) {
         Hashtable<rho::String, rho::String> existing_attribs;
         Hashtable<rho::String, rho::String> attribs_to_update;
-        for(int iCol = 0; iCol < res.getColCount(); ++iCol) { 
+        for(int iCol = 0; iCol < res.getColCount(); ++iCol) {
             existing_attribs.put(res.getColName(iCol), res.getStringByIdx(iCol));
         }
         // re-use existing source_id
@@ -385,7 +385,7 @@ void rho::CNewORMModelImpl::initDbSource(rho::apiGenerator::CMethodResult& oResu
             attribs_to_update.put("associations", associations);
         if(existing_attribs["blob_attribs"] != blob_attribs)
             attribs_to_update.put("blob_attribs", blob_attribs);
-        
+
         if(attribs_to_update.size()) {
             rho::String updateSqlStatement("UPDATE sources SET ");
             rho::String setSql;
@@ -409,7 +409,7 @@ void rho::CNewORMModelImpl::initDbSource(rho::apiGenerator::CMethodResult& oResu
             source_id = convertToStringA(start_id);
             setProperty("source_id", source_id, oResult);
         }
-        res = db.executeSQL("INSERT INTO sources (source_id,name,sync_priority,sync_type,partition,associations,blob_attribs) VALUES(?,?,?,?,?,?,?)", 
+        res = db.executeSQL("INSERT INTO sources (source_id,name,sync_priority,sync_type,partition,associations,blob_attribs) VALUES(?,?,?,?,?,?,?)",
             source_id, name(), sync_priority, sync_type, partition, associations, blob_attribs);
         if(!res.getDBError().isOK()) {
             oResult.setError(res.getDBError().getError());
@@ -420,7 +420,7 @@ void rho::CNewORMModelImpl::initDbSource(rho::apiGenerator::CMethodResult& oResu
 void rho::CNewORMModelImpl::initDbSchema(rho::apiGenerator::CMethodResult& oResult)
 {
     if(!fixed_schema())
-        return; 
+        return;
 
     // Schema models are freezed by default
     setProperty("freezed", "true", oResult);
@@ -434,7 +434,7 @@ void rho::CNewORMModelImpl::initDbSchema(rho::apiGenerator::CMethodResult& oResu
     LOG(INFO) + "initDbSchema: model attribs: " + "name: " + name()
         + ", schema_version: " + schema_version
         + ", schema_version in DB: " + existing_schema_version;
-    
+
     bool bTableExists = db.isTableExist(name());
     bool bMigrateSchema = (bTableExists && (existing_schema_version != schema_version));
     LOG(INFO) + "initDbSchema: bTableExists: " + bTableExists + ", bMigrateSchema: " + bMigrateSchema;
@@ -485,16 +485,16 @@ void rho::CNewORMModelImpl::initDbSchema(rho::apiGenerator::CMethodResult& oResu
 }
 
 void rho::CNewORMModelImpl::getCount(rho::apiGenerator::CMethodResult& oResult)
-{ 
+{
     Vector<rho::String> quests;
     _findCount("", quests, oResult);
     LOG(INFO) + name() + ", getCount: " +  oResult.getInt();
 }
 
-void rho::CNewORMModelImpl::_findCount(const rho::String& conditionsStr, 
+void rho::CNewORMModelImpl::_findCount(const rho::String& conditionsStr,
                 Vector<rho::String>& quests,
                 rho::apiGenerator::CMethodResult& oResult)
-{ 
+{
     getProperty("source_id", oResult);
     rho::String source_id = oResult.getString();
     db::CDBAdapter& db = _get_db(oResult);
@@ -533,7 +533,7 @@ void rho::CNewORMModelImpl::_findCount(const rho::String& conditionsStr,
 }
 
 void rho::CNewORMModelImpl::getBackendRefreshTime(rho::apiGenerator::CMethodResult& oResult)
-{ 
+{
     getProperty("source_id", oResult);
     rho::String source_id = oResult.getString();
     db::CDBAdapter& db = _get_db(oResult);
@@ -544,7 +544,7 @@ void rho::CNewORMModelImpl::getBackendRefreshTime(rho::apiGenerator::CMethodResu
     oResult.set(CLocalTime(nTime).formatStr("%Y-%m-%d %H:%M:%S %z"));
 }
 
-void rho::CNewORMModelImpl::findObjects(const rho::String& what, 
+void rho::CNewORMModelImpl::findObjects(const rho::String& what,
                  const Hashtable<rho::String, rho::String>& strOptions,
                  const rho::Vector<rho::String>& quests,
                  const rho::Vector<rho::String>& select_attrs,
@@ -630,7 +630,7 @@ void rho::CNewORMModelImpl::deleteObjects(const Hashtable<rho::String, rho::Stri
         }
         const rho::String& objId = cObjIt -> second;
         _deleteObject(db, is_sync_source, source_id, objId, obj_data, oResult);
-        if(oResult.isError()) 
+        if(oResult.isError())
         {
             db.rollback();
             return;
@@ -639,8 +639,8 @@ void rho::CNewORMModelImpl::deleteObjects(const Hashtable<rho::String, rho::Stri
     db.endTransaction();
 }
 
-void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const Hashtable<rho::String, rho::String>& conditions, 
-                    const Hashtable<rho::String, rho::String>& strOptions, 
+void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const Hashtable<rho::String, rho::String>& conditions,
+                    const Hashtable<rho::String, rho::String>& strOptions,
                     rho::apiGenerator::CMethodResult& oResult)
 {
     getProperty("source_id", oResult);
@@ -666,7 +666,7 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const Hashtable<r
         }
         const rho::String& objId = cObjIt -> second;
         _deleteObject(db, is_sync_source, source_id, objId, obj_data, oResult);
-        if(oResult.isError()) 
+        if(oResult.isError())
         {
             db.rollback();
             return;
@@ -677,7 +677,7 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const Hashtable<r
 
 void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondArray(const rho::String& conditions,
                                     const Vector<rho::String>& quests,
-                                    const Hashtable<rho::String, rho::String>& strOptions, 
+                                    const Hashtable<rho::String, rho::String>& strOptions,
                                     rho::apiGenerator::CMethodResult& oResult)
 {
     getProperty("source_id", oResult);
@@ -703,7 +703,7 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondArray(const rho::Strin
         }
         const rho::String& objId = cObjIt -> second;
         _deleteObject(db, is_sync_source, source_id, objId, obj_data, oResult);
-        if(oResult.isError()) 
+        if(oResult.isError())
         {
             db.rollback();
             return;
@@ -723,9 +723,9 @@ rho::String rho::CNewORMModelImpl::_make_select_attrs_str(const rho::Vector<rho:
         if(attrs_str.size())
             attrs_str += ",";
         attrs_str += select_attrs[i];
-        attrsSet[select_attrs[i]] = "";    
+        attrsSet[select_attrs[i]] = "";
     }
-    return attrs_str;   
+    return attrs_str;
 }
 
 rho::String rho::CNewORMModelImpl::_make_order_str(const Vector<rho::String>& order_attrs)
@@ -739,11 +739,11 @@ rho::String rho::CNewORMModelImpl::_make_order_str(const Vector<rho::String>& or
         if(order_attr_sql.size())
             order_attr_sql += ",";
         order_attr_sql += rho::String("\"") + order_attrs[i] + "\" " + order_attrs[i + 1];
-        i += 2; 
+        i += 2;
     }
     if(order_attr_sql.size())
         order_str = rho::String(" ORDER BY ") + order_attr_sql;
-    return order_str;   
+    return order_str;
 }
 
 rho::String rho::CNewORMModelImpl::_make_limit_str(const Hashtable<rho::String, rho::String>& options)
@@ -761,10 +761,10 @@ rho::String rho::CNewORMModelImpl::_make_limit_str(const Hashtable<rho::String, 
 
     if(limit > -1 && offset > -1)
         limit_str = rho::String(" LIMIT " ) + rho::common::convertToStringA(limit) + " OFFSET " + rho::common::convertToStringA(offset);
-    return limit_str;   
+    return limit_str;
 }
 
-void rho::CNewORMModelImpl::buildFindLimits(const rho::String& whatArg, 
+void rho::CNewORMModelImpl::buildFindLimits(const rho::String& whatArg,
                      const Hashtable<rho::String, rho::String>& options,
                      rho::apiGenerator::CMethodResult& oResult)
 {
@@ -779,10 +779,8 @@ void rho::CNewORMModelImpl::buildFindLimits(const rho::String& whatArg,
         iOffset = 0;
     }
     Hashtable<rho::String, rho::String>::const_iterator cIt = options.find("offset");
-    if(cIt != options.end())
+    if(cIt != options.end()) {
         rho::common::convertFromStringA(cIt -> second.c_str(), iOffset);
-    // look for limit, unless it's already set
-    if(iLimit != -1) {
         cIt = options.find("per_page");
         if(cIt != options.end())
             rho::common::convertFromStringA(cIt -> second.c_str(), iLimit);
@@ -832,14 +830,14 @@ void rho::CNewORMModelImpl::buildSimpleWhereCond(const rho::String& what,
     else { // all, first, count - build simple hash condition
         Vector<rho::String> values;
         buildComplexWhereCond("", values, "=", "", oResult);
-        return; 
+        return;
     }
-    oResult.set(conditions);    
+    oResult.set(conditions);
 }
 
-void rho::CNewORMModelImpl::buildComplexWhereCond(const rho::String& key, 
-                           const Vector<rho::String>& values, 
-                           const rho::String& val_op, 
+void rho::CNewORMModelImpl::buildComplexWhereCond(const rho::String& key,
+                           const Vector<rho::String>& values,
+                           const rho::String& val_op,
                            const rho::String& val_func,
                            rho::apiGenerator::CMethodResult& oResult)
 {
@@ -864,9 +862,9 @@ bool rho::CNewORMModelImpl::_is_non_str_func_where(const rho::String& val_func)
     return false;
 }
 
-rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key, 
-                                const Vector<rho::String>& values, 
-                                const rho::String& val_op, 
+rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
+                                const Vector<rho::String>& values,
+                                const rho::String& val_op,
                                 const rho::String& val_func,
                                 Vector<rho::String>& quests)
 {
@@ -876,13 +874,13 @@ rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
         if(!key.size())
             return strSQL;
         strSQL += (val_func.size() ? val_func + "(" + key + ")" : key);
-        strSQL += " "; 
+        strSQL += " ";
     }
     else {
         rho::apiGenerator::CMethodResult oResult;
         if(!key.size())
             return strSQL;
-        if(key != "object") 
+        if(key != "object")
         {
             strSQL += " attrib=?";
             quests.push_back(key);
@@ -895,12 +893,12 @@ rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
         }
     }
 
-    if(val_op == "IN" || val_op == "NOT IN") 
+    if(val_op == "IN" || val_op == "NOT IN")
     {
         strSQL += val_op + " (";
         rho::String valsStr;
         for(size_t i = 0; i < values.size(); ++i)
-        {   
+        {
             if(valsStr.size())
                 valsStr += ",";
             valsStr += "?";
@@ -908,11 +906,11 @@ rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
         }
         strSQL += valsStr + ")";
     }
-    else 
+    else
     {
         if(!values.size())
             strSQL += " IS NULL";
-        else 
+        else
         {
             // do not add embedded \" in case of Integer Func like COUNT
             if(_is_non_str_func_where(val_func))
@@ -930,7 +928,7 @@ rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
     return strSQL;
 }
 
-void rho::CNewORMModelImpl::findObjectsFixedSchema(const rho::String& what, 
+void rho::CNewORMModelImpl::findObjectsFixedSchema(const rho::String& what,
                  const Hashtable<rho::String, rho::String>& strOptions,
                  const rho::Vector<rho::String>& quests,
                  const rho::Vector<rho::String>& select_attrs,
@@ -977,7 +975,7 @@ void rho::CNewORMModelImpl::findObjectsFixedSchema(const rho::String& what,
     oResult.set(retVals);
 }
 
-void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& what, 
+void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& what,
                                                              const Hashtable<rho::String, rho::String>& conditions,
                                                              const Hashtable<rho::String, rho::String>& strOptions,
                                                              const Vector<rho::String>& select_attr,
@@ -990,7 +988,7 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
     rho::String attrs_str = "object,attrib,value";
     Hashtable<rho::String, rho::String> attrSet;
     rho::String selStr = _make_select_attrs_str(select_attr, attrSet);
-    LOG(INFO) + "MZV_DEBUG: " + selStr; 
+    LOG(INFO) + "MZV_DEBUG: " + selStr;
 
     // make intersect SQL statement
     rho::String strSQL;
@@ -1000,13 +998,13 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
         strSQL += " FROM object_values WHERE source_id=?";
         quests.push_back(source_id);
     }
-    else 
+    else
     {
         for(Hashtable<rho::String, rho::String>::const_iterator cIt = conditions.begin(); cIt != conditions.end(); ++cIt) {
-            if(strSQL.size() > 0) 
+            if(strSQL.size() > 0)
             {
                 strSQL += "\nINTERSECT\n";
-            } 
+            }
             rho::String strCondStatement("SELECT object ");
             strCondStatement += " FROM object_values WHERE source_id=? AND ";
             quests.push_back(source_id);
@@ -1015,7 +1013,7 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
             strCondStatement += rho::String("attrib=? AND value=?");
             quests.push_back(key);
             quests.push_back(value);
-            strSQL += strCondStatement;   
+            strSQL += strCondStatement;
         }
     }
 
@@ -1049,7 +1047,7 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
     oResult.set(retVals);
 }
 
-void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String& what, 
+void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String& what,
                                                               const rho::String& conditions,
                                                               const Vector<rho::String>& quests,
                                                               const Hashtable<rho::String, rho::String>& strOptions,
@@ -1062,13 +1060,13 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     rho::String where_str(conditions);
     rho::Vector<rho::String> questParams(quests);
     // count returns an integer
-    if(what == "count") 
+    if(what == "count")
     {
         _findCount(conditions, questParams, oResult);
         return;
     }
     Hashtable<rho::String, rho::String> attrSet;
-    _make_select_attrs_str(select_attr, attrSet);   
+    _make_select_attrs_str(select_attr, attrSet);
     // what is and Object's ID
     if(what != "all" && what != "first") {
         where_str = "object=?";
@@ -1076,7 +1074,7 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
         questParams.push_back(what);
     }
     rho::String order_str = "";
-    rho::String limit_str = ""; 
+    rho::String limit_str = "";
     rho::String attrs_str = "object,attrib,value";
     rho::String strSQL("SELECT ");
     strSQL += attrs_str + " FROM object_values";
@@ -1161,7 +1159,7 @@ void rho::CNewORMModelImpl::createInstance(const Hashtable<rho::String, rho::Str
             return;
         retInstance["object"] = rho::common::convertToStringA(oResult.getInt());
     }
-    getProperty("source_id", oResult); 
+    getProperty("source_id", oResult);
     retInstance["source_id"] = oResult.getString();
     oResult.set(retInstance);
 }
@@ -1211,7 +1209,7 @@ void rho::CNewORMModelImpl::createObject(const Hashtable<rho::String, rho::Strin
             oResult.setError(res.getDBError().getError());
             db.rollback();
             return;
-        }    
+        }
     }
     else
     {
@@ -1221,23 +1219,23 @@ void rho::CNewORMModelImpl::createObject(const Hashtable<rho::String, rho::Strin
             ++cIt)
         {
             if(_is_reserved_name(cIt -> first))
-                continue;   
-            
+                continue;
+
             IDBResult res = db.executeSQL(strSQL.c_str(), source_id, attrs.get("object"), cIt -> first, cIt -> second);
             if(!res.getDBError().isOK()) {
                 oResult.setError(res.getDBError().getError());
                 db.rollback();
                 return;
             }
-        } 
+        }
     }
 
     db.endTransaction();
 }
 
-void rho::CNewORMModelImpl::updateObject(const rho::String& objId, 
+void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
                   const Hashtable<rho::String, rho::String>& oldAttrs,
-                  const Hashtable<rho::String, rho::String>& newAttrs, 
+                  const Hashtable<rho::String, rho::String>& newAttrs,
                   rho::apiGenerator::CMethodResult& oResult)
 {
     Hashtable<rho::String, rho::String> retAttrs;
@@ -1248,11 +1246,11 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
     LOG(INFO) + "MZV_DEBUG, we have here : " + objId;
     for(Hashtable<rho::String, rho::String>::const_iterator cNIt = newAttrs.begin(); cNIt != newAttrs.end(); ++cNIt)
     {
-        LOG(INFO) + "MZV_DEBUG, newAttr : " + cNIt -> first + " : " + cNIt -> second;     
+        LOG(INFO) + "MZV_DEBUG, newAttr : " + cNIt -> first + " : " + cNIt -> second;
     }
     for(Hashtable<rho::String, rho::String>::const_iterator cOIt = oldAttrs.begin(); cOIt != oldAttrs.end(); ++cOIt)
     {
-        LOG(INFO) + "MZV_DEBUG, oldAttr : " + cOIt -> first + " : " + cOIt -> second;     
+        LOG(INFO) + "MZV_DEBUG, oldAttr : " + cOIt -> first + " : " + cOIt -> second;
     }
 
 
@@ -1281,7 +1279,7 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
         LOG(INFO) + "MZV_DEBUG: update_type ret is : " + res.isEnd();
         if(!res.isEnd())
         {
-            existing_update_type = res.getStringByIdx(0); 
+            existing_update_type = res.getStringByIdx(0);
         }
         ignore_changed_values = (existing_update_type == "create");
     }
@@ -1301,10 +1299,10 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
         }
         else
             is_modified = (attrValue.size() > 0);
-                      
+
         // if the object's value doesn't match the database record
         // then we procede with update
-        if(is_modified) 
+        if(is_modified)
         {
             Vector<rho::String> quests;
             rho::String sqlScript = _make_insert_or_update_attr_sql_script(source_id, objId, attrKey, attrValue, quests);
@@ -1319,7 +1317,7 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
             }
             LOG(INFO) + "MZV_DEBUG: attribute has been updated";
 
-            if(!ignore_changed_values) 
+            if(!ignore_changed_values)
             {
                 if(existing_update_type.size() > 0)
                 {
@@ -1341,7 +1339,7 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
                     db.rollback();
                     return;
                 }
-                LOG(INFO) + "MZV_DEBUG: changed_values are updated";   
+                LOG(INFO) + "MZV_DEBUG: changed_values are updated";
             }
 
             // to update in-memory object
@@ -1379,7 +1377,7 @@ void rho::CNewORMModelImpl::saveObject(const rho::String& objId,
     }
 }
 
-void rho::CNewORMModelImpl::deleteObject(const rho::String& objId, 
+void rho::CNewORMModelImpl::deleteObject(const rho::String& objId,
                   rho::apiGenerator::CMethodResult& oResult)
 {
     // delete all attrs first
@@ -1395,7 +1393,7 @@ void rho::CNewORMModelImpl::deleteObject(const rho::String& objId,
     LOG(INFO) + "MZV_DEBUG, we have here : " + objId + ", obj_exists : " + object_exists;
     for(Hashtable<rho::String, rho::String>::const_iterator cNIt = attrs.begin(); cNIt != attrs.end(); ++cNIt)
     {
-        LOG(INFO) + "MZV_DEBUG, exist attr : " + cNIt -> first + " : " + cNIt -> second;     
+        LOG(INFO) + "MZV_DEBUG, exist attr : " + cNIt -> first + " : " + cNIt -> second;
     }
     if(object_exists)
         _deleteObject(db, is_sync_source, source_id, objId, attrs, oResult);
@@ -1406,7 +1404,7 @@ void rho::CNewORMModelImpl::deleteObject(const rho::String& objId,
 }
 
 void rho::CNewORMModelImpl::_deleteObject(db::CDBAdapter& db,
-                   const bool is_sync_source, 
+                   const bool is_sync_source,
                    const rho::String& source_id,
                    const rho::String& objId,
                    const Hashtable<rho::String, rho::String>& attrs,
@@ -1429,7 +1427,7 @@ void rho::CNewORMModelImpl::_deleteObject(db::CDBAdapter& db,
         if(!res.getDBError().isOK()) {
             oResult.setError(res.getDBError().getError());
             return;
-        }    
+        }
     }
 
     bool ignore_changed_values = true;
@@ -1463,7 +1461,7 @@ void rho::CNewORMModelImpl::_deleteObject(db::CDBAdapter& db,
                     return;
                 }
                 LOG(INFO) + "MZV_DEBUG: " + objId + ", " + attrKey + ", " + attrValue;
-            }   
+            }
         }
     }
     oResult.set(true);
@@ -1509,8 +1507,8 @@ rho::String rho::CNewORMModelImpl::_get_db_type(const rho::String& propType)
     if(propType == "date")
         strType = "integer";
     if(propType == "time")
-        strType = "integer"; 
-    return strType;  
+        strType = "integer";
+    return strType;
 }
 
 bool rho::CNewORMModelImpl::_is_reserved_name(const rho::String& attrName)
@@ -1519,7 +1517,7 @@ bool rho::CNewORMModelImpl::_is_reserved_name(const rho::String& attrName)
 }
 
 rho::String rho::CNewORMModelImpl::_make_insert_attrs_sql_script(const rho::String& objectId,
-                                                const Hashtable<rho::String, rho::String>& attrs, 
+                                                const Hashtable<rho::String, rho::String>& attrs,
                                                 Vector<rho::String>& quests) const
 {
     rho::String strCols, strQuests;
@@ -1540,7 +1538,7 @@ rho::String rho::CNewORMModelImpl::_make_insert_attrs_sql_script(const rho::Stri
         quests.push_back(cIt -> second);
     }
 
-    return rho::String("INSERT INTO ") + name() + "(\"object\"," + strCols + ") VALUES (?," + strQuests + ");\r\n";   
+    return rho::String("INSERT INTO ") + name() + "(\"object\"," + strCols + ") VALUES (?," + strQuests + ");\r\n";
 }
 
 rho::String rho::CNewORMModelImpl::_make_create_sql_script() const
@@ -1563,7 +1561,7 @@ rho::String rho::CNewORMModelImpl::_make_create_sql_script() const
     strCols += "\"object\" varchar(255) PRIMARY KEY";
 
     rho::String strCreate = "CREATE TABLE \"" + name() + "\" ( " + strCols + " )";
-    
+
     if(strCreate.size() > 0)
         strCreate += ";\r\n";
 
@@ -1577,7 +1575,7 @@ rho::Vector<rho::String> rho::CNewORMModelImpl::_create_sql_schema_indices() con
     rho::Vector<rho::String> retIndices;
     for(Hashtable<rho::String, SchemaIndexDef>::const_iterator cIt = schemaIndices_.begin();
         cIt != schemaIndices_.end();
-        ++cIt) 
+        ++cIt)
     {
         rho::String strCols;
         const SchemaIndexDef& index_def = cIt -> second;
@@ -1586,7 +1584,7 @@ rho::Vector<rho::String> rho::CNewORMModelImpl::_create_sql_schema_indices() con
         {
             if(strCols.size())
                 strCols += ",";
-            strCols += rho::String("\"") + cols[i] + "\""; 
+            strCols += rho::String("\"") + cols[i] + "\"";
         }
 
         rho::String strIndex("CREATE ");
@@ -1595,20 +1593,20 @@ rho::Vector<rho::String> rho::CNewORMModelImpl::_create_sql_schema_indices() con
         strIndex += rho::String("INDEX ") + index_def.name_ + " ON " + name() + " (" + strCols + ");\r\n";
         retIndices.push_back(strIndex);
         LOG(INFO) + "_create_sql_schema_indices: " + name() + ", sql: " + strIndex;
-        //strSQLIndices += strIndex; 
+        //strSQLIndices += strIndex;
     }
 
     return retIndices;
 }
 
-rho::String rho::CNewORMModelImpl::_make_insert_or_update_attr_sql_script(const rho::String srcId, 
-                                                        const rho::String& objId, 
+rho::String rho::CNewORMModelImpl::_make_insert_or_update_attr_sql_script(const rho::String srcId,
+                                                        const rho::String& objId,
                                                         const rho::String& attrKey,
                                                         const rho::String& attrValue,
                                                         Vector<rho::String>& quests)
 {
     rho::apiGenerator::CMethodResult oResult;
-    db::CDBAdapter& db = _get_db(oResult); 
+    db::CDBAdapter& db = _get_db(oResult);
     rho::String retScript;
     if(fixed_schema())
     {
@@ -1617,16 +1615,16 @@ rho::String rho::CNewORMModelImpl::_make_insert_or_update_attr_sql_script(const 
         bool insert_or_update = false;
         insert_or_update = res.isEnd();
         if(insert_or_update) {
-            retScript = rho::String("INSERT INTO ") + name() + " (object," + attrKey + ") VALUES (?,?)"; 
+            retScript = rho::String("INSERT INTO ") + name() + " (object," + attrKey + ") VALUES (?,?)";
             quests.push_back(objId);
-            quests.push_back(attrValue);  
+            quests.push_back(attrValue);
         }
         else
         {
-            retScript = rho::String("UPDATE ") + name() + " SET " + attrKey + "=\"" + attrValue + "\" WHERE object=?"; 
+            retScript = rho::String("UPDATE ") + name() + " SET " + attrKey + "=\"" + attrValue + "\" WHERE object=?";
             quests.push_back(objId);
         }
-    } 
+    }
     else
     {
         rho::String checkObjScript("SELECT source_id FROM object_values WHERE object=? AND attrib=? AND source_id=?");
@@ -1634,11 +1632,11 @@ rho::String rho::CNewORMModelImpl::_make_insert_or_update_attr_sql_script(const 
         bool insert_or_update = false;
         insert_or_update = res.isEnd();
         if(insert_or_update) {
-            retScript = rho::String("INSERT INTO object_values (source_id,object,attrib,value) VALUES (?,?,?,?)"); 
+            retScript = rho::String("INSERT INTO object_values (source_id,object,attrib,value) VALUES (?,?,?,?)");
             quests.push_back(srcId);
             quests.push_back(objId);
             quests.push_back(attrKey);
-            quests.push_back(attrValue); 
+            quests.push_back(attrValue);
         }
         else {
             retScript = rho::String("UPDATE object_values SET value=\"") + attrValue + "\" WHERE object=? AND source_id=? AND attrib=?";
@@ -1651,7 +1649,7 @@ rho::String rho::CNewORMModelImpl::_make_insert_or_update_attr_sql_script(const 
     return retScript;
 }
 
-bool rho::CNewORMModelImpl::_get_object_attrs(const rho::String& objId, 
+bool rho::CNewORMModelImpl::_get_object_attrs(const rho::String& objId,
                         Hashtable<rho::String, rho::String>& attrs,
                         const Hashtable<rho::String, rho::String>& selectAttrs,
                         rho::apiGenerator::CMethodResult& oResult)
@@ -1681,10 +1679,10 @@ bool rho::CNewORMModelImpl::_get_object_attrs(const rho::String& objId,
         checkSql += name() + " WHERE object=? LIMIT 1 OFFSET 0";
         IDBResult res = db.executeSQL(checkSql.c_str(), objId);
         object_exists = !res.isEnd();
-        if(object_exists) 
+        if(object_exists)
         {
             int ncols = res.getColCount();
-            for(int i = 0; i < ncols; ++i) 
+            for(int i = 0; i < ncols; ++i)
             {
                 attrs[res.getColName(i)] = res.getStringByIdx(i);
             }
@@ -1695,9 +1693,9 @@ bool rho::CNewORMModelImpl::_get_object_attrs(const rho::String& objId,
         rho::String checkSql("SELECT attrib,value FROM object_values WHERE object=? AND source_id=?");
         IDBResult res = db.executeSQL(checkSql.c_str(), objId, source_id);
         object_exists = !res.isEnd();
-        if(object_exists) 
+        if(object_exists)
         {
-            for(; !res.isEnd(); res.next()) 
+            for(; !res.isEnd(); res.next())
             {
                 if(selectAttrs.size() && !selectAttrs.containsKey(res.getStringByIdx(0)))
                     continue;
@@ -1709,7 +1707,7 @@ bool rho::CNewORMModelImpl::_get_object_attrs(const rho::String& objId,
     return object_exists;
 }
 
-rho::String rho::CNewORMModelImpl::_strip_braces(const rho::String& str) 
+rho::String rho::CNewORMModelImpl::_strip_braces(const rho::String& str)
 {
     rho::String retStr = str;
     if(retStr.size() && retStr[0] == '{')
@@ -1719,7 +1717,7 @@ rho::String rho::CNewORMModelImpl::_strip_braces(const rho::String& str)
     return retStr;
 }
 
-// static definitions        
+// static definitions
 rho::HashtablePtr<rho::String, rho::CNewORMModelImpl*> rho::CNewORMModelImpl::models_;
 rho::Hashtable<rho::String, int> rho::CNewORMModelImpl::reserved_names_;
 
