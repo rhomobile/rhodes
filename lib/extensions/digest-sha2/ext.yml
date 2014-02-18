@@ -1,2 +1,4 @@
 entry: Init_sha2
 libraries: [ "digest-sha2" ]
+android:
+  exttype: rakefile
