@@ -725,7 +725,7 @@ namespace "config" do
                 rakepath = File.dirname(extpath)
               end
               $ext_android_build_scripts[ext] = [rakepath, 'rake']
-            else
+            elsif exttype != 'prebuilt'
               build_script = File.join(extpath, 'build' + $bat_ext)
               if File.exists? build_script
                 if RUBY_PLATFORM =~ /(win|w)32$/

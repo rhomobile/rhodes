@@ -17,16 +17,23 @@ namespace rho {
         
         CIntentSingletonImpl(): CIntentSingletonBase(){}
         
-        virtual void send( const rho::Hashtable<rho::String, rho::String>& params, rho::apiGenerator::CMethodResult& oResult) {
-			// TODO: support all other appropriate params
-			CSystemFactory::getSystemSingletonS()->sendApplicationMessage(params.get("appName"), params.get("data"), oResult);
+        virtual void send( const Hashtable<String, String>& params, apiGenerator::CMethodResult& oResult) {
+			String appName = params.get("appName");
+			String data = params.get("data");
+			String uri = params.get("uri");
+			if (appName.length() > 0)
+				CSystemFactory::getSystemSingletonS()->sendApplicationMessage(appName, data, oResult);
+			else if (uri.length() > 0)
+				CSystemFactory::getSystemSingletonS()->openUrl(uri, oResult);
+			else
+				oResult.setError("Intent sending error: no 'appName' or 'uri' specified");
         } 
 
-        virtual void startListening(rho::apiGenerator::CMethodResult& oResult) {
+        virtual void startListening(apiGenerator::CMethodResult& oResult) {
 			CSystemFactory::getSystemSingletonS()->startApplicationMessageNotifications(oResult);
         } 
 
-        virtual void stopListening(rho::apiGenerator::CMethodResult& oResult) {
+        virtual void stopListening(apiGenerator::CMethodResult& oResult) {
 			CSystemFactory::getSystemSingletonS()->stopApplicationMessageNotifications(oResult);
         } 
 
@@ -36,9 +43,6 @@ namespace rho {
     {
     public:
         virtual ~CIntentImpl() {}
-
-        //methods
-
     };
     
     ////////////////////////////////////////////////////////////////////////
