@@ -9,6 +9,8 @@ $rootdir = ENV['RHO_ROOT']
 raise "RHO_ROOT is not set" if $rootdir.nil?
 $appincdir = ENV["RHO_INC"]
 raise "RHO_INC is not set" if $appincdir.nil?
+$androidsdk = ENV['ANDROID_SDK']
+raise 'ANDROID_SDK is not set' if $androidsdk.nil?
 $androidndkpath = ENV['ANDROID_NDK']
 raise 'ANDROID_NDK is not set' if $androidndkpath.nil?
 TARGETLIB = ENV['TARGETLIB']
@@ -133,11 +135,10 @@ task :copyres => TARGETDIR do
     end
 end
 
-
 namespace 'arch' do
-  task :arm => [TARGETLIB_ARM, PLAYSERVICESJAR, copyres]
-  task :x86 => [TARGETLIB_x86, PLAYSERVICESJAR, copyres]
-  task :mips => [TARGETLIB_MIPS, PLAYSERVICESJAR, copyres]
+  task :arm => [TARGETLIB_ARM, PLAYSERVICESJAR, :copyres]
+  task :x86 => [TARGETLIB_x86, PLAYSERVICESJAR, :copyres]
+  task :mips => [TARGETLIB_MIPS, PLAYSERVICESJAR, :copyres]
 end
 
 task :default => ["arch:arm", "arch:x86"]
