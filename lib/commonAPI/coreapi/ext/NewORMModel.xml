@@ -150,6 +150,27 @@
                 <RETURN type="HASH"/>
             </METHOD>
 
+            <METHOD name="anyChangedObjects">
+                <DESC>checks whether the model has any changed objects</DESC>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="hasChanges">
+                <DESC>checks whether the object has any changes</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="canModify">
+                <DESC>checks whether the object can be modified</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
             <METHOD name="updateObject">
                 <DESC>updates object's attributes in the DB</DESC>
                 <PARAMS>

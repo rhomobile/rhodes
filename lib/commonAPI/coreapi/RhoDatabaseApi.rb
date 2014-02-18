@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,22 +20,22 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
 module Rho
 class Database
-    
+
   @database = nil
-  @dbpath = nil  
+  @dbpath = nil
 
 #-----------------------------------------
-#public API      
+#public API
   # maintains a single database connection
   def initialize(dbfile, partition)
     unless @database
-      @dbpath = dbfile  
+      @dbpath = dbfile
       @database = SQLite3.new(dbfile,partition)
     end
   end
@@ -50,7 +50,7 @@ class Database
       return false
     end
     return true
-  end   
+  end
 
 
   def isUiWaitForDb
@@ -63,7 +63,7 @@ class Database
         @database.startTransaction
       rescue Exception => e
         puts "exception when startTransaction: #{e}"
-        raise        
+        raise
       end
   end
   alias start_transaction :startTransaction
@@ -73,11 +73,11 @@ class Database
         @database.commitTransaction
       rescue Exception => e
         puts "exception when commit transaction : #{e}"
-        raise        
+        raise
       end
   end
   alias commit :commitTransaction
-  
+
   def rollbackTransaction
       begin
         @database.rollbackTransaction
@@ -87,47 +87,47 @@ class Database
       end
   end
   alias rollback :rollbackTransaction
-  
+
   def lockDb
       begin
         @database.lockDb
       rescue Exception => e
         puts "exception when lockDb: #{e}"
-        raise        
+        raise
       end
   end
   alias lock_db :lockDb
-  
+
   def unlockDb
       begin
         @database.unlockDb
       rescue Exception => e
         puts "exception when unlockDb: #{e}"
-        raise        
+        raise
       end
   end
-  alias unlock_db :unlockDb	
+  alias unlock_db :unlockDb
 
   def export
 	  begin
 		@database.export
 	  rescue Exception => e
 		puts "exception when export database: #{e}"
-		raise        
+		raise
       end
   end
-	
+
   def import(zipName)
 	  begin
 		@database.import(zipName)
 	  rescue Exception => e
 		puts "exception when import database: #{e}"
-		raise        
+		raise
 	  end
   end
 
   # execute a sql statement
-  # optionally, disable the factory processing 
+  # optionally, disable the factory processing
   # which returns the result array directly
   def executeSql(sql, *args)
     _execute_sql(sql, false, args)
@@ -135,38 +135,38 @@ class Database
   def executeBatchSql(sql, *args)
     _execute_sql(sql, true, args)
   end
-  alias execute_sql :executeSql	
-  alias execute_batch_sql :executeBatchSql	
+  alias execute_sql :executeSql
+  alias execute_batch_sql :executeBatchSql
 
   def setDoNotBackupAttribute( attr = true )
     if Rho::System.platform == Rho::System.PLATFORM_IOS
         Rho::System.setDoNotBackupAttribute(@dbpath, attr)
         Rho::System.setDoNotBackupAttribute(@dbpath+'.version', attr)
-    end                         
+    end
   end
-  alias set_do_not_bakup_attribute :setDoNotBackupAttribute	
+  alias set_do_not_bakup_attribute :setDoNotBackupAttribute
 
   def isTableExist(table_name)
     @database.isTableExist(table_name)
   end
-  alias table_exist? :isTableExist	
-    
-  #destroy one table  
+  alias table_exist? :isTableExist
+
+  #destroy one table
   def destroyTable(name)
     destroyTables(:include => [name])
   end
-  alias destroy_table :destroyTable	
-  
+  alias destroy_table :destroyTable
+
   # deletes all rows from all tables, except list of given tables by recreating db-file and save all other tables
   # arguments - :include, :exclude
   def destroyTables(*args)
       @database.destroyTables args.first[:include], args.first[:exclude]
   end
-  alias destroy_tables :destroyTables	
-        
+  alias destroy_tables :destroyTables
+
 #----------------------------------------
-#internal API  
-  def _execute_sql(sql, is_batch, args)      
+#internal API
+  def _execute_sql(sql, is_batch, args)
     result = []
     if sql
       #puts "RhomDbAdapter: Executing query - #{sql}; #{args}"
@@ -175,10 +175,10 @@ class Database
         #puts "result : #{result}"
       rescue Exception => e
         puts "exception when running query: #{e}"
+        puts "query: #{sql}"
         raise
       end
     end
-    #puts "result is: #{result.inspect}"
     result
   end
 
@@ -190,10 +190,10 @@ class Database
           where_str += string_from_key_vals(condition,"and")
           where_str = where_str[0..where_str.length - 5]
         end
-        
+
         where_str
       end
-      
+
       def select_str(select_arr)
         select_str = ""
         select_arr.each do |attrib|
@@ -201,7 +201,7 @@ class Database
         end
         select_str.length > 2 ? select_str[0..select_str.length-2] : select_str
       end
-    
+
       # generates value clause based on hash
       def vals_str(values)
         vals = string_from_key_vals_set(values, ",")
@@ -216,7 +216,7 @@ class Database
         end
         vals
       end
-      
+
       # generates key/value list
       def string_from_key_vals(values, delim)
         vals = ""
@@ -226,7 +226,7 @@ class Database
         end
         vals
       end
-      
+
       # generates a value for sql statement
       def get_value_for_sql_stmt(value, convert_value_to_string=true)
         if value.nil? or value == 'NULL'
@@ -239,33 +239,33 @@ class Database
             s = value.to_s.gsub(/'/,"''")
             "'#{s}'"
           else
-            "#{value}"            
-          end  
+            "#{value}"
+          end
         end
       end
-      
+
       def make_where_params(condition,op)
         raise ArgumentError if !condition || !op || op.length == 0
         quests = ""
         vals = []
-      
+
         condition.each do |key,val|
             if quests.length > 0
                 quests << ' ' << op << ' '
             end
 
-            if val.nil?        
-                quests << "\"#{key}\" IS NULL" 
+            if val.nil?
+                quests << "\"#{key}\" IS NULL"
             else
                 quests << "\"#{key}\"=?"
 				vals << val
             end
-            
+
         end
-        
+
         return quests,vals
       end
-      
+
     end #self
 
 
@@ -278,13 +278,13 @@ class Database
   # this would return all columns where source_id = 2 and update_type = 'query' ordered
   # by the "object" column
   def select_from_table(table=nil,columns=nil,condition=nil,params=nil)
-  
+
     raise ArgumentError if !table || !columns
     query = nil
     vals = []
 
     if condition
-        quests,vals = Database.make_where_params(condition,'AND') 
+        quests,vals = Database.make_where_params(condition,'AND')
         if params and params['distinct']
             query = "SELECT DISTINCT #{columns} FROM \"#{table}\" WHERE #{quests}"
         elsif params and params['order by']
@@ -295,7 +295,7 @@ class Database
     else
         query = "SELECT #{columns} FROM \"#{table}\""
     end
-    
+
     execute_sql query, vals
   end
 
@@ -314,23 +314,23 @@ class Database
 
   def make_insert_params(values, excludes)
     raise ArgumentError if !values
-    
+
     cols = ""
     quests = ""
     vals = []
-  
+
     values.each do |key,val|
         next if excludes && excludes[key]
         if cols.length > 0
             cols << ','
             quests << ','
         end
-    
+
         cols << "\"#{key}\""
         quests << '?'
         vals << val
     end
-    
+
     return cols,quests,vals
   end
 
@@ -341,7 +341,7 @@ class Database
   # delete from object_values where object="some-object"
   def delete_from_table(table,condition)
     raise ArgumentError if !table
-    quests,vals = Database.make_where_params(condition,'AND') 
+    quests,vals = Database.make_where_params(condition,'AND')
     query = "DELETE FROM \"#{table}\" WHERE #{quests}"
     execute_sql query, vals
   end
@@ -354,7 +354,7 @@ class Database
   def delete_table(table)
     execute_sql "DROP TABLE IF EXISTS \"#{table}\""
   end
-  
+
   # updates values (hash) in a given table which satisfy condition (hash)
   # example usage is the following:
   # update_into_table('object_values',{"value"=>"Electronics"},{"object"=>"some-object", "attrib"=>"industry"})
@@ -366,36 +366,36 @@ class Database
     vals = []
     if condition
         quests_set, vals_set = make_set_params(values)
-        quests_where,vals_where = Database.make_where_params(condition,'AND') 
+        quests_where,vals_where = Database.make_where_params(condition,'AND')
         query = "UPDATE \"#{table}\" SET #{quests_set} WHERE #{quests_where}"
         vals = vals_set + vals_where
     else
         quests, vals = make_set_params(values)
         query = "UPDATE \"#{table}\" SET #{quests}"
     end
-    
+
     execute_sql query, vals
   end
-  
+
   def make_set_params(values)
     raise ArgumentError if !values
-    
+
     quests = ""
     vals = []
-  
+
     values.each do |key,val|
         if quests.length > 0
             quests << ','
         end
-    
+
         quests << "\"#{key}\"=?"
         vals << val
     end
-    
+
     return quests,vals
   end
 
-  
+
 end # Database
 end # Rho
 
