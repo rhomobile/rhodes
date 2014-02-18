@@ -26,9 +26,9 @@ extern "C" void Init_CoreAPI_Extension()
 
 	Init_Network();
     Init_SQLite3();
-//#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WINCE)
     Init_NewORM_extension();
-//#endif
+#endif
     Init_Log();
 #if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_ANDROID)
     Init_WebView();
