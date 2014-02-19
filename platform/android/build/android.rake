@@ -582,16 +582,9 @@ namespace "config" do
       $ext_android_adds = {}
       $ext_android_library_deps = {}
 
-      $app_config["extensions"].each do |ext|
-        puts "#{ext} is processing..."
-        $app_config["extpaths"].each do |p|
-          extpath = File.join(p, ext, 'ext')
-
-          puts "Checking extpath: #{extpath}"
-
-          if File.exists? extpath and File.directory? extpath
+      $app_extensions_list.each do |ext, extpath|
             puts "#{extpath} is configuring..."
-            extyml = File.join(p, ext, "ext.yml")
+            extyml = File.join(extpath, "ext.yml")
             if File.file? extyml
               puts "#{extyml} is processing..."
 
@@ -603,7 +596,7 @@ namespace "config" do
               addspath = File.join targetpath,'adds'
               prebuiltpath = nil
               if exttype == 'prebuilt'
-                prebuiltpath = Dir.glob(File.join(extpath, '**', 'android'))
+                prebuiltpath = Dir.glob(File.join(extpath,'ext','**', 'android'))
                 if prebuiltpath.count == 1
                   prebuiltpath = prebuiltpath.first
                 else
@@ -620,7 +613,7 @@ namespace "config" do
 
               if manifest_changes
                 manifest_changes = [manifest_changes] unless manifest_changes.is_a? Array
-                manifest_changes.map! { |path| File.join(p, ext, path) }
+                manifest_changes.map! { |path| File.join(extpath,path) }
               else
                 if prebuiltpath
                   manifest_changes = []
@@ -644,7 +637,7 @@ namespace "config" do
               resource_addons = extconf["android_resources_addons"]
               resource_addons = extconf_android['adds'] if resource_addons.nil? and extconf_android
               if resource_addons
-                resource_addons = File.join(p, ext, resource_addons)
+                resource_addons = File.join(extpath, resource_addons)
               else
                 if prebuiltpath
                   resource_addons = File.join(prebuiltpath, 'adds')
@@ -669,10 +662,10 @@ namespace "config" do
               additional_sources = extconf["android_additional_sources_list"]
               additional_sources = extconf_android['source_list'] if additional_sources.nil? and extconf_android
               unless additional_sources.nil?
-                ext_sources_list = File.join(p, ext, additional_sources)
+                ext_sources_list = File.join(extpath, additional_sources)
 
                 if File.exists? ext_sources_list
-                  $ext_android_additional_sources[File.join(p, ext)] = ext_sources_list
+                  $ext_android_additional_sources[extpath] = ext_sources_list
                 else
                   raise "Extension java source list is missed: #{ext_sources_list}"
                 end
@@ -685,7 +678,7 @@ namespace "config" do
               android_additional_lib = extconf["android_additional_lib"]
               if android_additional_lib != nil
                 android_additional_lib.each do |lib|
-                  $ext_android_additional_lib << File.join(p, ext, lib)
+                  $ext_android_additional_lib << File.join(extpath, lib)
                 end
               end
 
@@ -722,26 +715,22 @@ namespace "config" do
               if rakepath.size == 1
                 rakepath = File.dirname(rakepath.first)
               else
-                rakepath = File.dirname(extpath)
+                rakepath = extpath
               end
               $ext_android_build_scripts[ext] = [rakepath, 'rake']
             elsif exttype != 'prebuilt'
-              build_script = File.join(extpath, 'build' + $bat_ext)
+              build_script = File.join(extpath,'ext','build'+$bat_ext)
               if File.exists? build_script
                 if RUBY_PLATFORM =~ /(win|w)32$/
-                  $ext_android_build_scripts[ext] = [extpath, 'build.bat']
+                  $ext_android_build_scripts[ext] = [File.join(extpath,'ext'),'build.bat']
                 else
-                  $ext_android_build_scripts[ext] = [extpath, File.join('.', 'build' + $bat_ext)]
+                  $ext_android_build_scripts[ext] = [File.join(extpath,'ext'), File.join('.', 'build' + $bat_ext)]
                 end
               end
             end
 
             puts "#{extpath} is configured"
-            # to prevent to build 2 extensions with same name
-            break
-          end # exists?
-        end # $app_config["extpaths"].each
-      end # $app_config["extensions"].each
+      end # $app_extensions_list.each
 
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
 
