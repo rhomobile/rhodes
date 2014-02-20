@@ -163,6 +163,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
         
         if (extras != null) {
             for (Map.Entry<String, Object> entry: extras.entrySet()) {
+                
                 if (String.class.isInstance(entry.getValue())) {
                     intent.putExtra(constant(entry.getKey()), (String)entry.getValue());
                 }
@@ -174,6 +175,20 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                 }
                 else if (Double.class.isInstance(entry.getValue())) {
                     intent.putExtra(constant(entry.getKey()), ((Double)entry.getValue()).doubleValue());
+                }
+                else if (ArrayList.class.isInstance(entry.getValue())) {
+                    ArrayList list = (ArrayList)entry.getValue();
+                    if ( list.size() > 0 ) {
+                        if (String.class.isInstance(list.get(0))) {
+                            intent.putExtra(constant(entry.getKey()),list.toArray(new String[list.size()]));
+                        } else if (Integer.class.isInstance(list.get(0))) {
+                            intent.putExtra(constant(entry.getKey()),list.toArray(new Integer[list.size()]));
+                        } else {
+                            throw new RuntimeException("Wrong intent data: array of " + list.get(0).getClass().getName() + " is not supported as value");
+                        }
+                    } else {
+                        intent.putExtra(constant(entry.getKey()),new String[0]);
+                    }
                 }
                 else {
                     throw new RuntimeException("Wrong intent data: " + entry.getValue().getClass().getName() + " is not supported as value");
