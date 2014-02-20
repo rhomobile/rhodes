@@ -583,7 +583,7 @@ namespace "config" do
       $ext_android_library_deps = {}
 
       $app_extensions_list.each do |ext, extpath|
-            next if expath.nil?
+            next if extpath.nil?
 
             puts "#{extpath} is configuring..."
             extyml = File.join(extpath, "ext.yml")
