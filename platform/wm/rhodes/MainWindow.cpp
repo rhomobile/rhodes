@@ -1156,7 +1156,7 @@ LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
 	TCHAR image_uri[MAX_PATH];
-	TCHAR file_name[MAX_PATH];
+	//TCHAR file_name[MAX_PATH];
     HRESULT status;
 #if defined (_WIN32_WCE)
 	Camera camera;
@@ -1209,7 +1209,7 @@ LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPAR
 LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
 	TCHAR image_uri[MAX_PATH];
-	TCHAR file_name[MAX_PATH];
+	//TCHAR file_name[MAX_PATH];
     HRESULT status = S_OK;
 	Camera camera;
 	status = camera.selectPicture(this->m_hWnd,image_uri);
