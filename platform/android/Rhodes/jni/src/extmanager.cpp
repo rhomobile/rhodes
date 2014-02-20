@@ -45,5 +45,5 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_extmanager_RhoExtManagerImp
     std::string strQuery = rho_cast<std::string>(env, jQuery);
     std::string strRes = rho::apiGenerator::js_entry_point(strQuery.c_str());
     jhstring jhRes = rho_cast<jstring>(env, strRes);
-    return jhRes.get();
+    return jhRes.release();
 }
