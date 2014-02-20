@@ -1,16 +1,36 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="NewORMModel" parent="Rho">
-        <HELP_OVERVIEW>NewORMModel CoreAPI module</HELP_OVERVIEW>
-        <MORE_HELP>New implementation of the RHOM Model.</MORE_HELP>
+    <MODULE name="NewORMModel" docNameOverride="YourModel" parent="Rho">
+        <HELP_OVERVIEW>
+## THIS IS BETA - Not production ready!
+
+New version of the Rho.ORMModel base class.  This will eventually replace the existing Rho.ORMModel
+        </HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+Next, since this is a beta version of the ORMModel module, to use it you will need to set a flag in `rhoconfig.txt`:
+
+    use_new_orm = 1
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+
+</MORE_HELP>
 
         <TEMPLATES>
             <PROPERTY_BAG/>
         </TEMPLATES>
 
          <PROPERTIES >
-            <DESC>list of properties supported by instance of object</DESC>
+            <DESC>List of properties supported by instance of object</DESC>
             <PROPERTY name="loaded" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag" >
                 <DESC>returns true if model is loaded.</DESC>
             </PROPERTY>
@@ -44,7 +64,7 @@
 
             <METHOD name="enumerate" access="STATIC">
                 <RETURN type="ARRAY">
-                    <DESC>Array of NewORMModel objects</DESC>
+                    <DESC>Array of ORMModel objects</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
@@ -55,7 +75,7 @@
                     </PARAM>
                 </PARAMS>
                 <RETURN type="STRING">
-                    <DESC>NewORMModel object</DESC>
+                    <DESC>ORMModel object</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
@@ -67,7 +87,7 @@
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="initModel">
+            <METHOD name="initModel" generateDoc="false">
                 <DESC>Initializes model's internal DB</DESC>
             </METHOD>
 
@@ -80,7 +100,7 @@
             </METHOD>
 
             <METHOD name="getBelongsTo">
-                <DESC>returns info about model's relationships with other models</DESC>
+                <DESC>Returns info about model's belongsTo relationship with other models</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                 </PARAMS>
@@ -88,21 +108,21 @@
             </METHOD>
 
             <METHOD name="set">
-                <DESC>Sets model's property to value with additional processing for :sync property</DESC>
+                <DESC>Sets model's property to value with additional processing for `sync` property</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="propertyValue" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="enable">
+            <METHOD name="enable" scopeOverride="STATIC">
                 <DESC>Sets model's Boolean property to true (enables model's property)</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="setModelProperty">
+            <METHOD name="setModelProperty" docNameOverride="property" scopeOverride="class">
                 <DESC>Initializes new model's field property</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
@@ -113,7 +133,7 @@
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="getModelProperty">
+            <METHOD name="getModelProperty" generateDoc="false">
                 <DESC>returns info about model's field property</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
@@ -121,7 +141,7 @@
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="setSchemaIndex">
+            <METHOD name="setSchemaIndex" scopeOverride="class">
                 <DESC>Initializes new model's schema index</DESC>
                 <PARAMS>
                     <PARAM name="indexName" type="STRING"/>
@@ -134,16 +154,16 @@
                 <DESC>destroys model's instance</DESC>
             </METHOD>
 
-            <METHOD name="createObject">
-                <DESC>Initializes model's object and stores it in the DB</DESC>
+            <METHOD name="createObject" docNameOverride="create" scopeOverride="STATIC">
+                <DESC>Create a new Rhodes model object and save it to the database. This is the fastest way to insert a single item into the database.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH"/>
                 </PARAMS>
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="createInstance">
-                <DESC>Initializes model's object</DESC>
+            <METHOD name="createInstance" docNameOverride="make" scopeOverride="STATIC">
+                <DESC>Create a new Rhodes model object Javascript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method. See the Orm new example.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH"/>
                 </PARAMS>
@@ -171,8 +191,8 @@
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="updateObject">
-                <DESC>updates object's attributes in the DB</DESC>
+            <METHOD name="updateObject" generateDoc="false">
+                <DESC>internal</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="oldAttrs" type="HASH"/>
@@ -181,8 +201,8 @@
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="saveObject">
-                <DESC>saves (creates if necessary or updates if already exists) object's attributes in the DB</DESC>
+            <METHOD name="saveObject" docNameOverride="save">
+                <DESC>Saves the current Rhodes model object to the database.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="attrs" type="HASH"/>
@@ -190,15 +210,15 @@
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="deleteObject">
-                <DESC>deletes object's attributes from the DB</DESC>
+            <METHOD name="deleteObject" generateDoc="false">
+                <DESC>internal</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="deleteObjects">
-                <DESC>deletes all object's according to specified conditions</DESC>
+            <METHOD name="deleteObjects" generateDoc="false">
+                <DESC>internal</DESC>
                 <PARAMS>
                     <PARAM name="strOptions" type="HASH"/>
                     <PARAM name="quests" type="ARRAY"/>
@@ -234,7 +254,7 @@
                 <RETURN type="STRING"/>
             </METHOD>
 
-            <METHOD name="findObjects">
+            <METHOD name="findObjects" docNameOverride="find" scopeOverride="STATIC">
                 <DESC>Returns array of objects for the given model queried according to the specified conditions</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING"/>
