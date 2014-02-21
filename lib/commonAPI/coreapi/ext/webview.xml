@@ -136,6 +136,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         
             <ALIASES>
                 <ALIAS new="execute_js" existing="executeJavascript" deprecated="true"/>
+                <ALIAS new="executeJavaScript" existing="executeJavascript"/>
                 <ALIAS new="get_current_url" existing="currentURL" deprecated="true"/>
             </ALIASES>
 
