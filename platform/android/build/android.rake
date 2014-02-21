@@ -826,9 +826,9 @@ namespace "build" do
         ENV['TARGETPATH'] = File.join($app_builddir, 'extensions', ext)
         ENV['TARGETLIB'] = "lib#{ext}.a"
         ENV['TEMP_FILES_DIR'] = File.join($tmpdir, ext)
-        buildargs = ["-I\"#{builddata[0]}/ext/platform/android/generated/jni\"",
-            "-I\"#{builddata[0]}/ext/shared\"",
-            "-I\"#{builddata[0]}/ext/shared/include\"",
+        buildargs = ['-Iext/platform/android/generated/jni',
+            '-Iext/shared',
+            '-Iext/shared/include',
             "-I\"#{$startdir}/platform/android/Rhodes/jni/include\"",
             "-I\"#{$startdir}/platform/android/Rhodes/jni/include/rhodes/details\"",
             "-I\"#{$startdir}/platform/shared/ruby/include\"",

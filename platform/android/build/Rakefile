@@ -35,8 +35,9 @@ cd SOURCEPATH
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
-ARGS = ["-I\"#{$curdir}/generated/jni\"",
-    "-I\"#{$curdir}/../../shared\"",
+ARGS = ['-Iext/platform/android/generated/jni',
+    '-Iext/platform/android/jni',
+    '-Iext/shared',
     "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\"",
     "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\"",
     "-I\"#{$rootdir}/platform/shared/ruby/include\"",

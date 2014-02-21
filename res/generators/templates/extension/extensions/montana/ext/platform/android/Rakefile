@@ -1,21 +1,41 @@
 require 'fileutils'
 
-$curdir = pwd
-TARGETDIR = ENV['TARGET_TEMP_DIR']
-raise "TARGET_TEMP_DIR is not set" if TARGETDIR.nil?
+SOURCEPATH = ENV['SOURCEPATH']
+raise 'SOURCEPATH is not set' if SOURCEPATH.nil?
+
+SOURCELIST = ENV['SOURCELIST']
+raise 'SOURCELIS is not setT' if SOURCELIST.nil?
+
+BUILDARGS = ENV['BUILDARGS'].split if ENV['BUILDARGS']
+  
+TARGETDIR = ENV['TARGETPATH']
+raise "TARGETPATH is not set" if TARGETDIR.nil?
+
+TARGETLIB = ENV['TARGETLIB']
+raise "TARGETLIB is not set" if TARGETLIB.nil?
+
 OBJDIR = ENV['TEMP_FILES_DIR']
 raise "TEMP_FILES_DIR is not set" if OBJDIR.nil?
+
 $rootdir = ENV['RHO_ROOT']
 raise "RHO_ROOT is not set" if $rootdir.nil?
+
 $appincdir = ENV["RHO_INC"]
 raise "RHO_INC is not set" if $appincdir.nil?
-$androidndkpath = ENV['ANDROID_NDK']
-raise 'ANDROID_NDK is not set' if $androidndkpath.nil?
+
+ANDROID_NDK = ENV['ANDROID_NDK']
+raise 'ANDROID_NDK is not set' if ANDROID_NDK.nil?
+
+ANDROID_API_LEVEL = ENV['ANDROID_API_LEVEL']
+raise 'ANDROID_API_LEVEL is not set' if ANDROID_API_LEVEL.nil?
+
+cd SOURCEPATH
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
-ARGS = ["-I\"#{$curdir}/generated/jni\"",
-    "-I\"#{$curdir}/../../shared\"",
+ARGS = ['-Iext/platform/android/generated/jni',
+    '-Iext/platform/android/jni',
+    '-Iext/shared',
     "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\"",
     "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\"",
     "-I\"#{$rootdir}/platform/shared/ruby/include\"",
@@ -23,42 +43,97 @@ ARGS = ["-I\"#{$curdir}/generated/jni\"",
     "-I\"#{$rootdir}/platform/shared/common\"",
     "-I\"#{$rootdir}/platform/shared/api_generator\"",
     "-I\"#{$appincdir}\"",
-    "-I\"#{File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"}\"",
     "-I\"#{$rootdir}/platform/shared/ruby\"",
     "-I\"#{$rootdir}/platform/shared/ruby/android\"",
     "-I\"#{$rootdir}/platform/shared/ruby/generated\""]
 
-SRC = get_sources File.join($curdir, 'ext_native.files')
-OBJ = FileList.new(get_objects SRC, OBJDIR)
+OBJDIR_ARM = File.join(OBJDIR,'arm')
+OBJDIR_x86 = File.join(OBJDIR,'x86')
+OBJDIR_MIPS = File.join(OBJDIR,'mips')
 
-TARGETLIB = File.join(TARGETDIR, 'lib<%= namefixed %>.a')
+    
+SRC = get_sources File.join(SOURCELIST)
+
+OBJ_ARM = FileList.new(get_objects(SRC, OBJDIR_ARM))
+OBJ_x86 = FileList.new(get_objects(SRC, OBJDIR_x86))
+OBJ_MIPS = FileList.new(get_objects(SRC, OBJDIR_MIPS))
+
+TARGETDIR_ARM = File.join(TARGETDIR,'armeabi')
+TARGETDIR_x86 = File.join(TARGETDIR,'x86')
+TARGETDIR_MIPS = File.join(TARGETDIR,'mips')
+
+TARGETLIB_ARM = File.join(TARGETDIR_ARM,TARGETLIB)
+TARGETLIB_x86 = File.join(TARGETDIR_x86,TARGETLIB)
+TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,TARGETLIB)
 
 cd '../../..'
 
-task :config do
-    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+namespace 'config' do
+  task :arm do
+      setup_ndk(ANDROID_NDK, ANDROID_API_LEVEL,'arm')
+  end
+  
+  task :x86 do
+      setup_ndk(ANDROID_NDK, ANDROID_API_LEVEL,'x86')
+  end
+  
+  task :mips do
+      setup_ndk(ANDROID_NDK, ANDROID_API_LEVEL,'mips')
+  end
 end
 
-directory TARGETDIR
-directory OBJDIR
+directory TARGETDIR_ARM
+directory TARGETDIR_x86
+directory TARGETDIR_MIPS
+directory OBJDIR_ARM
+directory OBJDIR_x86
+directory OBJDIR_MIPS
 
 rule '.o' => lambda {|obj| find_source(obj) } do |t|
-    Rake::Task[:config].invoke
-    cc_compile find_source(t.name), OBJDIR, ARGS or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
+  abi = File.basename(File.dirname(t.name))
+  Rake::Task["config:#{abi}"].invoke
+  cc_compile(find_source(t.name), File.dirname(t.name), BUILDARGS.nil? ? ARGS : BUILDARGS) or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
 end
 
-task OBJ => OBJDIR
+task OBJ_ARM => OBJDIR_ARM
+task OBJ_x86 => OBJDIR_x86
+task OBJ_MIPS => OBJDIR_MIPS
 
 def find_source(objfile)
   base = File.basename(objfile, '.o')
-  src = SRC.find { |s| File.basename(s) == base }
+  src = File.join(SOURCEPATH, SRC.find { |s| File.basename(s) == base })
   src
 end
 
-file TARGETLIB => TARGETDIR do |t|
-    Rake::Task[:config].invoke
-    cc_ar t.name, OBJ or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+file TARGETLIB_ARM => TARGETDIR_ARM do |t|
+    Rake::Task["config:arm"].invoke
+    cc_ar t.name, OBJ_ARM or raise "\e[31mCreating library failed: #{t.name}\e[0m"
 end
-multitask TARGETLIB => OBJ
+multitask TARGETLIB_ARM => OBJ_ARM
 
-task :default => TARGETLIB
+file TARGETLIB_x86 => TARGETDIR_x86 do |t|
+    Rake::Task["config:x86"].invoke
+    cc_ar t.name, OBJ_x86 or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_x86 => OBJ_x86
+
+file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
+    Rake::Task["config:mips"].invoke
+    cc_ar t.name, OBJ_MIPS or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_MIPS => OBJ_MIPS
+
+
+namespace 'build' do
+  task :arm => OBJ_ARM
+  task :x86 => OBJ_x86
+  task :mips => OBJ_MIPS
+end
+
+namespace 'arch' do
+  task :arm => TARGETLIB_ARM
+  task :x86 => TARGETLIB_x86
+  task :mips => TARGETLIB_MIPS
+end
+
+task :default => ["build:arm", "build:x86"]

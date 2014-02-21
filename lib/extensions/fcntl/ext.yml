@@ -1,2 +1,4 @@
 entry: Init_fcntl
 libraries: [ "fcntl" ]
+android:
+  exttype: rakefile
