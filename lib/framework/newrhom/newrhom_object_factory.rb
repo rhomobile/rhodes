@@ -339,6 +339,38 @@ module Rhom
           retVal
         end
 
+        def self.on_sync_delete_error( objects, action )
+          objects.each do |obj,val|
+            klass_model.onSyncDeleteError(obj, val['attributes'], action.to_s) 
+          end
+        end
+
+        def self.on_sync_update_error( objects, action, rollback_data = nil )
+          if action == :rollback
+            rollback_data.each do |obj,val|
+              klass_model.onSyncUpdateError(obj, {}, val['attributes'], action.to_s)
+            end
+          else
+            objects.each do |obj,val|
+              klass_model.onSyncUpdateError(obj, val['attributes'], {}, action.to_s) 
+            end
+          end
+        end
+
+        def self.on_sync_create_error( objects, action )
+          ar_objs = objects
+          if objects.is_a?(Hash)
+            ar_objs = objects.keys
+          elsif !objects.is_a?(Array)
+            ar_objs = [objects]
+          end
+          klass_model.onSyncCreateError(ar_objs, action.to_s)
+        end
+
+        def self.push_changes
+          klass_model.pushChanges
+        end
+
         # This holds the attributes for an instance of
         # the rhom object
         attr_accessor :vars
