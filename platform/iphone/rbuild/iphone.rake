@@ -62,22 +62,28 @@ def set_app_version(newversion)
   #fname = $config["build"]["iphonepath"] + "/Info.plist"
   fname = $app_path + "/project/iphone/Info.plist"
   nextline = false
-  replaced = false
+  is_real_changed = false
   buf = ""
   File.new(fname,"r").read.each_line do |line|
-    if nextline and not replaced
+    if nextline
       ret_value = extract_value_from_strings(line)
-      return if line =~ /#{newversion}/
-      buf << line.gsub(/<string>.*<\/string>/,"<string>#{newversion}</string>")
-      puts "set name"
-      replaced = true
+      if line =~ /#{newversion}/
+        buf << line
+      else
+          buf << line.gsub(/<string>.*<\/string>/,"<string>#{newversion}</string>")
+          is_real_changed = true
+          puts "set bundle version"
+      end
+      nextline = false
     else
       buf << line
     end
-    #nextline = true if line =~ /CFBundleVersion/
+    nextline = true if line =~ /CFBundleVersion/
     nextline = true if line =~ /CFBundleShortVersionString/
   end
-  File.open(fname,"w") { |f| f.write(buf) }
+  if is_real_changed
+     File.open(fname,"w") { |f| f.write(buf) }
+  end
   return ret_value
 end
 

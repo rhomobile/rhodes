@@ -822,7 +822,7 @@ void QtMainWindow::on_actionAbout_triggered()
 {
 #ifndef RHO_SYMBIAN
 #ifdef RHODES_EMULATOR
-    QMessageBox::about(this, RHOSIMULATOR_NAME, RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebKit v" QTWEBKIT_VERSION_STR ")");
+    QMessageBox::about(this, RHOSIMULATOR_NAME, QString(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebKit v" QTWEBKIT_VERSION_STR ")\n(WebKit v%1)").arg(qWebKitVersion()));
 #else
     QMessageBox::about(this, APPLICATION_NAME, APPLICATION_NAME " v" APPLICATION_VERSION);
 #endif
