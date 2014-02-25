@@ -1474,6 +1474,213 @@ rho::db::CDBAdapter& rho::CNewORMModelImpl::_get_db(rho::apiGenerator::CMethodRe
     return db::CDBAdapter::getDB(partition.c_str());
 }
 
+void rho::CNewORMModelImpl::onSyncDeleteError(const rho::String& objId,
+                                              const Hashtable<rho::String, rho::String>& attrHash,
+                                              const rho::String& actionStr,
+                                              rho::apiGenerator::CMethodResult& oResult)
+{
+    LOG(INFO) +  "onSyncDeleteError: " + actionStr;
+    if(!rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        return;
+    if(actionStr != "retry") 
+    {
+        oResult.setError("on_sync_delete_error action should be `retry`");
+        return;
+    }
+    getProperty("source_id", oResult);
+    rho::String source_id = oResult.getString();
+    int iSrcId = -1;
+    convertFromStringA(source_id.c_str(), iSrcId);
+    getProperty("sync_type", oResult);
+    bool is_sync_source = (oResult.getString() != "none");
+    if(!is_sync_source)
+        return;
+    db::CDBAdapter& db = _get_db(oResult);
+    
+    db.startTransaction();
+    for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrHash.begin(); cIt != attrHash.end(); ++cIt)
+    {
+        const rho::String& attrName = cIt -> first;
+        const rho::String& attrValue = cIt -> second;
+        rho::String selectSQL("SELECT update_type FROM changed_values WHERE object=? AND source_id=? AND attrib=? and sent=0");
+        IDBResult res = db.executeSQL(selectSQL.c_str(), objId, source_id, attrName);
+        if(!res.isEnd())
+            continue;
+
+        rho::String attrib_type = (db.getAttrMgr().isBlobAttr(iSrcId, attrName.c_str()) ? "blob.file" : "");
+        rho::String insertScript("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type) VALUES (?,?,?,?,?,?)");
+        res = db.executeSQL(insertScript.c_str(), source_id, objId, attrName, attrValue, "delete", attrib_type);
+        if(!res.getDBError().isOK()) {
+            oResult.setError(res.getDBError().getError());
+            db.rollback();
+            return;
+        }
+    }
+    db.endTransaction();
+}
+
+void rho::CNewORMModelImpl::onSyncUpdateError(const rho::String& objId,
+                                              const Hashtable<rho::String, rho::String>& attrHash,
+                                              const Hashtable<rho::String, rho::String>& rollbackHash,
+                                              const rho::String& actionStr,
+                                              rho::apiGenerator::CMethodResult& oResult)
+{
+    LOG(INFO) +  "onSyncUpdateError: " + actionStr;
+    if(!rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        return;
+    if(actionStr != "retry" && actionStr != "rollback") 
+    {
+        oResult.setError("on_sync_update_error action should be `retry` or `rollback`");
+        return;
+    }
+    getProperty("source_id", oResult);
+    rho::String source_id = oResult.getString();
+    int iSrcId = -1;
+    convertFromStringA(source_id.c_str(), iSrcId);
+    getProperty("sync_type", oResult);
+    bool is_sync_source = (oResult.getString() != "none");
+    if(!is_sync_source)
+        return;
+    getProperty("full_update", oResult);
+    bool is_full_update = false;
+    convertFromStringA(oResult.getString().c_str(), is_full_update);
+
+    db::CDBAdapter& db = _get_db(oResult);
+    
+    db.startTransaction();
+    if(actionStr == "rollback")
+    {
+        for(Hashtable<rho::String, rho::String>::const_iterator cIt = rollbackHash.begin(); cIt != rollbackHash.end(); ++cIt)
+        {
+            const rho::String& attrName = cIt -> first;
+            const rho::String& attrValue = cIt -> second;   
+        }    
+    }
+    else 
+    {
+        for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrHash.begin(); cIt != attrHash.end(); ++cIt)
+        {
+            const rho::String& attrName = cIt -> first;
+            const rho::String& attrValue = cIt -> second;
+            rho::String selectSQL("SELECT update_type FROM changed_values WHERE object=? AND source_id=? AND attrib=? and sent=0");
+            IDBResult res = db.executeSQL(selectSQL.c_str(), objId, source_id, attrName);
+            if(!res.isEnd())
+                continue;
+
+            rho::String attrib_type = (db.getAttrMgr().isBlobAttr(iSrcId, attrName.c_str()) ? "blob.file" : "");
+            rho::String insertScript("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type) VALUES (?,?,?,?,?,?)");
+            res = db.executeSQL(insertScript.c_str(), source_id, objId, attrName, attrValue, "update", attrib_type);
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                db.rollback();
+                return;
+            }
+        }
+    }
+    db.endTransaction();
+}
+
+void rho::CNewORMModelImpl::onSyncCreateError(const Vector<rho::String>& objects,
+                                              const rho::String& actionStr,
+                                              rho::apiGenerator::CMethodResult& oResult)
+{
+    LOG(INFO) +  "onSyncCreateError: " + actionStr;
+    if(!rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        return;
+    if(actionStr != "delete" && actionStr != "recreate") 
+    {
+        oResult.setError("on_sync_create_error action should be `delete` or `recreate`");
+        return;
+    }
+    getProperty("source_id", oResult);
+    rho::String source_id = oResult.getString();
+    getProperty("sync_type", oResult);
+    bool is_sync_source = (oResult.getString() != "none");
+    if(!is_sync_source)
+        return;
+    db::CDBAdapter& db = _get_db(oResult);
+    
+    db.startTransaction();
+    for(size_t i = 0; i < objects.size(); ++i) 
+    {
+        const rho::String& objId = objects[i];
+        if(actionStr == "recreate") 
+        {
+            rho::String selectSQL("SELECT object FROM changed_values WHERE update_type=? AND object=? AND source_id=?");
+            IDBResult res = db.executeSQL(selectSQL.c_str(), "delete", objId, source_id);
+            if(!res.isEnd())
+                continue;
+
+            rho::String deleteSQL("DELETE FROM changed_values WHERE source_id=? AND object=?");
+            res = db.executeSQL(deleteSQL.c_str(), source_id, objId);
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                db.rollback();
+                return;
+            }
+
+            rho::String insertScript("INSERT INTO changed_values (source_id,object,attrib,update_type) VALUES (?,?,?,?)");
+            res = db.executeSQL(insertScript.c_str(), source_id, objId, "object", "create");
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                db.rollback();
+                return;
+            }
+        }
+        else // delete
+        {
+            rho::String deleteSQL("DELETE FROM changed_values WHERE source_id=? AND object=?");
+            IDBResult res = db.executeSQL(deleteSQL.c_str(), source_id, objId);
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                db.rollback();
+                return;
+            } 
+            
+            if(fixed_schema()) {
+                rho::String deleteSourceSQL("DELETE FROM ");
+                deleteSourceSQL += name() + " WHERE object=?";
+                res = db.executeSQL(deleteSourceSQL.c_str(), objId);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                } 
+            }  
+            else 
+            {
+                rho::String deleteSourceSQL("DELETE FROM object_values WHERE object=? AND source_id=?");
+                res = db.executeSQL(deleteSourceSQL.c_str(), objId, source_id);
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    db.rollback();
+                    return;
+                } 
+            }
+        }
+    }
+    db.endTransaction();
+}
+
+void rho::CNewORMModelImpl::pushChanges(rho::apiGenerator::CMethodResult& oResult)
+{
+    LOG(INFO) +  "pushChanges";
+    if(!rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        return;
+    getProperty("source_id", oResult);
+    rho::String source_id = oResult.getString();
+    getProperty("sync_type", oResult);
+    bool is_sync_source = (oResult.getString() != "none");
+    if(!is_sync_source)
+        return;
+    db::CDBAdapter& db = _get_db(oResult);
+    rho::String insertScript("INSERT INTO changed_values (source_id,update_type) VALUES (?,?)");
+    IDBResult res = db.executeSQL(insertScript.c_str(), source_id, "push_changes");
+    if(!res.getDBError().isOK()) {
+        oResult.setError(res.getDBError().getError());
+    }
+}
+
 void rho::CNewORMModelImpl::init_defaults()
 {
     CNewORMModelImpl::init_once();

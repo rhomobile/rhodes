@@ -335,6 +335,38 @@
                 <DESC>Very, very dangerious method - only to be used in specs!!!</DESC>
             </METHOD>
 
+            
+            <METHOD name="onSyncDeleteError">
+                <DESC>Handles sync delete errors for the object</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="attrHash" type="HASH"/>
+                    <PARAM name="action" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="onSyncUpdateError">
+                <DESC>Handles sync update errors for the object</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="attrHash" type="HASH"/>
+                    <PARAM name="rollbackHash" type="HASH"/>
+                    <PARAM name="action" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="onSyncCreateError">
+                <DESC>Handles sync create errors</DESC>
+                <PARAMS>
+                    <PARAM name="objects" type="ARRAY"/>
+                    <PARAM name="action" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="pushChanges">
+                <DESC>Pushes all changes for the source</DESC>
+            </METHOD>
+
             <ALIASES>
                 <ALIAS new="count" existing="getCount"/>
                 <ALIAS new="backend_refresh_time" existing="getBackendRefreshTime"/>
