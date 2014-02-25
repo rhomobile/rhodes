@@ -201,6 +201,20 @@ namespace rho {
                            rho::apiGenerator::CMethodResult& oResult);
         db::CDBAdapter& _get_db(rho::apiGenerator::CMethodResult& oResult);
 
+        void onSyncDeleteError(const rho::String& objId,
+                               const Hashtable<rho::String, rho::String>& attrHash, 
+                               const rho::String& action,
+                               rho::apiGenerator::CMethodResult& oResult);
+        void onSyncUpdateError(const rho::String& objId,
+                               const Hashtable<rho::String, rho::String>& attrHash, 
+                               const Hashtable<rho::String, rho::String>& rollbackHash,
+                               const rho::String& action,
+                               rho::apiGenerator::CMethodResult& oResult);
+        void onSyncCreateError(const Vector<rho::String>& objects,
+                               const rho::String& action,
+                               rho::apiGenerator::CMethodResult& oResult);
+        void pushChanges(rho::apiGenerator::CMethodResult& oResult);
+
     private:
         void init_defaults();
 
