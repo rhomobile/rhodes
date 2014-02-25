@@ -241,14 +241,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             </VALUES>
                         </PARAM>
                         <PARAM name="eventData" type="HASH">
-                            <DESC>Event specific data.</DESC>
+                            <DESC>This will only contain values for the `APP_EVENT_CONFIGCONFLICT` event. This event may be triggered after an application was upgraded. If your rhoconfig.txt file contains custom properties that are different then what is being provided in the application upgrade package. By default local values are kept in place but you may overwrite configuration with new values and any other steps required for your application upgrade. `eventData` will be a hash. It will look like {"conflicting key" : ["new value","old value"].. }</DESC>
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
 
             <METHOD name="processApplicationEvent" generateAPI="false">
-                <DESC>Default processing of an application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
+                <DESC>Ruby applications must use this methof for processing of the application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
@@ -256,7 +256,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>See setApplicationNotify for applicationEvent values.</DESC>
                     </PARAM>
                     <PARAM name="eventData" type="HASH">
-                        <DESC>Event specific data.</DESC>
+                        <DESC>This will only contain values for the `APP_EVENT_CONFIGCONFLICT` event. This event may be triggered after an application was upgraded. If your rhoconfig.txt file contains custom properties that are different then what is being provided in the application upgrade package. By default local values are kept in place but you may overwrite configuration with new values and any other steps required for your application upgrade. `eventData` will be a hash. It will look like {"conflicting key" : ["new value","old value"].. }</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
