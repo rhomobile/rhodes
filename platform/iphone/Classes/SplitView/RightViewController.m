@@ -130,6 +130,18 @@
         }
     }
     
+	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
+	if (global_properties != nil) {
+		//background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
+		//selected_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_SELECTED_COLOR];
+        
+        self.on_change_tab_callback = (id<IMethodResult>)[global_properties objectForKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
+        if (self.on_change_tab_callback != nil) {
+            //[self.on_change_tab_callback release];
+        }
+	}
+    
+    
     self.itemsData = tabs;
     [tabs release];
 	
@@ -189,14 +201,8 @@
 -(void)callCallback:(int)new_index {
     // call callback
     if (self.on_change_tab_callback != nil) {
-        NSString* strBody = @"&rho_callback=1";
-        strBody = [strBody stringByAppendingString:@"&tab_index="];
-        strBody = [strBody stringByAppendingString:[NSString stringWithFormat:@"%d",new_index]];
-        const char* cb = [self.on_change_tab_callback UTF8String];
-        const char* b = [strBody UTF8String];
-        char* norm_url = rho_http_normalizeurl(cb);
-        rho_net_request_with_data(norm_url, b);
-        rho_http_free(norm_url);
+        NSMutableDictionary* result = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSString stringWithFormat:@"%d", new_index], @"tab_index", [NSString stringWithFormat:@"%d", new_index], @"tabIndex", nil];
+        [self.on_change_tab_callback setResult:result];
     }
 }
 
