@@ -70,6 +70,7 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent);
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
+bool m_SuspendedThroughPowerButton = false;
 
 using namespace rho::common;
 using namespace rho;
@@ -92,7 +93,11 @@ CMainWindow::CMainWindow()
     mNativeViewType = "";
     g_hWndCommandBar = 0;
     m_pBrowserEng = NULL;
+
+	
+	
 #if defined(OS_WINCE)
+	
     m_bFullScreen = false;
     m_bFullScreenBeforeLicense = m_bFullScreen;
 #endif
@@ -666,6 +671,34 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     return 0;
 }
 
+bool GetPowerButtonPressedValue(HWND hwnd)
+{
+	bool powerButtonPressed=false;
+	wchar_t szBuf[200];
+	if(hwnd!=NULL)
+	{
+		//LOG(INFO) + "Inside if(hwnd!=NULL)";
+		GetWindowText(hwnd,szBuf,199);
+		//LOG(INFO) + "After GetWindowText";
+		LOG(INFO) + szBuf;
+	}
+	if(0==wcscmp(szBuf,L"PowerKey Action"))
+	{
+		//LOG(INFO) + "Before powerButtonPressed=true;";
+		powerButtonPressed=true;
+		m_SuspendedThroughPowerButton=true;
+		//LOG(INFO) + "After m_SuspendedThroughPowerButton=true;";
+	}
+	else
+	{
+		
+		//LOG(INFO) + "Before powerButtonPressed=False;";
+		powerButtonPressed=false;
+	}
+	return powerButtonPressed;
+}
+
+
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
@@ -697,6 +730,8 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     return 0;
 }
 
+
+
 void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 {
 #if defined(_WIN32_WCE) 
@@ -707,7 +742,32 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
     }
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
-    RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
+
+	if(m_SuspendedThroughPowerButton==true)//Activation is due to Suspend Through PowerButton and resume
+	{
+	 m_SuspendedThroughPowerButton=false;
+	 LOG(INFO) + "Activation is due to powerbutton press suspend and resume.Skip it";
+	 //return 0;
+	}
+	else
+	{
+		HWND currentForeGroundWindowHandle;
+		//LOG(INFO) + "Before GetForegroundWindow";
+		currentForeGroundWindowHandle = GetForegroundWindow();
+		//LOG(INFO) + "After GetForegroundWindow";
+		bool powerButtonPressed = GetPowerButtonPressedValue(currentForeGroundWindowHandle);
+
+		if(true ==powerButtonPressed)//Deactivation is not due to Suspend Through PowerButton
+		{
+			 LOG(INFO) + "Deactivation is due to powerbutton press.Skip it";
+		}
+		else
+		{
+			//LOG(INFO) + "Before ProcessActivate";
+			RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
+		}
+		//RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
+	}
 #if defined(_WIN32_WCE)  && !defined (OS_PLATFORM_MOTCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
