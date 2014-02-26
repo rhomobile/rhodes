@@ -113,6 +113,8 @@ static void updateViewRect(CGRect* pRect)
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p  bar_info:(NSDictionary*)bar_info {
     
 	self = [self initWithNibName:nil bundle:nil];
+    
+    mCreationTimeMainView = v;
 
 	RightViewController *rightView = NULL;
 	LeftViewController *leftView = NULL;
@@ -173,6 +175,10 @@ static void updateViewRect(CGRect* pRect)
     return self;
 }
 
+
+- (id<RhoMainView>)getCreationTimeMainView {
+    return mCreationTimeMainView;
+}
 
 
 
