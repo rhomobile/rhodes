@@ -1266,8 +1266,6 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
     bool is_sync_source = (oResult.getString() != "none");
     getProperty("full_update", oResult);
     bool is_full_update = (oResult.getString() != "");
-    LOG(INFO) + "BAB_DEBUG: is_full_update: " + is_full_update;
-
     rho::String update_type("update");
     rho::String existing_update_type;
 
@@ -1352,8 +1350,6 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
         }
     }
     if (is_full_update && !ignore_changed_values) {
-        LOG(INFO) + "BAB_DEBUG: start full_update:";
-
         rho::String sqlDelStr("DELETE FROM changed_values WHERE object=? AND source_id=? AND sent=0");
         IDBResult res = db.executeSQL(sqlDelStr.c_str(), objId, source_id);
         if(!res.getDBError().isOK()) {
@@ -1362,13 +1358,10 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
             return;
         }
         Hashtable<rho::String, rho::String> obj_hash;
-        LOG(INFO) +  "BAB_DEBUG: full_update: fixed_schema: " + fixed_schema();
-
         if (fixed_schema()) {
             rho::String strSQL("SELECT * FROM ");
             strSQL += name();
             strSQL += rho::String(" WHERE object=?");
-            LOG(INFO) +  "BAB_DEBUG: full_update: sql: " + strSQL.c_str();
             res = db.executeSQL(strSQL.c_str(), objId);
             if(!res.getDBError().isOK()) {
                 oResult.setError(res.getDBError().getError());
@@ -1383,7 +1376,6 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
             }
         } else { // Property Bag
             rho::String strSQL("SELECT attrib,value FROM object_values WHERE object=? AND source_id=?");
-            LOG(INFO) +  "BAB_DEBUG: full_update: sql: " + strSQL.c_str();
             res = db.executeSQL(strSQL.c_str(), objId, source_id);
             if(!res.getDBError().isOK()) {
                 oResult.setError(res.getDBError().getError());
@@ -1393,7 +1385,6 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
                 obj_hash.put(res.getStringByIdx(0), res.getStringByIdx(1));
             }
         }
-        LOG(INFO) +  "BAB_DEBUG: full_update: inserting rows";
         for(Hashtable<rho::String, rho::String>::const_iterator cIt = obj_hash.begin(); cIt != obj_hash.end(); ++cIt)
         {
             const rho::String& attrKey = cIt -> first;
@@ -1412,7 +1403,6 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
                 return;
             }
         }
-        LOG(INFO) +  "BAB_DEBUG: full_update: changed_values are updated";
     }
 
     db.endTransaction();
