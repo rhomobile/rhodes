@@ -41,7 +41,7 @@
 
 @interface SplittedMainView : RhoViewController<RhoMainView> {
 	NSArray* viewControllers;
-
+    id<RhoMainView> mCreationTimeMainView;
 }
 
 @property (nonatomic,retain) NSArray *viewControllers;
@@ -71,6 +71,8 @@
 - (void)removeNavBar;
 
 - (UIWebView*)getWebView:(int)tab_index;
+
+- (id<RhoMainView>)getCreationTimeMainView;
 
 
 
