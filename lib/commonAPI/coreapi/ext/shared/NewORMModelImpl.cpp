@@ -1264,6 +1264,8 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
     bool ignore_changed_values = true;
     getProperty("sync_type", oResult);
     bool is_sync_source = (oResult.getString() != "none");
+    getProperty("full_update", oResult);
+    bool is_full_update = (oResult.getString() != "");
     rho::String update_type("update");
     rho::String existing_update_type;
 
@@ -1344,6 +1346,59 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
 
             // to update in-memory object
             retAttrs[attrKey] = attrValue;
+
+        }
+    }
+    if (is_full_update && !ignore_changed_values) {
+        rho::String sqlDelStr("DELETE FROM changed_values WHERE object=? AND source_id=? AND sent=0");
+        IDBResult res = db.executeSQL(sqlDelStr.c_str(), objId, source_id);
+        if(!res.getDBError().isOK()) {
+            oResult.setError(res.getDBError().getError());
+            db.rollback();
+            return;
+        }
+        Hashtable<rho::String, rho::String> obj_hash;
+        if (fixed_schema()) {
+            rho::String strSQL("SELECT * FROM ");
+            strSQL += name();
+            strSQL += rho::String(" WHERE object=?");
+            res = db.executeSQL(strSQL.c_str(), objId);
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                return;
+            }
+            // Fill out hashtable
+            for(; !res.isEnd(); res.next()) {
+                int ncols = res.getColCount();
+                for(int i = 0; i < ncols; ++i) {
+                    obj_hash.put(res.getColName(i), res.getStringByIdx(i));
+                }
+            }
+        } else { // Property Bag
+            rho::String strSQL("SELECT attrib,value FROM object_values WHERE object=? AND source_id=?");
+            res = db.executeSQL(strSQL.c_str(), objId, source_id);
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                return;
+            }
+            for(; !res.isEnd(); res.next()) {
+                obj_hash.put(res.getStringByIdx(0), res.getStringByIdx(1));
+            }
+        }
+        for(Hashtable<rho::String, rho::String>::const_iterator cIt = obj_hash.begin(); cIt != obj_hash.end(); ++cIt)
+        {
+            const rho::String& attrKey = cIt -> first;
+            const rho::String& attrValue = cIt -> second;
+            if(_is_reserved_name(attrKey)) continue;
+
+            rho::String attrib_type = (db.getAttrMgr().isBlobAttr(iSrcId, attrKey.c_str()) ? "blob.file" : "");
+            res = db.executeSQL(
+                "INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type) VALUES (?,?,?,?,?,?)",
+                source_id, objId, attrKey, attrValue, update_type, attrib_type);
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                return;
+            }
         }
     }
 
@@ -1482,7 +1537,7 @@ void rho::CNewORMModelImpl::onSyncDeleteError(const rho::String& objId,
     LOG(INFO) +  "onSyncDeleteError: " + actionStr;
     if(!rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
         return;
-    if(actionStr != "retry") 
+    if(actionStr != "retry")
     {
         oResult.setError("on_sync_delete_error action should be `retry`");
         return;
@@ -1496,7 +1551,7 @@ void rho::CNewORMModelImpl::onSyncDeleteError(const rho::String& objId,
     if(!is_sync_source)
         return;
     db::CDBAdapter& db = _get_db(oResult);
-    
+
     db.startTransaction();
     for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrHash.begin(); cIt != attrHash.end(); ++cIt)
     {
@@ -1528,7 +1583,7 @@ void rho::CNewORMModelImpl::onSyncUpdateError(const rho::String& objId,
     LOG(INFO) +  "onSyncUpdateError: " + actionStr;
     if(!rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
         return;
-    if(actionStr != "retry" && actionStr != "rollback") 
+    if(actionStr != "retry" && actionStr != "rollback")
     {
         oResult.setError("on_sync_update_error action should be `retry` or `rollback`");
         return;
@@ -1546,17 +1601,17 @@ void rho::CNewORMModelImpl::onSyncUpdateError(const rho::String& objId,
     convertFromStringA(oResult.getString().c_str(), is_full_update);
 
     db::CDBAdapter& db = _get_db(oResult);
-    
+
     db.startTransaction();
     if(actionStr == "rollback")
     {
         for(Hashtable<rho::String, rho::String>::const_iterator cIt = rollbackHash.begin(); cIt != rollbackHash.end(); ++cIt)
         {
             const rho::String& attrName = cIt -> first;
-            const rho::String& attrValue = cIt -> second;   
-        }    
+            const rho::String& attrValue = cIt -> second;
+        }
     }
-    else 
+    else
     {
         for(Hashtable<rho::String, rho::String>::const_iterator cIt = attrHash.begin(); cIt != attrHash.end(); ++cIt)
         {
@@ -1587,7 +1642,7 @@ void rho::CNewORMModelImpl::onSyncCreateError(const Vector<rho::String>& objects
     LOG(INFO) +  "onSyncCreateError: " + actionStr;
     if(!rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
         return;
-    if(actionStr != "delete" && actionStr != "recreate") 
+    if(actionStr != "delete" && actionStr != "recreate")
     {
         oResult.setError("on_sync_create_error action should be `delete` or `recreate`");
         return;
@@ -1599,12 +1654,12 @@ void rho::CNewORMModelImpl::onSyncCreateError(const Vector<rho::String>& objects
     if(!is_sync_source)
         return;
     db::CDBAdapter& db = _get_db(oResult);
-    
+
     db.startTransaction();
-    for(size_t i = 0; i < objects.size(); ++i) 
+    for(size_t i = 0; i < objects.size(); ++i)
     {
         const rho::String& objId = objects[i];
-        if(actionStr == "recreate") 
+        if(actionStr == "recreate")
         {
             rho::String selectSQL("SELECT object FROM changed_values WHERE update_type=? AND object=? AND source_id=?");
             IDBResult res = db.executeSQL(selectSQL.c_str(), "delete", objId, source_id);
@@ -1635,8 +1690,8 @@ void rho::CNewORMModelImpl::onSyncCreateError(const Vector<rho::String>& objects
                 oResult.setError(res.getDBError().getError());
                 db.rollback();
                 return;
-            } 
-            
+            }
+
             if(fixed_schema()) {
                 rho::String deleteSourceSQL("DELETE FROM ");
                 deleteSourceSQL += name() + " WHERE object=?";
@@ -1645,9 +1700,9 @@ void rho::CNewORMModelImpl::onSyncCreateError(const Vector<rho::String>& objects
                     oResult.setError(res.getDBError().getError());
                     db.rollback();
                     return;
-                } 
-            }  
-            else 
+                }
+            }
+            else
             {
                 rho::String deleteSourceSQL("DELETE FROM object_values WHERE object=? AND source_id=?");
                 res = db.executeSQL(deleteSourceSQL.c_str(), objId, source_id);
@@ -1655,7 +1710,7 @@ void rho::CNewORMModelImpl::onSyncCreateError(const Vector<rho::String>& objects
                     oResult.setError(res.getDBError().getError());
                     db.rollback();
                     return;
-                } 
+                }
             }
         }
     }
