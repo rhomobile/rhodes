@@ -165,6 +165,12 @@
     <ClCompile Include="..\..\shared\generated\cpp\NetworkBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Network_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Network_ruby_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMModelBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMModel_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMModel_ruby_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\NewORM_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\NewORM_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\PushBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Push_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Push_ruby_wrap.cpp" />
@@ -213,6 +219,12 @@
     <ClCompile Include="..\..\shared\generated\network_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\network_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\network_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\newormmodel_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\newormmodel_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\newormmodel_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\neworm_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\neworm_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\neworm_ruby_api.c" />
     <ClCompile Include="..\..\shared\generated\push_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\push_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\push_ruby_api.c" />
@@ -265,6 +277,8 @@
     <ClCompile Include="..\..\shared\LogImpl.cpp" />
     <ClCompile Include="..\..\shared\NetworkImpl.cpp" />
     <ClCompile Include="..\..\shared\NetworkDetectBase.cpp" />
+    <ClCompile Include="..\..\shared\NewORMImpl.cpp" />
+    <ClCompile Include="..\..\shared\NewORMModelImpl.cpp" />
     <ClCompile Include="..\..\shared\PushImpl.cpp" />
     <ClCompile Include="..\..\shared\SQLite3Impl.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -309,9 +323,12 @@
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h" />
     <ClInclude Include="..\..\shared\generated\cpp\LogBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\NetworkBase.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\NewORMBase.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\NewORMModelBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\RhoFileBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h" />
+    <ClInclude Include="..\..\shared\NewORMModelImpl.h" />
     <ClInclude Include="..\wm\src\NetworkDetect.h" />
   </ItemGroup>
   <ItemGroup>

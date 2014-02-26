@@ -48,6 +48,11 @@ using namespace rho::common;
 
 extern "C" {
 
+const char* rho_sys_qt_getWebviewFramework()
+{
+    return QString("WEBKIT/").append(qWebKitVersion()).toStdString().c_str();
+}
+
 VALUE phone_number()
 {
     return rho_ruby_get_NIL();
@@ -86,7 +91,7 @@ int rho_sys_get_screen_height()
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
     if (strcasecmp("webview_framework",szPropName) == 0) {
-        *resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
+        *resValue = rho_ruby_create_string(rho_sys_qt_getWebviewFramework());
         return 1;
     }
 

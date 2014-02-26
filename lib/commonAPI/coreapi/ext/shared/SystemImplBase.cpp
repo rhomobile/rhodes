@@ -493,8 +493,8 @@ void CSystemImplBase::getApplicationMessage(rho::apiGenerator::CMethodResult& oR
 void CSystemImplBase::startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult)
 {
     common::CMutexLock lock(m_appMessageMutex);
-    m_appMessageNotifications = true;
     m_appMessageHandler = oResult;
+    m_appMessageNotifications = true;
     for(Vector<Hashtable<String, String> >::const_iterator It = m_appMessageQueue.begin(); It != m_appMessageQueue.end(); ++It)
     {
         m_appMessageHandler.set(*It);

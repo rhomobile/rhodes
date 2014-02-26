@@ -6,4 +6,3 @@ iphone:
   libraries: [ "openssl.so" ]
 android:
   exttype: prebuilt
-  libraries: [ "libopenssl" ]

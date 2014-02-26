@@ -227,9 +227,10 @@ void CSystemImpl::setWindowPosition( int x,  int y, CMethodResult& oResult)
     CMainWindow::getInstance()->setPosition(x, y);
 }
 
+extern "C" const char* rho_sys_qt_getWebviewFramework();
 void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
 {
-    oResult.set(String("WEBKIT/" QTWEBKIT_VERSION_STR));
+    oResult.set(String(rho_sys_qt_getWebviewFramework()));
 }
 
 void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
