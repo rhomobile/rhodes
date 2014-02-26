@@ -28,17 +28,18 @@
 #import "RhoMainView.h"
 #import "RhoViewController.h"
 #import "SplittedMainView.h"
+#import "api_generator/iphone/IMethodResult.h"
 
 @interface RightViewController : UIViewController<RhoMainView> {
 	SplittedMainView* splittedView;
     NSArray *itemsData;
     int tabindex;	
-    NSString* on_change_tab_callback;
+    id<IMethodResult>  on_change_tab_callback;
 }
 
 @property (nonatomic,retain) NSArray *itemsData;
 @property (nonatomic,assign) int tabindex;
-@property (nonatomic,retain) NSString *on_change_tab_callback;
+@property (nonatomic,assign) id<IMethodResult> on_change_tab_callback;
 
 - (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent;
 
