@@ -118,7 +118,11 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
 
 void CSystemImpl::getDeviceName(CMethodResult& oResult)
 {
+#ifdef RHODES_EMULATOR
+    oResult.set(String("RhoSimulator"));
+#else
     oResult.set(String("Qt"));
+#endif
 }
 
 void CSystemImpl::getLocale(CMethodResult& oResult)

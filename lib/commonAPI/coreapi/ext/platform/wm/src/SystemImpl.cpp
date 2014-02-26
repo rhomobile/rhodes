@@ -220,7 +220,11 @@ void CSystemImpl::getDeviceName(CMethodResult& oResult)
 {
     String strRes;
 #ifdef OS_WINDOWS_DESKTOP
+#ifdef RHODES_EMULATOR
+	strRes = "RhoSimulator";
+#else
 	strRes = "Win32";
+#endif
 #else
 	HKEY hKey;
 	if (RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("Ident"), 0, KEY_READ, &hKey ) == ERROR_SUCCESS)
