@@ -47,7 +47,7 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
 void rho_wmsys_run_app_with_show(const wchar_t* szPath, const wchar_t* szParams, bool bShow);
 int rho_sys_get_screen_width();
 int rho_sys_get_screen_height();
-const char* rho_sys_win32_getWebviewFramework();
+const char* rho_sys_qt_getWebviewFramework();
 
 #if !defined( OS_WINDOWS_DESKTOP )
 typedef DWORD (*RCM_GETUNIQUEUNITIDEX)(LPUNITID_EX);
@@ -907,7 +907,7 @@ void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
     String strRes = "";
 
 #if defined(OS_WINDOWS_DESKTOP)
-	strRes = rho_sys_win32_getWebviewFramework();
+	strRes = rho_sys_qt_getWebviewFramework();
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 	strRes = "WEBKIT/MOTOROLA";
 #else

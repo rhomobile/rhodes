@@ -1,0 +1,37 @@
+require File.join(pwd, '../../../../../build/jake.rb')
+
+def build_extension(name)
+  chdir File.join( $rootdir, "lib/commonAPI/#{name}/ext/platform/qt/" )
+  args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "#{name}.pro", 'CONFIG-=debug', 'CONFIG+=release', $qmakevars]
+  puts Jake.run($qmake,args)
+  fail "[qmake #{name}.pro]" unless $? == 0
+  #puts Jake.run($make, ['clean'])
+  fail "[make clean]" unless $? == 0
+  puts Jake.run($make, ['all'])
+  fail "[make all]" unless $? == 0
+end
+
+namespace "build" do
+  task :config do
+    $platform = ENV['RHO_PLATFORM']
+    raise "RHO_PLATFORM is not set" if $platform.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+    $qmake = ENV['RHO_QMAKE']
+    raise "RHO_QMAKE is not set" if $qmake.nil?
+    $qmake_spec = ENV['RHO_QMAKE_SPEC']
+    raise "RHO_QMAKE_SPEC is not set" if $qmake_spec.nil?
+    $qmakevars = ENV['RHO_QMAKE_VARS']
+    if $platform == 'win32'
+      $make = 'nmake'
+    else
+      $make = 'make'
+    end
+  end
+
+  task :all => :config do
+    build_extension('logCapture')
+  end
+end
+
+task :default => "build:all"
