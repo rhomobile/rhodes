@@ -1390,9 +1390,6 @@ void rho::CNewORMModelImpl::updateObject(const rho::String& objId,
             const rho::String& attrKey = cIt -> first;
             const rho::String& attrValue = cIt -> second;
             if(_is_reserved_name(attrKey)) continue;
-            // if(_is_reserved_name(attrKey) || !attrValue.size()) continue;
-            LOG(INFO) +  "attrKey: " + attrKey.c_str();
-            LOG(INFO) +  "attrValue: " + attrValue.c_str();
 
             rho::String attrib_type = (db.getAttrMgr().isBlobAttr(iSrcId, attrKey.c_str()) ? "blob.file" : "");
             res = db.executeSQL(
