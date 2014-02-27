@@ -1143,44 +1143,49 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 }
 
 #ifdef __IPHONE_4_0
-- (void)applicationDidEnterBackground:(UIApplication *)application {
+- (void)applicationDidEnterBackground:(UIApplication *)app {
+
     RAWLOG_INFO("Application go to background");
     rho_rhodesapp_callUiDestroyedCallback();
     rho_rhodesapp_canstartapp("", ", ");
     
 	if (rho_rcclient_have_rhoconnect_client()) {
-	
-	if (rho_conf_getBool("finish_sync_in_background")/* && (rho_rcclient_issyncing()==1)*/) {
-		if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
-			if ([[UIDevice currentDevice] isMultitaskingSupported]) { //Check if device supports mulitasking 
-
-				syncBackgroundTask = [application beginBackgroundTaskWithExpirationHandler: ^ { 
-					NSLog(@"$$$ Background task is terminated by System !!!");
-					[application endBackgroundTask: syncBackgroundTask]; //Tell the system that we are done with the tasks 
-					syncBackgroundTask = UIBackgroundTaskInvalid; //Set the task to be invalid 
-				}]; 
-				
-				NSLog(@"Will wait sync thread to finish sync");
-				
-				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-					
-					NSLog(@"Waiting for sync thread");
-					
-					do 
-					{
-						NSLog(@"Check sync");
-						[NSThread sleepForTimeInterval:1];
-					}while (rho_rcclient_issyncing()==1);
-
-					NSLog(@"Sync is finished");
-					
-					[application endBackgroundTask: syncBackgroundTask]; //End the task so the system knows that you are done with what you need to perform 
-					syncBackgroundTask = UIBackgroundTaskInvalid; //Invalidate the background_task 
-					
-				}); 
-			}
-		}
-	}
+        if (rho_conf_getBool("finish_sync_in_background")/* && (rho_rcclient_issyncing()==1)*/) {
+            if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
+                if ([[UIDevice currentDevice] isMultitaskingSupported]) { //Check if device supports mulitasking
+                    
+                    syncBackgroundTask = [app beginBackgroundTaskWithExpirationHandler: ^ {
+                        NSLog(@"$$$ Background task is terminated by System !!!");
+                        
+                        // If the background task is already invalid, don't try to end it.
+                        if (syncBackgroundTask != UIBackgroundTaskInvalid) {
+                            [app endBackgroundTask: syncBackgroundTask]; //Tell the system that we are done with the tasks
+                            syncBackgroundTask = UIBackgroundTaskInvalid; //Set the task to be invalid
+                        }
+                    }];
+                    
+                    NSLog(@"Will wait sync thread to finish sync");
+                    
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        NSLog(@"Waiting for sync thread");
+                        
+                        do
+                        {
+                            NSLog(@"Check sync, rho_rcclient_issyncing = %d", rho_rcclient_issyncing());
+                            [NSThread sleepForTimeInterval:1];
+                        } while (rho_rcclient_issyncing() == 1);
+                        
+                        NSLog(@"Sync is finished, rho_rcclient_issyncing = %d", rho_rcclient_issyncing());
+                        
+                        // If the background task is already invalid, don't try to end it.
+                        if (syncBackgroundTask != UIBackgroundTaskInvalid) {
+                            [app endBackgroundTask: syncBackgroundTask]; //End the task so the system knows that you are done with what you need to perform
+                            syncBackgroundTask = UIBackgroundTaskInvalid; //Invalidate the background_task
+                        }
+                    });
+                }
+            }
+        }
 	}
 }
 
@@ -1221,6 +1226,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 {
     if (!url) {  return NO; }
 
+    rho_rhodesapp_setStartParametersOriginal( [[url absoluteString] UTF8String] );
+    
     NSBundle* mb = [NSBundle mainBundle];
     NSDictionary* md = [mb infoDictionary];
     NSArray* schemes = [md objectForKey:@"CFBundleURLTypes"];

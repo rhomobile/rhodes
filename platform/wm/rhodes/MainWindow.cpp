@@ -51,7 +51,7 @@
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
 #include "statistic/RhoProfiler.h"
-#include "coreapi/ext/shared/System.h"
+#include "coreapi/ext/shared/Intent.h"
 #include "coreapi/ext/platform/wm/src/Intents.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
@@ -2075,7 +2075,7 @@ LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
         LOG(INFO) + "INTERPROCESSMESSAGE : " + rho::String(ipmsg->appName) + rho::String(ipmsg->params);
 
 
-        rho::System::addApplicationMessage(ipmsg->appName, ipmsg->params);
+        rho::Intent::addApplicationMessage(ipmsg->appName, ipmsg->params);
         return 0;
     }
     else if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))

@@ -98,7 +98,7 @@ namespace rho {
 namespace common{
 
 IMPLEMENT_LOGCLASS(CRhodesApp,"RhodesApp");
-String CRhodesApp::m_strStartParameters;
+String CRhodesApp::m_strStartParameters, CRhodesApp::m_strStartParametersOriginal;
 boolean CRhodesApp::m_bSecurityTokenNotPassed = false;
 
 class CAppCallbacksQueue : public CThreadQueue
@@ -2700,6 +2700,16 @@ void rho_free_callbackdata(void* pData)
 	//It is used in SyncClient.
 }
 
+const char* rho_rhodesapp_getStartParametersOriginal()
+{
+    return RHODESAPP().getStartParametersOriginal().c_str();
+}
+
+void rho_rhodesapp_setStartParametersOriginal(const char* szParams)
+{
+    RHODESAPP().setStartParametersOriginal(szParams? szParams:"");
+}
+    
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 {
     String strCmdLineSecToken;

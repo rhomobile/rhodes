@@ -34,7 +34,7 @@
 #include <common/AutoPointer.h>
 #include <sync/RhoconnectClientManager.h>
 #include "Push.h"
-#include "SystemImplBase.h"
+#include "Intent.h"
 
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/JNIRhoRuby.h"
@@ -353,7 +353,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeAddAppMess
     std::string strAppName = rho_cast<std::string>(env, jAppName);
     std::string strMessage = jMessage ? rho_cast<std::string>(env, jMessage) : "";
 
-    static_cast<rho::CSystemImplBase*>(rho::CSystemFactoryBase::getSystemSingletonS())->addApplicationMessage(strAppName, strMessage);
+    rho::Intent::addApplicationMessage(strAppName, strMessage);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_resetHttpLogging
