@@ -1193,7 +1193,6 @@ if defined?(RHOCONNECT_CLIENT_PRESENT)
                     db_partition = Rho::RhoConfig.sources[get_source_name]['partition'].to_s
                     tableName = is_schema_source() ? get_schema_table_name : 'object_values'
                     is_full_update = Rho::RhoConfig.sources[get_source_name]['full_update']
-
                     db = ::Rho::RHO.get_src_db(get_source_name)
                     db.start_transaction
 
@@ -1216,7 +1215,6 @@ if defined?(RHOCONNECT_CLIENT_PRESENT)
                                 #        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>'update'})
                                 #    end
                                 #else
-
                                   values['attributes'].each do |attrib, value|
                                       resUpdateType =  db.select_from_table('changed_values', 'update_type',
                                         {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
@@ -1532,18 +1530,17 @@ end
 
                     raise
                 end
-
-            end
+              end
 
               # saves the current object to the database as a create type
               def save
                 # iterate over each instance variable and insert create row to table
-				obj = self.object #self.inst_strip_braces(self.object)
-				nSrcID = self.get_inst_source_id
+				        obj = self.object #self.inst_strip_braces(self.object)
+				        nSrcID = self.get_inst_source_id
                 db = ::Rho::RHO.get_src_db(get_inst_source_name)
                 db_partition = Rho::RhoConfig.sources[get_inst_source_name]['partition'].to_s
-				tableName = is_inst_schema_source() ? get_inst_schema_table_name() : 'object_values'
-				isSchemaSrc = is_inst_schema_source()
+				        tableName = is_inst_schema_source() ? get_inst_schema_table_name() : 'object_values'
+				        isSchemaSrc = is_inst_schema_source()
 
                 #call create if item does not exists
                 is_new_item = false
@@ -1577,16 +1574,9 @@ end
                     ignore_changed_values = true
                     resUpdateType = nil
                     if is_inst_sync_source()
-                        resUpdateType =  db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0})
-                        update_type = resUpdateType[0]['update_type'] if resUpdateType && resUpdateType.length > 0
-                        ignore_changed_values = update_type=='create'
-
-                        #if is_inst_full_update
-                        #    unless resUpdateType && resUpdateType.length > 0
-                        #        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
-                        #    end
-                        #    ignore_changed_values = update_type=='update'
-                        #end
+                      resUpdateType =  db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0})
+                      update_type = resUpdateType[0]['update_type'] if resUpdateType && resUpdateType.length > 0
+                      ignore_changed_values = update_type=='create'
                     end
 
                     self.vars.each do |key_a,value|
@@ -1702,75 +1692,84 @@ end
                 nSrcID = self.get_inst_source_id
                 db = ::Rho::RHO.get_src_db(get_inst_source_name)
                 db_partition = Rho::RhoConfig.sources[get_inst_source_name]['partition'].to_s
-                tableName = is_inst_schema_source() ? get_inst_schema_table_name() : 'object_values'
+                is_schema = is_inst_schema_source()
+                tableName = is_schema ? get_inst_schema_table_name() : 'object_values'
+
                 begin
+                  db.start_transaction
 
-                    db.start_transaction
+                  ignore_changed_values = true
+                  if is_inst_sync_source()
+                    resUpdateType =  db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0})
+                    update_type = resUpdateType[0]['update_type'] if resUpdateType && resUpdateType.length > 0
+                    ignore_changed_values = update_type=='create'
+                  end
 
-                    ignore_changed_values = true
-                    if is_inst_sync_source()
-                        resUpdateType =  db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0})
-                        update_type = resUpdateType[0]['update_type'] if resUpdateType && resUpdateType.length > 0
-                        ignore_changed_values = update_type=='create'
+                  attrs.each do |attrib,val|
+                    attrib = attrib.to_s.gsub(/@/,"")
+                    next if ::Rhom::RhomObject.method_name_reserved?(attrib)
 
-                        #if is_inst_full_update
-                        #    unless resUpdateType && resUpdateType.length > 0
-                        #        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
-                        #    end
-                        #    ignore_changed_values = update_type=='update'
-                        #end
-                    end
+                    # Don't save objects with braces to database
+                    new_val = val.to_s #self.inst_strip_braces(val.to_s)
+                    old_val = self.send attrib.to_sym unless ::Rhom::RhomObject.method_name_reserved?(attrib)
 
-                    attrs.each do |attrib,val|
-                      attrib = attrib.to_s.gsub(/@/,"")
-                      next if ::Rhom::RhomObject.method_name_reserved?(attrib)
-
-                      # Don't save objects with braces to database
-                      new_val = val.to_s #self.inst_strip_braces(val.to_s)
+                    isModified = old_val != new_val
+                    if isModified && new_val && old_val.nil? && new_val.to_s().length == 0
                       isModified = false
-
-                      old_val = self.send attrib.to_sym unless ::Rhom::RhomObject.method_name_reserved?(attrib)
-
-                      isModified = old_val != new_val
-                      if isModified && new_val && old_val.nil? && new_val.to_s().length == 0
-                        isModified = false
-                      end
-                      if isModified && old_val && new_val.nil? && old_val.to_s().length == 0
-                        isModified = false
-                      end
-
-                      # if the object's value doesn't match the database record
-                      # then we procede with update
-                      if isModified
-                          self.class._insert_or_update_attr(db, is_inst_schema_source(), tableName, nSrcID, obj, attrib, new_val)
-
-                          unless ignore_changed_values
-
-                              if resUpdateType && resUpdateType.length > 0
-                                db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID, "sent"=>0})
-                              end
-
-                              attrib_type = is_blob_attrib(db_partition, nSrcID, attrib) ? "blob.file" : ""
-                              db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib,
-                                "value"=>new_val, "update_type"=>update_type, "attrib_type"=>attrib_type })
-                          end
-
-                          # update in-memory object
-                          self.vars[attrib.to_sym()] = new_val #unless is_inst_full_update
-                      end
+                    end
+                    if isModified && old_val && new_val.nil? && old_val.to_s().length == 0
+                      isModified = false
                     end
 
-                    db.commit
+                    # if the object's value doesn't match the database record
+                    # then we procede with update
+                    if isModified
+                      self.class._insert_or_update_attr(db, is_inst_schema_source(), tableName, nSrcID, obj, attrib, new_val)
 
+                      unless ignore_changed_values
+                        if resUpdateType && resUpdateType.length > 0
+                          db.delete_from_table('changed_values', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID, "sent"=>0})
+                        end
+                        attrib_type = is_blob_attrib(db_partition, nSrcID, attrib) ? "blob.file" : ""
+                        db.insert_into_table('changed_values',
+                          { "source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val,
+                            "update_type"=>update_type, "attrib_type"=>attrib_type })
+                      end
+                      # update in-memory object
+                      self.vars[attrib.to_sym()] = new_val
+                    end
+                  end
+                  # In the case of :full_update insert into 'cahnged_values' table all attrib (exception 'object')
+                  if is_inst_full_update
+                    db.delete_from_table('changed_values', {"object"=>obj, "source_id"=>nSrcID, "sent"=>0})
+                    if is_schema
+                      record = db.execute_sql("SELECT * FROM \"#{tableName}\" WHERE object=?", obj)
+                      record[0].each do |attrib,value|
+                        next if attrib == "object"
+                        attrib_type = is_blob_attrib(db_partition, nSrcID, attrib) ? "blob.file" : ""
+                        db.insert_into_table('changed_values',
+                          { "source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>value,
+                            "update_type"=>update_type, "attrib_type"=>attrib_type })
+                      end
+                    else
+                      record = db.execute_sql("SELECT attrib,value FROM \"#{tableName}\" WHERE object=? AND source_id=?", obj, nSrcID)
+                      record.each do |pair|
+                        attrib_type = is_blob_attrib(db_partition, nSrcID, pair['attrib']) ? "blob.file" : ""
+                        db.insert_into_table('changed_values',
+                          { "source_id"=>nSrcID, "object"=>obj, "attrib"=>pair['attrib'], "value"=>pair['value'],
+                            "update_type"=>update_type, "attrib_type"=>attrib_type })
+                      end
+                    end
+                  end
+                  db.commit
                 rescue Exception => e
-                    puts 'update_attributes Exception: ' + e.inspect
-                    db.rollback
-
-                    raise
+                  puts 'update_attributes Exception: ' + e.inspect
+                  db.rollback
+                  raise
                 end
 
                 true
-              end
+              end # update_attributes
 
               def get_inst_source_name
                 self.class.name.to_s
@@ -1787,6 +1786,7 @@ end
               def is_inst_schema_source
                  !Rho::RhoConfig.sources[get_inst_source_name]['schema'].nil?
               end
+
               def get_inst_schema_table_name
                  get_inst_source_name()
               end
@@ -1798,7 +1798,8 @@ end
               def inst_strip_braces(str=nil)
                 str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
               end
-            end)
+            end
+          )
         end #unless
         #modelname = classname.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
         #puts "classname: #{classname}; modelname: #{modelname}"
