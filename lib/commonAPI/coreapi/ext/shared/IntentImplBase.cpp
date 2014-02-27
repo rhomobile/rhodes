@@ -9,8 +9,8 @@
 #include "db/DBAdapter.h"
 #include "Network.h"
 
-#undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "Intent"
+//#undef DEFAULT_LOGCATEGORY
+//#define DEFAULT_LOGCATEGORY "Intent"
 
 using namespace rho::common;
 
@@ -18,7 +18,7 @@ namespace rho {
 
 using namespace apiGenerator;
 
-IMPLEMENT_LOGCLASS(CIntentImplBase, "Intent");
+//IMPLEMENT_LOGCLASS(CIntentImplBase, "Intent");
 
 void CIntentImplBase::getApplicationMessage(rho::apiGenerator::CMethodResult& oResult)
 {

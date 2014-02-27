@@ -1,5 +1,5 @@
 #include "generated/cpp/IntentBase.h"
-#include "logging/RhoLog.h"
+//#include "logging/RhoLog.h"
 
 namespace rho {
 
