@@ -289,42 +289,52 @@ def cc_run(command, args, chdir = nil, coloring = true)
   argv += args
   cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '' + x + '' : x }.join(' ')
 
-  out = StringIO.new
-  ret = nil
-  Open3.popen2e(cmdstr) do |i,f,t|
-    warning = false
-    error = false
-    while data = f.gets
-      if data =~ /error:/
-        error = true
-      elsif data =~ /warning:/
-        warning = true
-      elsif data =~ /note:/
-      else
-        warning = false
-        error = false
-      end
-
-      if error && coloring
-        out.write "\e[31m#{data}\e[0m"
-      elsif warning && coloring
-        out.write "\e[33m#{data}\e[0m"
-      else
-        out.puts data
-      end
-
-    end
-    ret = t.value
+  isWinXP = false
+  if RUBY_PLATFORM =~ /(win|w)32$/
+    winName = `wmic OS get Name`
+    isWinXP = true if winName =~ /Windows XP/
   end
-
-  $output_lock.synchronize {
+  
+  if isWinXP
     puts '-' * 80
-    puts "PWD: " + FileUtils.pwd
-    puts cmdstr
-    puts out.string
-  }
-  out.close
+    %{#{cmdstr}}
+  else
+    out = StringIO.new
+    ret = nil
+    Open3.popen2e(cmdstr) do |i,f,t|
+      warning = false
+      error = false
+      while data = f.gets
+        if data =~ /error:/
+          error = true
+        elsif data =~ /warning:/
+          warning = true
+        elsif data =~ /note:/
+        else
+          warning = false
+          error = false
+        end
 
+        if error && coloring
+          out.write "\e[31m#{data}\e[0m"
+        elsif warning && coloring
+          out.write "\e[33m#{data}\e[0m"
+        else
+          out.puts data
+        end
+      end
+      ret = t.value
+    end
+
+    $output_lock.synchronize {
+      puts '-' * 80
+      puts "PWD: " + FileUtils.pwd
+      puts cmdstr
+      puts out.string
+    }
+    out.close
+  end
+  
   FileUtils.cd save_cwd unless chdir.nil?
   ret.success?
 end
