@@ -110,6 +110,12 @@ static void updateViewRect(CGRect* pRect)
 
 @synthesize viewControllers;
 
+- (void)dealloc {
+	[viewControllers release];
+    //[mCreationTimeMainView release];
+    [super dealloc];
+}
+
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p  bar_info:(NSDictionary*)bar_info {
     
 	self = [self initWithNibName:nil bundle:nil];

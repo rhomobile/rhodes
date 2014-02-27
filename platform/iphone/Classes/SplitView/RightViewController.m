@@ -129,9 +129,9 @@
             
 			td.loaded = is_use_current_view_for_tab;
 			
-			if (is_use_current_view_for_tab) {
+			/*if (is_use_current_view_for_tab) {
 				td.url = [[parent getCreationTimeMainView] currentLocation:-1];
-			}
+			}*/
 			
 			if (is_use_current_view_for_tab) {
 				//web_bkg_color = nil;
@@ -187,27 +187,27 @@
 	//	ri.loaded = YES;
 	//}
     
-    
+    /*
 	if (initUrl && is_load_initial_url) {
         [self navigateRedirect:initUrl tab:0];
 		RhoRightItem *ri = [self.itemsData objectAtIndex:tabindex];
 		ri.loaded = YES;
 
-    }
+    }*/
 	if (tab_to_initial_select >= 0) {
 		self.tabindex = tab_to_initial_select;
 	}
     
     
 	// set first tab
-	SimpleMainView* v = (SimpleMainView*)[[self.itemsData objectAtIndex:0] view];
+	/*SimpleMainView* v = (SimpleMainView*)[[self.itemsData objectAtIndex:0] view];
 	if (v != NULL) {
 		[v navigateRedirect:initUrl tab:0];
 		[self.view addSubview:v.view];
 		[self.view setNeedsLayout];
 		[v.view setNeedsDisplay];
         [self callCallback:0];
-	}
+	}*/
 	
 	return self;
 }
@@ -336,9 +336,15 @@
 	tabindex = index;
     RhoRightItem *ri = [self.itemsData objectAtIndex:tabindex];
     if (!ri.loaded || ri.reload) {
-        const char *s = [ri.url UTF8String];
-        rho_rhodesapp_load_url(s);
-        ri.loaded = YES;
+        if ( !ri.loaded )
+        {
+            const char *s = [ri.url UTF8String];
+            rho_rhodesapp_load_url(s);
+            ri.loaded = YES;
+        }else if (ri.reload)
+        {
+            rho_webview_refresh(tabindex);
+        }
     }
 	if (cur_v == new_v) {
 		return;
