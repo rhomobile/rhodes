@@ -4,20 +4,22 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
+#include "common/RhoFilePath.h"
+#include "Intents.h"
 #include "SystemImpl.h"
 
 namespace rho {
-    
-    using namespace apiGenerator;
-    using namespace common;
-    
-    class CIntentSingletonImpl: public CIntentImplBase
-    {
-    public:
-        
-        CIntentSingletonImpl(): CIntentImplBase(){}
-        
-        virtual void send( const Hashtable<String, String>& params, apiGenerator::CMethodResult& oResult) {
+
+	using namespace apiGenerator;
+	using namespace common;
+
+	class CIntentSingletonImpl: public CIntentImplBase
+	{
+	public:
+
+		CIntentSingletonImpl(): CIntentImplBase(){}
+
+		virtual void send( const Hashtable<String, String>& params, apiGenerator::CMethodResult& oResult) {
 			String appName = params.get("appName");
 			String data = params.get("data");
 			String uri = params.get("uri");
@@ -27,93 +29,92 @@ namespace rho {
 				CSystemFactory::getSystemSingletonS()->openUrl(uri, oResult);
 			else
 				oResult.setError("Intent sending error: no 'appName' or 'uri' specified");
-        } 
+		} 
 
-        virtual void startListening(apiGenerator::CMethodResult& oResult) {
+		virtual void startListening(apiGenerator::CMethodResult& oResult) {
 			startApplicationMessageNotifications(oResult);
-        } 
+		} 
 
-        virtual void stopListening(apiGenerator::CMethodResult& oResult) {
+		virtual void stopListening(apiGenerator::CMethodResult& oResult) {
 			stopApplicationMessageNotifications(oResult);
-        } 
+		} 
 
-    private:
-	void CIntentImpl::sendApplicationMessage(const String& appName, const String& params, apiGenerator::CMethodResult& oResult)
-	{
-	    CFilePath oPath(appName);    
-	    String appNamePath = oPath.getBaseName();
-	    appNamePath.resize(appNamePath.length() - 4);
+	private:
+		void sendApplicationMessage(const String& appName, const String& params, apiGenerator::CMethodResult& oResult) {
+			CFilePath oPath(appName);    
+			String appNamePath = oPath.getBaseName();
+			appNamePath.resize(appNamePath.length() - 4);
 
-	    COPYDATASTRUCT cds;
+			COPYDATASTRUCT cds;
 
-	    String strAppName = appNamePath + ".MainWindow";
-	    StringW strAppNameW = convertToStringW(strAppName);
+			String strAppName = appNamePath + ".MainWindow";
+			StringW strAppNameW = convertToStringW(strAppName);
 
-	    HWND appWindow = FindWindow(strAppNameW.c_str(), NULL);
+			HWND appWindow = FindWindow(strAppNameW.c_str(), NULL);
 
-	    if (appWindow == NULL) {
-	        apiGenerator::CMethodResult runResult;
-		runApplicationShowWindow(appName, "", false, false, runResult);
+			if (appWindow == NULL) {
+				apiGenerator::CMethodResult runResult;
+				static_cast<CSystemImpl*>(CSystemFactory::getSystemSingletonS())->runApplicationShowWindow(appName, "", false, false, runResult);
 
-		if (runResult.isError()) {
-		    oResult.setError(runResult.getErrorString());
-		    return;
+				if (runResult.isError()) {
+					oResult.setError(runResult.getErrorString());
+					return;
+				}
+
+				int maxTimeout = 5000;
+				int currTime = 0;
+
+				for (currTime = 0; currTime < maxTimeout; currTime += 100) {
+					Sleep(100);
+					appWindow = FindWindow(strAppNameW.c_str(), NULL);
+					if (appWindow != NULL)
+						break;
+				}
+
+				waitIntentEvent(appName);
+
+				appWindow = FindWindow(strAppNameW.c_str(), NULL);
+
+				if (appWindow == NULL) {
+					oResult.setError("application is not running");
+					return;
+				}
+			}
+
+			InterprocessMessage msg;
+			strcpy(msg.params, params.c_str());
+			strcpy(msg.appName, appName.c_str());
+
+			cds.dwData = COPYDATA_INTERPROCESSMESSAGE;
+			cds.cbData = sizeof(InterprocessMessage);
+			cds.lpData = &msg;
+
+			SendMessage(appWindow, WM_COPYDATA, (WPARAM)(HWND)0, (LPARAM) (LPVOID) &cds);
 		}
 
-	        int maxTimeout = 5000;
-	        int currTime = 0;
+	};
 
-    		for (currTime = 0; currTime < maxTimeout; currTime += 100) {
-	            Sleep(100);
-	            appWindow = FindWindow(strAppNameW.c_str(), NULL);
-	            if (appWindow != NULL)
-			break;
-    		}
+	class CIntentImpl : public CIntentBase
+	{
+	public:
+		virtual ~CIntentImpl() {}
+	};
 
-	        waitIntentEvent(appName);
+	////////////////////////////////////////////////////////////////////////
 
-    		appWindow = FindWindow(strAppNameW.c_str(), NULL);
-        
-	        if (appWindow == NULL) {
-	            oResult.setError("application is not running");
-    		    return;
-	        }
-	    }
+	class CIntentFactory: public CIntentFactoryBase    {
+	public:
+		CIntentFactory(){}
 
-	    InterprocessMessage msg;
-	    strcpy(msg.params, params.c_str());
-	    strcpy(msg.appName, appName.c_str());
+		IIntentSingleton* createModuleSingleton()
+		{ 
+			return new CIntentSingletonImpl();
+		}
 
-	    cds.dwData = COPYDATA_INTERPROCESSMESSAGE;
-	    cds.cbData = sizeof(InterprocessMessage);
-	    cds.lpData = &msg;
+		virtual IIntent* createModuleByID(const String& strID){ return new CIntentImpl(); };
 
-	    SendMessage(appWindow, WM_COPYDATA, (WPARAM)(HWND)0, (LPARAM) (LPVOID) &cds);
-	}
+	};
 
-    };
-    
-    class CIntentImpl : public CIntentBase
-    {
-    public:
-        virtual ~CIntentImpl() {}
-    };
-    
-    ////////////////////////////////////////////////////////////////////////
-    
-    class CIntentFactory: public CIntentFactoryBase    {
-    public:
-        CIntentFactory(){}
-        
-        IIntentSingleton* createModuleSingleton()
-        { 
-            return new CIntentSingletonImpl();
-        }
-        
-        virtual IIntent* createModuleByID(const String& strID){ return new CIntentImpl(); };
-        
-    };
-    
 }
 
 extern "C" void Init_Intent()
