@@ -1,4 +1,4 @@
-#include "../../../shared/generated/cpp/IntentBase.h"
+#include "../../../shared/IntentImplBase.h"
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
 #include "common/RhodesApp.h"
@@ -11,18 +11,18 @@ namespace rho {
     using namespace apiGenerator;
     using namespace common;
     
-    class CIntentSingletonImpl: public CIntentSingletonBase
+    class CIntentSingletonImpl: public CIntentImplBase
     {
     public:
         
-        CIntentSingletonImpl(): CIntentSingletonBase(){}
+        CIntentSingletonImpl(): CIntentImplBase(){}
         
         virtual void send( const Hashtable<String, String>& params, apiGenerator::CMethodResult& oResult) {
 			String appName = params.get("appName");
 			String data = params.get("data");
 			String uri = params.get("uri");
 			if (appName.length() > 0)
-				CSystemFactory::getSystemSingletonS()->sendApplicationMessage(appName, data, oResult);
+				sendApplicationMessage(appName, data, oResult);
 			else if (uri.length() > 0)
 				CSystemFactory::getSystemSingletonS()->openUrl(uri, oResult);
 			else
@@ -30,12 +30,66 @@ namespace rho {
         } 
 
         virtual void startListening(apiGenerator::CMethodResult& oResult) {
-			CSystemFactory::getSystemSingletonS()->startApplicationMessageNotifications(oResult);
+			startApplicationMessageNotifications(oResult);
         } 
 
         virtual void stopListening(apiGenerator::CMethodResult& oResult) {
-			CSystemFactory::getSystemSingletonS()->stopApplicationMessageNotifications(oResult);
+			stopApplicationMessageNotifications(oResult);
         } 
+
+    private:
+	void CIntentImpl::sendApplicationMessage(const String& appName, const String& params, apiGenerator::CMethodResult& oResult)
+	{
+	    CFilePath oPath(appName);    
+	    String appNamePath = oPath.getBaseName();
+	    appNamePath.resize(appNamePath.length() - 4);
+
+	    COPYDATASTRUCT cds;
+
+	    String strAppName = appNamePath + ".MainWindow";
+	    StringW strAppNameW = convertToStringW(strAppName);
+
+	    HWND appWindow = FindWindow(strAppNameW.c_str(), NULL);
+
+	    if (appWindow == NULL) {
+	        apiGenerator::CMethodResult runResult;
+		runApplicationShowWindow(appName, "", false, false, runResult);
+
+		if (runResult.isError()) {
+		    oResult.setError(runResult.getErrorString());
+		    return;
+		}
+
+	        int maxTimeout = 5000;
+	        int currTime = 0;
+
+    		for (currTime = 0; currTime < maxTimeout; currTime += 100) {
+	            Sleep(100);
+	            appWindow = FindWindow(strAppNameW.c_str(), NULL);
+	            if (appWindow != NULL)
+			break;
+    		}
+
+	        waitIntentEvent(appName);
+
+    		appWindow = FindWindow(strAppNameW.c_str(), NULL);
+        
+	        if (appWindow == NULL) {
+	            oResult.setError("application is not running");
+    		    return;
+	        }
+	    }
+
+	    InterprocessMessage msg;
+	    strcpy(msg.params, params.c_str());
+	    strcpy(msg.appName, appName.c_str());
+
+	    cds.dwData = COPYDATA_INTERPROCESSMESSAGE;
+	    cds.cbData = sizeof(InterprocessMessage);
+	    cds.lpData = &msg;
+
+	    SendMessage(appWindow, WM_COPYDATA, (WPARAM)(HWND)0, (LPARAM) (LPVOID) &cds);
+	}
 
     };
     
@@ -56,7 +110,7 @@ namespace rho {
             return new CIntentSingletonImpl();
         }
         
-        virtual IIntent* createModuleByID(const rho::String& strID){ return new CIntentImpl(); };
+        virtual IIntent* createModuleByID(const String& strID){ return new CIntentImpl(); };
         
     };
     

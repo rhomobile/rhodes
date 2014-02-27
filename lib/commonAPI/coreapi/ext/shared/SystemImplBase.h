@@ -8,7 +8,7 @@ using namespace apiGenerator;
 class CSystemImplBase: public CSystemSingletonBase
 {
 public:
-    CSystemImplBase(): CSystemSingletonBase(), m_appMessageNotifications(false), m_appMessageWait(false) {}
+    CSystemImplBase(): CSystemSingletonBase() {}
 
     virtual void getPlatform(CMethodResult& oResult);
     virtual void getHasCamera(CMethodResult& oResult);
@@ -66,20 +66,6 @@ public:
 
     virtual void getHttpProxyURI(rho::apiGenerator::CMethodResult& oResult);
     virtual void setHttpProxyURI( const rho::String& httpProxyURI, rho::apiGenerator::CMethodResult& oResult);
-
-    virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
-    virtual void getApplicationMessage(rho::apiGenerator::CMethodResult& oResult);
-    virtual void startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
-    virtual void stopApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
-
-    void addApplicationMessage(const rho::String& appName, const rho::String& msg);
-protected:
-    Vector<Hashtable<String, String> > m_appMessageQueue;
-    common::CMutex m_appMessageMutex;
-    bool m_appMessageNotifications;
-    CMethodResult m_appMessageHandler;
-    bool m_appMessageWait;
-    CMethodResult m_appMessageResult;
 
     DEFINE_LOGCLASS
 };
