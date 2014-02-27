@@ -13,7 +13,6 @@ ext/shared/generated/cpp/System_ruby_wrap.cpp
 ext/shared/generated/cpp/System_js_wrap.cpp
 ext/shared/generated/cpp/SystemBase.cpp
 ext/shared/SystemImplBase.cpp
-ext/shared/IntentImplBase.cpp
 ext/platform/android/jni/SystemImpl.cpp
 ext/shared/generated/network_api_init.cpp
 ext/shared/generated/network_js_api.cpp
