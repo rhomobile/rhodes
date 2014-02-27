@@ -37,7 +37,6 @@ public:
 	virtual bool haveSyncThread() = 0;
 	virtual unsigned int syncThreadGetThreadID() = 0;
 	virtual bool syncEngineNotifyIsReportingEnabled() = 0;
-	virtual int rho_sync_issyncing() = 0;
 	
 	virtual int logged_in() = 0;
 	virtual unsigned long login(const char* szLogin, const char* password, const char* callback) = 0;
@@ -97,7 +96,13 @@ public:
 	static void syncThreadCreate() { m_pImpl->syncThreadCreate(); }
 	static void syncThreadDestroy() { m_pImpl->syncThreadDestroy(); }
 	static bool syncEngineNotifyIsReportingEnabled() { return m_pImpl->syncEngineNotifyIsReportingEnabled(); }
-	static int rho_sync_issyncing() { return m_pImpl->rho_sync_issyncing(); }
+	static int rho_sync_issyncing() {
+        if (m_pImpl == NULL) {
+            return -1;
+        }
+
+        return m_pImpl->issyncing();
+    }
 	
 	static int logged_in() { return m_pImpl->logged_in(); }
 	static unsigned long login(const char* szLogin, const char* password, const char* callback) { return m_pImpl->login(szLogin,password,callback); }
