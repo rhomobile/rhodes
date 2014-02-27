@@ -937,65 +937,6 @@ void CSystemImpl::getHasCamera(CMethodResult& oResult)
 
 }
 
-void CSystemImpl::sendApplicationMessage(const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
-{
-    CFilePath oPath(appName);    
-    rho::String appNamePath = oPath.getBaseName();
-    appNamePath.resize(appNamePath.length() - 4);
-
-    COPYDATASTRUCT cds;
-
-    rho::String strAppName = appNamePath + ".MainWindow";
-    rho::StringW strAppNameW = rho::convertToStringW(strAppName);
-
-    HWND appWindow = FindWindow(strAppNameW.c_str(), NULL);
-
-    if (appWindow == NULL)
-    {
-        rho::apiGenerator::CMethodResult runResult;
-        runApplicationShowWindow(appName, "", false, false, runResult);
-
-        if (runResult.isError())
-        {
-            oResult.setError(runResult.getErrorString());
-            return;
-        }
-
-        int maxTimeout = 5000;
-        int currTime = 0;
-
-        for (currTime = 0; currTime < maxTimeout; currTime += 100)
-        {
-            Sleep(100);
-
-            appWindow = FindWindow(strAppNameW.c_str(), NULL);
-
-            if (appWindow != NULL)
-                break;
-        }
-
-        waitIntentEvent(appName);
-
-        appWindow = FindWindow(strAppNameW.c_str(), NULL);
-        
-        if (appWindow == NULL)
-        {
-            oResult.setError("application is not running");
-            return;
-        }
-    }
-
-    rho::InterprocessMessage msg;
-    strcpy(msg.params, params.c_str());
-    strcpy(msg.appName, appName.c_str());
-
-    cds.dwData = COPYDATA_INTERPROCESSMESSAGE;
-    cds.cbData = sizeof(rho::InterprocessMessage);
-    cds.lpData = &msg;
-
-    SendMessage(appWindow, WM_COPYDATA, (WPARAM)(HWND)0, (LPARAM) (LPVOID) &cds);
-}
-
 extern "C" bool rho_rhosim_window_closed();
 void CSystemImpl::getMain_window_closed(rho::apiGenerator::CMethodResult& oResult)
 {

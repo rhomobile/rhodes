@@ -245,38 +245,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <CALLBACK type="STRING"/>
                 <PLATFORM>WM, Win32, Android</PLATFORM>
             </METHOD>
-            <METHOD name="getApplicationMessage" hasCallback="optional">
-                <DESC>Return last message sent by another application by Rho.System.sendApplicationMessage. Rho.System.getApplicationMessage() and Rho.System.startApplicationMessageNotifications share single message queue. In synchronous mode (without callback) returns null if there is no message or application messages is not supported at current platform. In case a callback is passed the callback will be called just once as the message is received or immediately with first message in message queue.</DESC>
-                <RETURN type="HASH">
-                    <PARAMS>
-                        <PARAM name="appName" type="STRING">
-                            <DESC>Name of application which sent the message. At Android it is a package name. At iOS it is BundleURLScheme of an application.</DESC>
-                        </PARAM>
-                        <PARAM name="message" type="STRING">
-                            <DESC>Message payload string, it is not analysed or parsed any way and delivered as is.</DESC>
-                        </PARAM>
-                    </PARAMS>
-                </RETURN>
-                <PLATFORM>Android, WM, iOS</PLATFORM>
-            </METHOD>
-            <METHOD name="startApplicationMessageNotifications" hasCallback="mandatory">
-                <DESC>Start message notifications sent by another application by Rho.System.sendApplicationMessage. Rho.System.getApplicationMessage() and Rho.System.startApplicationMessageNotifications share single message queue.</DESC>
-                <CALLBACK type="HASH">
-                    <PARAMS>
-                        <PARAM name="appName" type="STRING">
-                            <DESC>Name of application which sent the message. At Android it is a package name. At iOS it is BundleURLScheme of an application.</DESC>
-                        </PARAM>
-                        <PARAM name="message" type="STRING">
-                            <DESC>Message payload string, it is not analysed or parsed any way and delivered as is.</DESC>
-                        </PARAM>
-                    </PARAMS>
-                </CALLBACK>
-                <PLATFORM>Android, WM, iOS</PLATFORM>
-            </METHOD>
-            <METHOD name="stopApplicationMessageNotifications" hasCallback="none">
-                <DESC>Stop message notifications sent by another application by Rho.System.sendApplicationMessage.</DESC>
-                <PLATFORM>Android, WM, iOS</PLATFORM>
-            </METHOD>
             <METHOD name="openUrl">
                 <DESC>Open the application associated with the URL. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix will execute the Web Browser installed on system and open URL in executed browser..</DESC>
                 <PARAMS>
@@ -663,18 +631,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <CAN_BE_NIL>
                             <DESC>False by default</DESC>
                         </CAN_BE_NIL>
-                    </PARAM>
-                </PARAMS>
-            </METHOD>
-            <METHOD name="sendApplicationMessage" hasCallback="none">
-                <DESC>Send data to another application.</DESC>
-                <PLATFORM>Android, WM, iOS</PLATFORM>
-                <PARAMS>
-                    <PARAM name="appName" type="STRING">
-                        <DESC>The name of the application already installed at the device. It depends from platform. At Android it is a package name. At iOS it is BundleURLScheme of an application.</DESC>
-                    </PARAM>
-                    <PARAM name="message" type="STRING">
-                        <DESC>Message payload string. Application can receive this string by getApplicationMessage/startApplicationMessageNotifications methods. Parameter could be any string. The string is passed to another side without any changes.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>

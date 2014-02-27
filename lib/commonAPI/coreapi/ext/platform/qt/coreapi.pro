@@ -65,6 +65,7 @@ HEADERS += \
 ../../shared/Push.h\
 ../../shared/System.h\
 ../../shared/SystemImplBase.h\
+../../shared/IntentImplBase.h\
 ../../shared/generated/cpp/ApplicationBase.h\
 ../../shared/generated/cpp/DatabaseBase.h\
 ../../shared/generated/cpp/IApplication.h\
@@ -114,6 +115,7 @@ SOURCES += \
 ../../shared/PushImpl.cpp\
 ../../shared/SQLite3Impl.cpp\
 ../../shared/SystemImplBase.cpp\
+../../shared/IntentImplBase.cpp\
 ../../shared/generated/application_api_init.cpp\
 ../../shared/generated/application_js_api.cpp\
 ../../shared/generated/application_ruby_api.c\
