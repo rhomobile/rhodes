@@ -151,7 +151,7 @@ private:
 
     String m_strLoadingPagePath, m_strLoadingPngPath;
     String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl;//, m_strFirstStartUrl;
-    static String m_strStartParameters;
+    static String m_strStartParameters, m_strStartParametersOriginal;
     static boolean m_bSecurityTokenNotPassed;
     String m_strRhoMessage;
     String m_EmptyString;
@@ -208,9 +208,11 @@ public:
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
 
     static void setStartParameters(const char* szParams ){ m_strStartParameters = (szParams ? szParams : ""); }
+    static void setStartParametersOriginal(const char* szParams ){ m_strStartParametersOriginal = (szParams ? szParams : ""); }
     static void setSecurityTokenNotPassed(boolean is_not_passed) {m_bSecurityTokenNotPassed = is_not_passed;}
     static boolean isSecurityTokenNotPassed() {return m_bSecurityTokenNotPassed;}
     static const String& getStartParameters(){ return m_strStartParameters; }
+    static const String& getStartParametersOriginal(){ return m_strStartParametersOriginal; }
 
     const String& getAppBackUrl();
     void setAppBackUrl(const String& url);
@@ -370,7 +372,9 @@ void rho_rhodesapp_load_url(const char *url);
 int rho_rhodesapp_check_mode();
 
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators);
-
+const char* rho_rhodesapp_getStartParametersOriginal();
+void rho_rhodesapp_setStartParametersOriginal(const char* szParams);
+    
 // return 1 only if "motorola_licence" and "motorola_licence" property is exist and correct !
 int rho_is_motorola_licence_checked(const char* szLicence, const char* szCompany, const char* szAppName);
     
