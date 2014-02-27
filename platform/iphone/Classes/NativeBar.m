@@ -361,7 +361,8 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
             NSNumber* obj_num = (NSNumber*)obj;
             if ([obj_num boolValue]) {
                 use_current_view_for_tab = "true";
-                action = "none";
+                if (bar_t != VTABBAR_TYPE)
+                    action = "none";
             }
             else {
                 use_current_view_for_tab = "false";
