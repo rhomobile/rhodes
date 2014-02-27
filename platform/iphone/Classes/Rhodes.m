@@ -1221,6 +1221,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 {
     if (!url) {  return NO; }
 
+    rho_rhodesapp_setStartParametersOriginal( [[url absoluteString] UTF8String] );
+    
     NSBundle* mb = [NSBundle mainBundle];
     NSDictionary* md = [mb infoDictionary];
     NSArray* schemes = [md objectForKey:@"CFBundleURLTypes"];
