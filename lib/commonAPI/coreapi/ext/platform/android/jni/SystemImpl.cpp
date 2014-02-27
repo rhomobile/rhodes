@@ -58,7 +58,6 @@ public:
     virtual void setWindowSize(int, int, rho::apiGenerator::CMethodResult& result);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& result);
     virtual void runApplication(const rho::String&, const rho::String&, bool, rho::apiGenerator::CMethodResult& result);
-    virtual void sendApplicationMessage( const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
     virtual void getHasCamera(rho::apiGenerator::CMethodResult& result);
     virtual void getPhoneNumber(rho::apiGenerator::CMethodResult& result);
     virtual void getHasNetwork(rho::apiGenerator::CMethodResult& result);
@@ -334,21 +333,6 @@ void CSystemImpl::getOsVersion(rho::apiGenerator::CMethodResult& result)
 void CSystemImpl::getIsMotorolaDevice(rho::apiGenerator::CMethodResult& result)
 {
     rho_sysimpl_get_property("is_motorola_device", result);
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CSystemImpl::sendApplicationMessage(const rho::String& appName,  const rho::String& params, rho::apiGenerator::CMethodResult& result)
-{
-    JNIEnv *env = jnienv();
-    jclass clsRhodesService = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
-    jmethodID midSendApplicationMessage = getJNIClassStaticMethod(env, clsRhodesService, "sendApplicationMessage", "(Ljava/lang/String;Ljava/lang/String;)V");
-    JNI_EXCEPTION_CHECK(env, result);
-
-    jhstring jhAppName = rho_cast<jstring>(env, appName);
-    jhstring jhParams = rho_cast<jstring>(env, params);
-
-    env->CallStaticVoidMethod(clsRhodesService, midSendApplicationMessage, jhAppName.get(), jhParams.get());
-
-    JNI_EXCEPTION_CHECK(env, result);
 }
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------

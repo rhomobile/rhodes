@@ -132,9 +132,6 @@ public class RhodesService extends Service {
 	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
 	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
 
-    private static final String ACTION_APP_MESSAGE_RECEIVE = "com.rhomobile.rhodes.ApplicationMessage.Receive";
-    private static final String CATEGORY_APP_MESSAGE = "com.rhomobile.rhodes.ApplicationMessage";
-
     private static final String NOTIFICATION_NONE = "none";
     private static final String NOTIFICATION_BACKGROUND = "background";
     private static final String NOTIFICATION_ALWAYS = "always";
@@ -912,22 +909,6 @@ public class RhodesService extends Service {
 		}
 	}
 	
-    public static void sendApplicationMessage(String appName, String params) throws NameNotFoundException {
-        Logger.T(TAG,  "App message to " + appName);
-        
-        Intent intent = new Intent();
-        intent.setClassName(appName, RhodesService.class.getCanonicalName());
-        intent.addCategory(CATEGORY_APP_MESSAGE);
-        
-        intent.putExtra(INTENT_SOURCE, ContextFactory.getAppContext().getPackageName());
-
-        if (params != null) {
-            String encodedParams = Uri.encode(params);
-            intent.putExtra(INTENT_EXTRA_MESSAGE, encodedParams);
-        }
-
-        ContextFactory.getContext().startService(intent);
-    }
 	public static boolean isAppInstalled(String appName) {
 		try {
 			RhodesService.getContext().getPackageManager().getPackageInfo(appName, 0);

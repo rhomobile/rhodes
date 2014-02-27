@@ -15,8 +15,6 @@ struct System
     static rho::String getPhoneId(){ rho::apiGenerator::CMethodResult oResult(true); getSystemObj()->getPhoneId(oResult); return oResult.getString(); }
     static rho::String getWebviewFramework(){ rho::apiGenerator::CMethodResult oResult(true); getSystemObj()->getWebviewFramework(oResult); return oResult.getString(); }
     static bool getIsRhoSimulator(){ rho::apiGenerator::CMethodResult oResult(true); getSystemObj()->getIsRhoSimulator(oResult); return oResult.getBool(); }
-
-    static void addApplicationMessage(const rho::String& appName, const rho::String& msg) { static_cast<CSystemImplBase*>(getSystemObj())->addApplicationMessage(appName, msg); }
 };
 
 }

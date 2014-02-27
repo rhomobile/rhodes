@@ -75,7 +75,6 @@ public:
     virtual void runApplicationShowWindow( const rho::String& appName,  const rho::String& params, bool bShow, bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
     virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
-    virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
 
 	virtual long OnSIPState(bool bSIPState, const rho::common::CRhoExtData& oExtData)
 	{

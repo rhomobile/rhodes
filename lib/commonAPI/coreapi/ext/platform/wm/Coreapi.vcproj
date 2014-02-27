@@ -1807,6 +1807,14 @@
 					RelativePath=".\src\IntentImpl.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\shared\IntentImplBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\IntentImplBase.h"
+					>
+				</File>
 				<Filter
 					Name="generated"
 					>
