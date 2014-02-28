@@ -9,8 +9,8 @@
 #include "db/DBAdapter.h"
 #include "Network.h"
 
-//#undef DEFAULT_LOGCATEGORY
-//#define DEFAULT_LOGCATEGORY "Intent"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Intent"
 
 using namespace rho::common;
 
@@ -18,7 +18,7 @@ namespace rho {
 
 using namespace apiGenerator;
 
-//IMPLEMENT_LOGCLASS(CIntentImplBase, "Intent");
+IMPLEMENT_LOGCLASS(CIntentImplBase, "Intent");
 
 void CIntentImplBase::getApplicationMessage(rho::apiGenerator::CMethodResult& oResult)
 {
@@ -43,10 +43,10 @@ void CIntentImplBase::startApplicationMessageNotifications(rho::apiGenerator::CM
     common::CMutexLock lock(m_appMessageMutex);
     m_appMessageHandler = oResult;
     m_appMessageNotifications = true;
-    for(Vector<Hashtable<String, String> >::const_iterator It = m_appMessageQueue.begin(); It != m_appMessageQueue.end(); ++It)
-    {
-        m_appMessageHandler.set(*It);
-    }
+    //for(Vector<Hashtable<String, String> >::const_iterator It = m_appMessageQueue.begin(); It != m_appMessageQueue.end(); ++It)
+    //{
+    //    m_appMessageHandler.set(*It);
+    //}
     m_appMessageQueue.clear();
 }
 
@@ -76,9 +76,7 @@ void CIntentImplBase::addApplicationMessage(const rho::String& appName, const rh
             LOG(TRACE) + "Pass " + appName + " mesage to callback (once): " + msg;
             m_appMessageResult.set(res);
             m_appMessageWait = false;
-        }
-
-        if(m_appMessageNotifications)
+        } else if(m_appMessageNotifications)
         {
             LOG(TRACE) + "Pass " + appName + " mesage to callback (subscription): " + msg;
             m_appMessageHandler.set(res);
