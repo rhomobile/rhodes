@@ -34,6 +34,15 @@ def extract_value_from_strings(line)
    return line.slice( pre_index + pre_str.length, post_index - (pre_index + pre_str.length))
 end
 
+def extract_bool_value_from_strings(line)
+   pre_str = '<'
+   post_str = '/>'
+   pre_index = line.index(pre_str)
+   post_index = line.index(post_str)
+   return "true" == line.slice( pre_index + pre_str.length, post_index - (pre_index + pre_str.length))
+end
+
+
 def set_app_name(newname)
   ret_value = ''
   #fname = $config["build"]["iphonepath"] + "/Info.plist"
@@ -111,6 +120,42 @@ def set_app_bundle_identifier(newname)
   end
   File.open(fname,"w") { |f| f.write(buf) }
   return ret_value
+end
+
+# Sets the application to exit on suspend (true) or to stay running (false)
+# 
+# @param [true, false] val
+#   True to exit on suspend (iOS default) or false to stay running
+def set_app_exit_on_suspend(val)
+  plist_value = ""
+
+  # the defaults command line expects TRUE or FALSE to be passed in.
+  if val
+    plist_value = "true"
+  else
+    plist_value = "false"
+  end
+
+  ret_value = false
+  fname = $app_path + "/project/iphone/Info.plist"
+  nextline = false
+  replaced = false
+  buf = ""
+  File.new(fname,"r").read.each_line do |line|
+    if nextline and not replaced
+      ret_value = extract_bool_value_from_strings(line)
+      return ret_value if line =~ /#{plist_value}/
+      buf << line.gsub(/<.*\/>/,"<#{plist_value}/>")
+      puts "set UIApplicationExitsOnSuspend"
+      replaced = true
+    else
+      buf << line
+    end
+    nextline = true if line =~ /UIApplicationExitsOnSuspend/
+  end
+  File.open(fname,"w") { |f| f.write(buf) }
+  return ret_value
+
 end
 
 def set_app_url_scheme(newname)
@@ -1255,6 +1300,8 @@ namespace "build" do
         puts 'prepare iphone XCode project for application'
         Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
 
+        Rake::Task['build:iphone:update_plist'].invoke
+
         Rake::Task['build:bundle:prepare_native_generated_files'].invoke
 
         rm_rf 'project/iphone/toremoved'
@@ -1263,6 +1310,46 @@ namespace "build" do
       end
     end
 
+
+
+    task :update_plist => ["config:iphone"] do
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+      chdir $app_path
+
+      puts 'update info.plist'
+
+      vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
+      bundle_identifier = "com.#{vendor}.#{appname}"
+      bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
+      set_app_bundle_identifier(bundle_identifier)
+
+      # Set UIApplicationExitsOnSuspend.
+      if $app_config["iphone"]["UIApplicationExitsOnSuspend"].nil?
+        puts "UIApplicationExitsOnSuspend not configured, using default of false"
+        set_app_exit_on_suspend(false)
+      elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "true" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "1"
+        set_app_exit_on_suspend(true)
+      elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "false" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "0"
+        set_app_exit_on_suspend(false)
+      else
+        raise "UIApplicationExitsOnSuspend is not set to a valid value. Current value: '#{$app_config["iphone"]["UIApplicationExitsOnSuspend"]}'"
+      end
+
+      set_app_name(appname)
+
+      set_app_version($app_config["version"]) unless $app_config["version"].nil?
+
+      set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
+      set_app_url_name(bundle_identifier)
+
+      set_app_icon(false)
+      set_default_images(false)
+
+      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
+
+    end
 
 
     task :make_xcode_project => ["config:iphone"] do
@@ -1290,6 +1377,18 @@ namespace "build" do
       bundle_identifier = "com.#{vendor}.#{appname}"
       bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
       set_app_bundle_identifier(bundle_identifier)
+
+      # Set UIApplicationExitsOnSuspend.
+      if $app_config["iphone"]["UIApplicationExitsOnSuspend"].nil?
+        puts "UIApplicationExitsOnSuspend not configured, using default of false"
+        set_app_exit_on_suspend(false)
+      elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "true" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "1"
+        set_app_exit_on_suspend(true)
+      elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "false" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "0"
+        set_app_exit_on_suspend(false)
+      else
+        raise "UIApplicationExitsOnSuspend is not set to a valid value. Current value: '#{$app_config["iphone"]["UIApplicationExitsOnSuspend"]}'"
+      end
 
       set_app_name(appname)
 
@@ -1350,6 +1449,17 @@ namespace "build" do
       #bundle_identifier = "com.#{vendor}.#{appname}"
       #bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
       #saved_identifier = set_app_bundle_identifier(bundle_identifier)
+      # Set UIApplicationExitsOnSuspend.
+      if $app_config["iphone"]["UIApplicationExitsOnSuspend"].nil?
+        puts "UIApplicationExitsOnSuspend not configured, using default of false"
+        set_app_exit_on_suspend(false)
+      elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "true" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "1"
+        set_app_exit_on_suspend(true)
+      elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "false" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "0"
+        set_app_exit_on_suspend(false)
+      else
+        raise "UIApplicationExitsOnSuspend is not set to a valid value. Current value: '#{$app_config["iphone"]["UIApplicationExitsOnSuspend"]}'"
+      end
 
       #icon_has_gloss_effect = $app_config["iphone"]["IconHasGlossEffect"] unless $app_config["iphone"]["IconHasGlossEffect"].nil?
       #icon_has_gloss_effect = set_ui_prerendered_icon(icon_has_gloss_effect)
@@ -1391,6 +1501,18 @@ namespace "build" do
       #set_app_url_scheme(saved_url_scheme) unless $app_config["iphone"]["BundleURLScheme"].nil?
       #set_app_url_name(saved_url_name) unless $app_config["iphone"]["BundleIdentifier"].nil?
       #set_ui_prerendered_icon(icon_has_gloss_effect)
+
+      # Set UIApplicationExitsOnSuspend.
+      if $app_config["iphone"]["UIApplicationExitsOnSuspend"].nil?
+        puts "UIApplicationExitsOnSuspend not configured, using default of false"
+        set_app_exit_on_suspend(false)
+      elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "true" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "1"
+        set_app_exit_on_suspend(true)
+      elsif $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s.downcase == "false" || $app_config["iphone"]["UIApplicationExitsOnSuspend"].to_s == "0"
+        set_app_exit_on_suspend(false)
+      else
+        raise "UIApplicationExitsOnSuspend is not set to a valid value. Current value: '#{$app_config["iphone"]["UIApplicationExitsOnSuspend"]}'"
+      end
 
       #restore_entitlements_file
       #restore_default_images
