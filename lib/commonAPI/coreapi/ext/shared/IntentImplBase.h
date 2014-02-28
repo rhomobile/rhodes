@@ -1,5 +1,5 @@
 #include "generated/cpp/IntentBase.h"
-//#include "logging/RhoLog.h"
+#include "logging/RhoLog.h"
 
 namespace rho {
 
@@ -18,7 +18,7 @@ protected:
     void startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
     void stopApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult);
 
-    //DEFINE_LOGCLASS
+    DEFINE_LOGCLASS;
 
     Vector<Hashtable<String, String> > m_appMessageQueue;
     common::CMutex m_appMessageMutex;
