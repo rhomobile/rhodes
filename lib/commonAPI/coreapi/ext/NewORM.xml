@@ -2,28 +2,48 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="NewORM" parent="Rho">
-        <HELP_OVERVIEW>NewORM CoreAPI module</HELP_OVERVIEW>
-        <MORE_HELP>New implementation of the RHOM.</MORE_HELP>
+        <HELP_OVERVIEW>
+## THIS IS BETA - Not production ready!
+
+New implementation of the Rho.ORM module as a CoreAPI Common API module.  This will eventually replace the existing Rho.ORM module.
+        </HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API           
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+Next, since this is a beta version of the ORMModel module, to use it you will need to set a flag in `rhoconfig.txt`:
+
+    use_new_orm = 1
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+
+</MORE_HELP>
 
         <METHODS>
 
             <METHOD name="useNewOrm" access="STATIC">
-                <DESC>returns TRUE if NewORM is enabled in rhoconfig.txt</DESC>
+                <DESC>Returns `true` if NewORM is enabled in rhoconfig.txt</DESC>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="getClientId" access="STATIC">
-                <DESC>returns current Client Id</DESC>
+                <DESC>Returns the current RhoConnect client id</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
 
             <METHOD name="haveLocalChanges" access="STATIC">
-                <DESC>returns TRUE whenever there are any local (non-synced) changes</DESC>
+                <DESC>Returns `true` whenever there are any local (non-synced) changes across all sync-enabled models</DESC>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="databaseLocalReset" access="STATIC">
-                <DESC>resets local database</DESC>
+                <DESC>Resets local database (sync-enabled models are not touched)</DESC>
             </METHOD>
 
             <METHOD name="databaseClientReset" access="STATIC">
@@ -41,39 +61,39 @@
                         <DESC>List of models to reset</DESC>
                     </PARAM>
                     <PARAM name="resetClientInfo" type="BOOLEAN">
-                        <DESC>Whether or not to reset Client Info</DESC>
+                        <DESC>Whether or not to reset the `client_info` table (resets RhoConnect session)</DESC>
                     </PARAM>
                     <PARAM name="resetLocalModels" type="BOOLEAN">
-                        <DESC>Whether or not to reset Local Models</DESC>
+                        <DESC>Whether or not to reset local models (not sync-enabled)</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>resets selected models, client info and local models</DESC>
+                <DESC>Resets selected models, `client_info` table and local models</DESC>
             </METHOD>
 
             <METHOD name="databaseFullReset" access="STATIC">
                 <PARAMS>
                     <PARAM name="resetClientInfo" type="BOOLEAN" default="false">
                         <CAN_BE_NIL/>
-                        <DESC>Whether or not to reset Client Info</DESC>
+                        <DESC>Whether or not to reset `client_info` table (resets RhoConnect session)</DESC>
                     </PARAM>
                     <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
                         <CAN_BE_NIL/>
-                        <DESC>Whether or not to reset Local Models</DESC>
+                        <DESC>Whether or not to reset local models (not sync-enabled)</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>resets selected models, client info and local models</DESC>
+                <DESC>Resets ALL models, `client_info` table and local models</DESC>
             </METHOD>
 
             <METHOD name="databaseFullResetAndLogout" access="STATIC">
-                <DESC>resets sync models, client info and local models and does the user logout</DESC>
+                <DESC>Resets ALL models, `client_info` and local models and optionally logs the user out of RhoConnectClient</DESC>
             </METHOD>
 
             <METHOD name="databaseFullclientResetAndLogout" access="STATIC">
-                <DESC>resets sync models, client info and local models and does the user logout</DESC>
+                <DESC>Resets sync models, `client_info` and local models and logs the user out of RhoConnectClient</DESC>
             </METHOD>
 
             <METHOD name="generateId" access="STATIC">
-                <DESC>returns newly generated unique object Id</DESC>
+                <DESC>Returns a new unique object id</DESC>
                 <RETURN type="INTEGER"/>    
             </METHOD>
 

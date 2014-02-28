@@ -32,13 +32,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
          <PROPERTIES >
             <DESC>List of properties supported by instance of object</DESC>
             <PROPERTY name="loaded" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag" >
-                <DESC>returns true if model is loaded.</DESC>
+                <DESC>Returns true if a model is loaded in memory.</DESC>
             </PROPERTY>
             <PROPERTY name="model_name" type="STRING" usePropertyBag="accessorsViaPropertyBag" >
-                <DESC>returns model's name.</DESC>
+                <DESC>The name of the model (i.e. `Product`).</DESC>
             </PROPERTY>
             <PROPERTY name="sync_type" type="STRING" usePropertyBag="accessorsViaPropertyBag" default="none" >
-                <DESC>returns model's Sync type.</DESC>
+                <DESC>The sync type for a model.</DESC>
             </PROPERTY>
             <PROPERTY name="sync_priority" type="INTEGER" usePropertyBag="accessorsViaPropertyBag" default="1000" >
                 <DESC>returns model's Sync Priority.</DESC>
@@ -68,6 +68,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
+
             <METHOD name="getModel" access="STATIC">
                 <PARAMS>
                     <PARAM name="modelName" type="STRING">
@@ -225,7 +226,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="deleteObjectsPropertyBagByCondHash">
+            <METHOD name="deleteObjectsPropertyBagByCondHash" generateDoc="false">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="HASH"/>
@@ -234,7 +235,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="deleteObjectsPropertyBagByCondArray">
+            <METHOD name="deleteObjectsPropertyBagByCondArray" generateDoc="false">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="STRING"/>
@@ -244,7 +245,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="getCount">
+            <METHOD name="getCount" docNameOverride="count" scopeOverride="STATIC">
                 <DESC>Returns total number of objects for the model</DESC>
                 <RETURN type="INTEGER"/>
             </METHOD>
@@ -266,7 +267,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="findObjectsPropertyBagByCondHash">
+            <METHOD name="findObjectsPropertyBagByCondHash" generateDoc="false">
                 <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING"/>
@@ -277,7 +278,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="findObjectsPropertyBagByCondArray">
+            <METHOD name="findObjectsPropertyBagByCondArray" generateDoc="false">
                 <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING"/>
@@ -289,15 +290,17 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="find_by_sql">
+            <METHOD name="find_by_sql" docNameOverride="findBySql" scopeOverride="STATIC">
                 <DESC>Returns array of objects for the given model queried according to the specified SQL</DESC>
                 <PARAMS>
-                    <PARAM name="sqlQuery" type="STRING"/>
+                    <PARAM name="sqlQuery" type="STRING">
+                        <DESC>The SQL query to execute, such as "SELECT * FROM Account". Note this is primarily only used for FixedSchema models.</DESC>
+                    </PARAM>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="validateFreezedAttribute">
+            <METHOD name="validateFreezedAttribute" generateDoc="false">
                 <DESC>Validates object's freezed attribute</DESC>
                 <PARAMS>
                     <PARAM name="attrName" type="STRING"/>
@@ -305,7 +308,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="validateFreezedAttributes">
+            <METHOD name="validateFreezedAttributes" generateDoc="false">
                 <DESC>Validates all object's freezed attributes</DESC>
                 <PARAMS>
                     <PARAM name="attrHash" type="HASH"/>
@@ -313,7 +316,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="buildComplexWhereCond">
+            <METHOD name="buildComplexWhereCond" generateDoc="false">
                 <DESC>Aux function</DESC>
                 <PARAMS>
                     <PARAM name="attrKey" type="STRING"/>
@@ -324,7 +327,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="buildFindLimits">
+            <METHOD name="buildFindLimits" generateDoc="false">
                 <DESC>Aux function</DESC>
                 <PARAMS>
                     <PARAM name="whatArg" type="STRING"/>
@@ -333,7 +336,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="buildFindOrder">
+            <METHOD name="buildFindOrder" generateDoc="false">
                 <DESC>Aux function</DESC>
                 <PARAMS>
                     <PARAM name="order_attrs" type="ARRAY"/>
@@ -342,7 +345,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="buildSimpleWhereCond">
+            <METHOD name="buildSimpleWhereCond" generateDoc="false">
                 <DESC>Aux function</DESC>
                 <PARAMS>
                     <PARAM name="what" type="STRING"/>
@@ -351,7 +354,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="clear" access="STATIC">
+            <METHOD name="clear" access="STATIC" generateDoc="false">
                 <DESC>Very, very dangerious method - only to be used in specs!!!</DESC>
             </METHOD>
 
@@ -383,8 +386,23 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
+            <METHOD name="paginate" scopeOverride="STATIC" generateAPI="false">
+                <DESC>Call `find` with a limit on the number of records. Default page size is 10.</DESC>
+                <PARAMS>
+                    <PARAM name="page" type="INTEGER">
+                        <DESC>Which page to return</DESC>
+                    </PARAM>
+                    <PARAM name="per_page" type="INTEGER">
+                        <DESC>Number of records per page to return</DESC>
+                    </PARAM>
+                    <PARAM name="options" type="HASH">
+                        <DESC>Same as `find` options argument</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
             <METHOD name="pushChanges">
-                <DESC>Pushes all changes for the source</DESC>
+                <DESC>Pushes all changes for the sync-enabled model.</DESC>
             </METHOD>
 
             <ALIASES>
