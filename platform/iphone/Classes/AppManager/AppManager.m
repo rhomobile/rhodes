@@ -443,6 +443,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         BOOL result = [docController presentPreviewAnimated:YES];
         
         if (!result) {
+            [docController retain];
             CGPoint centerPoint = [Rhodes sharedInstance].window.center;
             CGRect centerRec = CGRectMake(centerPoint.x, centerPoint.y, 0, 0);
             BOOL isValid = [docController presentOpenInMenuFromRect:centerRec inView:[Rhodes sharedInstance].window animated:YES];
@@ -452,6 +453,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 - (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)docController
 {
+	[docController autorelease];
     //[docController release];
     //docController = nil;
 }
