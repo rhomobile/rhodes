@@ -49,10 +49,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <METHOD name="databaseClientReset" access="STATIC">
                 <PARAMS>
                     <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
-                        <DESC>Whether or not to reset Local Models</DESC>
+                        <DESC>Whether or not to reset local models</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>resets client info and sync models (optionally, local models as well)</DESC>
+                <DESC>Resets `client_info` and sync-enabled models (optionally, local models as well)</DESC>
             </METHOD>
 
             <METHOD name="databaseFullResetEx" access="STATIC">

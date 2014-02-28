@@ -108,18 +108,24 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="set">
+            <METHOD name="set" scopeOverride="STATIC">
                 <DESC>Sets model's property to value with additional processing for `sync` property</DESC>
                 <PARAMS>
-                    <PARAM name="propertyName" type="STRING"/>
-                    <PARAM name="propertyValue" type="STRING"/>
+                    <PARAM name="propertyName" type="STRING">
+                        <DESC>The property to set (i.e. "sync")</DESC>
+                    </PARAM>
+                    <PARAM name="propertyValue" type="STRING">
+                        <DESC>The value for the property (i.e. true)</DESC>
+                    </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="enable" scopeOverride="STATIC">
                 <DESC>Sets model's Boolean property to true (enables model's property)</DESC>
                 <PARAMS>
-                    <PARAM name="propertyName" type="STRING"/>
+                    <PARAM name="propertyName" type="STRING">
+                        <DESC>The property to enable (i.e. sync)</DESC>
+                    </PARAM>
                 </PARAMS>
             </METHOD>
 
@@ -152,13 +158,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="destroy" destructor="true">
-                <DESC>destroys model's instance</DESC>
+                <DESC>Deletes a model's record from the database</DESC>
             </METHOD>
 
             <METHOD name="createObject" docNameOverride="create" scopeOverride="STATIC">
                 <DESC>Create a new Rhodes model object and save it to the database. This is the fastest way to insert a single item into the database.</DESC>
                 <PARAMS>
-                    <PARAM name="attrs" type="HASH"/>
+                    <PARAM name="attrs" type="HASH">
+                        <DESC>List of attributes assigned to the new model object, such as {"name" => "ABC Inc.","address" => "555 5th St."}</DESC>
+                    </PARAM>
                 </PARAMS>
                 <RETURN type="HASH"/>
             </METHOD>
