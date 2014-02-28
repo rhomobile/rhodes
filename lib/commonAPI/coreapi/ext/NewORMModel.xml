@@ -41,22 +41,22 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>The sync type for a model.</DESC>
             </PROPERTY>
             <PROPERTY name="sync_priority" type="INTEGER" usePropertyBag="accessorsViaPropertyBag" default="1000" >
-                <DESC>returns model's Sync Priority.</DESC>
+                <DESC>Returns the model's sync priority. This is the order the model synchronizes relative to other model priorities.</DESC>
             </PROPERTY>
             <PROPERTY name="partition" type="STRING" usePropertyBag="accessorsViaPropertyBag" >
-                <DESC>returns model's Db partition.</DESC>
+                <DESC>Returns model's database partition.</DESC>
             </PROPERTY>
             <PROPERTY name="source_id" type="INTEGER" usePropertyBag="accessorsViaPropertyBag" >
-                <DESC>returns model's source_id.</DESC>
+                <DESC>Returns a unique identifier for the model definition.</DESC>
             </PROPERTY>
             <PROPERTY name="fixed_schema" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag">
-                <DESC>returns whether the model's type is fixed schema.</DESC>
+                <DESC>Returns true if the model's type is fixed schema.</DESC>
             </PROPERTY>
             <PROPERTY name="freezed" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag">
-                <DESC>returns whether the model is freezed.</DESC>
+                <DESC>Returns whether the model is freezed. Attempts to modify the model's schema after freezing will raise an exception.</DESC>
             </PROPERTY>
             <PROPERTY name="associations" type="STRING" usePropertyBag="accessorsViaPropertyBag">
-                <DESC>returns model's associations.</DESC>
+                <DESC>Returns the model's sync associations.</DESC>
             </PROPERTY>
         </PROPERTIES>
 
@@ -76,7 +76,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
                 <RETURN type="STRING">
-                    <DESC>ORMModel object</DESC>
+                    <DESC>Model class</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
@@ -89,11 +89,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="initModel" generateDoc="false">
-                <DESC>Initializes model's internal DB</DESC>
+                <DESC>Initializes model's tables and other information in the database.</DESC>
             </METHOD>
 
             <METHOD name="setBelongsTo">
-                <DESC>Adds 'belongs_to' relationship for the model</DESC>
+                <DESC>Adds 'belongs_to' relationship for the model. Currently this only applies to sync-enabled models.</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="sourceName" type="STRING"/>
@@ -101,7 +101,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="getBelongsTo">
-                <DESC>Returns info about model's belongsTo relationship with other models</DESC>
+                <DESC>Returns info about model's 'belongs_to' relationship with other sync-enabled models.</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                 </PARAMS>
@@ -157,10 +157,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="destroy" destructor="true">
-                <DESC>Deletes a model's record from the database</DESC>
-            </METHOD>
-
             <METHOD name="createObject" docNameOverride="create" scopeOverride="STATIC">
                 <DESC>Create a new Rhodes model object and save it to the database. This is the fastest way to insert a single item into the database.</DESC>
                 <PARAMS>
@@ -172,11 +168,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="createInstance" docNameOverride="make" scopeOverride="STATIC">
-                <DESC>Create a new Rhodes model object Javascript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method. See the Orm new example.</DESC>
+                <DESC>Create a new Rhodes model reference but does not persist it to the database. To save this reference to the database, you will need to execute the `save()` method.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH"/>
                 </PARAMS>
                 <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="destroy" destructor="true">
+                <DESC>Deletes a model's record from the database</DESC>
             </METHOD>
 
             <METHOD name="anyChangedObjects">
@@ -185,7 +185,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="hasChanges">
-                <DESC>checks whether the object has any changes</DESC>
+                <DESC>Returns true if the record has any changes that are not synchronized.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                 </PARAMS>
@@ -193,9 +193,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="canModify">
-                <DESC>checks whether the object can be modified</DESC>
+                <DESC>Returns true if the object is not currently locked by the RhoConnect client for processing.</DESC>
                 <PARAMS>
-                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="objId" type="STRING">
+                        <DESC>ID of the record to check</DESC>
+                    </PARAM>
                 </PARAMS>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
@@ -210,8 +212,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="saveObject" docNameOverride="save">
-                <DESC>Saves the current Rhodes model object to the database.</DESC>
+            <METHOD name="save" generateAPI="false" access="INSTANCE">
+                <DESC>Saves the current record to the database.</DESC>
+            </METHOD>
+
+            <METHOD name="saveObject" generateDoc="false">
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="attrs" type="HASH"/>
