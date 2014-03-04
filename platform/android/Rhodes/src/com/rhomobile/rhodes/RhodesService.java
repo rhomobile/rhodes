@@ -846,8 +846,8 @@ public class RhodesService extends Service {
 	}
     
     public static Boolean isMotorolaDevice() {
-        Boolean res = false;
-        /*try
+       /* Boolean res = false;
+        try
         {
             Class<?> commonClass = Class.forName("com.motorolasolutions.rhoelements.Common");
             Method isEmdkDeviceMethod = commonClass.getDeclaredMethod("isEmdkDevice");
@@ -856,18 +856,12 @@ public class RhodesService extends Service {
         catch (Throwable e) { }
         return Boolean.valueOf(Capabilities.MOTOROLA_ENABLED && res);*/
         
-        try
-        {
-         Class.forName("com.motorolasolutions.emdk.scanning.Scanner");
-         res = true;
-        } 
-         catch (ClassNotFoundException ex)
-        {
-         Log.d("com.motorolasolutions.rhoelements.Common", ex.getMessage());
-         res=false;
-        }
-	catch(Throwable e){res=false;}
-	return res;
+        // There is a loading issue if app_type=rhodes. SR EMBPD00111897
+        
+       if(isAppInstalled("com.motorolasolutions.emdk.proxyframework") || isAppInstalled("com.motorolasolutions.emdk.datawedge") )
+        	return true;
+        else
+        	return false;
     }
 	
 	public static String getTimezoneStr() {
