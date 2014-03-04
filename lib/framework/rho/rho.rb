@@ -851,11 +851,10 @@ end
             if attribs['blob_attribs'] != blob_attribs
                 db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
             end
-
             pass_through = ''
             if source['pass_through']
               pass_through = 'pass_through'
-              puts "BAB: init_db_sources:pass_through = #{pass_through}"
+              puts "init_db_sources: about to store :pass_through option into sources table"
             end
             db.update_into_table('sources', {"source_attribs" => pass_through},{"name" => name})
 
