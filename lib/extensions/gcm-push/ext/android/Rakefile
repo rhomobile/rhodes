@@ -18,17 +18,20 @@ raise 'TARGETLIB is not set' if ENV['TARGETLIB'].nil?
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
-ARGS = ["-I\"#{$curdir}/ext/android/jni/src\"",
-    "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\"",
-    "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\"",
-    "-I\"#{$rootdir}/platform/shared/ruby/include\"",
-    "-I\"#{$rootdir}/platform/shared\"",
-    "-I\"#{$rootdir}/platform/shared/common\"",
-    "-I\"#{$rootdir}/platform/shared/api_generator\"",
-    "-I\"#{$appincdir}\"",
-    "-I\"#{$rootdir}/platform/shared/ruby\"",
-    "-I\"#{$rootdir}/platform/shared/ruby/android\"",
-    "-I\"#{$rootdir}/platform/shared/ruby/generated\""]
+ARGS = [
+  "#{$curdir}/ext/android/jni/src",
+  "#{$rootdir}/platform/android/Rhodes/jni/include",
+  "#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details",
+  "#{$rootdir}/platform/shared/ruby/include",
+  "#{$rootdir}/platform/shared",
+  "#{$rootdir}/platform/shared/common",
+  "#{$rootdir}/platform/shared/api_generator",
+  "#{$appincdir}",
+  "#{$rootdir}/platform/shared/ruby",
+  "#{$rootdir}/platform/shared/ruby/android",
+  "#{$rootdir}/platform/shared/ruby/generated",
+  "#{$rootdir}/lib/commonAPI/coreapi/ext/shared"
+].map{|i| "-I\"#{i}\""}
 
 OBJDIR_ARM = File.join(OBJDIR,'arm')
 OBJDIR_x86 = File.join(OBJDIR,'x86')
@@ -49,7 +52,7 @@ TARGETLIB_x86 = File.join(TARGETDIR_x86,TARGETLIB)
 TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,TARGETLIB)
 GCMJAR = File.join(TARGETDIR,'gcm.jar')
 
-cd '../../..'
+cd '../..'
 
 namespace 'config' do
   task :arm do
@@ -86,6 +89,7 @@ task OBJ_MIPS => OBJDIR_MIPS
 def find_source(objfile)
   base = File.basename(objfile, '.o')
   src = SRC.find { |s| File.basename(s) == base }
+  raise "\e[31mSource does not exist: #{src}\e[0m" unless File.exists?(src)
   src
 end
 
