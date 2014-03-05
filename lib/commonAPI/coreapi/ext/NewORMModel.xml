@@ -1,11 +1,13 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="NewORMModel" docNameOverride="YourModel" parent="Rho">
+    <MODULE name="NewORMModel" docNameOverride="Product" parent="Rho">
         <HELP_OVERVIEW>
 ## THIS IS BETA - Not production ready!
 
-New version of the Rho.ORMModel base class.  This will eventually replace the existing Rho.ORMModel
+New version of the Rho.ORMModel base class.  This will eventually replace the existing Rho.ORMModel.  We want your feedback so please let us know about your experience with this API on our [Launchpad Discussion Forum](https://developer.motorolasolutions.com/community/rhomobile-suite/rhomobile-community).
+
+RhoMobile applications provide simple CRUD methods for any models that you have defined to interact with the database.  You must define a model class by using the [ORM.addModel](#maddModel) method before you can use the API's referenced here.  See [Orm](Orm) to learn about defining and adding a model.
         </HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API           
@@ -18,10 +20,34 @@ Next, since this is a beta version of the ORMModel module, to use it you will ne
     use_new_orm = 1
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.  
+
+### Defining a model
+
+<![CDATA[
+    :::javascript
+    var Product = Rho.ORM.addModel("Product", function(model) {
+      model.enable("fixed_schema");
+      model.setModelProperty("name","string");
+      model.setModelProperty("brand","string");
+      model.setModelProperty("price","float");
+    });
+]]>
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+
+### Defining a model
+
+<![CDATA[
+    :::ruby
+    class Product
+      include Rho::ORM::FixedSchema
+      property :name, :string
+      property :brand, :string
+      property :price, :float
+    end
+]]>
 
 </MORE_HELP>
 
@@ -29,7 +55,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <PROPERTY_BAG/>
         </TEMPLATES>
 
-         <PROPERTIES >
+         <PROPERTIES>
             <DESC>List of properties supported by instance of object</DESC>
             <PROPERTY name="loaded" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag" >
                 <DESC>Returns true if a model is loaded in memory.</DESC>
@@ -62,14 +88,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
         <METHODS>
 
-            <METHOD name="enumerate" access="STATIC">
+            <METHOD name="enumerate" docNameOverride="Rho.ORMModel.enumerate" access="STATIC">
                 <RETURN type="ARRAY">
-                    <DESC>Array of ORMModel objects</DESC>
+                    <DESC>The list of ORM models.</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
 
-            <METHOD name="getModel" access="STATIC">
+            <METHOD name="getModel" generateDoc="false"  access="STATIC">
                 <PARAMS>
                     <PARAM name="modelName" type="STRING">
                         <DESC>Name of the model you want returned.</DESC>
@@ -81,15 +107,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </RETURN>
             </METHOD>
 
-            <METHOD name="init" constructor="true">
-                <DESC>Initializes new model's instance</DESC>
+            <METHOD name="init" constructor="true" generateDoc="false">
                 <PARAMS>
                     <PARAM name="modelName" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="initModel" generateDoc="false">
-                <DESC>Initializes model's tables and other information in the database.</DESC>
             </METHOD>
 
             <METHOD name="setBelongsTo">
@@ -100,8 +124,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="getBelongsTo">
-                <DESC>Returns info about model's 'belongs_to' relationship with other sync-enabled models.</DESC>
+            <METHOD name="getBelongsTo" generateDoc="false">
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                 </PARAMS>
@@ -129,8 +152,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="setModelProperty" docNameOverride="property" scopeOverride="class">
-                <DESC>Initializes new model's field property</DESC>
+            <METHOD name="setModelProperty" scopeOverride="STATIC">
+                <DESC>Defines database attribute for a model</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="propertyType" type="STRING"/>
@@ -148,12 +171,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="setSchemaIndex" scopeOverride="class">
-                <DESC>Initializes new model's schema index</DESC>
+            <METHOD name="setSchemaIndex" scopeOverride="STATIC">
+                <DESC>Creates an index on a model's database table (only relevant for FixedSchema models).</DESC>
                 <PARAMS>
                     <PARAM name="indexName" type="STRING"/>
                     <PARAM name="indexCols" type="ARRAY"/>
-                    <PARAM name="is_unique" type="BOOLEAN"/>
+                    <PARAM name="isUnique" type="BOOLEAN"/>
                 </PARAMS>
             </METHOD>
 
@@ -168,23 +191,23 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="createInstance" docNameOverride="make" scopeOverride="STATIC">
-                <DESC>Create a new Rhodes model reference but does not persist it to the database. To save this reference to the database, you will need to execute the `save()` method.</DESC>
+                <DESC>Create a new Rhodes model reference but does not persist it to the database. To save this reference to the database, you will need to execute the `save()` method. JS Only.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH"/>
                 </PARAMS>
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="destroy" destructor="true">
+            <METHOD name="destroy" destructor="true" generateDoc="false">
                 <DESC>Deletes a model's record from the database</DESC>
             </METHOD>
 
-            <METHOD name="anyChangedObjects">
+            <METHOD name="anyChangedObjects" scopeOverride="STATIC">
                 <DESC>checks whether the model has any changed objects</DESC>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="hasChanges">
+            <METHOD name="hasChanges" scopeOverride="INSTANCE">
                 <DESC>Returns true if the record has any changes that are not synchronized.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
@@ -192,7 +215,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="canModify">
+            <METHOD name="canModify" scopeOverride="INSTANCE">
                 <DESC>Returns true if the object is not currently locked by the RhoConnect client for processing.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING">
@@ -203,7 +226,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="updateObject" generateDoc="false">
-                <DESC>internal</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="oldAttrs" type="HASH"/>
@@ -212,7 +234,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="save" generateAPI="false" access="INSTANCE">
+            <METHOD name="save" generateAPI="false" scopeOverride="INSTANCE">
                 <DESC>Saves the current record to the database.</DESC>
             </METHOD>
 
@@ -224,17 +246,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="deleteObject" generateDoc="false">
-                <DESC>internal</DESC>
+            <METHOD name="deleteObject" docNameOverride="destroy" scopeOverride="INSTANCE">
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="deleteObjects" generateDoc="false">
-                <DESC>internal</DESC>
                 <PARAMS>
-                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="findConditions" type="HASH"/>
                     <PARAM name="quests" type="ARRAY"/>
                 </PARAMS>
             </METHOD>
@@ -350,7 +370,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="buildFindOrder" generateDoc="false">
-                <DESC>Aux function</DESC>
                 <PARAMS>
                     <PARAM name="order_attrs" type="ARRAY"/>
                     <PARAM name="order_ops" type="ARRAY"/>
@@ -359,7 +378,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="buildSimpleWhereCond" generateDoc="false">
-                <DESC>Aux function</DESC>
                 <PARAMS>
                     <PARAM name="what" type="STRING"/>
                     <PARAM name="conditions" type="ARRAY"/>
@@ -368,7 +386,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="clear" access="STATIC" generateDoc="false">
-                <DESC>Very, very dangerious method - only to be used in specs!!!</DESC>
             </METHOD>
 
             

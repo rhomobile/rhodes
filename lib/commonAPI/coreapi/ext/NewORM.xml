@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="NewORM" parent="Rho">
+    <MODULE name="NewORM" parent="Rho" docNameOverride="ORM">
         <HELP_OVERVIEW>
 ## THIS IS BETA - Not production ready!
 
@@ -33,7 +33,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="getClientId" access="STATIC">
-                <DESC>Returns the current RhoConnect client id</DESC>
+                <DESC>Returns the current RhoConnect client id.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
 
@@ -42,8 +42,17 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
+            <METHOD name="databaseFullResetAndLogout" access="STATIC">
+                <DESC>Deletes all records from the property bag and fixed_schema tables.  Logout the user from RhoConnect client.</DESC>
+            </METHOD>
+
             <METHOD name="databaseLocalReset" access="STATIC">
-                <DESC>Resets local database (sync-enabled models are not touched)</DESC>
+                <DESC>Resets local database (sync-enabled models are not touched).</DESC>
+            </METHOD>
+
+            <METHOD name="databaseFullclientResetAndLogout" access="STATIC">
+                <DESC>Deletes all records from the property bag and fixed_schema tables.  Logout the user from RhoConnect client and erases all RhoConnect client device information. Equivalent to `Rho.ORM.databaseFullReset(true)` followed by 
+                `Rho.RhoConnectClient.logout()`.</DESC>
             </METHOD>
 
             <METHOD name="databaseClientReset" access="STATIC">
@@ -56,18 +65,20 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="databaseFullResetEx" access="STATIC">
+                <DESC>Resets selected models, `client_info` table and local models.</DESC>
                 <PARAMS>
                     <PARAM name="models" type="ARRAY">
-                        <DESC>List of models to reset</DESC>
+                        <DESC>List of model names to reset</DESC>
                     </PARAM>
                     <PARAM name="resetClientInfo" type="BOOLEAN">
                         <DESC>Whether or not to reset the `client_info` table (resets RhoConnect session)</DESC>
+                        <CAN_BE_NIL/>
                     </PARAM>
-                    <PARAM name="resetLocalModels" type="BOOLEAN">
+                    <PARAM name="resetLocalModels" type="BOOLEAN" default="false">
                         <DESC>Whether or not to reset local models (not sync-enabled)</DESC>
+                        <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
-                <DESC>Resets selected models, `client_info` table and local models</DESC>
             </METHOD>
 
             <METHOD name="databaseFullReset" access="STATIC">
@@ -84,17 +95,32 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Resets ALL models, `client_info` table and local models</DESC>
             </METHOD>
 
-            <METHOD name="databaseFullResetAndLogout" access="STATIC">
-                <DESC>Resets ALL models, `client_info` and local models and optionally logs the user out of RhoConnectClient</DESC>
-            </METHOD>
-
-            <METHOD name="databaseFullclientResetAndLogout" access="STATIC">
-                <DESC>Resets sync models, `client_info` and local models and logs the user out of RhoConnectClient</DESC>
-            </METHOD>
-
-            <METHOD name="generateId" access="STATIC">
+            <METHOD name="generateId" access="STATIC" generateDoc="false">
                 <DESC>Returns a new unique object id</DESC>
                 <RETURN type="INTEGER"/>    
+            </METHOD>
+
+            <METHOD name="getModel" generateAPI="false" access="STATIC">
+                <APPLIES jsOnly="true"/>
+                <PARAMS>
+                    <PARAM name="modelName" type="STRING">
+                        <DESC>Name of the model you want returned.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="Model"></RETURN>
+            </METHOD>
+            <METHOD name="addModel" generateAPI="false" access="STATIC">
+                <DESC>Creates an ORM model reference.</DESC>
+                <APPLIES jsOnly="true"/>
+                <PARAMS>
+                    <PARAM name='modelName' type='STRING'>
+                        <DESC>The name of your model.</DESC>
+                    </PARAM>
+                    <PARAM name="Anoynomous Function" type="">
+                        <DESC>Use this function to define a model.  Refer to the [ORMModel docs](NewORMModel) for examples.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="Model"/>
             </METHOD>
 
         </METHODS>
@@ -102,8 +128,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <USER_OVERVIEW>
         </USER_OVERVIEW>
 
-        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
         <PLATFORM>
-         </PLATFORM>
+        </PLATFORM>
     </MODULE>
 </API>    
