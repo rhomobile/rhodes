@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.IRhoWebViewConfig;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
@@ -77,6 +78,8 @@ public class GoogleWebView implements IRhoWebView {
 
                 IWebSettingsProvider provider = OsVersionManager.getFeature(IWebSettingsProvider.class);
                 provider.fillSettings(mWebView.getSettings(), mConfig);
+                
+                RhodesActivity.safeGetInstance().notifyUiCreated();
             }
         });
     }

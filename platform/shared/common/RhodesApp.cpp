@@ -107,16 +107,16 @@ class CAppCallbacksQueue : public CThreadQueue
 public:
     enum callback_t
     {
-        app_deactivated,
         local_server_restart,
         local_server_started,
         ui_created,
-        app_activated
+        app_activated,
+        app_deactivated
     };
 
 public:
     CAppCallbacksQueue();
-	CAppCallbacksQueue(LogCategory logCat);
+	//CAppCallbacksQueue(LogCategory logCat);
 	~CAppCallbacksQueue();
 
     //void call(callback_t type);
@@ -133,13 +133,25 @@ public:
 
 private:
 
+    enum ui_created_state
+    {
+    	ui_not_available,
+    	ui_created_received,
+    	ui_created_processed
+    };
+
     void processCommand(IQueueCommand* pCmd);
+    void processUiCreated();
+
+    bool hasCommand(callback_t type);
 
     static char const *toString(int type);
     void   callCallback(const String& strCallback);
 
 private:
     callback_t m_expected;
+    ui_created_state m_uistate;
+
     Vector<int> m_commands;
     boolean m_bFirstServerStart;
 };
@@ -165,7 +177,7 @@ char const *CAppCallbacksQueue::toString(int type)
 }
 
 CAppCallbacksQueue::CAppCallbacksQueue()
-    :CThreadQueue(), m_expected(local_server_started), m_bFirstServerStart(true)
+    :CThreadQueue(), m_expected(local_server_started), m_uistate(ui_not_available), m_bFirstServerStart(true)
 {
     CThreadQueue::setLogCategory(getLogCategory());
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
@@ -214,28 +226,48 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
     }
 }
 
+bool CAppCallbacksQueue::hasCommand(callback_t type)
+{
+    for( int i = 0; i < (int)m_commands.size() ; i++)
+    {
+        if ( m_commands.elementAt(i) == type )
+        {
+        	return true;
+        }
+    }
+	return false;
+}
+
 void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 {
     Command *cmd = (Command *)pCmd;
     if (!cmd)
         return;
-/*
-    if (cmd->type < m_expected)
+
+    synchronized(getCommandLock());
+
+    LOG(INFO) + toString(cmd->type) + " is received ++++++++++++++++++++++++++++";
+
+    if ( cmd->type == ui_created)
     {
-        LOG(ERROR) + "received command " + toString(cmd->type) + " which is less than expected "+toString(m_expected)+" - ignore it";
-        return;
+        m_uistate = ui_created_received;
     }
-*/
+
     if ( m_expected == app_deactivated && cmd->type == app_activated )
     {
-        LOG(INFO) + "received duplicate activate skip it";
+        LOG(INFO) + "received duplicate app_activated - skip it";
         return;
     }
 
     if ( m_expected == local_server_restart )
     {
         if ( cmd->type != local_server_started )
+        {
+            LOG(INFO) + "Restart local server ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
             RHODESAPP().restartLocalServer(*this);
+            sleep(50);
+            LOG(INFO) + "Continue after server restart =======================================";
+        }
         else
             LOG(INFO) + "Local server restarted before activate.Do not restart it again.";
 
@@ -244,37 +276,37 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
     if (cmd->type > m_expected)
     {
-        boolean bDuplicate = false;
-        for( int i = 0; i < (int)m_commands.size() ; i++)
-        {
-            if ( m_commands.elementAt(i) == cmd->type )
-            {
-                bDuplicate = true;
-                break;
-            }
-        }
-
-        if ( bDuplicate )
+        if ( hasCommand(cmd->type) )
         {
             LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
+            return;
         }else
         {
             // Don't do that now
             LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
-            m_commands.push_back(cmd->type);
-            std::sort(m_commands.begin(), m_commands.end());
+
+            if (cmd->type == app_deactivated && m_expected != local_server_started)
+            {
+                m_commands.clear();
+                m_commands.push_back(cmd->type);
+            }
+            else
+            {
+                m_commands.push_back(cmd->type);
+                std::sort(m_commands.begin(), m_commands.end());
+                return;
+            }
         }
-        return;
+    }
+    else
+    {
+        m_commands.insert(m_commands.begin(), cmd->type);
     }
 
-    if ( cmd->type == app_deactivated )
-        m_commands.clear();
-
-    m_commands.insert(m_commands.begin(), cmd->type);
     for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
     {
         int type = *it;
-        LOG(INFO) + "process command: " + toString(type);
+        LOG(INFO) + "process command: " + toString(type) + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
         switch (type)
         {
         case app_deactivated:
@@ -297,37 +329,18 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             rho_sys_report_app_started();
             break;
         case ui_created:
+            if (m_uistate != ui_created_processed)
             {
-                rho::String startPath = RHOCONF().getString("start_path");
-
-                // handle security token validation
-                #ifndef OS_WP8
-                rho::String invalidSecurityTokenStartPath =  RHOCONF().getString("invalid_security_token_start_path");
-
-                if (RHODESAPP().isSecurityTokenNotPassed()) {
-                    if (invalidSecurityTokenStartPath.length() > 0) {
-                        startPath = invalidSecurityTokenStartPath;
-                    } else {
-                        // exit from application - old way
-                        LOGC(FATAL, "EROOR" ) + "processApplicationEvent: security_token is not passed - application will closed";
-                        rho_sys_app_exit();
-                    }
-                }
-                #endif
-                
-                // at this point JS app is unlikely to set its own handler, just navigate to overriden start path
-                if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
-                {
-                    if ( rho_ruby_is_started() )
-                        callCallback("/system/uicreated");
-                    else
-                        rho_webview_navigate(startPath.c_str(), 0);
-                }
+                processUiCreated();
                 m_expected = app_activated;
             }
             break;
         case app_activated:
             {
+                if ( m_uistate == ui_created_received )
+                {
+                    processUiCreated();
+                }
                 if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateActivated))
                 {
                     callCallback("/system/activateapp");
@@ -336,10 +349,38 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             }
             break;
         }
-        //if (type < app_activated && type != app_deactivated)
-        //    m_expected = (callback_t)(type + 1);
     }
     m_commands.clear();
+}
+
+void CAppCallbacksQueue::processUiCreated()
+{
+    rho::String startPath = RHOCONF().getString("start_path");
+
+    // handle security token validation
+    #ifndef OS_WP8
+    rho::String invalidSecurityTokenStartPath =  RHOCONF().getString("invalid_security_token_start_path");
+
+    if (RHODESAPP().isSecurityTokenNotPassed()) {
+        if (invalidSecurityTokenStartPath.length() > 0) {
+            startPath = invalidSecurityTokenStartPath;
+        } else {
+            // exit from application - old way
+            LOGC(FATAL, "EROOR" ) + "processApplicationEvent: security_token is not passed - application will closed";
+            rho_sys_app_exit();
+        }
+    }
+    #endif
+
+    // at this point JS app is unlikely to set its own handler, just navigate to overriden start path
+    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
+    {
+        if ( rho_ruby_is_started() )
+            callCallback("/system/uicreated");
+        else
+            rho_webview_navigate(startPath.c_str(), 0);
+    }
+    m_uistate = ui_created_processed;
 }
 
 /*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
@@ -2584,6 +2625,10 @@ void rho_rhodesapp_callUiCreatedCallback()
 {
     if ( rho::common::CRhodesApp::getInstance() )
         RHODESAPP().callUiCreatedCallback();
+    else
+    {
+        RAWLOGC_ERROR("RhodesApp", "UI created callback is missing because application instance is NULL");
+    }
 }
 
 void rho_rhodesapp_callUiDestroyedCallback()
