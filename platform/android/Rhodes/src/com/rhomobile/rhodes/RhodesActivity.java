@@ -196,7 +196,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         readRhoElementsConfig();
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
-        notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
     }
 
@@ -208,7 +207,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         return view;
     }
 	
-	private void notifyUiCreated() {
+	public void notifyUiCreated() {
 		RhodesService r = RhodesService.getInstance();
 		if ( r != null ) {
 			RhodesService.callUiCreatedCallback();
