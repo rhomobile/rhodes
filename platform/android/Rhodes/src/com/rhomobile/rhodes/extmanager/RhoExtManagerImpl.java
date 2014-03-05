@@ -350,6 +350,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                 handled = ext.onWebViewCreated(this, res, handled);
             }
         }
+        activity.notifyUiCreated();
         return res;
     }
     
