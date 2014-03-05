@@ -37,8 +37,11 @@
 
 #include "applepushclient.h"
 
+
+extern "C" void Init_ApplePushClient();
+
 //----------------------------------------------------------------------------------------------------------------------
-extern "C" void Init_ApplePushClient()
+void Init_ApplePushClient()
 {
     RAWTRACEC("Init_ApplePushClient", "creating Apple client >>>>>>>>>>>>>>");
 
