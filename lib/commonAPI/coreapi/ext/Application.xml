@@ -327,14 +327,10 @@ Alert.show_popup(message)
                <DESC>This will minimize your application.</DESC>
                <CODE>
                 <RUBY>
-           <![CDATA[
-Rho::Application.minimize
-                   ]]>
+<![CDATA[Rho::Application.minimize]]>
                  </RUBY>
                 <JAVASCRIPT>
-           <![CDATA[
-Rho.Application.minimize();
-                   ]]>
+<![CDATA[Rho.Application.minimize();]]>
                  </JAVASCRIPT>
                </CODE>
                </SECTION>
@@ -342,19 +338,14 @@ Rho.Application.minimize();
            </EXAMPLE>
            <EXAMPLE title="Quit your application">
             <SECTIONS>
-               
               <SECTION>
                <DESC>This will exit your application.</DESC>
                <CODE>
                 <RUBY>
-           <![CDATA[
-Rho::Application.quit
-                   ]]>
+<![CDATA[Rho::Application.quit]]>
                  </RUBY>
                 <JAVASCRIPT>
-           <![CDATA[
-Rho.Application.quit();
-                   ]]>
+<![CDATA[Rho.Application.quit();]]>
                  </JAVASCRIPT>
                </CODE>
                </SECTION>
@@ -366,14 +357,10 @@ Rho.Application.quit();
                <DESC>This will restore you application.</DESC>
                <CODE>
                 <RUBY>
-           <![CDATA[
-Rho::Application.restore
-                   ]]>
+<![CDATA[Rho::Application.restore]]>
                  </RUBY>
                 <JAVASCRIPT>
-           <![CDATA[
-Rho.Application.restore();
-                   ]]>
+<![CDATA[Rho.Application.restore();]]>
                  </JAVASCRIPT>
                </CODE>
                </SECTION>
