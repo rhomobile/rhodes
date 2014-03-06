@@ -747,7 +747,7 @@ end
     def init_db_sources(db, uniq_sources, db_partition, hash_migrate)
         puts "init_db_sources"
 
-        db_sources = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs, name' )
+        db_sources = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, source_attribs, blob_attribs, name' )
         start_id = get_start_id(db_sources, db_partition)
 
         uniq_sources.each do |source|
@@ -788,6 +788,14 @@ end
             if attribs['blob_attribs'] != blob_attribs
                 db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
             end
+
+            # TODO: the same for :full_update option
+            pass_through = ''
+            if source['pass_through']
+              pass_through = 'pass_through'
+              puts "init_db_sources: store :pass_through option into sources table for #{name} model"
+            end
+            db.update_into_table('sources', {"source_attribs" => pass_through},{"name" => name})
 
             if !source['source_id']
                 source['source_id'] = attribs['source_id'].to_i
