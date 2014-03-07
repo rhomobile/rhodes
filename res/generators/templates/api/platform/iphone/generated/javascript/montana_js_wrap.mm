@@ -358,9 +358,17 @@ rho::String js_s_<%= $cur_module.name %>_setDefaultID(const rho::String& strObjI
     id<I<%= $cur_module.name %>Factory> factory = [<%= $cur_module.name %>FactorySingleton get<%= $cur_module.name %>FactoryInstance];
     id<I<%= $cur_module.name %>Singleton> singleton = [factory get<%= $cur_module.name %>Singleton];
 
-    [singleton setDefaultID:[NSString stringWithUTF8String:(strObjID.c_str())]];
+    rho::json::CJSONEntry el = argv[0];
 
-    [[CJSConverter convertToJS:nil level:0] UTF8String];
+    if (el.isString()) {
+        NSString* defID = [NSString stringWithUTF8String:(el.getString())];
+
+        [singleton setDefaultID:defID];
+
+        return [[CJSConverter convertToJS:nil level:0] UTF8String];
+    }
+
+    return "\"result\":null,\"error\":\"Method parameter should be defined as string!\"";
 }
 <% end %>
 

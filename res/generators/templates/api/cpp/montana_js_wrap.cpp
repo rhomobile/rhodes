@@ -243,7 +243,13 @@ end %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "setDefaultID", true)%>
 {
     rho::apiGenerator::CMethodResult oRes;
-    <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(strObjID);
+    rho::json::CJSONEntry el = argv[0];
+
+    if (el.isString()) {
+        <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(el.getString());
+    } else {
+        oRes.setError("Method parameter should be defined as string!");
+    }
 
     return oRes.toJSON();
 }
