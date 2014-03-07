@@ -246,8 +246,12 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
     LOG(INFO) + toString(cmd->type) + " is received ++++++++++++++++++++++++++++";
 
-    if ( cmd->type == ui_created)
+    if (cmd->type == ui_created)
     {
+        LOG(INFO) + "m_uistate: " + (int)m_uistate;
+
+        if (m_uistate != ui_not_available)
+            return;
         m_uistate = ui_created_received;
     }
 
