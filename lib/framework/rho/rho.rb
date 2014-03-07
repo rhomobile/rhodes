@@ -747,7 +747,7 @@ end
     def init_db_sources(db, uniq_sources, db_partition, hash_migrate)
         puts "init_db_sources"
 
-        db_sources = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, source_attribs, blob_attribs, name' )
+        db_sources = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, source_attribs, blob_attribs, name')
         start_id = get_start_id(db_sources, db_partition)
 
         uniq_sources.each do |source|
@@ -760,6 +760,14 @@ end
           schema_version = source['schema_version']
           associations = source['str_associations']
           blob_attribs = process_blob_attribs(source, db)
+
+          # TODO: the same for :full_update option
+          source_attribs = ''
+          if source['pass_through']
+            source_attribs = 'pass_through'
+            puts "init_db_sources: store :pass_through option into sources table for #{name} model"
+          end
+          # TODO: the same for :full_update option
           #puts "blob_attribs : #{blob_attribs}"
 
           #attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs', {'name'=>name})
@@ -788,15 +796,9 @@ end
             if attribs['blob_attribs'] != blob_attribs
                 db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
             end
-
-            # TODO: the same for :full_update option
-            pass_through = ''
-            if source['pass_through']
-              pass_through = 'pass_through'
-              puts "init_db_sources: store :pass_through option into sources table for #{name} model"
+            if attribs['source_attribs'] != source_attribs
+                db.update_into_table('sources', {"source_attribs" => source_attribs},{"name" => name})
             end
-            db.update_into_table('sources', {"source_attribs" => pass_through},{"name" => name})
-
             if !source['source_id']
                 source['source_id'] = attribs['source_id'].to_i
                 Rho::RhoConfig::sources[name]['source_id'] = attribs['source_id'].to_i
@@ -814,8 +816,9 @@ end
                 end
 
                 db.insert_into_table('sources',
-                    {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, "sync_type"=>sync_type, "partition"=>partition,
-                    "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs })
+                    {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, "sync_type"=>sync_type,
+                      "partition"=>partition, "schema_version"=>source['schema_version'],
+                      'associations'=>associations, 'blob_attribs'=>blob_attribs, 'source_attribs' => source_attribs})
             end
           end
 
