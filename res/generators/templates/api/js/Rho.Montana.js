@@ -28,7 +28,6 @@ class TrueClass; def to_i; 1 end end
 
     var moduleNS = '<%= namespace $cur_module %>';
     var apiReq = rhoUtil.apiReqFor(moduleNS);
-    var currentDefaultID = null;
 
 <% if $cur_module.entities.size > 0 
 %>    // === entities definition === 
@@ -300,8 +299,6 @@ end %>
         }
     };
 
-    <%= $cur_module.name %>.getId = function() { return currentDefaultID; }
-
     // === <%= $cur_module.name %> instance properties ===
 
     rhoUtil.createPropsProxy(<%= $cur_module.name %>.prototype, [
@@ -418,15 +415,12 @@ end %>
     <% if $cur_module.is_template_default_instance %>
 
         rhoUtil.createPropsProxy(<%= $cur_module.name %>, [
-            { propName: 'defaultInstance:getDefault:setDefault', propAccess: 'rw', customSet: function(obj) { if(!obj || 'function' != typeof obj.getId){ throw 'Default object should provide getId method!' }; currentDefaultID = obj.getId(); } }
-          , { propName: 'defaultID:getDefaultID:setDefaultID', propAccess: 'rw', customSet: function(id) { currentDefaultID = id; } }
+            { propName: 'defaultInstance:getDefault:setDefault', propAccess: 'rw', customSet: function(obj) { if(!obj || 'function' != typeof obj.getId){ throw 'Default object should provide getId method!' }; <%= $cur_module.name %>.setDefaultID(obj.getId()); } }
+          , { propName: 'defaultID:getDefaultID:setDefaultID', propAccess: 'rw' }
         ], apiReq);
 
         <%= $cur_module.name %>.getId = function() {
-            if (null == currentDefaultID) {
-                currentDefaultID = <%= $cur_module.name %>.getDefaultID();
-            }
-            return currentDefaultID;
+            return <%= $cur_module.name %>.getDefaultID();
         }
 
         // === <%= $cur_module.name %> default instance properties ===
