@@ -187,13 +187,13 @@
 	//	ri.loaded = YES;
 	//}
     
-    /*
+    
 	if (initUrl && is_load_initial_url) {
         [self navigateRedirect:initUrl tab:0];
 		RhoRightItem *ri = [self.itemsData objectAtIndex:tabindex];
 		ri.loaded = YES;
 
-    }*/
+    }
 	if (tab_to_initial_select >= 0) {
 		self.tabindex = tab_to_initial_select;
 	}
