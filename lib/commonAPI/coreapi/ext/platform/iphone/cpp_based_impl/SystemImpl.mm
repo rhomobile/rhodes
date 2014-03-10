@@ -47,11 +47,12 @@ extern "C" BOOL rho_sys_run_app_iphone(const char* appname, char* params);
             mReceiver = receiver;
             if ([Rhodes sharedInstance])
             {
-                [[Rhodes sharedInstance] setAppMessageReceiver:self];
+                //[[Rhodes sharedInstance] setAppMessageReceiver:self];
             }
         }
         return self;
     }
+
 
 @end
 
