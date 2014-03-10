@@ -13,7 +13,6 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
         </HELP_OVERVIEW>
 
         <PLATFORM>WM, Android, iOS</PLATFORM>
@@ -28,19 +27,19 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="filename" type="STRING">
-                        <DESC>File name of the audio media to be played - full filepath. On iOS when you post URL to remote server (except https), then we open a standard browser (another application) for playing it. On iOS we support: mp3, mp4, wav formats. On other platforms the formats supported depend on what support is built into the platform. Typically on WM/CE this will be wav and on Android mp3.</DESC>
+                        <DESC>File name of the audio media to be played - absolute filepath. On iOS when you post URL to remote server (except https), then we open a standard browser (another application) for playing it. On iOS we support: mp3, mp4, wav formats. On other platforms the formats supported depend on what support is built into the platform. Typically on WM/CE this will be wav and on Android mp3.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="stop" access="STATIC" hasCallback="none">
-                <DESC>Stop playing the media file. Not applicable on iOS, because on iOS the special UI is opened for playback media/video - user can stop/close player by UI.</DESC>
+                <DESC>Stop playing the media file. Not applicable on iOS, because on iOS the special UI is opened for playback audio / video - user can stop / close player by UI.</DESC>
                 <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
 
             <!-- The following methods describe playback for video media -->
             <METHOD name="startvideo" access="STATIC" hasCallback="none" runInThread="ui">
-                <DESC>Playing a video file back</DESC>
+                <DESC>Playing a video file back.</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING" runInThread="ui">
                         <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server  (except https), then we open a standard browser (another application) for playing it. On iOS we support: mov, mp4, 3gp formats. On other platforms the formats supported depend on what support is built into the platform. Typically on WM/CE this will be wmv and on Android mp4.</DESC>
@@ -49,13 +48,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="stopvideo" access="STATIC" hasCallback="none">
-                <DESC>Stop the playback of a currently playing video file. Not applicable on iOS, because on iOS the special UI is opened for playback media/video - user can stop/close player by UI</DESC>
+                <DESC>Stop the playback of a currently playing video file. Not applicable on iOS, because on iOS the special UI is opened for playback audio / video - user can stop / close player by UI.</DESC>
                 <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
 
             <!-- These three methods are for RingtoneManager-->
             <METHOD name="getAllRingtones" access="STATIC" hasCallback="mandatory">
-                <DESC>Getting all ringtones on the device - result is array of hashes , each HASH contains name,fullname pairs of info about ringtone</DESC>    
+                <DESC>Getting all ringtones on the device - result is array of hashes , each HASH contains name, fullname pairs of info about ringtone.</DESC>    
                 <PLATFORM>Android</PLATFORM>
                 <CALLBACK type="ARRAY">
                     <PARAM type="HASH">
@@ -72,7 +71,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="playRingTone" access="STATIC" hasCallback="none">
-                <DESC>Play a ringtone with the name supplied being used to designate which one.  You cannot supply a location for the ringtone.  They are built in.  To get a full list of all ringtones avaialable on the system use the method getAllRintones</DESC>
+                <DESC>Play a ringtone with the name supplied being used to designate which one. You cannot supply a location for the ringtone. They are built in. To get a full list of all ringtones available on the system use the method getAllRintones.</DESC>
                 <PLATFORM>Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="name" type="STRING">
@@ -84,16 +83,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <METHOD name="stopRingTone" access="STATIC" hasCallback="none">
                 <DESC>Stop the currently playing ringtone.</DESC>
                 <PLATFORM>Android</PLATFORM>
-            </METHOD>            
-
-
+            </METHOD>
         </METHODS>
         
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-            <![CDATA[
-    				]]>
-    
+            <![CDATA[]]>
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>
@@ -101,36 +96,24 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PLATFORM>
         <REMARKS>
             <REMARK title="Availbility of Operating System">
-                <DESC>
-                    <![CDATA[
+                <DESC><![CDATA[
 Because the MediaPlayer extension uses the operating system's built-in player for some media types, it may be possible for the user to access operating system features while media is playing.
-                ]]>
-
-                </DESC>
+                ]]></DESC>
             </REMARK>
             <REMARK title="Playback Controls">
-                <DESC>
-                    <![CDATA[
+                <DESC><![CDATA[
 Because the MediaPlayer extension uses the operating system's built-in player for some media types, the playback controls available to the user are outside the control of RhoElements. Some players may have no playback controls in which the user will have to wait for the media to finish playing.
-                ]]>
-
-                </DESC>
+                ]]></DESC>
             </REMARK>
             <REMARK title="Android Support">
-                <DESC>
-                    <![CDATA[
+                <DESC><![CDATA[
 On Android devices, HTTPS is supported only on Android versions 4.0 (Ice Cream Sandwich) or newer.
-                ]]>
-
-                </DESC>
+                ]]></DESC>
             </REMARK>
             <REMARK title="Using File Transfer">
-                <DESC>
-                    <![CDATA[
+                <DESC><![CDATA[
 When more flexible file transfer is required than is provided by MediaPlayer itself it is recommended to use the Network API to fetch the media file, and then to play the local file using MediaPlayer. For example, if playing a file from an FTP server, or an HTTP server requiring authentication. This can also be more efficient if the same file is to be played multiple times, especially on Windows Mobile/CE, where there is no streaming support and therefore the file is completely downloaded before being played.
-                ]]>
-
-                </DESC>
+                ]]></DESC>
             </REMARK>
         </REMARKS>
         <EXAMPLES>
@@ -170,6 +153,6 @@ function list_ringtones_callback(params) {
               </SECTION>
             </SECTIONS>
            </EXAMPLE>
-        </EXAMPLES>        
+        </EXAMPLES>
     </MODULE>
-</API>    
+</API>

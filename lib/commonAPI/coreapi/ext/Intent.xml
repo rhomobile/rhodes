@@ -4,18 +4,17 @@
     <MODULE name="Intent" parent="Rho">
         <HELP_OVERVIEW>The Intent API provides an inter-application broadcast message-passing framework.</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
-        </MORE_HELP>
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+    </MORE_HELP>
         <TEMPLATES>
         </TEMPLATES>
         <METHODS  access="STATIC">
@@ -24,35 +23,35 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="params" type="HASH">
-                        <DESC>A hash-map with intent parameters</DESC>
+                        <DESC>A hash-map with intent parameters.</DESC>
                         <PARAMS>
                             <PARAM name="intentType" type="STRING">
-                                <DESC>Type of Intent.</DESC>
+                                <DESC>Type of Intent to send.</DESC>
                                 <VALUES>
                                     <VALUE constName="BROADCAST" value ="broadcast">
-                                        <DESC>Use the intent as broadcast intent</DESC>
+                                        <DESC>Use the intent as broadcast intent.</DESC>
                                     </VALUE>
                                     <VALUE constName="START_ACTIVITY" value ="startActivity">
-                                        <DESC>Use the intent to start a UI activity</DESC>
+                                        <DESC>Use the intent to start a UI activity.</DESC>
                                         <PLATFORM>Android</PLATFORM>
                                     </VALUE>
                                     <VALUE constName="START_SERVICE" value ="startService">
-                                        <DESC>Use the intent to start a background service</DESC>
+                                        <DESC>Use the intent to start a background service.</DESC>
                                         <PLATFORM>Android</PLATFORM>
                                     </VALUE>
                                 </VALUES>
                             </PARAM>
                             <PARAM name="permission" type="STRING">
                                 <PLATFORM>Android</PLATFORM>
-                                <DESC>Permission used to send a broadcast intent</DESC>
+                                <DESC>Permission used to send a broadcast intent.</DESC>
                             </PARAM>
                             <PARAM name="action" type="STRING">
                                 <PLATFORM>Android</PLATFORM>
-                                <DESC>Intent action. See android docs for possible values: http://developer.android.com/reference/android/content/Intent.html#setAction(java.lang.String)</DESC>
+                                <DESC>Intent action. See android docs for possible values: http://developer.android.com/reference/android/content/Intent.html#setAction(java.lang.String).</DESC>
                             </PARAM>
                             <PARAM name="categories" type="ARRAY">
                                 <PLATFORM>Android</PLATFORM>
-                                <DESC>List of intent categories. See android docs for possible values: http://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String)</DESC>
+                                <DESC>List of intent categories. See android docs for possible values: http://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String).</DESC>
                                 <PARAM type="STRING"/>
                             </PARAM>
                             <PARAM name="appName" type="STRING">
@@ -69,7 +68,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 <DESC>MIME type of data defined in the intent.</DESC>
                             </PARAM>
                             <PARAM name="data" type="HASH">
-                                <DESC>Data which will be sent within the intent. We don't support data like data:image/jpeg;base64,/9j/4AAQSkZ</DESC>
+                                <DESC>Data which will be sent within the intent. We don't support data like data:image/jpeg;base64,/9j/4AAQSkZ.</DESC>
                             </PARAM>
                          </PARAMS>
                     </PARAM>
@@ -80,26 +79,25 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAMS>
                         <PARAM name="responseCode" type="INTEGER">
                             <PLATFORM>Android</PLATFORM>
-                            <DESC>Response code passed to Android Activity.setResult() method</DESC>
+                            <DESC>Response code passed to Android Activity.setResult() method.</DESC>
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
             <METHOD name="startListening" hasCallback="mandatory" runInThread="none">
-                <DESC>Start listening for custom intents</DESC>
+                <DESC>Start listening for custom intents.</DESC>
                 <CALLBACK type="HASH">
                     <DESC>Same format as 'params' argument passed to Rho.Intent.send method
                     Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
                 </CALLBACK>
             </METHOD>
             <METHOD name="stopListening" hasCallback="none">
-                <DESC>Stop listening for custom intents</DESC>
+                <DESC>Stop listening for custom intents.</DESC>
             </METHOD>
-
         </METHODS>
         <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
         <PLATFORM>Android</PLATFORM>
         <EXAMPLES >
         </EXAMPLES>
     </MODULE>
-</API>    
+</API>

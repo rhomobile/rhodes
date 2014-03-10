@@ -4,7 +4,7 @@
     <MODULE name="Push" parent="Rho">
         <HELP_OVERVIEW>The Push API provides access to Push messaging functionality</HELP_OVERVIEW>
         <MORE_HELP>Use this API to give your application the ability to receive server initiated messages.
-## Enabling the API           
+## Enabling the API
 In order to use this API you must include the following extension in your `build.yml`:
 
 For APNS or GCM:
@@ -17,11 +17,10 @@ For RhoConnect Push Service:
     For Win32(XPE) MSMQ(Microsoft Message Queue) and .Net Framework 3.5 must be installed on device to get it work.
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <PLATFORM>WM, Android, iOS</PLATFORM>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
@@ -44,8 +43,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </VALUE>
                 </VALUES>
             </PROPERTY>
+
             <PROPERTY name="userNotifyMode" type="STRING" default="backgroundNotifications" deprecated="true">
-                <DESC>UI notification mode.  Use `Rho.Notification` instead.</DESC>
+                <DESC>UI notification mode. Use `Rho.Notification` instead.</DESC>
                 <PLATFORM>Android</PLATFORM>
                 <APPLIES rubyOnly="true"/>
                 <VALUES>
@@ -63,9 +63,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </VALUE>
                 </VALUES>
             </PROPERTY>
+
             <PROPERTY name="pushServer" type="STRING" readOnly="true">
                 <DESC>URL of RhoConnect Push server.</DESC>
             </PROPERTY>
+
             <PROPERTY name="pushAppName" type="STRING" readOnly="true">
                 <DESC>Application name used by RhoConnect Push server to identify application.</DESC>
             </PROPERTY>
@@ -79,10 +81,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
+
             <METHOD name="getDeviceId" access="INSTANCE" hasCallback="optional">
                 <DESC>Returns push token used to identify particular device.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
+
             <METHOD name="startNotifications" access="INSTANCE" hasCallback="mandatory" runInThread="none">
                 <DESC>Start listening for push messages, errors or other push related events.</DESC>
                 <CALLBACK type="HASH">
@@ -103,6 +107,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
+
             <METHOD name="stopNotifications" access="INSTANCE" hasCallback="none">
                 <DESC>Stop listening push events.</DESC>
             </METHOD>
@@ -110,11 +115,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-            <![CDATA[
-
-            ]]>
-
+            <![CDATA[]]>
         </USER_OVERVIEW>
+            
         <EXAMPLES >
             <EXAMPLE title="Handle push message">
                 <SECTIONS>

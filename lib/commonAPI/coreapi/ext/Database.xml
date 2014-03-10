@@ -10,11 +10,10 @@ This API is part of the `coreapi` extension that is included automatically.
     extensions: ["coreapi"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
     </MORE_HELP>
 
     <ALIASES>
@@ -31,126 +30,109 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <ALIAS new="is_ui_waitfordb" existing="isUiWaitForDb" deprecated="true"/>
         <ALIAS new="set_do_not_bakup_attribute" existing="setDoNotBackupAttribute" deprecated="true"/>
       </ALIASES>
-
       <METHOD name="initialize" constructor="true" generateAPI="false">
-        <DESC>This method is a contructor for this class. Instead of saying Rho.Database.initialize(dbPath,dbPartition) you would use new Rho.Database(dbPath,dbPartition). ex: `var db = new Rho.Database(Rho.Application.databaseFilePath('test'), 'test');` Make sure you issue a `.close()` when you are finished using the database. If the database file does not exist it will be created using a SQL schema: rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC>
+        <DESC>This method is a constructor for this class. Instead of saying Rho.Database.initialize(dbPath,dbPartition) you would use new Rho.Database(dbPath,dbPartition). ex: `var db = new Rho.Database(Rho.Application.databaseFilePath('test'), 'test');` Make sure you issue a `.close()` when you are finished using the database. If the database file does not exist it will be created using a SQL schema: rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
-            <DESC>The path to the database. Databases stored at the path provided by Rho::Application.databaseFilePath</DESC>
+            <DESC>The path to the database. Databases stored at the path provided by Rho::Application.databaseFilePath.</DESC>
           </PARAM>
           <PARAM name="dbPartition" type="STRING">
             <DESC>The database partition. Used as a file name for database and when connecting to RhoConnect server.</DESC>
           </PARAM>
         </PARAMS>
       </METHOD>
-
       <METHOD name="close" destructor="true" generateAPI="false">
-        <DESC>Closes the database.The database will not be accessible until it is opened again.</DESC>
+        <DESC>Closes the database. The database will not be accessible until it is opened again.</DESC>
       </METHOD>
-
       <METHOD name="startTransaction" generateAPI="false">
-        <DESC>Start database transaction. All operations will not be the saved to the database until a Commit is executed.</DESC>
+        <DESC>Start database transaction. All operations will not be the saved to the database until a commit is executed.</DESC>
       </METHOD>
-
       <METHOD name="commitTransaction" generateAPI="false">
         <DESC>Commit database transaction. Saves all updates to the database from the start of the transaction.</DESC>
       </METHOD>
-
       <METHOD name="rollbackTransaction" generateAPI="false">
-        <DESC>Rollback database transaction. This will cancel any pending actions to the database that were executed since the last Start and before a Commit.</DESC>
+        <DESC>Rollback database transaction. This will cancel any pending actions to the database that were executed since the last Start and before a commit.</DESC>
       </METHOD>
-
       <METHOD name="lockDb" generateAPI="false" generateDoc="false">
-        <DESC>Lock database. This method should be used to syncronize Database access with RhoConnect client. startTransaction also locks the database but if you're going to read from database, lockDb is faster.</DESC>
+        <DESC>Lock database. This method should be used to synchronize Database access with RhoConnect client. The startTransaction method also locks the database but if you're going to read from database, lockDb is faster.</DESC>
       </METHOD>
-
       <METHOD name="unlockDb" generateAPI="false" generateDoc="false">
-        <DESC>Unlock database, previusly locked by lockDb.</DESC>
+        <DESC>Unlock database, previously locked by lockDb.</DESC>
       </METHOD>
-
       <METHOD name="isUiWaitForDb" generateAPI="false" generateDoc="false">
-        <DESC>Is UI waiting for DB? Should be used in separate Ruby thread, which updates database(implementing custom data sync logic). Will be true when database method calls from Main Ruby thread and waits for database.></DESC>
+        <DESC>Is UI waiting for DB? Should be used in separate Ruby thread, which updates database (implementing custom data sync logic). Will be true when database method calls from Main Ruby thread and waits for database.</DESC>
         <RETURN type="BOOLEAN"/>
       </METHOD>
-
       <METHOD name="executeSql" generateAPI="false" >
         <DESC>Execute the sql statement specified in the method's parameters.</DESC>
         <PARAMS>
           <PARAM name="sqlStmt" type="STRING">
-            <DESC>The SQL statement</DESC>
+            <DESC>The SQL statement.</DESC>
           </PARAM>
           <PARAM name="args" type="ARRAY">
-            <DESC>Array of the sql expressions</DESC>
+            <DESC>Array of the sql expressions.</DESC>
             <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
-
         <RETURN type="ARRAY">
             <DESC>Array of Hashes. Each Hash item represents record from Database.</DESC>
         </RETURN>
       </METHOD>
-
       <METHOD name="executeBatchSql" generateAPI="false" >
         <DESC>Execute a series of sql statements included in the sqlStmt string parameter.</DESC>
         <PARAMS>
           <PARAM name="sqlStmt" type="STRING">
-            <DESC>The SQL statement</DESC>
+            <DESC>The SQL statement.</DESC>
           </PARAM>
         </PARAMS>
       </METHOD>
-
       <METHOD name="import" deprecated="true" generateAPI="false" generateDoc="false">
-        <DESC>Import the contents of the archived databse into the current database.</DESC>
+        <DESC>Import the contents of the archived database into the current database.</DESC>
         <PARAMS>
           <PARAM name="zipName" type="STRING">
-            <DESC>The name of the zip file</DESC>
+            <DESC>The name of the zip file.</DESC>
           </PARAM>
         </PARAMS>
         <RETURN type="BOOLEAN"/>
       </METHOD>
-
       <METHOD name="export" deprecated="true"  generateAPI="false"  generateDoc="false">
         <DESC>Exports the contents of the current database to a file.</DESC>
         <RETURN type="STRING"/>
       </METHOD>
-
       <METHOD name="destroyTable" generateAPI="false">
-        <DESC>Destroys a database table</DESC>
+        <DESC>Destroys a database table.</DESC>
         <PARAMS>
           <PARAM name="tableName" type="STRING">
-            <DESC>Table name to destroy</DESC>
+            <DESC>Table name to destroy.</DESC>
           </PARAM>
         </PARAMS>
       </METHOD>
-
       <METHOD name="destroyTables" generateAPI="false">
         <DESC>Destroy a list of database tables.</DESC>
         <PARAMS>
           <PARAM name="propertyMap" type="HASH">
             <PARAMS>
               <PARAM name="include" type="ARRAY">
-                <DESC>include tables</DESC>
+                <DESC>Include tables.</DESC>
               </PARAM>
               <PARAM name="exclude" type="ARRAY">
-                <DESC>exclude tables</DESC>
+                <DESC>Exclude tables.</DESC>
               </PARAM>
             </PARAMS>
           </PARAM>
         </PARAMS>
       </METHOD>
-
       <METHOD name="isTableExist" generateAPI="false">
         <DESC>Will return true or false if the specified table exists in the current database.</DESC>
         <PARAMS>
           <PARAM name="tableName" type="STRING">
-            <DESC>The name of the table</DESC>
+            <DESC>The name of the table.</DESC>
           </PARAM>
         </PARAMS>
         <RETURN type="BOOLEAN"/>
       </METHOD>
-
       <METHOD name="setDoNotBackupAttribute" generateAPI="false" generateDoc="false" >
-        <DESC>Set do not backup attribute for database file. This is special flag set on files, which will exclude it from iCloud service.</DESC>
+        <DESC>Set "do not backup attribute" for the database file. This is special flag set on files, which will exclude it from iCloud service.</DESC>
         <PLATFORM>iOS</PLATFORM>
         <PARAMS>
           <PARAM name="setFlag" type="BOOLEAN">
@@ -158,8 +140,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
           </PARAM>
         </PARAMS>
       </METHOD>
-
-      
     </METHODS>
 
     <USER_OVERVIEW>
@@ -170,12 +150,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
     <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
          <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
 
-      
     <EXAMPLES>
       <EXAMPLE title="Using Transactions">
         <SECTIONS>
           <SECTION>
-            <DESC> To insert/update multiple object/models use database transactions. This is the most performant method to initialize your application with a large set of data. </DESC>
+            <DESC>To insert/update multiple object/models use database transactions. This is the most performant method to initialize your application with a large set of data.</DESC>
             <CODE>
               <RUBY>
                 <![CDATA[
@@ -219,20 +198,17 @@ catch
 {
  db.rollbackTransaction();
 }
-
-  ]]>
-
+]]>
               </JAVASCRIPT>
             </CODE>
-
           </SECTION>
-        </SECTIONS>          
+        </SECTIONS>
       </EXAMPLE>
 
       <EXAMPLE title="Open and close database">
         <SECTIONS>
           <SECTION>
-            <DESC> The following example opens the database using the `constructor` method: .initialize. It then closes the database using the destructor method `.close()` </DESC>
+            <DESC>The following example opens the database using the `constructor` method: .initialize. It then closes the database using the destructor method `.close()`</DESC>
             <CODE>
               <RUBY>
                 <![CDATA[
@@ -247,9 +223,8 @@ db.close();
 ]]>
               </JAVASCRIPT>
             </CODE>
-
           </SECTION>
-        </SECTIONS>          
+        </SECTIONS>
       </EXAMPLE>
       <EXAMPLE title="destroyTables">
         <SECTIONS>
@@ -285,11 +260,9 @@ db.destroyTables({include: [], exclude: ['table1', 'table2']});
 ]]>
               </JAVASCRIPT>
             </CODE>
-
           </SECTION>
-        </SECTIONS>          
+        </SECTIONS>
       </EXAMPLE>
     </EXAMPLES>
-
-</MODULE>
+  </MODULE>
 </API>

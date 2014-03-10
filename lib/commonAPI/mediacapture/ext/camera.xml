@@ -3,7 +3,7 @@
 <API>
     <MODULE name="Camera" parent="Rho">
         <HELP_OVERVIEW>The Camera API provides access to your device's Camera(s)</HELP_OVERVIEW>
-        <MORE_HELP>Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application.  Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.
+        <MORE_HELP>Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application. Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.
 ## Enabling the API           
 In order to use this API you must include the following extension in your `build.yml`
     :::ruby
@@ -18,89 +18,89 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <PLATFORM>Android, iOS, WM</PLATFORM>
     
-    	<ALIASES>
-    		<ALIAS new="Camera" deprecated="true"/>
-    	</ALIASES>
-    	<TEMPLATES>
+        <ALIASES>
+            <ALIAS new="Camera" deprecated="true"/>
+        </ALIASES>
+        <TEMPLATES>
             <!-- <SINGLETON_INSTANCES/>   produce enumerate() fabric method, all instances is singletones by ID, add ID property -->
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
         <PROPERTIES usePropertyBag="accessorsViaPropertyBag" generateAccessors="true">
             <DESC>These properties are used to configure the Camera.</DESC>
-			<ALIASES>
-				<ALIAS new="format" existing="compressionFormat" deprecated="true"/>
-				<ALIAS new="desired_height" existing="desiredHeight" deprecated="true"/>
-				<ALIAS new="desired_width" existing="desiredWidth" deprecated="true"/>
-				<ALIAS new="color_model" existing="colorModel" deprecated="true"/>
-				<ALIAS new="enable_editing" existing="enableEditing" deprecated="true"/>
-				<ALIAS new="flash_mode" existing="flashMode" deprecated="true"/>
-				<ALIAS new="save_to_shared_gallery" existing="saveToDeviceGallery" deprecated="true"/>
-				<ALIAS new="left" existing="previewLeft" deprecated="true"/>
-				<ALIAS new="top" existing="previewTop" deprecated="true"/>
-				<ALIAS new="camera_type" existing="cameraType" deprecated="true"/>
-			</ALIASES>
-        	
-        	<PROPERTY name="cameraType" type="STRING" default="main" readOnly="true">
-        		<DESC>camera type: back or front.</DESC>
-        		<VALUES>
-        			<VALUE constName="CAMERA_TYPE_BACK" value="back">
-        				<DESC>back camera</DESC>
-        			</VALUE>
-        			<VALUE constName="CAMERA_TYPE_FRONT" value="front">
-        				<DESC>front camera</DESC>
-        			</VALUE>
-        		</VALUES>
-        	</PROPERTY>
-        	<PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
-        	    <PLATFORM>Android, iOS, WM</PLATFORM>
-        		<DESC>The maximum width of images which can be captured.</DESC>
-        	</PROPERTY>
-        	<PROPERTY name="maxHeight" type="INTEGER" generateAccessors="true" readOnly="true">
-        	    <PLATFORM>Android, iOS, WM</PLATFORM>
-        		<DESC>The maximum height of images which can be captured.</DESC>
-        	</PROPERTY>
-        	<PROPERTY name="supportedSizeList" type="ARRAY" readOnly="true" usePropertyBag="none" >
-        	    <PARAM type="HASH">
-        	        <PARAMS>
-        	            <PARAM name="width" type="INTEGER"/>
-        	            <PARAM name="height" type="INTEGER"/>
-        	        </PARAMS>
-        	    </PARAM>
-        	    <PLATFORM>Android</PLATFORM>
-        	    <DESC>List of resolutions supported by camera.</DESC>
-        	</PROPERTY>      	
-            <PROPERTY name="desiredWidth" type="INTEGER">
-				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc.  Specifying a desiredWidth will request to take the photo with the specified width but if it is not supported by the hardware then the closest match will be selected.  The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
-            </PROPERTY>
-            <PROPERTY name="desiredHeight" type="INTEGER">
-				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc.  Specifying a desiredHeight will request to take the photo with the specified height but if it is not supported by the hardware then the closest match will be selected.  The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
-            </PROPERTY>
-            <PROPERTY name="fileName" type="STRING">
-				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<DESC>The path without filename extension to store captured image in subsequent calls to takePicture(). The filename extension will be added automatically according to compressionFormat property value.</DESC>
-            </PROPERTY>
-            <PROPERTY name="compressionFormat" type="STRING" default="jpg">
-				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>JPG is supported on all devices, Android and Windows Mobile does not support PNG images</APPLIES>
-				<DESC>The format of the captured image in subsequent calls to takePicture().  If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data.</DESC>
-				<VALUES>
-                    <VALUE constName="COMPRESSION_FORMAT_JPG" value="jpg">
-                        <DESC>JPG compression</DESC>
+            <ALIASES>
+                <ALIAS new="format" existing="compressionFormat" deprecated="true"/>
+                <ALIAS new="desired_height" existing="desiredHeight" deprecated="true"/>
+                <ALIAS new="desired_width" existing="desiredWidth" deprecated="true"/>
+                <ALIAS new="color_model" existing="colorModel" deprecated="true"/>
+                <ALIAS new="enable_editing" existing="enableEditing" deprecated="true"/>
+                <ALIAS new="flash_mode" existing="flashMode" deprecated="true"/>
+                <ALIAS new="save_to_shared_gallery" existing="saveToDeviceGallery" deprecated="true"/>
+                <ALIAS new="left" existing="previewLeft" deprecated="true"/>
+                <ALIAS new="top" existing="previewTop" deprecated="true"/>
+                <ALIAS new="camera_type" existing="cameraType" deprecated="true"/>
+            </ALIASES>
+
+            <PROPERTY name="cameraType" type="STRING" default="main" readOnly="true">
+                <DESC>Camera type: back or front.</DESC>
+                <VALUES>
+                    <VALUE constName="CAMERA_TYPE_BACK" value="back">
+                        <DESC>Back camera.</DESC>
                     </VALUE>
-                    <VALUE constName="COMPRESSION_FORMAT_PNG" value="png">
-                        <DESC>PNG compression</DESC>
+                    <VALUE constName="CAMERA_TYPE_FRONT" value="front">
+                        <DESC>Front camera.</DESC>
                     </VALUE>
                 </VALUES>
-			</PROPERTY>
+            </PROPERTY>
+            <PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
+                <PLATFORM>Android, iOS, WM</PLATFORM>
+                <DESC>The maximum width of images which can be captured.</DESC>
+            </PROPERTY>
+            <PROPERTY name="maxHeight" type="INTEGER" generateAccessors="true" readOnly="true">
+                <PLATFORM>Android, iOS, WM</PLATFORM>
+                <DESC>The maximum height of images which can be captured.</DESC>
+            </PROPERTY>
+            <PROPERTY name="supportedSizeList" type="ARRAY" readOnly="true" usePropertyBag="none" >
+                <PARAM type="HASH">
+                    <PARAMS>
+                        <PARAM name="width" type="INTEGER"/>
+                        <PARAM name="height" type="INTEGER"/>
+                    </PARAMS>
+                </PARAM>
+                <PLATFORM>Android</PLATFORM>
+                <DESC>List of resolutions supported by camera.</DESC>
+            </PROPERTY>
+            <PROPERTY name="desiredWidth" type="INTEGER">
+                <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+                <DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc. Specifying a desiredWidth will request to take the photo with the specified width but if it is not supported by the hardware then the closest match will be selected. The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
+            </PROPERTY>
+            <PROPERTY name="desiredHeight" type="INTEGER">
+                <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+                <DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc. Specifying a desiredHeight will request to take the photo with the specified height but if it is not supported by the hardware then the closest match will be selected. The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
+            </PROPERTY>
+            <PROPERTY name="fileName" type="STRING">
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <DESC>The path without filename extension to store captured image in subsequent calls to takePicture(). The filename extension will be added automatically according to compressionFormat property value.</DESC>
+            </PROPERTY>
+            <PROPERTY name="compressionFormat" type="STRING" default="jpg">
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <APPLIES>JPG is supported on all devices, Android and Windows Mobile does not support PNG images</APPLIES>
+                <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data.</DESC>
+                <VALUES>
+                    <VALUE constName="COMPRESSION_FORMAT_JPG" value="jpg">
+                        <DESC>JPG compression.</DESC>
+                    </VALUE>
+                    <VALUE constName="COMPRESSION_FORMAT_PNG" value="png">
+                        <DESC>PNG compression.</DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
             <PROPERTY name="outputFormat" type="STRING" default="image">
-				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<DESC>Specifies the way to return the captured image to the application</DESC>
-				<VALUES>
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <DESC>Specifies the way to return the captured image to the application.</DESC>
+                <VALUES>
                     <VALUE constName="OUTPUT_FORMAT_IMAGE" value="image">
-                        <DESC>The captured image is stored on the device.  The callback associated with takePicture will contain the location of the image.</DESC>
+                        <DESC>The captured image is stored on the device. The callback associated with takePicture will contain the location of the image.</DESC>
                     </VALUE>
                     <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
                         <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>
@@ -109,10 +109,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="colorModel" type="STRING" default="rgb">
-				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-        	    <PLATFORM>Android,iOS</PLATFORM>
-				<DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.</DESC>
-				<VALUES>
+                <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+                <PLATFORM>Android,iOS</PLATFORM>
+                <DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.</DESC>
+                <VALUES>
                     <VALUE constName="COLOR_MODEL_RGB" value="rgb">
                         <DESC>A colour image is captured.</DESC>
                     </VALUE>
@@ -122,66 +122,66 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="enableEditing" type="BOOLEAN" default="true">
-				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-        	    <PLATFORM>iOS</PLATFORM>
-				<DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size).</DESC>
+                <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+                <PLATFORM>iOS</PLATFORM>
+                <DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size).</DESC>
             </PROPERTY>
             <PROPERTY name="flashMode" type="STRING">
-				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-        	    <PLATFORM>Android</PLATFORM>
-				<DESC>Specifies the flash behaviour when taking a picture</DESC>
-				<VALUES>
+                <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+                <PLATFORM>Android</PLATFORM>
+                <DESC>Specifies the flash behavior when taking a picture.</DESC>
+                <VALUES>
                     <VALUE constName="FLASH_ON" value="on">
-                        <DESC>Flash will be used</DESC>
+                        <DESC>Flash will be used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_OFF" value="off">
-                        <DESC>Flash will not be used</DESC>
+                        <DESC>Flash will not be used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_AUTO" value="auto">
-                        <DESC>Flash will be used if lighting conditions deem it necessary</DESC>
+                        <DESC>Flash will be used if lighting conditions deem it necessary.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_RED_EYE" value="redEye">
-                        <DESC>Flash with red eye reduction is used</DESC>
+                        <DESC>Flash with red eye reduction is used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_TORCH" value="torch">
-                        <DESC>The flash is turned on in torch mode</DESC>
+                        <DESC>The flash is turned on in torch mode.</DESC>
                     </VALUE>
                 </VALUES>   
-			</PROPERTY>
+            </PROPERTY>
             <PROPERTY name="saveToDeviceGallery" type="BOOLEAN" default="false">
-				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-        	    <PLATFORM>iOS,Android</PLATFORM>
-				<DESC>If true, the picture you take will be added to the device photo gallery. At Android default value is true.</DESC>
+                <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+                <PLATFORM>iOS,Android</PLATFORM>
+                <DESC>If true, the picture you take will be added to the device photo gallery. At Android default value is true.</DESC>
             </PROPERTY>
             <PROPERTY name="captureSound" type="STRING">
-				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<PLATFORM>Android, WM, WP8</PLATFORM>
-				<DESC>Path to a sound file resident on the device which will be played when the image is captured.</DESC>
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <PLATFORM>Android, WM, WP8</PLATFORM>
+                <DESC>Path to a sound file resident on the device which will be played when the image is captured.</DESC>
             </PROPERTY>
             <PROPERTY name="previewLeft" type="INTEGER">
-				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-        	    <PLATFORM>WM</PLATFORM>
-				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <PLATFORM>WM</PLATFORM>
+                <DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="previewTop" type="INTEGER">
-				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-        	    <PLATFORM>WM</PLATFORM>
-				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <PLATFORM>WM</PLATFORM>
+                <DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="previewWidth" type="INTEGER">
-				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-        	    <PLATFORM>WM</PLATFORM>
-				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <PLATFORM>WM</PLATFORM>
+                <DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="previewHeight" type="INTEGER">
-				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-        	    <PLATFORM>WM</PLATFORM>
-				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <PLATFORM>WM</PLATFORM>
+                <DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="useSystemViewfinder" type="BOOLEAN" default="false">
-				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-        	    <PLATFORM>ANDROID</PLATFORM>
-				<DESC>Uses system Camera application to take a picture instead of rhodes camera. System Camera does not accept most rhodes camera settings and can be adjusted by UI.</DESC>
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <PLATFORM>ANDROID</PLATFORM>
+                <DESC>Uses the system Camera application to take a picture instead of rhodes' camera. The system Camera application does not accept most rhodes' camera settings and can be adjusted by UI.</DESC>
             </PROPERTY>
         </PROPERTIES>
 
@@ -192,119 +192,115 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <METHOD name="enumerate" access="STATIC" hasCallback="optional">
                 <DESC>Returns the cameras present on your device, allowing you to access your device's front or back camera.</DESC>
-
                 <RETURN type="ARRAY">
                     <DESC>Array of objects.</DESC>
                     <PARAM name="cameraArray" type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
-        	
-        	<METHOD name="getCameraByType" access="STATIC" hasCallback="optional">
-        		<DESC>Returns the camera of requested type if that camera exist - else return nil</DESC>
-        		<PARAMS>
-        			<PARAM name="cameraType" type="STRING">
-        				<DESC>cameraType: main or front</DESC>
-        			</PARAM>	
-        		</PARAMS>		
-        		<RETURN type="SELF_INSTANCE">
-        			<DESC>Camera with requested type or nil if not have requested type camera</DESC>
-        		</RETURN>
-			</METHOD>
+            <METHOD name="getCameraByType" access="STATIC" hasCallback="optional">
+                <DESC>Returns the camera of requested type if that camera exist - else return nil.</DESC>
+                <PARAMS>
+                    <PARAM name="cameraType" type="STRING">
+                        <DESC>CameraType: main or front.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="SELF_INSTANCE">
+                    <DESC>Camera with requested type or nil if not requested type does not exist.</DESC>
+                </RETURN>
+            </METHOD>
             <METHOD name="takePicture" hasCallback="mandatory" runInThread="ui">
-                <DESC>Start the camera appliction to take a picture.  The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use.</DESC>
+                <DESC>Start the camera application to take a picture. The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-                        <DESC>Provide a set of properties to configure the camera, for example to specify the flashMode or compressionFormat</DESC>
+                        <DESC>Provide a set of properties to configure the camera, for example to specify the flashMode or compressionFormat.</DESC>
                         <CAN_BE_NIL>
-                            <DESC>Not providing properties to this function will use the Camera's default properties, or those previlusly set on the Camera instance</DESC>
+                            <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="HASH">
-					<PARAMS>
-						<PARAM name="status" type="STRING">
-							<DESC>Whether or not the image was successfully captured.  The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
-						</PARAM>
-						<PARAM name="imageUri" type="STRING">
-							<DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name.  If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>
-						</PARAM>
-						<PARAM name="imageHeight" type="INTEGER">
-							<DESC>The actual height of the image that was captured, this may differ from the requested height as the Camera will only support a finite number of resolutions.</DESC>
-						</PARAM>
-						<PARAM name="imageWidth" type="INTEGER">
-							<DESC>The actual width of the image that was captured, this may differ from the requested width as the Camera will only support a finite number of resolutions.</DESC>
-						</PARAM>
-						<PARAM name="imageFormat" type="STRING">
-							<DESC>The format in which the image was captured, either 'png' or 'jpg'.</DESC>
-						</PARAM>
-						<PARAM name="message" type="STRING">
-							<DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
-						</PARAM>
-						<PARAM name="image_uri" type="STRING" deprecated="true">
-							<DESC>It is recommended to use imageUri in preference to this parameter</DESC>
-						</PARAM>
-						<PARAM name="image_height" type="INTEGER" deprecated="true">
-							<DESC>It is recommended to use imageHeight in preference to this parameter</DESC>
-						</PARAM>
-						<PARAM name="image_width" type="INTEGER" deprecated="true">
-							<DESC>It is recommended to use imageWidth in preference to this parameter</DESC>
-						</PARAM>
-						<PARAM name="image_format" type="STRING" deprecated="true">
-							<DESC>It is recommended to use imageFormat in preference to this parameter</DESC>
-						</PARAM>
-					</PARAMS>
-				</CALLBACK>
-			</METHOD>
-
-        	<METHOD name="choosePicture" runInThread="module" hasCallback="mandatory" access="static">
-                <DESC>Choose a picture from the album</DESC>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>Whether or not the image was successfully captured. The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
+                        </PARAM>
+                        <PARAM name="imageUri" type="STRING">
+                            <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>
+                        </PARAM>
+                        <PARAM name="imageHeight" type="INTEGER">
+                            <DESC>The actual height of the image that was captured, this may differ from the requested height as the Camera will only support a finite resolutions.</DESC>
+                        </PARAM>
+                        <PARAM name="imageWidth" type="INTEGER">
+                            <DESC>The actual width of the image that was captured, this may differ from the requested width as the Camera will only support a finite resolutions.</DESC>
+                        </PARAM>
+                        <PARAM name="imageFormat" type="STRING">
+                            <DESC>The format in which the image was captured, either 'png' or 'jpg'.</DESC>
+                        </PARAM>
+                        <PARAM name="message" type="STRING">
+                            <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
+                        </PARAM>
+                        <PARAM name="image_uri" type="STRING" deprecated="true">
+                            <DESC>It is recommended to use imageUri in preference to this parameter.</DESC>
+                        </PARAM>
+                        <PARAM name="image_height" type="INTEGER" deprecated="true">
+                            <DESC>It is recommended to use imageHeight in preference to this parameter.</DESC>
+                        </PARAM>
+                        <PARAM name="image_width" type="INTEGER" deprecated="true">
+                            <DESC>It is recommended to use imageWidth in preference to this parameter.</DESC>
+                        </PARAM>
+                        <PARAM name="image_format" type="STRING" deprecated="true">
+                            <DESC>It is recommended to use imageFormat in preference to this parameter.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+            <METHOD name="choosePicture" runInThread="module" hasCallback="mandatory" access="static">
+                <DESC>Choose a picture from the album.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode</DESC>
+                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode.</DESC>
                         <CAN_BE_NIL>
-                            <DESC>Not providing properties to this function will use the Camera's default properties, or those previlusly set on the Camera instance</DESC>
+                            <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>               
-				<CALLBACK type="HASH">
-					<PARAMS>
-						<PARAM name="status" type="STRING">
-							<DESC>Whether or not the image was successfully chosen from the gallery.  The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
-						</PARAM>
-						<PARAM name="imageUri" type="STRING">
-							<DESC>The URI to the chosen image.</DESC>
-						</PARAM>
-						<PARAM name="imageHeight" type="INTEGER">
-							<DESC>The height of the image.</DESC>
-						</PARAM>
-						<PARAM name="imageWidth" type="INTEGER">
-							<DESC>The width of the image.</DESC>
-						</PARAM>
-						<PARAM name="imageFormat" type="STRING">
-							<DESC>The format of the image, either 'png' or 'jpg'.</DESC>
-						</PARAM>
-						<PARAM name="message" type="STRING">
-							<DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
-						</PARAM>
-						<PARAM name="image_uri" type="STRING" deprecated="true">
-							<DESC>It is recommended to use imageUri in preference to this parameter</DESC>
-						</PARAM>
-						<PARAM name="image_height" type="INTEGER" deprecated="true">
-							<DESC>It is recommended to use imageHeight in preference to this parameter</DESC>
-						</PARAM>
-						<PARAM name="image_width" type="INTEGER" deprecated="true">
-							<DESC>It is recommended to use imageWidth in preference to this parameter</DESC>
-						</PARAM>
-						<PARAM name="image_format" type="STRING" deprecated="true">
-							<DESC>It is recommended to use imageFormat in preference to this parameter</DESC>
-						</PARAM>					
-					</PARAMS>
-				</CALLBACK>
-			</METHOD>
-
-        	<METHOD name="saveImageToDeviceGallery" access="static">
-        	    <PLATFORM>iOS, Android</PLATFORM>
-                <DESC>Save an image to the device gallery</DESC>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>Whether or not the image was successfully chosen from the gallery. The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
+                        </PARAM>
+                        <PARAM name="imageUri" type="STRING">
+                            <DESC>The URI to the chosen image.</DESC>
+                        </PARAM>
+                        <PARAM name="imageHeight" type="INTEGER">
+                            <DESC>The height of the image.</DESC>
+                        </PARAM>
+                        <PARAM name="imageWidth" type="INTEGER">
+                            <DESC>The width of the image.</DESC>
+                        </PARAM>
+                        <PARAM name="imageFormat" type="STRING">
+                            <DESC>The format of the image, either 'png' or 'jpg'.</DESC>
+                        </PARAM>
+                        <PARAM name="message" type="STRING">
+                            <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
+                        </PARAM>
+                        <PARAM name="image_uri" type="STRING" deprecated="true">
+                            <DESC>It is recommended to use imageUri in preference to this parameter.</DESC>
+                        </PARAM>
+                        <PARAM name="image_height" type="INTEGER" deprecated="true">
+                            <DESC>It is recommended to use imageHeight in preference to this parameter.</DESC>
+                        </PARAM>
+                        <PARAM name="image_width" type="INTEGER" deprecated="true">
+                            <DESC>It is recommended to use imageWidth in preference to this parameter.</DESC>
+                        </PARAM>
+                        <PARAM name="image_format" type="STRING" deprecated="true">
+                            <DESC>It is recommended to use imageFormat in preference to this parameter.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+            <METHOD name="saveImageToDeviceGallery" access="static">
+                <PLATFORM>iOS, Android</PLATFORM>
+                <DESC>Save an image to the device gallery.</DESC>
                 <PARAMS>
                     <PARAM name="pathToImage" type="STRING">
                         <DESC>The real path to the image that is to be saved in the device gallery. You need to use the RhoApplication method get_blob_path to have the real path, such as Rho::RhoApplication::get_blob_path(img.image_uri).</DESC>
@@ -312,25 +308,20 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
         </METHODS>
-        
+
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-            <![CDATA[
- 
-    				]]>
-    
+            <![CDATA[]]>
         </USER_OVERVIEW>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
-<EXAMPLES >
+        <EXAMPLES>
            <EXAMPLE title="Take picture with default camera">
             <SECTIONS>
               <SECTION>
-               <DESC>
-                   Take an image with as little code as possible, using all default values
-               </DESC>
+               <DESC>Take an image with as little code as possible, using all default values.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -371,18 +362,13 @@ function picture_taken_callback(params) {
                </SECTION>
                </SECTIONS>
            </EXAMPLE>
-
            <EXAMPLE title="Choose which camera to use when taking images">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   On devices with more than one camera, you can select which camera to use for taking pictures
-               </DESC>
+               <DESC>On devices with more than one camera, you can select which camera to use for taking pictures.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
-
 # controller.rb
 def choose_camera
   $cameras = Rho::Camera.enumerate
@@ -405,8 +391,6 @@ end
                  </RUBY>
                 <JAVASCRIPT>
            <![CDATA[
-
-
 <div id="camera_list">
 </div>
 
@@ -444,11 +428,8 @@ function take_picture_with_camera(cameraIndex) {
            </EXAMPLE>
            <EXAMPLE title="Saving a picture to the device's gallery">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   Apart from taking new pictures, you can also save images to the built-in gallery. In the following examples, the picture we are adding to the gallery is one that was just taken with the camera, but you can add any other image you can access by filename
-               </DESC>
+               <DESC>Apart from taking new pictures, you can also save images to the built-in gallery. In the following examples, the picture we are adding to the gallery is one that was just taken with the camera, but you can add any other image you can access by filename.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -487,14 +468,10 @@ function picture_taken_callback_save_to_gallery(params) {
                </SECTION>
                </SECTIONS>
            </EXAMPLE>
-
            <EXAMPLE title="Control image properties">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   You can tweak multiple options to get an image exactly as you need it 
-               </DESC>
+               <DESC>You can tweak multiple options to get an image exactly as you need it </DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -562,11 +539,8 @@ function picture_taken_callback(params) {
            </EXAMPLE>
            <EXAMPLE title="Determine camera capabilities">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   You can get all available camera properties in a single call
-               </DESC>
+               <DESC>You can get all available camera properties in a single call.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -614,11 +588,8 @@ function determine_camera_capabilities() {
            </EXAMPLE>
            <EXAMPLE title="Select picture from device gallery">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   Apart from taking new pictures, the Camera API also lets you access existing images on the device's gallery
-               </DESC>
+               <DESC>Apart from taking new pictures, the Camera API also lets you access existing images on the device's gallery.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -657,10 +628,6 @@ function picture_taken_callback(params) {
                </SECTION>
                </SECTIONS>
            </EXAMPLE>
-
-
        </EXAMPLES>
-
-
     </MODULE>
-</API>    
+</API>

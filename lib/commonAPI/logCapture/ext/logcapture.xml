@@ -13,35 +13,34 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
         </HELP_OVERVIEW>
         
         <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="excludeCategories" type="STRING" default="">
-                <DESC>Comma-separated list of excluded log categories</DESC>
+                <DESC>Comma-separated list of excluded log categories.</DESC>
             </PROPERTY>
 
             <PROPERTY name="maxLines" type="INTEGER" default="1024">
-                <DESC>Maximum number of captured lines</DESC>
+                <DESC>Maximum number of captured lines.</DESC>
             </PROPERTY>
         </PROPERTIES>
         
         <METHODS access="STATIC">
             <METHOD name="start">
-                <DESC>Start capture log events</DESC>
+                <DESC>Start capture log events.</DESC>
             </METHOD>
             <METHOD name="stop">
-                <DESC>Stop capture log events</DESC>
+                <DESC>Stop capture log events.</DESC>
             </METHOD>
             <METHOD name="clear">
-                <DESC>Clear captured events</DESC>
+                <DESC>Clear captured events.</DESC>
             </METHOD>
             <METHOD name="numLines">
-                <DESC>Return number of captured lines</DESC>
+                <DESC>Return number of captured lines.</DESC>
                 <RETURN type="INTEGER"/>
             </METHOD>
             <METHOD name="read">
-                <DESC>Read captured items</DESC>
+                <DESC>Read captured items.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
         </METHODS>
@@ -49,4 +48,4 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
          <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
     </MODULE>
-</API>    
+</API>
