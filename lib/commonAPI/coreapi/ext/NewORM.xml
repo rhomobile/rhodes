@@ -8,77 +8,77 @@
         <METHODS>
 
             <METHOD name="useNewOrm" access="STATIC">
-                <DESC>returns TRUE if NewORM is enabled in rhoconfig.txt</DESC>
+                <DESC>Returns TRUE if NewORM is enabled in rhoconfig.txt.</DESC>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="getClientId" access="STATIC">
-                <DESC>returns current Client Id</DESC>
+                <DESC>Returns current Client Id.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
 
             <METHOD name="haveLocalChanges" access="STATIC">
-                <DESC>returns TRUE whenever there are any local (non-synced) changes</DESC>
+                <DESC>Returns TRUE whenever there are any local (non-synced) changes.</DESC>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="databaseLocalReset" access="STATIC">
-                <DESC>resets local database</DESC>
+                <DESC>Resets local database.</DESC>
             </METHOD>
 
             <METHOD name="databaseClientReset" access="STATIC">
                 <PARAMS>
                     <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
-                        <DESC>Whether or not to reset Local Models</DESC>
+                        <DESC>Whether or not to reset Local Models.</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>resets client info and sync models (optionally, local models as well)</DESC>
+                <DESC>Resets client info and sync models (optionally, local models as well)</DESC>
             </METHOD>
 
             <METHOD name="databaseFullResetEx" access="STATIC">
                 <PARAMS>
                     <PARAM name="models" type="ARRAY">
-                        <DESC>List of models to reset</DESC>
+                        <DESC>List of models to reset.</DESC>
                     </PARAM>
                     <PARAM name="resetClientInfo" type="BOOLEAN">
-                        <DESC>Whether or not to reset Client Info</DESC>
+                        <DESC>Whether or not to reset Client Info.</DESC>
                     </PARAM>
                     <PARAM name="resetLocalModels" type="BOOLEAN">
-                        <DESC>Whether or not to reset Local Models</DESC>
+                        <DESC>Whether or not to reset Local Models.</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>resets selected models, client info and local models</DESC>
+                <DESC>Resets selected models, client info and local models.</DESC>
             </METHOD>
 
             <METHOD name="databaseFullReset" access="STATIC">
                 <PARAMS>
                     <PARAM name="resetClientInfo" type="BOOLEAN" default="false">
                         <CAN_BE_NIL/>
-                        <DESC>Whether or not to reset Client Info</DESC>
+                        <DESC>Whether or not to reset Client Info.</DESC>
                     </PARAM>
                     <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
                         <CAN_BE_NIL/>
-                        <DESC>Whether or not to reset Local Models</DESC>
+                        <DESC>Whether or not to reset Local Models.</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>resets selected models, client info and local models</DESC>
+                <DESC>Resets selected models, client info and local models.</DESC>
             </METHOD>
 
             <METHOD name="databaseFullResetAndLogout" access="STATIC">
-                <DESC>resets sync models, client info and local models and does the user logout</DESC>
+                <DESC>Resets sync models, client info and local models and does the user logout.</DESC>
             </METHOD>
 
             <METHOD name="databaseFullclientResetAndLogout" access="STATIC">
-                <DESC>resets sync models, client info and local models and does the user logout</DESC>
+                <DESC>Resets sync models, client info and local models and does the user logout.</DESC>
             </METHOD>
 
             <METHOD name="generateId" access="STATIC">
-                <DESC>returns newly generated unique object Id</DESC>
+                <DESC>Returns newly generated unique object Id.</DESC>
                 <RETURN type="INTEGER"/>    
             </METHOD>
 
         </METHODS>
-        
+
         <USER_OVERVIEW>
         </USER_OVERVIEW>
 
@@ -86,4 +86,4 @@
         <PLATFORM>
          </PLATFORM>
     </MODULE>
-</API>    
+</API>

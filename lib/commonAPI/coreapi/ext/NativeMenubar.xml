@@ -4,17 +4,16 @@
     <MODULE name="NativeMenubar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NativeMenubar API lets you customize the Windows Mobile/CE native menu buttons.</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <PLATFORM>WM</PLATFORM>
         
@@ -25,31 +24,27 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <PROPERTY name="mainMenu" type="ARRAY">
                 <DESC>The Right menu items in Windows Mobile applications. This defines the list of menu choices when the mainButton is pressed.</DESC>
                 <PARAM type="HASH">
-
                     <PARAMS>
                         <PARAM name="label" type="STRING">
                             <DESC>Visible label.</DESC>
                         </PARAM>
                         <PARAM name="action" type="STRING"  rhoAction="true">
-                            <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
+                            <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or JavaScript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
                         </PARAM>
                         <PARAM name="disabled" type="BOOLEAN" default="false">
                             <DESC>Menu item will be displayed as disabled.</DESC>
                             <PLATFORM>WM</PLATFORM>
                         </PARAM>
                     </PARAMS>
-
                 </PARAM>
                 <PLATFORM>WM</PLATFORM>
             </PROPERTY>
             <PROPERTY name="extraMenu" type="ARRAY">
-                <DESC>The Left menu items for Windows Mobile applictions. This defines the list of menu choices when the extraButton is pressed.</DESC>
+                <DESC>The Left menu items for Windows Mobile applications. This defines the list of menu choices when the extraButton is pressed.</DESC>
                 <PLATFORM>WM</PLATFORM>
-
                 <PARAM type="HASH">
                     <DESC>Same values as for mainMenu.</DESC>
                 </PARAM>
-                
             </PROPERTY>
 
             <PROPERTY name="mainButton" type="HASH">
@@ -63,11 +58,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <PROPERTY name="defaultMainMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <PARAM type="HASH" />
-                <DESC>This will return what the default right menu should be. This is a readonly property.</DESC>
+                <DESC>This will return what the default right menu should be. This is a read-only property.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <PLATFORM>WM</PLATFORM>
             </PROPERTY>
-
         </PROPERTIES>
 
         <METHODS  access="STATIC">
@@ -85,75 +79,74 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                <CODE>
                 <RUBY>
                   <![CDATA[
-    Rho::NativeMenubar.extraButton = {
-      :label => "Extra"
-    }
+Rho::NativeMenubar.extraButton = {
+  :label => "Extra"
+}
 
-    Rho::NativeMenubar.extraMenu = [
-      {
-        :label => "Show alert 1",
-        :action => url_for(:action => :show_alert_1)
-      },
-      {
-        :label => "Show alert 2",
-        :action => url_for(:action => :show_alert_2)
-      },
-      {
-        :label => "Win the lottery",
-        :disabled => true
-      }
-    ]
+Rho::NativeMenubar.extraMenu = [
+  {
+    :label => "Show alert 1",
+    :action => url_for(:action => :show_alert_1)
+  },
+  {
+    :label => "Show alert 2",
+    :action => url_for(:action => :show_alert_2)
+  },
+  {
+    :label => "Win the lottery",
+    :disabled => true
+  }
+]
                   ]]>
                  </RUBY>
                 <JAVASCRIPT>
                   <![CDATA[
-    Rho.NativeMenubar.extraButton = {
-        label: "Extra"
-    };
+Rho.NativeMenubar.extraButton = {
+    label: "Extra"
+};
 
-    Rho.NativeMenubar.extraMenu = [
-      {
-          label: "Show alert 1",
-          action: javascript:show_alert_1();,
-      },
-      {
-          label: "Show alert 2",
-          action: javascript:show_alert_2();,
-      },
-      {
-          label: "Win the lottery",
-          disabled: true
-      }
-    ];
+Rho.NativeMenubar.extraMenu = [
+  {
+      label: "Show alert 1",
+      action: javascript:show_alert_1();,
+  },
+  {
+      label: "Show alert 2",
+      action: javascript:show_alert_2();,
+  },
+  {
+      label: "Win the lottery",
+      disabled: true
+  }
+];
                   ]]>
                  </JAVASCRIPT>
                </CODE>
               </SECTION>
             </SECTIONS>
-           </EXAMPLE>     
+           </EXAMPLE>
            <EXAMPLE title="Clear the main menu">
             <SECTIONS>
-               
               <SECTION>
                <CODE>
                 <RUBY>
                   <![CDATA[
-    def remove_menuitems
-      Rho::NativeMenubar.mainMenu = []
-    end
+def remove_menuitems
+  Rho::NativeMenubar.mainMenu = []
+end
                   ]]>
                  </RUBY>
                 <JAVASCRIPT>
                   <![CDATA[
-    function remove_menuitems() {
-        Rho.NativeMenubar.mainMenu = [];
-    }
+function remove_menuitems() {
+    Rho.NativeMenubar.mainMenu = [];
+}
                   ]]>
                  </JAVASCRIPT>
                </CODE>
               </SECTION>
             </SECTIONS>
-           </EXAMPLE>                  
+           </EXAMPLE>
         </EXAMPLES>
     </MODULE>
-</API>    
+</API>

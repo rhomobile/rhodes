@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="NativeTabbar" parent="Rho" generateUnderscoreRubyNames="true">
-        <HELP_OVERVIEW>The NativeTabbar methods let you use multiple instances of the RhoMobile webview in seperate tabs. On Android, iOS and WIndows Phone 8 the tabs are true Native Tabbar controls to give your application a native look and feel.</HELP_OVERVIEW>
+        <HELP_OVERVIEW>The NativeTabbar methods let you use multiple instances of the RhoMobile webview in separate tabs. On Android, iOS and WIndows Phone 8 the tabs are true Native Tabbar controls to give your application a native look and feel.</HELP_OVERVIEW>
         <MORE_HELP>No more than 4 tabs can be created in the Windows Phone 8 tabbar. A tabbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time. 
 ## Enabling the API           
 This API is part of the `coreapi` extension that is included automatically.
@@ -10,11 +10,10 @@ This API is part of the `coreapi` extension that is included automatically.
     extensions: ["coreapi"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         
         <TEMPLATES>
@@ -29,7 +28,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </ALIASES>
 
             <METHOD name="create" hasCallback="optional" runInThread="ui">
-                <DESC>Removes the current tabbar/toolbar and replaces it with this one. Callback will be called when tab is switched.</DESC>
+                <DESC>Removes the current tabbar / toolbar and replaces it with this one. Callback will be called when tab is switched.</DESC>
                 <PARAMS>
                     <PARAM name="tabElements" type="ARRAY">
                         <DESC>Array of Tab elements.</DESC>
@@ -51,7 +50,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <DESC>When tab is activated  - page in tab will be reloaded.</DESC>
                                 </PARAM>
                                 <PARAM name="selectedColor" type="INTEGER">
-                                    <DESC>Change the selected color of this tab. On Android this works only if you setup selectedColor for all tabs and also setup backgroundColor for the whole Tabbar</DESC>
+                                    <DESC>Change the selected color of this tab. On Android this works only if you setup selectedColor for all tabs and also setup backgroundColor for the whole Tabbar.</DESC>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                                 </PARAM>
                                 <PARAM name="disabled" type="BOOLEAN" default="false">
@@ -74,44 +73,37 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 
                                 <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                     <PLATFORM>WM</PLATFORM>
-                                    <DESC>Create tab immediatly when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to.</DESC>
+                                    <DESC>Create tab immediately when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to.</DESC>
                                 </PARAM>
-
                             </PARAMS>
                         </PARAM>
                     </PARAM>
                     
                     <PARAM name="tabBarProperties" type="HASH">
                         <DESC>Properties of TabBar.</DESC>
-
                         <PARAMS>
                             <PARAM name="verticalOrientation" type="BOOLEAN" default="false">
                                 <DESC>Creates a vertical tabbar on the iPad.</DESC>
                                 <PLATFORM>iOS</PLATFORM>
                             </PARAM>
-
                             <PARAM name="backgroundColor" type="INTEGER">
                                 <DESC>Background color of the tabbar.</DESC>
                                 <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                             </PARAM>
-
                             <PARAM name="hiddenTabs" type="BOOLEAN" default="true">
                                 <PLATFORM>WM</PLATFORM>
                                 <DESC>Do not display Tabs with labels.Only hiddenTab=true is currently supported.</DESC>
                             </PARAM>
-
                             <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                 <PLATFORM>WM</PLATFORM>
-                                <DESC>Create tabs immediatly when TabBar is created. Action also will be executed. If false, then each tab will be created when first switch to the tab is executed.</DESC>
+                                <DESC>Create tabs immediately when TabBar is created. Action also will be executed. If false, then each tab will be created when first switch to the tab is executed.</DESC>
                             </PARAM>
                             <PARAM name="placeTabsBottom" type="BOOLEAN">
                                 <PLATFORM>Android</PLATFORM>
-                                <DESC>Place TabBar to bottom instead of default top - only for Android</DESC>
+                                <DESC>Place TabBar to bottom instead of default top - only for Android.</DESC>
                             </PARAM>
-
                         </PARAMS>
                     </PARAM>
-                    
                 </PARAMS>
 
                 <CALLBACK type="HASH">
@@ -133,17 +125,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <PLATFORM>WM</PLATFORM>
                             <VALUES>
                                 <VALUE value ="onTabFocus">
-                                    <DESC>Fires when a tab gains focus</DESC>
+                                    <DESC>Fires when a tab gains focus.</DESC>
                                 </VALUE>
                                 <VALUE value ="onTabNewError">
-                                    <DESC>Fires when a new tab cannot be created</DESC>
+                                    <DESC>Fires when a new tab cannot be created.</DESC>
                                 </VALUE>
                             </VALUES>
                         </PARAM>
-
                     </PARAMS>
                 </CALLBACK>
-
             </METHOD>
 
             <METHOD name="currentTabIndex">
@@ -159,13 +149,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <METHOD name="removeTab" runInThread="ui">
                 <DESC>Removes the Tab by index. Method will remove the WebView for the specific tab, it will not remove the tab from the tab array, so all indexes will remain the same.You cannot delete the tab with useCurrentViewForTab flag.If you switch to previously removed tab, tab will be recreated.</DESC>
                 <PLATFORM>WM</PLATFORM>
-
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER">
                         <DESC>The index for tab (index numbered from 0) to delete.</DESC>
                     </PARAM>
                 </PARAMS>
-
             </METHOD>
 
             <METHOD name="setTabBadge" runInThread="ui" >
@@ -178,8 +166,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="badge" type="STRING">
                         <DESC>String for iPhone badge, such as '12'.</DESC>
                     </PARAM>
-
-                </PARAMS>                
+                </PARAMS>
             </METHOD>
 
             <METHOD name="switchTab" runInThread="ui">
@@ -205,11 +192,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <EXAMPLES >
            <EXAMPLE title="Create native tabbar">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                    Create a platform-native tabbar. Tabs can link to internal application links (such as those built with "url_for") as well as external URLs.
-               </DESC>
+               <DESC>Create a platform-native tabbar. Tabs can link to internal application links (such as those built with "url_for") as well as external URLs.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -254,11 +238,8 @@ function tabbar_callback(params) {
            </EXAMPLE>
            <EXAMPLE title="Switch tab">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                    Switch the active tab
-               </DESC>
+               <DESC>Switch the active tab.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -279,9 +260,7 @@ Rho.NativeTabbar.switchTab(2);
            <EXAMPLE title="Remove tabbar">
             <SECTIONS>
               <SECTION>
-               <DESC>
-                    Remove the tabbar
-               </DESC>
+               <DESC>Remove the tabbar.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -299,4 +278,4 @@ Rho.NativeTabbar.remove();
            </EXAMPLE>
         </EXAMPLES>
     </MODULE>
-</API>    
+</API>
