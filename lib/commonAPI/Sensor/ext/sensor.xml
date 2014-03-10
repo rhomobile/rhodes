@@ -2,327 +2,323 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="Sensor" parent="Rho">
-		
         <HELP_OVERVIEW>The Sensors extension is used to retrieve the raw data values of the specified sensors (accelerometer, tilt angle, device orientation, motion, eCompass, magnetometer, gyroscope, ambient light, proximity, proximity long range, pressure, temperature, humidity, gravity, linear acceleration, rotation, orientation etc.) from the device. To use this, you have to first call makeSensorByType to get an instance of that sensor. Then you can use the start and stop methods on that instance.
-## Enabling the API           
-In order to use this API you must include the following extension in your `build.yml`
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`.
     :::ruby
     extensions: ["sensor"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+        </HELP_OVERVIEW>
 
-        </HELP_OVERVIEW>       
-
-		<PLATFORM>WM, Android, iOS</PLATFORM>
+        <PLATFORM>WM, Android, iOS</PLATFORM>
  
         <TEMPLATES>
-            <SINGLETON_INSTANCES/> <!--   produce enumerate() fabric method, all instances is singletones by ID, add ID property -->
-			<PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
+            <SINGLETON_INSTANCES/> <!--   produce enumerate() fabric method, all instances is singletons by ID, add ID property -->
+            <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
- 
  
         <CONSTANTS>
             <CONSTANT name="SENSOR_TYPE_ACCELEROMETER" value="Accelerometer">
-                <DESC>Accelerometer sensor type</DESC>
+                <DESC>Accelerometer sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_TILT_ANGLE" value="TiltAngle">
-                <DESC>TiltAngle sensor type</DESC>
+                <DESC>TiltAngle sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_DEVICE_ORIENTATION" value="DeviceOrientation">
-                <DESC>DeviceOrientation sensor type</DESC>
+                <DESC>DeviceOrientation sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_MOTION" value="Motion">
-                <DESC>Motion sensor type</DESC>
+                <DESC>Motion sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_ECOMPASS" value="ECompass">
-                <DESC>ECompass sensor type</DESC>
+                <DESC>ECompass sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_MAGNETOMETER" value="Magnetometer">
-                <DESC>Magnetometer sensor type</DESC>
+                <DESC>Magnetometer sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_GYROSCOPE" value="Gyroscope">
-                <DESC>Gyroscope sensor type</DESC>
+                <DESC>Gyroscope sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_AMBIENT_LIGHT" value="AmbientLight">
-                <DESC>AmbientLight sensor type</DESC>
+                <DESC>AmbientLight sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_PROXIMITY" value="Proximity">
-                <DESC>Proximity sensor type</DESC>
+                <DESC>Proximity sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_PROXIMITY_LONG_RANGE" value="ProximityLongRange">
-                <DESC>ProximityLongRange sensor type</DESC>
+                <DESC>ProximityLongRange sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_PRESSURE" value="Pressure">
-                <DESC>Pressure sensor type</DESC>
+                <DESC>Pressure sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_TEMPERATURE" value="Temperature">
-                <DESC>Temperature sensor type</DESC>
+                <DESC>Temperature sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_HUMIDITY" value="Humidity">
-                <DESC>Humidity sensor type</DESC>
+                <DESC>Humidity sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_GRAVITY" value="Gravity">
-                <DESC>Gravity sensor type</DESC>
+                <DESC>Gravity sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_LINEAR_ACCELERATION" value="LinearAcceleration">
-                <DESC>LinearAcceleration sensor type</DESC>
+                <DESC>LinearAcceleration sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_ROTATION" value="Rotation">
-                <DESC>Rotation sensor type</DESC>
+                <DESC>Rotation sensor type.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_TYPE_ORIENTATION" value="Orientation">
-                <DESC>Orientation sensor type</DESC>
+                <DESC>Orientation sensor type.</DESC>
             </CONSTANT>
 
             <CONSTANT name="SENSOR_STATUS_NOT_READY" value="not_ready">
-                <DESC>sensor is not ready for start - may be some type of sensor require time for initialising/calibrating of HW etc.</DESC>
+                <DESC>Sensor is not ready for start - may be some type of sensor require time for initializing / calibrating of HW etc.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_STATUS_READY" value="ready">
-                <DESC>sensor is ready to start listening</DESC>
+                <DESC>Sensor is ready to start listening.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_STATUS_STARTED" value="started">
-                <DESC>sensor already started to listening</DESC>
+                <DESC>Sensor already started to listening.</DESC>
             </CONSTANT>
             <CONSTANT name="SENSOR_STATUS_ERROR" value="error">
-                <DESC>sensor in error state</DESC>
+                <DESC>Sensor in error state.</DESC>
             </CONSTANT>
-            
-        </CONSTANTS>	
+        </CONSTANTS>
 
-        
- 
         <PROPERTIES generateAccessors="true">
             <DESC>These properties are used to configure the Camera.</DESC>
-            
+
             <PROPERTY name="minimumGap" type="INTEGER" default="200">
-                <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds.</DESC>
+                <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milliseconds is specified, the interval will be defaulted to 200 milliseconds.</DESC>
             </PROPERTY>
+
             <PROPERTY name="type" type="STRING" readOnly="true">
-                <DESC>type of current sensor: Accelerometer, Magnetometer, etc.</DESC>
+                <DESC>Type of current sensor: Accelerometer, Magnetometer, etc.</DESC>
             </PROPERTY>
+
             <PROPERTY name="status" type="STRING" readOnly="true">
-                <DESC>current status: not_ready, ready, started, error etc.</DESC>
+                <DESC>Current status: not_ready, ready, started, error etc.</DESC>
             </PROPERTY>
-        </PROPERTIES>    
-
-
+        </PROPERTIES>
 
         <METHODS>
-            
             <METHOD name="makeSensorByType" access="STATIC">
-                <DESC>Return the new sensor object by type</DESC>
+                <DESC>Return the new sensor object by type.</DESC>
                 <PARAMS>
                     <PARAM name="type" type="STRING">
-                        <DESC>sensor type. Use the appropriate constants to get the sensor type. In the case of accelerometer use SENSOR_TYPE_ACCELEROMETER</DESC>
+                        <DESC>Sensor type. Use the appropriate constants to get the sensor type. In the case of accelerometer use SENSOR_TYPE_ACCELEROMETER.</DESC>
                     </PARAM>
-                </PARAMS>					
+                </PARAMS>                   
                 <RETURN type="SELF_INSTANCE">
                     <DESC>Returns a sensor object for the sensor type passed as parameter. You can use the type field along with the Rho.Sensor Constants to see what type of sensor is returned.</DESC>
                 </RETURN>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
- 
             </METHOD>
-            
 
             <METHOD name="start" hasCallback="optional">
                 <DESC>This enables the sensor data retrieval. Call start on the instance returned from the makeSensorByType.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
-                    <DESC>The callback is triggered with the sensors values according to sensor type when a parameter of the sensor is changed. Each sensor sends to the callback different object types - see sensor prefix of value name. All sensors will contain a status and message parameter in the callback</DESC>
+                    <DESC>The callback is triggered with the sensors values according to sensor type when a parameter of the sensor is changed. Each sensor sends to the callback different object types - see sensor prefix of value name. All sensors will contain a status and message parameter in the callback.</DESC>
                     <PARAMS>
                         <!-- shared for all sensor types callback parameters-->
                         <PARAM name="status" type="STRING">
-                            <DESC>status: ok, error</DESC>
+                            <DESC>Status: ok, error.</DESC>
                         </PARAM>
+
                         <PARAM name="message" type="STRING">
-                            <DESC>only if status=error, contain error message</DESC>
+                            <DESC>Only if status=error, contain error message.</DESC>
                         </PARAM>
-                        
 
                         <!-- only for Accelerometer callback -->
                         <PARAM name="accelerometer_x" type="FLOAT">
                             <DESC>X co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>
                         </PARAM>
+
                         <PARAM name="accelerometer_y" type="FLOAT">
                             <DESC>Y co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>
                         </PARAM>
+
                         <PARAM name="accelerometer_z" type="FLOAT">
                             <DESC>Z co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>
-                        </PARAM>							
-                        
+                        </PARAM>
+
                         <!-- only for TiltAngle callback -->
                         <PARAM name="tiltangle_x" type="FLOAT">
-                            <DESC>X co-ordinate value of the tiltangle sensor in degrees units</DESC>
+                            <DESC>X co-ordinate value of the tiltangle sensor in degrees units.</DESC>
                         </PARAM>
+
                         <PARAM name="tiltangle_y" type="FLOAT">
-                            <DESC>Y co-ordinate value of the tiltangle sensor in degrees units</DESC>
+                            <DESC>Y co-ordinate value of the tiltangle sensor in degrees units.</DESC>
                         </PARAM>
+
                         <PARAM name="tiltangle_z" type="FLOAT">
-                            <DESC>Z co-ordinate value of the tiltangle sensor in degrees units</DESC>
+                            <DESC>Z co-ordinate value of the tiltangle sensor in degrees units.</DESC>
                         </PARAM>
-                        
+
                         <!-- only for DeviceOrientation callback -->
                         <PARAM name="deviceorientation_value" type="STRING">
                             <DESC>The values of the Orientation sensor. Possible values include Portrait Down, Portrait Up, Landscape Left, Landscape Right, Face Up, Face Down. Applicable only for Motorola Windows Mobile/CE devices with Sensor support.</DESC>
-                        </PARAM>						
-                        
+                        </PARAM>
+
                         <!-- only for Motion callback -->
                         <PARAM name="motion_value" type="STRING">
-                            <DESC>Value from the Motion sensor</DESC>
-                        </PARAM>												
-                        
+                            <DESC>Value from the Motion sensor.</DESC>
+                        </PARAM>
+
                         <!-- only for ECompass callback -->
                         <PARAM name="ecompass_value" type="STRING">
-                            <DESC>Value from the E-Compass sensor</DESC>
-                        </PARAM>												
+                            <DESC>Value from the E-Compass sensor.</DESC>
+                        </PARAM>
 
                         <!-- only for Magnetometer callback -->
                         <PARAM name="magnetometer_x" type="FLOAT">
-                            <DESC>X value of the magnetometer sensor in micro-Tesla (uT) units</DESC>
+                            <DESC>X value of the magnetometer sensor in micro-Tesla (uT) units.</DESC>
                         </PARAM>
+
                         <PARAM name="magnetometer_y" type="FLOAT">
-                            <DESC>Y value of the magnetometer sensor in micro-Tesla (uT) units</DESC>
+                            <DESC>Y value of the magnetometer sensor in micro-Tesla (uT) units.</DESC>
                         </PARAM>
+
                         <PARAM name="magnetometer_z" type="FLOAT">
-                            <DESC>Z value of the magnetometer sensor in micro-Tesla (uT) units</DESC>
-                        </PARAM>														
+                            <DESC>Z value of the magnetometer sensor in micro-Tesla (uT) units.</DESC>
+                        </PARAM>                                                        
 
                         <!-- only for Gyroscope callback -->
                         <PARAM name="gyroscope_x" type="FLOAT">
-                            <DESC>X co-ordinate value of the gyroscope sensor in radians/second units</DESC>
+                            <DESC>X co-ordinate value of the gyroscope sensor in radians/second.</DESC>
                         </PARAM>
+
                         <PARAM name="gyroscope_y" type="FLOAT">
-                            <DESC>X co-ordinate value of the gyroscope sensor in radians/second units</DESC>
+                            <DESC>X co-ordinate value of the gyroscope sensor in radians/second.</DESC>
                         </PARAM>
+
                         <PARAM name="gyroscope_z" type="FLOAT">
-                            <DESC>X co-ordinate value of the gyroscope sensor in radians/second units</DESC>
-                        </PARAM>														
-                        
+                            <DESC>X co-ordinate value of the gyroscope sensor in radians/second.</DESC>
+                        </PARAM>
+
                         <!-- only for AmbientLight callback -->
                         <PARAM name="ambientlight_value" type="STRING">
-                            <DESC>Value of the ambient Light sensor in SI lux units</DESC>
-                        </PARAM>												
+                            <DESC>Value of the ambient Light sensor in SI lux units.</DESC>
+                        </PARAM>
 
                         <!-- only for Proximity callback -->
                         <PARAM name="proximity_value" type="STRING">
-                            <DESC>Value of the proximity sensor in centimeters units</DESC>
-                        </PARAM>											
+                            <DESC>Value of the proximity sensor in centimeters.</DESC>
+                        </PARAM>
 
                         <!-- only for ProximityLongRange callback -->
                         <PARAM name="proximitylongrange_value" type="STRING">
-                             <DESC>Value of the proximitylongrange sensor</DESC>
-                        </PARAM>											
+                             <DESC>Value of the proximitylongrange sensor.</DESC>
+                        </PARAM>
 
                         <!-- only for Pressure callback -->
                         <PARAM name="pressure_value" type="STRING">
-                            <DESC>Value of the pressure sensor in hPa (millibar) units</DESC>
-                        </PARAM>												
+                            <DESC>Value of the pressure sensor in hPa (millibar) units.</DESC>
+                        </PARAM>
 
                         <!-- only for Temperature callback -->
                         <PARAM name="temperature_value" type="STRING">
-                            <DESC>Value of the temperature sensor in degree Celsius units</DESC>
-                        </PARAM>												
-                        
+                            <DESC>Value of the temperature sensor in degree Celsius units.</DESC>
+                        </PARAM>
+
                         <!-- only for Humidity callback -->
                         <PARAM name="humidity_value" type="STRING">
-                            <DESC>Value of the humidity sensor in percent units</DESC>
-                        </PARAM>												
+                            <DESC>Value of the humidity sensor as a percentage.</DESC>
+                        </PARAM>
 
                         <!-- only for Gravity callback -->
                         <PARAM name="gravity_x" type="FLOAT">
                             <DESC>X co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>
                         </PARAM>
+
                         <PARAM name="gravity_y" type="FLOAT">
                             <DESC>Y co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>
                         </PARAM>
+
                         <PARAM name="gravity_z" type="FLOAT">
                             <DESC>Z co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>
-                        </PARAM>														
-                        
+                        </PARAM>
+
                         <!-- only for LinearAcceleration callback -->
                         <PARAM name="linearacceleration_x" type="FLOAT">
                             <DESC>X co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>
                         </PARAM>
+
                         <PARAM name="linearacceleration_y" type="FLOAT">
                             <DESC>Y co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>
                         </PARAM>
+
                         <PARAM name="linearacceleration_z" type="FLOAT">
                             <DESC>Z co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>
-                        </PARAM>														
+                        </PARAM>
 
                         <!-- only for Rotation callback -->
                         <PARAM name="rotation_x" type="FLOAT">
-                            <DESC>X co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>
+                            <DESC>X co-ordinate value of the rotation sensor as a combination of an angle and an axis.</DESC>
                         </PARAM>
+
                         <PARAM name="rotation_y" type="FLOAT">
-                            <DESC>Y co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>
+                            <DESC>Y co-ordinate value of the rotation sensor as a combination of an angle and an axis.</DESC>
                         </PARAM>
+
                         <PARAM name="rotation_z" type="FLOAT">
-                            <DESC>Z co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>
-                        </PARAM>														
+                            <DESC>Z co-ordinate value of the rotation sensor as a combination of an angle and an axis.</DESC>
+                        </PARAM>
 
                         <!-- only for Orientation callback -->
                         <PARAM name="orientation_x" type="FLOAT">
-                            <DESC>X co-ordinate value of the orientation sensor in degrees units</DESC>
+                            <DESC>X co-ordinate value of the orientation sensor in degrees units.</DESC>
                         </PARAM>
-                        <PARAM name="orientation_y" type="FLOAT">
-                            <DESC>Y co-ordinate value of the orientation sensor in degrees units</DESC>
-                        </PARAM>
-                        <PARAM name="orientation_z" type="FLOAT">
-                            <DESC>Z co-ordinate value of the orientation sensor in degrees units</DESC>
-                        </PARAM>														
 
-                    </PARAMS>					
+                        <PARAM name="orientation_y" type="FLOAT">
+                            <DESC>Y co-ordinate value of the orientation sensor in degrees units.</DESC>
+                        </PARAM>
+
+                        <PARAM name="orientation_z" type="FLOAT">
+                            <DESC>Z co-ordinate value of the orientation sensor in degrees units.</DESC>
+                        </PARAM>
+                    </PARAMS>
                 </CALLBACK> 
             </METHOD>
-            
+
             <METHOD name="readData">
-                <DESC>Read current sensor data from the sensor object retrieved by using makeSensorByType</DESC>
+                <DESC>Read current sensor data from the sensor object retrieved by using makeSensorByType.</DESC>
                 <RETURN type="HASH">
-                    <DESC>Current sensor data - format is the same with callback specified for start method</DESC>
+                    <DESC>Current sensor data - format is the same with callback specified for start method.</DESC>
                 </RETURN>>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
-            
-  			
+
             <METHOD name="stop">
                 <DESC>Stops listening to the sensor retrieved by using makeSensorType. On Windows Mobile/CE its recommended to call stop on all retrieved sensor objects before exiting a page.</DESC>
-				<PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
-			
         </METHODS>
-        
-		<VER_INTRODUCED>2.0.0</VER_INTRODUCED>	
-		<PLATFORM>Android, WM, iOS</PLATFORM>
-		<REMARKS>
+
+        <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+        <PLATFORM>Android, WM, iOS</PLATFORM>
+
+        <REMARKS>
             <REMARK title="General">
-                <DESC>
-                    <![CDATA[
-As this extension returns the raw sensor values reported by the operating system the values might differ between platforms. Also as some of the sensor values change rapidly the minimum gap between two updates should be specified as a reasonable value, otherwise there can be a performance impact.
-                    ]]>
-                </DESC>
+                <DESC>As this extension returns the raw sensor values reported by the operating system the values might differ between platforms. Also as some of the sensor values change rapidly the minimum gap between two updates should be specified as a reasonable value, otherwise there can be a performance impact.</DESC>
             </REMARK>
             <REMARK title="Supporting Sensors">
-                <DESC>
-                    <![CDATA[
-In Android, as supported sensors could vary from product to product so please refer to Device's PRD/TRD for the list of supported sensors in that particular device.
-                    ]]>
-                </DESC>
-            </REMARK>    
-		</REMARKS>
-		<EXAMPLES >
+                <DESC>In Android, as supported sensors could vary from product to product so please refer to Device's PRD/TRD for the list of supported sensors in that particular device.</DESC>
+            </REMARK>
+        </REMARKS>
+
+        <EXAMPLES>
             <EXAMPLE title="Basic Example">
                 <SECTIONS>
-                <SECTION>
-                <DESC>
-                    The below example gets the Accelerometer values for every 500 milli seconds.
-                </DESC>
-                <CODE lang='ruby'>
-            <![CDATA[
+                    <SECTION>
+                        <DESC>The below example gets the Accelerometer values for every 500 milliseconds.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
 #/app/Model
 def index
     @accelerometer_sensor = Rho::Sensor.makeSensorByType(Rho::Sensor::SENSOR_TYPE_ACCELEROMETER)
@@ -344,14 +340,14 @@ def myevent
     puts "Accelerometer params: #{@params}"
     puts "X is #{@params['accelerometer_x']}"
     puts "Y is #{@params['accelerometer_y']}"  
-    puts "Z is #{@params['accelerometer_z']}" 	   
+    puts "Z is #{@params['accelerometer_z']}"      
 end 
                     ]]>
-
-                </CODE>
-                </SECTION>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
                 </SECTIONS>
             </EXAMPLE>
         </EXAMPLES>
     </MODULE>
-</API>    
+</API>

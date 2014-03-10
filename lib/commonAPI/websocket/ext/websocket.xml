@@ -3,16 +3,15 @@
 <API>
     <MODULE name="Websocket" parent="Rho">
         <HELP_OVERVIEW>Websocket extension api</HELP_OVERVIEW>
-    
+
         <TEMPLATES>
         </TEMPLATES>
 
-         <PROPERTIES >
+        <PROPERTIES>
             <DESC>list of properties supported by instance of object</DESC>
         </PROPERTIES>
 
         <METHODS>
-
             <METHOD name="create" access="STATIC" hasCallback="none" constructor="true">
                 <PLATFORM>Android</PLATFORM>
                 <PARAMS>
@@ -24,7 +23,7 @@
                     <DESC>Websocket object</DESC>
                 </RETURN>
             </METHOD>
-            
+
             <METHOD name="setListener" hasCallback="mandatory">
                 <PLATFORM>Android</PLATFORM>
                 <DESC></DESC>
@@ -35,15 +34,15 @@
             <METHOD name="destroy" hasCallback="none">
                 <PLATFORM>Android</PLATFORM>
             </METHOD>
-            
+
             <METHOD name="connect" hasCallback="none">
                 <PLATFORM>Android</PLATFORM>
             </METHOD>
-            
+
             <METHOD name="disconnect" hasCallback="none">
                 <PLATFORM>Android</PLATFORM>
             </METHOD>
-            
+
             <METHOD name="send" hasCallback="none">
                 <PLATFORM>Android</PLATFORM>
                 <PARAMS>
@@ -52,15 +51,14 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-            
-
         </METHODS>
-        
+
         <USER_OVERVIEW>
         </USER_OVERVIEW>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+
         <PLATFORM>
-         </PLATFORM>
+        </PLATFORM>
     </MODULE>
-</API>    
+</API>

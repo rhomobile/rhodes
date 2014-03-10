@@ -10,41 +10,40 @@
         </TEMPLATES>
 
          <PROPERTIES >
-            <DESC>list of properties supported by instance of object</DESC>
+            <DESC>List of properties supported by instance of object.</DESC>
             <PROPERTY name="loaded" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag" >
-                <DESC>returns true if model is loaded.</DESC>
+                <DESC>Returns true if model is loaded.</DESC>
             </PROPERTY>
             <PROPERTY name="model_name" type="STRING" usePropertyBag="accessorsViaPropertyBag" >
-                <DESC>returns model's name.</DESC>
+                <DESC>Returns model's name.</DESC>
             </PROPERTY>
             <PROPERTY name="sync_type" type="STRING" usePropertyBag="accessorsViaPropertyBag" default="none" >
-                <DESC>returns model's Sync type.</DESC>
+                <DESC>Returns model's Sync type.</DESC>
             </PROPERTY>
             <PROPERTY name="sync_priority" type="INTEGER" usePropertyBag="accessorsViaPropertyBag" default="1000" >
-                <DESC>returns model's Sync Priority.</DESC>
+                <DESC>Returns model's Sync Priority.</DESC>
             </PROPERTY>
             <PROPERTY name="partition" type="STRING" usePropertyBag="accessorsViaPropertyBag" >
-                <DESC>returns model's Db partition.</DESC>
+                <DESC>Returns model's Db partition.</DESC>
             </PROPERTY>
             <PROPERTY name="source_id" type="INTEGER" usePropertyBag="accessorsViaPropertyBag" >
-                <DESC>returns model's source_id.</DESC>
+                <DESC>Returns model's source_id.</DESC>
             </PROPERTY>
             <PROPERTY name="fixed_schema" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag">
-                <DESC>returns whether the model's type is fixed schema.</DESC>
+                <DESC>Returns whether the model's type is fixed schema.</DESC>
             </PROPERTY>
             <PROPERTY name="freezed" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag">
-                <DESC>returns whether the model is freezed.</DESC>
+                <DESC>Returns whether the model is frozen.</DESC>
             </PROPERTY>
             <PROPERTY name="associations" type="STRING" usePropertyBag="accessorsViaPropertyBag">
-                <DESC>returns model's associations.</DESC>
+                <DESC>Returns model's associations.</DESC>
             </PROPERTY>
         </PROPERTIES>
 
         <METHODS>
-
             <METHOD name="enumerate" access="STATIC">
                 <RETURN type="ARRAY">
-                    <DESC>Array of NewORMModel objects</DESC>
+                    <DESC>Array of NewORMModel objects.</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
@@ -55,24 +54,24 @@
                     </PARAM>
                 </PARAMS>
                 <RETURN type="STRING">
-                    <DESC>NewORMModel object</DESC>
+                    <DESC>NewORMModel object.</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
 
             <METHOD name="init" constructor="true">
-                <DESC>Initializes new model's instance</DESC>
+                <DESC>Initializes new model's instance.</DESC>
                 <PARAMS>
                     <PARAM name="modelName" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="initModel">
-                <DESC>Initializes model's internal DB</DESC>
+                <DESC>Initializes model's internal DB.</DESC>
             </METHOD>
 
             <METHOD name="setBelongsTo">
-                <DESC>Adds 'belongs_to' relationship for the model</DESC>
+                <DESC>Adds 'belongs_to' relationship for the model.</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="sourceName" type="STRING"/>
@@ -80,7 +79,7 @@
             </METHOD>
 
             <METHOD name="getBelongsTo">
-                <DESC>returns info about model's relationships with other models</DESC>
+                <DESC>Returns info about model's relationships with other models.</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                 </PARAMS>
@@ -88,7 +87,7 @@
             </METHOD>
 
             <METHOD name="set">
-                <DESC>Sets model's property to value with additional processing for :sync property</DESC>
+                <DESC>Sets model's property to value with additional processing for :sync property.</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="propertyValue" type="STRING"/>
@@ -103,7 +102,7 @@
             </METHOD>
 
             <METHOD name="setModelProperty">
-                <DESC>Initializes new model's field property</DESC>
+                <DESC>Initializes new model's field property.</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="propertyType" type="STRING"/>
@@ -114,7 +113,7 @@
             </METHOD>
 
             <METHOD name="getModelProperty">
-                <DESC>returns info about model's field property</DESC>
+                <DESC>Returns info about model's field property.</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                 </PARAMS>
@@ -122,7 +121,7 @@
             </METHOD>
 
             <METHOD name="setSchemaIndex">
-                <DESC>Initializes new model's schema index</DESC>
+                <DESC>Initializes new model's schema index.</DESC>
                 <PARAMS>
                     <PARAM name="indexName" type="STRING"/>
                     <PARAM name="indexCols" type="ARRAY"/>
@@ -131,11 +130,11 @@
             </METHOD>
 
             <METHOD name="destroy" destructor="true">
-                <DESC>destroys model's instance</DESC>
+                <DESC>Destroys model's instance.</DESC>
             </METHOD>
 
             <METHOD name="createObject">
-                <DESC>Initializes model's object and stores it in the DB</DESC>
+                <DESC>Initializes model's object and stores it in the DB.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH"/>
                 </PARAMS>
@@ -143,7 +142,7 @@
             </METHOD>
 
             <METHOD name="createInstance">
-                <DESC>Initializes model's object</DESC>
+                <DESC>Initializes model's object.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH"/>
                 </PARAMS>
@@ -151,12 +150,12 @@
             </METHOD>
 
             <METHOD name="anyChangedObjects">
-                <DESC>checks whether the model has any changed objects</DESC>
+                <DESC>Checks whether the model has any changed objects.</DESC>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="hasChanges">
-                <DESC>checks whether the object has any changes</DESC>
+                <DESC>Checks whether the object has any changes.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                 </PARAMS>
@@ -164,7 +163,7 @@
             </METHOD>
 
             <METHOD name="canModify">
-                <DESC>checks whether the object can be modified</DESC>
+                <DESC>Checks whether the object can be modified.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                 </PARAMS>
@@ -172,7 +171,7 @@
             </METHOD>
 
             <METHOD name="updateObject">
-                <DESC>updates object's attributes in the DB</DESC>
+                <DESC>Updates object's attributes in the DB.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="oldAttrs" type="HASH"/>
@@ -182,7 +181,7 @@
             </METHOD>
 
             <METHOD name="saveObject">
-                <DESC>saves (creates if necessary or updates if already exists) object's attributes in the DB</DESC>
+                <DESC>Saves (creates if necessary or updates if already exists) object's attributes in the DB.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="attrs" type="HASH"/>
@@ -191,14 +190,14 @@
             </METHOD>
 
             <METHOD name="deleteObject">
-                <DESC>deletes object's attributes from the DB</DESC>
+                <DESC>Deletes object's attributes from the DB.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="deleteObjects">
-                <DESC>deletes all object's according to specified conditions</DESC>
+                <DESC>Deletes all object's according to specified conditions.</DESC>
                 <PARAMS>
                     <PARAM name="strOptions" type="HASH"/>
                     <PARAM name="quests" type="ARRAY"/>
@@ -206,7 +205,7 @@
             </METHOD>
 
             <METHOD name="deleteObjectsPropertyBagByCondHash">
-                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions</DESC>
+                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions.</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="HASH"/>
                     <PARAM name="strOptions" type="HASH"/>
@@ -215,7 +214,7 @@
             </METHOD>
 
             <METHOD name="deleteObjectsPropertyBagByCondArray">
-                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions</DESC>
+                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions.</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="STRING"/>
                     <PARAM name="quests" type="ARRAY"/>
@@ -225,17 +224,17 @@
             </METHOD>
 
             <METHOD name="getCount">
-                <DESC>Returns total number of objects for the model</DESC>
+                <DESC>Returns total number of objects for the model.</DESC>
                 <RETURN type="INTEGER"/>
             </METHOD>
 
             <METHOD name="getBackendRefreshTime">
-                <DESC>Returns time string when the source has been synced</DESC>
+                <DESC>Returns time string when the source has been synced.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
 
             <METHOD name="findObjects">
-                <DESC>Returns array of objects for the given model queried according to the specified conditions</DESC>
+                <DESC>Returns array of objects for the given model queried according to the specified conditions.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING"/>
                     <PARAM name="strOptions" type="HASH"/>
@@ -247,7 +246,7 @@
             </METHOD>
 
             <METHOD name="findObjectsPropertyBagByCondHash">
-                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions</DESC>
+                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING"/>
                     <PARAM name="conditions" type="HASH"/>
@@ -258,7 +257,7 @@
             </METHOD>
 
             <METHOD name="findObjectsPropertyBagByCondArray">
-                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions</DESC>
+                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING"/>
                     <PARAM name="conditions" type="STRING"/>
@@ -270,7 +269,7 @@
             </METHOD>
 
             <METHOD name="find_by_sql">
-                <DESC>Returns array of objects for the given model queried according to the specified SQL</DESC>
+                <DESC>Returns array of objects for the given model queried according to the specified SQL.</DESC>
                 <PARAMS>
                     <PARAM name="sqlQuery" type="STRING"/>
                 </PARAMS>
@@ -278,7 +277,7 @@
             </METHOD>
 
             <METHOD name="validateFreezedAttribute">
-                <DESC>Validates object's freezed attribute</DESC>
+                <DESC>Validates object's frozen attribute.</DESC>
                 <PARAMS>
                     <PARAM name="attrName" type="STRING"/>
                 </PARAMS>
@@ -286,7 +285,7 @@
             </METHOD>
 
             <METHOD name="validateFreezedAttributes">
-                <DESC>Validates all object's freezed attributes</DESC>
+                <DESC>Validates all object's frozen attributes.</DESC>
                 <PARAMS>
                     <PARAM name="attrHash" type="HASH"/>
                 </PARAMS>
@@ -294,7 +293,7 @@
             </METHOD>
 
             <METHOD name="buildComplexWhereCond">
-                <DESC>Aux function</DESC>
+                <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="attrKey" type="STRING"/>
                     <PARAM name="attrValues" type="ARRAY"/>
@@ -305,7 +304,7 @@
             </METHOD>
 
             <METHOD name="buildFindLimits">
-                <DESC>Aux function</DESC>
+                <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="whatArg" type="STRING"/>
                     <PARAM name="hashArgs" type="HASH"/>
@@ -314,7 +313,7 @@
             </METHOD>
 
             <METHOD name="buildFindOrder">
-                <DESC>Aux function</DESC>
+                <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="order_attrs" type="ARRAY"/>
                     <PARAM name="order_ops" type="ARRAY"/>
@@ -323,7 +322,7 @@
             </METHOD>
 
             <METHOD name="buildSimpleWhereCond">
-                <DESC>Aux function</DESC>
+                <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="what" type="STRING"/>
                     <PARAM name="conditions" type="ARRAY"/>
@@ -332,12 +331,11 @@
             </METHOD>
 
             <METHOD name="clear" access="STATIC">
-                <DESC>Very, very dangerious method - only to be used in specs!!!</DESC>
+                <DESC>Very, very dangerous method - only to be used in specs!!!</DESC>
             </METHOD>
 
-            
             <METHOD name="onSyncDeleteError">
-                <DESC>Handles sync delete errors for the object</DESC>
+                <DESC>Handles sync delete errors for the object.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="attrHash" type="HASH"/>
@@ -346,7 +344,7 @@
             </METHOD>
 
             <METHOD name="onSyncUpdateError">
-                <DESC>Handles sync update errors for the object</DESC>
+                <DESC>Handles sync update errors for the object.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="attrHash" type="HASH"/>
@@ -356,7 +354,7 @@
             </METHOD>
 
             <METHOD name="onSyncCreateError">
-                <DESC>Handles sync create errors</DESC>
+                <DESC>Handles sync create errors.</DESC>
                 <PARAMS>
                     <PARAM name="objects" type="ARRAY"/>
                     <PARAM name="action" type="STRING"/>
@@ -364,14 +362,13 @@
             </METHOD>
 
             <METHOD name="pushChanges">
-                <DESC>Pushes all changes for the source</DESC>
+                <DESC>Pushes all changes for the source.</DESC>
             </METHOD>
 
             <ALIASES>
                 <ALIAS new="count" existing="getCount"/>
                 <ALIAS new="backend_refresh_time" existing="getBackendRefreshTime"/>
             </ALIASES>
-
         </METHODS>
 
         <USER_OVERVIEW>
