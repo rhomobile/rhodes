@@ -19,7 +19,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </TEMPLATES>
         <METHODS  access="STATIC">
             <METHOD name="send" hasCallback="optional">
-                <DESC>Send intent. At android passing callback is actual for intentType = START_ACTIVITY only.</DESC>
+                <DESC>Send intent. NOTE: On Android, the callback should only be used when the intentType is set to START_ACTIVITY.</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="params" type="HASH">
