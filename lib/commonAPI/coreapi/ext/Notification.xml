@@ -58,7 +58,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <DESC>Show message in Android notification bar if application is at background. Touch the message opens the application.</DESC>
                                   </VALUE>  
                                   <VALUE constName="TYPE_NOTIFICATION_DIALOG" value="notificationDialog">
-                                    <DESC>Means TYPE_DIALOG + TYPE_NOTIFICATION. At Android 4.1 and above buttons is also added to notification message so user can interact with the application without application activation (dialog window is not shown if user pressed button at notification).</DESC>
+                                    <DESC>Means TYPE_DIALOG + TYPE_NOTIFICATION. At Android 4.1 and above buttons is also added to notification message so user can interact with the application without application activation (dialog window is not shown if user pressed button at notification). NB: Buttons are not always displayed in the notification area - this depends on screen size and layot and system decides whether to show buttons. You need to drag notification to make buttons appear.</DESC>
                                   </VALUE>  
                                   <VALUE constName="TYPE_TOAST" value="toast">
                                     <DESC>Show toast window with message at foreground for a short time. The toast is visible nevertheless the application is at background or foreground but is not shown same time with any foreground pop-up.</DESC>
