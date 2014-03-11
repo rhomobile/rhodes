@@ -615,6 +615,8 @@ end
 
 namespace :stop do
   task :wp8 do
-    # TODO: add implementation
+    Jake.get_process_list.each do |p|
+      Process.kill(9, p[:pid].to_i) if p[:cmd].include? 'XDE.exe'
+    end
   end
 end
