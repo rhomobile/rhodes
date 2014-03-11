@@ -94,7 +94,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
 
             <PROPERTY name="memoryPeriod" type="INTEGER" default="0">
-                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <DESC>Enables the logging of memory usage in the system; specifies the time interval in milliseconds at which memory logs will be generated periodically. Setting it to 0 will disable logging memory information.</DESC>
             </PROPERTY>
 
