@@ -114,7 +114,22 @@ Notice the use of the full constant string "android.intent.extra.TEXT" in place 
                 </CALLBACK>
             </METHOD>
             <METHOD name="startListening" hasCallback="mandatory" runInThread="none">
-                <DESC>Start listening for custom intents.</DESC>
+                <DESC>Start listening for custom intents. This is how we have implemented [Android Intent Filters](http://developer.android.com/guide/components/intents-filters.html#Receiving)
+
+In order to listen for Intents you will have to update the `AndroidManifest.erb` file and add a special section to it. This file is now generated with RhoMobile Version 4.1 when you create a new project. The file is located in the root of project.
+
+Add the following snippet to AndroidManifest.erb within the `manifest` tags
+<![CDATA[
+    :::xml
+    <receiver android:name='com.rho.intent.IntentReceiver'>
+      <intent-filter>
+        <action android:name="Intent.ACTION_BATTERY_CHANGED" />
+      </intent-filter>
+    </receiver> 
+]]>
+
+Notice that this looks very similar to a standard AndroidManifest.XML file section except the `receiver` is the common RhoMobile intent receiver. The `intent-filter` tags within this section are standard AndroidManifest.XML notation that you would put in for the Intent-Filters that you want to listen for. Consult the [Android Docs](http://developer.android.com/guide/components/intents-filters.html#Receiving) for more information about Intent Filters.
+</DESC>
                 <CALLBACK type="HASH">
                     <DESC>Same format as 'params' argument passed to Rho.Intent.send method
                     Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
