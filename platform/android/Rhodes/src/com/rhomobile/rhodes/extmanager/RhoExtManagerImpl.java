@@ -415,8 +415,14 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     public void onNavigateComplete(View view, String url) {
-        int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
-        IRhoWebView rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
+        IRhoWebView rhoWebView = null;
+        try {
+            int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
+            rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
+        }
+        catch(IllegalArgumentException ex) {
+            Logger.W(TAG, "Cannot get webView object for onNavigateComplete event: WebView object is destroyed.");
+        }
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
@@ -533,9 +539,15 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     public void onLoadEnd(View view, String url, long arg2, long arg3) {
-        int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
-        IRhoWebView rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
         boolean res = false;
+        IRhoWebView rhoWebView = null;
+        try {
+            int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
+            rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
+        }
+        catch(IllegalArgumentException ex) {
+            Logger.W(TAG, "Cannot get webView object for onLoadEnd event: WebView object is destroyed.");
+        }
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
                 res = ext.onNavigateComplete(this, url, rhoWebView, res);
