@@ -670,12 +670,17 @@ namespace "config" do
     end
 
     $devroot = '/Applications/Xcode.app/Contents/Developer' if $devroot.nil?
-    $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43') if $iphonesim.nil?
+    $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_51') if $iphonesim.nil?
     $xcodebuild = $devroot + "/usr/bin/xcodebuild"
     if !File.exists? $xcodebuild
         $devroot = '/Developer'
         $xcodebuild = $devroot + "/usr/bin/xcodebuild"
         $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
+    else
+        #additional checking for iphonesimulator version
+      if !File.exists? '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework'
+         $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43')
+      end
     end
 
     if !File.exists? $xcodebuild
@@ -1880,6 +1885,7 @@ namespace "run" do
            sleep(1000)
        else
            puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
+           puts 'Execute command: '+commandis
            system(commandis)
            $ios_run_completed = true
            sleep(1000)
