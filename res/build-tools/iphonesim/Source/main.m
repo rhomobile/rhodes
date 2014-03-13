@@ -34,12 +34,19 @@
 
 #import "iPhoneSimulator.h"
 
+
+//@interface DVTPlatform : NSObject
+//+ (BOOL)loadAllPlatformsReturningError:(id*)arg1;
+//@end
 /*
  * Runs the iPhoneSimulator backed by a main runloop.
  */
 int main (int argc, char *argv[]) {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     iPhoneSimulator *sim = [[iPhoneSimulator alloc] init];
+    
+    //NSError* error;
+    //[DVTPlatform loadAllPlatformsReturningError:&error];
     
     /* Execute command line handler */
     [sim runWithArgc: argc argv: argv];
