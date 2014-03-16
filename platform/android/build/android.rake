@@ -457,7 +457,7 @@ namespace "config" do
 
     #setup_ndk($androidndkpath, $found_api_level, 'arm')
     $abis = $app_config['android']['abis'] if $app_config["android"]
-    $abis = ['arm','x86'] unless $abis
+    $abis = ['arm'] unless $abis
 
     $native_libs = ["sqlite", "curl", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
@@ -557,7 +557,7 @@ namespace "config" do
         $app_config['extensions'].delete('rhoelements')
       end
 
-      if $app_config['android'].nil? || $app_config['android']['abis'].nil? || $app_config['android']['abis'].index('x86') || $app_config['android']['abis'].index('mips')
+      if !$app_config['android'].nil? && !$app_config['android']['abis'].nil? && ($app_config['android']['abis'].index('x86') || $app_config['android']['abis'].index('mips'))
         $app_config['extensions'].delete('rhoelementsext')
         $app_config['extensions'].delete('rhoelements')
         $app_config['extensions'].delete('shared-runtime')
