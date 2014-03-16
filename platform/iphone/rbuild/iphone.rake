@@ -917,6 +917,8 @@ namespace "build" do
          end
       end
 
+      #patterns << '../../../../../../platform/shared/common/app_build_capabilities.h'
+
       list_of_files = []
 
       fillist = FileList.new
@@ -927,6 +929,8 @@ namespace "build" do
       fillist.each do |fil|
          list_of_files << fil
       end
+
+      list_of_files << File.join( $startdir ,'platform/shared/common/app_build_capabilities.h')
 
       if !FileUtils.uptodate?(result_lib_file, list_of_files)
           return true
@@ -1274,6 +1278,7 @@ namespace "build" do
 
     task :extensions => "config:iphone" do
       simulator = $sdk =~ /iphonesimulator/
+      target_dir = ''
       if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
          target_dir = ENV["TARGET_TEMP_DIR"]
       else
@@ -1997,7 +2002,169 @@ namespace "clean" do
       end
     end
 
-    task :all => ["clean:iphone:rhodes", "clean:iphone:rhobundle"]
+
+
+    def run_clean_for_extension(extpath, xcodeproject, xcodetarget)
+      # only depfile is optional parameter !
+
+      currentdir = Dir.pwd()
+      Dir.chdir File.join(extpath, "platform/iphone")
+
+      xcodeproject = File.basename(xcodeproject)
+
+
+      #targetdir = ENV['TARGET_TEMP_DIR']
+      tempdir = ENV['TEMP_FILES_DIR']
+      rootdir = ENV['RHO_ROOT']
+      xcodebuild = ENV['XCODEBUILD']
+      configuration = ENV['CONFIGURATION']
+      sdk = ENV['SDK_NAME']
+      bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+      sdkroot = ENV['SDKROOT']
+      arch = ENV['ARCHS']
+      gccbin = bindir + '/gcc-4.2'
+      arbin = bindir + '/ar'
+
+      iphone_path = '.'
+
+      simulator = sdk =~ /iphonesimulator/
+
+      if configuration == 'Distribution'
+         configuration = 'Release'
+      end
+
+      rm_rf 'build'
+
+      args = ['clean', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
+
+      if simulator
+          args << '-arch'
+          args << 'i386'
+      end
+
+      require   rootdir + '/lib/build/jake.rb'
+
+      ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir})
+
+      Dir.chdir currentdir
+
+    end
+
+
+    def clean_extension_lib(extpath, sdk, xcodeproject, xcodetarget)
+
+      puts "clean extension START :" + extpath
+
+      if sdk =~ /iphonesimulator/
+        $sdkver = sdk.gsub(/iphonesimulator/,"")
+        $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + $sdkver + ".sdk"
+      else
+        $sdkver = sdk.gsub(/iphoneos/,"")
+        $sdkroot = $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + $sdkver + ".sdk"
+      end
+
+      ENV['RHO_PLATFORM'] = 'iphone'
+      simulator = sdk =~ /iphonesimulator/
+      ENV["PLATFORM_DEVELOPER_BIN_DIR"] ||= $devroot + "/Platforms/" + ( simulator ? "iPhoneSimulator" : "iPhoneOS" ) +
+        ".platform/Developer/usr/bin"
+      ENV["SDKROOT"] = $sdkroot
+
+      ENV["BUILD_DIR"] ||= $startdir + "/platform/iphone/build"
+      #ENV["TARGET_TEMP_DIR"] ||= target_dir
+      ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
+
+      ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
+      ENV["RHO_ROOT"] = $startdir
+
+      # added by dmitrys
+      ENV["XCODEBUILD"] = $xcodebuild
+      ENV["CONFIGURATION"] ||= $configuration
+      ENV["SDK_NAME"] ||= sdk
+
+
+      build_script = File.join(extpath, 'clean')
+
+
+      if (xcodeproject != nil) and (xcodetarget != nil)
+
+          run_clean_for_extension(extpath, xcodeproject, xcodetarget)
+
+      else
+
+        # modify executable attribute
+        if File.exists? build_script
+            if !File.executable? build_script
+                 #puts 'change executable attribute for build script in extension : '+build_script
+                 begin
+                     #File.chmod 0700, build_script
+                     #puts 'executable attribute was writed for : '+build_script
+                 rescue Exception => e
+                     puts 'ERROR: can not change attribute for clean script in extension ! Try to run clean command with sudo: prefix.'
+                 end
+            else
+                 puts 'clean script in extension already executable : '+build_script
+            end
+            #puts '$$$$$$$$$$$$$$$$$$     START'
+            currentdir = Dir.pwd()
+            Dir.chdir extpath
+            sh %{$SHELL ./clean}
+            Dir.chdir currentdir
+            #puts '$$$$$$$$$$$$$$$$$$     FINISH'
+            #if File.executable? build_script
+                 #puts Jake.run('./build', [], extpath)
+                 #exit 1 unless $? == 0
+            #else
+            #     puts 'ERROR: build script in extension is not executable !'
+            #end
+        else
+            puts 'clean script in extension not found => pure ruby extension or not supported clean'
+        end
+
+      end
+
+      puts "clean extension FINISH :" + extpath
+
+
+    end
+
+
+    task :extensions => ["config:iphone"] do
+      init_extensions(nil, 'get_ext_xml_paths')
+      #puts 'CLEAN ########################  ext='
+      puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
+      $stdout.flush
+      $app_extensions_list.each do |ext, commin_ext_path |
+          if commin_ext_path != nil
+            puts 'CLEAN ext='+ext.to_s+'        path='+commin_ext_path.to_s
+            extpath = File.join( commin_ext_path, 'ext')
+
+            prebuilt_copy = false
+
+            xcodeproject = nil  #xcodeproject
+            xcodetarget = nil   #xcodetarget
+
+            extyml = File.join(commin_ext_path,"ext.yml")
+            if File.file? extyml
+              extconf = Jake.config(File.open(extyml))
+              extconf_iphone = extconf['iphone']
+              exttype = 'build'
+              exttype = extconf_iphone['exttype'] if extconf_iphone and extconf_iphone['exttype']
+
+              xcodeproject = extconf_iphone['xcodeproject'] if extconf_iphone and extconf_iphone['xcodeproject']
+              xcodetarget = extconf_iphone['xcodetarget'] if extconf_iphone and extconf_iphone['xcodetarget']
+
+              if exttype != 'prebuilt'
+                  clean_extension_lib(extpath, $sdk, xcodeproject, xcodetarget)
+              end
+            end
+            #if ! prebuilt_copy
+            #  build_extension_lib(extpath, sdk, target_dir, xcodeproject, xcodetarget, depfile)
+            #end
+          end
+      end
+    end
+
+    task :all => ["clean:iphone:rhodes", "clean:iphone:rhobundle", "clean:iphone:extensions"]
   end
 end
 
