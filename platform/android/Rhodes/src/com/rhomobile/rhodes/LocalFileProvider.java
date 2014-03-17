@@ -82,7 +82,7 @@ public class LocalFileProvider extends ContentProvider
     {
         Uri uri = Uri.fromParts(PROTOCOL_PREFIX, "//" + ctx.getPackageName(), null);
         
-        Logger.I(TAG, "Revoke URI permissions: " + uri);
+        Logger.I(TAG, "Revoke URI permissions: " + Uri.decode(uri.toString()));
 
         ctx.revokeUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
@@ -143,9 +143,11 @@ public class LocalFileProvider extends ContentProvider
     }
 
     @Override
-    public Cursor query(Uri uri, String[] as, String s, String[] as1, String s1) {
-        throw new UnsupportedOperationException(
-                "Query operation is not supported by this provider");
+    public Cursor query(Uri uri, String[] proj, String selection, String[] selectionArgs, String sortOrder) {
+        // Some apps want to query some metadata for files being opened. So do not throw form here...  
+        return null;
+//        throw new UnsupportedOperationException(
+//                "Query operation is not supported by this provider");
     }
 
     @Override

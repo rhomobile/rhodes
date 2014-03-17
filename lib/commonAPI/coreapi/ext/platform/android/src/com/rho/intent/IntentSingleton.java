@@ -150,6 +150,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                     intent.setDataAndType(data, mime);
                 }
             }
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         }
         else if (mime != null) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
