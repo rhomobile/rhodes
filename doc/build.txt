@@ -302,19 +302,20 @@ In RhoStudio -> Preferences on the Macintosh or Windows -> Preferences on Window
 
 If you are not using RhoStudio, run rhodes-setup from the command line and set the paths to the Android SDK and NDK installations.
 
-### Setting up the Android Maps API
+### Setting up the Android Google Maps API
 
-In case you are planning to work with native geo mapping (the MapView interface), you must do two things:
+In case you are planning to work with native Google geo mapping (the MapView interface), you must do two things:
 
 * Retrieve the Android Maps API key from Google. Follow these [instructions](http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html) to get it. When key received, put it in your application's `build.yml` or share it across all your applications by adding it to `rhobuild.yml`. Note that the `apikey` value must match a certificate used to sign an application (the key is different for debug and production signed build and debug key cannot be shared between different build computers).
 
 	android:
 	  apikey: "GOOGLE-API-KEY-FOR-ANDROID"
 
-* Enable 'mapping' in your application's `build.yml` (or in `<rhodes-root>/rhobuild.yml`). In RhoStudio, you can double-click on your application's build.yml and edit from the text editor; otherwise, you can edit rhobuild.yml or build.yml from another text editor.
+* Add 'gmaps' extension to your application's `build.yml`. In RhoStudio, you can double-click on your application's build.yml and edit from the text editor; otherwise, you can edit build.yml from another text editor.
 
 	android:
-	  mapping: yes
+	  extensions:
+	  - gmaps
 
 ### Including CSS Files
 
