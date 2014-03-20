@@ -2186,7 +2186,7 @@ def run_as_spec(device_flag, uninstall_app)
 
   # stop app
   uninstall_app = true if uninstall_app.nil? # by default uninstall spec app
-  do_uninstall(device_flag) if uninstall_app
+  do_uninstall(device_flag) if uninstall_app and ((device_flag != '-e') or AndroidTools.is_emulator_running)
   if device_flag == '-e'
     AndroidTools.kill_adb_and_emulator
   else
