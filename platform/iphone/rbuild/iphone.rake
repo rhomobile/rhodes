@@ -1050,7 +1050,7 @@ namespace "build" do
       ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
+      ENV["ARCHS"] ||= simulator ? "i386" : "armv7"
       ENV["RHO_ROOT"] = $startdir
 
       # added by dmitrys
@@ -1239,7 +1239,7 @@ namespace "build" do
                  cp libpath, libsimpath
                  rm_f libpath
 
-                 ENV["ARCHS"] = "armv6"
+                 ENV["ARCHS"] = "armv7"
                  ENV["SDK_NAME"] = devsdk
                  build_extension_lib(extpath, devsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libdevpath
@@ -2073,7 +2073,7 @@ namespace "clean" do
       #ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
+      ENV["ARCHS"] ||= simulator ? "i386" : "armv7"
       ENV["RHO_ROOT"] = $startdir
 
       # added by dmitrys
