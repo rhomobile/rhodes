@@ -1,4 +1,7 @@
 #include "js_helpers.h"
+#if __cplusplus == 201103L
+#include <unordered_map>
+#endif
 
 #include "common/RhodesApp.h"
 #include "net/URI.h"
@@ -14,9 +17,14 @@ namespace apiGenerator
 
 using namespace rho::json;
 
+#if __cplusplus == 201103L
+typedef std::unordered_map<rho::String,Func_JS> JSEntryMap;
+#else
+typedef rho::Hashtable<rho::String,Func_JS> JSEntryMap;
+#endif
 
-static rho::Hashtable<rho::String,Func_JS> g_hashJSStaticMethods;
-static rho::Hashtable<rho::String,Func_JS> g_hashJSInstanceMethods;
+static JSEntryMap g_hashJSStaticMethods(450);
+static JSEntryMap g_hashJSInstanceMethods(800);
 
 static const String ID("id");
 static const String METHOD("method");
@@ -35,7 +43,7 @@ void js_define_static_method(const char* szMethodPath, Func_JS pFunc )
 void js_define_instance_method(const char* szMethodPath, Func_JS pFunc )
 {
     g_hashJSInstanceMethods[szMethodPath] = pFunc;
-    //RAWTRACE1("Instance method: %s", szMethodPath);
+    //RAWTRACE2("^Instance method: %s, count: %d", szMethodPath, g_hashJSInstanceMethods.size());
 }
 
 rho::String js_entry_point(const char* szJSON)

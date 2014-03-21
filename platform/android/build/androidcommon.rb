@@ -86,11 +86,11 @@ def detect_toolchain(ndkpath, abi)
 
   toolchain = 'unknown-toolchain'
   if abi == 'arm'
-    toolchain = 'arm-linux-androideabi-4.6'
+    toolchain = 'arm-linux-androideabi-4.8'
   elsif abi == 'x86'
-    toolchain = 'x86-4.6'
+    toolchain = 'x86-4.8'
   elsif abi == 'mips'
-    toolchain = 'mipsel-linux-android-4.6'
+    toolchain = 'mipsel-linux-android-4.8'
   else
     raise "Unknown ABI: {abi}";
   end
@@ -224,7 +224,7 @@ def cpp_def_args
     args << "-fvisibility-inlines-hidden"
     args << "-fno-exceptions"
     args << "-fno-rtti"
-    args << "-std=c++0x"
+    args << "-std=c++11"
     args << "-Wno-reorder"
     #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
