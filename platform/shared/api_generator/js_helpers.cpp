@@ -29,13 +29,13 @@ static const String RHO_CALLBACK_PARAM("optParams");
 void js_define_static_method(const char* szMethodPath, Func_JS pFunc )
 {
     g_hashJSStaticMethods[szMethodPath] = pFunc;
-    RAWTRACE1("Static method: %s", szMethodPath);
+    //RAWTRACE1("Static method: %s", szMethodPath);
 }
     
 void js_define_instance_method(const char* szMethodPath, Func_JS pFunc )
 {
     g_hashJSInstanceMethods[szMethodPath] = pFunc;
-    RAWTRACE1("Instance method: %s", szMethodPath);
+    //RAWTRACE1("Instance method: %s", szMethodPath);
 }
 
 rho::String js_entry_point(const char* szJSON)
