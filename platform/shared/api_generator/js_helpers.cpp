@@ -1,6 +1,8 @@
 #include "js_helpers.h"
 #if __cplusplus == 201103L
 #include <unordered_map>
+#else
+#include <hash_map>
 #endif
 
 #include "common/RhodesApp.h"
@@ -19,12 +21,22 @@ using namespace rho::json;
 
 #if __cplusplus == 201103L
 typedef std::unordered_map<rho::String,Func_JS> JSEntryMap;
-#else
-typedef rho::Hashtable<rho::String,Func_JS> JSEntryMap;
-#endif
-
 static JSEntryMap g_hashJSStaticMethods(450);
 static JSEntryMap g_hashJSInstanceMethods(800);
+#else
+typedef stdext::hash_map<rho::String,Func_JS> JSEntryMap;
+static JSEntryMap g_hashJSStaticMethods;
+static JSEntryMap g_hashJSInstanceMethods;
+
+struct CInitMethods{
+    CInitMethods(){
+        g_hashJSStaticMethods.rehash(450);
+        g_hashJSInstanceMethods.rehash(800);
+    }
+};
+static CInitMethods g_oInitMethods;
+#endif
+
 
 static const String ID("id");
 static const String METHOD("method");
