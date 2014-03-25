@@ -76,7 +76,7 @@ public class ImageCaptureCallback implements PictureCallback {
 				osCommon.write(data);
 				osCommon.flush();
 				osCommon.close();
-				System.out.println("osCommon.write()");
+			
 			}
 			
 			
@@ -86,7 +86,7 @@ public class ImageCaptureCallback implements PictureCallback {
 			osOwn.flush();
 			osOwn.close();
 			
-			System.out.println("picture saved");
+		
 			
 			
 			/*
@@ -138,7 +138,7 @@ public class ImageCaptureCallback implements PictureCallback {
 				{
 					rotationAngle=90;
 				}
-				System.out.println("jdp rotationAngle"+rotationAngle);
+			
 			
 				Matrix matrix = new Matrix();
 				matrix.postRotate(rotationAngle);
@@ -149,7 +149,7 @@ public class ImageCaptureCallback implements PictureCallback {
 			catch(Exception e)
 			{
 				Logger.E(TAG,e.getMessage());
-				System.out.println("exception"+e.getMessage());
+		
 			}
 			
 	
@@ -219,7 +219,7 @@ public class ImageCaptureCallback implements PictureCallback {
 				osCommon.flush();
 				osCommon.close();
 			}
-			System.out.println("jdp rotataion at last osCommon.write()");
+
 			
 			*/
 			
