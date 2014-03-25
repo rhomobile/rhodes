@@ -26,6 +26,7 @@
 
 package com.rhomobile.rhodes.camera;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
@@ -33,6 +34,10 @@ import com.rhomobile.rhodes.Logger;
 
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 
 public class ImageCaptureCallback implements PictureCallback {
 	
@@ -46,31 +51,180 @@ public class ImageCaptureCallback implements PictureCallback {
 	private int mImgWidth;
 	private int mImgHeight;
 	private String mImgFormat;
+	private int dev_rotation=0;
 
-	public ImageCaptureCallback(ImageCapture owner, String u, OutputStream o, String f, int w, int h, String format) {
+	public ImageCaptureCallback(ImageCapture owner, String u, OutputStream o, String f, int w, int h, String format,int _dev_rotation) {
 		mOwner = owner;
 		callbackUrl = u;
 		osCommon = o;
 		filePath = f;
+		//filePath="/mnt/sdcard/mypic.jpg";
 		mImgWidth = w;
 		mImgHeight = h;
 		mImgFormat = format;
+		dev_rotation =_dev_rotation;
 	}
 
 	public void onPictureTaken(byte[] data, Camera camera) {
+		
 		try {
 			Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
 
+			
+		
 			if (osCommon != null) {
 				osCommon.write(data);
 				osCommon.flush();
 				osCommon.close();
+				System.out.println("osCommon.write()");
 			}
+			
+			
+			
 			OutputStream osOwn = new FileOutputStream(filePath);
 			osOwn.write(data);
 			osOwn.flush();
 			osOwn.close();
+			
+			System.out.println("picture saved");
+			
+			
+			/*
+	        File pictureFile = new File(filePath);
+			try 
+			{
+	          FileOutputStream fos = new FileOutputStream(pictureFile);
+	          fos.write(data);
+	          fos.flush();
+	          fos.close();
+	        } 
+			catch (Exception ex) 
+			{
+	        	 Logger.E(TAG, ex.getMessage());
+	        }
+			*/  
+		  Bitmap rotatedBitmap=null;
+		  Bitmap bm=null;
+		  
+		  try
+			{
+				
+				
+		        BitmapFactory.Options bounds = new BitmapFactory.Options();
+		        bounds.inSampleSize = 4;
+		        bounds.inDither = false;
+		        bounds.inPurgeable = true;
+		        bounds.inInputShareable = true; 
+		        bounds.inTempStorage = new byte[32 * 1024];
+		        bounds.inPreferredConfig = Bitmap.Config.RGB_565;
+	
+		        bm= BitmapFactory.decodeFile(filePath, bounds);
+				int rotationAngle = 0;
+				if((dev_rotation>45)&&(dev_rotation<135))
+				{
+					rotationAngle =180;
+					
+				}
+				else if((dev_rotation>134)&&(dev_rotation<225))
+				{
+					rotationAngle =270;
+					
+				}
+				else if((dev_rotation>224)&&(dev_rotation<315))
+				{
+					rotationAngle =0;				
+				}
+				else
+				{
+					rotationAngle=90;
+				}
+				System.out.println("jdp rotationAngle"+rotationAngle);
+			
+				Matrix matrix = new Matrix();
+				matrix.postRotate(rotationAngle);
+				rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+				System.out.println("rotated");
+			
+			}
+			catch(Exception e)
+			{
+				Logger.E(TAG,e.getMessage());
+				System.out.println("exception"+e.getMessage());
+			}
+			
+	
+		  
+		  if(rotatedBitmap!=null)
+			{
+			try {
+			       
 
+				
+				
+				FileOutputStream out = new FileOutputStream(filePath);
+			       rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+			       out.flush();
+			       out.close();
+			       System.out.println("compressed 1st image");
+			       
+			      
+			       String temp= filePath;
+			       
+			       int lastIndex=0;
+			      
+			       lastIndex = temp.lastIndexOf("/");
+			       System.out.println("lastIndex of /"+lastIndex);
+			       
+			       String mystr = temp.substring(lastIndex);
+			       System.out.println("filename"+mystr);
+			       String sdcardFilepath= "/mnt/sdcard/"+mystr;
+			       System.out.println("Absolute path"+sdcardFilepath);	   
+			    		  
+			       
+			       FileOutputStream out1 = new FileOutputStream(sdcardFilepath);
+			       rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out1);
+			       out1.flush();
+			       out1.close();
+			       System.out.println("compressed 2nd image");
+			       
+			}
+			catch (Exception e) 
+			{
+				Logger.E(TAG,e.getMessage());
+				System.out.println("exception while compress"+e.getMessage());
+			}
+			}
+	  
+		  	mImgWidth = rotatedBitmap.getWidth();
+		  	mImgHeight = rotatedBitmap.getHeight();
+		  	
+		  	System.out.println("mImgWidth"+mImgWidth);
+		  	System.out.println("mImgHeight"+mImgHeight);
+		  	
+		  	if(rotatedBitmap!=null)
+		  	{
+		  	 rotatedBitmap.recycle();	
+			 rotatedBitmap=null;
+		  	}
+		  	
+		  	if(bm!=null)
+		  	{
+			bm.recycle();
+			bm=null;
+		  	}
+		  	
+		  	/*
+		  	
+			if (osCommon != null) 
+			{
+				osCommon.write(data);
+				osCommon.flush();
+				osCommon.close();
+			}
+			System.out.println("jdp rotataion at last osCommon.write()");
+			
+			*/
+			
 			com.rhomobile.rhodes.camera.Camera.doCallback(filePath, mImgWidth, mImgHeight, mImgFormat);
 			mOwner.finish();
 
@@ -78,5 +232,11 @@ public class ImageCaptureCallback implements PictureCallback {
 			Logger.E(TAG, e);
 		}
 	}
+	
+	
+
+	
+
+	
 	
 }
