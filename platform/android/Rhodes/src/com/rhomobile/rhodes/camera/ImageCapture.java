@@ -428,7 +428,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	            	}
 	            }
             }
-			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg", imgW, imgH, "jpg");
+			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg", imgW, imgH, "jpg",m_rotation);
             camera.setParameters(parameters);
 
 		} catch (Exception ex) {
