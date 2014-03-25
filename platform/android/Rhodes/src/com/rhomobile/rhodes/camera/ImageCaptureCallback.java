@@ -143,7 +143,7 @@ public class ImageCaptureCallback implements PictureCallback {
 				Matrix matrix = new Matrix();
 				matrix.postRotate(rotationAngle);
 				rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
-				System.out.println("rotated");
+			
 			
 			}
 			catch(Exception e)
@@ -165,7 +165,7 @@ public class ImageCaptureCallback implements PictureCallback {
 			       rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
 			       out.flush();
 			       out.close();
-			       System.out.println("compressed 1st image");
+			    
 			       
 			      
 			       String temp= filePath;
@@ -173,33 +173,31 @@ public class ImageCaptureCallback implements PictureCallback {
 			       int lastIndex=0;
 			      
 			       lastIndex = temp.lastIndexOf("/");
-			       System.out.println("lastIndex of /"+lastIndex);
+			 
 			       
 			       String mystr = temp.substring(lastIndex);
-			       System.out.println("filename"+mystr);
+			      
 			       String sdcardFilepath= "/mnt/sdcard/"+mystr;
-			       System.out.println("Absolute path"+sdcardFilepath);	   
+			  	   
 			    		  
 			       
 			       FileOutputStream out1 = new FileOutputStream(sdcardFilepath);
 			       rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out1);
 			       out1.flush();
 			       out1.close();
-			       System.out.println("compressed 2nd image");
+		
 			       
 			}
 			catch (Exception e) 
 			{
 				Logger.E(TAG,e.getMessage());
-				System.out.println("exception while compress"+e.getMessage());
 			}
 			}
 	  
 		  	mImgWidth = rotatedBitmap.getWidth();
 		  	mImgHeight = rotatedBitmap.getHeight();
 		  	
-		  	System.out.println("mImgWidth"+mImgWidth);
-		  	System.out.println("mImgHeight"+mImgHeight);
+
 		  	
 		  	if(rotatedBitmap!=null)
 		  	{
