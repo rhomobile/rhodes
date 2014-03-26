@@ -1,5 +1,7 @@
 #pragma once
 
+#include "logging/RhoLog.h"
+
 #include <string>
 #include <memory>
 #if __cplusplus == 201103L
@@ -24,7 +26,12 @@ public:
     ApiHandler(const char* pcszModuleId): m_pcszModule(pcszModuleId) {}
     virtual ~ApiHandler(){}
 
-    virtual void initialize() = 0;
+    virtual void initialize()
+    {
+        RAWTRACEC("ApiHandler","Creating method entry maps...");
+        m_pStaticMethods.reset(new MethodMap);
+        m_pInstanceMethods.reset(new MethodMap);
+    }
 
 
     const char* getModuleId() { return m_pcszModule; }

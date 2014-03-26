@@ -5,8 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>"
 
-<% puts $cur_module.inspect 
-
+<% 
 parent = ''
 $cur_module.parents.each do |p|
     parent = parent + p + ":"
@@ -50,6 +49,9 @@ namespace {
   
   void <%= $cur_module.name %>Dispatcher::initialize()
   {
+    ApiHandler<Func_JS>::initialize();
+    
+    RAWTRACE("Initializing <%= parent %><%= $cur_module.name %> API...");
 <% $cur_module.methods.each do |module_method|%>
 
 <%= api_generator_MakeJSMethodDef(module_method.binding_name, module_method.native_name, module_method.access == ModuleMethod::ACCESS_STATIC) %>
@@ -62,6 +64,7 @@ end %>
 <%= api_generator_MakeJSMethodDef("getDefault", "getDefault", true) %>
 <%= api_generator_MakeJSMethodDef("setDefaultID", "setDefaultID", true) %>
 <% end %>
+    RAWTRACE("<%= parent %><%= $cur_module.name %> API - done");
   }
 }
 
