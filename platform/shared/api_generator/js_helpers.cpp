@@ -29,6 +29,7 @@ std::vector<ApiHandler<Func_JS>*> g_modules;
 void defineJSApiModule(ApiHandler<Func_JS>* pModule)
 {
     g_modules.push_back(pModule);
+    RAWTRACE2("Define %1, %d", pModule->getModuleId(), g_modules.size() -1);
 }
 
 ApiHandler<Func_JS>* getJSApiModule(const std::string& moduleId)
@@ -37,10 +38,12 @@ ApiHandler<Func_JS>* getJSApiModule(const std::string& moduleId)
     {
         if(strcmp((*moduleIt)->getModuleId(), moduleId.c_str()) == 0)
         {
+            RAWTRACE2("Module %s, %d", (*moduleIt)->getModuleId(), moduleIt - g_modules.begin());
             return *moduleIt;
         }
 
     }
+    RAWTRACE1("Module is not found: %s", moduleId.c_str());
     return 0;
 }
 
