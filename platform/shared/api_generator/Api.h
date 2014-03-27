@@ -4,12 +4,18 @@
 
 #include <string>
 #include <memory>
+
 #if __cplusplus == 201103L
-#include <unordered_map>
-#define MAP_TEMPLATE std::unordered_map
+#  include <unordered_map>
+#  define MAP_TEMPLATE std::unordered_map
 #else
-#include <hash_map>
-#define MAP_TEMPLATE stdext::hash_map
+#  ifdef OS_MACOSX
+#    include <ext/hash_map>
+#    define MAP_TEMPLATE __gnu_cxx::hash_map
+#  else
+#    include <hash_map>
+#    define MAP_TEMPLATE stdext::hash_map
+#  endif
 #endif
 
 
