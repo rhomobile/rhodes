@@ -650,6 +650,9 @@ namespace "config" do
   end
 
   task :iphone => [:set_iphone_platform, "config:common", "switch_app"] do
+
+    $use_prebuild_data = false
+
     $rubypath = "res/build-tools/RubyMac" #path to RubyMac
     iphonepath = $app_path + "/project/iphone" #$config["build"]["iphonepath"]
     $builddir = $config["build"]["iphonepath"] + "/rbuild" #iphonepath + "/rbuild"
@@ -1157,7 +1160,29 @@ namespace "build" do
 
             end
             if ! prebuilt_copy
-              build_extension_lib(extpath, sdk, target_dir, xcodeproject, xcodetarget, depfile)
+              if $use_prebuild_data && (ext == 'coreapi')
+                prebuild_root = File.join($startdir, "platform/iphone/prebuild")
+
+                prebuild_ruby = File.join(prebuild_root, "ruby")
+                prebuild_noruby = File.join(prebuild_root, "noruby")
+
+                coreapi_ruby = File.join(prebuild_ruby, "libCoreAPI.a")
+                coreapi_noruby = File.join(prebuild_noruby, "libCoreAPI.a")
+
+                coreapi_lib = coreapi_ruby
+
+                if $js_application
+                  coreapi_lib = coreapi_noruby
+                end
+                if File.exist?(coreapi_lib)
+                   coreapi_lib_dst = File.join(target_dir, 'libCoreAPI.a')
+                   cp coreapi_lib, coreapi_lib_dst
+                else
+                   build_extension_lib(extpath, sdk, target_dir, xcodeproject, xcodetarget, depfile)
+                end
+              else
+                build_extension_lib(extpath, sdk, target_dir, xcodeproject, xcodetarget, depfile)
+              end
             end
           end
       end
@@ -1289,6 +1314,201 @@ namespace "build" do
       build_extension_libs($sdk, target_dir)
     end
 
+
+
+
+    def build_rhodes_lib(targetdir)
+      # only depfile is optional parameter !
+
+
+      rhodes_xcode_project_folder = File.join($startdir, '/platform/iphone/')
+
+      currentdir = Dir.pwd()
+      Dir.chdir File.join(rhodes_xcode_project_folder)
+
+      xcodeproject = 'Rhodes.xcodeproj'
+      xcodetarget = 'Rhodes'
+
+      #tempdir = ENV['TEMP_FILES_DIR']
+      #rootdir = ENV['RHO_ROOT']
+      configuration = 'Release'
+      sdk = $sdk
+      #bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+      #sdkroot = ENV['SDKROOT']
+      #arch = ENV['ARCHS']
+      #gccbin = bindir + '/gcc-4.2'
+      #arbin = bindir + '/ar'
+
+      iphone_path = '.'
+
+      simulator = sdk =~ /iphonesimulator/
+
+      if configuration == 'Distribution'
+         configuration = 'Release'
+      end
+
+      result_lib = iphone_path + '/build/' + configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/lib'+xcodetarget+'.a'
+      target_lib = targetdir + '/lib'+xcodetarget+'.a'
+
+      #if check_for_rebuild(result_lib, depfile) || is_options_was_changed({"configuration" => configuration,"sdk" => sdk}, "lastbuildoptions.yml")
+
+           rm_rf 'build'
+           rm_rf target_lib
+
+           args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
+
+           if simulator
+               args << '-arch'
+               args << 'i386'
+           end
+
+           require   $startdir + '/lib/build/jake.rb'
+
+           ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
+      #else
+      #
+      #  puts "ssskip rebuild because previous builded library is still actual !"
+      #  rm_rf target_lib
+      #
+      #end
+
+      cp result_lib,target_lib
+
+      Dir.chdir currentdir
+
+
+    end
+
+
+
+
+
+
+
+    task :make_prebuild_core do
+
+      currentdir = Dir.pwd()
+
+      # remove prebuild folder
+      prebuild_root = File.join($startdir, "platform/iphone/prebuild")
+
+      rm_rf prebuild_root
+
+      prebuild_ruby = File.join(prebuild_root, "ruby")
+      prebuild_noruby = File.join(prebuild_root, "noruby")
+
+      mkdir_p prebuild_ruby
+      mkdir_p prebuild_noruby
+
+
+      coreapi_ruby = File.join(prebuild_ruby, "libCoreAPI.a")
+      coreapi_noruby = File.join(prebuild_noruby, "libCoreAPI.a")
+
+      prebuild_base_app_folder = File.join($startdir, "res/prebuild_base_app");
+
+      prebuild_base_app_build_yml = File.join(prebuild_base_app_folder, "build.yml")
+
+      coreapi_root = File.join($startdir, "lib/commonAPI/coreapi")
+
+
+      $app_config = YAML::load_file(prebuild_base_app_build_yml)
+
+      puts "%%% $app_config[javascript_application] = "+$app_config["javascript_application"].to_s
+
+      $app_path = File.expand_path(prebuild_base_app_folder)
+
+      chdir File.join($startdir)
+
+      $app_extensions_list = {}
+      $app_extensions_list['coreapi'] = coreapi_root
+
+      #ruby
+
+      rm_rf File.join(prebuild_base_app_folder, 'project')
+      Rake::Task['clean:iphone'].invoke
+
+      #$app_config["javascript_application"] = "false"
+
+
+      Rake::Task['config:common'].invoke
+      Rake::Task['config:iphone'].invoke
+
+      $js_application = false
+
+      Rake::Task['build:bundle:prepare_native_generated_files'].invoke
+
+
+
+      #coreAPI
+      Rake::Task['build:iphone:extension_libs'].invoke
+
+      #Rhodes
+
+      build_rhodes_lib(prebuild_ruby)
+
+
+
+      #copy
+
+      cp File.join(prebuild_base_app_folder, "bin/target/iOS/release/extensions/coreapi/lib/libCoreAPI.a"), coreapi_ruby
+
+      #Rhodes
+
+
+
+
+
+      #noruby
+      rm_rf File.join(prebuild_base_app_folder, 'project')
+      $app_config['javascript_application'] = 'true'
+
+      puts "%%% $app_config[javascript_application] = "+$app_config["javascript_application"].to_s
+
+
+      Rake::Task['clean:iphone'].reenable
+      Rake::Task['config:common'].reenable
+      Rake::Task['config:iphone'].reenable
+      Rake::Task['build:bundle:prepare_native_generated_files'].reenable
+      Rake::Task['build:iphone:extension_libs'].reenable
+
+      #Rake::Task['clean:iphone'].invoke
+
+      #Rake::Task['config:common'].invoke
+
+      #Rake::Task['config:iphone'].invoke
+
+      $js_application = true
+
+
+      Rake::Task['build:bundle:prepare_native_generated_files'].invoke
+
+      #coreAPI
+
+      Rake::Task['build:iphone:extension_libs'].invoke
+
+
+      #Rhodes
+
+      build_rhodes_lib(prebuild_noruby)
+
+      #copy
+      #copy
+
+      cp File.join(prebuild_base_app_folder, "bin/target/iOS/release/extensions/coreapi/lib/libCoreAPI.a"), coreapi_noruby
+
+
+
+
+      Dir.chdir currentdir
+
+    end
+
+
+
+
+
+
+
     task :restore_xcode_project => ["config:iphone"] do
        restore_project_from_bak
     end
@@ -1318,6 +1538,50 @@ namespace "build" do
         rm_rf 'project/iphone/toremovef'
 
       end
+
+      #copy sources
+      extensions_src = File.join($startdir, 'platform/shared/ruby/ext/rho/extensions.c')
+      extensions_dst = File.join($app_path, 'project/iphone/Rhodes/extensions.c')
+
+      rm_rf extensions_dst
+      cp extensions_src, extensions_dst
+
+      properties_src = File.join($startdir, 'platform/shared/common/app_build_configs.c')
+      properties_dst = File.join($app_path, 'project/iphone/Rhodes/app_build_configs.c')
+
+      rm_rf properties_dst
+      cp properties_src, properties_dst
+
+      #copy libCoreAPI.a and Rhodes.a
+      prebuild_root = File.join($startdir, "platform/iphone/prebuild")
+
+      prebuild_ruby = File.join(prebuild_root, "ruby")
+      prebuild_noruby = File.join(prebuild_root, "noruby")
+
+      coreapi_ruby = File.join(prebuild_ruby, "libCoreAPI.a")
+      coreapi_noruby = File.join(prebuild_noruby, "libCoreAPI.a")
+
+      rhodes_ruby = File.join(prebuild_ruby, "libRhodes.a")
+      rhodes_noruby = File.join(prebuild_noruby, "libRhodes.a")
+
+      coreapi_lib = coreapi_ruby
+      rhodes_lib = rhodes_ruby
+
+      if $js_application
+        coreapi_lib = coreapi_noruby
+        rhodes_lib = rhodes_noruby
+      end
+      #if File.exist?(coreapi_lib)
+      #   coreapi_lib_dst = File.join($app_path, 'project/iphone/Rhodes/libCoreAPI.a')
+      #   rm_rf coreapi_lib_dst
+      #   cp coreapi_lib, coreapi_lib_dst
+      #end
+      if File.exist?(rhodes_lib)
+         rhodes_lib_dst = File.join($app_path, 'project/iphone/Rhodes/libRhodes.a')
+         rm_rf rhodes_lib_dst
+         cp rhodes_lib, rhodes_lib_dst
+      end
+
     end
 
 
@@ -1373,8 +1637,11 @@ namespace "build" do
       rm_rf 'project/iphone'
 
       puts 'prepare iphone XCode project for application'
-      Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
-
+      if $use_prebuild_data
+        Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project_prebuild #{appname_fixed} \"#{$startdir}\"")
+      else
+        Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+      end
       #make_project_bakup
 
       #restore_project_from_bak
@@ -2208,6 +2475,58 @@ namespace "device" do
     copy_all_png_from_icon_folder_to_product(app_path)
 
     end
+
+
+
+    task :production_with_prebuild => ["config:iphone"] do
+
+
+    rm_rf File.join($app_path, "project/iphone")
+    $use_prebuild_data = true
+
+
+    Rake::Task['build:iphone:rhodes'].invoke
+
+
+
+    #copy build results to app folder
+
+    app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration)
+
+    iphone_path = File.join($app_path, "/project/iphone")
+    if $sdk =~ /iphonesimulator/
+       iphone_path = File.join(iphone_path, 'build', $configuration+'-iphonesimulator')
+    else
+       iphone_path = File.join(iphone_path, 'build', $configuration+'-iphoneos')
+    end
+    appname = $app_config["name"]
+    if appname == nil
+       appname = 'rhorunner'
+    end
+
+    # fix appname for remove restricted symbols
+    #appname = appname.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("_")
+    appname = appname.split(/[^a-zA-Z0-9\_\-]/).map{|w| w}.join("_")
+
+    src_file = File.join(iphone_path, 'rhorunner.app')
+    dst_file = File.join(app_path, appname+'.app')
+
+    rm_rf dst_file
+    rm_rf app_path
+
+    mkdir_p app_path
+
+    puts 'copy result build package to application target folder ...'
+    cp_r src_file, dst_file
+    make_app_info
+    prepare_production_ipa(app_path, appname)
+    prepare_production_plist(app_path, appname)
+    copy_all_png_from_icon_folder_to_product(app_path)
+
+    end
+
+
+
   end
 
 end
