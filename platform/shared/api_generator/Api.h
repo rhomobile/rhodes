@@ -1,6 +1,7 @@
 #pragma once
 
 #include "logging/RhoLog.h"
+#include "common/RhoStd.h"
 
 #include <string>
 #include <memory>
@@ -9,13 +10,7 @@
 #  include <unordered_map>
 #  define MAP_TEMPLATE std::unordered_map
 #else
-#  ifdef OS_MACOSX
-#    include <ext/hash_map>
-#    define MAP_TEMPLATE __gnu_cxx::hash_map
-#  else
-#    include <hash_map>
-#    define MAP_TEMPLATE stdext::hash_map
-#  endif
+#  define MAP_TEMPLATE rho::Hashtable
 #endif
 
 
