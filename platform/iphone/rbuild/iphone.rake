@@ -108,7 +108,7 @@ end
 def set_app_exit_on_suspend(val)
   plist_value = ""
 
-  # the command line expects TRUE or FALSE to be passed in.
+  # the command line expects YES or NO to be passed in.
   if val
     plist_value = "YES"
   else
