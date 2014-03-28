@@ -386,7 +386,7 @@ namespace "config" do
     ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
     ENV["APP_TYPE"]     = "rhodes"
 
-    $app_config = Jake.config(File.open(File.join($app_path, "build.yml"))) if $app_config == nil
+    $app_config = Jake.config(File.open(File.join($app_path, "build.yml"))) if $app_config_disable_reread != true
     if File.exists?(File.join($app_path, "app_rakefile"))
       load File.join($app_path, "app_rakefile")
       $app_rakefile_exist = true
