@@ -197,7 +197,7 @@ end</RUBY>
                             <JAVASCRIPT>
 function webSearch(){}
   var intentParams = {action     : "android.intent.action.WEB_SEARCH",
-                      intentType : Rho::Intent::START_ACTIVITY,
+                      intentType : Rho.Intent.START_ACTIVITY,
                       data       : {query : "Rhomobile docs"}}
 
   Rho.Intent.send(intentParams)
