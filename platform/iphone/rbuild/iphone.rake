@@ -118,7 +118,7 @@ def set_app_exit_on_suspend(val)
   pwd = `pwd`.chomp
 
   puts "Setting UIApplicationExitsOnSuspend to #{plist_value} in Info.plist..."
-  cmd = "/usr/libexec/PlistBuddy -x -c \"Set :UIApplicationExitsOnSuspend bool #{plist_value}\" \"#{pwd}/#{$config["build"]["iphonepath"]}/Info.plist\""
+  cmd = "/usr/libexec/PlistBuddy -x -c \"Set :UIApplicationExitsOnSuspend bool\" -c \"Set :UIApplicationExitsOnSuspend #{plist_value}\" \"#{pwd}/#{$config["build"]["iphonepath"]}/Info.plist\""
   puts "CMD: #{cmd}"
 
   if system(cmd)
