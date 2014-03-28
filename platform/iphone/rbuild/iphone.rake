@@ -108,30 +108,21 @@ end
 def set_app_exit_on_suspend(val)
   plist_value = ""
 
-  # the defaults command line expects TRUE or FALSE to be passed in.
+  # the command line expects TRUE or FALSE to be passed in.
   if val
-    plist_value = "TRUE"
+    plist_value = "YES"
   else
-    plist_value = "FALSE"
+    plist_value = "NO"
   end
 
   pwd = `pwd`.chomp
 
   puts "Setting UIApplicationExitsOnSuspend to #{plist_value} in Info.plist..."
-  cmd = "defaults write \"#{pwd}/#{$config["build"]["iphonepath"]}/Info\" UIApplicationExitsOnSuspend -bool #{plist_value}"
+  cmd = "/usr/libexec/PlistBuddy -x -c \"Set :UIApplicationExitsOnSuspend bool #{plist_value}\" \"#{pwd}/#{$config["build"]["iphonepath"]}/Info.plist\""
   puts "CMD: #{cmd}"
 
   if system(cmd)
-    puts "Successfully wrote option out to plist, converting plist back to an XML plist."
-
-    cmd = "plutil -convert xml1 \"#{pwd}/#{$config["build"]["iphonepath"]}/Info.plist\""
-    puts "CMD: #{cmd}"
-
-    if system(cmd)
-      puts "Successfully converted pilst to an XML plist."
-    else
-      raise "set_exit_on_suspend: Unable to convert binary plist back to XML plist!"
-    end
+    puts "Successfully wrote option out to plist."
   else
     raise "set_exit_on_suspend: Unable to write UIApplicationExitsOnSuspend out to plist!"
   end
