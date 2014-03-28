@@ -1411,7 +1411,10 @@ namespace "build" do
       coreapi_root = File.join($startdir, "lib/commonAPI/coreapi")
 
 
-      $app_config = YAML::load_file(prebuild_base_app_build_yml)
+      #$app_config = YAML::load_file(prebuild_base_app_build_yml)
+      $app_config = Jake.config(File.open(prebuild_base_app_build_yml))
+
+      $app_config_disable_reread = true
 
       puts "%%% $app_config[javascript_application] = "+$app_config["javascript_application"].to_s
 
