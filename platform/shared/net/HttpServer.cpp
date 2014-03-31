@@ -622,6 +622,7 @@ bool CHttpServer::receive_request(ByteVector &request)
         if (n == 0) {
             if(!r.empty()) {
                 if (verbose) RAWTRACE("Client closed connection gracefully");
+                break;
             } else {
                 RAWLOG_ERROR("Connection gracefully closed before we receive any data");
                 return false;
