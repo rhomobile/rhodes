@@ -197,32 +197,57 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, regkeys_filename)
   chdir currDir
 end
 
+def build_rholaunch
+  chdir File.join( $config["build"]["wmpath"], "RhoLaunch")
+
+  cp $app_path + "/icon/icon.ico", "./RhoLaunch.ico" if File.exists? $app_path + "/icon/icon.ico"
+
+  args = ['/M4', "RhoLaunch.sln", "\"Release|#{$sdk}\""]
+  puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+  puts Jake.run($vcbuild,args)
+  unless $? == 0
+    puts "Error building"
+    exit 1
+  end
+  chdir $startdir
+
+end
+
+def stuff_around_appname
+  if !$use_shared_runtime
+    out_dir = File.join($startdir, $vcbindir, $sdk, 'rhodes', 'Release')
+    cp File.join(out_dir, 'rhodes.exe'), File.join(out_dir, "#{$appname}.exe")
+  end
+
+  if $use_shared_runtime
+    if $js_application
+      shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
+    else
+      shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
+    end
+
+    if File.exists? wm_icon then
+      shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
+    end
+    shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
+    File.open($srcdir + '/../' + $appname + ".lnk", "w") { |f| f.write(shortcut_content) }
+  end
+
+  if $run_on_startup
+    shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -minimized=""'
+    if File.exists? wm_icon then
+      shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
+    end
+    shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
+    File.open(File.join($srcdir, 'apps', $appname + "Min.lnk"), "w") { |f| f.write(shortcut_content) } 
+  end
+end
+
 def build_cab
   build_platform = 'wm6'
   build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
   build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
   build_platform = 'ce7' if $sdk == "WT41N0c70PSDK (ARMV4I)"
-
-  args = [
-    'build_inf.js',
-    $appname + ".inf",                        #0
-    build_platform,                           #1
-    '"' + $app_config["name"] +'"',           #2
-    $app_config["vendor"],                    #3
-    '"' + $srcdir + '"',                      #4
-    $hidden_app,                              #5
-    ($webkit_capability ? "1" : "0"),         #6
-    $wk_data_dir,                             #7
-    ($use_shared_runtime  ? "1" : "0"),       #8
-    ($motorola_capability ? "1" : "0"),       #9
-    ($run_on_startup      ? "1" : "0"),       #10
-    $srcdir,                                  #11
-    ($build_persistent_cab ? "1" : "0")       #12
-  ]
-
-  if !$use_shared_runtime
-    args.concat(additional_dlls_paths)
-  end
 
   reg_keys_filename = File.join(File.dirname(__FILE__), 'regs.txt');
   puts 'remove file with registry keys'
@@ -241,7 +266,27 @@ def build_cab
 
   dir = File.join($startdir, $builddir)
 
+  args = [
+    'build_inf.js',
+    $appname + ".inf",                        #0
+    build_platform,                           #1
+    '"' + $app_config["name"] +'"',           #2
+    $app_config["vendor"],                    #3
+    '"' + $srcdir + '"',                      #4
+    $hidden_app,                              #5
+    ($webkit_capability ? "1" : "0"),         #6
+    $wk_data_dir,                             #7
+    ($use_shared_runtime  ? "1" : "0"),       #8
+    ($motorola_capability ? "1" : "0"),       #9
+    ($run_on_startup      ? "1" : "0"),       #10
+    $srcdir,                                  #11
+    ($build_persistent_cab ? "1" : "0")       #12
+  ]
+
+  args.concat(additional_dlls_paths) unless $use_shared_runtime
+
   Jake.run3("cscript #{args.join(' ')}", dir)
+
   Jake.run3("\"#{$cabwiz}\" #{$appname}.inf", dir)
   Jake.run3('cscript cleanup.js', dir)
 
@@ -1048,80 +1093,46 @@ namespace "device" do
     end
   end
 
-  def build_rholaunch()
-      chdir File.join( $config["build"]["wmpath"], "RhoLaunch")
-
-      cp $app_path + "/icon/icon.ico", "./RhoLaunch.ico" if File.exists? $app_path + "/icon/icon.ico"
-
-      args = ['/M4', "RhoLaunch.sln", "\"Release|#{$sdk}\""]
-      puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
-      puts Jake.run($vcbuild,args)
-      unless $? == 0
-        puts "Error building"
-        exit 1
-      end
-      chdir $startdir
-    
-  end
-  
   namespace "wm" do
       
    
     desc 'Build cab'
     task :cab => ['config:wm'] do
+      stuff_around_appname
       build_cab
     end
 
     desc "Build production for device or emulator"
     task :production, [:exclude_dirs] => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 
+      if $use_shared_runtime
+        rm_rf $srcdir + '/lib'
+      end
+
       wm_icon = $app_path + '/icon/icon.ico'
-      if !$use_shared_runtime then
-        build_rholaunch()
-        
-        out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
-        out_rholauch_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/RhoLaunch/Release/"
-        cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
-        cp out_rholauch_dir + "RhoLaunch.exe", out_dir + "RhoLaunch.exe"
-        cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
-      else
-        if $js_application
-            shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
-        else
-            shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
-        end    
-        
-        if File.exists? wm_icon then
-          shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
-        end
-        shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
-        File.open($srcdir + '/../' + $appname + ".lnk", "w") { |f| f.write(shortcut_content) }
-      end
-
-      if $run_on_startup == true
-        shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -minimized=""'
-        if File.exists? wm_icon then
-          shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
-        end
-        shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
-        File.open(File.join($srcdir, 'apps', $appname + "Min.lnk"), "w") { |f| f.write(shortcut_content) } 
-      end
-
-      chdir $builddir
 
       icon_dest = $srcdir + '/icon'
       rm_rf icon_dest
-      if $use_shared_runtime then
-        rm_rf $srcdir + '/lib'
-        if File.exists? wm_icon then
-          mkdir_p icon_dest if not File.exists? icon_dest
+      if $use_shared_runtime
+        if File.exists? wm_icon
+          mkdir_p icon_dest
           cp wm_icon, icon_dest
         end
       end
 
+      if !$use_shared_runtime
+        build_rholaunch
+
+        out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
+        out_rholauch_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/RhoLaunch/Release/"
+        cp out_rholauch_dir + "RhoLaunch.exe", out_dir + "RhoLaunch.exe"
+        cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
+      end
+
+      stuff_around_appname
+
       build_cab if $build_cab
-      
-      chdir $startdir
+
     end
   end
 
@@ -1645,3 +1656,4 @@ namespace 'stop' do
     end
   end
 end
+
