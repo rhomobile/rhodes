@@ -65,6 +65,9 @@ require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
+
+load File.join(pwd, 'platform/android/build/android-repack.rake')
+
 load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
