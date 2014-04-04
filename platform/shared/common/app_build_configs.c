@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "app_build_configs.h"
+//#include "app_build_configs.h"
 
 static const char* keys[] = { ""
 ,"name"
