@@ -966,6 +966,7 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
     else
     {
         for(Hashtable<rho::String, rho::String>::const_iterator cIt = conditions.begin(); cIt != conditions.end(); ++cIt) {
+            LOG(INFO) + "MZV_DEBUG, we have conditions: " + cIt -> first + ", " + cIt -> second;
             if(strSQL.size() > 0)
             {
                 strSQL += "\nINTERSECT\n";
@@ -975,9 +976,12 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
             quests.push_back(source_id);
             const rho::String& key = cIt -> first;
             const rho::String& value = cIt -> second;
-            strCondStatement += rho::String("attrib=? AND value=?");
+            strCondStatement += rho::String("attrib=? AND value");
+            strCondStatement += (value.empty() ? " IS NULL" : "=?");  
+            //strCondStatement += rho::String("attrib=? AND value=?");
             quests.push_back(key);
-            quests.push_back(value);
+            if(value.size())
+                quests.push_back(value);
             strSQL += strCondStatement;
         }
     }
