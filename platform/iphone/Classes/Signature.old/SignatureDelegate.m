@@ -236,9 +236,11 @@ SignatureDelegate* ourSD = nil;
 
 void rho_signature_take(char* callback_url, rho_param* p) {
     
+    /*  REMOVED LICENSE
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.take() requires RhoElements license! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
+    */
     
     NSString *url = [NSString stringWithUTF8String:callback_url];
     char* image_format = 0;
@@ -290,9 +292,11 @@ void rho_signature_take(char* callback_url, rho_param* p) {
 
 void rho_signature_visible(bool b, rho_param* p)
 {
+    /*  REMOVED LICENSE
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.visible() requires RhoElements license! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
+    */
     
     
     if (!b) {
@@ -385,9 +389,11 @@ void rho_signature_visible(bool b, rho_param* p)
 
 void rho_signature_capture(const char* callback_url) 
 {
+    /*  REMOVED LICENSE
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.capture() requires RhoElements license! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
+    */
     
 	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance]; 
     
@@ -398,9 +404,11 @@ void rho_signature_capture(const char* callback_url)
 
 void rho_signature_clear() 
 {
+    /*  REMOVED LICENSE
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.clear() requires RhoElements license! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
+    */
 	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance];
     [deleg clearSignatureInlineView];
     
