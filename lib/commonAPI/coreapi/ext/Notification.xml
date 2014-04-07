@@ -39,16 +39,20 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 <PLATFORM>Android</PLATFORM>
                             </PARAM>
                             <PARAM name="buttons" type="Array" default="">
-                                <DESC>Array of buttons. Specify each button either by hash with :id and :title keys os string. For example: [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}].
-                                  At Android if TYPE_NOTIFICATION_DIALOG is used every button in notification has an icon. By default star icon is used. In case button id is 'accept' then system accept icon is used. In case button id is 'cancel' then system cancel icon is used.
-                                  Using hash this way: [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}]
-                                  Using string example: ['Yes', 'No']. Note: in case of buttons has been specified using strings an id and a title of each button will have same value.</DESC>
+                                <DESC>Array of buttons. Specify each button either by hash with :id and :title keys or string.When using strings, the `id` and `title` will have the same value.
+For example: 
+    :::javascript
+    buttonHash = [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}];
+    buttonString = ['Yes', 'No'];
+
+NOTE: For Android, if TYPE_NOTIFICATION_DIALOG is used, every button in the notification uses an icon. By default a star icon is used. If the button id is 'accept' then the system accept icon is used. If the button id is 'cancel' then the system cancel icon is used.
+</DESC>
                             </PARAM>
                             <PARAM name="types" type="Array">
-                                <DESC>List which notification kinds will be shown. Several types may be listed at same time.
-                                  TYPE_NOTIFICATION and TYPE_NOTIFICATION_DIALOG take no effect if application is at foreground.
-                                  By default [Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_NOTIFICATION] is used.
-                                  Example: [Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_TOAST].</DESC>
+                                <DESC>List which notification kinds will be shown. Several types may be listed at same time. `TYPE_NOTIFICATION` and `TYPE_NOTIFICATION_DIALOG` take no effect if application is in the foreground. By default `[Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_NOTIFICATION]` is used.
+Example:
+    :::javascript
+    typeToast = [Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_TOAST];</DESC>
                                 <PLATFORMS>Android</PLATFORMS>
                                 <VALUES>
                                   <VALUE constName="TYPE_DIALOG" value="dialog">
@@ -58,7 +62,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                     <DESC>Show message in Android notification bar if application is at background. Touch the message opens the application.</DESC>
                                   </VALUE>  
                                   <VALUE constName="TYPE_NOTIFICATION_DIALOG" value="notificationDialog">
-                                    <DESC>Means TYPE_DIALOG + TYPE_NOTIFICATION. At Android 4.1 and above buttons is also added to notification message so user can interact with the application without application activation (dialog window is not shown if user pressed button at notification). NB: Buttons are not always displayed in the notification area - this depends on screen size and layot and system decides whether to show buttons. You need to drag notification to make buttons appear.</DESC>
+                                    <DESC>This is the same as `TYPE_DIALOG` + `TYPE_NOTIFICATION`. 
+NOTE: In Android 4.1 and above, buttons are also added to the notification message so the user can interact with the application without application activation (dialog window is not shown if user pressed button in notification). Buttons are not always displayed in the notification area - this depends on screen size and layout and system decides whether to show buttons. You need to drag notification to make buttons appear.</DESC>
                                   </VALUE>  
                                   <VALUE constName="TYPE_TOAST" value="toast">
                                     <DESC>Show toast window with message at foreground for a short time. The toast is visible nevertheless the application is at background or foreground but is not shown same time with any foreground pop-up.</DESC>

@@ -549,6 +549,122 @@ module Rhogen
 
   end
 
+  class IphoneProjectPrebuildGenerator < BaseGenerator
+
+    @@noapp = false
+
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'iphone_project')
+    end
+
+    desc <<-DESC
+      Adds XCode application project with using of prebuild data to Rhodes based application.
+    DESC
+
+    first_argument :name, :required => true, :desc => 'application name'
+    second_argument :rhodes_root, :required => true, :desc => 'path to rhodes'
+
+    def namefixed
+      return name.downcase.split(/[^a-zA-Z0-9]/).map { |w| w.downcase }.join("")
+    end
+
+    def namecamelcase
+      return name.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize_first) }.join("")
+    end
+
+    def rhodes_root_path
+      return rhodes_root
+    end
+
+    directory :root do |directory|
+      @options[:force] = true
+      directory.source = 'root'
+      directory.destination = 'project/iphone'
+      if File.exists?(directory.destination)
+        directory.options[:skip] = 'project/iphone/toremoved'
+      end
+    end
+
+    directory :classes do |directory|
+      #@options[:force] = true
+      directory.source = 'Classes'
+      directory.destination = 'project/iphone/Classes'
+      if File.exists?(directory.destination)
+        directory.destination = 'project/iphone/toremoved'
+      end
+    end
+
+    directory :resources do |directory|
+      #@options[:force] = true
+      directory.source = 'Resources'
+      directory.destination = 'project/iphone/Resources'
+      if File.exists?(directory.destination)
+        directory.destination = 'project/iphone/toremoved'
+      end
+    end
+
+    directory :settings do |directory|
+      #@options[:force] = true
+      directory.source = 'Settings.bundle'
+      directory.destination = 'project/iphone/Settings.bundle'
+      if File.exists?(directory.destination)
+        directory.destination = 'project/iphone/toremoved'
+      end
+    end
+
+    template :project do |template|
+      #@options[:force] = true
+      #@options[:skip] = true
+      template.source = 'Bremen_prebuild.xcodeproj/project.pbxproj'
+      template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
+      if File.exists?(template.destination)
+        template.destination = 'project/iphone/toremovef'
+      end
+    end
+
+    $build_script_full_path = ''
+
+    def callback_after_make_build(template)
+      # change atribbutes in build script file to executable
+      File.chmod(0755, $build_script_full_path)
+    end
+
+
+    template :build do |template|
+      @options[:force] = true
+      template.source = 'buildRhoBundle'
+      template.destination = "project/iphone/buildRhoBundle"
+      $build_script_full_path = template.destination
+      template.options = {:after => :callback_after_make_build}
+    end
+
+    template :rhodes_project_02 do |template|
+      template.options[:force] = true
+      template.source = 'Rhodes/RhodesBaseDelegate.h'
+      template.destination = "project/iphone/Rhodes/RhodesBaseDelegate.h"
+    end
+
+    template :rhodes_project_03 do |template|
+      template.options[:force] = true
+      template.source = 'Rhodes/RhodesBaseDelegate.m'
+      template.destination = "project/iphone/Rhodes/RhodesBaseDelegate.m"
+    end
+
+
+    def attributes?
+      self.attributes && !self.attributes.empty?
+    end
+
+
+
+  end
+
+
+
+
+
+
+
   class ExtensionGenerator < BaseGenerator
 
     @@noapp = false
@@ -3395,6 +3511,7 @@ module Rhogen
   add :api, ApiGenerator
   add :api_test, ApiMegatestGenerator
   add :iphone_project, IphoneProjectGenerator
+  add :iphone_project_prebuild, IphoneProjectPrebuildGenerator
 
 end
 
