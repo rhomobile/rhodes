@@ -336,9 +336,11 @@ void rho_signature_take_ex( id<IMethodResult> callback, struct SignatureParam* s
 void rho_signature_visible_ex(bool b, struct SignatureParam* p)
 {
     // check for RhoElements :
+    /*  REMOVED LICENSE
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.visible() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
+    */
     
     
     if (!b) {
@@ -361,9 +363,11 @@ void rho_signature_visible_ex(bool b, struct SignatureParam* p)
 void rho_signature_capture(const char* callback_url) 
 {
     // check for RhoElements :
+    /*  REMOVED LICENSE
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
+    */
     
 	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance]; 
     
@@ -375,9 +379,11 @@ void rho_signature_capture(const char* callback_url)
 void rho_signature_capture_ex(id<IMethodResult> callback)
 {
     // check for RhoElements :
+    /*  REMOVED LICENSE
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
+    */
     
 	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance];
     
@@ -389,9 +395,11 @@ void rho_signature_capture_ex(id<IMethodResult> callback)
 void rho_signature_clear()
 {
     // check for RhoElements :
+    /*  REMOVED LICENSE
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
         RAWLOG_ERROR("Rho::SignatureCapture.clear() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
+    */
 	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance]; 
     [deleg clearSignatureInlineView];
     
