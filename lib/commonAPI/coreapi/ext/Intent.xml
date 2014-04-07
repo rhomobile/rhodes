@@ -145,8 +145,8 @@ Add the following snippet to AndroidManifest.erb within the `manifest` tags
 Notice that this looks very similar to a standard AndroidManifest.XML file section except the `receiver` is the common RhoMobile intent receiver. The `intent-filter` tags within this section are standard AndroidManifest.XML notation that you would put in for the Intent-Filters that you want to listen for. Consult the [Android Docs](http://developer.android.com/guide/components/intents-filters.html#Receiving) for more information about Intent Filters. From your Android application, you would use the [sendBroadcast() method](http://developer.android.com/reference/android/content/Context.html#sendBroadcast(android.content.Intent\)) with the appropriate parameters for this filter.
 </DESC>
                 <CALLBACK type="HASH">
-                    <DESC>Same format as 'params' argument passed to Rho.Intent.send method
-                    Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
+                    <DESC>Same format as 'params' argument passed to Rho.Intent.send method 
+                        Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
                 </CALLBACK>
             </METHOD>
             <METHOD name="stopListening" hasCallback="none">
@@ -155,7 +155,57 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
         </METHODS>
         <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
         <PLATFORM>iOS, WM, Android</PLATFORM>
-        <EXAMPLES >
+        <EXAMPLES>
+            <EXAMPLE title="Plot a location on a map">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>You can use the Intent API to use the default mapping program to plot locations.</DESC>
+                        <CODE>
+                            <RUBY>
+def send_geo
+  intent_params = {:action     => "android.intent.action.VIEW",
+                   :intentType => Rho::Intent::START_ACTIVITY,
+                   :uri        => "geo:37.422, -122.084"}
+
+  Rho::Intent.send intent_params
+end</RUBY>
+                            <JAVASCRIPT>
+function sendGeo(){
+  var intentParams = {action     : "android.intent.action.VIEW",
+                      intentType : Rho.Intent.START_ACTIVITY,
+                      uri        : "geo:37.422, -122.084"};
+
+  Rho.Intent.send(intentParams);
+}</JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+            <EXAMPLE title="Sending Extras">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>Sometimes you will want to send some extras along with an intent such as an SMS body or do a web search with a given string. Here is an example of an intent that will launch the default web browser and perform a search with the default search engine.</DESC>
+                        <CODE>
+                            <RUBY>
+def web_search
+  intent_params = { :action     => "android.intent.action.WEB_SEARCH",
+                    :intentType => Rho::Intent::START_ACTIVITY,
+                    :data       => { :query => "Rhomobile docs" } }
+
+  Rho::Intent.send intent_params
+end</RUBY>
+                            <JAVASCRIPT>
+function webSearch(){}
+  var intentParams = {action     : "android.intent.action.WEB_SEARCH",
+                      intentType : Rho.Intent.START_ACTIVITY,
+                      data       : {query : "Rhomobile docs"}}
+
+  Rho.Intent.send(intentParams)
+}</JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
         </EXAMPLES>
     </MODULE>
 </API>

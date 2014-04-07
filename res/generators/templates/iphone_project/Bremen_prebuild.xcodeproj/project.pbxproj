@@ -48,6 +48,7 @@
 		FA3C79E2136ED8BB002302E5 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */; };
 		FA3D8EAB182B831400231D0E /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = FA3D8EAA182B831400231D0E /* iTunesArtwork */; };
 		FA4D3F8D136B0A98009D6E63 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */; };
+		FA50ED3918E47DE20083F8FE /* libRhodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA50ED3818E47DE20083F8FE /* libRhodes.a */; };
 		FA522FE112E49D6F00AB55CC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA522FE012E49D6F00AB55CC /* QuartzCore.framework */; };
 		FA52309412E55CA700AB55CC /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA52309312E55CA700AB55CC /* EventKit.framework */; };
 		FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA673A5615FCD787005CAD64 /* CoreMotion.framework */; };
@@ -61,27 +62,9 @@
 		FA6DFCED18232A2C00A3B595 /* icon152.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE518232A2C00A3B595 /* icon152.png */; };
 		FAA5A5BC182B11EB00590B1F /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA5A5BB182B11EB00590B1F /* libstdc++.dylib */; };
 		FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC20FF123A759A0088A447 /* GameKit.framework */; };
-		FAED78CE183C3CF400BC7028 /* libRhodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED7893183C3A8200BC7028 /* libRhodes.a */; };
 		FAF3BF3218E26D3B00860FCA /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3018E26D3B00860FCA /* app_build_configs.c */; };
 		FAF3BF3318E26D3B00860FCA /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3118E26D3B00860FCA /* extensions.c */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		FAED7892183C3A8200BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = FAED7864183C3A8100BC7028;
-			remoteInfo = Rhodes;
-		};
-		FAED78CC183C3CDF00BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = FAED7863183C3A8100BC7028;
-			remoteInfo = Rhodes;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		05377D110E74D7D7003B8BD1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
@@ -129,6 +112,7 @@
 		FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
 		FA3D8EAA182B831400231D0E /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 		FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/usr/lib/libiconv.dylib; sourceTree = DEVELOPER_DIR; };
+		FA50ED3818E47DE20083F8FE /* libRhodes.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRhodes.a; path = Rhodes/libRhodes.a; sourceTree = "<group>"; };
 		FA522FE012E49D6F00AB55CC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		FA52309312E55CA700AB55CC /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		FA673A5615FCD787005CAD64 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
@@ -143,7 +127,6 @@
 		FA6DFCE518232A2C00A3B595 /* icon152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon152.png; sourceTree = "<group>"; };
 		FAA5A5BB182B11EB00590B1F /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/usr/lib/libstdc++.dylib"; sourceTree = DEVELOPER_DIR; };
 		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
-		FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Rhodes.xcodeproj; path = Rhodes/Rhodes.xcodeproj; sourceTree = "<group>"; };
 		FAF3BF3018E26D3B00860FCA /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = Rhodes/app_build_configs.c; sourceTree = "<group>"; };
 		FAF3BF3118E26D3B00860FCA /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = Rhodes/extensions.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -154,8 +137,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C076329B186DDD24005019BA /* ExternalAccessory.framework in Frameworks */,
-				FAED78CE183C3CF400BC7028 /* libRhodes.a in Frameworks */,
 				FAA5A5BC182B11EB00590B1F /* libstdc++.dylib in Frameworks */,
+				FA50ED3918E47DE20083F8FE /* libRhodes.a in Frameworks */,
 				C0539BFE1767169700D53DF7 /* MediaPlayer.framework in Frameworks */,
 				FA305F8D16D7BD8900565023 /* MobileCoreServices.framework in Frameworks */,
 				FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */,
@@ -206,7 +189,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */,
 				FA3D8EAA182B831400231D0E /* iTunesArtwork */,
 				FA52317212E750F300AB55CC /* Resources */,
 				BDFBD99910B1B9A900BAAFAB /* Settings.bundle */,
@@ -293,17 +275,10 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		FAED788E183C3A8100BC7028 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAED7893183C3A8200BC7028 /* libRhodes.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		FAF3BF2F18E26C4A00860FCA /* Rhodes */ = {
 			isa = PBXGroup;
 			children = (
+				FA50ED3818E47DE20083F8FE /* libRhodes.a */,
 				FAF3BF3018E26D3B00860FCA /* app_build_configs.c */,
 				FAF3BF3118E26D3B00860FCA /* extensions.c */,
 			);
@@ -327,7 +302,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				FAED78CD183C3CDF00BC7028 /* PBXTargetDependency */,
 			);
 			name = rhorunner;
 			productName = rhorunner;
@@ -363,28 +337,12 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = FAED788E183C3A8100BC7028 /* Products */;
-					ProjectRef = FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* rhorunner */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		FAED7893183C3A8200BC7028 /* libRhodes.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRhodes.a;
-			remoteRef = FAED7892183C3A8200BC7028 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BDFBD98F10B1B98100BAAFAB /* Resources */ = {
@@ -478,14 +436,6 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		FAED78CD183C3CDF00BC7028 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Rhodes;
-			targetProxy = FAED78CC183C3CDF00BC7028 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -510,6 +460,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 					"$(SRCROOT)/build/Debug-iphonesimulator",
+					"$(PROJECT_DIR)/Rhodes",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
@@ -553,6 +504,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 					"$(SRCROOT)/build/Release-iphoneos",
+					"$(PROJECT_DIR)/Rhodes",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
@@ -612,6 +564,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 					"$(SRCROOT)/build/Debug-iphonesimulator",
+					"$(PROJECT_DIR)/Rhodes",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
