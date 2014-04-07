@@ -1032,6 +1032,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
         */
         //exit(EXIT_SUCCESS);
     }
+    /*  REMOVED LICENSE
     if (!rho_can_app_started_with_current_licence(
                get_app_build_config_item("motorola_license"),
                get_app_build_config_item("motorola_license_company"),
@@ -1052,6 +1053,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
             [alert show];
             [alert release];
     }
+    */
 	
 	return NO;
 }

@@ -352,7 +352,7 @@ end
 var folders = [];
 var files = [];
 var root_path = "/arbitrary/path"
-var entries = Rho.File.listDir(root_path);
+var entries = Rho.RhoFile.listDir(root_path);
 
 for (var i = 0; i < entries.length; i++) {
   var entry = entries[i];

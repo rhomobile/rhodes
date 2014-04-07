@@ -111,7 +111,7 @@ def make_application_build_config_header_file
   f.puts ""
   f.puts "#include <string.h>"
   f.puts ""
-  f.puts '#include "app_build_configs.h"'
+  f.puts '//#include "app_build_configs.h"'
   if $rhosimulator_build
     f.puts '#include "common/RhoSimConf.h"'
   end
@@ -158,6 +158,8 @@ def make_application_build_config_header_file
 end
 
 def make_application_build_capabilities_header_file
+  puts "%%% Prepare capability header file %%%"
+
   f = StringIO.new("", "w+")      
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
   #f.puts "// Generated #{Time.now.to_s}"
@@ -180,8 +182,11 @@ def make_application_build_capabilities_header_file
   f.puts ''
   
   if $js_application
+    puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY_API'
+  else
+    puts '//#define RHO_NO_RUBY'
   end
   
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_capabilities.h"), f)
@@ -381,7 +386,7 @@ namespace "config" do
     ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
     ENV["APP_TYPE"]     = "rhodes"
 
-    $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
+    $app_config = Jake.config(File.open(File.join($app_path, "build.yml"))) if $app_config_disable_reread != true
     if File.exists?(File.join($app_path, "app_rakefile"))
       load File.join($app_path, "app_rakefile")
       $app_rakefile_exist = true
@@ -719,6 +724,9 @@ namespace "config" do
     $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
     
     $js_application    = Jake.getBuildBoolProp("javascript_application")
+
+    puts '%%%_%%% $js_application = '+$js_application.to_s
+
     
     if !$js_application && !Dir.exists?(File.join($app_path, "app"))
         puts '********* ERROR ************************************************************************'
@@ -1051,7 +1059,7 @@ def init_extensions(dest, mode = "")
             end
           end
 
-          if xml_api_paths && type != "prebuilt" # && wm_type != "prebuilt"
+          if (xml_api_paths && type != "prebuilt") && !($use_prebuild_data && (extname == 'coreapi')) # && wm_type != "prebuilt"
             xml_api_paths    = xml_api_paths.split(',')
                                                           
             xml_api_paths.each do |xml_api|

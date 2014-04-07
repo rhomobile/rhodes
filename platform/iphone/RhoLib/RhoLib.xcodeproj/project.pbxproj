@@ -86,7 +86,6 @@
 		C5D47763156A4ED000943A2D /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D47761156A4ED000943A2D /* zip.h */; };
 		FA0E908D16B7FE000094CCDE /* CJSConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA0E908C16B7FE000094CCDE /* CJSConverter.mm */; };
 		FA1D452618D9E2BC0010CCF9 /* app_build_capabilities.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1D452518D9E2BC0010CCF9 /* app_build_capabilities.h */; };
-		FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */; };
 		FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */; };
 		FA6B222617026477009D1398 /* MethodResultConvertor.h in Headers */ = {isa = PBXBuildFile; fileRef = FA6B222517026477009D1398 /* MethodResultConvertor.h */; };
 		FAC6EE5B143B1FC800B8E352 /* BaseMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */; };
@@ -645,7 +644,6 @@
 				5CEBCFEF11E6FB8700145F4E /* rhoparams.cpp in Sources */,
 				5C663BEA11F3712C005F60AF /* RhodesAppBase.cpp in Sources */,
 				5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */,
-				FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */,
 				5CE03CCC12DB7E990058B474 /* sqlite3.c in Sources */,
 				5CB821AE1312487100778441 /* INetRequest.cpp in Sources */,
 				5C0F94DF132979140093FA1B /* RhoTime.cpp in Sources */,
