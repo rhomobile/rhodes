@@ -26,7 +26,6 @@
 		BD807BC31259E37900A4E4B2 /* event_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD807BC11259E37900A4E4B2 /* event_wrap.c */; };
 		BD807BC41259E37900A4E4B2 /* event.h in Headers */ = {isa = PBXBuildFile; fileRef = BD807BC21259E37900A4E4B2 /* event.h */; };
 		BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD9E5E0F1186B44B0053049C /* navbar_wrap.c */; };
-		D38F7B5F110647510030B1F4 /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = D38F7B5E110647510030B1F4 /* extensions.c */; };
 		F51668800FFD39D80079F023 /* alert_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F516687F0FFD39D80079F023 /* alert_wrap.c */; };
 		F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FE70F008AA600E46829 /* phonebook_wrap.c */; };
 		F5E360690EB6A62A00226287 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360220EB6A62A00226287 /* array.c */; };
@@ -798,7 +797,6 @@
 				46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */,
 				F5FD0A3D10619E7900B7B8ED /* mapview_wrap.c in Sources */,
 				5CF8DBCA10B1D45C00247AB4 /* socket.c in Sources */,
-				D38F7B5F110647510030B1F4 /* extensions.c in Sources */,
 				5C79894D113BD1D0005F8736 /* geolocation_wrap.c in Sources */,
 				BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */,
 				BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */,
