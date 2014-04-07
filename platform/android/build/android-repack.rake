@@ -43,6 +43,8 @@ namespace 'build' do
             packed_items = get_bundle_map(filelist)
           end
 
+          zipfile.close
+
           bundle_items = {}
 
           File.open( File.join( $appassets, 'RhoBundleMap.txt' ) ) do |filelist|
@@ -52,52 +54,69 @@ namespace 'build' do
           remove_items = []
           add_items = []
 
-          packed_items.each_key { |key| remove_items << key unless bundle_items.has_key?(key) }
+          packed_items.each { |key,value| remove_items << key if (!bundle_items.has_key?(key) and value[:type]=='file') }
 
-          remove_items.each { |key|
-            puts "Removing item from package: #{key}"
-            zipfile.remove('assets/'+key)
-            packed_items.delete(key)
-          }
-
-          bundle_items.each { |key,value| (add_items<<key) unless value==packed_items[key] }
-
-          add_items.each { |key|
-
-            val = bundle_items[key]
-            target_entry = 'assets/'+key
-
-            if val[:type] == 'file' then
-
-              src_path = File.join($appassets,key)
-
-              if zipfile.find_entry(target_entry) then
-                puts "Replacing item in package: #{key}:#{val}"
-                zipfile.replace(target_entry,src_path)
-              else
-                puts "Adding item to package: #{key}:#{val}"
-                zipfile.add(target_entry,src_path)
-              end
-
-            else
-              puts "Adding directory to package: #{key}:#{val}"
-              zipfile.remove(target_entry) if zipfile.find_entry(target_entry)
-              zipfile.mkdir(target_entry)
+          bundle_items.each { |key,value|
+            if value!=packed_items[key] and value[:type]=='file' then
+              add_items << key unless key=='rho.dat'
+              remove_items << key if packed_items.has_key?(key)
             end
-            packed_items[key] = val
           }
+
+          currentdir = Dir.pwd()
+          Dir.chdir $appassets+'/..'
+
+          unless remove_items.empty? then
+            args = [ 'remove', resourcepkg ]
+
+            remove_items.each { |key|
+              puts "Removing item from package: #{key}"
+              args << 'assets/'+key
+              packed_items.delete(key)
+            }
+
+            Jake.run($aapt, args)
+            unless $?.success?
+              raise "Error running AAPT (1)"
+            end
+          end
+
+          unless add_items.empty? then
+            args = [ 'add', resourcepkg ]
+
+            add_items.each { |key|
+              puts "Adding item to package: #{key}:#{bundle_items[key]}"
+              args << 'assets/'+key
+            }
+
+            Jake.run($aapt, args)
+            unless $?.success?
+              raise "Error running AAPT (1)"
+            end
+          end
+
 
           has_changes = !(remove_items.empty? and add_items.empty?)
 
           if has_changes then
             puts 'Replacing bundle map and commiting package changes'
-            zipfile.replace('assets/RhoBundleMap.txt',File.join( $appassets, 'RhoBundleMap.txt' ))
-            zipfile.commit
+
+            Jake.run($aapt, ['remove',resourcepkg,'assets/RhoBundleMap.txt','assets/rho.dat'])
+            unless $?.success?
+              raise "Error running AAPT (1)"
+            end
+
+            Jake.run($aapt, ['add',resourcepkg,'assets/RhoBundleMap.txt','assets/rho.dat'])
+            unless $?.success?
+              raise "Error running AAPT (1)"
+            end
           else
             puts "No changes detected in the bundle, do nothing"
           end
 
-          zipfile.close
+          Dir.chdir currentdir
+
+          #zipfile.close
 
         rescue => e
           puts "EXCEPTION: #{e.inspect}"
