@@ -913,6 +913,22 @@ module Rhogen
     end
 
 
+    template :extension_qt_rakefile do |template|
+      template.source = 'extensions/montana/ext/platform/qt/Rakefile'
+      template.destination = "extensions/#{name}/ext/platform/qt/Rakefile"
+    end
+
+    template :extension_qt_pro do |template|
+      template.source = 'extensions/montana/ext/platform/qt/Montana.pro'
+      template.destination = "extensions/#{name}/ext/platform/qt/#{namecamelcase}.pro"
+    end
+
+    template :extension_qt_src_impl do |template|
+      template.source = 'extensions/montana/ext/platform/qt/src/Montana_impl.cpp'
+      template.destination = "extensions/#{name}/ext/platform/qt/src/#{namecamelcase}_impl.cpp"
+    end
+
+
     template :extension_bb_files do |template|
       template.source = 'extensions/montana/ext/platform/bb/Montana.files'
       template.destination = "extensions/#{name}/ext/platform/bb/#{namecamelcase}.files"
