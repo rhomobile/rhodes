@@ -569,6 +569,10 @@ namespace "config" do
         $app_config['capabilities'].delete('shared_runtime')
       end
       
+      if $app_config['capabilities'].index('shared_runtime')
+        $app_config['extensions'] << 'rhoelements-license'
+      end
+      
       $file_map_name = "rho.dat"
     end
 
