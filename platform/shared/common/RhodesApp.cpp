@@ -1650,7 +1650,12 @@ void CRhodesApp::initAppUrls()
     modifyRhoApiFile();
 #endif
 
+#ifndef OS_WINCE
 	m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
+#else
+	m_isJSFSApp = false;
+#endif
+
 }
 
 void CRhodesApp::modifyRhoApiFile()
