@@ -764,3 +764,14 @@ extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
     CMainWindow::getInstance()->executeRunnable(pTask);
 }
+
+#if defined(RHODES_QT_PLATFORM) && defined(OS_MACOSX)
+extern "C" void rho_qt_sys_minimize()
+{
+    CMainWindow::getInstance()->minimizeWindowCommand();
+}
+extern "C" void rho_qt_sys_bring_to_front()
+{
+    CMainWindow::getInstance()->bringToFront();
+}
+#endif
