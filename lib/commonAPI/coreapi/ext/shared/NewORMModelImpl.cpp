@@ -287,7 +287,7 @@ void rho::CNewORMModelImpl::initBlobAttributes(rho::apiGenerator::CMethodResult&
         {
             if(blob_attribs.size() > 0)
                 blob_attribs += ",";
-            blob_attribs += prop_def.name_;
+            blob_attribs += prop_def.name_ + ",";
             blob_attribs += (prop_def.option_ == "overwrite" ? "1" : "0");
 
         }
@@ -415,6 +415,8 @@ void rho::CNewORMModelImpl::initDbSource(rho::apiGenerator::CMethodResult& oResu
             oResult.setError(res.getDBError().getError());
         }
     }
+    // reload BlobAttrs
+    db.getAttrMgr().loadBlobAttrs(db);
 }
 
 void rho::CNewORMModelImpl::initDbSchema(rho::apiGenerator::CMethodResult& oResult)
@@ -486,50 +488,26 @@ void rho::CNewORMModelImpl::initDbSchema(rho::apiGenerator::CMethodResult& oResu
 
 void rho::CNewORMModelImpl::getCount(rho::apiGenerator::CMethodResult& oResult)
 {
-    Vector<rho::String> quests;
-    _findCount("", quests, oResult);
-    LOG(INFO) + name() + ", getCount: " +  oResult.getInt();
-}
-
-void rho::CNewORMModelImpl::_findCount(const rho::String& conditionsStr,
-                Vector<rho::String>& quests,
-                rho::apiGenerator::CMethodResult& oResult)
-{
     getProperty("source_id", oResult);
     rho::String source_id = oResult.getString();
+    Hashtable<rho::String, rho::String> attrsSet;
     db::CDBAdapter& db = _get_db(oResult);
     oResult.set(0);
     if(fixed_schema()) {
         rho::String strSQL("SELECT COUNT(*) FROM ");
         strSQL += name();
-        if(conditionsStr.size()) {
-            strSQL += rho::String(" WHERE ") + conditionsStr;
-        }
-        IDBResult res = db.executeSQLEx(strSQL.c_str(), quests);
-        if(!res.getDBError().isOK()) {
-            oResult.setError(res.getDBError().getError());
-            return;
-        }
-        if(!res.isEnd())
-            oResult.set(res.getIntByIdx(0));
+        IDBResult res = db.executeSQL(strSQL.c_str());
+        _processDbResult(res, "count", attrsSet, true, oResult);
     }
     else
     {
         rho::String strSQL("SELECT COUNT(DISTINCT object) FROM object_values WHERE source_id=");
         strSQL += source_id;
-        if(conditionsStr.size()) {
-            strSQL += rho::String(" AND ") + conditionsStr;
-        }
-        IDBResult res = db.executeSQLEx(strSQL.c_str(), quests);
-        if(!res.getDBError().isOK()) {
-            oResult.setError(res.getDBError().getError());
-            return;
-        }
-        if(!res.isEnd())
-            oResult.set(res.getIntByIdx(0));
+        IDBResult res = db.executeSQL(strSQL.c_str());
+        _processDbResult(res, "count", attrsSet, true, oResult);
     }
 
-    LOG(INFO) + name() + ", _findCount: " +  oResult.getInt();
+    LOG(INFO) + name() + ", getCount: " +  oResult.getInt();
 }
 
 void rho::CNewORMModelImpl::getBackendRefreshTime(rho::apiGenerator::CMethodResult& oResult)
@@ -565,18 +543,6 @@ void rho::CNewORMModelImpl::findObjects(const rho::String& what,
         oResult.setError("findObjects: Invalid Empty First Argument passed.");
         return;
     }
-    // count returns integer
-    if(what == "count") {
-        rho::String where_str;
-        rho::Vector<rho::String> where_quests;
-        Hashtable<rho::String, rho::String>::const_iterator cCondIt = strOptions.find("conditions");
-        if(cCondIt != strOptions.end())
-            where_str = cCondIt -> second;
-        rho::Vector<rho::String> questArgs(quests);
-        _findCount(where_str, questArgs, oResult);
-        return;
-    }
-    // in all other cases - objects are returned
     findObjectsFixedSchema(what, strOptions, quests, select_attrs, order_attrs, oResult);
 }
 
@@ -724,6 +690,12 @@ rho::String rho::CNewORMModelImpl::_make_select_attrs_str(const rho::Vector<rho:
             attrs_str += ",";
         attrs_str += select_attrs[i];
         attrsSet[select_attrs[i]] = "";
+    }
+    // object must be included always
+    if(!attrsSet.containsKey("object")) {
+        attrsSet["object"] = "";
+        attrs_str += ",";
+        attrs_str += "object";
     }
     return attrs_str;
 }
@@ -936,6 +908,8 @@ void rho::CNewORMModelImpl::findObjectsFixedSchema(const rho::String& what,
                  rho::apiGenerator::CMethodResult& oResult)
 {
     LOG(INFO) + "MZV_DEBUG: findObjectsFixedSchema";
+    getProperty("source_id", oResult);
+    rho::String source_id = oResult.getString();
     Hashtable<rho::String, rho::String> attrsSet;
     rho::String attrs_str = _make_select_attrs_str(select_attrs, attrsSet);
     rho::String order_str = _make_order_str(order_attrs);
@@ -947,7 +921,14 @@ void rho::CNewORMModelImpl::findObjectsFixedSchema(const rho::String& what,
     rho::Vector<rho::String> questParams(quests);
     // build the SQL
     rho::String strSQL("SELECT ");
-    strSQL += attrs_str + " FROM " + name();
+    if(what == "count") {
+        strSQL += "COUNT(*) ";
+    }
+    else 
+    {
+        strSQL += attrs_str;
+    }
+    strSQL += rho::String(" FROM ") + name();
     if(where_str.size())
         strSQL += rho::String(" WHERE ") + where_str;
     if(order_str.size())
@@ -958,21 +939,7 @@ void rho::CNewORMModelImpl::findObjectsFixedSchema(const rho::String& what,
 
     db::CDBAdapter& db = _get_db(oResult);
     IDBResult res = db.executeSQLEx(strSQL.c_str(), questParams);
-    if(!res.getDBError().isOK()) {
-        oResult.setError(res.getDBError().getError());
-        return;
-    }
-    Vector<Hashtable<rho::String, rho::String> > retVals;
-    for(; !res.isEnd(); res.next()) {
-        int ncols = res.getColCount();
-        Hashtable<rho::String, rho::String> obj_hash;
-        for(int i = 0; i < ncols; ++i) {
-            obj_hash.put(res.getColName(i), res.getStringByIdx(i));
-        }
-        retVals.push_back(obj_hash);
-    }
-    LOG(INFO) + "MZV_DEBUG, findObjectsFixedSchema : " + retVals.size();
-    oResult.set(retVals);
+    _processDbResult(res, what, attrsSet, true, oResult);
 }
 
 void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& what,
@@ -984,8 +951,6 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
     Hashtable<rho::String, rho::String> attrsSet;
     getProperty("source_id", oResult);
     rho::String source_id = oResult.getString();
-    // we do not support select attrs for PropertyBag
-    rho::String attrs_str = "object,attrib,value";
     Hashtable<rho::String, rho::String> attrSet;
     rho::String selStr = _make_select_attrs_str(select_attr, attrSet);
     LOG(INFO) + "MZV_DEBUG: " + selStr;
@@ -1001,6 +966,7 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
     else
     {
         for(Hashtable<rho::String, rho::String>::const_iterator cIt = conditions.begin(); cIt != conditions.end(); ++cIt) {
+            LOG(INFO) + "MZV_DEBUG, we have conditions: " + cIt -> first + ", " + cIt -> second;
             if(strSQL.size() > 0)
             {
                 strSQL += "\nINTERSECT\n";
@@ -1010,9 +976,12 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondHash(const rho::String& 
             quests.push_back(source_id);
             const rho::String& key = cIt -> first;
             const rho::String& value = cIt -> second;
-            strCondStatement += rho::String("attrib=? AND value=?");
+            strCondStatement += rho::String("attrib=? AND value");
+            strCondStatement += (value.empty() ? " IS NULL" : "=?");  
+            //strCondStatement += rho::String("attrib=? AND value=?");
             quests.push_back(key);
-            quests.push_back(value);
+            if(value.size())
+                quests.push_back(value);
             strSQL += strCondStatement;
         }
     }
@@ -1060,54 +1029,137 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     rho::String where_str(conditions);
     rho::Vector<rho::String> questParams(quests);
     // count returns an integer
+    rho::String strSQL;
     if(what == "count")
     {
-        _findCount(conditions, questParams, oResult);
-        return;
+        strSQL = "SELECT COUNT(DISTINCT object)";
     }
     Hashtable<rho::String, rho::String> attrSet;
     _make_select_attrs_str(select_attr, attrSet);
-    // what is and Object's ID
-    if(what != "all" && what != "first") {
-        where_str = "object=?";
-        questParams.clear();
-        questParams.push_back(what);
+    if(!where_str.size()) 
+    {
+        if(what != "all" && what != "first" && what != "count") {
+            where_str = "object=?";
+            questParams.clear();
+            questParams.push_back(what);
+        }
+        rho::String order_str = "";
+        rho::String limit_str = "";
+        rho::String attrs_str = "object,attrib,value";
+        if(!strSQL.size()) 
+        {
+            strSQL = "SELECT ";
+            strSQL += attrs_str; 
+        }
+        strSQL += " FROM object_values";
+        strSQL += " WHERE source_id=";
+        strSQL += source_id;
+        if(where_str.size())
+            strSQL += rho::String(" AND ") + where_str;
+        if(limit_str.size())
+            strSQL += limit_str;
+        db::CDBAdapter& db = _get_db(oResult);
+        LOG(INFO) + "MZV_DEBUG, before call : " + strSQL + ", " + questParams.size();
+        IDBResult res = db.executeSQLEx(strSQL.c_str(), questParams);
+        _processDbResult(res, what, attrSet, false, oResult);
+        return;
     }
-    rho::String order_str = "";
-    rho::String limit_str = "";
-    rho::String attrs_str = "object,attrib,value";
-    rho::String strSQL("SELECT ");
-    strSQL += attrs_str + " FROM object_values";
-    strSQL += " WHERE source_id=";
-    strSQL += source_id;
-    if(where_str.size())
-        strSQL += rho::String(" AND ") + where_str;
-    if(limit_str.size())
-        strSQL += limit_str;
+    else 
+    {
+        rho::String limit_str = "";
+        if(what != "count") 
+        {
+            if(where_str.size())
+                strSQL = "SELECT * FROM (\n";
+        }
+        else 
+        {
+            strSQL += " FROM (\n";
+        }
+        strSQL += "SELECT object";
 
-    db::CDBAdapter& db = _get_db(oResult);
-    LOG(INFO) + "MZV_DEBUG, before call : " + strSQL + ", " + questParams.size();
-    IDBResult res = db.executeSQLEx(strSQL.c_str(), questParams);
+        for(size_t i = 0; i < select_attr.size(); ++i)
+        {
+            if(_is_reserved_name(select_attr[i]))
+                continue;
+            strSQL += ",\n";
+            strSQL += "MAX(CASE WHEN attrib = '";
+            strSQL += select_attr[i];
+            strSQL += "' THEN value ELSE NULL END) AS \'";
+            strSQL += select_attr[i];
+            strSQL += "\'";
+        }
+        strSQL += " FROM object_values ov \n";
+        strSQL += " WHERE source_id=";
+        strSQL += source_id;
+        strSQL += "\n";
+        strSQL += "GROUP BY object\n";
+        strSQL += ") WHERE ";
+        strSQL += where_str;
+        if(limit_str.size())
+            strSQL += limit_str;
+        db::CDBAdapter& db = _get_db(oResult);
+        LOG(INFO) + "MZV_DEBUG, before call : " + strSQL + ", " + questParams.size();
+        IDBResult res = db.executeSQLEx(strSQL.c_str(), questParams);
+        _processDbResult(res, what, attrSet, true, oResult);
+    }
+}
+
+void rho::CNewORMModelImpl::_processDbResult(IDBResult& res, 
+                                             const rho::String& what,
+                                             const Hashtable<rho::String, rho::String>& attrSet,
+                                             const bool tableResults, 
+                                             rho::apiGenerator::CMethodResult& oResult)
+{
     if(!res.getDBError().isOK()) {
         oResult.setError(res.getDBError().getError());
         return;
     }
-    Vector<Hashtable<rho::String, rho::String> > retVals;
-    Hashtable<rho::String, Hashtable<rho::String, rho::String> > obj_hashes;
-    for(; !res.isEnd(); res.next()) {
-        // include only the requested attributes
-        if(attrSet.size() && !attrSet.containsKey(res.getStringByIdx(1)))
-            continue;
-        obj_hashes[res.getStringByIdx(0)][res.getStringByIdx(1)] = res.getStringByIdx(2);
+
+    if(what == "count")
+    {
+        if(!res.isEnd())
+            oResult.set(res.getIntByIdx(0));
+        return;   
     }
-    for(Hashtable<rho::String, Hashtable<rho::String, rho::String> >::iterator cResIt = obj_hashes.begin(); cResIt != obj_hashes.end(); ++cResIt) {
-        Hashtable<rho::String, rho::String>& obj_hash = cResIt -> second;
-        const rho::String& objId = cResIt -> first;
-        obj_hash["object"] = objId;
-        retVals.push_back(obj_hash);
+
+    // fixed_schema and inclusion SELECT for PropertyBag returns col/value table-format rows
+    getProperty("source_id", oResult);
+    rho::String source_id = oResult.getString();
+    if(tableResults) {
+        Vector<Hashtable<rho::String, rho::String> > retVals;
+        for(; !res.isEnd(); res.next()) {
+            int ncols = res.getColCount();
+            Hashtable<rho::String, rho::String> obj_hash;
+            for(int i = 0; i < ncols; ++i) {
+                obj_hash.put(res.getColName(i), res.getStringByIdx(i));
+            }
+            obj_hash["source_id"] = source_id;
+            retVals.push_back(obj_hash);
+        }
+        LOG(INFO) + "MZV_DEBUG, returning : " + retVals.size();
+        oResult.set(retVals);
     }
-    LOG(INFO) + "MZV_DEBUG, returning  : " + retVals.size();
-    oResult.set(retVals);
+    // propertyBag search returns attrib,value,object rows
+    else {
+        Vector<Hashtable<rho::String, rho::String> > retVals;
+        Hashtable<rho::String, Hashtable<rho::String, rho::String> > obj_hashes;
+        for(; !res.isEnd(); res.next()) {
+            // include only the requested attributes
+            if(attrSet.size() && !attrSet.containsKey(res.getStringByIdx(1)))
+                continue;
+            obj_hashes[res.getStringByIdx(0)][res.getStringByIdx(1)] = res.getStringByIdx(2);
+        }
+        for(Hashtable<rho::String, Hashtable<rho::String, rho::String> >::iterator cResIt = obj_hashes.begin(); cResIt != obj_hashes.end(); ++cResIt) {
+            Hashtable<rho::String, rho::String>& obj_hash = cResIt -> second;
+            const rho::String& objId = cResIt -> first;
+            obj_hash["object"] = objId;
+            obj_hash["source_id"] = source_id;
+            retVals.push_back(obj_hash);
+        }
+        LOG(INFO) + "MZV_DEBUG, returning  : " + retVals.size();
+        oResult.set(retVals);
+    }
 }
 
 void rho::CNewORMModelImpl::hasChanges(const rho::String& objId, rho::apiGenerator::CMethodResult& oResult)

@@ -160,9 +160,6 @@ namespace rho {
                     rho::apiGenerator::CMethodResult& oResult);
 
         // Aux methods
-        void _findCount(const rho::String& conditionsStr, 
-                        Vector<rho::String>& quests,
-                        rho::apiGenerator::CMethodResult& oResult);
         rho::String _make_select_attrs_str(const rho::Vector<rho::String>& select_attrs,
                                            rho::Hashtable<rho::String, rho::String>& attrsSet);
         rho::String _make_order_str(const Vector<rho::String>& order_attrs);
@@ -232,6 +229,12 @@ namespace rho {
                                 Hashtable<rho::String, rho::String>& attrs,
                                 const Hashtable<rho::String, rho::String>& selectAttrs, 
                                 rho::apiGenerator::CMethodResult& oResult);
+
+        void _processDbResult(IDBResult& res, 
+                              const rho::String& what,
+                              const Hashtable<rho::String, rho::String>& attrSet,
+                              const bool tableResults, 
+                              rho::apiGenerator::CMethodResult& oResult);
 
         static int _get_partition_start_id(const rho::String& partition);
         static rho::String _get_db_type(const rho::String& propType);
