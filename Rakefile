@@ -867,7 +867,7 @@ def find_ext_ingems(extname)
   extpath
 end
 
-def write_modules_js(filename, modules)
+def write_modules_js(folder, filename, modules)
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     
@@ -879,7 +879,19 @@ def write_modules_js(filename, modules)
         end
     end
 
-    Jake.modify_file_if_content_changed(filename, f)
+    Jake.modify_file_if_content_changed(File.join(folder,filename), f)
+
+    if modules
+        modules.each do |m|
+            f = StringIO.new("", "w+")
+
+            modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+            f.puts( "// Module #{modulename}\n\n" )
+            f.write(File.read(m))
+
+            Jake.modify_file_if_content_changed(File.join(folder, modulename+'.js'), f)
+        end
+    end
 end
 
 def is_ext_supported(extpath)
@@ -1125,12 +1137,12 @@ def init_extensions(dest, mode = "")
   #
   if extjsmodulefiles.count > 0
     puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
   end
   #
   if extjsmodulefiles_opt.count > 0
     puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
   end
   
   return if mode == "update_rho_modules_js"
@@ -2465,12 +2477,12 @@ namespace "run" do
         #
         if extjsmodulefiles.count > 0
           puts "extjsmodulefiles: #{extjsmodulefiles}"
-          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
         end
         #
         if extjsmodulefiles_opt.count > 0
           puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
-          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
