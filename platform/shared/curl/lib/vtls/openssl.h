@@ -1,5 +1,5 @@
-#ifndef __SSLUSE_H
-#define __SSLUSE_H
+#ifndef HEADER_CURL_SSLUSE_H
+#define HEADER_CURL_SSLUSE_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2014, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,19 +20,17 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: ssluse.h,v 1.32 2008-09-05 14:29:21 bagder Exp $
  ***************************************************************************/
+
+#include "curl_setup.h"
 
 #ifdef USE_SSLEAY
 /*
- * This header should only be needed to get included by sslgen.c and ssluse.c
+ * This header should only be needed to get included by vtls.c and openssl.c
  */
 
-#ifdef USE_RHOSSL
-#include "rhossl.h"
-#else
-
 #include "urldata.h"
+
 CURLcode Curl_ossl_connect(struct connectdata *conn, int sockindex);
 CURLcode Curl_ossl_connect_nonblocking(struct connectdata *conn,
                                        int sockindex,
@@ -61,25 +59,23 @@ struct curl_slist *Curl_ossl_engines_list(struct SessionHandle *data);
 int Curl_ossl_init(void);
 void Curl_ossl_cleanup(void);
 
-ssize_t Curl_ossl_send(struct connectdata *conn,
-                       int sockindex,
-                       const void *mem,
-                       size_t len);
-ssize_t Curl_ossl_recv(struct connectdata *conn, /* connection data */
-                       int num,                  /* socketindex */
-                       char *buf,                /* store read data here */
-                       size_t buffersize,        /* max amount to read */
-                       bool *wouldblock);
-
 size_t Curl_ossl_version(char *buffer, size_t size);
 int Curl_ossl_check_cxn(struct connectdata *cxn);
-#endif // USE_RHOSSL
 int Curl_ossl_seed(struct SessionHandle *data);
-#ifndef USE_RHOSSL
 
 int Curl_ossl_shutdown(struct connectdata *conn, int sockindex);
 bool Curl_ossl_data_pending(const struct connectdata *conn,
                             int connindex);
+void Curl_ossl_random(struct SessionHandle *data, unsigned char *entropy,
+                      size_t length);
+void Curl_ossl_md5sum(unsigned char *tmp, /* input */
+                      size_t tmplen,
+                      unsigned char *md5sum /* output */,
+                      size_t unused);
+
+/* this backend provides these functions: */
+#define have_curlssl_random 1
+#define have_curlssl_md5sum 1
 
 /* API setup for OpenSSL */
 #define curlssl_init Curl_ossl_init
@@ -93,12 +89,13 @@ bool Curl_ossl_data_pending(const struct connectdata *conn,
 #define curlssl_set_engine(x,y) Curl_ossl_set_engine(x,y)
 #define curlssl_set_engine_default(x) Curl_ossl_set_engine_default(x)
 #define curlssl_engines_list(x) Curl_ossl_engines_list(x)
-#define curlssl_send Curl_ossl_send
-#define curlssl_recv Curl_ossl_recv
 #define curlssl_version Curl_ossl_version
 #define curlssl_check_cxn Curl_ossl_check_cxn
 #define curlssl_data_pending(x,y) Curl_ossl_data_pending(x,y)
+#define curlssl_random(x,y,z) Curl_ossl_random(x,y,z)
+#define curlssl_md5sum(a,b,c,d) Curl_ossl_md5sum(a,b,c,d)
 
-#endif /* USE_RHOSSL */
+#define DEFAULT_CIPHER_SELECTION "ALL!EXPORT!EXPORT40!EXPORT56!aNULL!LOW!RC4"
+
 #endif /* USE_SSLEAY */
-#endif /* __SSLUSE_H */
+#endif /* HEADER_CURL_SSLUSE_H */

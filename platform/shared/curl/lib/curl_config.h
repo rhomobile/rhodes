@@ -987,4 +987,11 @@
 #if defined(OS_IPHONE) || defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8)
 #define USE_RHOSSL 1
 #endif
+
+#define HTTP_ONLY
+
+#define SIZEOF_INT              4
+#define SIZEOF_SHORT            2
+#define SIZEOF_SIZE_T           4
+
 /* RHO END */

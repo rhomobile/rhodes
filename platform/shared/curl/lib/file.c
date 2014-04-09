@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2013, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,35 +18,14 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: file.c,v 1.121 2009-06-04 19:11:11 yangtse Exp $
  ***************************************************************************/
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #ifndef CURL_DISABLE_FILE
-/* -- WIN32 approved -- */
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <ctype.h>
 
-#ifdef WIN32
-#include <time.h>
-#include <io.h>
-#include <fcntl.h>
-#else
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#endif
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
 #endif
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
@@ -69,8 +48,6 @@
 #include <fcntl.h>
 #endif
 
-#endif /* WIN32 */
-
 #include "strtoofft.h"
 #include "urldata.h"
 #include <curl/curl.h>
@@ -84,6 +61,7 @@
 #include "url.h"
 #include "curl_memory.h"
 #include "parsedate.h" /* for the week day and month names */
+#include "warnless.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -91,7 +69,8 @@
 /* The last #include file should be: */
 #include "memdebug.h"
 
-#if defined(WIN32) || defined(MSDOS) || defined(__EMX__) || defined(__SYMBIAN32__)
+#if defined(WIN32) || defined(MSDOS) || defined(__EMX__) || \
+  defined(__SYMBIAN32__)
 #define DOS_FILESYSTEM 1
 #endif
 
@@ -109,6 +88,9 @@ static CURLcode file_do(struct connectdata *, bool *done);
 static CURLcode file_done(struct connectdata *conn,
                           CURLcode status, bool premature);
 static CURLcode file_connect(struct connectdata *conn, bool *done);
+static CURLcode file_disconnect(struct connectdata *conn,
+                                bool dead_connection);
+static CURLcode file_setup_connection(struct connectdata *conn);
 
 /*
  * FILE scheme handler.
@@ -116,7 +98,7 @@ static CURLcode file_connect(struct connectdata *conn, bool *done);
 
 const struct Curl_handler Curl_handler_file = {
   "FILE",                               /* scheme */
-  ZERO_NULL,                            /* setup_connection */
+  file_setup_connection,                /* setup_connection */
   file_do,                              /* do_it */
   file_done,                            /* done */
   ZERO_NULL,                            /* do_more */
@@ -125,12 +107,25 @@ const struct Curl_handler Curl_handler_file = {
   ZERO_NULL,                            /* doing */
   ZERO_NULL,                            /* proto_getsock */
   ZERO_NULL,                            /* doing_getsock */
+  ZERO_NULL,                            /* domore_getsock */
   ZERO_NULL,                            /* perform_getsock */
-  ZERO_NULL,                            /* disconnect */
+  file_disconnect,                      /* disconnect */
+  ZERO_NULL,                            /* readwrite */
   0,                                    /* defport */
-  PROT_FILE                             /* protocol */
+  CURLPROTO_FILE,                       /* protocol */
+  PROTOPT_NONETWORK | PROTOPT_NOURLQUERY /* flags */
 };
 
+
+static CURLcode file_setup_connection(struct connectdata *conn)
+{
+  /* allocate the FILE specific struct */
+  conn->data->req.protop = calloc(1, sizeof(struct FILEPROTO));
+  if(!conn->data->req.protop)
+    return CURLE_OUT_OF_MEMORY;
+
+  return CURLE_OK;
+}
 
  /*
   Check if this is a range download, and if so, set the internal variables
@@ -147,7 +142,7 @@ static CURLcode file_range(struct connectdata *conn)
 
   if(data->state.use_range && data->state.range) {
     from=curlx_strtoofft(data->state.range, &ptr, 0);
-    while(ptr && *ptr && (isspace((int)*ptr) || (*ptr=='-')))
+    while(*ptr && (ISSPACE(*ptr) || (*ptr=='-')))
       ptr++;
     to=curlx_strtoofft(ptr, &ptr2, 0);
     if(ptr == ptr2) {
@@ -157,28 +152,28 @@ static CURLcode file_range(struct connectdata *conn)
     if((-1 == to) && (from>=0)) {
       /* X - */
       data->state.resume_from = from;
-      DEBUGF(infof(data, "RANGE %" FORMAT_OFF_T " to end of file\n",
+      DEBUGF(infof(data, "RANGE %" CURL_FORMAT_CURL_OFF_T " to end of file\n",
                    from));
     }
     else if(from < 0) {
       /* -Y */
-      totalsize = -from;
       data->req.maxdownload = -from;
       data->state.resume_from = from;
-      DEBUGF(infof(data, "RANGE the last %" FORMAT_OFF_T " bytes\n",
-                   totalsize));
+      DEBUGF(infof(data, "RANGE the last %" CURL_FORMAT_CURL_OFF_T " bytes\n",
+                   -from));
     }
     else {
       /* X-Y */
       totalsize = to-from;
       data->req.maxdownload = totalsize+1; /* include last byte */
       data->state.resume_from = from;
-      DEBUGF(infof(data, "RANGE from %" FORMAT_OFF_T
-                   " getting %" FORMAT_OFF_T " bytes\n",
+      DEBUGF(infof(data, "RANGE from %" CURL_FORMAT_CURL_OFF_T
+                   " getting %" CURL_FORMAT_CURL_OFF_T " bytes\n",
                    from, data->req.maxdownload));
     }
-    DEBUGF(infof(data, "range-download from %" FORMAT_OFF_T
-                 " to %" FORMAT_OFF_T ", totally %" FORMAT_OFF_T " bytes\n",
+    DEBUGF(infof(data, "range-download from %" CURL_FORMAT_CURL_OFF_T
+                 " to %" CURL_FORMAT_CURL_OFF_T ", totally %"
+                 CURL_FORMAT_CURL_OFF_T " bytes\n",
                  from, to, data->req.maxdownload));
   }
   else
@@ -194,39 +189,17 @@ static CURLcode file_range(struct connectdata *conn)
 static CURLcode file_connect(struct connectdata *conn, bool *done)
 {
   struct SessionHandle *data = conn->data;
-  char *real_path = curl_easy_unescape(data, data->state.path, 0, NULL);
-  struct FILEPROTO *file;
+  char *real_path;
+  struct FILEPROTO *file = data->req.protop;
   int fd;
 #ifdef DOS_FILESYSTEM
   int i;
   char *actual_path;
 #endif
 
+  real_path = curl_easy_unescape(data, data->state.path, 0, NULL);
   if(!real_path)
     return CURLE_OUT_OF_MEMORY;
-
-  /* If there already is a protocol-specific struct allocated for this
-     sessionhandle, deal with it */
-  Curl_reset_reqproto(conn);
-
-  if(!data->state.proto.file) {
-    file = calloc(sizeof(struct FILEPROTO), 1);
-    if(!file) {
-      free(real_path);
-      return CURLE_OUT_OF_MEMORY;
-    }
-    data->state.proto.file = file;
-  }
-  else {
-    /* file is not a protocol that can deal with "persistancy" */
-    file = data->state.proto.file;
-    Curl_safefree(file->freepath);
-    if(file->fd != -1)
-      close(file->fd);
-    file->path = NULL;
-    file->freepath = NULL;
-    file->fd = -1;
-  }
 
 #ifdef DOS_FILESYSTEM
   /* If the first character is a slash, and there's
@@ -246,18 +219,17 @@ static CURLcode file_connect(struct connectdata *conn, bool *done)
   actual_path = real_path;
   if((actual_path[0] == '/') &&
       actual_path[1] &&
-      (actual_path[2] == ':' || actual_path[2] == '|'))
-  {
+     (actual_path[2] == ':' || actual_path[2] == '|')) {
     actual_path[2] = ':';
     actual_path++;
   }
 
   /* change path separators from '/' to '\\' for DOS, Windows and OS/2 */
-  for (i=0; actual_path[i] != '\0'; ++i)
+  for(i=0; actual_path[i] != '\0'; ++i)
     if(actual_path[i] == '/')
       actual_path[i] = '\\';
 
-  fd = open_readonly(actual_path, O_RDONLY|O_BINARY); /* no CR/LF translation */
+  fd = open_readonly(actual_path, O_RDONLY|O_BINARY);
   file->path = actual_path;
 #else
   fd = open_readonly(real_path, O_RDONLY);
@@ -279,13 +251,34 @@ static CURLcode file_connect(struct connectdata *conn, bool *done)
 static CURLcode file_done(struct connectdata *conn,
                                CURLcode status, bool premature)
 {
-  struct FILEPROTO *file = conn->data->state.proto.file;
+  struct FILEPROTO *file = conn->data->req.protop;
   (void)status; /* not used */
   (void)premature; /* not used */
-  Curl_safefree(file->freepath);
 
-  if(file->fd != -1)
-    close(file->fd);
+  if(file) {
+    Curl_safefree(file->freepath);
+    file->path = NULL;
+    if(file->fd != -1)
+      close(file->fd);
+    file->fd = -1;
+  }
+
+  return CURLE_OK;
+}
+
+static CURLcode file_disconnect(struct connectdata *conn,
+                                bool dead_connection)
+{
+  struct FILEPROTO *file = conn->data->req.protop;
+  (void)dead_connection; /* not used */
+
+  if(file) {
+    Curl_safefree(file->freepath);
+    file->path = NULL;
+    if(file->fd != -1)
+      close(file->fd);
+    file->fd = -1;
+  }
 
   return CURLE_OK;
 }
@@ -298,9 +291,10 @@ static CURLcode file_done(struct connectdata *conn,
 
 static CURLcode file_upload(struct connectdata *conn)
 {
-  struct FILEPROTO *file = conn->data->state.proto.file;
+  struct FILEPROTO *file = conn->data->req.protop;
   const char *dir = strchr(file->path, DIRSEP);
-  FILE *fp;
+  int fd;
+  int mode;
   CURLcode res=CURLE_OK;
   struct SessionHandle *data = conn->data;
   char *buf = data->state.buffer;
@@ -323,29 +317,21 @@ static CURLcode file_upload(struct connectdata *conn)
     return CURLE_FILE_COULDNT_READ_FILE; /* fix: better error code */
 
   if(!dir[1])
-     return CURLE_FILE_COULDNT_READ_FILE; /* fix: better error code */
+    return CURLE_FILE_COULDNT_READ_FILE; /* fix: better error code */
+
+#ifdef O_BINARY
+#define MODE_DEFAULT O_WRONLY|O_CREAT|O_BINARY
+#else
+#define MODE_DEFAULT O_WRONLY|O_CREAT
+#endif
 
   if(data->state.resume_from)
-    fp = fopen( file->path, "ab" );
-  else {
-    int fd;
+    mode = MODE_DEFAULT|O_APPEND;
+  else
+    mode = MODE_DEFAULT|O_TRUNC;
 
-#ifdef DOS_FILESYSTEM
-    fd = open(file->path, O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,
-              conn->data->set.new_file_perms);
-#else
-    fd = open(file->path, O_WRONLY|O_CREAT|O_TRUNC,
-              conn->data->set.new_file_perms);
-#endif
-    if(fd < 0) {
-      failf(data, "Can't open %s for writing", file->path);
-      return CURLE_WRITE_ERROR;
-    }
-    close(fd);
-    fp = fopen(file->path, "wb");
-  }
-
-  if(!fp) {
+  fd = open(file->path, mode, conn->data->set.new_file_perms);
+  if(fd < 0) {
     failf(data, "Can't open %s for writing", file->path);
     return CURLE_WRITE_ERROR;
   }
@@ -356,8 +342,8 @@ static CURLcode file_upload(struct connectdata *conn)
 
   /* treat the negative resume offset value as the case of "-" */
   if(data->state.resume_from < 0) {
-    if(fstat(fileno(fp), &file_stat)) {
-      fclose(fp);
+    if(fstat(fd, &file_stat)) {
+      close(fd);
       failf(data, "Can't get the size of %s", file->path);
       return CURLE_WRITE_ERROR;
     }
@@ -378,7 +364,7 @@ static CURLcode file_upload(struct connectdata *conn)
 
     /*skip bytes before resume point*/
     if(data->state.resume_from) {
-      if( (curl_off_t)nread <= data->state.resume_from ) {
+      if((curl_off_t)nread <= data->state.resume_from ) {
         data->state.resume_from -= nread;
         nread = 0;
         buf2 = buf;
@@ -393,7 +379,7 @@ static CURLcode file_upload(struct connectdata *conn)
       buf2 = buf;
 
     /* write the data to the target */
-    nwrite = fwrite(buf2, 1, nread, fp);
+    nwrite = write(fd, buf2, nread);
     if(nwrite != nread) {
       res = CURLE_SEND_ERROR;
       break;
@@ -411,7 +397,7 @@ static CURLcode file_upload(struct connectdata *conn)
   if(!res && Curl_pgrsUpdate(conn))
     res = CURLE_ABORTED_BY_CALLBACK;
 
-  fclose(fp);
+  close(fd);
 
   return res;
 }
@@ -438,12 +424,12 @@ static CURLcode file_do(struct connectdata *conn, bool *done)
   curl_off_t expected_size=0;
   bool fstated=FALSE;
   ssize_t nread;
-  size_t bytestoread;
   struct SessionHandle *data = conn->data;
   char *buf = data->state.buffer;
   curl_off_t bytecount = 0;
   int fd;
   struct timeval now = Curl_tvnow();
+  struct FILEPROTO *file;
 
   *done = TRUE; /* unconditionally */
 
@@ -453,16 +439,25 @@ static CURLcode file_do(struct connectdata *conn, bool *done)
   if(data->set.upload)
     return file_upload(conn);
 
+  file = conn->data->req.protop;
+
   /* get the fd from the connection phase */
-  fd = conn->data->state.proto.file->fd;
+  fd = file->fd;
 
   /* VMS: This only works reliable for STREAMLF files */
-  if( -1 != fstat(fd, &statbuf)) {
+  if(-1 != fstat(fd, &statbuf)) {
     /* we could stat it, then read out the size */
     expected_size = statbuf.st_size;
     /* and store the modification time */
     data->info.filetime = (long)statbuf.st_mtime;
     fstated = TRUE;
+  }
+
+  if(fstated && !data->state.range && data->set.timecondition) {
+    if(!Curl_meets_timecondition(data, (time_t)data->info.filetime)) {
+      *done = TRUE;
+      return CURLE_OK;
+    }
   }
 
   /* If we have selected NOBODY and HEADER, it means that we only want file
@@ -471,7 +466,7 @@ static CURLcode file_do(struct connectdata *conn, bool *done)
   if(data->set.opt_no_body && data->set.include_header && fstated) {
     CURLcode result;
     snprintf(buf, sizeof(data->state.buffer),
-             "Content-Length: %" FORMAT_OFF_T "\r\n", expected_size);
+             "Content-Length: %" CURL_FORMAT_CURL_OFF_T "\r\n", expected_size);
     result = Curl_client_write(conn, CLIENTWRITE_BOTH, buf, 0);
     if(result)
       return result;
@@ -482,14 +477,13 @@ static CURLcode file_do(struct connectdata *conn, bool *done)
       return result;
 
     if(fstated) {
-      const struct tm *tm;
       time_t filetime = (time_t)statbuf.st_mtime;
-#ifdef HAVE_GMTIME_R
       struct tm buffer;
-      tm = (const struct tm *)gmtime_r(&filetime, &buffer);
-#else
-      tm = gmtime(&filetime);
-#endif
+      const struct tm *tm = &buffer;
+      result = Curl_gmtime(filetime, &buffer);
+      if(result)
+        return result;
+
       /* format: "Tue, 15 Nov 1994 12:45:26 GMT" */
       snprintf(buf, BUFSIZE-1,
                "Last-Modified: %s, %02d %s %4d %02d:%02d:%02d GMT\r\n",
@@ -531,7 +525,7 @@ static CURLcode file_do(struct connectdata *conn, bool *done)
   }
 
   /* A high water mark has been specified so we obey... */
-  if (data->req.maxdownload > 0)
+  if(data->req.maxdownload > 0)
     expected_size = data->req.maxdownload;
 
   if(fstated && (expected_size == 0))
@@ -554,13 +548,16 @@ static CURLcode file_do(struct connectdata *conn, bool *done)
 
   while(res == CURLE_OK) {
     /* Don't fill a whole buffer if we want less than all data */
-    bytestoread = (expected_size < BUFSIZE-1)?(size_t)expected_size:BUFSIZE-1;
+    size_t bytestoread =
+      (expected_size < CURL_OFF_T_C(BUFSIZE) - CURL_OFF_T_C(1)) ?
+      curlx_sotouz(expected_size) : BUFSIZE - 1;
+
     nread = read(fd, buf, bytestoread);
 
-    if( nread > 0)
+    if(nread > 0)
       buf[nread] = 0;
 
-    if (nread <= 0 || expected_size == 0)
+    if(nread <= 0 || expected_size == 0)
       break;
 
     bytecount += nread;

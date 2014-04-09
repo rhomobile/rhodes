@@ -26,7 +26,7 @@
  * but sslgen.c should ever call or use these functions.
  */
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -43,11 +43,9 @@
 #include "formdata.h" /* for the boundary function */
 #include "url.h" /* for the ssl config check function */
 #include "inet_pton.h"
-#include "ssluse.h"
 #include "connect.h"
 #include "strequal.h"
 #include "select.h"
-#include "sslgen.h"
 #include "rawstr.h"
 
 #define _MPRINTF_REPLACE /* use the internal *printf() functions */

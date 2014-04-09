@@ -18,10 +18,10 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: timeval.c,v 1.32 2008-07-02 03:04:56 yangtse Exp $
  ***************************************************************************/
 
 #include "timeval.h"
+
 #if defined(WIN32) && !defined(MSDOS)
 
 struct timeval curlx_tvnow(void)
@@ -32,11 +32,7 @@ struct timeval curlx_tvnow(void)
   ** increases monotonically and wraps once 49.7 days have elapsed.
   */
   struct timeval now;
-#ifndef OS_WP8
   DWORD milliseconds = GetTickCount();
-#else
-  ULONGLONG milliseconds = GetTickCount64();
-#endif
   now.tv_sec = milliseconds / 1000;
   now.tv_usec = (milliseconds % 1000) * 1000;
   return now;
@@ -124,8 +120,11 @@ long curlx_tvdiff(struct timeval newer, struct timeval older)
  */
 double curlx_tvdiff_secs(struct timeval newer, struct timeval older)
 {
-  return (double)(newer.tv_sec-older.tv_sec)+
-    (double)(newer.tv_usec-older.tv_usec)/1000000.0;
+  if(newer.tv_sec != older.tv_sec)
+    return (double)(newer.tv_sec-older.tv_sec)+
+      (double)(newer.tv_usec-older.tv_usec)/1000000.0;
+  else
+    return (double)(newer.tv_usec-older.tv_usec)/1000000.0;
 }
 
 /* return the number of seconds in the given input timeval struct */

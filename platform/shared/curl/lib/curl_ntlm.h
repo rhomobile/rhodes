@@ -1,5 +1,5 @@
-#ifndef HEADER_CURL_RAND_H
-#define HEADER_CURL_RAND_H
+#ifndef HEADER_CURL_NTLM_H
+#define HEADER_CURL_NTLM_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,11 +20,25 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: curl_rand.h,v 1.1 2009-09-17 14:23:27 yangtse Exp $
  ***************************************************************************/
 
-void Curl_srand(void);
+#include "curl_setup.h"
 
-unsigned int Curl_rand(void);
+#ifdef USE_NTLM
 
-#endif /* HEADER_CURL_RAND_H */
+/* this is for ntlm header input */
+CURLcode Curl_input_ntlm(struct connectdata *conn, bool proxy,
+                         const char *header);
+
+/* this is for creating ntlm header output */
+CURLcode Curl_output_ntlm(struct connectdata *conn, bool proxy);
+
+void Curl_http_ntlm_cleanup(struct connectdata *conn);
+
+#else
+
+#define Curl_http_ntlm_cleanup(a) Curl_nop_stmt
+
+#endif
+
+#endif /* HEADER_CURL_NTLM_H */
