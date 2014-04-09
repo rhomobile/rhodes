@@ -32,7 +32,12 @@
 #include <android/log.h>
 
 #include <cstring>
+
+#if __cplusplus == 201103L
 #include <unordered_map>
+#else
+#include <map>
+#endif
 
 #include "rhodes/fileapi.h"
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
@@ -73,7 +78,13 @@ struct rho_stat_t
     unsigned long mtime;
 };
 
+#if __cplusplus == 201103L
 typedef std::unordered_map<std::string, rho_stat_t> rho_stat_map_t;
+#else
+typedef std::map<std::string, rho_stat_t> rho_stat_map_t;
+#endif
+
+
 static rho_stat_map_t rho_stat_map;
 
 struct rho_fd_data_t
