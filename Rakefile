@@ -109,7 +109,8 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company","name", "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "name", "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
+
 $winxpe_build = false
       
 def make_application_build_config_header_file
@@ -651,6 +652,11 @@ namespace "config" do
        $app_config[$config["platform"]]["capabilities"] and $app_config[$config["platform"]]["capabilities"].is_a? Array
     $app_config["capabilities"] = capabilities
 
+    # Add license related keys in case of shared runtime build
+    if $app_config['capabilities'].index('shared_runtime')
+      $application_build_configs_keys << 'motorola_license'
+      $application_build_configs_keys << 'motorola_license_company'
+    end
     application_build_configs = {}
 
     #Process rhoelements settings
@@ -807,7 +813,7 @@ namespace "config" do
         $rhoelements_features += "- Javascript API for device capabilities\n"                
     end
 
-    if File.exist?(File.join($app_path, "license.yml"))
+    if $app_config["capabilities"].index("shared_runtime") && File.exist?(File.join($app_path, "license.yml"))
         license_config = Jake.config(File.open(File.join($app_path, "license.yml")))    
     
         if ( license_config )
@@ -816,11 +822,7 @@ namespace "config" do
         end    
     end    
     
-    $invalid_license = false
-
-    if $rhoelements_features.length() > 0
-        $app_config['extensions'] << 'rhoelements-license' if $current_platform == "android"
-
+    if $app_config["capabilities"].index("shared_runtime") && $rhoelements_features.length() > 0
         #check for RhoElements gem and license
 	    if  !$app_config['re_buildstub']	
             begin
@@ -828,43 +830,16 @@ namespace "config" do
                 
                 $rhoelements_features = ""
                 
-                # check license
-                is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
-                is_win_platform = (($current_platform == "wm") or ($current_platform == "win32") or $is_rho_simulator )
-
-                if (!is_ET1) and (!is_win_platform)
-                     # check the license parameter
-                     if (!$application_build_configs["motorola_license"]) or (!$application_build_configs["motorola_license_company"])
-                        $invalid_license = true
-                     end
-                end
-                
             rescue Exception => e
                 if $app_config['extensions'].index('nfc')
                     $app_config['extensions'].delete('nfc')
                 end
-                #if $app_config['extensions'].index('audiocapture')
-                #    $app_config['extensions'].delete('audiocapture')
-                #end
-                #if $app_config['extensions'].index('rho-javascript')
-                #    $app_config['extensions'].delete('rho-javascript')
-                #end
-                
                 if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
                     $application_build_configs.delete('encrypt_database')
                 end
-                
-                #if $app_config['extensions'].index('signature')
-                #  $app_config['extensions'].delete('signature')
-                #end
             end
         end
     end
-
-    #if $app_config['extensions'].index('signature') && (($current_platform == 'iphone') || ($current_platform == 'android'))
-    #    $app_config['capabilities'] << 'signature'
-    #    $app_config['extensions'].delete('signature')
-    #end
 
     if $current_platform == "win32" && $winxpe_build == true
       $app_config['capabilities'] << 'winxpe'
@@ -876,11 +851,6 @@ namespace "config" do
     $app_config['extensions'].delete("mspec") if !$debug && $app_config['extensions'].index('mspec')
     $app_config['extensions'].delete("rhospec") if !$debug && $app_config['extensions'].index('rhospec')
     
-    if $invalid_license
-        $application_build_configs["motorola_license"] = '123' if !$application_build_configs["motorola_license"]
-        $application_build_configs["motorola_license_company"] = 'WRONG' if !$application_build_configs["motorola_license_company"]
-    end
-
     $rhologhostport = $config["log_host_port"] 
     $rhologhostport = 52363 unless $rhologhostport
     begin
@@ -1085,7 +1055,7 @@ def find_ext_ingems(extname)
   extpath
 end
 
-def write_modules_js(filename, modules)
+def write_modules_js(folder, filename, modules)
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     
@@ -1097,7 +1067,19 @@ def write_modules_js(filename, modules)
         end
     end
 
-    Jake.modify_file_if_content_changed(filename, f)
+    Jake.modify_file_if_content_changed(File.join(folder,filename), f)
+
+    if modules
+        modules.each do |m|
+            f = StringIO.new("", "w+")
+
+            modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+            f.puts( "// Module #{modulename}\n\n" )
+            f.write(File.read(m))
+
+            Jake.modify_file_if_content_changed(File.join(folder, modulename+'.js'), f)
+        end
+    end
 end
 
 def is_ext_supported(extpath)
@@ -1343,12 +1325,12 @@ def init_extensions(dest, mode = "")
   #
   if extjsmodulefiles.count > 0
     puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
   end
   #
   if extjsmodulefiles_opt.count > 0
     puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
   end
   
   return if mode == "update_rho_modules_js"
@@ -2683,12 +2665,12 @@ namespace "run" do
         #
         if extjsmodulefiles.count > 0
           puts "extjsmodulefiles: #{extjsmodulefiles}"
-          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
         end
         #
         if extjsmodulefiles_opt.count > 0
           puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
-          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
@@ -2834,14 +2816,6 @@ at_exit do
     puts ' The following features are only available in RhoElements v2 and above:'
     puts $rhoelements_features
     puts ' For more information go to http://www.motorolasolutions.com/rhoelements '
-    puts '**************************************************************************************'
-  end
-  
-  if $invalid_license
-    puts '********* WARNING ************************************************************************'
-    puts ' License is required to run RhoElements application.'
-    puts ' Please, provide  "motorola_license" and "motorola_license_company" parameters in build.yml.'
-    puts ' For more information go to http://www.motorolasolutions.com/rhoelements '    
     puts '**************************************************************************************'
   end
 
