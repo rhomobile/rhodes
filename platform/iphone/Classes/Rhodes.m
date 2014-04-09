@@ -782,6 +782,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void) registerForPushNotifications:(id<IPushNotificationsReceiver>)receiver;
 {
+#ifdef APP_BUILD_CAPABILITY_PUSH
     pushReceiver = receiver;
 
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
@@ -789,6 +790,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     
     UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
     NSLog(@"Enabled notification types: %i", (int)nt);
+#endif
 }
 
 
@@ -1088,6 +1090,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 
 #ifdef __IPHONE_3_0
+#ifdef APP_BUILD_CAPABILITY_PUSH
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
@@ -1112,6 +1115,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 //	[self processPushMessage:userInfo];
 }
 
+#endif //APP_BUILD_CAPABILITY_PUSH
 #endif //__IPHONE_3_0
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
