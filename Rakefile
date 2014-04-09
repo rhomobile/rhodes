@@ -351,7 +351,7 @@ namespace "clean" do
   end  
 end
 
-def decode_validate_token(token_hash, salt, preamble_len)
+def decode_validate_token(token_hash, salt, token_preamble_len)
   token = ''
 
   base_message = JSON.parse(token_hash)
@@ -370,10 +370,10 @@ def decode_validate_token(token_hash, salt, preamble_len)
       decrypted = cipher.update(message["token"])
       decrypted << cipher.final
 
-      tokenlen = decrypted.length - preamble_len - Digest::SHA2.hexdigest("token").length
+      tokenlen = decrypted.length - token_preamble_len - Digest::SHA2.hexdigest("token").length
 
-      token = decrypted.slice(preamble_len, tokenlen)
-      token_hash = decrypted.slice(tokenlen + preamble_len,decrypted.length)
+      token = decrypted.slice(token_preamble_len, tokenlen)
+      token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
 
       if token_hash != Digest::SHA2.hexdigest(token)
         puts "invalid token"
@@ -389,7 +389,7 @@ def decode_validate_token(token_hash, salt, preamble_len)
   token
 end
 
-def encode_token(token, salt, preamble_len)
+def encode_token(token, salt, token_preamble_len)
   cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
   cipher.encrypt
 
@@ -399,7 +399,7 @@ def encode_token(token, salt, preamble_len)
 
   #random preamble
   range = ((48..57).to_a+(65..90).to_a+(97..122).to_a)
-  preamble = ([nil]*preamble_len).map { range.sample.chr }.join
+  preamble = ([nil]*token_preamble_len).map { range.sample.chr }.join
 
   encrypted = cipher.update(preamble)
   encrypted << cipher.update(token)
@@ -419,7 +419,6 @@ def kan_i_haz_interwebs(url)
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
-  puts "i cah has? #{url}"
   begin
     http.start {
       http.request_get(uri.path) {|res|
@@ -444,6 +443,106 @@ def get_app_list(token)
   end
 
   result
+end
+
+namespace "license" do
+  task :initialize => "config:initialize" do
+    $token = ''
+    $token_preamble_len = 16
+    $token_file = File.join($app_path,'.apitoken')
+
+    $app = nil
+    $apps = nil
+
+    #generate salt file to encode api token
+    salt_path = File.join($startdir,'secret')
+    FileUtils::mkdir_p salt_path
+
+    salt_file = File.join(salt_path,'.salt')
+    $salt = ''
+    $salt_generated = false
+
+    if File.exists?(salt_file)
+      $salt = File.read(salt_file)
+    else
+      $salt = SecureRandom.urlsafe_base64(32)
+      File.write(salt_file,$salt)
+      $salt_generated = true
+    end
+  end
+
+  task :read => [:initialize] do
+    # check existing API token
+
+    # check internet connection
+    # 1. check for token file
+    # 2. read if available and validate, reset to empty on error
+    # 3. check token online, reset if not valid
+
+    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/")
+
+    if !$salt_generated && File.exists?($token_file)
+      $token = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
+    else
+      if $salt_generated
+        puts "salt file was generated, token should be invalidated"
+      else
+        puts "token file not found, generating new one"
+      end
+    end
+
+    if $interwebs_available && !($token.nil? || $token.empty?)
+      $apps = get_app_list($token)
+      if $apps.nil?
+        token = ''
+        puts "token is not valid"
+      end
+    end
+  end
+
+  task :check => [:read] do
+    if !($token.nil? || $token.empty?)
+      puts "1"
+      exit 1
+    else
+      puts "0"
+      exit 0
+    end
+  end
+
+  task :setup => [:read] do
+    # 4. if token is empty 
+    #   a. read plain text file or ask user to enter token manually
+    #   b. check token inline, exit if not valid
+
+    if $token.nil? || $token.empty?
+      token_source = File.join($app_path,'token.txt')
+
+      if File.exists?(token_source)
+        tok = File.read(token_source)
+      else
+        puts "In order to use Rhodes framework you should register at http://rhohub.com and get your API token."
+        puts "You save token to 'token.txt' file. It will be automatically validated and encrypted during next run."
+        print "You can enter your token right now (or just press enter to stop build):"
+        tok = STDIN.gets.chomp
+      end
+
+      if $interwebs_available
+        $apps = get_app_list(tok)
+        if apps.nil?
+          $token = ''
+          raise Exception.new "RhoHub API token is not valid!"
+        end
+      end
+
+      $token = tok
+
+      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+    else
+      puts "RhoHub API Token is valid"
+    end
+    #end of check
+  end
 end
 
 namespace "config" do
@@ -498,92 +597,9 @@ namespace "config" do
     end
 
     Jake.set_bbver($app_config["bbver"].to_s)
-
-    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/")
   end
 
-  task :token => "config:initialize" do
-    # check existing API token
-
-    # check internet connection
-    # 1. check for token file
-    # 2. read if available and validate, reset to empty on error
-    # 3. check token online, reset if not valid
-    # 4. if token is empty 
-    #   a. read plain text file or ask user to enter token manually
-    #   b. check token inline, exit if not valid
-
-    #generate salt file to encode api token
-    salt_path = File.join($startdir,'secret')
-    FileUtils::mkdir_p salt_path
-    salt_file = File.join(salt_path,'.salt')
-    salt = ''
-    salt_generated = false
-
-    if File.exists?(salt_file)
-      salt = File.read(salt_file)
-    else
-      salt = SecureRandom.urlsafe_base64(32)
-      File.write(salt_file,salt)
-      salt_generated = true
-    end
-
-
-    token_file = File.join($app_path,'.apitoken')
-    token_source = File.join($app_path,'token.txt')
-
-    token = ''
-
-    preamble_len = 16
-
-    if !salt_generated && File.exists?(token_file)
-      token = decode_validate_token(File.read(token_file), salt, preamble_len)
-    else
-      if salt_generated
-        puts "salt file was generated, token should be invalidated"
-      else
-        puts "token file not found, generating new one"
-      end
-    end
-
-    apps = nil
-
-    if $interwebs_available && !(token.empty? || token.nil?)
-      apps = get_app_list(token)
-      if apps.nil?
-        token = ''
-        puts "token is not valid"
-      end
-    end
-
-    if token.nil? || token.empty?
-      if File.exists?(token_source)
-        tok = File.read(token_source)
-      else
-        puts "In order to use Rhodes framework you should register at http://rhohub.com and get your API token."
-        puts "You save token to 'token.txt' file. It will be automatically validated and encrypted during next run."
-        print "You can enter your token right now (or just press enter to stop build):"
-        tok = STDIN.gets.chomp
-      end
-
-      if $interwebs_available
-        apps = get_app_list(tok)
-        if apps.nil?
-          token = ''
-          raise Exception.new "RhoHub API token is not valid!"
-        end
-      end
-
-      token = tok
-
-      File.write(token_file, encode_token(token, salt, preamble_len))
-    end
-    #end of check
-
-    puts "Toaken: #{apps}"
-  end
-
-  task :common => "config:token" do    
+  task :common => ["license:setup"] do    
     extpaths = []
 
     if $app_config["paths"] and $app_config["paths"]["extensions"]
