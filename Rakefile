@@ -449,20 +449,20 @@ namespace "token" do
   task :initialize => "config:initialize" do
     $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/")
 
-    $rhodes_home = File.join(Dir.home(),'rhodes')
+    $rhodes_home = File.join(Dir.home(),'.rhomobile')
     if !File.exist?($rhodes_home)
       FileUtils::mkdir_p $rhodes_home
     end
 
     $token = ''
     $token_preamble_len = 16
-    $token_file = File.join($rhodes_home,'.token')
+    $token_file = File.join($rhodes_home,'token')
 
     $app = nil
     $apps = nil
 
     #generate salt file to encode api token
-    salt_file = File.join($rhodes_home,'.salt')
+    salt_file = File.join($rhodes_home,'salt')
     $salt = ''
     $salt_generated = false
 
