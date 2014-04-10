@@ -445,20 +445,24 @@ def get_app_list(token)
   result
 end
 
-namespace "license" do
+namespace "token" do
   task :initialize => "config:initialize" do
+    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/")
+
+    $rhodes_home = File.join(Dir.home(),'rhodes')
+    if !File.exist?($rhodes_home)
+      FileUtils::mkdir_p $rhodes_home
+    end
+
     $token = ''
     $token_preamble_len = 16
-    $token_file = File.join($app_path,'.apitoken')
+    $token_file = File.join($rhodes_home,'.token')
 
     $app = nil
     $apps = nil
 
     #generate salt file to encode api token
-    salt_path = File.join($startdir,'secret')
-    FileUtils::mkdir_p salt_path
-
-    salt_file = File.join(salt_path,'.salt')
+    salt_file = File.join($rhodes_home,'.salt')
     $salt = ''
     $salt_generated = false
 
@@ -478,8 +482,6 @@ namespace "license" do
     # 1. check for token file
     # 2. read if available and validate, reset to empty on error
     # 3. check token online, reset if not valid
-
-    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/")
 
     if !$salt_generated && File.exists?($token_file)
       $token = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
@@ -502,11 +504,37 @@ namespace "license" do
 
   task :check => [:read] do
     if !($token.nil? || $token.empty?)
-      puts "1"
-      exit 1
-    else
-      puts "0"
+      puts "TokenValid[YES]"
       exit 0
+    else
+      puts "TokenValid[NO]"
+      exit 1
+    end
+  end
+
+  task :get => [:read] do
+    if !($token.nil? || $token.empty?)
+      puts "Token[#{$token}]"
+    else
+      exit 1
+    end
+  end
+
+  task :set, [:token] => [:initialize] do |t, args|
+    $token = args[:token]
+
+    if !($token.nil? || $token.empty?)
+      if $interwebs_available
+        $apps = get_app_list($token)
+        if $apps.nil?
+          $token = ''
+          raise Exception.new "RhoHub API token is not valid!"
+        end
+      else
+        puts "Could not check token online"
+      end
+
+      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
     end
   end
 
@@ -529,7 +557,7 @@ namespace "license" do
 
       if $interwebs_available
         $apps = get_app_list(tok)
-        if apps.nil?
+        if $apps.nil?
           $token = ''
           raise Exception.new "RhoHub API token is not valid!"
         end
@@ -599,7 +627,7 @@ namespace "config" do
     Jake.set_bbver($app_config["bbver"].to_s)
   end
 
-  task :common => ["license:setup"] do    
+  task :common => ["token:setup"] do    
     extpaths = []
 
     if $app_config["paths"] and $app_config["paths"]["extensions"]
