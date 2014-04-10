@@ -485,7 +485,8 @@ bool CHttpServer::run()
                         val = rho_ruby_disable_gc();
                 }
 
-                bProcessed = process(conn);
+                m_sock = conn;
+                bProcessed = process(m_sock);
 
                 if (rho_ruby_is_started())
                 {
@@ -494,7 +495,8 @@ bool CHttpServer::run()
                 }
 
                 RAWTRACE("Close connected socket");
-                closesocket(conn);
+                closesocket(m_sock);
+                m_sock = INVALID_SOCKET;
             }
         }
         else if ( ret == 0 ) //timeout
