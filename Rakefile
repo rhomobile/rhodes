@@ -27,9 +27,16 @@
 require 'find'
 require 'erb'
 #require 'rdoc/task'
+require 'openssl'
 require 'digest/sha2'
 require 'rexml/document'
 require 'pathname'
+require 'securerandom'
+require 'base64'
+require 'json'
+require 'open-uri'
+require 'net/https'
+require 'uri'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -62,6 +69,7 @@ chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
+require File.join(pwd, 'res/build-tools/rhohub.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -343,13 +351,207 @@ namespace "clean" do
   end  
 end
 
-namespace "config" do
-  task :common do
+def decode_validate_token(token_hash, salt, token_preamble_len)
+  token = ''
 
+  base_message = JSON.parse(token_hash)
+  if !base_message.nil?
+    message = Hash[base_message.map {|k,v| [k, Base64.decode64(v)]}]
+
+    if !(message["iv"].nil? || message["token"].nil?)
+
+      cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+      cipher.decrypt
+
+      cipher.key = Digest::SHA2.hexdigest(salt)
+      cipher.iv = message["iv"]
+
+      # and decrypt it
+      decrypted = cipher.update(message["token"])
+      decrypted << cipher.final
+
+      tokenlen = decrypted.length - token_preamble_len - Digest::SHA2.hexdigest("token").length
+
+      token = decrypted.slice(token_preamble_len, tokenlen)
+      token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
+
+      if token_hash != Digest::SHA2.hexdigest(token)
+        puts "invalid token"
+        token = ''
+      end
+    else
+      puts "corrupted token"
+    end 
+  else
+    puts "could not read token"
+  end
+
+  token
+end
+
+def encode_token(token, salt, token_preamble_len)
+  cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+  cipher.encrypt
+
+  cipher.key = Digest::SHA2.hexdigest(salt)
+  iv = cipher.random_iv
+  cipher.iv = iv
+
+  #random preamble
+  range = ((48..57).to_a+(65..90).to_a+(97..122).to_a)
+  preamble = ([nil]*token_preamble_len).map { range.sample.chr }.join
+
+  encrypted = cipher.update(preamble)
+  encrypted << cipher.update(token)
+  encrypted << cipher.update(Digest::SHA2.hexdigest(token))
+  encrypted << cipher.final
+
+  message = Hash[{:iv => iv, :token => encrypted}.map {|k,v| [k, Base64.encode64(v)]}]
+
+  JSON.generate(message)
+end
+
+def kan_i_haz_interwebs(url)
+  uri = URI.parse(url)
+  http = Net::HTTP.new(uri.host, uri.port)
+  if uri.scheme == "https"  # enable SSL/TLS
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  end
+
+  begin
+    http.start {
+      http.request_get(uri.path) {|res|
+      }
+    }
+    true
+  rescue => e
+    puts e.inspect
+    puts e.backtrace
+    false
+  end
+end
+
+def get_app_list(token)
+  result = nil
+  begin 
+    Rhohub.token = token
+    Rhohub.url = "https://app.rhohub.com/api/v1"
+    result = Rhohub::App.list()
+  rescue Exception => e
+    puts "could not get result"
+  end
+
+  result
+end
+
+namespace "license" do
+  task :initialize => "config:initialize" do
+    $token = ''
+    $token_preamble_len = 16
+    $token_file = File.join($app_path,'.apitoken')
+
+    $app = nil
+    $apps = nil
+
+    #generate salt file to encode api token
+    salt_path = File.join($startdir,'secret')
+    FileUtils::mkdir_p salt_path
+
+    salt_file = File.join(salt_path,'.salt')
+    $salt = ''
+    $salt_generated = false
+
+    if File.exists?(salt_file)
+      $salt = File.read(salt_file)
+    else
+      $salt = SecureRandom.urlsafe_base64(32)
+      File.write(salt_file,$salt)
+      $salt_generated = true
+    end
+  end
+
+  task :read => [:initialize] do
+    # check existing API token
+
+    # check internet connection
+    # 1. check for token file
+    # 2. read if available and validate, reset to empty on error
+    # 3. check token online, reset if not valid
+
+    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/")
+
+    if !$salt_generated && File.exists?($token_file)
+      $token = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
+    else
+      if $salt_generated
+        puts "salt file was generated, token should be invalidated"
+      else
+        puts "token file not found, generating new one"
+      end
+    end
+
+    if $interwebs_available && !($token.nil? || $token.empty?)
+      $apps = get_app_list($token)
+      if $apps.nil?
+        token = ''
+        puts "token is not valid"
+      end
+    end
+  end
+
+  task :check => [:read] do
+    if !($token.nil? || $token.empty?)
+      puts "1"
+      exit 1
+    else
+      puts "0"
+      exit 0
+    end
+  end
+
+  task :setup => [:read] do
+    # 4. if token is empty 
+    #   a. read plain text file or ask user to enter token manually
+    #   b. check token inline, exit if not valid
+
+    if $token.nil? || $token.empty?
+      token_source = File.join($app_path,'token.txt')
+
+      if File.exists?(token_source)
+        tok = File.read(token_source)
+      else
+        puts "In order to use Rhodes framework you should register at http://rhohub.com and get your API token."
+        puts "You save token to 'token.txt' file. It will be automatically validated and encrypted during next run."
+        print "You can enter your token right now (or just press enter to stop build):"
+        tok = STDIN.gets.chomp
+      end
+
+      if $interwebs_available
+        $apps = get_app_list(tok)
+        if apps.nil?
+          $token = ''
+          raise Exception.new "RhoHub API token is not valid!"
+        end
+      end
+
+      $token = tok
+
+      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+    else
+      puts "RhoHub API Token is valid"
+    end
+    #end of check
+  end
+end
+
+namespace "config" do
+  task :initialize do
     puts RUBY_VERSION
 
     $binextensions = []
     $app_extensions_list = {}
+
     buildyml = 'rhobuild.yml'
 
     $current_platform_bridge = $current_platform unless $current_platform_bridge
@@ -371,7 +573,7 @@ namespace "config" do
       end
     end
 
-	  $app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
+    $app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
 
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
@@ -382,7 +584,7 @@ namespace "config" do
         exit 1
       end
     end
-    
+
     ENV["RHO_APP_PATH"] = $app_path.to_s
     ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
     ENV["APP_TYPE"]     = "rhodes"
@@ -395,7 +597,9 @@ namespace "config" do
     end
 
     Jake.set_bbver($app_config["bbver"].to_s)
-    
+  end
+
+  task :common => ["license:setup"] do    
     extpaths = []
 
     if $app_config["paths"] and $app_config["paths"]["extensions"]
