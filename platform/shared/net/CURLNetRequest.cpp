@@ -194,6 +194,18 @@ static size_t curlBodyBinaryCallback(void *ptr, size_t size, size_t nmemb, void 
     return nBytes;
 }
 
+static size_t curlBodyFileCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+{
+    size_t nBytes = size*nmemb;
+    RAWTRACE1("Received %d bytes", nBytes);
+    common::CRhoFile* file = (common::CRhoFile*)opaque;
+    file->write(ptr, nBytes);
+    file->flush();
+    
+    return nBytes;
+}
+
+
 extern "C" int rho_net_ping_network(const char* szHost);	
 
 INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl,
@@ -252,8 +264,15 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
             curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
             curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
         }
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
+        
+        if ( oFile != 0 ) {
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, oFile);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
+        
+        } else {
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
+        }
 		//curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 2);
 		//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2);        
         
@@ -277,7 +296,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 			//Do nothing, file is already loaded
 		}else if (statusCode == 206) {
             if (oFile) {
-                oFile->write(&respChunk[0], respChunk.size());
+                //oFile->write(&respChunk[0], respChunk.size());
                 oFile->flush();
             }
             else
