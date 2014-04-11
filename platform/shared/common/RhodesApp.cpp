@@ -1654,11 +1654,12 @@ void CRhodesApp::initAppUrls()
     CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
     modifyRhoApiFile();
 #endif
-
+    
+    m_isJSFSApp = false;
 #ifndef OS_WINCE
+#ifdef RHO_NO_RUBY_API
 	m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
-#else
-	m_isJSFSApp = false;
+#endif
 #endif
 
 }
