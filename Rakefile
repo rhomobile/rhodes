@@ -753,8 +753,10 @@ namespace "config" do
         #check for RhoElements gem and license
 	    if  !$app_config['re_buildstub']	
             begin
-                # try loading specific gem 
-                gem "rhoelements", "~> #{$app_config['sdkversion']}"
+                # try loading specific gem
+                if ENV['RHOHUB_SDKVERSION']
+                  gem "rhoelements", "~> #{ENV['RHOHUB_SDKVERSION']}"
+                end
                 require "rhoelements"
                 
                 $rhoelements_features = ""
@@ -975,10 +977,12 @@ def find_ext_ingems(extname)
 	  $rhodes_join_ext_name = false
 	
     # try to load the correct gem for the sdkversion
-    begin
-      gem extname, "~> #{$app_config['sdkversion']}"
-    rescue Exception => e
-      puts "Can't load gem #{extname}, '~> #{$app_config['sdkversion']}' : will use default (commonAPI) or latest available version"
+    if ENV['RHOHUB_SDKVERSION']
+      begin
+        gem extname, "~> #{ENV['RHOHUB_SDKVERSION']}"
+      rescue Exception => e
+        puts "Can't load gem #{extname}, '~> #{ENV['RHOHUB_SDKVERSION']}' : will use default (commonAPI) or latest available version"
+      end
     end
     require extname
     if $rhodes_extensions
