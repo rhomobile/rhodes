@@ -69,12 +69,19 @@ public class GoogleWebView implements IRhoWebView {
             @Override
             public void run() {
                 Logger.T(TAG, "Web settings is applying now");
-
+                mWebView.setInitialScale(0);
                 mWebView.setVerticalScrollBarEnabled(true);
                 mWebView.setHorizontalScrollBarEnabled(true);
                 mWebView.setVerticalScrollbarOverlay(true);
                 mWebView.setHorizontalScrollbarOverlay(true);
                 mWebView.setFocusableInTouchMode(true);
+
+                mWebView.getSettings().setJavaScriptEnabled(true);
+                mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+                mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
+                mWebView.getSettings().setDomStorageEnabled(true);
+                mWebView.getSettings().setSaveFormData(false);
+                mWebView.getSettings().setSavePassword(false);
 
                 IWebSettingsProvider provider = OsVersionManager.getFeature(IWebSettingsProvider.class);
                 provider.fillSettings(mWebView.getSettings(), mConfig);
