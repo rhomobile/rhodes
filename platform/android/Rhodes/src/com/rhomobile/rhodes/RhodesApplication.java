@@ -41,6 +41,7 @@ import android.content.pm.ApplicationInfo;
 import android.os.Handler;
 import android.os.Process;
 import android.util.Log;
+import android.webkit.CookieSyncManager;
 
 import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
@@ -256,6 +257,8 @@ public class RhodesApplication extends Application{
 
 	    mReceiver = new ScreenReceiver();
 	    registerReceiver(mReceiver, filter);
+
+      CookieSyncManager.createInstance(getContext());
 
         Logger.I(TAG, "Initialized");
     }
