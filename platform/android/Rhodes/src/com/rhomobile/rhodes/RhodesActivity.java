@@ -59,7 +59,6 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
-import android.webkit.CookieSyncManager;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
 	
@@ -271,8 +270,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         pauseWebViews(false);
         super.onResume();
 
-        CookieSyncManager.getInstance().startSync();
-
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityResumed);
         RhoExtManager.getImplementationInstance().onResumeActivity(this);
     }
@@ -282,7 +279,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     {
         mIsForeground = false;
         pauseWebViews(true);
-        CookieSyncManager.getInstance().stopSync();
 
         RhoExtManager.getImplementationInstance().onPauseActivity(this);
 

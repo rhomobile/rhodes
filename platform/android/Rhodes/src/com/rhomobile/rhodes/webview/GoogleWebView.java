@@ -14,7 +14,6 @@ import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Picture;
@@ -76,20 +75,6 @@ public class GoogleWebView implements IRhoWebView {
                 mWebView.setVerticalScrollbarOverlay(true);
                 mWebView.setHorizontalScrollbarOverlay(true);
                 mWebView.setFocusableInTouchMode(true);
-
-                mWebView.getSettings().setJavaScriptEnabled(true);
-                mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-                mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
-                mWebView.getSettings().setDomStorageEnabled(true);
-                mWebView.getSettings().setDatabaseEnabled(true);
-                //if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                  String databasePath = RhodesActivity.safeGetInstance().getContext().getDir("databases", Context.MODE_PRIVATE).getPath();
-                  mWebView.getSettings().setDatabasePath(databasePath);
-                  //mWebView.getSettings().setDatabasePath("/data/data/" + mWebView.getContext().getPackageName() + "/databases/");
-                //}
-
-                mWebView.getSettings().setSaveFormData(false);
-                mWebView.getSettings().setSavePassword(false);
 
                 IWebSettingsProvider provider = OsVersionManager.getFeature(IWebSettingsProvider.class);
                 provider.fillSettings(mWebView.getSettings(), mConfig);
