@@ -1,3 +1,9 @@
+
+#include <Windows.h>
+
+#include <ruby/wince/sys/types.h>
+#include <ruby/win32/dir.h>
+
 //TODO: implement this functions
 int rb_w32_rename(const char *oldname, const char *newname)
 {
@@ -37,4 +43,22 @@ char *
 rb_w32_getenv(const char *name)
 {
     return "";
+}
+
+
+DIR*           
+rb_w32_opendir(const char* dirName)
+{
+    return 0;
+}
+
+void           
+rb_w32_closedir(DIR *dirObj)
+{
+}
+
+struct direct* 
+rb_w32_readdir(DIR *dirObj)
+{
+    return 0;
 }
