@@ -705,7 +705,8 @@ namespace "config" do
         puts '****************************************************************************************'
         exit(1)
     end
-    #$app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime') 
+
+    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime') 
 
     if $current_platform == "bb"  
       make_application_build_config_java_file()
@@ -927,11 +928,9 @@ def init_extensions(dest, mode = "")
 
   rhoapi_js_folder = nil
   if !dest.nil?
-    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
-    
+    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )  
   elsif mode == "update_rho_modules_js"
     rhoapi_js_folder = File.join( $app_path, "public/api" )
-      
   end
   
   puts "rhoapi_js_folder: #{rhoapi_js_folder}"
@@ -979,7 +978,6 @@ def init_extensions(dest, mode = "")
           entry           = extconf["entry"]
           nlib            = extconf["nativelibs"]
           type            = Jake.getBuildProp( "exttype", extconf )
-          #wm_type         = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths   = extconf["xml_api_paths"]
           extconf_wp8     = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
           csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
@@ -1025,9 +1023,9 @@ def init_extensions(dest, mode = "")
                 csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?)
                 if extconf_wp8_lib['libname'].nil?
                     extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
-				end
+            end
                   
-                if csharp_impl
+            if csharp_impl
                   wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
                   extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
                   extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
