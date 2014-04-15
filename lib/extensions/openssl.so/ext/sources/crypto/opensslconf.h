@@ -85,9 +85,8 @@
 #endif
 #endif
 
-#ifndef OPENSSL_UNISTD
+#undef OPENSSL_UNISTD
 #define OPENSSL_UNISTD <unistd.h>
-#endif
 
 #undef OPENSSL_EXPORT_VAR_AS_FUNCTION
 
