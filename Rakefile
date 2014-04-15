@@ -1550,7 +1550,6 @@ def common_bundle_start( startdir, dest)
   puts "common_bundle_start"
     
   app = $app_path
-  rhodeslib = "lib/framework"
 
   puts $srcdir
   puts dest
@@ -1562,16 +1561,9 @@ def common_bundle_start( startdir, dest)
   mkdir_p File.join($srcdir,'apps')
 
   start = pwd
-  chdir rhodeslib  
-  
+
   if !$js_application
-    Dir.glob("*").each { |f|
-      if f.to_s == "autocomplete"
-        next
-      end
-          
-      cp_r f,dest, :preserve => true 
-    }
+    Dir.glob('lib/framework/*').each {|f| cp_r(f, dest, :preserve => true) unless f.to_s == 'autocomplete'}
   end
 
   chdir dest
