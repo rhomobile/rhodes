@@ -716,14 +716,32 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		SendMessage( m_hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
 	}
 
+#if defined(_WIN32_WCE) 
+	wchar_t szClassName[15];
+	if (lParam && GetClassName((HWND)lParam, szClassName, 14))
+	{
+		if(wcsncmp(szClassName, L"PB_ADDRESSBAR", 14) == 0 ||
+			wcsncmp(szClassName, L"PB_BUTTON", 9) == 0)
+		{
+			bDebugButtons = true;
+		}
+	}
+#endif
+
     if (lParam) //We get activate from some internal window
     {
-        LOG(INFO) + "Get activate from child window. Skip it.";
 #if defined(_WIN32_WCE) 
         if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
 	        RhoSetFullScreen(true);
 #endif
-        return 0;
+		//  Ignore the activate msg from the child window if
+		//  1. If it is from any window other than a debug window or
+		//  2. It is a de-activate
+		if (!(bDebugButtons && fActive))
+		{
+	        LOG(INFO) + "Get activate from child window. Skip it.";
+			return 0;
+		}
     }
 
     ProcessActivate( fActive, wParam, lParam );    
