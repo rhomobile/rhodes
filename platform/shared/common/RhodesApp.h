@@ -155,6 +155,7 @@ private:
     static boolean m_bSecurityTokenNotPassed;
     String m_strRhoMessage;
     String m_EmptyString;
+	bool m_isJSFSApp;
 
     Vector<String> m_currentUrls;
 

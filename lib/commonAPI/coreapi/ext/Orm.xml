@@ -6,11 +6,16 @@
         <MORE_HELP>
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
-  :::ruby
-  extensions: ["coreapi"]
+    :::ruby
+    extensions: ["coreapi"]
 
 ## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+If you are going to be using the JS ORM API, you'll also need to include this line in any files that will be using it:
+
+    :::html
+    <![CDATA[<script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORM.js"></script>]]>
 
 ## Ruby Usage
 For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/rhom-api).

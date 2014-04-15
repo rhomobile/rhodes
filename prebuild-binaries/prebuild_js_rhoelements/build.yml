@@ -1,0 +1,28 @@
+sdk: "../.."
+sdkversion: 4.1.0
+app_type: rhoelements
+javascript_application: true
+name: prebuild_js_rhoelements
+version: 1.0
+vendor: rhomobile
+build: release
+applog: rholog.txt
+iphone:
+  configuration: Release
+  sdk: iphoneos7.1
+  provisionprofile:
+  codesignidentity: iPhone Developer
+  entitlements: ""
+  BundleIdentifier: com.rhomobile.prebuildjsrhoelements
+  BundleURLScheme: prebuildjsrhoelements
+wp8:
+  productid: '719d5830-a391-0131-e3c4-482a1411841f'
+android:
+  manifest_template: 'AndroidManifest.erb'
+  version: 2.3.3
+
+wm:
+  #sdk: "MC3000c50b (ARMV4I)"
+  #sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+
+extensions: ["rhoconnect-client"]
