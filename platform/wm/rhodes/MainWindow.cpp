@@ -703,6 +703,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 {
     int fActive = LOWORD(wParam);
     LOG(INFO) + "ACTIVATE: " + fActive;
+	bool bDebugButtons = false;
 
     if ( m_bLoading && !fActive )
     {
