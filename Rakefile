@@ -1509,6 +1509,16 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
   end  
 end
 
+def get_config_override_params
+    override = {}
+    ENV.each do |key, value|
+        key.match(/^rho_override_(.+)$/) do |match|
+            override[match[1]] = value
+        end
+    end
+    return override
+end
+
 def copy_rhoconfig(source, target)
   override = get_config_override_params
   mentioned = Set.new
@@ -1543,6 +1553,18 @@ def copy_rhoconfig(source, target)
   File.open(target, 'w') do |file|
     lines.each { |l| file.puts l }
   end
+end
+
+def make_rhoconfig_txt
+  copy_rhoconfig(File.join($app_path, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
+
+  Jake.modify_rhoconfig_for_debug if $remote_debug
+
+  app_version = "\r\napp_version='#{$app_config["version"]}'"
+  app_version += "\r\ntitle_text='#{$app_config["name"]}'"  if $current_platform == "win32"
+
+  File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
+  File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
 end
 
 def common_bundle_start( startdir, dest)
@@ -1590,14 +1612,6 @@ def common_bundle_start( startdir, dest)
     public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, file_map, app 
   end
   
-  copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
- 
-  # modify rhoconfig for ruby debugger
-  if $remote_debug      
-    puts "$app_config=" + $app_config['extensions'].to_s    
-    Jake.modify_rhoconfig_for_debug()
-  end
-
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
     if $app_config[$config["platform"]] && 
@@ -1616,11 +1630,7 @@ def common_bundle_start( startdir, dest)
     end
   end
 
-  app_version = "\r\napp_version='#{$app_config["version"]}'"  
-  app_version += "\r\ntitle_text='#{$app_config["name"]}'"  if $current_platform == "win32"
-  
-  File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
-  File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
+  make_rhoconfig_txt
   
   unless $debug
     rm_rf $srcdir + "/apps/app/SpecRunner"
@@ -1703,16 +1713,6 @@ def process_exclude_folders(excluded_dirs=[])
       
   end
 
-end
-
-def get_config_override_params
-    override = {}
-    ENV.each do |key, value|
-        key.match(/^rho_override_(.+)$/) do |match|
-            override[match[1]] = value
-        end
-    end
-    return override
 end
 
 def get_extensions
