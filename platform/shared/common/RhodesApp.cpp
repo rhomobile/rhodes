@@ -427,7 +427,8 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
     initAppUrls();
 
-    initHttpServer();
+	if(!m_isJSFSApp)
+		initHttpServer();
 
     getSplashScreen().init();
 }
@@ -441,13 +442,18 @@ extern "C" void Init_Extensions(void);
 
 void CRhodesApp::RhoJsStart()
 {
+    LOG(INFO) + "Starting pure JS application...";
+
     const char* szBlobPath = getBlobsDirPath().c_str();
     const char* szUserPath = rho_native_rhodbpath();
     LOG(INFO) + "Init_RhoBlobs:" + szBlobPath;
 
     CRhoFile::recursiveCreateDir(szBlobPath, szUserPath);
 
+    PROF_START("EXTENSIONS_INIT");
     Init_Extensions();
+    PROF_STOP("EXTENSIONS_INIT");
+
     void *dbObj = NULL;
 
     rho::String partName = rho::db::CDBAdapter::USER_PARTITION_NAME();
@@ -499,18 +505,29 @@ void CRhodesApp::run()
 
     PROF_CREATE_COUNTER("READ_FILE");
     PROF_CREATE_COUNTER("LOW_FILE");
-    while (!m_bExit) {
-        m_httpServer->run();
-        if (m_bExit)
-            break;
+	if(m_isJSFSApp)
+		RHODESAPP().notifyLocalServerStarted();
 
-        if ( !m_bRestartServer )
-        {
-            LOG(INFO) + "RhodesApp thread wait.";
-            wait(-1);
-        }
-        m_bRestartServer = false;
-    }
+	while (!m_bExit) {
+		if(!m_isJSFSApp)
+			m_httpServer->run();
+		else
+		{
+			LOG(INFO) + "RhodesApp thread wait.";
+			wait(-1);
+		}
+
+		if (m_bExit)
+			break;
+
+		if ( !m_bRestartServer )
+		{
+			LOG(INFO) + "RhodesApp thread wait.";
+			wait(-1);
+		}
+		m_bRestartServer = false;
+	}
+
     PROF_DESTROY_COUNTER("LOW_FILE");
     PROF_DESTROY_COUNTER("READ_FILE");
 
@@ -564,7 +581,8 @@ void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
 {
     LOG(INFO) + "restart local server.";
     m_bRestartServer = true;
-    m_httpServer->stop();
+	if(!m_isJSFSApp)
+		m_httpServer->stop();
 	stopWait();
 }
 
@@ -578,7 +596,8 @@ void CRhodesApp::stopApp()
     if (!m_bExit)
     {
         m_bExit = true;
-        m_httpServer->stop();
+		if(!m_isJSFSApp)
+			m_httpServer->stop();
         stopWait();
         stop(4000);
     }
@@ -1635,6 +1654,14 @@ void CRhodesApp::initAppUrls()
     CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
     modifyRhoApiFile();
 #endif
+    
+    m_isJSFSApp = false;
+#ifndef OS_WINCE
+#ifdef RHO_NO_RUBY_API
+	m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
+#endif
+#endif
+
 }
 
 void CRhodesApp::modifyRhoApiFile()
@@ -2627,7 +2654,7 @@ void rho_rhodesapp_callAppActiveCallback(int nActive)
 
 void rho_rhodesapp_callUiCreatedCallback()
 {
-    if ( rho::common::CRhodesApp::getInstance() )
+	if ( rho::common::CRhodesApp::getInstance() )
         RHODESAPP().callUiCreatedCallback();
     else
     {

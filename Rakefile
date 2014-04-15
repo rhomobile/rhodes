@@ -27,9 +27,16 @@
 require 'find'
 require 'erb'
 #require 'rdoc/task'
+require 'openssl'
 require 'digest/sha2'
 require 'rexml/document'
 require 'pathname'
+require 'securerandom'
+require 'base64'
+require 'json'
+require 'open-uri'
+require 'net/https'
+require 'uri'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -62,6 +69,7 @@ chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
+require File.join(pwd, 'res/build-tools/rhohub.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -104,7 +112,8 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company","name", "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "name", "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
+
 $winxpe_build = false
       
 def make_application_build_config_header_file
@@ -345,13 +354,235 @@ namespace "clean" do
   end  
 end
 
-namespace "config" do
-  task :common do
+def decode_validate_token(token_hash, salt, token_preamble_len)
+  token = ''
 
+  base_message = JSON.parse(token_hash)
+  if !base_message.nil?
+    message = Hash[base_message.map {|k,v| [k, Base64.decode64(v)]}]
+
+    if !(message["iv"].nil? || message["token"].nil?)
+
+      cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+      cipher.decrypt
+
+      cipher.key = Digest::SHA2.hexdigest(salt)
+      cipher.iv = message["iv"]
+
+      # and decrypt it
+      decrypted = cipher.update(message["token"])
+      decrypted << cipher.final
+
+      tokenlen = decrypted.length - token_preamble_len - Digest::SHA2.hexdigest("token").length
+
+      token = decrypted.slice(token_preamble_len, tokenlen)
+      token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
+
+      if token_hash != Digest::SHA2.hexdigest(token)
+        puts "invalid token"
+        token = ''
+      end
+    else
+      puts "corrupted token"
+    end 
+  else
+    puts "could not read token"
+  end
+
+  token
+end
+
+def encode_token(token, salt, token_preamble_len)
+  cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+  cipher.encrypt
+
+  cipher.key = Digest::SHA2.hexdigest(salt)
+  iv = cipher.random_iv
+  cipher.iv = iv
+
+  #random preamble
+  range = ((48..57).to_a+(65..90).to_a+(97..122).to_a)
+  preamble = ([nil]*token_preamble_len).map { range.sample.chr }.join
+
+  encrypted = cipher.update(preamble)
+  encrypted << cipher.update(token)
+  encrypted << cipher.update(Digest::SHA2.hexdigest(token))
+  encrypted << cipher.final
+
+  message = Hash[{:iv => iv, :token => encrypted}.map {|k,v| [k, Base64.encode64(v)]}]
+
+  JSON.generate(message)
+end
+
+def kan_i_haz_interwebs(url)
+  uri = URI.parse(url)
+  http = Net::HTTP.new(uri.host, uri.port)
+  if uri.scheme == "https"  # enable SSL/TLS
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  end
+
+  begin
+    http.start {
+      http.request_get(uri.path) {|res|
+      }
+    }
+    true
+  rescue => e
+    puts e.inspect
+    puts e.backtrace
+    false
+  end
+end
+
+def get_app_list(token)
+  result = nil
+  begin 
+    Rhohub.token = token
+    Rhohub.url = "https://app.rhohub.com/api/v1"
+    result = Rhohub::App.list()
+  rescue Exception => e
+    puts "could not get result"
+  end
+
+  result
+end
+
+namespace "token" do
+  task :initialize => "config:initialize" do
+    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/")
+
+    $rhodes_home = File.join(Dir.home(),'.rhomobile')
+    if !File.exist?($rhodes_home)
+      FileUtils::mkdir_p $rhodes_home
+    end
+
+    $token = ''
+    $token_preamble_len = 16
+    $token_file = File.join($rhodes_home,'token')
+
+    $app = nil
+    $apps = nil
+
+    #generate salt file to encode api token
+    salt_file = File.join($rhodes_home,'salt')
+    $salt = ''
+    $salt_generated = false
+
+    if File.exists?(salt_file)
+      $salt = File.read(salt_file)
+    else
+      $salt = SecureRandom.urlsafe_base64(32)
+      File.write(salt_file,$salt)
+      $salt_generated = true
+    end
+  end
+
+  task :read => [:initialize] do
+    # check existing API token
+
+    # check internet connection
+    # 1. check for token file
+    # 2. read if available and validate, reset to empty on error
+    # 3. check token online, reset if not valid
+
+    if !$salt_generated && File.exists?($token_file)
+      $token = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
+    else
+      if $salt_generated
+        puts "salt file was generated, token should be invalidated"
+      else
+        puts "token file not found, generating new one"
+      end
+    end
+
+    if $interwebs_available && !($token.nil? || $token.empty?)
+      $apps = get_app_list($token)
+      if $apps.nil?
+        token = ''
+        puts "token is not valid"
+      end
+    end
+  end
+
+  task :check => [:read] do
+    if !($token.nil? || $token.empty?)
+      puts "TokenValid[YES]"
+      exit 0
+    else
+      puts "TokenValid[NO]"
+      exit 1
+    end
+  end
+
+  task :get => [:read] do
+    if !($token.nil? || $token.empty?)
+      puts "Token[#{$token}]"
+    else
+      exit 1
+    end
+  end
+
+  task :set, [:token] => [:initialize] do |t, args|
+    $token = args[:token]
+
+    if !($token.nil? || $token.empty?)
+      if $interwebs_available
+        $apps = get_app_list($token)
+        if $apps.nil?
+          $token = ''
+          raise Exception.new "RhoHub API token is not valid!"
+        end
+      else
+        puts "Could not check token online"
+      end
+
+      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+    end
+  end
+
+  task :setup => [:read] do
+    # 4. if token is empty 
+    #   a. read plain text file or ask user to enter token manually
+    #   b. check token inline, exit if not valid
+
+    if $token.nil? || $token.empty?
+      token_source = File.join($app_path,'token.txt')
+
+      if File.exists?(token_source)
+        tok = File.read(token_source)
+      else
+        puts "In order to use Rhodes framework you should register at http://rhohub.com and get your API token."
+        puts "You save token to 'token.txt' file. It will be automatically validated and encrypted during next run."
+        print "You can enter your token right now (or just press enter to stop build):"
+        tok = STDIN.gets.chomp
+      end
+
+      if $interwebs_available
+        $apps = get_app_list(tok)
+        if $apps.nil?
+          $token = ''
+          raise Exception.new "RhoHub API token is not valid!"
+        end
+      end
+
+      $token = tok
+
+      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+    else
+      puts "RhoHub API Token is valid"
+    end
+    #end of check
+  end
+end
+
+namespace "config" do
+  task :initialize do
     puts RUBY_VERSION
 
     $binextensions = []
     $app_extensions_list = {}
+
     buildyml = 'rhobuild.yml'
 
     $current_platform_bridge = $current_platform unless $current_platform_bridge
@@ -373,7 +604,7 @@ namespace "config" do
       end
     end
 
-	  $app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
+    $app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
 
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
@@ -384,7 +615,7 @@ namespace "config" do
         exit 1
       end
     end
-    
+
     ENV["RHO_APP_PATH"] = $app_path.to_s
     ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
     ENV["APP_TYPE"]     = "rhodes"
@@ -397,7 +628,9 @@ namespace "config" do
     end
 
     Jake.set_bbver($app_config["bbver"].to_s)
-    
+  end
+
+  task :common => ["token:setup"] do    
     extpaths = []
 
     if $app_config["paths"] and $app_config["paths"]["extensions"]
@@ -466,6 +699,11 @@ namespace "config" do
        $app_config[$config["platform"]]["capabilities"] and $app_config[$config["platform"]]["capabilities"].is_a? Array
     $app_config["capabilities"] = capabilities
 
+    # Add license related keys in case of shared runtime build
+    if $app_config['capabilities'].index('shared_runtime')
+      $application_build_configs_keys << 'motorola_license'
+      $application_build_configs_keys << 'motorola_license_company'
+    end
     application_build_configs = {}
 
     #Process rhoelements settings
@@ -622,7 +860,7 @@ namespace "config" do
         $rhoelements_features += "- Javascript API for device capabilities\n"                
     end
 
-    if File.exist?(File.join($app_path, "license.yml"))
+    if $app_config["capabilities"].index("shared_runtime") && File.exist?(File.join($app_path, "license.yml"))
         license_config = Jake.config(File.open(File.join($app_path, "license.yml")))    
     
         if ( license_config )
@@ -631,11 +869,7 @@ namespace "config" do
         end    
     end    
     
-    $invalid_license = false
-
-    if $rhoelements_features.length() > 0
-        $app_config['extensions'] << 'rhoelements-license' if $current_platform == "android"
-
+    if $app_config["capabilities"].index("shared_runtime") && $rhoelements_features.length() > 0
         #check for RhoElements gem and license
 	    if  !$app_config['re_buildstub']	
             begin
@@ -643,43 +877,16 @@ namespace "config" do
                 
                 $rhoelements_features = ""
                 
-                # check license
-                is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
-                is_win_platform = (($current_platform == "wm") or ($current_platform == "win32") or $is_rho_simulator )
-
-                if (!is_ET1) and (!is_win_platform)
-                     # check the license parameter
-                     if (!$application_build_configs["motorola_license"]) or (!$application_build_configs["motorola_license_company"])
-                        $invalid_license = true
-                     end
-                end
-                
             rescue Exception => e
                 if $app_config['extensions'].index('nfc')
                     $app_config['extensions'].delete('nfc')
                 end
-                #if $app_config['extensions'].index('audiocapture')
-                #    $app_config['extensions'].delete('audiocapture')
-                #end
-                #if $app_config['extensions'].index('rho-javascript')
-                #    $app_config['extensions'].delete('rho-javascript')
-                #end
-                
                 if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
                     $application_build_configs.delete('encrypt_database')
                 end
-                
-                #if $app_config['extensions'].index('signature')
-                #  $app_config['extensions'].delete('signature')
-                #end
             end
         end
     end
-
-    #if $app_config['extensions'].index('signature') && (($current_platform == 'iphone') || ($current_platform == 'android'))
-    #    $app_config['capabilities'] << 'signature'
-    #    $app_config['extensions'].delete('signature')
-    #end
 
     if $current_platform == "win32" && $winxpe_build == true
       $app_config['capabilities'] << 'winxpe'
@@ -691,11 +898,6 @@ namespace "config" do
     $app_config['extensions'].delete("mspec") if !$debug && $app_config['extensions'].index('mspec')
     $app_config['extensions'].delete("rhospec") if !$debug && $app_config['extensions'].index('rhospec')
     
-    if $invalid_license
-        $application_build_configs["motorola_license"] = '123' if !$application_build_configs["motorola_license"]
-        $application_build_configs["motorola_license_company"] = 'WRONG' if !$application_build_configs["motorola_license_company"]
-    end
-
     $rhologhostport = $config["log_host_port"] 
     $rhologhostport = 52363 unless $rhologhostport
     begin
@@ -900,7 +1102,7 @@ def find_ext_ingems(extname)
   extpath
 end
 
-def write_modules_js(filename, modules)
+def write_modules_js(folder, filename, modules)
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     
@@ -912,7 +1114,19 @@ def write_modules_js(filename, modules)
         end
     end
 
-    Jake.modify_file_if_content_changed(filename, f)
+    Jake.modify_file_if_content_changed(File.join(folder,filename), f)
+
+    if modules
+        modules.each do |m|
+            f = StringIO.new("", "w+")
+
+            modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+            f.puts( "// Module #{modulename}\n\n" )
+            f.write(File.read(m))
+
+            Jake.modify_file_if_content_changed(File.join(folder, modulename+'.js'), f)
+        end
+    end
 end
 
 def is_ext_supported(extpath)
@@ -1158,12 +1372,12 @@ def init_extensions(dest, mode = "")
   #
   if extjsmodulefiles.count > 0
     puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
   end
   #
   if extjsmodulefiles_opt.count > 0
     puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
   end
   
   return if mode == "update_rho_modules_js"
@@ -2498,12 +2712,12 @@ namespace "run" do
         #
         if extjsmodulefiles.count > 0
           puts "extjsmodulefiles: #{extjsmodulefiles}"
-          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
         end
         #
         if extjsmodulefiles_opt.count > 0
           puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
-          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules-ORM.js"), extjsmodulefiles_opt)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
@@ -2649,14 +2863,6 @@ at_exit do
     puts ' The following features are only available in RhoElements v2 and above:'
     puts $rhoelements_features
     puts ' For more information go to http://www.motorolasolutions.com/rhoelements '
-    puts '**************************************************************************************'
-  end
-  
-  if $invalid_license
-    puts '********* WARNING ************************************************************************'
-    puts ' License is required to run RhoElements application.'
-    puts ' Please, provide  "motorola_license" and "motorola_license_company" parameters in build.yml.'
-    puts ' For more information go to http://www.motorolasolutions.com/rhoelements '    
     puts '**************************************************************************************'
   end
 

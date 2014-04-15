@@ -1,8 +1,10 @@
 #include "js_helpers.h"
-
 #include "common/RhodesApp.h"
 #include "net/URI.h"
 #include "logging/RhoLog.h"
+#include "api_generator/Api.h"
+#include <vector>
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "js_helper"
@@ -14,10 +16,6 @@ namespace apiGenerator
 
 using namespace rho::json;
 
-
-static rho::Hashtable<rho::String,Func_JS> g_hashJSStaticMethods;
-static rho::Hashtable<rho::String,Func_JS> g_hashJSInstanceMethods;
-
 static const String ID("id");
 static const String METHOD("method");
 static const String RHO_CLASS("__rhoClass");
@@ -26,23 +24,34 @@ static const String RHO_CALLBACK("__rhoCallback");
 static const String VM_ID("vmID");
 static const String RHO_CALLBACK_PARAM("optParams");
 
-void js_define_static_method(const char* szMethodPath, Func_JS pFunc )
+std::vector<ApiHandler<Func_JS>*> g_modules;
+
+void defineJSApiModule(ApiHandler<Func_JS>* pModule)
 {
-    g_hashJSStaticMethods[szMethodPath] = pFunc;
-    RAWTRACE1("Static method: %s", szMethodPath);
+    g_modules.push_back(pModule);
+    RAWTRACE2("Define %1, %d", pModule->getModuleId(), g_modules.size() -1);
 }
-    
-void js_define_instance_method(const char* szMethodPath, Func_JS pFunc )
+
+ApiHandler<Func_JS>* getJSApiModule(const std::string& moduleId)
 {
-    g_hashJSInstanceMethods[szMethodPath] = pFunc;
-    RAWTRACE1("Instance method: %s", szMethodPath);
+    for(std::vector<ApiHandler<Func_JS>*>::iterator moduleIt = g_modules.begin(); moduleIt != g_modules.end(); ++moduleIt)
+    {
+        if(strcmp((*moduleIt)->getModuleId(), moduleId.c_str()) == 0)
+        {
+            RAWTRACE2("Module %s, %d", (*moduleIt)->getModuleId(), moduleIt - g_modules.begin());
+            return *moduleIt;
+        }
+
+    }
+    RAWTRACE1("Module is not found: %s", moduleId.c_str());
+    return 0;
 }
 
 rho::String js_entry_point(const char* szJSON)
 {
     RAWTRACE(szJSON);
 
-    rho::String strReqId, strMethod, strObjID, strCallbackID, strJsVmID, strCallbackParam;
+    rho::String strReqId, strModule, strMethod, strObjID, strCallbackID, strJsVmID, strCallbackParam;
     CJSONEntry oEntry(szJSON);
 
     if ( !oEntry.hasName(ID) )
@@ -52,19 +61,19 @@ rho::String js_entry_point(const char* szJSON)
     }
     strReqId = oEntry.getString(ID.c_str());
 
+    if ( !oEntry.hasName(RHO_CLASS) )
+    {
+        RAWLOG_ERROR1("There is no %s string in JSON request", RHO_CLASS.c_str());
+        return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": " + strReqId + "}";
+    }
+    strModule = oEntry.getString(RHO_CLASS.c_str());
+
     if ( !oEntry.hasName(METHOD) )
     {
         RAWLOG_ERROR1("There is no %s string in JSON request object", METHOD.c_str());
         return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": " + strReqId + "}";
     }
     strMethod = oEntry.getString(METHOD.c_str());
-
-    if ( oEntry.hasName(RHO_CLASS) )
-    {
-        RAWTRACE("Parsing module class");
-        rho::String strModule = oEntry.getString(RHO_CLASS.c_str());
-        strMethod = strModule + ":" + strMethod;
-    }
 
     if ( oEntry.hasName(RHO_ID) )
         strObjID = oEntry.getString(RHO_ID.c_str());
@@ -96,24 +105,32 @@ rho::String js_entry_point(const char* szJSON)
             strCallbackParam = pcszCallbackParam;
     }
 
-    String_replace(strMethod, '.', ':');
+    String_replace(strModule, '.', ':');
+
+    ApiHandler<Func_JS>* pApiHandler = getJSApiModule(strModule);
+    if (!pApiHandler)
+    {
+        RAWLOG_ERROR1("API Module is not found: %s", strModule.c_str());
+        return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"API module is not found.\"}, \"id\": " + strReqId + "}";
+    }
+
     Func_JS pMethod = NULL;
     if (strObjID == "0")
     {
-        pMethod = g_hashJSStaticMethods[strMethod];
+        pMethod = pApiHandler->getStaticMethod(strMethod);
         if (!pMethod)
         {
             RAWLOG_ERROR1("Static API method is not found: %s", strMethod.c_str());
-            return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Static method not found.\"}, \"id\": " + strReqId + "}";
+            return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Static method is not found.\"}, \"id\": " + strReqId + "}";
         }
     }
     else
     {
-        pMethod = g_hashJSInstanceMethods[strMethod];
+        pMethod = pApiHandler->getInstanceMethod(strMethod);
         if (!pMethod)
         {
             RAWLOG_ERROR1("Instance API method is not found: %s", strMethod.c_str());
-            return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Instance method not found.\"}, \"id\": " + strReqId + "}";
+            return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Instance method is not found.\"}, \"id\": " + strReqId + "}";
         }
     }
     
