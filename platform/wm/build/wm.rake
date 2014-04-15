@@ -1098,6 +1098,7 @@ namespace "device" do
    
     desc 'Build cab'
     task :cab => ['config:wm'] do
+      Jake.make_rhoconfig_txt
       stuff_around_appname
       build_cab
     end
