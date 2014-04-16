@@ -116,6 +116,95 @@
 #include "e_capi_err.h"
 #include "e_capi_err.c"
 
+#ifdef OPENSSL_SYSNAME_WINCE // pdelaage20100926 : to move to wcecomapt one day
+
+BOOL WINAPI myCryptEnumProvidersA(
+  DWORD dwIndex, 
+  DWORD *pdwReserved,
+  DWORD dwFlags,
+  DWORD *pdwProvType, 
+  LPSTR pszProvName,
+  DWORD *pcbProvName
+)
+{
+BOOL cr_l = FALSE;
+
+DWORD cbProvNameW = 0;
+LPWSTR pszProvNameW = NULL;
+
+if (pszProvName == NULL)
+{ // get length for future buffer
+cr_l = CryptEnumProvidersW(dwIndex, pdwReserved, dwFlags, pdwProvType, NULL, pcbProvName);
+}
+else // len here is reliable
+{
+cbProvNameW = (*pcbProvName) * sizeof(WCHAR);
+pszProvNameW = (LPWSTR) malloc(cbProvNameW);
+cr_l = CryptEnumProvidersW(dwIndex, pdwReserved, dwFlags, pdwProvType, pszProvNameW, &cbProvNameW);
+
+// convert back to Ascii
+  WideCharToMultiByte(CP_ACP, 0, pszProvNameW, -1, pszProvName, *pcbProvName, NULL, NULL);
+ 
+free(pszProvNameW);
+}
+
+return(cr_l);
+}
+
+
+BOOL WINAPI myCryptAcquireContextA( 
+  HCRYPTPROV *phProv,
+  LPCSTR pszContainer,
+  LPCSTR pszProvider,
+  DWORD dwProvType,
+  DWORD dwFlags
+)
+{
+BOOL cr_l = FALSE;
+LPWSTR pszContainerW = NULL;
+LPWSTR pszProviderW = NULL;
+size_t aLen;
+
+
+if (pszContainer && (aLen=strlen(pszContainer)))  
+{
+pszContainerW = (LPWSTR) malloc( (1+aLen) * sizeof(WCHAR) );
+MultiByteToWideChar(CP_ACP, 0, pszContainer, -1, pszContainerW, (int) ((1+ aLen)*sizeof(WCHAR)) );
+}
+
+if (pszProvider  && (aLen=strlen(pszProvider)))
+{
+pszProviderW  = (LPWSTR) malloc( (1+aLen) * sizeof(WCHAR) );
+MultiByteToWideChar(CP_ACP, 0, pszProvider, -1, pszProviderW,   (int) ((1+ aLen)*sizeof(WCHAR)) );
+}   
+
+cr_l = CryptAcquireContextW(phProv, pszContainerW, pszProviderW, dwProvType, dwFlags);
+
+if (pszContainerW) free(pszContainerW);
+if (pszProviderW)  free(pszProviderW);
+
+return(cr_l);
+}
+
+BOOL WINAPI myCryptSignHashA(
+  HCRYPTHASH hHash,     
+  DWORD dwKeySpec,      
+  LPCSTR sDescription, // ascii version
+  DWORD dwFlags,        
+  BYTE *pbSignature,    
+  DWORD *pdwSigLen      
+)
+{
+return(CryptSignHashW(hHash, dwKeySpec, NULL, dwFlags, pbSignature, pdwSigLen));
+}
+
+// pdelaage 20101114: override wincrypt.h import names THAT REFER TO NOTHING IN EVC LIBS !
+// and, at the same time, avoid compiler warnings for redefinition of symbols.
+#define CryptEnumProvidersA myCryptEnumProvidersA
+#define CryptAcquireContextA myCryptAcquireContextA
+#define CryptSignHashA myCryptSignHashA
+
+#endif
 
 static const char *engine_capi_id = "capi";
 static const char *engine_capi_name = "CryptoAPI ENGINE";
