@@ -351,6 +351,11 @@ namespace "clean" do
   end  
 end
 
+def is_valid_token?(token)
+  res = /([0-9a-f]{50})/.match(token)
+  return !res.nil? && !res[1].nil?  
+end
+
 def decode_validate_token(token_hash, salt, token_preamble_len)
   token = ''
 
@@ -372,12 +377,21 @@ def decode_validate_token(token_hash, salt, token_preamble_len)
 
       tokenlen = decrypted.length - token_preamble_len - Digest::SHA2.hexdigest("token").length
 
-      token = decrypted.slice(token_preamble_len, tokenlen)
-      token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
+      tok = decrypted.slice(token_preamble_len, tokenlen)
+      if is_valid_token?(tok) 
+        token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
 
-      if token_hash != Digest::SHA2.hexdigest(token)
-        puts "invalid token"
-        token = ''
+        if token_hash != Digest::SHA2.hexdigest(tok)
+          puts "invalid token"
+        else
+          token = tok
+        end
+      else
+          puts "invalid token format"
+      end
+
+      if !token.empty?
+        Time.now.to_i
       end
     else
       puts "corrupted token"
@@ -521,9 +535,14 @@ namespace "token" do
   end
 
   task :set, [:token] => [:initialize] do |t, args|
-    $token = args[:token]
+    if is_valid_token?(args[:token])
+      $token = args[:token]
+    else
+      puts "invalid token format"
+      $token = ''
+    end
 
-    if !($token.nil? || $token.empty?)
+    if !($token.nil? || $token.empty?) 
       if $interwebs_available
         $apps = get_app_list($token)
         if $apps.nil?
@@ -535,6 +554,8 @@ namespace "token" do
       end
 
       File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+
+      puts "Token was updated successfully"
     end
   end
 
@@ -549,17 +570,34 @@ namespace "token" do
       if File.exists?(token_source)
         tok = File.read(token_source)
       else
-        puts "In order to use Rhodes framework you should register at http://rhohub.com and get your API token."
-        puts "You save token to 'token.txt' file. It will be automatically validated and encrypted during next run."
-        print "You can enter your token right now (or just press enter to stop build):"
+        puts "In order to use Rhodes framework you should set RhoHub API token for it.
+Register at http://rhohub.com and get your API token there. 
+It is located in your profile (rightmost toolbar item).
+Inside your profile configuration select 'API token' menu item. Then run command
+ 
+`rake token:set[<Your_RhoHub_API_token>]`
+
+You can also paste your RhoHub token right now (or just press enter to stop build):"
         tok = STDIN.gets.chomp
       end
 
-      if $interwebs_available
-        $apps = get_app_list(tok)
-        if $apps.nil?
-          $token = ''
-          raise Exception.new "RhoHub API token is not valid!"
+      if tok.empty? 
+        exit 1
+      else
+        if !is_valid_token?(tok)
+          puts "Invalid token format"
+          exit 1
+        end
+        if $interwebs_available
+          $apps = get_app_list(tok)
+          if $apps.nil?
+            $token = ''
+            raise Exception.new "RhoHub API token is not valid!"
+          else 
+            puts "Token is valid"
+          end
+        else
+          puts "Unable to check your token online. It would be tested during next run"
         end
       end
 
