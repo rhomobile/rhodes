@@ -69,6 +69,7 @@ chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
+require File.join(pwd, 'lib/build/SiteChecker.rb')
 require File.join(pwd, 'res/build-tools/rhohub.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
@@ -497,34 +498,6 @@ def decode_validate_token(token_hash, salt, token_preamble_len)
   result
 end
 
-def kan_i_haz_interwebs(url, proxy)
-  uri = URI.parse(url)
-
-  begin
-    if !(proxy.nil? || proxy.empty?)
-      proxy_uri = URI.parse(proxy)
-      http = Net::HTTP.new(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password )
-    else
-      http = Net::HTTP.new(uri.host, uri.port)
-    end
-
-    if uri.scheme == "https"  # enable SSL/TLS
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    end
-
-    http.start {
-      http.request_get(uri.path) {|res|
-      }
-    }
-    true
-  rescue => e
-    puts e.inspect
-    puts e.backtrace
-    false
-  end
-end
-
 def get_app_list(token, proxy)
   result = nil
   begin 
@@ -546,7 +519,8 @@ end
 
 namespace "token" do
   task :initialize => "config:initialize" do
-    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/", $proxy)
+    SiteChecker.site = "https://app.rhohub.com/"
+    SiteChecker.proxy = $proxy
 
     $rhodes_home = File.join(Dir.home(),'.rhomobile')
     if !File.exist?($rhodes_home)
@@ -607,14 +581,16 @@ namespace "token" do
 
     min_check_interval = 60*60*24 # one day
 
-    if $interwebs_available && !($token.nil? || $token.empty?) && (Time.now.to_i - result[:lt] > min_check_interval )
-      puts "checking token at rhohub.com"
-      $apps = get_app_list($token, $proxy)
-      if $apps.nil?
-        token = ''
-        puts "token is not valid"
-      else
-        File.write($token_file, encode_token($token, $salt, $token_preamble_len, result[:iv]))
+    if !($token.nil? || $token.empty?) && (Time.now.to_i - result[:lt] > min_check_interval )
+      if SiteChecker.is_available?
+        puts "checking token at rhohub.com"
+        $apps = get_app_list($token, $proxy)
+        if $apps.nil?
+          token = ''
+          puts "token is not valid"
+        else
+          File.write($token_file, encode_token($token, $salt, $token_preamble_len, result[:iv]))
+        end
       end
     end
   end
@@ -646,7 +622,7 @@ namespace "token" do
     end
 
     if !($token.nil? || $token.empty?) 
-      if $interwebs_available
+      if SiteChecker.is_available?
         $apps = get_app_list($token, $proxy)
         if $apps.nil?
           $token = ''
@@ -691,7 +667,7 @@ You can also paste your RhoHub token right now (or just press enter to stop buil
           puts "Invalid token format"
           exit 1
         end
-        if $interwebs_available
+        if SiteChecker.is_available?
           $apps = get_app_list(tok, $proxy)
           if $apps.nil?
             $token = ''
