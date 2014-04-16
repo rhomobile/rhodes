@@ -109,7 +109,7 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "name", "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
 
 $winxpe_build = false
       
@@ -1037,7 +1037,7 @@ namespace "config" do
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"
 
-  end # end of common:config 
+  end # end of config:common
   
   task :qt do
     $qtdir = ENV['QTDIR']

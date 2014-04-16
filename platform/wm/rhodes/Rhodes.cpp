@@ -639,7 +639,7 @@ const rho::String& CRhodesModule::getAppName()
             m_strAppName = path.substr( nStart, nEnd-nStart+1);
         }
 #else
-        m_strAppName = get_app_build_config_item("name");
+        m_strAppName = RHOCONF().getString("app_name");
 #endif
     }
 
