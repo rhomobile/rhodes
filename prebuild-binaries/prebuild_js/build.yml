@@ -25,3 +25,7 @@ wm:
   #sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 
 extensions: ["rhoconnect-client"]
+
+paths:
+  extensions:
+    - ../../../rhoconnect-client/ext
