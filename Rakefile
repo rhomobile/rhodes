@@ -354,6 +354,11 @@ namespace "clean" do
   end  
 end
 
+def is_valid_token?(token)
+  res = /([0-9a-f]{50})/.match(token)
+  return !res.nil? && !res[1].nil?  
+end
+
 def decode_validate_token(token_hash, salt, token_preamble_len)
   token = ''
 
@@ -375,12 +380,21 @@ def decode_validate_token(token_hash, salt, token_preamble_len)
 
       tokenlen = decrypted.length - token_preamble_len - Digest::SHA2.hexdigest("token").length
 
-      token = decrypted.slice(token_preamble_len, tokenlen)
-      token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
+      tok = decrypted.slice(token_preamble_len, tokenlen)
+      if is_valid_token?(tok) 
+        token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
 
-      if token_hash != Digest::SHA2.hexdigest(token)
-        puts "invalid token"
-        token = ''
+        if token_hash != Digest::SHA2.hexdigest(tok)
+          puts "invalid token"
+        else
+          token = tok
+        end
+      else
+          puts "invalid token format"
+      end
+
+      if !token.empty?
+        Time.now.to_i
       end
     else
       puts "corrupted token"
@@ -414,15 +428,22 @@ def encode_token(token, salt, token_preamble_len)
   JSON.generate(message)
 end
 
-def kan_i_haz_interwebs(url)
+def kan_i_haz_interwebs(url, proxy)
   uri = URI.parse(url)
-  http = Net::HTTP.new(uri.host, uri.port)
-  if uri.scheme == "https"  # enable SSL/TLS
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  end
 
   begin
+    if !(proxy.nil? || proxy.empty?)
+      proxy_uri = URI.parse(proxy)
+      http = Net::HTTP.new(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password )
+    else
+      http = Net::HTTP.new(uri.host, uri.port)
+    end
+
+    if uri.scheme == "https"  # enable SSL/TLS
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+
     http.start {
       http.request_get(uri.path) {|res|
       }
@@ -435,14 +456,20 @@ def kan_i_haz_interwebs(url)
   end
 end
 
-def get_app_list(token)
+def get_app_list(token, proxy)
   result = nil
   begin 
     Rhohub.token = token
+    if !proxy.nil?
+      RestClient.proxy = proxy
+    else
+      RestClient.proxy = ENV['http_proxy']
+    end
     Rhohub.url = "https://app.rhohub.com/api/v1"
     result = Rhohub::App.list()
   rescue Exception => e
     puts "could not get result"
+    raise
   end
 
   result
@@ -450,7 +477,7 @@ end
 
 namespace "token" do
   task :initialize => "config:initialize" do
-    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/")
+    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/", $proxy)
 
     $rhodes_home = File.join(Dir.home(),'.rhomobile')
     if !File.exist?($rhodes_home)
@@ -465,16 +492,27 @@ namespace "token" do
     $apps = nil
 
     #generate salt file to encode api token
-    salt_file = File.join($rhodes_home,'salt')
+    $salt_file = File.join($rhodes_home,'salt')
     $salt = ''
     $salt_generated = false
 
-    if File.exists?(salt_file)
-      $salt = File.read(salt_file)
+    if File.exists?($salt_file)
+      $salt = File.read($salt_file)
     else
       $salt = SecureRandom.urlsafe_base64(32)
-      File.write(salt_file,$salt)
+      File.write($salt_file,$salt)
       $salt_generated = true
+    end
+
+  end
+
+  task :clear => [:initialize] do
+    begin
+      File.delete($token_file)
+      File.delete($salt_file)
+    rescue => e
+      puts "could not delete token files"
+      raise
     end
   end
 
@@ -497,7 +535,7 @@ namespace "token" do
     end
 
     if $interwebs_available && !($token.nil? || $token.empty?)
-      $apps = get_app_list($token)
+      $apps = get_app_list($token, $proxy)
       if $apps.nil?
         token = ''
         puts "token is not valid"
@@ -524,11 +562,16 @@ namespace "token" do
   end
 
   task :set, [:token] => [:initialize] do |t, args|
-    $token = args[:token]
+    if is_valid_token?(args[:token])
+      $token = args[:token]
+    else
+      puts "invalid token format"
+      $token = ''
+    end
 
-    if !($token.nil? || $token.empty?)
+    if !($token.nil? || $token.empty?) 
       if $interwebs_available
-        $apps = get_app_list($token)
+        $apps = get_app_list($token, $proxy)
         if $apps.nil?
           $token = ''
           raise Exception.new "RhoHub API token is not valid!"
@@ -538,6 +581,8 @@ namespace "token" do
       end
 
       File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+
+      puts "Token was updated successfully"
     end
   end
 
@@ -552,17 +597,34 @@ namespace "token" do
       if File.exists?(token_source)
         tok = File.read(token_source)
       else
-        puts "In order to use Rhodes framework you should register at http://rhohub.com and get your API token."
-        puts "You save token to 'token.txt' file. It will be automatically validated and encrypted during next run."
-        print "You can enter your token right now (or just press enter to stop build):"
+        puts "In order to use Rhodes framework you should set RhoHub API token for it.
+Register at http://rhohub.com and get your API token there. 
+It is located in your profile (rightmost toolbar item).
+Inside your profile configuration select 'API token' menu item. Then run command
+ 
+`rake token:set[<Your_RhoHub_API_token>]`
+
+You can also paste your RhoHub token right now (or just press enter to stop build):"
         tok = STDIN.gets.chomp
       end
 
-      if $interwebs_available
-        $apps = get_app_list(tok)
-        if $apps.nil?
-          $token = ''
-          raise Exception.new "RhoHub API token is not valid!"
+      if tok.empty? 
+        exit 1
+      else
+        if !is_valid_token?(tok)
+          puts "Invalid token format"
+          exit 1
+        end
+        if $interwebs_available
+          $apps = get_app_list(tok, $proxy)
+          if $apps.nil?
+            $token = ''
+            raise Exception.new "RhoHub API token is not valid!"
+          else 
+            puts "Token is valid"
+          end
+        else
+          puts "Unable to check your token online. It would be tested during next run"
         end
       end
 
@@ -591,6 +653,16 @@ namespace "config" do
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
+
+    $proxy = {}
+
+    conn = $config['connection']
+
+    if (!conn.nil?) && (!conn['proxy'].nil?)
+      $proxy = conn['proxy']
+    else
+      $proxy = nil
+    end
     
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
@@ -1512,48 +1584,11 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
   end  
 end
 
-def copy_rhoconfig(source, target)
-  override = get_config_override_params
-  mentioned = Set.new
-
-  lines = []
-
-  # read file and edit overriden parameters
-  File.open(source, 'r') do |file|
-    while line = file.gets
-      match = line.match(/^(\s*)(\w+)(\s*=\s*)/)
-      if match
-        name = match[2]
-        if override.has_key?(name)
-          lines << "#{match[1]}#{name}#{match[3]}#{override[name]}"
-          mentioned << name
-          next
-        end
-      end
-      lines << line
-    end
-  end
-
-  # append rest of overriden parameters to text
-  override.each do |key, value|
-    if !mentioned.include?(key)
-      lines << ''
-      lines << "#{key} = #{value}"
-    end
-  end
-
-  # write text to target file
-  File.open(target, 'w') do |file|
-    lines.each { |l| file.puts l }
-  end
-end
-
 def common_bundle_start( startdir, dest)
   
   puts "common_bundle_start"
     
   app = $app_path
-  rhodeslib = "lib/framework"
 
   puts $srcdir
   puts dest
@@ -1565,16 +1600,9 @@ def common_bundle_start( startdir, dest)
   mkdir_p File.join($srcdir,'apps')
 
   start = pwd
-  chdir rhodeslib  
-  
+
   if !$js_application
-    Dir.glob("*").each { |f|
-      if f.to_s == "autocomplete"
-        next
-      end
-          
-      cp_r f,dest, :preserve => true 
-    }
+    Dir.glob('lib/framework/*').each {|f| cp_r(f, dest, :preserve => true) unless f.to_s == 'autocomplete'}
   end
 
   chdir dest
@@ -1601,14 +1629,6 @@ def common_bundle_start( startdir, dest)
     public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, file_map, app 
   end
   
-  copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
- 
-  # modify rhoconfig for ruby debugger
-  if $remote_debug      
-    puts "$app_config=" + $app_config['extensions'].to_s    
-    Jake.modify_rhoconfig_for_debug()
-  end
-
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
     if $app_config[$config["platform"]] && 
@@ -1627,11 +1647,7 @@ def common_bundle_start( startdir, dest)
     end
   end
 
-  app_version = "\r\napp_version='#{$app_config["version"]}'"  
-  app_version += "\r\ntitle_text='#{$app_config["name"]}'"  if $current_platform == "win32"
-  
-  File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
-  File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
+  Jake.make_rhoconfig_txt
   
   unless $debug
     rm_rf $srcdir + "/apps/app/SpecRunner"
@@ -1714,16 +1730,6 @@ def process_exclude_folders(excluded_dirs=[])
       
   end
 
-end
-
-def get_config_override_params
-    override = {}
-    ENV.each do |key, value|
-        key.match(/^rho_override_(.+)$/) do |match|
-            override[match[1]] = value
-        end
-    end
-    return override
 end
 
 def get_extensions
@@ -2728,7 +2734,7 @@ namespace "run" do
         fdir = File.join($app_path, 'rhosimulator')
         mkdir fdir unless File.exist?(fdir)
             
-        get_config_override_params.each do |key, value|
+        Jake.get_config_override_params.each do |key, value|
             if key != 'start_path'
                 puts "Override '#{key}' is not supported."
                 next

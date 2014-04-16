@@ -32,3 +32,8 @@ excludedirs:
     - "**/.*.swo"
     - "**/.*.swn"
     - "**/.DS_Store"
+
+# internet proxy configuration for cloud build
+# connection:
+#   proxy: http://user:pass@address:port
+
