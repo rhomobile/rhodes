@@ -425,15 +425,22 @@ def encode_token(token, salt, token_preamble_len)
   JSON.generate(message)
 end
 
-def kan_i_haz_interwebs(url)
+def kan_i_haz_interwebs(url, proxy)
   uri = URI.parse(url)
-  http = Net::HTTP.new(uri.host, uri.port)
-  if uri.scheme == "https"  # enable SSL/TLS
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  end
 
   begin
+    if !(proxy.nil? || proxy.empty?)
+      proxy_uri = URI.parse(proxy)
+      http = Net::HTTP.new(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password )
+    else
+      http = Net::HTTP.new(uri.host, uri.port)
+    end
+
+    if uri.scheme == "https"  # enable SSL/TLS
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+
     http.start {
       http.request_get(uri.path) {|res|
       }
@@ -446,14 +453,20 @@ def kan_i_haz_interwebs(url)
   end
 end
 
-def get_app_list(token)
+def get_app_list(token, proxy)
   result = nil
   begin 
     Rhohub.token = token
+    if !proxy.nil?
+      RestClient.proxy = proxy
+    else
+      RestClient.proxy = ENV['http_proxy']
+    end
     Rhohub.url = "https://app.rhohub.com/api/v1"
     result = Rhohub::App.list()
   rescue Exception => e
     puts "could not get result"
+    raise
   end
 
   result
@@ -461,7 +474,7 @@ end
 
 namespace "token" do
   task :initialize => "config:initialize" do
-    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/")
+    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/", $proxy)
 
     $rhodes_home = File.join(Dir.home(),'.rhomobile')
     if !File.exist?($rhodes_home)
@@ -508,7 +521,7 @@ namespace "token" do
     end
 
     if $interwebs_available && !($token.nil? || $token.empty?)
-      $apps = get_app_list($token)
+      $apps = get_app_list($token, $proxy)
       if $apps.nil?
         token = ''
         puts "token is not valid"
@@ -544,7 +557,7 @@ namespace "token" do
 
     if !($token.nil? || $token.empty?) 
       if $interwebs_available
-        $apps = get_app_list($token)
+        $apps = get_app_list($token, $proxy)
         if $apps.nil?
           $token = ''
           raise Exception.new "RhoHub API token is not valid!"
@@ -589,7 +602,7 @@ You can also paste your RhoHub token right now (or just press enter to stop buil
           exit 1
         end
         if $interwebs_available
-          $apps = get_app_list(tok)
+          $apps = get_app_list(tok, $proxy)
           if $apps.nil?
             $token = ''
             raise Exception.new "RhoHub API token is not valid!"
@@ -626,6 +639,16 @@ namespace "config" do
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
+
+    $proxy = {}
+
+    conn = $config['connection']
+
+    if (!conn.nil?) && (!conn['proxy'].nil?)
+      $proxy = conn['proxy']
+    else
+      $proxy = nil
+    end
     
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
