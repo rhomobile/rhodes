@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		504196A718FEF89E0035C902 /* s3_cbc.c in Sources */ = {isa = PBXBuildFile; fileRef = 504196A618FEF89E0035C902 /* s3_cbc.c */; };
+		504196A918FEF9C20035C902 /* evp_cnf.c in Sources */ = {isa = PBXBuildFile; fileRef = 504196A818FEF9C20035C902 /* evp_cnf.c */; };
 		C5089BA415AF12D700B28675 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5089BA315AF12D700B28675 /* Foundation.framework */; };
 		C5089F9215AF131400B28675 /* apps.h in Headers */ = {isa = PBXBuildFile; fileRef = C5089BB115AF131400B28675 /* apps.h */; };
 		C5089F9315AF131400B28675 /* progs.h in Headers */ = {isa = PBXBuildFile; fileRef = C5089BB215AF131400B28675 /* progs.h */; };
@@ -910,6 +912,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		504196A618FEF89E0035C902 /* s3_cbc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = s3_cbc.c; sourceTree = "<group>"; };
+		504196A818FEF9C20035C902 /* evp_cnf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = evp_cnf.c; sourceTree = "<group>"; };
 		C5089BA015AF12D700B28675 /* libopenssl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libopenssl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5089BA315AF12D700B28675 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C5089BA715AF12D700B28675 /* openssl-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "openssl-Prefix.pch"; sourceTree = "<group>"; };
@@ -1811,8 +1815,8 @@
 		C5089F8D15AF131400B28675 /* t1_srvr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = t1_srvr.c; sourceTree = "<group>"; };
 		C5089F8E15AF131400B28675 /* tls1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tls1.h; sourceTree = "<group>"; };
 		C5089F8F15AF131400B28675 /* tls_srp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tls_srp.c; sourceTree = "<group>"; };
-		C5089F9015AF131400B28675 /* e_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = e_os.h; path = ../../sources/e_os.h; sourceTree = "<group>"; };
-		C5089F9115AF131400B28675 /* e_os2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = e_os2.h; path = ../../sources/e_os2.h; sourceTree = "<group>"; };
+		C5089F9015AF131400B28675 /* e_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = e_os.h; path = ../sources/e_os.h; sourceTree = "<group>"; };
+		C5089F9115AF131400B28675 /* e_os2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = e_os2.h; path = ../sources/e_os2.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1885,7 +1889,7 @@
 				C5089BB515AF131400B28675 /* testrsa.h */,
 			);
 			name = apps;
-			path = ../../sources/apps;
+			path = ../sources/apps;
 			sourceTree = "<group>";
 		};
 		C5089BB615AF131400B28675 /* crypto */ = {
@@ -1975,7 +1979,7 @@
 				C5089E8215AF131400B28675 /* x509v3 */,
 			);
 			name = crypto;
-			path = ../../sources/crypto;
+			path = ../sources/crypto;
 			sourceTree = "<group>";
 		};
 		C5089BB715AF131400B28675 /* aes */ = {
@@ -2476,6 +2480,7 @@
 		C5089D3215AF131400B28675 /* evp */ = {
 			isa = PBXGroup;
 			children = (
+				504196A818FEF9C20035C902 /* evp_cnf.c */,
 				C5089D3315AF131400B28675 /* bio_b64.c */,
 				C5089D3415AF131400B28675 /* bio_enc.c */,
 				C5089D3515AF131400B28675 /* bio_md.c */,
@@ -3042,7 +3047,7 @@
 				C5089EE215AF131400B28675 /* vendor_defns */,
 			);
 			name = engines;
-			path = ../../sources/engines;
+			path = ../sources/engines;
 			sourceTree = "<group>";
 		};
 		C5089EAB15AF131400B28675 /* ccgost */ = {
@@ -3095,7 +3100,7 @@
 				C5089EEB15AF131400B28675 /* openssl */,
 			);
 			name = include;
-			path = ../../sources/include;
+			path = ../sources/include;
 			sourceTree = "<group>";
 		};
 		C5089EEB15AF131400B28675 /* openssl */ = {
@@ -3184,6 +3189,7 @@
 		C5089F5715AF131400B28675 /* ssl */ = {
 			isa = PBXGroup;
 			children = (
+				504196A618FEF89E0035C902 /* s3_cbc.c */,
 				C5089F5815AF131400B28675 /* bio_ssl.c */,
 				C5089F5915AF131400B28675 /* d1_both.c */,
 				C5089F5A15AF131400B28675 /* d1_clnt.c */,
@@ -3242,7 +3248,7 @@
 				C5089F8F15AF131400B28675 /* tls_srp.c */,
 			);
 			name = ssl;
-			path = ../../sources/ssl;
+			path = ../sources/ssl;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -3547,6 +3553,7 @@
 				C5089F9C15AF131400B28675 /* aes_ecb.c in Sources */,
 				C5089F9D15AF131400B28675 /* aes_ige.c in Sources */,
 				C5089F9F15AF131400B28675 /* aes_misc.c in Sources */,
+				504196A918FEF9C20035C902 /* evp_cnf.c in Sources */,
 				C5089FA015AF131400B28675 /* aes_ofb.c in Sources */,
 				C5089FA115AF131400B28675 /* aes_wrap.c in Sources */,
 				C5089FA315AF131400B28675 /* a_bitstr.c in Sources */,
@@ -3785,6 +3792,7 @@
 				C508A0B615AF131400B28675 /* ec2_mult.c in Sources */,
 				C508A0B715AF131400B28675 /* ec2_oct.c in Sources */,
 				C508A0B815AF131400B28675 /* ec2_smpl.c in Sources */,
+				504196A718FEF89E0035C902 /* s3_cbc.c in Sources */,
 				C508A0B915AF131400B28675 /* ec_ameth.c in Sources */,
 				C508A0BA15AF131400B28675 /* ec_asn1.c in Sources */,
 				C508A0BB15AF131400B28675 /* ec_check.c in Sources */,
