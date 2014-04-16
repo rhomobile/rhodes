@@ -489,16 +489,27 @@ namespace "token" do
     $apps = nil
 
     #generate salt file to encode api token
-    salt_file = File.join($rhodes_home,'salt')
+    $salt_file = File.join($rhodes_home,'salt')
     $salt = ''
     $salt_generated = false
 
-    if File.exists?(salt_file)
-      $salt = File.read(salt_file)
+    if File.exists?($salt_file)
+      $salt = File.read($salt_file)
     else
       $salt = SecureRandom.urlsafe_base64(32)
-      File.write(salt_file,$salt)
+      File.write($salt_file,$salt)
       $salt_generated = true
+    end
+
+  end
+
+  task :clear => [:initialize] do
+    begin
+      File.delete($token_file)
+      File.delete($salt_file)
+    rescue => e
+      puts "could not delete token files"
+      raise
     end
   end
 
