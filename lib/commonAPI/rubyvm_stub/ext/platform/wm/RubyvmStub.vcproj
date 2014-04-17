@@ -695,6 +695,10 @@
 			Name="win32"
 			>
 			<File
+				RelativePath=".\dir_stub.c"
+				>
+			</File>
+			<File
 				RelativePath=".\RubyvmStub.c"
 				>
 			</File>
