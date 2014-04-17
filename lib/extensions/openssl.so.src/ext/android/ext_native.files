@@ -329,6 +329,7 @@ ext/sources/crypto/evp/e_seed.c
 ext/sources/crypto/evp/e_xcbc_d.c
 ext/sources/crypto/evp/encode.c
 ext/sources/crypto/evp/evp_acnf.c
+ext/sources/crypto/evp/evp_cnf.c
 ext/sources/crypto/evp/evp_enc.c
 ext/sources/crypto/evp/evp_err.c
 ext/sources/crypto/evp/evp_fips.c
@@ -638,6 +639,7 @@ ext/sources/ssl/s2_meth.c
 ext/sources/ssl/s2_pkt.c
 ext/sources/ssl/s2_srvr.c
 ext/sources/ssl/s3_both.c
+ext/sources/ssl/s3_cbc.c
 ext/sources/ssl/s3_clnt.c
 ext/sources/ssl/s3_enc.c
 ext/sources/ssl/s3_lib.c
