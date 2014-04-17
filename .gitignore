@@ -13,6 +13,7 @@ lastbuildoptions.yml
 #platform/iphone/Info.plist
 lib/commonAPI/*/*/*/generated/
 lib/commonAPI/*/*/*/*/generated/
+lib/commonAPI/*/*/*/*/*/debug/
 lib/commonAPI/*/ext/platform/iphone/build/
 lib/commonAPI/javascriptvm/ext/platform/iphone/build/*
 lib/extensions/*/*/*/generated/
@@ -33,6 +34,7 @@ platform/rhodes-symbian-emulator-build/*
 platform/shared/*/iphone/*/build/*
 platform/shared/*/iphone/build/*
 platform/shared/*/win32/bin/*
+platform/shared/qt/*/*/Debug
 platform/symbian/bld.inf
 platform/symbian/curl/bld.inf
 platform/symbian/curl/curl_lib.mmp
