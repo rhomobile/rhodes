@@ -361,7 +361,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\sources\;..\sources\include;..\sources\crypto;..\sources\engines;..\sources\ssl;..\sources\crypto\asn1;..\sources\crypto\evp;..\sources\crypto\rsa;..\sources\crypto\modes;..\sources\crypto\dsa;..\sources\engines\ccgost"
+				AdditionalIncludeDirectories="..\sources\;..\sources\include;..\sources\crypto;..\sources\engines;..\sources\ssl;..\sources\crypto\asn1;..\sources\crypto\evp;..\sources\crypto\rsa;..\sources\crypto\modes;..\sources\crypto\dsa;..\sources\engines\ccgost;..\sources\include\wcecompat"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;OPENSSL_SYSNAME_WINCE;WIN32_LEAN_AND_MEAN;L_ENDIAN;DSO_WIN32;NO_CHMOD;OPENSSL_SMALL_FOOTPRINT;WCE_PLATFORM_WINDOWS_MOBILE_6_PROFESSIONAL_SDK_(ARMV4I);ARM;_ARM_;ARMV4I;OPENSSL_NO_RC5;OPENSSL_NO_MD2;OPENSSL_NO_KRB5;OPENSSL_NO_JPAKE;OPENSSL_NO_DYNAMIC_ENGINE;MONOLITH;MK1MF_BUILD;MK1MF_PLATFORM_VC_CE;OPENSSL_UNISTD=&lt;windows.h&gt;;NO_SYS_TYPES_H"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -3405,6 +3405,10 @@
 			</File>
 			<File
 				RelativePath="..\sources\crypto\modes\xts128.c"
+				>
+			</File>
+			<File
+				RelativePath="..\sources\ssl\s3_cbc.c"
 				>
 			</File>
 		</Filter>
