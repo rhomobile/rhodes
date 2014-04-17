@@ -1,9 +1,9 @@
 
 #include <Windows.h>
+#include <stdlib.h>
 
 #include <ruby/wince/sys/types.h>
 #include <ruby/wince/errno.h>
-#include <ruby/win32/dir.h>
 
 static char *envarea;
 
@@ -12,6 +12,10 @@ int rb_w32_map_errno(unsigned long winerr);
 #define RUBY_CRITICAL(expr) do { expr; } while (0)
 #define map_errno(e) rb_w32_map_errno(e)
 #define AreFileApisANSI() 1
+
+#if defined(_WIN32_WCE) || defined(WIN32) || defined(_WINRT_DLL) || defined(_WP8_LIB)
+# define strncasecmp _strnicmp
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -34,23 +38,6 @@ char* rb_w32_getenv(const char *name)
 
     return NULL;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// directory functions
-
-DIR* rb_w32_opendir(const char* dirName)
-{
-    return 0;
-}
-
-void rb_w32_closedir(DIR *dirObj)
-{
-}
-
-struct direct* rb_w32_readdir(DIR *dirObj)
-{
-    return 0;
-}  
 
 //////////////////////////////////////////////////////////////////////////
 // file functions
