@@ -655,6 +655,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\..\platform\shared\ruby\wince\errno.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\..\platform\shared\ruby\wince\io_wce.c"
 				>
 			</File>
@@ -690,6 +694,10 @@
 		<Filter
 			Name="win32"
 			>
+			<File
+				RelativePath=".\RubyvmStub.c"
+				>
+			</File>
 			<File
 				RelativePath=".\win32_stub.c"
 				>
