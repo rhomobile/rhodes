@@ -8,6 +8,7 @@
 #include <ruby/regenc.h>
 
 extern int rb_w32_map_errno(unsigned long winerr);
+extern WCHAR* filecp_to_wstr(const char *str, long *plen);
 
 //////////////////////////////////////////////////////////////////////////
 // regenc.c
