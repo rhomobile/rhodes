@@ -1,5 +1,6 @@
 require 'digest'
-require 'FileUtils'
+#require 'FileUtils'
+require 'fileutils'
                   
 class CheckSumSerializer
   @@hash_filename = "wm_bin_hash.txt"
