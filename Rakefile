@@ -27,9 +27,16 @@
 require 'find'
 require 'erb'
 #require 'rdoc/task'
+require 'openssl'
 require 'digest/sha2'
 require 'rexml/document'
 require 'pathname'
+require 'securerandom'
+require 'base64'
+require 'json'
+require 'open-uri'
+require 'net/https'
+require 'uri'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -62,6 +69,8 @@ chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
+require File.join(pwd, 'lib/build/SiteChecker.rb')
+require File.join(pwd, 'res/build-tools/rhohub.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -101,7 +110,7 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "name", "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
 
 $winxpe_build = false
       
@@ -343,13 +352,351 @@ namespace "clean" do
   end  
 end
 
-namespace "config" do
-  task :common do
+#token handling
+def is_valid_token?(token)
+  res = /([0-9a-f]{50})/.match(token)
+  return !res.nil? && !res[1].nil?  
+end
 
+def generate_preamble(token_preamble_len)
+  range = ((48..57).to_a+(65..90).to_a+(97..122).to_a)
+  
+  ([nil]*token_preamble_len).map { range.sample.chr }.join
+end
+
+def encode_val(encodeable, salt, iv = nil)
+  cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+  cipher.encrypt
+  cipher.key = Digest::SHA2.hexdigest(salt)
+
+  if iv.nil?
+    iv = cipher.random_iv
+  end
+  cipher.iv = iv
+
+  #random preamble
+  encrypted = cipher.update(encodeable)
+  encrypted << cipher.final
+
+  return encrypted, iv
+end
+
+def decode_val(decodeable, salt, iv)
+  cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+  cipher.decrypt
+
+  cipher.key = Digest::SHA2.hexdigest(salt)
+  cipher.iv = iv
+
+  # and decrypt it
+  decrypted = cipher.update(decodeable)
+  decrypted << cipher.final
+
+  decrypted
+end
+
+def bin_to_hex(s)
+  s.unpack('H*').first
+end
+
+def hex_to_bin(s)
+  s.scan(/../).map { |x| x.hex }.pack('c*')
+end
+ 
+def crc32(string, crc = 0)
+  if $crc_t.nil?
+    divisor = [0, 1, 2, 4, 5, 7, 8, 10, 11, 12, 16, 22, 23, 26, 32].inject(0) {|sum, exponent| sum + (1 << (32 - exponent))}
+    $crc_t = Array.new(256) do |octet|
+      remainder = octet
+      (0..7).each do |i|
+        if !remainder[i].zero?
+          remainder ^= (divisor << i)
+        end
+      end
+      remainder >> 8
+    end
+  end
+
+  crc ^= 0xffff_ffff
+  string.each_byte do |octet| 
+    remainder_1 = crc >> 8
+    remainder_2 = $crc_t[(crc & 0xff) ^ octet]
+    crc = remainder_1 ^ remainder_2
+  end
+  crc ^ 0xffff_ffff
+end
+
+def crc(val)
+  [crc32(val)].pack('l<')
+end
+
+def encode_token(token, salt, token_preamble_len, iv = nil)
+  #random preamble
+  token_code = generate_preamble(token_preamble_len)
+  token_code << token
+  token_code << Digest::SHA2.hexdigest(token)
+
+  encrypted, iv = encode_val(token_code, salt)
+
+  curr_time = [Time.now.to_i].pack('l<')
+  time_code = bin_to_hex(curr_time + crc(curr_time))
+
+  time, ivv = encode_val(time_code, salt, iv)
+
+  message = Hash[{:iv => iv, :token => encrypted, :lt => time}.map {|k,v| [k, Base64.encode64(v)]}]
+
+  JSON.generate(message)
+end
+
+def decode_validate_token(token_hash, salt, token_preamble_len)
+  result = {}
+
+  result[:token] = nil
+  result[:lt] = 0
+
+  base_message = JSON.parse(token_hash)
+  if !base_message.nil?
+    message = Hash[base_message.map {|k,v| [k, Base64.decode64(v)]}]
+
+    if !(message["iv"].nil? || message["token"].nil?)
+      result[:iv] = message["iv"]
+
+      decrypted = decode_val(message["token"], salt, message["iv"])
+
+      tokenlen = decrypted.length - token_preamble_len - Digest::SHA2.hexdigest("token").length
+      tok = decrypted.slice(token_preamble_len, tokenlen)
+
+      if is_valid_token?(tok) 
+        token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
+
+        if token_hash != Digest::SHA2.hexdigest(tok)
+          puts "invalid token"
+        else
+          result[:token] = tok
+        end
+      else
+          puts "invalid token format"
+      end
+
+      if !(message["lt"].nil?)
+        timecode = hex_to_bin(decode_val(message["lt"], salt, message["iv"]))
+        len = crc("token").length
+        code = timecode.slice(0, timecode.length - len)
+        code_hash = timecode.slice(timecode.length - len, len)
+
+        if code_hash == crc(code)
+          result[:lt] = code.unpack('l<').first
+        end
+      end
+    else
+      puts "corrupted token"
+    end 
+  else
+    puts "could not read token"
+  end
+
+  result
+end
+
+def get_app_list(token, proxy)
+  result = nil
+  begin 
+    Rhohub.token = token
+    if !proxy.nil?
+      RestClient.proxy = proxy
+    else
+      RestClient.proxy = ENV['http_proxy']
+    end
+    Rhohub.url = "https://app.rhohub.com/api/v1"
+    result = Rhohub::App.list()
+  rescue Exception => e
+    puts "could not get result"
+    raise
+  end
+
+  result
+end
+
+namespace "token" do
+  task :initialize => "config:initialize" do
+    SiteChecker.site = "https://app.rhohub.com/"
+    SiteChecker.proxy = $proxy
+
+    $rhodes_home = File.join(Dir.home(),'.rhomobile')
+    if !File.exist?($rhodes_home)
+      FileUtils::mkdir_p $rhodes_home
+    end
+
+    $token = ''
+    $token_preamble_len = 16
+    $token_file = File.join($rhodes_home,'token')
+
+    $app = nil
+    $apps = nil
+
+    #generate salt file to encode api token
+    $salt_file = File.join($rhodes_home,'salt')
+    $salt = ''
+    $salt_generated = false
+
+    if File.exists?($salt_file)
+      $salt = File.read($salt_file)
+    else
+      $salt = SecureRandom.urlsafe_base64(32)
+      File.write($salt_file,$salt)
+      $salt_generated = true
+    end
+
+  end
+
+  task :clear => [:initialize] do
+    begin
+      File.delete($token_file)
+      File.delete($salt_file)
+    rescue => e
+      puts "could not delete token files"
+      raise
+    end
+  end
+
+  task :read => [:initialize] do
+    # check existing API token
+
+    # check internet connection
+    # 1. check for token file
+    # 2. read if available and validate, reset to empty on error
+    # 3. check token online, reset if not valid
+    result = nil
+
+    if !$salt_generated && File.exists?($token_file)
+      result = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
+      $token = result[:token]
+    else
+      if $salt_generated
+        puts "salt file was generated, token should be invalidated"
+      else
+        puts "token file not found, generating new one"
+      end
+    end
+
+    min_check_interval = 60*60*24 # one day
+
+    if !($token.nil? || $token.empty?) && (Time.now.to_i - result[:lt] > min_check_interval )
+      if SiteChecker.is_available?
+        puts "checking token at rhohub.com"
+        $apps = get_app_list($token, $proxy)
+        if $apps.nil?
+          token = ''
+          puts "token is not valid"
+        else
+          File.write($token_file, encode_token($token, $salt, $token_preamble_len, result[:iv]))
+        end
+      end
+    end
+  end
+
+  task :check => [:read] do
+    if !($token.nil? || $token.empty?)
+      puts "TokenValid[YES]"
+      exit 0
+    else
+      puts "TokenValid[NO]"
+      exit 1
+    end
+  end
+
+  task :get => [:read] do
+    if !($token.nil? || $token.empty?)
+      puts "Token[#{$token}]"
+    else
+      exit 1
+    end
+  end
+
+  task :set, [:token] => [:initialize] do |t, args|
+    if is_valid_token?(args[:token])
+      $token = args[:token]
+    else
+      puts "invalid token format"
+      $token = ''
+    end
+
+    if !($token.nil? || $token.empty?) 
+      if SiteChecker.is_available?
+        $apps = get_app_list($token, $proxy)
+        if $apps.nil?
+          $token = ''
+          raise Exception.new "RhoHub API token is not valid!"
+        end
+      else
+        puts "Could not check token online"
+      end
+
+      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+
+      puts "Token was updated successfully"
+    end
+  end
+
+  task :setup => [:read] do
+    # 4. if token is empty 
+    #   a. read plain text file or ask user to enter token manually
+    #   b. check token inline, exit if not valid
+
+    if $token.nil? || $token.empty?
+      token_source = File.join($app_path,'token.txt')
+
+      if File.exists?(token_source)
+        tok = File.read(token_source)
+      else
+        puts "In order to use Rhodes framework you should set RhoHub API token for it.
+Register at http://rhohub.com and get your API token there. 
+It is located in your profile (rightmost toolbar item).
+Inside your profile configuration select 'API token' menu item. Then run command
+ 
+`rake token:set[<Your_RhoHub_API_token>]`
+
+You can also paste your RhoHub token right now (or just press enter to stop build):"
+        tok = STDIN.gets.chomp
+      end
+
+      if tok.empty? 
+        exit 1
+      else
+        if !is_valid_token?(tok)
+          puts "Invalid token format"
+          exit 1
+        end
+        if SiteChecker.is_available?
+          $apps = get_app_list(tok, $proxy)
+          if $apps.nil?
+            $token = ''
+            raise Exception.new "RhoHub API token is not valid!"
+          else 
+            puts "Token is valid"
+          end
+        else
+          puts "Unable to check your token online. It would be tested during next run"
+        end
+      end
+
+      $token = tok
+
+      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+    else
+      puts "RhoHub API Token is valid"
+    end
+    #end of check
+  end
+end
+
+namespace "config" do
+  task :initialize do
     puts RUBY_VERSION
 
     $binextensions = []
     $app_extensions_list = {}
+
     buildyml = 'rhobuild.yml'
 
     $current_platform_bridge = $current_platform unless $current_platform_bridge
@@ -358,6 +705,16 @@ namespace "config" do
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
+
+    $proxy = {}
+
+    conn = $config['connection']
+
+    if (!conn.nil?) && (!conn['proxy'].nil?)
+      $proxy = conn['proxy']
+    else
+      $proxy = nil
+    end
     
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
@@ -371,7 +728,7 @@ namespace "config" do
       end
     end
 
-	  $app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
+    $app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
 
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
@@ -382,7 +739,7 @@ namespace "config" do
         exit 1
       end
     end
-    
+
     ENV["RHO_APP_PATH"] = $app_path.to_s
     ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
     ENV["APP_TYPE"]     = "rhodes"
@@ -395,7 +752,9 @@ namespace "config" do
     end
 
     Jake.set_bbver($app_config["bbver"].to_s)
-    
+  end
+
+  task :common => ["token:setup"] do    
     extpaths = []
 
     if $app_config["paths"] and $app_config["paths"]["extensions"]
@@ -705,7 +1064,8 @@ namespace "config" do
         puts '****************************************************************************************'
         exit(1)
     end
-    #$app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime') 
+
+    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime') 
 
     if $current_platform == "bb"  
       make_application_build_config_java_file()
@@ -733,7 +1093,7 @@ namespace "config" do
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"
 
-  end # end of common:config 
+  end # end of config:common
   
   task :qt do
     $qtdir = ENV['QTDIR']
@@ -867,7 +1227,7 @@ def find_ext_ingems(extname)
   extpath
 end
 
-def write_modules_js(folder, filename, modules)
+def write_modules_js(folder, filename, modules, do_separate_js_modules)
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     
@@ -881,7 +1241,7 @@ def write_modules_js(folder, filename, modules)
 
     Jake.modify_file_if_content_changed(File.join(folder,filename), f)
 
-    if modules
+    if modules && do_separate_js_modules
         modules.each do |m|
             f = StringIO.new("", "w+")
 
@@ -923,17 +1283,17 @@ def init_extensions(dest, mode = "")
   extscsharp = nil
   ext_xmls_paths = []
   
-  extpaths = $app_config["extpaths"]  
+  extpaths = $app_config["extpaths"]
 
   rhoapi_js_folder = nil
   if !dest.nil?
-    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
-    
+    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )  
   elsif mode == "update_rho_modules_js"
     rhoapi_js_folder = File.join( $app_path, "public/api" )
-      
   end
   
+  do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
+
   puts "rhoapi_js_folder: #{rhoapi_js_folder}"
   puts 'init extensions'
 
@@ -979,7 +1339,6 @@ def init_extensions(dest, mode = "")
           entry           = extconf["entry"]
           nlib            = extconf["nativelibs"]
           type            = Jake.getBuildProp( "exttype", extconf )
-          #wm_type         = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths   = extconf["xml_api_paths"]
           extconf_wp8     = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
           csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
@@ -1025,9 +1384,9 @@ def init_extensions(dest, mode = "")
                 csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?)
                 if extconf_wp8_lib['libname'].nil?
                     extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
-				end
+            end
                   
-                if csharp_impl
+            if csharp_impl
                   wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
                   extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
                   extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
@@ -1137,12 +1496,12 @@ def init_extensions(dest, mode = "")
   #
   if extjsmodulefiles.count > 0
     puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
   end
   #
   if extjsmodulefiles_opt.count > 0
     puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
   end
   
   return if mode == "update_rho_modules_js"
@@ -1277,48 +1636,11 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
   end  
 end
 
-def copy_rhoconfig(source, target)
-  override = get_config_override_params
-  mentioned = Set.new
-
-  lines = []
-
-  # read file and edit overriden parameters
-  File.open(source, 'r') do |file|
-    while line = file.gets
-      match = line.match(/^(\s*)(\w+)(\s*=\s*)/)
-      if match
-        name = match[2]
-        if override.has_key?(name)
-          lines << "#{match[1]}#{name}#{match[3]}#{override[name]}"
-          mentioned << name
-          next
-        end
-      end
-      lines << line
-    end
-  end
-
-  # append rest of overriden parameters to text
-  override.each do |key, value|
-    if !mentioned.include?(key)
-      lines << ''
-      lines << "#{key} = #{value}"
-    end
-  end
-
-  # write text to target file
-  File.open(target, 'w') do |file|
-    lines.each { |l| file.puts l }
-  end
-end
-
 def common_bundle_start( startdir, dest)
   
   puts "common_bundle_start"
     
   app = $app_path
-  rhodeslib = "lib/framework"
 
   puts $srcdir
   puts dest
@@ -1330,16 +1652,9 @@ def common_bundle_start( startdir, dest)
   mkdir_p File.join($srcdir,'apps')
 
   start = pwd
-  chdir rhodeslib  
-  
+
   if !$js_application
-    Dir.glob("*").each { |f|
-      if f.to_s == "autocomplete"
-        next
-      end
-          
-      cp_r f,dest, :preserve => true 
-    }
+    Dir.glob('lib/framework/*').each {|f| cp_r(f, dest, :preserve => true) unless f.to_s == 'autocomplete'}
   end
 
   chdir dest
@@ -1366,14 +1681,6 @@ def common_bundle_start( startdir, dest)
     public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, file_map, app 
   end
   
-  copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
- 
-  # modify rhoconfig for ruby debugger
-  if $remote_debug      
-    puts "$app_config=" + $app_config['extensions'].to_s    
-    Jake.modify_rhoconfig_for_debug()
-  end
-
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
     if $app_config[$config["platform"]] && 
@@ -1392,11 +1699,7 @@ def common_bundle_start( startdir, dest)
     end
   end
 
-  app_version = "\r\napp_version='#{$app_config["version"]}'"  
-  app_version += "\r\ntitle_text='#{$app_config["name"]}'"  if $current_platform == "win32"
-  
-  File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
-  File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
+  Jake.make_rhoconfig_txt
   
   unless $debug
     rm_rf $srcdir + "/apps/app/SpecRunner"
@@ -1479,16 +1782,6 @@ def process_exclude_folders(excluded_dirs=[])
       
   end
 
-end
-
-def get_config_override_params
-    override = {}
-    ENV.each do |key, value|
-        key.match(/^rho_override_(.+)$/) do |match|
-            override[match[1]] = value
-        end
-    end
-    return override
 end
 
 def get_extensions
@@ -2347,6 +2640,8 @@ namespace "run" do
         rhoapi_js_folder = File.join( $app_path, "public/api" )
         puts "rhoapi_js_folder: #{rhoapi_js_folder}"
         
+        do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
+
         # TODO: checker init
         gen_checker = GeneratorTimeChecker.new        
         gen_checker.init($startdir, $app_path)
@@ -2477,12 +2772,12 @@ namespace "run" do
         #
         if extjsmodulefiles.count > 0
           puts "extjsmodulefiles: #{extjsmodulefiles}"
-          write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
         end
         #
         if extjsmodulefiles_opt.count > 0
           puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
-          write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
@@ -2493,7 +2788,7 @@ namespace "run" do
         fdir = File.join($app_path, 'rhosimulator')
         mkdir fdir unless File.exist?(fdir)
             
-        get_config_override_params.each do |key, value|
+        Jake.get_config_override_params.each do |key, value|
             if key != 'start_path'
                 puts "Override '#{key}' is not supported."
                 next

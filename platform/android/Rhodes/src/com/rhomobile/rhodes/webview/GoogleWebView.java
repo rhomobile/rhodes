@@ -69,7 +69,7 @@ public class GoogleWebView implements IRhoWebView {
             @Override
             public void run() {
                 Logger.T(TAG, "Web settings is applying now");
-
+                mWebView.setInitialScale(0);
                 mWebView.setVerticalScrollBarEnabled(true);
                 mWebView.setHorizontalScrollBarEnabled(true);
                 mWebView.setVerticalScrollbarOverlay(true);

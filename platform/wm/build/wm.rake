@@ -226,7 +226,7 @@ def stuff_around_appname
       shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
     end
 
-    if File.exists? wm_icon then
+    if File.exists? $wm_icon then
       shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
     end
     shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
@@ -235,7 +235,7 @@ def stuff_around_appname
 
   if $run_on_startup
     shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -minimized=""'
-    if File.exists? wm_icon then
+    if File.exists? $wm_icon then
       shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
     end
     shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
@@ -388,8 +388,7 @@ namespace "config" do
     end
         
     unless $build_solution
-      #$build_solution = ($js_application and $app_config["capabilities"].index('shared_runtime')) ? 'rhodes_js.sln' : 'rhodes.sln'
-      $build_solution = 'rhodes.sln'
+      $build_solution = ($js_application and $app_config["capabilities"].index('shared_runtime')) ? 'rhodes_js.sln' : 'rhodes.sln'
     end
 
     if $app_config["wm"].nil?
@@ -1098,6 +1097,7 @@ namespace "device" do
    
     desc 'Build cab'
     task :cab => ['config:wm'] do
+      Jake.make_rhoconfig_txt
       stuff_around_appname
       build_cab
     end
@@ -1109,14 +1109,14 @@ namespace "device" do
         rm_rf $srcdir + '/lib'
       end
 
-      wm_icon = $app_path + '/icon/icon.ico'
+      $wm_icon = $app_path + '/icon/icon.ico'
 
       icon_dest = $srcdir + '/icon'
       rm_rf icon_dest
       if $use_shared_runtime
-        if File.exists? wm_icon
+        if File.exists? $wm_icon
           mkdir_p icon_dest
-          cp wm_icon, icon_dest
+          cp $wm_icon, icon_dest
         end
       end
 

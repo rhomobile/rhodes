@@ -719,6 +719,65 @@ class Jake
     File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
   end
 
+  def self.get_config_override_params
+    override = {}
+    ENV.each do |key, value|
+      key.match(/^rho_override_(.+)$/) do |match|
+        override[match[1]] = value
+      end
+    end
+    return override
+  end
+
+  def self.copy_rhoconfig(source, target)
+    override = get_config_override_params
+    mentioned = Set.new
+
+    lines = []
+
+    # read file and edit overriden parameters
+    File.open(source, 'r') do |file|
+      while line = file.gets
+        match = line.match(/^(\s*)(\w+)(\s*=\s*)/)
+        if match
+          name = match[2]
+          if override.has_key?(name)
+            lines << "#{match[1]}#{name}#{match[3]}#{override[name]}"
+            mentioned << name
+            next
+          end
+        end
+        lines << line
+      end
+    end
+
+    # append rest of overriden parameters to text
+    override.each do |key, value|
+      if !mentioned.include?(key)
+        lines << ''
+        lines << "#{key} = #{value}"
+      end
+    end
+
+    # write text to target file
+    File.open(target, 'w') do |file|
+      lines.each { |l| file.puts l }
+    end
+  end
+
+  def self.make_rhoconfig_txt
+    copy_rhoconfig(File.join($app_path, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
+
+    modify_rhoconfig_for_debug if $remote_debug
+
+    app_version = "\r\napp_version='#{$app_config["version"]}'"
+    app_version += "\r\napp_name='#{$app_config["name"]}'"
+    app_version += "\r\ntitle_text='#{$app_config["name"]}'"  if $current_platform == "win32"
+
+    File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
+    File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
+  end
+
   def self.run_rho_log_server(app_path)
 
 	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")

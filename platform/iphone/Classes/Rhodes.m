@@ -780,9 +780,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     NSLog(@"Initialization finished");
 }
 
-- (void) registerForPushNotifications:(id<IPushNotificationsReceiver>)receiver;
+- (void) registerForPushNotificationsInternal:(id<IPushNotificationsReceiver>)receiver;
 {
-#ifdef APP_BUILD_CAPABILITY_PUSH
     pushReceiver = receiver;
 
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
@@ -790,6 +789,13 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     
     UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
     NSLog(@"Enabled notification types: %i", (int)nt);
+
+}
+
+- (void) registerForPushNotifications:(id<IPushNotificationsReceiver>)receiver;
+{
+#ifdef APP_BUILD_CAPABILITY_PUSH
+    [self performSelectorOnMainThread:@selector(registerForPushNotificationsInternal:) withObject:receiver waitUntilDone:NO];
 #endif
 }
 
