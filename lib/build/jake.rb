@@ -771,6 +771,7 @@ class Jake
     modify_rhoconfig_for_debug if $remote_debug
 
     app_version = "\r\napp_version='#{$app_config["version"]}'"
+    app_version += "\r\napp_name='#{$app_config["name"]}'"
     app_version += "\r\ntitle_text='#{$app_config["name"]}'"  if $current_platform == "win32"
 
     File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }

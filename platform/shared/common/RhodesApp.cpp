@@ -1820,7 +1820,7 @@ String CRhodesApp::getAppName()
     strAppName = rho_native_get_appname();
 #else
     //TODO: Android - get app name for shared runtime app
-    strAppName = get_app_build_config_item("name");
+    strAppName = RHOCONF().getString("app_name");
 #endif
 
     return strAppName;

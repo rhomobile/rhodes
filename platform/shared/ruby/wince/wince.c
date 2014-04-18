@@ -284,12 +284,14 @@ BOOL UnlockFile( HFILE hFile,
 	return FALSE;
 }
 
+#if !defined(RHO_NO_RUBY_API)
 BOOL UnlockFileEx(HANDLE hFile,
 	DWORD dwReserved, DWORD nNumberOfBytesToUnlockLow,
 	DWORD nNumberOfBytesToUnlockHigh, LPOVERLAPPED lpOverlapped)
 {
 	return FALSE;
 }
+#endif
 
 /* --------------------- etc, etc, etc... ----------------------- */
 BOOL GetVersionExA(OSVERSIONINFOA *v)
