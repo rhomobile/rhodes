@@ -585,6 +585,7 @@ namespace "config" do
       $ext_android_manifest_changes = {}
       $ext_android_adds = {}
       $ext_android_library_deps = {}
+      $ext_android_platform_lib = []
 
       $app_extensions_list.each do |ext, extpath|
             next if extpath.nil?
@@ -686,6 +687,12 @@ namespace "config" do
                 android_additional_lib.each do |lib|
                   $ext_android_additional_lib << File.join(extpath, lib)
                 end
+              end
+              
+              android_platform_libs = nil
+              android_platform_libs = extconf_android['platform_libraries'] if extconf_android
+              if android_platform_libs
+                android_platform_libs.each { |lib| $ext_android_platform_lib << lib }
               end
 
               if prebuiltpath
@@ -1360,6 +1367,10 @@ namespace "build" do
         end
 
         args += rlibs
+        
+        $ext_android_platform_lib.each do |lib|
+          args << "-l#{lib}"
+        end
         
         ENV['LINKARGS'] = args.join(' ')
         ENV['LINKDEPS'] = (deps+extlibs).join(' ')

@@ -69,6 +69,7 @@ chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
+require File.join(pwd, 'lib/build/SiteChecker.rb')
 require File.join(pwd, 'res/build-tools/rhohub.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
@@ -112,7 +113,7 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "name", "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
 
 $winxpe_build = false
       
@@ -354,47 +355,141 @@ namespace "clean" do
   end  
 end
 
+#token handling
 def is_valid_token?(token)
   res = /([0-9a-f]{50})/.match(token)
   return !res.nil? && !res[1].nil?  
 end
 
+def generate_preamble(token_preamble_len)
+  range = ((48..57).to_a+(65..90).to_a+(97..122).to_a)
+  
+  ([nil]*token_preamble_len).map { range.sample.chr }.join
+end
+
+def encode_val(encodeable, salt, iv = nil)
+  cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+  cipher.encrypt
+  cipher.key = Digest::SHA2.hexdigest(salt)
+
+  if iv.nil?
+    iv = cipher.random_iv
+  end
+  cipher.iv = iv
+
+  #random preamble
+  encrypted = cipher.update(encodeable)
+  encrypted << cipher.final
+
+  return encrypted, iv
+end
+
+def decode_val(decodeable, salt, iv)
+  cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+  cipher.decrypt
+
+  cipher.key = Digest::SHA2.hexdigest(salt)
+  cipher.iv = iv
+
+  # and decrypt it
+  decrypted = cipher.update(decodeable)
+  decrypted << cipher.final
+
+  decrypted
+end
+
+def bin_to_hex(s)
+  s.unpack('H*').first
+end
+
+def hex_to_bin(s)
+  s.scan(/../).map { |x| x.hex }.pack('c*')
+end
+ 
+def crc32(string, crc = 0)
+  if $crc_t.nil?
+    divisor = [0, 1, 2, 4, 5, 7, 8, 10, 11, 12, 16, 22, 23, 26, 32].inject(0) {|sum, exponent| sum + (1 << (32 - exponent))}
+    $crc_t = Array.new(256) do |octet|
+      remainder = octet
+      (0..7).each do |i|
+        if !remainder[i].zero?
+          remainder ^= (divisor << i)
+        end
+      end
+      remainder >> 8
+    end
+  end
+
+  crc ^= 0xffff_ffff
+  string.each_byte do |octet| 
+    remainder_1 = crc >> 8
+    remainder_2 = $crc_t[(crc & 0xff) ^ octet]
+    crc = remainder_1 ^ remainder_2
+  end
+  crc ^ 0xffff_ffff
+end
+
+def crc(val)
+  [crc32(val)].pack('l<')
+end
+
+def encode_token(token, salt, token_preamble_len, iv = nil)
+  #random preamble
+  token_code = generate_preamble(token_preamble_len)
+  token_code << token
+  token_code << Digest::SHA2.hexdigest(token)
+
+  encrypted, iv = encode_val(token_code, salt)
+
+  curr_time = [Time.now.to_i].pack('l<')
+  time_code = bin_to_hex(curr_time + crc(curr_time))
+
+  time, ivv = encode_val(time_code, salt, iv)
+
+  message = Hash[{:iv => iv, :token => encrypted, :lt => time}.map {|k,v| [k, Base64.encode64(v)]}]
+
+  JSON.generate(message)
+end
+
 def decode_validate_token(token_hash, salt, token_preamble_len)
-  token = ''
+  result = {}
+
+  result[:token] = nil
+  result[:lt] = 0
 
   base_message = JSON.parse(token_hash)
   if !base_message.nil?
     message = Hash[base_message.map {|k,v| [k, Base64.decode64(v)]}]
 
     if !(message["iv"].nil? || message["token"].nil?)
+      result[:iv] = message["iv"]
 
-      cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
-      cipher.decrypt
-
-      cipher.key = Digest::SHA2.hexdigest(salt)
-      cipher.iv = message["iv"]
-
-      # and decrypt it
-      decrypted = cipher.update(message["token"])
-      decrypted << cipher.final
+      decrypted = decode_val(message["token"], salt, message["iv"])
 
       tokenlen = decrypted.length - token_preamble_len - Digest::SHA2.hexdigest("token").length
-
       tok = decrypted.slice(token_preamble_len, tokenlen)
+
       if is_valid_token?(tok) 
         token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
 
         if token_hash != Digest::SHA2.hexdigest(tok)
           puts "invalid token"
         else
-          token = tok
+          result[:token] = tok
         end
       else
           puts "invalid token format"
       end
 
-      if !token.empty?
-        Time.now.to_i
+      if !(message["lt"].nil?)
+        timecode = hex_to_bin(decode_val(message["lt"], salt, message["iv"]))
+        len = crc("token").length
+        code = timecode.slice(0, timecode.length - len)
+        code_hash = timecode.slice(timecode.length - len, len)
+
+        if code_hash == crc(code)
+          result[:lt] = code.unpack('l<').first
+        end
       end
     else
       puts "corrupted token"
@@ -403,57 +498,7 @@ def decode_validate_token(token_hash, salt, token_preamble_len)
     puts "could not read token"
   end
 
-  token
-end
-
-def encode_token(token, salt, token_preamble_len)
-  cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
-  cipher.encrypt
-
-  cipher.key = Digest::SHA2.hexdigest(salt)
-  iv = cipher.random_iv
-  cipher.iv = iv
-
-  #random preamble
-  range = ((48..57).to_a+(65..90).to_a+(97..122).to_a)
-  preamble = ([nil]*token_preamble_len).map { range.sample.chr }.join
-
-  encrypted = cipher.update(preamble)
-  encrypted << cipher.update(token)
-  encrypted << cipher.update(Digest::SHA2.hexdigest(token))
-  encrypted << cipher.final
-
-  message = Hash[{:iv => iv, :token => encrypted}.map {|k,v| [k, Base64.encode64(v)]}]
-
-  JSON.generate(message)
-end
-
-def kan_i_haz_interwebs(url, proxy)
-  uri = URI.parse(url)
-
-  begin
-    if !(proxy.nil? || proxy.empty?)
-      proxy_uri = URI.parse(proxy)
-      http = Net::HTTP.new(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password )
-    else
-      http = Net::HTTP.new(uri.host, uri.port)
-    end
-
-    if uri.scheme == "https"  # enable SSL/TLS
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    end
-
-    http.start {
-      http.request_get(uri.path) {|res|
-      }
-    }
-    true
-  rescue => e
-    puts e.inspect
-    puts e.backtrace
-    false
-  end
+  result
 end
 
 def get_app_list(token, proxy)
@@ -477,7 +522,8 @@ end
 
 namespace "token" do
   task :initialize => "config:initialize" do
-    $interwebs_available = kan_i_haz_interwebs("https://app.rhohub.com/", $proxy)
+    SiteChecker.site = "https://app.rhohub.com/"
+    SiteChecker.proxy = $proxy
 
     $rhodes_home = File.join(Dir.home(),'.rhomobile')
     if !File.exist?($rhodes_home)
@@ -523,9 +569,11 @@ namespace "token" do
     # 1. check for token file
     # 2. read if available and validate, reset to empty on error
     # 3. check token online, reset if not valid
+    result = nil
 
     if !$salt_generated && File.exists?($token_file)
-      $token = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
+      result = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
+      $token = result[:token]
     else
       if $salt_generated
         puts "salt file was generated, token should be invalidated"
@@ -534,11 +582,18 @@ namespace "token" do
       end
     end
 
-    if $interwebs_available && !($token.nil? || $token.empty?)
-      $apps = get_app_list($token, $proxy)
-      if $apps.nil?
-        token = ''
-        puts "token is not valid"
+    min_check_interval = 60*60*24 # one day
+
+    if !($token.nil? || $token.empty?) && (Time.now.to_i - result[:lt] > min_check_interval )
+      if SiteChecker.is_available?
+        puts "checking token at rhohub.com"
+        $apps = get_app_list($token, $proxy)
+        if $apps.nil?
+          token = ''
+          puts "token is not valid"
+        else
+          File.write($token_file, encode_token($token, $salt, $token_preamble_len, result[:iv]))
+        end
       end
     end
   end
@@ -570,7 +625,7 @@ namespace "token" do
     end
 
     if !($token.nil? || $token.empty?) 
-      if $interwebs_available
+      if SiteChecker.is_available?
         $apps = get_app_list($token, $proxy)
         if $apps.nil?
           $token = ''
@@ -615,7 +670,7 @@ You can also paste your RhoHub token right now (or just press enter to stop buil
           puts "Invalid token format"
           exit 1
         end
-        if $interwebs_available
+        if SiteChecker.is_available?
           $apps = get_app_list(tok, $proxy)
           if $apps.nil?
             $token = ''
@@ -1012,7 +1067,8 @@ namespace "config" do
         puts '****************************************************************************************'
         exit(1)
     end
-    #$app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime') 
+
+    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime') 
 
     if $current_platform == "bb"  
       make_application_build_config_java_file()
@@ -1040,7 +1096,7 @@ namespace "config" do
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"
 
-  end # end of common:config 
+  end # end of config:common
   
   task :qt do
     $qtdir = ENV['QTDIR']
@@ -1174,7 +1230,7 @@ def find_ext_ingems(extname)
   extpath
 end
 
-def write_modules_js(folder, filename, modules)
+def write_modules_js(folder, filename, modules, do_separate_js_modules)
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     
@@ -1188,7 +1244,7 @@ def write_modules_js(folder, filename, modules)
 
     Jake.modify_file_if_content_changed(File.join(folder,filename), f)
 
-    if modules
+    if modules && do_separate_js_modules
         modules.each do |m|
             f = StringIO.new("", "w+")
 
@@ -1230,17 +1286,17 @@ def init_extensions(dest, mode = "")
   extscsharp = nil
   ext_xmls_paths = []
   
-  extpaths = $app_config["extpaths"]  
+  extpaths = $app_config["extpaths"]
 
   rhoapi_js_folder = nil
   if !dest.nil?
-    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
-    
+    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )  
   elsif mode == "update_rho_modules_js"
     rhoapi_js_folder = File.join( $app_path, "public/api" )
-      
   end
   
+  do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
+
   puts "rhoapi_js_folder: #{rhoapi_js_folder}"
   puts 'init extensions'
 
@@ -1286,7 +1342,6 @@ def init_extensions(dest, mode = "")
           entry           = extconf["entry"]
           nlib            = extconf["nativelibs"]
           type            = Jake.getBuildProp( "exttype", extconf )
-          #wm_type         = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths   = extconf["xml_api_paths"]
           extconf_wp8     = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
           csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
@@ -1332,9 +1387,9 @@ def init_extensions(dest, mode = "")
                 csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?)
                 if extconf_wp8_lib['libname'].nil?
                     extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
-				end
+            end
                   
-                if csharp_impl
+            if csharp_impl
                   wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
                   extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
                   extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
@@ -1444,12 +1499,12 @@ def init_extensions(dest, mode = "")
   #
   if extjsmodulefiles.count > 0
     puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
   end
   #
   if extjsmodulefiles_opt.count > 0
     puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
   end
   
   return if mode == "update_rho_modules_js"
@@ -2588,6 +2643,8 @@ namespace "run" do
         rhoapi_js_folder = File.join( $app_path, "public/api" )
         puts "rhoapi_js_folder: #{rhoapi_js_folder}"
         
+        do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
+
         # TODO: checker init
         gen_checker = GeneratorTimeChecker.new        
         gen_checker.init($startdir, $app_path)
@@ -2718,12 +2775,12 @@ namespace "run" do
         #
         if extjsmodulefiles.count > 0
           puts "extjsmodulefiles: #{extjsmodulefiles}"
-          write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
         end
         #
         if extjsmodulefiles_opt.count > 0
           puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
-          write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
