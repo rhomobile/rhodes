@@ -1226,7 +1226,7 @@ def find_ext_ingems(extname)
   extpath
 end
 
-def write_modules_js(folder, filename, modules)
+def write_modules_js(folder, filename, modules, do_separate_js_modules)
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     
@@ -1240,7 +1240,7 @@ def write_modules_js(folder, filename, modules)
 
     Jake.modify_file_if_content_changed(File.join(folder,filename), f)
 
-    if modules
+    if modules && do_separate_js_modules
         modules.each do |m|
             f = StringIO.new("", "w+")
 
@@ -1282,7 +1282,7 @@ def init_extensions(dest, mode = "")
   extscsharp = nil
   ext_xmls_paths = []
   
-  extpaths = $app_config["extpaths"]  
+  extpaths = $app_config["extpaths"]
 
   rhoapi_js_folder = nil
   if !dest.nil?
@@ -1293,6 +1293,8 @@ def init_extensions(dest, mode = "")
       
   end
   
+  do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
+
   puts "rhoapi_js_folder: #{rhoapi_js_folder}"
   puts 'init extensions'
 
@@ -1496,12 +1498,12 @@ def init_extensions(dest, mode = "")
   #
   if extjsmodulefiles.count > 0
     puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
   end
   #
   if extjsmodulefiles_opt.count > 0
     puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
+    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
   end
   
   return if mode == "update_rho_modules_js"
@@ -2640,6 +2642,8 @@ namespace "run" do
         rhoapi_js_folder = File.join( $app_path, "public/api" )
         puts "rhoapi_js_folder: #{rhoapi_js_folder}"
         
+        do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
+
         # TODO: checker init
         gen_checker = GeneratorTimeChecker.new        
         gen_checker.init($startdir, $app_path)
@@ -2770,12 +2774,12 @@ namespace "run" do
         #
         if extjsmodulefiles.count > 0
           puts "extjsmodulefiles: #{extjsmodulefiles}"
-          write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
         end
         #
         if extjsmodulefiles_opt.count > 0
           puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
-          write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt)
+          write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
