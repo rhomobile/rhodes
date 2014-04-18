@@ -3,14 +3,12 @@ require File.join(pwd, 'lib/build/jake.rb')
 
 require 'zip'
 
+
 namespace 'device' do
   namespace 'android' do
-
-
     def determine_prebuild_path(config)
       rhoelements = (config['app_type'] == 'rhoelements')
       js_app = Jake.getBuildBoolProp('javascript_application',config)
-      app_name = ''
 
       if rhoelements then
         app_name = js_app ? 'prebuild_js_rhoelements':'prebuild_ruby'
@@ -18,12 +16,13 @@ namespace 'device' do
         app_name = js_app ? 'prebuild_js':'prebuild_ruby'
       end
 
-      app_name = 'prebuild_js' #TODO: remove this line when have binaries for all prebuilt apps
+      #app_name = 'prebuild_js' #TODO: remove this line when have binaries for all prebuilt apps
 
       return File.join($startdir,'prebuild-binaries',app_name)
     end
 
     def make_app_bundle
+      $use_prebuild_data = true
       Rake::Task['build:android:rhobundle'].execute
       return $appassets
     end
@@ -245,59 +244,19 @@ namespace 'device' do
       return underscores
     end
 
-    def build_java
-      Rake::Task['build:android:genrjava'].execute
-      Rake::Task['build:android:rhodes'].execute
-
-      return $android_jars
-    end
-
-    def get_rholib_path(prebuild_path)
-      return File.join(prebuild_path,'bin','target','android','release','librhodes','lib','armeabi','librhodes.so')
+    def get_native_libs_path(prebuilt_path)
+      return File.join(prebuilt_path,'bin','tmp')
     end
 
     def make_output_path
       return $targetdir + '/' + $appname + '_signed.apk'
     end
 
-    def make_package(manifest_path, resources_path, assets_path, underscore_files, jars, rholib_so, output_path)
-      classes_dex = "#{$bindir}/classes.dex"
-
-      puts 'Running dx utility'
-      args = []
-      args << '-Xmx1024m'
-      args << '-jar'
-      args << $dxjar
-      args << '--dex'
-      args << "--output=#{classes_dex}"
-
-=begin
-      jarnames = []
-
-      Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
-
-        jarname = Pathname.new(jar).basename
-
-        if not jarnames.include?(jarname) then
-          args << jar
-          jarnames << jarname
-        else
-          puts "Skipping duplicated jar: #{jar}"
-        end
-      end
-=end
-
-      Jake.run(File.join($java, 'java'+$exe_ext), args)
-      unless $?.success?
-        raise "Error running DX utility"
-      end
+    def make_package(manifest_path, resources_path, assets_path, underscore_files, native_libs_path, classes_dex, output_path)
 
       resourcepkg = $bindir + "/rhodes.ap_"
 
       puts "Packaging Assets and Jars"
-
-      # this task already caaled during build "build:android:all"
-      #set_app_name_android($appname)
 
       args = ["package", "-f", "-M", manifest_path, "-S", resources_path, "-A", assets_path, "-I", $androidjar, "-F", resourcepkg]
       if $no_compression
@@ -321,36 +280,18 @@ namespace 'device' do
           raise "Error packaging assets"
         end
       end
-=begin
-      Dir.glob(File.join($appassets, "**/*")).each do |f|
-        next unless File.basename(f) =~ /^_/
-        relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
-        puts "Add #{relpath} to #{resourcepkg}..."
-        args = ["uf", resourcepkg, relpath]
-        Jake.run($jarbin, args, $tmpdir)
-        unless $?.success?
-          raise "Error packaging assets"
-        end
-      end
-=end
+
       puts "Packaging Native Libs"
-=begin
+
       args = ["uf", resourcepkg]
-      Dir.glob(File.join($applibs,'**','lib*.so')).each do |lib|
+      Dir.glob(File.join(native_libs_path,'**','lib*.so')) do |lib|
         arch = File.basename(File.dirname(lib))
         args << "lib/#{arch}/#{File.basename(lib)}"
       end
-      Jake.run($jarbin, args, $tmpdir)
+      Jake.run($jarbin, args, native_libs_path)
       unless $?.success?
         raise "Error packaging native libraries"
       end
-=end
-      Jake.run($jarbin, ['uf',resourcepkg,rholib_so], $tmpdir)
-      unless $?.success?
-        raise "Error packaging native libraries"
-      end
-
-
 
       dexfile = classes_dex
       simple_apkfile = $targetdir + "/" + $appname + "_tmp.apk"
@@ -434,10 +375,7 @@ namespace 'device' do
     end
 
     def production_with_prebuild_binary
-      puts "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
-
-      Rake::Task['config:android'].execute
-
+      Rake::Task['config:android'].invoke
 
       prebuilt_path = determine_prebuild_path($app_config)
       bundle_path = make_app_bundle
@@ -454,19 +392,20 @@ namespace 'device' do
 
       underscore_files = get_underscore_files_from_bundle(bundle_path)
 
-      jars = build_java
+      #jars = build_java
 
-      rholib_so = get_rholib_path(prebuilt_path)
+      native_libs_path = get_native_libs_path(prebuilt_path)
 
       output_path = make_output_path
 
-      make_package(manifest_path,resources_path,assets_path,underscore_files,jars,rholib_so, output_path)
+      classes_dex = File.join(prebuilt_path,'bin','classes.dex')
+      make_package(manifest_path,resources_path,assets_path,underscore_files,native_libs_path, classes_dex, output_path)
     end
   end
 end
 
 
-
+=begin
 namespace 'build' do
   namespace 'android' do
 
@@ -492,15 +431,6 @@ namespace 'build' do
       Rake::Task['config:android'].execute
       Rake::Task['build:android:rhobundle'].execute
 
-
-      assetsDir = $appassets #new bundle is built here
-
-      build classes.dex with current build.yml
-
-
-
-
-=begin
       if File.exists?(resourcepkg) then
         puts 'Make diff maps and repack only changed files'
 
@@ -599,7 +529,7 @@ namespace 'build' do
         puts 'Pack everything from scratch'
         Rake::Task['device:android:production'].invoke
       end
-=end
     end
   end
 end
+=end
