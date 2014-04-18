@@ -818,6 +818,7 @@ namespace "config" do
     # gather main extensions
     extensions = []
     extensions << "coreapi" #unless $app_config['re_buildstub']
+    extensions << "zlib" if $current_platform == "win32" # required by coreapi on win32 for gzip support in Network
     extensions += get_extensions
     extensions << "rhoconnect-client" if $rhosimulator_build
     extensions << "json"
