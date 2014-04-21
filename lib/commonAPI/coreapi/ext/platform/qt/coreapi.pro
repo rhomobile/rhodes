@@ -29,7 +29,8 @@ win32 {
   Release {
     DEFINES += _NDEBUG NDEBUG
   }
-  INCLUDEPATH += ../../../../../../platform/shared/ruby/win32
+  INCLUDEPATH += ../../../../../../platform/shared/ruby/win32\
+../../../../../../lib/extensions/zlib/ext
   HEADERS += ../../../../../../platform/shared/ruby/win32/ruby/config.h\
 ../../../../../../platform/shared/ruby/win32/dir.h\
 ../wm/src/NetworkDetect.h
