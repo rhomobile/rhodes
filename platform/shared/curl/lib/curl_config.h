@@ -483,12 +483,19 @@
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #if defined(__APPLE__) && !defined(RHODES_QT_PLATFORM)
-#import <Availability.h>
-#ifndef __IPHONE_6_0
-#define HAVE_PWD_H 1
-#endif
+    #import <Availability.h>
+
+    #ifdef __IPHONE_7_0
+        #define HAVE_PWD_H 1
+    #else
+
+        #ifndef __IPHONE_6_0
+            #define HAVE_PWD_H 1
+        #endif
+
+    #endif
 #else
-#define HAVE_PWD_H 1
+    #define HAVE_PWD_H 1
 #endif
 
 
