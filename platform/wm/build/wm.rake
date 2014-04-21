@@ -220,7 +220,6 @@ def stuff_around_appname
   end
 
   wm_icon = $app_path + '/icon/icon.ico'
-  puts "UGU #{wm_icon}"
   if $use_shared_runtime
     if $js_application
       shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
