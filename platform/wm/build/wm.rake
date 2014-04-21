@@ -219,6 +219,8 @@ def stuff_around_appname
     cp File.join(out_dir, 'rhodes.exe'), File.join(out_dir, "#{$appname}.exe")
   end
 
+  wm_icon = $app_path + '/icon/icon.ico'
+  puts "UGU #{wm_icon}"
   if $use_shared_runtime
     if $js_application
       shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
@@ -226,7 +228,7 @@ def stuff_around_appname
       shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
     end
 
-    if File.exists? $wm_icon then
+    if File.exists? wm_icon then
       shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
     end
     shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
@@ -235,7 +237,7 @@ def stuff_around_appname
 
   if $run_on_startup
     shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -minimized=""'
-    if File.exists? $wm_icon then
+    if File.exists? wm_icon then
       shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
     end
     shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
@@ -1109,14 +1111,14 @@ namespace "device" do
         rm_rf $srcdir + '/lib'
       end
 
-      $wm_icon = $app_path + '/icon/icon.ico'
+      wm_icon = $app_path + '/icon/icon.ico'
 
       icon_dest = $srcdir + '/icon'
       rm_rf icon_dest
       if $use_shared_runtime
-        if File.exists? $wm_icon
+        if File.exists? wm_icon
           mkdir_p icon_dest
-          cp $wm_icon, icon_dest
+          cp wm_icon, icon_dest
         end
       end
 
