@@ -24,6 +24,15 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+def pack_7z(where, what, archive)
+  what = what.join(' ') if what.kind_of?(Array)
+  Jake.run3("7za a \"#{archive}\" #{what} -bd", where)
+end
+
+def unpack_7z(where, archive)
+  Jake.run3("7za x \"#{archive}\" -bd -y", where)
+end
+
 def additional_dlls_paths
   unless defined?($additional_dlls_paths_)
     $additional_dlls_paths_ = []
@@ -219,6 +228,7 @@ def stuff_around_appname
     cp File.join(out_dir, 'rhodes.exe'), File.join(out_dir, "#{$appname}.exe")
   end
 
+  wm_icon = $app_path + '/icon/icon.ico'
   if $use_shared_runtime
     if $js_application
       shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
@@ -226,7 +236,7 @@ def stuff_around_appname
       shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
     end
 
-    if File.exists? $wm_icon then
+    if File.exists? wm_icon then
       shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
     end
     shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
@@ -235,7 +245,7 @@ def stuff_around_appname
 
   if $run_on_startup
     shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -minimized=""'
-    if File.exists? $wm_icon then
+    if File.exists? wm_icon then
       shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
     end
     shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
@@ -1094,7 +1104,30 @@ namespace "device" do
 
   namespace "wm" do
       
-   
+    desc 'Creates application container. See also device:wm:apply_container.'
+    task :make_container, [:container_prefix_path] => :production do |t, args|
+      container_prefix_path = args[:container_prefix_path]
+
+      Dir.glob("#{container_prefix_path}*") {|f| rm_r(f)}
+      mkdir_p container_prefix_path
+
+      pack_7z($app_path, 'bin', File.join(container_prefix_path, 'application_override.7z'))
+      pack_7z($startdir, [
+        'platform/wm/RhoLaunch/RhoLaunch.ico',
+        'platform/wm/rhodes/resources/icon.ico',
+        'platform/wm/bin',
+        'platform/wm/build/regs.txt'
+      ], File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
+    desc 'Applies application container. See also device:wm:make_container.'
+    task :apply_container, [:container_prefix_path] do |t, args|
+      container_prefix_path = args[:container_prefix_path]
+
+      unpack_7z($app_path, File.join(container_prefix_path, 'application_override.7z'))
+      unpack_7z($startdir, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
     desc 'Build cab'
     task :cab => ['config:wm'] do
       Jake.make_rhoconfig_txt
@@ -1109,14 +1142,14 @@ namespace "device" do
         rm_rf $srcdir + '/lib'
       end
 
-      $wm_icon = $app_path + '/icon/icon.ico'
+      wm_icon = $app_path + '/icon/icon.ico'
 
       icon_dest = $srcdir + '/icon'
       rm_rf icon_dest
       if $use_shared_runtime
-        if File.exists? $wm_icon
+        if File.exists? wm_icon
           mkdir_p icon_dest
-          cp $wm_icon, icon_dest
+          cp wm_icon, icon_dest
         end
       end
 
