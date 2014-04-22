@@ -48,6 +48,7 @@
 #include "api_generator/js_helpers.h"
 #include "api_generator/StringifyHelper.h"
 #include "coreapi/ext/shared/Application.h"
+#include "statistic/rhoProfiler.h"
 
 #include <algorithm>
 
@@ -588,6 +589,8 @@ void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
 
 void CRhodesApp::stopApp()
 {
+    PROF_DESTROY_COUNTER("JS_CALL");
+
     if (m_bExit)
         return;
 
@@ -1444,6 +1447,8 @@ void CRhodesApp::registerLocalServerUrl(const String& strUrl, rho::net::CHttpSer
 
 void CRhodesApp::initHttpServer()
 {
+    PROF_CREATE_COUNTER("JS_CALL");
+
     String strAppRootPath = getRhoRootPath();
     String strAppUserPath = getRhoUserPath();
     String strRuntimePath = getRhoRuntimePath();

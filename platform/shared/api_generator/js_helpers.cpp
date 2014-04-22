@@ -4,7 +4,7 @@
 #include "logging/RhoLog.h"
 #include "api_generator/Api.h"
 #include <vector>
-
+#include "statistic/rhoProfiler.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "js_helper"
@@ -49,6 +49,8 @@ ApiHandler<Func_JS>* getJSApiModule(const std::string& moduleId)
 
 rho::String js_entry_point(const char* szJSON)
 {
+    PROF_START("JS_CALL");
+
     RAWTRACE(szJSON);
 
     rho::String strReqId, strModule, strMethod, strObjID, strCallbackID, strJsVmID, strCallbackParam;
@@ -143,6 +145,9 @@ rho::String js_entry_point(const char* szJSON)
     String res = "{"+methodResult+"}";
     CJSONEntry jsonValidator(res.c_str());
     #endif
+
+    PROF_STOP("JS_CALL");
+
     return "{\"jsonrpc\": \"2.0\", " + methodResult + ", \"id\": " + strReqId + "}";
 }
 
