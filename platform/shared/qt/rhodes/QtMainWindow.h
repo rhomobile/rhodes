@@ -80,7 +80,7 @@ public:
     void GoForward(void);
     void Refresh(int index);
     bool isStarted(void);
-    void setProxy();
+    void unsetProxy();
     void setProxy(QString host, QString port, QString login, QString password);
     // toolbar
     void toolbarRemoveAllButtons(void);
