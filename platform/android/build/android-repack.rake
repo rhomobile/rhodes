@@ -1,8 +1,7 @@
-#require File.join( File.dirname(__FILE__), 'android.rake' )
 require File.join(pwd, 'lib/build/jake.rb')
 require 'fileutils'
 
-namespace 'build' do
+namespace 'device' do
   namespace 'android' do
     task :make_prebuild, :target_path do |t,args|
 
@@ -26,33 +25,15 @@ namespace 'build' do
       FileUtils.cp( File.join($app_path,'build.yml'), target_path )
       
     end
-  end
-end
 
-namespace 'device' do
-  namespace 'android' do
-
-    def get_prebuild_path
+    #TODO: This is a stub function to be removed when real implementation is available.
+    def get_container_path
       return File.join(pwd,'prebuilt')
     end
 
 
     def determine_prebuild_path(config)
-=begin
-      rhoelements = (config['app_type'] == 'rhoelements')
-      js_app = Jake.getBuildBoolProp('javascript_application',config)
-
-      if rhoelements then
-        app_name = js_app ? 'prebuild_js_rhoelements':'prebuild_ruby'
-      else
-        app_name = js_app ? 'prebuild_js':'prebuild_ruby'
-      end
-
-      #app_name = 'prebuild_js' #TODO: remove this line when have binaries for all prebuilt apps
-
-      return File.join($startdir,'prebuild-binaries',app_name)
-=end
-      return get_prebuild_path
+      return get_container_path
     end
 
     def make_app_bundle
