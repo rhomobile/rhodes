@@ -1,12 +1,44 @@
-load File.join( File.dirname(__FILE__), 'android.rake' )
+#require File.join( File.dirname(__FILE__), 'android.rake' )
 require File.join(pwd, 'lib/build/jake.rb')
+require 'fileutils'
 
-require 'zip'
+namespace 'build' do
+  namespace 'android' do
+    task :make_prebuild, :target_path do |t,args|
 
+      target_path = args[:target_path]
+
+      puts "Target path for prebuilt binaries: #{args}"
+
+      Rake::Task['device:android:production'].invoke
+      FileUtils.mkdir_p target_path
+
+      FileUtils.cp( File.join($bindir,'classes.dex'), target_path )
+
+      FileUtils.mkdir_p File.join(target_path,'native','lib')
+
+      Dir.glob(File.join($bindir,'tmp','**','lib*.so')) { |lib|
+        arch = File.basename(File.dirname(lib))
+        FileUtils::mkdir_p File.join(target_path,'native','lib',arch)
+        FileUtils.cp(lib, File.join(target_path,'native','lib',arch))
+      }
+
+      FileUtils.cp( File.join($app_path,'build.yml'), target_path )
+      
+    end
+  end
+end
 
 namespace 'device' do
   namespace 'android' do
+
+    def get_prebuild_path
+      return File.join(pwd,'prebuilt')
+    end
+
+
     def determine_prebuild_path(config)
+=begin
       rhoelements = (config['app_type'] == 'rhoelements')
       js_app = Jake.getBuildBoolProp('javascript_application',config)
 
@@ -19,6 +51,8 @@ namespace 'device' do
       #app_name = 'prebuild_js' #TODO: remove this line when have binaries for all prebuilt apps
 
       return File.join($startdir,'prebuild-binaries',app_name)
+=end
+      return get_prebuild_path
     end
 
     def make_app_bundle
@@ -245,7 +279,7 @@ namespace 'device' do
     end
 
     def get_native_libs_path(prebuilt_path)
-      return File.join(prebuilt_path,'bin','tmp')
+      return File.join(prebuilt_path,'native')
     end
 
     def make_output_path
@@ -398,7 +432,7 @@ namespace 'device' do
 
       output_path = make_output_path
 
-      classes_dex = File.join(prebuilt_path,'bin','classes.dex')
+      classes_dex = File.join(prebuilt_path,'classes.dex')
       make_package(manifest_path,resources_path,assets_path,underscore_files,native_libs_path, classes_dex, output_path)
     end
   end
