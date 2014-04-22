@@ -33,10 +33,105 @@
 #import "iPhoneSimulator.h"
 #import "nsprintf.h"
 
+
+NSString* const kSimulatorFrameworkRelativePath = @"Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework";
+NSString* const kDVTFoundationRelativePath = @"../SharedFrameworks/DVTFoundation.framework";
+NSString* const kDevToolsFoundationRelativePath = @"../OtherFrameworks/DevToolsFoundation.framework";
+NSString* const kSimulatorRelativePath = @"Platforms/iPhoneSimulator.platform/Developer/Applications/iPhone Simulator.app";
+
+
+@interface DVTPlatform : NSObject
+  +(BOOL)loadAllPlatformsReturningError:(id*)o;
+@end
+
+
+
 /**
  * A simple iPhoneSimulatorRemoteClient framework.
  */
 @implementation iPhoneSimulator
+
+
+
+// Helper to find a class by name and die if it isn't found.
+-(Class) FindClassByName:(NSString*) nameOfClass {
+    Class theClass = NSClassFromString(nameOfClass);
+    if (!theClass) {
+        nsfprintf(stderr,@"Failed to find class %@ at runtime.", nameOfClass);
+        exit(EXIT_FAILURE);
+    }
+    return theClass;
+}
+
+// Loads the Simulator framework from the given developer dir.
+-(NSBundle*) LoadSimulatorFramework:(NSString*) developerDir {
+    // The Simulator framework depends on some of the other Xcode private
+    // frameworks; manually load them first so everything can be linked up.
+    NSString* dvtFoundationPath = [developerDir
+                                   stringByAppendingPathComponent:kDVTFoundationRelativePath];
+    NSBundle* dvtFoundationBundle =
+    [NSBundle bundleWithPath:dvtFoundationPath];
+    if (![dvtFoundationBundle load])
+    return nil;
+    
+    NSString* devToolsFoundationPath = [developerDir
+                                        stringByAppendingPathComponent:kDevToolsFoundationRelativePath];
+    NSBundle* devToolsFoundationBundle =
+    [NSBundle bundleWithPath:devToolsFoundationPath];
+    if (![devToolsFoundationBundle load])
+    return nil;
+    
+    // Prime DVTPlatform.
+    NSError* error;
+    Class DVTPlatformClass = [self FindClassByName:@"DVTPlatform"];
+    if (![DVTPlatformClass loadAllPlatformsReturningError:&error]) {
+        nsfprintf(stderr, @"Unable to loadAllPlatformsReturningError. Error: %@",
+                  [error localizedDescription]);
+        return nil;
+    }
+    
+    NSString* simBundlePath = [developerDir
+                               stringByAppendingPathComponent:kSimulatorFrameworkRelativePath];
+    NSBundle* simBundle = [NSBundle bundleWithPath:simBundlePath];
+    if (![simBundle load])
+    return nil;
+    return simBundle;
+}
+
+
+// Finds the developer dir via xcode-select or the DEVELOPER_DIR environment
+// variable.
+NSString* FindDeveloperDir() {
+    // Check the env first.
+    NSDictionary* env = [[NSProcessInfo processInfo] environment];
+    NSString* developerDir = [env objectForKey:@"DEVELOPER_DIR"];
+    if ([developerDir length] > 0)
+    return developerDir;
+    
+    // Go look for it via xcode-select.
+    NSTask* xcodeSelectTask = [[[NSTask alloc] init] autorelease];
+    [xcodeSelectTask setLaunchPath:@"/usr/bin/xcode-select"];
+    [xcodeSelectTask setArguments:[NSArray arrayWithObject:@"-print-path"]];
+    
+    NSPipe* outputPipe = [NSPipe pipe];
+    [xcodeSelectTask setStandardOutput:outputPipe];
+    NSFileHandle* outputFile = [outputPipe fileHandleForReading];
+    
+    [xcodeSelectTask launch];
+    NSData* outputData = [outputFile readDataToEndOfFile];
+    [xcodeSelectTask terminate];
+    
+    NSString* output =
+    [[[NSString alloc] initWithData:outputData
+                           encoding:NSUTF8StringEncoding] autorelease];
+    output = [output stringByTrimmingCharactersInSet:
+              [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if ([output length] == 0)
+    output = nil;
+    return output;
+}
+
+
 
 /**
  * Print usage.
@@ -134,9 +229,11 @@
 		if ([family isEqualToString:@"ipad"])
 		{
 			[config setSimulatedDeviceFamily:[NSNumber numberWithInt:2]];
+            [config setSimulatedDeviceInfoName:@"iPad"];
 		}
 		else
 		{
+            [config setSimulatedDeviceInfoName:@"iPhone"];
 			if ([family isEqualToString:@"iphone4"])
 			{
 				[config setSimulatedDeviceFamily:[NSNumber numberWithInt:3]];
@@ -147,6 +244,8 @@
 			}
 		}
 	}
+    
+    
 
     /* Start the session */
     session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
@@ -176,6 +275,13 @@
         exit(EXIT_FAILURE);
     }
 
+    NSString* developerDir = FindDeveloperDir();
+    if (!developerDir) {
+        nsprintf(@"Unable to find developer directory.");
+        exit(EXIT_FAILURE);
+    }
+    [self LoadSimulatorFramework:developerDir];
+    
     if (strcmp(argv[1], "showsdks") == 0) {
         exit([self showSDKs]);
     }

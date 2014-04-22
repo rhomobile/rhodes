@@ -1,2 +1,4 @@
 entry: Init_md5
 libraries: [ "digest-md5" ]
+android:
+  exttype: rakefile

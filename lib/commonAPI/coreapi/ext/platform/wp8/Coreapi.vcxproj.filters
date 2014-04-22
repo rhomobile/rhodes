@@ -89,6 +89,15 @@
     <Filter Include="Push\shared\generated\cpp">
       <UniqueIdentifier>{cf61144c-82ea-4911-89b4-69eb7935244c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NewORM">
+      <UniqueIdentifier>{e66c7026-a1e5-4f75-aae4-a27254e9ec33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NewORM\shared">
+      <UniqueIdentifier>{754c2bba-46a3-41b3-b9d2-11144bea4f42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NewORM\shared\generated">
+      <UniqueIdentifier>{d538c375-ba68-4e45-b718-5254f33c8877}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp">
@@ -249,6 +258,48 @@
     <ClCompile Include="..\..\shared\generated\cpp\PushBase.cpp">
       <Filter>Push\shared\generated\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\NewORMImpl.cpp">
+      <Filter>NewORM\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\NewORMModelImpl.cpp">
+      <Filter>NewORM\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\neworm_api_init.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\neworm_js_api.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\neworm_ruby_api.c">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\newormmodel_api_init.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\newormmodel_js_api.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\newormmodel_ruby_api.c">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORM_js_wrap.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORM_ruby_wrap.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMBase.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMModel_js_wrap.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMModel_ruby_wrap.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMModelBase.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
@@ -289,6 +340,15 @@
     </ClInclude>
     <ClInclude Include="..\..\shared\generated\cpp\IRhoFile.h">
       <Filter>File\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\NewORMModelImpl.h">
+      <Filter>NewORM\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\NewORMBase.h">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\NewORMModelBase.h">
+      <Filter>NewORM\shared\generated</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

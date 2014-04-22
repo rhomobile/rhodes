@@ -1,20 +1,12 @@
-#include "../../../shared/SystemImplBase.h"
+#include "SystemImpl.h"
 
-#include <windows.h>
-#include <atlbase.h>
 #include <atlstr.h>
 
-#include "common/app_build_capabilities.h"
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
-#include "common/RhoDefs.h"
 
-#if defined( OS_WINCE )
-#include "EmdkDefines.h"
-#include "Keyboard.h"
-#endif
 #include <algorithm>
 #include "Registry.h"
 #include "Intents.h"
@@ -55,7 +47,7 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
 void rho_wmsys_run_app_with_show(const wchar_t* szPath, const wchar_t* szParams, bool bShow);
 int rho_sys_get_screen_width();
 int rho_sys_get_screen_height();
-const char* rho_sys_win32_getWebviewFramework();
+const char* rho_sys_qt_getWebviewFramework();
 
 #if !defined( OS_WINDOWS_DESKTOP )
 typedef DWORD (*RCM_GETUNIQUEUNITIDEX)(LPUNITID_EX);
@@ -74,81 +66,6 @@ namespace rho {
 
 using namespace apiGenerator;
 using namespace common;
-
-class CSystemImpl: public CSystemImplBase
-{
-private:
-#if defined( OS_WINCE )
-	CSIP* m_pSip;
-#endif
-    bool m_bLockedWindowSize;
-public:
-    CSystemImpl(): CSystemImplBase()
-	{
-#if defined( OS_WINCE )
-	    m_pSip = NULL;
-#endif
-        m_bLockedWindowSize = false;
-	}
-
-    virtual void getScreenWidth(CMethodResult& oResult);
-    virtual void getScreenHeight(CMethodResult& oResult);
-    virtual void getScreenOrientation(CMethodResult& oResult);
-    virtual void getPpiX(CMethodResult& oResult);
-    virtual void getPpiY(CMethodResult& oResult);
-    virtual void getPhoneId(CMethodResult& oResult);
-    virtual void getDeviceName(CMethodResult& oResult);
-    virtual void getOsVersion(CMethodResult& oResult);
-    virtual void getIsMotorolaDevice(CMethodResult& oResult);
-    virtual void getLocale(CMethodResult& oResult);
-    virtual void getCountry(CMethodResult& oResult);
-    virtual void getIsEmulator(CMethodResult& oResult);
-    virtual void getHasCalendar(CMethodResult& oResult);
-    virtual void getHasCamera(CMethodResult& oResult);
-    virtual void getOemInfo(CMethodResult& oResult);
-    virtual void getUuid(CMethodResult& oResult);
-#if defined( OS_WINCE )
-	bool populateUUID(UNITID_EX* uuid);
-	void bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize);
-#endif
-    virtual void getLockWindowSize(CMethodResult& oResult);
-    virtual void setLockWindowSize( bool value, CMethodResult& oResult);
-    virtual void getKeyboardState(CMethodResult& oResult);
-	virtual void setKeyboardState( const rho::String &, CMethodResult& oResult);
-    virtual void getScreenAutoRotate(CMethodResult& oResult);
-    virtual void setScreenAutoRotate( bool value, CMethodResult& oResult);
-    virtual void getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult);
-    virtual void getScreenSleeping(rho::apiGenerator::CMethodResult& oResult);
-    virtual void setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult);
-
-    virtual void applicationInstall( const rho::String& applicationUrl, CMethodResult& oResult);
-    virtual void isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult);
-    virtual void applicationUninstall( const rho::String& applicationName, CMethodResult& oResult);
-    virtual void openUrl( const rho::String& url, CMethodResult& oResult);
-    virtual void setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
-    virtual void getRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
-    virtual void deleteRegistrySetting(const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
-	virtual void setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult);
-    virtual void setWindowPosition( int x,  int y, CMethodResult& oResult);
-    virtual void setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult);
-    virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
-    virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
-    virtual void runApplicationShowWindow( const rho::String& appName,  const rho::String& params, bool bShow, bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
-    virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
-    virtual void getMain_window_closed(rho::apiGenerator::CMethodResult& oResult);
-    virtual void sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult);
-
-	virtual long OnSIPState(bool bSIPState, const CRhoExtData& oExtData)
-	{
-#if defined( OS_WINCE )
-		if (!m_pSip)
-			m_pSip = new CSIP();
-		if (m_pSip->getCurrentStatus() == SIP_CONTROL_AUTOMATIC)
-			m_pSip->ToggleSIPReliably(bSIPState);
-#endif
-		return S_OK;
-	}
-};
 
 void CSystemImpl::getOsVersion(CMethodResult& oResult)
 {
@@ -303,7 +220,11 @@ void CSystemImpl::getDeviceName(CMethodResult& oResult)
 {
     String strRes;
 #ifdef OS_WINDOWS_DESKTOP
+#ifdef RHODES_EMULATOR
+	strRes = "RhoSimulator";
+#else
 	strRes = "Win32";
+#endif
 #else
 	HKEY hKey;
 	if (RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("Ident"), 0, KEY_READ, &hKey ) == ERROR_SUCCESS)
@@ -990,7 +911,7 @@ void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
     String strRes = "";
 
 #if defined(OS_WINDOWS_DESKTOP)
-	strRes = rho_sys_win32_getWebviewFramework();
+	strRes = rho_sys_qt_getWebviewFramework();
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 	strRes = "WEBKIT/MOTOROLA";
 #else
@@ -1016,80 +937,11 @@ void CSystemImpl::getHasCamera(CMethodResult& oResult)
 
 }
 
-void CSystemImpl::sendApplicationMessage(const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
-{
-    CFilePath oPath(appName);    
-    rho::String appNamePath = oPath.getBaseName();
-    appNamePath.resize(appNamePath.length() - 4);
-
-    COPYDATASTRUCT cds;
-
-    rho::String strAppName = appNamePath + ".MainWindow";
-    rho::StringW strAppNameW = rho::convertToStringW(strAppName);
-
-    HWND appWindow = FindWindow(strAppNameW.c_str(), NULL);
-
-    if (appWindow == NULL)
-    {
-        rho::apiGenerator::CMethodResult runResult;
-        runApplicationShowWindow(appName, "", false, false, runResult);
-
-        if (runResult.isError())
-        {
-            oResult.setError(runResult.getErrorString());
-            return;
-        }
-
-        int maxTimeout = 5000;
-        int currTime = 0;
-
-        for (currTime = 0; currTime < maxTimeout; currTime += 100)
-        {
-            Sleep(100);
-
-            appWindow = FindWindow(strAppNameW.c_str(), NULL);
-
-            if (appWindow != NULL)
-                break;
-        }
-
-        waitIntentEvent(appName);
-
-        appWindow = FindWindow(strAppNameW.c_str(), NULL);
-        
-        if (appWindow == NULL)
-        {
-            oResult.setError("application is not running");
-            return;
-        }
-    }
-
-    rho::InterprocessMessage msg;
-    strcpy(msg.params, params.c_str());
-    strcpy(msg.appName, appName.c_str());
-
-    cds.dwData = COPYDATA_INTERPROCESSMESSAGE;
-    cds.cbData = sizeof(rho::InterprocessMessage);
-    cds.lpData = &msg;
-
-    SendMessage(appWindow, WM_COPYDATA, (WPARAM)(HWND)0, (LPARAM) (LPVOID) &cds);
-}
-
 extern "C" bool rho_rhosim_window_closed();
 void CSystemImpl::getMain_window_closed(rho::apiGenerator::CMethodResult& oResult)
 {
     oResult.set(rho_rhosim_window_closed());
 }
-
-////////////////////////////////////////////////////////////////////////
-
-class CSystemFactory: public CSystemFactoryBase
-{
-public:
-    ~CSystemFactory(){}
-
-    ISystemSingleton* createModuleSingleton(){ return new CSystemImpl(); }
-};
 
 }
 

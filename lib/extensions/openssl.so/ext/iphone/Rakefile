@@ -2,8 +2,6 @@ require 'fileutils'
 
 USE_STLPORT = true
 
-puts "Test extension !"
-
 namespace "build" do
 
   task :config do
@@ -50,24 +48,29 @@ namespace "build" do
        $configuration = 'Release'
     end
 
-    result_lib = "#{$rootdir}/lib/extensions/openssl.so/ext/iphone/" + ( simulator ? "Release-iphonesimulator" : "Release-iphoneos") + '/libopenssl.so.a'
+    result_dir = "#{$rootdir}/lib/extensions/openssl.so/ext/iphone/" + ( simulator ? "Release-iphonesimulator" : "Release-iphoneos")
+    result_lib = result_dir + '/libopenssl.so.a'
     target_lib = $targetdir + '/libopenssl.so.a'
+    if !File.exists?(result_lib)
+      built_lib = "#{$rootdir}/lib/extensions/openssl.so/ext/iphone/build/" + $configuration + ( simulator ? "-iphonesimulator" : "-iphoneos") + '/libopenssl.a'
 
-    #rm_rf 'build'
-    #rm_rf target_lib
+      rm_rf 'build'
+      rm_rf target_lib
 
-    #args = ['build', '-target', 'Test', '-configuration', $configuration, '-sdk', $sdk]
+      args = ['build', '-target', 'openssl', '-configuration', $configuration, '-sdk', $sdk]
 
-    #if simulator
-    #    args << '-arch'
-    #    args << 'i386'
-    #end
+      if simulator
+        args << '-arch'
+        args << 'i386'
+      end
 
-    #require   $rootdir + '/lib/build/jake.rb'
+      require $rootdir + '/lib/build/jake.rb'
 
-    #puts Jake.run($xcodebuild,args)
-    #ret = $?
-
+      puts Jake.run($xcodebuild,args)
+      ret = $?
+      mkdir_p result_dir
+      cp built_lib,result_lib
+    end
     # copy result to $targetdir
     cp result_lib,target_lib
 

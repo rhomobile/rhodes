@@ -7,6 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		258D5F2D189980FD007A6F14 /* NewORMModelImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F2A189980FD007A6F14 /* NewORMModelImpl.cpp */; };
+		258D5F2E189980FD007A6F14 /* NewORMImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F2B189980FD007A6F14 /* NewORMImpl.cpp */; };
+		258D5F351899812A007A6F14 /* newormmodel_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F2F1899812A007A6F14 /* newormmodel_ruby_api.c */; };
+		258D5F361899812A007A6F14 /* newormmodel_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F301899812A007A6F14 /* newormmodel_js_api.cpp */; };
+		258D5F371899812A007A6F14 /* newormmodel_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F311899812A007A6F14 /* newormmodel_api_init.cpp */; };
+		258D5F381899812A007A6F14 /* neworm_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F321899812A007A6F14 /* neworm_ruby_api.c */; };
+		258D5F391899812A007A6F14 /* neworm_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F331899812A007A6F14 /* neworm_js_api.cpp */; };
+		258D5F3A1899812A007A6F14 /* neworm_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F341899812A007A6F14 /* neworm_api_init.cpp */; };
+		258D5F431899815C007A6F14 /* NewORMModelBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 258D5F3B1899815C007A6F14 /* NewORMModelBase.h */; };
+		258D5F441899815C007A6F14 /* NewORMModelBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F3C1899815C007A6F14 /* NewORMModelBase.cpp */; };
+		258D5F451899815C007A6F14 /* NewORMModel_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F3D1899815C007A6F14 /* NewORMModel_ruby_wrap.cpp */; };
+		258D5F461899815C007A6F14 /* NewORMModel_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F3E1899815C007A6F14 /* NewORMModel_js_wrap.cpp */; };
+		258D5F471899815C007A6F14 /* NewORMBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 258D5F3F1899815C007A6F14 /* NewORMBase.h */; };
+		258D5F481899815C007A6F14 /* NewORMBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F401899815C007A6F14 /* NewORMBase.cpp */; };
+		258D5F491899815C007A6F14 /* NewORM_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F411899815C007A6F14 /* NewORM_ruby_wrap.cpp */; };
+		258D5F4A1899815C007A6F14 /* NewORM_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 258D5F421899815C007A6F14 /* NewORM_js_wrap.cpp */; };
 		C00E09821761424A00ADA93E /* MenubarImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09811761424A00ADA93E /* MenubarImpl.cpp */; };
 		C00E098A1761429200ADA93E /* INativeMenubar.h in Headers */ = {isa = PBXBuildFile; fileRef = C00E09851761429200ADA93E /* INativeMenubar.h */; };
 		C00E098B1761429200ADA93E /* NativeMenubar_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09861761429200ADA93E /* NativeMenubar_js_wrap.cpp */; };
@@ -43,6 +59,24 @@
 		C08B5E181774C4CA0021B5BA /* NotificationSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E121774C4CA0021B5BA /* NotificationSetup.m */; };
 		C08B5E191774C4CA0021B5BA /* NotificationSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C08B5E131774C4CA0021B5BA /* NotificationSingleton.h */; };
 		C08B5E1A1774C4CA0021B5BA /* NotificationSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E141774C4CA0021B5BA /* NotificationSingleton.m */; };
+		C50050BD1898015C000C4A15 /* Intent.h in Headers */ = {isa = PBXBuildFile; fileRef = C50050B71898015C000C4A15 /* Intent.h */; };
+		C50050BE1898015C000C4A15 /* Intent.m in Sources */ = {isa = PBXBuildFile; fileRef = C50050B81898015C000C4A15 /* Intent.m */; };
+		C50050BF1898015C000C4A15 /* IntentFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C50050B91898015C000C4A15 /* IntentFactorySingleton.m */; };
+		C50050C01898015C000C4A15 /* IntentSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C50050BA1898015C000C4A15 /* IntentSetup.m */; };
+		C50050C11898015C000C4A15 /* IntentSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C50050BB1898015C000C4A15 /* IntentSingleton.h */; };
+		C50050C21898015C000C4A15 /* IntentSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C50050BC1898015C000C4A15 /* IntentSingleton.m */; };
+		C50050C4189801C4000C4A15 /* intent_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C50050C3189801C4000C4A15 /* intent_ruby_wrap.m */; };
+		C50050C6189801D3000C4A15 /* intent_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = C50050C5189801D3000C4A15 /* intent_js_wrap.mm */; };
+		C53284B21898001C0039193D /* IntentBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C53284AC1898001C0039193D /* IntentBase.h */; };
+		C53284B31898001C0039193D /* IntentBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C53284AD1898001C0039193D /* IntentBase.m */; };
+		C53284B41898001C0039193D /* IntentFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C53284AE1898001C0039193D /* IntentFactoryBase.h */; };
+		C53284B51898001C0039193D /* IntentFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C53284AF1898001C0039193D /* IntentFactoryBase.m */; };
+		C53284B61898001C0039193D /* IntentSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C53284B01898001C0039193D /* IntentSingletonBase.h */; };
+		C53284B71898001C0039193D /* IntentSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C53284B11898001C0039193D /* IntentSingletonBase.m */; };
+		C53D6BD21897FB6B001E4FA2 /* IIntent.h in Headers */ = {isa = PBXBuildFile; fileRef = C53D6BD11897FB6B001E4FA2 /* IIntent.h */; };
+		C53D6BD61897FB99001E4FA2 /* intent_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C53D6BD31897FB99001E4FA2 /* intent_api_init.cpp */; };
+		C53D6BD71897FB99001E4FA2 /* intent_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C53D6BD41897FB99001E4FA2 /* intent_js_api.cpp */; };
+		C53D6BD81897FB99001E4FA2 /* intent_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C53D6BD51897FB99001E4FA2 /* intent_ruby_api.c */; };
 		C57BD8F8174FD25500494EA3 /* FileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8F7174FD25500494EA3 /* FileImpl.cpp */; };
 		C57BD8FC175392E700494EA3 /* rhofile_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8F9175392E700494EA3 /* rhofile_api_init.cpp */; };
 		C57BD8FD175392E700494EA3 /* rhofile_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8FA175392E700494EA3 /* rhofile_js_api.cpp */; };
@@ -181,6 +215,22 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		258D5F2A189980FD007A6F14 /* NewORMModelImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMModelImpl.cpp; path = ../../shared/NewORMModelImpl.cpp; sourceTree = "<group>"; };
+		258D5F2B189980FD007A6F14 /* NewORMImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMImpl.cpp; path = ../../shared/NewORMImpl.cpp; sourceTree = "<group>"; };
+		258D5F2F1899812A007A6F14 /* newormmodel_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = newormmodel_ruby_api.c; path = ../../shared/generated/newormmodel_ruby_api.c; sourceTree = "<group>"; };
+		258D5F301899812A007A6F14 /* newormmodel_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = newormmodel_js_api.cpp; path = ../../shared/generated/newormmodel_js_api.cpp; sourceTree = "<group>"; };
+		258D5F311899812A007A6F14 /* newormmodel_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = newormmodel_api_init.cpp; path = ../../shared/generated/newormmodel_api_init.cpp; sourceTree = "<group>"; };
+		258D5F321899812A007A6F14 /* neworm_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = neworm_ruby_api.c; path = ../../shared/generated/neworm_ruby_api.c; sourceTree = "<group>"; };
+		258D5F331899812A007A6F14 /* neworm_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = neworm_js_api.cpp; path = ../../shared/generated/neworm_js_api.cpp; sourceTree = "<group>"; };
+		258D5F341899812A007A6F14 /* neworm_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = neworm_api_init.cpp; path = ../../shared/generated/neworm_api_init.cpp; sourceTree = "<group>"; };
+		258D5F3B1899815C007A6F14 /* NewORMModelBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NewORMModelBase.h; path = ../../shared/generated/cpp/NewORMModelBase.h; sourceTree = "<group>"; };
+		258D5F3C1899815C007A6F14 /* NewORMModelBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMModelBase.cpp; path = ../../shared/generated/cpp/NewORMModelBase.cpp; sourceTree = "<group>"; };
+		258D5F3D1899815C007A6F14 /* NewORMModel_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMModel_ruby_wrap.cpp; path = ../../shared/generated/cpp/NewORMModel_ruby_wrap.cpp; sourceTree = "<group>"; };
+		258D5F3E1899815C007A6F14 /* NewORMModel_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMModel_js_wrap.cpp; path = ../../shared/generated/cpp/NewORMModel_js_wrap.cpp; sourceTree = "<group>"; };
+		258D5F3F1899815C007A6F14 /* NewORMBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NewORMBase.h; path = ../../shared/generated/cpp/NewORMBase.h; sourceTree = "<group>"; };
+		258D5F401899815C007A6F14 /* NewORMBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORMBase.cpp; path = ../../shared/generated/cpp/NewORMBase.cpp; sourceTree = "<group>"; };
+		258D5F411899815C007A6F14 /* NewORM_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORM_ruby_wrap.cpp; path = ../../shared/generated/cpp/NewORM_ruby_wrap.cpp; sourceTree = "<group>"; };
+		258D5F421899815C007A6F14 /* NewORM_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NewORM_js_wrap.cpp; path = ../../shared/generated/cpp/NewORM_js_wrap.cpp; sourceTree = "<group>"; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C00E09811761424A00ADA93E /* MenubarImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MenubarImpl.cpp; path = ../../shared/MenubarImpl.cpp; sourceTree = "<group>"; };
 		C00E09851761429200ADA93E /* INativeMenubar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INativeMenubar.h; path = ../../shared/generated/cpp/INativeMenubar.h; sourceTree = "<group>"; };
@@ -218,6 +268,24 @@
 		C08B5E121774C4CA0021B5BA /* NotificationSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NotificationSetup.m; path = impl/NotificationSetup.m; sourceTree = "<group>"; };
 		C08B5E131774C4CA0021B5BA /* NotificationSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NotificationSingleton.h; path = impl/NotificationSingleton.h; sourceTree = "<group>"; };
 		C08B5E141774C4CA0021B5BA /* NotificationSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NotificationSingleton.m; path = impl/NotificationSingleton.m; sourceTree = "<group>"; };
+		C50050B71898015C000C4A15 /* Intent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Intent.h; path = impl/Intent.h; sourceTree = "<group>"; };
+		C50050B81898015C000C4A15 /* Intent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Intent.m; path = impl/Intent.m; sourceTree = "<group>"; };
+		C50050B91898015C000C4A15 /* IntentFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IntentFactorySingleton.m; path = impl/IntentFactorySingleton.m; sourceTree = "<group>"; };
+		C50050BA1898015C000C4A15 /* IntentSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IntentSetup.m; path = impl/IntentSetup.m; sourceTree = "<group>"; };
+		C50050BB1898015C000C4A15 /* IntentSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntentSingleton.h; path = impl/IntentSingleton.h; sourceTree = "<group>"; };
+		C50050BC1898015C000C4A15 /* IntentSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IntentSingleton.m; path = impl/IntentSingleton.m; sourceTree = "<group>"; };
+		C50050C3189801C4000C4A15 /* intent_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = intent_ruby_wrap.m; path = generated/ruby/intent_ruby_wrap.m; sourceTree = "<group>"; };
+		C50050C5189801D3000C4A15 /* intent_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = intent_js_wrap.mm; path = generated/javascript/intent_js_wrap.mm; sourceTree = "<group>"; };
+		C53284AC1898001C0039193D /* IntentBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntentBase.h; path = generated/base_impl/IntentBase.h; sourceTree = "<group>"; };
+		C53284AD1898001C0039193D /* IntentBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IntentBase.m; path = generated/base_impl/IntentBase.m; sourceTree = "<group>"; };
+		C53284AE1898001C0039193D /* IntentFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntentFactoryBase.h; path = generated/base_impl/IntentFactoryBase.h; sourceTree = "<group>"; };
+		C53284AF1898001C0039193D /* IntentFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IntentFactoryBase.m; path = generated/base_impl/IntentFactoryBase.m; sourceTree = "<group>"; };
+		C53284B01898001C0039193D /* IntentSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntentSingletonBase.h; path = generated/base_impl/IntentSingletonBase.h; sourceTree = "<group>"; };
+		C53284B11898001C0039193D /* IntentSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IntentSingletonBase.m; path = generated/base_impl/IntentSingletonBase.m; sourceTree = "<group>"; };
+		C53D6BD11897FB6B001E4FA2 /* IIntent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IIntent.h; path = generated/IIntent.h; sourceTree = "<group>"; };
+		C53D6BD31897FB99001E4FA2 /* intent_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = intent_api_init.cpp; path = ../../shared/generated/intent_api_init.cpp; sourceTree = "<group>"; };
+		C53D6BD41897FB99001E4FA2 /* intent_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = intent_js_api.cpp; path = ../../shared/generated/intent_js_api.cpp; sourceTree = "<group>"; };
+		C53D6BD51897FB99001E4FA2 /* intent_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = intent_ruby_api.c; path = ../../shared/generated/intent_ruby_api.c; sourceTree = "<group>"; };
 		C57BD8F7174FD25500494EA3 /* FileImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileImpl.cpp; path = ../../shared/FileImpl.cpp; sourceTree = "<group>"; };
 		C57BD8F9175392E700494EA3 /* rhofile_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rhofile_api_init.cpp; path = ../../shared/generated/rhofile_api_init.cpp; sourceTree = "<group>"; };
 		C57BD8FA175392E700494EA3 /* rhofile_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rhofile_js_api.cpp; path = ../../shared/generated/rhofile_js_api.cpp; sourceTree = "<group>"; };
@@ -399,6 +467,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C53D6BCF1897FB40001E4FA2 /* Intent */,
+				258D5F26189980BD007A6F14 /* NewORM */,
 				C5F48AD6177DEAD20071BFE2 /* Push */,
 				C08B5DF01774C3D70021B5BA /* Notification */,
 				C5B99D7F174E688C00D8D02E /* File */,
@@ -415,6 +485,45 @@
 				FA7C85C816E412950000EAE6 /* InitExtension.cpp */,
 			);
 			name = Classes;
+			sourceTree = "<group>";
+		};
+		258D5F26189980BD007A6F14 /* NewORM */ = {
+			isa = PBXGroup;
+			children = (
+				258D5F28189980D3007A6F14 /* impl */,
+				258D5F27189980CB007A6F14 /* generated */,
+			);
+			name = NewORM;
+			sourceTree = "<group>";
+		};
+		258D5F27189980CB007A6F14 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				258D5F3B1899815C007A6F14 /* NewORMModelBase.h */,
+				258D5F3C1899815C007A6F14 /* NewORMModelBase.cpp */,
+				258D5F3D1899815C007A6F14 /* NewORMModel_ruby_wrap.cpp */,
+				258D5F3E1899815C007A6F14 /* NewORMModel_js_wrap.cpp */,
+				258D5F3F1899815C007A6F14 /* NewORMBase.h */,
+				258D5F401899815C007A6F14 /* NewORMBase.cpp */,
+				258D5F411899815C007A6F14 /* NewORM_ruby_wrap.cpp */,
+				258D5F421899815C007A6F14 /* NewORM_js_wrap.cpp */,
+				258D5F2F1899812A007A6F14 /* newormmodel_ruby_api.c */,
+				258D5F301899812A007A6F14 /* newormmodel_js_api.cpp */,
+				258D5F311899812A007A6F14 /* newormmodel_api_init.cpp */,
+				258D5F321899812A007A6F14 /* neworm_ruby_api.c */,
+				258D5F331899812A007A6F14 /* neworm_js_api.cpp */,
+				258D5F341899812A007A6F14 /* neworm_api_init.cpp */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		258D5F28189980D3007A6F14 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				258D5F2A189980FD007A6F14 /* NewORMModelImpl.cpp */,
+				258D5F2B189980FD007A6F14 /* NewORMImpl.cpp */,
+			);
+			name = impl;
 			sourceTree = "<group>";
 		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
@@ -594,6 +703,47 @@
 				C08B5E141774C4CA0021B5BA /* NotificationSingleton.m */,
 			);
 			name = impl;
+			sourceTree = "<group>";
+		};
+		C50050B61898014A000C4A15 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C50050B71898015C000C4A15 /* Intent.h */,
+				C50050B81898015C000C4A15 /* Intent.m */,
+				C50050B91898015C000C4A15 /* IntentFactorySingleton.m */,
+				C50050BA1898015C000C4A15 /* IntentSetup.m */,
+				C50050BB1898015C000C4A15 /* IntentSingleton.h */,
+				C50050BC1898015C000C4A15 /* IntentSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		C53D6BCF1897FB40001E4FA2 /* Intent */ = {
+			isa = PBXGroup;
+			children = (
+				C50050B61898014A000C4A15 /* impl */,
+				C53D6BD01897FB47001E4FA2 /* generated */,
+			);
+			name = Intent;
+			sourceTree = "<group>";
+		};
+		C53D6BD01897FB47001E4FA2 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C50050C5189801D3000C4A15 /* intent_js_wrap.mm */,
+				C50050C3189801C4000C4A15 /* intent_ruby_wrap.m */,
+				C53284AC1898001C0039193D /* IntentBase.h */,
+				C53284AD1898001C0039193D /* IntentBase.m */,
+				C53284AE1898001C0039193D /* IntentFactoryBase.h */,
+				C53284AF1898001C0039193D /* IntentFactoryBase.m */,
+				C53284B01898001C0039193D /* IntentSingletonBase.h */,
+				C53284B11898001C0039193D /* IntentSingletonBase.m */,
+				C53D6BD31897FB99001E4FA2 /* intent_api_init.cpp */,
+				C53D6BD41897FB99001E4FA2 /* intent_js_api.cpp */,
+				C53D6BD51897FB99001E4FA2 /* intent_ruby_api.c */,
+				C53D6BD11897FB6B001E4FA2 /* IIntent.h */,
+			);
+			name = generated;
 			sourceTree = "<group>";
 		};
 		C57BD8F6174FD24600494EA3 /* impl */ = {
@@ -1187,6 +1337,7 @@
 				FA7C85E016E413400000EAE6 /* SystemBase.h in Headers */,
 				FA7C85E416E4135F0000EAE6 /* System.h in Headers */,
 				FA7C85E616E4135F0000EAE6 /* SystemImplBase.h in Headers */,
+				C53284B61898001C0039193D /* IntentSingletonBase.h in Headers */,
 				FA7C85ED16E41E460000EAE6 /* SystemImpl.h in Headers */,
 				FA01F1E716E65FD100D53D60 /* ISQLite3.h in Headers */,
 				FA01F1EB16E65FD100D53D60 /* SQLite3Base.h in Headers */,
@@ -1197,7 +1348,10 @@
 				FA340BA416F0E455000094DD /* WebView.h in Headers */,
 				FA340BA816F0E455000094DD /* WebViewSingleton.h in Headers */,
 				C06A0F0316F21C880065EF81 /* ILog.h in Headers */,
+				C53284B21898001C0039193D /* IntentBase.h in Headers */,
+				C53284B41898001C0039193D /* IntentFactoryBase.h in Headers */,
 				C06A0F0D16F21C880065EF81 /* LogBase.h in Headers */,
+				258D5F431899815C007A6F14 /* NewORMModelBase.h in Headers */,
 				FA1C7FAF16FBCAF00024FB5C /* ApplicationBase.h in Headers */,
 				FA1C7FB016FBCAF00024FB5C /* IApplication.h in Headers */,
 				FAEB2B901743C486001AE032 /* INativeToolbar.h in Headers */,
@@ -1215,13 +1369,17 @@
 				FA4EC2E0174D105900969368 /* INavbar.h in Headers */,
 				FA4EC2E8174D106600969368 /* NavbarBase.h in Headers */,
 				FA4EC2EA174D106600969368 /* NavbarFactoryBase.h in Headers */,
+				C53D6BD21897FB6B001E4FA2 /* IIntent.h in Headers */,
 				FA4EC2EC174D106600969368 /* NavbarSingletonBase.h in Headers */,
+				C50050C11898015C000C4A15 /* IntentSingleton.h in Headers */,
 				FA4EC2FE174D109B00969368 /* Navbar.h in Headers */,
 				FA4EC302174D109B00969368 /* NavbarSingleton.h in Headers */,
 				C00E098A1761429200ADA93E /* INativeMenubar.h in Headers */,
 				C00E098E1761429200ADA93E /* NativeMenubarBase.h in Headers */,
 				C08B5DF41774C4290021B5BA /* INotification.h in Headers */,
+				258D5F471899815C007A6F14 /* NewORMBase.h in Headers */,
 				C08B5DFC1774C45C0021B5BA /* NotificationBase.h in Headers */,
+				C50050BD1898015C000C4A15 /* Intent.h in Headers */,
 				C08B5DFE1774C45C0021B5BA /* NotificationFactoryBase.h in Headers */,
 				C08B5E001774C45C0021B5BA /* NotificationSingletonBase.h in Headers */,
 				C08B5E151774C4CA0021B5BA /* Notification.h in Headers */,
@@ -1256,6 +1414,8 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Coreapi" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -1291,6 +1451,7 @@
 				FA7C85CB16E412950000EAE6 /* NetworkImpl.cpp in Sources */,
 				FA7C85D416E413300000EAE6 /* system_api_init.cpp in Sources */,
 				FA7C85D516E413300000EAE6 /* system_js_api.cpp in Sources */,
+				258D5F2E189980FD007A6F14 /* NewORMImpl.cpp in Sources */,
 				FA7C85D616E413300000EAE6 /* system_ruby_api.c in Sources */,
 				FA7C85DD16E413400000EAE6 /* System_js_wrap.cpp in Sources */,
 				FA7C85DE16E413400000EAE6 /* System_ruby_wrap.cpp in Sources */,
@@ -1298,10 +1459,12 @@
 				FA7C85E516E4135F0000EAE6 /* SystemImplBase.cpp in Sources */,
 				FA7C85E816E413D40000EAE6 /* SystemImpl.mm in Sources */,
 				FA01F1DF16E65FBB00D53D60 /* sqlite3_api_init.cpp in Sources */,
+				258D5F351899812A007A6F14 /* newormmodel_ruby_api.c in Sources */,
 				FA01F1E016E65FBB00D53D60 /* sqlite3_js_api.cpp in Sources */,
 				FA01F1E116E65FBB00D53D60 /* sqlite3_ruby_api.c in Sources */,
 				FA01F1E816E65FD100D53D60 /* SQLite3_js_wrap.cpp in Sources */,
 				FA01F1E916E65FD100D53D60 /* SQLite3_ruby_wrap.cpp in Sources */,
+				C50050BE1898015C000C4A15 /* Intent.m in Sources */,
 				FA01F1EA16E65FD100D53D60 /* SQLite3Base.cpp in Sources */,
 				FA01F1EE16E65FED00D53D60 /* SQLite3Impl.cpp in Sources */,
 				FA01F1EF16E65FED00D53D60 /* SQLite3ImplRuby.c in Sources */,
@@ -1313,10 +1476,13 @@
 				FA340B9916F0E42F000094DD /* WebViewSingletonBase.m in Sources */,
 				FA340B9C16F0E442000094DD /* webview_js_wrap.mm in Sources */,
 				FA340B9D16F0E442000094DD /* webview_ruby_wrap.m in Sources */,
+				258D5F361899812A007A6F14 /* newormmodel_js_api.cpp in Sources */,
 				FA340BA516F0E455000094DD /* WebView.m in Sources */,
 				FA340BA616F0E455000094DD /* WebViewFactorySingleton.m in Sources */,
 				FA340BA716F0E455000094DD /* WebViewSetup.m in Sources */,
+				C53284B71898001C0039193D /* IntentSingletonBase.m in Sources */,
 				FA340BA916F0E455000094DD /* WebViewSingleton.m in Sources */,
+				258D5F381899812A007A6F14 /* neworm_ruby_api.c in Sources */,
 				C06A0F0A16F21C880065EF81 /* Log_js_wrap.cpp in Sources */,
 				C06A0F0B16F21C880065EF81 /* Log_ruby_wrap.cpp in Sources */,
 				C06A0F0C16F21C880065EF81 /* LogBase.cpp in Sources */,
@@ -1326,15 +1492,21 @@
 				C06A0F3C16F21C880065EF81 /* LogImpl.cpp in Sources */,
 				FA1C7FA416FBCAC50024FB5C /* application_api_init.cpp in Sources */,
 				FA1C7FA516FBCAC50024FB5C /* application_js_api.cpp in Sources */,
+				C53284B51898001C0039193D /* IntentFactoryBase.m in Sources */,
+				258D5F491899815C007A6F14 /* NewORM_ruby_wrap.cpp in Sources */,
 				FA1C7FA616FBCAC50024FB5C /* application_ruby_api.c in Sources */,
 				FA1C7FAC16FBCAF00024FB5C /* Application_js_wrap.cpp in Sources */,
 				FA1C7FAD16FBCAF00024FB5C /* Application_ruby_wrap.cpp in Sources */,
 				FA1C7FAE16FBCAF00024FB5C /* ApplicationBase.cpp in Sources */,
 				FA1C7FB216FBCAFE0024FB5C /* ApplicationImpl.cpp in Sources */,
+				C50050C4189801C4000C4A15 /* intent_ruby_wrap.m in Sources */,
 				C5AA919617380F6B002E4A65 /* NetworkDetectBase.cpp in Sources */,
 				C5AA919817380FD0002E4A65 /* NetworkDetect.mm in Sources */,
+				C53D6BD71897FB99001E4FA2 /* intent_js_api.cpp in Sources */,
 				FAEB2B981743C498001AE032 /* NativeToolbarBase.m in Sources */,
 				FAEB2B9A1743C498001AE032 /* NativeToolbarFactoryBase.m in Sources */,
+				C50050BF1898015C000C4A15 /* IntentFactorySingleton.m in Sources */,
+				258D5F461899815C007A6F14 /* NewORMModel_js_wrap.cpp in Sources */,
 				FAEB2B9C1743C498001AE032 /* NativeToolbarSingletonBase.m in Sources */,
 				FAEB2B9E1743C4AC001AE032 /* nativetoolbar_ruby_wrap.m in Sources */,
 				FAEB2BA01743C4B6001AE032 /* nativetoolbar_js_wrap.mm in Sources */,
@@ -1344,9 +1516,12 @@
 				FAEB2BAE1743C4E0001AE032 /* NativeToolbar.m in Sources */,
 				FAEB2BAF1743C4E0001AE032 /* NativeToolbarFactorySingleton.m in Sources */,
 				FAEB2BB01743C4E0001AE032 /* NativeToolbarSetup.m in Sources */,
+				258D5F371899812A007A6F14 /* newormmodel_api_init.cpp in Sources */,
+				258D5F3A1899812A007A6F14 /* neworm_api_init.cpp in Sources */,
 				FAEB2BB21743C4E0001AE032 /* NativeToolbarSingleton.m in Sources */,
 				FAEB2BC11743C584001AE032 /* NativeTabbar.m in Sources */,
 				FAEB2BC21743C584001AE032 /* NativeTabbarFactorySingleton.m in Sources */,
+				C53D6BD61897FB99001E4FA2 /* intent_api_init.cpp in Sources */,
 				FAEB2BC31743C584001AE032 /* NativeTabbarSetup.m in Sources */,
 				FAEB2BC51743C584001AE032 /* NativeTabbarSingleton.m in Sources */,
 				FAEB2BC91743C596001AE032 /* nativetabbar_api_init.cpp in Sources */,
@@ -1354,8 +1529,10 @@
 				FAEB2BCB1743C596001AE032 /* nativetabbar_ruby_api.c in Sources */,
 				FAEB2BCD1743C5A1001AE032 /* nativetabbar_ruby_wrap.m in Sources */,
 				FAEB2BCF1743C5AA001AE032 /* nativetabbar_js_wrap.mm in Sources */,
+				258D5F481899815C007A6F14 /* NewORMBase.cpp in Sources */,
 				FAEB2BD71743C5C0001AE032 /* NativeTabbarBase.m in Sources */,
 				FAEB2BD91743C5C0001AE032 /* NativeTabbarFactoryBase.m in Sources */,
+				C53284B31898001C0039193D /* IntentBase.m in Sources */,
 				FAEB2BDB1743C5C0001AE032 /* NativeTabbarSingletonBase.m in Sources */,
 				FA4EC2E9174D106600969368 /* NavbarBase.m in Sources */,
 				FA4EC2EB174D106600969368 /* NavbarFactoryBase.m in Sources */,
@@ -1369,11 +1546,16 @@
 				FA4EC300174D109B00969368 /* NavbarFactorySingleton.m in Sources */,
 				FA4EC301174D109B00969368 /* NavbarSetup.m in Sources */,
 				FA4EC303174D109B00969368 /* NavbarSingleton.m in Sources */,
+				C50050C01898015C000C4A15 /* IntentSetup.m in Sources */,
 				C57BD8F8174FD25500494EA3 /* FileImpl.cpp in Sources */,
 				C57BD8FC175392E700494EA3 /* rhofile_api_init.cpp in Sources */,
+				C50050C21898015C000C4A15 /* IntentSingleton.m in Sources */,
 				C57BD8FD175392E700494EA3 /* rhofile_js_api.cpp in Sources */,
 				C57BD8FE175392E700494EA3 /* rhofile_ruby_api.c in Sources */,
+				258D5F441899815C007A6F14 /* NewORMModelBase.cpp in Sources */,
+				C53D6BD81897FB99001E4FA2 /* intent_ruby_api.c in Sources */,
 				C57BD902175392F200494EA3 /* RhoFile_js_wrap.cpp in Sources */,
+				258D5F4A1899815C007A6F14 /* NewORM_js_wrap.cpp in Sources */,
 				C57BD903175392F200494EA3 /* RhoFile_ruby_wrap.cpp in Sources */,
 				C57BD904175392F200494EA3 /* RhoFileBase.cpp in Sources */,
 				C00E09821761424A00ADA93E /* MenubarImpl.cpp in Sources */,
@@ -1382,13 +1564,17 @@
 				C00E098D1761429200ADA93E /* NativeMenubarBase.cpp in Sources */,
 				C00E0994176142C900ADA93E /* nativemenubar_api_init.cpp in Sources */,
 				C00E0995176142C900ADA93E /* nativemenubar_js_api.cpp in Sources */,
+				258D5F451899815C007A6F14 /* NewORMModel_ruby_wrap.cpp in Sources */,
+				258D5F2D189980FD007A6F14 /* NewORMModelImpl.cpp in Sources */,
 				C00E0996176142C900ADA93E /* nativemenubar_ruby_api.c in Sources */,
 				C08B5DFD1774C45C0021B5BA /* NotificationBase.m in Sources */,
 				C08B5DFF1774C45C0021B5BA /* NotificationFactoryBase.m in Sources */,
 				C08B5E011774C45C0021B5BA /* NotificationSingletonBase.m in Sources */,
+				258D5F391899812A007A6F14 /* neworm_js_api.cpp in Sources */,
 				C08B5E041774C47C0021B5BA /* notification_js_wrap.mm in Sources */,
 				C08B5E061774C4870021B5BA /* notification_ruby_wrap.m in Sources */,
 				C08B5E0B1774C4A80021B5BA /* notification_api_init.cpp in Sources */,
+				C50050C6189801D3000C4A15 /* intent_js_wrap.mm in Sources */,
 				C08B5E0C1774C4A80021B5BA /* notification_js_api.cpp in Sources */,
 				C08B5E0D1774C4A80021B5BA /* notification_ruby_api.c in Sources */,
 				C08B5E161774C4CA0021B5BA /* Notification.m in Sources */,

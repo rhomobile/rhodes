@@ -1,2 +1,4 @@
 entry: Init_openssl
 libraries: [ "openssl" ]
+android:
+  exttype: rakefile

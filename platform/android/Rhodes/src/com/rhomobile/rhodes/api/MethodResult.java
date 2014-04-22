@@ -1,6 +1,7 @@
 package com.rhomobile.rhodes.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class MethodResult implements IMethodResult {
     private int mIntegerResult = 0;
     private double mDoubleResult = 0.0;
     private String mStrResult;
-    private List<Object> mListResult;
+    private Collection<Object> mListResult;
     private Map<String, Object> mMapResult;
 
     private native void nativeCallBack(int tabId, boolean isRuby, boolean releaseCallback);
@@ -140,7 +141,7 @@ public class MethodResult implements IMethodResult {
             break;
         case typeError:
         case typeArgError:
-            res.append("error: ").append(mStrResult);
+            res.append('"').append(mStrResult).append('"');
             break;
         }
         return res.toString();
@@ -149,7 +150,7 @@ public class MethodResult implements IMethodResult {
     public int getInteger() { return mIntegerResult; }
     public double getDouble() { return mDoubleResult; }
     public String getString() { return mStrResult; }
-    public List<Object> getList() { return mListResult; }
+    public Collection<Object> getList() { return mListResult; }
     public Map<String, Object> getMap() { return mMapResult; }
     public String getJson() throws JSONException {
         JSONGenerator json;
@@ -283,7 +284,7 @@ public class MethodResult implements IMethodResult {
     }
 
     @Override
-    public void set(List<Object> res) {
+    public void set(Collection<Object> res) {
         Logger.T(TAG, "set("+res+")");
         mListResult = res;
         mResultType = ResultType.typeList;
@@ -486,12 +487,13 @@ public class MethodResult implements IMethodResult {
     @Override
     public void set(Throwable ex) {
         mStrResult = ex.getMessage();
+        if(mStrResult.length() == 0) {
+            mStrResult = ex.getClass().getSimpleName();
+        }
         mResultType = ResultType.typeError;
 
         Logger.E(TAG, ex);
         Logger.E(TAG, toString());
-        
-        ex.printStackTrace();
         
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");

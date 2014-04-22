@@ -307,6 +307,16 @@ void CMethodResult::setSynchronousCallback(bool executeSynchronous)
 {
     m_synchronousCallback = executeSynchronous;
 }
+
+void CMethodResult::setJSON(const rho::String& res)
+{
+    #ifdef RHO_DEBUG
+    CJSONEntry jsonValidator(res.c_str());
+    #endif
+    m_strJSONRes = res;
+    setType(eJSON);
+}
+
     
 }
 }

@@ -1,3 +1,3 @@
-entry: Init_ApplePushClient
-libraries: ['applePush']
-xml_api_paths: ext/applepush.xml
+entry: Init_applePush_extension
+javaentry: com.applepush.ApplePush
+libraries: ["ApplePush"]

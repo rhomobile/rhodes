@@ -42,7 +42,7 @@
 
 
 #import "TabbedMainView.h"
-#import "SignatureViewController.h"
+#import "Signature/SignatureViewController.h"
 
 
 static void updateViewRect(CGRect* pRect)
@@ -110,9 +110,17 @@ static void updateViewRect(CGRect* pRect)
 
 @synthesize viewControllers;
 
+- (void)dealloc {
+	[viewControllers release];
+    //[mCreationTimeMainView release];
+    [super dealloc];
+}
+
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p  bar_info:(NSDictionary*)bar_info {
     
 	self = [self initWithNibName:nil bundle:nil];
+    
+    mCreationTimeMainView = v;
 
 	RightViewController *rightView = NULL;
 	LeftViewController *leftView = NULL;
@@ -173,6 +181,10 @@ static void updateViewRect(CGRect* pRect)
     return self;
 }
 
+
+- (id<RhoMainView>)getCreationTimeMainView {
+    return mCreationTimeMainView;
+}
 
 
 

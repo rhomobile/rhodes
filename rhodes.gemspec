@@ -23,6 +23,9 @@ Gem::Specification.new do |s|
   s.add_dependency('rake', '>= 0.9.2')
   s.add_dependency('activesupport', '~> 2.3.5')
   s.add_dependency('uuid', '>= 2.3.2')
+  s.add_dependency('systemu', '>= 2.5.0')
+  s.add_dependency('json', '~>1.5.4')
+  s.add_dependency('rest-client', '~>1.6.6')
   #s.add_dependency('rdoc', '~> 3.6.1')
   s.executables << 'rhogen'
   s.executables << 'rhodes'

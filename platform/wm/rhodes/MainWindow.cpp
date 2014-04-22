@@ -51,9 +51,8 @@
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
 #include "statistic/RhoProfiler.h"
-#include "Intents.h"
-#include "System.h"
-#include "Intents.h"
+#include "coreapi/ext/shared/Intent.h"
+#include "coreapi/ext/platform/wm/src/Intents.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
@@ -71,6 +70,7 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent);
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
+bool m_SuspendedThroughPowerButton = false;
 
 using namespace rho::common;
 using namespace rho;
@@ -93,7 +93,11 @@ CMainWindow::CMainWindow()
     mNativeViewType = "";
     g_hWndCommandBar = 0;
     m_pBrowserEng = NULL;
+
+	
+	
 #if defined(OS_WINCE)
+	
     m_bFullScreen = false;
     m_bFullScreenBeforeLicense = m_bFullScreen;
 #endif
@@ -667,10 +671,39 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     return 0;
 }
 
+bool GetPowerButtonPressedValue(HWND hwnd)
+{
+	bool powerButtonPressed=false;
+	wchar_t szBuf[200];
+	if(hwnd!=NULL)
+	{
+		//LOG(INFO) + "Inside if(hwnd!=NULL)";
+		GetWindowText(hwnd,szBuf,199);
+		//LOG(INFO) + "After GetWindowText";
+		LOG(INFO) + szBuf;
+	}
+	if(0==wcscmp(szBuf,L"PowerKey Action"))
+	{
+		//LOG(INFO) + "Before powerButtonPressed=true;";
+		powerButtonPressed=true;
+		m_SuspendedThroughPowerButton=true;
+		//LOG(INFO) + "After m_SuspendedThroughPowerButton=true;";
+	}
+	else
+	{
+		
+		//LOG(INFO) + "Before powerButtonPressed=False;";
+		powerButtonPressed=false;
+	}
+	return powerButtonPressed;
+}
+
+
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
     LOG(INFO) + "ACTIVATE: " + fActive;
+	bool bDebugButtons = false;
 
     if ( m_bLoading && !fActive )
     {
@@ -684,19 +717,39 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		SendMessage( m_hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
 	}
 
+#if defined(_WIN32_WCE) 
+	wchar_t szClassName[15];
+	if (lParam && GetClassName((HWND)lParam, szClassName, 14))
+	{
+		if(wcsncmp(szClassName, L"PB_ADDRESSBAR", 14) == 0 ||
+			wcsncmp(szClassName, L"PB_BUTTON", 9) == 0)
+		{
+			bDebugButtons = true;
+		}
+	}
+#endif
+
     if (lParam) //We get activate from some internal window
     {
-        LOG(INFO) + "Get activate from child window. Skip it.";
 #if defined(_WIN32_WCE) 
         if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
 	        RhoSetFullScreen(true);
 #endif
-        return 0;
+		//  Ignore the activate msg from the child window if
+		//  1. If it is from any window other than a debug window or
+		//  2. It is a de-activate
+		if (!(bDebugButtons && fActive))
+		{
+	        LOG(INFO) + "Get activate from child window. Skip it.";
+			return 0;
+		}
     }
 
     ProcessActivate( fActive, wParam, lParam );    
     return 0;
 }
+
+
 
 void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 {
@@ -708,7 +761,32 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
     }
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
-    RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
+
+	if(m_SuspendedThroughPowerButton==true)//Activation is due to Suspend Through PowerButton and resume
+	{
+	 m_SuspendedThroughPowerButton=false;
+	 LOG(INFO) + "Activation is due to powerbutton press suspend and resume.Skip it";
+	 //return 0;
+	}
+	else
+	{
+		HWND currentForeGroundWindowHandle;
+		//LOG(INFO) + "Before GetForegroundWindow";
+		currentForeGroundWindowHandle = GetForegroundWindow();
+		//LOG(INFO) + "After GetForegroundWindow";
+		bool powerButtonPressed = GetPowerButtonPressedValue(currentForeGroundWindowHandle);
+
+		if(true ==powerButtonPressed)//Deactivation is not due to Suspend Through PowerButton
+		{
+			 LOG(INFO) + "Deactivation is due to powerbutton press.Skip it";
+		}
+		else
+		{
+			//LOG(INFO) + "Before ProcessActivate";
+			RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
+		}
+		//RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
+	}
 #if defined(_WIN32_WCE)  && !defined (OS_PLATFORM_MOTCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
@@ -1157,6 +1235,7 @@ LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
 	TCHAR image_uri[MAX_PATH];
+	//TCHAR file_name[MAX_PATH];
     HRESULT status;
 #if defined (_WIN32_WCE)
 	Camera camera;
@@ -1174,7 +1253,7 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 #endif
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
-        (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
+       (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
 
     free ((void *)lParam);
 	return 0;
@@ -1209,12 +1288,13 @@ LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPAR
 LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
 	TCHAR image_uri[MAX_PATH];
+	//TCHAR file_name[MAX_PATH];
     HRESULT status = S_OK;
 	Camera camera;
 	status = camera.selectPicture(this->m_hWnd,image_uri);
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
-        (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
+         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
     
     free ((void *)lParam);
     
@@ -2014,7 +2094,7 @@ LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
         LOG(INFO) + "INTERPROCESSMESSAGE : " + rho::String(ipmsg->appName) + rho::String(ipmsg->params);
 
 
-        rho::System::addApplicationMessage(ipmsg->appName, ipmsg->params);
+        rho::Intent::addApplicationMessage(ipmsg->appName, ipmsg->params);
         return 0;
     }
     else if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))

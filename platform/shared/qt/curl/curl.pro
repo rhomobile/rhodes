@@ -22,6 +22,10 @@ win32 {
   DESTDIR = ../../../win32/bin/curl
   OBJECTS_DIR = ../../../win32/bin/curl/tmp
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  INCLUDEPATH += ../../../../lib/extensions/zlib/ext\
+../../ruby/include\
+../../common\
+../../ruby/win32
   Debug {
     DEFINES += _DEBUG DEBUG
   }
@@ -36,7 +40,7 @@ unix:!macx {
   DEFINES += HAVE_CONFIG_H USE_RHOSSL
 }
 
-DEFINES += RHODES_QT_PLATFORM
+DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 
 !isEmpty(RHOSIMULATOR_BUILD) {
   DEFINES += RHODES_EMULATOR

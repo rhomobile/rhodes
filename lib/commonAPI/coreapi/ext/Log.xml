@@ -3,7 +3,7 @@
 <API>
     <MODULE name="Log" parent="Rho">
         <HELP_OVERVIEW> Use this API to control the behavior of the RhoMobile Log API as well as access it.</HELP_OVERVIEW>
-        <MORE_HELP> This API gives access to Rhodes Logging functionality. There are five functions to add messages to the log with different severity (from lowest to highest) : trace, info, warning, error and fatal. Each of those functions gets two parameters: message and category. Category is an user defined group that helps with used  searching and filtering.
+        <MORE_HELP>This API gives access to Rhodes Logging functionality. There are five functions to add messages to the log with different severity (from lowest to highest) : trace, info, warning, error and fatal. Each of those functions gets two parameters: message and category. Category is an user defined group that helps with used  searching and filtering.
 
 Accessing Log File:
 sendLogFile: will sent all the log to server
@@ -35,31 +35,29 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-        
-</MORE_HELP>
+        </MORE_HELP>
         
         <TEMPLATES>
         </TEMPLATES>
 
         <PROPERTIES access="STATIC" generateAccessors="true">
-            
             <PROPERTY name="level" type="INTEGER">
                 <DESC>The current logging level. Minimal severity level of messages that will appear in log. When level is set to 0 any messages will be logged. When level is set to 4 only fatal error messages will be logged. Default value is defined in rhoconfig.txt (MinSeverity) </DESC>
                 <VALUES>
                     <VALUE constName="LEVEL_TRACE" value = "0">
-                        <DESC>Everything will be logged. Also see settings for controlling log size</DESC>
+                        <DESC>Everything will be logged. Also see settings for controlling log size.</DESC>
                     </VALUE>
                     <VALUE constName="LEVEL_INFO" value = "1">
-                        <DESC>Information level logs and above will be shown</DESC>
+                        <DESC>Information level logs and above will be shown.</DESC>
                     </VALUE>
                     <VALUE constName="LEVEL_WARNING" value = "2">
-                        <DESC>Warnings and above will only be shown</DESC>
+                        <DESC>Warnings and above will only be shown.</DESC>
                     </VALUE>
                     <VALUE constName="LEVEL_ERROR" value = "3">
-                        <DESC>Error level log messages and above will be shown</DESC>
+                        <DESC>Error level log messages and above will be shown.</DESC>
                     </VALUE>
                     <VALUE constName="LEVEL_FATAL" value = "4">
-                        <DESC>Fatala level log messages and above will be shown</DESC>
+                        <DESC>Fatal level log messages and above will be shown.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
@@ -74,7 +72,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Log is written to the standard output (ex: Android ADB)</DESC>
                     </VALUE>
                     <VALUE constName="DEST_URI" value ="uri">
-                        <DESC>Log is written to a remote logger</DESC>
+                        <DESC>Log is written to a remote logger.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
@@ -92,31 +90,30 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
 
             <PROPERTY name="filePath" type="STRING" default="rholog.txt">
-                <DESC>Path to the log file including file name. The path is relative to the platform specific application root or start if from '/' if you wish to store elsewhere ('/mnt/sdcard/myapp.log').   Default file path is "rholog.txt"</DESC>
+                <DESC>Path to the log file including file name. The path is relative to the platform specific application root or start if from '/' if you wish to store elsewhere ('/mnt/sdcard/myapp.log').  Default file path is "rholog.txt"</DESC>
             </PROPERTY>
 
             <PROPERTY name="memoryPeriod" type="INTEGER" default="0">
-                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <DESC>Enables the logging of memory usage in the system; specifies the time interval in milliseconds at which memory logs will be generated periodically. Setting it to 0 will disable logging memory information.</DESC>
             </PROPERTY>
 
             <PROPERTY name="netTrace" type="BOOLEAN" default="false">
-                <DESC>Turn on local http server traces. Traces contain infromation about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of remote server app (and/or shared runtime). Default value can be overridden by the setting in rhoconfig.txt (net_trace) </DESC>
+                <DESC>Turn on local http server traces. Traces contain information about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of remote server app (and / or shared runtime). Default value can be overridden by the setting in rhoconfig.txt (net_trace) </DESC>
                 <PLATFORM>Android, iOS, WP8</PLATFORM>
             </PROPERTY>
 
             <PROPERTY name="skipPost" type="BOOLEAN" default="false">
-                <DESC>Skip http package body from log(for security reasons). Please note that this parameter will not take an effect in case of remote server app (and/or shared runtime), no log will appear in this case. </DESC>
+                <DESC>Skip http package body from log(for security reasons). Please note that this parameter will not take an effect in case of remote server app (and / or shared runtime), no log will appear in this case. </DESC>
             </PROPERTY>
 
             <PROPERTY name="excludeFilter" type="STRING" default="">
-                <DESC>Define exclude parameters log filter(for security reasons) - parameter names separated by comma. It works when user tries to put in log string containing json/urls. Default value is "" (empty). For example, if user set excludeFilter="password", then trys to put in log this string: "{"user":"alex","password":"abcdef","sessionid":123456}", "abcdef" will not appear in log.</DESC>
+                <DESC>Define exclude parameters log filter(for security reasons) - parameter names separated by comma. It works when user tries to put in log string containing json / urls. Default value is "" (empty). For example, if user set excludeFilter="password", then tries to put in log this string: "{"user":"alex","password":"abcdef","sessionid":123456}", "abcdef" will not appear in log.</DESC>
             </PROPERTY>
 
             <PROPERTY name="destinationURI" type="STRING" default="">
                 <DESC>Log server URI where log will be posted by using Rho::Log.sendLogFile or from the log view. Log server source code is open and available at http://github.com/rhomobile/rhologs, so you can deploy your own logserver. URI format: 'http://host:port[/path][?log_name=appName]'. Default value is set in rhoconfig.txt (logserver)</DESC>
             </PROPERTY>
-
         </PROPERTIES>
 
         <METHODS  access="STATIC">
@@ -124,8 +121,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </ALIASES>
 
             <METHOD name="trace">
-                <DESC>Log message at the Trace level. By default trace messages are not shown in log (if level equals to 1)</DESC>
-
+                <DESC>Log message at the Trace level. By default trace messages are not shown in log (if level equals to 1).</DESC>
                 <PARAMS>
                     <PARAM name="message" type="STRING">
                         <DESC>Log message.</DESC>
@@ -133,13 +129,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="category" type="STRING" default="APP">
                         <DESC>Log category.</DESC>
                     </PARAM>
-
                 </PARAMS>
             </METHOD>
 
             <METHOD name="info">
                 <DESC>Log message at the Info level.</DESC>
-
                 <PARAMS>
                     <PARAM name="message" type="STRING">
                         <DESC>Log message.</DESC>
@@ -147,13 +141,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="category" type="STRING" default="APP">
                         <DESC>Log category.</DESC>
                     </PARAM>
-
                 </PARAMS>
             </METHOD>
 
             <METHOD name="warning">
                 <DESC>Log message at the Warning level.</DESC>
-
                 <PARAMS>
                     <PARAM name="message" type="STRING">
                         <DESC>Log message.</DESC>
@@ -161,13 +153,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="category" type="STRING" default="APP">
                         <DESC>Log category.</DESC>
                     </PARAM>
-
                 </PARAMS>
             </METHOD>
 
             <METHOD name="error">
                 <DESC>Log message at the Error level.</DESC>
-
                 <PARAMS>
                     <PARAM name="message" type="STRING">
                         <DESC>Log message.</DESC>
@@ -179,8 +169,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="fatalError">
-                <DESC>Log message at the FatalError level. Application will be terminated (on all platforms except iOS)</DESC>
-
+                <DESC>Log message at the FatalError level. Application will be terminated (on all platforms except iOS).</DESC>
                 <PARAMS>
                     <PARAM name="message" type="STRING">
                         <DESC>Log message.</DESC>
@@ -206,16 +195,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <METHOD name="readLogFile">
                 <DESC>Read log file. Returns string from the log file containing specified number of symbols.</DESC>
-
                 <PARAMS>
                     <PARAM name="limit" type="INTEGER">
                         <DESC>Maximum size of the resulting string in symbols.</DESC>
                     </PARAM>
                 </PARAMS>
-
                 <RETURN type="STRING"/>
             </METHOD>
-
         </METHODS>
         
         <USER_OVERVIEW>
@@ -229,9 +215,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
            <EXAMPLE title="Show log file">
                <SECTIONS>
                <SECTION>
-               <DESC>
-                   Show the contents of the log file in a window with controls to refresh, clear and send. Useful for debugging and when asking users to report error messages
-               </DESC>
+               <DESC>Show the contents of the log file in a window with controls to refresh, clear and send. Useful for debugging and when asking users to report error messages.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -241,7 +225,6 @@ Rho::Log.showLog]]>
            <![CDATA[
 Rho.Log.showLog();]]>
                 </JAVASCRIPT>
-
                </CODE>
                </SECTION>
                </SECTIONS>
@@ -249,9 +232,7 @@ Rho.Log.showLog();]]>
           <EXAMPLE title="Read log file content">
                <SECTIONS>
                <SECTION>
-               <DESC>
-                   Retrieve the contents of the log file as a string
-               </DESC>
+               <DESC>Retrieve the contents of the log file as a string.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -270,9 +251,7 @@ logFileContent = Rho.Log.readLogFile(16384);]]>
            <EXAMPLE title="Clean log file">
                <SECTIONS>
                <SECTION>
-               <DESC>
-                   Clear the contents of the log file. In this example, logFileContentBefore will contain the log up until that point, while logFileContentAfter will be empty
-               </DESC>
+               <DESC>Clear the contents of the log file. In this example, logFileContentBefore will contain the log up until that point, while logFileContentAfter will be empty.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -303,9 +282,7 @@ logFileContentAfter = Rho.Log.readLogFile(16384);]]>
            <EXAMPLE title="Logging categories">
                <SECTIONS>
                <SECTION>
-               <DESC>
-                   Categories help you organize your logging messages and find related statements using tools like grep or a text editor's "search" function.
-               </DESC>
+               <DESC>Categories help you organize your logging messages and find related statements using tools like grep or a text editor's "search" function.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -314,7 +291,7 @@ Rho::Log.info("Foo acquired value Bar in method Baz", "Miscellaneous")
 
 #The above code will result in logging statements like these
 Lorem Ipsum| Consectetuer adipiscing elit
-Miscellaneous| Foo acquired value Bar in method Baz
+Miscellaneous Foo acquired value Bar in method Baz
 ]]>
                 </RUBY>
                 <JAVASCRIPT>
@@ -324,21 +301,17 @@ Rho.Log.info("Foo acquired value Bar in method Baz", "Miscellaneous");
 
 //The above code will result in logging statements like these
 Lorem Ipsum| Consectetuer adipiscing elit
-Miscellaneous| Foo acquired value Bar in method Baz
+Miscellaneous Foo acquired value Bar in method Baz
 ]]>
                 </JAVASCRIPT>
                </CODE>
                </SECTION>
-               
                </SECTIONS>
            </EXAMPLE>
            <EXAMPLE title="Memory Usage">
                <SECTIONS>
                <SECTION>
-               <DESC>
-                   You can ask the system to automatically log memory usage information on a set interval. 
-                   This can be used to debug potential memory leaks in operations where a high number of objects are touched in memory. 
-               </DESC>
+               <DESC>You can ask the system to automatically log memory usage information on a set interval. This can be used to debug potential memory leaks in operations where a high number of objects are touched in memory. </DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -354,13 +327,11 @@ Rho.Log.memoryPeriod = 1000;
 // Perform memory-intensive operations here. Examining the log will tell us if we have a memory leak
 // Once our task finishes, disable automatic memory logging
 Rho.Log.memoryPeriod = 0;]]>
-
                </JAVASCRIPT>
                </CODE>
                </SECTION>
-               
                </SECTIONS>
            </EXAMPLE>
        </EXAMPLES>
     </MODULE>
-</API>    
+</API>

@@ -1,186 +1,182 @@
 <?xml version = "1.0"?>
 <API>
-	<MODULE name="Notification" parent="Rho">
-		<HELP_OVERVIEW>The Notification API allows you to provide feedback to the user, either auditory, tactile or visual.  Use this API to give a visual popup window, sound the device beeper or illuminate the device LEDs (hardware permitting)</HELP_OVERVIEW>
-		<MORE_HELP>
+    <MODULE name="Notification" parent="Rho">
+        <HELP_OVERVIEW>The Notification API allows you to provide feedback to the user, either auditory, tactile or visual. Use this API to give a visual popup window, sound the device beeper or illuminate the device LEDs (hardware permitting).</HELP_OVERVIEW>
+        <MORE_HELP>
 ## Enabling the API           
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+        </MORE_HELP>
+        <PLATFORM>iOS, Android, WM</PLATFORM>
+        <TEMPLATES>
+        </TEMPLATES>
 
-</MORE_HELP>
-		<PLATFORM>iOS, Android, WM</PLATFORM>
-		<TEMPLATES>
-		</TEMPLATES>
-
-		<METHODS access="STATIC">
+        <METHODS access="STATIC">
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
                 <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the `button` array. Icon is not supported on iOS devices.</DESC>
-				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
-				<PARAMS>
-					<PARAM name="propertyMap" type="HASH">
-						<DESC>The properties associated with the popup.</DESC>
-						<PARAMS>
-							<PARAM name="message" type="String" default="">
-								<DESC>Text displayed in the popup window</DESC>
-							</PARAM>
-							<PARAM name="title" type="String" default="">
-								<DESC>Title of the popup window</DESC>
-							</PARAM>
-							<PARAM name="icon" type="String" default="">
-								<DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon.</DESC>
+                <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH">
+                        <DESC>The properties associated with the popup.</DESC>
+                        <PARAMS>
+                            <PARAM name="message" type="String" default="">
+                                <DESC>Text displayed in the popup window.</DESC>
+                            </PARAM>
+                            <PARAM name="title" type="String" default="">
+                                <DESC>Title of the popup window.</DESC>
+                            </PARAM>
+                            <PARAM name="icon" type="String" default="">
+                                <DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon.</DESC>
                                 <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only predefined icons are supported.</MORE_HELP>
-								<PLATFORM>Android</PLATFORM>
-							</PARAM>
-							<PARAM name="buttons" type="Array" default="">
-								<DESC>Array of buttons. Specify each button either by hash with :id and :title keys os string. For example: [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}].
-                                  At Android if TYPE_NOTIFICATION_DIALOG is used every button in notification has an icon. By default star icon is used. In case button id is 'accept' then system accept icon is used. In case button id is 'cancel' then system cancel icon is used.
-                                  Using hash this way: [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}]
-                                  Using string example: ['Yes', 'No']. Note: in case of buttons has been specified using strings an id and a title of each button will have same value.
-                                </DESC>
-							</PARAM>
-							<PARAM name="types" type="Array">
-							    <DESC>List which notification kinds will be shown. Several types may be listed at same time.
-							      TYPE_NOTIFICATION and TYPE_NOTIFICATION_DIALOG take no effect if application is at foreground.
-							      By default [Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_NOTIFICATION] is used.
-							      Example: [Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_TOAST]
-							    </DESC>
-							    <PLATFORMS>Android</PLATFORMS>
-							    <VALUES>
-							      <VALUE constName="TYPE_DIALOG" value="dialog">
-							        <DESC>show common dialog window with buttons visible if application is active</DESC>
-							      </VALUE>  
-							      <VALUE constName="TYPE_NOTIFICATION" value="notification">
-							        <DESC>show message in Android notification bar if application is at background. Touch the message opens the application.</DESC>
-							      </VALUE>  
-							      <VALUE constName="TYPE_NOTIFICATION_DIALOG" value="notificationDialog">
-							        <DESC>Means TYPE_DIALOG + TYPE_NOTIFICATION. At Android 4.1 and above buttons is also added to notification message so user can interact with the application without application activation (dialog window is not shown if user pressed button at notification).</DESC>
-							      </VALUE>  
-							      <VALUE constName="TYPE_TOAST" value="toast">
-							        <DESC>show toast window with message at foreground for a short time. The toast is visible nevertheless the application is at background or foreground but is not shown same time with any foreground pop-up.</DESC>
-							      </VALUE>  
-							    </VALUES>
-							</PARAM>
-						</PARAMS>
-					</PARAM>
-				</PARAMS>
-				<CALLBACK type="HASH">
-					<DESC>A hash/object is returned indicated which button was pressed.</DESC>
-					<PARAMS>
-						<PARAM name="button_id" type="STRING">
-							<DESC>ID assigned to the button when showing the popup</DESC>
-						</PARAM>
-						<PARAM name="button_title" type="STRING">
-							<DESC>Button text</DESC>
-						</PARAM>
-						<PARAM name="button_index" type="STRING">
-							<DESC>The index in the 'buttons' array.</DESC>
-						</PARAM>
-					</PARAMS>
-				</CALLBACK>    
-			</METHOD>
-		
-            <METHOD name="hidePopup" access="STATIC" hasCallback="none">
-                <DESC>Closes the current popup window</DESC>
-                <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</MORE_HELP>
-				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
+                                <PLATFORM>Android</PLATFORM>
+                            </PARAM>
+                            <PARAM name="buttons" type="Array" default="">
+                                <DESC>Array of buttons. Specify each button either by hash with :id and :title keys or string.When using strings, the `id` and `title` will have the same value.
+For example: 
+    :::javascript
+    buttonHash = [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}];
+    buttonString = ['Yes', 'No'];
+
+NOTE: For Android, if TYPE_NOTIFICATION_DIALOG is used, every button in the notification uses an icon. By default a star icon is used. If the button id is 'accept' then the system accept icon is used. If the button id is 'cancel' then the system cancel icon is used.
+</DESC>
+                            </PARAM>
+                            <PARAM name="types" type="Array">
+                                <DESC>List which notification kinds will be shown. Several types may be listed at same time. `TYPE_NOTIFICATION` and `TYPE_NOTIFICATION_DIALOG` take no effect if application is in the foreground. By default `[Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_NOTIFICATION]` is used.
+Example:
+    :::javascript
+    typeToast = [Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_TOAST];</DESC>
+                                <PLATFORMS>Android</PLATFORMS>
+                                <VALUES>
+                                  <VALUE constName="TYPE_DIALOG" value="dialog">
+                                    <DESC>Show common dialog window with buttons visible if application is active.</DESC>
+                                  </VALUE>  
+                                  <VALUE constName="TYPE_NOTIFICATION" value="notification">
+                                    <DESC>Show message in Android notification bar if application is at background. Touch the message opens the application.</DESC>
+                                  </VALUE>  
+                                  <VALUE constName="TYPE_NOTIFICATION_DIALOG" value="notificationDialog">
+                                    <DESC>This is the same as `TYPE_DIALOG` + `TYPE_NOTIFICATION`. 
+NOTE: In Android 4.1 and above, buttons are also added to the notification message so the user can interact with the application without application activation (dialog window is not shown if user pressed button in notification). Buttons are not always displayed in the notification area - this depends on screen size and layout and system decides whether to show buttons. You need to drag notification to make buttons appear.</DESC>
+                                  </VALUE>  
+                                  <VALUE constName="TYPE_TOAST" value="toast">
+                                    <DESC>Show toast window with message at foreground for a short time. The toast is visible nevertheless the application is at background or foreground but is not shown same time with any foreground pop-up.</DESC>
+                                  </VALUE>  
+                                </VALUES>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="HASH">
+                    <DESC>A hash/object is returned indicated which button was pressed.</DESC>
+                    <PARAMS>
+                        <PARAM name="button_id" type="STRING">
+                            <DESC>ID assigned to the button when showing the popup.</DESC>
+                        </PARAM>
+                        <PARAM name="button_title" type="STRING">
+                            <DESC>Button text.</DESC>
+                        </PARAM>
+                        <PARAM name="button_index" type="STRING">
+                            <DESC>The index in the 'buttons' array.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>    
             </METHOD>
-		
+        
+            <METHOD name="hidePopup" access="STATIC" hasCallback="none">
+                <DESC>Closes the current popup window.</DESC>
+                <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</MORE_HELP>
+                <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
+            </METHOD>
+        
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
-                <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button. Note: Android will show a toast message for a short time in addition to a dialog window.
-                </DESC>
-				<PLATFORM>WM, Android, iOS, Win32</PLATFORM>
-				<PARAMS>
-					<PARAM name="title" type="STRING">
-					    <CAN_BE_NIL/>
-						<DESC>The title on the status message popup window.</DESC>
-					</PARAM>
-					<PARAM name="status_text" type="STRING">
-						<DESC>The status message displayed in the popup status window.</DESC>
-					</PARAM>
-					<PARAM name="hide_button_label" type="STRING">
-						<DESC>The label text for the hide button in the popup status window</DESC>
+                <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button. Note: Android will show a toast message for a short time in addition to a dialog window.</DESC>
+                <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
+                <PARAMS>
+                    <PARAM name="title" type="STRING">
+                        <CAN_BE_NIL/>
+                        <DESC>The title on the status message popup window.</DESC>
+                    </PARAM>
+                    <PARAM name="status_text" type="STRING">
+                        <DESC>The status message displayed in the popup status window.</DESC>
+                    </PARAM>
+                    <PARAM name="hide_button_label" type="STRING">
+                        <DESC>The label text for the hide button in the popup status window.</DESC>
                         <PLATFORM>iOS, Android, WP8</PLATFORM>
                         <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators Windows Close icon used to hide the status window.</MORE_HELP>
-					</PARAM>
-				</PARAMS>
+                    </PARAM>
+                </PARAMS>
             </METHOD>
-		
+        
             <METHOD name="playFile" access="STATIC" hasCallback="none">
                 <DESC>Play an audio file if that media type is supported by the device.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
-				<PARAMS>
-					<PARAM name="path" type="STRING">
-						<DESC>The full path to the file, ending in the file name and extension.</DESC>
-					</PARAM>
-					<PARAM name="media_type" type="STRING" default="">
-					    <CAN_BE_NIL/>
-						<DESC>Media type can be specified explicitly, or can be recognized from the file extension. The known file extensions are ".mp3" - "audio/mpeg" and ".wav" - "audio/x-wav".</DESC>
+                <PARAMS>
+                    <PARAM name="path" type="STRING">
+                        <DESC>The full path to the file, ending in the file name and extension.</DESC>
+                    </PARAM>
+                    <PARAM name="media_type" type="STRING" default="">
+                        <CAN_BE_NIL/>
+                        <DESC>Media type can be specified explicitly, or can be recognized from the file extension. The known file extensions are ".mp3" - "audio/mpeg" and ".wav" - "audio/x-wav".</DESC>
                         <PLATFORM>iOS, Android</PLATFORM>
-					</PARAM>
-				</PARAMS>
+                    </PARAM>
+                </PARAMS>
             </METHOD>
 
             <METHOD name="beep" access="STATIC" hasCallback="none">
                 <DESC>If the device is equipped with a beeper then a beep will be emitted. Not supported on iOS devices.</DESC>
-				<PLATFORM>Android, WM</PLATFORM>
-				<PARAMS>
-					<PARAM name="propertyMap" type="HASH">
-						<DESC>The properties associated with the beep.</DESC>
-						<PARAMS>
-							<PARAM name="frequency" type="Integer" default="2000">
-								<DESC>The frequency of the beep, in Hz</DESC>
-							</PARAM>
-							<PARAM name="volume" type="Integer" default="1">
-								<DESC>A number between 0 and 3.  0 represents minimum volume and 3 is maximum volume, the decibels each volume level represents is device dependant.</DESC>
-							</PARAM>
-							<PARAM name="duration" type="Integer" default="1000">
-								<DESC>The duration of the beep, in milliseconds</DESC>
-							</PARAM>
-						</PARAMS>
-					</PARAM>
-				</PARAMS>
+                <PLATFORM>Android, WM</PLATFORM>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH">
+                        <DESC>The properties associated with the beep.</DESC>
+                        <PARAMS>
+                            <PARAM name="frequency" type="Integer" default="2000">
+                                <DESC>The frequency of the beep, in Hz.</DESC>
+                            </PARAM>
+                            <PARAM name="volume" type="Integer" default="1">
+                                <DESC>A number between 0 and 3. 0 represents minimum volume and 3 is maximum volume, the decibels each volume level represents is device dependant.</DESC>
+                            </PARAM>
+                            <PARAM name="duration" type="Integer" default="1000">
+                                <DESC>The duration of the beep, in milliseconds.</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
             </METHOD>
 
             <METHOD name="vibrate" access="STATIC" hasCallback="none">
-                <DESC>Vibrate the device's pager hardware. Need 'vibrate' capability set at build.yml for Android</DESC>
-				<PLATFORM>iOS, Android, WM</PLATFORM>
-				<PARAMS>
-					<PARAM name="duration" type="Integer" default="1000">
-					    <CAN_BE_NIL/>
-						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration. iOS devices have fixed system vibration time. It could not be changed. Android and Windows devices have default vibration time 1000 ms</DESC>
-					</PARAM>
-				</PARAMS>
+                <DESC>Vibrate the device's pager hardware. Need 'vibrate' capability set at build.yml for Android.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PARAMS>
+                    <PARAM name="duration" type="Integer" default="1000">
+                        <CAN_BE_NIL/>
+                        <DESC>The duration of the vibration, in milliseconds. Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration. iOS devices have fixed system vibration time. It could not be changed. Android and Windows devices have default vibration time 1000 ms.</DESC>
+                    </PARAM>
+                </PARAMS>
             </METHOD>
-			
-		</METHODS>
-		
-		<USER_OVERVIEW>
-			<!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-			<![CDATA[
+        </METHODS>
+
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+            <![CDATA[
 Exiting RhoElements
 =====================
 If RhoElements is exited after applying notifications, the settings to LEDs will not revert.
-
-		]]>
-	
-		</USER_OVERVIEW>
-		<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-		<PLATFORM></PLATFORM>
-		<EXAMPLES>
+        ]]>
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM></PLATFORM>
+        <EXAMPLES>
            <EXAMPLE title="Sound the device beeper">
             <SECTIONS>
               <SECTION>
-               <DESC>
-                   Not every device is equipped with a hardware beeper but if present this code snippet will cause the beeper to sound.
-               </DESC>
+               <DESC>Not every device is equipped with a hardware beeper but if present this code snippet will cause the beeper to sound.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -205,29 +201,27 @@ end
            <EXAMPLE title="Show an alert">
             <SECTIONS>
               <SECTION>
-               <DESC>
-                   This example shows how to show an alert in Javascript. 
-               </DESC>
+               <DESC>This example shows how to show an alert in JavaScript.</DESC>
                <CODE>
                 <JAVASCRIPT>
            <![CDATA[
 function show_alert()
 {
-	//creates a popup with a message and two buttons
-	Rho.Notification.showPopup({
-		title:'My Popup',
-		message:'Do you really want to delete this record',
-		buttons:[
-			{id:'yes',title:'Ok to Delete'},
-			{id:'no',title:'No'}]
-		},
-			function(e){
-				if(e.button_id == "yes")
-				{
-					// go ahead and delete the record
-				}
-			}
-	);
+    //creates a popup with a message and two buttons
+    Rho.Notification.showPopup({
+        title:'My Popup',
+        message:'Do you really want to delete this record',
+        buttons:[
+            {id:'yes',title:'Ok to Delete'},
+            {id:'no',title:'No'}]
+        },
+            function(e){
+                if(e.button_id == "yes")
+                {
+                    // go ahead and delete the record
+                }
+            }
+    );
 }
                    ]]>
                  </JAVASCRIPT>
@@ -235,18 +229,14 @@ function show_alert()
                </SECTION>
                </SECTIONS>
            </EXAMPLE>
-	   </EXAMPLES>
-	   <REMARKS>
+       </EXAMPLES>
+       <REMARKS>
             <REMARK title="Maximum vibrate duration">
-                <DESC>
-On Android, the maximum duration for vibrate is 15 seconds (15000ms).
-				</DESC>
-			</REMARK>
+                <DESC>On Android, the maximum duration for vibrate is 15 seconds (15000ms).</DESC>
+            </REMARK>
             <REMARK title="Spuriously reported hardware">
-                <DESC>
-Some Windows Mobile or CE devices may report hardware which is not present on the device such as a pager or LEDs.  This is a limitation of the underlying driver layer reporting spurious results to the application, though all real hardware will be controllable.
-				</DESC>
-			</REMARK>
-	   </REMARKS>
-	</MODULE>
-</API>    
+                <DESC>Some Windows Mobile or CE devices may report hardware which is not present on the device such as a pager or LEDs. This is a limitation of the underlying driver layer reporting spurious results to the application, though all real hardware will be controllable.</DESC>
+            </REMARK>
+       </REMARKS>
+    </MODULE>
+</API>

@@ -313,10 +313,17 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+    }else
+    {
+        cell.userInteractionEnabled = YES;
+        cell.indentationLevel = 0;
+        cell.indentationWidth = 0;
+        if ( cell.detailTextLabel.text )
+        {
+            cell.detailTextLabel.text = [NSString stringWithString:@""];
+        }
     }
     
-    CGRect rc = cell.bounds;
-    CGRect rc2 = tableView.bounds;
     RhoLeftItem* td =   [self.itemsData objectAtIndex:indexPath.row];
     
 	cell.imageView.image = [td image];

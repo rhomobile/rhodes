@@ -2,14 +2,14 @@
 
 #include <string.h>
 
-#include "app_build_configs.h"
+//#include "app_build_configs.h"
 
 static const char* keys[] = { ""
 ,"name"
 };
 
 static const char* values[] = { ""
-,"RM40B28"
+,"new_orm_spec"
 };
 
 #define APP_BUILD_CONFIG_COUNT 2

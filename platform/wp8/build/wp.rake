@@ -82,11 +82,14 @@ namespace "config" do
 
     $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
 
-    if !$app_config["wp"] || !$app_config["wp"]["productid"]
-      puts "Add wp:productid to application build.yml"
+    $productid = $app_config["wp8"]["productid"] if $app_config["wp8"]
+    $productid = $app_config["wp"]["productid"] if $app_config["wp"] && !$productid
+
+    if !$productid
+      puts "Add wp8:productid to application build.yml"
       puts "productid is GUID in format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
       puts "for example:"
-      puts "wp:"
+      puts "wp8:"
       puts "  productid: 'fd55c4d0-51fa-012e-7844-3caec51bd50e'"
 
       exit 1
@@ -213,7 +216,7 @@ namespace "build" do
                 if !extconf_wp8_lib['project_path'].nil?
                   setCSharpEnvironment( csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?) )
                   ENV['RHO_PROJECT_PATH'] = File.join(p, ext, extconf_wp8_lib['project_path'])
-                  Jake.run3('rake', File.join($startdir, 'lib/build/extensions'))
+                  Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
                 end
               end
             end
@@ -265,7 +268,7 @@ namespace "build" do
 
       doc = REXML::Document.new(File.open($startdir+"/"+$config["build"]["wp8path"]+"/rhodes/Properties/WMAppManifest.xml"))
       doc.elements.each("Deployment/App") { |element|
-        element.attributes["ProductID"]   = "{"+$app_config["wp"]["productid"]+"}"
+        element.attributes["ProductID"]   = "{"+$productid+"}"
         element.attributes["Title"]       = $app_config["name"]
         element.attributes["Description"] = $app_config["name"]
         element.attributes["Author"]      = $app_config["vendor"]
@@ -360,22 +363,22 @@ namespace "build" do
   end
 end
 
-def get_app_log()
-  args = []
-  args << $app_config["wp"]["productid"]
-  args << ""
-  args << ""
-  args << ""
-  args << "RhoLog.txt"
-
-  cc_run($wp7runner, args) or return false
-  puts "RhoLog.txt stored to " + $app_path
-  return true
-end
-
-def run_rho_log_server()
-  system("START rake run:wp:rhologserver[#{$app_path}]")
-end
+#def get_app_log()
+#  args = []
+#  args << $app_config["wp"]["productid"]
+#  args << ""
+#  args << ""
+#  args << ""
+#  args << "RhoLog.txt"
+#
+#  cc_run($wp7runner, args) or return false
+#  puts "RhoLog.txt stored to " + $app_path
+#  return true
+#end
+#
+#def run_rho_log_server()
+#  system("START rake run:wp:rhologserver[#{$app_path}]")
+#end
 
 namespace "device" do
   namespace "wp8" do
@@ -386,7 +389,7 @@ namespace "device" do
 
 	task :getlog => ["config:wp8"] do
 		args = []
-		args << $app_config["wp"]["productid"]
+		args << $productid
 		args << $app_config["name"]
 		args << $app_path + "/icon/icon.png"
 		args << $targetdir + "/" + $appname + ".xap"
@@ -412,7 +415,7 @@ namespace "emulator" do
 
 	task :getlog => ["config:wp8"] do
 		args = []
-		args << $app_config["wp"]["productid"]
+		args << $productid
 		args << $app_config["name"]
 		args << $app_path + "/icon/icon.png"
 		args << $targetdir + "/" + $appname + ".xap"
@@ -456,7 +459,7 @@ namespace "run" do
   desc "Build, install .xap and run on WP8 emulator"
   task :wp8 => ["emulator:wp8:production"] do
 
-    if $app_config["wp"] && $app_config["wp"]["productid"] != nil
+    if $productid != nil
 
       #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
       #Jake.run_rho_log_server($app_path)
@@ -474,7 +477,7 @@ namespace "run" do
       mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
 
       args = []
-      args << $app_config["wp"]["productid"]
+      args << $productid
       args << $app_config["name"]
       args << $app_path + "/icon/icon.png"
       args << $targetdir + "/" + $appname + ".xap"
@@ -573,7 +576,7 @@ namespace "run" do
     task :device => ["device:wp8:production"] do
       addRhobundleFilesToCacheFile()
 
-      if $app_config["wp"] && $app_config["wp"]["productid"] != nil
+      if $productid != nil
         #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
         #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
         #Jake.run_rho_log_server($app_path)
@@ -591,7 +594,7 @@ namespace "run" do
         mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
 
         args = []
-        args << $app_config["wp"]["productid"]
+        args << $productid
         args << $app_config["name"]
         args << $app_path + "/icon/icon.png"
         args << $targetdir + "/" + $appname + ".xap"
@@ -612,6 +615,8 @@ end
 
 namespace :stop do
   task :wp8 do
-    # TODO: add implementation
+    Jake.get_process_list.each do |p|
+      Process.kill(9, p[:pid].to_i) if p[:cmd].include? 'XDE.exe'
+    end
   end
 end

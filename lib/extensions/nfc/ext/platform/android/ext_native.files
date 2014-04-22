@@ -1,0 +1,2 @@
+/ext/platform/android/jni/src/nfc.cpp
+/ext/shared/ruby/nfc_wrap.c

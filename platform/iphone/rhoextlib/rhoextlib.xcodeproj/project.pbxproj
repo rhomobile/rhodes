@@ -166,7 +166,7 @@
 				GCC_PREFIX_HEADER = rhoextlib_Prefix.pch;
 				GCC_VERSION = "";
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhoextlib;
 				SDKROOT = iphoneos;
@@ -189,7 +189,7 @@
 				GCC_PREFIX_HEADER = rhoextlib_Prefix.pch;
 				GCC_VERSION = "";
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhoextlib;
 				SDKROOT = iphoneos;
@@ -267,7 +267,7 @@
 				GCC_PREFIX_HEADER = rhoextlib_Prefix.pch;
 				GCC_VERSION = "";
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhoextlib;
 				SDKROOT = iphoneos;

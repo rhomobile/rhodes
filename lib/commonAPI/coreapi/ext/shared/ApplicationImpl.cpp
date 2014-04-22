@@ -2,6 +2,7 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "common/RhoFilePath.h"
+#include "json/JSONIterator.h"
 #include "rubyext/WebView.h"
 
 #ifdef RHODES_EMULATOR
@@ -148,10 +149,9 @@ public:
     {
 #ifdef OS_ANDROID
         rho_impl_setNativeMenu(value);
+        RHODESAPP().getAppMenu().setAppBackUrlWithJSONItems(value);
 #else
-
         RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(value);
-        
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
        rho_webview_update_menu(1);
 #endif

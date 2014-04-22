@@ -99,6 +99,9 @@
     
     NSString *initUrl = nil;
     
+	BOOL is_load_initial_url = YES;
+	int tab_to_initial_select = -1;
+    
     for (int i = 0; i < count; ++i) {
 		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
         
@@ -106,6 +109,15 @@
         NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
         NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
         NSString *reload = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_RELOAD];
+		NSString *use_current_view_for_tab = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_USE_CURRENT_VIEW_FOR_TAB];
+        
+		
+		BOOL is_use_current_view_for_tab = NO;
+		if (use_current_view_for_tab != nil) {
+			if ([use_current_view_for_tab caseInsensitiveCompare:@"true"] == NSOrderedSame) {
+				is_use_current_view_for_tab = YES;
+            }
+        }
         
         if (!initUrl)
             initUrl = url;
@@ -115,7 +127,27 @@
             td.url = url;
             td.reload = [reload isEqualToString:@"true"];
             
-            SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect];
+			td.loaded = is_use_current_view_for_tab;
+			
+			/*if (is_use_current_view_for_tab) {
+				td.url = [[parent getCreationTimeMainView] currentLocation:-1];
+			}*/
+			
+			if (is_use_current_view_for_tab) {
+				//web_bkg_color = nil;
+				is_load_initial_url = NO;
+				tab_to_initial_select = i;
+			}
+            
+            SimpleMainView *subController = nil;
+            //SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect];
+            if (is_use_current_view_for_tab) {
+                subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect webview:[[parent getCreationTimeMainView] detachWebView]];
+            }
+            else {
+                subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect];
+            }
+            
             
 			subController.title = label;
 			//subController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -130,6 +162,18 @@
         }
     }
     
+	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
+	if (global_properties != nil) {
+		//background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
+		//selected_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_SELECTED_COLOR];
+        
+        self.on_change_tab_callback = (id<IMethodResult>)[global_properties objectForKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
+        if (self.on_change_tab_callback != nil) {
+            //[self.on_change_tab_callback release];
+        }
+	}
+    
+    
     self.itemsData = tabs;
     [tabs release];
 	
@@ -137,20 +181,33 @@
 	self.view.autoresizesSubviews = YES;
 	
     self.tabindex = 0;
-    if (initUrl){
+    //if (initUrl){
+    //    [self navigateRedirect:initUrl tab:0];
+	//	RhoRightItem *ri = [self.itemsData objectAtIndex:tabindex];
+	//	ri.loaded = YES;
+	//}
+    
+    
+	/*if (initUrl && is_load_initial_url) {
         [self navigateRedirect:initUrl tab:0];
 		RhoRightItem *ri = [self.itemsData objectAtIndex:tabindex];
 		ri.loaded = YES;
+
+    }*/
+	if (tab_to_initial_select >= 0) {
+		self.tabindex = tab_to_initial_select;
 	}
+    
+    
 	// set first tab
-	SimpleMainView* v = (SimpleMainView*)[[self.itemsData objectAtIndex:0] view];
+	/*SimpleMainView* v = (SimpleMainView*)[[self.itemsData objectAtIndex:0] view];
 	if (v != NULL) {
 		[v navigateRedirect:initUrl tab:0];
 		[self.view addSubview:v.view];
 		[self.view setNeedsLayout];
 		[v.view setNeedsDisplay];
         [self callCallback:0];
-	}
+	}*/
 	
 	return self;
 }
@@ -189,14 +246,8 @@
 -(void)callCallback:(int)new_index {
     // call callback
     if (self.on_change_tab_callback != nil) {
-        NSString* strBody = @"&rho_callback=1";
-        strBody = [strBody stringByAppendingString:@"&tab_index="];
-        strBody = [strBody stringByAppendingString:[NSString stringWithFormat:@"%d",new_index]];
-        const char* cb = [self.on_change_tab_callback UTF8String];
-        const char* b = [strBody UTF8String];
-        char* norm_url = rho_http_normalizeurl(cb);
-        rho_net_request_with_data(norm_url, b);
-        rho_http_free(norm_url);
+        NSMutableDictionary* result = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSString stringWithFormat:@"%d", new_index], @"tab_index", [NSString stringWithFormat:@"%d", new_index], @"tabIndex", nil];
+        [self.on_change_tab_callback setResult:result];
     }
 }
 
@@ -285,9 +336,15 @@
 	tabindex = index;
     RhoRightItem *ri = [self.itemsData objectAtIndex:tabindex];
     if (!ri.loaded || ri.reload) {
-        const char *s = [ri.url UTF8String];
-        rho_rhodesapp_load_url(s);
-        ri.loaded = YES;
+        if ( !ri.loaded )
+        {
+            const char *s = [ri.url UTF8String];
+            rho_rhodesapp_load_url(s);
+            ri.loaded = YES;
+        }else if (ri.reload)
+        {
+            rho_webview_refresh(tabindex);
+        }
     }
 	if (cur_v == new_v) {
 		return;
