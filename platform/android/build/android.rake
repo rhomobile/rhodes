@@ -28,6 +28,7 @@ require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
+load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
 require 'tempfile'
 
