@@ -4,7 +4,6 @@
     <MODULE name="AudioCapture" parent="Rho">
         <HELP_OVERVIEW>Audio capture API</HELP_OVERVIEW>
         <MORE_HELP></MORE_HELP>
-    
         <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
         <PLATFORM>Android</PLATFORM>
 
@@ -16,56 +15,55 @@
         <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
 
             <ALIASES>
-			    <ALIAS new="codec" existing="encoder" deprecated="true"/>
+                <ALIAS new="codec" existing="encoder" deprecated="true"/>
                 <ALIAS new="duration" existing="maxDuration" deprecated="true"/>
             </ALIASES>
 
             <PROPERTY name="source" type="STRING">
-                <DESC>audio source</DESC>
+                <DESC>Audio source.</DESC>
                 <VALUES>
                     <VALUE constName="MIC" value="mic">
-                        <DESC>embedded microphone</DESC>
+                        <DESC>Embedded microphone.</DESC>
                     </VALUE>
                     <VALUE constName="CAMCORDER" value="camcorder">
-                        <DESC>microphone with same orientation as camera if available, the main device microphone otherwise</DESC>
+                        <DESC>Microphone with same orientation as camera if available, the main device microphone otherwise.</DESC>
                     </VALUE>
                     <VALUE constName="CALL_FULLDUPLEX" value="call_fullduplex">
-                        <DESC>voice call uplink and downlink audio</DESC>
+                        <DESC>Voice call uplink and downlink audio.</DESC>
                     </VALUE>
                     <VALUE constName="CALL_DOWNLINK" value="call_downlink">
-                        <DESC>voice call downlink audio</DESC>
+                        <DESC>Voice call downlink audio.</DESC>
                     </VALUE>
                     <VALUE constName="CALL_UPLINK" value="call_uplink">
-                        <DESC>voice call uplink audio</DESC>
+                        <DESC>Voice call uplink audio.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="encoder" type="STRING">
-                <DESC>Encoder to compress recorded audio</DESC>
+                <DESC>Encoder to compress recorded audio.</DESC>
                 <VALUES>
                     <VALUE constName="ENCODER_AAC_LC" value="AAC_LC">
-                        <DESC>AAC low complexity</DESC></VALUE>
+                        <DESC>AAC low complexity.</DESC></VALUE>
                     <VALUE constName="ENCODER_AAC" value="AAC">
                         <DESC>AAC low complexity (same as AAC_LC)</DESC></VALUE>
                     <VALUE constName="ENCODER_AAC_ELD" value="AAC_ELD">
-                        <DESC>AAC enhanced low delay</DESC></VALUE>
+                        <DESC>AAC enhanced low delay.</DESC></VALUE>
                     <VALUE constName="ENCODER_AAC_HE" value="AAC_HE">
-                        <DESC>AAC high efficiency</DESC></VALUE>
+                        <DESC>AAC high efficiency.</DESC></VALUE>
                     <VALUE constName="ENCODER_AMR_NB" value="AMR_NB">
-                        <DESC>AMR narrow-band</DESC></VALUE>
+                        <DESC>AMR narrow-band.</DESC></VALUE>
                     <VALUE constName="ENCODER_AMR_WB" value="AMR_WB">
-                        <DESC>AMR wide-band</DESC></VALUE>
+                        <DESC>AMR wide-band.</DESC></VALUE>
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="maxDuration" type="INTEGER">
-                <DESC>Maximum duration (in milliseconds) of the recording session. Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 20000 milli seconds.</DESC>
+                <DESC>Maximum duration (in milliseconds) of the recording session. Specifies the number of milliseconds of audio to capture by defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milliseconds is specified, the interval will be defaulted to 20000 milliseconds.</DESC>
             </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
                 <DESC>Sets the destination path and name for the captured file. </DESC>
             </PROPERTY>
         </PROPERTIES>
         <METHODS>
-
             <METHOD name="start" hasCallback="optional" runInThread="separate">
                 <PARAMS>
                     <PARAM name="props" type="HASH" propertyHash="true">
@@ -74,19 +72,14 @@
                 </PARAMS>
                 <DESC>Starts capturing audio until either 'stop' is received, or 'duration' is reached (i.e. until the buffer is full).</DESC>
             </METHOD>
-    
             <METHOD name="stop" runInThread="none">
-                <DESC>stop audio recording</DESC>
+                <DESC>Stop audio recording.</DESC>
             </METHOD>
-    
             <METHOD name="cancel" runInThread="none">
-                <DESC>cancel audio recording</DESC>
+                <DESC>Cancel audio recording.</DESC>
             </METHOD>
-
         </METHODS>
-        
         <USER_OVERVIEW>
         </USER_OVERVIEW>
-
     </MODULE>
-</API>    
+</API>

@@ -53,6 +53,6 @@
     </ClInclude>
     <ClInclude Include="generated\lib\NativeToolbarRuntime.h">
       <Filter>wp8\lib</Filter>
-    </ClCompile>
+    </ClInclude>
   </ItemGroup>
 </Project>

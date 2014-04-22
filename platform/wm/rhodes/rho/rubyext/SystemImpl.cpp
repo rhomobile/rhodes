@@ -67,10 +67,7 @@ extern "C"
 {
 
 #if defined(OS_WINDOWS_DESKTOP)
-const char* rho_sys_win32_getWebviewFramework()
-{
-    return "WEBKIT/" QTWEBKIT_VERSION_STR;
-}
+const char* rho_sys_qt_getWebviewFramework();
 #endif
 
 bool rho_rhosim_window_closed()
@@ -753,7 +750,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	if (strcasecmp("webview_framework",szPropName) == 0)
 	{
 #if defined(OS_WINDOWS_DESKTOP)
-		*resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
+		*resValue = rho_ruby_create_string(rho_sys_qt_getWebviewFramework());
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 		*resValue = rho_ruby_create_string("WEBKIT/MOTOROLA");
 #else

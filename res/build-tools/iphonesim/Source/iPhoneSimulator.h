@@ -31,7 +31,8 @@
   */
 
 #import <Foundation/Foundation.h>
-#import <iPhoneSimulatorRemoteClient/iPhoneSimulatorRemoteClient.h>
+//#import <iPhoneSimulatorRemoteClient/iPhoneSimulatorRemoteClient.h>
+#import <DVTiPhoneSimulatorRemoteClient/DVTiPhoneSimulatorRemoteClient.h>
 
 @interface iPhoneSimulator : NSObject <DTiPhoneSimulatorSessionDelegate> {
 @private

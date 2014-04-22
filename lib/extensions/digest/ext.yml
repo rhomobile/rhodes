@@ -1,2 +1,4 @@
 entry: Init_digest
 libraries: [ "digest" ]
+android:
+  exttype: rakefile

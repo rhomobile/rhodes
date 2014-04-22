@@ -25,8 +25,8 @@
 *------------------------------------------------------------------------*/
 
 #import <UIKit/UIKit.h>
-#import "RhoMainView.h"
-#import "RhoViewController.h"
+#import "../RhoMainView.h"
+#import "../RhoViewController.h"
 
 @class SignatureDelegate;
 @class SignatureView;

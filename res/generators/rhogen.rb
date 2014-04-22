@@ -252,6 +252,11 @@ module Rhogen
       template.source = 'app/Settings/wait.erb'
       template.destination = "#{name}/app/Settings/wait.erb"
     end
+    
+    file :androidmanifesterb do |file|
+      file.source = 'AndroidManifest.erb'
+      file.destination = "#{name}/AndroidManifest.erb"
+    end
 
 =begin
     directory :settings do |directory|
@@ -544,6 +549,122 @@ module Rhogen
 
   end
 
+  class IphoneProjectPrebuildGenerator < BaseGenerator
+
+    @@noapp = false
+
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'iphone_project')
+    end
+
+    desc <<-DESC
+      Adds XCode application project with using of prebuild data to Rhodes based application.
+    DESC
+
+    first_argument :name, :required => true, :desc => 'application name'
+    second_argument :rhodes_root, :required => true, :desc => 'path to rhodes'
+
+    def namefixed
+      return name.downcase.split(/[^a-zA-Z0-9]/).map { |w| w.downcase }.join("")
+    end
+
+    def namecamelcase
+      return name.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize_first) }.join("")
+    end
+
+    def rhodes_root_path
+      return rhodes_root
+    end
+
+    directory :root do |directory|
+      @options[:force] = true
+      directory.source = 'root'
+      directory.destination = 'project/iphone'
+      if File.exists?(directory.destination)
+        directory.options[:skip] = 'project/iphone/toremoved'
+      end
+    end
+
+    directory :classes do |directory|
+      #@options[:force] = true
+      directory.source = 'Classes'
+      directory.destination = 'project/iphone/Classes'
+      if File.exists?(directory.destination)
+        directory.destination = 'project/iphone/toremoved'
+      end
+    end
+
+    directory :resources do |directory|
+      #@options[:force] = true
+      directory.source = 'Resources'
+      directory.destination = 'project/iphone/Resources'
+      if File.exists?(directory.destination)
+        directory.destination = 'project/iphone/toremoved'
+      end
+    end
+
+    directory :settings do |directory|
+      #@options[:force] = true
+      directory.source = 'Settings.bundle'
+      directory.destination = 'project/iphone/Settings.bundle'
+      if File.exists?(directory.destination)
+        directory.destination = 'project/iphone/toremoved'
+      end
+    end
+
+    template :project do |template|
+      #@options[:force] = true
+      #@options[:skip] = true
+      template.source = 'Bremen_prebuild.xcodeproj/project.pbxproj'
+      template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
+      if File.exists?(template.destination)
+        template.destination = 'project/iphone/toremovef'
+      end
+    end
+
+    $build_script_full_path = ''
+
+    def callback_after_make_build(template)
+      # change atribbutes in build script file to executable
+      File.chmod(0755, $build_script_full_path)
+    end
+
+
+    template :build do |template|
+      @options[:force] = true
+      template.source = 'buildRhoBundle'
+      template.destination = "project/iphone/buildRhoBundle"
+      $build_script_full_path = template.destination
+      template.options = {:after => :callback_after_make_build}
+    end
+
+    template :rhodes_project_02 do |template|
+      template.options[:force] = true
+      template.source = 'Rhodes/RhodesBaseDelegate.h'
+      template.destination = "project/iphone/Rhodes/RhodesBaseDelegate.h"
+    end
+
+    template :rhodes_project_03 do |template|
+      template.options[:force] = true
+      template.source = 'Rhodes/RhodesBaseDelegate.m'
+      template.destination = "project/iphone/Rhodes/RhodesBaseDelegate.m"
+    end
+
+
+    def attributes?
+      self.attributes && !self.attributes.empty?
+    end
+
+
+
+  end
+
+
+
+
+
+
+
   class ExtensionGenerator < BaseGenerator
 
     @@noapp = false
@@ -789,6 +910,22 @@ module Rhogen
     template :extension_wp8_lib_props do |template|
       template.source = 'extensions/montana/ext/platform/wp8/MontanaLib.props'
       template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Lib.props"
+    end
+
+
+    template :extension_qt_rakefile do |template|
+      template.source = 'extensions/montana/ext/platform/qt/Rakefile'
+      template.destination = "extensions/#{name}/ext/platform/qt/Rakefile"
+    end
+
+    template :extension_qt_pro do |template|
+      template.source = 'extensions/montana/ext/platform/qt/Montana.pro'
+      template.destination = "extensions/#{name}/ext/platform/qt/#{namecamelcase}.pro"
+    end
+
+    template :extension_qt_src_impl do |template|
+      template.source = 'extensions/montana/ext/platform/qt/src/Montana_impl.cpp'
+      template.destination = "extensions/#{name}/ext/platform/qt/src/#{namecamelcase}_impl.cpp"
     end
 
 
@@ -2897,7 +3034,14 @@ module Rhogen
       # add items from item_dict to current_module
       def update_current_module(current_module, item_dict, section, subsection)
         xml_module_item_methods = current_module.elements[section]
-        existing_methods = current_module.get_elements("#{section}/#{subsection}")
+        existing_methods = []
+
+        #check if xml_module_item_methods section exists
+        if xml_module_item_methods.nil?
+          xml_module_item_methods = current_module.add_element(section)  
+        else
+          existing_methods = current_module.get_elements("#{section}/#{subsection}")
+        end
 
         # since we want to get base methods be be first, we need to remove existing methods and then insert them back in the last turn
         existing_methods.each do |method|
@@ -2905,9 +3049,11 @@ module Rhogen
         end
 
         list_size = item_dict.size
+        # generate key/value pairs
         item_list = item_dict.sort_by { |k, v| v[:index] + (v[:current] ? list_size : 0) }
 
         item_list.each do |item|
+          # get sorted value, not the key
           xml_module_item_methods.add_element item[1][:item]
         end
       end
@@ -3381,6 +3527,7 @@ module Rhogen
   add :api, ApiGenerator
   add :api_test, ApiMegatestGenerator
   add :iphone_project, IphoneProjectGenerator
+  add :iphone_project_prebuild, IphoneProjectPrebuildGenerator
 
 end
 

@@ -37,7 +37,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_E
   (JNIEnv *env, jclass, jstring jTag, jstring jMsg)
 {
     //RAWTRACE("Error");
-    RAWLOGC_ERROR(rho_cast<std::string>(env, jTag).c_str(), rho_cast<std::string>(env, jMsg).c_str());
+    const char *tag = env->GetStringUTFChars(jTag, 0);
+    const char *msg = env->GetStringUTFChars(jMsg, 0);
+    RAWLOGC_ERROR(tag, msg);
+    env->ReleaseStringUTFChars(jTag, tag);
+    env->ReleaseStringUTFChars(jMsg, msg);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_W
@@ -66,10 +70,9 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_D
   (JNIEnv *env, jclass, jstring jTag, jstring jMsg)
 {
 #ifdef _DEBUG
-    //RAWTRACE("Debug");
     const char *tag = env->GetStringUTFChars(jTag, 0);
     const char *msg = env->GetStringUTFChars(jMsg, 0);
-    RAWLOGC_INFO(tag, msg);
+    RAWTRACEC(tag, msg);
     env->ReleaseStringUTFChars(jTag, tag);
     env->ReleaseStringUTFChars(jMsg, msg);
 #endif

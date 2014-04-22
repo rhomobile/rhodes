@@ -43,11 +43,11 @@ extern "C" void recursiveDeleteDirectory(const std::wstring &path);
 #ifndef S_ISREG
 #   define S_ISREG(m) ((m & S_IFMT) == S_IFREG)
 #endif
-#ifndef RHO_NO_RUBY
+//#ifndef RHO_NO_RUBY
 extern "C"{
 #include "win32/dir.h"
 }
-#endif //RHO_NO_RUBY
+//#endif //RHO_NO_RUBY
 #define dirent direct
 #endif
 
@@ -623,7 +623,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 bool CRhoFile::listFolderEntries( const String& path, Vector<String> &entries)
 {
     bool ret = false;
-#ifndef RHO_NO_RUBY
+//#ifndef RHO_NO_RUBY
     DIR *dp;
     struct dirent *ep;
     dp = opendir (path.c_str());
@@ -645,7 +645,7 @@ bool CRhoFile::listFolderEntries( const String& path, Vector<String> &entries)
         
         closedir(dp);
     }
-#endif //RHO_NO_RUBY
+//#endif //RHO_NO_RUBY
     return ret;
 }
     

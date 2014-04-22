@@ -639,7 +639,7 @@ const rho::String& CRhodesModule::getAppName()
             m_strAppName = path.substr( nStart, nEnd-nStart+1);
         }
 #else
-        m_strAppName = get_app_build_config_item("name");
+        m_strAppName = RHOCONF().getString("app_name");
 #endif
     }
 
@@ -761,6 +761,7 @@ typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
 
 extern "C" void rho_wm_impl_CheckLicense()
 {   
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     int nRes = 0;
     LOG(INFO) + "Start license_rc.dll";
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
@@ -820,6 +821,7 @@ extern "C" void rho_wm_impl_CheckLicense()
 
     if ( !nRes )
         ::PostMessage( getMainWnd(), WM_SHOW_LICENSE_WARNING, 0, 0);
+#endif
 }
 
 static inline char *

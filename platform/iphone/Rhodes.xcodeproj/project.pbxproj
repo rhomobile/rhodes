@@ -1,0 +1,546 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FA2A0E9D183C415A00C11E7F /* RhodesBaseDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */; };
+		FAAFCD76183C40030068F3D3 /* libMotorolaLicence.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAAFCD75183C40030068F3D3 /* libMotorolaLicence.a */; };
+		FAED7868183C3A8100BC7028 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED7867183C3A8100BC7028 /* Foundation.framework */; };
+		FAED78C6183C3C5800BC7028 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78AA183C3B2100BC7028 /* libcurl.a */; };
+		FAED78C7183C3C5800BC7028 /* librhoappbaselib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78AD183C3B2100BC7028 /* librhoappbaselib.a */; };
+		FAED78C8183C3C5800BC7028 /* librhoextlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78B0183C3B2100BC7028 /* librhoextlib.a */; };
+		FAED78C9183C3C5800BC7028 /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78B3183C3B2100BC7028 /* librholib.a */; };
+		FAED78CA183C3C5800BC7028 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78B6183C3B2100BC7028 /* librhorubylib.a */; };
+		FAED78CB183C3C5800BC7028 /* librhosynclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78B9183C3B2100BC7028 /* librhosynclib.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FAED78A9183C3B2100BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED78A5183C3B2100BC7028 /* curl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = curl;
+		};
+		FAED78AC183C3B2100BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = RhoAppBaseLib;
+		};
+		FAED78AF183C3B2100BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = rhoextlib;
+		};
+		FAED78B2183C3B2100BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = RhoLib;
+		};
+		FAED78B5183C3B2100BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = rhorubylib;
+		};
+		FAED78B8183C3B2100BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = rhosynclib;
+		};
+		FAED78BA183C3C3900BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = rhoextlib;
+		};
+		FAED78BC183C3C3C00BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhosynclib;
+		};
+		FAED78BE183C3C3F00BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhorubylib;
+		};
+		FAED78C0183C3C4200BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = RhoLib;
+		};
+		FAED78C2183C3C4500BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = RhoAppBaseLib;
+		};
+		FAED78C4183C3C4800BC7028 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAED78A5183C3B2100BC7028 /* curl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = curl;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FAED7862183C3A8100BC7028 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		FA2A0E9B183C415A00C11E7F /* RhodesBaseDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhodesBaseDelegate.h; sourceTree = SOURCE_ROOT; };
+		FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhodesBaseDelegate.m; sourceTree = SOURCE_ROOT; };
+		FAAFCD75183C40030068F3D3 /* libMotorolaLicence.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMotorolaLicence.a; path = ../../res/libs/motorolalicence/iphone/libMotorolaLicence.a; sourceTree = SOURCE_ROOT; };
+		FAED7864183C3A8100BC7028 /* libRhodes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRhodes.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAED7867183C3A8100BC7028 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FAED7878183C3A8100BC7028 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhoextlib.xcodeproj; path = rhoextlib/rhoextlib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = rhosynclib/rhosynclib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoAppBaseLib.xcodeproj; path = RhoAppBaseLib/RhoAppBaseLib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		FAED78A5183C3B2100BC7028 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAED7861183C3A8100BC7028 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAED78C6183C3C5800BC7028 /* libcurl.a in Frameworks */,
+				FAED78C7183C3C5800BC7028 /* librhoappbaselib.a in Frameworks */,
+				FAAFCD76183C40030068F3D3 /* libMotorolaLicence.a in Frameworks */,
+				FAED78C8183C3C5800BC7028 /* librhoextlib.a in Frameworks */,
+				FAED78C9183C3C5800BC7028 /* librholib.a in Frameworks */,
+				FAED78CA183C3C5800BC7028 /* librhorubylib.a in Frameworks */,
+				FAED78CB183C3C5800BC7028 /* librhosynclib.a in Frameworks */,
+				FAED7868183C3A8100BC7028 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FAED785B183C3A8100BC7028 = {
+			isa = PBXGroup;
+			children = (
+				FAAFCD75183C40030068F3D3 /* libMotorolaLicence.a */,
+				FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */,
+				FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */,
+				FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */,
+				FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */,
+				FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */,
+				FAED78A5183C3B2100BC7028 /* curl.xcodeproj */,
+				FAED7869183C3A8100BC7028 /* Rhodes */,
+				FAED7866183C3A8100BC7028 /* Frameworks */,
+				FAED7865183C3A8100BC7028 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FAED7865183C3A8100BC7028 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAED7864183C3A8100BC7028 /* libRhodes.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAED7866183C3A8100BC7028 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FAED7867183C3A8100BC7028 /* Foundation.framework */,
+				FAED7878183C3A8100BC7028 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FAED7869183C3A8100BC7028 /* Rhodes */ = {
+			isa = PBXGroup;
+			children = (
+				FA2A0E9B183C415A00C11E7F /* RhodesBaseDelegate.h */,
+				FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */,
+			);
+			path = Rhodes;
+			sourceTree = "<group>";
+		};
+		FAED7897183C3B2100BC7028 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAED78B0183C3B2100BC7028 /* librhoextlib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAED789A183C3B2100BC7028 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAED78B9183C3B2100BC7028 /* librhosynclib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAED789D183C3B2100BC7028 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAED78B6183C3B2100BC7028 /* librhorubylib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAED78A0183C3B2100BC7028 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAED78B3183C3B2100BC7028 /* librholib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAED78A3183C3B2100BC7028 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAED78AD183C3B2100BC7028 /* librhoappbaselib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAED78A6183C3B2100BC7028 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAED78AA183C3B2100BC7028 /* libcurl.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FAED7863183C3A8100BC7028 /* Rhodes */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAED7887183C3A8100BC7028 /* Build configuration list for PBXNativeTarget "Rhodes" */;
+			buildPhases = (
+				FAED7860183C3A8100BC7028 /* Sources */,
+				FAED7861183C3A8100BC7028 /* Frameworks */,
+				FAED7862183C3A8100BC7028 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FAED78C5183C3C4800BC7028 /* PBXTargetDependency */,
+				FAED78C3183C3C4500BC7028 /* PBXTargetDependency */,
+				FAED78C1183C3C4200BC7028 /* PBXTargetDependency */,
+				FAED78BF183C3C3F00BC7028 /* PBXTargetDependency */,
+				FAED78BD183C3C3C00BC7028 /* PBXTargetDependency */,
+				FAED78BB183C3C3900BC7028 /* PBXTargetDependency */,
+			);
+			name = Rhodes;
+			productName = Rhodes;
+			productReference = FAED7864183C3A8100BC7028 /* libRhodes.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FAED785C183C3A8100BC7028 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = Rhomobile;
+			};
+			buildConfigurationList = FAED785F183C3A8100BC7028 /* Build configuration list for PBXProject "Rhodes" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = FAED785B183C3A8100BC7028;
+			productRefGroup = FAED7865183C3A8100BC7028 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = FAED78A6183C3B2100BC7028 /* Products */;
+					ProjectRef = FAED78A5183C3B2100BC7028 /* curl.xcodeproj */;
+				},
+				{
+					ProductGroup = FAED78A3183C3B2100BC7028 /* Products */;
+					ProjectRef = FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */;
+				},
+				{
+					ProductGroup = FAED7897183C3B2100BC7028 /* Products */;
+					ProjectRef = FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */;
+				},
+				{
+					ProductGroup = FAED78A0183C3B2100BC7028 /* Products */;
+					ProjectRef = FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */;
+				},
+				{
+					ProductGroup = FAED789D183C3B2100BC7028 /* Products */;
+					ProjectRef = FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */;
+				},
+				{
+					ProductGroup = FAED789A183C3B2100BC7028 /* Products */;
+					ProjectRef = FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				FAED7863183C3A8100BC7028 /* Rhodes */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		FAED78AA183C3B2100BC7028 /* libcurl.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcurl.a;
+			remoteRef = FAED78A9183C3B2100BC7028 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAED78AD183C3B2100BC7028 /* librhoappbaselib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhoappbaselib.a;
+			remoteRef = FAED78AC183C3B2100BC7028 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAED78B0183C3B2100BC7028 /* librhoextlib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhoextlib.a;
+			remoteRef = FAED78AF183C3B2100BC7028 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAED78B3183C3B2100BC7028 /* librholib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librholib.a;
+			remoteRef = FAED78B2183C3B2100BC7028 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAED78B6183C3B2100BC7028 /* librhorubylib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhorubylib.a;
+			remoteRef = FAED78B5183C3B2100BC7028 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAED78B9183C3B2100BC7028 /* librhosynclib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhosynclib.a;
+			remoteRef = FAED78B8183C3B2100BC7028 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAED7860183C3A8100BC7028 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA2A0E9D183C415A00C11E7F /* RhodesBaseDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FAED78BB183C3C3900BC7028 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhoextlib;
+			targetProxy = FAED78BA183C3C3900BC7028 /* PBXContainerItemProxy */;
+		};
+		FAED78BD183C3C3C00BC7028 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhosynclib;
+			targetProxy = FAED78BC183C3C3C00BC7028 /* PBXContainerItemProxy */;
+		};
+		FAED78BF183C3C3F00BC7028 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhorubylib;
+			targetProxy = FAED78BE183C3C3F00BC7028 /* PBXContainerItemProxy */;
+		};
+		FAED78C1183C3C4200BC7028 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhoLib;
+			targetProxy = FAED78C0183C3C4200BC7028 /* PBXContainerItemProxy */;
+		};
+		FAED78C3183C3C4500BC7028 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhoAppBaseLib;
+			targetProxy = FAED78C2183C3C4500BC7028 /* PBXContainerItemProxy */;
+		};
+		FAED78C5183C3C4800BC7028 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = curl;
+			targetProxy = FAED78C4183C3C4800BC7028 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		FAED7885183C3A8100BC7028 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FAED7886183C3A8100BC7028 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FAED7888183C3A8100BC7028 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/Rhodes.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					../../res/libs/motorolalicence/iphone,
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../../platform/shared/ruby/iphone ../../platform/shared/ruby/include ../../platform/shared/curl/include ../../platform/shared/ ../../platform/shared/syncengine ../../platform/shared/logging ../../platform/shared/common ../../platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
+				VALID_ARCHS = "armv7 i386";
+			};
+			name = Debug;
+		};
+		FAED7889183C3A8100BC7028 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/Rhodes.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					../../res/libs/motorolalicence/iphone,
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../../platform/shared/ruby/iphone ../../platform/shared/ruby/include ../../platform/shared/curl/include ../../platform/shared/ ../../platform/shared/syncengine ../../platform/shared/logging ../../platform/shared/common ../../platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
+				VALID_ARCHS = "armv7 i386";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FAED785F183C3A8100BC7028 /* Build configuration list for PBXProject "Rhodes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAED7885183C3A8100BC7028 /* Debug */,
+				FAED7886183C3A8100BC7028 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAED7887183C3A8100BC7028 /* Build configuration list for PBXNativeTarget "Rhodes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAED7888183C3A8100BC7028 /* Debug */,
+				FAED7889183C3A8100BC7028 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FAED785C183C3A8100BC7028 /* Project object */;
+}

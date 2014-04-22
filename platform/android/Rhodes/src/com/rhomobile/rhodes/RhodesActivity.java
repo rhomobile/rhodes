@@ -56,6 +56,7 @@ import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -196,7 +197,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         readRhoElementsConfig();
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
-        notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
     }
 
@@ -208,7 +208,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         return view;
     }
 	
-	private void notifyUiCreated() {
+	public void notifyUiCreated() {
 		RhodesService r = RhodesService.getInstance();
 		if ( r != null ) {
 			RhodesService.callUiCreatedCallback();
@@ -347,9 +347,15 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			if (r == null)
 				return false;
 			
-			MainView v = r.getMainView();
-			v.goBack();//back(v.activeTab());
-			return true;
+			// If the RhoConf setting of disable_back_button is set to 1, pretend we did something.
+			if (RhoConf.isExist("disable_back_button") && RhoConf.getInt("disable_back_button") == 1) {
+				Logger.D(TAG, "Back button pressed, but back button is disabled in RhoConfig.");
+				return true;
+			} else {
+				MainView v = r.getMainView();
+				v.goBack();//back(v.activeTab());
+				return true;
+			}
 		}
 		
 		return super.onKeyDown(keyCode, event);
@@ -385,8 +391,11 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     @Override
     public void onSplashScreenGone(SplashScreen splashScreen) {
-        ViewGroup parent = (ViewGroup)splashScreen.getSplashView().getParent();
-        parent.removeView(splashScreen.getSplashView());
+        View splashView = splashScreen.getSplashView();
+        if (splashView != null) {
+            ViewGroup parent = (ViewGroup)splashView.getParent();
+            parent.removeView(splashScreen.getSplashView());
+        }
         mMainView = splashScreen.getBackendView();
     }
 

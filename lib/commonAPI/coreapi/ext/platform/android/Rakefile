@@ -27,27 +27,58 @@ ARGS = ["-I\"#{$curdir}/generated/jni\"",
     "-I\"#{$rootdir}/platform/shared/ruby/android\"",
     "-I\"#{$rootdir}/platform/shared/ruby/generated\""]
 
-SRC = get_sources File.join($curdir, 'ext_native.files')
-OBJ = FileList.new(get_objects SRC, OBJDIR)
+OBJDIR_ARM = File.join(OBJDIR,'arm')
+OBJDIR_x86 = File.join(OBJDIR,'x86')
+OBJDIR_MIPS = File.join(OBJDIR,'mips')
 
-TARGETLIB = File.join(TARGETDIR, 'libcoreapi.a')
+SRC = get_sources File.join($curdir, 'ext_native.files')
+
+OBJ_ARM = FileList.new(get_objects(SRC, OBJDIR_ARM))
+OBJ_x86 = FileList.new(get_objects(SRC, OBJDIR_x86))
+OBJ_MIPS = FileList.new(get_objects(SRC, OBJDIR_MIPS))
+
+TARGETDIR_ARM = File.join(TARGETDIR,'armeabi')
+TARGETDIR_x86 = File.join(TARGETDIR,'x86')
+TARGETDIR_MIPS = File.join(TARGETDIR,'mips')
+
+TARGETLIB_ARM = File.join(TARGETDIR_ARM,'libcoreapi.a')
+TARGETLIB_x86 = File.join(TARGETDIR_x86,'libcoreapi.a')
+TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,'libcoreapi.a')
+
 V4JAR = File.join(TARGETDIR, 'android-support-v4.jar')
 
 cd '../../..'
 
-task :config do
-    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+namespace 'config' do
+  task :arm do
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'arm')
+  end
+  
+  task :x86 do
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'x86')
+  end
+  
+  task :mips do
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'mips')
+  end
 end
 
-directory TARGETDIR
-directory OBJDIR
+directory TARGETDIR_ARM
+directory TARGETDIR_x86
+directory TARGETDIR_MIPS
+directory OBJDIR_ARM
+directory OBJDIR_x86
+directory OBJDIR_MIPS
 
 rule '.o' => lambda {|obj| find_source(obj) } do |t|
-    Rake::Task[:config].invoke
-    cc_compile find_source(t.name), OBJDIR, ARGS or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
+  abi = File.basename(File.dirname(t.name))
+  Rake::Task["config:#{abi}"].invoke
+  cc_compile find_source(t.name), File.dirname(t.name), ARGS or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
 end
 
-task OBJ => OBJDIR
+task OBJ_ARM => OBJDIR_ARM
+task OBJ_x86 => OBJDIR_x86
+task OBJ_MIPS => OBJDIR_MIPS
 
 def find_source(objfile)
   base = File.basename(objfile, '.o')
@@ -55,14 +86,35 @@ def find_source(objfile)
   src
 end
 
-file TARGETLIB => TARGETDIR do |t|
-    Rake::Task[:config].invoke
-    cc_ar t.name, OBJ or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+file TARGETLIB_ARM => TARGETDIR_ARM do |t|
+    Rake::Task["config:arm"].invoke
+    cc_ar t.name, OBJ_ARM or raise "\e[31mCreating library failed: #{t.name}\e[0m"
 end
-multitask TARGETLIB => OBJ
+multitask TARGETLIB_ARM => OBJ_ARM
 
-file V4JAR => [TARGETDIR, :config] do
-    cp File.join(ENV['ANDROID_SDK'],'extras','android','support','v4','android-support-v4.jar'), TARGETDIR
+file TARGETLIB_x86 => TARGETDIR_x86 do |t|
+    Rake::Task["config:x86"].invoke
+    cc_ar t.name, OBJ_x86 or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_x86 => OBJ_x86
+
+file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
+    Rake::Task["config:mips"].invoke
+    cc_ar t.name, OBJ_MIPS or raise "\e[31mCreating library failed: #{t.name}\e[0m"
 end
 
-task :default => [TARGETLIB, V4JAR]
+multitask TARGETLIB_MIPS => OBJ_MIPS
+file V4JAR => [TARGETDIR] do
+    v4jar = Dir.glob(File.join(ENV['ANDROID_SDK'],'extras','android','**','v4','android-support-v4.jar'))
+    raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
+    v4jar = v4jar.first
+    cp v4jar, TARGETDIR
+end
+
+namespace 'arch' do
+  task :arm => [TARGETLIB_ARM, V4JAR]
+  task :x86 => [TARGETLIB_x86, V4JAR]
+  task :mips => [TARGETLIB_MIPS, V4JAR]
+end
+
+task :default => ["arch:arm", "arch:x86"]

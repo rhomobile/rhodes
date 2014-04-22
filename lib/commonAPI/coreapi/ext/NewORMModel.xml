@@ -1,0 +1,381 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="NewORMModel" parent="Rho">
+        <HELP_OVERVIEW>NewORMModel CoreAPI module</HELP_OVERVIEW>
+        <MORE_HELP>New implementation of the RHOM Model.</MORE_HELP>
+
+        <TEMPLATES>
+            <PROPERTY_BAG/>
+        </TEMPLATES>
+
+         <PROPERTIES >
+            <DESC>List of properties supported by instance of object.</DESC>
+            <PROPERTY name="loaded" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag" >
+                <DESC>Returns true if model is loaded.</DESC>
+            </PROPERTY>
+            <PROPERTY name="model_name" type="STRING" usePropertyBag="accessorsViaPropertyBag" >
+                <DESC>Returns model's name.</DESC>
+            </PROPERTY>
+            <PROPERTY name="sync_type" type="STRING" usePropertyBag="accessorsViaPropertyBag" default="none" >
+                <DESC>Returns model's Sync type.</DESC>
+            </PROPERTY>
+            <PROPERTY name="sync_priority" type="INTEGER" usePropertyBag="accessorsViaPropertyBag" default="1000" >
+                <DESC>Returns model's Sync Priority.</DESC>
+            </PROPERTY>
+            <PROPERTY name="partition" type="STRING" usePropertyBag="accessorsViaPropertyBag" >
+                <DESC>Returns model's Db partition.</DESC>
+            </PROPERTY>
+            <PROPERTY name="source_id" type="INTEGER" usePropertyBag="accessorsViaPropertyBag" >
+                <DESC>Returns model's source_id.</DESC>
+            </PROPERTY>
+            <PROPERTY name="fixed_schema" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag">
+                <DESC>Returns whether the model's type is fixed schema.</DESC>
+            </PROPERTY>
+            <PROPERTY name="freezed" type="BOOLEAN" usePropertyBag="accessorsViaPropertyBag">
+                <DESC>Returns whether the model is frozen.</DESC>
+            </PROPERTY>
+            <PROPERTY name="associations" type="STRING" usePropertyBag="accessorsViaPropertyBag">
+                <DESC>Returns model's associations.</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS>
+            <METHOD name="enumerate" access="STATIC">
+                <RETURN type="ARRAY">
+                    <DESC>Array of NewORMModel objects.</DESC>
+                    <PARAM type="SELF_INSTANCE"/>
+                </RETURN>
+            </METHOD>
+            <METHOD name="getModel" access="STATIC">
+                <PARAMS>
+                    <PARAM name="modelName" type="STRING">
+                        <DESC>Name of the model you want returned.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>NewORMModel object.</DESC>
+                    <PARAM type="SELF_INSTANCE"/>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="init" constructor="true">
+                <DESC>Initializes new model's instance.</DESC>
+                <PARAMS>
+                    <PARAM name="modelName" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="initModel">
+                <DESC>Initializes model's internal DB.</DESC>
+            </METHOD>
+
+            <METHOD name="setBelongsTo">
+                <DESC>Adds 'belongs_to' relationship for the model.</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                    <PARAM name="sourceName" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="getBelongsTo">
+                <DESC>Returns info about model's relationships with other models.</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="set">
+                <DESC>Sets model's property to value with additional processing for :sync property.</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                    <PARAM name="propertyValue" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="enable">
+                <DESC>Sets model's Boolean property to true (enables model's property)</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setModelProperty">
+                <DESC>Initializes new model's field property.</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                    <PARAM name="propertyType" type="STRING"/>
+                    <PARAM name="propOption" type="STRING" default="">
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="getModelProperty">
+                <DESC>Returns info about model's field property.</DESC>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="setSchemaIndex">
+                <DESC>Initializes new model's schema index.</DESC>
+                <PARAMS>
+                    <PARAM name="indexName" type="STRING"/>
+                    <PARAM name="indexCols" type="ARRAY"/>
+                    <PARAM name="is_unique" type="BOOLEAN"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="destroy" destructor="true">
+                <DESC>Destroys model's instance.</DESC>
+            </METHOD>
+
+            <METHOD name="createObject">
+                <DESC>Initializes model's object and stores it in the DB.</DESC>
+                <PARAMS>
+                    <PARAM name="attrs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="createInstance">
+                <DESC>Initializes model's object.</DESC>
+                <PARAMS>
+                    <PARAM name="attrs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="anyChangedObjects">
+                <DESC>Checks whether the model has any changed objects.</DESC>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="hasChanges">
+                <DESC>Checks whether the object has any changes.</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="canModify">
+                <DESC>Checks whether the object can be modified.</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="updateObject">
+                <DESC>Updates object's attributes in the DB.</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="oldAttrs" type="HASH"/>
+                    <PARAM name="newAttrs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="saveObject">
+                <DESC>Saves (creates if necessary or updates if already exists) object's attributes in the DB.</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="attrs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="deleteObject">
+                <DESC>Deletes object's attributes from the DB.</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="deleteObjects">
+                <DESC>Deletes all object's according to specified conditions.</DESC>
+                <PARAMS>
+                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="deleteObjectsPropertyBagByCondHash">
+                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions.</DESC>
+                <PARAMS>
+                    <PARAM name="conditions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="deleteObjectsPropertyBagByCondArray">
+                <DESC>Deletes all objects for the given Property Bag model according to the specified conditions.</DESC>
+                <PARAMS>
+                    <PARAM name="conditions" type="STRING"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="getCount">
+                <DESC>Returns total number of objects for the model.</DESC>
+                <RETURN type="INTEGER"/>
+            </METHOD>
+
+            <METHOD name="getBackendRefreshTime">
+                <DESC>Returns time string when the source has been synced.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="findObjects">
+                <DESC>Returns array of objects for the given model queried according to the specified conditions.</DESC>
+                <PARAMS>
+                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="selectAttrs" type="ARRAY"/>
+                    <PARAM name="orderAttrs" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="findObjectsPropertyBagByCondHash">
+                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions.</DESC>
+                <PARAMS>
+                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="conditions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="selectAttrs" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="findObjectsPropertyBagByCondArray">
+                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions.</DESC>
+                <PARAMS>
+                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="conditions" type="STRING"/>
+                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="selectAttrs" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="find_by_sql">
+                <DESC>Returns array of objects for the given model queried according to the specified SQL.</DESC>
+                <PARAMS>
+                    <PARAM name="sqlQuery" type="STRING"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="validateFreezedAttribute">
+                <DESC>Validates object's frozen attribute.</DESC>
+                <PARAMS>
+                    <PARAM name="attrName" type="STRING"/>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="validateFreezedAttributes">
+                <DESC>Validates all object's frozen attributes.</DESC>
+                <PARAMS>
+                    <PARAM name="attrHash" type="HASH"/>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="buildComplexWhereCond">
+                <DESC>Aux function.</DESC>
+                <PARAMS>
+                    <PARAM name="attrKey" type="STRING"/>
+                    <PARAM name="attrValues" type="ARRAY"/>
+                    <PARAM name="valOp" type="STRING"/>
+                    <PARAM name="valFunc" type="STRING"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="buildFindLimits">
+                <DESC>Aux function.</DESC>
+                <PARAMS>
+                    <PARAM name="whatArg" type="STRING"/>
+                    <PARAM name="hashArgs" type="HASH"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="buildFindOrder">
+                <DESC>Aux function.</DESC>
+                <PARAMS>
+                    <PARAM name="order_attrs" type="ARRAY"/>
+                    <PARAM name="order_ops" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="buildSimpleWhereCond">
+                <DESC>Aux function.</DESC>
+                <PARAMS>
+                    <PARAM name="what" type="STRING"/>
+                    <PARAM name="conditions" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="clear" access="STATIC">
+                <DESC>Very, very dangerous method - only to be used in specs!!!</DESC>
+            </METHOD>
+
+            <METHOD name="onSyncDeleteError">
+                <DESC>Handles sync delete errors for the object.</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="attrHash" type="HASH"/>
+                    <PARAM name="action" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="onSyncUpdateError">
+                <DESC>Handles sync update errors for the object.</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="attrHash" type="HASH"/>
+                    <PARAM name="rollbackHash" type="HASH"/>
+                    <PARAM name="action" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="onSyncCreateError">
+                <DESC>Handles sync create errors.</DESC>
+                <PARAMS>
+                    <PARAM name="objects" type="ARRAY"/>
+                    <PARAM name="action" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="pushChanges">
+                <DESC>Pushes all changes for the source.</DESC>
+            </METHOD>
+
+            <ALIASES>
+                <ALIAS new="count" existing="getCount"/>
+                <ALIAS new="backend_refresh_time" existing="getBackendRefreshTime"/>
+            </ALIASES>
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>

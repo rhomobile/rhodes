@@ -45,6 +45,7 @@ import android.webkit.URLUtil;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.CookieSyncManager;
 
 public class RhoWebViewClient extends WebViewClient
 {
@@ -108,7 +109,8 @@ public class RhoWebViewClient extends WebViewClient
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
 
         RhoExtManager.getImplementationInstance().onNavigateComplete(view, url);
-        
+        //CookieSyncManager.getInstance().sync();
+
         super.onPageFinished(view, url);
     }
     

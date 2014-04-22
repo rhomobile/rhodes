@@ -15,7 +15,7 @@
 }
 
 -(id<I<%= $cur_module.name %>>) get<%= $cur_module.name %>ByID:(NSString*)ID {
-    <%= $cur_module.name %>* obj = (<%= $cur_module.name %>*)[m<%= $cur_module.name %>Instances objectForKey:ID];
+    id<I<%= $cur_module.name %>> obj = (<%= $cur_module.name %>*)[m<%= $cur_module.name %>Instances objectForKey:ID];
     if (obj == nil) {
         obj = [self create<%= $cur_module.name %>ByID:ID];
         [m<%= $cur_module.name %>Instances setObject:obj forKey:ID];

@@ -90,7 +90,7 @@ public:
 #endif //OS_ANDROID
 
     void set(const rho::String& res){ m_strRes = res;  setType(eString); }
-    void setJSON(const rho::String& res){ m_strJSONRes = res;  setType(eJSON);}
+    void setJSON(const rho::String& res);
     void set(rho::String::const_pointer res){ m_strRes = res;  setType(eString); }
 
     void set(const rho::Vector<rho::String>& res){ m_arStrRes = res;  setType(eStringArray); }

@@ -26,10 +26,11 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import "RhoDelegate.h"
+#import "../RhoDelegate.h"
 #import "SignatureView.h"
 #import "SignatureViewController.h"
 #include "SignatureParam.h"
+#import "../../../shared/api_generator/iphone/IMethodResult.h"
 
 @interface SignatureDelegate : RhoDelegate {
 	SignatureViewController* signatureViewController;

@@ -1,0 +1,3 @@
+ext/sha2.c
+ext/sha2init.c
+ext/sha2ossl.c

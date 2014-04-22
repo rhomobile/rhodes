@@ -2,73 +2,73 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="ScreenOrientation" parent="Rho">
-        <HELP_OVERVIEW>The ScreenOrientation Module is used to control the screen orientation/layout and register to receive an event when it changes.</HELP_OVERVIEW>
+        <HELP_OVERVIEW>The ScreenOrientation Module is used to control the screen orientation / layout and register to receive an event when it changes.</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
-In order to use this API you must include the following extension in your `build.yml`
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`.
     :::ruby
     extensions: ["screenorientation"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
-    
+
         <PROPERTIES access="STATIC">
-            <DESC>Properties used to configure Screen Orientation module</DESC>
+            <DESC>Properties used to configure Screen Orientation module.</DESC>
             <PROPERTY name="autoRotate" type="BOOLEAN" access="STATIC" generateAccessors="true" default="true">
-                <DESC>Enables or Disables autorotation of the screen orientation when the device is rotated. For Windows Mobile/CE devices, support is limited to only Motorola Solutions devices with IST Sensor support.</DESC>
+                <DESC>Enables or Disables auto-rotation of the screen orientation when the device is rotated. For Windows Mobile/CE devices, support is limited to only Motorola Solutions devices with IST Sensor support.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
 
         <METHODS access="STATIC">
             <METHOD name="normal" runInThread="module">
-                <DESC>Sets the screen orientation to default device orientation</DESC>
+                <DESC>Sets the screen orientation to default device orientation.</DESC>
                 <PLATFORM>Android, WM</PLATFORM>
             </METHOD>
-			<METHOD name="rightHanded" runInThread="module">
-                <DESC>Sets the screen orientation to righthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
+
+            <METHOD name="rightHanded" runInThread="module">
+                <DESC>Sets the screen orientation to right-handed orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
                 <PLATFORM>Android, WM</PLATFORM>
             </METHOD>
+
             <METHOD name="leftHanded" runInThread="module">
-                <DESC>Sets the screen orientation to lefthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
+                <DESC>Sets the screen orientation to left-handed orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
                 <PLATFORM>Android, WM</PLATFORM>
             </METHOD>
+
             <METHOD name="upsideDown" runInThread="module">
                 <DESC>Sets the screen orientation to upside down, useful if presenting the device to a customer to obtain a signature.</DESC>
                 <PLATFORM>Android, WM</PLATFORM>
-            </METHOD>			
-			<METHOD name="setScreenOrientationEvent" hasCallback="mandatory" runInThread="module">
-				<DESC>Sets the callback to be called when a screen orientation event occurres</DESC>
+            </METHOD>
+
+            <METHOD name="setScreenOrientationEvent" hasCallback="mandatory" runInThread="module">
+                <DESC>Sets the callback to be called when a screen orientation event occurs.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
-				<CALLBACK type="STRING">
-					<DESC>Current orientation of the screen. The orientation is reported as normal, leftHanded, rightHanded or upsideDown. If auto rotation is disabled - real rotating of device do not produce an event. The event occurs only for real changing of screen orientation.</DESC>
-				</CALLBACK>
-			</METHOD>
+                <CALLBACK type="STRING">
+                    <DESC>Current orientation of the screen. The orientation is reported as normal, leftHanded, rightHanded or upsideDown. If auto rotation is disabled - real rotating of device do not produce an event. The event occurs only for real changing of screen orientation.</DESC>
+                </CALLBACK>
+            </METHOD>
         </METHODS>
-        
+
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
             <![CDATA[]]>
-    
         </USER_OVERVIEW>
+
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-         <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
-         <EXAMPLES >
-           <EXAMPLE title="Detect screen orientation changes">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   Detect when the device changes orientation
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
+        <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+        
+        <EXAMPLES>
+            <EXAMPLE title="Detect screen orientation changes">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>Detect when the device changes orientation.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
 def start_detecting_orientation_changes
   Rho::ScreenOrientation.setScreenOrientationEvent(url_for(:action => :orientation_callback))
 end
@@ -77,9 +77,8 @@ def orientation_callback
   Alert.show_popup("The screen changed orientation")
 end
 ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
+                            </RUBY>
+                            <JAVASCRIPT><![CDATA[
 function start_detecting_orientation_changes(){
   ScreenOrientation.setScreenOrientationEvent(orientation_callback)
 }
@@ -88,24 +87,19 @@ function orientation_callback(){
     
   Alert.show_popup("The screen changed orientation")
 }
-
                    ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-
-           <EXAMPLE title="Change screen orientation">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   Set the screen orientation programmatically. Particularly useful in a tablet: before capturing a signature, set the orientation to upside-down so that the interface will look right from the signer's point of view without having to physically rotate the device
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+            
+            <EXAMPLE title="Change screen orientation">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>Set the screen orientation programmatically. Particularly useful in a tablet: before capturing a signature, set the orientation to upside-down so that the interface will look right from the signer's point of view without having to physically rotate the device.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
 def capture_signature_with_attention_to_details
     # Set screen orientation to upside down
     Rho::ScreenOrientation.upsideDown
@@ -121,10 +115,8 @@ def signature_callback
     Rho::ScreenOrientation.normal
 end
                    ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
-
+                            </RUBY>
+                            <JAVASCRIPT><![CDATA[
 function capture_signature_with_attention_to_details() {
     // Set screen orientation to upside down
     Rho.ScreenOrientation.upsideDown();
@@ -141,45 +133,37 @@ function signature_callback(params) {
     Rho.ScreenOrientation.normal();
 }
                    ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-           <EXAMPLE title="Enable / disable auto rotate">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   Enable / disable automatic rotation of the screen according to device orientation
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+
+            <EXAMPLE title="Enable / disable auto rotate">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>Enable / disable automatic rotation of the screen according to device orientation.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
 # Enable autorotate
 Rho::ScreenOrientation.autoRotate=true
 
 # Disable autorotate
 Rho::ScreenOrientation.autoRotate=false
                    ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
+                            </RUBY>
+                            <JAVASCRIPT><![CDATA[
 // Enable autorotate
 Rho.ScreenOrientation.autoRotate=true;
 
 // Disable autorotate
 Rho.ScreenOrientation.autoRotate=false;
                    ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-           
-
-                     
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
         </EXAMPLES>
-
     </MODULE>
-</API>    
+</API>

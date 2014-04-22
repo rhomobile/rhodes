@@ -261,9 +261,39 @@ void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bo
     }
 }
 
+void CAppMenu::setAppBackUrlWithJSONItems( const rho::Vector<rho::String>& arMenu )
+{
+    RHODESAPP().setAppBackUrl("");
+    
+    for (int i = 0; i < (int)arMenu.size(); i++)
+    {
+        rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
+        String label, action;
+        
+        
+        while(!oIter.isEnd())
+        {
+            String strKey = oIter.getCurKey();
+            String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
+            
+            if (strKey == g_labelTag)
+                label = strValue;
+            
+            if (strKey == g_actionTag)
+                action = strValue;
+            
+            oIter.next();
+        }
+        
+        if ( strcasecmp( label.c_str(), "back" )==0 && strcasecmp( action.c_str(), "back" )!=0 ) {
+            RHODESAPP().setAppBackUrl(action);
+        }
+    }
+}
+
 void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems, bool bLeftMenu)
 {
-    synchronized(m_mxAppMenu) 
+    synchronized(m_mxAppMenu)
 	{
         if (bLeftMenu)
             arAppMenuItems = m_arAppLeftMenuItems; 

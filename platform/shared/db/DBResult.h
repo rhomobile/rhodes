@@ -130,6 +130,8 @@ public:
     CDBResultWrapper(const DBResultPtr& dbRes) : m_dbRes(dbRes){}
     void operator=( const DBResultPtr& dbRes){ m_dbRes = dbRes; }
 
+    CDBError& getDBError(){ return m_dbRes -> getDBError(); }
+
     sqlite3_stmt* getStatement(){ return m_dbRes->getStatement(); }
     boolean isNonUnique(){ return m_dbRes->isNonUnique(); }
     bool isEnd(){ return m_dbRes->isEnd(); }

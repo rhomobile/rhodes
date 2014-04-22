@@ -144,14 +144,9 @@ public class SplashScreen implements MainView{
             break;
         default:
             {
-                Logger.I(TAG, "Loading default html data");
-
-                WebView webView = new WebView(activity);
-                webView.setVerticalScrollBarEnabled(false);
-                webView.setHorizontalScrollBarEnabled(false);
-                webView.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
-                mView = webView;
+                mSplashScreenListener.onSplashScreenGone(this);
             }
+            return;
         }
         activity.addContentView(mView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         Logger.I(TAG, "Done");

@@ -71,7 +71,7 @@ def get_objects(sources, objdir)
     sources.map { |src| File.join(objdir, File.basename(src) + ".o") }    
 end
 
-def detect_toolchain(ndkpath)
+def detect_toolchain(ndkpath, abi)
   $ndktools = nil
   $ndkabi = "unknown"
   $ndkgccver = "unknown"
@@ -84,38 +84,57 @@ def detect_toolchain(ndkpath)
       ndkhostvariants = [`uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, `uname -s`.downcase!.chomp! + '-x86']
   end
 
-  ["arm-linux-androideabi-4.6"].each do |abi|
-    variants = []
-    ndkhostvariants.each do |ndkhost|
-      variants << File.join(ndkpath,'build','prebuilt',ndkhost,abi)
-      variants << File.join(ndkpath,'toolchains',abi,'prebuilt',ndkhost)
+  toolchain = 'unknown-toolchain'
+  if abi == 'arm'
+    toolchain = 'arm-linux-androideabi-4.8'
+  elsif abi == 'x86'
+    toolchain = 'x86-4.8'
+  elsif abi == 'mips'
+    toolchain = 'mipsel-linux-android-4.8'
+  else
+    raise "Unknown ABI: {abi}";
+  end
+
+  variants = []
+  ndkhostvariants.each do |ndkhost|
+      variants << File.join(ndkpath,'build','prebuilt',ndkhost,toolchain)
+      variants << File.join(ndkpath,'toolchains',toolchain,'prebuilt',ndkhost)
       variants.each do |variant|
         puts "Check toolchain path: #{variant}" if USE_TRACES    
         next unless File.directory? variant
         $ndktools = variant
-        $ndkabi = abi.gsub(/^(.*)-([^-]*)$/, '\1')
-        $ndkgccver = abi.gsub(/^(.*)-([^-]*)$/, '\2')
+        $ndkabi = toolchain.gsub(/^(.*)-([^-]*)$/, '\1')
+        $ndkgccver = toolchain.gsub(/^(.*)-([^-]*)$/, '\2')
+        
+        $ndkabi = 'i686-linux-android' if $ndkabi == 'x86'
+
+        puts "Toolchain is detected: #{$ndktools}, abi: #{$ndkabi}, version: #{$ndkgccver}" if USE_TRACES
+        
+        ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
+            name = tool.gsub('+', 'p')
+            eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
+        end
+
         return
       end
-    end
-    break unless $ndktools.nil?
   end
+
   if $ndktools.nil?
     raise "Can't detect NDK toolchain path (corrupted NDK installation?)"
   end
+  
 end
 
-def setup_ndk(ndkpath,apilevel)
-  puts "setup_ndk(#{ndkpath}, #{apilevel})" if USE_TRACES
+def setup_ndk(ndkpath,apilevel,abi)
+  puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})" if USE_TRACES
   
-  detect_toolchain ndkpath
+  detect_toolchain ndkpath, abi
 
   variants = []
   variants << "platforms"
   variants << File.join("build", "platforms")
 
   api_levels = Array.new
-  variant = "platforms"
 
   variants.each do |variant|
     puts "Check NDK folder: #{variant}" if USE_TRACES
@@ -140,7 +159,7 @@ def setup_ndk(ndkpath,apilevel)
   end
 
   variants.each do |variant|
-    sysroot = File.join(ndkpath, variant, "android-#{last_api_level}/arch-arm")
+    sysroot = File.join(ndkpath, variant, "android-#{last_api_level}/arch-#{abi}")
     next unless File.directory? sysroot
     $ndksysroot = sysroot
     break
@@ -150,11 +169,6 @@ def setup_ndk(ndkpath,apilevel)
   end
   puts "NDK sysroot: #{$ndksysroot}"
 
-  ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
-    name = tool.gsub('+', 'p')
-    eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
-  end
-  
   $androidndkpath = ndkpath unless $androidndkpath
 
   # Detect rlim_t
@@ -175,15 +189,12 @@ def setup_ndk(ndkpath,apilevel)
 end
 
 def cc_def_args
-  if $cc_def_args_val.nil?
     args = []
     args << "--sysroot"
     args << $ndksysroot
-    #args << "-fvisibility=hidden"
     args << "-fPIC"
     args << "-Wall"
     args << "-Wextra"
-    #args << "-Wno-psabi" if $ndkgccver != "4.2.1"
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
     args << "-mandroid"
@@ -205,26 +216,21 @@ def cc_def_args
       args << "-Wvla"
       args << "-Wstack-protector"
     end
-    $cc_def_args_val = args
-  end
-  $cc_def_args_val.dup
+    args
 end
 
 def cpp_def_args
-  if $cpp_def_args_val.nil?
-    args = []
+    args = cc_def_args()
     args << "-fvisibility-inlines-hidden"
     args << "-fno-exceptions"
     args << "-fno-rtti"
-    args << "-std=c++0x"
+    args << "-std=c++11"
     args << "-Wno-reorder"
     #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include','backward')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')}\""
-    $cpp_def_args_val = args
-  end
-  $cpp_def_args_val.dup
+    args
 end
 
 def get_def_args(filename)
@@ -276,50 +282,59 @@ def cc_deps(filename, objdir, additional)
   out.split(/\s+/)
 end
 
-def cc_run(command, args, chdir = nil)
+def cc_run(command, args, chdir = nil, coloring = true)
   save_cwd = FileUtils.pwd
   FileUtils.cd chdir unless chdir.nil?
   argv = [command]
   argv += args
-  #cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
   cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '' + x + '' : x }.join(' ')
 
-  out = StringIO.new
-  ret = nil
-  Open3.popen2e(cmdstr) do |i,f,t|
-    warning = false
-    error = false
-    while data = f.gets
-      if data =~ /error:/
-        error = true
-      elsif data =~ /warning:/
-        warning = true
-      elsif data =~ /note:/
-      else
-        warning = false
-        error = false
-      end
-
-      if error
-        out.write "\e[31m#{data}\e[0m"
-      elsif warning
-        out.write "\e[33m#{data}\e[0m"
-      else
-        out.puts data
-      end
-
-    end
-    ret = t.value
+  isWinXP = false
+  if RUBY_PLATFORM =~ /(win|w)32$/
+    winName = `wmic OS get Name`
+    isWinXP = true if winName =~ /Windows XP/
   end
-
-  $output_lock.synchronize {
+  
+  if isWinXP
     puts '-' * 80
-    puts "PWD: " + FileUtils.pwd
-    puts cmdstr
-    puts out.string
-  }
-  out.close
+    %{#{cmdstr}}
+  else
+    out = StringIO.new
+    ret = nil
+    Open3.popen2e(cmdstr) do |i,f,t|
+      warning = false
+      error = false
+      while data = f.gets
+        if data =~ /error:/
+          error = true
+        elsif data =~ /warning:/
+          warning = true
+        elsif data =~ /note:/
+        else
+          warning = false
+          error = false
+        end
 
+        if error && coloring
+          out.write "\e[31m#{data}\e[0m"
+        elsif warning && coloring
+          out.write "\e[33m#{data}\e[0m"
+        else
+          out.puts data
+        end
+      end
+      ret = t.value
+    end
+
+    $output_lock.synchronize {
+      puts '-' * 80
+      puts "PWD: " + FileUtils.pwd
+      puts cmdstr
+      puts out.string
+    }
+    out.close
+  end
+  
   FileUtils.cd save_cwd unless chdir.nil?
   ret.success?
 end
@@ -392,10 +407,18 @@ def cc_ar(libname, objects)
   FileUtils.uptodate?(libname, objects) or cc_run($arbin, ["crs", "\"#{libname}\""] + objects.collect { |x| "\"#{x}\"" })
 end
 
+def get_stl_link_args(abi)
+  args = []
+  args << "-L#{File.join($androidndkpath, "sources","cxx-stl","gnu-libstdc++",$ndkgccver,'libs',abi)}"
+  args << "-lgnustl_static"
+  args
+end
+
 def cc_link(outname, objects, additional = nil, deps = nil)
   dependencies = objects
   dependencies += deps unless deps.nil?
   return true if FileUtils.uptodate? outname, dependencies
+
   args = []
   if $ndkabi == "arm-eabi"
     args << "-nostdlib"
@@ -414,8 +437,6 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "\"#{outname}\""
   args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  args << "-L#{File.join($androidndkpath, "sources","cxx-stl","gnu-libstdc++",$ndkgccver,'libs','armeabi')}"
-  args << "-lgnustl_static"
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
   args << "#{$ndksysroot}/usr/lib/libc.so"
@@ -482,13 +503,8 @@ def java_build(jarpath, buildpath, classpath, srclists)
       fullsrclist = fullsrclist.path
     end
     
-    #puts "jar deps:"
-    #puts deps.inspect
-
     if FileUtils.uptodate?(jarpath, deps)
       puts "#{jarpath} is uptodate: true"
-      #puts deps.inspect
-      #puts ""
       return
     end
 
