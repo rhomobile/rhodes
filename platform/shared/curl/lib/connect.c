@@ -489,7 +489,7 @@ static bool verifyconnect(curl_socket_t sockfd, int *error)
    *    Someone got to verify this on Win-NT 4.0, 2000."
    */
 
-#ifdef _WIN32_WCE
+#if defined(_WIN32_WCE) || defined(OS_WP8)
   Sleep(0);
 #else
   SleepEx(0, FALSE);
@@ -920,6 +920,7 @@ void Curl_sndbufset(curl_socket_t sockfd)
 
   static int detectOsState = DETECT_OS_NONE;
 
+#ifndef OS_WP8
   if(detectOsState == DETECT_OS_NONE) {
 #if !defined(_WIN32_WINNT) || !defined(_WIN32_WINNT_WIN2K) || \
     (_WIN32_WINNT < _WIN32_WINNT_WIN2K)
@@ -949,6 +950,7 @@ void Curl_sndbufset(curl_socket_t sockfd)
       detectOsState = DETECT_OS_PREVISTA;
 #endif
   }
+#endif
 
   if(detectOsState == DETECT_OS_VISTA_OR_LATER)
     return;
