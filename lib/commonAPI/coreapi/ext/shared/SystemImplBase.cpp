@@ -440,14 +440,14 @@ void CSystemImplBase::getMain_window_closed(rho::apiGenerator::CMethodResult& oR
 }
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-extern "C" void rho_win32_unset_window_proxy();
-extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password);
+extern "C" void rho_qt_unset_window_proxy();
+extern "C" void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password);
 #endif
 
 extern "C" void rho_sys_unset_http_proxy()
 {
-#if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-	rho_win32_unset_window_proxy();
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+	rho_qt_unset_window_proxy();
 #endif
 	RHOCONF().removeProperty("http_proxy_host", false);
 	RHOCONF().removeProperty("http_proxy_port", false);
@@ -565,8 +565,8 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 	RAWLOG_INFO1("HTTP proxy port     = %s", port.c_str());
 
 	if (host.length()) {
-#if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-		rho_win32_set_window_proxy(host.c_str(), port.c_str(), login.c_str(), password.c_str());
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+		rho_qt_set_window_proxy(host.c_str(), port.c_str(), login.c_str(), password.c_str());
 #endif
 		RHOCONF().setString ("http_proxy_host", host, false);
 
