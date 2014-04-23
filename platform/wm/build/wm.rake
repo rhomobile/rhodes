@@ -25,8 +25,8 @@
 #------------------------------------------------------------------------
 
 def pack_7z(where, what, archive)
-  what = what.join(' ') if what.kind_of?(Array)
-  Jake.run3("7za a \"#{archive}\" #{what} -bd", where)
+  what = what.map {|p| "\"#{p}\""}
+  Jake.run3("7za a \"#{archive}\" #{what.join(' ')} -bd", where)
 end
 
 def unpack_7z(where, archive)
@@ -1111,13 +1111,17 @@ namespace "device" do
       Dir.glob("#{container_prefix_path}*") {|f| rm_r(f)}
       mkdir_p container_prefix_path
 
-      pack_7z($app_path, 'bin', File.join(container_prefix_path, 'application_override.7z'))
-      pack_7z($startdir, [
+      rhodes_gem_paths = ([
         'platform/wm/RhoLaunch/RhoLaunch.ico',
         'platform/wm/rhodes/resources/icon.ico',
-        'platform/wm/bin',
+        'platform/wm/bin/**/license_rc.dll',
+        'platform/wm/bin/**/rhodes.exe',
+        'platform/wm/bin/**/RhoLaunch.exe',
         'platform/wm/build/regs.txt'
-      ], File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+      ].map {|p| Dir.glob(p)}).flatten
+
+      pack_7z($app_path, ['bin'], File.join(container_prefix_path, 'application_override.7z'))
+      pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
     end
 
     desc 'Applies application container. See also device:wm:make_container.'
