@@ -596,7 +596,8 @@ namespace "token" do
       $salt = File.read($salt_file)
     else
       $salt = SecureRandom.urlsafe_base64(32)
-      File.write($salt_file,$salt)
+      #File.write($salt_file,$salt)
+      File.open($salt_file,"w") { |f| f.write($salt) }
       $salt_generated = true
     end
 
@@ -642,7 +643,8 @@ namespace "token" do
           token = ''
           puts "token is not valid"
         else
-          File.write($token_file, encode_token($token, $salt, $token_preamble_len, result[:iv]))
+          #File.write($token_file, encode_token($token, $salt, $token_preamble_len, result[:iv]))
+          File.open($token_file,"w") { |f| f.write(encode_token($token, $salt, $token_preamble_len, result[:iv])) }
         end
       end
     end
@@ -685,7 +687,8 @@ namespace "token" do
         puts "Could not check token online"
       end
 
-      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+      #File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+      File.open($token_file,"w") { |f| f.write(encode_token($token, $salt, $token_preamble_len)) }
 
       puts "Token was updated successfully"
     end
@@ -735,7 +738,8 @@ You can also paste your RhoHub token right now (or just press enter to stop buil
 
       $token = tok
 
-      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+      #File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+      File.open($token_file,"w") { |f| f.write(encode_token($token, $salt, $token_preamble_len)) }
     else
       puts "RhoHub API Token is valid"
     end

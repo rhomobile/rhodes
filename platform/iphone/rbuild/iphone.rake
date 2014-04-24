@@ -2742,6 +2742,9 @@ namespace "device" do
       ipaname = appname + ".ipa"
       app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration)
 
+
+      mkdir_p container_prefix_path
+
       cp File.join(app_path, ipaname), File.join(container_prefix_path, "prebuild.ipa")
     end
 
