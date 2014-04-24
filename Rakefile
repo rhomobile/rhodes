@@ -762,14 +762,12 @@ namespace "config" do
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
 
-    $proxy = {}
+    $proxy = URI("https://app.rhohub.com/api/v1").find_proxy()
 
     conn = $config['connection']
 
-    if (!conn.nil?) && (!conn['proxy'].nil?)
+    if ($proxy.nil?) && (!conn.nil?) && (!conn['proxy'].nil?)
       $proxy = conn['proxy']
-    else
-      $proxy = nil
     end
 
     if RUBY_PLATFORM =~ /(win|w)32$/
