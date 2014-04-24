@@ -2501,6 +2501,7 @@ namespace "device" do
       $skip_build_rhodes_main = true
       $skip_build_extensions = true
       $skip_build_xmls = true
+      $use_prebuild_data = true
 
       parent_ipa_path = File.join(get_prebuild_binary_folder, "prebuild.ipa")
 
