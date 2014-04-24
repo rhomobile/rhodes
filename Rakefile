@@ -1729,7 +1729,9 @@ def common_bundle_start( startdir, dest)
   chdir start
   clear_linker_settings
 
-  init_extensions(dest)
+  if !$skip_build_extensions
+    init_extensions(dest)
+  end
 
   chdir startdir
 
