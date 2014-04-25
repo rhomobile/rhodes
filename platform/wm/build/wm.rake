@@ -24,6 +24,15 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+def pack_7z(where, what, archive)
+  what = what.map {|p| "\"#{p}\""}
+  Jake.run3("7za a \"#{archive}\" #{what.join(' ')} -bd", where)
+end
+
+def unpack_7z(where, archive)
+  Jake.run3("7za x \"#{archive}\" -bd -y", where)
+end
+
 def additional_dlls_paths
   unless defined?($additional_dlls_paths_)
     $additional_dlls_paths_ = []
@@ -1095,7 +1104,34 @@ namespace "device" do
 
   namespace "wm" do
       
-   
+    desc 'Creates application container. See also device:wm:apply_container.'
+    task :make_container, [:container_prefix_path] => :production do |t, args|
+      container_prefix_path = args[:container_prefix_path]
+
+      Dir.glob("#{container_prefix_path}*") {|f| rm_r(f)}
+      mkdir_p container_prefix_path
+
+      rhodes_gem_paths = ([
+        'platform/wm/RhoLaunch/RhoLaunch.ico',
+        'platform/wm/rhodes/resources/icon.ico',
+        'platform/wm/bin/**/license_rc.dll',
+        'platform/wm/bin/**/rhodes.exe',
+        'platform/wm/bin/**/RhoLaunch.exe',
+        'platform/wm/build/regs.txt'
+      ].map {|p| Dir.glob(p)}).flatten
+
+      pack_7z($app_path, ['bin'], File.join(container_prefix_path, 'application_override.7z'))
+      pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
+    desc 'Applies application container. See also device:wm:make_container.'
+    task :apply_container, [:container_prefix_path] do |t, args|
+      container_prefix_path = args[:container_prefix_path]
+
+      unpack_7z($app_path, File.join(container_prefix_path, 'application_override.7z'))
+      unpack_7z($startdir, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
     desc 'Build cab'
     task :cab => ['config:wm'] do
       Jake.make_rhoconfig_txt

@@ -83,6 +83,49 @@ load File.join(pwd, 'platform/wp8/build/wp.rake')
 load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
+
+
+
+$prebuild_binary_path_inside_app = {}
+$prebuild_binary_path_inside_app['iphone'] = '/bin/target/iOS/iphoneos7.1/Release/'
+$prebuild_binary_path_inside_app['android'] = '/bin/target/android/'
+$prebuild_binary_path_inside_app['wm'] = '/bin/target/wm/'
+
+#$prebuild_binary_ext = {}
+#$prebuild_binary_ext['iphone'] = 'ipa'
+#$prebuild_binary_ext['android'] = 'apk'
+#$prebuild_binary_ext['wm'] = 'cab'
+
+
+#return prebuild binary package/container path
+def get_prebuild_binary_folder
+
+  #set app name
+  app_name = 'prebuild_ruby'
+  if $js_application
+    if $app_config["app_type"] == 'rhoelements'
+      app_name = 'prebuild_js_rhoelements'
+    else
+      app_name = 'prebuild_js'
+    end
+  else
+    if $app_config["app_type"] == 'rhoelements'
+      app_name = 'prebuild_ruby_rhoelements'
+    else
+      app_name = 'prebuild_ruby'
+    end
+  end
+  res_path = nil
+  if $prebuild_binary_path_inside_app[$current_platform] != nil
+    #res_path = File.join($startdir, 'prebuild-binaries', app_name,$prebuild_binary_path_inside_app[$current_platform], 'prebuild')+'.'+$prebuild_binary_ext[$current_platform]
+    res_path = File.join($startdir, 'prebuild-binaries', app_name,$prebuild_binary_path_inside_app[$current_platform])
+  end
+  return res_path
+end
+
+
+
+
 #------------------------------------------------------------------------
 
 def get_dir_hash(dir, init = nil)
@@ -553,7 +596,8 @@ namespace "token" do
       $salt = File.read($salt_file)
     else
       $salt = SecureRandom.urlsafe_base64(32)
-      File.write($salt_file,$salt)
+      #File.write($salt_file,$salt)
+      File.open($salt_file,"w") { |f| f.write($salt) }
       $salt_generated = true
     end
 
@@ -599,7 +643,8 @@ namespace "token" do
           token = ''
           puts "token is not valid"
         else
-          File.write($token_file, encode_token($token, $salt, $token_preamble_len, result[:iv]))
+          #File.write($token_file, encode_token($token, $salt, $token_preamble_len, result[:iv]))
+          File.open($token_file,"w") { |f| f.write(encode_token($token, $salt, $token_preamble_len, result[:iv])) }
         end
       end
     end
@@ -642,7 +687,8 @@ namespace "token" do
         puts "Could not check token online"
       end
 
-      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+      #File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+      File.open($token_file,"w") { |f| f.write(encode_token($token, $salt, $token_preamble_len)) }
 
       puts "Token was updated successfully"
     end
@@ -692,7 +738,8 @@ You can also paste your RhoHub token right now (or just press enter to stop buil
 
       $token = tok
 
-      File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+      #File.write($token_file, encode_token($token, $salt, $token_preamble_len))
+      File.open($token_file,"w") { |f| f.write(encode_token($token, $salt, $token_preamble_len)) }
     else
       puts "RhoHub API Token is valid"
     end
@@ -719,14 +766,12 @@ namespace "config" do
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
 
-    $proxy = {}
+    $proxy = URI("https://app.rhohub.com/api/v1").find_proxy()
 
     conn = $config['connection']
 
-    if (!conn.nil?) && (!conn['proxy'].nil?)
+    if ($proxy.nil?) && (!conn.nil?) && (!conn['proxy'].nil?)
       $proxy = conn['proxy']
-    else
-      $proxy = nil
     end
 
     if RUBY_PLATFORM =~ /(win|w)32$/
@@ -768,6 +813,9 @@ namespace "config" do
   end
 
   task :common => ["token:setup"] do
+    $skip_build_rhodes_main = false
+    $skip_build_extensions = false
+    $skip_build_xmls = false
     extpaths = []
 
     if $app_config["paths"] and $app_config["paths"]["extensions"]
@@ -1681,7 +1729,9 @@ def common_bundle_start( startdir, dest)
   chdir start
   clear_linker_settings
 
-  init_extensions(dest)
+  if !$skip_build_extensions
+    init_extensions(dest)
+  end
 
   chdir startdir
 
