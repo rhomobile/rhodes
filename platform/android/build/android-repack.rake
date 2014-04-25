@@ -1,6 +1,5 @@
 require File.join(pwd, 'lib/build/jake.rb')
 require 'fileutils'
-require 'rhodes/containers'
 
 namespace 'device' do
   namespace 'android' do
@@ -27,7 +26,8 @@ namespace 'device' do
     end
 
     def determine_prebuild_path(config)
-      return Rhodes::Containers::get_container_path_prefix('android', config)
+      require 'rhodes/containers'
+      Rhodes::Containers::get_container_path_prefix('android', config)
     end
 
     def make_app_bundle
