@@ -13,7 +13,7 @@ public class WebSettingsProviderKitKat extends
     public void fillSettings(WebSettings settings, IRhoWebViewConfig config) {
         super.fillSettings(settings, config);
         if (Capabilities.DEBUG_ENABLED) {
-            WebView.setWebContentsDebuggingEnabled(true);
+            //WebView.setWebContentsDebuggingEnabled(true);
         }
     }
 
