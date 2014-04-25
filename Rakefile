@@ -26,6 +26,7 @@
 
 require 'find'
 require 'erb'
+
 #require 'rdoc/task'
 require 'openssl'
 require 'digest/sha2'
@@ -114,7 +115,6 @@ namespace "framework" do
     puts `#{rhoruby}  -I#{File.expand_path('spec/framework_spec/app/')} -I#{File.expand_path('lib/framework')} -I#{File.expand_path('lib/test')} -Clib/test framework_test.rb`
   end
 end
-
 
 $application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen"]
 
@@ -660,10 +660,10 @@ namespace "token" do
         tok = File.read(token_source)
       else
         puts "In order to use Rhodes framework you should set RhoHub API token for it.
-Register at http://rhohub.com and get your API token there. 
+Register at http://rhohub.com and get your API token there.
 It is located in your profile (rightmost toolbar item).
 Inside your profile configuration select 'API token' menu item. Then run command
- 
+
 `rake token:set[<Your_RhoHub_API_token>]`
 
 You can also paste your RhoHub token right now (or just press enter to stop build):"
@@ -1070,7 +1070,6 @@ namespace "config" do
 
     puts '%%%_%%% $js_application = '+$js_application.to_s
 
-
     if !$js_application && !Dir.exists?(File.join($app_path, "app"))
       puts '********* ERROR ************************************************************************'
       puts "Add javascript_application:true to build.yml, since application does not contain app folder."
@@ -1078,8 +1077,10 @@ namespace "config" do
       puts '****************************************************************************************'
       exit(1)
     end
+    
+    $shraed_rt_js_appliction = $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime')
 
-    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime')
+    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shraed_rt_js_appliction 
 
     if $current_platform == "bb"
       make_application_build_config_java_file()
@@ -1168,7 +1169,7 @@ def add_linker_library(libraryname)
     tmpdir = ENV["TARGET_TEMP_DIR"]
   else
     tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
-      ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+    ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
   end
   $ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
 end
@@ -1183,7 +1184,7 @@ def set_linker_flags
         tmpdir = ENV["TARGET_TEMP_DIR"]
       else
         tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
-          ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
       end
     end
     mkdir_p tmpdir unless File.exist? tmpdir
@@ -1456,18 +1457,18 @@ def init_extensions(dest, mode = "")
             elsif f.downcase().end_with?("rho.database.js")
               endJSModules << f
             elsif f.downcase().end_with?("rho.newormhelper.js")
-              endJSModules << f #if $current_platform == "android" || $current_platform == "iphone" || $current_platform == "wm"
+              endJSModules << f
             elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
-                puts "add #{f} to startJSModules_opt.."
-                startJSModules_opt << f
-              else
-                extjsmodulefiles << f
-              end  
+              puts "add #{f} to startJSModules_opt.."
+              startJSModules_opt << f
+            else
+              extjsmodulefiles << f
+            end
           end
-          
+
           Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-              if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
-                puts "add #{f} to extjsmodulefiles_opt.."
+            if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+              puts "add #{f} to extjsmodulefiles_opt.."
               extjsmodulefiles_opt << f
             else
               puts "add #{f} to extjsmodulefiles.."
@@ -1512,10 +1513,12 @@ def init_extensions(dest, mode = "")
     puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
     write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
   end
-  #
-  if extjsmodulefiles_opt.count > 0
-    puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-    write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+  # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build 
+  if $shraed_rt_js_appliction == false
+    if extjsmodulefiles_opt.count > 0
+      puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
+      write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+    end
   end
 
   return if mode == "update_rho_modules_js"
@@ -1698,9 +1701,9 @@ def common_bundle_start( startdir, dest)
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
     if $app_config[$config["platform"]] &&
-        $app_config[$config["platform"]]["rhoelements"] &&
-        $app_config[$config["platform"]]["rhoelements"]["config"] &&
-        (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
+    $app_config[$config["platform"]]["rhoelements"] &&
+    $app_config[$config["platform"]]["rhoelements"]["config"] &&
+    (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
 
       $config_xml = File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"])
     elsif $app_config["rhoelements"] && $app_config["rhoelements"]["config"] && (File.exists? File.join(app, $app_config["rhoelements"]["config"]))
@@ -1829,7 +1832,6 @@ namespace "build" do
       Dir.chdir currentdir
     end
 
-
     task :xruby do
       if $js_application
         return
@@ -1884,11 +1886,11 @@ namespace "build" do
       Dir.glob($tmpdir + "/**/RubyIDContainer.class") { |f| rm f }
       rm "#{$bindir}/RhoBundle.jar"
       chdir $tmpdir
-      puts `jar cf #{$bindir}/RhoBundle.jar #{$all_files_mask}`      
+      puts `jar cf #{$bindir}/RhoBundle.jar #{$all_files_mask}`
       rm_rf $tmpdir
       mkdir_p $tmpdir
       chdir $srcdir
-=end  
+=end
 
       Jake.build_file_map($srcdir, $file_map_name)
 
@@ -2066,7 +2068,6 @@ namespace "build" do
       end
     end
 
-
     def minify_inplace(filename,type)
       puts "minify file: #{filename}"
 
@@ -2153,7 +2154,7 @@ namespace "build" do
           Zip::ZipFile.open(new_zip_file, Zip::ZipFile::CREATE)do |zipfile|
             Find.find(root) do |path|
               Find.prune if File.basename(path)[0] == ?.
-                dest = /apps\/(\w.*)/.match(path)
+              dest = /apps\/(\w.*)/.match(path)
               if dest
                 puts '     add file to zip : '+dest[1].to_s
                 zipfile.add(dest[1],path)
@@ -2175,7 +2176,6 @@ namespace "build" do
       rm   new_zip_file
 
     end
-
 
     task :noiseq do
       app = $app_path
@@ -2236,7 +2236,10 @@ task :update_rho_modules_js, [:platform] do |t,args|
   init_extensions( nil, "update_rho_modules_js")
 
   minify_inplace( File.join( $app_path, "public/api/rhoapi-modules.js" ), "js" ) if $minify_types.include?('js')
-  minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORM.js" ), "js" ) if $minify_types.include?('js')
+  
+  if $shraed_rt_js_appliction == false
+    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORM.js" ), "js" ) if $minify_types.include?('js')
+  end
 end
 
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
@@ -2250,7 +2253,6 @@ task :get_version do
   #symver = "unknown"
   wmver = "unknown"
   androidver = "unknown"
-
 
   # File.open("res/generators/templates/application/build.yml","r") do |f|
   #     file = f.read
@@ -2317,8 +2319,6 @@ task :get_version do
     end
   end
 
-
-
   puts "Versions:"
   #puts "  Generator:        " + genver
   puts "  iPhone:           " + iphonever
@@ -2347,7 +2347,6 @@ task :set_version, [:version] do |t,args|
   #   File.open("res/generators/templates/application/build.yml","w") do |f|
   #     f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
   #   end
-
 
   File.open("platform/iphone/Info.plist","r") { |f| origfile = f.read }
   File.open("platform/iphone/Info.plist","w") do |f|
@@ -2419,7 +2418,6 @@ namespace "buildall" do
     end
   end
 end
-
 
 task :gem do
   puts "Removing old gem"
@@ -2499,7 +2497,6 @@ task :switch_app => "config:common" do
   end
 end
 
-
 #Rake::RDocTask.new do |rd|
 #RDoc::Task.new do |rd|
 #  rd.main = "README.textile"
@@ -2548,7 +2545,7 @@ namespace "build" do
 
     Dir.glob("platform/shared/*").each do |f|
       next if f == "platform/shared/ruby" || f == "platform/shared/rubyext" || f == "platform/shared/xruby" || f == "platform/shared/shttpd" ||
-        f == "platform/shared/stlport"  || f == "platform/shared/qt"
+      f == "platform/shared/stlport"  || f == "platform/shared/qt"
       #puts f
       cp_r f, shared_dir #, :preserve => true
     end
@@ -2756,15 +2753,15 @@ namespace "run" do
             elsif f.downcase().end_with?("rho.newormhelper.js")
               endJSModules << f #if $current_platform == "android" || $current_platform == "iphone" || $current_platform == "wm"
             elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
-                        puts "add #{f} to startJSModules_opt.."
-                        startJSModules_opt << f
-                      else
-                        extjsmodulefiles << f
-                      end  
-                  end
-                  Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-                    if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
-                      puts "add #{f} to extjsmodulefiles_opt.."
+              puts "add #{f} to startJSModules_opt.."
+              startJSModules_opt << f
+            else
+              extjsmodulefiles << f
+            end
+          end
+          Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
+            if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+              puts "add #{f} to extjsmodulefiles_opt.."
               extjsmodulefiles_opt << f
             else
               puts "add #{f} to extjsmodulefiles.."
