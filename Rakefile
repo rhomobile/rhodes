@@ -1616,7 +1616,7 @@ namespace "config" do
     
     $shraed_rt_js_appliction = $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime')
 
-    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shraed_rt_js_appliction 
+    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shraed_rt_js_appliction == true
 
     if $current_platform == "bb"
       make_application_build_config_java_file()
