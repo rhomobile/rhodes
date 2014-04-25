@@ -276,14 +276,6 @@ namespace "config" do
 
     $uri_host = $app_config["android"]["URIHost"] unless $app_config["android"].nil?
 
-    # Here is switch between release/debug configuration used for
-    # building native libraries
-    if $app_config["debug"].nil?
-      $build_release = true
-    else
-      $build_release = !$app_config["debug"].to_i
-    end
-
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
     $rhobindir = File.join($androidpath, "bin")
@@ -462,7 +454,7 @@ namespace "config" do
 
     $native_libs = ["sqlite", "curl", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
-    if $build_release
+    unless $debug
       $confdir = "release"
     else
       $confdir = "debug"
@@ -1610,6 +1602,9 @@ namespace "build" do
         val = 'true' if $app_config["capabilities"].index(k) != nil
         f.puts "  public static final boolean #{k.upcase}_ENABLED = #{val};"
       end
+      
+      f.puts "  public static final boolean DEBUG_ENABLED = #{$debug.to_s};"
+      
       f.puts "}"
       #end
       Jake.modify_file_if_content_changed($app_capabilities_java, f)
