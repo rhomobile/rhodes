@@ -705,11 +705,14 @@ void CRhodesApp::callUiDestroyedCallback()
     
     if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed))
     {
-        String strUrl = m_strHomeUrl + "/system/uidestroyed";
-        NetResponse resp = getNetRequest().pullData( strUrl, null );
-        if ( !resp.isOK() )
+        if ( rho_ruby_is_started() )
         {
-            LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+          String strUrl = m_strHomeUrl + "/system/uidestroyed";
+          NetResponse resp = getNetRequest().pullData( strUrl, null );
+          if ( !resp.isOK() )
+          {
+              LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+          }
         }
     }
 }
