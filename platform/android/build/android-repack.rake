@@ -3,13 +3,12 @@ require 'fileutils'
 
 namespace 'device' do
   namespace 'android' do
-    task :make_prebuild, :target_path do |t,args|
+    task :make_container, [:target_path] => 'device:android:production' do |t,args|
 
       target_path = args[:target_path]
 
       puts "Target path for prebuilt binaries: #{args}"
 
-      Rake::Task['device:android:production'].invoke
       FileUtils.mkdir_p target_path
 
       FileUtils.cp( File.join($bindir,'classes.dex'), target_path )
@@ -26,14 +25,9 @@ namespace 'device' do
       
     end
 
-    #TODO: This is a stub function to be removed when real implementation is available.
-    def get_container_path
-      return File.join(pwd,'prebuilt')
-    end
-
-
     def determine_prebuild_path(config)
-      return get_container_path
+      require 'rhodes/containers'
+      Rhodes::Containers::get_container_path_prefix('android', config)
     end
 
     def make_app_bundle

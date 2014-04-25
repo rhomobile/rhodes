@@ -821,7 +821,7 @@ class Jake
     proc_list = []
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      cmd = 'wmic'
+      cmd = 'WMIC'
       args = ['path', 'win32_process', 'get', 'Processid,Parentprocessid,Commandline']
     else
       cmd = 'ps'
