@@ -3,7 +3,7 @@ require 'fileutils'
 
 namespace 'device' do
   namespace 'android' do
-    task :make_container, :target_path => 'device:android:production' do |t,args|
+    task :make_container, [:target_path] => 'device:android:production' do |t,args|
 
       target_path = args[:target_path]
 
