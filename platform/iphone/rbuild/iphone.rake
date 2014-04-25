@@ -718,6 +718,10 @@ namespace "config" do
       end
     end
 
+    if $signidentity == nil
+      $signidentity = 'iPhone Developer'
+    end
+
     if $sdk !~ /iphone/
       if Rake.application.top_level_tasks.to_s =~ /run/
         $sdk = "iphonesimulator#{$sdk}"
@@ -1571,13 +1575,14 @@ namespace "build" do
 
       if !File.exist?(iphone_project)
 
+        puts '$ make iphone XCode project for application'
         Rake::Task['build:iphone:make_xcode_project'].invoke
 
       else
 
         chdir $app_path
 
-        puts 'prepare iphone XCode project for application'
+        puts '$ prepare iphone XCode project for application'
         Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
 
         Rake::Task['build:iphone:update_plist'].invoke
@@ -1631,7 +1636,7 @@ namespace "build" do
       set_app_icon(false)
       set_default_images(false)
 
-      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
+      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) #if $signidentity.to_s != ""
 
     end
 
@@ -1693,7 +1698,7 @@ namespace "build" do
           end
       end
 
-      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
+      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) #if $signidentity.to_s != ""
       copy_entitlements_file_from_app
 
       Rake::Task['build:bundle:prepare_native_generated_files'].invoke
@@ -2491,6 +2496,10 @@ namespace "device" do
 
     end
 
+    def determine_prebuild_path(config)
+      require 'rhodes/containers'
+      Rhodes::Containers::get_container_path_prefix('iphone', config)
+    end
 
 
     desc "Builds and signs iphone for production, use prebuild binaries"
@@ -2503,9 +2512,9 @@ namespace "device" do
       $skip_build_xmls = true
       $use_prebuild_data = true
 
-      parent_ipa_path = File.join(get_prebuild_binary_folder, "prebuild.ipa")
+      parent_ipa_path = File.join(determine_prebuild_path($app_config), "prebuild.ipa")
 
-      puts '$$$$$ parent_ipa_path = '+parent_ipa_path
+      puts '$ parent_ipa_path = '+parent_ipa_path
 
       Rake::Task['build:iphone:rhodes'].invoke
 
@@ -2746,6 +2755,7 @@ namespace "device" do
       app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration)
 
 
+      rm_rf container_prefix_path
       mkdir_p container_prefix_path
 
       cp File.join(app_path, ipaname), File.join(container_prefix_path, "prebuild.ipa")

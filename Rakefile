@@ -84,48 +84,6 @@ load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
-
-
-$prebuild_binary_path_inside_app = {}
-$prebuild_binary_path_inside_app['iphone'] = '/bin/target/iOS/iphoneos7.1/Release/'
-$prebuild_binary_path_inside_app['android'] = '/bin/target/android/'
-$prebuild_binary_path_inside_app['wm'] = '/bin/target/wm/'
-
-#$prebuild_binary_ext = {}
-#$prebuild_binary_ext['iphone'] = 'ipa'
-#$prebuild_binary_ext['android'] = 'apk'
-#$prebuild_binary_ext['wm'] = 'cab'
-
-
-#return prebuild binary package/container path
-def get_prebuild_binary_folder
-
-  #set app name
-  app_name = 'prebuild_ruby'
-  if $js_application
-    if $app_config["app_type"] == 'rhoelements'
-      app_name = 'prebuild_js_rhoelements'
-    else
-      app_name = 'prebuild_js'
-    end
-  else
-    if $app_config["app_type"] == 'rhoelements'
-      app_name = 'prebuild_ruby_rhoelements'
-    else
-      app_name = 'prebuild_ruby'
-    end
-  end
-  res_path = nil
-  if $prebuild_binary_path_inside_app[$current_platform] != nil
-    #res_path = File.join($startdir, 'prebuild-binaries', app_name,$prebuild_binary_path_inside_app[$current_platform], 'prebuild')+'.'+$prebuild_binary_ext[$current_platform]
-    res_path = File.join($startdir, 'prebuild-binaries', app_name,$prebuild_binary_path_inside_app[$current_platform])
-  end
-  return res_path
-end
-
-
-
-
 #------------------------------------------------------------------------
 
 def get_dir_hash(dir, init = nil)
