@@ -33,7 +33,7 @@ require 'stringio'
 # uses following globals
 # $objdir[]       list of paths to compiled library object files
 # $libname[]      list of paths to compiled library
-# $build_release  set to true to disable debug binaries
+# $debug          set to true to enable debug binaries
 
 USE_TRACES = Rake.application.options.trace
 
@@ -203,7 +203,7 @@ def cc_def_args
     args << "-DRHO_DEBUG"
     args << "-DHAVE_RLIM_T" if $have_rlim_t
     args << "-g"
-    if $build_release
+    unless $debug
       args << "-O2"
       args << "-DNDEBUG"
     else
