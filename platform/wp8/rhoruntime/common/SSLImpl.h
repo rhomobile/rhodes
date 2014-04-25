@@ -60,7 +60,7 @@ public:
     
     CURLcode connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage, char* host_name);
     void shutdown(void *storage);
-    ssize_t send(const void *mem, size_t len, void *storage);
+    ssize_t send(const void *mem, size_t len, int* wouldblock, void *storage);
     ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage);
 };
 

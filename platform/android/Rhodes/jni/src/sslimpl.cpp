@@ -151,7 +151,7 @@ void SSLImpl::shutdown(void *storage)
     jnienv()->CallVoidMethod(obj, midShutdown);
 }
 
-ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
+ssize_t SSLImpl::send(const void *mem, size_t len, int* wouldblock, void *storage)
 {
     if (!storage) return -1;
 
@@ -164,6 +164,33 @@ ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
     env->ReleaseByteArrayElements(array.get(), arr, 0);
 
     jobject obj = (jobject)storage;
+    
+    static jfieldID fid = 0;
+    if(!fid)
+    {
+        jclass clsSock = getJNIObjectClass(env, obj);
+        if (!clsSock) return -1;
+
+        fid = getJNIClassField(env, clsSock, "sockfd", "I");
+
+        env->DeleteLocalRef(clsSock);
+    }
+    if (!fid) return -1;
+
+    jint sock = env->GetIntField(obj, fid);
+
+    fd_set wfd;
+    FD_ZERO(&wfd);
+    FD_SET(sock, &wfd);
+    timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    int n = ::select(sock + 1, NULL, &wfd, NULL, &tv);
+    if (n == 0) {
+        *wouldblock = 1;
+        return -1;
+    }
+    
     jboolean result = env->CallBooleanMethod(obj, midSend, array.get());
     if (!result) return -1;
     return len;
