@@ -59,7 +59,7 @@ public class GoogleWebView implements IRhoWebView {
         OsVersionManager.registerSelector(Build.VERSION_CODES.ECLAIR_MR1, IWebSettingsProvider.class, WebSettingsProviderEclairMR1.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.FROYO, IWebSettingsProvider.class, WebSettingsProviderFroyo.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.JELLY_BEAN, IWebSettingsProvider.class, WebSettingsProviderJellyBean.class.getCanonicalName());
-        OsVersionManager.registerSelector(Build.VERSION_CODES.KITKAT, IWebSettingsProvider.class, WebSettingsProviderKitKat.class.getCanonicalName());
+        //OsVersionManager.registerSelector(Build.VERSION_CODES.KITKAT, IWebSettingsProvider.class, WebSettingsProviderKitKat.class.getCanonicalName());
 
         mInitialized = true;
     }
