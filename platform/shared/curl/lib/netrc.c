@@ -79,11 +79,13 @@ int Curl_parsenetrc(const char *host,
 #if defined(HAVE_GETPWUID) && defined(HAVE_GETEUID)
     }
     else {
+#ifdef HAVE_PWD_H
       struct passwd *pw;
       pw= getpwuid(geteuid());
       if(pw) {
         home = pw->pw_dir;
       }
+#endif
 #endif
     }
 
