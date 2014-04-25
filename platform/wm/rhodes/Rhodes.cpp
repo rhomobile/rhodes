@@ -639,7 +639,7 @@ const rho::String& CRhodesModule::getAppName()
             m_strAppName = path.substr( nStart, nEnd-nStart+1);
         }
 #else
-        m_strAppName = get_app_build_config_item("name");
+        m_strAppName = RHOCONF().getString("app_name");
 #endif
     }
 
@@ -870,11 +870,11 @@ extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
     PostMessage( rho_wmimpl_get_mainwnd(),WM_COMMAND, ID_TITLECHANGE, (LPARAM)_tcsdup(convertToStringW(strTitle).c_str()) );
 }
 
-extern "C" void rho_win32_unset_window_proxy()
+extern "C" void rho_qt_unset_window_proxy()
 {
 }
 
-extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
+extern "C" void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
 {
 }
 

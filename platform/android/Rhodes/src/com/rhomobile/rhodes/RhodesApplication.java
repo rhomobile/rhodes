@@ -257,7 +257,7 @@ public class RhodesApplication extends Application{
 	    mReceiver = new ScreenReceiver();
 	    registerReceiver(mReceiver, filter);
 
-        Logger.I(TAG, "Initialized");
+      Logger.I(TAG, "Initialized");
     }
 
     private native static void initClassLoader(ClassLoader c);

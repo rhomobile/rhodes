@@ -35,10 +35,13 @@ char *GetEnv(const char *variable)
 #else
 #ifdef WIN32
   char env[MAX_PATH]; /* MAX_PATH is from windef.h */
-  char *temp = getenv(variable);
   env[0] = '\0';
+//We can not get access to env vars from app's sandbox
+#ifndef OS_WP8
+  char *temp = getenv(variable);
   if(temp != NULL)
     ExpandEnvironmentStringsA(temp, env, sizeof(env));
+#endif
   return (env[0] != '\0')?strdup(env):NULL;
 #else
   char *env = getenv(variable);

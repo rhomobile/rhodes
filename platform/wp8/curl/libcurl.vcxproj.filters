@@ -19,6 +19,12 @@
     <ClCompile Include="..\..\shared\curl\lib\base64.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\bundles.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\conncache.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\connect.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,13 +40,13 @@
     <ClCompile Include="..\..\shared\curl\lib\curl_memrchr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\curl_rand.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\curl_sspi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\dict.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\dotdot.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\easy.c">
@@ -50,6 +56,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\fileinfo.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\formdata.c">
@@ -64,22 +73,19 @@
     <ClCompile Include="..\..\shared\curl\lib\getinfo.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\gtls.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\hash.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\hostasyn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\hostip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\hostip4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\hostip6.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\hostip.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\hostsyn.c">
@@ -97,6 +103,9 @@
     <ClCompile Include="..\..\shared\curl\lib\http_negotiate.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\http_proxy.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\if2ip.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -104,9 +113,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\inet_pton.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\krb4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\krb5.c">
@@ -136,19 +142,25 @@
     <ClCompile Include="..\..\shared\curl\lib\nonblock.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\nss.c">
+    <ClCompile Include="..\..\shared\curl\lib\nwlib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\nwos.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\parsedate.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\pipeline.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\progress.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\qssl.c">
+    <ClCompile Include="..\..\shared\curl\lib\rawstr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\rawstr.c">
+    <ClCompile Include="..\..\shared\curl\lib\rhossl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\security.c">
@@ -184,12 +196,6 @@
     <ClCompile Include="..\..\shared\curl\lib\ssh.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\sslgen.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\ssluse.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\curl\lib\strdup.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -223,14 +229,71 @@
     <ClCompile Include="..\..\shared\curl\lib\version.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\hostthre.c">
+    <ClCompile Include="..\..\shared\curl\lib\warnless.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\curl\lib\rhossl.c">
+    <ClCompile Include="..\..\shared\curl\lib\wildcard.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\vtls\vtls.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\asyn-ares.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\asyn-thread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\rtsp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\gopher.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\imap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\curl_threads.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\curl_sasl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\pingpong.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\shared\curl\include\curl\curl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\include\curl\curlbuild.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\include\curl\curlrules.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\include\curl\curlver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\include\curl\easy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\include\curl\mprintf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\include\curl\multi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\include\curl\stdcheaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\include\curl\typecheck-gcc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\include\curl\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\amigaos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -240,10 +303,13 @@
     <ClInclude Include="..\..\shared\curl\lib\asyn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\axtls.h">
+    <ClInclude Include="..\..\shared\curl\lib\bundles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\config-win32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\conncache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\connect.h">
@@ -255,31 +321,22 @@
     <ClInclude Include="..\..\shared\curl\lib\cookie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\curlx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\curl_addrinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\curl_base64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_darwinssl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_fnmatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_gethostname.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_gssapi.h">
+    <ClInclude Include="..\..\shared\curl\lib\curl_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\curl_hmac.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\curl_ldap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_md4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\curl_md5.h">
@@ -291,46 +348,25 @@
     <ClInclude Include="..\..\shared\curl\lib\curl_memrchr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_multibyte.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_ntlm_core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\curl_ntlm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_ntlm_msgs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\curl_ntlm_wb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_rand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\curl_rtmp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_sasl.h">
+    <ClInclude Include="..\..\shared\curl\lib\curl_setup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_schannel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_sspi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curl_threads.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\curlx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\cyassl.h">
+    <ClInclude Include="..\..\shared\curl\lib\curl_setup_once.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\dict.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\dotdot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\easyif.h">
@@ -351,16 +387,10 @@
     <ClInclude Include="..\..\shared\curl\lib\ftp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\ftplistparser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\getinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\gopher.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\gtls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\hash.h">
@@ -372,13 +402,16 @@
     <ClInclude Include="..\..\shared\curl\lib\hostip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\http.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\http2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\http_chunks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\http_digest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\http.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\http_negotiate.h">
@@ -399,13 +432,13 @@
     <ClInclude Include="..\..\shared\curl\lib\inet_pton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\krb4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\llist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\memdebug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\multihandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\multiif.h">
@@ -420,16 +453,13 @@
     <ClInclude Include="..\..\shared\curl\lib\nonblock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\nssg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\parsedate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\pingpong.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\polarssl.h">
+    <ClInclude Include="..\..\shared\curl\lib\pipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\pop3.h">
@@ -438,10 +468,10 @@
     <ClInclude Include="..\..\shared\curl\lib\progress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\qssl.h">
+    <ClInclude Include="..\..\shared\curl\lib\rawstr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\rawstr.h">
+    <ClInclude Include="..\..\shared\curl\lib\rhossl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\rtsp.h">
@@ -453,13 +483,10 @@
     <ClInclude Include="..\..\shared\curl\lib\sendf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\setup.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\setup_once.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\share.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\sigpipe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\slist.h">
@@ -481,12 +508,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\ssh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\sslgen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\ssluse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\strdup.h">
@@ -516,16 +537,58 @@
     <ClInclude Include="..\..\shared\curl\lib\transfer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\urldata.h">
+    <ClInclude Include="..\..\shared\curl\lib\url.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\curl\lib\url.h">
+    <ClInclude Include="..\..\shared\curl\lib\urldata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\warnless.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\curl\lib\wildcard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\axtls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\curl_darwinssl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\curl_schannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\cyassl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\gskit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\gtls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\nssg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\openssl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\polarssl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\polarssl_threadlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\qssl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\vtls\vtls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\curl_sasl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\curl\lib\curl_ntlm_msgs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

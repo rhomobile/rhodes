@@ -20,6 +20,9 @@
 #include "System.h"
 #include "common/RhoConf.h"
 #include "unzip/zip.h"
+#ifdef OS_WINDOWS_DESKTOP
+#include "zlib.h"
+#endif
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NetworkAcceess"
@@ -396,7 +399,7 @@ void CNetworkImpl::createResult( NetResponse& resp, Hashtable<String,String>& ma
     else
     {
         mapRes["status"] = "error";
-        mapRes["error_code"] = convertToStringA(RhoAppAdapter.getErrorFromResponse(resp));;
+        mapRes["error_code"] = convertToStringA(RhoAppAdapter.getErrorFromResponse(resp));
         if ( resp.isResponseRecieved())
             mapRes["http_error"] = convertToStringA(resp.getRespCode());
     }
@@ -408,6 +411,51 @@ void CNetworkImpl::createResult( NetResponse& resp, Hashtable<String,String>& ma
     oResult.getStringHashL2()["headers"] = mapHeaders;
 
     //TODO: support "application/json" content-type
+#ifdef OS_WINDOWS_DESKTOP
+    if (mapHeaders.containsKey("content-encoding") &&
+        ((mapHeaders.get("content-encoding") == "gzip") ||
+         (mapHeaders.get("content-encoding") == "x-gzip")))
+    {
+        size_t bufSize = 30*((size_t)resp.getDataSize());
+        if (bufSize < 4096)
+            bufSize = 4096;
+        Bytef* decoded = (Bytef*)malloc(bufSize+1);
+        *decoded = '\0';
+        z_stream strm;
+        strm.next_in = (Bytef*)resp.getCharData();
+        strm.avail_in = resp.getDataSize();
+        strm.next_out = decoded;
+        strm.avail_out = bufSize;
+        strm.opaque = Z_NULL;
+        strm.zalloc = (alloc_func)0;
+        strm.zfree = (free_func)0;
+        int res = inflateInit2(&strm, 16 + MAX_WBITS);
+        if (res == Z_OK) {
+            do {
+                res = inflate(&strm, Z_SYNC_FLUSH);
+                decoded[strm.total_out] = '\0';
+                if ((res == Z_OK) || (res == Z_STREAM_END)) {
+                    if (strm.avail_in == 0)
+                        mapRes["body"].assign( (char*)decoded, strm.total_out );
+                    else {
+                        bufSize *= 4;
+                        decoded = (Bytef*)realloc(decoded, bufSize+1);
+                        strm.next_out = decoded + strm.total_out;
+                        strm.avail_out = bufSize - strm.total_out;
+                    }
+                }
+            } while ((res == Z_OK) && (strm.avail_in > 0));
+        }
+        if ((res != Z_OK) && (res != Z_STREAM_END)) {
+            mapRes["status"] = "error";
+            mapRes["error_code"] = "gzip: ";
+            mapRes.get("error_code").append(strm.msg);
+            LOG(INFO) + "gzip error: " + strm.msg;
+        }
+        inflateEnd(&strm);
+        free(decoded);
+    } else
+#endif
     mapRes["body"].assign( resp.getCharData(), resp.getDataSize() );
 
     oResult.set(mapRes);

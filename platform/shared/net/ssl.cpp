@@ -57,10 +57,10 @@ void rho_ssl_shutdown(void *storage)
     return GETSSL->shutdown(storage);
 }
 
-ssize_t rho_ssl_send(const void *mem, size_t len, void *storage)
+ssize_t rho_ssl_send(const void *mem, size_t len, int* wouldblock, void *storage)
 {
     RAWTRACEC("rho_ssl", "rho_ssl_send");
-    return GETSSL->send(mem, len, storage);
+    return GETSSL->send(mem, len, wouldblock, storage);
 }
 
 ssize_t rho_ssl_recv(char *buf, size_t size, int *wouldblock, void *storage)

@@ -47,16 +47,6 @@ void Curl_rhossl_session_free(void *ptr);
 int Curl_rhossl_init(void);
 void Curl_rhossl_cleanup(void);
 
-ssize_t Curl_rhossl_send(struct connectdata *conn,
-                         int sockindex,
-                         const void *mem,
-                         size_t len);
-ssize_t Curl_rhossl_recv(struct connectdata *conn,
-                         int sockindex,
-                         char *buf,
-                         size_t size,
-                         bool *wouldblock);
-
 size_t Curl_rhossl_version(char *buffer, size_t size);
 
 int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex);
@@ -73,8 +63,6 @@ int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex);
 #define curlssl_set_engine(x,y) (x=x, y=y, CURLE_FAILED_INIT)
 #define curlssl_set_engine_default(x) (x=x, CURLE_FAILED_INIT)
 #define curlssl_engines_list(x) (x=x, (struct curl_slist *)NULL)
-#define curlssl_send Curl_rhossl_send
-#define curlssl_recv Curl_rhossl_recv
 #define curlssl_version Curl_rhossl_version
 #define curlssl_check_cxn(x) (x=x, -1)
 #define curlssl_data_pending(x,y) (x=x, y=y, 0)

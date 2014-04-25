@@ -55,7 +55,7 @@ void SSLImpl::shutdown(void *storage)
 {
 }
 
-ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
+ssize_t SSLImpl::send(const void *mem, size_t len, int* wouldblock, void *storage)
 {
     return 0;
 }

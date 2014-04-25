@@ -48,6 +48,16 @@
 /* Define if you have the <limits.h> header file.  */
 #define HAVE_LIMITS_H 1
 
+#ifndef OS_WP8
+/* if zlib is available */
+#define HAVE_LIBZ 1
+/* if you have the zlib.h header file */
+#define HAVE_ZLIB_H 1
+#else
+/* Define to 1 if you have the <errno.h> header file. */
+#define HAVE_ERRNO_H 1
+#endif //!OS_WP8
+
 /* Define if you need the malloc.h header file even with stdlib.h  */
 #if !defined(__SALFORDC__) && !defined(__POCC__)
 #define NEED_MALLOC_H 1
@@ -131,6 +141,13 @@
 /* Define if you have the <ws2tcpip.h> header file.  */
 #ifndef __SALFORDC__
 #define HAVE_WS2TCPIP_H 1
+#endif
+
+#ifdef OS_WP8
+#define HAVE_STRUCT_POLLFD 1
+#define SIZEOF_INT              4
+#define SIZEOF_SHORT            2
+#define SIZEOF_SIZE_T           4
 #endif
 
 /* ---------------------------------------------------------------- */

@@ -125,12 +125,14 @@ void SSLImpl::shutdown(void *storage)
     }
 }
 
-ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
+ssize_t SSLImpl::send(const void *mem, size_t len, int* wouldblock, void *storage)
 {
     ssl_data_t *data = (ssl_data_t*)storage;
     
-    if (!CFWriteStreamCanAcceptBytes(data->writeStream))
-        return 0;
+    if (!CFWriteStreamCanAcceptBytes(data->writeStream)) {
+        *wouldblock = 1;
+        return -1;
+    }
     
     int rc = CFWriteStreamWrite(data->writeStream, (const UInt8 *)mem, len);
     if (rc < 0) {
