@@ -1506,7 +1506,7 @@ namespace "config" do
       end
     end
 
-    if $current_platform == "win32" && $winxpe_build == true
+    if $current_platform == "win32" && $winxpe_build
       $app_config['capabilities'] << 'winxpe'
     end
 
@@ -1559,8 +1559,8 @@ namespace "config" do
     end
     
     $shared_rt_js_appliction = ($js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime'))
-
-    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction == true
+    puts "%%%_%%% $shared_rt_js_appliction = #{$js_application}"
+    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction
 
     if $current_platform == "bb"
       make_application_build_config_java_file()
@@ -1994,7 +1994,7 @@ def init_extensions(dest, mode = "")
     write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
   end
   # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build 
-  if $shared_rt_js_appliction == false
+  if !$shared_rt_js_appliction
     if extjsmodulefiles_opt.count > 0
       puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
       write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
@@ -2719,7 +2719,7 @@ task :update_rho_modules_js, [:platform] do |t,args|
 
   minify_inplace( File.join( $app_path, "public/api/rhoapi-modules.js" ), "js" ) if $minify_types.include?('js')
   
-  if $shared_rt_js_appliction == false
+  if !$shared_rt_js_appliction
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORM.js" ), "js" ) if $minify_types.include?('js')
   end
 end
