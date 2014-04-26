@@ -770,8 +770,8 @@ extern "C" void rho_qt_sys_minimize()
 {
     CMainWindow::getInstance()->minimizeWindowCommand();
 }
-extern "C" void rho_qt_sys_bring_to_front()
+extern "C" void rho_qt_sys_restore_window()
 {
-    CMainWindow::getInstance()->bringToFront();
+    CMainWindow::getInstance()->restoreWindowCommand();
 }
 #endif

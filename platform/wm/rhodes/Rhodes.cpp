@@ -425,6 +425,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	LOG(INFO) + "Rhodes started";
 	if (RHOCONF().isExist("http_proxy_url")) {
 		parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
+	} else if (RHOCONF().isExist("http_proxy_uri")) {
+		parseHttpProxyURI(RHOCONF().getString("http_proxy_uri"));
 	}
 
 
