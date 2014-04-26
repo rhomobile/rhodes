@@ -46,6 +46,10 @@ using namespace rho::common;
 using namespace std;
 using namespace stdext;
 
+#if defined(_WIN32_WCE)
+int winversion = 1;
+#endif
+
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
@@ -191,6 +195,7 @@ public :
 
     bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( );
     HRESULT PreMessageLoop(int nShowCmd) throw();
+	HRESULT PostMessageLoop() throw();
     void RunMessageLoop( ) throw( );
     const rho::String& getRhoRootPath();
     const rho::String& getRhoRuntimePath();
@@ -359,11 +364,11 @@ extern "C" void rho_wm_impl_CheckLicense();
 // error code => Failure. Skip both RunMessageLoop() and PostMessageLoop().
 HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 {
-    HRESULT hr = __super::PreMessageLoop(nShowCmd);
+    /*HRESULT hr = __super::PreMessageLoop(nShowCmd);
     if (FAILED(hr))
     {
         return hr;
-    }
+    }*/
     // Note: In this sample, we don't respond differently to different hr success codes.
 
     SetLastError(0);
@@ -688,6 +693,11 @@ void CRhodesModule::createAutoStartShortcut()
     DWORD dwRes = SHCreateShortcut( (LPTSTR)strLnk.c_str(), (LPTSTR)strAppPath.c_str());
 #endif
 
+}
+
+HRESULT CRhodesModule::PostMessageLoop() throw()
+{
+	return 0;
 }
 
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,

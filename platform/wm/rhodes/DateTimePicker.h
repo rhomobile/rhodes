@@ -69,11 +69,11 @@ public:
 };
 
 class CDateTimePickerDialog : public 
-#if defined(OS_PLATFORM_MOTCE)
-	COkCancelModalDialog<CDateTimePickerDialog>
-#else
+//#if defined(OS_PLATFORM_MOTCE)
+//	COkCancelModalDialog<CDateTimePickerDialog>
+//#else
 	CDialogImpl <CDateTimePickerDialog>
-#endif
+//#endif
 {
 public:
 	CDateTimePickerDialog  (const CDateTimeMessage *msg);
@@ -106,11 +106,11 @@ private:
 
 
 class CTimePickerDialog : public
-#if defined(OS_PLATFORM_MOTCE)
-	COkCancelModalDialog<CTimePickerDialog>
-#else
+//#if defined(OS_PLATFORM_MOTCE)
+	//COkCancelModalDialog<CTimePickerDialog>
+//#else
 	CDialogImpl <CTimePickerDialog>
-#endif
+//#endif
 {
 public:
 	CTimePickerDialog  (const CDateTimeMessage *msg);
