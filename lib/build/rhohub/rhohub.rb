@@ -23,6 +23,8 @@ module Rhohub
         base_url +=  "/apps/#{options[:app_id]}" if options.has_key?(:app_id) # DELETE, SHOW
       elsif resource == 'platforms'
         base_url += "/platforms"
+      elsif resource == 'subscription'
+        base_url += '/subscription'
       else
         base_url += "/app/#{options[:app_id]}/builds" if options.has_key?(:app_id) && !options.has_key?(:id) # POST, INDEX
         base_url += "/app/#{options[:app_id]}/builds/#{options[:id]}"  if options.has_key?(:id) && options.has_key?(:app_id) # DELETE, SHOW

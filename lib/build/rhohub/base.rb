@@ -37,5 +37,10 @@ class Rhohub::Base
     resp = RestClient.get Rhohub.resource_url(options,resource), {:AUTHORIZATION => Rhohub.token, :content_type => :json, :accept => :json}
     resp.body
   end
+
+  def self.check(options,resource)
+    resp = RestClient.get Rhohub.resource_url(options,resource), {:AUTHORIZATION => Rhohub.token, :content_type => :json, :accept => :json}
+    resp.body
+  end
   
 end
