@@ -87,7 +87,10 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 	else {
 		SetWindowText(_T("Date"));
 	}
-#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
+#if defined(_WIN32_WCE)
+if(winversion == 1)
+{
+	//#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
 
     SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
     RHO_ASSERT(SHInitDialog(&shidi));
@@ -121,8 +124,10 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 	}
 
 	GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
-
-#elif defined( OS_PLATFORM_MOTCE )
+}
+else if(winversion ==2)
+{
+//#elif defined( OS_PLATFORM_MOTCE )
 
 	//CreateButtons();
 	//GotoDlgCtrl(m_btnOk);
@@ -132,6 +137,8 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 
     CommandBar_Show(m_hWndCommandBar, TRUE);
 
+//#endif
+}
 #endif
 
 	DLG_ITEM_SET_FONT_BOLD (IDC_DATE_STATIC);
@@ -233,7 +240,10 @@ LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 		SetWindowText(_T("Date"));
 	}
 
-#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
+#if defined(_WIN32_WCE)
+//#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
+	if(winversion == 1)
+	{
 
     SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
     RHO_ASSERT(SHInitDialog(&shidi));
@@ -250,8 +260,10 @@ LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 		UnixTimeToSystemTime(m_initialTime, &start_time);
 		DateTime_SetSystemtime( GetDlgItem(IDC_TIME_CTRL), GDT_VALID, &start_time);
 	}
-
-#elif defined( OS_PLATFORM_MOTCE )
+	}
+	else if(winversion == 2)
+	{
+//#elif defined( OS_PLATFORM_MOTCE )
 
 	//CreateButtons();
 	//GotoDlgCtrl(m_btnOk);
@@ -260,7 +272,8 @@ LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     CommandBar_AddAdornments(m_hWndCommandBar, CMDBAR_OK, 0 );
 
     CommandBar_Show(m_hWndCommandBar, TRUE);
-
+	}
+//#endif
 #endif
 
 	DLG_ITEM_SET_FONT_BOLD (IDC_TIME_STATIC);

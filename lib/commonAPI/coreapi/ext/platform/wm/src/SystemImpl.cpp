@@ -178,17 +178,19 @@ static void _toHexString(int i, String& strRes, int radix)
 void CSystemImpl::getPhoneId(CMethodResult& oResult)
 {
     String strDeviceID;
-
-#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
+#if defined( OS_WINCE )
+	if(winversion == 1)
+	{
+//#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
     BYTE rgDeviceId[20];
     DWORD cbDeviceId = sizeof(rgDeviceId);
     String strAppData = "RHODES_" + RHODESAPP().getAppName() + "_DEVICEID";
 
-    HRESULT hr = GetDeviceUniqueID( (PBYTE)(strAppData.c_str()),
+    HRESULT hr = 0;/*GetDeviceUniqueID( (PBYTE)(strAppData.c_str()),
        strAppData.length(),
        GETDEVICEUNIQUEID_V1,
        rgDeviceId,
-       &cbDeviceId);
+       &cbDeviceId);*/
 
     if ( SUCCEEDED(hr) )
     {
@@ -197,7 +199,10 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
             _toHexString( rgDeviceId[i], strDeviceID, 16);
         }
     }
-#elif defined( OS_PLATFORM_MOTCE )
+	}
+	else if(winversion == 2)
+	{
+//#elif defined( OS_PLATFORM_MOTCE )
 	UNITID_EX uuid;
     memset(&uuid, 0, sizeof uuid);
     uuid.StructInfo.dwAllocated = sizeof uuid;
@@ -211,8 +216,9 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
             _toHexString( uuid.byUUID[i], strDeviceID, 16);
         }
     }
+	}
+//#endif
 #endif
-
     oResult.set( strDeviceID );
 }
 
@@ -271,11 +277,13 @@ void CSystemImpl::getCountry(CMethodResult& oResult)
 
 void CSystemImpl::getHasCalendar(CMethodResult& oResult)
 {
-#if defined( OS_PLATFORM_MOTCE )
-    oResult.set(false);
-#else
-    oResult.set(true);
-#endif
+//#if defined( OS_PLATFORM_MOTCE )
+	if(winversion == 2)
+		oResult.set(false);
+//#else
+	else
+		oResult.set(true);
+//#endif
 }
 
 void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
@@ -526,9 +534,12 @@ void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult)
 
 extern "C" int rho_wmsys_has_touchscreen()
 {
-#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
+//#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
+	if(winversion != 1)
         return 1;
-#else
+	else
+	{
+//#else
         BOOL bRet;
         TCHAR oem[257];
 #ifndef WIN32_PLATFORM_WFSP
@@ -551,7 +562,8 @@ extern "C" int rho_wmsys_has_touchscreen()
         int aMouseInfo[3] = {0};
         bRet = SystemParametersInfo(SPI_GETMOUSE, sizeof(aMouseInfo), aMouseInfo, 0);
         return (bRet && aMouseInfo[0] != 0) ? 1 : 0;
-#endif
+	}
+//#endif
 }
 
 void CSystemImpl::getHasTouchscreen(CMethodResult& oResult)
@@ -627,7 +639,9 @@ static LONG _openRegAppPath( const rho::String& applicationName, CRegKey& oKey, 
 void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult)
 {
     bool bRet = false;
-#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
+//#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
+	if(winversion != 1)
+	{
     CRegKey oKey;
     StringW strKeyPath;
     LONG res = _openRegAppPath(applicationName, oKey, strKeyPath);
@@ -643,7 +657,10 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
 	}
 #endif
 	
-#else
+//#else
+	}
+	else
+	{
     CFilePath oPath( applicationName );
     StringW strAppName = convertToStringW(oPath.getFolderName());
     
@@ -656,7 +673,7 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
 //#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
     HRESULT hr         = E_FAIL;
     LPWSTR wszOutput   = NULL;
-    hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+    hr = 0;//DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
     if (FAILED(hr) || !wszOutput )
         LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
     else
@@ -669,8 +686,8 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
     if ( wszOutput )
         free( wszOutput );
 //#endif
-#endif
-
+//#endif
+	}
     oResult.set(bRet);
 }
 
@@ -929,11 +946,13 @@ void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
 
 void CSystemImpl::getHasCamera(CMethodResult& oResult)
 {
-#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
-    oResult.set(false);
-#else
-    oResult.set(true);
-#endif
+//#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
+	if(winversion != 1)
+		oResult.set(false);
+//#else
+	else
+		oResult.set(true);
+//#endif
 
 }
 
