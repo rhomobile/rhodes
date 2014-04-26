@@ -1636,7 +1636,7 @@ void CRhodesApp::initAppUrls()
     m_isJSFSApp = false;
 #ifndef OS_WINCE
 #ifdef RHO_NO_RUBY_API
- 	  m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
+    m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
 #endif
 #endif
 
@@ -1663,13 +1663,13 @@ void CRhodesApp::initAppUrls()
 
     //write local server url to file
 #ifdef OS_WINCE
-    String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
-    CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
-    modifyRhoApiFile();
+    if (!m_isJSFSApp)
+    {
+        String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
+        CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
+        modifyRhoApiFile();
+    }
 #endif
-    
-
-
 }
 
 void CRhodesApp::modifyRhoApiFile()

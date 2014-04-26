@@ -477,6 +477,13 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     if (RHOCONF().getBool("Application.autoStart"))
         createAutoStartShortcut();
 
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
+        String spath = convertToStringA(rho_wmimpl_get_startpage());
+        RHOCONF().setString("start_path", spath, false);
+    }
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
 
     bool bRE1App = false;
@@ -487,13 +494,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 
     RHODESAPP().setJSApplication(bRE1App || _AtlModule.isJSApplication());
-
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
-        String spath = convertToStringA(rho_wmimpl_get_startpage());
-        RHOCONF().setString("start_path", spath, false);
-    }
-#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
     DWORD dwStyle = m_bMinimized ? 0 : WS_VISIBLE;
 
