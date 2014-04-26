@@ -519,7 +519,6 @@ def get_app_list(token, proxy)
     else
       RestClient.proxy = ENV['http_proxy']
     end
-    Rhohub.url = "https://app.rhohub.com/api/v1"
     result = JSON.parse(Rhohub::App.list())
   rescue Exception => e
     puts "could not get result"
@@ -529,9 +528,27 @@ def get_app_list(token, proxy)
   result
 end
 
+def get_conf(section, key, default)
+  result = nil
+  result = $app_config[section][key] unless $app_config[section].nil?
+  result = $config[section][key] if result.nil? and !$config[section].nil?
+  result = default if result.nil?
+
+  result
+end
+
+$def_rhohub_url = 'https://app.rhohub.com/api/v1'
+
 namespace "token" do
   task :initialize => "config:initialize" do
-    SiteChecker.site = "https://app.rhohub.com/"
+    $rhohub = get_conf('rhohub', 'url', $def_rhohub_url) 
+
+    if ($rhohub != $def_rhohub_url)
+      puts "Using alternative #{$rhohub} url"
+    end
+
+    SiteChecker.site = $rhohub
+    Rhohub.url = $rhohub
     SiteChecker.proxy = $proxy
 
     $rhodes_home = File.join(Dir.home(),'.rhomobile')
@@ -767,7 +784,7 @@ def http_get(url, proxy, save_to, show_info = false)
   end
 
   header_resp = nil
-  
+
   http.start {
     header_resp = http.head(uri.path)
   }
@@ -780,7 +797,7 @@ def http_get(url, proxy, save_to, show_info = false)
     end
   end
 
-  puts "Downloading #{url}, size #{header_resp.content_length}" if show_info
+  puts "Downloading #{url}, size #{header_resp.content_length.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1'")} bytes" if show_info
 
   if save_to.nil?
     res = ""
@@ -792,18 +809,19 @@ def http_get(url, proxy, save_to, show_info = false)
     f = File.open(f_name, "wb")
     begin
       result = false
+      puts "0%#{'.'*(50-6)}100%"
       http.request_get(uri.path) do |resp|
         length = resp['Content-Length'].to_i
         last_p = 0
+        done = 0
         resp.read_body do |segment|
           f.write(segment)
           if show_info
-            done = (done || 0) + segment.length
-            progress = done.quo(length) * 100
-            dot = (progress/25).to_i
-            if dot != last_p
-              print "."
-              last_p = dot
+            done += segment.length
+            dot = (done * 50 / length).to_i
+            while last_p < dot
+              print "="
+              last_p += 1
             end
           end
         end
@@ -834,13 +852,13 @@ def show_build_infromation(build_hash, proxy)
 
   dl = build_hash["download_link"]
 
-  if !dl.nil?
+  if !(dl.nil? || dl.empty?)
     puts "  Download link : #{dl.underline}"
   end
 end
 
 def show_build_messages(build_hash, proxy, save_to)
-  if build_hash["status"] == "failed" 
+  if build_hash["status"] == "failed"
     if !(build_hash["download_link"].nil? || build_hash["download_link"].empty?)
       error_file = http_get(build_hash["download_link"], proxy, save_to)
 
@@ -936,8 +954,6 @@ def wait_and_get_download_link(app_id, build_id, proxy)
   app_request = {:app_id => app_id, :id => build_id}
   last_stat = ""
   status = ""
-
-  puts "#{app_request.inspect}"
 
   print("Application build progress: ")
 
@@ -1051,17 +1067,14 @@ namespace "rhohub" do
   task :download, [:build_id] => [:initialize] do |t, args|
     builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
 
-    puts JSON.pretty_generate(builds)
-
     if !builds.empty?
 
       build_id = args.build_id
 
       if build_id.nil? || build_id.empty?
-        puts "Build id is not set, downloading latest one"
-        result = builds.max_by{|l| l["id"]}
-        puts result
+        result = builds.max_by{|l| l["id"].to_i}
         build_id = result["id"]
+        puts "Build id is not set, downloading latest one (#{build_id})"
         #builds.sort{|a, b| b["id"]<=>a["id"]}.first
       else
         build_id = args.build_id.to_i
@@ -1072,7 +1085,7 @@ namespace "rhohub" do
       if !build_hash.nil?
         successfull, link = wait_and_get_download_link($rhohub_app_id, build_id, $proxy)
 
-        result = http_get(build_hash["download_link"], $proxy, $rhohub_home, true)
+        result = http_get(link, $proxy, $rhohub_home, true)
 
         puts "Check #{result}" unless result.nil?
       else
@@ -1083,13 +1096,37 @@ namespace "rhohub" do
         else
           puts "Could not find #{build_id}"
         end
-      end      
+      end
     else
       puts "Nothing to download"
     end
   end
 
   $rhodes_ver = '3.5.1.14'
+  #$rhodes_ver = '4.0.0'
+
+  def do_platform_build(platform_name, platform_list, config_override = nil)
+    platform_version = find_platform_version(platform_name, platform_list, config_override, true)
+
+    puts "Running rhohub build using #{platform_version[:tag]} command"
+
+    build_flags = {
+      :build =>
+      {
+        'target_device' => platform_version[:tag],
+        'version_tag' => "master",
+        'rhodes_version' => $rhodes_ver
+      }
+    }
+
+    build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
+
+    if (!build_id.nil?)
+      show_build_infromation(res, $proxy)
+    end
+
+    check_rhohub_result(res)
+  end
 
   namespace :build do
     desc "Prepare for cloud build"
@@ -1102,26 +1139,7 @@ namespace "rhohub" do
       task :production => ["build:initialize"] do
         $build_platform = "android"
 
-        platform_version = find_platform_version($build_platform, $platform_list, nil, true)
-
-        puts "Running rhohub build using #{platform_version[:tag]} command"
-
-        build_flags = {
-          :build =>
-          {
-            'target_device' => platform_version[:tag],
-            'version_tag' => "master",
-            'rhodes_version' => $rhodes_ver
-          }
-        }
-
-        build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
-
-        if (!build_id.nil?)
-          show_build_infromation(res, $proxy)
-        end
-
-        check_rhohub_result(res)
+        do_platform_build( $build_platform, $platform_list)
       end
     end
 
@@ -1130,106 +1148,32 @@ namespace "rhohub" do
       task :production => ["build:initialize"] do
         $build_platform = "wm"
 
-        platform_version = find_platform_version($build_platform, $platform_list, nil, true)
-
-        puts "Running rhohub build using #{platform_version[:tag]} command"
-
-        build_flags = {
-          :build =>
-          {
-            'target_device' => platform_version[:tag],
-            'version_tag' => "master",
-            'rhodes_version' => $rhodes_ver
-          }
-        }
-
-        build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
-
-        if (!build_id.nil?)
-          show_build_infromation(res, $proxy)
-        end
-
-        check_rhohub_result(res)
+        do_platform_build( $build_platform, $platform_list)
       end
     end
 
     namespace :iphone do
-      desc "Build iphone production version"
+      desc "Build iphone development version"
       task :development => ["build:initialize"] do
         $build_platform = "iphone"
 
-        platform_version = find_platform_version($build_platform, $platform_list, 'development', true)
-
-        puts "Running rhohub build using #{platform_version[:tag]} command"
-
-        build_flags = {
-          :build =>
-          {
-            'target_device' => platform_version[:tag],
-            'version_tag' => "master",
-            'rhodes_version' => $rhodes_ver
-          }
-        }
-
-        build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
-
-        if (!build_id.nil?)
-          show_build_infromation(res, $proxy)
-        end
-
-        check_rhohub_result(res)
+        do_platform_build( $build_platform, $platform_list, 'development')
       end
 
+      desc "Build iphone distribution version"
       task :distribution => ["build:initialize"] do
         $build_platform = "iphone"
 
-        platform_version = find_platform_version($build_platform, $platform_list, 'distribution', true)
-
-        puts "Running rhohub build using #{platform_version[:tag]} command"
-
-        build_flags = {
-          :build =>
-          {
-            'target_device' => platform_version[:tag],
-            'version_tag' => "master",
-            'rhodes_version' => $rhodes_ver
-          }
-        }
-
-        build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
-
-        if (!build_id.nil?)
-          show_build_infromation(res, $proxy)
-        end
-
-        check_rhohub_result(res)
+        do_platform_build( $build_platform, $platform_list, 'distribution')
       end
     end
+
     namespace :win32 do
       desc "Build win32 production version"
       task :production => ["build:initialize"] do
         $build_platform = "win32"
 
-        platform_version = find_platform_version($build_platform, $platform_list, true)
-
-        puts "Running rhohub build using #{platform_version[:tag]} command"
-
-        build_flags = {
-          :build =>
-          {
-            'target_device' => platform_version[:tag],
-            'version_tag' => "master",
-            'rhodes_version' => $rhodes_ver
-          }
-        }
-
-        build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
-
-        if (!build_id.nil?)
-          show_build_infromation(res, $proxy)
-        end
-
-        check_rhohub_result(res)
+        do_platform_build( $build_platform, $platform_list)
       end
     end
   end
@@ -1254,7 +1198,7 @@ namespace "config" do
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
 
-    $proxy = URI("https://app.rhohub.com/api/v1").find_proxy()
+    $proxy = URI($def_rhohub_url).find_proxy()
 
     conn = $config['connection']
 
@@ -1562,7 +1506,7 @@ namespace "config" do
       end
     end
 
-    if $current_platform == "win32" && $winxpe_build == true
+    if $current_platform == "win32" && $winxpe_build
       $app_config['capabilities'] << 'winxpe'
     end
 
@@ -1614,9 +1558,9 @@ namespace "config" do
       exit(1)
     end
     
-    $shraed_rt_js_appliction = $js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime')
-
-    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shraed_rt_js_appliction 
+    $shared_rt_js_appliction = ($js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime'))
+    puts "%%%_%%% $shared_rt_js_appliction = #{$js_application}"
+    $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction
 
     if $current_platform == "bb"
       make_application_build_config_java_file()
@@ -2050,7 +1994,7 @@ def init_extensions(dest, mode = "")
     write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
   end
   # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build 
-  if $shraed_rt_js_appliction == false
+  if !$shared_rt_js_appliction
     if extjsmodulefiles_opt.count > 0
       puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
       write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
@@ -2775,7 +2719,7 @@ task :update_rho_modules_js, [:platform] do |t,args|
 
   minify_inplace( File.join( $app_path, "public/api/rhoapi-modules.js" ), "js" ) if $minify_types.include?('js')
   
-  if $shraed_rt_js_appliction == false
+  if !$shared_rt_js_appliction
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORM.js" ), "js" ) if $minify_types.include?('js')
   end
 end

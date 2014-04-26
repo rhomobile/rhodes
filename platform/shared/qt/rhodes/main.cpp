@@ -134,6 +134,13 @@ int main(int argc, char *argv[])
                 free(proxy);
             } else
                 RAWLOGC_INFO("Main", "invalid value for \"http_proxy_url\" cmd parameter");
+        } else if (strncasecmp("-http_proxy_uri",argv[i],15)==0) {
+            char *proxy = parseToken(argv[i]);
+            if (proxy) {
+                m_strHttpProxy = proxy;
+                free(proxy);
+            } else
+                RAWLOGC_INFO("Main", "invalid value for \"http_proxy_uri\" cmd parameter");
 #ifdef RHODES_EMULATOR
         } else if ((strncasecmp("-approot",argv[i],8)==0) || (isJSApp = (strncasecmp("-jsapproot",argv[i],10)==0))) {
             char* path = parseToken(argv[i]);
@@ -208,6 +215,8 @@ int main(int argc, char *argv[])
     } else {
         if (RHOCONF().isExist("http_proxy_url")) {
             parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
+        } else if (RHOCONF().isExist("http_proxy_uri")) {
+            parseHttpProxyURI(RHOCONF().getString("http_proxy_uri"));
         }
     }
 
