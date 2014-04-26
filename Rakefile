@@ -484,7 +484,7 @@ def check_field(field, salt, iv)
   code = decode.slice(0, decode.length - len)
   code_hash = decode.slice(decode.length - len, len)
 
-  return code_hash, code_hash == crc(code)
+  return code, code_hash == crc(code)
 end
 
 def decode_validate_token(token_hash, salt, token_preamble_len)
@@ -612,7 +612,11 @@ def check_update_token_file(token_file, token_preamble_len, token_hash, salt)
 end
 
 def check_subscription_re(subscr)
-  resp = JSON.parse(subscr)
+  begin
+    resp = JSON.parse(subscr)
+  rescue Exception => e
+    return false
+  end
   unsigned = subscr.gsub(/"signature":"[^"]*"/, '"signature":""') 
   hash = Digest::SHA1.hexdigest(unsigned)
 
