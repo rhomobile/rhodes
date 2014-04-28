@@ -34,8 +34,8 @@
 #include "net/URI.h"
 #include "common/RhoConf.h"
 
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-#include <connmgr.h>
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+#include "connmgr.h"
 #endif
 
 #ifdef OS_WINCE

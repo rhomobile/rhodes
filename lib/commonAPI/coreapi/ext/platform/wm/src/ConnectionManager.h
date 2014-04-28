@@ -10,14 +10,16 @@
 
 //#include "../../common/Public/PBPlugin.h"
 #pragma once
-#include <snapi.h>
-#include <regext.h>
+#include "snapi.h"
+#include "regext.h"
 #define INITGUID
 ///  Globally unique identifier for the Internet
 static const GUID IID_DestNetInternet = {0x436ef144, 0xb4fb, 0x4863, 0xa0, 0x41, 0x8f, 0x90, 0x5a, 0x62, 0xc5, 0x72};
 ///  Time (in milliseconds) between each watchdog check that we haven't lost the connection from Connection Manager
 const int CONNECTION_MANAGER_WATCHDOG_TIMER_TIMEOUT = 15000;
+//#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 #include "ConnMgr.h"
+//#endif
 #define WM_USER_CONNECTION_MANGER_STATUS	WM_USER + 30
 #include "logging/RhoLog.h"
 #include "api_generator/MethodResult.h"
