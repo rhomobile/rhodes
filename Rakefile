@@ -367,6 +367,7 @@ def get_conf(section, key, default)
   result = nil
   result = $app_config[section][key] unless $app_config[section].nil?
   result = $config[section][key] if result.nil? and !$config[section].nil?
+  result = $shared_conf[section][key] if result.nil? and !$shared_conf[section].nil?
   result = default if result.nil?
 
   result
@@ -1269,55 +1270,43 @@ def create_rhodes_home()
   home
 end
 
-def read_config(file)
-  config = {}
-  if File.exist?(file)
-    begin
-      conf = JSON.parse(File.read(file))
-    rescue Exception => e
-      conf = {}
+def find_proxy()
+  # proxy url priority starting from maximum
+  priority = [ "https_proxy", "http_proxy", "all_proxy" ].reverse
+
+  proxy = nil
+
+  best_proxy = ENV.max_by do |k, v|
+    val = priority.index(k.downcase) 
+    if val.nil?
+      -1
+    else
+      val
     end
-    config = conf
   end
 
-  config
-end
+  # check for 
+  if !priority.index(best_proxy[0].downcase).nil?
+    proxy = best_proxy[1]
 
-def write_config(file, config)
-  File.open(file, "wb") { |io|
-    io.write(JSON.pretty_generate(config))
-  }
+    prefix = ""
+
+    case best_proxy[0].downcase
+    when "https_proxy"
+      prefix = "https://"
+    else
+      prefix = "http://"
+    end
+
+    if !proxy.include?("://")
+      proxy = prefix + proxy
+    end
+  end
+
+  proxy
 end
 
 namespace "config" do
-
-  namespace :proxy do
-    desc "Set proxy url, if parameter is omitted then proxy url will be removed"
-    task :set, [:proxy_url] => ["config:initialize"] do |t, args|
-      args.with_defaults(:proxy_url => nil)
-      p_url = args.proxy_url
-      if p_url.nil?
-        $shared_conf.delete("proxy")
-        puts "Proxy url removed"
-      else
-        if !p_url.empty?
-          $shared_conf["proxy"] = p_url
-          puts "Proxy url is set to: #{p_url}"
-        end
-      end
-      write_config($conf_file,$shared_conf)
-    end
-    desc "Show proxy configuration"
-    task :get => ["config:initialize"] do
-      p_url = $shared_conf["proxy"]
-      if !p_url.nil?
-        puts "Proxy url is set to: #{p_url}"
-      else
-        puts "Proxy url is not set"
-      end
-    end
-  end
-
   task :initialize do
     puts "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
 
@@ -1326,30 +1315,21 @@ namespace "config" do
 
     buildyml = 'rhobuild.yml'
 
+    # read shared config
+    $rhodes_home = create_rhodes_home()
+    conf_file = File.join($rhodes_home,buildyml)
+    $shared_conf = {}
+    if File.exists?(conf_file)
+      $shared_conf = Jake.config(File.open(File.join($rhodes_home,buildyml)))
+    end
+
     $current_platform_bridge = $current_platform unless $current_platform_bridge
 
+    # read gem folder build config
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
-
-    $rhodes_home = create_rhodes_home()
-
-    $conf_file = File.join($rhodes_home,'shared.cfg')
-    $shared_conf = read_config($conf_file)
-
-    proxy_url = get_conf('connection', 'proxy', $shared_conf["proxy"])
-
-    if !proxy_url.nil? && !proxy_url.empty?
-      if !proxy_url.start_with?('http')
-        proxy_url = 'http://' + proxy_url
-      end
-      $proxy = proxy_url
-    end
-
-    if !($proxy.nil? || $proxy.empty?)
-      puts "Using proxy: #{$proxy}"
-    end
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
@@ -1379,6 +1359,7 @@ namespace "config" do
     ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
     ENV["APP_TYPE"]     = "rhodes"
 
+    # read application config
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml"))) if $app_config_disable_reread != true
     if File.exists?(File.join($app_path, "app_rakefile"))
       load File.join($app_path, "app_rakefile")
@@ -1387,6 +1368,12 @@ namespace "config" do
     end
 
     Jake.set_bbver($app_config["bbver"].to_s)
+
+    $proxy = get_conf('connection', 'proxy', find_proxy())
+
+    if !($proxy.nil? || $proxy.empty?)
+      puts "Using proxy: #{$proxy}"
+    end
   end
 
   task :common => ["token:setup"] do
