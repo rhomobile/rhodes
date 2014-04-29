@@ -634,13 +634,15 @@ namespace "token" do
     $rhohub = get_conf('rhohub', 'url', $def_rhohub_url) 
 
     if ($rhohub != $def_rhohub_url)
-      puts "Using alternative #{$rhohub} url"
+      puts "Using alternative rhohub api url: #{$rhohub}"
     end
 
     SiteChecker.site = $rhohub
     Rhohub.url = $rhohub
-    SiteChecker.proxy = $proxy
-    RestClient.proxy = $proxy
+    if !(proxy.nil? || proxy.empty?)
+      SiteChecker.proxy = $proxy
+      RestClient.proxy = $proxy
+    end
 
     $rhodes_home = File.join(Dir.home(),'.rhomobile')
     if !File.exist?($rhodes_home)
@@ -1280,12 +1282,17 @@ namespace "config" do
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
 
-    $proxy = URI($def_rhohub_url).find_proxy()
+    proxy_url = get_conf('connection', 'proxy', nil)
 
-    conn = $config['connection']
+    if !proxy_url.nil? && !proxy_url.empty? 
+      if !proxy_url.start_with?('http')
+        proxy_url = 'http://' + proxy_url
+      end
+      $proxy = proxy_url
+    end
 
-    if ($proxy.nil?) && (!conn.nil?) && (!conn['proxy'].nil?)
-      $proxy = conn['proxy']
+    if !($proxy.nil? || $proxy.empty?)
+      puts "Using proxy: #{$proxy}"
     end
 
     if RUBY_PLATFORM =~ /(win|w)32$/
