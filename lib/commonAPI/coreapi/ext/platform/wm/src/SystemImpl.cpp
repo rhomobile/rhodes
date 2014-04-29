@@ -11,9 +11,9 @@
 #include "Registry.h"
 #include "Intents.h"
 
-#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
-#include <cfgmgrapi.h>
-#include <getdeviceuniqueid.h>
+#if defined( OS_WINCE )// && !defined( OS_PLATFORM_MOTCE )
+#include "cfgmgrapi.h"
+#include "getdeviceuniqueid.h"
 #endif
 
 //#ifndef RCMCAPI_H_
@@ -186,11 +186,11 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
     DWORD cbDeviceId = sizeof(rgDeviceId);
     String strAppData = "RHODES_" + RHODESAPP().getAppName() + "_DEVICEID";
 
-    HRESULT hr = 0;/*GetDeviceUniqueID( (PBYTE)(strAppData.c_str()),
+    HRESULT hr = GetDeviceUniqueID( (PBYTE)(strAppData.c_str()),
        strAppData.length(),
        GETDEVICEUNIQUEID_V1,
        rgDeviceId,
-       &cbDeviceId);*/
+       &cbDeviceId);
 
     if ( SUCCEEDED(hr) )
     {
@@ -673,7 +673,7 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
 //#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
     HRESULT hr         = E_FAIL;
     LPWSTR wszOutput   = NULL;
-    hr = 0;//DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+    hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
     if (FAILED(hr) || !wszOutput )
         LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
     else
@@ -693,8 +693,10 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
 
 void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMethodResult& oResult)
 {
-#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
-    CRegKey oKey;
+#if defined( OS_WINDOWS_DESKTOP ) || defined(OS_WINCE) 
+    if(winversion != 1)
+	{
+	CRegKey oKey;
     StringW strKeyPath;
     LONG res = _openRegAppPath(applicationName, oKey, strKeyPath);
     if ( res != ERROR_SUCCESS )
@@ -719,34 +721,38 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
 
 		}
 	}
-#else
-    CFilePath oPath( applicationName );
-    StringW strAppName = convertToStringW(oPath.getFolderName());
+	}
+//#else
+	else
+	{
+		CFilePath oPath( applicationName );
+		StringW strAppName = convertToStringW(oPath.getFolderName());
     
-    StringW strRequest = 
-        L"<wap-provisioningdoc><characteristic type=\"UnInstall\">"
-        L"<characteristic type=\"";
-    strRequest += strAppName + L"\">"
-        L"<parm name=\"uninstall\" value=\"1\"/>"
-        L"</characteristic>"
-        L"</characteristic></wap-provisioningdoc>";
+		StringW strRequest = 
+		 L"<wap-provisioningdoc><characteristic type=\"UnInstall\">"
+		 L"<characteristic type=\"";
+		strRequest += strAppName + L"\">"
+		 L"<parm name=\"uninstall\" value=\"1\"/>"
+			L"</characteristic>"
+			L"</characteristic></wap-provisioningdoc>";
 
 //#if defined( OS_WINCE )&& !defined( OS_PLATFORM_MOTCE )
-    HRESULT hr         = E_FAIL;
-    LPWSTR wszOutput   = NULL;
-    hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
-    if (FAILED(hr) || !wszOutput )
-    {
-        LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
-        oResult.setError("System.applicationUninstall failed for: " + applicationName);
+		HRESULT hr         = E_FAIL;
+		LPWSTR wszOutput   = NULL;
+		hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+		if (FAILED(hr) || !wszOutput )
+		{
+			LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
+			oResult.setError("System.applicationUninstall failed for: " + applicationName);
 
-    }
-    else
-    {
-    }
+		}
+		else
+		{
+		}
 
-    if ( wszOutput )
-        free( wszOutput );
+		if ( wszOutput )
+		  free( wszOutput );
+	}
 //#endif
 #endif
 }
