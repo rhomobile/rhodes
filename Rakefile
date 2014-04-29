@@ -362,7 +362,6 @@ namespace "clean" do
   end
 end
 
-
 #------------------------------------------------------------------------
 def get_conf(section, key, default)
   result = nil
@@ -602,8 +601,8 @@ def check_update_token_file(token_file, token_preamble_len, token_hash, salt)
     end
 
     if (!File.exists?(token_file)) || updated
-      File.open(token_file,"w") do |f| 
-        f.write(encode_token(token, salt, token_preamble_len, token_hash[:iv], subcription)) 
+      File.open(token_file,"w") do |f|
+        f.write(encode_token(token, salt, token_preamble_len, token_hash[:iv], subcription))
       end
     end
   end
@@ -617,7 +616,7 @@ def check_subscription_re(subscr)
   rescue Exception => e
     return false
   end
-  unsigned = subscr.gsub(/"signature":"[^"]*"/, '"signature":""') 
+  unsigned = subscr.gsub(/"signature":"[^"]*"/, '"signature":""')
   hash = Digest::SHA1.hexdigest(unsigned)
 
   if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
@@ -681,15 +680,15 @@ namespace "token" do
       result = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
 
       case check_update_token_file($token_file, $token_preamble_len, result, $salt)
-        when 2
-          puts "Token and subscription are valid"
-          $subcription = result[:ft]
-        when 1
-          puts "Token is valid, could not check subcription"
-        when 0
-          puts "Could not check token online"
-        else
-          puts "RhoHub API token is not valid!"
+      when 2
+        puts "Token and subscription are valid"
+        $subcription = result[:ft]
+      when 1
+        puts "Token is valid, could not check subcription"
+      when 0
+        puts "Could not check token online"
+      else
+        puts "RhoHub API token is not valid!"
       end
 
       $token = result[:token]
@@ -733,16 +732,16 @@ namespace "token" do
     if !($token.nil? || $token.empty?)
       t_hash = {:token => $token}
       case check_update_token_file($token_file, $token_preamble_len, t_hash, $salt)
-        when 2
-          puts "Token and subscription are valid"
-          $subcription = t_hash[:ft]
-        when 1
-          puts "Token is valid, could not check subcription"
-        when 0
-          puts "Could not check token online"
-        else
-          puts "RhoHub API token is not valid!"
-          exit 1
+      when 2
+        puts "Token and subscription are valid"
+        $subcription = t_hash[:ft]
+      when 1
+        puts "Token is valid, could not check subcription"
+      when 0
+        puts "Could not check token online"
+      else
+        puts "RhoHub API token is not valid!"
+        exit 1
       end
     end
   end
@@ -781,19 +780,19 @@ You can also paste your RhoHub token right now (or just press enter to stop buil
 
       if tok.empty?
         exit 1
-      else      
+      else
         t_hash = {:token => tok}
         case check_update_token_file($token_file, $token_preamble_len, t_hash, $salt)
-          when 2
-            puts "Token and subscription are valid"
-            $subcription = result[:ft]
-          when 1
-            puts "Token is valid, could not check subcription"
-          when 0
-            puts "Unable to check your token online. It would be tested during next run"
-          else
-            puts "RhoHub API token is not valid!"
-            exit 1
+        when 2
+          puts "Token and subscription are valid"
+          $subcription = result[:ft]
+        when 1
+          puts "Token is valid, could not check subcription"
+        when 0
+          puts "Unable to check your token online. It would be tested during next run"
+        else
+          puts "RhoHub API token is not valid!"
+          exit 1
         end
       end
 
@@ -1709,7 +1708,7 @@ namespace "config" do
       puts '****************************************************************************************'
       exit(1)
     end
-    
+
     $shared_rt_js_appliction = ($js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime'))
     puts "%%%_%%% $shared_rt_js_appliction = #{$js_application}"
     $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction
@@ -1801,7 +1800,7 @@ def add_linker_library(libraryname)
     tmpdir = ENV["TARGET_TEMP_DIR"]
   else
     tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
-    ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+      ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
   end
   $ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
 end
@@ -1816,7 +1815,7 @@ def set_linker_flags
         tmpdir = ENV["TARGET_TEMP_DIR"]
       else
         tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
-        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+          ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
       end
     end
     mkdir_p tmpdir unless File.exist? tmpdir
@@ -2145,7 +2144,7 @@ def init_extensions(dest, mode = "")
     puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
     write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
   end
-  # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build 
+  # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
   if !$shared_rt_js_appliction
     if extjsmodulefiles_opt.count > 0
       puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
@@ -2335,9 +2334,9 @@ def common_bundle_start( startdir, dest)
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
     if $app_config[$config["platform"]] &&
-    $app_config[$config["platform"]]["rhoelements"] &&
-    $app_config[$config["platform"]]["rhoelements"]["config"] &&
-    (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
+        $app_config[$config["platform"]]["rhoelements"] &&
+        $app_config[$config["platform"]]["rhoelements"]["config"] &&
+        (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
 
       $config_xml = File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"])
     elsif $app_config["rhoelements"] && $app_config["rhoelements"]["config"] && (File.exists? File.join(app, $app_config["rhoelements"]["config"]))
@@ -2788,7 +2787,7 @@ namespace "build" do
           Zip::ZipFile.open(new_zip_file, Zip::ZipFile::CREATE)do |zipfile|
             Find.find(root) do |path|
               Find.prune if File.basename(path)[0] == ?.
-              dest = /apps\/(\w.*)/.match(path)
+                dest = /apps\/(\w.*)/.match(path)
               if dest
                 puts '     add file to zip : '+dest[1].to_s
                 zipfile.add(dest[1],path)
@@ -2870,7 +2869,7 @@ task :update_rho_modules_js, [:platform] do |t,args|
   init_extensions( nil, "update_rho_modules_js")
 
   minify_inplace( File.join( $app_path, "public/api/rhoapi-modules.js" ), "js" ) if $minify_types.include?('js')
-  
+
   if !$shared_rt_js_appliction
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORM.js" ), "js" ) if $minify_types.include?('js')
   end
@@ -3179,7 +3178,7 @@ namespace "build" do
 
     Dir.glob("platform/shared/*").each do |f|
       next if f == "platform/shared/ruby" || f == "platform/shared/rubyext" || f == "platform/shared/xruby" || f == "platform/shared/shttpd" ||
-      f == "platform/shared/stlport"  || f == "platform/shared/qt"
+        f == "platform/shared/stlport"  || f == "platform/shared/qt"
       #puts f
       cp_r f, shared_dir #, :preserve => true
     end
