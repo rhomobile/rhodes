@@ -46,8 +46,8 @@
 
 
 
-typedef int (WINAPI* LPFN_BTH_GETMODE_T)	(DWORD* pdwMode);
-typedef int (WINAPI* LPFN_BTH_SETMODE_T)	(DWORD pdwMode);
+typedef int (WINAPI* LPFN_BTH_GETMODE_T)	(DWORD*);
+typedef int (WINAPI* LPFN_BTH_SETMODE_T)	(DWORD);
 
 #define RHO_BT_OK  "OK"
 #define RHO_BT_CANCEL  "CANCEL"

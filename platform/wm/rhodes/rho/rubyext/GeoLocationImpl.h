@@ -26,9 +26,9 @@
 
 #pragma once
 
-#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
+#if defined (_WIN32_WCE)// && !defined( OS_PLATFORM_MOTCE )
 
-#include <gpsapi.h>
+#include "gpsapi.h"
 #include "logging/RhoLog.h"
 
 interface IGPSController

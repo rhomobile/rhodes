@@ -32,7 +32,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 
 
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
 IMPLEMENT_LOGCLASS(CGPSDevice,"GPSDevice");
 IMPLEMENT_LOGCLASS(CGPSController,"GPSController");
 
@@ -472,30 +472,39 @@ void CGPSController::Unlock() {
 extern "C"{
 double rho_geo_latitude() 
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	CGPSController* gps = CGPSController::startInstance();
-	return gps->GetLatitude();
-#else
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetLatitude();
+	}
+//#else
 	return 0.0;
 #endif
 }
 
 double rho_geo_longitude() 
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-  CGPSController* gps = CGPSController::startInstance();
-	return gps->GetLongitude();
-#else
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetLongitude();
+	}
+//#else
 	return 0.0;
 #endif
 }
 
 double rho_geo_altitude() 
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	CGPSController* gps = CGPSController::startInstance();
-	return gps->GetAltitude();
-#else
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetAltitude();
+	}
+//#else
 	return 0.0;
 #endif
 }
@@ -507,28 +516,37 @@ float rho_geo_accuracy()
 
 int rho_geo_known_position() 
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	CGPSController* gps = CGPSController::startInstance();
-	return gps->IsKnownPosition();
-#else
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->IsKnownPosition();
+	}
+//#else
 	return 0;
 #endif
 }
 
 double rho_geo_speed() {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-    CGPSController* gps = CGPSController::startInstance();
-	return gps->GetSpeed();
-#else
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetSpeed();
+	}
+//#else
     return 0.0;
 #endif
 }
 
 int rho_geo_satellites() {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-    CGPSController* gps = CGPSController::startInstance();
-	return gps->GetSatelliteCount();
-#else
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetSatelliteCount();
+	}
+//#else
     return 0;
 #endif
 }
@@ -546,17 +564,19 @@ void rho_geoimpl_settimeout(int nTimeoutSec)
 
 void rho_geoimpl_turngpsoff()
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	CGPSController::TurnGpsOff();
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+		CGPSController::TurnGpsOff();
 #endif
 
 }
 
 int rho_geo_is_available()
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-    return CGPSDevice::isAvailable() ? 1 : 0;
-#else
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+		return CGPSDevice::isAvailable() ? 1 : 0;
+//#else
 	return 0;
 #endif
 }
