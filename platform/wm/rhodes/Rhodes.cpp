@@ -122,7 +122,7 @@ extern "C" bool rho_wmimpl_get_resize_on_sip()
 }
 #endif
 
-#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
+#if defined(_WIN32_WCE) //&& !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
 
 // Global Notification Handle
@@ -364,7 +364,8 @@ extern "C" void rho_wm_impl_CheckLicense();
 // error code => Failure. Skip both RunMessageLoop() and PostMessageLoop().
 HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 {
-    /*HRESULT hr = __super::PreMessageLoop(nShowCmd);
+    HRESULT hr;
+	/*HRESULT hr = __super::PreMessageLoop(nShowCmd);
     if (FAILED(hr))
     {
         return hr;
@@ -549,7 +550,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     //}
 
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
 
     DWORD dwConnCount = 0;
     hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
@@ -595,7 +596,7 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 {
     m_appWindow.getWebKitEngine()->RunMessageLoop(m_appWindow);
 
-#if defined(OS_WINCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined(OS_WINCE)//&& !defined( OS_PLATFORM_MOTCE )
     if (g_hNotify)
         RegistryCloseNotification(g_hNotify);
 

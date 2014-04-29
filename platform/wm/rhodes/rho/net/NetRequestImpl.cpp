@@ -36,6 +36,17 @@
 
 #if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
 #include "connmgr.h"
+typedef HRESULT (WINAPI* LPFN_CONMGR_RELEASECONNECTION_T) (HANDLE, LONG);
+typedef HRESULT (WINAPI* LPFN_CONMGR_ESTABLISHCONNECTION_T)	(CONNMGR_CONNECTIONINFO*,HANDLE*);
+typedef HRESULT (WINAPI* LPFN_CONMGR_MAPURL_T)	(LPCTSTR, GUID*, DWORD*);
+typedef HRESULT (WINAPI* LPFN_CONMGR_CONNECTIONSTATUS_T) (HANDLE, DWORD*);
+
+LPFN_CONMGR_RELEASECONNECTION_T		lpfn_ConMgr_ReleaseConnection = NULL;
+LPFN_CONMGR_ESTABLISHCONNECTION_T	lpfn_ConMgr_EstablishConnection = NULL;
+LPFN_CONMGR_MAPURL_T lpfn_ConMgr_MapUrl = NULL;
+LPFN_CONMGR_CONNECTIONSTATUS_T		lpfn_ConMgr_ConnectionStatus = NULL;
+HMODULE g_hConnManDLL = NULL;	
+extern "C" BOOL LoadConnectionManager();
 #endif
 
 #ifdef OS_WINCE
@@ -63,7 +74,10 @@ CNetRequestImpl::CNetRequestImpl()
 
 void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
-    m_pHeaders = pHeaders;
+	if(winversion == 1 && !g_hConnManDLL)
+		LoadConnectionManager();
+	
+	m_pHeaders = pHeaders;
     m_bCancel = false;
     m_pSession = oSession;
 
@@ -913,9 +927,9 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
         InternetCloseHandle(m_hInternet);
     m_hInternet = NULL;
 
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
     if ( m_hWceConnMgrConnection )
-        ConnMgrReleaseConnection(m_hWceConnMgrConnection, FALSE);
+        lpfn_ConMgr_ReleaseConnection(m_hWceConnMgrConnection, FALSE);
 
     m_hWceConnMgrConnection = NULL;
 #endif //_WIN32_WCE
@@ -924,7 +938,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 
 bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
 	int iNetwork;
 	HRESULT hResult = E_FAIL;
 	DWORD   dwStatus;
@@ -932,14 +946,14 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 	// cleanup the old connection
 	if(NULL != m_hWceConnMgrConnection)
 	{
-		hResult = ConnMgrConnectionStatus( m_hWceConnMgrConnection, &dwStatus );
+		hResult = lpfn_ConMgr_ConnectionStatus( m_hWceConnMgrConnection, &dwStatus );
 		if( SUCCEEDED(hResult) )
 		{
 			LOG(INFO) + "Internet connection exist, use it";
 			if( dwStatus & CONNMGR_STATUS_CONNECTED )
 				return true;
 		}
-		ConnMgrReleaseConnection(m_hWceConnMgrConnection, FALSE);
+		lpfn_ConMgr_ReleaseConnection(m_hWceConnMgrConnection, FALSE);
 		LOG(INFO) + "Internet connection droped, open new one";
 		m_hWceConnMgrConnection = NULL;
 	}
@@ -949,7 +963,7 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 	//CONNMGR_DESTINATION_INFO DestInfo;
 
 	GUID pguid;
-	if( FAILED( ConnMgrMapURL(url, &pguid, NULL) ) )
+	if( FAILED( lpfn_ConMgr_MapUrl(url, &pguid, NULL) ) )
 		return false;
 
 	//while( SUCCEEDED(ConnMgrEnumDestinations(iNetwork++, &DestInfo)))
@@ -967,7 +981,7 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 #endif
 		ConnInfo.guidDestNet = pguid;
 
-		hResult = ConnMgrEstablishConnection(&ConnInfo, &m_hWceConnMgrConnection);
+		hResult = lpfn_ConMgr_EstablishConnection(&ConnInfo, &m_hWceConnMgrConnection);
 
 		// check to see if the attempt failed
 		int count = 0;
@@ -977,7 +991,7 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 			DWORD dwResult = WaitForSingleObject(m_hWceConnMgrConnection, 1000); 
 			if (dwResult == (WAIT_OBJECT_0))
 			{ 
-				hResult=ConnMgrConnectionStatus(m_hWceConnMgrConnection,&dwStatus);
+				hResult=lpfn_ConMgr_ConnectionStatus(m_hWceConnMgrConnection,&dwStatus);
 				if( SUCCEEDED(hResult) )
 				{
 					if( dwStatus & CONNMGR_STATUS_CONNECTED )
@@ -1001,5 +1015,51 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 	return true;
 #endif //_WIN32_WCE
 }
+
+#if defined(_WIN32_WCE)
+extern "C" BOOL LoadConnectionManager()
+{
+	bool bReturnValue = FALSE;
+	g_hConnManDLL = LoadLibrary(L"cellcore.dll");
+	if (!g_hConnManDLL)
+	{
+		//  Error loading CellCore.dll (used for Connection Manager)
+		LOG(INFO) + "Failed to load CellCore.dll, WAN connectivity will not be available";
+	}
+	else
+	{
+		lpfn_ConMgr_EstablishConnection = 
+			(LPFN_CONMGR_ESTABLISHCONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrEstablishConnection"));
+		lpfn_ConMgr_ReleaseConnection = 
+			(LPFN_CONMGR_RELEASECONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrReleaseConnection"));
+		lpfn_ConMgr_MapUrl = 
+			(LPFN_CONMGR_MAPURL_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrMapUrl"));
+		lpfn_ConMgr_ConnectionStatus = 
+			(LPFN_CONMGR_CONNECTIONSTATUS_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrConnectionStatus"));
+
+		if (!lpfn_ConMgr_EstablishConnection)
+		{
+			LOG(ERROR) + "Unable to load ConnMgrEstablishConnection";
+			bReturnValue = FALSE;
+		}
+		else if (!lpfn_ConMgr_ReleaseConnection)
+		{
+			LOG(ERROR) + "Unable to load ConnMgrReleaseConnection";
+		}
+		else if (!lpfn_ConMgr_MapUrl)
+		{
+			LOG(ERROR) + "Unable to load ConnMgrMapUrl";
+		}
+		else if (!lpfn_ConMgr_ConnectionStatus)
+		{
+			LOG(ERROR) + "Unable to load ConnMgrConnectionStatus";
+		}
+		else
+			bReturnValue = TRUE;
+	}
+	return bReturnValue;
+}
+#endif
+
 }
 }
