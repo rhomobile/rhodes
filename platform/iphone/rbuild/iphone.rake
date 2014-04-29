@@ -1725,6 +1725,7 @@ namespace "build" do
 
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+      appname_project = appname_fixed.slice(0, 1).capitalize + appname_fixed.slice(1..-1) + ".xcodeproj"
 
       #saved_name = ''
       #saved_version = ''
@@ -1774,7 +1775,7 @@ namespace "build" do
       #chdir $config["build"]["iphonepath"]
       chdir File.join($app_path, "/project/iphone")
 
-      args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
+      args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project]
 
       if $sdk =~ /iphonesimulator/
          args << '-arch'
@@ -2241,11 +2242,16 @@ namespace "clean" do
 
       iphone_project_folder = File.join($app_path, "/project/iphone")
 
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+      appname_project = appname_fixed.slice(0, 1).capitalize + appname_fixed.slice(1..-1) + ".xcodeproj"
+
+
       if File.exists?(iphone_project_folder)
 
         chdir iphone_project_folder
 
-        args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
+        args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project]
         ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
         unless ret == 0
           puts "Error cleaning"
