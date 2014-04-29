@@ -70,13 +70,13 @@ CNetRequestImpl::CNetRequestImpl()
     m_bCancel = false;
     m_pSession = 0;
     m_sslVerifyPeer = true;
+
+	if(winversion == 1 && !g_hConnManDLL)
+		LoadConnectionManager();
 }
 
 void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
-{
-	if(winversion == 1 && !g_hConnManDLL)
-		LoadConnectionManager();
-	
+{	
 	m_pHeaders = pHeaders;
     m_bCancel = false;
     m_pSession = oSession;
