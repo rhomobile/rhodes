@@ -229,7 +229,8 @@ public:
 
 	void terminateDiscoverThread();
 	void terminateDiscoverByNameThread();
-    void terminateDiscoveredThread();    
+    void terminateDiscoveredThread(); 
+	static BOOL LoadBthUtil();
 
 private:
 
@@ -271,7 +272,6 @@ private:
 
 	static DWORD WINAPI runThreadReadData(LPVOID voidArg);
 	static DWORD WINAPI runThreadDiscovered(LPVOID data);
-	static BOOL LoadBthUtil();
 	static HMODULE m_hBthUtilDLL;
 
 };

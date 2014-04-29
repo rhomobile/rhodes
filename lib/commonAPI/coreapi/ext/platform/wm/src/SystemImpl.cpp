@@ -14,6 +14,10 @@
 #if defined( OS_WINCE )// && !defined( OS_PLATFORM_MOTCE )
 #include "cfgmgrapi.h"
 #include "getdeviceuniqueid.h"
+
+typedef HRESULT (WINAPI* LPFN_GETDEVICE_UNIQID_T)  (LPBYTE, DWORD, DWORD, LPBYTE, DWORD*);
+typedef HRESULT (WINAPI* LPFN_DMPROCESS_CONFIGXML_T)  (LPCWSTR, DWORD, LPWSTR*);
+
 #endif
 
 //#ifndef RCMCAPI_H_
@@ -186,19 +190,32 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
     DWORD cbDeviceId = sizeof(rgDeviceId);
     String strAppData = "RHODES_" + RHODESAPP().getAppName() + "_DEVICEID";
 
-    HRESULT hr = GetDeviceUniqueID( (PBYTE)(strAppData.c_str()),
-       strAppData.length(),
-       GETDEVICEUNIQUEID_V1,
-       rgDeviceId,
-       &cbDeviceId);
 
-    if ( SUCCEEDED(hr) )
-    {
-        for(unsigned int i = 0; i < cbDeviceId; i++)
-        {
-            _toHexString( rgDeviceId[i], strDeviceID, 16);
-        }
-    }
+	LPFN_GETDEVICE_UNIQID_T lpfn_device_id = NULL; 
+	HMODULE hLib = LoadLibrary(TEXT("CoreDLL.dll"));
+		if (hLib)
+		{
+			lpfn_device_id = (LPFN_GETDEVICE_UNIQID_T)GetProcAddress(hLib, L"GetDeviceUniqueID");
+			if (lpfn_device_id != NULL)
+			{
+				    HRESULT hr = lpfn_device_id( (PBYTE)(strAppData.c_str()),
+												  strAppData.length(),
+												  GETDEVICEUNIQUEID_V1,
+												  rgDeviceId,
+												  &cbDeviceId);
+
+					if ( SUCCEEDED(hr) )
+					{
+						for(unsigned int i = 0; i < cbDeviceId; i++)
+						{
+							_toHexString( rgDeviceId[i], strDeviceID, 16);
+						}
+					}
+			}
+		}
+
+	if (hLib)
+		FreeLibrary (hLib);
 	}
 	else if(winversion == 2)
 	{
@@ -670,10 +687,23 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
     strRequest += strAppName + L"\"/>"
         L"</characteristic></wap-provisioningdoc>"; 
 
-//#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
-    HRESULT hr         = E_FAIL;
+	LPFN_DMPROCESS_CONFIGXML_T lpfn_dmprocess_configxml = NULL; 
+	HRESULT hr         = E_FAIL;
     LPWSTR wszOutput   = NULL;
-    hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+	HMODULE hLib = LoadLibrary(TEXT("aygshell.dll"));
+		if (hLib)
+		{
+			lpfn_dmprocess_configxml = (LPFN_DMPROCESS_CONFIGXML_T)GetProcAddress(hLib, L"DMProcessConfigXML");
+			if (lpfn_dmprocess_configxml != NULL)
+			{
+				        hr = lpfn_dmprocess_configxml(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+			}
+		}
+
+	if (hLib)
+		FreeLibrary (hLib);
+
+//#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
     if (FAILED(hr) || !wszOutput )
         LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
     else
@@ -737,9 +767,24 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
 			L"</characteristic></wap-provisioningdoc>";
 
 //#if defined( OS_WINCE )&& !defined( OS_PLATFORM_MOTCE )
+
+
+		LPFN_DMPROCESS_CONFIGXML_T lpfn_dmprocess_configxml = NULL; 
 		HRESULT hr         = E_FAIL;
 		LPWSTR wszOutput   = NULL;
-		hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+		HMODULE hLib = LoadLibrary(TEXT("aygshell.dll"));
+		if (hLib)
+		{
+			lpfn_dmprocess_configxml = (LPFN_DMPROCESS_CONFIGXML_T)GetProcAddress(hLib, L"DMProcessConfigXML");
+			if (lpfn_dmprocess_configxml != NULL)
+			{
+				hr = lpfn_dmprocess_configxml(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+			}
+		}
+
+		if (hLib)
+			FreeLibrary (hLib);
+
 		if (FAILED(hr) || !wszOutput )
 		{
 			LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
