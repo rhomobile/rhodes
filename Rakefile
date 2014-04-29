@@ -365,10 +365,16 @@ end
 #------------------------------------------------------------------------
 def get_conf(section, key, default)
   result = nil
-  result = $app_config[section][key] unless $app_config[section].nil?
-  result = $config[section][key] if result.nil? and !$config[section].nil?
-  result = $shared_conf[section][key] if result.nil? and !$shared_conf[section].nil?
-  result = default if result.nil?
+  [$app_config, $config, $shared_conf].each do |config|
+    if !config.nil? && !config[section].nil?
+      result = config[section][key]
+      break if !result.nil?
+    end
+  end
+
+  if result.nil?
+    result = default
+  end
 
   result
 end
