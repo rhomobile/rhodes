@@ -631,7 +631,7 @@ $def_rhohub_url = 'https://app.rhohub.com/api/v1'
 
 namespace "token" do
   task :initialize => "config:initialize" do
-    $rhohub = get_conf('rhohub', 'url', $def_rhohub_url) 
+    $rhohub = get_conf('rhohub', 'url', $def_rhohub_url)
 
     if ($rhohub != $def_rhohub_url)
       puts "Using alternative rhohub api url: #{$rhohub}"
@@ -639,14 +639,9 @@ namespace "token" do
 
     SiteChecker.site = $rhohub
     Rhohub.url = $rhohub
-    if !(proxy.nil? || proxy.empty?)
+    if !($proxy.nil? || $proxy.empty?)
       SiteChecker.proxy = $proxy
       RestClient.proxy = $proxy
-    end
-
-    $rhodes_home = File.join(Dir.home(),'.rhomobile')
-    if !File.exist?($rhodes_home)
-      FileUtils::mkdir_p $rhodes_home
     end
 
     $token = ''
@@ -1266,9 +1261,66 @@ end
 #------------------------------------------------------------------------
 #config
 
+def create_rhodes_home()
+  home = File.join(Dir.home(),'.rhomobile')
+  if !File.exist?(home)
+    FileUtils::mkdir_p home
+  end
+
+  home
+end
+
+def read_config(file)
+  config = {}
+  if File.exist?(file)
+    begin
+      conf = JSON.parse(File.read(file))
+    rescue Exception => e
+      conf = {}
+    end
+    config = conf
+  end
+
+  config
+end
+
+def write_config(file, config)
+  File.open(file, "wb") { |io|
+    io.write(JSON.pretty_generate(config))
+  }
+end
+
 namespace "config" do
+
+  namespace :proxy do
+    desc "Set proxy url, if parameter is omitted then proxy url will be removed"
+    task :set, [:proxy_url] => ["config:initialize"] do |t, args|
+      args.with_defaults(:proxy_url => nil)
+      p_url = args.proxy_url
+      if p_url.nil?
+        $shared_conf.delete("proxy")
+        puts "Proxy url removed"
+      else
+        if !p_url.empty?
+          $shared_conf["proxy"] = p_url
+          puts "Proxy url is set to: #{p_url}"
+        end
+      end
+      write_config($conf_file,$shared_conf)
+    end
+    desc "Show proxy configuration"
+    task :get => ["config:initialize"] do
+      p_url = $shared_conf["proxy"]
+      if !p_url.nil?
+        puts "Proxy url is set to: #{p_url}"
+      else
+        puts "Proxy url is not set"
+      end
+    end
+  end
+
   task :initialize do
-    puts RUBY_VERSION
+    puts "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
 
     $binextensions = []
     $app_extensions_list = {}
@@ -1282,9 +1334,14 @@ namespace "config" do
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
 
-    proxy_url = get_conf('connection', 'proxy', nil)
+    $rhodes_home = create_rhodes_home()
 
-    if !proxy_url.nil? && !proxy_url.empty? 
+    $conf_file = File.join($rhodes_home,'shared.cfg')
+    $shared_conf = read_config($conf_file)
+
+    proxy_url = get_conf('connection', 'proxy', $shared_conf["proxy"])
+
+    if !proxy_url.nil? && !proxy_url.empty?
       if !proxy_url.start_with?('http')
         proxy_url = 'http://' + proxy_url
       end
