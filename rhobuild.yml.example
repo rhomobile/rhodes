@@ -33,6 +33,9 @@ excludedirs:
     - "**/.*.swn"
     - "**/.DS_Store"
 
+#rhohub:
+#  url: https://app.rhohub.com/api/v1
+
 # internet proxy configuration for cloud build
 # connection:
 #   proxy: http://user:pass@address:port

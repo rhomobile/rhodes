@@ -705,11 +705,14 @@ void CRhodesApp::callUiDestroyedCallback()
     
     if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed))
     {
-        String strUrl = m_strHomeUrl + "/system/uidestroyed";
-        NetResponse resp = getNetRequest().pullData( strUrl, null );
-        if ( !resp.isOK() )
+        if ( rho_ruby_is_started() )
         {
-            LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+          String strUrl = m_strHomeUrl + "/system/uidestroyed";
+          NetResponse resp = getNetRequest().pullData( strUrl, null );
+          if ( !resp.isOK() )
+          {
+              LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+          }
         }
     }
 }
@@ -1508,6 +1511,9 @@ void CRhodesApp::initHttpServer()
 
 const char* CRhodesApp::getFreeListeningPort()
 {
+  if ( m_isJSFSApp )
+    return "";
+
 	if ( m_strListeningPorts.length() > 0 )
 		return m_strListeningPorts.c_str();
 
@@ -1626,7 +1632,14 @@ int CRhodesApp::determineFreeListeningPort()
 void CRhodesApp::initAppUrls() 
 {
     CRhodesAppBase::initAppUrls(); 
-   
+
+    m_isJSFSApp = false;
+#ifndef OS_WINCE
+#ifdef RHO_NO_RUBY_API
+    m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
+#endif
+#endif
+
 #if defined( OS_WINCE ) && !defined(OS_PLATFORM_MOTCE)
     TCHAR oem[257];
     SystemParametersInfo(SPI_GETPLATFORMNAME, sizeof(oem), oem, 0);
@@ -1650,18 +1663,13 @@ void CRhodesApp::initAppUrls()
 
     //write local server url to file
 #ifdef OS_WINCE
-    String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
-    CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
-    modifyRhoApiFile();
+    if (!m_isJSFSApp)
+    {
+        String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
+        CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
+        modifyRhoApiFile();
+    }
 #endif
-    
-    m_isJSFSApp = false;
-#ifndef OS_WINCE
-#ifdef RHO_NO_RUBY_API
-	m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
-#endif
-#endif
-
 }
 
 void CRhodesApp::modifyRhoApiFile()
