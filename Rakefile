@@ -1631,7 +1631,7 @@ namespace "config" do
       end
     end
 
-    if $app_config["capabilities"].index("shared_runtime") && $rhoelements_features.length() > 0
+    if $rhoelements_features.length() > 0
       #check for RhoElements gem and license
       if  !$app_config['re_buildstub']
         begin
@@ -1640,13 +1640,9 @@ namespace "config" do
           $rhoelements_features = ""
 
         rescue Exception => e
-          if $app_config['extensions'].index('nfc')
-            $app_config['extensions'].delete('nfc')
-          end
-          if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
-            $application_build_configs.delete('encrypt_database')
-          end
         end
+      else
+        $rhoelements_features = ""        
       end
     end
 
@@ -1703,7 +1699,7 @@ namespace "config" do
     end
 
     $shared_rt_js_appliction = ($js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime'))
-    puts "%%%_%%% $shared_rt_js_appliction = #{$js_application}"
+    puts "%%%_%%% $shared_rt_js_appliction = #{$shared_rt_js_appliction}"
     $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction
 
     if $current_platform == "bb"
