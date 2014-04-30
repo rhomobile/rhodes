@@ -2007,6 +2007,84 @@ namespace "run" do
        puts "log_file=" + rholog
     end
 
+    #run:iphone:simulator
+    namespace "simulator" do
+      desc "run IPA package on simulator"
+      task :package, [:package_path] => ["config:iphone"] do |t, args|
+
+        currentdir = Dir.pwd()
+
+
+        package_path = args[:package_path]
+        #unpack package
+
+        tmp_dir  =   File.join($tmpdir, 'launch_package')
+        rm_rf tmp_dir
+        mkdir_p tmp_dir
+
+        #cp package_path, File.join(tmp_dir, 'package.ipa')
+        Jake.run('unzip', [package_path, '-d', tmp_dir])
+
+        Dir.chdir File.join(tmp_dir, 'Payload')
+
+        app_file = nil
+
+        Dir::glob(File.join(tmp_dir, 'Payload', '*.app')).each { |x| app_file = x }
+
+        if app_file == nil
+          raise 'can not find *.app folder inside package !'
+        end
+
+        puts '$$$ founded app folder is ['+app_file+']'
+
+        log_name  =   File.join(tmp_dir, 'logout')
+        File.delete(log_name) if File.exist?(log_name)
+
+        commandis = $iphonesim + ' launch "' + app_file + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+
+        kill_iphone_simulator
+
+        $ios_run_completed = false
+
+        thr = Thread.new do
+           puts 'start thread with execution of application'
+           if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+               puts  'use old execution way - just open iPhone Simulator'
+               system("open \"#{$sim}/iPhone Simulator.app\"")
+               $ios_run_completed = true
+               sleep(1000)
+           else
+               puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
+               puts 'Execute command: '+commandis
+               system(commandis)
+               $ios_run_completed = true
+               sleep(1000)
+           end
+        #}
+        end
+
+        if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+           thr.join
+        else
+           puts 'start waiting for run application in Simulator'
+           while (!File.exist?(log_name)) && (!$ios_run_completed)
+              puts ' ... still waiting'
+              sleep(1)
+           end
+           puts 'stop waiting - application started'
+           #sleep(1000)
+           thr.kill
+           #thr.join
+           puts 'application is started in Simulator'
+           exit
+        end
+
+        puts "end run iphone app package"
+        Dir.chdir currentdir
+
+      end
+    end
+
   end
 
   task :buildsim => ["config:iphone", "build:iphone:rhodes"] do
@@ -2226,6 +2304,14 @@ namespace "run" do
     exit 1 if $total.to_i==0
     exit $failed.to_i
   end
+
+  namespace "device" do
+    desc "run IPA package on device"
+    task :package, [:package_path] => ["config:iphone"] do |t, args|
+      raise "run on device is UNSUPPORTED !!!"
+    end
+  end
+
 
 end
 
@@ -2461,6 +2547,23 @@ namespace "clean" do
   end
 end
 
+
+namespace "simulator" do
+  namespace "iphone" do
+
+    desc "build application package for simulator"
+    task :production => ["config:iphone"] do
+      Rake::Task['device:iphone:production'].invoke
+    end
+
+    desc "Builds and signs iphone for production, use prebuild binaries"
+    task :production_with_prebuild_binary => ["config:iphone"] do
+      Rake::Task['device:iphone:production_with_prebuild_binary'].invoke
+    end
+
+  end
+end
+
 namespace "device" do
   namespace "iphone" do
     desc "Builds and signs iphone for production"
@@ -2517,6 +2620,8 @@ namespace "device" do
       $skip_build_extensions = true
       $skip_build_xmls = true
       $use_prebuild_data = true
+
+      is_simulator = ($sdk =~ /iphonesimulator/)
 
       parent_ipa_path = File.join(determine_prebuild_path($app_config), "prebuild.ipa")
 
@@ -2704,20 +2809,43 @@ namespace "device" do
 
 
       #sign
-      chdir parent_app_bin
-      rm_rf File.join(parent_app_bin, "Payload/prebuild.app/_CodeSignature")
-      rm_rf File.join(parent_app_bin, "Payload/prebuild.app/CodeResources")
+      if !is_simulator
 
-      cp File.join($app_path, 'production/embedded.mobileprovision'), File.join(parent_app_bin, "Payload/"+appname+".app/embedded.mobileprovision")
+        chdir parent_app_bin
+        rm_rf File.join(parent_app_bin, "Payload/prebuild.app/_CodeSignature")
+        rm_rf File.join(parent_app_bin, "Payload/prebuild.app/CodeResources")
 
-      #/usr/bin/codesign -f -s "iPhone Distribution: Certificate Name" --resource-rules "Payload/Application.app/ResourceRules.plist" "Payload/Application.app"
-      Jake.run('/usr/bin/codesign', ['-f', '-s', '"'+$signidentity+'"', '-i', '"'+$app_config["iphone"]["BundleIdentifier"]+'"', 'Payload/'+appname+'.app'])
-      #Jake.run('/usr/bin/codesign', ['-f', '-s', '"'+$signidentity+'"', '--resource-rules', 'Payload/prebuild.app/ResourceRules.plist', 'Payload/prebuild.app'])
+        prov_file_path = File.join($app_path, 'production/embedded.mobileprovision')
 
-      unless $?.success?
-          raise "Error during signing of  application package !"
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["production"].nil?
+            if !$app_config["iphone"]["production"]["mobileprovision_file"].nil?
+              test_name = $app_config["iphone"]["production"]["mobileprovision_file"]
+              if File.exists? test_name
+                prov_file_path = test_name
+              else
+                test_name = File.join($app_path,$app_config["iphone"]["production"]["mobileprovision_file"])
+                if File.exists? test_name
+                  prov_file_path = test_name
+                else
+                  prov_file_path = $app_config["iphone"]["production"]["mobileprovision_file"]
+                end
+              end
+            end
+          end
+        end
+
+        cp prov_file_path, File.join(parent_app_bin, "Payload/"+appname+".app/embedded.mobileprovision")
+
+        #/usr/bin/codesign -f -s "iPhone Distribution: Certificate Name" --resource-rules "Payload/Application.app/ResourceRules.plist" "Payload/Application.app"
+        Jake.run('/usr/bin/codesign', ['-f', '-s', '"'+$signidentity+'"', '-i', '"'+$app_config["iphone"]["BundleIdentifier"]+'"', 'Payload/'+appname+'.app'])
+        #Jake.run('/usr/bin/codesign', ['-f', '-s', '"'+$signidentity+'"', '--resource-rules', 'Payload/prebuild.app/ResourceRules.plist', 'Payload/prebuild.app'])
+
+        unless $?.success?
+            raise "Error during signing of  application package !"
+        end
+
       end
-
 
 
 
