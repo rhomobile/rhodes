@@ -554,6 +554,7 @@ extern "C" int rho_wmsys_has_touchscreen()
 //#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
 	if(winversion != 1)
         return 1;
+#if defined(OS_WINCE)
 	else
 	{
 //#else
@@ -581,6 +582,7 @@ extern "C" int rho_wmsys_has_touchscreen()
         return (bRet && aMouseInfo[0] != 0) ? 1 : 0;
 	}
 //#endif
+#endif
 }
 
 void CSystemImpl::getHasTouchscreen(CMethodResult& oResult)
@@ -676,6 +678,7 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
 	
 //#else
 	}
+#if defined(OS_WINCE)
 	else
 	{
     CFilePath oPath( applicationName );
@@ -718,6 +721,7 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
 //#endif
 //#endif
 	}
+#endif
     oResult.set(bRet);
 }
 
@@ -753,6 +757,7 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
 	}
 	}
 //#else
+#if defined(OS_WINCE)
 	else
 	{
 		CFilePath oPath( applicationName );
@@ -798,6 +803,7 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
 		if ( wszOutput )
 		  free( wszOutput );
 	}
+#endif
 //#endif
 #endif
 }
