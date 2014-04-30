@@ -68,6 +68,8 @@ extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstan
 
 #if !defined(APP_BUILD_CAPABILITY_MOTOROLA)
 extern "C" LRESULT	rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam){ return 0;}
+#else
+extern "C" void initialiseRhoElementsExt();
 #endif
 
 #else
@@ -517,7 +519,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     m_appWindow.InvalidateRect(NULL, TRUE);
     m_appWindow.UpdateWindow();
-
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+	initialiseRhoElementsExt();
+#endif
     m_appWindow.initBrowserWindow();
 
     if (m_bMinimized)
