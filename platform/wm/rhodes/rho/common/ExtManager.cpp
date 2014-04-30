@@ -82,7 +82,8 @@ CRhoExtData CExtManager::makeExtData()
 #endif
     oData.m_iTabIndex = rho_webview_active_tab();
 #if !defined(OS_WINDOWS_DESKTOP)
-    oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND(oData.m_iTabIndex);
+	if(getAppWindow().getWebKitEngine())
+		oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND(oData.m_iTabIndex);
 #endif
     
     return oData;
