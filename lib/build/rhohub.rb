@@ -9,7 +9,8 @@ files = [
     "rhohub/version",
     "rhohub/base",
     "rhohub/build",
-    "rhohub/app"
+    "rhohub/app",
+    "rhohub/subscription"
 	];
 
 files.each do |f|

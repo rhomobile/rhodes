@@ -138,7 +138,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
-                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri, http_proxy_port, http_proxy_user, http_proxy_password in rhoconfig.txt. To set proxy for Motorola WebKit for Windows Mobile/CE use config.xml settings.</DESC>
+                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password) in rhoconfig.txt. To set proxy for Motorola WebKit for Windows Mobile/CE use config.xml settings.</DESC>
                 <PLATFORM>Android, iOS, WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
