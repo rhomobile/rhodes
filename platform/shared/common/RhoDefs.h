@@ -48,11 +48,11 @@
 #endif
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8)
+// 0 - win32 desktop, 1 - wm, 2 - mot ce
+extern int winversion;
 #define WINDOWS_PLATFORM
 #if defined(OS_WINCE)
-// 0 - win32 desktop, 1 - wm, 2 - mot ce
 #define OS_PLATFORM_MOTCE
-extern int winversion;
 #endif
 #endif
 
