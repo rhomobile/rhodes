@@ -8,7 +8,7 @@
 		## Enabling the API
 In order to use this API you must include the following extension in your `build.yml`
     :::ruby
-    extensions: ["audioapture"]
+    extensions: ["audiocapture"]
 
 The `audiocapture` extension is also included automatically if you specify the following in your `build.yml`
     :::ruby
