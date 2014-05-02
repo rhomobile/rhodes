@@ -1,9 +1,9 @@
 #include "rhodes.h"
-#include "Audiocapture.h"
+#include "AudioCapture.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "Audiocapture_impl"
+#define DEFAULT_LOGCATEGORY "AudioCapture_impl"
 
 #define AUDIOCAPTURE_FACTORY_CLASS "com.rho.audiocapture.AudioCaptureFactory"
 
@@ -47,12 +47,15 @@ extern "C" void Init_AudioCapture(void)
 
         Init_AudioCapture_API();
 
-        RAWTRACE("Init_Audiocapture succeeded");
+        RAWTRACE("Init_AudioCapture succeeded");
     }
     else
     {
-        RAWLOG_ERROR("Failed to initialize Audiocapture API: jnienv() is failed");
+        RAWLOG_ERROR("Failed to initialize AudioCapture API: jnienv() is failed");
     }
 
 }
 
+extern "C" void Init_AudioCapture_extension() {
+    Init_AudioCapture();
+}

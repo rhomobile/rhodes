@@ -1,11 +1,29 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
 <API>
     <MODULE name="AudioCapture" parent="Rho">
         <HELP_OVERVIEW>Audio capture API</HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
-        <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
-        <PLATFORM>Android</PLATFORM>
+        <MORE_HELP>
+		## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["audioapture"]
+
+The `audiocapture` extension is also included automatically if you specify the following in your `build.yml`
+    :::ruby
+    app_type: "rhoelements"
+
+NOTE: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+		</MORE_HELP>
+        <VER_INTRODUCED>4.2.0</VER_INTRODUCED>
+        <PLATFORM>WM, Android</PLATFORM>
 
         <TEMPLATES>
             <DEFAULT_INSTANCE/>
@@ -21,6 +39,7 @@
 
             <PROPERTY name="source" type="STRING">
                 <DESC>Audio source.</DESC>
+				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
                     <VALUE constName="MIC" value="mic">
                         <DESC>Embedded microphone.</DESC>
@@ -41,45 +60,63 @@
             </PROPERTY>
             <PROPERTY name="encoder" type="STRING">
                 <DESC>Encoder to compress recorded audio.</DESC>
+				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
                     <VALUE constName="ENCODER_AAC_LC" value="AAC_LC">
-                        <DESC>AAC low complexity.</DESC></VALUE>
+                        <DESC>AAC low complexity.</DESC>
+                    </VALUE>
                     <VALUE constName="ENCODER_AAC" value="AAC">
-                        <DESC>AAC low complexity (same as AAC_LC)</DESC></VALUE>
+                        <DESC>AAC low complexity (same as AAC_LC)</DESC>
+                    </VALUE>
                     <VALUE constName="ENCODER_AAC_ELD" value="AAC_ELD">
-                        <DESC>AAC enhanced low delay.</DESC></VALUE>
+                        <DESC>AAC enhanced low delay.</DESC>
+                    </VALUE>
                     <VALUE constName="ENCODER_AAC_HE" value="AAC_HE">
-                        <DESC>AAC high efficiency.</DESC></VALUE>
+                        <DESC>AAC high efficiency.</DESC>
+                    </VALUE>
                     <VALUE constName="ENCODER_AMR_NB" value="AMR_NB">
-                        <DESC>AMR narrow-band.</DESC></VALUE>
+                        <DESC>AMR narrow-band.</DESC>
+                    </VALUE>
                     <VALUE constName="ENCODER_AMR_WB" value="AMR_WB">
-                        <DESC>AMR wide-band.</DESC></VALUE>
+                        <DESC>AMR wide-band.</DESC>
+                    </VALUE>
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="maxDuration" type="INTEGER">
                 <DESC>Maximum duration (in milliseconds) of the recording session. Specifies the number of milliseconds of audio to capture by defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milliseconds is specified, the interval will be defaulted to 20000 milliseconds.</DESC>
-            </PROPERTY>
+				        <PLATFORM>WM, Android</PLATFORM>
+			      </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
-                <DESC>Sets the destination path and name for the captured file. </DESC>
+                <DESC>This parameter is used to specify the filename. In Windows, when the audio capture completes a file is saved in the root directory of the device.</DESC>
+				        <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
         <METHODS>
-            <METHOD name="start" hasCallback="optional" runInThread="separate">
+            <METHOD name="start" hasCallback="mandatory" runInThread="separate">
                 <PARAMS>
-                    <PARAM name="props" type="HASH" propertyHash="true">
-                        <DESC>The path to store captured audio. The filename extension is used to define file output format. Supported extensions are ".3gpp", ".mp4"</DESC>
-                    </PARAM>
+                     <PARAM name="props" type="HASH" propertyHash="true">
+                        <DESC>Map of Audio Capture properties to be set.</DESC>
+                     </PARAM>
                 </PARAMS>
+				        <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>Whether or not the audio recording was successfully captured, status will be 'successful' or 'unsuccessful'</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>    
                 <DESC>Starts capturing audio until either 'stop' is received, or 'duration' is reached (i.e. until the buffer is full).</DESC>
+				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             <METHOD name="stop" runInThread="none">
                 <DESC>Stop audio recording.</DESC>
+				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             <METHOD name="cancel" runInThread="none">
                 <DESC>Cancel audio recording.</DESC>
+				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
         </METHODS>
-        <USER_OVERVIEW>
-        </USER_OVERVIEW>
+        <USER_OVERVIEW></USER_OVERVIEW>
     </MODULE>
 </API>
