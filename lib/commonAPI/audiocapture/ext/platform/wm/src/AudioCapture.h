@@ -51,14 +51,14 @@ enum AC_RETURN
 
 
 #define AC_DEFAULT_DURATION 20000
-#define AC_MIN_DURATION		500
+#define AC_MIN_DURATION		1000
 #define AC_DEFAULT_FILENAME L"\\AudioCapture.wav"
 
 
 class CAudioCapture
 {
 public:
-	CAudioCapture(/*CAudioCaptureModule *pModule,*/ bool bHasFocus);
+	CAudioCapture(bool bHasFocus);
 	~CAudioCapture();
 
 	int Start();
@@ -70,7 +70,7 @@ public:
 	BOOL ApplicationFocusChange(bool bActivated);
 	void ResetToDefaults();
 	/**
-	* checks if two strings are euqla
+	* checks if two strings are equal
 	*/
 	BOOL cmp(LPCTSTR tc1, LPCTSTR tc2);
 	/**
@@ -104,8 +104,6 @@ private:
 	AC_RETURN eventHandler();
 	
 	void processRawFile();
-
-	//CAudioCaptureModule *m_pModule;
 
 	unsigned int	m_iMaxDuration;
 	unsigned long	m_iMaxFileSizeBytes;
