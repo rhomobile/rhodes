@@ -3,9 +3,8 @@
 
 LPCWSTR	lpRawFileName = L"\\AudioCapture.raw";
 
-CAudioCapture::CAudioCapture(/*CAudioCaptureModule *pModule, */bool bHasFocus)
+CAudioCapture::CAudioCapture(bool bHasFocus)
 {
-	//m_pModule		= pModule;
 	m_hWaveIn		= NULL;
 	m_hFile			= INVALID_HANDLE_VALUE;
 	m_bUseBufferA	= TRUE;
@@ -62,7 +61,7 @@ unsigned int CAudioCapture::RoundUp(double dValue)
 LPWSTR CAudioCapture::SetFilename(LPCWSTR lpFilename)
 {
 	if(m_hWaveIn){
-		LOG(WARNING) +  L"Name cannot be changed during Wave capture";
+		LOG(INFO) +  L"Name cannot be changed during Wave capture";
 		return NULL;
 	}
 
@@ -232,15 +231,8 @@ int CAudioCapture::Start()
 			LOG(WARNING) + L"WAV: Wavin failure";			
 		}	
 	}
-	else 
-	{
-		LOG(INFO) + L"WAV: Restarting WaveIn capture";
-		m_waveHdrA.dwBytesRecorded = 0;
-		m_waveHdrB.dwBytesRecorded = 0;
-		m_bUseBufferA = TRUE;
-		waveInAddBuffer(m_hWaveIn, &m_waveHdrA, sizeof(WAVEHDR));
-		waveInAddBuffer(m_hWaveIn, &m_waveHdrB, sizeof(WAVEHDR));
-		LOG(INFO) + L"WAV: WaveIn capture restarted";		
+	else{
+		LOG(INFO) + L"WAV: Audio Capturing is already in process.";
 	}
 	return res;
 }
@@ -507,10 +499,17 @@ LPWSTR CAudioCapture::setString(LPCWSTR pStr)
 
 void CAudioCapture::SetDuration(int iMilliSeconds)
 {
-	if(iMilliSeconds >= AC_MIN_DURATION){
-		m_iMaxDuration = iMilliSeconds;
+	if (m_hWaveIn == NULL){
+		if(iMilliSeconds >= AC_MIN_DURATION){
+			m_iMaxDuration = iMilliSeconds;
+		}
+		else{
+			m_iMaxDuration = AC_DEFAULT_DURATION;
+		}
 	}
-
+	else{
+		LOG(INFO) +  L"Name cannot be changed during Wave capture";
+	}
 }
 
 BOOL CAudioCapture::ApplicationFocusChange(bool bActivated)
