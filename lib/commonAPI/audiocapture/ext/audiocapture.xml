@@ -42,38 +42,20 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
                     <VALUE constName="MIC" value="mic">
-                        <DESC>Embedded microphone.</DESC>
+                        <DESC>Embedded microphone. This is the default value.</DESC>
                     </VALUE>
-                    <VALUE constName="CAMCORDER" value="camcorder">
-                        <DESC>Microphone with same orientation as camera if available, the main device microphone otherwise.</DESC>
-                    </VALUE>
-                    <VALUE constName="CALL_FULLDUPLEX" value="call_fullduplex">
-                        <DESC>Voice call uplink and downlink audio.</DESC>
-                    </VALUE>
-                    <VALUE constName="CALL_DOWNLINK" value="call_downlink">
-                        <DESC>Voice call downlink audio.</DESC>
-                    </VALUE>
-                    <VALUE constName="CALL_UPLINK" value="call_uplink">
-                        <DESC>Voice call uplink audio.</DESC>
-                    </VALUE>
+                    
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="encoder" type="STRING">
                 <DESC>Encoder to compress recorded audio.</DESC>
 				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
-                    <VALUE constName="ENCODER_AAC_LC" value="AAC_LC">
-                        <DESC>AAC low complexity.</DESC>
-                    </VALUE>
+                    
                     <VALUE constName="ENCODER_AAC" value="AAC">
-                        <DESC>AAC low complexity (same as AAC_LC)</DESC>
+                        <DESC>AAC low complexity. This is the default value.</DESC>
                     </VALUE>
-                    <VALUE constName="ENCODER_AAC_ELD" value="AAC_ELD">
-                        <DESC>AAC enhanced low delay.</DESC>
-                    </VALUE>
-                    <VALUE constName="ENCODER_AAC_HE" value="AAC_HE">
-                        <DESC>AAC high efficiency.</DESC>
-                    </VALUE>
+                   
                     <VALUE constName="ENCODER_AMR_NB" value="AMR_NB">
                         <DESC>AMR narrow-band.</DESC>
                     </VALUE>
@@ -83,11 +65,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="maxDuration" type="INTEGER">
-                <DESC>Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 20000 milliseconds.</DESC>
+                <DESC>Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 20000 milliseconds. The default value is 20,000 milisec.</DESC>
 				<PLATFORM>WM, Android</PLATFORM>
 			      </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
-                <DESC>This parameter is used to specify the filename. In Windows, when the audio capture completes a file is saved in the root directory of the device. File is saved in the root directory if the location path is not specified with the file name.</DESC>
+                <DESC>This parameter is used to specify the filename. In Windows, when the audio capture completes a file is saved in the root directory of the device. File is saved in the root directory if the location path is not specified with the file name. In android, default location is sdcard and default name is AudioCapture. Please see remarks section for extension.</DESC>
 				        <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
@@ -109,11 +91,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             <METHOD name="stop" runInThread="none">
-                <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'successful' in the callback returning parameter of 'start' method.</DESC>
+                <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'successful' in the callback returning parameter of 'start' method. The file is saved in the desired location.</DESC>
 				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             <METHOD name="cancel" runInThread="none">
-                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'unsuccessful' in the callback returning parameter of 'start' method.</DESC>
+                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'unsuccessful' in the callback returning parameter of 'start' method. No file is saved.</DESC>
 				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
         </METHODS>
@@ -121,7 +103,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <REMARK title="File Name">
                 <DESC>
                     <![CDATA[
-In windows, to store the file in a particular location, specify the path with the file name. Mentioning the extension name with the file name is optional. Only *.wav files are supported. If the path is not specified with the file name, the captured file is stored in the root directory of the device.					
+In windows, to store the file in a particular location, specify the path with the file name. Mentioning the extension name with the file name is optional. Only *.wav files are supported. If the path is not specified with the file name, the captured file is stored in the root directory of the device. In android, the default location is in the sdcard and default name is AudioCapture.In Android, the file extension depends on encoder value. If it is AAC,the extensin should be ".mp4". In all other case it is of ".3gpp".					
                     ]]>
                 </DESC>
             </REMARK>
@@ -135,21 +117,21 @@ Audio recording will not be restarted, if the audio recording is already in proc
 			<REMARK title="Page Refresh">
                 <DESC>
                     <![CDATA[
-Audio recording should be cancelled.
+Audio recording should be cancelled. In android, the state will pe persisted.
                     ]]>
                 </DESC>
             </REMARK>
 			<REMARK title="Page Navigation">
                 <DESC>
                     <![CDATA[
-Audio recording should be cancelled.
+Audio recording should be cancelled. In android, the state will be persisted.
                     ]]>
                 </DESC>
             </REMARK>			
 			<REMARK title="Duration & File Name Settings">
                 <DESC>
                     <![CDATA[
-The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in process.
+The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in process. In android, there might be slight omit of recording data initially.
                     ]]>
                 </DESC>
 			</REMARK>
