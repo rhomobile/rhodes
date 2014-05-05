@@ -128,7 +128,7 @@ Audio recording should be cancelled. In android, the state will be persisted.
                     ]]>
                 </DESC>
             </REMARK>			
-			<REMARK title="Duration & File Name Settings">
+			<REMARK title="Duration And File Name Settings">
                 <DESC>
                     <![CDATA[
 The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in process. In android, there might be slight omit of recording data initially.
