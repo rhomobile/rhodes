@@ -91,7 +91,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             <METHOD name="stop" runInThread="none">
-                <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'successful' in the callback returning parameter of 'start' method. The file is saved in the desired location.</DESC>
+                <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'successful' in the callback returning parameter of 'start' method. The file is saved in default or user provided location.</DESC>
 				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             <METHOD name="cancel" runInThread="none">
@@ -131,7 +131,7 @@ Audio recording should be cancelled. In android, the state will be persisted.
 			<REMARK title="Duration And File Name Settings">
                 <DESC>
                     <![CDATA[
-The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in process. In android, there might be slight omit of recording data initially.
+The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in progress. In android, there might be slight omit of recording data initially.
                     ]]>
                 </DESC>
 			</REMARK>
