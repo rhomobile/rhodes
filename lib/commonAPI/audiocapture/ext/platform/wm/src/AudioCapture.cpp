@@ -499,16 +499,16 @@ LPWSTR CAudioCapture::setString(LPCWSTR pStr)
 
 void CAudioCapture::SetDuration(int iMilliSeconds)
 {
-	if (m_hWaveIn == NULL){
+	if (m_hWaveIn){
+		LOG(INFO) +  L"Duration cannot be changed during Wave capture";
+	}
+	else{
 		if(iMilliSeconds >= AC_MIN_DURATION){
 			m_iMaxDuration = iMilliSeconds;
 		}
 		else{
 			m_iMaxDuration = AC_DEFAULT_DURATION;
 		}
-	}
-	else{
-		LOG(INFO) +  L"Name cannot be changed during Wave capture";
 	}
 }
 
