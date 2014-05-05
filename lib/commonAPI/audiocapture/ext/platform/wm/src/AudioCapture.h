@@ -92,7 +92,7 @@ public:
 	*/
 	void SetCallback(rho::apiGenerator::CMethodResult* pCallback);
 private:
-	
+	void UpdateCallbackStatus(LPCWSTR szValue);
 	unsigned int RoundUp(double dValue);
 	
 
@@ -103,7 +103,7 @@ private:
 
 	AC_RETURN eventHandler();
 	
-	void processRawFile();
+	BOOL processRawFile();
 
 	unsigned int	m_iMaxDuration;
 	unsigned long	m_iMaxFileSizeBytes;

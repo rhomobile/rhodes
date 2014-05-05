@@ -6,6 +6,9 @@ namespace rho {
 	using namespace apiGenerator;
 	using namespace common;
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "AudioCapture"
+
 class CAudioCaptureImpl: public IRhoExtension, public CAudioCaptureBase
 {
 	CAudioCapture *pAudio;
@@ -27,19 +30,18 @@ public:
 	
 	virtual void start( const rho::Hashtable<rho::String, rho::String>& props, rho::apiGenerator::CMethodResult& oResult){
 		if (!pAudio) {return;}
-		if (!oResult.hasCallback())
-		{
-			pAudio->SetCallback(NULL);
-			DEBUGMSG(true, (L"No Callback"));
-		}
-		else
-		{
+		pAudio->SetCallback(NULL);		
+		if (oResult.hasCallback()){
 			DEBUGMSG(true, (L"Callback"));
 			pAudio->SetCallback(&oResult);
+			CMethodResult oRes;
+			setProperties(props, oRes);
+			pAudio->Start();
 		}
-		CMethodResult oRes;
-		setProperties(props, oRes);
-		pAudio->Start();
+		else{
+			LOG(INFO) +  L"Could not start Audio Capture. Callback is Mandatory.";
+			return;
+		}
     }
 	
     virtual void stop( rho::apiGenerator::CMethodResult& oResult) {
@@ -51,7 +53,7 @@ public:
 		if (!pAudio) {return;}
 		pAudio->Cancel();
     }
-
+	
     virtual void onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData)
 	{
 		if (!pAudio){return;}

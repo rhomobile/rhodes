@@ -80,10 +80,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Map of Audio Capture properties to be set.</DESC>
                      </PARAM>
                 </PARAMS>
-				        <CALLBACK type="HASH">
+				<CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">
-                            <DESC>Whether or not the audio recording was successfully captured, status will be 'successful' or 'unsuccessful'</DESC>
+                            <DESC>Whether or not the audio recording was successfully captured, status will be 'successful' or 'unsuccessful'.</DESC>
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>    
@@ -132,6 +132,13 @@ Audio recording should be cancelled. In android, the state will be persisted.
                 <DESC>
                     <![CDATA[
 The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in progress. In Windows, if the folder is not present, it should be created manually for storing the file in that location. In android, there might be slight omit of recording data initially.
+                    ]]>
+                </DESC>
+			</REMARK>
+			<REMARK title="Get Property Or Get Properties">
+                <DESC>
+                    <![CDATA[
+In Windows, 'getProperty' or 'getProperties' for filename will return the complete path along with the extension name. For example: If file name was set to '\\Application\\AudioCapture', then 'getProperty' or 'getProperties' will return '\Application\AudioCapture.wav'. If file name was set to 'AudioCapture', then 'getProperty' or 'getProperties' will return '\AudioCapture.wav'.
                     ]]>
                 </DESC>
 			</REMARK>
