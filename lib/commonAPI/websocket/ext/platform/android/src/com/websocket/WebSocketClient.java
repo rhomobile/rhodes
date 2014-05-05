@@ -163,6 +163,7 @@ public class WebSocketClient {
                     try {
                         mSocket.close();
                         mSocket = null;
+                        mListener.onDisconnect(0,"Websocket disconnected from client side");
                     } catch (IOException ex) {
                         Log.d(TAG, "Error while disconnecting", ex);
                         mListener.onError(ex);
