@@ -113,12 +113,8 @@ int CAudioCapture::Start()
 		if ((m_hFile != INVALID_HANDLE_VALUE) ||
 			((m_hFile = CreateFile(lpRawFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, 0, NULL)) == INVALID_HANDLE_VALUE))
 		{
-			if(m_pStatusEvent->hasCallback()){
-				rho::Hashtable<rho::String, rho::String> statusData;
-				statusData.put( rho::common::convertToStringA(L"status"), 
-				rho::common::convertToStringA(L"unsuccessful") );			
-				m_pStatusEvent->set(statusData);
-			}
+			//set unsuccessful status
+			UpdateCallbackStatus(L"unsuccessful");
 			return MMSYSERR_NOMEM;
 		}
 
@@ -154,12 +150,8 @@ int CAudioCapture::Start()
 				m_waveHdrA.lpData = NULL;
 				delete [] m_waveHdrB.lpData;
 				m_waveHdrB.lpData = NULL;
-				if(m_pStatusEvent->hasCallback()){
-					rho::Hashtable<rho::String, rho::String> statusData;
-					statusData.put( rho::common::convertToStringA(L"status"), 
-					rho::common::convertToStringA(L"unsuccessful") );			
-					m_pStatusEvent->set(statusData);
-				}
+				//set unsuccessful status
+				UpdateCallbackStatus(L"unsuccessful");
 				return MMSYSERR_NOMEM;
 			}
 
@@ -231,12 +223,8 @@ int CAudioCapture::Start()
 				LOG(WARNING) + L"WAV: Waven WAVERR_BADFORMAT";
 				
 			}
-			if(m_pStatusEvent->hasCallback()){
-				rho::Hashtable<rho::String, rho::String> statusData;
-				statusData.put( rho::common::convertToStringA(L"status"), 
-				rho::common::convertToStringA(L"unsuccessful") );			
-				m_pStatusEvent->set(statusData);
-			}
+			//set unsuccessful status
+			UpdateCallbackStatus(L"unsuccessful");
 			LOG(WARNING) + L"WAV: Wavin failure";			
 		}	
 	}
@@ -313,7 +301,7 @@ DWORD WINAPI CAudioCapture::threadProc(LPVOID lpParam)
 		if(pAudioCapture->eventHandler()==AC_SAVED){
 			LOG(INFO) + L"WAV: Successfully saved the file";
 			return 0;
-		}
+		}	
 		return 1;
 	}
 	return -1;
@@ -355,26 +343,19 @@ AC_RETURN CAudioCapture::eventHandler()
 		if (dwEvent == WAIT_OBJECT_0 + CAPTURE_EVENT)
 		{
 			// only process the raw file on capture event
-			processRawFile();
-			//set unsuccessful status
-			if(m_pStatusEvent->hasCallback()){
-				//Used for storing the appropriate recording status
-				rho::Hashtable<rho::String, rho::String> statusData;
-				statusData.put( rho::common::convertToStringA(L"status"), 
-				rho::common::convertToStringA(L"successful") );			
-				m_pStatusEvent->set(statusData);
+			if(TRUE == processRawFile()){
+				//set successful status
+				UpdateCallbackStatus(L"successful");
+				iRet = AC_SAVED;
 			}
-			iRet = AC_SAVED;
+			else{
+				//set unsuccessful status
+				UpdateCallbackStatus(L"unsuccessful");
+			}
 		}
-		else if(dwEvent == WAIT_OBJECT_0 + CANCEL_EVENT){
+		else{
 			//set unsuccessful status
-			if(m_pStatusEvent->hasCallback()){
-				//Used for storing the appropriate recording status
-				rho::Hashtable<rho::String, rho::String> statusData;
-				statusData.put( rho::common::convertToStringA(L"status"), 
-				rho::common::convertToStringA(L"unsuccessful") );			
-				m_pStatusEvent->set(statusData);
-			}
+			UpdateCallbackStatus(L"unsuccessful");
 		}
 		m_hWaveIn = NULL;
 	}
@@ -393,8 +374,9 @@ AC_RETURN CAudioCapture::eventHandler()
 
 }
 
-void CAudioCapture::processRawFile()
+BOOL CAudioCapture::processRawFile()
 {
+	BOOL isFileSaved = FALSE;
 	RIFF_FILEHEADER FileHeader;
 	RIFF_CHUNKHEADER WaveHeader;
 	RIFF_CHUNKHEADER DataHeader;
@@ -424,7 +406,7 @@ void CAudioCapture::processRawFile()
 		pCopyBuf = new BYTE[iCopyBufSize];
 		if (pCopyBuf == NULL) {
 			LOG(WARNING) + L"Unable to get enough memory for copy operation";
-			return;
+			return isFileSaved;
 		}
 
 		// Open wave file
@@ -487,6 +469,7 @@ void CAudioCapture::processRawFile()
 
 			dwBytesToCopy -= dwBytesRead;
 		} while (dwBytesToCopy > 0);
+		isFileSaved = TRUE;
 	}
 
 ERROR_EXIT:
@@ -494,6 +477,7 @@ ERROR_EXIT:
     CloseHandle(m_hFile);
 	m_hFile = INVALID_HANDLE_VALUE;
 	CloseHandle(hWavFile);
+	return isFileSaved;
 }
 
 
@@ -581,4 +565,14 @@ BOOL CAudioCapture::RetrieveProperty(LPCTSTR szParameterName, WCHAR* szParameter
 
 void CAudioCapture::SetCallback(rho::apiGenerator::CMethodResult* pCallback){
 	m_pStatusEvent = pCallback;
+}
+
+void CAudioCapture::UpdateCallbackStatus(LPCWSTR szValue){
+	if(m_pStatusEvent->hasCallback()){
+		//Used for storing the appropriate recording status
+		rho::Hashtable<rho::String, rho::String> statusData;
+		statusData.put( rho::common::convertToStringA(L"status"), 
+		rho::common::convertToStringA(szValue) );			
+		m_pStatusEvent->set(statusData);
+	}	
 }
