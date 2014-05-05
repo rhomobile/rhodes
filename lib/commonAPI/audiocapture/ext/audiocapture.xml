@@ -138,11 +138,50 @@ The default values will be applied if no values are provided by the user. If val
 			<REMARK title="Get Property Or Get Properties">
                 <DESC>
                     <![CDATA[
-In Windows, 'getProperty' or 'getProperties' for filename will return the complete path along with the extension name. For example: If file name was set to '\\Application\\AudioCapture', then 'getProperty' or 'getProperties' will return '\Application\AudioCapture.wav'. If file name was set to 'AudioCapture', then 'getProperty' or 'getProperties' will return '\AudioCapture.wav'.
+In Windows, 'getProperty' or 'getProperties' for fileName will return the complete path along with the extension name. For example: If file name was set to '\\Application\\AudioCapture', then 'getProperty' or 'getProperties' will return '\Application\AudioCapture.wav'. If file name was set to 'AudioCapture', then 'getProperty' or 'getProperties' will return '\AudioCapture.wav'.
                     ]]>
                 </DESC>
 			</REMARK>
 		</REMARKS>
         <USER_OVERVIEW></USER_OVERVIEW>
+		<EXAMPLES>
+			<EXAMPLE title="Setting And Getting File Name">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>In WM/WinCE, one can set the fileName with or without extensions. On retrieving, the fileName property will return the complete path with the extension name.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Setting fileName without extension
+Rho::AudioCapture.fileName = "\\Application\\Audio1";
+
+#The returned value is "\Application\Audio1.wav"
+Alert.show_popup(Rho::AudioCapture.fileName);
+
+#Setting fileName with extension
+Rho::AudioCapture.fileName = "Audio2.wav";
+
+#The returned value is "\Audio2.wav"
+Alert.show_popup(Rho::AudioCapture.fileName);
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+// Setting fileName without extension
+Rho.AudioCapture.fileName = "\\Application\\Audio1";
+
+// The returned value is "\Application\Audio1.wav"
+alert(Rho.AudioCapture.fileName);
+
+// Setting fileName with extension
+Rho.AudioCapture.fileName = "Audio2.wav";
+
+// The returned value is "\Audio2.wav"
+alert(Rho.AudioCapture.fileName);
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+            </EXAMPLE>
+		</EXAMPLES>
     </MODULE>
 </API>
