@@ -136,4 +136,4 @@ namespace 'arch' do
   task :mips => TARGETLIB_MIPS
 end
 
-task :default => ["build:arm", "build:x86"]
+task :default => ["arch:arm"]
