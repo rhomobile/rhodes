@@ -38,7 +38,8 @@ CAudioCapture::~CAudioCapture()
 {
 	if (m_hWaveIn)
 		Cancel();
-	
+
+	m_pStatusEvent	= NULL;
 	delete [] m_lpzFilename;	
 }
 
@@ -93,7 +94,6 @@ LPWSTR CAudioCapture::SetFilename(LPCWSTR lpFilename)
 int CAudioCapture::Start()
 {
 	MMRESULT res = MMSYSERR_NOERROR;
-	rho::Hashtable<rho::String, rho::String> statusData;
 
 	if (!m_bAppHasFocus) // if we aren't focussed we can't use the hardware so ignore
 		return res;
@@ -113,9 +113,12 @@ int CAudioCapture::Start()
 		if ((m_hFile != INVALID_HANDLE_VALUE) ||
 			((m_hFile = CreateFile(lpRawFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, 0, NULL)) == INVALID_HANDLE_VALUE))
 		{
-			statusData.put( rho::common::convertToStringA(L"status"), 
-			rho::common::convertToStringA(L"unsuccessful") );			
-			m_pStatusEvent->set(statusData);
+			if(m_pStatusEvent->hasCallback()){
+				rho::Hashtable<rho::String, rho::String> statusData;
+				statusData.put( rho::common::convertToStringA(L"status"), 
+				rho::common::convertToStringA(L"unsuccessful") );			
+				m_pStatusEvent->set(statusData);
+			}
 			return MMSYSERR_NOMEM;
 		}
 
@@ -151,9 +154,12 @@ int CAudioCapture::Start()
 				m_waveHdrA.lpData = NULL;
 				delete [] m_waveHdrB.lpData;
 				m_waveHdrB.lpData = NULL;
-				statusData.put( rho::common::convertToStringA(L"status"), 
-				rho::common::convertToStringA(L"unsuccessful") );			
-				m_pStatusEvent->set(statusData);
+				if(m_pStatusEvent->hasCallback()){
+					rho::Hashtable<rho::String, rho::String> statusData;
+					statusData.put( rho::common::convertToStringA(L"status"), 
+					rho::common::convertToStringA(L"unsuccessful") );			
+					m_pStatusEvent->set(statusData);
+				}
 				return MMSYSERR_NOMEM;
 			}
 
@@ -225,9 +231,12 @@ int CAudioCapture::Start()
 				LOG(WARNING) + L"WAV: Waven WAVERR_BADFORMAT";
 				
 			}
-			statusData.put( rho::common::convertToStringA(L"status"), 
-			rho::common::convertToStringA(L"unsuccessful") );			
-			m_pStatusEvent->set(statusData);
+			if(m_pStatusEvent->hasCallback()){
+				rho::Hashtable<rho::String, rho::String> statusData;
+				statusData.put( rho::common::convertToStringA(L"status"), 
+				rho::common::convertToStringA(L"unsuccessful") );			
+				m_pStatusEvent->set(statusData);
+			}
 			LOG(WARNING) + L"WAV: Wavin failure";			
 		}	
 	}
@@ -342,23 +351,30 @@ AC_RETURN CAudioCapture::eventHandler()
 	    CloseHandle(m_hFile);
 		m_hFile = INVALID_HANDLE_VALUE;
 
-		//Used for storing the appropriate recording status
-		rho::Hashtable<rho::String, rho::String> statusData;
+		
 		if (dwEvent == WAIT_OBJECT_0 + CAPTURE_EVENT)
 		{
 			// only process the raw file on capture event
 			processRawFile();
-			//send notification of successful send
-			statusData.put( rho::common::convertToStringA(L"status"), 
-			rho::common::convertToStringA(L"successful") );			
-			m_pStatusEvent->set(statusData);
+			//set unsuccessful status
+			if(m_pStatusEvent->hasCallback()){
+				//Used for storing the appropriate recording status
+				rho::Hashtable<rho::String, rho::String> statusData;
+				statusData.put( rho::common::convertToStringA(L"status"), 
+				rho::common::convertToStringA(L"successful") );			
+				m_pStatusEvent->set(statusData);
+			}
 			iRet = AC_SAVED;
 		}
 		else if(dwEvent == WAIT_OBJECT_0 + CANCEL_EVENT){
 			//set unsuccessful status
-			statusData.put( rho::common::convertToStringA(L"status"), 
-			rho::common::convertToStringA(L"unsuccessful") );			
-			m_pStatusEvent->set(statusData);
+			if(m_pStatusEvent->hasCallback()){
+				//Used for storing the appropriate recording status
+				rho::Hashtable<rho::String, rho::String> statusData;
+				statusData.put( rho::common::convertToStringA(L"status"), 
+				rho::common::convertToStringA(L"unsuccessful") );			
+				m_pStatusEvent->set(statusData);
+			}
 		}
 		m_hWaveIn = NULL;
 	}
