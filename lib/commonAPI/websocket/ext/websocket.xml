@@ -28,7 +28,7 @@
         </CONSTANTS>
 
          <PROPERTIES >
-
+-
             <PROPERTY name="onopen" type="CALLBACK">
                 <DESC>This callback is fired when connection is established.</DESC>
             </PROPERTY>
