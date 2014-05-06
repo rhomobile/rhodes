@@ -1,20 +1,15 @@
-entry: Init_AudioCapture
-javaentry: com.audiocapture.Audiocapture
-libraries: ["audiocapture"]
+entry: Init_AudioCapture_extension
+javaentry: com.audiocapture.AudioCapture
+libraries: ["AudioCapture"]
 android:
   source_list: ext/platform/android/ext_java.files
   exttype: rakefile
-  manifest_changes: 
-  - ext/platform/android/AndroidManifest.rb
 wp8:
   csharp_impl: yes
   root_namespace: rho
 
 project_paths:
-  wp8: ext/platform/wp8/AudiocaptureLib.vcxproj
-  wm: ext/platform/wm/Audiocapture.vcproj
-  win32: ext/platform/wm/Audiocapture.vcproj
+  wp8: ext/platform/wp8/AudioCaptureLib.vcxproj
+  wm: ext/platform/wm/AudioCapture.vcproj
   
-xml_api_paths: ext/audiocapture.xml
-
-platforms: [android]
+xml_api_paths: ext/AudioCapture.xml

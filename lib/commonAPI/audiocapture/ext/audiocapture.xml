@@ -1,11 +1,29 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
 <API>
     <MODULE name="AudioCapture" parent="Rho">
         <HELP_OVERVIEW>Audio capture API</HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
-        <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
-        <PLATFORM>Android</PLATFORM>
+        <MORE_HELP>
+		## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["audiocapture"]
+
+The `audiocapture` extension is also included automatically if you specify the following in your `build.yml`
+    :::ruby
+    app_type: "rhoelements"
+
+NOTE: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+		</MORE_HELP>
+        <VER_INTRODUCED>4.2.0</VER_INTRODUCED>
+        <PLATFORM>WM, Android</PLATFORM>
 
         <TEMPLATES>
             <DEFAULT_INSTANCE/>
@@ -21,65 +39,219 @@
 
             <PROPERTY name="source" type="STRING">
                 <DESC>Audio source.</DESC>
+				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
                     <VALUE constName="MIC" value="mic">
-                        <DESC>Embedded microphone.</DESC>
+                        <DESC>Embedded microphone. This is the default value.</DESC>
                     </VALUE>
-                    <VALUE constName="CAMCORDER" value="camcorder">
-                        <DESC>Microphone with same orientation as camera if available, the main device microphone otherwise.</DESC>
-                    </VALUE>
-                    <VALUE constName="CALL_FULLDUPLEX" value="call_fullduplex">
-                        <DESC>Voice call uplink and downlink audio.</DESC>
-                    </VALUE>
-                    <VALUE constName="CALL_DOWNLINK" value="call_downlink">
-                        <DESC>Voice call downlink audio.</DESC>
-                    </VALUE>
-                    <VALUE constName="CALL_UPLINK" value="call_uplink">
-                        <DESC>Voice call uplink audio.</DESC>
-                    </VALUE>
+                    
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="encoder" type="STRING">
                 <DESC>Encoder to compress recorded audio.</DESC>
+				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
-                    <VALUE constName="ENCODER_AAC_LC" value="AAC_LC">
-                        <DESC>AAC low complexity.</DESC></VALUE>
+                    
                     <VALUE constName="ENCODER_AAC" value="AAC">
-                        <DESC>AAC low complexity (same as AAC_LC)</DESC></VALUE>
-                    <VALUE constName="ENCODER_AAC_ELD" value="AAC_ELD">
-                        <DESC>AAC enhanced low delay.</DESC></VALUE>
-                    <VALUE constName="ENCODER_AAC_HE" value="AAC_HE">
-                        <DESC>AAC high efficiency.</DESC></VALUE>
+                        <DESC>AAC low complexity. This is the default value.</DESC>
+                    </VALUE>
+                   
                     <VALUE constName="ENCODER_AMR_NB" value="AMR_NB">
-                        <DESC>AMR narrow-band.</DESC></VALUE>
+                        <DESC>AMR narrow-band.</DESC>
+                    </VALUE>
                     <VALUE constName="ENCODER_AMR_WB" value="AMR_WB">
-                        <DESC>AMR wide-band.</DESC></VALUE>
+                        <DESC>AMR wide-band.</DESC>
+                    </VALUE>
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="maxDuration" type="INTEGER">
-                <DESC>Maximum duration (in milliseconds) of the recording session. Specifies the number of milliseconds of audio to capture by defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milliseconds is specified, the interval will be defaulted to 20000 milliseconds.</DESC>
-            </PROPERTY>
+                <DESC>Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 20000 milliseconds. The default value is 20,000 milisec.</DESC>
+				<PLATFORM>WM, Android</PLATFORM>
+			      </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
-                <DESC>Sets the destination path and name for the captured file. </DESC>
+                <DESC>This parameter is used to specify the filename. In Windows, when the audio capture completes a file is saved in the root directory of the device. File is saved in the root directory if the location path is not specified with the file name. In android, default location is "sdcard" and default name is "AudioCapture". Please see remarks section for extension.</DESC>
+				        <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
         <METHODS>
-            <METHOD name="start" hasCallback="optional" runInThread="separate">
+            <METHOD name="start" hasCallback="mandatory" runInThread="separate">
                 <PARAMS>
-                    <PARAM name="props" type="HASH" propertyHash="true">
-                        <DESC>The path to store captured audio. The filename extension is used to define file output format. Supported extensions are ".3gpp", ".mp4"</DESC>
-                    </PARAM>
+                     <PARAM name="props" type="HASH" propertyHash="true">
+                        <DESC>Map of Audio Capture properties to be set.</DESC>
+                     </PARAM>
                 </PARAMS>
-                <DESC>Starts capturing audio until either 'stop' is received, or 'duration' is reached (i.e. until the buffer is full).</DESC>
+				<CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>Whether or not the audio recording was successfully captured, status will be 'successful' or 'unsuccessful'.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>    
+                <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'successful' status and unsuccessful recording will set 'unsuccessful' status in the callback returning parameters. If 'cancel' method is called during recording, 'unsuccessful' status will be set in the callback returning parameters. In order to restart the audio capture when audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
+				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             <METHOD name="stop" runInThread="none">
-                <DESC>Stop audio recording.</DESC>
+                <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'successful' in the callback returning parameter of 'start' method. The file is saved in default or user provided location.</DESC>
+				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
             <METHOD name="cancel" runInThread="none">
-                <DESC>Cancel audio recording.</DESC>
+                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'unsuccessful' in the callback returning parameter of 'start' method. No file is saved.</DESC>
+				        <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
         </METHODS>
-        <USER_OVERVIEW>
-        </USER_OVERVIEW>
+		<REMARKS>
+            <REMARK title="File Name">
+                <DESC>
+                    <![CDATA[
+In windows, to store the file in a particular location, specify the path with the file name. Mentioning the extension name with the file name is optional. Only *.wav files are supported. If the path is not specified with the file name, the captured file is stored in the root directory of the device. In android, the default location is in the "sdcard" and "default" name is AudioCapture.In Android, the filename property should be set with fully qualified path name and the directory should be present in the path else it should be manually created before setting this property. For example,"/sdcard/Audio/sample.mp4". In Android, the file extension depends on encoder value. If it is AAC,the extensin should be ".mp4". In all other case it is of ".3gpp".					
+                    ]]> 
+                </DESC>
+            </REMARK>
+			<REMARK title="Restarting of Audio Capture">
+                <DESC>
+                    <![CDATA[
+Audio recording will not be restarted, if the audio recording is already in process. In order to restart the audio capture, stop or cancel method need to be invoked before invoking start method.
+                    ]]>
+                </DESC>
+            </REMARK>
+			<REMARK title="Page Refresh">
+                <DESC>
+                    <![CDATA[
+Audio recording should be cancelled. In android, the state will pe persisted.
+                    ]]>
+                </DESC>
+            </REMARK>
+			<REMARK title="Page Navigation">
+                <DESC>
+                    <![CDATA[
+Audio recording should be cancelled. In android, the state will be persisted.
+                    ]]>
+                </DESC>
+            </REMARK>			
+			<REMARK title="Duration And File Name Settings">
+                <DESC>
+                    <![CDATA[
+The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in progress. In Windows, if the folder is not present, it should be created manually for storing the file in that location. In android, there might be slight omit of recording data initially.
+                    ]]>
+                </DESC>
+			</REMARK>
+			<REMARK title="Get Property Or Get Properties">
+                <DESC>
+                    <![CDATA[
+In Windows, 'getProperty' or 'getProperties' for fileName will return the complete path along with the extension name. For example: If file name was set to '\\Application\\AudioCapture', then 'getProperty' or 'getProperties' will return '\Application\AudioCapture.wav'. If file name was set to 'AudioCapture', then 'getProperty' or 'getProperties' will return '\AudioCapture.wav'. In Android, the default fileName will return "AudioCapture".
+                    ]]>
+                </DESC>
+			</REMARK>
+		</REMARKS>
+        <USER_OVERVIEW></USER_OVERVIEW>
+		<EXAMPLES>
+			<EXAMPLE title="Starting, Stopping And Cancelling Audio Capture">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>Starting, Stopping and Cancelling audio capture is same across all platforms.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Starting Audio Capture without settings. Callback is mandatory.
+Rho::AudioCapture.start({},mycallback);
+
+#Starting Audio Capture with settings. Callback is mandatory.
+Rho::AudioCapture.start({'fileName':"AudioCapture",'maxDuration':'15000'},mycallback);
+
+#Stopping Audio Capture
+Rho::AudioCapture.stop();
+
+#Cancelling Audio Capture
+Rho::AudioCapture.cancel();
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+// Starting Audio Capture without settings. Callback is mandatory.
+Rho.AudioCapture.start({},mycallback);
+
+// Starting Audio Capture with settings. Callback is mandatory.
+Rho.AudioCapture.start({'fileName':"AudioCapture",'maxDuration':'15000'},mycallback);
+
+// Stopping Audio Capture
+Rho.AudioCapture.stop();
+
+// Cancelling Audio Capture
+Rho.AudioCapture.cancel();
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+            </EXAMPLE>
+			<EXAMPLE title="Setting And Getting File Name">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>In WM/WinCE, one can set the fileName with or without extensions. On retrieving, the fileName property will return the complete path with the extension name.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Setting fileName without extension
+Rho::AudioCapture.fileName = "\\Application\\Audio1";
+
+#The returned value is "\Application\Audio1.wav"
+Alert.show_popup(Rho::AudioCapture.fileName);
+
+#Setting fileName with extension
+Rho::AudioCapture.fileName = "Audio2.wav";
+
+#The returned value is "\Audio2.wav"
+Alert.show_popup(Rho::AudioCapture.fileName);
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+// Setting fileName without extension
+Rho.AudioCapture.fileName = "\\Application\\Audio1";
+
+// The returned value is "\Application\Audio1.wav"
+alert(Rho.AudioCapture.fileName);
+
+// Setting fileName with extension
+Rho.AudioCapture.fileName = "Audio2.wav";
+
+// The returned value is "\Audio2.wav"
+alert(Rho.AudioCapture.fileName);
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                        <SECTION>
+                            <DESC>In Android, one can set the fileName with or without extensions. The extension depends on encoder. The directory should be present. </DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Setting fileName without extension
+Rho::AudioCapture.fileName = "/sdcard/Audio/sample";
+
+#The returned value is "/sdcard/Audio/sample"
+Alert.show_popup(Rho::AudioCapture.fileName);
+
+#Setting fileName with extension
+Rho::AudioCapture.fileName = "/sdcard/Audio/sample.mp4";
+
+#The returned value is "/sdcard/Audio/sample.mp4"
+Alert.show_popup(Rho::AudioCapture.fileName);
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+// Setting fileName without extension
+Rho.AudioCapture.fileName = "/sdcard/Audio/sample";
+
+// The returned value is "/sdcard/Audio/sample";
+alert(Rho.AudioCapture.fileName);
+
+// Setting fileName with extension
+Rho.AudioCapture.fileName = "/sdcard/Audio/sample.mp4";
+
+// The returned value is "/sdcard/Audio/sample.mp4";
+alert(Rho.AudioCapture.fileName);
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+            </EXAMPLE>
+		</EXAMPLES>
     </MODULE>
 </API>
