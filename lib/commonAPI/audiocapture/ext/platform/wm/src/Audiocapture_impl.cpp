@@ -15,6 +15,12 @@ class CAudioCaptureImpl: public IRhoExtension, public CAudioCaptureBase
 public:
     CAudioCaptureImpl(const rho::String& strID): CAudioCaptureBase()
     {
+		//Is this the AudioCapture instance ID?
+		m_hashProps.put( "ID", strID);
+		
+		LOG(INFO) + "Initialising interface for AudioCapture " + strID; 
+		RHODESAPP().getExtManager().registerExtension(strID, this );
+
 		pAudio = NULL;
 		pAudio = new CAudioCapture(true);
     }
@@ -175,9 +181,7 @@ IAudioCaptureSingleton* CAudioCaptureFactory::createModuleSingleton()
 void CAudioCaptureSingleton::enumerate(CMethodResult& oResult)
 {
     rho::Vector<rho::String> arIDs;
-    arIDs.addElement("SC1");
-    arIDs.addElement("SC2");
-
+    arIDs.addElement("AudioCapture");
     oResult.set(arIDs);
 }
 
