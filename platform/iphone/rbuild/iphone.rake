@@ -2605,7 +2605,7 @@ namespace "device" do
 
     end
 
-    def determine_prebuild_path(config)
+    def determine_prebuild_path_iphone(config)
       require 'rhodes/containers'
       Rhodes::Containers::get_container_path_prefix('iphone', config)
     end
@@ -2623,7 +2623,7 @@ namespace "device" do
 
       is_simulator = ($sdk =~ /iphonesimulator/)
 
-      parent_ipa_path = File.join(determine_prebuild_path($app_config), "prebuild.ipa")
+      parent_ipa_path = File.join(determine_prebuild_path_iphone($app_config), "prebuild.ipa")
 
       puts '$ parent_ipa_path = '+parent_ipa_path
 
