@@ -23,7 +23,7 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
 		</MORE_HELP>
         <VER_INTRODUCED>4.2.0</VER_INTRODUCED>
-        <PLATFORM>WM, Android</PLATFORM>
+        <PLATFORM>WM, Android, iOS</PLATFORM>
 
         <TEMPLATES>
             <DEFAULT_INSTANCE/>
@@ -41,7 +41,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Audio source.</DESC>
 				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
-                    <VALUE constName="MIC" value="mic">
+                    <VALUE constName="SOURCE_MIC" value="mic">
                         <DESC>Embedded microphone. This is the default value.</DESC>
                     </VALUE>
                     
@@ -64,39 +64,47 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </VALUE>
                 </VALUES>
             </PROPERTY>
-            <PROPERTY name="maxDuration" type="INTEGER">
+
+            <PROPERTY name="maxDuration" type="INTEGER" default="20000">
                 <DESC>Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 20000 milliseconds. The default value is 20,000 milisec.</DESC>
-				<PLATFORM>WM, Android</PLATFORM>
+				<PLATFORM>WM, Android, iOS</PLATFORM>
 			      </PROPERTY>
-            <PROPERTY name="fileName" type="STRING">
-                <DESC>This parameter is used to specify the filename. By default the audio capture file is saved in the root directory of the device if the location path is not specified with the file name. </DESC>
-				        <PLATFORM>WM, Android</PLATFORM>
+            <PROPERTY name="fileName" type="STRING" default="audiocapture">
+                <DESC>This parameter is used to specify the filename. By default the audio capture file is saved in the root directory of the device if the location path is not specified with the file name. This is only filename without extension, because extension added automatically and related to file format on platform</DESC>
+				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
         <METHODS>
+             
             <METHOD name="start" hasCallback="mandatory" runInThread="separate">
                 <PARAMS>
                      <PARAM name="props" type="HASH" propertyHash="true">
-                        <DESC>Map of Audio Capture properties to be set.</DESC>
+                        <DESC>Map of Audio Capture properties to be set. For iOS 22kHz 16bit Mono WAV file will be created.</DESC>
                      </PARAM>
                 </PARAMS>
 				<CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">
-                            <DESC>Whether or not the audio recording was successfully captured, status will be 'successful' or 'unsuccessful'.</DESC>
+                            <DESC>Whether or not the audio recording was successfully captured, status will be 'OK' or 'CANCEL' or 'ERROR'.</DESC>
+                        </PARAM>
+                        <PARAM name="message" type="STRING">
+                            <DESC>if 'status' == 'ERROR', then message contain error message.</DESC>
+                        </PARAM>
+                        <PARAM name="fileName" type="STRING">
+                            <DESC>if 'status' == 'OK', then contain full file path of recored audiofile.</DESC>
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>    
                 <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'successful' status and unsuccessful recording will set 'unsuccessful' status in the callback returning parameters. If 'cancel' method is called during recording, 'unsuccessful' status will be set in the callback returning parameters. In order to restart the audio capture when audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
-				        <PLATFORM>WM, Android</PLATFORM>
+				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
             <METHOD name="stop" runInThread="none">
                 <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'successful' in the callback returning parameter of 'start' method. The file is saved in default or user provided location.</DESC>
-				        <PLATFORM>WM, Android</PLATFORM>
+				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
             <METHOD name="cancel" runInThread="none">
                 <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'unsuccessful' in the callback returning parameter of 'start' method. No file is saved.</DESC>
-				        <PLATFORM>WM, Android</PLATFORM>
+				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
         </METHODS>
 		<REMARKS>
