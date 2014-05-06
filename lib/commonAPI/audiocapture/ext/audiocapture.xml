@@ -69,7 +69,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				<PLATFORM>WM, Android</PLATFORM>
 			      </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
-                <DESC>This parameter is used to specify the filename. In Windows, when the audio capture completes a file is saved in the root directory of the device. File is saved in the root directory if the location path is not specified with the file name. In android, default location is "sdcard" and default name is "AudioCapture". Please see remarks section for extension.</DESC>
+                <DESC>This parameter is used to specify the filename. By default the audio capture file is saved in the root directory of the device if the location path is not specified with the file name. </DESC>
 				        <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
@@ -103,7 +103,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <REMARK title="File Name">
                 <DESC>
                     <![CDATA[
-In windows, to store the file in a particular location, specify the path with the file name. Mentioning the extension name with the file name is optional. Only *.wav files are supported. If the path is not specified with the file name, the captured file is stored in the root directory of the device. In android, the default location is in the "sdcard" and "default" name is AudioCapture.In Android, the filename property should be set with fully qualified path name and the directory should be present in the path else it should be manually created before setting this property. For example,"/sdcard/Audio/sample.mp4". In Android, the file extension depends on encoder value. If it is AAC,the extensin should be ".mp4". In all other case it is of ".3gpp".					
+In Windows, to store the file in a particular location, specify the path with the file name. Mentioning the extension name with the file name is optional. Only *.wav files are supported. If the path is not specified with the file name, the captured file is stored in the root directory of the device. In Windows and Android, if the folder is not present, it should be created manually for storing the file in that location. In Android, the default location is 'sdcard' and default name is 'AudioCapture'. In Android, the file extension depends on encoder value. If it is AAC, the extension should be '.mp4'. In all other cases, it is of '.3gpp'.
                     ]]> 
                 </DESC>
             </REMARK>
@@ -117,7 +117,7 @@ Audio recording will not be restarted, if the audio recording is already in proc
 			<REMARK title="Page Refresh">
                 <DESC>
                     <![CDATA[
-Audio recording should be cancelled. In android, the state will pe persisted.
+Audio recording should be cancelled. In android, the state will be persisted.
                     ]]>
                 </DESC>
             </REMARK>
@@ -131,7 +131,7 @@ Audio recording should be cancelled. In android, the state will be persisted.
 			<REMARK title="Duration And File Name Settings">
                 <DESC>
                     <![CDATA[
-The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in progress. In Windows, if the folder is not present, it should be created manually for storing the file in that location. In android, there might be slight omit of recording data initially.
+The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in progress. In android, there might be slight omit of recording data initially.
                     ]]>
                 </DESC>
 			</REMARK>
