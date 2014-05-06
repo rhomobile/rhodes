@@ -145,6 +145,43 @@ In Windows, 'getProperty' or 'getProperties' for fileName will return the comple
 		</REMARKS>
         <USER_OVERVIEW></USER_OVERVIEW>
 		<EXAMPLES>
+			<EXAMPLE title="Starting, Stopping And Cancelling Audio Capture">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>Starting, Stopping and Cancelling audio capture is same across all platforms.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Starting Audio Capture without settings. Callback is mandatory.
+Rho::AudioCapture.start({},mycallback);
+
+#Starting Audio Capture with settings. Callback is mandatory.
+Rho::AudioCapture.start({'fileName':"AudioCapture",'maxDuration':'15000'},mycallback);
+
+#Stopping Audio Capture
+Rho::AudioCapture.stop();
+
+#Cancelling Audio Capture
+Rho::AudioCapture.cancel();
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+// Starting Audio Capture without settings. Callback is mandatory.
+Rho.AudioCapture.start({},mycallback);
+
+// Starting Audio Capture with settings. Callback is mandatory.
+Rho.AudioCapture.start({'fileName':"AudioCapture",'maxDuration':'15000'},mycallback);
+
+// Stopping Audio Capture
+Rho.AudioCapture.stop();
+
+// Cancelling Audio Capture
+Rho.AudioCapture.cancel();
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+            </EXAMPLE>
 			<EXAMPLE title="Setting And Getting File Name">
                     <SECTIONS>
                         <SECTION>
