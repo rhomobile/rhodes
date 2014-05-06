@@ -278,18 +278,18 @@ def build_cab
 
   args = [
     'build_inf.js',
-    $appname + ".inf",                        #0
+    '"' + $appname + ".inf\"",               #0
     build_platform,                           #1
     '"' + $app_config["name"] +'"',           #2
-    $app_config["vendor"],                    #3
+    '"' + $app_config["vendor"] + '"',        #3
     '"' + $srcdir + '"',                      #4
     $hidden_app,                              #5
     ($webkit_capability ? "1" : "0"),         #6
-    $wk_data_dir,                             #7
+    '"' + $wk_data_dir + '"',                 #7
     ($use_shared_runtime  ? "1" : "0"),       #8
     ($motorola_capability ? "1" : "0"),       #9
     ($run_on_startup      ? "1" : "0"),       #10
-    $srcdir,                                  #11
+    '"' + $srcdir + '"',                      #11
     ($build_persistent_cab ? "1" : "0")       #12
   ]
 
@@ -297,7 +297,7 @@ def build_cab
 
   Jake.run3("cscript #{args.join(' ')}", dir)
 
-  Jake.run3("\"#{$cabwiz}\" #{$appname}.inf", dir)
+  Jake.run3("\"#{$cabwiz}\" \"#{$appname}.inf\"", dir)
   Jake.run3('cscript cleanup.js', dir)
 
   mkdir_p $targetdir
@@ -307,7 +307,7 @@ def build_cab
   File.open(File.join($targetdir, 'app_info.txt'), 'w') { |f| f.write("#{$app_config['vendor']} #{$appname}/#{$appname}.exe") }
 
   if not $config['build']['wmsign'].nil? and $config['build']['wmsign'] != ''
-    sign("#{$targetdir}/#{$appname}.cab", $config['build']['wmsign'])
+    sign("\"#{$targetdir}/#{$appname}.cab\"", $config['build']['wmsign'])
   end
 
   rm File.join(dir, 'cleanup.js')
@@ -1243,7 +1243,7 @@ namespace "device" do
     Rake::Task["build:win32:deployqt"].invoke
 
     puts "$nsis - " + $nsis
-    args = [$tmpdir + "/" + $appname + ".nsi"]
+    args = ['"' + $tmpdir + "/" + $appname + ".nsi\""]
     puts "arg = " + args.to_s
 
     puts Jake.run2($nsis, args, {:nowait => false} )
@@ -1577,7 +1577,7 @@ namespace "run" do
 
         cd $startdir + "/res/build-tools"
         detool = "detool.exe"
-        args   = [$detoolappflag, 'devcab', $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
+        args   = [$detoolappflag, 'devcab', '"' + $targetdir + '/' +  $appname + ".cab\"", '"' + $appname + '"', ( $use_shared_runtime ? "1" : "0")]
         puts "\nStarting application on the device"
         puts "Please, connect you device via ActiveSync.\n\n"
         log_file = gelLogPath
@@ -1595,7 +1595,7 @@ namespace "run" do
 
       cd $startdir + "/res/build-tools"
       detool = "detool.exe"
-      args   = [$detoolappflag, 'emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
+      args   = [$detoolappflag, 'emucab', "\"#{$wm_emulator}\"", '"' + $targetdir + '/' +  $appname + ".cab\"", '"' + $appname + '"', ( $use_shared_runtime ? "1" : "0")]
       log_file = gelLogPath
 
       Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
