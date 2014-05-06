@@ -34,8 +34,7 @@ namespace rho {
         rho::apiGenerator::CMethodResult* m_onMessageCallback;
         rho::apiGenerator::CMethodResult* m_onErrorCallback;
 
-        
-    public:
+      public:
         CEventSourceImpl() :
             m_onErrorCallback(0), m_onMessageCallback(0), m_onOpenCallback(0)
         {
@@ -74,9 +73,14 @@ namespace rho {
         }
         
         virtual void create( const rho::String& url,  const rho::Hashtable<rho::String, rho::String>& settings, rho::apiGenerator::CMethodResult& oResult) {
-            LOG(INFO) + "CEventSourceImpl::create: + " + url;
+            LOG(INFO) + "CEventSourceImpl::create: " + url;
             m_es = EventSource::create(url, this);
         }
+
+        virtual void addEventListener( const rho::String& event, rho::apiGenerator::CMethodResult& oResult) {
+          LOG(INFO) + "CEventSourceImpl::addEventListener: + " + event;
+        }
+
         
         virtual void close(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::close";
@@ -86,14 +90,24 @@ namespace rho {
     
         virtual void onOpen() {
             LOG(INFO) + "CEventSourceImpl::onOpen";
+            if ( m_onOpenCallback != 0 ) {
+              m_onOpenCallback->set((void*)0);
+            }
         }
         
-        virtual void onError(const String&) {
-            LOG(INFO) + "CEventSourceImpl::onError";
+        virtual void onError(const String& error) {
+            LOG(INFO) + "CEventSourceImpl::onError - " + error;
+            if ( m_onErrorCallback != 0 ) {
+              m_onErrorCallback->set(error);
+            }
+
         }
         
-        virtual void onMessage(const String&) {
-            LOG(INFO) + "CEventSourceImpl::onMessage";
+        virtual void onMessage(const String& message) {
+            LOG(INFO) + "CEventSourceImpl::onMessage - " + message;
+            if ( m_onMessageCallback != 0 ) {
+              m_onMessageCallback->set(message);
+            }
         }
 
     };

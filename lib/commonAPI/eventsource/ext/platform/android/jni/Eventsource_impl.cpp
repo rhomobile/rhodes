@@ -37,7 +37,7 @@ extern "C" void Init_Eventsource(void)
         
         RAWTRACE("Initializing Java factory");
 
-        rho::CEventsourceBase::setJavaFactory(env, jFactory);
+        CEventsourceBase::setJavaFactory(env, jFactory);
 
         RAWTRACE("Deleting JNI reference");
 
