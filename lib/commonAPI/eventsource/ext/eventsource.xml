@@ -41,11 +41,11 @@
                 <DESC>URL passed to EventSource constructor.</DESC>
             </PROPERTY>
             
-            <PROPERTY name="readyState" type="INTEGER" readyOnly="true">
+            <PROPERTY name="readyState" type="INTEGER" readOnly="true">
                 <DESC>Represents the state of the connection.</DESC>
             </PROPERTY>
             
-            <PROPERTY name="withCredentials" type="BOOLEAN" readyOnly="true">
+            <PROPERTY name="withCredentials" type="BOOLEAN" readOnly="true">
                 <DESC>Currently will return empty string.</DESC>
             </PROPERTY>
 
@@ -59,7 +59,7 @@
                     <PARAM name="url" type="STRING">
                         <DESC></DESC>
                     </PARAM>
-                    <PARAM name="settings" type="HASH" optional="true">
+                    <PARAM name="init" type="HASH" optional="true">
                         <DESC></DESC>
                     </PARAM>
 
@@ -68,8 +68,17 @@
             </METHOD>
             
             
-             <METHOD name="close" hasCallback="none" destructor="true">
-                <PLATFORM>Android</PLATFORM>
+            <METHOD name="close" hasCallback="none" destructor="true">
+
+            </METHOD>
+
+            <METHOD name="addEventListener" runInThread="none" hasCallback="mandatory">
+              <PARAMS>
+                <PARAM name="event" type="STRING">
+                  <DESC></DESC>
+                </PARAM>
+              </PARAMS>        
+              <CALLBACK/>
             </METHOD>
             
         </METHODS>
