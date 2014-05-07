@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import android.graphics.Rect;
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
 import android.media.MediaRecorder.OnInfoListener;
@@ -16,6 +17,11 @@ import android.os.Environment;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.extmanager.IRhoConfig;
+import com.rhomobile.rhodes.extmanager.IRhoExtManager;
+import com.rhomobile.rhodes.extmanager.IRhoExtension;
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     
@@ -27,8 +33,11 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     
     private Map<String, String> mActualPropertyMap = new HashMap<String, String>();
     
+    private AudioCaptureExt ext=null;
     private void initWithDefaultValues()
     {
+    	ext=new AudioCaptureExt();
+    	RhoExtManager.getInstance().registerExtension("audiocapture", ext);
     	
     	if(mActualPropertyMap.size()==0)
     	{
@@ -430,6 +439,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
                 		System.out.println("Stop storedMethodResult="+storedMethodResult);
                 	}
                 storedMethodResult=null;
+                return;
             }
            
             System.out.println("Start->4");
@@ -515,7 +525,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             
             System.out.println("Start->10");
             recorder.setMaxDuration(maxDuration);
-            System.out.println("Start->11,maxDuration="+maxDuration);
+            System.out.println("Start->11,maxDuration="+maxDuration+" outputFormat="+outputFormat);
             recorder.setOutputFormat(outputFormat);
             System.out.println("Start->12,outputFormat="+outputFormat);
             recorder.setOutputFile(path);
@@ -556,11 +566,15 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         try {
             releaseRecorder();
         } finally {
-            String path = getActualPropertyMap().get("fileName");
-            if (path != null && !path.isEmpty()) {
-                File file = new File(path);
+        	System.out.println("18");
+            //String path = getActualPropertyMap().get("fileName");
+            //System.out.println("19,path="+path);
+            if (filepath != null && !filepath.isEmpty()) {
+                File file = new File(filepath);
                 if (file.exists()) {
-                    file.delete();
+                	 System.out.println("20,exists="+true);
+                    boolean del=file.delete();
+                    System.out.println("20,deletion happens or NOT="+true);
                 }
             }
            // clearActualPropertyMap();
@@ -593,9 +607,9 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             try {
                 releaseRecorder();
             } finally {
-                String path = getActualPropertyMap().get("fileName");
-                if (path != null && !path.isEmpty()) {
-									                    File file = new File(path);
+                //String path = getActualPropertyMap().get("fileName");
+                if (filepath != null && !filepath.isEmpty()) {
+									                    File file = new File(filepath);
 									                    if (file.exists()) {
 									                        				file.delete();
 									                    					}
@@ -615,6 +629,185 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
       storedMethodResult=null;
     	
     }
-    
+class AudioCaptureExt implements IRhoExtension
+{
+
+	@Override
+	public IRhoWebView onCreateWebView(IRhoExtManager extManager, int tabIndex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean onWebViewCreated(IRhoExtManager extManager, IRhoWebView ext,
+			boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onSetPropertiesData(IRhoExtManager extManager,
+			String propId, String data, int pos, int total, IRhoWebView ext,
+			boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onSetPropertiesDataEnd(IRhoExtManager extManager,
+			IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onSetProperty(IRhoExtManager extManager, String name,
+			String value, IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onBeforeNavigate(IRhoExtManager extManager, String url,
+			IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		System.out.println("onBeforeNavigate");
+		cancel(null);
+		
+		return true;
+	}
+
+	@Override
+	public boolean onNavigateStarted(IRhoExtManager extManager, String url,
+			IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onNavigateProgress(IRhoExtManager extManager, String url,
+			int pos, int total, IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onNavigateComplete(IRhoExtManager extManager, String url,
+			IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onDocumentComplete(IRhoExtManager extManager, String url,
+			IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onAlert(IRhoExtManager extManager, String message,
+			IRhoWebView ext, IAlertResult alertResult, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onConfirm(IRhoExtManager extManager, String message,
+			IRhoWebView ext, IAlertResult confirmResult, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onPrompt(IRhoExtManager extManager, String message,
+			String defaultResponse, IRhoWebView ext,
+			IPromptResult promptResult, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onSelect(IRhoExtManager extManager, String[] items,
+			int selected, IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onStatus(IRhoExtManager extManager, String status,
+			IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onTitle(IRhoExtManager extManager, String title,
+			IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onConsole(IRhoExtManager extManager, String message,
+			IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onInputMethod(IRhoExtManager extManager, boolean enabled,
+			String type, Rect area, IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onNavigateError(IRhoExtManager extManager, String url,
+			LoadErrorReason reason, IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onAuthRequired(IRhoExtManager extManager, String type,
+			String url, String realm, IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onAppActivate(IRhoExtManager extManager, boolean bActivate) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean startLocationUpdates(IRhoExtManager extManager,
+			boolean highAccuracy, IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean stopLocationUpdates(IRhoExtManager extManager,
+			IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config,
+			String name, boolean res) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String onGetProperty(IRhoExtManager extManager, String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	}
 
 }
