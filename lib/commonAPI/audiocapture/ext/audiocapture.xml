@@ -65,7 +65,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				<PLATFORM>WM, Android, iOS</PLATFORM>
 			      </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
-                <DESC>This parameter is used to specify the file name. File name must be specified.</DESC>
+                <DESC>This parameter is used to specify the file name. File name must be specified. File name should be set atleast once before calling 'start' method otherwise 'start' method will update the callback 'status' as 'error'.</DESC>
 				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
@@ -134,7 +134,7 @@ Audio recording should be cancelled. In android, the state will be persisted.
 			<REMARK title="Duration And File Name Settings">
                 <DESC>
                     <![CDATA[
-The default values will be applied if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in progress. In android, there might be slight omit of recording data initially.
+The default values will be applied for duration if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in progress. In android, there might be slight omit of recording data initially.
                     ]]>
                 </DESC>
 			</REMARK>
