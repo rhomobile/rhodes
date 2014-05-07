@@ -168,9 +168,9 @@ void CMainWindow::restoreWindow(void)
     ((QtMainWindow*)qtMainWindow)->showNormal();
 }
 
-void CMainWindow::setProxy()
+void CMainWindow::unsetProxy()
 {
-    ((QtMainWindow*)qtMainWindow)->setProxy();
+    ((QtMainWindow*)qtMainWindow)->unsetProxy();
 }
 
 void CMainWindow::setProxy(const char* host, const char* port, const char* login, const char* password)
@@ -265,8 +265,8 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         this, SLOT(restoreWindow(void)) );
     QObject::connect(this, SIGNAL(doCreateCustomMenu(void)),
         this, SLOT(createCustomMenuSlot(void)) );
-    QObject::connect(this, SIGNAL(doSetProxy()),
-        this, SLOT(setProxy()) );
+    QObject::connect(this, SIGNAL(doUnsetProxy()),
+        this, SLOT(unsetProxy()) );
     QObject::connect(this, SIGNAL(doSetProxy(const char*, const char*, const char*, const char*)),
         this, SLOT(setProxy(const char*, const char*, const char*, const char*)) );
     return true;
@@ -745,9 +745,9 @@ void CMainWindow::restoreWindowCommand(void)
     emit doRestoreWindow();
 }
 
-void CMainWindow::setProxyCommand()
+void CMainWindow::unsetProxyCommand()
 {
-    emit doSetProxy();
+    emit doUnsetProxy();
 }
 
 void CMainWindow::setProxyCommand(const char* host, const char* port, const char* login, const char* password)
@@ -770,8 +770,8 @@ extern "C" void rho_qt_sys_minimize()
 {
     CMainWindow::getInstance()->minimizeWindowCommand();
 }
-extern "C" void rho_qt_sys_bring_to_front()
+extern "C" void rho_qt_sys_restore_window()
 {
-    CMainWindow::getInstance()->bringToFront();
+    CMainWindow::getInstance()->restoreWindowCommand();
 }
 #endif

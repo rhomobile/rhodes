@@ -73,14 +73,14 @@ int rho_net_ping_network(const char* szHost)
     return 1;
 }
 
-void rho_win32_unset_window_proxy()
+void rho_qt_unset_window_proxy()
 {
     CMainWindow* m_appWindow = CMainWindow::getInstance();
     if (m_appWindow)
-        m_appWindow->setProxyCommand();
+        m_appWindow->unsetProxyCommand();
 }
 
-void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
+void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
 {
     CMainWindow* m_appWindow = CMainWindow::getInstance();
     if (m_appWindow)
