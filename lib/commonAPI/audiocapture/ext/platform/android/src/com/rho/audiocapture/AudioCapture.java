@@ -629,185 +629,20 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
       storedMethodResult=null;
     	
     }
-class AudioCaptureExt implements IRhoExtension
+class AudioCaptureExt extends AbstractRhoExtension
 {
-
-	@Override
-	public IRhoWebView onCreateWebView(IRhoExtManager extManager, int tabIndex) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean onWebViewCreated(IRhoExtManager extManager, IRhoWebView ext,
-			boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onSetPropertiesData(IRhoExtManager extManager,
-			String propId, String data, int pos, int total, IRhoWebView ext,
-			boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onSetPropertiesDataEnd(IRhoExtManager extManager,
-			IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onSetProperty(IRhoExtManager extManager, String name,
-			String value, IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 	@Override
 	public boolean onBeforeNavigate(IRhoExtManager extManager, String url,
 			IRhoWebView ext, boolean res) {
 		// TODO Auto-generated method stub
-		System.out.println("onBeforeNavigate");
+		System.out.println("AbstractRhoExtension..onBeforeNavigate,returning false");
 		cancel(null);
 		
-		return true;
-	}
-
-	@Override
-	public boolean onNavigateStarted(IRhoExtManager extManager, String url,
-			IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
-	public boolean onNavigateProgress(IRhoExtManager extManager, String url,
-			int pos, int total, IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onNavigateComplete(IRhoExtManager extManager, String url,
-			IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onDocumentComplete(IRhoExtManager extManager, String url,
-			IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onAlert(IRhoExtManager extManager, String message,
-			IRhoWebView ext, IAlertResult alertResult, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onConfirm(IRhoExtManager extManager, String message,
-			IRhoWebView ext, IAlertResult confirmResult, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onPrompt(IRhoExtManager extManager, String message,
-			String defaultResponse, IRhoWebView ext,
-			IPromptResult promptResult, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onSelect(IRhoExtManager extManager, String[] items,
-			int selected, IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onStatus(IRhoExtManager extManager, String status,
-			IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onTitle(IRhoExtManager extManager, String title,
-			IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onConsole(IRhoExtManager extManager, String message,
-			IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onInputMethod(IRhoExtManager extManager, boolean enabled,
-			String type, Rect area, IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onNavigateError(IRhoExtManager extManager, String url,
-			LoadErrorReason reason, IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onAuthRequired(IRhoExtManager extManager, String type,
-			String url, String realm, IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void onAppActivate(IRhoExtManager extManager, boolean bActivate) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean startLocationUpdates(IRhoExtManager extManager,
-			boolean highAccuracy, IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean stopLocationUpdates(IRhoExtManager extManager,
-			IRhoWebView ext, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config,
-			String name, boolean res) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String onGetProperty(IRhoExtManager extManager, String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 	}
 
 }
