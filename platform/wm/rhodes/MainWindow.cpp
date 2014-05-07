@@ -604,14 +604,14 @@ LRESULT CMainWindow::OnTitleChangeCommand (WORD /*wNotifyCode*/, WORD /*wID*/, H
 #if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
 LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    if(winversion == 2)
-	{
+   // if(winversion == 2)
+	//{
 		rho::fireIntentEvent();
 
 		ProcessDocumentComplete( (LPCTSTR)lParam );
 
 		free((void*)lParam);
-	}
+	//}
     return 0;
 }
 
@@ -1434,17 +1434,23 @@ LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 LRESULT CMainWindow::OnBluetoothDiscover (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
-	RhoDiscoverDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoverDlg();
-	dlg->openDialog(RhoBluetoothManager::getInstance());
+#if defined( OS_WINCE) //&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		RhoDiscoverDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoverDlg();
+		dlg->openDialog(RhoBluetoothManager::getInstance());
+	}
 #endif //
 	return 0;
 }
 
 LRESULT CMainWindow::OnBluetoothDiscovered (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
-	RhoDiscoveredDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoveredDlg();
-	dlg->openDialog(RhoBluetoothManager::getInstance());
+#if defined( OS_WINCE) //&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		RhoDiscoveredDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoveredDlg();
+		dlg->openDialog(RhoBluetoothManager::getInstance());
+	}
 #endif // 
 	return 0;
 }
