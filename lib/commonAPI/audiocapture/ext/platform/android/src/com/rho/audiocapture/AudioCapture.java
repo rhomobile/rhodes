@@ -12,6 +12,8 @@ import java.util.Set;
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
 import android.media.MediaRecorder.OnInfoListener;
+import android.os.Environment;
+
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.api.IMethodResult;
 
@@ -20,6 +22,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     private static final String TAG = AudioCapture.class.getSimpleName();
     
     private IMethodResult storedMethodResult=null;
+    
+    private String filepath=null;
     
     private Map<String, String> mActualPropertyMap = new HashMap<String, String>();
     
@@ -30,18 +34,15 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	{
     		mActualPropertyMap.put("maxDuration", "20000");
     								
-        	mActualPropertyMap.put("fileName", "AudioCapture");
+        	//mActualPropertyMap.put("fileName", "AudioCapture");
+    		mActualPropertyMap.put("fileName", "");
         	mActualPropertyMap.put("encoder","AAC");
         	mActualPropertyMap.put("source", "mic");
     	}
     	
     }
     
-  
-    
-    
-    
-    @Override
+   @Override
     public void getAllProperties(IMethodResult result) {
     	
     	//super.getAllProperties(result);
@@ -82,8 +83,14 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     public void getMaxDuration(IMethodResult result) {
     	
     	//super.getMaxDuration(result);
-    	
+    	try{
     	result.set(Integer.parseInt(mActualPropertyMap.get("maxDuration")));
+    	}
+    	catch(NumberFormatException e)
+    	{
+    		System.out.println("getMaxDuration,error="+e.getMessage());
+    		result.set(0);
+    	}
     }
     
     @Override
@@ -95,7 +102,16 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         for (String name: arrayofNames)
         {
         	if(name.equalsIgnoreCase("maxDuration"))
+        	{
+        		try{
         		props.put(name,Integer.parseInt(mActualPropertyMap.get(name)) );
+        		}
+        		catch(NumberFormatException e)
+        		{
+        			System.out.println("getProperties()..error="+e.getMessage());
+        			props.put(name,0 );
+        		}
+        	}
         	else
                 props.put(name,mActualPropertyMap.get(name) );
         }
@@ -159,7 +175,15 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	mActualPropertyMap.putAll(propertyMap);
     	if(propertyMap.containsKey("maxDuration"))
     	{
-    		int x=Integer.parseInt(propertyMap.get("maxDuration"));
+    		int x=0;
+    		try{
+    			x=Integer.parseInt(propertyMap.get("maxDuration"));
+    		}
+			catch(NumberFormatException e)
+			{
+				x=0;
+				System.out.println("error="+e.getMessage());
+				}
     		if(x<1000)
     			mActualPropertyMap.put("maxDuration", "20000");
     		else
@@ -176,10 +200,17 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	// super.setProperty(propertyName, propertyValue, result);
     	if(propertyName.equalsIgnoreCase("maxDuration"))
     	{
+    		try{
     		if(Integer.parseInt(propertyValue)<1000)
     			mActualPropertyMap.put("maxDuration", "20000");
     		else
     			mActualPropertyMap.put(propertyName, propertyValue);
+    		}
+    		catch(NumberFormatException e)
+    		{
+    			System.out.println("Error="+e.getMessage());
+    			mActualPropertyMap.put("maxDuration", "20000");
+    		}
     		System.out.println("OLAA,setProperty..   maxDuration="+propertyValue);
     	}
     	else
@@ -216,20 +247,6 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     
     private Map<String, String> getActualPropertyMap() { return mActualPropertyMap; }
     private void clearActualPropertyMap() { mActualPropertyMap.clear(); }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     private MediaRecorder mRecorder;
     
@@ -298,9 +315,16 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         System.out.println("maxDurationProp="+maxDurationProp);
         int maxD=20000;
         if(maxDurationProp != null && maxDurationProp.length() != 0)
-        {	maxD=Integer.parseInt(maxDurationProp);
-        	if(maxD<1000)
-        	maxD=20000;//set to Default if it is less than 20000 mili sec
+	        {
+		        	try{
+			        	maxD=Integer.parseInt(maxDurationProp);
+			        }
+			        catch(NumberFormatException e)
+			        {
+			        	System.out.println("error="+e.getMessage());
+			        }
+		        	if(maxD<1000)
+		        	maxD=20000;//set to Default if it is less than 20000 mili sec
         }
         else
         	maxD=20000;
@@ -330,8 +354,6 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         	switch(audioEncoder)
         	{
         	case MediaRecorder.AudioEncoder.AAC:System.out.println("Inside-AAC"); return MediaRecorder.OutputFormat.MPEG_4;
-        	case MediaRecorder.AudioEncoder.AAC_ELD:System.out.println("Inside-AAC_ELD");return MediaRecorder.OutputFormat.MPEG_4;
-        	case MediaRecorder.AudioEncoder.HE_AAC:System.out.println("Inside-HE_AAC");return MediaRecorder.OutputFormat.MPEG_4;
         	case MediaRecorder.AudioEncoder.AMR_NB:System.out.println("Inside-AMR_NB");return MediaRecorder.OutputFormat.THREE_GPP;
         	case MediaRecorder.AudioEncoder.AMR_WB:System.out.println("Inside-AMR_WB");return MediaRecorder.OutputFormat.THREE_GPP;
         	 default:                        System.out.println("Inside-...");return MediaRecorder.OutputFormat.MPEG_4;
@@ -351,14 +373,13 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     private String getDefaultPath(Map<String,String> props)
     {
     	int audioEncoder=getAudioEncoder(props);
+    	String defaultPath=Environment.getExternalStorageDirectory().getAbsolutePath().concat("/");
     	switch(audioEncoder)
     	{
-    	case MediaRecorder.AudioEncoder.AAC: return "/sdcard/AudioCapture.mp4";
-    	case MediaRecorder.AudioEncoder.AAC_ELD: return "/sdcard/AudioCapture.mp4";
-    	case MediaRecorder.AudioEncoder.HE_AAC:return  "/sdcard/AudioCapture.mp4";
-    	case MediaRecorder.AudioEncoder.AMR_NB:return "/sdcard/AudioCapture.3gpp";
-    	case MediaRecorder.AudioEncoder.AMR_WB: return "/sdcard/AudioCapture.3gpp";
-    	default:return "/sdcard/AudioCapture.mp4";
+    	case MediaRecorder.AudioEncoder.AAC: return defaultPath.concat("AudioCapture.mp4");
+    	case MediaRecorder.AudioEncoder.AMR_NB:return defaultPath.concat("AudioCapture.3gpp");
+    	case MediaRecorder.AudioEncoder.AMR_WB: return defaultPath.concat("AudioCapture.3gpp");
+    	default:return defaultPath.concat("AudioCapture.mp4");
     	
     	}
     	
@@ -382,6 +403,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     		Logger.I(TAG, "Start is already triggered and it is running currently.... DOnt start it again...");
     		return;
     	}
+    	
+    	
     	storedMethodResult=res;
     	System.out.println("Start storedMethodResult="+storedMethodResult);
 
@@ -393,10 +416,20 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             String path = actualPropertyMap.get("fileName");
             
             System.out.println("Start->3");
-            if (path == null || path.length() == 0) {
+            if (path == null || path.length() == 0 || path.equalsIgnoreCase("")) {
                 Logger.E(TAG, "fileName property cannot be empty! Taking the default path...");
-                path=getDefaultPath(actualPropertyMap);
+                //path=getDefaultPath(actualPropertyMap);//Default  file path concept is removed in ARB meeting...
                 //throw new RuntimeException("fileName property is empty");
+                Map<String, Object> tempprops = new HashMap<String, Object>();
+                tempprops.put("status", "error");
+                tempprops.put("message", "fileName property is NOT set");
+                tempprops.put("fileName", "");
+                if(storedMethodResult!=null)
+                	{
+                		storedMethodResult.set(tempprops);
+                		System.out.println("Stop storedMethodResult="+storedMethodResult);
+                	}
+                storedMethodResult=null;
             }
            
             System.out.println("Start->4");
@@ -409,7 +442,10 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             System.out.println("Start->7");
             int outputFormat = getOutputFormat(path,audioEncoder);
             if(!(path.contains("/")))
-            		path="/sdcard/".concat(path);
+            		{
+            			//path="/sdcard/".concat(path);
+            			  path=Environment.getExternalStorageDirectory().getAbsolutePath().concat("/").concat(path);
+            		}
             
             if(!(path.contains(".")))
             {
@@ -458,7 +494,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             		{
             		case MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN:
             			
-            			cancel(null);
+            			//cancel(null);
+            			stopNsend("error");
             			break;
             		}
             	}
@@ -467,14 +504,22 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             
             
             
-            System.out.println("Start->9");
+            System.out.println("Start->9,,audioSource="+audioSource);
+            try{
             recorder.setAudioSource(audioSource);
-            System.out.println("Start->10,audioSource="+audioSource);
+            }
+            catch(Exception e)
+            {
+            	System.out.println("AudioSource error="+e.getMessage());
+            }
+            
+            System.out.println("Start->10");
             recorder.setMaxDuration(maxDuration);
             System.out.println("Start->11,maxDuration="+maxDuration);
             recorder.setOutputFormat(outputFormat);
             System.out.println("Start->12,outputFormat="+outputFormat);
             recorder.setOutputFile(path);
+            filepath=path;//to be sent during callback
             System.out.println("Start->13,path="+path);
             recorder.setAudioEncoder(audioEncoder);
             System.out.println("Start->14,audioEncoder="+audioEncoder);
@@ -500,15 +545,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             releaseRecorder();
         } finally {
           //  clearActualPropertyMap();
-            
-            Map<String, Object> tempprops = new HashMap<String, Object>();
-            tempprops.put("status", "successful");
-            if(storedMethodResult!=null)
-            	{
-            		storedMethodResult.set(tempprops);
-            		System.out.println("Stop storedMethodResult="+storedMethodResult);
-            	}
-            storedMethodResult=null;
+        	stopNsend("stop");
         }
         
     }
@@ -527,16 +564,57 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
                 }
             }
            // clearActualPropertyMap();
-            
-            Map<String, Object> tempprops = new HashMap<String, Object>();
-            tempprops.put("status", "unsuccessful");
-            if(storedMethodResult!=null)
-            	{
-            		storedMethodResult.set(tempprops);
-            		System.out.println("Cancel storedMethodResult="+storedMethodResult);
-            	}
-            storedMethodResult=null;
+           stopNsend("cancel");
         }
     }
+    private synchronized void stopNsend(String status)
+    {
+    	
+    	 Map<String, Object> tempprops = new HashMap<String, Object>();
+         
+        
+    	if(status.equalsIgnoreCase("stop"))
+    	{
+    		String filrProtocolPath="file://".concat(filepath);
+    		tempprops.put("status", "ok");
+    		tempprops.put("message", "");
+    		tempprops.put("fileName", filrProtocolPath);
+    	}
+    	else if(status.equalsIgnoreCase("cancel"))
+    	{
+    		tempprops.put("status", "cancel");
+    		tempprops.put("message", "");
+    		tempprops.put("fileName", "");
+    	}
+    	else if(status.equalsIgnoreCase("error"))
+    	{
+    		
+    		System.out.println("Audio Error Has Happened");
+            try {
+                releaseRecorder();
+            } finally {
+                String path = getActualPropertyMap().get("fileName");
+                if (path != null && !path.isEmpty()) {
+									                    File file = new File(path);
+									                    if (file.exists()) {
+									                        				file.delete();
+									                    					}
+                									}
+                
+    		tempprops.put("status", "error");
+    		tempprops.put("message", "Unknown Error");
+    		tempprops.put("fileName", "");
+    	}
+            
+    	}
+    	 if(storedMethodResult!=null)
+      	{
+      		storedMethodResult.set(tempprops);
+      		System.out.println("stopNsend storedMethodResult="+storedMethodResult);
+      	}
+      storedMethodResult=null;
+    	
+    }
+    
 
 }
