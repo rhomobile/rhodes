@@ -244,10 +244,10 @@ def stuff_around_appname
 end
 
 def build_cab
-  build_platform = 'wm6'
-  build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-  build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
-  build_platform = 'ce7' if $sdk == "WT41N0c70PSDK (ARMV4I)"
+  #build_platform = 'wm6'
+  #build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+  build_platform = 'ce5' #if $sdk == "MC3000c50b (ARMV4I)"
+  #build_platform = 'ce7' if $sdk == "WT41N0c70PSDK (ARMV4I)"
 
   reg_keys_filename = File.join(File.dirname(__FILE__), 'regs.txt');
   puts 'remove file with registry keys'
@@ -333,10 +333,11 @@ namespace "config" do
     puts " $current_platform : #{$current_platform}"
 
     unless $sdk
-      $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
-      $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
-      value = ENV['rho_wm_sdk']
-      $sdk = value if value      
+      #$sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
+      #$sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
+      #value = ENV['rho_wm_sdk']
+      #$sdk = value if value  
+      $sdk = "MC3000c50b (ARMV4I)"    
     end
 
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
