@@ -33,7 +33,7 @@ require 'stringio'
 # uses following globals
 # $objdir[]       list of paths to compiled library object files
 # $libname[]      list of paths to compiled library
-# $build_release  set to true to disable debug binaries
+# $debug          set to true to enable debug binaries
 
 USE_TRACES = Rake.application.options.trace
 
@@ -77,7 +77,7 @@ def detect_toolchain(ndkpath, abi)
   $ndkgccver = "unknown"
   ndkhostvariants = []
   if RUBY_PLATFORM =~ /(win|w)32$/
-      bufcheck64 = `wmic OS get OSArchitecture`.split[1]
+      bufcheck64 = `WMIC OS get OSArchitecture`.split[1]
       ndkhostvariants << 'windows-x86_64' if bufcheck64 and bufcheck64.include?('64')
       ndkhostvariants << 'windows'
   else
@@ -203,7 +203,7 @@ def cc_def_args
     args << "-DRHO_DEBUG"
     args << "-DHAVE_RLIM_T" if $have_rlim_t
     args << "-g"
-    if $build_release
+    unless $debug
       args << "-O2"
       args << "-DNDEBUG"
     else
@@ -291,7 +291,7 @@ def cc_run(command, args, chdir = nil, coloring = true)
 
   isWinXP = false
   if RUBY_PLATFORM =~ /(win|w)32$/
-    winName = `wmic OS get Name`
+    winName = `WMIC OS get Name`
     isWinXP = true if winName =~ /Windows XP/
   end
   

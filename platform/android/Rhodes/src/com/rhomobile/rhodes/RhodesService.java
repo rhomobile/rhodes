@@ -310,16 +310,19 @@ public class RhodesService extends Service {
         Logger.I("Rhodes", "Loading...");
         RhodesApplication.create();
 
-        RhodesActivity ra = RhodesActivity.getInstance();
-        if (ra != null) {
-            // Show splash screen only if we have active activity
-            SplashScreen splashScreen = ra.getSplashScreen();
-            splashScreen.start();
+        // Increase WebView rendering priority
+        WebView w = new WebView(context);
+        WebSettings webSettings = w.getSettings();
+        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
 
-            // Increase WebView rendering priority
-            WebView w = new WebView(context);
-            WebSettings webSettings = w.getSettings();
-            webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        try {
+            // Show splash screen only if we have active activity
+            SplashScreen splashScreen = RhodesActivity.safeGetInstance().getSplashScreen();
+            if (splashScreen != null) {
+                splashScreen.start();
+            }
+        } catch (NullPointerException ex) {
+            
         }
 
 		initForegroundServiceApi();

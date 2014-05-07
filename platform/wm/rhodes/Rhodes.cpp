@@ -70,6 +70,8 @@ extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstan
 
 #if !defined(APP_BUILD_CAPABILITY_MOTOROLA)
 extern "C" LRESULT	rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam){ return 0;}
+#else
+extern "C" void initialiseRhoElementsExt();
 #endif
 
 #else
@@ -442,6 +444,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	LOG(INFO) + "Rhodes started";
 	if (RHOCONF().isExist("http_proxy_url")) {
 		parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
+	} else if (RHOCONF().isExist("http_proxy_uri")) {
+		parseHttpProxyURI(RHOCONF().getString("http_proxy_uri"));
 	}
 
 
@@ -492,6 +496,13 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     if (RHOCONF().getBool("Application.autoStart"))
         createAutoStartShortcut();
 
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
+        String spath = convertToStringA(rho_wmimpl_get_startpage());
+        RHOCONF().setString("start_path", spath, false);
+    }
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
 
     bool bRE1App = false;
@@ -502,13 +513,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 
     RHODESAPP().setJSApplication(bRE1App || _AtlModule.isJSApplication());
-
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
-        String spath = convertToStringA(rho_wmimpl_get_startpage());
-        RHOCONF().setString("start_path", spath, false);
-    }
-#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
     DWORD dwStyle = m_bMinimized ? 0 : WS_VISIBLE;
 
@@ -532,7 +536,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     m_appWindow.InvalidateRect(NULL, TRUE);
     m_appWindow.UpdateWindow();
-
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+	initialiseRhoElementsExt();
+#endif
     m_appWindow.initBrowserWindow();
 
     if (m_bMinimized)
@@ -661,7 +667,7 @@ const rho::String& CRhodesModule::getAppName()
             m_strAppName = path.substr( nStart, nEnd-nStart+1);
         }
 #else
-        m_strAppName = get_app_build_config_item("name");
+        m_strAppName = RHOCONF().getString("app_name");
 #endif
     }
 
@@ -906,11 +912,11 @@ extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
     PostMessage( rho_wmimpl_get_mainwnd(),WM_COMMAND, ID_TITLECHANGE, (LPARAM)_tcsdup(convertToStringW(strTitle).c_str()) );
 }
 
-extern "C" void rho_win32_unset_window_proxy()
+extern "C" void rho_qt_unset_window_proxy()
 {
 }
 
-extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
+extern "C" void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
 {
 }
 

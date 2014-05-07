@@ -1,4 +1,4 @@
-#entry: Init_RubyvmStub_extension
+entry: Init_RubyvmStub_extension
 #javaentry: com.rubyvmstub.RubyvmStub
 libraries: ["RubyvmStub"]
 #android:

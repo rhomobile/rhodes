@@ -24,6 +24,15 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+def pack_7z(where, what, archive)
+  what = what.map {|p| "\"#{p}\""}
+  Jake.run3("7za a \"#{archive}\" #{what.join(' ')} -bd", where)
+end
+
+def unpack_7z(where, archive)
+  Jake.run3("7za x \"#{archive}\" -bd -y", where)
+end
+
 def additional_dlls_paths
   unless defined?($additional_dlls_paths_)
     $additional_dlls_paths_ = []
@@ -219,6 +228,7 @@ def stuff_around_appname
     cp File.join(out_dir, 'rhodes.exe'), File.join(out_dir, "#{$appname}.exe")
   end
 
+  wm_icon = $app_path + '/icon/icon.ico'
   if $use_shared_runtime
     if $js_application
       shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
@@ -268,18 +278,18 @@ def build_cab
 
   args = [
     'build_inf.js',
-    $appname + ".inf",                        #0
+    '"' + $appname + ".inf\"",               #0
     build_platform,                           #1
     '"' + $app_config["name"] +'"',           #2
-    $app_config["vendor"],                    #3
+    '"' + $app_config["vendor"] + '"',        #3
     '"' + $srcdir + '"',                      #4
     $hidden_app,                              #5
     ($webkit_capability ? "1" : "0"),         #6
-    $wk_data_dir,                             #7
+    '"' + $wk_data_dir + '"',                 #7
     ($use_shared_runtime  ? "1" : "0"),       #8
     ($motorola_capability ? "1" : "0"),       #9
     ($run_on_startup      ? "1" : "0"),       #10
-    $srcdir,                                  #11
+    '"' + $srcdir + '"',                      #11
     ($build_persistent_cab ? "1" : "0")       #12
   ]
 
@@ -287,7 +297,7 @@ def build_cab
 
   Jake.run3("cscript #{args.join(' ')}", dir)
 
-  Jake.run3("\"#{$cabwiz}\" #{$appname}.inf", dir)
+  Jake.run3("\"#{$cabwiz}\" \"#{$appname}.inf\"", dir)
   Jake.run3('cscript cleanup.js', dir)
 
   mkdir_p $targetdir
@@ -297,7 +307,7 @@ def build_cab
   File.open(File.join($targetdir, 'app_info.txt'), 'w') { |f| f.write("#{$app_config['vendor']} #{$appname}/#{$appname}.exe") }
 
   if not $config['build']['wmsign'].nil? and $config['build']['wmsign'] != ''
-    sign("#{$targetdir}/#{$appname}.cab", $config['build']['wmsign'])
+    sign("\"#{$targetdir}/#{$appname}.cab\"", $config['build']['wmsign'])
   end
 
   rm File.join(dir, 'cleanup.js')
@@ -389,8 +399,7 @@ namespace "config" do
     end
         
     unless $build_solution
-      #$build_solution = ($js_application and $app_config["capabilities"].index('shared_runtime')) ? 'rhodes_js.sln' : 'rhodes.sln'
-      $build_solution = 'rhodes.sln'
+      $build_solution = ($js_application and $app_config["capabilities"].index('shared_runtime')) ? 'rhodes_js.sln' : 'rhodes.sln'
     end
 
     if $app_config["wm"].nil?
@@ -1096,9 +1105,37 @@ namespace "device" do
 
   namespace "wm" do
       
-   
+    desc 'Creates application container. See also device:wm:apply_container.'
+    task :make_container, [:container_prefix_path] => :production do |t, args|
+      container_prefix_path = args[:container_prefix_path]
+
+      Dir.glob("#{container_prefix_path}*") {|f| rm_r(f)}
+      mkdir_p container_prefix_path
+
+      rhodes_gem_paths = ([
+        'platform/wm/RhoLaunch/RhoLaunch.ico',
+        'platform/wm/rhodes/resources/icon.ico',
+        'platform/wm/bin/**/license_rc.dll',
+        'platform/wm/bin/**/rhodes.exe',
+        'platform/wm/bin/**/RhoLaunch.exe',
+        'platform/wm/build/regs.txt'
+      ].map {|p| Dir.glob(p)}).flatten
+
+      pack_7z($app_path, ['bin'], File.join(container_prefix_path, 'application_override.7z'))
+      pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
+    desc 'Applies application container. See also device:wm:make_container.'
+    task :apply_container, [:container_prefix_path] do |t, args|
+      container_prefix_path = args[:container_prefix_path]
+
+      unpack_7z($app_path, File.join(container_prefix_path, 'application_override.7z'))
+      unpack_7z($startdir, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
     desc 'Build cab'
     task :cab => ['config:wm'] do
+      Jake.make_rhoconfig_txt
       stuff_around_appname
       build_cab
     end
@@ -1207,7 +1244,7 @@ namespace "device" do
     Rake::Task["build:win32:deployqt"].invoke
 
     puts "$nsis - " + $nsis
-    args = [$tmpdir + "/" + $appname + ".nsi"]
+    args = ['"' + $tmpdir + "/" + $appname + ".nsi\""]
     puts "arg = " + args.to_s
 
     puts Jake.run2($nsis, args, {:nowait => false} )
@@ -1541,7 +1578,7 @@ namespace "run" do
 
         cd $startdir + "/res/build-tools"
         detool = "detool.exe"
-        args   = [$detoolappflag, 'devcab', $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
+        args   = [$detoolappflag, 'devcab', '"' + $targetdir + '/' +  $appname + ".cab\"", '"' + $appname + '"', ( $use_shared_runtime ? "1" : "0")]
         puts "\nStarting application on the device"
         puts "Please, connect you device via ActiveSync.\n\n"
         log_file = gelLogPath
@@ -1559,7 +1596,7 @@ namespace "run" do
 
       cd $startdir + "/res/build-tools"
       detool = "detool.exe"
-      args   = [$detoolappflag, 'emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
+      args   = [$detoolappflag, 'emucab', "\"#{$wm_emulator}\"", '"' + $targetdir + '/' +  $appname + ".cab\"", '"' + $appname + '"', ( $use_shared_runtime ? "1" : "0")]
       log_file = gelLogPath
 
       Jake.run2( detool, ['log', log_file, $port], {:nowait => true})

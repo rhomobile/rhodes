@@ -109,7 +109,7 @@ public class RhoWebViewClient extends WebViewClient
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
 
         RhoExtManager.getImplementationInstance().onNavigateComplete(view, url);
-        CookieSyncManager.getInstance().sync();
+        //CookieSyncManager.getInstance().sync();
 
         super.onPageFinished(view, url);
     }

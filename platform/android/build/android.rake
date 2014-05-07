@@ -28,6 +28,7 @@ require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
+load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
 require 'tempfile'
 
@@ -275,14 +276,6 @@ namespace "config" do
 
     $uri_host = $app_config["android"]["URIHost"] unless $app_config["android"].nil?
 
-    # Here is switch between release/debug configuration used for
-    # building native libraries
-    if $app_config["debug"].nil?
-      $build_release = true
-    else
-      $build_release = !$app_config["debug"].to_i
-    end
-
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
     $rhobindir = File.join($androidpath, "bin")
@@ -461,7 +454,7 @@ namespace "config" do
 
     $native_libs = ["sqlite", "curl", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
-    if $build_release
+    unless $debug
       $confdir = "release"
     else
       $confdir = "debug"
@@ -585,6 +578,7 @@ namespace "config" do
       $ext_android_manifest_changes = {}
       $ext_android_adds = {}
       $ext_android_library_deps = {}
+      $ext_android_platform_lib = []
 
       $app_extensions_list.each do |ext, extpath|
             next if extpath.nil?
@@ -686,6 +680,12 @@ namespace "config" do
                 android_additional_lib.each do |lib|
                   $ext_android_additional_lib << File.join(extpath, lib)
                 end
+              end
+              
+              android_platform_libs = nil
+              android_platform_libs = extconf_android['platform_libraries'] if extconf_android
+              if android_platform_libs
+                android_platform_libs.each { |lib| $ext_android_platform_lib << lib }
               end
 
               if prebuiltpath
@@ -1361,6 +1361,10 @@ namespace "build" do
 
         args += rlibs
         
+        $ext_android_platform_lib.each do |lib|
+          args << "-l#{lib}"
+        end
+        
         ENV['LINKARGS'] = args.join(' ')
         ENV['LINKDEPS'] = (deps+extlibs).join(' ')
 
@@ -1598,6 +1602,9 @@ namespace "build" do
         val = 'true' if $app_config["capabilities"].index(k) != nil
         f.puts "  public static final boolean #{k.upcase}_ENABLED = #{val};"
       end
+      
+      f.puts "  public static final boolean DEBUG_ENABLED = #{$debug.to_s};"
+      
       f.puts "}"
       #end
       Jake.modify_file_if_content_changed($app_capabilities_java, f)

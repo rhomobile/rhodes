@@ -101,7 +101,7 @@ task OBJ_MIPS => OBJDIR_MIPS
 
 def find_source(objfile)
   base = File.basename(objfile, '.o')
-  src = File.join(SOURCEPATH, SRC.find { |s| File.basename(s) == base })
+  src = SRC.find { |s| File.basename(s) == base }
   src
 end
 
@@ -136,4 +136,4 @@ namespace 'arch' do
   task :mips => TARGETLIB_MIPS
 end
 
-task :default => ["build:arm", "build:x86"]
+task :default => ["arch:arm"]

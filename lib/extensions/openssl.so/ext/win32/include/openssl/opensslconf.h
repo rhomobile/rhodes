@@ -85,8 +85,8 @@
 
 #if !(defined(VMS) || defined(__VMS)) /* VMS uses logical names instead */
 #if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
-#define ENGINESDIR "c:/rhomobile/rhodes/lib/extensions/openssl.so/ext/win32/lib/engines"
-#define OPENSSLDIR "c:/rhomobile/rhodes/lib/extensions/openssl.so/ext/win32/ssl"
+#define ENGINESDIR "C:\\rhomobile\\rhodes\\lib\\extensions\\openssl.so\\ext\\win32/lib/engines"
+#define OPENSSLDIR "C:\\rhomobile\\rhodes\\lib\\extensions\\openssl.so\\ext\\win32/ssl"
 #endif
 #endif
 

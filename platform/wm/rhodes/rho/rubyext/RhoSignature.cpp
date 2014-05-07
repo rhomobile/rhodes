@@ -925,7 +925,9 @@ void rho_signature_clear()
 void Init_SignatureCapture(void);
 void init_rhoext_Signature()
 {
+#ifndef RHO_NO_RUBY_API
     Init_SignatureCapture();
+#endif
 
     RHODESAPP().getExtManager().registerExtension( "signaturecapture", new CRhoSignature() );
 }

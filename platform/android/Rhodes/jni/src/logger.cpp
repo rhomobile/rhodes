@@ -70,10 +70,9 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_D
   (JNIEnv *env, jclass, jstring jTag, jstring jMsg)
 {
 #ifdef _DEBUG
-    //RAWTRACE("Debug");
     const char *tag = env->GetStringUTFChars(jTag, 0);
     const char *msg = env->GetStringUTFChars(jMsg, 0);
-    RAWLOGC_INFO(tag, msg);
+    RAWTRACEC(tag, msg);
     env->ReleaseStringUTFChars(jTag, tag);
     env->ReleaseStringUTFChars(jMsg, msg);
 #endif
