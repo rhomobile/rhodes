@@ -4,6 +4,7 @@ libraries: ["AudioCapture"]
 android:
   source_list: ext/platform/android/ext_java.files
   exttype: rakefile
+  manifest_changes: ext/platform/android/AndroidManifest.rb
 wp8:
   csharp_impl: yes
   root_namespace: rho
