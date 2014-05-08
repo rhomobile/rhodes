@@ -100,6 +100,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	catch(NumberFormatException e)
     	{
     		System.out.println("getMaxDuration,error="+e.getMessage());
+    		Logger.E(TAG, "Error in getMaxDuration= "+e.getMessage());
     		result.set(0);
     	}
     }
@@ -120,6 +121,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         		catch(NumberFormatException e)
         		{
         			System.out.println("getProperties()..error="+e.getMessage());
+        			Logger.E(TAG, "Error in getProperties= "+e.getMessage());
         			props.put(name,0 );
         		}
         	}
@@ -134,10 +136,17 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	
     	//super.getProperty(propertyName, result);
     	
+    	try{
     	if(propertyName.equalsIgnoreCase("maxDuration"))
     		result.set(Integer.parseInt(mActualPropertyMap.get(propertyName)));
     	else
     	result.set(mActualPropertyMap.get(propertyName));
+    	}
+    	catch(NumberFormatException e)
+    	{
+    		Logger.E(TAG, "Error getProperty="+e.getMessage());
+    		result.set(0);
+    	}
     }
     
     @Override
@@ -193,6 +202,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
 			catch(NumberFormatException e)
 			{
 				x=0;
+				Logger.E(TAG, "Error setProperties= "+e.getMessage());
 				System.out.println("error="+e.getMessage());
 				}
     		if(x<1000)
@@ -220,6 +230,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     		catch(NumberFormatException e)
     		{
     			System.out.println("Error="+e.getMessage());
+    			Logger.E(TAG, "Error="+e.getMessage());
     			mActualPropertyMap.put("maxDuration", "20000");
     		}
     		System.out.println("OLAA,setProperty..   maxDuration="+propertyValue);
@@ -333,6 +344,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
 			        catch(NumberFormatException e)
 			        {
 			        	System.out.println("error="+e.getMessage());
+			        	Logger.E(TAG, "Error="+e.getMessage());
 			        }
 		        	if(maxD<1000)
 		        	maxD=20000;//set to Default if it is less than 20000 mili sec
@@ -523,6 +535,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             catch(Exception e)
             {
             	System.out.println("AudioSource error="+e.getMessage());
+            	Logger.E(TAG, "AudioSource error="+e.getMessage());
             }
             
             System.out.println("Start->10");
