@@ -186,7 +186,9 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
     showTaskBar(!bFull);
 
-#if defined( OS_PLATFORM_MOTCE )
+//#if defined( OS_PLATFORM_MOTCE )
+	if(winversion == 2)
+	{
 
 	//if(g_hWndCommandBar)
 		//::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
@@ -218,22 +220,27 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
         }
     }
 
-#endif
+//#endif
+	}
 
     if (!bDestroy)
     {
-#if !defined( OS_PLATFORM_MOTCE )
-        SetFullScreen(bFull);
-#endif
+//#if !defined( OS_PLATFORM_MOTCE )
+		if(winversion == 1)
+			SetFullScreen(bFull);
+		//#endif
 
-        if ( bFull )
-            hideSIPButton();
+		if ( bFull )
+			hideSIPButton();
 
-#if defined( OS_PLATFORM_MOTCE )
-        CRect rcMainWindow;
-        calculateMainWindowRect(rcMainWindow);
-        MoveWindow(&rcMainWindow);
-#endif
+		//#if defined( OS_PLATFORM_MOTCE )
+		if(winversion == 2)
+		{
+			CRect rcMainWindow;
+			calculateMainWindowRect(rcMainWindow);
+			MoveWindow(&rcMainWindow);
+		}
+		//#endif
     }
 
 }
@@ -249,7 +256,10 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	RECT rcMainWindow = { 0,0,320,470 };
 
-#if defined(OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
+#if defined(OS_WINCE)
+	if(winversion == 1)
+	{
+		//#if defined(OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 
     if(m_mainMenu.CreateMenu())
     {
@@ -276,8 +286,10 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
             SizeToMenuBar();
         }
     }
-
-#elif defined( OS_PLATFORM_MOTCE )
+	}
+//#elif defined( OS_PLATFORM_MOTCE )
+	else if(winversion == 2)
+	{
 /*    g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
 
     TBBUTTON oBtn = {0};
@@ -291,6 +303,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     CommandBar_AddAdornments(g_hWndCommandBar, 0, 0);
     CommandBar_Show(g_hWndCommandBar, TRUE);
 */
+//#endif
+	}
 #endif
 
 #if defined(OS_WINCE)
@@ -324,7 +338,10 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
     SystemParametersInfo(SPI_GETWORKAREA, 0, &rcMainWindow, 0);
     LOG(INFO)  + "SPI_GETWORKAREA: x=" + rcMainWindow.right + ";y=" + rcMainWindow.bottom;
 
-#if defined(OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
+#if defined(OS_WINCE)
+	if(winversion == 1)
+	{
+		//#if defined(OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 
     RECT rcMenuBar = { 0 };
     // (rcMenuBar was initialized above)
@@ -340,10 +357,15 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
         rcMainWindow.bottom = si.rcVisibleDesktop.bottom;
     }
 	
-#elif defined( OS_PLATFORM_MOTCE )
+}	
+	else if(winversion == 1)
+	{
+		//#elif defined( OS_PLATFORM_MOTCE )
 	if (m_bFullScreen)
 		rcMainWindow.bottom =  GetSystemMetrics(SM_CYSCREEN);
 
+		//#endif
+	}
 #endif
 
 }
@@ -490,7 +512,9 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     if ( m_toolbar.m_hWnd )
         rect.bottom -= m_toolbar.getHeight();
 
-#if defined( OS_PLATFORM_MOTCE )
+//#if defined( OS_PLATFORM_MOTCE )
+	if(winversion == 2)
+	{
     if (!m_bFullScreen && g_hWndCommandBar)
     {
         CRect rcCmdBar;
@@ -504,7 +528,8 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
         ::SetWindowPos(g_hWndCommandBar, NULL, 0,0, rcCmdBar.Width(), rcCmdBar.Height(), SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
         //::MoveWindow( g_hWndCommandBar, rcCmdBar.left, rcCmdBar.top, rcCmdBar.Width(), rcCmdBar.Height(), TRUE );
     }
-#endif
+}
+	//#endif
 
     if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()) )
         m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
@@ -579,11 +604,14 @@ LRESULT CMainWindow::OnTitleChangeCommand (WORD /*wNotifyCode*/, WORD /*wID*/, H
 #if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
 LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    rho::fireIntentEvent();
+   // if(winversion == 2)
+	//{
+		rho::fireIntentEvent();
 
-    ProcessDocumentComplete( (LPCTSTR)lParam );
+		ProcessDocumentComplete( (LPCTSTR)lParam );
 
-    free((void*)lParam);
+		free((void*)lParam);
+	//}
     return 0;
 }
 
@@ -787,9 +815,12 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 		}
 		//RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
 	}
-#if defined(_WIN32_WCE)  && !defined (OS_PLATFORM_MOTCE)
-    // Notify shell of our WM_ACTIVATE message
-    SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
+#if defined(_WIN32_WCE)
+	//#if defined(_WIN32_WCE)  && !defined (OS_PLATFORM_MOTCE)
+	// Notify shell of our WM_ACTIVATE message
+	if(winversion == 1)
+		SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
+	//#endif
 #endif
 
     if (!fActive)
@@ -941,12 +972,14 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 //        if (m_pBrowserEng)
 //            m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
 
-#if defined (OS_PLATFORM_MOTCE)
-
-        RECT rcMain;    
-        calculateMainWindowRect(rcMain);
-        MoveWindow( rcMain.left, rcMain.top, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, TRUE );
-#endif
+//#if defined (OS_PLATFORM_MOTCE)
+		if(winversion == 2)
+		{
+			RECT rcMain;    
+			calculateMainWindowRect(rcMain);
+			MoveWindow( rcMain.left, rcMain.top, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, TRUE );
+		}
+		//#endif
 
 	//} else if (wParam == SPI_SIPMOVE) {
 	} else if (rho_wmimpl_get_resize_on_sip() && (wParam == SPI_SETSIPINFO)) {
@@ -981,13 +1014,16 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 					pSipInfo.rcSipRect.bottom += deltaY;
 					doSIPmove = true;
 				}
-#if defined (OS_PLATFORM_MOTCE)
-				if ((pSipInfo.rcSipRect.left != 0) || (pSipInfo.rcSipRect.right != width)) {
-					pSipInfo.rcSipRect.left = 0;
-					pSipInfo.rcSipRect.right = width;
-					doSIPmove = true;
+				if(winversion == 2)
+				{
+					//#if defined (OS_PLATFORM_MOTCE)
+					if ((pSipInfo.rcSipRect.left != 0) || (pSipInfo.rcSipRect.right != width)) {
+						pSipInfo.rcSipRect.left = 0;
+						pSipInfo.rcSipRect.right = width;
+						doSIPmove = true;
+					}
+					//#endif
 				}
-#endif
 				pSipInfo.rcVisibleDesktop.bottom = pSipInfo.rcSipRect.top;
 			}
 			CRect cRect;
@@ -1007,11 +1043,15 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 						SWP_SHOWWINDOW);
 				}
 			}
-#if defined (OS_PLATFORM_MOTCE)
-			if (m_toolbar.m_hWnd)
-#else
-			if (m_bFullScreen && m_toolbar.m_hWnd)
-#endif
+
+			if(winversion == 2 && m_toolbar.m_hWnd)
+				m_toolbar.MoveWindow(0, (isHiding ? bottom : pSipInfo.rcSipRect.top) - m_toolbar.getHeight(), width, m_toolbar.getHeight());
+			//#if defined (OS_PLATFORM_MOTCE)
+			//if (m_toolbar.m_hWnd)
+			//#else
+			//if (m_bFullScreen && m_toolbar.m_hWnd)
+			else if(winversion == 1 && m_bFullScreen && m_toolbar.m_hWnd)
+				//#endif
 				m_toolbar.MoveWindow(0, (isHiding ? bottom : pSipInfo.rcSipRect.top) - m_toolbar.getHeight(), width, m_toolbar.getHeight());
 
             if ( m_bFullScreen && isHiding )
@@ -1227,7 +1267,8 @@ LRESULT CMainWindow::OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
 #if defined( OS_PLATFORM_MOTCE )
 LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
-	createCustomMenu();
+	if(winversion == 2)
+		createCustomMenu();
 	return 0;
 }
 #endif
@@ -1393,17 +1434,23 @@ LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 LRESULT CMainWindow::OnBluetoothDiscover (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
-	RhoDiscoverDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoverDlg();
-	dlg->openDialog(RhoBluetoothManager::getInstance());
+#if defined( OS_WINCE) //&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		RhoDiscoverDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoverDlg();
+		dlg->openDialog(RhoBluetoothManager::getInstance());
+	}
 #endif //
 	return 0;
 }
 
 LRESULT CMainWindow::OnBluetoothDiscovered (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
-	RhoDiscoveredDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoveredDlg();
-	dlg->openDialog(RhoBluetoothManager::getInstance());
+#if defined( OS_WINCE) //&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		RhoDiscoveredDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoveredDlg();
+		dlg->openDialog(RhoBluetoothManager::getInstance());
+	}
 #endif // 
 	return 0;
 }
@@ -1628,19 +1675,24 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
-#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
-	//createCustomMenu();
+#if defined (_WIN32_WCE)
+	if(winversion == 1)
+	{
+		//#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+		//createCustomMenu();
 
-    if (m_pageCounter >= 0)
-    {
-	    m_pageCounter++;
-	    if (m_pageCounter > 1) //"loading" page + first page
-        {
-            //Do it once
-		    SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
-            m_pageCounter = -1;
-        }
-    }
+		if (m_pageCounter >= 0)
+		{
+			m_pageCounter++;
+			if (m_pageCounter > 1) //"loading" page + first page
+			{
+				//Do it once
+				SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
+				m_pageCounter = -1;
+			}
+		}
+	}
+	//#endif	
 #endif	
 
     //CMetaHandler oHandler(m_spIWebBrowser2);
@@ -1717,15 +1769,18 @@ BOOL CMainWindow::SetToolbarButtonName(UINT uTbbID, LPCTSTR szLabel)
 // **************************************************************************
 BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 {
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
-	if (pMsg->message == WM_CONTEXTMENU){
-		return TRUE;
-	}
+if(winversion == 1)
+	{
+		//#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
+		if (pMsg->message == WM_CONTEXTMENU){
+			return TRUE;
+		}
 
-	if (m_bFullScreen && pMsg->message == WM_KEYUP && 
-		(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
-	        RhoSetFullScreen(false);
-#endif
+		if (m_bFullScreen && pMsg->message == WM_KEYUP && 
+			(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
+			RhoSetFullScreen(false);
+		//#endif
+	}
 
     // Accelerators are only keyboard or mouse messages
     UINT uMsg = pMsg->message;
@@ -1828,9 +1883,10 @@ void CMainWindow::showMenuBarMenu(const CAppMenuItem& menuButton, bool isLeft)
         else
         {
             HMENU hMenu = CreatePopupMenu();
-#if !defined( OS_PLATFORM_MOTCE )
-            createCustomMenuEx( hMenu, m_arAppMenuItems );
-#endif
+			//#if !defined( OS_PLATFORM_MOTCE )
+			if(winversion == 1)
+				createCustomMenuEx( hMenu, m_arAppMenuItems );
+			//#endif
             RECT  rcBar = {0}; 
 	        m_menuBar.GetWindowRect(&rcBar);
 
@@ -1872,6 +1928,8 @@ LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 void CMainWindow::createCustomMenu()
 {
+	if(winversion == 1)
+	{
 	CMenu menu;
 	CMenu sub;
 	CMenu popup;
@@ -1913,12 +1971,16 @@ void CMainWindow::createCustomMenu()
 
 	RECT  rect; 
 	GetWindowRect(&rect);
-#if defined( OS_PLATFORM_MOTCE )
-    rect.right = 1;
-    rect.bottom = m_menuBarHeight+1;
-#else
-    rect.bottom -= m_menuBarHeight;
-#endif
+	if(winversion == 2)
+	{
+//#if defined( OS_PLATFORM_MOTCE )
+		rect.right = 1;
+		rect.bottom = m_menuBarHeight+1;
+//#else
+	}
+	else
+		rect.bottom -= m_menuBarHeight;
+//#endif
 
 	sub.Attach(menu.GetSubMenu(0));
 	sub.TrackPopupMenu( 
@@ -1931,10 +1993,45 @@ void CMainWindow::createCustomMenu()
 						rect.bottom-1,
 						m_hWnd);
 	sub.Detach();
+	}
+	else if(winversion == 2)
+	{
+		RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
+		m_arAppMenuItems.push_back(rho::common::CAppMenuItem("aaa", "bbb"));
+		HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
+		createCustomMenuEx( hMenu, m_arAppMenuItems );
+	}
 }
 
 void CMainWindow::createCustomMenuEx(HMENU hMenu, rho::Vector<rho::common::CAppMenuItem>& arAppMenuItems)
 {
+	if(winversion == 1)
+	{
+		//except exit item
+		int num = GetMenuItemCount (hMenu);
+		for (int i = 0; i < (num/* - 1*/); i++)	
+			DeleteMenu(hMenu, 0, MF_BYPOSITION);
+
+		//update UI with cusom menu items
+		USES_CONVERSION;
+		for ( int i = arAppMenuItems.size() - 1; i >= 0; i--)
+		{
+			CAppMenuItem& oItem = arAppMenuItems.elementAt(i);
+			StringW strLabelW = convertToStringW(oItem.m_strLabel);
+
+			if (oItem.m_eType == CAppMenuItem::emtSeparator) 
+				InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
+			else if (oItem.m_eType != CAppMenuItem::emtClose)
+				InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, strLabelW.c_str() );
+			else
+				InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, L"Exit" );
+
+			if (oItem.m_isEnable)
+				EnableMenuItem(hMenu, 0, MF_BYPOSITION | MF_ENABLED);
+			else
+				EnableMenuItem(hMenu, 0, MF_BYPOSITION | MF_GRAYED);
+		}
+	}
 }
 
 #else

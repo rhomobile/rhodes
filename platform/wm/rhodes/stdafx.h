@@ -118,7 +118,7 @@
 #ifndef min
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
-
+#include <aygshell.h>
 #include <atlapp.h>
 #include <atlframe.h>
 #include <atlmisc.h>
@@ -129,7 +129,7 @@
 #include <tpcshell.h>
 #endif
 
-#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
+//#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
 //#include <tpcshell.h> // Required for SHSendBackToFocusWindow
@@ -139,7 +139,7 @@
 #define _WTL_CE_NO_ZOOMSCROLL
 #define _WTL_CE_NO_CONTROLS
 #include <atlwince.h>
-#endif 
+//#endif 
 
 #undef max
 #undef min
