@@ -39,17 +39,12 @@ namespace common{
 class CBaseTime{
 public:
     CBaseTime(){ memset( &m_nativeTime, 0, sizeof(m_nativeTime) ); }
-    CBaseTime(const time_t seconds)
-        : m_nativeTime(seconds)
-        {}
     CBaseTime(const CBaseTime& time ){ m_nativeTime = time.m_nativeTime; }
     const CBaseTime& operator=(const CBaseTime& time ){ m_nativeTime = time.m_nativeTime; return *this; }
 
     void setToCurTime(){
         time( &m_nativeTime );
     }
-
-
 
     unsigned long toULong()
     {
@@ -64,19 +59,6 @@ protected:
 class CLocalTime : public CBaseTime{
 public:
     CLocalTime(){ setToCurTime(); }
-    CLocalTime(const time_t seconds)
-        : CBaseTime(seconds)
-        {}
-
-    String formatStr(const char* format)
-    {
-        struct tm* locTime = localtime(&m_nativeTime);
-        char timeBuf[255];
-        int nSize = 0;
-        strftime(timeBuf, 255, format, locTime);
-
-        return String(timeBuf); 
-    }
 
     String toString(boolean ms = false, boolean inFileFormat = false){ 
         char timeBuf[40];
@@ -160,10 +142,25 @@ public:
         return *this;
     }
 
-    void addMillis(int nMs)
+    //void addMillis(int nMs)
+    //{
+    //    m_nativeTime += nMs;
+    //}
+
+	bool addMillis(int nMs)
     {
-        m_nativeTime += nMs;
-    }
+        unsigned long temp=m_nativeTime;
+		m_nativeTime=m_nativeTime+nMs;
+		if((m_nativeTime<temp)||(m_nativeTime<nMs))
+		{
+		return true;
+		}
+		else
+		{
+		return false;
+		}
+
+   }
 
     static CTimeInterval getCurrentTime(){
         CTimeInterval res;
@@ -205,6 +202,7 @@ class CRhoTimer
         CTimeInterval m_oFireTime;
         String m_strCallback;
         String m_strCallbackData;
+		bool m_overflow;
 
         CTimerItem(int nInterval, const char* szCallback, const char* szCallbackData);
     };
