@@ -194,6 +194,18 @@ static size_t curlBodyBinaryCallback(void *ptr, size_t size, size_t nmemb, void 
     return nBytes;
 }
 
+static size_t curlBodyFileCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+{
+    size_t nBytes = size*nmemb;
+    RAWTRACE1("Received %d bytes", nBytes);
+    common::CRhoFile* file = (common::CRhoFile*)opaque;
+    file->write(ptr, nBytes);
+    file->flush();
+    
+    return nBytes;
+}
+
+
 extern "C" int rho_net_ping_network(const char* szHost);	
 
 INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl,
@@ -252,11 +264,16 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
             curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
             curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
         }
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
-		//curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 2);
-		//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2);        
         
+        if ( oFile != 0 ) {
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, oFile);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
+        
+        } else {
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
+        }
+		
         if (nStartFrom > 0)
 		{
 			RAWLOG_INFO1("CURLNetRequest::doPull - resuming from %d",nStartFrom);
@@ -271,37 +288,37 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
             statusCode = 500;
         
         RAWTRACE2("CURLNetRequest::doPull - Status code: %d, response size: %d", (int)statusCode, respChunk.size() );
-		
-		if (statusCode == 416 )
-		{
-			//Do nothing, file is already loaded
-		}else if (statusCode == 206) {
-            if (oFile)
-                oFile->write(&respChunk[0], respChunk.size());
-            else
+        
+        switch (statusCode) {
+        case 416:
+    		//Do nothing, file is already loaded
+            break;
+            
+        case 206:
+            if ( oFile!= 0 ) {
+                oFile->flush();
+            } else {
                 std::copy(respChunk.begin(), respChunk.end(), std::back_inserter(respBody));
+            }
             // Clear counter of attempts because 206 response does not considered to be failed attempt
             nAttempts = 0;
-		}
-        else {
-			if (oFile && (statusCode == 206 || statusCode == 200) ) {
-				if ( respChunk.size() > 0 )
-				{
-					oFile->movePosToStart();
-					oFile->write(&respChunk[0], respChunk.size());
-				}
-            }
-            else
+            break;
+
+        default:
+            if ( 0 == oFile ) {
                 respBody = respChunk;
+            }
+            break;
         }
         
-        if (err == CURLE_OPERATION_TIMEDOUT && respChunk.size() > 0) {
+		if (err == CURLE_OPERATION_TIMEDOUT ) {
             RAWLOG_INFO("Connection was closed by timeout, but we have part of data received; try to restore connection");
             nRespCode = -1;
+            
 			if ( oFile != 0 ) {
 				oFile->flush();
 				nStartFrom = oFile->size();
-			} else {
+			} else if ( respChunk.size() > 0 ) {
 				nStartFrom = respBody.size();
 			}
             continue;
@@ -611,7 +628,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     }
     
     curl_easy_setopt(m_curl, CURLOPT_CONNECTTIMEOUT, timeout);
-	curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
+	//curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
 	
     curl_easy_setopt(m_curl, CURLOPT_TCP_NODELAY, 0); //enable Nagle algorithm
     
