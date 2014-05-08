@@ -1178,6 +1178,14 @@ namespace "device" do
       build_cab if $build_cab
 
     end
+
+    task :production_with_prebuild_binary => ['config:wm'] do
+      require 'rhodes/containers'
+      container_path = Rhodes::Containers::get_container_path_prefix('wm', $app_config)
+
+      Rake::Task["device:wm:apply_container[#{conatiner_path}]"].invoke
+      Rake::Task['device:wm:cab'].invoke
+    end
   end
 
   def createWin32Production()
