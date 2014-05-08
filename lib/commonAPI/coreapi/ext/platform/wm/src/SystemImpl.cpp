@@ -552,11 +552,14 @@ void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult)
 extern "C" int rho_wmsys_has_touchscreen()
 {
 //#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
-	if(winversion != 1)
+//fixed: function should return a value (it wasn't for winversion=1)
+#if !defined(OS_WINCE)
+    return 1;
+#else
+    if(winversion != 1)
         return 1;
-#if defined(OS_WINCE)
-	else
-	{
+    else
+    {
 //#else
         BOOL bRet;
         TCHAR oem[257];

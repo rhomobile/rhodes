@@ -35,6 +35,10 @@
 using namespace std;
 using namespace rho;
 
+#if defined(OS_WINDOWS_DESKTOP)
+int winversion = 0;
+#endif
+
 extern "C" {
 
 void rho_conf_show_log()
