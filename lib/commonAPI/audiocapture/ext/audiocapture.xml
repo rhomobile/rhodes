@@ -90,15 +90,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>    
-                <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'successful' status and unsuccessful recording will set 'unsuccessful' status in the callback returning parameters. If 'cancel' method is called during recording, 'unsuccessful' status will be set in the callback returning parameters. In order to restart the audio capture when audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
+                <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'ok' status and unsuccessful recording will set 'cancel' or 'error' status in the callback returning parameters. If 'cancel' method is called during recording, 'cancel' status will be set in the callback returning parameters. In order to restart the audio capture, if the audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
 				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
             <METHOD name="stop">
-                <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'successful' in the callback returning parameter of 'start' method. The file is saved in default or user provided location.</DESC>
+                <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'ok' in the callback returning parameter of 'start' method. The file is saved in user provided location.</DESC>
 				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
             <METHOD name="cancel">
-                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'unsuccessful' in the callback returning parameter of 'start' method. No file is saved.</DESC>
+                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved.</DESC>
 				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
         </METHODS>
@@ -106,7 +106,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <REMARK title="File Name">
                 <DESC>
                     <![CDATA[
-In Windows, to store the file in a particular location, specify the path with the file name. Mentioning the extension name with the file name is optional. Only *.wav files are supported. If the path is not specified with the file name, the captured file is stored in the root directory of the device. In Windows and Android, if the folder is not present, it should be created manually for storing the file in that location. In Android, the default location is 'sdcard' and default name is 'AudioCapture'. In Android, the file extension depends on encoder value. If it is AAC, the extension should be '.mp4'. In all other cases, it is of '.3gpp'.
+In Windows, to store the file in a particular location, specify the path with the file name. Mentioning the extension name with the file name is optional. Only *.wav files are supported. If the path is not specified with the file name, the captured file is stored in the root directory of the device. In Windows and Android, if the folder is not present, it should be created manually for storing the file in that location. In Android, the file extension depends on encoder value. If it is AAC, the extension should be '.mp4'. In all other cases, it is of '.3gpp'.
                     ]]> 
                 </DESC>
             </REMARK>
