@@ -12,6 +12,6 @@ project_paths:
   wm: ext/platform/wm/Sensor.vcproj
   win32: ext/platform/wm/Sensor.vcproj
   
-xml_api_paths: ext/Sensor.xml
+xml_api_paths: ext/sensor.xml
 
 platforms: ["wm", "iphone", "android"]

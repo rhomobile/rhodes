@@ -363,11 +363,24 @@ namespace "clean" do
 end
 
 #------------------------------------------------------------------------
-def get_conf(section, key, default)
+def get_conf(key_path, default = nil)
   result = nil
+
+  key_sections = key_path.split('/').reject { |c| c.empty? }
+
   [$app_config, $config, $shared_conf].each do |config|
-    if !config.nil? && !config[section].nil?
-      result = config[section][key]
+    if !config.nil? 
+      curr = config
+      key_sections.each_with_index do |section, i|
+        if !curr[section].nil?
+          curr = curr[section]
+        else
+          break
+        end
+        if (i == key_sections.length-1) && !curr.nil? 
+          result = curr
+        end
+      end
       break if !result.nil?
     end
   end
@@ -637,7 +650,7 @@ $def_rhohub_url = 'https://app.rhohub.com/api/v1'
 
 namespace "token" do
   task :initialize => "config:initialize" do
-    $rhohub = get_conf('rhohub', 'url', $def_rhohub_url)
+    $rhohub = get_conf('rhohub/url', $def_rhohub_url)
 
     if ($rhohub != $def_rhohub_url)
       puts "Using alternative rhohub api url: #{$rhohub}"
@@ -970,6 +983,7 @@ def get_build_platforms()
         platform = k
         version = ""
       end
+      v.gsub!("iphone-","iphone:")
       id = {:ver => version, :tag => v}
       if build_platforms[platform].nil?
         build_platforms[platform] = [id]
@@ -1190,19 +1204,22 @@ namespace "rhohub" do
   $rhodes_ver = '3.5.1.14'
   #$rhodes_ver = '4.0.0'
 
-  def do_platform_build(platform_name, platform_list, config_override = nil)
+  def do_platform_build(platform_name, platform_list, build_info = {}, config_override = nil)
     platform_version = find_platform_version(platform_name, platform_list, config_override, true)
 
     puts "Running rhohub build using #{platform_version[:tag]} command"
 
-    build_flags = {
-      :build =>
-      {
-        'target_device' => platform_version[:tag],
-        'version_tag' => "master",
-        'rhodes_version' => $rhodes_ver
-      }
+    build_hash = {
+      'target_device' => platform_version[:tag],
+      'version_tag' => "master",
+      'rhodes_version' => $rhodes_ver
     }
+
+    build_flags = { :build => build_hash }
+
+    build_info.each do |k, v|
+      build_flags[k] = v
+    end
 
     build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
 
@@ -1211,6 +1228,12 @@ namespace "rhohub" do
     end
 
     check_rhohub_result(res)
+  end
+
+  def list_missing_files(files_array)
+    failed = files_array.select{|file| !File.exists?(file)}
+
+    failed
   end
 
   namespace :build do
@@ -1242,14 +1265,41 @@ namespace "rhohub" do
       task :development => ["build:initialize"] do
         $build_platform = "iphone"
 
-        do_platform_build( $build_platform, $platform_list, 'development')
+        profile_file = get_conf('iphone/production/mobileprovision_file')
+        cert_file = get_conf('iphone/production/certificate_file')
+        cert_pw = get_conf('iphone/production/certificate_password')
+
+        if profile_file.nil? || cert_file.nil?
+          raise Exception.new("You should specify mobileprovision_file and certificate_file in iphone:production section of your build.yml")
+        end
+
+        profile_file = File.expand_path(profile_file, $app_path)
+        cert_file = File.expand_path(cert_file, $app_path)
+
+        missing = list_missing_files([profile_file, cert_file])
+
+        if !missing.empty?
+          raise Exception.new("Could not load #{missing.join(', ')}")
+        end
+        
+        options = {
+          :upload_cert => File.new(cert_file, 'rb'),
+          :upload_profile => File.new(profile_file, 'rb'),
+          :bundle_identifier => get_conf('iphone/BundleIdentifier')
+        }
+
+        if !cert_pw.nil? && !cert_pw.empty?
+          options[:cert_pw] = cert_pw
+        end
+
+        do_platform_build( $build_platform, $platform_list, options, 'development')
       end
 
       desc "Build iphone distribution version"
       task :distribution => ["build:initialize"] do
         $build_platform = "iphone"
 
-        do_platform_build( $build_platform, $platform_list, 'distribution')
+        do_platform_build( $build_platform, $platform_list, {}, 'distribution')
       end
     end
 
@@ -1375,7 +1425,7 @@ namespace "config" do
 
     Jake.set_bbver($app_config["bbver"].to_s)
 
-    $proxy = get_conf('connection', 'proxy', find_proxy())
+    $proxy = get_conf('connection/proxy', find_proxy())
 
     if !($proxy.nil? || $proxy.empty?)
       puts "Using proxy: #{$proxy}"
