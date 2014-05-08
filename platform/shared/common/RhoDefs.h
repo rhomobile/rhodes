@@ -48,7 +48,12 @@
 #endif
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8)
+// 0 - win32 desktop, 1 - wm, 2 - mot ce
+extern int winversion;
 #define WINDOWS_PLATFORM
+#if defined(OS_WINCE)
+#define OS_PLATFORM_MOTCE
+#endif
 #endif
 
 #ifdef __cplusplus
@@ -95,7 +100,7 @@
 
 
 #define RHO_STRIP_LOG 0
-#define RHO_STRIP_PROFILER 1
+#define RHO_STRIP_PROFILER 0
 
 typedef int LogSeverity;
 

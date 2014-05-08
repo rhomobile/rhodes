@@ -10,6 +10,8 @@
 #define POWER_STATE_UNATTENDED   (DWORD)(0x00400000)        // Unattended state.
 #endif 
 
+#define POWER_STATE_BACKLIGHTON  (DWORD)(0x02000000)
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "PowerManagement"
 
@@ -71,12 +73,18 @@ void PowerNotificationThread::run()
             {
                 LOG(TRACE) + "[PMT] receive PBT_TRANSITION message";
 
-#if defined(OS_PLATFORM_MOTCE)
-                if (ppb->Flags == (POWER_STATE_ON | POWER_STATE_PASSWORD))
-#else
-                if (ppb->Flags == (POWER_STATE_ON | POWER_STATE_PASSWORD | POWER_STATE_BACKLIGHTON))
-#endif
-                {
+//#if defined(OS_PLATFORM_MOTCE)
+				DWORD flags;
+				if(winversion == 2)
+					flags = (POWER_STATE_ON | POWER_STATE_PASSWORD);
+				else
+					flags = (POWER_STATE_ON | POWER_STATE_PASSWORD | POWER_STATE_BACKLIGHTON);
+                //if (ppb->Flags == (POWER_STATE_ON | POWER_STATE_PASSWORD))
+//#else
+                //if (ppb->Flags == (POWER_STATE_ON | POWER_STATE_PASSWORD | POWER_STATE_BACKLIGHTON))
+//#endif
+                if (ppb->Flags == flags)
+				{
                     LOG(TRACE) + "[PMT] POWER_STATE_ON | POWER_STATE_PASSWORD | POWER_STATE_BACKLIGHTON";
                     rho_rhodesapp_callScreenOnCallback();
                 }
