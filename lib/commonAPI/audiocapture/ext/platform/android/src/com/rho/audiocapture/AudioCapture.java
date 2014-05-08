@@ -33,6 +33,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     
     private Map<String, String> mActualPropertyMap = new HashMap<String, String>();
     
+     private boolean stopApi=false;
+    
     private AudioCaptureExt ext=null;
     private void initWithDefaultValues()
     {
@@ -550,6 +552,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
 
     @Override
     public synchronized void stop(IMethodResult res) {
+    	stopApi=true;
     	System.out.println("Audio Capture Stop is called");
         try {
             releaseRecorder();
@@ -636,8 +639,11 @@ class AudioCaptureExt extends AbstractRhoExtension
 	public boolean onBeforeNavigate(IRhoExtManager extManager, String url,
 			IRhoWebView ext, boolean res) {
 		// TODO Auto-generated method stub
-		System.out.println("AbstractRhoExtension..onBeforeNavigate,returning false");
+	System.out.println("AbstractRhoExtension..onBeforeNavigate,stopApi="+stopApi);
+		if(stopApi==false)
 		cancel(null);
+		
+		stopApi=false;
 		
 		return false;
 	}
