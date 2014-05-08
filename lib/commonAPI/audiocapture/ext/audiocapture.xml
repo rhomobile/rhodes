@@ -21,7 +21,7 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
-		</MORE_HELP>
+        </MORE_HELP>
         <VER_INTRODUCED>4.2.0</VER_INTRODUCED>
         <PLATFORM>WM, Android, iOS</PLATFORM>
 
@@ -253,6 +253,41 @@ Rho.AudioCapture.fileName = "/sdcard/Audio/sample.mp4";
 
 // The returned value is "/sdcard/Audio/sample.mp4";
 alert(Rho.AudioCapture.fileName);
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                        <SECTION>
+                            <DESC>In iOS, one can set the fileName without extensions. The extension depends on encoder and will be automatically added. Currently supported WAV (16kHz, 16 bit, mono) IF you do not specify fullpath filename, then file will be placed to default folder. You can receive result fullpath filename in callback.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Setting fileName without extension
+Rho::AudioCapture.fileName = 'sample'
+
+// The returned value is "sample"
+Alert.show_popup(Rho.AudioCapture.fileName)
+
+#Setting fileName with fullpath
+Rho::AudioCapture.fileName = File.join(Rho::Application.userFolder,'mysound')
+
+// The returned value is (this is example for simulator) "/Users/MOHUS/Library/Application Support/iPhone Simulator/7.1/Applications/376D660D-B6C7-4E6E-8B69-38E7C681DAC5/Documents/apps/mysound";
+Alert.show_popup(Rho.AudioCapture.fileName)
+
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+#Setting fileName without extension
+Rho::AudioCapture.fileName = "sample";
+
+// The returned value is "sample";
+alert(Rho.AudioCapture.fileName);
+
+#Setting fileName with fullpath
+Rho::AudioCapture.fileName = Rho::Application.userFolder + 'mysound';
+
+// The returned value is (this is example for simulator) "/Users/MOHUS/Library/Application Support/iPhone Simulator/7.1/Applications/376D660D-B6C7-4E6E-8B69-38E7C681DAC5/Documents/apps/mysound";
+alert(Rho.AudioCapture.fileName);
+
 ]]>
                                 </JAVASCRIPT>
                             </CODE>

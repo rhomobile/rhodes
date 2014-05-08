@@ -7,6 +7,12 @@
 #import "IAudioCapture.h"
 #import "AudioCaptureBase.h"
 
+
+
+#define CALLBACK_STATUS_ERROR  @"error"
+#define CALLBACK_STATUS_OK  @"ok"
+#define CALLBACK_STATUS_CANCEL  @"cancel"
+
 @interface AudioCapture : AudioCaptureBase<IAudioCapture,AVAudioRecorderDelegate> {
     
     id<IMethodResult> callback;
