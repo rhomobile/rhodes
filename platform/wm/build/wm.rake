@@ -95,7 +95,7 @@ def sign(cabfile, signature)
 end
 
 # make a *.cpy and *.reg files for persistent installation
-def makePersistentFiles(dstDir, additional_paths, webkit_dir, regkeys_filename)
+def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_process, regkeys_filename)
   cf = File.new(File.join(dstDir, $appname + ".cpy"), "w+")
 
   if cf.nil?
@@ -132,6 +132,7 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, regkeys_filename)
 
     Dir.glob("**/*").each { |f|
       if File.directory?(f) == false && File.extname(f) != ".lib" && File.extname(f) != ".exp"
+        next if File.basename(f) == (webkit_out_of_process ? 'WebkitPlatformDeliveryCompiledAsDLL.dll' : 'OutProcessWK.exe')
         path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
         path.gsub!("/", "\\")
         cf.puts(path)
@@ -271,7 +272,12 @@ def build_cab
   end
 
   if $build_persistent_cab && !$use_shared_runtime
-    makePersistentFiles($srcdir, additional_dlls_paths, $webkit_capability ? $wk_data_dir : nil, reg_keys_filename)
+    makePersistentFiles($srcdir, additional_dlls_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
+  end
+
+  webkit = 'none'
+  if $webkit_capability
+    webkit = $webkit_out_of_process ? 'out_of_process' : 'in_process'
   end
 
   dir = File.join($startdir, $builddir)
@@ -284,7 +290,7 @@ def build_cab
     '"' + $app_config["vendor"] + '"',        #3
     '"' + $srcdir + '"',                      #4
     $hidden_app,                              #5
-    ($webkit_capability ? "1" : "0"),         #6
+    webkit,                                   #6
     '"' + $wk_data_dir + '"',                 #7
     ($use_shared_runtime  ? "1" : "0"),       #8
     ($motorola_capability ? "1" : "0"),       #9
@@ -376,6 +382,7 @@ namespace "config" do
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
+    $webkit_out_of_process = $app_config['wm']['webkit_outprocess'] == '1'
     $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("motorola").nil?) 
     $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
     $additional_dlls_path = nil
