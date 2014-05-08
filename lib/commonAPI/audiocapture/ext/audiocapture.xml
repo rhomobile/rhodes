@@ -71,7 +71,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PROPERTIES>
         <METHODS>
              
-            <METHOD name="start" hasCallback="mandatory" runInThread="ui">
+            <METHOD name="start" hasCallback="mandatory">
                 <PARAMS>
                      <PARAM name="props" type="HASH" propertyHash="true">
                         <DESC>Map of Audio Capture properties to be set. For iOS 22kHz 16bit Mono WAV file will be created.</DESC>
@@ -83,10 +83,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <DESC>Whether or not the audio recording was successfully captured, status will be 'ok' or 'cancel' or 'error'.</DESC>
                         </PARAM>
                         <PARAM name="message" type="STRING">
-                            <DESC>if 'status' == 'error', then message contains error message. In all other cases, it will remain empty.</DESC>
+                            <DESC>If 'status' == 'error', then message contains error message. In all other cases, it will remain empty.</DESC>
                         </PARAM>
                         <PARAM name="fileName" type="STRING">
-                            <DESC>if 'status' == 'ok', then contain full file path with the file name of recorded audiofile. In all other cases, it will remain empty.</DESC>
+                            <DESC>If 'status' == 'ok', then contain full file path with the file name of recorded audiofile. In all other cases, it will remain empty.</DESC>
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>    
@@ -154,10 +154,12 @@ In Windows, 'getProperty' or 'getProperties' for fileName will return the comple
                             <DESC>Starting, Stopping and Cancelling audio capture is same across all platforms.</DESC>
                             <CODE>
                                 <RUBY><![CDATA[
-#Starting Audio Capture without settings. Callback is mandatory.
+#Starting Audio Capture without settings. Callback is mandatory. Setting the file name at least once is also mandatory before invoking 'start' method.
 Rho::AudioCapture.start({},mycallback);
 
 #Starting Audio Capture with settings. Callback is mandatory.
+#On successful recording the hash property  for fileName' in callback will return the complete file path with the filename.
+#In Windows, for the below settings, it will return "file://\AudioCapture.wav".
 Rho::AudioCapture.start({'fileName':"AudioCapture",'maxDuration':'15000'},mycallback);
 
 #Stopping Audio Capture
@@ -168,10 +170,12 @@ Rho::AudioCapture.cancel();
 ]]>
                                 </RUBY>
                                 <JAVASCRIPT><![CDATA[
-// Starting Audio Capture without settings. Callback is mandatory.
+// Starting Audio Capture without settings. Callback is mandatory. Setting the file name at least once is also mandatory before invoking 'start' method.
 Rho.AudioCapture.start({},mycallback);
 
-// Starting Audio Capture with settings. Callback is mandatory.
+// Starting Audio Capture with settings. Callback is mandatory. 
+// On successful recording the hash property  for fileName' in callback will return the complete file path with the filename.
+// In Windows, for the below settings, it will return "file://\AudioCapture.wav".
 Rho.AudioCapture.start({'fileName':"AudioCapture",'maxDuration':'15000'},mycallback);
 
 // Stopping Audio Capture

@@ -1,6 +1,5 @@
 #include "AudioCapture.h"
 
-
 LPCWSTR	lpRawFileName = L"\\AudioCapture.raw";
 
 CAudioCapture::CAudioCapture(bool bHasFocus)
@@ -12,6 +11,7 @@ CAudioCapture::CAudioCapture(bool bHasFocus)
 	m_hEvents[1]	= NULL;
 	m_bAppHasFocus	= bHasFocus;
 	m_pStatusEvent	= NULL;
+	m_isFileNameSetAtleastOnce = false;
 	ResetToDefaults();
 
 	// The following defaults (with the exception of cbSize) may need to be configurable
@@ -39,6 +39,7 @@ CAudioCapture::~CAudioCapture()
 	if (m_hWaveIn)
 		Cancel();
 
+	m_isFileNameSetAtleastOnce = false;
 	m_pStatusEvent	= NULL;
 	delete [] m_lpzFilename;	
 }
@@ -88,12 +89,19 @@ LPWSTR CAudioCapture::SetFilename(LPCWSTR lpFilename)
 	{
 		m_lpzFilename = setString(lpFilename); 
 	}
+	//If the fileName is set at least once, then we allow user to start Audio Capture. 
+	m_isFileNameSetAtleastOnce = true;
 	return m_lpzFilename;	
 }
 
 int CAudioCapture::Start()
 {
 	MMRESULT res = MMSYSERR_NOERROR;
+
+	if(!m_isFileNameSetAtleastOnce){
+		UpdateCallbackStatus("error","File name must be set atleast once.");
+		return res;
+	}
 
 	if (!m_bAppHasFocus) // if we aren't focussed we can't use the hardware so ignore
 		return res;
@@ -114,7 +122,7 @@ int CAudioCapture::Start()
 			((m_hFile = CreateFile(lpRawFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, 0, NULL)) == INVALID_HANDLE_VALUE))
 		{
 			//set unsuccessful status
-			UpdateCallbackStatus(L"unsuccessful");
+			UpdateCallbackStatus("error","Memory allocation error.");
 			return MMSYSERR_NOMEM;
 		}
 
@@ -151,7 +159,7 @@ int CAudioCapture::Start()
 				delete [] m_waveHdrB.lpData;
 				m_waveHdrB.lpData = NULL;
 				//set unsuccessful status
-				UpdateCallbackStatus(L"unsuccessful");
+				UpdateCallbackStatus("error","Unable to allocate memory for audio capture buffers.");
 				return MMSYSERR_NOMEM;
 			}
 
@@ -224,7 +232,7 @@ int CAudioCapture::Start()
 				
 			}
 			//set unsuccessful status
-			UpdateCallbackStatus(L"unsuccessful");
+			UpdateCallbackStatus("error","Wave in failure.");
 			LOG(WARNING) + L"WAV: Wavin failure";			
 		}	
 	}
@@ -345,17 +353,17 @@ AC_RETURN CAudioCapture::eventHandler()
 			// only process the raw file on capture event
 			if(TRUE == processRawFile()){
 				//set successful status
-				UpdateCallbackStatus(L"successful");
+				UpdateCallbackStatus("ok","");	
 				iRet = AC_SAVED;
 			}
 			else{
 				//set unsuccessful status
-				UpdateCallbackStatus(L"unsuccessful");
+				UpdateCallbackStatus("error","Unable to process raw file.");
 			}
 		}
 		else{
 			//set unsuccessful status
-			UpdateCallbackStatus(L"unsuccessful");
+			UpdateCallbackStatus("cancel","");
 		}
 		m_hWaveIn = NULL;
 	}
@@ -515,8 +523,11 @@ void CAudioCapture::SetDuration(int iMilliSeconds)
 BOOL CAudioCapture::ApplicationFocusChange(bool bActivated)
 {
 	// if we've lost focus during audio capture we must release the audio hardware
-	if (!bActivated && m_bAppHasFocus)
-		Cancel();
+	if (!bActivated && m_bAppHasFocus){
+		//Commenting the below method as the requirement says that 
+		//it should not cancel AudioCapture.
+		//Cancel();
+	}
 
 	m_bAppHasFocus = bActivated;
 	return TRUE;
@@ -567,12 +578,19 @@ void CAudioCapture::SetCallback(rho::apiGenerator::CMethodResult* pCallback){
 	m_pStatusEvent = pCallback;
 }
 
-void CAudioCapture::UpdateCallbackStatus(LPCWSTR szValue){
-	if(m_pStatusEvent->hasCallback()){
+void CAudioCapture::UpdateCallbackStatus(LPCSTR szStatus,LPCSTR szMessage){
+	wchar_t szTempFileName[2049]=L"";
+	
+	if(strcmp(szStatus,"ok") == 0){
+		wsprintf(szTempFileName,L"file://%s",m_lpzFilename);
+	}
+
+	if(m_pStatusEvent != NULL){
 		//Used for storing the appropriate recording status
 		rho::Hashtable<rho::String, rho::String> statusData;
-		statusData.put( rho::common::convertToStringA(L"status"), 
-		rho::common::convertToStringA(szValue) );			
-		m_pStatusEvent->set(statusData);
+		statusData.put( "status",szStatus);	
+		statusData.put( "message",szMessage);
+		statusData.put( "fileName",rho::common::convertToStringA(szTempFileName));		
+		m_pStatusEvent->set(statusData);		
 	}	
 }
