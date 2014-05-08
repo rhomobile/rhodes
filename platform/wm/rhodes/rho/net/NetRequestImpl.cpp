@@ -71,8 +71,10 @@ CNetRequestImpl::CNetRequestImpl()
     m_pSession = 0;
     m_sslVerifyPeer = true;
 
+#if !defined(OS_WINDOWS_DESKTOP)
 	if(winversion == 1 && !g_hConnManDLL)
 		LoadConnectionManager();
+#endif
 }
 
 void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
