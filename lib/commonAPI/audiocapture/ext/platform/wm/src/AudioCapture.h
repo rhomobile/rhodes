@@ -70,10 +70,6 @@ public:
 	BOOL ApplicationFocusChange(bool bActivated);
 	void ResetToDefaults();
 	/**
-	* checks if two strings are equal
-	*/
-	BOOL cmp(LPCTSTR tc1, LPCTSTR tc2);
-	/**
 	* Sets a property or a method of the card reader module
 	*/
 	BOOL SetPropertyOrMethod(LPCTSTR szPropertyName, LPCTSTR szPropertyValue);
@@ -92,7 +88,11 @@ public:
 	*/
 	void SetCallback(rho::apiGenerator::CMethodResult* pCallback);
 private:
-	void UpdateCallbackStatus(LPCWSTR szValue);
+	/**
+	* checks if two strings are equal
+	*/
+	BOOL cmp(LPCTSTR tc1, LPCTSTR tc2);
+	void UpdateCallbackStatus(LPCSTR szStatus,LPCSTR szMessage);
 	unsigned int RoundUp(double dValue);
 	
 
@@ -108,6 +108,7 @@ private:
 	unsigned int	m_iMaxDuration;
 	unsigned long	m_iMaxFileSizeBytes;
 	LPWSTR			m_lpzFilename;
+	bool			m_isFileNameSetAtleastOnce;//Checking whether file name is set atleast once. If not then user will not be allowed to start the AudioCapture.
 	HANDLE			m_hFile;
 	HANDLE			m_hEvents[2];
 	HWAVEIN			m_hWaveIn;
