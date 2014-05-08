@@ -15,7 +15,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     self = [super init];
     
     maxDuration = 20000;
-    destination = [self getPreparedFileNameWithName:@"audiocapture"];
+    destination = [self getPreparedFileNameWithName:@""];
     
     return self;
 }
@@ -28,7 +28,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     if(err){
         NSLog(@"audioSession: %@ %d %@", [err domain], [err code], [[err userInfo] description]);
         //fire ERROR
-        [self fireCallback:@"ERROR" param_name:nil param_value:nil];
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:nil param_value:nil];
         return;
     }
     [audioSession setActive:YES error:&err];
@@ -36,7 +36,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     if(err){
         NSLog(@"audioSession: %@ %d %@", [err domain], [err code], [[err userInfo] description]);
         //fire ERROR
-        [self fireCallback:@"ERROR" param_name:nil param_value:nil];
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:nil param_value:nil];
         return;
     }
     
@@ -73,7 +73,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     recorder = [[ AVAudioRecorder alloc] initWithURL:url settings:recordSetting error:&err];
     if(!recorder){
         //fire ERROR
-        [self fireCallback:@"ERROR" param_name:nil param_value:nil];
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:nil param_value:nil];
         return;
     }
     
@@ -85,7 +85,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     BOOL audioHWAvailable = audioSession.inputIsAvailable;
     if (! audioHWAvailable) {
         //fire ERROR
-        [self fireCallback:@"ERROR" param_name:@"message" param_value:@"AudioCapture hardware is not available !"];
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"AudioCapture hardware is not available !"];
         return;
     }
     
@@ -103,7 +103,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         [recorder stop];
     }
     else {
-        [self fireCallback:@"ERROR" param_name:@"message" param_value:@"not any record process"];
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"not any record process"];
     }
     recorder = nil;
     
@@ -121,7 +121,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         [recorder stop];
     }
     else {
-        [self fireCallback:@"ERROR" param_name:@"message" param_value:@"not any record process"];
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"not any record process"];
     }
     recorder = nil;
 }
@@ -130,7 +130,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
 -(void) convertCommand {
     if (![self exportAssetAsWaveFormat:recorderFilePath outPath:destination] ) {
         //fire ERROR
-        [self fireCallback:@"ERROR" param_name:@"message" param_value:@"can not save WAV after capturing"];
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"can not save WAV after capturing"];
     }
 }
 
@@ -146,12 +146,12 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         }
         else {
             //fire CANCEL
-            [self fireCallback:@"CANCEL" param_name:nil param_value:nil];
+            [self fireCallback:CALLBACK_STATUS_CANCEL param_name:nil param_value:nil];
         }
     }
     else {
         //fire ERROR
-        [self fireCallback:@"ERROR" param_name:nil param_value:nil];
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:nil param_value:nil];
     }
 }
 
@@ -316,7 +316,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         //int durInMilis = (int)actualDuration;
         
         //fire OK
-        [self fireCallback:@"OK" param_name:HK_FILE_NAME param_value:destination];//[NSString stringWithFormat:@"%d", durInMilis]];
+        [self fireCallback:CALLBACK_STATUS_OK param_name:HK_FILE_NAME param_value:destination];//[NSString stringWithFormat:@"%d", durInMilis]];
     }];
     
     dispatch_release(queue);
@@ -329,12 +329,17 @@ extern const char* rho_rhodesapp_getblobsdirpath();
 
 -(void) start:(NSDictionary*)props methodResult:(id<IMethodResult>)methodResult {
     if (isStarted) {
-        [self fireCallback:@"ERROR" param_name:HK_MESSAGE param_value:@"Audiocapture process already started. Please cancel or stop previous process before start new one."];
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:HK_MESSAGE param_value:@"Audiocapture process already started. Please cancel or stop previous process before start new one."];
         return;
     }
     isStarted = YES;
     callback = methodResult;
     destination = [[self getPreparedFileNameWithHash:props] retain];
+    if (destination == nil) {
+        isStarted = NO;
+        [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"File name must be set atleast once."];
+        return;
+    }
     maxDuration = [self getMaxDurationWithHash:props];
     [self performSelectorOnMainThread:@selector(startCommand) withObject:nil waitUntilDone:NO];
 }
@@ -384,9 +389,19 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         NSObject* val = [options objectForKey:PROPERTY_FILE_NAME];
         if (val != nil) {
             if ([val isKindOfClass:[NSString class]]) {
-                name = (NSString*)val;
+                NSString* names = (NSString*)val;
+                if ([names length] > 0) {
+                    name = names;
+                }
             }
         }
+    }
+
+    if (name == nil) {
+        return nil;
+    }
+    if ([name length] <= 0) {
+        return nil;
     }
     
     return [self getPreparedFileNameWithName:name];
@@ -398,6 +413,10 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     
     if (name == nil) {
         name = @"audiocapture";
+    }
+    
+    if ([name length] <= 0) {
+        return nil;
     }
     
     NSRange range = [name rangeOfString:@"/"];
