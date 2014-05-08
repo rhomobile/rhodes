@@ -537,7 +537,8 @@ double rho_geo_latitude()
 		CGPSController* gps = CGPSController::startInstance();
 		return gps->GetLatitude();
 	}
-//#else
+	return 0.0;
+#else
 	return 0.0;
 #endif
 }
@@ -550,7 +551,8 @@ double rho_geo_longitude()
 		CGPSController* gps = CGPSController::startInstance();
 		return gps->GetLongitude();
 	}
-//#else
+	return 0.0;
+#else
 	return 0.0;
 #endif
 }
@@ -563,7 +565,8 @@ double rho_geo_altitude()
 		CGPSController* gps = CGPSController::startInstance();
 		return gps->GetAltitude();
 	}
-//#else
+	return 0.0;
+#else
 	return 0.0;
 #endif
 }
@@ -581,7 +584,8 @@ int rho_geo_known_position()
 		CGPSController* gps = CGPSController::startInstance();
 		return gps->IsKnownPosition();
 	}
-//#else
+	return 0;
+#else
 	return 0;
 #endif
 }
@@ -593,7 +597,8 @@ double rho_geo_speed() {
 		CGPSController* gps = CGPSController::startInstance();
 		return gps->GetSpeed();
 	}
-//#else
+	return 0.0;
+#else
     return 0.0;
 #endif
 }
@@ -605,7 +610,8 @@ int rho_geo_satellites() {
 		CGPSController* gps = CGPSController::startInstance();
 		return gps->GetSatelliteCount();
 	}
-//#else
+	return 0;
+#else
     return 0;
 #endif
 }
@@ -635,7 +641,8 @@ int rho_geo_is_available()
 #if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
 	if(winversion == 1)
 		return CGPSDevice::isAvailable() ? 1 : 0;
-//#else
+	return 0;
+#else
 	return 0;
 #endif
 }
