@@ -46,6 +46,8 @@ using namespace rho::common;
 using namespace std;
 using namespace stdext;
 
+int winversion = 0;
+
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
@@ -120,8 +122,9 @@ extern "C" bool rho_wmimpl_get_resize_on_sip()
 }
 #endif
 
-#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
+#if defined(_WIN32_WCE) //&& !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
+#include "bluetooth/Bluetooth.h"
 
 // Global Notification Handle
 HREGNOTIFY g_hNotify = NULL, g_hNotifyCell = NULL;
@@ -134,6 +137,18 @@ HREGNOTIFY g_hNotify = NULL, g_hNotifyCell = NULL;
 
 #define SN_CELLSYSTEMCONNECTED_PATH TEXT("System\\State\\Phone")
 #define SN_CELLSYSTEMCONNECTED_VALUE TEXT("Cellular System Connected")
+
+typedef HRESULT (WINAPI* LPFN_REGISTRY_CLOSENOTIFICATION_T) (HREGNOTIFY);
+typedef HRESULT (WINAPI* LPFN_REGISTRY_NOTIFYWINDOW_T) (HKEY, LPCTSTR, LPCTSTR, HWND, UINT, DWORD, NOTIFICATIONCONDITION*, HREGNOTIFY*);
+typedef HRESULT (WINAPI* LPFN_REGISTRY_GETSTRING_T) (HKEY, LPCTSTR, LPCTSTR, LPTSTR, UINT);
+typedef HRESULT (WINAPI* LPFN_REGISTRY_GETDWORD_T) (HKEY, LPCTSTR, LPCTSTR, DWORD*);
+
+LPFN_REGISTRY_CLOSENOTIFICATION_T	lpfn_Registry_CloseNotification = NULL;
+LPFN_REGISTRY_NOTIFYWINDOW_T		lpfn_Registry_NotifyWindow = NULL;		
+LPFN_REGISTRY_GETSTRING_T			lpfn_Registry_GetString = NULL;			
+LPFN_REGISTRY_GETDWORD_T			lpfn_Registry_GetDWORD = NULL;
+HMODULE g_hAygShellDLL = NULL;	
+extern "C" BOOL LoadAYGShell();
 
 #endif
 
@@ -193,6 +208,7 @@ public :
 
     bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( );
     HRESULT PreMessageLoop(int nShowCmd) throw();
+	HRESULT PostMessageLoop() throw();
     void RunMessageLoop( ) throw( );
     const rho::String& getRhoRootPath();
     const rho::String& getRhoRuntimePath();
@@ -361,11 +377,12 @@ extern "C" void rho_wm_impl_CheckLicense();
 // error code => Failure. Skip both RunMessageLoop() and PostMessageLoop().
 HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 {
-    HRESULT hr = __super::PreMessageLoop(nShowCmd);
+    HRESULT hr;
+	/*HRESULT hr = __super::PreMessageLoop(nShowCmd);
     if (FAILED(hr))
     {
         return hr;
-    }
+    }*/
     // Note: In this sample, we don't respond differently to different hr success codes.
 
     SetLastError(0);
@@ -550,10 +567,12 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     //}
 
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+if(winversion == 1)
+{
 
     DWORD dwConnCount = 0;
-    hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
+    hr = lpfn_Registry_GetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
 		SN_CONNECTIONSNETWORKCOUNT_PATH, 
 		SN_CONNECTIONSNETWORKCOUNT_VALUE, 
         &dwConnCount
@@ -561,7 +580,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho_sysimpl_sethas_network((dwConnCount > 1) ? 1 : 0);
 
     DWORD dwCellConnected = 0;
-    hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
+    hr = lpfn_Registry_GetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
 		SN_CELLSYSTEMCONNECTED_PATH, 
 		SN_CELLSYSTEMCONNECTED_VALUE, 
         &dwCellConnected
@@ -569,7 +588,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho_sysimpl_sethas_cellnetwork(dwCellConnected);
 
 	// Register for changes in the number of network connections
-	hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
+	hr = lpfn_Registry_NotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
 		SN_CONNECTIONSNETWORKCOUNT_PATH, 
 		SN_CONNECTIONSNETWORKCOUNT_VALUE, 
 		m_appWindow.m_hWnd, 
@@ -578,7 +597,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		NULL, 
 		&g_hNotify);
 
-	hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
+	hr = lpfn_Registry_NotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
 		SN_CELLSYSTEMCONNECTED_PATH, 
 		SN_CELLSYSTEMCONNECTED_VALUE, 
 		m_appWindow.m_hWnd, 
@@ -586,7 +605,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		0, 
 		NULL, 
 		&g_hNotifyCell);
-
+}
 #endif
 
     return S_OK;
@@ -596,15 +615,18 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 {
     m_appWindow.getWebKitEngine()->RunMessageLoop(m_appWindow);
 
-#if defined(OS_WINCE)&& !defined( OS_PLATFORM_MOTCE )
-    if (g_hNotify)
-        RegistryCloseNotification(g_hNotify);
+#if defined(OS_WINCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		if (g_hNotify)
+		  lpfn_Registry_CloseNotification(g_hNotify);
 
-    if ( g_hNotifyCell )
-        RegistryCloseNotification(g_hNotifyCell);
+	 if ( g_hNotifyCell )
+		 lpfn_Registry_CloseNotification(g_hNotifyCell);
 
-    CGPSController* pGPS = CGPSController::Instance();
-    pGPS->DeleteInstance();
+		CGPSController* pGPS = CGPSController::Instance();
+		pGPS->DeleteInstance();
+	}
 #endif
     rho_ringtone_manager_stop();
 
@@ -696,11 +718,25 @@ void CRhodesModule::createAutoStartShortcut()
 
 }
 
+HRESULT CRhodesModule::PostMessageLoop() throw()
+{
+	return 0;
+}
+
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR lpCmdLine, int nShowCmd)
 {
 	INITCOMMONCONTROLSEX ctrl;
 
+#if defined(OS_WINCE)
+	if(RhoBluetoothManager::LoadBthUtil())
+		winversion = 1;
+	else
+		winversion = 2;
+#endif
+
+    if(winversion == 1)
+		LoadAYGShell();
 
 	//Required to use datetime picker controls.
 	ctrl.dwSize = sizeof(ctrl);
@@ -901,6 +937,49 @@ extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
 
 extern "C" void Init_fcntl(void)
 {
+}
+
+extern "C" BOOL LoadAYGShell()
+{
+	bool bReturnValue = FALSE;
+	g_hAygShellDLL = LoadLibrary(L"aygshell.dll");
+	if (!g_hAygShellDLL)
+	{
+		//  Error loading AygShell.dll (used for Retrieving values from the Registry)
+		LOG(INFO) + "Failed to load AygShell.dll, WAN status event will not be available";
+	}
+	else
+	{
+		lpfn_Registry_CloseNotification = 
+			(LPFN_REGISTRY_CLOSENOTIFICATION_T)GetProcAddress(g_hAygShellDLL, _T("RegistryCloseNotification"));
+		lpfn_Registry_NotifyWindow = 
+			(LPFN_REGISTRY_NOTIFYWINDOW_T)GetProcAddress(g_hAygShellDLL, _T("RegistryNotifyWindow"));
+		lpfn_Registry_GetString = 
+			(LPFN_REGISTRY_GETSTRING_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetString"));
+		lpfn_Registry_GetDWORD = 
+			(LPFN_REGISTRY_GETDWORD_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetDWORD"));
+
+		if (!lpfn_Registry_CloseNotification)
+		{
+			LOG(ERROR) + "Unable to load RegistryCloseNotification, WAN Status event will be unavailable";
+			bReturnValue = FALSE;
+		}
+		else if (!lpfn_Registry_CloseNotification)
+		{
+			LOG(ERROR) + "Unable to load RegistryNotifyCallback, WAN Status event will be unavailable";
+		}
+		else if (!lpfn_Registry_GetString)
+		{
+			LOG(ERROR) + "Unable to load RegistryGetString, WAN Status event will be unavailable";
+		}
+		else if (!lpfn_Registry_GetDWORD)
+		{
+			LOG(ERROR) + "Unable to load RegistryGetDWORD, WAN Status event will be unavailable";
+		}
+		else
+			bReturnValue = TRUE;
+	}
+	return bReturnValue;	
 }
 
 //parseToken will allocate extra byte at the end of the 

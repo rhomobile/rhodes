@@ -127,12 +127,12 @@ namespace rho
 }
 
 class CMainWindow :
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+//#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	public CFrameWindowImpl<CMainWindow>, 
-	public CFullScreenFrame<CMainWindow, false>
-#else
-    public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
-#endif
+	public CFullScreenFrame<CMainWindow, false>//,
+//#else
+  ///  public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
+//#endif
 #if !defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) && !defined(OS_PLATFORM_MOTCE)
     ,public IDispEventImpl<ID_BROWSER, CMainWindow>
 #endif
