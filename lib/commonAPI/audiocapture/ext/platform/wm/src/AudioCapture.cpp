@@ -177,7 +177,11 @@ int CAudioCapture::Start()
 							m_hEvents[CANCEL_EVENT] = CreateEvent(NULL, FALSE, FALSE, NULL);
 							if (m_hEvents[CAPTURE_EVENT] && m_hEvents[CANCEL_EVENT])
 							{
-								CloseHandle(CreateThread(NULL, 0, threadProc, (LPVOID)this, 0, NULL));
+								HANDLE hThread = CreateThread(NULL, 0, threadProc, (LPVOID)this, 0, NULL);
+								if(hThread != NULL){
+									CloseHandle(hThread);
+									hThread = NULL;
+								}
 								if ((res = waveInStart(m_hWaveIn)) == MMSYSERR_NOERROR)
 								{
 									return res;
