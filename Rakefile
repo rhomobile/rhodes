@@ -1423,7 +1423,7 @@ namespace "config" do
       Rake::Task["app:config"].invoke
     end
 
-    $app_config['wm'] = {} if $app_config['wm'].nil?
+    $app_config['wm'] = {} unless $app_config['wm'].is_a?(Hash)
     $app_config['wm']['webkit_outprocess'] = '1' if $app_config['wm']['webkit_outprocess'].nil?
 
     Jake.set_bbver($app_config["bbver"].to_s)
