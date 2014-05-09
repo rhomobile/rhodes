@@ -113,7 +113,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	Map<String, Object> props = new HashMap<String, Object>();
         for (String name: arrayofNames)
         {
-        	if(name.equalsIgnoreCase("maxDuration"))
+        /*	if(name.equalsIgnoreCase("maxDuration"))
         	{
         		try{
         		props.put(name,Integer.parseInt(mActualPropertyMap.get(name)) );
@@ -126,6 +126,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         		}
         	}
         	else
+                props.put(name,mActualPropertyMap.get(name) );
+                */
                 props.put(name,mActualPropertyMap.get(name) );
         }
         result.set(props);
