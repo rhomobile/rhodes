@@ -360,12 +360,37 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         return maxD;
         
     }
-    
+     private static boolean IsPathContainExtension(String path)
+    {
+    	String substr="";
+    	if(!path.contains("."))
+    		return false;
+    	else 
+    	{
+    		if(path.contains("/"))
+    			{
+    				substr=path.substring(path.lastIndexOf("/"));
+    				System.out.println("substr="+substr);
+    				if(substr.contains(".") && ( substr.indexOf(".") != (substr.length()-1) ))
+    					return true;
+    				else
+    					return false;
+    			}
+    		if(path.contains(".") && ( path.indexOf(".") != (path.length()-1) ))
+				return true;
+			else
+				return false;
+    	}
+    	
+    	
+    	
+    	
     private static int getOutputFormat(String path,int audioEncoder) {
         
         Logger.T(TAG, "Output format for: " + path);
         String ext ="";
-        if(path.contains("."))
+       // if(path.contains("."))
+        if(IsPathContainExtension(path))
         { 
         	File file = new File(path);
         	String filename = file.getName();
@@ -476,7 +501,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             			  path=Environment.getExternalStorageDirectory().getAbsolutePath().concat("/").concat(path);
             		}
             
-            if(!(path.contains(".")))
+            //if(!(path.contains(".")))
+             if(!IsPathContainExtension(path))
             {
             		switch(outputFormat)
             		{
