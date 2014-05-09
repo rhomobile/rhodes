@@ -136,7 +136,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	
     	//super.getProperty(propertyName, result);
     	
-    	try{
+    /*	try{
     	if(propertyName.equalsIgnoreCase("maxDuration"))
     		result.set(Integer.parseInt(mActualPropertyMap.get(propertyName)));
     	else
@@ -146,7 +146,10 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	{
     		Logger.E(TAG, "Error getProperty="+e.getMessage());
     		result.set(0);
-    	}
+    	}*/
+    	
+    	
+    	result.set(mActualPropertyMap.get(propertyName));
     }
     
     @Override
