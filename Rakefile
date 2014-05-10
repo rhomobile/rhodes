@@ -2088,7 +2088,7 @@ def init_extensions(dest, mode = "")
             end
           end
 
-          if (xml_api_paths && type != "prebuilt") && !($use_prebuild_data && (extname == 'coreapi')) # && wm_type != "prebuilt"
+          if (xml_api_paths && type != "prebuilt") && !($use_prebuild_data && (extname == 'coreapi')) && !$prebuild_win32 # && wm_type != "prebuilt"
             xml_api_paths    = xml_api_paths.split(',')
 
             xml_api_paths.each do |xml_api|

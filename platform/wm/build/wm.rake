@@ -24,13 +24,26 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-def pack_7z(where, what, archive)
+def get_7z_path()
+  if RUBY_PLATFORM =~ /(win|w)32$/
+    File.join($startdir,'res/build-tools/7za')
+  else
+    '7za'
+  end
+end
+
+def pack_7z(where, what, archive, exclude = [])
   what = what.map {|p| "\"#{p}\""}
-  Jake.run3("7za a \"#{archive}\" #{what.join(' ')} -bd", where)
+  Jake.run3(get_7z_path() + " a \"#{archive}\" #{what.join(' ')} -bd" + (exclude.map {|f| " -x!#{f}"}).join(' '), where)
 end
 
 def unpack_7z(where, archive)
-  Jake.run3("7za x \"#{archive}\" -bd -y", where)
+  Jake.run3(get_7z_path()+" x \"#{archive}\" -bd -y", where)
+end
+
+def determine_prebuild_path_win(platform,config)
+  require 'rhodes/containers'
+  Rhodes::Containers::get_container_path_prefix(platform, config)
 end
 
 def additional_dlls_paths
@@ -439,6 +452,8 @@ namespace "config" do
     end
 
     task :qt do
+      next if $prebuild_win32
+
       $msvc_version = $app_config["win32"]["msvc"] if $app_config["win32"] && $app_config["win32"]["msvc"]
 
       # use Visual Studio 2012 by default
@@ -514,6 +529,7 @@ namespace "config" do
       $app_icon_path = $app_path + "/icon/icon.ico"
       $app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exists? $app_icon_path
       cp $app_icon_path, $startdir + "/platform/wm/rhodes/resources/icon.ico"
+      cp $app_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.ico"
       resfile = $startdir + "/platform/wm/bin/win32/rhodes/" +$buildcfg + "/Rhodes.res"
       rm resfile if File.exists? resfile
 
@@ -559,7 +575,7 @@ namespace "build" do
   namespace "wm" do
   
     task :extensions => "config:wm" do
-      if $use_shared_runtime then next end
+      next if $use_shared_runtime || $prebuild_win32
 
       extensions_lib = ''
       pre_targetdeps = ''
@@ -924,6 +940,8 @@ namespace "build" do
     end
 
     task :extensions => "config:wm" do
+      next if $prebuild_win32
+
       extensions_lib = ''
       pre_targetdeps = ''
 
@@ -1086,6 +1104,8 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
   #desc "Build rhodes for win32"
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
+    next if $prebuild_win32
+
     chdir $config["build"]["wmpath"]
 
     ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
@@ -1189,11 +1209,13 @@ namespace "device" do
     end
   end
 
-  def createWin32Production()
+  def createWin32Production(skip_deployqt = false, skip_nsis = false)
     out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
     puts "out_dir - "  + out_dir
 
-    mkdir_p $targetdir
+    if !skip_nsis
+      mkdir_p $targetdir
+    end
     mkdir_p $tmpdir
     mkdir_p out_dir
 
@@ -1223,31 +1245,36 @@ namespace "device" do
       readme_line = 'File "' + readme_filename + '"'
     end
 
-    # custumize install script for application
-    install_script = File.read(script_name)
-    install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
-    install_script = install_script.gsub(/%APPNAME%/, $appname)
-    install_script = install_script.gsub(/%APPVERSION%/, $app_version)
-    install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
-    install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
-    install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
-    install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
-    install_script = install_script.gsub(/%APPICON%/, "icon.ico")
-    install_script = install_script.gsub(/%GROUP_NAME%/, $app_config["vendor"])
-    install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
-    install_script = install_script.gsub(/%LICENSE_FILE%/, license_line)
-    install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
-    install_script = install_script.gsub(/%README_FILE%/, readme_line)
-    install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
-    install_script = install_script.gsub(/%QT_VSPEC_FILES%/, ($qt_version == 4 ? 'File *.manifest' : 'File /r "platforms"'))
-    install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
-    File.open(app_script_name, "w") { |file| file.puts install_script }
+    if !skip_nsis
+      # custumize install script for application
+      install_script = File.read(script_name)
+      install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
+      install_script = install_script.gsub(/%APPNAME%/, $appname)
+      install_script = install_script.gsub(/%APPVERSION%/, $app_version)
+      install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
+      install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
+      install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
+      install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
+      install_script = install_script.gsub(/%APPICON%/, "icon.ico")
+      install_script = install_script.gsub(/%GROUP_NAME%/, $app_config["vendor"])
+      install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
+      install_script = install_script.gsub(/%LICENSE_FILE%/, license_line)
+      install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
+      install_script = install_script.gsub(/%README_FILE%/, readme_line)
+      install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
+      install_script = install_script.gsub(/%QT_VSPEC_FILES%/, ($qt_version == 4 ? 'File *.manifest' : 'File /r "platforms"'))
+      install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
+      File.open(app_script_name, "w") { |file| file.puts install_script }
+    end
 
     puts "$appname - " + $appname
 
     cp $app_icon_path, $tmpdir + "/icon.ico"
+    cp $qt_icon_path, $tmpdir + "/icon.png"
 
-    File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + "/" + $appname + "/" + $appname + ".exe") }
+    if !skip_nsis
+      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + "/" + $appname + "/" + $appname + ".exe") }
+    end
 
     chdir $tmpdir
 
@@ -1256,13 +1283,16 @@ namespace "device" do
     mv $srcdir, target_rho_dir
 
     $target_path = $tmpdir
-    Rake::Task["build:win32:deployqt"].invoke
+    if !skip_deployqt
+      Rake::Task["build:win32:deployqt"].invoke
+    end
 
-    puts "$nsis - " + $nsis
-    args = ['"' + $tmpdir + "/" + $appname + ".nsi\""]
-    puts "arg = " + args.to_s
-
-    puts Jake.run2($nsis, args, {:nowait => false} )
+    if !skip_nsis
+      puts "$nsis - " + $nsis
+      args = ['"' + $tmpdir + "/" + $appname + ".nsi\""]
+      puts "arg = " + args.to_s
+      puts Jake.run2($nsis, args, {:nowait => false} )
+    end
   end
 
   namespace "winxpe" do
@@ -1276,8 +1306,58 @@ namespace "device" do
   namespace "win32" do
     desc "Build installer for Windows"
     task :production => ["build:win32:set_release_config", "build:win32"] do
-      createWin32Production
+      createWin32Production()
     end
+
+    desc "Build Windows for production, use prebuild binaries"
+    task :production_with_prebuild_binary do
+      $prebuild_win32 = true
+      Rake::Task["device:win32:build_with_prebuild_binary"].invoke
+    end
+    task :build_with_prebuild_binary => ["build:win32:set_release_config", "build:win32:rhobundle", "config:win32:application"] do
+      require 'rhodes/containers'
+      container_path = Rhodes::Containers::get_container_path_prefix('win32', $app_config)
+      Jake.run3("rake device:win32:apply_container[#{container_path}] --trace", $app_path)
+      createWin32Production(true,false)
+    end
+
+    desc 'Creates application container. See also device:win32:apply_container.'
+    task :make_container, [:container_prefix_path] => ["build:win32:set_release_config", "build:win32"] do |t, args|
+      createWin32Production(false,true)
+
+      container_prefix_path = args[:container_prefix_path]
+
+      Dir.glob("#{container_prefix_path}*") {|f| rm_r(f)}
+      mkdir_p container_prefix_path
+
+      cd $startdir
+      rhodes_gem_paths = ([
+        'platform/wm/bin/win32/rhodes/**/rhodes.exe'
+      ].map {|p| Dir.glob(p)}).flatten
+      bin_exclude_files = [
+        'bin/tmp/*.exe',
+        'bin/tmp/*.time',
+        'bin/tmp/*.ico',
+        'bin/tmp/*.png',
+        'bin/tmp/rho/RhoBundleMap.txt',
+        'bin/tmp/rho/apps/rhoconfig.txt*',
+        'bin/tmp/rho/apps/rhofilelist.txt',
+        'bin/tmp/rho/apps/app',
+        'bin/tmp/rho/apps/public/api'
+      ]
+
+      pack_7z($app_path, ['bin'], File.join(container_prefix_path, 'application_override.7z'), bin_exclude_files)
+      pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
+    desc 'Applies application container. See also device:win32:make_container'
+    task :apply_container, [:container_prefix_path] do |t, args|
+      container_prefix_path = args[:container_prefix_path]
+
+      unpack_7z($app_path, File.join(container_prefix_path, 'application_override.7z'))
+      unpack_7z($startdir, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
   end
 end
 
