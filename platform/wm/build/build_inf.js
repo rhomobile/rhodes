@@ -244,6 +244,12 @@ function fill_registry_keys() {
 
 function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_mode,
                 rhogempath,usereruntime,include_motocaps,is_custom_config,autorun,autorun_path,is_persistent) {
+
+    var webkit_file = {
+        'out_of_process': '"OutProcessWK.exe"'                       ,
+        'in_process'    : '"WebkitPlatformDeliveryCompiledAsDLL.dll"'
+    }[webkit_mode];
+
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
     p("Provider=\""+vendor+"\"");
@@ -334,13 +340,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             p("\"eklibrary.dll\"=3");
             p("\"prtlib.dll\"=3");
             p("\"ipc_manager.dll\"=3");
-
-            if (webkit_mode == 'out_of_process') {
-                p("\"OutProcessWK.exe\"=3");
-            } else {
-                p("\"WebkitPlatformDeliveryCompiledAsDLL.dll\"=3");
-            }
-
+            p(webkit_file + "=3");
             p("\"openssl.dll\"=3");
             p("\"Ekioh.dll\"=3");
             p("\"npwtg_jsobjects.dll\"=4");
@@ -429,7 +429,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("[CopyWebKitBin]");
                 p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
                 p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
-                p("\"OutProcessWK.exe\",\"OutProcessWK.exe\",,0");
+                p(webkit_file + "," + webkit_file + ",,0");
                 p("\"openssl.dll\",\"openssl.dll\",,0");
                 p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
@@ -453,7 +453,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("[CopyWebKitBinPers]");
                 p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
                 p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
-                p("\"OutProcessWK.exe\",\"OutProcessWK.exe\",,0");
+                p(webkit_file + "," + webkit_file + ",,0");
                 p("\"openssl.dll\",\"openssl.dll\",,0");
                 p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
