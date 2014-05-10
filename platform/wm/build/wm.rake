@@ -1213,9 +1213,7 @@ namespace "device" do
     out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
     puts "out_dir - "  + out_dir
 
-    if !skip_nsis
-      mkdir_p $targetdir
-    end
+    mkdir_p $targetdir unless skip_nsis
     mkdir_p $tmpdir
     mkdir_p out_dir
 
@@ -1283,9 +1281,7 @@ namespace "device" do
     mv $srcdir, target_rho_dir
 
     $target_path = $tmpdir
-    if !skip_deployqt
-      Rake::Task["build:win32:deployqt"].invoke
-    end
+    Rake::Task["build:win32:deployqt"].invoke unless skip_deployqt
 
     if !skip_nsis
       puts "$nsis - " + $nsis
