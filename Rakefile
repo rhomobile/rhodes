@@ -1315,8 +1315,6 @@ namespace "rhohub" do
       build_flags[k] = v
     end
 
-    puts JSON.pretty_generate(build_flags)
-
     build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
 
     if (!build_id.nil?)
@@ -1336,8 +1334,6 @@ namespace "rhohub" do
     desc "Prepare for cloud build"
     task :initialize => ["rhohub:initialize"] do
       $platform_list = get_build_platforms()
-
-      puts JSON.pretty_generate($platform_list)
     end
 
     namespace :android do
