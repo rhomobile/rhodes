@@ -104,7 +104,7 @@ class BuildOutput
         message[:color] = col
         txt << col
       end
-
+      txt << '' unless txt.empty?
       txt.join($/)
     end
   end
