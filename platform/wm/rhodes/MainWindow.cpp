@@ -358,7 +358,7 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
     }
 	
 }	
-	else if(winversion == 1)
+	else if(winversion == 2)
 	{
 		//#elif defined( OS_PLATFORM_MOTCE )
 	if (m_bFullScreen)
