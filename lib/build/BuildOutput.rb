@@ -1,6 +1,6 @@
 path = File.dirname(__FILE__)
 
-files = [ 
+files = [
   "ExtendedString",
 ];
 
@@ -26,15 +26,21 @@ class BuildOutput
     def decorate_message( message, title )
       message_content = []
 
-      message_content << ' **** ' + title +'*'*(105-title.length)
+      message_content << ' **** ' + title + '*' * (105 - title.length)
 
+      out = []
+      
       if message.kind_of?(Array)
-        message_content.concat( message.map{|el| ' '*4 + el })
+        message.flatten(1).each do |line|
+          out.concat( line.split($/) )
+        end
       else
-        message_content << ' '*3 + message
+        out.concat( message.split($/) )
       end
 
-      message_content << ' ' + '*'*(110)
+      message_content.concat( out.map{|el| ' ' * 3 + el })
+
+      message_content << ' ' + '*' * (110)
 
       message_content
     end
