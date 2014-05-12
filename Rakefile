@@ -75,6 +75,7 @@ require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
 require File.join(pwd, 'lib/build/SiteChecker.rb')
 require File.join(pwd, 'lib/build/ExtendedString.rb')
 require File.join(pwd, 'lib/build/rhohub.rb')
+require File.join(pwd, 'lib/build/BuildOutput.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -567,14 +568,14 @@ def get_app_list()
   begin
     result = JSON.parse(Rhohub::App.list())
   rescue Exception => e
-    puts "could not get result"
+    puts "Could not get result #{e.inspect}"
     raise
   end
 
   result
 end
 
-def check_update_token_file(token_file, token_preamble_len, token_hash, salt)
+def check_update_token_file(token_file, token_preamble_len, token_hash, salt, check_subcription = false)
   min_check_interval = 60*60*24 # one day
 
   if !is_valid_token?(token_hash[:token])
@@ -588,31 +589,34 @@ def check_update_token_file(token_file, token_preamble_len, token_hash, salt)
 
   is_vaild = (Time.now.to_i - time > min_check_interval) ? 0 : 2
 
-  if !(token.nil? || token.empty?)
-    if (subcription.nil? || subcription.empty?) || (is_vaild < 2)
+  if !(token.nil? || token.empty?) && SiteChecker.is_available?
+    if check_subcription && ((subcription.nil? || subcription.empty?) || (is_vaild < 2))
       Rhohub.token = token
       updated = false
-      if SiteChecker.is_available?
-        puts "Trying to check API token on rhohub.com"
-        begin
-          subcription = Rhohub::Subscription.check()
-          token_hash[:ft] = subcription
-          is_vaild = 2
-          updated = true
-        rescue Exception => e
-          subcription = nil
-        end
+      puts "Downloading user subscription information"
+      begin
+        subcription = Rhohub::Subscription.check()
+        token_hash[:ft] = subcription
+        is_vaild = 2
+        updated = true
+      rescue Exception => e
+        subcription = nil
+      end
+    end
 
-        if subcription.nil?
-          $apps = get_app_list()
-          if $apps.nil?
-            token = nil
-            is_vaild = -1
-          else
-            is_vaild = 1
-            updated = true
-          end
-        end
+    if subcription.nil?
+      user_apps = nil
+      begin
+        user_apps = get_app_list()
+      rescue Exception => e
+        user_apps = nil
+      end
+      if user_apps.nil?
+        token = nil
+        is_vaild = -1
+      else
+        is_vaild = 1
+        updated = true
       end
     end
 
@@ -696,24 +700,29 @@ namespace "token" do
     # 3. check token online, reset if not valid
     result = nil
 
+    $token = nil
+
     if !$salt_generated && File.exists?($token_file)
       result = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
 
-      case check_update_token_file($token_file, $token_preamble_len, result, $salt)
+      case check_update_token_file($token_file, $token_preamble_len, result, $salt, $re_app)
       when 2
-        puts "Token and subscription are valid"
+        BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
         $subcription = result[:ft]
+        $token = result[:token]
       when 1
-        puts "Token is valid, could not check subcription"
+        BuildOutput.put_log( BuildOutput::WARNING, "Token is valid, could not check subcription", "Token check" );
+        $token = result[:token]
       when 0
-        puts "Could not check token online"
+        BuildOutput.put_log( BuildOutput::WARNING, "Could not check token online", "Token check" );
+        $token = result[:token]
       else
-        puts "RhoHub API token is not valid!"
+        BuildOutput.put_log( BuildOutput::ERROR, "RhoHub API token is not valid!", "Token check" );
       end
-
-      $token = result[:token]
-
-      Rhohub.token = $token
+      
+      if !$token.nil?
+        Rhohub.token = $token
+      end
     else
       if $salt_generated
         puts "salt file was generated, token should be invalidated"
@@ -751,25 +760,30 @@ namespace "token" do
 
     if !($token.nil? || $token.empty?)
       t_hash = {:token => $token}
-      case check_update_token_file($token_file, $token_preamble_len, t_hash, $salt)
+      case check_update_token_file($token_file, $token_preamble_len, t_hash, $salt, true)
       when 2
-        puts "Token and subscription are valid"
+        BuildOutput.note( "Token and subscription are valid", "Token check")
         $subcription = t_hash[:ft]
       when 1
-        puts "Token is valid, could not check subcription"
+        BuildOutput.warning("Token is valid, could not check subcription", "Token check")
       when 0
-        puts "Could not check token online"
+        BuildOutput.warning("Could not check token online", "Token check")
       else
-        puts "RhoHub API token is not valid!"
+        BuildOutput.error("RhoHub API token is not valid!", "Token check")
         exit 1
       end
     end
   end
 
   task :clear => [:initialize] do
+    files = [$token_file, $salt_file]
+
     begin
-      File.delete($token_file)
-      File.delete($salt_file)
+      files.each do |f_name|
+        if File.exists?(f_name)
+          File.delete(f_name)
+        end
+      end
     rescue => e
       puts "could not delete token files"
       raise
@@ -787,14 +801,13 @@ namespace "token" do
       if File.exists?(token_source)
         tok = File.read(token_source)
       else
-        puts "In order to use Rhodes framework you should set RhoHub API token for it.
+        BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you should set RhoHub API token for it.
 Register at http://rhohub.com and get your API token there.
 It is located in your profile (rightmost toolbar item).
 Inside your profile configuration select 'API token' menu item. Then run command
 
-`rake token:set[<Your_RhoHub_API_token>]`
-
-You can also paste your RhoHub token right now (or just press enter to stop build):"
+`rake token:set[<Your_RhoHub_API_token>]`")
+        puts "You can also paste your RhoHub token right now (or just press enter to stop build):"
         tok = STDIN.gets.chomp
       end
 
@@ -802,16 +815,16 @@ You can also paste your RhoHub token right now (or just press enter to stop buil
         exit 1
       else
         t_hash = {:token => tok}
-        case check_update_token_file($token_file, $token_preamble_len, t_hash, $salt)
+        case check_update_token_file($token_file, $token_preamble_len, t_hash, $salt, true)
         when 2
           puts "Token and subscription are valid"
-          $subcription = result[:ft]
+          $subcription = t_hash[:ft]
         when 1
           puts "Token is valid, could not check subcription"
         when 0
           puts "Unable to check your token online. It would be tested during next run"
         else
-          puts "RhoHub API token is not valid!"
+          BuildOutput.error("RhoHub API token is not valid!","Token check")
           exit 1
         end
       end
@@ -1045,7 +1058,9 @@ end
 
 def check_rhohub_result(result)
   if !(result["text"].nil?)
-    raise Exception.new("Error running build: #{result["text"]}")
+    e_msg = "Error running build: #{result["text"]}"
+    BuildOutput.error(e_msg)
+    raise Exception.new(e_msg)
   end
 end
 
@@ -1433,9 +1448,16 @@ namespace "config" do
     if !($proxy.nil? || $proxy.empty?)
       puts "Using proxy: #{$proxy}"
     end
+
+
+    $re_app = ($app_config["app_type"] == 'rhoelements') || !($app_config['capabilities'].index('shared_runtime').nil?)
   end
 
   task :common => ["token:setup"] do
+    if $app_config && !$app_config["sdk"].nil?
+      BuildOutput.note('To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.','You use sdk parameter in build.yml')
+    end
+
     $skip_build_rhodes_main = false
     $skip_build_extensions = false
     $skip_build_xmls = false
@@ -1515,9 +1537,21 @@ namespace "config" do
     end
     application_build_configs = {}
 
-    if $app_config["app_type"] == 'rhoelements'
+    if $re_app
       if !check_subscription_re($subcription)
-        raise Exception.new("Could not build licensed features. In order to use rhoelements you should have paid subcription!")
+        if $subcription.nil?
+          BuildOutput.error([
+            'Subscription infromation is not downloaded. Please connect to internet',
+            'and run build command again.'],
+            'Could not build licensed features.')
+        else
+          BuildOutput.error([
+            'You have free subcription on rhohub.com. You need to buy paid subcription.',
+            'Please go to https://app.rhohub.com/, log in into your account, go to profile.',
+            'Select "change plan" menu item and select paid subscription plan.'],
+            'Could not build licensed features.')
+        end
+        raise Exception.new("Could not build licensed features")
       end
     end
 
@@ -1699,6 +1733,14 @@ namespace "config" do
       end
     end
 
+
+    if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
+      BuildOutput.warning([
+        ' The following features are only available in RhoElements v2 and above:',
+        $rhoelements_features.join($/),
+        ' For more information go to http://www.motorolasolutions.com/rhoelements '])
+    end
+
     if $current_platform == "win32" && $winxpe_build
       $app_config['capabilities'] << 'winxpe'
     end
@@ -1744,10 +1786,10 @@ namespace "config" do
     puts '%%%_%%% $js_application = '+$js_application.to_s
 
     if !$js_application && !Dir.exists?(File.join($app_path, "app"))
-      puts '********* ERROR ************************************************************************'
-      puts "Add javascript_application:true to build.yml, since application does not contain app folder."
-      puts "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
-      puts '****************************************************************************************'
+      BuildOutput.error([
+        "Add javascript_application:true to build.yml, since application does not contain app folder.",
+        "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
+      ]);
       exit(1)
     end
 
@@ -2155,6 +2197,14 @@ def init_extensions(dest, mode = "")
 
       add_extension(extpath, dest) if !dest.nil? && mode == ""
     end
+  end
+
+
+  if ($ruby_only_extensions_list)
+    BuildOutput.warning([
+      'The following extensions do not have JavaScript API: ', 
+      $ruby_only_extensions_list.join(', '), 
+      'Use RMS 4.0 extensions to provide JavaScript API'])
   end
 
   return ext_xmls_paths if mode == "get_ext_xml_paths"
@@ -2784,6 +2834,13 @@ namespace "build" do
         $minification_failed_list = [] if !$minification_failed_list
         $minification_failed_list << filename
         #exit 1
+      end
+
+      if ($minification_failed_list)
+        BuildOutput.warning([
+            ' The JavaScript or CSS files failed to minify:',
+            $minification_failed_list.join($/),
+            ' See log for details '])
       end
 
       fc.puts(output)
@@ -3591,37 +3648,5 @@ end
 #------------------------------------------------------------------------
 
 at_exit do
-  if $app_config && !$app_config["sdk"].nil?
-    puts '********* NOTE: You use sdk parameter in build.yml !****************'
-    puts 'To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.'
-    puts '************************************************************************'
-  end
-
-  if ($minification_failed_list)
-    puts '********* WARNING ************************************************************************'
-    puts ' The JavaScript or CSS files failed to minify:'
-    puts $minification_failed_list
-    puts ' See log for details '
-    puts '**************************************************************************************'
-
-  end
-
-  if ($ruby_only_extensions_list)
-
-    puts '********* WARNING *****************************************************************************************************'
-    puts 'The following extensions do not have JavaScript API: '
-    puts $ruby_only_extensions_list
-    puts 'Use RMS 4.0 extensions to provide JavaScript API'
-    puts '***********************************************************************************************************************'
-
-  end
-
-  if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
-    puts '********* WARNING ************************************************************************'
-    puts ' The following features are only available in RhoElements v2 and above:'
-    puts $rhoelements_features
-    puts ' For more information go to http://www.motorolasolutions.com/rhoelements '
-    puts '**************************************************************************************'
-  end
-
+  puts BuildOutput.getLogText
 end

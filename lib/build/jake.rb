@@ -648,6 +648,44 @@ class Jake
     return file_map
   end
 
+  def self.unzip(source_zip, dest_folder)
+
+    if true#RUBY_PLATFORM =~ /(win|w)32$/
+      begin
+        require 'rubygems'
+        require 'zip/zip'
+        require 'find'
+        require 'fileutils'
+        include FileUtils
+
+        Zip::ZipFile.open(file_path) { |zip_file|
+          last_path = ""
+          zip_file.each { |f|
+            f_path=File.join(dest_folder, f.name)
+            d_path=File.dirname(f_path)
+            if last_path != d_path && !File.exists(d_path)
+              FileUtils.mkdir_p()
+              last_path = d_path
+            end
+            zip_file.extract(f, f_path) 
+          }
+        }
+      rescue Exception => e
+        puts "ERROR : #{e}"
+        puts 'Require "rubyzip" gem for make zip file !'
+        puts 'Install gem by "gem install rubyzip"'
+      end
+    else
+      require 'fileutils'
+
+      args = []
+      args << source_zip
+      args << "-d"
+      args << dest_folder
+      run("unzip", args, temp_dir)
+    end
+  end
+
   def self.zip_upgrade_bundle(folder_path, zip_file_path)
 
       File.delete(zip_file_path) if File.exists?(zip_file_path)
