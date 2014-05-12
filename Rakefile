@@ -1079,34 +1079,53 @@ def check_rhohub_result(result)
   end
 end
 
+
+TIME_FORMAT = '%02d:%02d:%02d'
+
 def wait_and_get_download_link(app_id, build_id, proxy)
   app_request = {:app_id => app_id, :id => build_id}
   last_stat = ""
   status = ""
 
-  print("Application build progress: ")
+  puts("Application build progress: \n")
+
+  started = Time.now
+
+  spinner = ['|', '/', '-', '\\'].cycle
 
   begin
     result = JSON.parse(Rhohub::Build.show(app_request))
 
     message = status = result["status"]
+    desc = ''
 
     case status
     when "queued"
+      desc = "Your build request is in the build queue. Please wait!"
       sleep(2)
     when "started"
+      desc = "Your application is building right now. Please wait.."
       sleep(0.5)
     when "completed"
-      message = "ready\n".green
+      desc = "Build is ready to be downloaded."
+      message = "ready".green
     when "failed"
-      message = "error!\n".red
+      desc = "Build failed."
+      message = "error!".red
     end
 
-    if last_stat != status
-      print (last_stat.empty? ? "" : ", ") + message
-      last_stat = status
-    end
-  end while !%w[completed failed].include?(status)
+    build_complete = %w[completed failed].include?(status)
+
+    seconds = (Time.now - started).floor
+
+    hours, seconds = seconds.divmod(3600)
+    minutes, seconds = seconds.divmod(60)
+
+    out = sprintf TIME_FORMAT, hours, minutes, seconds
+    print " \r[#{out}] #{spinner.next} Current status is: #{message.bold}. #{desc}" + ' ' * 20 
+
+  end while !build_complete
+  puts ""
 
   return (status == "completed"), result["download_link"]
 end
