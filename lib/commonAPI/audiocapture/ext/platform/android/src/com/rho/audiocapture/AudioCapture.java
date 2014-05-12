@@ -17,6 +17,7 @@ import android.os.Environment;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.extmanager.AbstractRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
@@ -33,9 +34,9 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     
     private Map<String, String> mActualPropertyMap = new HashMap<String, String>();
     
-     private boolean stopApi=false;
-    
     private AudioCaptureExt ext=null;
+    
+    private boolean stopApi=false;
     private void initWithDefaultValues()
     {
     	ext=new AudioCaptureExt();
@@ -113,22 +114,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	Map<String, Object> props = new HashMap<String, Object>();
         for (String name: arrayofNames)
         {
-        /*	if(name.equalsIgnoreCase("maxDuration"))
-        	{
-        		try{
-        		props.put(name,Integer.parseInt(mActualPropertyMap.get(name)) );
-        		}
-        		catch(NumberFormatException e)
-        		{
-        			System.out.println("getProperties()..error="+e.getMessage());
-        			Logger.E(TAG, "Error in getProperties= "+e.getMessage());
-        			props.put(name,0 );
-        		}
-        	}
-        	else
-                props.put(name,mActualPropertyMap.get(name) );
-                */
-                props.put(name,mActualPropertyMap.get(name) );
+        	props.put(name,mActualPropertyMap.get(name) );
         }
         result.set(props);
     }
@@ -136,22 +122,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     @Override
     public void getProperty(String propertyName, IMethodResult result) {
     	
-    	//super.getProperty(propertyName, result);
-    	
-    /*	try{
-    	if(propertyName.equalsIgnoreCase("maxDuration"))
-    		result.set(Integer.parseInt(mActualPropertyMap.get(propertyName)));
-    	else
     	result.set(mActualPropertyMap.get(propertyName));
-    	}
-    	catch(NumberFormatException e)
-    	{
-    		Logger.E(TAG, "Error getProperty="+e.getMessage());
-    		result.set(0);
-    	}*/
     	
-    	
-    	result.set(mActualPropertyMap.get(propertyName));
     }
     
     @Override
@@ -207,8 +179,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
 			catch(NumberFormatException e)
 			{
 				x=0;
-				Logger.E(TAG, "Error setProperties= "+e.getMessage());
 				System.out.println("error="+e.getMessage());
+				Logger.E(TAG, "Error setProperties= "+e.getMessage());
 				}
     		if(x<1000)
     			mActualPropertyMap.put("maxDuration", "20000");
@@ -323,7 +295,9 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         } else if (encoderProp.equalsIgnoreCase(IAudioCaptureSingleton.ENCODER_AMR_WB)) {
             encoder = MediaRecorder.AudioEncoder.AMR_WB;
         } else {
-            throw new RuntimeException ("Unknown encoder: " + encoderProp);
+            //throw new RuntimeException ("Unknown encoder: " + encoderProp);
+        	 encoder = MediaRecorder.AudioEncoder.AAC;//return the default
+        	
         }
         return encoder;
     }
@@ -337,6 +311,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	catch(Exception e)
     	{
     		System.out.println("OMG.error="+e.getMessage());
+    		Logger.E(TAG, "Error="+e.getMessage());
     	}
     	
         System.out.println("maxDurationProp="+maxDurationProp);
@@ -360,7 +335,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         return maxD;
         
     }
-     private static boolean IsPathContainExtension(String path)
+    
+    private static boolean IsPathContainExtension(String path)
     {
     	String substr="";
     	if(!path.contains("."))
@@ -385,13 +361,16 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	
     	
     	
+    }
+    
     private static int getOutputFormat(String path,int audioEncoder) {
         
         Logger.T(TAG, "Output format for: " + path);
+        System.out.println("path="+path+"audioEncoder="+audioEncoder);
         String ext ="";
-       // if(path.contains("."))
         if(IsPathContainExtension(path))
         { 
+        	 System.out.println("Inside DOT");
         	File file = new File(path);
         	String filename = file.getName();
         	ext= filename.substring(filename.lastIndexOf('.'));
@@ -406,7 +385,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         else {
         	switch(audioEncoder)
         	{
-        	case MediaRecorder.AudioEncoder.AAC:System.out.println("Inside-AAC"); return MediaRecorder.OutputFormat.MPEG_4;
+        	case MediaRecorder.AudioEncoder.AAC:System.out.println("Inside-AAC"); System.out.println("getOutputFormat=AAC");return MediaRecorder.OutputFormat.MPEG_4;
         	case MediaRecorder.AudioEncoder.AMR_NB:System.out.println("Inside-AMR_NB");return MediaRecorder.OutputFormat.THREE_GPP;
         	case MediaRecorder.AudioEncoder.AMR_WB:System.out.println("Inside-AMR_WB");return MediaRecorder.OutputFormat.THREE_GPP;
         	 default:                        System.out.println("Inside-...");return MediaRecorder.OutputFormat.MPEG_4;
@@ -437,6 +416,10 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	}
     	
     }
+
+    
+    
+    
     @Override
     public synchronized void start(Map<String, String> props, IMethodResult res) {
     	
@@ -486,6 +469,46 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
                 return;
             }
            
+            if(path.contains("/"))
+            {
+            	String str=path.substring(0, path.lastIndexOf("/"));
+            	File file=new File(str);
+            	if(! file.isDirectory() )
+            	{
+            		Map<String, Object> tempprops = new HashMap<String, Object>();
+                    tempprops.put("status", "error");
+                    tempprops.put("message", "file directory does not exist");
+                    tempprops.put("fileName", "");
+                    if(storedMethodResult!=null)
+                    	{
+                    		storedMethodResult.set(tempprops);
+                    		System.out.println("Stop storedMethodResult="+storedMethodResult);
+                    	}
+                    storedMethodResult=null;
+                    return;
+            	}
+            	if(! file.canWrite() )
+            	{
+            		Map<String, Object> tempprops = new HashMap<String, Object>();
+                    tempprops.put("status", "error");
+                    tempprops.put("message", "file write permission is NOT there");
+                    tempprops.put("fileName", "");
+                    if(storedMethodResult!=null)
+                    	{
+                    		storedMethodResult.set(tempprops);
+                    		System.out.println("Stop storedMethodResult="+storedMethodResult);
+                    	}
+                    storedMethodResult=null;
+                    return;
+            	}
+            		
+            }
+            
+            
+            
+            
+            
+            
             System.out.println("Start->4");
 
             int audioSource = getAudioSource(actualPropertyMap);
@@ -501,8 +524,10 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             			  path=Environment.getExternalStorageDirectory().getAbsolutePath().concat("/").concat(path);
             		}
             
-            //if(!(path.contains(".")))
-             if(!IsPathContainExtension(path))
+           // if(!(path.contains(".")))
+            
+            System.out.println("IsPathContainExtension(path)="+IsPathContainExtension(path));
+            if(!IsPathContainExtension(path))
             {
             		switch(outputFormat)
             		{
@@ -552,6 +577,11 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             			//cancel(null);
             			stopNsend("error");
             			break;
+            			
+            		case MediaRecorder.MEDIA_ERROR_SERVER_DIED:
+            			
+            			stopNsend("MediaServerDied");
+            			break;
             		}
             	}
             });
@@ -586,9 +616,13 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             System.out.println("Start->16");
         } catch (IllegalStateException ex) {
         	System.out.println("Start->17,error="+ex.getMessage());
+        	Logger.E(TAG, ex.getMessage());
+        	sendException(ex);
             throw new RuntimeException(ex);
         } catch (IOException ex) {
-        	System.out.println("Start->18");
+        	System.out.println("Start->18 ,ex="+ex.getMessage());
+        	Logger.E(TAG, ex.getMessage());
+        	sendException(ex);
             throw new RuntimeException(ex);
         }
        
@@ -596,8 +630,12 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
 
     @Override
     public synchronized void stop(IMethodResult res) {
+    	
+    	if(storedMethodResult==null)
+    		return;//start is NOT called....Hence returning
+    	
     	stopApi=true;
-    	System.out.println("Audio Capture Stop is called");
+    	System.out.println("Audio Capture Stop is called,stopApi="+stopApi);
         try {
             releaseRecorder();
         } finally {
@@ -610,6 +648,9 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     @Override
     public synchronized void cancel(IMethodResult res) {
     	System.out.println("Audio Capture Cancel is called");
+    	if(storedMethodResult==null)
+    		return;//start is NOT called....Hence returning
+    	
         try {
             releaseRecorder();
         } finally {
@@ -668,6 +709,58 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	}
             
     	}
+    	
+    	else if(status.equalsIgnoreCase("MediaServerDied"))
+    	{
+    		System.out.println("Media Server Died");
+            try {
+                releaseRecorder();
+            } finally {
+                //String path = getActualPropertyMap().get("fileName");
+                if (filepath != null && !filepath.isEmpty()) {
+									                    File file = new File(filepath);
+									                    if (file.exists()) {
+									                        				file.delete();
+									                    					}
+                									}
+                
+    		tempprops.put("status", "error");
+    		tempprops.put("message", "Media Server Died");
+    		tempprops.put("fileName", "");
+    	}
+    	}
+    	 if(storedMethodResult!=null)
+      	{
+      		storedMethodResult.set(tempprops);
+      		System.out.println("stopNsend storedMethodResult="+storedMethodResult);
+      	}
+      storedMethodResult=null;
+    	
+    }
+    
+    
+    private synchronized void sendException(Exception ex )
+    {
+    	
+    	 Map<String, Object> tempprops = new HashMap<String, Object>();
+        {
+        	try {
+                releaseRecorder();
+            } finally {
+                //String path = getActualPropertyMap().get("fileName");
+                if (filepath != null && !filepath.isEmpty()) {
+									                    File file = new File(filepath);
+									                    if (file.exists()) {
+									                        				file.delete();
+									                    					}
+                									}
+                
+    		tempprops.put("status", "error");
+    		tempprops.put("message", ex.getMessage());
+    		tempprops.put("fileName", "");
+    	}
+            
+    	}
     	 if(storedMethodResult!=null)
       	{
       		storedMethodResult.set(tempprops);
@@ -683,7 +776,7 @@ class AudioCaptureExt extends AbstractRhoExtension
 	public boolean onBeforeNavigate(IRhoExtManager extManager, String url,
 			IRhoWebView ext, boolean res) {
 		// TODO Auto-generated method stub
-	System.out.println("AbstractRhoExtension..onBeforeNavigate,stopApi="+stopApi);
+		System.out.println("AbstractRhoExtension..onBeforeNavigate,stopApi="+stopApi);
 		if(stopApi==false)
 		cancel(null);
 		
