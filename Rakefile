@@ -584,6 +584,8 @@ def check_update_token_file(token_file, token_preamble_len, token_hash, salt, ch
   end
 
   token = token_hash[:token]
+  Rhohub.token = token
+
   subcription = token_hash[:ft]
   time = (token_hash[:lt].nil?) ? 0 : token_hash[:lt]
 
@@ -591,7 +593,6 @@ def check_update_token_file(token_file, token_preamble_len, token_hash, salt, ch
 
   if !(token.nil? || token.empty?) && SiteChecker.is_available?
     if check_subcription && ((subcription.nil? || subcription.empty?) || (is_vaild < 2))
-      Rhohub.token = token
       updated = false
       puts "Downloading user subscription information"
       begin
@@ -707,7 +708,7 @@ namespace "token" do
 
       case check_update_token_file($token_file, $token_preamble_len, result, $salt, $re_app)
       when 2
-        BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
+        #BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
         $subcription = result[:ft]
         $token = result[:token]
       when 1
@@ -728,6 +729,25 @@ namespace "token" do
         puts "salt file was generated, token should be invalidated"
       else
         puts "token file not found, generating new one"
+      end
+    end
+
+    if $token.nil? || $token.empty?
+      token_source = File.join($app_path,'token.txt')
+
+      if File.exists?(token_source)
+        begin
+          tok = File.read(token_source)
+          File.delete(token_source)
+        rescue Exception => e
+          puts "Token file exception #{e.inspect}"
+        end
+
+        result = {:token => tok}
+        if check_update_token_file($token_file, $token_preamble_len, result, $salt, $re_app) >= 0
+          $subcription = result[:ft]
+          $token = result[:token]
+        end
       end
     end
   end
@@ -754,7 +774,8 @@ namespace "token" do
     if is_valid_token?(args[:token])
       $token = args[:token]
     else
-      puts "invalid token format"
+      BuildOutput.error(" Invalid RhoHub API token format!")
+      exit 1
       $token = ''
     end
 
@@ -796,21 +817,15 @@ namespace "token" do
     #   b. check token inline, exit if not valid
 
     if $token.nil? || $token.empty?
-      token_source = File.join($app_path,'token.txt')
-
-      if File.exists?(token_source)
-        tok = File.read(token_source)
-      else
-        BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you should set RhoHub API token for it.
+      BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you should set RhoHub API token for it.
 Register at http://rhohub.com and get your API token there.
 It is located in your profile (rightmost toolbar item).
 Inside your profile configuration select 'API token' menu item. Then run command
 
 `rake token:set[<Your_RhoHub_API_token>]`")
-        puts "You can also paste your RhoHub token right now (or just press enter to stop build):"
-        tok = STDIN.gets.chomp
-      end
-
+      puts "You can also paste your RhoHub token right now (or just press enter to stop build):"
+      tok = STDIN.gets.chomp
+    
       if tok.empty?
         exit 1
       else
@@ -820,11 +835,11 @@ Inside your profile configuration select 'API token' menu item. Then run command
           puts "Token and subscription are valid"
           $subcription = t_hash[:ft]
         when 1
-          puts "Token is valid, could not check subcription"
+          BuildOutput.put_log("Token is valid, could not check subcription", "Token check")
         when 0
-          puts "Unable to check your token online. It would be tested during next run"
+          BuildOutput.put_log("Could not check token online", "Token check")
         else
-          BuildOutput.error("RhoHub API token is not valid!","Token check")
+          BuildOutput.error("RhoHub API token is not valid!", "Token check")
           exit 1
         end
       end
@@ -1379,8 +1394,6 @@ end
 
 namespace "config" do
   task :initialize do
-    puts "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
-
     $binextensions = []
     $app_extensions_list = {}
 
@@ -1454,6 +1467,8 @@ namespace "config" do
   end
 
   task :common => ["token:setup"] do
+    puts "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
+
     if $app_config && !$app_config["sdk"].nil?
       BuildOutput.note('To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.','You use sdk parameter in build.yml')
     end
