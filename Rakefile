@@ -3727,5 +3727,5 @@ end
 #------------------------------------------------------------------------
 
 at_exit do
-  puts BuildOutput.getLogText
+  print BuildOutput.getLogText
 end
