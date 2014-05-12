@@ -26,15 +26,15 @@ class BuildOutput
     def decorate_message( message, title )
       message_content = []
 
-      message_content << '  **** ' + title +'*'*(105-title.length)
+      message_content << ' **** ' + title +'*'*(105-title.length)
 
       if message.kind_of?(Array)
         message_content.concat( message.map{|el| ' '*4 + el })
       else
-        message_content << ' '*4 + message
+        message_content << ' '*3 + message
       end
 
-      message_content << '  *'*(110)
+      message_content << ' ' + '*'*(110)
 
       message_content
     end

@@ -1450,7 +1450,7 @@ namespace "config" do
     end
 
 
-    $re_app = ($app_config["app_type"] == 'rhoelements') || !($app_config['capabilities'].index('shared_runtime').nil?)
+    $re_app = ($app_config["app_type"] == 'rhoelements') || !($app_config['capabilities'].nil? || $app_config['capabilities'].index('shared_runtime').nil?)
   end
 
   task :common => ["token:setup"] do
