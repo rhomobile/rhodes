@@ -1616,24 +1616,6 @@ namespace "config" do
     end
     application_build_configs = {}
 
-    if $re_app
-      if !check_subscription_re($subcription)
-        if $subcription.nil?
-          BuildOutput.error([
-            'Subscription infromation is not downloaded. Please connect to internet',
-            'and run build command again.'],
-            'Could not build licensed features.')
-        else
-          BuildOutput.error([
-            'You have free subcription on rhohub.com. You need to buy paid subcription.',
-            'Please go to https://app.rhohub.com/, log in into your account, go to profile.',
-            'Select "change plan" menu item and select paid subscription plan.'],
-            'Could not build licensed features.')
-        end
-        raise Exception.new("Could not build licensed features")
-      end
-    end
-
     #Process rhoelements settings
     if $current_platform == "wm" || $current_platform == "android"
       if $app_config["app_type"] == 'rhoelements'
@@ -1740,52 +1722,52 @@ namespace "config" do
     end
     $application_build_configs = application_build_configs
     #check for rhoelements gem
-    $rhoelements_features = ""
+    $rhoelements_features = []
     if $app_config['extensions'].index('barcode')
       #$app_config['extensions'].delete('barcode')
-      $rhoelements_features += "- Barcode extension\n"
+      $rhoelements_features << "- Barcode extension"
     end
     if $app_config['extensions'].index('indicators')
-      $rhoelements_features += "- Indicators extension\n"
+      $rhoelements_features << "- Indicators extension"
     end
     if $app_config['extensions'].index('hardwarekeys')
-      $rhoelements_features += "- HardwareKeys extension\n"
+      $rhoelements_features << "- HardwareKeys extension"
     end
     if $app_config['extensions'].index('cardreader')
-      $rhoelements_features += "- CardReader extension\n"
+      $rhoelements_features << "- CardReader extension"
     end
 
     if $app_config['extensions'].index('nfc')
       #$app_config['extensions'].delete('nfc')
-      $rhoelements_features += "- NFC extension\n"
+      $rhoelements_features << "- NFC extension"
     end
     #if $app_config['extensions'].index('audiocapture')
     #    #$app_config['extensions'].delete('audiocapture')
-    #    $rhoelements_features += "- Audio Capture\n"
+    #    $rhoelements_features << "- Audio Capture"
     #end
     if $app_config['extensions'].index('signature')
-      $rhoelements_features += "- Signature Capture\n"
+      $rhoelements_features << "- Signature Capture"
     end
 
     if $current_platform == "wm"
-      $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
+      $rhoelements_features << "- Windows Mobile/Windows CE platform support"
     end
 
     if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
       #$application_build_configs.delete('encrypt_database')
-      $rhoelements_features += "- Database encryption\n"
+      $rhoelements_features << "- Database encryption"
     end
 
     if $app_config["capabilities"].index("motorola")
-      $rhoelements_features += "- Motorola device capabilities\n"
+      $rhoelements_features << "- Motorola device capabilities"
     end
 
     if $app_config['extensions'].index('webkit-browser') || $app_config['capabilities'].index('webkit_browser')
-      $rhoelements_features += "- Motorola WebKit Browser\n"
+      $rhoelements_features << "- Motorola WebKit Browser"
     end
 
     if $app_config['extensions'].index('rho-javascript')
-      $rhoelements_features += "- Javascript API for device capabilities\n"
+      $rhoelements_features << "- Javascript API for device capabilities"
     end
 
     if $app_config["capabilities"].index("shared_runtime") && File.exist?(File.join($app_path, "license.yml"))
@@ -1797,27 +1779,49 @@ namespace "config" do
       end
     end
 
+    if $re_app || $rhoelements_features.length() > 0
+      if !check_subscription_re($subcription)
+        if $subcription.nil?
+          BuildOutput.error([
+            'Subscription infromation is not downloaded. Please connect to internet and run build command again.'],
+            'Could not build licensed features.')
+        else
+          msg = ['You have free subcription on rhohub.com. RhoElements featuers are available only for paid accounts.']
+          if $rhoelements_features.length() > 0
+            msg.concat(['The following features are only available in RhoElements v2 and above:',
+            $rhoelements_features,
+            'For more information go to http://www.motorolasolutions.com/rhoelements '])
+          end
+          msg.concat(
+            ['In order to upgrade your account please log in https://app.rhohub.com/',
+            'Select "change plan" menu item in your profile settings.'])
+          BuildOutput.error(msg, 'Could not build licensed features.')
+        end
+        raise Exception.new("Could not build licensed features")
+      end
+    end
+
     if $rhoelements_features.length() > 0
       #check for RhoElements gem and license
       if  !$app_config['re_buildstub']
         begin
           require "rhoelements"
 
-          $rhoelements_features = ""
+          $rhoelements_features = []
 
         rescue Exception => e
         end
       else
-        $rhoelements_features = ""        
+        $rhoelements_features = []      
       end
     end
 
 
     if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
       BuildOutput.warning([
-        ' The following features are only available in RhoElements v2 and above:',
-        $rhoelements_features.join($/),
-        ' For more information go to http://www.motorolasolutions.com/rhoelements '])
+        'The following features are only available in RhoElements v2 and above:',
+        $rhoelements_features,
+        'For more information go to http://www.motorolasolutions.com/rhoelements '])
     end
 
     if $current_platform == "win32" && $winxpe_build
@@ -2918,7 +2922,7 @@ namespace "build" do
       if ($minification_failed_list)
         BuildOutput.warning([
             ' The JavaScript or CSS files failed to minify:',
-            $minification_failed_list.join($/),
+            $minification_failed_list,
             ' See log for details '])
       end
 
