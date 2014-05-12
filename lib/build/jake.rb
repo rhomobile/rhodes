@@ -650,20 +650,20 @@ class Jake
 
   def self.unzip(source_zip, dest_folder)
 
-    if true#RUBY_PLATFORM =~ /(win|w)32$/
+    if RUBY_PLATFORM =~ /(win|w)32$/
       begin
         require 'rubygems'
-        require 'zip/zip'
+        require 'zip'
         require 'find'
         require 'fileutils'
         include FileUtils
 
-        Zip::ZipFile.open(file_path) { |zip_file|
+        Zip::File.open(source_zip) { |zip_file|
           last_path = ""
           zip_file.each { |f|
             f_path=File.join(dest_folder, f.name)
             d_path=File.dirname(f_path)
-            if last_path != d_path && !File.exists(d_path)
+            if last_path != d_path && !File.exists?(d_path)
               FileUtils.mkdir_p()
               last_path = d_path
             end
@@ -682,7 +682,7 @@ class Jake
       args << source_zip
       args << "-d"
       args << dest_folder
-      run("unzip", args, temp_dir)
+      run("unzip", args, dest_folder)
     end
   end
 

@@ -1156,7 +1156,8 @@ namespace "rhohub" do
     result = Jake.run2("git",%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
 
     if result.nil? || result.empty?
-      raise Exception.new("Current project folder #{$app_path} is not versioned by git")
+      BuildOutput.error("Current project folder #{$app_path} is not versioned by git", "Rhohub build")
+      raise Exception.new("Not versioned by git")
     end
 
     user_proj = rhohub_git_match(result)
@@ -1164,18 +1165,23 @@ namespace "rhohub" do
     if !user_proj.empty?
       puts "RhoHub User: #{user_proj[:user]}, application: #{user_proj[:app]}"
     else
-      raise Exception.new("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by rhohub cloud build system")
+      BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by rhohub cloud build system", "Rhohub build")
+      raise Exception.new("Not versioned on github")
     end
 
     #get app list
     $apps = get_app_list() unless !$apps.nil?
 
     if $apps.nil?
+      BuildOutput.error("Could not get rhohub project list. Check your internet connection and proxy settings.", "Rhohub build")
+      
       raise Exception.new("Could not get rhohub project list")
     end
 
     if $apps.empty?
-      raise Exception.new("You do not have any RhoHub projects, please create progect first in order to use cloud build system")
+      BuildOutput.error("You do not have any RhoHub projects, please create progect first in order to use cloud build system", "Rhohub build")
+     
+      raise Exception.new("Empty project list")
     end
 
     $apps.each do |item|
@@ -1190,9 +1196,22 @@ namespace "rhohub" do
     end
     $rhohub_app_id = $rhohub_app["id"]
 
+    if $app_path.empty? 
+      BuildOutput.error("Could not run cloud build, app_path is not set", "Rhohub build")
+      exit 1
+    end
+
     $rhohub_home = File.join($app_path, 'rhohub')
     if !File.exist?($rhohub_home)
       FileUtils::mkdir_p $rhohub_home
+    end
+    $rhohub_temp = File.join($rhohub_home, 'temp')
+    if !File.exist?($rhohub_temp)
+      FileUtils::mkdir_p $rhohub_temp
+    end
+    $rhohub_bin = File.join($app_path, 'bin')
+    if !File.exist?($rhohub_bin)
+      FileUtils::mkdir_p $rhohub_bin
     end
   end
 
@@ -1213,6 +1232,8 @@ namespace "rhohub" do
 
   desc "Download build into app\\bin folder"
   task :download, [:build_id] => [:initialize] do |t, args|
+    FileUtils.rm_rf(Dir.glob(File.join($rhohub_temp,'*')))
+
     builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
 
     if !builds.empty?
@@ -1221,11 +1242,17 @@ namespace "rhohub" do
 
       if build_id.nil? || build_id.empty?
         result = builds.max_by{|l| l["id"].to_i}
-        build_id = result["id"]
+        build_id = result["id"].to_i
         puts "Build id is not set, downloading latest one (#{build_id})"
         #builds.sort{|a, b| b["id"]<=>a["id"]}.first
       else
         build_id = args.build_id.to_i
+      end
+
+      if build_id <= 0
+        if build_id.abs < builds.length
+          build_id = builds[(build_id).abs]["id"].to_i
+        end
       end
 
       build_hash = builds.find {|f| f["id"] == build_id }
@@ -1235,7 +1262,25 @@ namespace "rhohub" do
 
         result = http_get(link, $proxy, $rhohub_home, true)
 
-        puts "Check #{result}" unless result.nil?
+        if !result.nil?
+          Jake.unzip(result, $rhohub_temp)
+
+          dirs = Dir.entries($rhohub_temp).select {|entry| File.directory? File.join($rhohub_temp,entry) and !(entry =='.' || entry == '..') }
+          
+          dirs.each do |dir|
+            puts "Removing previous application from bin folder"
+            FileUtils.rm_rf(Dir.glob(File.join($rhohub_bin,dir)))
+          end
+
+          if dirs.length > 0
+            FileUtils.cp_r File.join($rhohub_temp,'.'), $rhohub_bin
+
+            dest = File.join($rhohub_bin, dirs.first)
+            puts "Check #{dest} directory"
+          end
+        else
+          puts "Could not get any result"
+        end
       else
         str = build_id.to_s
         match = builds.collect{ |h| { :id => h["id"], :dist => distance(str, h["id"].to_s) } }.min_by{|a| a[:dist]}
@@ -1270,6 +1315,8 @@ namespace "rhohub" do
       build_flags[k] = v
     end
 
+    puts JSON.pretty_generate(build_flags)
+
     build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
 
     if (!build_id.nil?)
@@ -1289,6 +1336,8 @@ namespace "rhohub" do
     desc "Prepare for cloud build"
     task :initialize => ["rhohub:initialize"] do
       $platform_list = get_build_platforms()
+
+      puts JSON.pretty_generate($platform_list)
     end
 
     namespace :android do
