@@ -22,6 +22,8 @@ extern const char* rho_rhodesapp_getblobsdirpath();
 
 - (void) startCommand {
     
+    NSLog(@"$$$ AudioCapture.start");
+    
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     NSError *err = nil;
     [audioSession setCategory :AVAudioSessionCategoryPlayAndRecord error:&err];
@@ -157,6 +159,12 @@ extern const char* rho_rhodesapp_getblobsdirpath();
 
 
 - (void) fireCallback:(NSString*)status param_name:(NSString*)param_name param_value:(NSString*)param_value {
+    
+    if (param_name != nil) {
+        NSLog(@"$$$ AudioCapture. CALLBACK %@, %@, %@", status, param_name, param_value);
+    }
+    
+    
     if (callback == nil) {
         return;
     }
@@ -320,6 +328,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     }];
     
     dispatch_release(queue);
+    return YES;
 }
 
 
@@ -376,6 +385,10 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         }
     }
     
+    if (dur < 1000) {
+        dur = 20000;
+    }
+    
     return dur;
 }
 
@@ -422,6 +435,20 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     NSRange range = [name rangeOfString:@"/"];
     if (range.location != NSNotFound ) {
         //full path
+        NSRange area;
+        if ([name length] >= 4) {
+            area.location = [name length] - 4;
+        }
+        else {
+            area.location = 0;
+        }
+        
+        area.length = [name length] - area.location;
+        range = [name rangeOfString:@".wav" options:NSCaseInsensitiveSearch range:area];
+        if (range.location != NSNotFound ) {
+            // already has .wav extension
+            return name;
+        }
         return [name stringByAppendingString:@".wav"];
     
     }
@@ -433,8 +460,21 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         NSFileManager *fileManager = [NSFileManager defaultManager];
         if (![fileManager fileExistsAtPath:folder])
             [fileManager createDirectoryAtPath:folder attributes:nil];
+        NSRange area;
+        if ([name length] >= 4) {
+            area.location = [name length] - 4;
+        }
+        else {
+            area.location = 0;
+        }
         
-        res = [folder stringByAppendingPathComponent:[name stringByAppendingString:@".wav"]];
+        area.length = [name length] - area.location;
+        range = [name rangeOfString:@".wav" options:NSCaseInsensitiveSearch range:area];
+        if (range.location == NSNotFound ) {
+            name = [name stringByAppendingString:@".wav"];
+        }
+        
+        res = [folder stringByAppendingPathComponent:name];
     }
     
     return res;
