@@ -452,13 +452,13 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             String path = actualPropertyMap.get("fileName");
             
             System.out.println("Start->3");
-            if (path == null || path.length() == 0 || path.equalsIgnoreCase("") || path.contains("*")) {
+            if (path == null || path.length() == 0 || path.equalsIgnoreCase("") /*|| path.contains("*")*/ ) {
                 Logger.E(TAG, "fileName property cannot be empty! Taking the default path...");
                 //path=getDefaultPath(actualPropertyMap);//Default  file path concept is removed in ARB meeting...
                 //throw new RuntimeException("fileName property is empty");
                 Map<String, Object> tempprops = new HashMap<String, Object>();
                 tempprops.put("status", "error");
-                tempprops.put("message", "fileName property is NOT set");
+                tempprops.put("message", "fileName property should NOT be empty or NULL");
                 tempprops.put("fileName", "");
                 if(storedMethodResult!=null)
                 	{
@@ -618,12 +618,12 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         	System.out.println("Start->17,error="+ex.getMessage());
         	Logger.E(TAG, ex.getMessage());
         	sendException(ex);
-            throw new RuntimeException(ex);
+         //   throw new RuntimeException(ex);
         } catch (IOException ex) {
         	System.out.println("Start->18 ,ex="+ex.getMessage());
         	Logger.E(TAG, ex.getMessage());
         	sendException(ex);
-            throw new RuntimeException(ex);
+          //  throw new RuntimeException(ex);
         }
        
     }
@@ -638,7 +638,14 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	System.out.println("Audio Capture Stop is called,stopApi="+stopApi);
         try {
             releaseRecorder();
-        } finally {
+        } 
+        catch(Exception e)
+        {
+        	
+        }
+        
+        
+        finally {
           //  clearActualPropertyMap();
         	stopNsend("stop");
         }
@@ -653,7 +660,14 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	
         try {
             releaseRecorder();
-        } finally {
+        } 
+        catch(Exception e)
+        {
+        	
+        }
+        
+        
+        finally {
         	System.out.println("18");
             //String path = getActualPropertyMap().get("fileName");
             //System.out.println("19,path="+path);
@@ -694,7 +708,14 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     		System.out.println("Audio Error Has Happened");
             try {
                 releaseRecorder();
-            } finally {
+            } 
+            catch(Exception e)
+            {
+            	
+            }
+            
+            
+            finally {
                 //String path = getActualPropertyMap().get("fileName");
                 if (filepath != null && !filepath.isEmpty()) {
 									                    File file = new File(filepath);
@@ -715,7 +736,15 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     		System.out.println("Media Server Died");
             try {
                 releaseRecorder();
-            } finally {
+            } 
+            catch(Exception e)
+            {
+            	
+            }
+            
+            
+            
+            finally {
                 //String path = getActualPropertyMap().get("fileName");
                 if (filepath != null && !filepath.isEmpty()) {
 									                    File file = new File(filepath);
@@ -746,7 +775,15 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         {
         	try {
                 releaseRecorder();
-            } finally {
+            } 
+            catch(Exception e)
+            {
+            	
+            }
+            
+            
+            
+            finally {
                 //String path = getActualPropertyMap().get("fileName");
                 if (filepath != null && !filepath.isEmpty()) {
 									                    File file = new File(filepath);
