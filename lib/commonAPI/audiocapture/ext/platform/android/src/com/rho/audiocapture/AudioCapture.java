@@ -452,7 +452,7 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             String path = actualPropertyMap.get("fileName");
             
             System.out.println("Start->3");
-            if (path == null || path.length() == 0 || path.equalsIgnoreCase("")) {
+            if (path == null || path.length() == 0 || path.equalsIgnoreCase("") || path.contains("*")) {
                 Logger.E(TAG, "fileName property cannot be empty! Taking the default path...");
                 //path=getDefaultPath(actualPropertyMap);//Default  file path concept is removed in ARB meeting...
                 //throw new RuntimeException("fileName property is empty");
