@@ -578,58 +578,58 @@ end
 def check_update_token_file(token_file, token_preamble_len, token_hash, salt, check_subcription = false)
   min_check_interval = 60*60*24 # one day
 
-  if !is_valid_token?(token_hash[:token])
+  if is_valid_token?(token_hash[:token])
+    token = token_hash[:token]
+    Rhohub.token = token
+
+    subcription = token_hash[:ft]
+    time = (token_hash[:lt].nil?) ? 0 : token_hash[:lt]
+
+    is_vaild = (Time.now.to_i - time > min_check_interval) ? 0 : 2
+
+    if !(token.nil? || token.empty?) && SiteChecker.is_available?
+      if check_subcription && ((subcription.nil? || subcription.empty?) || (is_vaild < 2))
+        updated = false
+        puts "Downloading user subscription information"
+        begin
+          subcription = Rhohub::Subscription.check()
+          token_hash[:ft] = subcription
+          is_vaild = 2
+          updated = true
+        rescue Exception => e
+          subcription = nil
+        end
+      end
+
+      if subcription.nil?
+        user_apps = nil
+        begin
+          user_apps = get_app_list()
+        rescue Exception => e
+          user_apps = nil
+        end
+        if user_apps.nil?
+          token = nil
+          is_vaild = -1
+        else
+          is_vaild = 1
+          updated = true
+        end
+      end
+
+      if (token.nil? || token.empty?)
+        token = token_hash[:token]
+      end
+
+      if (!File.exists?(token_file)) || updated
+        File.open(token_file,"w") do |f|
+          f.write(encode_token(token, salt, token_preamble_len, token_hash[:iv], subcription))
+        end
+      end
+    end
+  else
     is_vaild = -2
     token_hash[:token] = ''
-  end
-
-  token = token_hash[:token]
-  Rhohub.token = token
-
-  subcription = token_hash[:ft]
-  time = (token_hash[:lt].nil?) ? 0 : token_hash[:lt]
-
-  is_vaild = (Time.now.to_i - time > min_check_interval) ? 0 : 2
-
-  if !(token.nil? || token.empty?) && SiteChecker.is_available?
-    if check_subcription && ((subcription.nil? || subcription.empty?) || (is_vaild < 2))
-      updated = false
-      puts "Downloading user subscription information"
-      begin
-        subcription = Rhohub::Subscription.check()
-        token_hash[:ft] = subcription
-        is_vaild = 2
-        updated = true
-      rescue Exception => e
-        subcription = nil
-      end
-    end
-
-    if subcription.nil?
-      user_apps = nil
-      begin
-        user_apps = get_app_list()
-      rescue Exception => e
-        user_apps = nil
-      end
-      if user_apps.nil?
-        token = nil
-        is_vaild = -1
-      else
-        is_vaild = 1
-        updated = true
-      end
-    end
-
-    if (token.nil? || token.empty?)
-      token = token_hash[:token]
-    end
-
-    if (!File.exists?(token_file)) || updated
-      File.open(token_file,"w") do |f|
-        f.write(encode_token(token, salt, token_preamble_len, token_hash[:iv], subcription))
-      end
-    end
   end
 
   is_vaild
