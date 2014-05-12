@@ -103,6 +103,11 @@ int CAudioCapture::Start()
 		return res;
 	}
 
+	if(wcscmp(m_lpzFilename,L"\\.wav") == 0){
+		UpdateCallbackStatus("error","File name should not be null. Please set the proper file name.");
+		return res;
+	}
+
 	if (!m_bAppHasFocus) // if we aren't focussed we can't use the hardware so ignore
 		return res;
 
@@ -352,17 +357,12 @@ AC_RETURN CAudioCapture::eventHandler()
 		m_hFile = INVALID_HANDLE_VALUE;
 
 		
-		if (dwEvent == WAIT_OBJECT_0 + CAPTURE_EVENT)
-		{
+		if (dwEvent == WAIT_OBJECT_0 + CAPTURE_EVENT){
 			// only process the raw file on capture event
 			if(TRUE == processRawFile()){
 				//set successful status
 				UpdateCallbackStatus("ok","");	
 				iRet = AC_SAVED;
-			}
-			else{
-				//set unsuccessful status
-				UpdateCallbackStatus("error","Unable to process raw file.");
 			}
 		}
 		else{
@@ -418,45 +418,52 @@ BOOL CAudioCapture::processRawFile()
 		pCopyBuf = new BYTE[iCopyBufSize];
 		if (pCopyBuf == NULL) {
 			LOG(WARNING) + L"Unable to get enough memory for copy operation";
+			UpdateCallbackStatus("error","Unable to get enough memory for copy operation.");
 			return isFileSaved;
 		}
 
 		// Open wave file
 		hWavFile = CreateFile(m_lpzFilename, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, 0, NULL);
 		if( hWavFile == INVALID_HANDLE_VALUE ) {
-			LOG(WARNING) + L"Unable to open file";
+			LOG(WARNING) + L"Unable to open file.";
 			RETAILMSG(1, (TEXT("Error opening %s. Error code = 0x%08x\n"), m_lpzFilename, GetLastError()));
+			UpdateCallbackStatus("error","File creation error. Please ensure that the file name is proper.");
 			goto ERROR_EXIT;
 		}
 
 	    m_hFile = CreateFile(lpRawFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 		if( m_hFile == INVALID_HANDLE_VALUE ) {
-			LOG(WARNING) + L"Unable to open Raw file";
+			LOG(WARNING) + L"Unable to open Raw file.";
 			RETAILMSG(1, (TEXT("Error opening %s. Error code = 0x%08x\n"), lpRawFileName, GetLastError()));
+			UpdateCallbackStatus("error","Unable to open raw file.");
 			goto ERROR_EXIT;
 		}
 
 		// write the riff file
 		if (! WriteFile(hWavFile, &FileHeader, sizeof(FileHeader), &dwBytesWritten, NULL)) {
-			LOG(WARNING) + L"Error writing file header";
+			LOG(WARNING) + L"Error writing file header.";
+			UpdateCallbackStatus("error","Error writing file header.");
 			goto ERROR_EXIT;
 		}
 
 		// write the wave header
 		if (! WriteFile(hWavFile, &WaveHeader, sizeof(WaveHeader), &dwBytesWritten, NULL)) {
-			LOG(WARNING) + L"Error writing wave header";
+			LOG(WARNING) + L"Error writing wave header.";
+			UpdateCallbackStatus("error","Error writing wave header.");
 			goto ERROR_EXIT;
 		}
 
 		// write the wave format
 		if (! WriteFile(hWavFile, &m_wfx, WaveHeader.dwSize, &dwBytesWritten, NULL)) {
-			LOG(WARNING) + L"Error writing wave format";
+			LOG(WARNING) + L"Error writing wave format.";
+			UpdateCallbackStatus("error","Error writing wave format.");
 			goto ERROR_EXIT;
 		}
 
 		// write the data header
 		if (! WriteFile(hWavFile, &DataHeader, sizeof(DataHeader), &dwBytesWritten, NULL)) {
-			LOG(WARNING) + L"Error writing PCM data header";
+			LOG(WARNING) + L"Error writing PCM data header.";
+			UpdateCallbackStatus("error","Error writing PCM data header.");
 			goto ERROR_EXIT;
 		}
 
@@ -469,13 +476,15 @@ BOOL CAudioCapture::processRawFile()
 
 			// read the PCM data
 			if (! ReadFile(m_hFile, pCopyBuf, dwChunkSize, &dwBytesRead, NULL) || dwBytesRead < dwChunkSize) {
-				LOG(WARNING) + L"Error reading raw file";
+				LOG(WARNING) + L"Error reading raw file.";
+				UpdateCallbackStatus("error","Error reading raw file.");
 				goto ERROR_EXIT;
 			}
 
 			// write the PCM data
 			if (! WriteFile(hWavFile, pCopyBuf, dwBytesRead, &dwBytesWritten, NULL)) {
-				LOG(WARNING) + L"Error writing PCM data";
+				LOG(WARNING) + L"Error writing PCM data.";
+				UpdateCallbackStatus("error","Error writing PCM data.");
 				goto ERROR_EXIT;
 			}
 
