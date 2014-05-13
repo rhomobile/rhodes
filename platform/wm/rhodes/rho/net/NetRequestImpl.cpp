@@ -34,7 +34,7 @@
 #include "net/URI.h"
 #include "common/RhoConf.h"
 
-#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+#if defined(_WIN32_WCE)
 #include "connmgr.h"
 typedef HRESULT (WINAPI* LPFN_CONMGR_RELEASECONNECTION_T) (HANDLE, LONG);
 typedef HRESULT (WINAPI* LPFN_CONMGR_ESTABLISHCONNECTION_T)	(CONNMGR_CONNECTIONINFO*,HANDLE*);
@@ -929,7 +929,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
         InternetCloseHandle(m_hInternet);
     m_hInternet = NULL;
 
-#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+#if defined (_WIN32_WCE)
     if ( m_hWceConnMgrConnection )
         lpfn_ConMgr_ReleaseConnection(m_hWceConnMgrConnection, FALSE);
 
@@ -940,7 +940,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 
 bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 {
-#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+#if defined (_WIN32_WCE)
 	int iNetwork;
 	HRESULT hResult = E_FAIL;
 	DWORD   dwStatus;

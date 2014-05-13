@@ -58,6 +58,10 @@ extern int winversion;
 #define IS_CURRENT_PLATFORM(p) ((bool)(p == winversion))
 
 #define WINDOWS_PLATFORM
+
+#define RHO_IS_WMDEVICE winversion==1
+#define RHO_IS_CEDEVICE winversion==2
+#define RHO_IS_WIN32DEVICE winversion==0
 #endif
 
 #ifdef __cplusplus

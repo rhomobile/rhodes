@@ -1203,8 +1203,7 @@ namespace "device" do
     task :production_with_prebuild_binary => ['config:wm'] do
       require 'rhodes/containers'
       container_path = Rhodes::Containers::get_container_path_prefix('wm', $app_config)
-
-      Rake::Task["device:wm:apply_container[#{conatiner_path}]"].invoke
+      Jake.run3("rake device:wm:apply_container[#{container_path}] --trace", $app_path)
       Rake::Task['device:wm:cab'].invoke
     end
   end

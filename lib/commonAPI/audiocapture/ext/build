@@ -11,7 +11,9 @@ elif [ "$RHO_PLATFORM" = "iphone" ]; then
 cd platform/iphone
 rake --trace
 
+elif [ "$RHO_PLATFORM" = "osx" ]; then
+
+cd platform/qt
+rake --trace
+
 fi
-
-
-

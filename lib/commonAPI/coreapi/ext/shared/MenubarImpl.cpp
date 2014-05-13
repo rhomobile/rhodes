@@ -37,10 +37,9 @@ virtual void setMainMenu( const rho::Vector<rho::String>& mainMenu, rho::apiGene
 {
     RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(mainMenu);
     
-    if (!IS_CURRENT_PLATFORM(WIN_PLATFORM_MOTCE))
-    {
-        rho_webview_update_menu(1);
-    }
+#if defined (_WIN32_WCE)
+    rho_webview_update_menu(1);
+#endif
 }
 
 virtual void getExtraMenu(rho::apiGenerator::CMethodResult& oResult)
@@ -71,10 +70,9 @@ virtual void setMainButton( const rho::Hashtable<rho::String, rho::String>& main
         RHODESAPP().getAppMenu().setRightButton(mainButton);
     }
 
-    if (!IS_CURRENT_PLATFORM(WIN_PLATFORM_MOTCE))
-    {
-        rho_webview_update_menu(1);
-    }
+#if defined (_WIN32_WCE)
+    rho_webview_update_menu(1);
+#endif
 }
 
 virtual void getExtraButton(rho::apiGenerator::CMethodResult& oResult)
@@ -92,10 +90,9 @@ virtual void setExtraButton( const rho::Hashtable<rho::String, rho::String>& ext
         RHODESAPP().getAppMenu().setLeftButton(extraButton);
     }
 
-    if (!IS_CURRENT_PLATFORM(WIN_PLATFORM_MOTCE))
-    {
-        rho_webview_update_menu(1);
-    }
+#if defined (_WIN32_WCE)
+    rho_webview_update_menu(1);
+#endif
 }
 
 };

@@ -152,7 +152,7 @@ public:
         RHODESAPP().getAppMenu().setAppBackUrlWithJSONItems(value);
 #else
         RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(value);
-#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+#if defined (_WIN32_WCE)
        rho_webview_update_menu(1);
 #endif
 

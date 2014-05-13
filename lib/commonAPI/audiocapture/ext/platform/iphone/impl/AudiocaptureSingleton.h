@@ -1,15 +1,14 @@
 
-#import "IAudiocapture.h"
-#import "AudiocaptureSingletonBase.h"
+#import "IAudioCapture.h"
+#import "AudioCaptureSingletonBase.h"
 
-@interface AudiocaptureSingleton : AudiocaptureSingletonBase<IAudiocaptureSingleton> {
+@interface AudioCaptureSingleton : AudioCaptureSingletonBase<IAudioCaptureSingleton> {
 }
 
 
 -(NSString*)getInitialDefaultID;
 
 
--(void) enumerate:(id<IMethodResult>)methodResult;
 
 
 
