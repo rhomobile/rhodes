@@ -4,55 +4,35 @@ namespace rho {
 
 const unsigned long long EventSource::defaultReconnectDelay = 3000;
 
-inline EventSource::EventSource(const String& url, IEventSourceReceiver*)
-/*    :
-    , m_url(url)
+inline EventSource::EventSource(const String& url, IEventSourceReceiver*, const Hashtable<String,String>& eventSourceInit)
+    :
+      m_url(url)
     , m_withCredentials(false)
     , m_state(CONNECTING)
-    , m_decoder(TextResourceDecoder::create("text/plain", "UTF-8"))
-    , m_connectTimer(this, &EventSource::connectTimerFired)
+//    , m_decoder(TextResourceDecoder::create("text/plain", "UTF-8"))
+//    , m_connectTimer(this, &EventSource::connectTimerFired)
     , m_discardTrailingNewline(false)
     , m_requestInFlight(false)
-    , m_reconnectDelay(defaultReconnectDelay)*/
+    , m_reconnectDelay(defaultReconnectDelay)
 {
     //eventSourceInit.get("withCredentials", m_withCredentials);
 }
 
-EventSource* EventSource::create(const String& url, IEventSourceReceiver* receiver )
+EventSource* EventSource::create(const String& url, IEventSourceReceiver* receiver, const Hashtable<String,String>& eventSourceInit )
 {
-/*
-    if (url.isEmpty()) {
-        ec = SYNTAX_ERR;
+
+    if (url.empty()) {
         return 0;
     }
 
-    URL fullURL = context->completeURL(url);
-    if (!fullURL.isValid()) {
-        ec = SYNTAX_ERR;
-        return 0;
-    }
 
-    // FIXME: Convert this to check the isolated world's Content Security Policy once webkit.org/b/104520 is solved.
-    bool shouldBypassMainWorldContentSecurityPolicy = false;
-    if (context->isDocument()) {
-        Document* document = toDocument(context);
-        shouldBypassMainWorldContentSecurityPolicy = document->frame()->script().shouldBypassMainWorldContentSecurityPolicy();
-    }
-    if (!shouldBypassMainWorldContentSecurityPolicy && !context->contentSecurityPolicy()->allowConnectToSource(fullURL)) {
-        // FIXME: Should this be throwing an exception?
-        ec = SECURITY_ERR;
-        return 0;
-    }
+    EventSource* source = new EventSource(url, receiver, eventSourceInit);
 
-    RefPtr<EventSource> source = adoptRef(new EventSource(context, fullURL, eventSourceInit));
-
-    source->setPendingActivity(source.get());
+//    source->setPendingActivity(source);
     source->scheduleInitialConnect();
-    source->suspendIfNeeded();
+//    source->suspendIfNeeded();
 
-    return source.release();
-    */
-    return 0;
+    return source;
 }
 
 EventSource::~EventSource()
@@ -104,15 +84,15 @@ void EventSource::networkRequestEnded()
     else
         unsetPendingActivity(this);
 }
-
+*/
 void EventSource::scheduleInitialConnect()
 {
-    ASSERT(m_state == CONNECTING);
-    ASSERT(!m_requestInFlight);
+    //ASSERT(m_state == CONNECTING);
+    //ASSERT(!m_requestInFlight);
 
-    m_connectTimer.startOneShot(0);
+    //m_connectTimer.startOneShot(0);
 }
-
+/*
 void EventSource::scheduleReconnect()
 {
     m_state = CONNECTING;

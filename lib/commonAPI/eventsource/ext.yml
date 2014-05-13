@@ -1,8 +1,10 @@
 entry: Init_EventSource_extension
 javaentry: com.eventsource.Eventsource
 libraries: ["Eventsource"]
-#android:
+android:
+  exttype: rakefile
 #  source_list: ext/platform/android/ext_java.files
+
 wp8:
   csharp_impl: yes
   root_namespace: rho
