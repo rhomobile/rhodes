@@ -32,6 +32,7 @@ load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
 require 'tempfile'
 
+include FileUtils
 
 USE_OWN_STLPORT = false
 #USE_TRACES = # see androidcommon.rb
