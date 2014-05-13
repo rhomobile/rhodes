@@ -18,7 +18,7 @@ public:
         virtual void onMessage( const String& message ) = 0;
     };
 
-    static EventSource* create( const String& url, IEventSourceReceiver* receiver );
+    static EventSource* create( const String& url, IEventSourceReceiver* receiver, const Hashtable<String,String>& init );
     virtual ~EventSource();
     
 private:
@@ -42,7 +42,7 @@ private:
     //void close();
 
 private:
-    EventSource(const String&, IEventSourceReceiver* receiver );
+    EventSource(const String&, IEventSourceReceiver* receiver, const Hashtable<String,String>& init );
 /*
     virtual void didReceiveResponse(unsigned long, const ResourceResponse&) OVERRIDE;
     virtual void didReceiveData(const char*, int) OVERRIDE;
@@ -54,31 +54,30 @@ private:
     virtual void stop() OVERRIDE;
 */
     void connect();
-/*
+
     void networkRequestEnded();
     void scheduleInitialConnect();
     void scheduleReconnect();
-    void connectTimerFired(Timer<EventSource>*);
+//    void connectTimerFired(Timer<EventSource>*);
     void abortConnectionAttempt();
     void parseEventStream();
     void parseEventStreamLine(unsigned pos, int fieldLength, int lineLength);
-    PassRefPtr<MessageEvent> createMessageEvent();
+//    PassRefPtr<MessageEvent> createMessageEvent();
 
-    URL m_url;
+    String m_url;
     bool m_withCredentials;
     State m_state;
 
-    Vector<UChar> m_receiveBuf;
+    Vector<unsigned char> m_receiveBuf;
     bool m_discardTrailingNewline;
     bool m_requestInFlight;
 
     String m_eventName;
-    Vector<UChar> m_data;
+    Vector<unsigned char> m_data;
     String m_currentlyParsedEventId;
     String m_lastEventId;
     unsigned long long m_reconnectDelay;
     String m_eventStreamOrigin;
-*/
 };
 
 }
