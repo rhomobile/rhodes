@@ -53,6 +53,7 @@
 #include "statistic/RhoProfiler.h"
 #include "coreapi/ext/shared/Intent.h"
 #include "coreapi/ext/platform/wm/src/Intents.h"
+#include "browser/BrowserFactory.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
@@ -221,8 +222,8 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
     if (!bDestroy)
     {
-		if(RHO_IS_WMDEVICE)
-			SetFullScreen(bFull);
+		//if(RHO_IS_WMDEVICE)
+		//	SetFullScreen(bFull);
 
 		if ( bFull )
 			hideSIPButton();
@@ -353,7 +354,8 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
 
 void CMainWindow::initBrowserWindow()
 {
-    m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+    //m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+    m_pBrowserEng = rho::BrowserFactory::getInstance()->select(m_hWnd);
 
     CRect rect;
     GetWindowRect(&rect);

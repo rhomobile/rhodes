@@ -27,7 +27,7 @@ UINT WM_BROWSER_ONAUTHENTICATIONREQUEST = ::RegisterWindowMessage(L"WM_BROWSER_O
 
 extern "C" void rho_wm_impl_CheckLicense();
 
-IMPLEMENT_LOGCLASS(CEBrowserEngine,"IEBrowser");
+IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
 
 namespace
 {
