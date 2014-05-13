@@ -48,7 +48,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <VALUES>
                     
                     <VALUE constName="ENCODER_AAC" value="AAC">
-                        <DESC>AAC low complexity. This is the default value.</DESC>
+                        <DESC>AAC low complexity. This is the default value. If wrong or no value is specified this value will be accounted.</DESC>
                     </VALUE>
                    
                     <VALUE constName="ENCODER_AMR_NB" value="AMR_NB">
