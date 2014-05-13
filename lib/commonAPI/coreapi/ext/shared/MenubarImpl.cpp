@@ -10,8 +10,6 @@
 #define RHO_APPS_DIR "apps/"
 #endif
 
-extern "C" void rho_sys_app_exit();
-
 namespace rho 
 {
 
@@ -39,10 +37,10 @@ virtual void setMainMenu( const rho::Vector<rho::String>& mainMenu, rho::apiGene
 {
     RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(mainMenu);
     
-#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
-    rho_webview_update_menu(1);
-#endif
-
+    if (!IS_CURRENT_PLATFORM(WIN_PLATFORM_MOTCE))
+    {
+        rho_webview_update_menu(1);
+    }
 }
 
 virtual void getExtraMenu(rho::apiGenerator::CMethodResult& oResult)
@@ -73,9 +71,10 @@ virtual void setMainButton( const rho::Hashtable<rho::String, rho::String>& main
         RHODESAPP().getAppMenu().setRightButton(mainButton);
     }
 
-#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
-    rho_webview_update_menu(1);
-#endif
+    if (!IS_CURRENT_PLATFORM(WIN_PLATFORM_MOTCE))
+    {
+        rho_webview_update_menu(1);
+    }
 }
 
 virtual void getExtraButton(rho::apiGenerator::CMethodResult& oResult)
@@ -93,9 +92,10 @@ virtual void setExtraButton( const rho::Hashtable<rho::String, rho::String>& ext
         RHODESAPP().getAppMenu().setLeftButton(extraButton);
     }
 
-#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
-    rho_webview_update_menu(1);
-#endif
+    if (!IS_CURRENT_PLATFORM(WIN_PLATFORM_MOTCE))
+    {
+        rho_webview_update_menu(1);
+    }
 }
 
 };
