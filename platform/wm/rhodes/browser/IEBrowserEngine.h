@@ -10,21 +10,28 @@
 
 class CIEBrowserEngine :  public rho::IBrowserEngine
 {
-    // Represents the PIEWebBrowser control contained in the main application.
-    // window. m_browser is used to manage the control and its associated 
-    // "AtlAxWin" window. (AtlAxWin is a window class that ATL uses to support 
-    // containment of controls in windows.)
-    CAxWindow m_browser;
+    DEFINE_LOGCLASS;
 
-    // cached copy of hosted control's IWebBrowser2 interface pointer
-    CComPtr<IWebBrowser2> m_spIWebBrowser2;
-    bool  m_bLoadingComplete;
+private:
+    static HWND     m_hwndTabHTMLContainer;          ///< HTML Window for this Tab's HTML Component's Parent
+    bool            m_bsvScrollBars;                 ///<  Whether scrollbars or visible or not
+    HWND            m_hwndTabHTML;                   ///< HTML Window Handle for this Tab's HTML Component
+    RECT            m_rcViewSize;
+    int             m_tabID;                         ///< The unique PocketBrowser reference for this tab (PocketBrowser Application)
+    HWND            m_parentHWND; 
+    HINSTANCE       m_hparentInst;
+
+private:
+    LRESULT CreateEngine(ReadEngineConfigParameter_T configFunction);
+
+    static LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 public:
     CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance);
     virtual ~CIEBrowserEngine(void);
 
     virtual BOOL Navigate(LPCTSTR szURL, int iTabID);
-    virtual HWND GetHTMLWND(int /*iTabID*/){ return m_browser.m_hWnd; }
+    virtual HWND GetHTMLWND(int /*iTabID*/); 
     virtual BOOL ResizeOnTab(int iInstID,RECT rcNewSize);
     virtual BOOL BackOnTab(int iInstID,int iPagesBack = 1);
     virtual BOOL ForwardOnTab(int iInstID);
@@ -52,5 +59,4 @@ public:
     virtual int NewTab();//returns	the new tab ID 
 	virtual int SwitchTab(int iTabID);//returns the previous tab ID
 	virtual BOOL CloseTab(int iTabID);//returns TRUE if successful
-
 };
