@@ -1033,7 +1033,7 @@ LPTSTR parseToken (LPCTSTR start, LPCTSTR* next_token) {
 	return value;
 }
 
-#if defined( OS_PLATFORM_MOTCE )
+#if defined( _WIN32_WCE )
 
 #include <Imaging.h>
 
@@ -1091,9 +1091,7 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 	return hResult;
 }
 
-#endif
-
-#if !defined(_WIN32_WCE)
+#elif //!_WIN32_WCE
 #include <gdiplus.h>
 #include <Gdiplusinit.h>
 using namespace Gdiplus;
@@ -1148,4 +1146,4 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
     return hBitmap;
 }
 
-#endif
+#endif //!_WIN32_WCE

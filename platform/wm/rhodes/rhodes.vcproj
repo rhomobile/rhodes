@@ -1309,7 +1309,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\JSApp_FSTest"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\rhodes"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
