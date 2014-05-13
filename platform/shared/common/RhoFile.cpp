@@ -595,7 +595,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
         fop.pFrom = name;
 	fop.pTo = NULL;
 	fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_PLATFORM_MOTCE)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
                  | FOF_NOERRORUI
 #endif        
         ;

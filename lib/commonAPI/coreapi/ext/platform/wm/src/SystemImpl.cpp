@@ -11,7 +11,7 @@
 #include "Registry.h"
 #include "Intents.h"
 
-#if defined( OS_WINCE )// && !defined( OS_PLATFORM_MOTCE )
+#if defined( OS_WINCE )
 #include "cfgmgrapi.h"
 #include "getdeviceuniqueid.h"
 
@@ -183,58 +183,55 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
 {
     String strDeviceID;
 #if defined( OS_WINCE )
-	if(winversion == 1)
+	if(RHO_IS_WMDEVICE)
 	{
-//#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
-    BYTE rgDeviceId[20];
-    DWORD cbDeviceId = sizeof(rgDeviceId);
-    String strAppData = "RHODES_" + RHODESAPP().getAppName() + "_DEVICEID";
+        BYTE rgDeviceId[20];
+        DWORD cbDeviceId = sizeof(rgDeviceId);
+        String strAppData = "RHODES_" + RHODESAPP().getAppName() + "_DEVICEID";
 
 
-	LPFN_GETDEVICE_UNIQID_T lpfn_device_id = NULL; 
-	HMODULE hLib = LoadLibrary(TEXT("CoreDLL.dll"));
-		if (hLib)
-		{
-			lpfn_device_id = (LPFN_GETDEVICE_UNIQID_T)GetProcAddress(hLib, L"GetDeviceUniqueID");
-			if (lpfn_device_id != NULL)
-			{
-				    HRESULT hr = lpfn_device_id( (PBYTE)(strAppData.c_str()),
-												  strAppData.length(),
-												  GETDEVICEUNIQUEID_V1,
-												  rgDeviceId,
-												  &cbDeviceId);
+	    LPFN_GETDEVICE_UNIQID_T lpfn_device_id = NULL; 
+	    HMODULE hLib = LoadLibrary(TEXT("CoreDLL.dll"));
+		    if (hLib)
+		    {
+			    lpfn_device_id = (LPFN_GETDEVICE_UNIQID_T)GetProcAddress(hLib, L"GetDeviceUniqueID");
+			    if (lpfn_device_id != NULL)
+			    {
+				        HRESULT hr = lpfn_device_id( (PBYTE)(strAppData.c_str()),
+												      strAppData.length(),
+												      GETDEVICEUNIQUEID_V1,
+												      rgDeviceId,
+												      &cbDeviceId);
 
-					if ( SUCCEEDED(hr) )
-					{
-						for(unsigned int i = 0; i < cbDeviceId; i++)
-						{
-							_toHexString( rgDeviceId[i], strDeviceID, 16);
-						}
-					}
-			}
-		}
+					    if ( SUCCEEDED(hr) )
+					    {
+						    for(unsigned int i = 0; i < cbDeviceId; i++)
+						    {
+							    _toHexString( rgDeviceId[i], strDeviceID, 16);
+						    }
+					    }
+			    }
+		    }
 
-	if (hLib)
-		FreeLibrary (hLib);
+	    if (hLib)
+		    FreeLibrary (hLib);
 	}
-	else if(winversion == 2)
+	else if(RHO_IS_CEDEVICE)
 	{
-//#elif defined( OS_PLATFORM_MOTCE )
-	UNITID_EX uuid;
-    memset(&uuid, 0, sizeof uuid);
-    uuid.StructInfo.dwAllocated = sizeof uuid;
+	    UNITID_EX uuid;
+        memset(&uuid, 0, sizeof uuid);
+        uuid.StructInfo.dwAllocated = sizeof uuid;
 
-	if (populateUUID(&uuid))
-    {
-        DWORD cbDeviceId = sizeof(uuid.byUUID);
-
-        for(unsigned int i = 0; i < cbDeviceId; i++)
+	    if (populateUUID(&uuid))
         {
-            _toHexString( uuid.byUUID[i], strDeviceID, 16);
+            DWORD cbDeviceId = sizeof(uuid.byUUID);
+
+            for(unsigned int i = 0; i < cbDeviceId; i++)
+            {
+                _toHexString( uuid.byUUID[i], strDeviceID, 16);
+            }
         }
-    }
 	}
-//#endif
 #endif
     oResult.set( strDeviceID );
 }
@@ -294,13 +291,10 @@ void CSystemImpl::getCountry(CMethodResult& oResult)
 
 void CSystemImpl::getHasCalendar(CMethodResult& oResult)
 {
-//#if defined( OS_PLATFORM_MOTCE )
-	if(winversion == 2)
+	if(RHO_IS_CEDEVICE)
 		oResult.set(false);
-//#else
 	else
 		oResult.set(true);
-//#endif
 }
 
 void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
@@ -551,16 +545,13 @@ void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult)
 
 extern "C" int rho_wmsys_has_touchscreen()
 {
-//#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
-//fixed: function should return a value (it wasn't for winversion=1)
 #if !defined(OS_WINCE)
     return 1;
 #else
-    if(winversion != 1)
+    if(RHO_IS_CEDEVICE)
         return 1;
     else
     {
-//#else
         BOOL bRet;
         TCHAR oem[257];
 #ifndef WIN32_PLATFORM_WFSP
@@ -584,7 +575,6 @@ extern "C" int rho_wmsys_has_touchscreen()
         bRet = SystemParametersInfo(SPI_GETMOUSE, sizeof(aMouseInfo), aMouseInfo, 0);
         return (bRet && aMouseInfo[0] != 0) ? 1 : 0;
 	}
-//#endif
 #endif
 }
 
@@ -661,68 +651,62 @@ static LONG _openRegAppPath( const rho::String& applicationName, CRegKey& oKey, 
 void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult)
 {
     bool bRet = false;
-//#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
 	if(winversion != 1)
 	{
-    CRegKey oKey;
-    StringW strKeyPath;
-    LONG res = _openRegAppPath(applicationName, oKey, strKeyPath);
+        CRegKey oKey;
+        StringW strKeyPath;
+        LONG res = _openRegAppPath(applicationName, oKey, strKeyPath);
 
-#if defined( OS_WINDOWS_DESKTOP )
-    bRet = res == ERROR_SUCCESS;
-#else
-    if ( res == ERROR_SUCCESS )
-    {
-        DWORD dw = 0;
-        res = oKey.QueryDWORDValue(L"Instl", dw);
-        bRet = res == ERROR_SUCCESS && dw > 0;
-	}
-#endif
-	
-//#else
+    #if defined( OS_WINDOWS_DESKTOP )
+        bRet = res == ERROR_SUCCESS;
+    #else
+        if ( res == ERROR_SUCCESS )
+        {
+            DWORD dw = 0;
+            res = oKey.QueryDWORDValue(L"Instl", dw);
+            bRet = res == ERROR_SUCCESS && dw > 0;
+	    }
+    #endif
 	}
 #if defined(OS_WINCE)
 	else
 	{
-    CFilePath oPath( applicationName );
-    StringW strAppName = convertToStringW(oPath.getFolderName());
-    
-    StringW strRequest = 
-        L"<wap-provisioningdoc><characteristic type=\"UnInstall\">"
-        L"<characteristic-query type=\"";
-    strRequest += strAppName + L"\"/>"
-        L"</characteristic></wap-provisioningdoc>"; 
+        CFilePath oPath( applicationName );
+        StringW strAppName = convertToStringW(oPath.getFolderName());
+        
+        StringW strRequest = 
+            L"<wap-provisioningdoc><characteristic type=\"UnInstall\">"
+            L"<characteristic-query type=\"";
+        strRequest += strAppName + L"\"/>"
+            L"</characteristic></wap-provisioningdoc>"; 
 
-	LPFN_DMPROCESS_CONFIGXML_T lpfn_dmprocess_configxml = NULL; 
-	HRESULT hr         = E_FAIL;
-    LPWSTR wszOutput   = NULL;
-	HMODULE hLib = LoadLibrary(TEXT("aygshell.dll"));
-		if (hLib)
-		{
-			lpfn_dmprocess_configxml = (LPFN_DMPROCESS_CONFIGXML_T)GetProcAddress(hLib, L"DMProcessConfigXML");
-			if (lpfn_dmprocess_configxml != NULL)
-			{
-				        hr = lpfn_dmprocess_configxml(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
-			}
-		}
+	    LPFN_DMPROCESS_CONFIGXML_T lpfn_dmprocess_configxml = NULL; 
+	    HRESULT hr         = E_FAIL;
+        LPWSTR wszOutput   = NULL;
+	    HMODULE hLib = LoadLibrary(TEXT("aygshell.dll"));
+		    if (hLib)
+		    {
+			    lpfn_dmprocess_configxml = (LPFN_DMPROCESS_CONFIGXML_T)GetProcAddress(hLib, L"DMProcessConfigXML");
+			    if (lpfn_dmprocess_configxml != NULL)
+			    {
+				            hr = lpfn_dmprocess_configxml(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
+			    }
+		    }
 
-	if (hLib)
-		FreeLibrary (hLib);
+	    if (hLib)
+		    FreeLibrary (hLib);
 
-//#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
-    if (FAILED(hr) || !wszOutput )
-        LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
-    else
-    {
-        StringW strResp = L"<characteristic type=\"";
-        strResp += strAppName + L"\">";
-        bRet = wcsstr(wszOutput, strResp.c_str()) != 0;
-    }
+        if (FAILED(hr) || !wszOutput )
+            LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
+        else
+        {
+            StringW strResp = L"<characteristic type=\"";
+            strResp += strAppName + L"\">";
+            bRet = wcsstr(wszOutput, strResp.c_str()) != 0;
+        }
 
-    if ( wszOutput )
-        free( wszOutput );
-//#endif
-//#endif
+        if ( wszOutput )
+            free( wszOutput );
 	}
 #endif
     oResult.set(bRet);
@@ -774,9 +758,6 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
 			L"</characteristic>"
 			L"</characteristic></wap-provisioningdoc>";
 
-//#if defined( OS_WINCE )&& !defined( OS_PLATFORM_MOTCE )
-
-
 		LPFN_DMPROCESS_CONFIGXML_T lpfn_dmprocess_configxml = NULL; 
 		HRESULT hr         = E_FAIL;
 		LPWSTR wszOutput   = NULL;
@@ -807,7 +788,6 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
 		  free( wszOutput );
 	}
 #endif
-//#endif
 #endif
 }
 
@@ -1006,14 +986,10 @@ void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
 
 void CSystemImpl::getHasCamera(CMethodResult& oResult)
 {
-//#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
 	if(winversion != 1)
 		oResult.set(false);
-//#else
 	else
 		oResult.set(true);
-//#endif
-
 }
 
 extern "C" bool rho_rhosim_window_closed();

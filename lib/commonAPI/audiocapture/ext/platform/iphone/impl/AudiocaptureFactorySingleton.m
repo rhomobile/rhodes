@@ -1,16 +1,16 @@
 
-#import "IAudiocapture.h"
-#import "AudiocaptureFactoryBase.h"
+#import "IAudioCapture.h"
+#import "AudioCaptureFactoryBase.h"
 
-static AudiocaptureFactoryBase* ourAudiocaptureFactory = nil;
+static AudioCaptureFactoryBase* ourAudioCaptureFactory = nil;
 
-@implementation AudiocaptureFactorySingleton
+@implementation AudioCaptureFactorySingleton
 
-+(id<IAudiocaptureFactory>) getAudiocaptureFactoryInstance {
-    if (ourAudiocaptureFactory == nil) {
-        ourAudiocaptureFactory = [[AudiocaptureFactoryBase alloc] init];
++(id<IAudioCaptureFactory>) getAudioCaptureFactoryInstance {
+    if (ourAudioCaptureFactory == nil) {
+        ourAudioCaptureFactory = [[AudioCaptureFactoryBase alloc] init];
     }
-    return ourAudiocaptureFactory;
+    return ourAudioCaptureFactory;
 }
 
 @end

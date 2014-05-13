@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
-	Name="Audiocapture"
-	ProjectGUID="{8a3c9950-3d8e-0131-681a-3c0754255b71}"
+	Version="9.00"
+	Name="AudioCapture"
+	ProjectGUID="{a5fe69d0-b3e9-0131-4ea6-0002b3c35f11}"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="0"
 	>
@@ -29,7 +29,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\Audiocapture.vsprops"
+			InheritedPropertySheets=".\AudioCapture.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -50,7 +50,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="1"
+				Optimization="0"
 				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/Audiocapture.lib"
+				OutputFile="$(OutDir)/AudioCapture.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -108,7 +108,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\Audiocapture.vsprops"
+			InheritedPropertySheets=".\AudioCapture.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -151,7 +151,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/Audiocapture.lib"
+				OutputFile="$(OutDir)/AudioCapture.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -174,7 +174,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\Audiocapture.vsprops"
+			InheritedPropertySheets=".\AudioCapture.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -196,7 +196,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="1"
+				Optimization="0"
 				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
 				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
@@ -220,7 +220,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.00"
-				OutputFile="$(OutDir)/Audiocapture.lib"
+				OutputFile="$(OutDir)/AudioCapture.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -254,7 +254,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\Audiocapture.vsprops"
+			InheritedPropertySheets=".\AudioCapture.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -276,7 +276,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="1"
+				Optimization="0"
 				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
@@ -300,7 +300,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/Audiocapture.lib"
+				OutputFile="$(OutDir)/AudioCapture.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -334,7 +334,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\Audiocapture.vsprops"
+			InheritedPropertySheets=".\AudioCapture.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -355,7 +355,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="1"
+				Optimization="2"
 				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
@@ -378,7 +378,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/Audiocapture.lib"
+				OutputFile="$(OutDir)/AudioCapture.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -412,7 +412,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\Audiocapture.vsprops"
+			InheritedPropertySheets=".\AudioCapture.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -454,7 +454,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/Audiocapture.lib"
+				OutputFile="$(OutDir)/AudioCapture.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -477,7 +477,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\Audiocapture.vsprops"
+			InheritedPropertySheets=".\AudioCapture.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -499,7 +499,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="1"
+				Optimization="2"
 				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
 				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
@@ -522,7 +522,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.00"
-				OutputFile="$(OutDir)/Audiocapture.lib"
+				OutputFile="$(OutDir)/AudioCapture.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -556,7 +556,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\Audiocapture.vsprops"
+			InheritedPropertySheets=".\AudioCapture.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -578,7 +578,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="1"
+				Optimization="2"
 				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
@@ -601,7 +601,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/Audiocapture.lib"
+				OutputFile="$(OutDir)/AudioCapture.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -638,7 +638,7 @@
 			Name="shared"
 			>
 			<File
-				RelativePath="..\..\Audiocapture.xml"
+				RelativePath="..\..\AudioCapture.xml"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -700,30 +700,42 @@
 					Name="cpp"
 					>
 					<File
-						RelativePath="..\..\shared\generated\cpp\Audiocapture_js_wrap.cpp"
+						RelativePath="..\..\shared\generated\cpp\AudioCapture_js_wrap.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\shared\generated\cpp\Audiocapture_ruby_wrap.cpp"
+						RelativePath="..\..\shared\generated\cpp\AudioCapture_ruby_wrap.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\shared\generated\cpp\AudiocaptureBase.cpp"
+						RelativePath="..\..\shared\generated\cpp\AudioCaptureBase.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\shared\generated\cpp\AudiocaptureBase.h"
+						RelativePath="..\..\shared\generated\cpp\AudioCaptureBase.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\shared\generated\cpp\IAudiocapture.h"
+						RelativePath="..\..\shared\generated\cpp\IAudioCapture.h"
 						>
 					</File>
 				</Filter>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="AudioCapture"
+			>
+			<File
+				RelativePath=".\src\AudioCapture.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\AudioCapture.h"
+				>
+			</File>
+		</Filter>
 		<File
-			RelativePath=".\src\Audiocapture_impl.cpp"
+			RelativePath=".\src\AudioCapture_impl.cpp"
 			>
 		</File>
 	</Files>
