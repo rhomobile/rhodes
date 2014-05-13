@@ -1793,30 +1793,33 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 
 LRESULT CMainWindow::OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftButton();
-    CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightButton();
-
-    if ( oLeftItem.m_strLabel.length() > 0 )
+	if(RHO_IS_WMDEVICE)
     {
-        SetToolbarButtonName( IDM_SK1_EXIT, convertToStringW(oLeftItem.m_strLabel).c_str() );
+        CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftButton();
+        CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightButton();
+
+        if ( oLeftItem.m_strLabel.length() > 0 )
+        {
+            SetToolbarButtonName( IDM_SK1_EXIT, convertToStringW(oLeftItem.m_strLabel).c_str() );
+        }
+
+        if (oLeftItem.m_isEnable)
+            SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
+        else
+            SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
+
+        if ( oRightItem.m_strLabel.length() > 0 )
+        {
+            SetToolbarButtonName( IDM_SK2_MENU, convertToStringW(oRightItem.m_strLabel).c_str() );
+        }
+
+        if (oRightItem.m_isEnable)
+          SetToolbarButtonEnabled(IDM_SK2_MENU, TRUE);
+        else
+          SetToolbarButtonEnabled(IDM_SK2_MENU, FALSE);
+
+        createCustomMenu();
     }
-
-    if (oLeftItem.m_isEnable)
-        SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
-    else
-        SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
-
-    if ( oRightItem.m_strLabel.length() > 0 )
-    {
-        SetToolbarButtonName( IDM_SK2_MENU, convertToStringW(oRightItem.m_strLabel).c_str() );
-    }
-
-    if (oRightItem.m_isEnable)
-      SetToolbarButtonEnabled(IDM_SK2_MENU, TRUE);
-    else
-      SetToolbarButtonEnabled(IDM_SK2_MENU, FALSE);
-
-    createCustomMenu();
 
     return 0;
 }
