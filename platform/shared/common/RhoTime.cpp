@@ -48,13 +48,20 @@ unsigned long CRhoTimer::getNextTimeout()
     for( int i = 0; i < (int)m_arItems.size(); i++ )
     {
         unsigned long nInterval = 0;
+        
         if ( m_arItems.elementAt(i).m_oFireTime.toULong() > curTime.toULong() )
 		{
-            nInterval = m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+        	 nInterval = m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
 		}
 		else
 		{	
-		nInterval=nMinInterval+m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+			if((curTime.toULong()-m_arItems.elementAt(i).m_oFireTime.toULong())>100)
+			{
+				if(m_arItems.elementAt(i).m_overflow)
+				{
+				nInterval=nMinInterval+m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+				}
+			}
 		}
 
         if ( nInterval < nMinInterval )
