@@ -134,7 +134,7 @@ Audio recording should be cancelled. In android, the state will be persisted.
 			<REMARK title="Page Navigation">
                 <DESC>
                     <![CDATA[
-Audio recording should be cancelled. In android, the state will be persisted.
+Audio recording should be cancelled.
                     ]]>
                 </DESC>
             </REMARK>			
