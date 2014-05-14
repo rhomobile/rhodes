@@ -355,7 +355,7 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
 void CMainWindow::initBrowserWindow()
 {
     //m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
-    m_pBrowserEng = rho::BrowserFactory::getInstance()->select(m_hWnd);
+    m_pBrowserEng = rho::BrowserFactory::getInstance()->create(m_hWnd);
 
     CRect rect;
     GetWindowRect(&rect);
