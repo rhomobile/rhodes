@@ -97,6 +97,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -871,16 +872,45 @@ public class RhodesService extends Service {
 			PackageManager mgr = ctx.getPackageManager();
 			PackageInfo info = mgr.getPackageInfo(appName, PackageManager.GET_ACTIVITIES);
 			if (info.activities.length == 0) {
-				Logger.E(TAG, "No activities found for application " + appName);
+				Logger.E(TAG, "No activities found for application package [" + appName + "]");
 				return;
 			}
-			ActivityInfo ainfo = info.activities[0];
-			String className = ainfo.name;
-			if (className.startsWith("."))
-				className = ainfo.packageName + className;
+			String className = null;
+			{
+				//Utils.platformLog("$$$", "Enumerate all MAIN activities :");
 
+				Intent main_intent = new Intent(Intent.ACTION_MAIN);
+				//main_intent.addCategory(Intent.CATEGORY_DEFAULT);
+				//main_intent.addCategory(Intent.CATEGORY_LAUNCHER);
+				
+				List<ResolveInfo> activities = mgr.queryIntentActivities(main_intent, 0/*PackageManager.MATCH_DEFAULT_ONLY*/);
+				
+				Iterator<ResolveInfo> activities_iterator = activities.iterator();
+				while (activities_iterator.hasNext()) {
+					ResolveInfo resolve_info = activities_iterator.next();
+					//Utils.platformLog("$$$", "     ACTIVITY NAME["+resolve_info.activityInfo.name+"] TARGET["+resolve_info.activityInfo.targetActivity+"]");					
+					if (appName.equals(resolve_info.activityInfo.packageName)) {
+						// we found our activity !
+						className = resolve_info.activityInfo.name;
+						break;
+					}
+				}
+			}
+			if (className == null) {
+				Logger.E(TAG, "No MAIN activities found in application package [" + appName+"]");
+				return;				
+			}
+			
+			//ActivityInfo ainfo = info.activities[0];
+			//String className = ainfo.name;
+			if (className.startsWith(".")) {
+				className = appName + className;
+			}
+
+			
 			Intent intent = new Intent();
 			intent.setClassName(appName, className);
+			Utils.platformLog("$$$", "START ACTIVITY P["+appName+"] A["+className+"]");
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			if (params != null) {
 				Bundle startParams = new Bundle();
