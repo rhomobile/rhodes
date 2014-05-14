@@ -459,7 +459,7 @@ module Rhogen
       directory.source = 'root'
       directory.destination = 'project/iphone'
       if File.exists?(directory.destination)
-        directory.options[:skip] = 'project/iphone/toremoved'
+        directory.destination = 'project/iphone/toremoved'
       end
     end
 
@@ -496,7 +496,10 @@ module Rhogen
       template.source = 'Bremen.xcodeproj/project.pbxproj'
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
       if File.exists?(template.destination)
+        #puts '$$$$$$$$$$$$$$$$ EXIST'+template.destination
         template.destination = 'project/iphone/toremovef'
+      else
+        #puts '$$$$$$$$$$$$$$$$ NOT EXIST'+template.destination
       end
     end
 
@@ -581,7 +584,8 @@ module Rhogen
       directory.source = 'root'
       directory.destination = 'project/iphone'
       if File.exists?(directory.destination)
-        directory.options[:skip] = 'project/iphone/toremoved'
+        #directory.options[:skip] = 'project/iphone/toremoved'
+        directory.destination = 'project/iphone/toremoved'
       end
     end
 
