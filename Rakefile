@@ -638,7 +638,7 @@ def to_boolean(s)
 end
 
 def rhohub_git_match(str)
-  res = /git@git\.rhohub\.com:(.*?)\/(.*?).git/i.match(str)
+  res = /git@git(?:.*?)\.rhohub\.com:(.*?)\/(.*?).git/i.match(str)
   res.nil? ? { :str => "", :user => "", :app => "" } : { :str => "#{res[1]}/#{res[2]}", :user => res[1], :app => res[2] }
 end
 
@@ -688,6 +688,7 @@ def http_get(url, proxy, save_to, show_info = false)
       puts "0%#{'.'*(50-6)}100%"
       http.request_get(uri.path) do |resp|
         length = resp['Content-Length'].to_i
+        length = length > 1 ? length : 1
         last_p = 0
         done = 0
         resp.read_body do |segment|
@@ -695,6 +696,9 @@ def http_get(url, proxy, save_to, show_info = false)
           if show_info
             done += segment.length
             dot = (done * 50 / length).to_i
+            if dot > 50
+              dot = 50
+            end
             while last_p < dot
               print "="
               last_p += 1
@@ -1013,20 +1017,24 @@ namespace "rhohub" do
         result = http_get(link, $proxy, $rhohub_home, true)
 
         if !result.nil?
-          Jake.unzip(result, $rhohub_temp)
+          if successfull
+            Jake.unzip(result, $rhohub_temp)
 
-          dirs = Dir.entries($rhohub_temp).select {|entry| File.directory? File.join($rhohub_temp,entry) and !(entry =='.' || entry == '..') }
-          
-          dirs.each do |dir|
-            puts "Removing previous application from bin folder"
-            FileUtils.rm_rf(Dir.glob(File.join($rhohub_bin,dir)))
-          end
+            dirs = Dir.entries($rhohub_temp).select {|entry| File.directory? File.join($rhohub_temp,entry) and !(entry =='.' || entry == '..') }
+            
+            dirs.each do |dir|
+              puts "Removing previous application from bin folder"
+              FileUtils.rm_rf(Dir.glob(File.join($rhohub_bin,dir)))
+            end
 
-          if dirs.length > 0
-            FileUtils.cp_r File.join($rhohub_temp,'.'), $rhohub_bin
+            if dirs.length > 0
+              FileUtils.cp_r File.join($rhohub_temp,'.'), $rhohub_bin
 
-            dest = File.join($rhohub_bin, dirs.first)
-            puts "Check #{dest} directory"
+              dest = File.join($rhohub_bin, dirs.first)
+              puts "Check #{dest} directory"
+            end
+          else
+            BuildOutput.put_log( BuildOutput::ERROR, File.read(result), 'build error')
           end
         else
           puts "Could not get any result"
