@@ -24,13 +24,19 @@ private:
     HINSTANCE       m_hparentInst;
     bool            m_bPageLoaded;
     TCHAR           m_tcNavigatedURL[MAX_URL];		 ///< The current URL loaded or being navigated to
-
+    HANDLE          m_hNavigated;					 ///< Event handle set on document complete or on navigation error, used to stop the navigation timeout thread.
+    int             m_dwNavigationTimeout;
 private:
     //
     LRESULT CreateEngine();
     //
-    HRESULT RegisterWindowClass(LPCWSTR className, HINSTANCE hInstance, WNDPROC appWndProc);
+    HRESULT RegisterWindowClass(HINSTANCE hInstance, WNDPROC appWndProc);
+    //
+    void InvokeEngineEventTitleChange(LPTSTR tcTitle);
+    void InvokeEngineEventMetaTag(LPTSTR tcHttpEquiv, LPTSTR tcContent);
+    void InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEventID);
 
+    static DWORD WINAPI NavigationTimeoutThread( LPVOID lpParameter );
     static LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
@@ -63,7 +69,7 @@ public:
 	virtual bool RegisterForPrimaryMessage(unsigned int iMsgId);
 	virtual bool DeRegisterForPrimaryMessage(unsigned int iMsgId);
 
-    virtual int NewTab();//returns	the new tab ID 
-	virtual int SwitchTab(int iTabID);//returns the previous tab ID
-	virtual BOOL CloseTab(int iTabID);//returns TRUE if successful
+    virtual int NewTab() {return 0;}//returns	the new tab ID 
+    virtual int SwitchTab(int iTabID) {return 0;}//returns the previous tab ID
+    virtual BOOL CloseTab(int iTabID) {return 0;}//returns TRUE if successful
 };

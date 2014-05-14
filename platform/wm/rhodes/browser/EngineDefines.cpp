@@ -1,5 +1,14 @@
 #include "EngineDefines.h"
 
+//////////////////////////////////////////////////////////////////////////
+
+#define HTMLVIEWDLL L"HTMLVIEW.DLL"
+
+//////////////////////////////////////////////////////////////////////////
+
+typedef BOOL (*lpfnInitHTMLControl)(HINSTANCE hinst);
+
+//////////////////////////////////////////////////////////////////////////
 
 namespace rho
 {
@@ -97,6 +106,22 @@ BOOL DereferenceURL(LPCTSTR tcRelativeURLConst, TCHAR* tcDereferencedURL, TCHAR*
         retVal = TRUE;
     }
     return retVal;
+}
+
+HRESULT InitHTMLControl(HINSTANCE hInstance)
+{
+    HMODULE htmlModule = LoadLibrary(HTMLVIEWDLL);
+
+    if (htmlModule == NULL)
+        return S_FALSE;
+
+    lpfnInitHTMLControl InitHTMLControl = (lpfnInitHTMLControl)GetProcAddressA(htmlModule, "InitHTMLControl");
+
+    //initialize the HTML Control
+    if(!InitHTMLControl(hInstance))
+        return S_FALSE;
+
+    return S_OK;
 }
 
 } //end of browser
