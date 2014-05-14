@@ -902,6 +902,7 @@ def rhohub_start_build(app_id, build_flags)
   return build_id, result
 end
 
+$rhodes_ver_default = '3.5.1.14'
 
 namespace "rhohub" do
   desc "Get project infromation from rhohub"
@@ -967,6 +968,8 @@ namespace "rhohub" do
     if !File.exist?($rhohub_bin)
       FileUtils::mkdir_p $rhohub_bin
     end
+
+    $rhodes_ver = get_conf('rhohub/rhodesgem',$rhodes_ver_default)
   end
 
   desc "List avaliable builds"
@@ -1052,9 +1055,6 @@ namespace "rhohub" do
       puts "Nothing to download"
     end
   end
-
-  $rhodes_ver = '3.5.1.14'
-  #$rhodes_ver = '4.0.0'
 
   def do_platform_build(platform_name, platform_list, build_info = {}, config_override = nil)
     platform_version = find_platform_version(platform_name, platform_list, config_override, true)
