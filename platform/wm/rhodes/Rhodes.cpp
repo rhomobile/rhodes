@@ -729,14 +729,12 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	INITCOMMONCONTROLSEX ctrl;
 
 #if defined(OS_WINCE)
-	if(RhoBluetoothManager::LoadBthUtil())
+	/*if(RhoBluetoothManager::LoadBthUtil())
 		winversion = 1;
 	else
-		winversion = 2;
+		winversion = 2;*/
+	LoadAYGShell();
 #endif
-
-    if(winversion == 1)
-		LoadAYGShell();
 
 	//Required to use datetime picker controls.
 	ctrl.dwSize = sizeof(ctrl);
@@ -942,6 +940,7 @@ extern "C" void Init_fcntl(void)
 extern "C" BOOL LoadAYGShell()
 {
 	bool bReturnValue = FALSE;
+	winversion = 2;
 	g_hAygShellDLL = LoadLibrary(L"aygshell.dll");
 	if (!g_hAygShellDLL)
 	{
@@ -977,8 +976,12 @@ extern "C" BOOL LoadAYGShell()
 			LOG(ERROR) + "Unable to load RegistryGetDWORD, WAN Status event will be unavailable";
 		}
 		else
+		{
+			winversion = 1;
 			bReturnValue = TRUE;
+		}
 	}
+
 	return bReturnValue;	
 }
 
