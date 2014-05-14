@@ -3,6 +3,8 @@
 
 #include "logging/RhoLog.h"
 
+#include "EngineDefines.h"
+
 #if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 #include <pvdispid.h>
 #include <piedocvw.h>
@@ -20,9 +22,14 @@ private:
     int             m_tabID;                         ///< The unique PocketBrowser reference for this tab (PocketBrowser Application)
     HWND            m_parentHWND; 
     HINSTANCE       m_hparentInst;
+    bool            m_bPageLoaded;
+    TCHAR           m_tcNavigatedURL[MAX_URL];		 ///< The current URL loaded or being navigated to
 
 private:
-    LRESULT CreateEngine(ReadEngineConfigParameter_T configFunction);
+    //
+    LRESULT CreateEngine();
+    //
+    HRESULT RegisterWindowClass(LPCWSTR className, HINSTANCE hInstance, WNDPROC appWndProc);
 
     static LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 

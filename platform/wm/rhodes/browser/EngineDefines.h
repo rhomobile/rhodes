@@ -27,4 +27,18 @@ extern UINT WM_BROWSER_ONSETSIPSTATE;
 extern UINT WM_BROWSER_ONALERTPOPUP;
 extern UINT WM_BROWSER_ONAUTHENTICATIONREQUEST;
 
+namespace rho
+{
+namespace browser
+{
+
+BOOL IsRelativeURL(LPCTSTR tcURL);
+//
+int GetProtocolFromURL(LPCTSTR tcURL, LPTSTR lpRetStr);
+//
+BOOL DereferenceURL(LPCTSTR tcRelativeURLConst, TCHAR* tcDereferencedURL, TCHAR* tcCurrentURL);
+
+} //end of browser
+} //end of rho
+
 #endif
