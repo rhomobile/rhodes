@@ -160,10 +160,21 @@ public:
         return *this;
     }
 
-    void addMillis(int nMs)
+	bool addMillis(int nMs)
     {
-        m_nativeTime += nMs;
-    }
+        unsigned long temp=m_nativeTime;
+		m_nativeTime=m_nativeTime+nMs;
+		if((m_nativeTime<temp)||(m_nativeTime<nMs))
+		{
+		return true;
+		}
+		else
+		{
+		return false;
+		}
+
+	}
+
 
     static CTimeInterval getCurrentTime(){
         CTimeInterval res;
@@ -205,6 +216,7 @@ class CRhoTimer
         CTimeInterval m_oFireTime;
         String m_strCallback;
         String m_strCallbackData;
+		bool m_overflow;
 
         CTimerItem(int nInterval, const char* szCallback, const char* szCallbackData);
     };

@@ -254,6 +254,13 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        RhoExtManager.getImplementationInstance().onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
 

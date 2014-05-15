@@ -21,6 +21,7 @@ import android.widget.AbsoluteLayout;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.os.Bundle;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
@@ -828,6 +829,13 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             listener.onActivityResult(activity, reqCode, resCode, intent);
         }
     }
+
+    public void onSaveInstanceState(Bundle outState) {
+        for (IRhoListener listener: mListeners) {
+            listener.onSaveInstanceState(outState);
+        }
+    }
+
     public Dialog onCreateDialog(RhodesActivity activity, int id/*, Bundle args*/) {
         Dialog res = null;
         for (IRhoListener listener: mListeners) {

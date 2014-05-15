@@ -64,7 +64,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 20000 milliseconds. The default value is 20,000 milisec.</DESC>
 				<PLATFORM>WM, Android, iOS</PLATFORM>
 			      </PROPERTY>
-            <PROPERTY name="fileName" type="STRING"  default="AudioCapture">
+            <PROPERTY name="fileName" type="STRING">
                 <DESC>This parameter is used to specify the file name. File name must be specified. File name should be set atleast once before calling 'start' method otherwise 'start' method will update the callback 'status' as 'error'.</DESC>
 				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </PROPERTY>
@@ -127,14 +127,14 @@ Audio recording will not be restarted, if the audio recording is already in proc
 			<REMARK title="Page Refresh">
                 <DESC>
                     <![CDATA[
-Audio recording should be cancelled. In android, the state will be persisted.
+Audio recording should be cancelled. In android and iOS, the state will be persisted.
                     ]]>
                 </DESC>
             </REMARK>
 			<REMARK title="Page Navigation">
                 <DESC>
                     <![CDATA[
-Audio recording should be cancelled.
+Audio recording should be cancelled.In iOS, the state will be persisted.
                     ]]>
                 </DESC>
             </REMARK>			
