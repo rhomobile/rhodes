@@ -127,14 +127,14 @@ Audio recording will not be restarted, if the audio recording is already in proc
 			<REMARK title="Page Refresh">
                 <DESC>
                     <![CDATA[
-Audio recording should be cancelled. In android, the state will be persisted.
+Audio recording should be cancelled. In android and iOS, the state will be persisted.
                     ]]>
                 </DESC>
             </REMARK>
 			<REMARK title="Page Navigation">
                 <DESC>
                     <![CDATA[
-Audio recording should be cancelled.
+Audio recording should be cancelled.In iOS, the state will be persisted.
                     ]]>
                 </DESC>
             </REMARK>			
