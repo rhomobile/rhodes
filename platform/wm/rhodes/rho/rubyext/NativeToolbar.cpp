@@ -192,9 +192,6 @@ void CNativeToolbar::createToolbarEx( const rho::Vector<rho::String>& toolbarEle
 /*
 void CNativeToolbar::createToolbar(rho_param *p)
 {
-//#if defined( OS_PLATFORM_MOTCE )
-//    return;
-//#endif
 
     if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
         return;

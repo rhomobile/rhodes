@@ -27,7 +27,7 @@
 #include "stdafx.h"
 
 #include "ruby/ext/rho/rhoruby.h"
-#if defined(OS_WINCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined(OS_WINCE)//&& !defined( OS_PLATFORM_MOTCE )
 #include "ruby/ext/calendar/event.h"
 #include "OutlookApp.h"
 #include "common/StringConverter.h"
@@ -41,7 +41,7 @@
 
 #if defined (_WIN32_WCE)
 #define INITGUID
-#include <pimstore.h>
+#include "pimstore.h"
 #endif //_WIN32_WCE
 
 using namespace rho;

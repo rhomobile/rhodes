@@ -51,7 +51,7 @@
 #pragma warning(disable:4189)
 #endif
 
-#if defined(OS_PLATFORM_MOTCE)
+#if defined(OS_WINCE)
 #ifdef __cplusplus
 extern "C"{
 #endif

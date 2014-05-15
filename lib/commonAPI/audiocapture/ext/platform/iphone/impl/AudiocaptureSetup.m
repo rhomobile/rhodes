@@ -1,9 +1,9 @@
 #import <Foundation/Foundation.h>
 #include "common/app_build_capabilities.h"
 
-extern void Init_Audiocapture_API();
+extern void Init_AudioCapture_API();
 
-void Init_Audiocapture_extension()
+void Init_AudioCapture_extension()
 {
-    Init_Audiocapture_API();
+    Init_AudioCapture_API();
 }
