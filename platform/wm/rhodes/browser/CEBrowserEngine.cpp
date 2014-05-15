@@ -14,8 +14,6 @@
 #include <webvw.h>
 #endif
 
-//#define MAX_URL 1024
-
 UINT WM_BROWSER_ONDOCUMENTCOMPLETE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONDOCUMENTCOMPLETE");
 UINT WM_BROWSER_ONNAVIGATECOMPLETE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONNAVIGATECOMPLETE");
 UINT WM_BROWSER_ONTITLECHANGE           = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONTITLECHANGE");
@@ -26,10 +24,7 @@ UINT WM_BROWSER_ONSETSIPSTATE           = ::RegisterWindowMessage(L"RHODES_WM_BR
 UINT WM_BROWSER_ONALERTPOPUP            = ::RegisterWindowMessage(L"WM_BROWSER_ONALERTPOPUP");
 UINT WM_BROWSER_ONAUTHENTICATIONREQUEST = ::RegisterWindowMessage(L"WM_BROWSER_ONAUTHENTICATIONREQUEST");
 
-extern "C" void rho_wm_impl_CheckLicense();
-
 IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
-
 
 CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     : m_ulRefs(0)
@@ -765,7 +760,6 @@ void CEBrowserEngine::OnDocumentComplete(LPCTSTR url)
         m_bLoadingComplete = true;
 
         ResizeOnTab(0, m_rcViewSize);
-        rho_wm_impl_CheckLicense();
     }
 }
 

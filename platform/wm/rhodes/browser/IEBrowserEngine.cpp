@@ -25,14 +25,32 @@ IMPLEMENT_LOGCLASS(CIEBrowserEngine,"IEBrowser");
 
 //////////////////////////////////////////////////////////////////////////
 
-HWND CIEBrowserEngine::m_hwndTabHTMLContainer = NULL;
+HWND              CIEBrowserEngine::g_hwndTabHTMLContainer = NULL;
+CIEBrowserEngine* CIEBrowserEngine::g_hInstance = NULL;
+
+//////////////////////////////////////////////////////////////////////////
+
+CIEBrowserEngine* CIEBrowserEngine::getInstance()
+{
+    return g_hInstance;
+}
+
+CIEBrowserEngine* CIEBrowserEngine::getInstance(HWND hParentWnd, HINSTANCE hInstance)
+{
+    if (!g_hInstance)
+    {
+        g_hInstance = new CIEBrowserEngine(hParentWnd, hInstance);
+    }
+
+    return g_hInstance;
+}
 
 //////////////////////////////////////////////////////////////////////////
 
 CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
         m_parentHWND(NULL),
         m_hparentInst(NULL),
-        m_bPageLoaded(FALSE),
+        m_bLoadingComplete(FALSE),
         m_hNavigated(NULL),
         m_dwNavigationTimeout(0)
 {
@@ -49,19 +67,15 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
 
 CIEBrowserEngine::~CIEBrowserEngine()
 {
-    //  Remove the browser history object from memory
-    //delete m_BrowserHistory;
-    //m_BrowserHistory = NULL;
-
     //  Destroy the Browser Object
     DestroyWindow(m_hwndTabHTML);
     m_hwndTabHTML = NULL;
 
     //  Destroy the Browser Object's parent if it exists
-    if (m_hwndTabHTMLContainer)
+    if (g_hwndTabHTMLContainer)
     {
-        DestroyWindow(m_hwndTabHTMLContainer);
-        m_hwndTabHTMLContainer = NULL;
+        DestroyWindow(g_hwndTabHTMLContainer);
+        g_hwndTabHTMLContainer = NULL;
     }
 }
 
@@ -92,20 +106,20 @@ LRESULT CIEBrowserEngine::CreateEngine()
 {
     //  Create an HTML container to listen for Engine Events if one does not 
     //  already exist
-    if (m_hwndTabHTMLContainer == NULL)
+    if (g_hwndTabHTMLContainer == NULL)
     {
         //register the main window
         if (FAILED(RegisterWindowClass(m_hparentInst, &CIEBrowserEngine::WndProc)))
             return S_FALSE;
 
         //create the main window
-        m_hwndTabHTMLContainer = CreateWindowEx( 0, HTML_CONTAINER_NAME, NULL, 
+        g_hwndTabHTMLContainer = CreateWindowEx( 0, HTML_CONTAINER_NAME, NULL, 
             WS_POPUP | WS_VISIBLE, 
             CW_USEDEFAULT, CW_USEDEFAULT, 
             CW_USEDEFAULT, CW_USEDEFAULT, 
             m_parentHWND, NULL, m_hparentInst, 0);
 
-        if(!m_hwndTabHTMLContainer)
+        if(!g_hwndTabHTMLContainer)
             return S_FALSE;
 
 
@@ -114,11 +128,11 @@ LRESULT CIEBrowserEngine::CreateEngine()
     }
 
     m_hwndTabHTML = CreateWindow(WC_HTML, NULL, 
-        WS_POPUP | WS_VISIBLE | HS_NOSCROLL, 
+        WS_POPUP | WS_VISIBLE | HS_NOSELECTION, 
         m_rcViewSize.left, m_rcViewSize.top, 
         (m_rcViewSize.right-m_rcViewSize.left), 
         (m_rcViewSize.bottom-m_rcViewSize.top), 
-        m_hwndTabHTMLContainer, NULL, m_hparentInst, NULL);    
+        g_hwndTabHTMLContainer, NULL, m_hparentInst, NULL);    
 
     if (!m_hwndTabHTML)
         return S_FALSE;
@@ -132,7 +146,7 @@ BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
     //  navigate to a Javascript function before the page is fully loaded can 
     //  crash PocketBrowser (specifically when using Reload).  This condition
     //  prevents that behaviour.
-    if (!m_bPageLoaded && (wcsnicmp(tcURL, L"JavaScript:", wcslen(L"JavaScript:")) == 0))
+    if (!m_bLoadingComplete && (wcsnicmp(tcURL, L"JavaScript:", wcslen(L"JavaScript:")) == 0))
     {
         LOG(TRACE) + "Failed to Navigate, Navigation in Progress\n";
         return S_FALSE;
@@ -185,13 +199,30 @@ BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 }
 
 BOOL CIEBrowserEngine::ResizeOnTab(int iInstID,RECT rcNewSize)
-{
-    return TRUE;
+{    
+    m_rcViewSize = rcNewSize;
+
+    if(!m_bLoadingComplete)
+        return TRUE;
+
+    if (MoveWindow(m_hwndTabHTML,
+                   m_rcViewSize.left, 
+                   m_rcViewSize.top, 
+                  (m_rcViewSize.right-m_rcViewSize.left), 
+                  (m_rcViewSize.bottom-m_rcViewSize.top), 
+                   FALSE))
+    {
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
 }
 
 BOOL CIEBrowserEngine::BackOnTab(int iInstID,int iPagesBack /*= 1*/)
 {
-    return TRUE;
+    return Navigate(L"history:back", 0);
 }
 
 BOOL CIEBrowserEngine::ForwardOnTab(int iInstID)
@@ -206,37 +237,17 @@ BOOL CIEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 
 BOOL CIEBrowserEngine::StopOnTab(UINT iTab)
 {
-    return FALSE;
+    return SendMessage(m_hwndTabHTML, DTM_STOP, 0, 0);
 }
 
 BOOL CIEBrowserEngine::ZoomPageOnTab(float fZoom, UINT iTab)
 {
-    return FALSE;
-}
-
-BOOL CIEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
-{
-    return FALSE;
-}
-
-int CIEBrowserEngine::GetTextZoomOnTab(UINT iTab)
-{
-    return 2; //Normal
+    return SendMessage(m_hwndTabHTML, DTM_ZOOMLEVEL, 0, fZoom);
 }
 
 BOOL CIEBrowserEngine::GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab)
 {
     return FALSE;
-}
-
-BOOL CIEBrowserEngine::NavigateToHtml(LPCTSTR szHtml)
-{
-    return TRUE;
-}
-
-LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    return 0;
 }
 
 void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
@@ -255,57 +266,39 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
     }
 }
 
-bool CIEBrowserEngine::isExistJavascript(const wchar_t* szJSFunction, int index)
-{
-    return true;
-}
-
 void CIEBrowserEngine::executeJavascript(const wchar_t* szJSFunction, int index)
 {
-}
-
-void CIEBrowserEngine::SetCookie(char* url, char* cookie)
-{
+    //  Test to see if the passed function starts with "JavaScript:" and 
+    //  if it does not then prepend it.
+    if (_memicmp(szJSFunction, L"JavaScript:", 22))
+    {
+        //  Function does not start with JavaScript:
+        TCHAR* tcURI = new TCHAR[MAX_URL];
+        wsprintf(tcURI, L"JavaScript:%s", szJSFunction);
+        LRESULT retVal;
+        retVal = Navigate(tcURI, 0);
+        delete[] tcURI;
+    }
+    else
+    {
+        Navigate(szJSFunction, 0);
+    }
 }
 
 void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 {
-}
+    if(!m_bLoadingComplete && wcscmp(url,_T("about:blank")) != 0)
+    {
+        m_bLoadingComplete = true;
 
-void CIEBrowserEngine::setBrowserGesturing(bool bEnableGesturing)
-{
-}
-
-void CIEBrowserEngine::NotifyEngineOfSipPosition()
-{
+        ResizeOnTab(0, m_rcViewSize);
+    }
 }
 
 void CIEBrowserEngine::setNavigationTimeout(unsigned int dwMilliseconds)
 {
     m_dwNavigationTimeout = dwMilliseconds;
 }
-
-bool CIEBrowserEngine::RegisterForMessage(unsigned int iMsgId)
-{
-	return true;
-}
-
-bool CIEBrowserEngine::DeRegisterForMessage(unsigned int iMsgId)
-{
-	return true;
-}
-
-bool CIEBrowserEngine::RegisterForPrimaryMessage(unsigned int iMsgId)
-{
-	return true;
-}
-
-bool CIEBrowserEngine::DeRegisterForPrimaryMessage(unsigned int iMsgId)
-{
-	return true;
-}
-
-
 
 HWND CIEBrowserEngine::GetHTMLWND(int /*iTabID*/)
 {
@@ -335,10 +328,11 @@ void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEvent
 	//  Engine component has indicated a load event, this should be 
 	//  one of BeforeNavigate, NavigateComplete or DocumentComplete.
 	wcscpy(m_tcNavigatedURL, tcURL);
+
 	switch (eeEventID)
 	{
 		case EEID_BEFORENAVIGATE:
-			m_bPageLoaded = FALSE;
+			m_bLoadingComplete = FALSE;
 			SetEvent(m_hNavigated);
 			CloseHandle(m_hNavigated);
 			m_hNavigated = NULL;
@@ -362,32 +356,18 @@ void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEvent
 									&CIEBrowserEngine::NavigationTimeoutThread, 
 									(LPVOID)this, 0, NULL));
 
-			//if(m_EngineEvents[EEID_BEFORENAVIGATE])
-			//{
-			//	m_EngineEvents[EEID_BEFORENAVIGATE](EEID_BEFORENAVIGATE, 
-			//										(LPARAM)tcURL, m_tabID);
-			//}
+
+            PostMessage(m_parentHWND, WM_BROWSER_ONBEFORENAVIGATE, (WPARAM)m_tabID, (LPARAM)_tcsdup(tcURL));
 			break;
 		case EEID_DOCUMENTCOMPLETE:
-			m_bPageLoaded = TRUE;
-			//if(m_EngineEvents[EEID_DOCUMENTCOMPLETE])
-			//{
-			//	m_EngineEvents[EEID_DOCUMENTCOMPLETE](EEID_DOCUMENTCOMPLETE, 
-			//											(LPARAM)tcURL, m_tabID);
-			//}
+			m_bLoadingComplete = TRUE;
+            PostMessage(m_parentHWND, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)_tcsdup(tcURL));
 			break;
 		case EEID_NAVIGATECOMPLETE:
 			SetEvent(m_hNavigated);
 			CloseHandle(m_hNavigated);
 			m_hNavigated = NULL;
-
-			////Validate that there is an event handler
-			//if(m_EngineEvents[EEID_NAVIGATECOMPLETE])
-			//{
-			//	m_EngineEvents[EEID_NAVIGATECOMPLETE](EEID_NAVIGATECOMPLETE, 
-			//											(LPARAM)tcURL, m_tabID);
-			//}
-			
+            SendMessage(m_parentHWND, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);			
 			break;
 	}
 }
@@ -396,19 +376,15 @@ void CIEBrowserEngine::InvokeEngineEventTitleChange(LPTSTR tcTitle)
 {
 	////  Notify the core the page title has changed, if not specified between 
 	////  <TITLE> </TITLE> tags this should be set to the page URL.
-	//if(m_EngineEvents[EEID_TITLECHANGE])
-	//{
-	//	TCHAR tcURL[MAX_URL];
-	//	memset(tcURL, 0, sizeof(MAX_URL) * sizeof(TCHAR));
-	//	wcsncpy(tcURL, tcTitle, MAX_URL);
-	//	//m_EngineEvents[EEID_TITLECHANGE](EEID_TITLECHANGE, 
-	//	//								(LPARAM)tcURL, 
-	//	//								m_tabID);
-	//	//wcscpy(m_tcCurrentPageTitle, tcURL);
-	//}
+    TCHAR tcURL[MAX_URL];
+    memset(tcURL, 0, sizeof(MAX_URL) * sizeof(TCHAR));
+    wcsncpy(tcURL, tcTitle, MAX_URL);
+
+    SendMessage(m_parentHWND, WM_BROWSER_ONTITLECHANGE, (WPARAM)m_tabID, (LPARAM)tcURL);
 }
 
 //////////////////////////////////////////////////////////////////////////
+// system handlers
 
 /**
 * \author	Darryn Campbell (DCC, JRQ768)
@@ -417,7 +393,8 @@ void CIEBrowserEngine::InvokeEngineEventTitleChange(LPTSTR tcTitle)
 LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lResult = S_OK;
-	switch (uMsg) 
+
+    switch (uMsg) 
 	{
 		case WM_NOTIFY:
 		{
@@ -430,27 +407,10 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			pnmHTML = (NM_HTMLVIEWW *) lParam;
 			pnmh = (LPNMHDR) &(pnmHTML->hdr);
 			
-			//  Check the message originated from an expected window, i.e. 
-			//  it came from a PIE component we had created whose HWND is identical
-			//  to one of the tabs
-			HWND hwndOriginatingPIEHTML = pnmh->hwndFrom;
-			//  When we created the HTML tab it created a child window which 
-			//  originates these messages, therefore find the parent of the 
-			//  originator and ensure it has the correct class name
-			HWND hwndParentOfOriginator = GetParent(hwndOriginatingPIEHTML);
-			TCHAR* tcOriginatingClassName = new TCHAR[wcslen(WC_HTML)+1];
-			GetClassName(hwndParentOfOriginator, tcOriginatingClassName, wcslen(WC_HTML)+1);
-			if (wcscmp(tcOriginatingClassName, WC_HTML) != 0)
-			{
-				delete[] tcOriginatingClassName;
-				break;
-			}
-			delete[] tcOriginatingClassName;
-
 			//  The message has originated from one of the tabs we created, determine
 			//  the tab ID from the hwnd
 			//IETab* tab = GetSpecificTab(hwndParentOfOriginator);
-			CIEBrowserEngine* mobileTab = (CIEBrowserEngine*)0; //tab->pEngine;
+            CIEBrowserEngine* mobileTab = CIEBrowserEngine::getInstance();
 
 			//  Invoke the appropriate tab with the event.  The data will vary
 			//  depending on which event has been received
@@ -477,8 +437,8 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 					mbstowcs(tcData, (LPSTR)pnmHTML->szData, MAX_URL);
 				//  If there is both an HTTP Equiv and some Content to the Meta
 				//  tag then invoke it
-				//if (tcTarget && tcData)
-				//	mobileTab->InvokeEngineEventMetaTag(tcTarget, tcData);			
+				if (tcTarget && tcData)
+					mobileTab->InvokeEngineEventMetaTag(tcTarget, tcData);			
 				break;
 			case NM_PIE_BEFORENAVIGATE:
 				if (pnmHTML->szTarget)
@@ -494,8 +454,8 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 							LOG(TRACE) + "Navigation to file folder aborted\n";
 							return S_FALSE;
 						}
-				//if (tcTarget)
-				//	mobileTab->InvokeEngineEventLoad(tcTarget, EEID_BEFORENAVIGATE);
+				if (tcTarget)
+					mobileTab->InvokeEngineEventLoad(tcTarget, EEID_BEFORENAVIGATE);
 				break;
 			case NM_PIE_DOCUMENTCOMPLETE:
 				if (pnmHTML->szTarget)
@@ -505,14 +465,14 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 				//  give a document complete with the current page URL (not the
 				//  page being navigated to) which is hiding the hourglass, 
 				//  stop this behaviour.
-				//if (tcTarget && !wcsicmp(tcTarget, mobileTab->m_tcNavigatedURL))
-				//	mobileTab->InvokeEngineEventLoad(tcTarget, EEID_DOCUMENTCOMPLETE);
+				if (tcTarget && !wcsicmp(tcTarget, mobileTab->m_tcNavigatedURL))
+					mobileTab->InvokeEngineEventLoad(tcTarget, EEID_DOCUMENTCOMPLETE);
 				break;
 			case NM_PIE_NAVIGATECOMPLETE:
 				if (pnmHTML->szTarget)
 					mbstowcs(tcTarget, (LPSTR)pnmHTML->szTarget, MAX_URL);
-				//if (tcTarget)
-				//	mobileTab->InvokeEngineEventLoad(tcTarget, EEID_NAVIGATECOMPLETE);
+				if (tcTarget)
+					mobileTab->InvokeEngineEventLoad(tcTarget, EEID_NAVIGATECOMPLETE);
 				break;
 			case NM_PIE_KEYSTATE:
 			case NM_PIE_ALPHAKEYSTATE:
@@ -521,7 +481,8 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 			}
 		}	
-//		lResult = DefWindowProc(hwnd, uMsg, wParam, lParam);
+
+		lResult = DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
 	return lResult;
@@ -529,25 +490,28 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
-	LOG(TRACE) + "Mobile NavThread Started\n";
-
 	CIEBrowserEngine* pIEEng = reinterpret_cast<CIEBrowserEngine*>(lpParameter);
 
-	if(pIEEng->m_hNavigated==NULL)
-		pIEEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
+    if (pIEEng->m_dwNavigationTimeout != 0)
+    {
+        LOG(TRACE) + "Mobile NavThread Started\n";
 
-	if(WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
-	{
-		//no point in doing anything as there is no event handler
-		pIEEng->StopOnTab(0);
-		CloseHandle(pIEEng->m_hNavigated);
-		pIEEng->m_hNavigated = NULL;
-	
-		//if(pIEEng->m_EngineEvents[EEID_NAVIGATIONTIMEOUT])
-		//	pIEEng->m_EngineEvents[EEID_NAVIGATIONTIMEOUT](EEID_NAVIGATIONTIMEOUT, (LPARAM)pIEEng->m_tcNavigatedURL, pIEEng->m_tabID);
-	}
+	    if(pIEEng->m_hNavigated==NULL)
+		    pIEEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
-	LOG(TRACE) + "NavThread Ended\n";
+	    if(WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
+	    {
+		    //no point in doing anything as there is no event handler
+		    pIEEng->StopOnTab(0);
+		    CloseHandle(pIEEng->m_hNavigated);
+		    pIEEng->m_hNavigated = NULL;
+
+            SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+                (WPARAM)pIEEng->m_tabID, (LPARAM)pIEEng->m_tcNavigatedURL);
+	    }
+
+	    LOG(TRACE) + "NavThread Ended\n";
+    }
 
 	return 0;
 }
