@@ -29,7 +29,7 @@ IBrowserEngine* BrowserFactory::create(HWND hwndParent)
 //#elif defined(OS_PLATFORM_MOTCE)
     //return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 //#else
-    return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
+    return CIEBrowserEngine::getInstance(hwndParent, rho_wmimpl_get_appinstance());
 //#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 }
 
