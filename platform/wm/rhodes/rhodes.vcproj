@@ -2993,11 +2993,11 @@
 			Name="browsers"
 			>
 			<File
-				RelativePath=".\browser\BrowserSelector.cpp"
+				RelativePath=".\browser\BrowserFactory.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\browser\BrowserSelector.h"
+				RelativePath=".\browser\BrowserFactory.h"
 				>
 			</File>
 			<File
@@ -3006,6 +3006,14 @@
 			</File>
 			<File
 				RelativePath=".\browser\CEBrowserEngine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\browser\EngineDefines.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\browser\EngineDefines.h"
 				>
 			</File>
 			<File
