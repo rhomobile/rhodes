@@ -660,6 +660,15 @@ namespace "config" do
                 end
               end
 
+              resource_packages = extconf_android['resource_packages'] if extconf_android
+              if resource_packages
+                if resource_packages.is_a? Array
+                  resource_packages.each do |package|
+                    $ext_android_library_deps[package] = ""
+                  end
+                end
+              end
+
               additional_sources = extconf["android_additional_sources_list"]
               additional_sources = extconf_android['source_list'] if additional_sources.nil? and extconf_android
               unless additional_sources.nil?
