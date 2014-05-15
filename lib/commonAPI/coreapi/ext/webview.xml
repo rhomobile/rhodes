@@ -2,19 +2,18 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="WebView" parent="Rho" generateUnderscoreRubyNames="true">
-        <HELP_OVERVIEW>The `Webview` is the core container used for rendering your application code. You can control certain behaviours of the webview by using this API class.</HELP_OVERVIEW>
+        <HELP_OVERVIEW>The `Webview` is the core container used for rendering your application code. You can control certain behaviors of the webview by using this API class.</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
 
         <ALIASES>
@@ -26,12 +25,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
         <PROPERTIES access="STATIC">
             <DESC></DESC>
-
             <ALIASES>
             </ALIASES>
-
             <PROPERTY name="framework" type="STRING" readOnly="true">
-                <DESC>Same as System.webViewFramework</DESC>
+                <DESC>Same as System.webViewFramework.</DESC>
             </PROPERTY>
             <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
                 <DESC>Use full screen mode.</DESC>
@@ -47,18 +44,18 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <APPLIES>Motorola Solutions' WebKit on Windows Mobile/CE</APPLIES> 
             </PROPERTY>
             <PROPERTY name="enableWebPlugins" type="BOOLEAN" default="true" readOnly="true">
-                <DESC>Enable/disable web plugins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC>
+                <DESC>Enable / disable web plug-ins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="navigationTimeout" type="INTEGER" default="0">
                 <DESC>Can be defined in config.xml: Navigation\\NavTimeout. Number of milliseconds(maximum is 45000) before the browser times out and navigates to the page specified in the badlink setting. If it is determined that the destination is unreachable regardless of wait time, the badlink may be loaded before NAVTIMEOUT. This is the time taken to establish communication with the server, not the time taken to fully load the page.</DESC>
-                <MORE_HELP>Note that the navigation timeout will not be invoked when navigating to the start page, best practise is to store your first page locally to avoid connectivity issues at start up, you can then redirect to an online page if desired.</MORE_HELP>
+                <MORE_HELP>Note that the navigation timeout will not be invoked when navigating to the start page, best practice is to store your first page locally to avoid connectivity issues at start up, you can then redirect to an online page if desired.</MORE_HELP>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
 
             <PROPERTY name="scrollTechnique" type="STRING" default="FingerScroll" readOnly="true">
-                <DESC>Specifies the technique used to scroll about the page.Defines in config.xml: Scrolling\\ScrollTechnique</DESC>
+                <DESC>Specifies the technique used to scroll about the page.Defines in config.xml: Scrolling\\ScrollTechnique.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
                 <VALUES>
@@ -93,22 +90,22 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
 
             <PROPERTY name="viewportEnabled" type="BOOLEAN" default="true" readOnly="true">
-                <DESC>Whether to enable or disable viewport meta tag processing.Defines in config.xml: Navigation\\ViewportEnabled</DESC>
+                <DESC>Whether to enable or disable viewport meta tag processing.Defines in config.xml: Navigation\\ViewportEnabled.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="viewportWidth" type="INTEGER" readOnly="true">
-                <DESC>Default viewport width to use for pages that do not have a viewport meta tag (uses 1:1 scaling if not specified).Defines in config.xml: Navigation\\ViewportWidth</DESC>
+                <DESC>Default viewport width to use for pages that do not have a viewport meta tag (uses 1:1 scaling if not specified).Defines in config.xml: Navigation\\ViewportWidth.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="cacheSize" type="INTEGER" readOnly="true">
-                <DESC>The browser cache size, in whole MBs. Defines in config.xml: Navigation\\Cache</DESC>
+                <DESC>The browser cache size, in whole MBs. Defines in config.xml: Navigation\\Cache.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="enableCache" type="BOOLEAN" default="true" readOnly="true">
-                <DESC>Enable/disable Browser cache. Use 'WebView.enableCache' parameter in rhoconfig.txt to configure this value.</DESC>
+                <DESC>Enable / disable Browser cache. Use 'WebView.enableCache' parameter in rhoconfig.txt to configure this value.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="acceptLanguage" type="STRING" generateDoc="false">
@@ -129,13 +126,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <PROPERTY name="activeTab" type="INTEGER" readOnly="true">
                 <DESC>Return an active tab index. For change active tab use Use Rho.NativeTabbar.currentTab property.</DESC>
             </PROPERTY>
-
         </PROPERTIES>
 
-        <METHODS  access="STATIC">
-                        
+        <METHODS access="STATIC">
             <ALIASES>
                 <ALIAS new="execute_js" existing="executeJavascript" deprecated="true"/>
+                <ALIAS new="executeJavaScript" existing="executeJavascript"/>
                 <ALIAS new="get_current_url" existing="currentURL" deprecated="true"/>
             </ALIASES>
 
@@ -181,19 +177,18 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="currentLocation">
-                <DESC>Returns the relative url (location) of the current page(without server and port); the last URL loaded to WebView from controller action.</DESC>
+                <DESC>Returns the relative url (location) of the current page(without server and port); the last URL loaded to WebView from Ruby controller action.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <MORE_HELP>If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</MORE_HELP>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
-                        <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
+                        <DESC>TabBar tab index. If no tab bar present, index is ignored.Tab should be loaded once to return current url.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Current location of active WebView.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="STRING">
-                    
                 </RETURN>
             </METHOD>
 
@@ -210,7 +205,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
                 <RETURN type="STRING">
-                    
                 </RETURN>
             </METHOD>
 
@@ -231,15 +225,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="active_tab" deprecated="true">
                 <DESC>Use Rho::NativeTabbar.currentTab property: returns the current tab index.</DESC>
                 <RETURN type="INTEGER">
-                    
                 </RETURN>
             </METHOD>
 
             <METHOD name="full_screen_mode" deprecated="true">
-                <DESC>Use WebView.fullScreen property: Switch to/from full screen mode.</DESC>
+                <DESC>Use WebView.fullScreen property: Switch to / from full screen mode.</DESC>
                 <PARAMS>
                     <PARAM name="enable" type="BOOLEAN"/>
                 </PARAMS>
@@ -254,7 +248,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Set a cookie to be used by WebView for this url.</DESC>
                     </PARAM>
                     <PARAM name="cookie" type="STRING">
-                        <DESC>One or more name/value pairs of the format "NAME=VALUE". Separate multiple name/value pairs with a semicolon, such as "NAME1=VALUE1; NAME2=VALUE2".</DESC>
+                        <DESC>One or more name-value pairs of the format "NAME=VALUE". Separate multiple name-value pairs with a semicolon, such as "NAME1=VALUE1; NAME2=VALUE2".</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -267,18 +261,18 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Format of the saved page.</DESC>
                         <VALUES>
                             <VALUE constName="SAVE_FORMAT_JPEG" value ="jpeg">
-                                <DESC>Save as jpeg image</DESC>
+                                <DESC>Save as jpeg image.</DESC>
                             </VALUE>
                         </VALUES>
                     </PARAM>
                     <PARAM name="path" type="STRING">
-                        <DESC>Path to the file/folder to save the page.</DESC>
+                        <DESC>Path to the file / folder to save the page.</DESC>
                     </PARAM>
 
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
-                            <DESC>If tabbar index ommited then active WebView will be saved.</DESC>
+                            <DESC>If tabbar index omitted then active WebView will be saved.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
@@ -293,224 +287,189 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
         </METHODS>
-        
+
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-            <![CDATA[
-    				]]>
-    
+            <![CDATA[]]>
         </USER_OVERVIEW>
+
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
-        <EXAMPLES >
-           <EXAMPLE title="Execute javascript">
-               <SECTIONS>
-               <SECTION>
-               <DESC>
-                   You can call the WebView and make it execute Javascript code from a Ruby controller. This can be particularly helpful in order to reuse Javascript functionality 
-                   that is already included in your pages 
-               </DESC>
-               <CODE lang='ruby'>
-           <![CDATA[
-    #call javascript alert on the current page
-    Rho::WebView.executeJavascript("alert('This is Webview.executejavascript function');")
 
-                   ]]>
+        <EXAMPLES>
+            <EXAMPLE title="Execute javascript">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>You can call the WebView and make it execute JavaScript code from a Ruby controller. This can be particularly helpful in order to reuse JavaScript functionality that is already included in your pages.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+#call javascript alert on the current page
+Rho::WebView.executeJavascript("alert('This is Webview.executejavascript function');")
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>As an example, you can invoke JQuery Mobile's changePage.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+#call JQuery Mobile from a Ruby controller
+Rho::WebView.executeJavascript("$.mobile.changePage('#my_page');")
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>You can also call your own functions.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+function greet(name) {
+    alert("Hello, "+name);  
+}
+]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>From the Ruby controller we can execute the JavaScript function that may be in the view.</DESC> 
+                        <CODE>
+                            <RUBY><![CDATA[
+#call a custom JavaScript function from Ruby
+Rho::WebView.executeJavascript("greet('John Doe');")
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
 
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                    As an example, you can invoke JQuery Mobile's changePage
-               </DESC>
-               <CODE lang='ruby'>
-           <![CDATA[
-    #call JQuery Mobile from a Ruby controller
-    Rho::WebView.executeJavascript("$.mobile.changePage('#my_page');")
-                   ]]>
-
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                    You can also call your own functions                    
-               </DESC>
-               <CODE lang='javascript'>
-           <![CDATA[
-           function greet(name) {
-                alert("Hello, "+name);  
-           }
-                   ]]>
-
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                    From the Ruby controller we can execute the Javascript function that may be in the view.
-                </DESC> 
-               <CODE lang='ruby'>
-           <![CDATA[
-    #call a custom Javascript function from Ruby
-    Rho::WebView.executeJavascript("greet('John Doe');")
-                   ]]>
-
-               </CODE>
-               </SECTION>
-                              
-               </SECTIONS>
-           </EXAMPLE>
             <EXAMPLE title="Use full-screen mode">
-               <SECTIONS>
-               <SECTION>
-               <DESC>
-                   The WebView can be set to use all the available screen real-estate by turning on "full-screen" mode 
-               </DESC>
-               <CODE lang='ruby'>
-           <![CDATA[
-           # Toggle fullScreen on / off
-        Rho::WebView.fullScreen = !Rho::WebView.fullScreen 
-                   ]]>
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>The WebView can be set to use all the available screen real-estate by turning on "full-screen" mode.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+# Toggle fullScreen on / off
+Rho::WebView.fullScreen = !Rho::WebView.fullScreen 
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>This property can also be assigned to in JavaScript.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+// Fullscreen can also be invoked from JavaScript
+Rho.WebView.fullScreen = true;
 
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                   This property can also be assigned to in Javascript   
-               </DESC>
-               <CODE lang='javascript'>
-           <![CDATA[
-        // Fullscreen can also be invoked from Javascript
-        Rho.WebView.fullScreen = true;
-        
-        Rho.WebView.fullScreen = false;
-                   ]]>
+Rho.WebView.fullScreen = false;
+]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
 
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>           
-           <EXAMPLE title="Navigate">
-               <SECTIONS>
-               <SECTION>
-               <DESC>
-                   This is the section that will appear before the code block
-               </DESC>
-               <CODE lang='ruby'>
-           <![CDATA[
-    #Force WebView to navigate to a URL.
-    Rho::WebView.navigate(url_for(:action => :my_action))
-                   ]]>
+            <EXAMPLE title="Navigate">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This is the section that will appear before the code block.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+#Force WebView to navigate to a URL.
+Rho::WebView.navigate(url_for(:action => :my_action))
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>You can also navigate outside of your application, to an external site.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+#Navigate out of the local application and into an externally-served site
+Rho::WebView.navigate("http://www.example.com");
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>This API is also available from JavaScript.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+//Navigate out of the local application and into an externally-served site
+Rho.WebView.navigate("http://www.example.com");
+]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
 
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                   You can also navigate outside of your application, to an external site
-               </DESC>
-               <CODE lang='ruby'>
-           <![CDATA[
-     #Navigate out of the local application and into an externally-served site
-      Rho::WebView.navigate("http://www.example.com");
-                   ]]>
+            <EXAMPLE title="Navigate back">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This is the section that will appear before the code block.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+#Force WebView to navigate to the previous page using Browser back.
+Rho::WebView.navigateBack
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>The same method is available in JavaScript.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+//Force WebView to navigate to the previous page using Browser back.
+Rho.WebView.navigateBack();
+]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
 
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                   This API is also available from Javascript
-               </DESC>
-               <CODE lang='javascript'>
-           <![CDATA[
-     //Navigate out of the local application and into an externally-served site
-      Rho.WebView.navigate("http://www.example.com");
-                   ]]>
+            <EXAMPLE title="Refresh the page">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>Reload the current URL into the WebView. This is useful especially after having updated data that must be now shown to the user </DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+# Update database or variables here
+# ...     
+# Refresh the current page to show new information
+Rho::WebView.refresh
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>By default, "refresh" will update the current view. If you are using the native Tabbar and have multiple WebViews, you can specify which one to refresh.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+# Reload the page on WebView number 2
+Rho::WebView.refresh(2)
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>Also available from JavaScript.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+// Reload the current page
+Rho.WebView.refresh()
 
-               </CODE>
-               </SECTION>
-
-               </SECTIONS>
-           </EXAMPLE>
-           <EXAMPLE title="Navigate back">
-               <SECTIONS>
-               <SECTION>
-               <DESC>
-                   This is the section that will appear before the code block
-               </DESC>
-               <CODE lang='ruby'>
-           <![CDATA[
-     #Force WebView to navigate to the previous page using Browser back.
-      Rho::WebView.navigateBack
-
-                   ]]>
-
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                   The same method is available in Javascript
-               </DESC>
-               <CODE lang='javascript'>
-           <![CDATA[
-     //Force WebView to navigate to the previous page using Browser back.
-      Rho.WebView.navigateBack();
-    
-                   ]]>
-
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-           <EXAMPLE title="Refresh the page">
-               <SECTIONS>
-               <SECTION>
-               <DESC>
-                   Reload the current URL into the WebView. This is useful especially after having updated data that must be now shown to the user 
-               </DESC>
-               <CODE lang='ruby'>
-           <![CDATA[
-    # Update database or variables here
-    # ...      
-    # Refresh the current page to show new information
-    Rho::WebView.refresh
-                   ]]>
-
-               </CODE>
-               </SECTION>
-               <SECTION>
-               <DESC>
-                   By default, "refresh" will update the current view. If you are using the native Tabbar and have multiple WebViews, you can specify which one to refresh
-               </DESC>
-               <CODE lang='ruby'>
-           <![CDATA[
-     # Reload the page on WebView number 2
-      Rho::WebView.refresh(2)
-                   ]]>
-
-               </CODE>
-               </SECTION>
-               
-               <SECTION>
-               <DESC>
-                   Also available from Javascript
-               </DESC>
-               <CODE lang='javascript'>
-           <![CDATA[
-     // Reload the current page
-      Rho.WebView.refresh()
-
-     // Reload the page on WebView number 3
-      Rho.WebView.refresh(3)
-      
-                   ]]>
-
-               </CODE>
-               </SECTION>               
-               </SECTIONS>
-           </EXAMPLE>
-
-       </EXAMPLES>
-
+// Reload the page on WebView number 3
+Rho.WebView.refresh(3)
+]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
     </MODULE>
-</API>    
+</API>

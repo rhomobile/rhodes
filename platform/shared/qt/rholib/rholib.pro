@@ -24,8 +24,7 @@ macx {
 win32 {
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
-  DEFINES -= _UNICODE UNICODE
-  DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS
+  DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS _UNICODE UNICODE
   Debug {
     DEFINES += _DEBUG DEBUG
   }

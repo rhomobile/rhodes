@@ -1,3 +1,4 @@
+ext/platform/android/src/com/motorolasolutions/rho/coreapi/RhodesListener.java
 ext/platform/android/generated/src/com/rho/webview/IWebView.java
 ext/platform/android/generated/src/com/rho/webview/IWebViewFactory.java
 ext/platform/android/generated/src/com/rho/webview/IWebViewSingleton.java
@@ -36,3 +37,11 @@ ext/platform/android/src/com/rho/notification/NotificationFactory.java
 ext/platform/android/src/com/rho/notification/NotificationSingleton.java
 ext/platform/android/src/com/rho/notification/Notification.java
 ext/platform/android/src/com/rho/notification/NotificationIntentService.java
+ext/platform/android/generated/src/com/rho/intent/IntentBase.java
+ext/platform/android/generated/src/com/rho/intent/IntentFactorySingleton.java
+ext/platform/android/generated/src/com/rho/intent/IntentSingletonBase.java
+ext/platform/android/generated/src/com/rho/intent/IIntent.java
+ext/platform/android/generated/src/com/rho/intent/IIntentFactory.java
+ext/platform/android/generated/src/com/rho/intent/IIntentSingleton.java
+ext/platform/android/src/com/rho/intent/IntentSingleton.java
+ext/platform/android/src/com/rho/intent/IntentReceiver.java

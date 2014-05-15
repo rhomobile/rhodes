@@ -55,9 +55,11 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 
@@ -470,6 +472,7 @@ public class TabbedMainView implements MainView {
 	@SuppressWarnings("unchecked")
 	public TabbedMainView(Object params, Object options, IMethodResult callback) {
 		Context ctx = ContextFactory.getUiContext();
+        RhodesActivity activity = RhodesActivity.safeGetInstance();
 
 		if (callback != null) {
 			mChangeTabCallback = callback;
@@ -534,26 +537,22 @@ public class TabbedMainView implements MainView {
 		TabHost.LayoutParams lpt = null;
 		if (place_tabs_bottom) {
 
-			lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
-					LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
+			lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
 			host.addView(tabWidget, lpt);
 			
 			
 			frame.setId(android.R.id.tabcontent);
-			lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
-					LayoutParams.FILL_PARENT, Gravity.TOP);
+			lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, Gravity.TOP);
 			host.addView(frame, lpf);
 
 		}
 		else {
-			lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
-					LayoutParams.WRAP_CONTENT, Gravity.TOP);
+			lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, Gravity.TOP);
 			host.addView(tabWidget, lpt);
 
 			frame = new FrameLayout(ctx);
 			frame.setId(android.R.id.tabcontent);
-			lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
-					LayoutParams.FILL_PARENT, Gravity.BOTTOM);
+			lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, Gravity.BOTTOM);
 			host.addView(frame, lpf);
 		}
 		
@@ -575,7 +574,7 @@ public class TabbedMainView implements MainView {
 			Map<Object, Object> hash = (Map<Object, Object>)param;
 			
 			Object labelObj = hash.get("label");
-			if (labelObj == null || !(labelObj instanceof String))
+			if (!(labelObj instanceof String))
 				throw new IllegalArgumentException("'label' should be String");
 			
 			Object actionObj = hash.get("action");
@@ -593,16 +592,11 @@ public class TabbedMainView implements MainView {
 				throw new IllegalArgumentException("'action' should be String");
 			
 			
-			String label = (String)labelObj;
+			String label = (labelObj == null) ? null : (String)labelObj;
 			String action = (String)actionObj;
-			String icon = null;
 			boolean reload = false;
 			boolean disabled = false;
 			int web_bkg_color = 0xFFFFFFFF;
-			
-			Object iconObj = hash.get("icon");
-			if (iconObj != null && (iconObj instanceof String))
-				icon = "apps/" + (String)iconObj;
 			
 			Object reloadObj = hash.get("reload");
 			if (reloadObj != null && (reloadObj instanceof Boolean))
@@ -627,40 +621,20 @@ public class TabbedMainView implements MainView {
 			
 			// Set label and icon
 			BitmapDrawable drawable = null;
+            Bitmap bitmap = getIconBitmap(tabs_array[i]);
+            if (bitmap != null) {
+                drawable = new BitmapDrawable(ctx.getResources(), bitmap);
+                drawable.setTargetDensity(metrics);
+            }
 
-			if (icon != null) {
-				String iconPath = RhoFileApi.normalizePath(icon);
-				Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
-				if (disabled && (bitmap != null)) {
-					// replace Bitmap to gray
-					bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true); // prepare mutable bitmap
-					int x;
-					int y;
-					int bw = bitmap.getWidth();
-					int bh = bitmap.getHeight();
-					int nc = DISABLED_IMG_COLOR & 0xFFFFFF;
-					int c;
-					for (y = 0; y < bh; y++) {
-						for (x = 0; x < bw; x++) {
-							c = bitmap.getPixel(x, y);
-							c = nc | (c & 0xFF000000);
-							bitmap.setPixel(x, y, c);
-						}
-					}
-				}
-				
-				if (bitmap != null)
-					bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);//Bitmap.DENSITY_NONE);
-					drawable = new BitmapDrawable(bitmap);
-					drawable.setTargetDensity(metrics);
-			}
-			if (drawable == null)
-				spec.setIndicator(label);
-			else
-				spec.setIndicator(label, drawable);
+            if (drawable == null) {
+                spec.setIndicator(label);
+            }
+            else {
+                spec.setIndicator(label, drawable);
+            }
 
             SimpleMainView view = null;
-            RhodesActivity activity = RhodesActivity.safeGetInstance();
             if (use_current_view_for_tab) {
                 MainView mainView = activity.getMainView();
                 action = mainView.currentLocation(-1);
@@ -701,6 +675,7 @@ public class TabbedMainView implements MainView {
 			host.addTab(spec);
 		}
 		
+		
 		tabWidget.measure(host.getWidth(), host.getHeight());
 		int hh = tabWidget.getMeasuredHeight();
 		//if (hh < 64) {
@@ -713,7 +688,67 @@ public class TabbedMainView implements MainView {
 			lpf.setMargins(0, hh, 0, 0);
 		}
 		host.updateViewLayout(frame, lpf);
-	}
+
+	       //host.getTabWidget().getChildTabViewAt(index);
+        for (int i = 0; i < size; ++i) {
+            ViewGroup tab = (ViewGroup)host.getTabWidget().getChildTabViewAt(i);
+            ImageView iconView = (ImageView)tab.findViewById(android.R.id.icon);
+
+            Bitmap bitmap = getIconBitmap(tabs_array[i]);
+            if (bitmap != null) {
+                
+                Logger.T(TAG, "Add icon to Holo style tab: " + i);
+                
+                BitmapDrawable drawable = new BitmapDrawable(ctx.getResources(), bitmap);
+                drawable.setTargetDensity(metrics);
+                iconView.setImageDrawable(drawable);
+                iconView.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private Bitmap getIconBitmap(Object tabParamsObj) {
+        Map<Object, Object> hash = (Map<Object, Object>)tabParamsObj;
+
+        Object iconObj = hash.get("icon");
+        
+        Bitmap bitmap = null;
+
+        if (iconObj != null) {
+            String iconPath = RhoFileApi.normalizePath("apps/" + (String)iconObj);
+
+            Logger.T(TAG, "Bitmap file path: " + iconPath);
+
+            bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
+
+            if (bitmap != null) {
+                boolean disabled = false;
+                Object disabled_Obj = hash.get("disabled");
+                if (disabled_Obj != null && (disabled_Obj instanceof Boolean))
+                    disabled = ((Boolean)disabled_Obj).booleanValue();
+
+                if (disabled) {
+                    // replace Bitmap to gray
+                    bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true); // prepare mutable bitmap
+                    int x;
+                    int y;
+                    int bw = bitmap.getWidth();
+                    int bh = bitmap.getHeight();
+                    int nc = DISABLED_IMG_COLOR & 0xFFFFFF;
+                    int c;
+                    for (y = 0; y < bh; y++) {
+                        for (x = 0; x < bw; x++) {
+                            c = bitmap.getPixel(x, y);
+                            c = nc | (c & 0xFF000000);
+                            bitmap.setPixel(x, y, c);
+                        }
+                    }
+                }
+                bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);//Bitmap.DENSITY_NONE);
+            }
+        }
+        return bitmap;
+    }
 
 	private class TabHostClickListener implements View.OnTouchListener, View.OnClickListener, TabHost.OnTabChangeListener {
 		

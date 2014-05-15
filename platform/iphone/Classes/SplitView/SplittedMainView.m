@@ -42,11 +42,28 @@
 
 
 #import "TabbedMainView.h"
-#import "SignatureViewController.h"
+#import "Signature/SignatureViewController.h"
 
 
+static void updateViewRect(CGRect* pRect)
+{
+#ifdef __IPHONE_7_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        char fsc[] = "0";
+        const char* fs = get_app_build_config_item("iphone_use_new_ios7_status_bar_style");
+        if (fs == NULL) {
+            fs = fsc;
+        }
+        if ((fs[0] == '0')) {
+            pRect->origin.y += 20;
+            pRect->size.height -= 20;
+        }
+    }
+    
+#endif
+}
 
-@implementation RhoUISplitView 
+@implementation RhoUISplitView
 
 @synthesize leftWidth;
 
@@ -75,25 +92,10 @@
 	right_frame.size.width = my_frame.size.width - left_frame.size.width - 2;
 	right_frame.size.height = my_frame.size.height;
     
-    
-#ifdef __IPHONE_7_0
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
-        char fsc[] = "0";
-        const char* fs = get_app_build_config_item("iphone_use_new_ios7_status_bar_style");
-        if (fs == NULL) {
-            fs = fsc;
-        }
-        if ((fs[0] == '0')) {
-            left_frame.origin.y += 20;
-            left_frame.size.height -= 20;
-        }
-    }
-    
-#endif
-    
-    
+    updateViewRect(&left_frame);
 	
 	leftView.frame = left_frame;
+    //leftView.bounds = left_frame;
 	rightView.frame = right_frame;
 	
 }
@@ -108,9 +110,17 @@
 
 @synthesize viewControllers;
 
+- (void)dealloc {
+	[viewControllers release];
+    //[mCreationTimeMainView release];
+    [super dealloc];
+}
+
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p  bar_info:(NSDictionary*)bar_info {
     
 	self = [self initWithNibName:nil bundle:nil];
+    
+    mCreationTimeMainView = v;
 
 	RightViewController *rightView = NULL;
 	LeftViewController *leftView = NULL;
@@ -160,13 +170,21 @@
 	[leftView release];
 	[rightView release];
 	
-	
+    CGRect rc = [v view].bounds;
+    updateViewRect(&rc);
+	[ leftView updateViewHeight: rc.size.height] ;
+    [self switchTab: [leftView getFirstActiveItem]];
+    
 	//[self.view layoutSubviews];
 	//[self.view setNeedsLayout];
 	
     return self;
 }
 
+
+- (id<RhoMainView>)getCreationTimeMainView {
+    return mCreationTimeMainView;
+}
 
 
 

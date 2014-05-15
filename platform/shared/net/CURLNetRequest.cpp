@@ -685,6 +685,8 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         }
         
         curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC);
+    
+        curl_easy_setopt(m_curl,CURLOPT_NOPROXY,"127.0.0.1,localhost");
     }
     
 #if defined(OS_WP8) || defined(OS_WINRT)

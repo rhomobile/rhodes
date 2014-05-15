@@ -117,7 +117,8 @@ public class RhodesApplication extends Application{
     }
 
     public static void handleAppStarted() {
-        sRhodesAppActiveWatcher.run();
+        //sRhodesAppActiveWatcher.run();
+    	stateChanged(AppState.AppStarted);
     }
 
     public static Context getContext() {
@@ -140,7 +141,7 @@ public class RhodesApplication extends Application{
     }
 
     private void registerStateHandlers() {
-        sRhodesAppActiveWatcher = AppState.AppStarted.addObserver("RhodesAppActiveObserver", true);
+        sRhodesAppActiveWatcher = null;//AppState.AppStarted.addObserver("RhodesAppActiveObserver", true);
         
         RhodesApplication.runWhen(
                 UiState.MainActivityPaused,
@@ -256,7 +257,7 @@ public class RhodesApplication extends Application{
 	    mReceiver = new ScreenReceiver();
 	    registerReceiver(mReceiver, filter);
 
-        Logger.I(TAG, "Initialized");
+      Logger.I(TAG, "Initialized");
     }
 
     private native static void initClassLoader(ClassLoader c);

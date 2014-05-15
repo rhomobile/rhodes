@@ -11,8 +11,9 @@ android:
   source_list: ext/platform/android/ext_java.files
   adds: ext/platform/android/adds
   manifest_changes: ext/platform/android/ApplicationManifestAdds.erb
-  rhodes_listener: com.rho.notification.NotificationFactory
+  rhodes_listener: com.motorolasolutions.rho.coreapi.RhodesListener
   exttype: rakefile
+
 wp8:
   libraries: ["WebView", "NativeToolbar", "NativeTabbar"]
   webview:
@@ -31,5 +32,6 @@ wp8:
 project_paths:
   wp8: ext/platform/wp8/CoreAPI.vcxproj
   wm: ext/platform/wm/CoreAPI.vcproj
-  
-xml_api_paths: ext/Application.xml, ext/Database.xml, ext/system.xml, ext/Network.xml, ext/sqlite3.xml, ext/process.xml, ext/webview.xml, ext/Log.xml, ext/NativeTabbar.xml, ext/NativeToolbar.xml, ext/Navbar.xml, ext/File.xml, ext/push.xml, ext/Notification.xml, ext/NativeMenubar.xml
+
+xml_api_paths: ext/Application.xml, ext/Database.xml, ext/NewORM.xml, ext/NewORMModel.xml, ext/system.xml, ext/Network.xml, ext/sqlite3.xml, ext/process.xml, ext/webview.xml, ext/Log.xml, ext/NativeTabbar.xml, ext/NativeToolbar.xml, ext/Navbar.xml, ext/File.xml, ext/push.xml, ext/Notification.xml, ext/NativeMenubar.xml, ext/Intent.xml
+

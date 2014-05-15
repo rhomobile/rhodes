@@ -77,10 +77,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactAccessorNew.ja
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactAccessorOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactField.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Phonebook.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/ImageCapture.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/Signature.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/SignatureView.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/signature/SignatureProperties.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSockAddr.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocket.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocketImpl.java
@@ -112,6 +108,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderEcla
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderEclairMR1.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderFroyo.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderJellyBean.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderKitKat.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoConfig.java

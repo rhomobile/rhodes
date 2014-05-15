@@ -1056,7 +1056,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="2"
+				Optimization="1"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\wince;..\..\shared\ruby\wince\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED;RUBY_EXPORT"
 				RuntimeLibrary="0"
@@ -2074,10 +2074,6 @@
 				<Filter
 					Name="rho"
 					>
-					<File
-						RelativePath="..\..\shared\ruby\ext\rho\extensions.c"
-						>
-					</File>
 					<File
 						RelativePath="..\..\shared\ruby\ext\rho\rhoruby.c"
 						>

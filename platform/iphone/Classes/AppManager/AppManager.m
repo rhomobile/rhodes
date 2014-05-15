@@ -428,7 +428,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 - (UIViewController *) documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller {
     
-    return [[Rhodes sharedInstance] mainView]; 
+    return [[[Rhodes sharedInstance] mainView] getMainViewController];
     
 }
 
@@ -441,29 +441,33 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         docController.delegate = self;//[AppManager instance];
         
         BOOL result = [docController presentPreviewAnimated:YES];
+        [docController autorelease];
         
         if (!result) {
+            //[docController retain];
             CGPoint centerPoint = [Rhodes sharedInstance].window.center;
             CGRect centerRec = CGRectMake(centerPoint.x, centerPoint.y, 0, 0);
             BOOL isValid = [docController presentOpenInMenuFromRect:centerRec inView:[Rhodes sharedInstance].window animated:YES];
+            //[docController autorelease];
         }    
     }
 }
 
 - (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)docController
 {
+	//[docController autorelease];
     //[docController release];
     //docController = nil;
 }
 
 - (void)openDocInteract:(NSString*)url {
-	[self performSelectorOnMainThread:@selector(openDocInteractCommand:) withObject:url waitUntilDone:NO];	
+	[self performSelectorOnMainThread:@selector(openDocInteractCommand:) withObject:[url retain] waitUntilDone:NO];
 }
 
 
 - (void) openURLComand:(NSString*)url {
     
-    RAWLOG_INFO1("rho_sys_open_url: %s", url);
+    RAWLOG_INFO1("rho_sys_open_url: %s", [url UTF8String]);
 	
 	NSString* strUrl = url;//[NSString stringWithUTF8String:url];
 	BOOL res = FALSE;

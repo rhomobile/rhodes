@@ -168,12 +168,18 @@ extern "C" void Init_SQLite3()
 
     rho::database::Init_SQLite3_API();
 }
-
+#ifndef RHO_NO_RUBY_API
 extern "C" unsigned long rb_impl_SQLite3_execute(int argc, unsigned long *argv, rho::database::ISQLite3* pObj)
 {
     void* pDB =  static_cast<rho::database::CSQLite3Impl*>(pObj)->getDb();
     return rb_c_impl_SQLite3_execute(argc, argv, pDB);
 }
+#else
+extern "C" unsigned long rb_impl_SQLite3_execute(int argc, unsigned long *argv, rho::database::ISQLite3* pObj)
+{
+    return 0;
+}
+#endif
 
 using namespace rho;
 using namespace rho::common;

@@ -26,7 +26,6 @@
 		BD807BC31259E37900A4E4B2 /* event_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD807BC11259E37900A4E4B2 /* event_wrap.c */; };
 		BD807BC41259E37900A4E4B2 /* event.h in Headers */ = {isa = PBXBuildFile; fileRef = BD807BC21259E37900A4E4B2 /* event.h */; };
 		BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD9E5E0F1186B44B0053049C /* navbar_wrap.c */; };
-		D38F7B5F110647510030B1F4 /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = D38F7B5E110647510030B1F4 /* extensions.c */; };
 		F51668800FFD39D80079F023 /* alert_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F516687F0FFD39D80079F023 /* alert_wrap.c */; };
 		F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FE70F008AA600E46829 /* phonebook_wrap.c */; };
 		F5E360690EB6A62A00226287 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360220EB6A62A00226287 /* array.c */; };
@@ -118,7 +117,6 @@
 		FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04C14681D5900B147A2 /* iso_8859_9.c */; };
 		FA5AC05014681D5900B147A2 /* iso_8859_1.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04D14681D5900B147A2 /* iso_8859_1.c */; };
 		FA5F2DB61796FA0C007FFE5A /* camera_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FACE0F44E92700C9AF85 /* camera_wrap.c */; };
-		FA5F2DB71796FA60007FFE5A /* signature_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FA291E8811FF2BF90096AC39 /* signature_wrap.c */; };
 		FACC2099123A5F300088A447 /* bluetooth_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FACC2098123A5F300088A447 /* bluetooth_wrap.c */; };
 /* End PBXBuildFile section */
 
@@ -799,7 +797,6 @@
 				46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */,
 				F5FD0A3D10619E7900B7B8ED /* mapview_wrap.c in Sources */,
 				5CF8DBCA10B1D45C00247AB4 /* socket.c in Sources */,
-				D38F7B5F110647510030B1F4 /* extensions.c in Sources */,
 				5C79894D113BD1D0005F8736 /* geolocation_wrap.c in Sources */,
 				BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */,
 				BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */,
@@ -813,7 +810,6 @@
 				FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */,
 				FA5AC05014681D5900B147A2 /* iso_8859_1.c in Sources */,
 				FA5F2DB61796FA0C007FFE5A /* camera_wrap.c in Sources */,
-				FA5F2DB71796FA60007FFE5A /* signature_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -840,7 +836,7 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhorubylib;
 				SDKROOT = iphoneos;
@@ -867,7 +863,7 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhorubylib;
 				SDKROOT = iphoneos;
@@ -935,7 +931,7 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhorubylib;
 				SDKROOT = iphoneos;

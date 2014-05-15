@@ -39,12 +39,17 @@ namespace common{
 class CBaseTime{
 public:
     CBaseTime(){ memset( &m_nativeTime, 0, sizeof(m_nativeTime) ); }
+    CBaseTime(const time_t seconds)
+        : m_nativeTime(seconds)
+        {}
     CBaseTime(const CBaseTime& time ){ m_nativeTime = time.m_nativeTime; }
     const CBaseTime& operator=(const CBaseTime& time ){ m_nativeTime = time.m_nativeTime; return *this; }
 
     void setToCurTime(){
         time( &m_nativeTime );
     }
+
+
 
     unsigned long toULong()
     {
@@ -59,6 +64,19 @@ protected:
 class CLocalTime : public CBaseTime{
 public:
     CLocalTime(){ setToCurTime(); }
+    CLocalTime(const time_t seconds)
+        : CBaseTime(seconds)
+        {}
+
+    String formatStr(const char* format)
+    {
+        struct tm* locTime = localtime(&m_nativeTime);
+        char timeBuf[255];
+        int nSize = 0;
+        strftime(timeBuf, 255, format, locTime);
+
+        return String(timeBuf); 
+    }
 
     String toString(boolean ms = false, boolean inFileFormat = false){ 
         char timeBuf[40];

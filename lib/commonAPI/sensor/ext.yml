@@ -1,0 +1,17 @@
+entry: Init_Sensor_extension
+javaentry: com.sensor.Sensor
+libraries: ["Sensor"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+wp8:
+  csharp_impl: yes
+
+project_paths:
+  wp8: ext/platform/wp8/Sensor.sln
+  wm: ext/platform/wm/Sensor.vcproj
+  win32: ext/platform/wm/Sensor.vcproj
+  
+xml_api_paths: ext/sensor.xml
+
+platforms: ["wm", "iphone", "android"]

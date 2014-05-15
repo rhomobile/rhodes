@@ -1,58 +1,123 @@
 require 'fileutils'
 
-def build_extension(name, arch, src_files)
-  objects = []
-  mkdir_p $tempdir unless File.exists? $tempdir
+$curdir = pwd
+TARGETDIR = ENV['TARGET_TEMP_DIR']
+raise "TARGET_TEMP_DIR is not set" if TARGETDIR.nil?
+OBJDIR = ENV['TEMP_FILES_DIR']
+raise "TEMP_FILES_DIR is not set" if OBJDIR.nil?
+$rootdir = ENV['RHO_ROOT']
+raise "RHO_ROOT is not set" if $rootdir.nil?
+$appincdir = ENV["RHO_INC"]
+raise "RHO_INC is not set" if $appincdir.nil?
+$androidndkpath = ENV['ANDROID_NDK']
+raise 'ANDROID_NDK is not set' if $androidndkpath.nil?
+$androidsdk = ENV['ANDROID_SDK']
+raise 'ANDROID_SDK is not set' unless $androidsdk    
+TARGETLIB = ENV['TARGETLIB']
+raise 'TARGETLIB is not set' if ENV['TARGETLIB'].nil?
 
-  args = []
-  args << "-I."
-  args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
-  args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\""
-  args << "-I\"#{$rootdir}/platform/shared\""
-  args << "-I\"#{$rootdir}/lib/commonAPI/coreapi/ext/shared\""
-  args << "-I\"#{$appincdir}\""
+require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+ARGS = [
+  "#{$curdir}/ext/android/jni/src",
+  "#{$rootdir}/platform/android/Rhodes/jni/include",
+  "#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details",
+  "#{$rootdir}/platform/shared/ruby/include",
+  "#{$rootdir}/platform/shared",
+  "#{$rootdir}/platform/shared/common",
+  "#{$rootdir}/platform/shared/api_generator",
+  "#{$appincdir}",
+  "#{$rootdir}/platform/shared/ruby",
+  "#{$rootdir}/platform/shared/ruby/android",
+  "#{$rootdir}/platform/shared/ruby/generated",
+  "#{$rootdir}/lib/commonAPI/coreapi/ext/shared"
+].map{|i| "-I\"#{i}\""}
+
+OBJDIR_ARM = File.join(OBJDIR,'arm')
+OBJDIR_x86 = File.join(OBJDIR,'x86')
+OBJDIR_MIPS = File.join(OBJDIR,'mips')
+
+SRC = get_sources File.join($curdir, 'ext_native.files')
+
+OBJ_ARM = FileList.new(get_objects(SRC, OBJDIR_ARM))
+OBJ_x86 = FileList.new(get_objects(SRC, OBJDIR_x86))
+OBJ_MIPS = FileList.new(get_objects(SRC, OBJDIR_MIPS))
+
+TARGETDIR_ARM = File.join(TARGETDIR,'armeabi')
+TARGETDIR_x86 = File.join(TARGETDIR,'x86')
+TARGETDIR_MIPS = File.join(TARGETDIR,'mips')
+
+TARGETLIB_ARM = File.join(TARGETDIR_ARM,TARGETLIB)
+TARGETLIB_x86 = File.join(TARGETDIR_x86,TARGETLIB)
+TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,TARGETLIB)
+GCMJAR = File.join(TARGETDIR,'gcm.jar')
+
+cd '../..'
+
+namespace 'config' do
+  task :arm do
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'arm')
+  end
   
-  src_files.each do |f|
-    cc_compile f, $tempdir, args or exit 1
+  task :x86 do
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'x86')
   end
-
-  mkdir_p $targetdir unless File.exist? $targetdir
-
-  cc_ar File.join($targetdir,'lib'+name+'.a'), Dir.glob($tempdir + "/**/*.o") or exit 1
-end
-
-namespace "build" do
-  task :config do
-    curdir = pwd
-    $ans_pushdir = curdir.gsub('/ext/android','');
-    $androidsdk = ENV['ANDROID_SDK']
-    raise 'ANDROID_SDK is not set' unless $androidsdk    
-    $targetdir = ENV['TARGET_TEMP_DIR']
-    raise "TARGET_TEMP_DIR is not set" unless $targetdir
-    $tempdir = ENV['TEMP_FILES_DIR']
-    raise "TEMP_FILES_DIR is not set" unless $tempdir
-    $rootdir = ENV['RHO_ROOT']
-    raise "RHO_ROOT is not set" unless $rootdir
-    $appincdir = ENV["RHO_INC"]
-    raise "RHO_INC is not set" unless $appincdir
-
-    require File.join($rootdir, 'platform/android/build/androidcommon.rb')
-
-    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
-
-  end
-
-  task :all => :config do
-
-    src_files = []
-    src_files << $ans_pushdir + '/ext/android/jni/src/gcmpushclient.cpp'
-
-    # build native part
-    build_extension('gcm-push', $arch, src_files)
-    
-    cp File.join($androidsdk,'extras','google','gcm','gcm-client','dist','gcm.jar'), $targetdir
-
+  
+  task :mips do
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'mips')
   end
 end
 
-task :default => "build:all"
+directory TARGETDIR
+directory TARGETDIR_ARM => TARGETDIR
+directory TARGETDIR_x86 => TARGETDIR
+directory TARGETDIR_MIPS => TARGETDIR
+directory OBJDIR_ARM
+directory OBJDIR_x86
+directory OBJDIR_MIPS
+
+rule '.o' => lambda {|obj| find_source(obj) } do |t|
+  abi = File.basename(File.dirname(t.name))
+  Rake::Task["config:#{abi}"].invoke
+  cc_compile find_source(t.name), File.dirname(t.name), ARGS or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
+end
+
+task OBJ_ARM => OBJDIR_ARM
+task OBJ_x86 => OBJDIR_x86
+task OBJ_MIPS => OBJDIR_MIPS
+
+def find_source(objfile)
+  base = File.basename(objfile, '.o')
+  src = SRC.find { |s| File.basename(s) == base }
+  raise "\e[31mSource does not exist: #{src}\e[0m" unless File.exists?(src)
+  src
+end
+
+file TARGETLIB_ARM => TARGETDIR_ARM do |t|
+    Rake::Task["config:arm"].invoke
+    cc_ar t.name, OBJ_ARM or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_ARM => OBJ_ARM
+
+file TARGETLIB_x86 => TARGETDIR_x86 do |t|
+    Rake::Task["config:x86"].invoke
+    cc_ar t.name, OBJ_x86 or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_x86 => OBJ_x86
+
+file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
+    Rake::Task["config:mips"].invoke
+    cc_ar t.name, OBJ_MIPS or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_MIPS => OBJ_MIPS
+file GCMJAR => TARGETDIR do |t|
+  cp File.join($androidsdk,'extras','google','gcm','gcm-client','dist','gcm.jar'), t.name
+end
+
+namespace 'arch' do
+  task :arm => [TARGETLIB_ARM, GCMJAR]
+  task :x86 => [TARGETLIB_x86, GCMJAR]
+  task :mips => [TARGETLIB_MIPS, GCMJAR]
+end
+
+task :default => ["arch:arm", "arch:x86"]

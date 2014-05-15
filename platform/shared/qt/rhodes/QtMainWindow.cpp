@@ -159,7 +159,11 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 #if defined(RHODES_EMULATOR)
     webInspectorWindow->show();
 #endif
-    internalSetProxy();
+
+    setProxy(QString::fromStdString(RHOCONF().getString("http_proxy_host")),
+             QString::fromStdString(RHOCONF().getString("http_proxy_port")),
+             QString::fromStdString(RHOCONF().getString("http_proxy_login")),
+             QString::fromStdString(RHOCONF().getString("http_proxy_password")));
 }
 
 QtMainWindow::~QtMainWindow()
@@ -257,7 +261,7 @@ bool QtMainWindow::isStarted(void)
       );
 }
 
-void QtMainWindow::setProxy()
+void QtMainWindow::unsetProxy()
 {
     m_proxy = QNetworkProxy(QNetworkProxy::DefaultProxy);
     internalSetProxy();
@@ -271,10 +275,11 @@ void QtMainWindow::setProxy(QString host, QString port, QString login, QString p
 
 void QtMainWindow::internalSetProxy()
 {
-    for (int i=0; i<tabViews.size(); ++i) {
-        tabViews[i]->page()->networkAccessManager()->setProxy(m_proxy);
-    }
-    ui->webView->page()->networkAccessManager()->setProxy(m_proxy);
+    QNetworkProxy::setApplicationProxy(m_proxy);
+    //for (int i=0; i<tabViews.size(); ++i) {
+    //    tabViews[i]->page()->networkAccessManager()->setProxy(m_proxy);
+    //}
+    //ui->webView->page()->networkAccessManager()->setProxy(m_proxy);
 }
 
 void QtMainWindow::on_actionBack_triggered()
@@ -432,6 +437,11 @@ void QtMainWindow::navigate(QString url, int index)
                 const QByteArray asc_url = url.toLatin1();
                 mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
             }
+			QUrl test(url);
+			QString errStr = test.errorString();
+			if (errStr.length() > 0 )
+				LOG(ERROR) + "WebView navigate: failed to parse URL: " + errStr.toStdString();
+
             wv->load(QUrl(url));
         }
     }
@@ -520,7 +530,7 @@ void QtMainWindow::tabbarInitialize()
 
 void QtMainWindow::setUpWebPage(QWebPage* page)
 {
-    page->networkAccessManager()->setProxy(m_proxy);
+    //page->networkAccessManager()->setProxy(m_proxy);
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
     quint16 webkit_debug_port = 
@@ -817,7 +827,7 @@ void QtMainWindow::on_actionAbout_triggered()
 {
 #ifndef RHO_SYMBIAN
 #ifdef RHODES_EMULATOR
-    QMessageBox::about(this, RHOSIMULATOR_NAME, RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebKit v" QTWEBKIT_VERSION_STR ")");
+    QMessageBox::about(this, RHOSIMULATOR_NAME, QString(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebKit v" QTWEBKIT_VERSION_STR ")\n(WebKit v%1)").arg(qWebKitVersion()));
 #else
     QMessageBox::about(this, APPLICATION_NAME, APPLICATION_NAME " v" APPLICATION_VERSION);
 #endif

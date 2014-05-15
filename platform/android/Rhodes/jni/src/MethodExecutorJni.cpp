@@ -80,24 +80,38 @@ jclass MethodExecutorJni::loadClass(JNIEnv* env, const char* const name)
     return res;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void MethodExecutorJni::run(JNIEnv* env, jobject jTask, MethodResultJni& result, bool thread, bool uiThread)
+void MethodExecutorJni::run(JNIEnv* env, jobject jTask, MethodResultJni& result, ForceThread forceThread)
 {
-    if(uiThread)
+    switch(forceThread)
     {
+    case NOT_FORCE_THREAD:
+        if(result.hasCallback())
+        {
+            RAWTRACE("Run in new thread -----> ");
+            env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithSeparateThread, jTask);
+            result.disconnect(env);
+        }
+        else
+        {
+            RAWTRACE("Run in current thread -----> ");
+            env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRun, jTask);
+        }
+        break;
+    case FORCE_UI_THREAD:
         RAWTRACE("Run in UI thread -----> ");
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithUiThread, jTask);
         result.disconnect(env);
-    }
-    else if(result.hasCallback() || thread)
-    {
-        RAWTRACE("Run in thread -----> ");
+        break;
+    case FORCE_NEW_THREAD:
+    case FORCE_MODULE_THREAD:
+        RAWTRACE("Run in new thread -----> ");
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithSeparateThread, jTask);
         result.disconnect(env);
-    }
-    else
-    {
+        break;
+    case FORCE_CURRENT_THREAD:
         RAWTRACE("Run in current thread -----> ");
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRun, jTask);
+        break;
     }
 }
 //----------------------------------------------------------------------------------------------------------------------

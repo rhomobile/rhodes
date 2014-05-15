@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include <common/RhoDefs.h>
+#ifndef RHO_NO_RUBY_API
 
 #if defined(_WIN32_WCE) || defined(WIN32) || defined(OS_WP8) || defined(OS_WINRT)
 //#define strdup _strdup
@@ -601,3 +602,9 @@ VALUE rho_json_parse(VALUE v,VALUE str)
 
     return rho_ruby_get_NIL();
 }
+#else // RHO_NO_RUBY_API
+unsigned long rjson_tokener_parse(const char *str, char** pszError)
+{
+    return 0;
+}
+#endif

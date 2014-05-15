@@ -148,12 +148,16 @@ end %>
                     static_cast<jobject>(result));
 
         run(env, jhTask.get(), result, <%=
-if method.run_in_thread == ModuleMethod::RUN_IN_THREAD_NONE or method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UNDEFINED
-    "false, false"
+if method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UNDEFINED
+    "rho::apiGenerator::NOT_FORCE_THREAD"
+elsif method.run_in_thread == ModuleMethod::RUN_IN_THREAD_NONE
+    "rho::apiGenerator::FORCE_CURRENT_THREAD"
 elsif method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI
-    "false, true"
-else
-    "true, true"
+    "rho::apiGenerator::FORCE_UI_THREAD"
+elsif method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE
+    "rho::apiGenerator::FORCE_MODULE_THREAD"
+elsif method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED
+    "rho::apiGenerator::FORCE_NEW_THREAD"
 end %>);
         if(env->ExceptionCheck() == JNI_TRUE)
         {

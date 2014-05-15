@@ -85,7 +85,7 @@
 		C5D47762156A4ED000943A2D /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D47760156A4ED000943A2D /* zip.cpp */; };
 		C5D47763156A4ED000943A2D /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D47761156A4ED000943A2D /* zip.h */; };
 		FA0E908D16B7FE000094CCDE /* CJSConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA0E908C16B7FE000094CCDE /* CJSConverter.mm */; };
-		FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */; };
+		FA1D452618D9E2BC0010CCF9 /* app_build_capabilities.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1D452518D9E2BC0010CCF9 /* app_build_capabilities.h */; };
 		FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */; };
 		FA6B222617026477009D1398 /* MethodResultConvertor.h in Headers */ = {isa = PBXBuildFile; fileRef = FA6B222517026477009D1398 /* MethodResultConvertor.h */; };
 		FAC6EE5B143B1FC800B8E352 /* BaseMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */; };
@@ -202,6 +202,7 @@
 		C5DEC5691575069800AE4AC1 /* RhoSettingsDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RhoSettingsDefs.h; path = ../../shared/common/RhoSettingsDefs.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0E908C16B7FE000094CCDE /* CJSConverter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CJSConverter.mm; sourceTree = "<group>"; };
+		FA1D452518D9E2BC0010CCF9 /* app_build_capabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app_build_capabilities.h; path = ../../shared/common/app_build_capabilities.h; sourceTree = "<group>"; };
 		FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = ../../shared/common/app_build_configs.c; sourceTree = SOURCE_ROOT; };
 		FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app_build_configs.h; path = ../../shared/common/app_build_configs.h; sourceTree = SOURCE_ROOT; };
 		FA6B222517026477009D1398 /* MethodResultConvertor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MethodResultConvertor.h; path = ../../shared/api_generator/MethodResultConvertor.h; sourceTree = "<group>"; };
@@ -305,6 +306,7 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				FA1D452518D9E2BC0010CCF9 /* app_build_capabilities.h */,
 				FAC6EE4C143B1F1E00B8E352 /* map */,
 				A22F9EFD14605D12006D8F1A /* phonebook */,
 				A2D0558115A75027002376EE /* push */,
@@ -502,6 +504,7 @@
 				5C71626F0F8B7E170096B6AA /* RhoDefs.h in Headers */,
 				5C7162700F8B7E170096B6AA /* RhoFatalError.h in Headers */,
 				5C7162720F8B7E170096B6AA /* RhoFile.h in Headers */,
+				FA1D452618D9E2BC0010CCF9 /* app_build_capabilities.h in Headers */,
 				5C7162730F8B7E170096B6AA /* RhoFilePath.h in Headers */,
 				5C7162740F8B7E170096B6AA /* RhoMutexLock.h in Headers */,
 				5C7162750F8B7E170096B6AA /* RhoPort.h in Headers */,
@@ -641,7 +644,6 @@
 				5CEBCFEF11E6FB8700145F4E /* rhoparams.cpp in Sources */,
 				5C663BEA11F3712C005F60AF /* RhodesAppBase.cpp in Sources */,
 				5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */,
-				FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */,
 				5CE03CCC12DB7E990058B474 /* sqlite3.c in Sources */,
 				5CB821AE1312487100778441 /* INetRequest.cpp in Sources */,
 				5C0F94DF132979140093FA1B /* RhoTime.cpp in Sources */,
@@ -692,7 +694,7 @@
 					../../../lib/commonAPI,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -727,7 +729,7 @@
 					../../../lib/commonAPI,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -803,7 +805,7 @@
 					../../../lib/commonAPI,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (

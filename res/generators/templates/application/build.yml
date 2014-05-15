@@ -4,7 +4,6 @@ name: <%=@app_name%>
 version: 1.0
 vendor: rhomobile
 build: debug
-bbver: 6.0
 applog: rholog.txt
 iphone:
   configuration: Release
@@ -14,11 +13,14 @@ iphone:
   entitlements: ""
   BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
   BundleURLScheme: <%=@app_name_cleared%>
-wp:
+wp8:
   productid: '<%=@productid%>'
-symbian:
-  uid: '<%=@uid%>'
 android:
+  manifest_template: 'AndroidManifest.erb'
   version: 2.3.3
+
+wm:
+  #sdk: "MC3000c50b (ARMV4I)"
+  #sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 
 extensions: [<%=@rhoconnectclient_ext%>]

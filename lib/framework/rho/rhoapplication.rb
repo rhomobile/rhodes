@@ -24,7 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-require 'rhom'
+#require 'rhom'
 #require 'rhofsconnector'
 require 'rholang/localization_simplified'
 require 'rho/rhomsg'
@@ -69,7 +69,7 @@ module Rho
       #LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
       
       unless @rhom
-        @rhom = Rhom::Rhom.new
+        @rhom = Rhom::Rhom.get_instance
       end
       unless @default_menu
       	@default_menu = Rho::Application::make_default_native_menu()

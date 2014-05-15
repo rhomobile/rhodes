@@ -9,15 +9,11 @@ env:
     vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
     
 build:
-  bbpath: platform/bb
   wmpath: platform/wm
-  wppath: platform/wp7
   wp8path: platform/wp8
   androidpath: platform/android
   iphonepath: platform/iphone
-  symbianpath: platform/symbian
-  bb:
-  bbsignpwd: "somepasswordhere"
+
 android:
   # Google API key obtained from http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html
   #apikey: "GOOGLE-API-KEY-FOR-ANDROID"
@@ -36,3 +32,11 @@ excludedirs:
     - "**/.*.swo"
     - "**/.*.swn"
     - "**/.DS_Store"
+
+#rhohub:
+#  url: https://app.rhohub.com/api/v1
+
+# internet proxy configuration for cloud build
+# connection:
+#   proxy: http://user:pass@address:port
+

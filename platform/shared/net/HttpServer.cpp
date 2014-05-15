@@ -249,7 +249,7 @@ static String get_mime_type(String const &path)
     return mime_type;
 }
     
-
+#ifndef RHO_NO_RUBY_API
 static VALUE create_request_hash(String const &application, String const &model,
                                  String const &action, String const &id,
                                  String const &method, String const &uri, String const &query,
@@ -278,6 +278,7 @@ static VALUE create_request_hash(String const &application, String const &model,
     
     return hash;
 }
+#endif
 
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
     :m_active(false), m_port(port), verbose(true)
@@ -446,10 +447,10 @@ bool CHttpServer::run()
     for(;;) 
     {
         RAWTRACE("Waiting for connections...");
-
+#ifndef RHO_NO_RUBY_API
         if (rho_ruby_is_started())
             rho_ruby_start_threadidle();
-
+#endif
         fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(m_listener, &readfds);
@@ -459,10 +460,10 @@ bool CHttpServer::run()
         tv.tv_sec = nTimeout/1000;
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
-
+#ifndef RHO_NO_RUBY_API
         if (rho_ruby_is_started())
             rho_ruby_stop_threadidle();
-
+#endif
         bool bProcessed = false;
         if (ret > 0) 
         {
@@ -486,23 +487,25 @@ bool CHttpServer::run()
 
                 RAWTRACE("Connection accepted, process it...");
                 VALUE val;
-                
+#ifndef RHO_NO_RUBY_API                
                 if (rho_ruby_is_started())
                 {
                     if ( !RHOCONF().getBool("enable_gc_while_request") )                
                         val = rho_ruby_disable_gc();
                 }
-
-                bProcessed = process(conn);
-
+#endif
+                m_sock = conn;
+                bProcessed = process(m_sock);
+#ifndef RHO_NO_RUBY_API
                 if (rho_ruby_is_started())
                 {
                     if ( !RHOCONF().getBool("enable_gc_while_request") )
                         rho_ruby_enable_gc(val);
                 }
-
+#endif
                 RAWTRACE("Close connected socket");
-                closesocket(conn);
+                closesocket(m_sock);
+                m_sock = INVALID_SOCKET;
             }
         }
         else if ( ret == 0 ) //timeout
@@ -514,7 +517,7 @@ bool CHttpServer::run()
             RAWLOG_ERROR1("select error: %d", ret);
             return false;
         }
-
+#ifndef RHO_NO_RUBY_API
         if (rho_ruby_is_started())
         {
             if ( bProcessed )
@@ -524,6 +527,7 @@ bool CHttpServer::run()
                 LOG(INFO) + "GC End.";
             }
         }
+#endif
     }
 }
 
@@ -1246,6 +1250,7 @@ PROF_STOP("LOW_FILE");
 
 bool CHttpServer::call_ruby_method(String const &uri, String const &body, String& strReply)
 {
+#ifndef RHO_NO_RUBY_API
     Route route;
     if (!dispatch(uri, route)) 
         return false;
@@ -1259,6 +1264,9 @@ bool CHttpServer::call_ruby_method(String const &uri, String const &body, String
     rho_ruby_releaseValue(data);
 
     return true;
+#else
+    return false;
+#endif
 }
 
 void rho_http_ruby_proc_callback(void *arg, rho::String const &query )
@@ -1268,6 +1276,7 @@ void rho_http_ruby_proc_callback(void *arg, rho::String const &query )
 
 void CHttpServer::call_ruby_proc( rho::String const &query, String const &body )
 {
+#ifndef RHO_NO_RUBY_API
     unsigned long valProc = 0;
     convertFromStringA( query.c_str(), valProc );
 
@@ -1281,6 +1290,7 @@ void CHttpServer::call_ruby_proc( rho::String const &query, String const &body )
     rho_ruby_releaseValue(data);
 
     send_response(strReply);
+#endif
 }
 
 bool CHttpServer::decide(String const &method, String const &arg_uri, String const &query,
@@ -1313,7 +1323,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 //#endif
 
     String fullPath = CFilePath::join(m_root, uri);
-    
+#ifndef RHO_NO_RUBY_API    
     if (rho_ruby_is_started())
     {
         Route route;
@@ -1390,7 +1400,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             return true;
         }
     }
-
+#endif
     // Try to send requested file
     RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
 

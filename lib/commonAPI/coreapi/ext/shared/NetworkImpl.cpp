@@ -3,7 +3,7 @@
 #include <list>
 
 #if (defined OS_WINCE || defined OS_WP8 || defined OS_WINRT)
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
 #include "../platform/wm/src/ConnectionManager.h"
 #endif
 #endif
@@ -20,6 +20,9 @@
 #include "System.h"
 #include "common/RhoConf.h"
 #include "unzip/zip.h"
+#ifdef OS_WINDOWS_DESKTOP
+#include "zlib.h"
+#endif
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NetworkAcceess"
@@ -49,24 +52,30 @@ public:
 
     CNetworkImpl(): CNetworkSingletonBase()
 	{
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
-		CRhoExtData rhodesData = RHODESAPP().getExtManager().makeExtData();
-		if (rhodesData.m_hBrowserWnd)
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
+		if(winversion == 1)
 		{
-//			m_pConnectionManager = new CWAN(rhodesData.m_hBrowserWnd);
-			m_pConnectionManager = new CWAN(rhodesData.m_hWnd);
-			m_pConnectionManager->Initialise();
+			CRhoExtData rhodesData = RHODESAPP().getExtManager().makeExtData();
+			if (rhodesData.m_hBrowserWnd)
+			{
+	//			m_pConnectionManager = new CWAN(rhodesData.m_hBrowserWnd);
+				m_pConnectionManager = new CWAN(rhodesData.m_hWnd);
+				m_pConnectionManager->Initialise();
+			}
+			else
+				m_pConnectionManager = NULL;
 		}
-		else
-			m_pConnectionManager = NULL;
 #endif
 	}
 
 	~CNetworkImpl()
 	{
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
-		if (m_pConnectionManager)
-			delete m_pConnectionManager;
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
+		if(winversion == 1)
+		{
+			if (m_pConnectionManager)
+				delete m_pConnectionManager;
+		}
 #endif
 	}
 
@@ -90,13 +99,16 @@ public:
 	virtual void stopDetectingConnection(rho::apiGenerator::CMethodResult& oResult);
     virtual void connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult);
     virtual void disconnectWan(rho::apiGenerator::CMethodResult& oResult);
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
     virtual bool onWndMsg(MSG& oMsg)
 	{
-		if (oMsg.message == WM_USER_CONNECTION_MANGER_STATUS)
+		if(winversion == 1)
 		{
-			if (!m_pConnectionManager) {return FALSE;}
-				m_pConnectionManager->ConnectionManagerStatusUpdate();
+			if (oMsg.message == WM_USER_CONNECTION_MANGER_STATUS)
+			{
+				if (!m_pConnectionManager) {return FALSE;}
+					m_pConnectionManager->ConnectionManagerStatusUpdate();
+			}
 		}
 		return FALSE;
 	}
@@ -111,7 +123,7 @@ private:
 	//  RE1 Network API
 //	std::list<INetworkDetection*> m_networkPollers;
     std::auto_ptr<INetworkDetection> m_networkPoller;
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
 	CWAN *m_pConnectionManager;
 #endif
     void setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest, rho::apiGenerator::CMethodResult& oResult );
@@ -396,7 +408,7 @@ void CNetworkImpl::createResult( NetResponse& resp, Hashtable<String,String>& ma
     else
     {
         mapRes["status"] = "error";
-        mapRes["error_code"] = convertToStringA(RhoAppAdapter.getErrorFromResponse(resp));;
+        mapRes["error_code"] = convertToStringA(RhoAppAdapter.getErrorFromResponse(resp));
         if ( resp.isResponseRecieved())
             mapRes["http_error"] = convertToStringA(resp.getRespCode());
     }
@@ -408,6 +420,51 @@ void CNetworkImpl::createResult( NetResponse& resp, Hashtable<String,String>& ma
     oResult.getStringHashL2()["headers"] = mapHeaders;
 
     //TODO: support "application/json" content-type
+#ifdef OS_WINDOWS_DESKTOP
+    if (mapHeaders.containsKey("content-encoding") &&
+        ((mapHeaders.get("content-encoding") == "gzip") ||
+         (mapHeaders.get("content-encoding") == "x-gzip")))
+    {
+        size_t bufSize = 30*((size_t)resp.getDataSize());
+        if (bufSize < 4096)
+            bufSize = 4096;
+        Bytef* decoded = (Bytef*)malloc(bufSize+1);
+        *decoded = '\0';
+        z_stream strm;
+        strm.next_in = (Bytef*)resp.getCharData();
+        strm.avail_in = resp.getDataSize();
+        strm.next_out = decoded;
+        strm.avail_out = bufSize;
+        strm.opaque = Z_NULL;
+        strm.zalloc = (alloc_func)0;
+        strm.zfree = (free_func)0;
+        int res = inflateInit2(&strm, 16 + MAX_WBITS);
+        if (res == Z_OK) {
+            do {
+                res = inflate(&strm, Z_SYNC_FLUSH);
+                decoded[strm.total_out] = '\0';
+                if ((res == Z_OK) || (res == Z_STREAM_END)) {
+                    if (strm.avail_in == 0)
+                        mapRes["body"].assign( (char*)decoded, strm.total_out );
+                    else {
+                        bufSize *= 4;
+                        decoded = (Bytef*)realloc(decoded, bufSize+1);
+                        strm.next_out = decoded + strm.total_out;
+                        strm.avail_out = bufSize - strm.total_out;
+                    }
+                }
+            } while ((res == Z_OK) && (strm.avail_in > 0));
+        }
+        if ((res != Z_OK) && (res != Z_STREAM_END)) {
+            mapRes["status"] = "error";
+            mapRes["error_code"] = "gzip: ";
+            mapRes.get("error_code").append(strm.msg);
+            LOG(INFO) + "gzip error: " + strm.msg;
+        }
+        inflateEnd(&strm);
+        free(decoded);
+    } else
+#endif
     mapRes["body"].assign( resp.getCharData(), resp.getDataSize() );
 
     oResult.set(mapRes);
@@ -594,20 +651,26 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 
 void CNetworkImpl::connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined OS_WINCE)&& !defined(OS_PLATFORM_MOTCE) 
-	//  Only applicable to WM/CE, specific to connection manager
-	//  There is only a single object for connection manager access as you can only have
-	//  one physical connection.
-	m_pConnectionManager->SetWanCallback(oResult);
-	m_pConnectionManager->Connect(convertToStringW(connectionDestination).c_str(), TRUE);
+#if (defined OS_WINCE)//&& !defined(OS_PLATFORM_MOTCE) 
+	if(winversion == 1)
+	{
+		//  Only applicable to WM/CE, specific to connection manager
+		//  There is only a single object for connection manager access as you can only have
+		//  one physical connection.
+		m_pConnectionManager->SetWanCallback(oResult);
+		m_pConnectionManager->Connect(convertToStringW(connectionDestination).c_str(), TRUE);
+	}
 #endif
 }
 
 void CNetworkImpl::disconnectWan(rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
-	//  Only applicable to WM/CE, specific to connection manager
-	m_pConnectionManager->Disconnect(TRUE);
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
+	if(winversion == 1)
+	{
+		//  Only applicable to WM/CE, specific to connection manager
+		m_pConnectionManager->Disconnect(TRUE);
+	}
 #endif
 }
     

@@ -35,6 +35,10 @@
 extern "C" void rho_sys_bring_to_front();
 extern "C" void rho_sys_minimize();
 #endif
+#if defined(RHODES_QT_PLATFORM) && defined(OS_MACOSX)
+extern "C" void rho_qt_sys_minimize();
+extern "C" void rho_qt_sys_restore_window();
+#endif
 
 #if defined(WINDOWS_PLATFORM)
 
@@ -225,11 +229,17 @@ public:
 #ifdef OS_ANDROID
         rho_sys_minimize();
 #endif
+#if defined(RHODES_QT_PLATFORM) && defined(OS_MACOSX)
+        rho_qt_sys_minimize();
+#endif
         //UNSUPPORTED
     }
     virtual void restoreApp() {
 #ifdef OS_ANDROID
         rho_sys_bring_to_front();
+#endif
+#if defined(RHODES_QT_PLATFORM) && defined(OS_MACOSX)
+        rho_qt_sys_restore_window();
 #endif
         //UNSUPPORTED
     }

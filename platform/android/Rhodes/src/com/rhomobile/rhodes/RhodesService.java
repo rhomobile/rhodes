@@ -92,6 +92,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -131,9 +132,6 @@ public class RhodesService extends Service {
 	
 	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
 	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
-
-    private static final String ACTION_APP_MESSAGE_RECEIVE = "com.rhomobile.rhodes.ApplicationMessage.Receive";
-    private static final String CATEGORY_APP_MESSAGE = "com.rhomobile.rhodes.ApplicationMessage";
 
     private static final String NOTIFICATION_NONE = "none";
     private static final String NOTIFICATION_BACKGROUND = "background";
@@ -265,7 +263,7 @@ public class RhodesService extends Service {
 	public static native void resetHttpLogging(String http_log_url);
 	public static native void resetFileLogging(String log_path);
 	
-	public static native boolean isMotorolaLicencePassed(String license, String company, String appName);
+	//public static native boolean isMotorolaLicencePassed(String license, String company, String appName);
 	
 	public native void notifyNetworkStatusChanged( int status );
 	
@@ -313,16 +311,19 @@ public class RhodesService extends Service {
         Logger.I("Rhodes", "Loading...");
         RhodesApplication.create();
 
-        RhodesActivity ra = RhodesActivity.getInstance();
-        if (ra != null) {
-            // Show splash screen only if we have active activity
-            SplashScreen splashScreen = ra.getSplashScreen();
-            splashScreen.start();
+        // Increase WebView rendering priority
+        WebView w = new WebView(context);
+        WebSettings webSettings = w.getSettings();
+        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
 
-            // Increase WebView rendering priority
-            WebView w = new WebView(context);
-            WebSettings webSettings = w.getSettings();
-            webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        try {
+            // Show splash screen only if we have active activity
+            SplashScreen splashScreen = RhodesActivity.safeGetInstance().getSplashScreen();
+            if (splashScreen != null) {
+                splashScreen.start();
+            }
+        } catch (NullPointerException ex) {
+            
         }
 
 		initForegroundServiceApi();
@@ -404,16 +405,14 @@ public class RhodesService extends Service {
 		String source = intent.getStringExtra(INTENT_SOURCE);
 		Set<String> categories = intent.getCategories();
 		Logger.I(TAG, "handleCommand: startId=" + startId + ", source=" + source);
-		if (source == null)
-			throw new IllegalArgumentException("Service command received from empty source");
-		
-		if (source.equals(BaseActivity.INTENT_SOURCE)) {
+
+		if (BaseActivity.INTENT_SOURCE.equals(source)) {
 			Logger.D(TAG, "New activity was created");
 		}
-		else if (source.equals(PushContract.INTENT_SOURCE)) {
+		else if (PushContract.INTENT_SOURCE.equals(source)) {
 			int type = intent.getIntExtra(PushContract.INTENT_TYPE, PushContract.INTENT_TYPE_UNKNOWN);
 			switch (type) {
-			case PushContract.INTENT_TYPE_REGISTRATION_ID:
+			case PushContract.INTENT_TYPE_REGISTRATION_ID: 
 			{
 				String id = intent.getStringExtra(PushContract.INTENT_REGISTRATION_ID);
                 String pushType = intent.getStringExtra(PushContract.INTENT_PUSH_CLIENT);
@@ -459,18 +458,8 @@ public class RhodesService extends Service {
             default:
                 Logger.W(TAG, "Unknown command type received from " + source + ": " + type);
             }
-        } else if (categories.contains(CATEGORY_APP_MESSAGE)) {
-            final Bundle extras = intent.getExtras();
-            Logger.D(TAG, "Received application message: " + extras);
-            RhodesApplication.runWhen(
-                    RhodesApplication.AppState.AppStarted,
-                    new RhodesApplication.StateHandler(true) {
-                        @Override
-                        public void run()
-                        {
-                            handleAppMessage(extras);
-                        }
-                    });
+        } else {
+            RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
         }
 	}
 	
@@ -870,6 +859,13 @@ public class RhodesService extends Service {
         } 
         catch (Throwable e) { }
         return Boolean.valueOf(Capabilities.MOTOROLA_ENABLED && res);
+        
+        // There is a loading issue if app_type=rhodes. SR EMBPD00111897
+        
+//       if(isAppInstalled("com.motorolasolutions.emdk.proxyframework") || isAppInstalled("com.motorolasolutions.emdk.datawedge") )
+//            return true;
+//        else
+//            return false;
     }
 	
 	public static String getTimezoneStr() {
@@ -884,16 +880,45 @@ public class RhodesService extends Service {
 			PackageManager mgr = ctx.getPackageManager();
 			PackageInfo info = mgr.getPackageInfo(appName, PackageManager.GET_ACTIVITIES);
 			if (info.activities.length == 0) {
-				Logger.E(TAG, "No activities found for application " + appName);
+				Logger.E(TAG, "No activities found for application package [" + appName + "]");
 				return;
 			}
-			ActivityInfo ainfo = info.activities[0];
-			String className = ainfo.name;
-			if (className.startsWith("."))
-				className = ainfo.packageName + className;
+			String className = null;
+			{
+				//Utils.platformLog("$$$", "Enumerate all MAIN activities :");
 
+				Intent main_intent = new Intent(Intent.ACTION_MAIN);
+				//main_intent.addCategory(Intent.CATEGORY_DEFAULT);
+				//main_intent.addCategory(Intent.CATEGORY_LAUNCHER);
+				
+				List<ResolveInfo> activities = mgr.queryIntentActivities(main_intent, 0/*PackageManager.MATCH_DEFAULT_ONLY*/);
+				
+				Iterator<ResolveInfo> activities_iterator = activities.iterator();
+				while (activities_iterator.hasNext()) {
+					ResolveInfo resolve_info = activities_iterator.next();
+					//Utils.platformLog("$$$", "     ACTIVITY NAME["+resolve_info.activityInfo.name+"] TARGET["+resolve_info.activityInfo.targetActivity+"]");					
+					if (appName.equals(resolve_info.activityInfo.packageName)) {
+						// we found our activity !
+						className = resolve_info.activityInfo.name;
+						break;
+					}
+				}
+			}
+			if (className == null) {
+				Logger.E(TAG, "No MAIN activities found in application package [" + appName+"]");
+				return;				
+			}
+			
+			//ActivityInfo ainfo = info.activities[0];
+			//String className = ainfo.name;
+			if (className.startsWith(".")) {
+				className = appName + className;
+			}
+
+			
 			Intent intent = new Intent();
 			intent.setClassName(appName, className);
+			Utils.platformLog("$$$", "START ACTIVITY P["+appName+"] A["+className+"]");
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			if (params != null) {
 				Bundle startParams = new Bundle();
@@ -924,22 +949,6 @@ public class RhodesService extends Service {
 		}
 	}
 	
-    public static void sendApplicationMessage(String appName, String params) throws NameNotFoundException {
-        Logger.T(TAG,  "App message to " + appName);
-        
-        Intent intent = new Intent();
-        intent.setClassName(appName, RhodesService.class.getCanonicalName());
-        intent.addCategory(CATEGORY_APP_MESSAGE);
-        
-        intent.putExtra(INTENT_SOURCE, ContextFactory.getAppContext().getPackageName());
-
-        if (params != null) {
-            String encodedParams = Uri.encode(params);
-            intent.putExtra(INTENT_EXTRA_MESSAGE, encodedParams);
-        }
-
-        ContextFactory.getContext().startService(intent);
-    }
 	public static boolean isAppInstalled(String appName) {
 		try {
 			RhodesService.getContext().getPackageManager().getPackageInfo(appName, 0);
@@ -1248,19 +1257,6 @@ public class RhodesService extends Service {
         callPushCallback(type, json);
     }
     
-    private static native void nativeAddAppMessage(String sourceAppName, String message);
-    private void handleAppMessage(Bundle extras) {
-        String sourceAppName = extras.getString(INTENT_SOURCE);
-        String message = extras.getString(INTENT_EXTRA_MESSAGE);
-        if (message != null) {
-            message = Uri.decode(message);
-        }
-        
-        Logger.T(TAG, "App message from: " + sourceAppName + ", message: " + message);
-        
-        nativeAddAppMessage(sourceAppName, message);
-    }
-
 	private void restartGeoLocationIfNeeded() {
 		if (mNeedGeoLocationRestart) {
 			//GeoLocation.restart();

@@ -118,7 +118,7 @@ end %>
         if ( argv[<%= first_arg %>].isFloat() )
             arg<%= first_arg %> = argv[<%= first_arg %>].getDouble();
         else if ( argv[<%= first_arg %>].isInteger() )
-            arg<%= first_arg %> = argv[<%= first_arg %>].getInt();
+            arg<%= first_arg %> = (int64)argv[<%= first_arg %>].getUInt64();
         else if (!argv[<%= first_arg %>].isNull())
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
@@ -243,7 +243,13 @@ end %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "setDefaultID", true)%>
 {
     rho::apiGenerator::CMethodResult oRes;
-    <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(strObjID);
+    rho::json::CJSONEntry el = argv[0];
+
+    if (el.isString()) {
+        <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(el.getString());
+    } else {
+        oRes.setError("Method parameter should be defined as string!");
+    }
 
     return oRes.toJSON();
 }

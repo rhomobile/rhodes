@@ -52,9 +52,6 @@
 #include <algorithm>
 
 // licence lib
-#ifdef OS_ANDROID
-#include "../../../res/libs/motorolalicence/android/MotorolaLicence.h" 
-#endif
 #ifdef OS_MACOSX
 #include "../../../res/libs/motorolalicence/iphone/MotorolaLicence.h" 
 #endif
@@ -101,7 +98,7 @@ namespace rho {
 namespace common{
 
 IMPLEMENT_LOGCLASS(CRhodesApp,"RhodesApp");
-String CRhodesApp::m_strStartParameters;
+String CRhodesApp::m_strStartParameters, CRhodesApp::m_strStartParametersOriginal;
 boolean CRhodesApp::m_bSecurityTokenNotPassed = false;
 
 class CAppCallbacksQueue : public CThreadQueue
@@ -110,16 +107,16 @@ class CAppCallbacksQueue : public CThreadQueue
 public:
     enum callback_t
     {
-        app_deactivated,
         local_server_restart,
         local_server_started,
         ui_created,
-        app_activated
+        app_activated,
+        app_deactivated
     };
 
 public:
     CAppCallbacksQueue();
-	CAppCallbacksQueue(LogCategory logCat);
+	//CAppCallbacksQueue(LogCategory logCat);
 	~CAppCallbacksQueue();
 
     //void call(callback_t type);
@@ -136,13 +133,25 @@ public:
 
 private:
 
+    enum ui_created_state
+    {
+    	ui_not_available,
+    	ui_created_received,
+    	ui_created_processed
+    };
+
     void processCommand(IQueueCommand* pCmd);
+    void processUiCreated();
+
+    bool hasCommand(callback_t type);
 
     static char const *toString(int type);
     void   callCallback(const String& strCallback);
 
 private:
     callback_t m_expected;
+    ui_created_state m_uistate;
+
     Vector<int> m_commands;
     boolean m_bFirstServerStart;
 };
@@ -168,7 +177,7 @@ char const *CAppCallbacksQueue::toString(int type)
 }
 
 CAppCallbacksQueue::CAppCallbacksQueue()
-    :CThreadQueue(), m_expected(local_server_started), m_bFirstServerStart(true)
+    :CThreadQueue(), m_expected(local_server_started), m_uistate(ui_not_available), m_bFirstServerStart(true)
 {
     CThreadQueue::setLogCategory(getLogCategory());
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
@@ -217,28 +226,52 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
     }
 }
 
+bool CAppCallbacksQueue::hasCommand(callback_t type)
+{
+    for( int i = 0; i < (int)m_commands.size() ; i++)
+    {
+        if ( m_commands.elementAt(i) == type )
+        {
+        	return true;
+        }
+    }
+	return false;
+}
+
 void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 {
     Command *cmd = (Command *)pCmd;
     if (!cmd)
         return;
-/*
-    if (cmd->type < m_expected)
+
+    synchronized(getCommandLock());
+
+    LOG(INFO) + toString(cmd->type) + " is received ++++++++++++++++++++++++++++";
+
+    if (cmd->type == ui_created)
     {
-        LOG(ERROR) + "received command " + toString(cmd->type) + " which is less than expected "+toString(m_expected)+" - ignore it";
-        return;
+        LOG(INFO) + "m_uistate: " + (int)m_uistate;
+
+        if (m_uistate != ui_not_available)
+            return;
+        m_uistate = ui_created_received;
     }
-*/
+
     if ( m_expected == app_deactivated && cmd->type == app_activated )
     {
-        LOG(INFO) + "received duplicate activate skip it";
+        LOG(INFO) + "received duplicate app_activated - skip it";
         return;
     }
 
     if ( m_expected == local_server_restart )
     {
         if ( cmd->type != local_server_started )
+        {
+            LOG(INFO) + "Restart local server ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
             RHODESAPP().restartLocalServer(*this);
+            sleep(50);
+            LOG(INFO) + "Continue after server restart =======================================";
+        }
         else
             LOG(INFO) + "Local server restarted before activate.Do not restart it again.";
 
@@ -247,37 +280,37 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
     if (cmd->type > m_expected)
     {
-        boolean bDuplicate = false;
-        for( int i = 0; i < (int)m_commands.size() ; i++)
-        {
-            if ( m_commands.elementAt(i) == cmd->type )
-            {
-                bDuplicate = true;
-                break;
-            }
-        }
-
-        if ( bDuplicate )
+        if ( hasCommand(cmd->type) )
         {
             LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
+            return;
         }else
         {
             // Don't do that now
             LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
-            m_commands.push_back(cmd->type);
-            std::sort(m_commands.begin(), m_commands.end());
+
+            if (cmd->type == app_deactivated && m_expected != local_server_started)
+            {
+                m_commands.clear();
+                m_commands.push_back(cmd->type);
+            }
+            else
+            {
+                m_commands.push_back(cmd->type);
+                std::sort(m_commands.begin(), m_commands.end());
+                return;
+            }
         }
-        return;
+    }
+    else
+    {
+        m_commands.insert(m_commands.begin(), cmd->type);
     }
 
-    if ( cmd->type == app_deactivated )
-        m_commands.clear();
-
-    m_commands.insert(m_commands.begin(), cmd->type);
     for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
     {
         int type = *it;
-        LOG(INFO) + "process command: " + toString(type);
+        LOG(INFO) + "process command: " + toString(type) + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
         switch (type)
         {
         case app_deactivated:
@@ -300,37 +333,18 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             rho_sys_report_app_started();
             break;
         case ui_created:
+            if (m_uistate != ui_created_processed)
             {
-                rho::String startPath = RHOCONF().getString("start_path");
-
-                // handle security token validation
-                #if !defined(OS_WP8) && !defined(OS_WINRT)
-                rho::String invalidSecurityTokenStartPath =  RHOCONF().getString("invalid_security_token_start_path");
-
-                if (RHODESAPP().isSecurityTokenNotPassed()) {
-                    if (invalidSecurityTokenStartPath.length() > 0) {
-                        startPath = invalidSecurityTokenStartPath;
-                    } else {
-                        // exit from application - old way
-                        LOGC(FATAL, "EROOR" ) + "processApplicationEvent: security_token is not passed - application will closed";
-                        rho_sys_app_exit();
-                    }
-                }
-                #endif
-                
-                // at this point JS app is unlikely to set its own handler, just navigate to overriden start path
-                if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
-                {
-                    if ( rho_ruby_is_started() )
-                        callCallback("/system/uicreated");
-                    else
-                        rho_webview_navigate(startPath.c_str(), 0);
-                }
+                processUiCreated();
                 m_expected = app_activated;
             }
             break;
         case app_activated:
             {
+                if ( m_uistate == ui_created_received )
+                {
+                    processUiCreated();
+                }
                 if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateActivated))
                 {
                     callCallback("/system/activateapp");
@@ -339,10 +353,38 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             }
             break;
         }
-        //if (type < app_activated && type != app_deactivated)
-        //    m_expected = (callback_t)(type + 1);
     }
     m_commands.clear();
+}
+
+void CAppCallbacksQueue::processUiCreated()
+{
+    rho::String startPath = RHOCONF().getString("start_path");
+
+    // handle security token validation
+    #ifndef OS_WP8
+    rho::String invalidSecurityTokenStartPath =  RHOCONF().getString("invalid_security_token_start_path");
+
+    if (RHODESAPP().isSecurityTokenNotPassed()) {
+        if (invalidSecurityTokenStartPath.length() > 0) {
+            startPath = invalidSecurityTokenStartPath;
+        } else {
+            // exit from application - old way
+            LOGC(FATAL, "EROOR" ) + "processApplicationEvent: security_token is not passed - application will closed";
+            rho_sys_app_exit();
+        }
+    }
+    #endif
+
+    // at this point JS app is unlikely to set its own handler, just navigate to overriden start path
+    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
+    {
+        if ( rho_ruby_is_started() )
+            callCallback("/system/uicreated");
+        else
+            rho_webview_navigate(startPath.c_str(), 0);
+    }
+    m_uistate = ui_created_processed;
 }
 
 /*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
@@ -385,7 +427,8 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
     initAppUrls();
 
-    initHttpServer();
+	if(!m_isJSFSApp)
+		initHttpServer();
 
     getSplashScreen().init();
 }
@@ -399,13 +442,18 @@ extern "C" void Init_Extensions(void);
 
 void CRhodesApp::RhoJsStart()
 {
+    LOG(INFO) + "Starting pure JS application...";
+
     const char* szBlobPath = getBlobsDirPath().c_str();
     const char* szUserPath = rho_native_rhodbpath();
     LOG(INFO) + "Init_RhoBlobs:" + szBlobPath;
 
     CRhoFile::recursiveCreateDir(szBlobPath, szUserPath);
 
+    PROF_START("EXTENSIONS_INIT");
     Init_Extensions();
+    PROF_STOP("EXTENSIONS_INIT");
+
     void *dbObj = NULL;
 
     rho::String partName = rho::db::CDBAdapter::USER_PARTITION_NAME();
@@ -419,13 +467,14 @@ void CRhodesApp::RhoJsStart()
 void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
-
+#ifndef RHO_NO_RUBY_API
     if (!isJSApplication())
     {
         RhoRubyStart();
         rubyext::CGeoLocation::Create();
     }
     else
+#endif
         RhoJsStart();
     
 
@@ -433,7 +482,7 @@ void CRhodesApp::run()
 		LOG(INFO) + "Starting sync engine...";
 		sync::RhoconnectClientManager::syncThreadCreate();
 	}
-
+#ifndef RHO_NO_RUBY_API
     if (!isJSApplication())
     {
         LOG(INFO) + "RhoRubyInitApp...";
@@ -451,23 +500,34 @@ void CRhodesApp::run()
             rho_ruby_call_config_conflicts();
         }
     }
-
+#endif
     RHOCONF().conflictsResolved();
 
     PROF_CREATE_COUNTER("READ_FILE");
     PROF_CREATE_COUNTER("LOW_FILE");
-    while (!m_bExit) {
-        m_httpServer->run();
-        if (m_bExit)
-            break;
+	if(m_isJSFSApp)
+		RHODESAPP().notifyLocalServerStarted();
 
-        if ( !m_bRestartServer )
-        {
-            LOG(INFO) + "RhodesApp thread wait.";
-            wait(-1);
-        }
-        m_bRestartServer = false;
-    }
+	while (!m_bExit) {
+		if(!m_isJSFSApp)
+			m_httpServer->run();
+		else
+		{
+			LOG(INFO) + "RhodesApp thread wait.";
+			wait(-1);
+		}
+
+		if (m_bExit)
+			break;
+
+		if ( !m_bRestartServer )
+		{
+			LOG(INFO) + "RhodesApp thread wait.";
+			wait(-1);
+		}
+		m_bRestartServer = false;
+	}
+
     PROF_DESTROY_COUNTER("LOW_FILE");
     PROF_DESTROY_COUNTER("READ_FILE");
 
@@ -487,11 +547,12 @@ void CRhodesApp::run()
     }
 
     db::CDBAdapter::closeAll();
-
+#ifndef RHO_NO_RUBY_API
     if (!isJSApplication())
     {
         RhoRubyStop();
     }
+#endif
 }
 
 CRhodesApp::~CRhodesApp(void)
@@ -520,7 +581,8 @@ void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
 {
     LOG(INFO) + "restart local server.";
     m_bRestartServer = true;
-    m_httpServer->stop();
+	if(!m_isJSFSApp)
+		m_httpServer->stop();
 	stopWait();
 }
 
@@ -534,7 +596,8 @@ void CRhodesApp::stopApp()
     if (!m_bExit)
     {
         m_bExit = true;
-        m_httpServer->stop();
+		if(!m_isJSFSApp)
+			m_httpServer->stop();
         stopWait();
         stop(4000);
     }
@@ -569,8 +632,10 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 
 static void callback_activateapp(void *arg, String const &strQuery)
 {
+#ifndef RHO_NO_RUBY_API
     if (!RHODESAPP().isJSApplication())
         rho_ruby_activateApp();
+#endif
 
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -578,8 +643,10 @@ static void callback_activateapp(void *arg, String const &strQuery)
 
 static void callback_deactivateapp(void *arg, String const &strQuery)
 {
+#ifndef RHO_NO_RUBY_API
     if (!RHODESAPP().isJSApplication())
         rho_ruby_deactivateApp();
+#endif
 
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -587,16 +654,20 @@ static void callback_deactivateapp(void *arg, String const &strQuery)
 
 static void callback_uicreated(void *arg, String const &strQuery)
 {
+#ifndef RHO_NO_RUBY_API
     if (!RHODESAPP().isJSApplication())
         rho_ruby_uiCreated();
+#endif
 
     rho_http_sendresponse(arg, "");
 }
 
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
+#ifndef RHO_NO_RUBY_API
     if (!RHODESAPP().isJSApplication())
         rho_ruby_uiDestroyed();
+#endif
 
     rho_http_sendresponse(arg, "");
 }
@@ -634,11 +705,14 @@ void CRhodesApp::callUiDestroyedCallback()
     
     if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed))
     {
-        String strUrl = m_strHomeUrl + "/system/uidestroyed";
-        NetResponse resp = getNetRequest().pullData( strUrl, null );
-        if ( !resp.isOK() )
+        if ( rho_ruby_is_started() )
         {
-            LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+          String strUrl = m_strHomeUrl + "/system/uidestroyed";
+          NetResponse resp = getNetRequest().pullData( strUrl, null );
+          if ( !resp.isOK() )
+          {
+              LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+          }
         }
     }
 }
@@ -678,7 +752,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // TODO: Support stop_local_server command to be parsed from callback result
         if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateDeactivated))
         {
-            // 
+#ifndef RHO_NO_RUBY_API 
             if ( rho_ruby_is_started() )
             {
                 String strUrl = m_strHomeUrl + "/system/deactivateapp";
@@ -700,6 +774,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
                     }
                 }
             }
+#endif
         }
 
         m_bDeactivationMode = false;
@@ -778,6 +853,7 @@ class CJsonResponse : public rho::ICallbackObject
 public:
     CJsonResponse(const String& strJson) : m_strJson(strJson) { }
     CJsonResponse(const char* szJson) : m_strJson(szJson) { }
+#ifndef RHO_NO_RUBY_API
     virtual unsigned long getObjectValue()
     {
         char* szError = 0;
@@ -791,6 +867,13 @@ public:
 
         return rho_ruby_get_NIL();
     }
+#else
+    virtual unsigned long getObjectValue()
+    {
+        return 0;
+    }
+
+#endif
 };
 
 void CRhodesApp::callCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse)
@@ -802,7 +885,7 @@ void CRhodesApp::callCallbackWithJsonBody( const char* szCallback, const char* s
 }
 
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
-    const String& strError, boolean bCancel ) 
+    const String& strError, boolean bCancel )
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
     String strBody;
@@ -814,6 +897,7 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
             strBody = "status=error&message=" + strError;
     }else
         strBody = "status=ok&image_uri=db%2Fdb-files%2F" + strImagePath;
+
 
     strBody += "&rho_callback=1";
     getNetRequest().pushData( strCallbackUrl, strBody, null );
@@ -976,6 +1060,7 @@ static void callback_AppManager_load(void *arg, String const &query )
 static void callback_getrhomessage(void *arg, String const &strQuery)
 {
     String strMsg;
+#ifndef RHO_NO_RUBY_API
     size_t nErrorPos = strQuery.find("error=");
     if ( nErrorPos != String::npos )
     {
@@ -992,7 +1077,7 @@ static void callback_getrhomessage(void *arg, String const &strQuery)
             strMsg = rho_ruby_internal_getMessageText(strName.c_str());
         }
     }
-
+#endif
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
@@ -1426,6 +1511,9 @@ void CRhodesApp::initHttpServer()
 
 const char* CRhodesApp::getFreeListeningPort()
 {
+  if ( m_isJSFSApp )
+    return "";
+
 	if ( m_strListeningPorts.length() > 0 )
 		return m_strListeningPorts.c_str();
 
@@ -1544,18 +1632,15 @@ int CRhodesApp::determineFreeListeningPort()
 void CRhodesApp::initAppUrls() 
 {
     CRhodesAppBase::initAppUrls(); 
-   
-#if defined( OS_WINCE ) && !defined(OS_PLATFORM_MOTCE)
-    TCHAR oem[257];
-    SystemParametersInfo(SPI_GETPLATFORMNAME, sizeof(oem), oem, 0);
-    LOG(INFO) + "Device name: " + oem;
-    //if ((_tcscmp(oem, _T("MC75"))==0) || (_tcscmp(oem, _T("MC75A"))==0))
-    //   m_strHomeUrl = "http://localhost:";
-    //else
-       m_strHomeUrl = "http://127.0.0.1:";
-#else
-    m_strHomeUrl = "http://127.0.0.1:";
+
+    m_isJSFSApp = false;
+#ifndef OS_WINCE
+#ifdef RHO_NO_RUBY_API
+    m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
 #endif
+#endif
+
+    m_strHomeUrl = "http://127.0.0.1:";
     m_strHomeUrl += getFreeListeningPort();
 
 #ifndef RHODES_EMULATOR
@@ -1568,9 +1653,12 @@ void CRhodesApp::initAppUrls()
 
     //write local server url to file
 #ifdef OS_WINCE
-    String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
-    CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
-    modifyRhoApiFile();
+    if (!m_isJSFSApp)
+    {
+        String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
+        CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
+        modifyRhoApiFile();
+    }
 #endif
 }
 
@@ -1712,7 +1800,9 @@ void CRhodesApp::navigateBack()
     if((nIndex < static_cast<int>(m_arAppBackUrlOrig.size()))
         && (m_arAppBackUrlOrig[nIndex].length() > 0))
     {
-        loadUrl(m_arAppBackUrlOrig[nIndex]);
+        String backUrl = m_arAppBackUrlOrig[nIndex];
+        setAppBackUrl("");
+        loadUrl(backUrl);
     }
     else// if(strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0)
     {
@@ -1728,7 +1818,7 @@ String CRhodesApp::getAppName()
     strAppName = rho_native_get_appname();
 #else
     //TODO: Android - get app name for shared runtime app
-    strAppName = get_app_build_config_item("name");
+    strAppName = RHOCONF().getString("app_name");
 #endif
 
     return strAppName;
@@ -1830,6 +1920,7 @@ String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String st
 
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
+#ifndef RHO_NO_RUBY_API
     synchronized(m_mxCallbackObjects)
     {
         if ( nIndex < 0 || nIndex > (int)m_arCallbackObjects.size() )
@@ -1847,6 +1938,9 @@ unsigned long CRhodesApp::getCallbackObject(int nIndex)
 
         return valRes;
     }
+#else
+    return 0;
+#endif
 }
 
 void CRhodesApp::initPushClients()
@@ -2070,6 +2164,7 @@ extern "C" unsigned long rho_ruby_safe_require(const char *fname);
 
 void CExtManager::requireRubyFile( const char* szFilePath )
 {
+#ifndef RHO_NO_RUBY_API	
     if( rho_ruby_is_started() )
     {
         RAWTRACEC1("CExtManager", "Require ruby file: %s", szFilePath);
@@ -2077,6 +2172,7 @@ void CExtManager::requireRubyFile( const char* szFilePath )
         if ( rho_ruby_is_NIL(val) )
             RAWLOGC_WARNING1("CExtManager", "requireRubyFile cannot find file: %s", szFilePath);
     }
+#endif
 }
 	
 void CRhodesApp::setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval)
@@ -2556,8 +2652,12 @@ void rho_rhodesapp_callAppActiveCallback(int nActive)
 
 void rho_rhodesapp_callUiCreatedCallback()
 {
-    if ( rho::common::CRhodesApp::getInstance() )
+	if ( rho::common::CRhodesApp::getInstance() )
         RHODESAPP().callUiCreatedCallback();
+    else
+    {
+        RAWLOGC_ERROR("RhodesApp", "UI created callback is missing because application instance is NULL");
+    }
 }
 
 void rho_rhodesapp_callUiDestroyedCallback()
@@ -2674,6 +2774,16 @@ void rho_free_callbackdata(void* pData)
 	//It is used in SyncClient.
 }
 
+const char* rho_rhodesapp_getStartParametersOriginal()
+{
+    return RHODESAPP().getStartParametersOriginal().c_str();
+}
+
+void rho_rhodesapp_setStartParametersOriginal(const char* szParams)
+{
+    RHODESAPP().setStartParametersOriginal(szParams? szParams:"");
+}
+    
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 {
     String strCmdLineSecToken;
@@ -2706,6 +2816,8 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
     return result; 
 }
     
+#ifndef OS_ANDROID
+
 int rho_is_motorola_licence_checked(const char* szMotorolaLicence, const char* szMotorolaLicenceCompany, const char* szAppName)
 {
 
@@ -2744,6 +2856,9 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
 #endif        
     return res_check;
 }
+
+#endif
+
     //TODO: remove it
     void rho_sys_set_network_status_notify(const char* /*url*/, int /*poll_interval*/)
 	{
@@ -2772,7 +2887,7 @@ extern "C"
 }
 #endif
 
-extern "C" bool rho_is_remote_debug()
+extern "C" int rho_is_remote_debug()
 {
     return RHOCONF().getBool("remotedebug");
 }

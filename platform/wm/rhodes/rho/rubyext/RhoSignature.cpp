@@ -123,7 +123,10 @@ LRESULT CRhoSignatureWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
     if (getParams().m_eType == CRhoSignature::esModal)
     {
 
-    #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
+//    #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
+#if defined(_WIN32_WCE)
+		if(winversion == 1)
+		{
 	    SetWindowText(_T("Take signature"));
 
 	    SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
@@ -134,7 +137,10 @@ LRESULT CRhoSignatureWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	    mbi.nToolBarId = IDR_GETURL_MENUBAR;
 	    mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
 	    SHCreateMenuBar(&mbi);
-    #elif defined( OS_PLATFORM_MOTCE )
+		}
+		else if(winversion == 2)
+		{
+    //#elif defined( OS_PLATFORM_MOTCE )
         m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
         TBBUTTON oBtn = {0};
         oBtn.iBitmap = -1;
@@ -146,7 +152,9 @@ LRESULT CRhoSignatureWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
         CommandBar_AddAdornments(m_hWndCommandBar, CMDBAR_OK, 0 );
 
         CommandBar_Show(m_hWndCommandBar, TRUE);
-    #endif
+		}
+    //#endif
+#endif
 
     }else
     {
@@ -917,7 +925,9 @@ void rho_signature_clear()
 void Init_SignatureCapture(void);
 void init_rhoext_Signature()
 {
+#ifndef RHO_NO_RUBY_API
     Init_SignatureCapture();
+#endif
 
     RHODESAPP().getExtManager().registerExtension( "signaturecapture", new CRhoSignature() );
 }

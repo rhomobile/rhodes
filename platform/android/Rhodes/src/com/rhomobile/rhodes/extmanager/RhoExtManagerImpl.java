@@ -277,39 +277,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         return Capabilities.SHARED_RUNTIME_ENABLED;
     }
 
-    private String mLicenseToken;
-    private String mLicenseCompany;
-    private String mAppName;
-    private LicenseStatus mLicenseStatus = LicenseStatus.LICENSE_MISSED;
-
-    public void setLicenseCredentials(String token, String company, String appName) {
-        Logger.T(TAG, "New license credentials");
-        Logger.D(TAG, "License token: " + token);
-        Logger.D(TAG, "License company: " + company);
-        Logger.D(TAG, "App name: " + appName);
-
-        mLicenseToken = token;
-        mLicenseCompany = company;
-        mAppName = appName;
-        
-        mLicenseStatus = checkLicence();
-    }
-
-    public LicenseStatus getLicenseStatus() {
-        return mLicenseStatus;
-    }
-
-    private LicenseStatus checkLicence() {
-        if (mLicenseToken == null || mLicenseToken.length() == 0) {
-            return LicenseStatus.LICENSE_MISSED;
-        }
-        if (RhodesService.isMotorolaLicencePassed(mLicenseToken, mLicenseCompany, mAppName)) {
-            return LicenseStatus.LICENSE_PASSED;
-        }
-        else {
-            return LicenseStatus.LICENSE_FAILED;
-        }
-    }
 
     //-----------------------------------------------------------------------------------------------------------------
     // Rhodes implementation related methods are below
@@ -448,8 +415,14 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     public void onNavigateComplete(View view, String url) {
-        int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
-        IRhoWebView rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
+        IRhoWebView rhoWebView = null;
+        try {
+            int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
+            rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
+        }
+        catch(IllegalArgumentException ex) {
+            Logger.W(TAG, "Cannot get webView object for onNavigateComplete event: WebView object is destroyed.");
+        }
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
@@ -566,9 +539,15 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     public void onLoadEnd(View view, String url, long arg2, long arg3) {
-        int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
-        IRhoWebView rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
         boolean res = false;
+        IRhoWebView rhoWebView = null;
+        try {
+            int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
+            rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
+        }
+        catch(IllegalArgumentException ex) {
+            Logger.W(TAG, "Cannot get webView object for onLoadEnd event: WebView object is destroyed.");
+        }
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
                 res = ext.onNavigateComplete(this, url, rhoWebView, res);
@@ -837,6 +816,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     public void onNewIntent(RhodesActivity activity, Intent intent) {
         for (IRhoListener listener: mListeners) {
             listener.onNewIntent(activity, intent);
+        }
+    }
+    public void onNewIntent(RhodesService service, Intent intent) {
+        for (IRhoListener listener: mListeners) {
+            listener.onNewIntent(service, intent);
         }
     }
     public void onActivityResult(RhodesActivity activity, int reqCode, int resCode, Intent intent) {

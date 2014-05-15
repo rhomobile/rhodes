@@ -222,13 +222,9 @@ class Jake
   end
 
   def self.process_spec_output(line)
+      # Print MSpec example description
       puts line if line =~ /\| - it/ or line =~ /\| describe/ or line =~ /\|   - /
-
-      #strip android trace tag
-      if line =~ /^I\/APP\s+\(\s+[0-9]+\)\:\s+(.*)/
-        line = $1
-      end
-
+      line = $1 if line =~ /^I\/APP\s+\(\s+[0-9]+\)\:\s+(.*)/
       if $getdump
         if line =~ /^I/
           $getdump = false
@@ -247,7 +243,7 @@ class Jake
       elsif line =~ /\| \*\*\*Passed:\s+(.*)/ # | ***Passed:
         $passed += $1.to_i
       end
-
+      # Faillog for MSpec
       if line =~ /\| FAIL:/
         line = line.gsub(/I.*APP\|/,"\n\n***")
         if !$faillog.include?(line)
@@ -255,7 +251,14 @@ class Jake
         end
         $getdump = true
       end
-
+      # Faillog for Jusmine
+      if line =~ /I.* Jasmine specRunner\| .*Failed\./
+        line = line.gsub(/I.*Jasmine specRunner\|/,"\n\n***")
+        if !$faillog.include?(line)
+          $faillog << line
+        end
+        $getdump = true
+      end
       return true
   end
 
@@ -391,6 +394,14 @@ class Jake
       out = `#{command}`
       fail "[#{command}]" if $?.exitstatus != 0
       out
+  end
+
+  def self.edit_yml(file, out_file = nil)
+    out_file = file if out_file.nil?
+
+    yml = YAML::load_file(file)
+    yield yml
+    File.open(out_file, 'w') {|f| f.write yml.to_yaml}
   end
 
   def self.edit_xml(file, out_file = nil)
@@ -598,11 +609,11 @@ class Jake
     file_map = Array.new
     file_map_name = File.join(dir, file_name)
     dat      = nil
-    
+
     if in_memory == false
       dat = File.open(file_map_name, 'w')
     end
-    
+
     Dir.glob(File.join(dir, '**/*')).sort.each do |f|
       relpath = f[psize..-1]
 
@@ -613,16 +624,16 @@ class Jake
       else
         next
       end
-          
+
       if File.basename(f) == file_name
         next
       end
-          
+
       size = File.stat(f).size
       tm   = File.stat(f).mtime.to_i
 
       if in_memory == true
-        map_item = Hash.new 
+        map_item = Hash.new
         map_item = { :path => relpath, :size => size, :time => tm }
         file_map << map_item
       else
@@ -633,8 +644,46 @@ class Jake
     if in_memory == false
       dat.close
     end
-    
+
     return file_map
+  end
+
+  def self.unzip(source_zip, dest_folder)
+
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      begin
+        require 'rubygems'
+        require 'zip'
+        require 'find'
+        require 'fileutils'
+        include FileUtils
+
+        Zip::File.open(source_zip) { |zip_file|
+          last_path = ""
+          zip_file.each { |f|
+            f_path=File.join(dest_folder, f.name)
+            d_path=File.dirname(f_path)
+            if last_path != d_path && !File.exists?(d_path)
+              FileUtils.mkdir_p()
+              last_path = d_path
+            end
+            zip_file.extract(f, f_path) 
+          }
+        }
+      rescue Exception => e
+        puts "ERROR : #{e}"
+        puts 'Require "rubyzip" gem for make zip file !'
+        puts 'Install gem by "gem install rubyzip"'
+      end
+    else
+      require 'fileutils'
+
+      args = []
+      args << source_zip
+      args << "-d"
+      args << dest_folder
+      run("unzip", args, dest_folder)
+    end
   end
 
   def self.zip_upgrade_bundle(folder_path, zip_file_path)
@@ -698,14 +747,73 @@ class Jake
   def self.modify_rhoconfig_for_debug
     confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
     puts "confpath_content=" + confpath_content.to_s
-    
+
     confpath_content += "\r\n" + "remotedebug=1"  if !confpath_content.include?("remotedebug=")
     confpath_content += "\r\n" + "debughosturl=" + $rhologhostaddr  if !confpath_content.include?("debughosturl=")
-  
+
  #   puts "confpath_content=" + confpath_content.to_s
  #   puts  "$srcdir=" + $srcdir.to_s
-   
+
     File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+  end
+
+  def self.get_config_override_params
+    override = {}
+    ENV.each do |key, value|
+      key.match(/^rho_override_(.+)$/) do |match|
+        override[match[1]] = value
+      end
+    end
+    return override
+  end
+
+  def self.copy_rhoconfig(source, target)
+    override = get_config_override_params
+    mentioned = Set.new
+
+    lines = []
+
+    # read file and edit overriden parameters
+    File.open(source, 'r') do |file|
+      while line = file.gets
+        match = line.match(/^(\s*)(\w+)(\s*=\s*)/)
+        if match
+          name = match[2]
+          if override.has_key?(name)
+            lines << "#{match[1]}#{name}#{match[3]}#{override[name]}"
+            mentioned << name
+            next
+          end
+        end
+        lines << line
+      end
+    end
+
+    # append rest of overriden parameters to text
+    override.each do |key, value|
+      if !mentioned.include?(key)
+        lines << ''
+        lines << "#{key} = #{value}"
+      end
+    end
+
+    # write text to target file
+    File.open(target, 'w') do |file|
+      lines.each { |l| file.puts l }
+    end
+  end
+
+  def self.make_rhoconfig_txt
+    copy_rhoconfig(File.join($app_path, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
+
+    modify_rhoconfig_for_debug if $remote_debug
+
+    app_version = "\r\napp_version='#{$app_config["version"]}'"
+    app_version += "\r\napp_name='#{$app_config["name"]}'"
+    app_version += "\r\ntitle_text='#{$app_config["name"]}'"  if $current_platform == "win32"
+
+    File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
+    File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
   end
 
   def self.run_rho_log_server(app_path)
@@ -751,7 +859,7 @@ class Jake
     proc_list = []
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      cmd = 'wmic'
+      cmd = 'WMIC'
       args = ['path', 'win32_process', 'get', 'Processid,Parentprocessid,Commandline']
     else
       cmd = 'ps'
@@ -830,7 +938,7 @@ class Jake
 
     false
   end
-  
+
   def self.copyIfNeeded src, dst
     if File.directory? dst and !File.directory? src
       dst_path = File.join dst, File.basename(src)

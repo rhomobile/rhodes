@@ -177,7 +177,7 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 	const char* ios_7_icon_color = NULL;
 	const char* ios_7_selected_color = NULL;
     const char* detail_color = NULL;
-	NSNumber* nMaxWidth = NULL;
+	NSNumber* nMaxWidth = NULL, *nFixedWidth = NULL;
     
     NSObject* obj = nil;
     
@@ -214,10 +214,11 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
         if (obj != nil) {
             nMaxWidth = (NSNumber*)obj;
         }
-        
+        obj = [p_properties objectForKey:NATIVE_BAR_FIXED_WIDTH];
+        if (obj != nil) {
+            nFixedWidth = (NSNumber*)obj;
+        }
     }
-    
-
     
     int size = [p_items count];//params->v.array->size;
 
@@ -244,15 +245,18 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
         const char *detailLabel = NULL;
         const char *action = NULL;
         const char *icon = NULL;
+        const char *background_image = NULL, *background_sel_image = NULL;
         const char *reload = NULL;
-        const char *colored_icon = NULL;
+        const char *colored_icon = NULL, *group_bottom = NULL;
 		
 		const char *selected_color = NULL;
 		//const char *selected_color_enable = NULL;
 		const char *disabled = NULL;
 		const char* web_bkg_color = NULL;
 		const char* use_current_view_for_tab = NULL;
-		
+		NSNumber* nIndentWidth = NULL;
+        const char* label_sel_color = NULL, * detail_sel_color = NULL;
+        
         BOOL skip_item = NO;
         
         //obj = [hash objectForKey:@"backgroundColor"];
@@ -281,6 +285,16 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
             NSString* obj_str = (NSString*)obj;
             icon = [obj_str UTF8String];
         }
+        obj = [hash objectForKey:@"backgroundImage"];
+        if (obj != nil) {
+            NSString* obj_str = (NSString*)obj;
+            background_image = [obj_str UTF8String];
+        }
+        obj = [hash objectForKey:NATIVE_BAR_ITEM_BACK_SEL_IMAGE];
+        if (obj != nil) {
+            NSString* obj_str = (NSString*)obj;
+            background_sel_image = [obj_str UTF8String];
+        }
         obj = [hash objectForKey:@"reload"];
         if (obj != nil) {
             NSNumber* obj_num = (NSNumber*)obj;
@@ -299,6 +313,16 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
             }
             else {
                 colored_icon = "false";
+            }
+        }
+        obj = [hash objectForKey:NATIVE_BAR_ITEM_GROUP_BOTTOM];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            if ([obj_num boolValue]) {
+                group_bottom = "true";
+            }
+            else {
+                group_bottom = "false";
             }
         }
         obj = [hash objectForKey:@"selectedColor"];
@@ -321,18 +345,33 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
             NSNumber* obj_num = (NSNumber*)obj;
             web_bkg_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
         }
+        obj = [hash objectForKey:NATIVE_BAR_ITEM_LABEL_SEL_COLOR];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            label_sel_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
+        }
+        obj = [hash objectForKey:NATIVE_BAR_ITEM_DETAIL_SEL_COLOR];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            detail_sel_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
+        }
+
         obj = [hash objectForKey:@"useCurrentViewForTab"];
         if (obj != nil) {
             NSNumber* obj_num = (NSNumber*)obj;
             if ([obj_num boolValue]) {
                 use_current_view_for_tab = "true";
-                action = "none";
+                if (bar_t != VTABBAR_TYPE)
+                    action = "none";
             }
             else {
                 use_current_view_for_tab = "false";
             }
         }
-        
+        obj = [hash objectForKey:NATIVE_BAR_ITEM_INDENT_WIDTH];
+        if (obj != nil) {
+            nIndentWidth = (NSNumber*)obj;
+        }
         
         if (label == NULL && bar_type == TOOLBAR_TYPE)
             label = "";
@@ -350,11 +389,21 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
             }
 			[item setObject:[NSString stringWithUTF8String:action] forKey:NATIVE_BAR_ITEM_ACTION];
 			[item setObject:[NSString stringWithUTF8String:(icon ? icon : "")] forKey:NATIVE_BAR_ITEM_ICON];
+            [item setObject:[NSString stringWithUTF8String:(background_image ? background_image : "")] forKey:NATIVE_BAR_ITEM_BACK_IMAGE];
+            [item setObject:[NSString stringWithUTF8String:(background_sel_image ? background_sel_image : "")] forKey:NATIVE_BAR_ITEM_BACK_SEL_IMAGE];
 			[item setObject:[NSString stringWithUTF8String:(reload ? reload : "false")] forKey:NATIVE_BAR_ITEM_RELOAD];
 			[item setObject:[NSString stringWithUTF8String:(colored_icon ? colored_icon : "false")] forKey:NATIVE_BAR_ITEM_COLORED_ICON];
-			if (selected_color != nil) {
+            [item setObject:[NSString stringWithUTF8String:(group_bottom ? group_bottom : "false")] forKey:NATIVE_BAR_ITEM_GROUP_BOTTOM];
+            if (nIndentWidth != NULL)
+                [item setObject: nIndentWidth forKey:NATIVE_BAR_ITEM_INDENT_WIDTH];
+            
+			if (selected_color != nil)
 				[item setObject:[NSString stringWithUTF8String:selected_color] forKey:NATIVE_BAR_ITEM_SELECTED_COLOR];
-			}
+			if (label_sel_color != nil)
+				[item setObject:[NSString stringWithUTF8String:label_sel_color] forKey:NATIVE_BAR_ITEM_LABEL_SEL_COLOR];
+			if (detail_sel_color != nil)
+				[item setObject:[NSString stringWithUTF8String:detail_sel_color] forKey:NATIVE_BAR_ITEM_DETAIL_SEL_COLOR];
+            
 			[item setObject:[NSString stringWithUTF8String:(disabled ? disabled : "false")] forKey:NATIVE_BAR_ITEM_DISABLED];
 			if (web_bkg_color != NULL) {
 				[item setObject:[NSString stringWithUTF8String:web_bkg_color] forKey:NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR];
@@ -370,6 +419,8 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 	}
     if (nMaxWidth != NULL)
         [properties setObject: nMaxWidth forKey:NATIVE_BAR_MAX_WIDTH];
+    if (nFixedWidth != NULL)
+        [properties setObject: nFixedWidth forKey:NATIVE_BAR_FIXED_WIDTH];
     
     if (ios_7_icon_color != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:ios_7_icon_color] forKey:NATIVE_BAR_ICON_COLOR];

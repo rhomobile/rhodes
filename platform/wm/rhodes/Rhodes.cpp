@@ -46,6 +46,8 @@ using namespace rho::common;
 using namespace std;
 using namespace stdext;
 
+int winversion = 0;
+
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
@@ -68,6 +70,8 @@ extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstan
 
 #if !defined(APP_BUILD_CAPABILITY_MOTOROLA)
 extern "C" LRESULT	rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam){ return 0;}
+#else
+extern "C" void initialiseRhoElementsExt();
 #endif
 
 #else
@@ -118,8 +122,9 @@ extern "C" bool rho_wmimpl_get_resize_on_sip()
 }
 #endif
 
-#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
+#if defined(_WIN32_WCE)
 #include <regext.h>
+#include "bluetooth/Bluetooth.h"
 
 // Global Notification Handle
 HREGNOTIFY g_hNotify = NULL, g_hNotifyCell = NULL;
@@ -132,6 +137,18 @@ HREGNOTIFY g_hNotify = NULL, g_hNotifyCell = NULL;
 
 #define SN_CELLSYSTEMCONNECTED_PATH TEXT("System\\State\\Phone")
 #define SN_CELLSYSTEMCONNECTED_VALUE TEXT("Cellular System Connected")
+
+typedef HRESULT (WINAPI* LPFN_REGISTRY_CLOSENOTIFICATION_T) (HREGNOTIFY);
+typedef HRESULT (WINAPI* LPFN_REGISTRY_NOTIFYWINDOW_T) (HKEY, LPCTSTR, LPCTSTR, HWND, UINT, DWORD, NOTIFICATIONCONDITION*, HREGNOTIFY*);
+typedef HRESULT (WINAPI* LPFN_REGISTRY_GETSTRING_T) (HKEY, LPCTSTR, LPCTSTR, LPTSTR, UINT);
+typedef HRESULT (WINAPI* LPFN_REGISTRY_GETDWORD_T) (HKEY, LPCTSTR, LPCTSTR, DWORD*);
+
+LPFN_REGISTRY_CLOSENOTIFICATION_T	lpfn_Registry_CloseNotification = NULL;
+LPFN_REGISTRY_NOTIFYWINDOW_T		lpfn_Registry_NotifyWindow = NULL;		
+LPFN_REGISTRY_GETSTRING_T			lpfn_Registry_GetString = NULL;			
+LPFN_REGISTRY_GETDWORD_T			lpfn_Registry_GetDWORD = NULL;
+HMODULE g_hAygShellDLL = NULL;	
+extern "C" BOOL LoadAYGShell();
 
 #endif
 
@@ -191,6 +208,7 @@ public :
 
     bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( );
     HRESULT PreMessageLoop(int nShowCmd) throw();
+	HRESULT PostMessageLoop() throw();
     void RunMessageLoop( ) throw( );
     const rho::String& getRhoRootPath();
     const rho::String& getRhoRuntimePath();
@@ -359,11 +377,12 @@ extern "C" void rho_wm_impl_CheckLicense();
 // error code => Failure. Skip both RunMessageLoop() and PostMessageLoop().
 HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 {
-    HRESULT hr = __super::PreMessageLoop(nShowCmd);
+    HRESULT hr;
+	/*HRESULT hr = __super::PreMessageLoop(nShowCmd);
     if (FAILED(hr))
     {
         return hr;
-    }
+    }*/
     // Note: In this sample, we don't respond differently to different hr success codes.
 
     SetLastError(0);
@@ -425,6 +444,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	LOG(INFO) + "Rhodes started";
 	if (RHOCONF().isExist("http_proxy_url")) {
 		parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
+	} else if (RHOCONF().isExist("http_proxy_uri")) {
+		parseHttpProxyURI(RHOCONF().getString("http_proxy_uri"));
 	}
 
 
@@ -475,6 +496,13 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     if (RHOCONF().getBool("Application.autoStart"))
         createAutoStartShortcut();
 
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
+        String spath = convertToStringA(rho_wmimpl_get_startpage());
+        RHOCONF().setString("start_path", spath, false);
+    }
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
 
     bool bRE1App = false;
@@ -485,13 +513,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 
     RHODESAPP().setJSApplication(bRE1App || _AtlModule.isJSApplication());
-
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
-        String spath = convertToStringA(rho_wmimpl_get_startpage());
-        RHOCONF().setString("start_path", spath, false);
-    }
-#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
     DWORD dwStyle = m_bMinimized ? 0 : WS_VISIBLE;
 
@@ -515,7 +536,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     m_appWindow.InvalidateRect(NULL, TRUE);
     m_appWindow.UpdateWindow();
-
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+	initialiseRhoElementsExt();
+#endif
     m_appWindow.initBrowserWindow();
 
     if (m_bMinimized)
@@ -544,43 +567,45 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     //}
 
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined(_WIN32_WCE)
+    if(RHO_IS_WMDEVICE)
+    {
 
-    DWORD dwConnCount = 0;
-    hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
-		SN_CONNECTIONSNETWORKCOUNT_PATH, 
-		SN_CONNECTIONSNETWORKCOUNT_VALUE, 
-        &dwConnCount
-    );
-    rho_sysimpl_sethas_network((dwConnCount > 1) ? 1 : 0);
+        DWORD dwConnCount = 0;
+        hr = lpfn_Registry_GetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
+		    SN_CONNECTIONSNETWORKCOUNT_PATH, 
+		    SN_CONNECTIONSNETWORKCOUNT_VALUE, 
+            &dwConnCount
+        );
+        rho_sysimpl_sethas_network((dwConnCount > 1) ? 1 : 0);
 
-    DWORD dwCellConnected = 0;
-    hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
-		SN_CELLSYSTEMCONNECTED_PATH, 
-		SN_CELLSYSTEMCONNECTED_VALUE, 
-        &dwCellConnected
-    );
-    rho_sysimpl_sethas_cellnetwork(dwCellConnected);
+        DWORD dwCellConnected = 0;
+        hr = lpfn_Registry_GetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
+		    SN_CELLSYSTEMCONNECTED_PATH, 
+		    SN_CELLSYSTEMCONNECTED_VALUE, 
+            &dwCellConnected
+        );
+        rho_sysimpl_sethas_cellnetwork(dwCellConnected);
 
-	// Register for changes in the number of network connections
-	hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
-		SN_CONNECTIONSNETWORKCOUNT_PATH, 
-		SN_CONNECTIONSNETWORKCOUNT_VALUE, 
-		m_appWindow.m_hWnd, 
-		WM_CONNECTIONSNETWORKCOUNT, 
-		0, 
-		NULL, 
-		&g_hNotify);
+	    // Register for changes in the number of network connections
+	    hr = lpfn_Registry_NotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
+		    SN_CONNECTIONSNETWORKCOUNT_PATH, 
+		    SN_CONNECTIONSNETWORKCOUNT_VALUE, 
+		    m_appWindow.m_hWnd, 
+		    WM_CONNECTIONSNETWORKCOUNT, 
+		    0, 
+		    NULL, 
+		    &g_hNotify);
 
-	hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
-		SN_CELLSYSTEMCONNECTED_PATH, 
-		SN_CELLSYSTEMCONNECTED_VALUE, 
-		m_appWindow.m_hWnd, 
-		WM_CONNECTIONSNETWORKCELL, 
-		0, 
-		NULL, 
-		&g_hNotifyCell);
-
+	    hr = lpfn_Registry_NotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
+		    SN_CELLSYSTEMCONNECTED_PATH, 
+		    SN_CELLSYSTEMCONNECTED_VALUE, 
+		    m_appWindow.m_hWnd, 
+		    WM_CONNECTIONSNETWORKCELL, 
+		    0, 
+		    NULL, 
+		    &g_hNotifyCell);
+    }
 #endif
 
     return S_OK;
@@ -590,15 +615,18 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 {
     m_appWindow.getWebKitEngine()->RunMessageLoop(m_appWindow);
 
-#if defined(OS_WINCE)&& !defined( OS_PLATFORM_MOTCE )
-    if (g_hNotify)
-        RegistryCloseNotification(g_hNotify);
+#if defined(OS_WINCE)
+	if(RHO_IS_WMDEVICE)
+	{
+		if (g_hNotify)
+		  lpfn_Registry_CloseNotification(g_hNotify);
 
-    if ( g_hNotifyCell )
-        RegistryCloseNotification(g_hNotifyCell);
+	 if ( g_hNotifyCell )
+		 lpfn_Registry_CloseNotification(g_hNotifyCell);
 
-    CGPSController* pGPS = CGPSController::Instance();
-    pGPS->DeleteInstance();
+		CGPSController* pGPS = CGPSController::Instance();
+		pGPS->DeleteInstance();
+	}
 #endif
     rho_ringtone_manager_stop();
 
@@ -639,7 +667,7 @@ const rho::String& CRhodesModule::getAppName()
             m_strAppName = path.substr( nStart, nEnd-nStart+1);
         }
 #else
-        m_strAppName = get_app_build_config_item("name");
+        m_strAppName = RHOCONF().getString("app_name");
 #endif
     }
 
@@ -690,11 +718,23 @@ void CRhodesModule::createAutoStartShortcut()
 
 }
 
+HRESULT CRhodesModule::PostMessageLoop() throw()
+{
+	return 0;
+}
+
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR lpCmdLine, int nShowCmd)
 {
 	INITCOMMONCONTROLSEX ctrl;
 
+#if defined(OS_WINCE)
+	/*if(RhoBluetoothManager::LoadBthUtil())
+		winversion = 1;
+	else
+		winversion = 2;*/
+	LoadAYGShell();
+#endif
 
 	//Required to use datetime picker controls.
 	ctrl.dwSize = sizeof(ctrl);
@@ -761,6 +801,7 @@ typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
 
 extern "C" void rho_wm_impl_CheckLicense()
 {   
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     int nRes = 0;
     LOG(INFO) + "Start license_rc.dll";
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
@@ -820,6 +861,7 @@ extern "C" void rho_wm_impl_CheckLicense()
 
     if ( !nRes )
         ::PostMessage( getMainWnd(), WM_SHOW_LICENSE_WARNING, 0, 0);
+#endif
 }
 
 static inline char *
@@ -868,11 +910,11 @@ extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
     PostMessage( rho_wmimpl_get_mainwnd(),WM_COMMAND, ID_TITLECHANGE, (LPARAM)_tcsdup(convertToStringW(strTitle).c_str()) );
 }
 
-extern "C" void rho_win32_unset_window_proxy()
+extern "C" void rho_qt_unset_window_proxy()
 {
 }
 
-extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
+extern "C" void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
 {
 }
 
@@ -893,6 +935,54 @@ extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
 
 extern "C" void Init_fcntl(void)
 {
+}
+
+extern "C" BOOL LoadAYGShell()
+{
+	bool bReturnValue = FALSE;
+	winversion = 2;
+	g_hAygShellDLL = LoadLibrary(L"aygshell.dll");
+	if (!g_hAygShellDLL)
+	{
+		//  Error loading AygShell.dll (used for Retrieving values from the Registry)
+		LOG(INFO) + "Failed to load AygShell.dll, WAN status event will not be available";
+	}
+	else
+	{
+		lpfn_Registry_CloseNotification = 
+			(LPFN_REGISTRY_CLOSENOTIFICATION_T)GetProcAddress(g_hAygShellDLL, _T("RegistryCloseNotification"));
+		lpfn_Registry_NotifyWindow = 
+			(LPFN_REGISTRY_NOTIFYWINDOW_T)GetProcAddress(g_hAygShellDLL, _T("RegistryNotifyWindow"));
+		lpfn_Registry_GetString = 
+			(LPFN_REGISTRY_GETSTRING_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetString"));
+		lpfn_Registry_GetDWORD = 
+			(LPFN_REGISTRY_GETDWORD_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetDWORD"));
+
+		if (!lpfn_Registry_CloseNotification)
+		{
+			LOG(ERROR) + "Unable to load RegistryCloseNotification, WAN Status event will be unavailable";
+			bReturnValue = FALSE;
+		}
+		else if (!lpfn_Registry_CloseNotification)
+		{
+			LOG(ERROR) + "Unable to load RegistryNotifyCallback, WAN Status event will be unavailable";
+		}
+		else if (!lpfn_Registry_GetString)
+		{
+			LOG(ERROR) + "Unable to load RegistryGetString, WAN Status event will be unavailable";
+		}
+		else if (!lpfn_Registry_GetDWORD)
+		{
+			LOG(ERROR) + "Unable to load RegistryGetDWORD, WAN Status event will be unavailable";
+		}
+		else
+		{
+			winversion = 1;
+			bReturnValue = TRUE;
+		}
+	}
+
+	return bReturnValue;	
 }
 
 //parseToken will allocate extra byte at the end of the 
@@ -946,7 +1036,7 @@ LPTSTR parseToken (LPCTSTR start, LPCTSTR* next_token) {
 	return value;
 }
 
-#if defined( OS_PLATFORM_MOTCE )
+#if defined( _WIN32_WCE )
 
 #include <Imaging.h>
 
@@ -1004,9 +1094,7 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 	return hResult;
 }
 
-#endif
-
-#if !defined(_WIN32_WCE)
+#elif //!_WIN32_WCE
 #include <gdiplus.h>
 #include <Gdiplusinit.h>
 using namespace Gdiplus;
@@ -1061,4 +1149,4 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
     return hBitmap;
 }
 
-#endif
+#endif //!_WIN32_WCE

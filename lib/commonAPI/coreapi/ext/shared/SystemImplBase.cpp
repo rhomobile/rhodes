@@ -437,88 +437,17 @@ void CSystemImplBase::getMain_window_closed(rho::apiGenerator::CMethodResult& oR
     //windows only
 }
 
-void CSystemImplBase::addApplicationMessage(const rho::String& appName, const rho::String& msg)
-{
-    common::CMutexLock lock(m_appMessageMutex);
-    if(!m_appMessageWait && !m_appMessageNotifications)
-    {
-        LOG(TRACE) + "Push " + appName + " mesage to queue: " + msg;
-        m_appMessageQueue.push_back(Hashtable<String, String>());
-        m_appMessageQueue.back()["appName"] = appName;
-        m_appMessageQueue.back()["message"] = msg;
-    }
-    else
-    {
-        Hashtable<String, String> res;
-        res["appName"] = appName;
-        res["message"] = msg;
-        if(m_appMessageWait)
-        {
-            LOG(TRACE) + "Pass " + appName + " mesage to callback (once): " + msg;
-            m_appMessageResult.set(res);
-            m_appMessageWait = false;
-        }
-
-        if(m_appMessageNotifications)
-        {
-            LOG(TRACE) + "Pass " + appName + " mesage to callback (subscription): " + msg;
-            m_appMessageHandler.set(res);
-        }
-    }
-}
-
-void CSystemImplBase::sendApplicationMessage( const rho::String& appName, const rho::String& params, rho::apiGenerator::CMethodResult& oResult)
-{
-}
-
-void CSystemImplBase::getApplicationMessage(rho::apiGenerator::CMethodResult& oResult)
-{
-    common::CMutexLock lock(m_appMessageMutex);
-    if(m_appMessageQueue.size() != 0)
-    {
-        LOG(TRACE) + "src: " + m_appMessageQueue.front()["appName"] + ", msg: " + m_appMessageQueue.front()["message"];
-
-        oResult.set(m_appMessageQueue.front());
-        m_appMessageQueue.erase(m_appMessageQueue.begin());
-    }
-    else
-    {
-        LOG(TRACE) + "There is no pending app msg";
-        m_appMessageResult = oResult;
-        m_appMessageWait = true;
-    }
-
-}
-
-void CSystemImplBase::startApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult)
-{
-    common::CMutexLock lock(m_appMessageMutex);
-    m_appMessageNotifications = true;
-    m_appMessageHandler = oResult;
-    for(Vector<Hashtable<String, String> >::const_iterator It = m_appMessageQueue.begin(); It != m_appMessageQueue.end(); ++It)
-    {
-        m_appMessageHandler.set(*It);
-    }
-    m_appMessageQueue.clear();
-}
-
-void CSystemImplBase::stopApplicationMessageNotifications(rho::apiGenerator::CMethodResult& oResult)
-{
-    common::CMutexLock lock(m_appMessageMutex);
-    m_appMessageNotifications = false;
-}
-
 }
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-extern "C" void rho_win32_unset_window_proxy();
-extern "C" void rho_win32_set_window_proxy(const char* host, const char* port, const char* login, const char* password);
+extern "C" void rho_qt_unset_window_proxy();
+extern "C" void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password);
 #endif
 
 extern "C" void rho_sys_unset_http_proxy()
 {
-#if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-	rho_win32_unset_window_proxy();
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+	rho_qt_unset_window_proxy();
 #endif
 	RHOCONF().removeProperty("http_proxy_host", false);
 	RHOCONF().removeProperty("http_proxy_port", false);
@@ -636,8 +565,8 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 	RAWLOG_INFO1("HTTP proxy port     = %s", port.c_str());
 
 	if (host.length()) {
-#if defined(OS_WINDOWS_DESKTOP)// || defined(RHODES_EMULATOR)
-		rho_win32_set_window_proxy(host.c_str(), port.c_str(), login.c_str(), password.c_str());
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+		rho_qt_set_window_proxy(host.c_str(), port.c_str(), login.c_str(), password.c_str());
 #endif
 		RHOCONF().setString ("http_proxy_host", host, false);
 

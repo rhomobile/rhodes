@@ -67,10 +67,7 @@ extern "C"
 {
 
 #if defined(OS_WINDOWS_DESKTOP)
-const char* rho_sys_win32_getWebviewFramework()
-{
-    return "WEBKIT/" QTWEBKIT_VERSION_STR;
-}
+const char* rho_sys_qt_getWebviewFramework();
 #endif
 
 bool rho_rhosim_window_closed()
@@ -106,11 +103,10 @@ void rho_wmsys_run_app_with_show(const wchar_t* szPath, const wchar_t* szParams,
         if ( String_startsWith(strPath, "http:") || String_startsWith(strPath, "ftp:") )
         {
             //Try to run internet explorer
-#ifdef OS_PLATFORM_MOTCE
-            se.lpFile = L"iesample.exe";
-#else
-            se.lpFile = L"iexplore.exe";
-#endif
+			if(RHO_IS_CEDEVICE)
+				se.lpFile = L"iesample.exe";
+			else
+				se.lpFile = L"iexplore.exe";
 
             StringW strParamsW = szPath;
             if ( szParams && *szParams )
@@ -753,7 +749,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	if (strcasecmp("webview_framework",szPropName) == 0)
 	{
 #if defined(OS_WINDOWS_DESKTOP)
-		*resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
+		*resValue = rho_ruby_create_string(rho_sys_qt_getWebviewFramework());
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 		*resValue = rho_ruby_create_string("WEBKIT/MOTOROLA");
 #else

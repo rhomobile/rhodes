@@ -4,17 +4,16 @@
   <MODULE name="RhoFile" parent="Rho" generateUnderscoreRubyNames="true">
     <HELP_OVERVIEW>File I/O</HELP_OVERVIEW>
     <MORE_HELP>Use this API to access local files for reading and writing. Only string data can be read and written with this API. Please note that binary files are not supported. Strings filled with \0 will be truncated to the last non \0 character. 
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
   </MORE_HELP>
 
     <ALIASES>
@@ -28,25 +27,25 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       </ALIASES>
 
       <METHOD name="open" constructor="true">
-        <DESC>Opens file in specified mode.</DESC>
+        <DESC>Opens file in a mode specified by the "mode" parameter.</DESC>
         <PARAMS>
           <PARAM name="path" type="STRING">
-            <DESC>Path to file.</DESC>
+            <DESC>Absolute path to the file.</DESC>
           </PARAM>
           <PARAM name="mode" type="INTEGER">
-            <DESC>File open mode.</DESC>
+            <DESC>Mode in which to open the file.</DESC>
             <VALUES>
                 <VALUE constName="OPEN_FOR_APPEND" value="1" type="INTEGER">
                     <DESC>Open file for output at the end of a file. The file is created if it does not exist.</DESC>
                 </VALUE>
                 <VALUE constName="OPEN_FOR_READ" value="2" type="INTEGER">
-                    <DESC>Open file for input operations. The file must exist.</DESC>
+                    <DESC>Open file for read-only operations. The file must exist.</DESC>
                 </VALUE>
                 <VALUE constName="OPEN_FOR_WRITE" value="3" type="INTEGER">
                     <DESC>Create an empty file for output operations. If a file with the same name already exists, its contents are discarded and the file is treated as a new empty file.</DESC>
                 </VALUE>
                 <VALUE constName="OPEN_FOR_READ_WRITE" value="4" type="INTEGER">
-                    <DESC>Open a file for update (both for input and output). The file must exist.</DESC>
+                    <DESC>Open a file for update (both for read and write). The file must exist.</DESC>
                 </VALUE>
             </VALUES>
           </PARAM>
@@ -65,14 +64,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       </METHOD>
         
       <METHOD name="read">
-          <DESC>Reads specified number of symbols from current position of the file.</DESC>
+          <DESC>Reads specified number of characters from current position of the file.</DESC>
           <PARAMS>
               <PARAM name="size" type="INTEGER">
-                  <DESC>Number of symbols to be read.</DESC>
+                  <DESC>Number of characters to be read.</DESC>
               </PARAM>
-          </PARAMS>              
+          </PARAMS>
           <RETURN type="STRING">
-              <DESC>String from current position of file containing specified number of symbols</DESC>
+              <DESC>String from current position of file containing specified number of characters.</DESC>
           </RETURN>
       </METHOD>
         
@@ -84,10 +83,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       </METHOD>
         
       <METHOD name="write">
-          <DESC>Writes passed string at current position.</DESC>
+          <DESC>Writes the provided string at current position in the file.</DESC>
           <PARAMS>
               <PARAM name="val" type="STRING">
-                  <DESC>String to be written.</DESC>
+                  <DESC>String to be written to the file.</DESC>
               </PARAM>
           </PARAMS>
           <RETURN type="INTEGER">
@@ -103,7 +102,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
           <DESC>Sets file position to specified value from the beginning of the file.</DESC>
           <PARAMS>
               <PARAM name="pos" type="INTEGER">
-                  <DESC>File position.</DESC>
+                  <DESC>Position within the file.</DESC>
               </PARAM>
           </PARAMS>
       </METHOD>
@@ -117,7 +116,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       
     <!--    STATIC METHODS -->
         <METHOD name="copy" access="STATIC">
-            <DESC>Copies file to specified destination.</DESC>
+            <DESC>Copies file from "from" (source) to "to" (destination).</DESC>
             <PARAMS>
                 <PARAM name="from" type="STRING">
                     <DESC>File name to be copied.</DESC>
@@ -127,35 +126,34 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
-                <DESC>Error code. 0 if no error</DESC>
+                <DESC>Error code raised during copy operation. 0 if no error.</DESC>
             </RETURN>
         </METHOD>
         
         <METHOD name="rename" access="STATIC">
-            <DESC>Renames/moves file.</DESC>
+            <DESC>Renames / moves file.</DESC>
             <PARAMS>
                 <PARAM name="from" type="STRING">
-                    <DESC>Original path.</DESC>
+                    <DESC>Original path / name.</DESC>
                 </PARAM>
                 <PARAM name="to" type="STRING">
-                    <DESC>New path.</DESC>
+                    <DESC>New path / name.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
-                <DESC>Error code. 0 on success, -1 otherwise.</DESC>
+                <DESC>Error code raised on move / rename. 0 on success, -1 otherwise.</DESC>
             </RETURN>
-
         </METHOD>
         
         <METHOD name="makeDir" access="STATIC">
-            <DESC>Creates directory. If all top-level nodes of the path doesn't exists, directory will not be created.</DESC>
+            <DESC>Creates directory with the provided path. If all top-level nodes of the path doesn't exists, directory will not be created.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
                     <DESC>Path to the new directory.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
-                <DESC>Error code. 0 on success, -1 otherwise.</DESC>
+                <DESC>Error code raised on directory creation. 0 on success, -1 otherwise.</DESC>
             </RETURN>
         </METHOD>
         
@@ -163,11 +161,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Checks if specified path exists.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Full pathname of file or directory.</DESC>
+                    <DESC>Absolute path to file or directory.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="BOOLEAN">
-                <DESC>True if path exists. Otherwise false.</DESC>
+                <DESC>True if path exists, otherwise false.</DESC>
             </RETURN>
         </METHOD>
         
@@ -175,7 +173,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Returns size of the file.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Path to the file.</DESC>
+                    <DESC>Absolute path to the file.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
@@ -187,7 +185,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Checks if specified path is a directory.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Full pathname of the directory.</DESC>
+                    <DESC>Absolute path of the directory.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="BOOLEAN">
@@ -199,11 +197,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Checks if specified path is a file.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Full pathname of the file.</DESC>
+                    <DESC>Absolute path of the file.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="BOOLEAN">
-                <DESC>True if path is a file. False otherwise.</DESC>
+                <DESC>True if path is a file, false otherwise.</DESC>
             </RETURN>
         </METHOD>
         
@@ -211,33 +209,32 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Deletes file.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Full path to the file to be deleted.</DESC>
+                    <DESC>Absolute path to the file to be deleted.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
-                <DESC>Error code. 0 on success, -1 otherwise.</DESC>
+                <DESC>Error code raised on file deletion. 0 on success, -1 otherwise.</DESC>
             </RETURN>
 
         </METHOD>
         
         <METHOD name="deleteDir" access="STATIC">
-            <DESC>Deletes directory. Non-empty directory will not be deleted.</DESC>
+            <DESC>Deletes specified directory. The specified directory must be empty to be deleted.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Full path to the directory to be deleted.</DESC>
+                    <DESC>Absolute path to the directory to be deleted.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="INTEGER">
-                <DESC>Error code. 0 on success, -1 otherwise.</DESC>
+                <DESC>Error code raised on directory deletion. 0 on success, -1 otherwise.</DESC>
             </RETURN>
-
         </METHOD>
         
         <METHOD name="makeDirs" access="STATIC">
             <DESC>Creates directory and all top-level directories if necessary. Subsequent isDir call is necessary to check if path was successfully created.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Path to the directory to be created.</DESC>
+                    <DESC>Absolute path to the directory to be created.</DESC>
                 </PARAM>
             </PARAMS>
         </METHOD>
@@ -246,7 +243,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Deletes all directory contents.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Path to the directory.</DESC>
+                    <DESC>Absolute path to the directory.</DESC>
                 </PARAM>
                 <PARAM name="leaveRoot" type="BOOLEAN" default="false">
                     <DESC>Set to true if you only want to delete directory contents, but no the directory itself.</DESC>
@@ -259,7 +256,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Lists all entries of specified directory.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Directory path.</DESC>
+                    <DESC>Absolute path to directory.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="ARRAY">
@@ -271,10 +268,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
     <!--PATH METHODS -->
             
         <METHOD name="basename" access="STATIC">
-            <DESC>Return basename part for the specified path. Will remove any prefix up to the last path separator ('/' or '\' depending on platform). Exampe: for path '/full/path/to/file.ext' basename will return 'file.ext'. </DESC>
+            <DESC>Return basename part for the specified path. Will remove any prefix up to the last path separator ('/' or '\' depending on platform). Example: for path '/full/path/to/file.ext' basename will return 'file.ext'. </DESC>
             <PARAMS>
               <PARAM name="path" type="STRING">
-                  <DESC>Full pathname for which basename is given.</DESC>
+                  <DESC>Absolute path for which basename is given.</DESC>
               </PARAM>
             </PARAMS>
             <RETURN type="STRING">
@@ -286,7 +283,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Returns directory name part of the specified path.</DESC>
             <PARAMS>
               <PARAM name="path" type="STRING">
-                  <DESC>Path.</DESC>
+                  <DESC>Absolute path to directory.</DESC>
               </PARAM>
             </PARAMS>
             <RETURN type="STRING">
@@ -295,7 +292,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </METHOD>
             
         <METHOD name="join" access="STATIC">
-            <DESC>Joins two parts of the path concidering all necessary path delimiters. I.e.: join('/path/to','file') will return '/path/to/file' </DESC>
+            <DESC>Joins two parts of the path considering all necessary path delimiters. I.e.: join('/path/to','file') will return '/path/to/file' </DESC>
             <PARAMS>
                 <PARAM name="p1" type="STRING">
                     <DESC>First part of the path.</DESC>
@@ -313,14 +310,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>Reads specified file to a string object.</DESC>
             <PARAMS>
                 <PARAM name="path" type="STRING">
-                    <DESC>Path to file.</DESC>
+                    <DESC>Absolute path to file.</DESC>
                 </PARAM>
             </PARAMS>
             <RETURN type="STRING">
-                <DESC>File contents</DESC>
+                <DESC>File contents.</DESC>
             </RETURN>
         </METHOD>
-      
     </METHODS>
 
     <USER_OVERVIEW>
@@ -333,11 +329,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       <EXAMPLES >
            <EXAMPLE title="List contents of a folder">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   Iterate through the contents of a folder and divide the entries in "folders" and "files"
-               </DESC>
+               <DESC>Iterate through the contents of a folder and divide the entries in "folders" and "files".</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -359,7 +352,7 @@ end
 var folders = [];
 var files = [];
 var root_path = "/arbitrary/path"
-var entries = Rho.File.listDir(root_path);
+var entries = Rho.RhoFile.listDir(root_path);
 
 for (var i = 0; i < entries.length; i++) {
   var entry = entries[i];
@@ -374,8 +367,6 @@ for (var i = 0; i < entries.length; i++) {
                </SECTION>
                </SECTIONS>
            </EXAMPLE>
-       </EXAMPLES>      
-    
-
-</MODULE>
+       </EXAMPLES>
+    </MODULE>
 </API>

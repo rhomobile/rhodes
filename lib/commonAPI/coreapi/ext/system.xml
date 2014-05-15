@@ -4,17 +4,16 @@
     <MODULE name="System" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The System API is used to control and modify core aspects of the device such as the screen, OS and device capabilities.</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <ALIASES>
             <ALIAS new="System" deprecated="true"/>
@@ -24,14 +23,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
         <PROPERTIES usePropertyBag="PropertyBagViaAccessors" limitPropertyBag="true" access="STATIC">
-            <DESC>The System API supports the following properties</DESC>
+            <DESC>The System API supports the following properties.</DESC>
             <ALIASES>
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
                 <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
             </ALIASES>
             <PROPERTY name="main_window_closed" type="BOOLEAN" readOnly="true" generateDoc="false">
                 <DESC>It is internal property for using in debugger (signal for main window close).</DESC>
-            </PROPERTY>            
+            </PROPERTY>
             <PROPERTY name="platform" type="STRING" readOnly="true">
                 <DESC>Platform where application is running.</DESC>
                 <VALUES>         
@@ -50,7 +49,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <VALUE constName="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
                         <DESC></DESC>
                     </VALUE>
-
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
@@ -72,12 +70,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Current screen orientation.</DESC>
                 <VALUES>
                     <VALUE constName="SCREEN_PORTRAIT" value ="portrait">
-                        <DESC></DESC>
+                        <DESC>The return value if the screen is in portrait mode.</DESC>
                     </VALUE>
                     <VALUE constName="SCREEN_LANDSCAPE" value ="landscape">
-                        <DESC></DESC>
+                        <DESC>The return value if the screen is in landscape mode.</DESC>
                     </VALUE>
-
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="ppiX" type="INTEGER" readOnly="true">
@@ -141,15 +138,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
-                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri, http_proxy_port, http_proxy_user, http_proxy_password in rhoconfig.txt. To set proxy for Motorola WebKit for Windows Mobile/CE use config.xml settings.</DESC>
+                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password) in rhoconfig.txt. To set proxy for Motorola WebKit for Windows Mobile/CE use config.xml settings.</DESC>
                 <PLATFORM>Android, iOS, WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
-                <DESC>Lock/unlock the window size change by the user. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
+                <DESC>Lock / unlock the window size change by the user. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <PLATFORM>Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="keyboardState" type="STRING" default="See Description">
-                <DESC>For Windows Mobile and Windows CE the keyboard can be manually shown or hidden as required.  All other platforms only support 'automatic'.  The default state for Windows Mobile and Windows CE is manual, for all other platforms it is automatic.</DESC>
+                <DESC>For Windows Mobile and Windows CE the keyboard can be manually shown or hidden as required. All other platforms only support 'automatic'. The default state for Windows Mobile and Windows CE is manual, for all other platforms it is automatic.</DESC>
                 <PLATFORM>WM</PLATFORM>               
                 <APPLIES msiOnly="true"></APPLIES>
                 <VALUES>
@@ -157,10 +154,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Shows the on screen keyboard, after setting the keyboard to shown or hidden it will no longer appear / disappear automatically until you set this property to automatic.</DESC>
                     </VALUE>
                     <VALUE constName="KEYBOARD_HIDDEN" value ="hidden">
-                        <DESC>Hides the on screen keyboard, after setting the keyboard to shown or hidden it will no longer appear / disappear automatically until you set this property to automatic.  This is most useful if your device has a hardware keyboard or you are scanning / capturing data to an input field.</DESC>
+                        <DESC>Hides the on screen keyboard, after setting the keyboard to shown or hidden it will no longer appear / disappear automatically until you set this property to automatic. This is most useful if your device has a hardware keyboard or you are scanning / capturing data to an input field.</DESC>
                     </VALUE>
                     <VALUE constName="KEYBOARD_AUTOMATIC" value ="automatic">
-                        <DESC>Automatically shows or hides the keyboard as needed by the application</DESC>
+                        <DESC>Automatically shows or hides the keyboard as needed by the application.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
@@ -188,7 +185,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Use Network.hasNetwork to tell if the device is connected to the network.</DESC>
             </PROPERTY>
             <PROPERTY name="hasWifiNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
-                <DESC>Use Network.hasWifiNetwork to tell if the device is connected to the wifi network</DESC>
+                <DESC>Use Network.hasWifiNetwork to tell if the device is connected to the wifi network.</DESC>
             </PROPERTY>
             <PROPERTY name="hasCellNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
                 <DESC>Use Network.hasCellNetwork to tell if device is connected to the cell network.</DESC>
@@ -219,18 +216,18 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="isApplicationInstalled">
-                <DESC>Checks if the specified applicationName is installed on the device</DESC>
+                <DESC>Checks if the specified applicationName is installed on the device.</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
                         <DESC>The name of the application.</DESC>
                     </PARAM>
                 </PARAMS>
-
                 <RETURN type="BOOLEAN"/>
-
             </METHOD>
+
             <METHOD name="applicationUninstall">
                 <DESC>Uninstall the application. Not Supported on Windows CE devices.</DESC>
                 <PLATFORM>WM, Win32, Android</PLATFORM>
@@ -240,51 +237,23 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="getStartParams">
                 <DESC>Return the command line parameters. At Android start parameters are returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
                 <CALLBACK type="STRING"/>
                 <PLATFORM>WM, Win32, Android</PLATFORM>
             </METHOD>
-            <METHOD name="getApplicationMessage" hasCallback="optional">
-                <DESC>Return last message sent by another applcation by Rho.System.sendApplicationMessage. Rho.System.getApplicationMessage() and Rho.System.startApplicationMessageNotifications share single message queue. In synchronous mode (without callback) returns null if there is no message or application messages is not supported at current platform. In case a callback is passed the callback will be called just once as the message is received or immediately with first message in message queue.</DESC>
-                <RETURN type="HASH">
-                    <PARAMS>
-                        <PARAM name="appName" type="STRING">
-                            <DESC>Name of application which sent the message. At Android it is a package name. At iOS it is BundleURLScheme of an application.</DESC>
-                        </PARAM>
-                        <PARAM name="message" type="STRING">
-                            <DESC>Message payload string, it is not analysed or parsed any way and delivered as is.</DESC>
-                        </PARAM>
-                    </PARAMS>
-                </RETURN>
-                <PLATFORM>Android, WM, iOS</PLATFORM>
-            </METHOD>
-            <METHOD name="startApplicationMessageNotifications" hasCallback="mandatory">
-                <DESC>Start message notifications sent by another applcation by Rho.System.sendApplicationMessage. Rho.System.getApplicationMessage() and Rho.System.startApplicationMessageNotifications share single message queue.</DESC>
-                <CALLBACK type="HASH">
-                    <PARAMS>
-                        <PARAM name="appName" type="STRING">
-                            <DESC>Name of application which sent the message. At Android it is a package name. At iOS it is BundleURLScheme of an application.</DESC>
-                        </PARAM>
-                        <PARAM name="message" type="STRING">
-                            <DESC>Message payload string, it is not analysed or parsed any way and delivered as is.</DESC>
-                        </PARAM>
-                    </PARAMS>
-                </CALLBACK>
-                <PLATFORM>Android, WM, iOS</PLATFORM>
-            </METHOD>
-            <METHOD name="stopApplicationMessageNotifications" hasCallback="none">
-                <DESC>Stop message notifications sent by another applcation by Rho.System.sendApplicationMessage.</DESC>
-                <PLATFORM>Android, WM, iOS</PLATFORM>
-            </METHOD>
+
             <METHOD name="openUrl">
-                <DESC>Open the application associated with the URL. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix will execute the Web Browser installed on system and open URL in executed browser..</DESC>
+                <DESC>Open the application associated with the URL. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix will execute the Web Browser installed on system and open URL in executed browser. Note: For opening pdf files on android devices it is necessary to add option "no_compression: [ pdf ]" to android section in build.yml
+                </DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>URL as string.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="unzipFile">
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
@@ -297,6 +266,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="zipFile">
                 <DESC>Zip one file. Zip archive must placed to the folder where application can write files. </DESC>
                 <PARAMS>
@@ -312,6 +282,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="zipFiles">
                 <DESC>Zip list of files.</DESC>
                 <PARAMS>
@@ -330,58 +301,59 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="setRegistrySetting">
-                <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
+                <DESC>Set a value in the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-                        <DESC>Map of properties associated with the registry key being set</DESC>
+                        <DESC>Map of properties associated with the registry key being set.</DESC>
                         <PARAMS>
                             <PARAM name="hive" type="STRING">
-                                <DESC>The hive name</DESC>
+                                <DESC>The hive name.</DESC>
                                 <VALUES>
                                     <VALUE constName="REGKEY_CLASSES_ROOT" value ="HKCR">
-                                        <DESC>Set the property in the HKEY_CLASSES_ROOT hive</DESC>
+                                        <DESC>Set the property in the HKEY_CLASSES_ROOT hive.</DESC>
                                     </VALUE>
                                     <VALUE constName="REGKEY_CURRENT_USER" value ="HKCU">
-                                        <DESC>Set the property in the HKEY_CURRENT_USER hive</DESC>
+                                        <DESC>Set the property in the HKEY_CURRENT_USER hive.</DESC>
                                     </VALUE>
                                     <VALUE constName="REGKEY_LOCAL_MACHINE" value ="HKLM">
-                                        <DESC>Set the property in the HKEY_LOCAL_MACHINE hive</DESC>
+                                        <DESC>Set the property in the HKEY_LOCAL_MACHINE hive.</DESC>
                                     </VALUE>
                                     <VALUE constName="REGKEY_USERS" value ="HKU">
-                                        <DESC>Set the property in the HKEY_USERS hive</DESC>
+                                        <DESC>Set the property in the HKEY_USERS hive.</DESC>
                                     </VALUE>
                                 </VALUES>
                             </PARAM>
                             <PARAM name="type" type="STRING">
-                                <DESC>The type</DESC>
+                                <DESC>The type.</DESC>
                                 <VALUES>
                                     <VALUE constName="REGTYPE_SZ" value ="String">
-                                        <DESC>The type of the value being set is a string</DESC>
+                                        <DESC>The type of the value being set is a string.</DESC>
                                     </VALUE>
                                     <VALUE constName="REGTYPE_BINARY" value ="Binary">
-                                        <DESC>The type of the value being set is a binary number</DESC>
+                                        <DESC>The type of the value being set is a binary number.</DESC>
                                     </VALUE>
                                     <VALUE constName="REGTYPE_DWORD" value ="DWORD">
                                         <DESC>The type of the value being set is a natural number (DWORD)</DESC>
                                     </VALUE>
                                     <VALUE constName="REGTYPE_MULTI_SZ" value ="MultiSZ">
-                                        <DESC>The type of the value being set is a multi line string.  Separate your lines with \n (\\n in Javascript)</DESC>
+                                        <DESC>The type of the value being set is a multi line string. Separate your lines with \n (\\n in JavaScript)</DESC>
                                     </VALUE>
                                 </VALUES>
                             </PARAM>
                             <PARAM name="key" type="STRING">
-                                <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
+                                <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in JavaScript to specify backslash.</DESC>
                             </PARAM>
                             <PARAM name="setting" type="STRING">
-                                <DESC>The name of the registry setting to be set</DESC>
+                                <DESC>The name of the registry setting to be set.</DESC>
                             </PARAM>
                             <PARAM name="value" type="STRING">
-                                <DESC>The registry value to be set</DESC>
+                                <DESC>The registry value to be set.</DESC>
                             </PARAM>
                             <PARAM name="persistent" type="BOOLEAN">
-                                <DESC>Whether or not to create a corresponding merge file, setting to true will cause your value to persist across a device clean boot.  A .reg file is written to the \Application folder on the device to persist the setting.</DESC>
+                                <DESC>Whether or not to create a corresponding merge file, setting to true will cause your value to persist across a device clean boot. A .reg file is written to the \Application folder on the device to persist the setting.</DESC>
                             </PARAM>
                         </PARAMS>
                     </PARAM>
@@ -392,44 +364,44 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="getRegistrySetting">
-                <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
+                <DESC>Retrieve a value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-                        <DESC>Map of properties associated with the registry key being set</DESC>
+                        <DESC>Map of properties associated with the registry key being set.</DESC>
                         <PARAMS>
                             <PARAM name="hive" type="STRING">
-                                <DESC>The hive name, see setRegistrySetting</DESC>
+                                <DESC>The hive name, see setRegistrySetting.</DESC>
                             </PARAM>
                             <PARAM name="key" type="STRING">
-                                <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
+                                <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in JavaScript to specify backslash.</DESC>
                             </PARAM>
                             <PARAM name="setting" type="STRING">
-                                <DESC>The name of the setting to be retrieved</DESC>
+                                <DESC>The name of the setting to be retrieved.</DESC>
                             </PARAM>
                         </PARAMS>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="STRING">
-                    <DESC>Regsitry value of the key.</DESC>
+                    <DESC>Registry value of the key.</DESC>
                 </RETURN>
             </METHOD>
             
             <METHOD name="deleteRegistrySetting">
-                <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
+                <DESC>Deletes the specified value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-                        <DESC>Map of properties associated with the registry key being set</DESC>
+                        <DESC>Map of properties associated with the registry key being set.</DESC>
                         <PARAMS>
                             <PARAM name="hive" type="STRING">
-                                <DESC>The hive name, setRegistrySetting</DESC>
+                                <DESC>The hive name, setRegistrySetting.</DESC>
                             </PARAM>
                             <PARAM name="key" type="STRING">
-                                <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
+                                <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in JavaScript to specify backslash.</DESC>
                             </PARAM>
                             <PARAM name="setting" type="STRING">
-                                <DESC>The name of the setting to be deleted</DESC>
+                                <DESC>The name of the setting to be deleted.</DESC>
                             </PARAM>
                             <PARAM name="persistent" type="BOOLEAN">
                                 <DESC>If the registry value was set to be persistent, ie a corresponding .reg file was created in the \Application folder then setting true here will delete that .reg file.</DESC>
@@ -441,8 +413,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <DESC>Whether or not the registry key was successfully deleted.</DESC>
                 </RETURN>
             </METHOD>
+
             <METHOD name="setWindowFrame">
-                <DESC>Change application window position and size</DESC>
+                <DESC>Change application window position and size.</DESC>
                 <PLATFORM>Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="x" type="INTEGER">
@@ -457,11 +430,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="height" type="INTEGER">
                         <DESC>Height of window.</DESC>
                     </PARAM>
-
                 </PARAMS>
             </METHOD>
+
             <METHOD name="setWindowPosition">
-                <DESC>Change application window position</DESC>
+                <DESC>Change application window position.</DESC>
                 <PLATFORM>Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="x" type="INTEGER">
@@ -472,8 +445,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="setWindowSize">
-                <DESC>Change application window size</DESC>
+                <DESC>Change application window size.</DESC>
                 <PLATFORM>Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="width" type="INTEGER">
@@ -484,11 +458,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="bringToFront" deprecated="true">
-            <DESC>Bring application window to the top of the screen.</DESC>
-            <PLATFORM>WM</PLATFORM>
-          </METHOD>
-            <METHOD name="replaceCurrentBundle">
+                <DESC>Bring application window to the top of the screen.</DESC>
+                <PLATFORM>WM</PLATFORM>
+            </METHOD>
+
+            <METHOD name="replaceCurrentBundle"  deprecated="true">
                 <DESC>Replace application bundle.</DESC>
                 <PARAMS>
                     <PARAM name="pathToBundle" type="STRING">
@@ -498,12 +474,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Update parameters.</DESC>
                         <PARAMS>
                             <PARAM name="do_not_restart_app" type="BOOLEAN">
-                                <DESC>If true, when Application will not be automatically restarted after the replace bundle is finished</DESC>
+                                <DESC>If true, when Application will not be automatically restarted after the replace bundle is finished.</DESC>
                             </PARAM>
                         </PARAMS>
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="deleteFolder" deprecated="true">
                 <DESC>Delete folder.</DESC>
                 <PARAMS>
@@ -512,6 +489,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="setDoNotBackupAttribute">
                 <DESC>Set do not backup attribute for file.</DESC>
                 <PLATFORM>iOS</PLATFORM>
@@ -520,10 +498,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Path to file.</DESC>
                     </PARAM>
                     <PARAM name="doNotBackup" type="BOOLEAN">
-                        <DESC>true set doNotBackup attribute to file (exlude this file from backup), false for remove doNotBackup attribute from file</DESC>
+                        <DESC>True set doNotBackup attribute to file (exclude this file from backup), false for remove doNotBackup attribute from file.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="isBlobAttr" deprecated="true">
                 <DESC>Use Database.SQLite3.isBlobAttr: is model attribute is blob.</DESC>
                 <PARAMS>
@@ -533,6 +512,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
+
             <METHOD name="updateBlobAttribs" deprecated="true">
                 <DESC>Use Database.updateBlobAttribs: update model blob attributes list.</DESC>
                 <PARAMS>
@@ -540,17 +520,20 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="sourceID" type="INTEGER"/>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="get_locale" deprecated="true">
                 <DESC>Use System.locale property: Current device locale.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
+
             <METHOD name="set_locale" deprecated="true" generateAPI="false" access="STATIC">
-                <DESC>Use Application.setLocale method: set application specific locale</DESC>
+                <DESC>Use Application.setLocale method: set application specific locale.</DESC>
                 <PARAMS>
                     <PARAM name="locale_code" type="STRING"/>
                     <PARAM name="country_code" type="STRING"/>
                 </PARAMS>
             </METHOD>
+
             <METHOD name="setPushNotification" deprecated="true">
                 <DESC>Use Push.setPushNotification: Register push callback, the method to call upon receiving a push message.</DESC>
                 <PARAMS>
@@ -558,7 +541,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>URL of the callback method. If empty, unregisters rhoconnect-push.</DESC>
                     </PARAM>
                     <PARAM name="url_params" type="STRING">
-                        <DESC>Params which will be added to callback URL.</DESC>
+                        <DESC>Parameters which will be added to callback URL.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                     <PARAM name="push_client" type="STRING">
@@ -568,8 +551,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         </CAN_BE_NIL>    
                     </PARAM>
                 </PARAMS>
-
             </METHOD>
+
             <METHOD name="setScreenRotationNotification" deprecated="true">
                 <DESC>Use ScreenOrientation.setScreenOrientationEvent: Notify (call a callback method) when the screen rotates.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
@@ -578,7 +561,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>URL of the callback method. If empty, unregisters notification callback.</DESC>
                     </PARAM>
                     <PARAM name="url_params" type="STRING">
-                        <DESC>Params which will be added to callback URL.</DESC>
+                        <DESC>Parameters which will be added to callback URL.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
@@ -587,7 +570,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Use Application.quit: exit application.</DESC>
             </METHOD>
             <METHOD name="set_sleeping" deprecated="true">
-                <DESC>Use System.screenSleeping property: enable/disable phone sleeping.</DESC>
+                <DESC>Use System.screenSleeping property: enable / disable phone sleeping.</DESC>
                 <PARAMS>
                     <PARAM name="enable" type="BOOLEAN"/>
                 </PARAMS>
@@ -602,7 +585,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>URL of the callback method.</DESC>
                     </PARAM>
                     <PARAM name="url_params" type="STRING">
-                        <DESC>Params which will be added to callback URL.</DESC>
+                        <DESC>Parameters which will be added to callback URL.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
@@ -622,7 +605,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>The url to the user-defined callback method.</DESC>
                     </PARAM>
                     <PARAM name="poll_interval" type="INTEGER">
-                        <DESC>iOS. The network status polling period for systems that can not notify network status change immediately. Default value is 20 seconds.</DESC>
+                        <DESC>IOS. The network status polling period for systems that can not notify network status change immediately. Default value is 20 seconds.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -630,7 +613,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Use Network.clearStatusNotify: Clear network status callback.</DESC>
             </METHOD>
             <METHOD name="set_http_proxy_url" deprecated="true">
-                <DESC>Use System.httpProxyURI property: To use client with the HTTP proxy</DESC>
+                <DESC>Use System.httpProxyURI property: To use client with the HTTP proxy.</DESC>
                 <PARAMS>
                     <PARAM name="proxyURI" type="STRING"/>
                 </PARAMS>
@@ -661,37 +644,23 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="blockingCall" type="BOOLEAN">
                         <DESC>Not Implemented.</DESC>
                         <CAN_BE_NIL>
-                            <DESC>False by default</DESC>
+                            <DESC>False by default.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
             </METHOD>
-            <METHOD name="sendApplicationMessage" hasCallback="none">
-                <DESC>Send data to another application.</DESC>
-                <PLATFORM>Android, WM, iOS</PLATFORM>
-                <PARAMS>
-                    <PARAM name="appName" type="STRING">
-                        <DESC>The name of the application already installed at the device. It depends from platform. At Android it is a package name. At iOS it is BundleURLScheme of an application.</DESC>
-                    </PARAM>
-                    <PARAM name="message" type="STRING">
-                        <DESC>Message payload string. Application can receive this string by getApplicationMessage/startApplicationMessageNotifications methods. Parameter could be any string. The string is passed to another side without any changes.</DESC>
-                    </PARAM>
-                </PARAMS>
-            </METHOD>
         </METHODS>
+
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>iOS, WM, Win32, WP8, Android</PLATFORM>
-        <EXAMPLES >
-           <EXAMPLE title="Get device capabilities">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   You can find out whether the device has access to several system-dependant features such as calendar, camera, touchscreen, etc.
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
+
+        <EXAMPLES>
+            <EXAMPLE title="Get device capabilities">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>You can find out whether the device has access to several system-dependent features such as calendar, camera, touchscreen, etc.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
 # Returns true if device supports Motorola device capabilities, such as barcode scanner, etc.
 is_motorola_device = Rho::System.isMotorolaDevice
     
@@ -714,10 +683,9 @@ SQLite: #{has_sqlite}
 Touchscreen: #{has_touchscreen}
 "
 Alert.show_popup(message)
-                   ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
+]]>
+                            </RUBY>
+                            <JAVASCRIPT><![CDATA[
 // Returns true if device supports Motorola device capabilities, such as Scanner, etc.
 var is_motorola_device = Rho.System.isMotorolaDevice;
 
@@ -739,133 +707,113 @@ message = "Motorola device: "+is_motorola_device+"\n"+
   "Touchscreen: "+has_touchscreen;
 
 alert(message);
-                   ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-           <EXAMPLE title="Get version information">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   Retrieve the version of the underlying Operating System
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
+]]>
+                            </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+                </EXAMPLE>
+
+                <EXAMPLE title="Get version information">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>Retrieve the version of the underlying Operating System.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
 version_info = Rho::System.osVersion
 Alert.show_popup(version_info)
-                   ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
 var version_info = Rho.System.osVersion;
 alert(version_info);
-                   ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-           <EXAMPLE title="Install / uninstall other applications">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   You can ask the system to install or uninstall a different application. This feature is useful for installing sub-applications, custom upgrades, etc
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+                </EXAMPLE>
+
+                <EXAMPLE title="Install / uninstall other applications">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>You can ask the system to install or uninstall a different application. This feature is useful for installing sub-applications, custom upgrades, etc.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
 #install an application from given url
 Rho::System.applicationInstall("/bin/target/android/rhodes-app-debug.apk")
 
 # uninstall the application
 Rho::System.applicationUninstall("rhodes-app")
-
-                   ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
 // install an application from given url
 Rho.System.applicationInstall("/bin/target/android/rhodes-app-debug.apk");
   
 // uninstall the application
 Rho.System.applicationUninstall("rhodes-app");
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+                </EXAMPLE>
 
-                   ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-           <EXAMPLE title="Get the local server port for debug purposes">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   If necessary, you can read the embedded HTTP server's port, for debugging purposes.
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
+                <EXAMPLE title="Get the local server port for debug purposes">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>If necessary, you can read the embedded HTTP server's port, for debugging purposes.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
 # Get port of the local (embedded) HTTP served
 local_port = Rho::System.localServerPort()
 Alert.show_popup(local_port)
-                   ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
 // Get port of the local (embedded) HTTP server
 var local_port = Rho.System.localServerPort;
 alert(local_port);
-                   ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-           <EXAMPLE title="Zipping and unzipping files">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   If you ever need to build or extract zip archives, RhoMobile includes easy-to-use APIs for this task  
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+                </EXAMPLE>
+
+                <EXAMPLE title="Zipping and unzipping files">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>If you ever need to build or extract zip archives, RhoMobile includes easy-to-use APIs for this task.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
 # unzip a file 
 Rho::System.unzipFile("/app/public/sample.zip")
 
 # zip a file
 Rho::System.zipFile("/app/public", "/app/public/sample.txt")
-                   ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
 // unzip file 
 Rho.System.unzipFile("/app/public/sample.zip");
   
 // zip file
 Rho.System.zipFile("/app/public/zipfile.zip", "/app/public/sample.txt");
-                   ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-            
-            <EXAMPLE title="Working with the Windows Registry">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>
-                            On devices running Windows Mobile, Windows CE, Windows Embedded Handheld and Windows Embedded CE it is possible to interact with the registry, this example shows how to do that.
-                        </DESC>
-                        <CODE lang='ruby'>
-<![CDATA[
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+                </EXAMPLE>
+
+                <EXAMPLE title="Working with the Windows Registry">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>On devices running Windows Mobile, Windows CE, Windows Embedded Handheld and Windows Embedded CE it is possible to interact with the registry, this example shows how to do that.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
 #/app/Model
 
 #  Retrieve a value from the Registry
@@ -884,11 +832,13 @@ end
 def delete_registry_sync
     theRegSetting = Rho::System.deleteRegistrySetting({hive:'HKLM', key:'Software', setting:'RhoElementsTest', persistent:true})
     puts "Registry Deleting Success?: #{theRegSetting}"
-end]]>
+end
+]]>
+                            </RUBY>
                         </CODE>
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
         </EXAMPLES>
     </MODULE>
-</API>    
+</API>

@@ -48,6 +48,13 @@
 /* Define if you have the <limits.h> header file.  */
 #define HAVE_LIMITS_H 1
 
+#ifndef OS_WP8
+/* if zlib is available */
+#define HAVE_LIBZ 1
+/* if you have the zlib.h header file */
+#define HAVE_ZLIB_H 1
+#endif //!OS_WP8
+
 /* Define if you need the malloc.h header file even with stdlib.h  */
 #if !defined(__SALFORDC__) && !defined(__POCC__)
 #define NEED_MALLOC_H 1

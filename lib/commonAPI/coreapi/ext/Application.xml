@@ -14,9 +14,7 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
 </MORE_HELP>
-        
         <TEMPLATES>
         </TEMPLATES>
 
@@ -40,26 +38,26 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Path to file with the model list.</DESC>
             </PROPERTY>
             <PROPERTY name="databaseBlobFolder" type="STRING" readOnly="true">
-                <DESC>Path to folder where the database blob files are stored. Blobs are usually images or binary files. In the ORM Model you would specify that the attibute is of type blob Ex. When capturing an image, the actual file is saved in the databaseBlobFolder</DESC>
+                <DESC>Path to folder where the database blob files are stored. Blobs are usually images or binary files. In the ORM Model you would specify that the attribute is of type blob Ex. When capturing an image, the actual file is saved in the databaseBlobFolder.</DESC>
             </PROPERTY>             
             <PROPERTY name="publicFolder" type="STRING" readOnly="true">
-                <DESC>Path to the application public folder.</DESC>
+                <DESC>Path to the application's public folder.</DESC>
             </PROPERTY>
             
             <PROPERTY name="startURI" type="STRING">
                 <DESC>Startup page for your application.</DESC>
             </PROPERTY>
             <PROPERTY name="settingsPageURI" type="STRING">
-                <DESC>Settings page URI. Will be used when Options menu or toolbar item is choosed by user.</DESC>
+                <DESC>Settings page URI. Will be used when Options menu or toolbar item is chosen by user.</DESC>
             </PROPERTY>
             <PROPERTY name="splash" type="STRING" readOnly="true">
-                <DESC>Splash screen image display options. This a string with several parameters divided by ';': delay=5;center;hcenter;vcenter;vzoom;hzoom;zoom</DESC>
+                <DESC>Splash screen image display options. This a string with several parameters divided by ';': delay=5;center;hcenter;vcenter;vzoom;hzoom;zoom.</DESC>
             </PROPERTY>
             <PROPERTY name="version" type="STRING" readOnly="true">
                 <DESC>Version from build time configuration file (build.yml).</DESC>
             </PROPERTY>
             <PROPERTY name="title" type="STRING">
-                <DESC>Define Window caption text.If missed - caption from page used.Not supported on Windows CE devices.</DESC>
+                <DESC>Define Window caption text. If missed - caption from page used. Not supported on Windows CE devices.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="appName" type="STRING" readOnly="true">
@@ -73,39 +71,33 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Current application country code.</DESC>
                 <APPLIES rubyOnly="true"/>
             </PROPERTY>
-
             <PROPERTY name="nativeMenu" type="ARRAY">
                 <PARAM type="HASH">
-
                     <PARAMS>
                         <PARAM name="label" type="STRING">
                             <DESC>Visible label.</DESC>
                         </PARAM>
                         <PARAM name="action" type="STRING"  rhoAction="true">
-                            <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
+                            <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or JavaScript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
                         </PARAM>
                     </PARAMS>
-
                 </PARAM>
-
-                <DESC>Native Menu items</DESC>
+                <DESC>Native Menu items.</DESC>
                 <PLATFORM>WM, Android, Win32, WP8</PLATFORM>
             </PROPERTY>
-
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
-                <DESC>Native Menu items</DESC>
+                <DESC>Native Menu items.</DESC>
                 <PARAM type="HASH">
-                    <DESC>Same values as for nativeMenu.</DESC>
+                    <DESC>Same values as nativeMenu.</DESC>
                 </PARAM>
                 <PLATFORM>WM, Android, Win32, WP8</PLATFORM>
-                
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
-                <DESC>Is the security token check was failed.Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
+                <DESC>Is the security token check was failed. Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="invalidSecurityTokenStartPath" type="STRING" readOnly="true">
-                <DESC>Page to navigate in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
+                <DESC>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
             
@@ -114,7 +106,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
 
             <PROPERTY name="badLinkURI" type="STRING" readOnly="true">
-                <DESC>Bad link URI to navigate in browser. This is defined in config.xml: Navigation\\BadLinkURI</DESC>
+                <DESC>Bad link URI to navigate in browser. This is defined in config.xml: Navigation\\BadLinkURI.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
                 <MORE_HELP>
@@ -124,71 +116,56 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
     * The timeout occurs when navigating to the page. You can adjust the value of the timeout using the NavTimeout setting.
     * The user presses the stop button.
 
-    The browser will automatically append the querystring value "badlink" containing the url of the page which could not be reached and "stop=true" if the page was loaded because the user pressed the stop button. The page specified in the badlink setting should be an offline file using the file:// protocol, this way the browser can always access the file. ]]></MORE_HELP>
+    The browser will automatically append the querystring value "badlink" containing the url of the page which could not be reached and "stop=true" if the page was loaded because the user pressed the stop button. The page specified in the badlink setting should be an offline file using the file:// protocol, this way the browser can always access the file. ]]>
+                </MORE_HELP>
             </PROPERTY>
-
         </PROPERTIES>
-
         <METHODS  access="STATIC">
             <ALIASES>
             </ALIASES>
-
             <METHOD name="modelFolderPath">
                 <DESC>Folder of the model by name.</DESC>
-
                 <PARAMS>
                     <PARAM name="name" type="STRING">
                         <DESC>Model name.</DESC>
                     </PARAM>
                 </PARAMS>
-
                 <RETURN type="STRING"/>
             </METHOD>
-
             <METHOD name="databaseFilePath">
                 <DESC>Path to database file by partition name. Please note that this function does not create a database file. This function only generates the file path based on the application path and partition name.</DESC>
-
                 <PARAMS>
                     <PARAM name="partitionName" type="STRING">
                         <DESC>Partition name.</DESC>
                     </PARAM>
                 </PARAMS>
-
                 <RETURN type="STRING">
                     <DESC>Full path to the database file for given partition.</DESC>
                 </RETURN>
             </METHOD>
-
             <METHOD name="expandDatabaseBlobFilePath">
                 <DESC>Generates the absolute path to database blob file. Please note that this function does not the create database file. This function only generates the file path based on application path and partition name.</DESC>
-
                 <PARAMS>
                     <PARAM name="relativePath" type="STRING">
                         <DESC>Relative path to the blob file, as it is stored in the database.</DESC>
                     </PARAM>
                 </PARAMS>
-
                 <RETURN type="STRING">
-                    <DESC>Full path to the databaes blob.</DESC>
+                    <DESC>Full path to the database blob.</DESC>
                 </RETURN>
             </METHOD>
-
             <METHOD name="relativeDatabaseBlobFilePath">
                 <DESC>Generates the relative path to database blob file. Please note that this function does not create a database file. This function only generates the file path based on the application path and partition name.</DESC>
-
                 <PARAMS>
                     <PARAM name="absolutePath" type="STRING">
                         <DESC>Absolute path to database blob file.</DESC>
                     </PARAM>
                 </PARAMS>
-
                 <RETURN type="STRING"/>
             </METHOD>
-
             <METHOD name="quit">
                 <DESC>Quit the application.</DESC>
             </METHOD>
-
             <METHOD name="minimize">
                 <DESC>Minimize or move the application to background. When running in RhoSimulator this method is supported only for Windows OS.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
@@ -197,38 +174,37 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Restores the application to be in the foreground. When running in RhoSimulator the method is supported only for windows OS.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
-
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
                 <DESC>This method allows your application to register for application specific events like application activation/deactivation, UI creation/destruction as well as others. Check the Callback tab for details.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
-                    <DESC>Application events are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start/shut down activities. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. NB: Event firing behavior depends on platform.</DESC>
+                    <DESC>Application events are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start up/shut down activities. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. NB: Event firing behavior depends on platform.</DESC>
                     <PARAMS>
                         <PARAM name="applicationEvent" type="STRING">
                             <DESC></DESC>
                             <VALUES>
                                 <VALUE constName="APP_EVENT_ACTIVATED" value ="Activated">
-                                    <DESC>The application has been activated</DESC>
+                                    <DESC>The application has been activated.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_DEACTIVATED" value ="Deactivated">
-                                    <DESC>The application has been deactivated</DESC>
+                                    <DESC>The application has been deactivated.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_UICREATED" value ="UICreated">
-                                    <DESC>APP_EVENT_UICREATED is generated before the start page is loaded. There are no means to set callback and catch event in javascript. Ruby Application class descendant can to set callback and process this event.</DESC>
+                                    <DESC>Generated before the start page is loaded. There are no means to set callback and catch event in javascript. Ruby Application class descendant can to set callback and process this event.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_UIDESTROYED" value ="UIDestroyed">
                                     <DESC>This event is triggered when the application is closing and the UI has been cleared.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_OFF" value ="ScreenOff">
-                                    <DESC>Device screen was turned off when power button was pressed or due to idle timeout. NB: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.</DESC>
+                                    <DESC>Device screen was turned off when power button was pressed or due to idle timeout. NB: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.Not supported on Windows CE.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_ON" value ="ScreenOn">
-                                    <DESC>Device screen was turned on and unlocked.</DESC>
+                                    <DESC>Device screen was turned on and unlocked.Not supported on Windows CE.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged">
-                                    <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only</DESC>
+                                    <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_CONFIGCONFLICT" value ="ConfigConflict">
                                     <DESC>This is available under Ruby Only.</DESC>
@@ -241,14 +217,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             </VALUES>
                         </PARAM>
                         <PARAM name="eventData" type="HASH">
-                            <DESC>Event specific data.</DESC>
+                            <DESC>This will only contain values for the `APP_EVENT_CONFIGCONFLICT` event. This event may be triggered after an application was upgraded. If your rhoconfig.txt file contains custom properties that are different then what is being provided in the application upgrade package. By default local values are kept in place but you may overwrite configuration with new values and any other steps required for your application upgrade. `eventData` will be a hash. It will look like {"conflicting key" : ["new value","old value"].. }</DESC>
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
 
             <METHOD name="processApplicationEvent" generateAPI="false">
-                <DESC>Default processing of an application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
+                <DESC>Ruby applications must use this method for processing of the application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
@@ -256,13 +232,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>See setApplicationNotify for applicationEvent values.</DESC>
                     </PARAM>
                     <PARAM name="eventData" type="HASH">
-                        <DESC>Event specific data.</DESC>
+                        <DESC>This will only contain values for the `APP_EVENT_CONFIGCONFLICT` event. This event may be triggered after an application was upgraded. If your rhoconfig.txt file contains custom properties that are different then what is being provided in the application upgrade package. By default local values are kept in place but you may overwrite configuration with new values and any other steps required for your application upgrade. `eventData` will be a hash. It will look like {"conflicting key" : ["new value","old value"].. }</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="setLocale" generateAPI="false" generateDoc="false" access="STATIC">
-                <DESC>Set application specific locale</DESC>
+                <DESC>Set application specific locale.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="localeCode" type="STRING"/>
@@ -271,25 +246,17 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
         </METHODS>
-        
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-            <![CDATA[]]>
-    
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
-
-<EXAMPLES >
+        <EXAMPLES>
            <EXAMPLE title="Set the locale">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   If your application is internationalized, you may want to set the locale depending on the user's preference 
-               </DESC>
+               <DESC>If your application is internationalized, you may want to set the locale depending on the user's preference.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -311,11 +278,8 @@ alert(current_locale)
            </EXAMPLE>
            <EXAMPLE title="Get folders where items are stored">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   There are times where you need access to files bundled with your application, or to write files to a safe folder. These examples show how to retrieve each of the several important folders available
-               </DESC>
+               <DESC>There are times where you need access to files bundled with your application, or to write files to a safe folder. These examples show how to retrieve each of the several important folders available.</DESC>
                <CODE>
                 <RUBY>
            <![CDATA[
@@ -359,21 +323,14 @@ Alert.show_popup(message)
            </EXAMPLE>
           <EXAMPLE title="Minimize your application">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   This will minimize your application.
-               </DESC>
+               <DESC>This will minimize your application.</DESC>
                <CODE>
                 <RUBY>
-           <![CDATA[
-Rho::Application.minimize
-                   ]]>
+<![CDATA[Rho::Application.minimize]]>
                  </RUBY>
                 <JAVASCRIPT>
-           <![CDATA[
-Rho.Application.minimize();
-                   ]]>
+<![CDATA[Rho.Application.minimize();]]>
                  </JAVASCRIPT>
                </CODE>
                </SECTION>
@@ -381,21 +338,14 @@ Rho.Application.minimize();
            </EXAMPLE>
            <EXAMPLE title="Quit your application">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   This will exit your application.
-               </DESC>
+               <DESC>This will exit your application.</DESC>
                <CODE>
                 <RUBY>
-           <![CDATA[
-Rho::Application.quit
-                   ]]>
+<![CDATA[Rho::Application.quit]]>
                  </RUBY>
                 <JAVASCRIPT>
-           <![CDATA[
-Rho.Application.quit();
-                   ]]>
+<![CDATA[Rho.Application.quit();]]>
                  </JAVASCRIPT>
                </CODE>
                </SECTION>
@@ -403,28 +353,19 @@ Rho.Application.quit();
            </EXAMPLE>
            <EXAMPLE title="Restore your application">
             <SECTIONS>
-               
               <SECTION>
-               <DESC>
-                   This will restore you application
-               </DESC>
+               <DESC>This will restore you application.</DESC>
                <CODE>
                 <RUBY>
-           <![CDATA[
-Rho::Application.restore
-                   ]]>
+<![CDATA[Rho::Application.restore]]>
                  </RUBY>
                 <JAVASCRIPT>
-           <![CDATA[
-Rho.Application.restore();
-                   ]]>
+<![CDATA[Rho.Application.restore();]]>
                  </JAVASCRIPT>
                </CODE>
                </SECTION>
                </SECTIONS>
            </EXAMPLE>
-
        </EXAMPLES>
-
     </MODULE>
-</API>    
+</API>

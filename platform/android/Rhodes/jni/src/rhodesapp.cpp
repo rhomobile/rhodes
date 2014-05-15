@@ -34,7 +34,6 @@
 #include <common/AutoPointer.h>
 #include <sync/RhoconnectClientManager.h>
 #include "Push.h"
-#include "SystemImplBase.h"
 
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/JNIRhoRuby.h"
@@ -83,7 +82,7 @@ static jmethodID g_loadClass = NULL;
 
 jclass rho_find_class(JNIEnv *env, const char *c)
 {
-    RAWTRACE2("%s - %s", __FUNCTION__, c);
+    //RAWTRACE2("%s - %s", __FUNCTION__, c);
     jstring className = env->NewStringUTF(c);
     jclass cls = (jclass)env->CallObjectMethod(g_classLoader, g_loadClass, className);
     if(env->ExceptionCheck() == JNI_TRUE) {
@@ -250,16 +249,16 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfi
     return rho_cast<jstring>(env, cs);
 }
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isMotorolaLicencePassed
-(JNIEnv *env, jclass, jstring jLicense, jstring jCompany, jstring jAppName)
-{
-    int res = rho_can_app_started_with_current_licence(
-                    jLicense ? rho_cast<std::string>(env, jLicense).c_str() : 0,
-                    jCompany ? rho_cast<std::string>(env, jCompany).c_str() : 0,
-                    jAppName ? rho_cast<std::string>(env, jAppName).c_str() : 0);
+//RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isMotorolaLicencePassed
+//(JNIEnv *env, jclass, jstring jLicense, jstring jCompany, jstring jAppName)
+//{
+//    int res = rho_can_app_started_with_current_licence(
+//                    jLicense ? rho_cast<std::string>(env, jLicense).c_str() : 0,
+//                    jCompany ? rho_cast<std::string>(env, jCompany).c_str() : 0,
+//                    jAppName ? rho_cast<std::string>(env, jAppName).c_str() : 0);
 
-    return (jboolean)(res == 1);
-}
+//    return (jboolean)(res == 1);
+//}
 
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabled
@@ -345,15 +344,6 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCall
     rho::push::CPushManager::getInstance()->callBack(strType, strJson);
 
     return (jboolean)true;
-}
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeAddAppMessage
-  (JNIEnv *env, jclass, jstring jAppName, jstring jMessage)
-{
-    std::string strAppName = rho_cast<std::string>(env, jAppName);
-    std::string strMessage = jMessage ? rho_cast<std::string>(env, jMessage) : "";
-
-    static_cast<rho::CSystemImplBase*>(rho::CSystemFactoryBase::getSystemSingletonS())->addApplicationMessage(strAppName, strMessage);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_resetHttpLogging

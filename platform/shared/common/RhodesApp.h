@@ -151,10 +151,11 @@ private:
 
     String m_strLoadingPagePath, m_strLoadingPngPath;
     String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl;//, m_strFirstStartUrl;
-    static String m_strStartParameters;
+    static String m_strStartParameters, m_strStartParametersOriginal;
     static boolean m_bSecurityTokenNotPassed;
     String m_strRhoMessage;
     String m_EmptyString;
+	bool m_isJSFSApp;
 
     Vector<String> m_currentUrls;
 
@@ -208,9 +209,11 @@ public:
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
 
     static void setStartParameters(const char* szParams ){ m_strStartParameters = (szParams ? szParams : ""); }
+    static void setStartParametersOriginal(const char* szParams ){ m_strStartParametersOriginal = (szParams ? szParams : ""); }
     static void setSecurityTokenNotPassed(boolean is_not_passed) {m_bSecurityTokenNotPassed = is_not_passed;}
     static boolean isSecurityTokenNotPassed() {return m_bSecurityTokenNotPassed;}
     static const String& getStartParameters(){ return m_strStartParameters; }
+    static const String& getStartParametersOriginal(){ return m_strStartParametersOriginal; }
 
     const String& getAppBackUrl();
     void setAppBackUrl(const String& url);
@@ -221,7 +224,7 @@ public:
     void callBarcodeCallback(String strCallbackUrl, const String& strBarcode, bool isError);
     void callCallbackWithData(String strCallbackUrl, String strBody, const String& strCallbackData, bool bWaitForResponse);
     void callCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse);
-    void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
+    void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel);
     void callSignatureCallback(String strCallbackUrl, const String& strSignaturePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 	void callBluetoothCallback(String strCallbackUrl, const char* body);
@@ -339,7 +342,7 @@ char* rho_http_normalizeurl(const char* szUrl);
 void rho_http_free(void* data);
 
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
-    const char* strError, int bCancel );
+        const char* strError, int bCancel );
 void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath, 
   const char* strError, int bCancel );
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
@@ -370,7 +373,9 @@ void rho_rhodesapp_load_url(const char *url);
 int rho_rhodesapp_check_mode();
 
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators);
-
+const char* rho_rhodesapp_getStartParametersOriginal();
+void rho_rhodesapp_setStartParametersOriginal(const char* szParams);
+    
 // return 1 only if "motorola_licence" and "motorola_licence" property is exist and correct !
 int rho_is_motorola_licence_checked(const char* szLicence, const char* szCompany, const char* szAppName);
     

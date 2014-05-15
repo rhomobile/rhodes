@@ -32,9 +32,22 @@
 #include "ruby/ext/rho/rhoruby.h"
 
 
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
 IMPLEMENT_LOGCLASS(CGPSDevice,"GPSDevice");
 IMPLEMENT_LOGCLASS(CGPSController,"GPSController");
+
+typedef HANDLE (WINAPI* LPFN_GPS_OPENDEVICE_T)  (HANDLE, HANDLE, const WCHAR*, DWORD);
+typedef DWORD (WINAPI* LPFN_GPS_GETPOSITION_T)  (HANDLE, GPS_POSITION*, DWORD, DWORD);
+typedef DWORD (WINAPI* LPFN_GPS_GETDEVICESTATE_T)  (GPS_DEVICE*);
+typedef DWORD (WINAPI* LPFN_GPS_CLOSEDEVICE_T)  (HANDLE hGPSDevice);
+
+LPFN_GPS_OPENDEVICE_T lpfn_gps_opendevice = NULL;
+LPFN_GPS_GETPOSITION_T lpfn_gps_getposition = NULL;
+LPFN_GPS_GETDEVICESTATE_T lpfn_gps_getdevicestate = NULL;
+LPFN_GPS_CLOSEDEVICE_T lpfn_gps_closedevice = NULL;
+
+HMODULE g_hGpsApiDLL = NULL;	
+extern "C" BOOL LoadGpsApi();
 
 //To test GPS on emulator, use FakeGPS (coming from WM6 SDK refresh) 
 
@@ -43,7 +56,7 @@ CGPSDevice * CGPSDevice::s_pInstance = NULL;
 #define MAX_WAIT    5000
 #define MAX_AGE     3000
 #define GPS_CONTROLLER_EVENT_COUNT 3
-#define KNOTS_TO_METRESPERSECOND (1852/3600)
+#define KNOTS_TO_METRESPERSECOND (double)(1852.00/3600.00)
 
 CGPSDevice::CGPSDevice(void)
 {
@@ -52,6 +65,9 @@ CGPSDevice::CGPSDevice(void)
     m_hNewLocationData = NULL;
     m_hDeviceStateChange = NULL;
     m_hExitThread = NULL;
+
+	if(winversion == 1 && !g_hGpsApiDLL)
+		LoadGpsApi();
 }
 
 CGPSDevice::~CGPSDevice(void)
@@ -102,7 +118,7 @@ DWORD WINAPI CGPSDevice::GPSThreadProc(__opt LPVOID lpParameter)
 
         if (dwRet == WAIT_OBJECT_0)
         {
-            dwRet = GPSGetPosition(
+            dwRet = lpfn_gps_getposition(
                 pDevice->m_hGPS_Device, 
                 &gps_Position, MAX_AGE, 0);
 
@@ -116,7 +132,7 @@ DWORD WINAPI CGPSDevice::GPSThreadProc(__opt LPVOID lpParameter)
         }
         else if (dwRet == WAIT_OBJECT_0 + 1)
         {
-            dwRet = GPSGetDeviceState(&gps_Device);    
+            dwRet = lpfn_gps_getdevicestate(&gps_Device);    
 
             if (ERROR_SUCCESS != dwRet)
                 continue;
@@ -255,7 +271,7 @@ HRESULT CGPSDevice::TurnOn(IGPSController * pController)
 
     if( SUCCEEDED(hr) )
     {
-        pDevice->m_hGPS_Device = GPSOpenDevice( 
+        pDevice->m_hGPS_Device = lpfn_gps_opendevice( 
             pDevice->m_hNewLocationData, 
             pDevice->m_hDeviceStateChange, 
             NULL, NULL);
@@ -283,7 +299,7 @@ HRESULT CGPSDevice::TurnOff()
 
     pDevice->m_pController = NULL;
 
-    DWORD dwRet = GPSCloseDevice(pDevice->m_hGPS_Device);
+    DWORD dwRet = lpfn_gps_closedevice(pDevice->m_hGPS_Device);
     pDevice->m_hGPS_Device = NULL;
 
     if( SUCCEEDED(hr) )
@@ -467,14 +483,61 @@ void CGPSController::Unlock() {
   LeaveCriticalSection(&m_critical_section);
   //ATLTRACE(_T("CGPSController unlocked\n"));
 }
+
+extern "C" BOOL LoadGpsApi()
+{
+	bool bReturnValue = FALSE;
+	g_hGpsApiDLL = LoadLibrary(L"gpsapi.dll");
+	if (!g_hGpsApiDLL)
+	{
+		//  Error loading CellCore.dll (used for Connection Manager)
+		LOG(INFO) + "Failed to load GpsApi.dll, GPS connectivity will not be available";
+	}
+	else
+	{
+		lpfn_gps_opendevice = 
+			(LPFN_GPS_OPENDEVICE_T)GetProcAddress(g_hGpsApiDLL, _T("GPSOpenDevice"));
+		lpfn_gps_getposition = 
+			(LPFN_GPS_GETPOSITION_T)GetProcAddress(g_hGpsApiDLL, _T("GPSGetPosition"));
+		lpfn_gps_getdevicestate = 
+			(LPFN_GPS_GETDEVICESTATE_T)GetProcAddress(g_hGpsApiDLL, _T("GPSGetDeviceState"));
+		lpfn_gps_closedevice = 
+			(LPFN_GPS_CLOSEDEVICE_T)GetProcAddress(g_hGpsApiDLL, _T("GPSCloseDevice"));
+
+		if (!lpfn_gps_opendevice)
+		{
+			LOG(ERROR) + "Unable to load GPSOpenDevice";
+			bReturnValue = FALSE;
+		}
+		else if (!lpfn_gps_getposition)
+		{
+			LOG(ERROR) + "Unable to load GPSGetPosition";
+		}
+		else if (!lpfn_gps_getdevicestate)
+		{
+			LOG(ERROR) + "Unable to load GPSGetDeviceState";
+		}
+		else if (!lpfn_gps_closedevice)
+		{
+			LOG(ERROR) + "Unable to load GPSGetCloseDevice";
+		}
+		else
+			bReturnValue = TRUE;
+	}
+	return bReturnValue;
+}
 #endif //_WIN32_WCE
 
 extern "C"{
 double rho_geo_latitude() 
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	CGPSController* gps = CGPSController::startInstance();
-	return gps->GetLatitude();
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetLatitude();
+	}
+	return 0.0;
 #else
 	return 0.0;
 #endif
@@ -482,9 +545,13 @@ double rho_geo_latitude()
 
 double rho_geo_longitude() 
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-  CGPSController* gps = CGPSController::startInstance();
-	return gps->GetLongitude();
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetLongitude();
+	}
+	return 0.0;
 #else
 	return 0.0;
 #endif
@@ -492,9 +559,13 @@ double rho_geo_longitude()
 
 double rho_geo_altitude() 
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	CGPSController* gps = CGPSController::startInstance();
-	return gps->GetAltitude();
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetAltitude();
+	}
+	return 0.0;
 #else
 	return 0.0;
 #endif
@@ -507,27 +578,39 @@ float rho_geo_accuracy()
 
 int rho_geo_known_position() 
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	CGPSController* gps = CGPSController::startInstance();
-	return gps->IsKnownPosition();
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->IsKnownPosition();
+	}
+	return 0;
 #else
 	return 0;
 #endif
 }
 
 double rho_geo_speed() {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-    CGPSController* gps = CGPSController::startInstance();
-	return gps->GetSpeed();
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetSpeed();
+	}
+	return 0.0;
 #else
     return 0.0;
 #endif
 }
 
 int rho_geo_satellites() {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-    CGPSController* gps = CGPSController::startInstance();
-	return gps->GetSatelliteCount();
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+	{
+		CGPSController* gps = CGPSController::startInstance();
+		return gps->GetSatelliteCount();
+	}
+	return 0;
 #else
     return 0;
 #endif
@@ -546,16 +629,19 @@ void rho_geoimpl_settimeout(int nTimeoutSec)
 
 void rho_geoimpl_turngpsoff()
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	CGPSController::TurnGpsOff();
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+		CGPSController::TurnGpsOff();
 #endif
 
 }
 
 int rho_geo_is_available()
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-    return CGPSDevice::isAvailable() ? 1 : 0;
+#if defined(_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(winversion == 1)
+		return CGPSDevice::isAvailable() ? 1 : 0;
+	return 0;
 #else
 	return 0;
 #endif

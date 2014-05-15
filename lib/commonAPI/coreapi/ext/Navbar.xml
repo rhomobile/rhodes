@@ -4,20 +4,20 @@
     <MODULE name="Navbar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NavBar API supports a native navigation bar for iOS devices.</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-
-</MORE_HELP>
-        <PLATFORM>iOS</PLATFORM>
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+        </MORE_HELP>
         
+        <PLATFORM>iOS</PLATFORM>
+
         <ALIASES>
             <ALIAS new="NavBar" deprecated="true"/>
         </ALIASES>
@@ -29,7 +29,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PARAMS>
                     <PARAM name="navBarProperties" type="HASH">
                         <DESC>HASH with NavBar elements.</DESC>
-
                         <PARAM name="left" type="HASH">
                             <DESC>Left button with :action and :label defined.</DESC>
                             <PARAMS>
@@ -57,38 +56,32 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <PARAM name="title" type="STRING">
                             <DESC>Title of the navigation bar.</DESC>
                         </PARAM>
-                        
                     </PARAM>
-                    
                 </PARAMS>
 
                 <PLATFORM>iOS</PLATFORM>
-        
+
             </METHOD>
 
             <METHOD name="remove" >
                 <DESC>Removes the current navigation bar. Does nothing if there is no active navigation bar.</DESC>
                 <PLATFORM>iOS</PLATFORM>
-        
             </METHOD>
-            
+
             <METHOD name="started" >
                 <DESC>Return true is navbar is started (used only for automatic tests)</DESC>
                 <RETURN type="BOOLEAN"/>
                 <PLATFORM>iOS</PLATFORM>
-        
             </METHOD>
-            
-
         </METHODS>
-        
+
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
         <REMARKS>
         </REMARKS>
-        <EXAMPLES >
+        <EXAMPLES>
         </EXAMPLES>
     </MODULE>
-</API>    
+</API>

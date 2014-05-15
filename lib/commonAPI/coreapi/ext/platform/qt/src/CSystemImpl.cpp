@@ -118,7 +118,11 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
 
 void CSystemImpl::getDeviceName(CMethodResult& oResult)
 {
+#ifdef RHODES_EMULATOR
+    oResult.set(String("RhoSimulator"));
+#else
     oResult.set(String("Qt"));
+#endif
 }
 
 void CSystemImpl::getLocale(CMethodResult& oResult)
@@ -227,9 +231,10 @@ void CSystemImpl::setWindowPosition( int x,  int y, CMethodResult& oResult)
     CMainWindow::getInstance()->setPosition(x, y);
 }
 
+extern "C" const char* rho_sys_qt_getWebviewFramework();
 void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
 {
-    oResult.set(String("WEBKIT/" QTWEBKIT_VERSION_STR));
+    oResult.set(String(rho_sys_qt_getWebviewFramework()));
 }
 
 void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
