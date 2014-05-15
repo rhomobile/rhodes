@@ -242,8 +242,14 @@ function fill_registry_keys() {
 	}
 }
 
-function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
+function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_mode,
                 rhogempath,usereruntime,include_motocaps,is_custom_config,autorun,autorun_path,is_persistent) {
+
+    var webkit_file = {
+        'out_of_process': '"OutProcessWK.exe"'                       ,
+        'in_process'    : '"WebkitPlatformDeliveryCompiledAsDLL.dll"'
+    }[webkit_mode];
+
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
     p("Provider=\""+vendor+"\"");
@@ -279,15 +285,15 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     if (is_persistent)
     {
         p("CopyFiles=CopyToInstallDir,CopyPersistent" +
-           (!usereruntime && webkit ? ",CopyWebKitBinPers,CopyNPAPIPers,CopyConfigPers,CopySystemFilesPers" : "")+
-           (!usereruntime && !webkit && include_motocaps? ",CopyConfigPers" : "")+
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBinPers,CopyNPAPIPers,CopyConfigPers,CopySystemFilesPers" : "")+
+           (!usereruntime && (webkit_mode == 'none') && include_motocaps? ",CopyConfigPers" : "")+
            get_copyfiles_sections(es,is_persistent));
     }
     else
     {
         p("CopyFiles=CopyToInstallDir"+
-           (!usereruntime && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig,CopySystemFiles" : "") +
-           (!usereruntime && !webkit && include_motocaps? ",CopyConfig" : "")+
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI,CopyConfig,CopySystemFiles" : "") +
+           (!usereruntime && (webkit_mode == 'none') && include_motocaps? ",CopyConfig" : "")+
            (show_shortcut && usereruntime ? ",Shortcuts" : "")+
            get_copyfiles_sections(es,is_persistent));
     }
@@ -300,7 +306,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     else 
     {
         p("2=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
-        if (webkit)
+        if (webkit_mode != 'none')
         {
             p("3=,\"\",," + rhogempath + "\"\\\"");
             p("4=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
@@ -329,12 +335,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
 
         p("\"" + name + ".exe\"=2");
         p("\"" + "RhoLaunch" + ".exe\"=2");
-        if (webkit) 
+        if (webkit_mode != 'none') 
         {
             p("\"eklibrary.dll\"=3");
             p("\"prtlib.dll\"=3");
             p("\"ipc_manager.dll\"=3");
-            p("\"OutProcessWK.exe\"=3");
+            p(webkit_file + "=3");
             p("\"openssl.dll\"=3");
             p("\"Ekioh.dll\"=3");
             p("\"npwtg_jsobjects.dll\"=4");
@@ -372,7 +378,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     if (autorun) {
         p("ShortcutsAutorun=0,\"%CE4%\"");
     }
-    if ((!usereruntime) && webkit) {
+    if ((!usereruntime) && (webkit_mode != 'none')) {
         p("CopySystemFiles=0,\"%CE2%\"");
     }
     if(is_persistent)
@@ -380,7 +386,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     else {
         p("CopyToInstallDir=0,\"%InstallDir%\"");    
     }    
-    if ((!usereruntime) && webkit) {
+    if ((!usereruntime) && (webkit_mode != 'none')) {
         if (is_persistent) {
             p("CopyWebKitBinPers=0,\"Application\\" + name + "\"");
             p("CopyNPAPIPers=0,\"Application\\" + name + "\\NPAPI\"");
@@ -394,7 +400,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("CopyConfig=0,\"%InstallDir%\\Config\"");
         }
     }
-    if ((!usereruntime) && (!webkit) && include_motocaps) {
+    if ((!usereruntime) && (webkit_mode == 'none') && include_motocaps) {
         p("CopyConfig=0,\"%InstallDir%\\Config\"");
     }
     
@@ -416,14 +422,14 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
         p("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
-        if (webkit) {
+        if (webkit_mode != 'none') {
             p("");
             if (!is_persistent)
             {
                 p("[CopyWebKitBin]");
                 p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
                 p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
-                p("\"OutProcessWK.exe\",\"OutProcessWK.exe\",,0");
+                p(webkit_file + "," + webkit_file + ",,0");
                 p("\"openssl.dll\",\"openssl.dll\",,0");
                 p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
@@ -447,7 +453,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
                 p("[CopyWebKitBinPers]");
                 p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
                 p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
-                p("\"OutProcessWK.exe\",\"OutProcessWK.exe\",,0");
+                p(webkit_file + "," + webkit_file + ",,0");
                 p("\"openssl.dll\",\"openssl.dll\",,0");
                 p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
@@ -540,7 +546,7 @@ function main() {
     var srcdir = args(4)
     var is_icon = fso.FileExists(srcdir+"/icon/icon.ico");
     var show_shortcut = (args(5) == "0");
-    var include_webkit = (args(6) == "1");
+    var webkit_mode = args(6);
     var usereruntime = (args(8) == "1");
     var include_motocaps = (args(9) == "1");
     var is_custom_config = fso.FileExists(srcdir+"/apps/Config.xml");
@@ -576,7 +582,7 @@ function main() {
     }
 
     pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,
-             is_icon,include_webkit,args(7),usereruntime,include_motocaps,is_custom_config,is_autorun,autorun_path,is_persistent);
+             is_icon,webkit_mode,args(7),usereruntime,include_motocaps,is_custom_config,is_autorun,autorun_path,is_persistent);
 
     output_file.Close();
 }

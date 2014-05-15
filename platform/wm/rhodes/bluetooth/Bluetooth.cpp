@@ -36,7 +36,7 @@
 
 #include "../Utils.h"
 
-#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
+#if defined( OS_WINCE )// && !defined( OS_PLATFORM_MOTCE )
 
 #ifdef _MSC_VER
 // warning C4800: 'int' : forcing to bool 'true' or 'false' (performance warning)
@@ -48,6 +48,10 @@ extern "C" HWND getMainWnd();
 extern "C" int rho_sys_get_screen_height();
 extern "C" int rho_sys_get_screen_width();
 
+LPFN_BTH_GETMODE_T	lpfn_bth_getmode;
+LPFN_BTH_SETMODE_T	lpfn_bth_setmode;
+
+HMODULE RhoBluetoothManager::m_hBthUtilDLL = NULL;
 
 BYTE rgbSdpRecord[] = {
 	0x35, 0x4d, 0x09, 0x00, 0x01, 0x35, 0x11, 0x1c,
@@ -429,9 +433,48 @@ void RhoBluetoothManager::fireRhodeCallback(const char* callback_url, const char
 	*/
 }
 
+BOOL RhoBluetoothManager::LoadBthUtil()
+{
+	bool bReturnValue = FALSE;
+	m_hBthUtilDLL = LoadLibrary(L"bthutil.dll");
+	if (!m_hBthUtilDLL)
+	{
+		//  Error loading CellCore.dll (used for Connection Manager)
+		LOG(INFO) + "Failed to load BthUtil.dll, BlueTooth connectivity will not be available";
+	}
+	else
+	{
+		lpfn_bth_getmode = 
+			(LPFN_BTH_GETMODE_T)GetProcAddress(m_hBthUtilDLL, _T("BthGetMode"));
+		lpfn_bth_setmode = 
+			(LPFN_BTH_SETMODE_T)GetProcAddress(m_hBthUtilDLL, _T("BthSetMode"));
+
+		if (!lpfn_bth_getmode)
+		{
+			LOG(ERROR) + "Unable to load BthGetMode";
+			bReturnValue = FALSE;
+		}
+		else if (!lpfn_bth_setmode)
+		{
+			LOG(ERROR) + "Unable to load BthSetMode";
+		}
+		else
+			bReturnValue = TRUE;
+	}
+	return bReturnValue;
+}
+
 
 void RhoBluetoothManager::init() {
+
 	LOG(INFO)  + "RhoBluetoothManager::init()";
+
+	if(!LoadBthUtil()) 
+	{
+		LOG(INFO)  + "BthUtil.dll not found";
+		return;
+	}
+
 /*	WORD wVersionRequested;
 	WSADATA wsaData;
 	wVersionRequested = MAKEWORD( 2, 2 );
@@ -449,10 +492,10 @@ void RhoBluetoothManager::init() {
 	mFirstDataBlock = NULL;
 	mLastDataBlock = NULL;
 
-	BthGetMode(&m_dwBluetoothMode);
+	lpfn_bth_getmode(&m_dwBluetoothMode);
 	if(m_dwBluetoothMode==BTH_POWER_OFF)
 	{
-		BthSetMode(BTH_DISCOVERABLE);
+		lpfn_bth_setmode(BTH_DISCOVERABLE);
 	}
 	RhoDeviceInfo devInfo;
 	GetLocalDeviceName(&devInfo);
@@ -498,7 +541,7 @@ void RhoBluetoothManager::terminateDiscoveredThread() {
 void RhoBluetoothManager::freeAll() {
 	LOG(INFO)  + "RhoBluetoothManager::freeAll()";
 	//Set radio mode back to original state
-	BthSetMode(m_dwBluetoothMode);
+	lpfn_bth_setmode(m_dwBluetoothMode);
 	if(m_pStart)
 	{
 		for(m_pCurrentDevice	= m_pStart;m_pCurrentDevice;)
@@ -1074,27 +1117,41 @@ void RhoDiscoveredDlg::closeDialog() {
 
 
 int rho_bluetooth_is_bluetooth_available() {
-	return RhoBluetoothManager::getInstance()->rho_bluetooth_is_bluetooth_available();
+	if(winversion == 1)
+		return RhoBluetoothManager::getInstance()->rho_bluetooth_is_bluetooth_available();
+	
+	return 0;
 }
 
 void rho_bluetooth_off_bluetooth() {
-	RhoBluetoothManager::getInstance()->rho_bluetooth_off_bluetooth();
+	if(winversion == 1)
+		RhoBluetoothManager::getInstance()->rho_bluetooth_off_bluetooth();
 }
 
 void rho_bluetooth_set_device_name(const char* device_name) {
-	RhoBluetoothManager::getInstance()->rho_bluetooth_set_device_name(device_name);
+	if(winversion == 1)
+		RhoBluetoothManager::getInstance()->rho_bluetooth_set_device_name(device_name);
 }
 
 VALUE rho_bluetooth_get_device_name() {
-	return rho_ruby_create_string(RhoBluetoothManager::getInstance()->rho_bluetooth_get_device_name());
+	if(winversion == 1)
+		return rho_ruby_create_string(RhoBluetoothManager::getInstance()->rho_bluetooth_get_device_name());
+
+	return rho_ruby_create_string("ERROR");
 }
 
 const char* rho_bluetooth_get_last_error() {
-	return RhoBluetoothManager::getInstance()->rho_bluetooth_get_last_error();
+	if(winversion == 1)
+		return RhoBluetoothManager::getInstance()->rho_bluetooth_get_last_error();
+
+	return "ERROR";
 }
 
 const char* rho_bluetooth_create_session(const char* role, const char* callback_url) {
-	return RhoBluetoothManager::getInstance()->rho_bluetooth_create_session(role, callback_url);
+	if(winversion == 1)
+		return RhoBluetoothManager::getInstance()->rho_bluetooth_create_session(role, callback_url);
+
+	return "ERROR";
 }
 
 const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device) {
@@ -1103,7 +1160,10 @@ const char* rho_bluetooth_create_custom_server_session(const char* client_name, 
 }
 
 const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url) {
-    return RhoBluetoothManager::getInstance()->rho_bluetooth_create_custom_client_session(server_name, callback_url);
+    if(winversion == 1)
+		return RhoBluetoothManager::getInstance()->rho_bluetooth_create_custom_client_session(server_name, callback_url);
+
+	return NULL;
 }
 
 const char* rho_bluetooth_stop_current_connection_process() {
@@ -1113,19 +1173,27 @@ const char* rho_bluetooth_stop_current_connection_process() {
 
 
 void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url) {
-	RhoBluetoothManager::getInstance()->rho_bluetooth_session_set_callback(connected_device_name, callback_url);
+	if(winversion == 1)
+		RhoBluetoothManager::getInstance()->rho_bluetooth_session_set_callback(connected_device_name, callback_url);
 }
 
 void rho_bluetooth_session_disconnect(const char* connected_device_name) {
-	RhoBluetoothManager::getInstance()->rho_bluetooth_session_disconnect(connected_device_name);
+	if(winversion == 1)
+		RhoBluetoothManager::getInstance()->rho_bluetooth_session_disconnect(connected_device_name);
 }
 
 int rho_bluetooth_session_get_status(const char* connected_device_name) {
-	return RhoBluetoothManager::getInstance()->rho_bluetooth_session_get_status(connected_device_name); 
+	if(winversion == 1)
+		return RhoBluetoothManager::getInstance()->rho_bluetooth_session_get_status(connected_device_name); 
+
+	return -1; 
 }
 
 VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {
-	return rho_ruby_create_string(RhoBluetoothManager::getInstance()->rho_bluetooth_session_read_string(connected_device_name));
+	if(winversion == 1)
+		return rho_ruby_create_string(RhoBluetoothManager::getInstance()->rho_bluetooth_session_read_string(connected_device_name));
+
+	return  rho_ruby_create_string("ERROR");
 }
 
 void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str) {
@@ -1133,26 +1201,35 @@ void rho_bluetooth_session_write_string(const char* connected_device_name, const
 	if (length <= 0) {
 		return;
 	}
-	RhoBluetoothManager::getInstance()->rho_bluetooth_session_write_data(connected_device_name, (void*)str, length);
+	if(winversion == 1)
+		RhoBluetoothManager::getInstance()->rho_bluetooth_session_write_data(connected_device_name, (void*)str, length);
 }
 
 VALUE rho_bluetooth_session_read_data(const char* connected_device_name) {
-	int size = 0;
-	void* buf = RhoBluetoothManager::getInstance()->readAllBlocks(&size, 0);
-	VALUE val = rho_ruby_create_byte_array((unsigned char*)buf, size);
-	free(buf);
-	return val;
+	if(winversion == 1)
+	{
+		int size = 0;
+		void* buf = RhoBluetoothManager::getInstance()->readAllBlocks(&size, 0);
+		VALUE val = rho_ruby_create_byte_array((unsigned char*)buf, size);
+		free(buf);
+		return val;
+	}
+
+	return 0;
 }
 
 void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data) {
-	int size = rho_ruby_unpack_byte_array(data, 0, 0);
-	if (size <= 0) {
-		return;
+	if(winversion == 1)
+	{
+		int size = rho_ruby_unpack_byte_array(data, 0, 0);
+		if (size <= 0) {
+			return;
+		}
+		unsigned char* buf = (unsigned char*)malloc(size);
+		size = rho_ruby_unpack_byte_array(data, buf, size);
+		RhoBluetoothManager::getInstance()->rho_bluetooth_session_write_data(connected_device_name, buf, size);
+		free(buf);
 	}
-	unsigned char* buf = (unsigned char*)malloc(size);
-	size = rho_ruby_unpack_byte_array(data, buf, size);
-	RhoBluetoothManager::getInstance()->rho_bluetooth_session_write_data(connected_device_name, buf, size);
-	free(buf);
 }
 
 // CRhoBluetoothDiscoverDlg dialog

@@ -33,8 +33,8 @@ namespace common{
 CRhoTimer::CTimerItem::CTimerItem(int nInterval, const char* szCallback, const char* szCallbackData): 
     m_nInterval(nInterval), m_strCallback(szCallback), m_strCallbackData(szCallbackData)
 {
-    m_oFireTime = CTimeInterval::getCurrentTime();
-    m_oFireTime.addMillis(nInterval);
+	m_oFireTime = CTimeInterval::getCurrentTime();
+	m_overflow = m_oFireTime.addMillis(nInterval);
 }
 
 unsigned long CRhoTimer::getNextTimeout()
@@ -49,7 +49,13 @@ unsigned long CRhoTimer::getNextTimeout()
     {
         unsigned long nInterval = 0;
         if ( m_arItems.elementAt(i).m_oFireTime.toULong() > curTime.toULong() )
+		{
             nInterval = m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+		}
+		else
+		{	
+		nInterval=nMinInterval+m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+		}
 
         if ( nInterval < nMinInterval )
             nMinInterval = nInterval;
@@ -68,12 +74,34 @@ boolean CRhoTimer::checkTimers()
     for( int i = (int)m_arItems.size()-1; i >= 0; i--)
     {
         CTimerItem oItem = m_arItems.elementAt(i);
-        if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
-        {
-            m_arItems.removeElementAt(i);
-            if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
-                bRet = true;
-        }
+		if(oItem.m_overflow==false)
+		{
+
+			if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
+			{
+				m_arItems.removeElementAt(i);
+				if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
+					bRet = true;
+			}
+
+		}
+		else
+		{
+
+
+			if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
+			{
+				if((curTime.toULong()-oItem.m_oFireTime.toULong())<=oItem.m_nInterval)
+				{
+					m_arItems.removeElementAt(i);
+					if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
+						bRet = true;
+				}
+
+
+			}
+
+		}
     }
 
     return bRet;
@@ -96,4 +124,3 @@ void CRhoTimer::stopTimer(const char* szCallback)
 
 }
 }
-

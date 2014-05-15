@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		C5DFBB31185B6FB400DB6BDB /* IAppMessageReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */; };
+		FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F248192121BF00FB1301 /* IRhoExtension.h */; };
+		FA11F24B192121F200FB1301 /* IRhoExtManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F24A192121F200FB1301 /* IRhoExtManager.h */; };
+		FA11F24E1921221E00FB1301 /* RhoExtManagerImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F24C1921221E00FB1301 /* RhoExtManagerImpl.h */; };
+		FA11F24F1921221E00FB1301 /* RhoExtManagerImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = FA11F24D1921221E00FB1301 /* RhoExtManagerImpl.m */; };
+		FA11F2521921224400FB1301 /* RhoExtManagerSingletone.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F2501921224400FB1301 /* RhoExtManagerSingletone.h */; };
+		FA11F2531921224400FB1301 /* RhoExtManagerSingletone.m in Sources */ = {isa = PBXBuildFile; fileRef = FA11F2511921224400FB1301 /* RhoExtManagerSingletone.m */; };
 		FA20C2B6182B078C0036D304 /* PickImageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C21C182B04140036D304 /* PickImageDelegate.h */; };
 		FA20C2B7182B078C0036D304 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C21D182B04140036D304 /* PickImageDelegate.m */; };
 		FA20C2B8182B07A10036D304 /* CRhoURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C21F182B04140036D304 /* CRhoURLProtocol.h */; };
@@ -115,6 +121,12 @@
 /* Begin PBXFileReference section */
 		C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAppMessageReceiver.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhoappbaselib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhoappbaselib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA11F248192121BF00FB1301 /* IRhoExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoExtension.h; path = RhoExtManager/IRhoExtension.h; sourceTree = "<group>"; };
+		FA11F24A192121F200FB1301 /* IRhoExtManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoExtManager.h; path = RhoExtManager/IRhoExtManager.h; sourceTree = "<group>"; };
+		FA11F24C1921221E00FB1301 /* RhoExtManagerImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoExtManagerImpl.h; path = RhoExtManager/RhoExtManagerImpl.h; sourceTree = "<group>"; };
+		FA11F24D1921221E00FB1301 /* RhoExtManagerImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoExtManagerImpl.m; path = RhoExtManager/RhoExtManagerImpl.m; sourceTree = "<group>"; };
+		FA11F2501921224400FB1301 /* RhoExtManagerSingletone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoExtManagerSingletone.h; path = RhoExtManager/RhoExtManagerSingletone.h; sourceTree = "<group>"; };
+		FA11F2511921224400FB1301 /* RhoExtManagerSingletone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoExtManagerSingletone.m; path = RhoExtManager/RhoExtManagerSingletone.m; sourceTree = "<group>"; };
 		FA20C215182B04140036D304 /* SignatureDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureDelegate.h; path = Signature.old/SignatureDelegate.h; sourceTree = "<group>"; };
 		FA20C216182B04140036D304 /* SignatureDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureDelegate.m; path = Signature.old/SignatureDelegate.m; sourceTree = "<group>"; };
 		FA20C217182B04140036D304 /* SignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureView.h; path = Signature.old/SignatureView.h; sourceTree = "<group>"; };
@@ -270,6 +282,19 @@
 			children = (
 			);
 			name = Documentation;
+			sourceTree = "<group>";
+		};
+		FA11F2471921214A00FB1301 /* RhoExtManager */ = {
+			isa = PBXGroup;
+			children = (
+				FA11F248192121BF00FB1301 /* IRhoExtension.h */,
+				FA11F24A192121F200FB1301 /* IRhoExtManager.h */,
+				FA11F24C1921221E00FB1301 /* RhoExtManagerImpl.h */,
+				FA11F24D1921221E00FB1301 /* RhoExtManagerImpl.m */,
+				FA11F2501921224400FB1301 /* RhoExtManagerSingletone.h */,
+				FA11F2511921224400FB1301 /* RhoExtManagerSingletone.m */,
+			);
+			name = RhoExtManager;
 			sourceTree = "<group>";
 		};
 		FA20C21B182B04140036D304 /* Signature.old */ = {
@@ -549,6 +574,7 @@
 		FA20C29B182B04140036D304 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FA11F2471921214A00FB1301 /* RhoExtManager */,
 				C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */,
 				FA20C21B182B04140036D304 /* Signature.old */,
 				FA20C21E182B04140036D304 /* Camera.old */,
@@ -609,6 +635,7 @@
 				FA20C2BA182B07A50036D304 /* RhoAlert.h in Headers */,
 				FA20C300182B07EE0036D304 /* sslimpl.h in Headers */,
 				FA20C2CA182B07BA0036D304 /* Event.h in Headers */,
+				FA11F2521921224400FB1301 /* RhoExtManagerSingletone.h in Headers */,
 				FA20C307182B08080036D304 /* NetworkStatusMonitor.h in Headers */,
 				FA20C2ED182B07DA0036D304 /* NVViewController.h in Headers */,
 				FA20C2EF182B07DA0036D304 /* NVDelegate.h in Headers */,
@@ -626,6 +653,7 @@
 				FA89817818917EA900AF5E39 /* SignatureView.h in Headers */,
 				FA20C2E3182B07D10036D304 /* MapViewManager.h in Headers */,
 				FA20C2D8182B07CB0036D304 /* SplittedMainView.h in Headers */,
+				FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */,
 				FA20C2E5182B07D10036D304 /* GoogleGeocoder.h in Headers */,
 				FA20C2C1182B07AE0036D304 /* Bluetooth.h in Headers */,
 				FAA5A5AE182B0E9B00590B1F /* rhorunner_Prefix.pch in Headers */,
@@ -634,8 +662,10 @@
 				FA20C2D1182B07C50036D304 /* LogViewController.h in Headers */,
 				FA20C2F3182B07DE0036D304 /* NavBar.h in Headers */,
 				FA20C2F5182B07E20036D304 /* phonebook.h in Headers */,
+				FA11F24B192121F200FB1301 /* IRhoExtManager.h in Headers */,
 				FA89817E18917EBA00AF5E39 /* SignatureParam.h in Headers */,
 				FA20C30D182B08080036D304 /* Rhodes.h in Headers */,
+				FA11F24E1921221E00FB1301 /* RhoExtManagerImpl.h in Headers */,
 				FA20C304182B08000036D304 /* ParamsWrapper.h in Headers */,
 				FA20C2DD182B07CB0036D304 /* SimpleMainView.h in Headers */,
 				FA20C2DC182B07CB0036D304 /* RhoMainView.h in Headers */,
@@ -705,6 +735,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */,
+				FA11F2531921224400FB1301 /* RhoExtManagerSingletone.m in Sources */,
+				FA11F24F1921221E00FB1301 /* RhoExtManagerImpl.m in Sources */,
 				FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */,
 				FA20C2EC182B07D50036D304 /* NativeBar.m in Sources */,
 				FA20C2CE182B07C40036D304 /* InitMemoryInfoCollector.mm in Sources */,
