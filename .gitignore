@@ -280,3 +280,6 @@ platform/build/*.build/*
 *.vcxproj*.cache
 
 platform/winrt/bin
+platform/winrt/ipch
+platform/winrt/*/obj
+platform/winrt/rhodes/bin
