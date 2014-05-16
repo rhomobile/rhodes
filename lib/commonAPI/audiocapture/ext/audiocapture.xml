@@ -98,7 +98,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
             <METHOD name="cancel">
-                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved.</DESC>
+                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved. In android, it will delete the file if it exists.</DESC>
 				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
         </METHODS>
