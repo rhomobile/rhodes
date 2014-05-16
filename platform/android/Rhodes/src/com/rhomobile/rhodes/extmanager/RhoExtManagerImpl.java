@@ -313,7 +313,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             res.setContainerView(containerView);
             res.setWebClient();
             boolean handled = false;
-            //res.addJSInterface(new RhoJSApi(), "__rhoNativeApi");
+            res.addJSInterface(new RhoJSApi(), "__rhoNativeApi");
             for (IRhoExtension ext : mExtensions.values()) {
                 handled = ext.onWebViewCreated(this, res, handled);
             }
