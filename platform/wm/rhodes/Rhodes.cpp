@@ -1188,11 +1188,11 @@ static int bridge_direct_callback(const BridgeCB_String *request, BridgeCB_Strin
     memcpy(data, request->data, request->size);
     data[request->size] = '\0';
 
-    RAWLOG_INFO("bridge_direct_callback: before rho::apiGenerator::js_entry_point.");
+    LOG(TRACE) + "bridge_direct_callback: before rho::apiGenerator::js_entry_point.";
 
     rho::String answer = rho::apiGenerator::js_entry_point(data);
 
-    RAWLOG_INFO("bridge_direct_callback: after rho::apiGenerator::js_entry_point.");
+    LOG(TRACE) + "bridge_direct_callback: after rho::apiGenerator::js_entry_point.";
 
     free(data);
 
@@ -1207,7 +1207,7 @@ static int bridge_direct_callback(const BridgeCB_String *request, BridgeCB_Strin
 
 static void set_bridge_direct_callback()
 {
-    HINSTANCE hInstance = LoadLibrary(L"bridge.dll");
+    HINSTANCE hInstance = LoadLibrary(L"\\Program Files\\manual_common_spec\\NPAPI\\bridge.dll");
     if (hInstance == NULL)
     {
         RAWLOG_ERROR("set_bridge_direct_callback: LoadLibrary(L\"bridge.dll\") returns NULL.");
@@ -1228,9 +1228,9 @@ static void set_bridge_direct_callback()
         return;
     }
 
-    RAWLOG_INFO("set_bridge_direct_callback: before set_callback.");
+    LOG(TRACE) + "set_bridge_direct_callback: before set_callback.";
 
     (*set_callback)(bridge_direct_callback, 0);
 
-    RAWLOG_INFO("set_bridge_direct_callback: after set_callback.");
+    LOG(TRACE) + "set_bridge_direct_callback: after set_callback.";
 }
