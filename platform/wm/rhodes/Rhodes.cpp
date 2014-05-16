@@ -1207,7 +1207,14 @@ static int bridge_direct_callback(const BridgeCB_String *request, BridgeCB_Strin
 
 static void set_bridge_direct_callback()
 {
-    HINSTANCE hInstance = LoadLibrary(L"\\Program Files\\manual_common_spec\\NPAPI\\bridge.dll");
+    rho::String rePath = rho_native_reruntimepath();
+
+    int last = rePath.find_last_of('/');
+    int pre_last = rePath.substr(0, last).find_last_of('/');
+
+    rho::StringW fullPath = rho::common::convertToStringW(rePath.substr(0, pre_last)) + + L"\\NPAPI\\bridge.dll";
+    
+    HINSTANCE hInstance = LoadLibrary(fullPath.c_str());
     if (hInstance == NULL)
     {
         RAWLOG_ERROR("set_bridge_direct_callback: LoadLibrary(L\"bridge.dll\") returns NULL.");
