@@ -171,6 +171,9 @@ static GETPROCTIMES getProcessTimesAddr = NULL;
 ** support found (or found previously).
 */
 static int hasTimer(void){
+#ifdef SQLITE_OS_WINRT
+  return 0;
+#else
   if( getProcessTimesAddr ){
     return 1;
   } else {
@@ -191,6 +194,7 @@ static int hasTimer(void){
     }
   }
   return 0;
+#endif
 }
 
 /*
@@ -2153,11 +2157,14 @@ static int do_meta_command(char *zLine, struct callback_data *p){
     }
     sCsv.zFile = zFile;
     sCsv.nLine = 1;
+#if !defined(SQLITE_OS_WINRT)
     if( sCsv.zFile[0]=='|' ){
       sCsv.in = popen(sCsv.zFile+1, "r");
       sCsv.zFile = "<pipe>";
       xCloser = pclose;
-    }else{
+    } else
+#endif
+	{
       sCsv.in = fopen(sCsv.zFile, "rb");
       xCloser = fclose;
     }
@@ -2431,12 +2438,16 @@ static int do_meta_command(char *zLine, struct callback_data *p){
   }else
 
   if( c=='o' && strncmp(azArg[0], "output", n)==0 && nArg==2 ){
+#if !defined(SQLITE_OS_WINRT)
     if( p->outfile[0]=='|' ){
       pclose(p->out);
-    }else{
+    } else
+#endif
+	{
       output_file_close(p->out);
     }
     p->outfile[0] = 0;
+#if !defined(SQLITE_OS_WINRT)
     if( azArg[1][0]=='|' ){
       p->out = popen(&azArg[1][1], "w");
       if( p->out==0 ){
@@ -2446,7 +2457,9 @@ static int do_meta_command(char *zLine, struct callback_data *p){
       }else{
         sqlite3_snprintf(sizeof(p->outfile), p->outfile, "%s", azArg[1]);
       }
-    }else{
+    } else
+#endif
+	{
       p->out = output_file_open(azArg[1]);
       if( p->out==0 ){
         if( strcmp(azArg[1],"off")!=0 ){
@@ -3130,8 +3143,8 @@ static char *find_home_dir(void){
   }
 #endif
 
-#if defined(_WIN32_WCE)
-  /* Windows CE (arm-wince-mingw32ce-gcc) does not provide getenv()
+#if defined(_WIN32_WCE) || defined(SQLITE_OS_WINRT)
+  /* Windows CE (arm-wince-mingw32ce-gcc) and Windows RT do not provide getenv()
    */
   home_dir = "/";
 #else
