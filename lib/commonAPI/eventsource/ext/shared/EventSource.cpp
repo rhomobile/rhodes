@@ -1,10 +1,12 @@
 #include "EventSource.h"
+#include "common/RhodesApp.h"
 
 namespace rho {
 
+
 const unsigned long long EventSource::defaultReconnectDelay = 3000;
 
-inline EventSource::EventSource(const String& url, IEventSourceReceiver*, const Hashtable<String,String>& eventSourceInit)
+inline EventSource::EventSource(const String& url, IEventSourceReceiver* receiver, const Hashtable<String,String>& eventSourceInit)
     :
       m_url(url)
     , m_withCredentials(false)
@@ -14,6 +16,7 @@ inline EventSource::EventSource(const String& url, IEventSourceReceiver*, const 
     , m_discardTrailingNewline(false)
     , m_requestInFlight(false)
     , m_reconnectDelay(defaultReconnectDelay)
+    , m_pReceiver(receiver)
 {
     //eventSourceInit.get("withCredentials", m_withCredentials);
 }
@@ -43,10 +46,24 @@ EventSource::~EventSource()
 
 void EventSource::connect()
 {
-/*
-    ASSERT(m_state == CONNECTING);
-    ASSERT(!m_requestInFlight);
 
+//    ASSERT(m_state == CONNECTING);
+//    ASSERT(!m_requestInFlight);
+
+    Hashtable<String,String> headers;
+
+    headers.put("Accept","text/event-stream");
+    headers.put("Cache-Control", "no-cache");
+    if (!m_lastEventId.empty())
+        headers.put("Last-Event-ID", m_lastEventId);
+
+    m_requestInFlight = true;
+
+    new common::CRhoCallInThread<CAsyncNetRequest>( 
+      new CAsyncNetRequest( "GET", m_url, "", 0, &headers, this )
+    );
+
+/*
     ResourceRequest request(m_url);
     request.setHTTPMethod("GET");
     request.setHTTPHeaderField("Accept", "text/event-stream");
@@ -69,7 +86,7 @@ void EventSource::connect()
 
     if (m_loader)
         m_requestInFlight = true;
-        */
+*/        
 }
 /*
 void EventSource::networkRequestEnded()
@@ -91,27 +108,33 @@ void EventSource::scheduleInitialConnect()
     //ASSERT(!m_requestInFlight);
 
     //m_connectTimer.startOneShot(0);
+    ::RHODESAPP().getTimer().addNativeTimer(0,this);
 }
-/*
+
 void EventSource::scheduleReconnect()
 {
     m_state = CONNECTING;
-    m_connectTimer.startOneShot(m_reconnectDelay / 1000.0);
-    dispatchEvent(Event::create(eventNames().errorEvent, false, false));
+//    m_connectTimer.startOneShot(m_reconnectDelay / 1000.0);
+    ::RHODESAPP().getTimer().addNativeTimer(m_reconnectDelay / 1000.0,this);
+//    dispatchEvent(Event::create(eventNames().errorEvent, false, false));
 }
 
+bool EventSource::onTimer()
+{
+  connect();
+  return true;
+}
+/*
 void EventSource::connectTimerFired(Timer<EventSource>*)
 {
     connect();
 }
-
+*/
 String EventSource::url() const
 {
-    return m_url.string();
+    return m_url;
 }
-*/
 
-/*
 bool EventSource::withCredentials() const
 {
     return m_withCredentials;
@@ -130,58 +153,60 @@ void EventSource::close()
     }
 
     // Stop trying to connect/reconnect if EventSource was explicitly closed or if ActiveDOMObject::stop() was called.
-    if (m_connectTimer.isActive())
-        m_connectTimer.stop();
+//    if (m_connectTimer.isActive())
+//        m_connectTimer.stop();
 
-    if (m_requestInFlight)
-        m_loader->cancel();
-    else {
-        m_state = CLOSED;
-        unsetPendingActivity(this);
-    }
+//    if (m_requestInFlight)
+//        m_loader->cancel();
+//    else {
+//        m_state = CLOSED;
+//        unsetPendingActivity(this);
+//    }
 }
-*/
 
-/*
-void EventSource::didReceiveResponse(unsigned long, const ResourceResponse& response)
+
+
+void EventSource::didReceiveResponse(NetResponse& response, const Hashtable<String,String>* headers)
 {
-    ASSERT(m_state == CONNECTING);
-    ASSERT(m_requestInFlight);
+//    ASSERT(m_state == CONNECTING);
+//    ASSERT(m_requestInFlight);
 
-    m_eventStreamOrigin = SecurityOrigin::create(response.url())->toString();
-    int statusCode = response.httpStatusCode();
-    bool mimeTypeIsValid = response.mimeType() == "text/event-stream";
+//    m_eventStreamOrigin = SecurityOrigin::create(response.url())->toString();
+    int statusCode = response.getRespCode();
+    bool mimeTypeIsValid = headers->get("content-type") == "text/event-stream";
     bool responseIsValid = statusCode == 200 && mimeTypeIsValid;
     if (responseIsValid) {
-        const String& charset = response.textEncodingName();
+        const String& charset = headers->get("content-encoding");
         // If we have a charset, the only allowed value is UTF-8 (case-insensitive).
-        responseIsValid = charset.isEmpty() || equalIgnoringCase(charset, "UTF-8");
+        responseIsValid = charset.empty() || (strcasecmp(charset.c_str(), "UTF-8")==0);
         if (!responseIsValid) {
-            StringBuilder message;
+/*            StringBuilder message;
             message.appendLiteral("EventSource's response has a charset (\"");
             message.append(charset);
             message.appendLiteral("\") that is not UTF-8. Aborting the connection.");
             // FIXME: We are missing the source line.
-            scriptExecutionContext()->addConsoleMessage(JSMessageSource, ErrorMessageLevel, message.toString());
+            scriptExecutionContext()->addConsoleMessage(JSMessageSource, ErrorMessageLevel, message.toString());*/
         }
     } else {
         // To keep the signal-to-noise ratio low, we only log 200-response with an invalid MIME type.
         if (statusCode == 200 && !mimeTypeIsValid) {
-            StringBuilder message;
+/*            StringBuilder message;
             message.appendLiteral("EventSource's response has a MIME type (\"");
             message.append(response.mimeType());
             message.appendLiteral("\") that is not \"text/event-stream\". Aborting the connection.");
             // FIXME: We are missing the source line.
-            scriptExecutionContext()->addConsoleMessage(JSMessageSource, ErrorMessageLevel, message.toString());
+            scriptExecutionContext()->addConsoleMessage(JSMessageSource, ErrorMessageLevel, message.toString());*/
         }
     }
 
     if (responseIsValid) {
         m_state = OPEN;
-        dispatchEvent(Event::create(eventNames().openEvent, false, false));
+        m_pReceiver->onOpen();
+        //dispatchEvent(Event::create(eventNames().openEvent, false, false));
     } else {
-        m_loader->cancel();
-        dispatchEvent(Event::create(eventNames().errorEvent, false, false));
+        m_pReceiver->onError("");
+        //m_loader->cancel();
+        //dispatchEvent(Event::create(eventNames().errorEvent, false, false));
     }
 }
 
@@ -190,7 +215,8 @@ void EventSource::didReceiveData(const char* data, int length)
     ASSERT(m_state == OPEN);
     ASSERT(m_requestInFlight);
 
-    append(m_receiveBuf, m_decoder->decode(data, length));
+//    append(m_receiveBuf, m_decoder->decode(data, length));
+    m_receiveBuf.insert(m_receiveBuf.end(),data,data+length);
     parseEventStream();
 }
 
@@ -211,16 +237,16 @@ void EventSource::didFinishLoading(unsigned long, double)
     networkRequestEnded();
 }
 
-void EventSource::didFail(const ResourceError& error)
+void EventSource::didFail(NetResponse& error)
 {
     ASSERT(m_state != CLOSED);
     ASSERT(m_requestInFlight);
 
-    if (error.isCancellation())
-        m_state = CLOSED;
+//    if (error.isCancellation())
+//        m_state = CLOSED;
     networkRequestEnded();
 }
-
+/*
 void EventSource::didFailAccessControlCheck(const ResourceError& error)
 {
     String message = makeString("EventSource cannot load ", error.failingURL(), ". ", error.localizedDescription());
@@ -248,6 +274,7 @@ void EventSource::abortConnectionAttempt()
     ASSERT(m_state == CLOSED);
     dispatchEvent(Event::create(eventNames().errorEvent, false, false));
 }
+*/
 
 void EventSource::parseEventStream()
 {
@@ -291,26 +318,31 @@ void EventSource::parseEventStream()
     if (bufPos == bufSize)
         m_receiveBuf.clear();
     else if (bufPos)
-        m_receiveBuf.remove(0, bufPos);
+        m_receiveBuf.erase(m_receiveBuf.begin(),m_receiveBuf.begin()+bufPos);
+        //m_receiveBuf.remove(0, bufPos);
 }
+
+extern unsigned long long rho_atoi64( const char *str );
 
 void EventSource::parseEventStreamLine(unsigned bufPos, int fieldLength, int lineLength)
 {
     if (!lineLength) {
         if (!m_data.isEmpty()) {
-            m_data.removeLast();
-            if (!m_currentlyParsedEventId.isNull()) {
+//            m_data.removeLast();
+            m_data.erase(m_data.end()-1);
+            if (!m_currentlyParsedEventId./*isNull*/empty()) {
                 m_lastEventId.swap(m_currentlyParsedEventId);
                 m_currentlyParsedEventId = String();
             }
-            dispatchEvent(createMessageEvent());
+            m_pReceiver->onMessage(m_eventName,String(m_data.begin(),m_data.end()),m_lastEventId);
+            //dispatchEvent(createMessageEvent());
         }
-        if (!m_eventName.isEmpty())
+        if (!m_eventName.empty())
             m_eventName = "";
     } else if (fieldLength) {
         bool noValue = fieldLength < 0;
 
-        String field(&m_receiveBuf[bufPos], noValue ? lineLength : fieldLength);
+        String field((const char*)&m_receiveBuf[bufPos], (size_t)(noValue ? lineLength : fieldLength));
         int step;
         if (noValue)
             step = lineLength;
@@ -323,19 +355,21 @@ void EventSource::parseEventStreamLine(unsigned bufPos, int fieldLength, int lin
 
         if (field == "data") {
             if (valueLength)
-                m_data.append(&m_receiveBuf[bufPos], valueLength);
-            m_data.append('\n');
+//                m_data.append(&m_receiveBuf[bufPos], valueLength);
+                m_data.insert(m_data.end(),&m_receiveBuf[bufPos],&m_receiveBuf[bufPos+valueLength]);
+//            m_data.append('\n');
+            m_data.push_back('\n');
         } else if (field == "event")
-            m_eventName = valueLength ? String(&m_receiveBuf[bufPos], valueLength) : "";
+            m_eventName = valueLength ? String((const char*)&m_receiveBuf[bufPos], (size_t)valueLength) : "";
         else if (field == "id")
-            m_currentlyParsedEventId = valueLength ? String(&m_receiveBuf[bufPos], valueLength) : "";
+            m_currentlyParsedEventId = valueLength ? String((const char*)&m_receiveBuf[bufPos], (size_t)valueLength) : "";
         else if (field == "retry") {
             if (!valueLength)
                 m_reconnectDelay = defaultReconnectDelay;
             else {
-                String value(&m_receiveBuf[bufPos], valueLength);
+                String value((const char*)&m_receiveBuf[bufPos], (size_t)valueLength);
                 bool ok;
-                unsigned long long retry = value.toUInt64(&ok);
+                unsigned long long retry = rho_atoi64(value.c_str());//value.toUInt64(&ok);
                 if (ok)
                     m_reconnectDelay = retry;
             }
@@ -347,7 +381,7 @@ void EventSource::stop()
 {
     close();
 }
-
+/*
 PassRefPtr<MessageEvent> EventSource::createMessageEvent()
 {
     RefPtr<MessageEvent> event = MessageEvent::create();

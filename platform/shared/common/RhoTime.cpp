@@ -104,6 +104,18 @@ boolean CRhoTimer::checkTimers()
 		}
     }
 
+    for( int i = (int)m_arNativeItems.size()-1; i >= 0; i--)
+    {
+        CNativeTimerItem oItem = m_arNativeItems.elementAt(i);
+        if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
+        {
+            m_arNativeItems.removeElementAt(i);
+            if ( oItem.m_pCallback->onTimer() )
+                bRet = true;
+        }
+    }
+
+
     return bRet;
 }
 

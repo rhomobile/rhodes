@@ -210,6 +210,17 @@ inline CTimeInterval operator-(const CTimeInterval& time1, const CTimeInterval& 
 
 class CRhoTimer
 {
+public:
+    class ICallback
+    {
+    public:
+      virtual ~ICallback() {}
+
+      virtual bool onTimer() = 0;
+    };
+
+private:
+
     struct CTimerItem
     {
         int m_nInterval;
@@ -221,15 +232,35 @@ class CRhoTimer
         CTimerItem(int nInterval, const char* szCallback, const char* szCallbackData);
     };
 
+    struct CNativeTimerItem
+    {
+        int m_nInterval;
+        CTimeInterval m_oFireTime;
+        CRhoTimer::ICallback* m_pCallback;
+
+        CNativeTimerItem(int nInterval, CRhoTimer::ICallback* callback);
+    };
+
+
     Vector<CTimerItem> m_arItems;
+    Vector<CNativeTimerItem> m_arNativeItems;
+
 
     void callTimerCallback(CTimerItem& oItem);
+
+
+
 public:
     CRhoTimer(){}
 
     void addTimer(int nInterval, const char* szCallback, const char* szCallbackData)
     {
         m_arItems.addElement(CTimerItem(nInterval, szCallback, szCallbackData));
+    }
+
+    void addNativeTimer(int nInterval, CRhoTimer::ICallback* callback)
+    {
+        m_arNativeItems.addElement(CNativeTimerItem(nInterval, callback));
     }
 
     unsigned long getNextTimeout();
