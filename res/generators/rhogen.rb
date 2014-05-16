@@ -481,14 +481,14 @@ module Rhogen
       end
     end
 
-    directory :settings do |directory|
-      #@options[:force] = true
-      directory.source = 'Settings.bundle'
-      directory.destination = 'project/iphone/Settings.bundle'
-      if File.exists?(directory.destination)
-        directory.destination = 'project/iphone/toremoved'
-      end
-    end
+    #directory :settings do |directory|
+    #  #@options[:force] = true
+    #  directory.source = 'Settings.bundle'
+    #  directory.destination = 'project/iphone/Settings.bundle'
+    #  if File.exists?(directory.destination)
+    #    directory.destination = 'project/iphone/toremoved'
+    #  end
+    #end
 
     template :project do |template|
       #@options[:force] = true
@@ -607,14 +607,14 @@ module Rhogen
       end
     end
 
-    directory :settings do |directory|
-      #@options[:force] = true
-      directory.source = 'Settings.bundle'
-      directory.destination = 'project/iphone/Settings.bundle'
-      if File.exists?(directory.destination)
-        directory.destination = 'project/iphone/toremoved'
-      end
-    end
+    #directory :settings do |directory|
+    #  #@options[:force] = true
+    #  directory.source = 'Settings.bundle'
+    #  directory.destination = 'project/iphone/Settings.bundle'
+    #  if File.exists?(directory.destination)
+    #    directory.destination = 'project/iphone/toremoved'
+    #  end
+    #end
 
     template :project do |template|
       #@options[:force] = true
