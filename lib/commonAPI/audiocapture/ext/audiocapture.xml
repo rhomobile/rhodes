@@ -152,6 +152,13 @@ In Windows, 'getProperty' or 'getProperties' for fileName will return the comple
                     ]]>
                 </DESC>
 			</REMARK>
+			<REMARK title="General">
+                <DESC>
+                    <![CDATA[
+On Quitting of the Application, Android will save the data in the file and gracefully exit.
+                    ]]>
+                </DESC>
+			</REMARK>
 		</REMARKS>
         <USER_OVERVIEW></USER_OVERVIEW>
 		<EXAMPLES>
