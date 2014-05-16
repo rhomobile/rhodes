@@ -218,6 +218,11 @@ String CNetRequestWrapper::resolveUrl(const String& strUrl)
     return RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
 
+void CNetRequestWrapper::cancel()
+{
+  m_pReqImpl->cancel();
+}
+
 }
 }
 

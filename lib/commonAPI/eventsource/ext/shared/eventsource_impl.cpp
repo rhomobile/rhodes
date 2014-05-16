@@ -74,7 +74,7 @@ namespace rho {
         
         virtual void create( const rho::String& url,  const rho::Hashtable<rho::String, rho::String>& settings, rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::create: " + url;
-            m_es = EventSource::create(url, this);
+            m_es = EventSource::create(url, this, settings );
         }
 
         virtual void addEventListener( const rho::String& event, rho::apiGenerator::CMethodResult& oResult) {
@@ -103,10 +103,13 @@ namespace rho {
 
         }
         
-        virtual void onMessage(const String& message) {
+        virtual void onMessage(const String& event, const String& message, const String& eventId) {
             LOG(INFO) + "CEventSourceImpl::onMessage - " + message;
             if ( m_onMessageCallback != 0 ) {
-              m_onMessageCallback->set(message);
+              Hashtable<String,String> params;
+              params.put("event",event);
+              params.put("data",message);
+              m_onMessageCallback->set(params);
             }
         }
 
@@ -134,6 +137,5 @@ extern "C" void Init_EventSource_API();
 extern "C" void Init_EventSource_extension()
 {
     rho::CEventSourceFactory::setInstance( new rho::CEventSourceFactory() );
-    Init_EventSource_API();
-    
+    Init_EventSource_API();    
 }

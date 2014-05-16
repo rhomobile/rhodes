@@ -160,6 +160,7 @@ public:
     rho::net::CNetResponseWrapper pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders,bool overwriteFile,bool createFolders, bool* pFileExistsFlag = 0 );
 
     String resolveUrl(const String& strUrl);
+    void cancel();
 
 };
 
