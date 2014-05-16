@@ -52,7 +52,7 @@
  * Definition of pollfd struct and constants for platforms lacking them.
  */
 
-#if !defined(OS_WP8) && !defined(OS_WINRT) && !defined(HAVE_STRUCT_POLLFD) && \
+#if !defined(OS_WP8) && !defined(HAVE_STRUCT_POLLFD) && \
     !defined(HAVE_SYS_POLL_H) && \
     !defined(HAVE_POLL_H)
 

@@ -189,7 +189,10 @@
 #    define WIN32_LEAN_AND_MEAN
 #  endif
 #  include <windows.h>
-#  ifdef HAVE_WINSOCK2_H
+#  if WINAPI_FAMILY == WINAPI_FAMILY_APP
+#    include <winrtsock.h>
+#    include <winrtsockEx.h>
+#  elif defined(HAVE_WINSOCK2_H)
 #    include <winsock2.h>
 #    ifdef HAVE_WS2TCPIP_H
 #       include <ws2tcpip.h>

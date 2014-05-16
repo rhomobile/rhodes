@@ -61,7 +61,10 @@
 
 #if defined(WIN32) && !defined(_WIN32_WCE) && !defined(__GNUC__) && \
   !defined(__CYGWIN__) || defined(__MINGW32__)
-#if !(defined(_WINSOCKAPI_) || defined(_WINSOCK_H))
+#if (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+#include "winrtsock.h"
+#include "winrtsockEx.h"
+#elif !(defined(_WINSOCKAPI_) || defined(_WINSOCK_H))
 /* The check above prevents the winsock2 inclusion if winsock.h already was
    included, since they can't co-exist without problems */
 #include <winsock2.h>

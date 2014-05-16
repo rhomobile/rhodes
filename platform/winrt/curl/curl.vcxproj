@@ -34,7 +34,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
-    <AppContainerApplication>false</AppContainerApplication>
+    <AppContainerApplication>true</AppContainerApplication>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -123,7 +123,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared;..\winrtsock\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>OS_WINRT;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
@@ -138,7 +138,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared;..\winrtsock\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>OS_WINRT;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
@@ -153,7 +153,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared;..\winrtsock\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>OS_WINRT;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
@@ -168,7 +168,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared;..\winrtsock\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>OS_WINRT;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
@@ -183,7 +183,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared;..\winrtsock\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>OS_WINRT;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
@@ -198,7 +198,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared;..\winrtsock\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>

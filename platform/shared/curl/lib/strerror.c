@@ -598,7 +598,7 @@ const char *Curl_strerror(struct connectdata *conn, int err)
 
 #ifdef USE_WINSOCK
 
-#ifdef _WIN32_WCE
+#if defined(_WIN32_WCE) || defined(OS_WINRT)
   {
     wchar_t wbuf[256];
     wbuf[0] = L'\0';
