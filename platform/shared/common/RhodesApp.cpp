@@ -1628,16 +1628,28 @@ int CRhodesApp::determineFreeListeningPort()
 	
 	return nFreePort;
 }
-	
+
+#ifdef OS_WINCE
+bool CRhodesApp::isWebkitOutofProcess()
+{
+    const char* szOutprocess = get_app_build_config_item("webkit_outprocess");
+    return szOutprocess && strcmp(szOutprocess, "1") == 0;
+}
+#endif
+
 void CRhodesApp::initAppUrls() 
 {
     CRhodesAppBase::initAppUrls(); 
 
     m_isJSFSApp = false;
-#ifndef OS_WINCE
+
 #ifdef RHO_NO_RUBY_API
     m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
 #endif
+
+#ifdef OS_WINCE
+    if (isWebkitOutofProcess())
+        m_isJSFSApp = false; //We need local server for out of process webkit, it use sockets to call common API
 #endif
 
     m_strHomeUrl = "http://127.0.0.1:";

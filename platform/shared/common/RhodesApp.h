@@ -279,6 +279,10 @@ public:
 
     void callCallbackProcWithData(unsigned long oRubyCallbackProc, String strBody, const String& strCallbackData, bool bWaitForResponse);
 
+    #ifdef OS_WINCE
+    bool isWebkitOutofProcess();
+    #endif
+
 protected:
     virtual void run();
 
