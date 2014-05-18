@@ -82,6 +82,8 @@ int GetProtocolFromURL(LPCTSTR tcURL, LPTSTR lpRetStr);
 BOOL DereferenceURL(LPCTSTR tcRelativeURLConst, TCHAR* tcDereferencedURL, TCHAR* tcCurrentURL);
 //
 HRESULT InitHTMLControl(HINSTANCE hInstance);
+//
+void MetaHandler(int tabIndex, EngineMETATag* metaTag);
 
 } //end of browser
 } //end of rho

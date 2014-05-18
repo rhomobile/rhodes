@@ -1,3 +1,6 @@
+#include <stdafx.h>
+
+#include "common/RhodesApp.h"
 #include "EngineDefines.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -122,6 +125,18 @@ HRESULT InitHTMLControl(HINSTANCE hInstance)
         return S_FALSE;
 
     return S_OK;
+}
+
+void MetaHandler(int tabIndex, EngineMETATag* metaTag)
+{
+    RHODESAPP().getExtManager().onSetPropertiesData((LPCWSTR)tabIndex, (LPCWSTR)metaTag);
+    
+    if (wcscmp(metaTag->tcHTTPEquiv, L"initialiseRhoElementsExtension") != 0)
+    {
+        free(metaTag->tcHTTPEquiv);
+        free(metaTag->tcContents);
+        delete metaTag;
+    }
 }
 
 } //end of browser

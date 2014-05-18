@@ -310,17 +310,12 @@ HWND CIEBrowserEngine::GetHTMLWND(int /*iTabID*/)
 
 void CIEBrowserEngine::InvokeEngineEventMetaTag(LPTSTR tcHttpEquiv, LPTSTR tcContent)
 {
-	//if (m_EngineEvents[EEID_METATAG])
-	{
-		EngineMETATag metaTag;
-		memset(&metaTag, 0, sizeof(metaTag));
-		metaTag.tcHTTPEquiv = tcHttpEquiv;
-		metaTag.tcContents = tcContent;
-		//m_EngineEvents[EEID_METATAG]
-		//	(EEID_METATAG, 
-		//	(LPARAM)&metaTag,
-		//	m_tabID);
-	}	
+	EngineMETATag *metaTag = new EngineMETATag;
+	memset(&metaTag, 0, sizeof(metaTag));
+	metaTag->tcHTTPEquiv = tcHttpEquiv;
+	metaTag->tcContents = tcContent;
+
+    rho::browser::MetaHandler(m_tabID, metaTag);
 }
 
 void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEventID)
@@ -355,7 +350,6 @@ void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEvent
 			CloseHandle (CreateThread(NULL, 0, 
 									&CIEBrowserEngine::NavigationTimeoutThread, 
 									(LPVOID)this, 0, NULL));
-
 
             PostMessage(m_parentHWND, WM_BROWSER_ONBEFORENAVIGATE, (WPARAM)m_tabID, (LPARAM)_tcsdup(tcURL));
 			break;
@@ -405,7 +399,7 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			NM_HTMLVIEWW * pnmHTML;
 			LPNMHDR pnmh;
 			pnmHTML = (NM_HTMLVIEWW *) lParam;
-			pnmh = (LPNMHDR) &(pnmHTML->hdr);
+			pnmh    = (LPNMHDR) &(pnmHTML->hdr);
 			
 			//  The message has originated from one of the tabs we created, determine
 			//  the tab ID from the hwnd
