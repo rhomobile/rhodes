@@ -316,7 +316,18 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
     case PB_ONMETA:
         {
             EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
-            rho::browser::MetaHandler(m_tabID, metaTag2);
+
+            RHODESAPP().getExtManager().onSetPropertiesData( (LPCWSTR)wParam, (LPCWSTR)lParam );
+            
+            if (metaTag2 && wcscmp(metaTag2->tcHTTPEquiv, L"initialiseRhoElementsExtension") != 0)
+            {
+                free(metaTag2->tcHTTPEquiv);
+                free(metaTag2->tcContents);
+                delete metaTag2;
+            }
+
+            //EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
+            //rho::browser::MetaHandler(m_tabID, metaTag2);
         }
         break;
     }
@@ -333,7 +344,6 @@ void CIEBrowserEngine::InvokeEngineEventMetaTag(LPTSTR tcHttpEquiv, LPTSTR tcCon
     LRESULT lRet;
 
     EngineMETATag *pMeta = new EngineMETATag;
-	memset(&pMeta, 0, sizeof(EngineMETATag));
 	pMeta->tcHTTPEquiv = tcHttpEquiv;
 	pMeta->tcContents = tcContent;
 
@@ -355,9 +365,9 @@ void CIEBrowserEngine::InvokeEngineEventMetaTag(LPTSTR tcHttpEquiv, LPTSTR tcCon
     delete []metaTag.tcHTTPEquiv;
     delete []metaTag.tcContents;
 
-    delete [] pMeta->tcHTTPEquiv;
-    delete [] pMeta->tcContents;
-    delete pMeta;
+    //delete [] pMeta->tcHTTPEquiv;
+    //delete [] pMeta->tcContents;
+    //delete pMeta;
 }
 
 void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEventID)
@@ -463,6 +473,7 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 					mobileTab->InvokeEngineEventTitleChange(tcTarget);
 				break;
 			case NM_PIE_META:
+
 				//  A Meta Tag has been received from the Page, convert the content
 				//  and data to wide strings.
 				if (pnmHTML->szTarget)
