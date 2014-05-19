@@ -24,13 +24,25 @@ IBrowserFactory* BrowserFactory::getInstance()
 
 IBrowserEngine* BrowserFactory::create(HWND hwndParent)
 {
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-    return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-#elif defined(OS_PLATFORM_MOTCE)
-    return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-#else
+//#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+//    return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
+//#elif defined(OS_PLATFORM_MOTCE)
+//    return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
+//#else
     return CIEBrowserEngine::getInstance(hwndParent, rho_wmimpl_get_appinstance());
-#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+//#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+}
+
+//
+IBrowserFactory::EBrowserEngine BrowserFactory::getCurrentBrowserType()
+{
+    //#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+    //    return IBrowserFactory::eWebkit;
+    //#elif defined(OS_PLATFORM_MOTCE)
+    //    return IBrowserFactory::eIE_CE;
+    //#else
+        return IBrowserFactory::eIE_WM;
+    //#endif 
 }
 
 }
