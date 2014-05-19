@@ -1076,11 +1076,10 @@ extern "C" {
 		*/
 #define WSAGETSELECTERROR(lParam)           HIWORD(lParam)
 
+#define WSAAPI  FAR PASCAL
+
 #if(_WIN32_WINNT >= 0x0501)
 #ifdef IPV6STRICT
 #error WINSOCK2 required.
 #endif // IPV6STRICT
 #endif //(_WIN32_WINNT >= 0x0501)
-
-
-

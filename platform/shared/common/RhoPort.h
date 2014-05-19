@@ -45,7 +45,8 @@
 #if defined( WINDOWS_PLATFORM )
 
 #if defined(OS_WINRT)
-#include <WinSock2.h>
+#include "winrtsock.h"
+#include "winrtsockEx.h"
 #endif // OS_WINRT
 
 #include <windows.h>

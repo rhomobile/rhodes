@@ -38,8 +38,13 @@ extern "C" {
 #if defined(__cplusplus) && defined(_MSC_VER)
 extern "C++" {			/* template without extern "C++" */
 #endif
+#if defined(OS_WINRT)
+#include "winrtsock.h"
+#include "winrtsockEx.h"
+#else
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#endif
 #if defined(__cplusplus) && defined(_MSC_VER)
 }
 #endif

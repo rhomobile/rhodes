@@ -12,7 +12,12 @@
 #define _WINSOCKAPI_
 
 #include <windows.h>
+#if defined(OS_WINRT)
+#include "winrtsock.h"
+#include "winrtsockEx.h"
+#else
 #include <winsock2.h>
+#endif
 #include <commctrl.h>
 #include <winnls.h>
 #include <shlobj.h>

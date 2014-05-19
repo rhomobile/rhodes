@@ -43,9 +43,9 @@ VALUE
 rsock_init_sock(VALUE sock, int fd)
 {
     rb_io_t *fp;
-    struct stat sbuf;
 
 #ifndef _WIN32
+	struct stat sbuf;
     if (fstat(fd, &sbuf) < 0)
         rb_sys_fail(0);
     if (!S_ISSOCK(sbuf.st_mode))

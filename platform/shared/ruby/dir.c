@@ -1877,7 +1877,10 @@ static VALUE
 dir_entries(int argc, VALUE *argv, VALUE io)
 {
     VALUE dir;
-    VALUE res, temp;
+    VALUE res;
+#ifdef _WIN32_WCE
+	VALUE temp;
+#endif //_WIN32_WCE
 
     dir = dir_open_dir(argc, argv);
 

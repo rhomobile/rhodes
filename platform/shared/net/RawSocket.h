@@ -37,9 +37,12 @@ typedef int SOCKET;
 #  define RHO_NET_ERROR_CODE errno
 #  define closesocket close
 #else
-#  if defined(OS_WINCE) || defined(OS_WP8) || defined(OS_WINRT)
+#  if defined(OS_WINCE) || defined(OS_WP8)
 #    include <winsock2.h>
 #    include <ws2tcpip.h>
+#  elif defined(OS_WINRT)
+#    include "winrtsock.h"
+#    include "winrtsockEx.h"
 #  endif
 #  define RHO_NET_ERROR_CODE ::WSAGetLastError()
 #endif

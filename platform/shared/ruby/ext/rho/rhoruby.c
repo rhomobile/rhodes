@@ -708,7 +708,7 @@ double rho_ruby_get_double(VALUE val)
 
 VALUE rho_ruby_get_time(VALUE rDate)
 {
-    VALUE res, cDate;
+    VALUE cDate;
     if (TYPE(rDate) == T_STRING) {
         rDate = rb_funcall(rb_cTime, rb_intern("parse"), 1, rDate);
     }
