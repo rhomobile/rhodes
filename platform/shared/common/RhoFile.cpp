@@ -450,7 +450,7 @@ unsigned int CRhoFile::deleteEmptyFolder( const char* szFilePath ){
 
 void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 {
-#if defined(WINDOWS_PLATFORM)
+#if defined(WINDOWS_PLATFORM) && !defined(OS_WINRT)
     StringW wFolderName;
     common::convertToStringW(szFolderPath,wFolderName);
     StringW wFolderMask = wFolderName + L"/*";
@@ -649,7 +649,7 @@ bool CRhoFile::listFolderEntries( const String& path, Vector<String> &entries)
     return ret;
 }
     
-#if defined(WINDOWS_PLATFORM)
+#if defined(WINDOWS_PLATFORM) && !defined(OS_WINRT)
 static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boolean bMove)
 {
     unsigned int nErr = 0;
