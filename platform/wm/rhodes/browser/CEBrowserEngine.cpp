@@ -13,6 +13,13 @@
 #if defined(_WIN32_WCE)
 #include <webvw.h>
 #endif
+//////////////////////////////////////////////////////////////////////////
+
+extern "C" HWND rho_wmimpl_get_mainwnd();
+
+IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
+
+//////////////////////////////////////////////////////////////////////////
 
 UINT WM_BROWSER_ONDOCUMENTCOMPLETE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONDOCUMENTCOMPLETE");
 UINT WM_BROWSER_ONNAVIGATECOMPLETE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONNAVIGATECOMPLETE");
@@ -24,7 +31,7 @@ UINT WM_BROWSER_ONSETSIPSTATE           = ::RegisterWindowMessage(L"RHODES_WM_BR
 UINT WM_BROWSER_ONALERTPOPUP            = ::RegisterWindowMessage(L"WM_BROWSER_ONALERTPOPUP");
 UINT WM_BROWSER_ONAUTHENTICATIONREQUEST = ::RegisterWindowMessage(L"WM_BROWSER_ONAUTHENTICATIONREQUEST");
 
-IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
+//////////////////////////////////////////////////////////////////////////
 
 CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     : m_ulRefs(0)
@@ -507,8 +514,10 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
         m_bLoadingComplete = true;
         InvalidateRect(GetHTMLWND(0), NULL, FALSE);
+        ParseTags();
 
 		retVal = S_OK;
+        
 		break;
 
 	case DISPID_BEFORENAVIGATE2:
@@ -651,14 +660,18 @@ BOOL CEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 
 LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
 {
+    bHandled = TRUE;
+
     switch (uMsg) 
     {
     case PB_ONMETA:
-        RHODESAPP().getExtManager().onSetPropertiesData( (LPCWSTR)wParam, (LPCWSTR)lParam );
+        {
+            EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
+            rho::browser::MetaHandler(m_tabID, metaTag2);
+        }
         break;
     }
 
-    bHandled = TRUE;
     return 0;
 }
 
@@ -786,5 +799,123 @@ bool CEBrowserEngine::DeRegisterForPrimaryMessage(unsigned int iMsgId)
 int CEBrowserEngine::NewTab() { return 0; }
 int CEBrowserEngine::SwitchTab(int iTabID){ return 0;}
 BOOL CEBrowserEngine::CloseTab(int iTabID) { return false; }
+
+/**
+* \author	Darryn Campbell (DCC, JRQ768)
+* \date		October 2009
+*/
+HRESULT CEBrowserEngine::ParseTags()
+{
+	IDispatch* pDisp;
+	m_pBrowser->get_Document(&pDisp);
+		
+	if (pDisp != NULL )
+	{
+		IHTMLDocument2* pHTMLDocument2;
+		HRESULT hr;
+		
+		hr = pDisp->QueryInterface( IID_IHTMLDocument2, (void**)&pHTMLDocument2 );
+		// Finished with pDisp so release
+		pDisp->Release();
+
+		if (hr == S_OK)
+		{
+			IHTMLElementCollection* pColl;
+			hr = pHTMLDocument2->get_all( &pColl );
+			
+			// Finished so release
+			pHTMLDocument2->Release();
+
+			if (hr == S_OK)
+			{
+				LONG celem;
+				hr = pColl->get_length( &celem );
+
+				if ( hr == S_OK )
+				{
+					for ( int i=0; i< celem; i++ )
+					{
+						VARIANT varIndex;
+						varIndex.vt = VT_UINT;
+						varIndex.lVal = i;
+						VARIANT var2;
+						VariantInit( &var2 );
+						IDispatch* pDisp2; 
+
+						hr = pColl->item( varIndex, var2, &pDisp2 );
+
+						if ( hr == S_OK )
+						{
+							BSTR bstr;
+							memset(&bstr, 0, sizeof(BSTR));
+							IHTMLMetaElement* pMetaElem;
+							hr = pDisp2->QueryInterface( IID_IHTMLMetaElement, 
+								(void **)&pMetaElem );
+							if ( hr == S_OK )
+							{
+								//  The engine uses its own definition of 
+								//  meta tags, must HTTP Equiv and Contents
+								EngineMETATag metaTag;
+								memset(&metaTag, 0, sizeof(metaTag));
+								TCHAR tcHttpEquiv[MAX_URL], tcContents[MAX_URL];
+								memset(tcHttpEquiv, 0, MAX_URL);
+								memset(tcContents, 0, MAX_URL);
+								//  Obtain the HTTP Equiv from the IE 
+								//  component, stored in bstr
+								if (S_OK == pMetaElem->get_httpEquiv(&bstr)) 
+								{
+									if (bstr != 0) 
+									{
+										//  Copy the HTTP Equiv returned
+										//  from the IE Component into our 
+										//  Meta Tag Structure
+										wcsncpy(tcHttpEquiv, bstr, MAX_URL);
+										metaTag.tcHTTPEquiv = tcHttpEquiv;
+										::SysFreeString(bstr);
+									}
+									else if	(S_OK == pMetaElem->get_name(&bstr))
+									{
+										//  Failed to get the HTTP Equiv, try and get the <META Name...>
+										if (bstr != 0)
+										{
+											//  Copy the HTTP Equiv returned
+											//  from the IE Component into our 
+											//  Meta Tag Structure
+											wcsncpy(tcHttpEquiv, bstr, MAX_URL);
+											metaTag.tcHTTPEquiv = tcHttpEquiv;
+											::SysFreeString(bstr);
+										}
+									}
+								}
+								if (metaTag.tcHTTPEquiv && S_OK == pMetaElem->get_content(&bstr)) 
+								{
+									if (bstr != 0) 
+									{
+										//  Copy the Contents returned
+										//  from the IE component into our
+										//  Meta Tag Structure
+										wcsncpy(tcContents, bstr, MAX_URL);
+										metaTag.tcContents = (TCHAR*) tcContents;
+										::SysFreeString(bstr);
+										//  Invoke the Meta Tag Callback.
+										//  This blocks whilst the callback
+										//  code is handled so metaTag does not
+										//  go out of scope.
+                                        PostMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)&metaTag);
+									}
+								}
+								pMetaElem->Release();
+							}
+							pDisp2->Release();
+						}
+					}
+				}
+				pColl->Release();
+			}
+		}
+	}
+	return S_OK;
+}
+
 
 #endif //!defined( OS_WINCE )

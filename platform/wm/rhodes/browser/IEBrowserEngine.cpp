@@ -11,6 +11,8 @@
 
 IMPLEMENT_LOGCLASS(CIEBrowserEngine,"IEBrowser");
 
+extern "C" HWND rho_wmimpl_get_mainwnd();
+
 //////////////////////////////////////////////////////////////////////////
 
 #define NM_PIE_TITLE            (WM_USER + 104)  ///< Message ID indicating the associated message defines the page title.
@@ -305,17 +307,57 @@ HWND CIEBrowserEngine::GetHTMLWND(int /*iTabID*/)
     return m_hwndTabHTML;
 }
 
+LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    bHandled = TRUE;
+
+    switch (uMsg) 
+    {
+    case PB_ONMETA:
+        {
+            EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
+            rho::browser::MetaHandler(m_tabID, metaTag2);
+        }
+        break;
+    }
+
+    return 0;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // invoke methods
 
 void CIEBrowserEngine::InvokeEngineEventMetaTag(LPTSTR tcHttpEquiv, LPTSTR tcContent)
 {
-	EngineMETATag *metaTag = new EngineMETATag;
-	memset(&metaTag, 0, sizeof(metaTag));
-	metaTag->tcHTTPEquiv = tcHttpEquiv;
-	metaTag->tcContents = tcContent;
+    EngineMETATag metaTag;
+    LRESULT lRet;
 
-    rho::browser::MetaHandler(m_tabID, metaTag);
+    EngineMETATag *pMeta = new EngineMETATag;
+	memset(&pMeta, 0, sizeof(EngineMETATag));
+	pMeta->tcHTTPEquiv = tcHttpEquiv;
+	pMeta->tcContents = tcContent;
+
+    if(pMeta->tcHTTPEquiv && *pMeta->tcHTTPEquiv){
+        metaTag.tcHTTPEquiv = new WCHAR[wcslen(pMeta->tcHTTPEquiv)+1];
+        wcscpy(metaTag.tcHTTPEquiv,pMeta->tcHTTPEquiv);
+    }
+
+    if(pMeta->tcContents && *pMeta->tcContents){
+        metaTag.tcContents = new WCHAR[wcslen(pMeta->tcContents)+1];
+        wcscpy(metaTag.tcContents,pMeta->tcContents);
+    }
+
+    EngineMETATag* metaTag2 = new EngineMETATag;
+    metaTag2->tcHTTPEquiv = _tcsdup(metaTag.tcHTTPEquiv);
+    metaTag2->tcContents = _tcsdup(metaTag.tcContents);
+    lRet = PostMessage(rho_wmimpl_get_mainwnd(),PB_ONMETA,(WPARAM)m_tabID, (LPARAM)metaTag2);
+
+    delete []metaTag.tcHTTPEquiv;
+    delete []metaTag.tcContents;
+
+    delete [] pMeta->tcHTTPEquiv;
+    delete [] pMeta->tcContents;
+    delete pMeta;
 }
 
 void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEventID)

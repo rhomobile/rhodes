@@ -60,7 +60,7 @@ public:
     virtual BOOL ReloadOnTab(bool bFromCache, UINT iTab);
     virtual BOOL StopOnTab(UINT iTab);
     virtual BOOL NavigateToHtml(LPCTSTR szHtml) {return TRUE;}
-    virtual LRESULT OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {return 0;}
+    virtual LRESULT OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual void RunMessageLoop(CMainWindow& mainWnd);
     virtual void SetCookie(char* url, char* cookie) {}
     virtual bool isExistJavascript(const wchar_t* szJSFunction, int index){return true;}
