@@ -32,6 +32,7 @@ load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
 require 'tempfile'
 
+include FileUtils
 
 USE_OWN_STLPORT = false
 #USE_TRACES = # see androidcommon.rb
@@ -655,6 +656,15 @@ namespace "config" do
                   library_deps.each do |dep|
                     deppath = File.join($androidsdkpath, dep)
                     $ext_android_library_deps[AndroidTools.read_manifest_package(deppath)] = deppath
+                  end
+                end
+              end
+
+              resource_packages = extconf_android['resource_packages'] if extconf_android
+              if resource_packages
+                if resource_packages.is_a? Array
+                  resource_packages.each do |package|
+                    $ext_android_library_deps[package] = ""
                   end
                 end
               end

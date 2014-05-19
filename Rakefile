@@ -76,6 +76,7 @@ require File.join(pwd, 'lib/build/SiteChecker.rb')
 require File.join(pwd, 'lib/build/ExtendedString.rb')
 require File.join(pwd, 'lib/build/rhohub.rb')
 require File.join(pwd, 'lib/build/BuildOutput.rb')
+require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 
 load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -396,173 +397,6 @@ end
 #------------------------------------------------------------------------
 #token handling
 
-def bin_to_hex(s)
-  s.unpack('H*').first
-end
-
-def hex_to_bin(s)
-  s.scan(/../).map { |x| x.hex }.pack('c*')
-end
-
-def crc32(string, crc = 0)
-  if $crc_t.nil?
-    divisor = [0, 1, 2, 4, 5, 7, 8, 10, 11, 12, 16, 22, 23, 26, 32].inject(0) {|sum, exponent| sum + (1 << (32 - exponent))}
-    $crc_t = Array.new(256) do |octet|
-      remainder = octet
-      (0..7).each do |i|
-        if !remainder[i].zero?
-          remainder ^= (divisor << i)
-        end
-      end
-      remainder >> 8
-    end
-  end
-
-  crc ^= 0xffff_ffff
-  string.each_byte do |octet|
-    remainder_1 = crc >> 8
-    remainder_2 = $crc_t[(crc & 0xff) ^ octet]
-    crc = remainder_1 ^ remainder_2
-  end
-  crc ^ 0xffff_ffff
-end
-
-def crc(val)
-  [crc32(val)].pack('l<')
-end
-
-def is_valid_token?(token)
-  res = /([0-9a-f]{50})/.match(token)
-  return !res.nil? && !res[1].nil?
-end
-
-def generate_preamble(token_preamble_len)
-  range = ((48..57).to_a+(65..90).to_a+(97..122).to_a)
-
-  ([nil]*token_preamble_len).map { range.sample.chr }.join
-end
-
-def encode_val(encodeable, salt, iv = nil)
-  cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
-  cipher.encrypt
-  cipher.key = Digest::SHA2.hexdigest(salt)
-
-  if iv.nil?
-    iv = cipher.random_iv
-  end
-  cipher.iv = iv
-
-  #random preamble
-  encrypted = cipher.update(encodeable)
-  encrypted << cipher.final
-
-  return encrypted, iv
-end
-
-def decode_val(decodeable, salt, iv)
-  cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
-  cipher.decrypt
-
-  cipher.key = Digest::SHA2.hexdigest(salt)
-  cipher.iv = iv
-
-  # and decrypt it
-  decrypted = cipher.update(decodeable)
-  decrypted << cipher.final
-
-  decrypted
-end
-
-def encode_token(token, salt, token_preamble_len, iv = nil, subcription = nil)
-  #random preamble
-  token_code = generate_preamble(token_preamble_len)
-  token_code << token
-  token_code << Digest::SHA2.hexdigest(token)
-
-  encrypted, iv = encode_val(token_code, salt, iv)
-
-  curr_time = [Time.now.to_i].pack('l<')
-  time_code = curr_time + crc(curr_time)
-
-  time, iv = encode_val(time_code, salt, iv)
-
-  if !(subcription.nil? || subcription.empty?)
-    sub_code_crc = subcription + crc(subcription)
-    sub_code, iv = encode_val(sub_code_crc, salt, iv)
-  else
-    sub_code = ""
-  end
-
-  message = Hash[{:iv => iv, :token => encrypted, :lt => time, :ft => sub_code}.map {|k,v| [k, Base64.encode64(v)]}]
-
-  JSON.generate(message)
-end
-
-def check_field(field, salt, iv)
-  decode = decode_val(field, salt, iv)
-  len = crc("token").length
-  code = decode.slice(0, decode.length - len)
-  code_hash = decode.slice(decode.length - len, len)
-
-  return code, code_hash == crc(code)
-end
-
-def decode_validate_token(token_hash, salt, token_preamble_len)
-  result = {}
-
-  result[:token] = nil
-  result[:lt] = 0
-  result[:ft] = nil
-
-  base_message = JSON.parse(token_hash)
-  if !base_message.nil?
-    message = Hash[base_message.map {|k,v| [k, Base64.decode64(v)]}]
-
-    if !(message["iv"].nil? || message["token"].nil?)
-      result[:iv] = message["iv"]
-
-      decrypted = decode_val(message["token"], salt, message["iv"])
-
-      tokenlen = decrypted.length - token_preamble_len - Digest::SHA2.hexdigest("token").length
-      tok = decrypted.slice(token_preamble_len, tokenlen)
-
-      if is_valid_token?(tok)
-        token_hash = decrypted.slice(tokenlen + token_preamble_len,decrypted.length)
-
-        if token_hash != Digest::SHA2.hexdigest(tok)
-          puts "invalid token"
-        else
-          result[:token] = tok
-        end
-      else
-        puts "invalid token format"
-      end
-
-      if !(message["lt"].nil?)
-        code, is_correct = check_field(message["lt"], salt, message["iv"])
-
-        if is_correct
-          result[:lt] = code.unpack('l<').first
-        end
-      end
-
-      if !(message["ft"].nil? || message["ft"].empty?)
-        code, is_correct = check_field(message["ft"], salt, message["iv"])
-
-        if is_correct
-          result[:ft] = code
-        end
-      end
-    else
-      puts "corrupted token"
-    end
-  else
-    puts "could not read token"
-  end
-
-  result
-end
-
 def get_app_list()
   result = nil
   begin
@@ -575,33 +409,27 @@ def get_app_list()
   result
 end
 
-def check_update_token_file(token_file, token_preamble_len, token_hash, salt, check_subcription = false)
-  min_check_interval = 60*60*24 # one day
+def check_update_token_file(user_acc, token_folder, check_subcription = false)
+  is_vaild = -2
 
-  if is_valid_token?(token_hash[:token])
-    token = token_hash[:token]
-    Rhohub.token = token
+  if user_acc.is_valid_token?()
+    Rhohub.token = user_acc.token
 
-    subcription = token_hash[:ft]
-    time = (token_hash[:lt].nil?) ? 0 : token_hash[:lt]
+    is_vaild = user_acc.is_outdated() ? 0 : 2 
 
-    is_vaild = (Time.now.to_i - time > min_check_interval) ? 0 : 2
-
-    if !(token.nil? || token.empty?) && SiteChecker.is_available?
-      if check_subcription && ((subcription.nil? || subcription.empty?) || (is_vaild < 2))
-        updated = false
+    if SiteChecker.is_available? && (user_acc.is_outdated() || (check_subcription && !user_acc.is_valid_subscription?()))
+      if (check_subcription && !user_acc.is_valid_subscription?())
         puts "Downloading user subscription information"
         begin
-          subcription = Rhohub::Subscription.check()
-          token_hash[:ft] = subcription
+          subscription = Rhohub::Subscription.check()
+          user_acc.subscription = subscription
           is_vaild = 2
-          updated = true
         rescue Exception => e
-          subcription = nil
+          subscription = nil
         end
       end
 
-      if subcription.nil?
+      if is_vaild < 2
         user_apps = nil
         begin
           user_apps = get_app_list()
@@ -609,27 +437,19 @@ def check_update_token_file(token_file, token_preamble_len, token_hash, salt, ch
           user_apps = nil
         end
         if user_apps.nil?
-          token = nil
+          user_acc.token = nil
           is_vaild = -1
         else
           is_vaild = 1
-          updated = true
-        end
-      end
-
-      if (token.nil? || token.empty?)
-        token = token_hash[:token]
-      end
-
-      if (!File.exists?(token_file)) || updated
-        File.open(token_file,"w") do |f|
-          f.write(encode_token(token, salt, token_preamble_len, token_hash[:iv], subcription))
         end
       end
     end
+
+    if (user_acc.is_valid_token?() && user_acc.changed)
+      user_acc.save_token(token_folder)
+    end
   else
     is_vaild = -2
-    token_hash[:token] = ''
   end
 
   is_vaild
@@ -668,71 +488,29 @@ namespace "token" do
       RestClient.proxy = $proxy
     end
 
-    $token = ''
-    $token_preamble_len = 16
-    $token_file = File.join($rhodes_home,'token')
-
-    $subcription = nil
-
-    $app = nil
-    $apps = nil
-
-    #generate salt file to encode api token
-    $salt_file = File.join($rhodes_home,'salt')
-    $salt = ''
-    $salt_generated = false
-
-    if File.exists?($salt_file)
-      $salt = File.read($salt_file)
-    else
-      $salt = SecureRandom.urlsafe_base64(32)
-      #File.write($salt_file,$salt)
-      File.open($salt_file,"w") { |f| f.write($salt) }
-      $salt_generated = true
-    end
+    $user_acc = RhoHubAccount.new()
   end
 
   task :read => [:initialize] do
-    # check existing API token
+    if !$user_acc.read_token_from_env()
+      $user_acc.read_token_from_files($rhodes_home)
+    end
 
-    # check internet connection
-    # 1. check for token file
-    # 2. read if available and validate, reset to empty on error
-    # 3. check token online, reset if not valid
-    result = nil
-
-    $token = nil
-
-    if !$salt_generated && File.exists?($token_file)
-      result = decode_validate_token(File.read($token_file), $salt, $token_preamble_len)
-
-      case check_update_token_file($token_file, $token_preamble_len, result, $salt, $re_app)
+    if $user_acc.is_valid_token?()
+      # check existing API token
+      case check_update_token_file($user_acc, $rhodes_home, $re_app)
       when 2
         #BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
-        $subcription = result[:ft]
-        $token = result[:token]
       when 1
         BuildOutput.put_log( BuildOutput::WARNING, "Token is valid, could not check subcription", "Token check" );
-        $token = result[:token]
       when 0
         BuildOutput.put_log( BuildOutput::WARNING, "Could not check token online", "Token check" );
-        $token = result[:token]
       else
         BuildOutput.put_log( BuildOutput::ERROR, "RhoHub API token is not valid!", "Token check" );
       end
-      
-      if !$token.nil?
-        Rhohub.token = $token
-      end
-    else
-      if $salt_generated
-        puts "salt file was generated, token should be invalidated"
-      else
-        puts "token file not found, generating new one"
-      end
     end
 
-    if $token.nil? || $token.empty?
+    if !$user_acc.is_valid_token?()
       token_source = File.join($app_path,'token.txt')
 
       if File.exists?(token_source)
@@ -743,80 +521,66 @@ namespace "token" do
           puts "Token file exception #{e.inspect}"
         end
 
-        result = {:token => tok}
-        if check_update_token_file($token_file, $token_preamble_len, result, $salt, $re_app) >= 0
-          $subcription = result[:ft]
-          $token = result[:token]
-        end
+        $user_acc.token = tok
+
+        check_update_token_file($user_acc, $rhodes_home, $re_app)
       end
+    end
+
+    if $user_acc.is_valid_token?()
+      Rhohub.token = $user_acc.token
     end
   end
 
   task :check => [:read] do
-    if !($token.nil? || $token.empty?)
-      puts "TokenValid[YES]"
+    puts "SubscriptionValid[#{$user_acc.is_valid_subscription?() ? 'YES' : 'NO'}]"
+    puts "TokenValid[#{$user_acc.is_valid_token?() ? 'YES' : 'NO'}]"
+
+    if ($user_acc.is_valid_token?())
       exit 0
     else
-      puts "TokenValid[NO]"
       exit 1
     end
   end
 
   task :get => [:read] do
-    if !($token.nil? || $token.empty?)
-      puts "Token[#{$token}]"
+    if $user_acc.is_valid_token?()
+      puts "Token[#{$user_acc.token}]"
     else
+      puts "TokenNotSet!"
       exit 1
     end
   end
 
   task :set, [:token] => [:initialize] do |t, args|
-    if is_valid_token?(args[:token])
-      $token = args[:token]
+    if RhoHubAccount.is_valid_token?(args[:token])
+      $user_acc.token = args[:token]
     else
-      BuildOutput.error(" Invalid RhoHub API token format!")
+      BuildOutput.error("Invalid RhoHub API token !", "Token check")
       exit 1
-      $token = ''
     end
 
-    if !($token.nil? || $token.empty?)
-      t_hash = {:token => $token}
-      case check_update_token_file($token_file, $token_preamble_len, t_hash, $salt, true)
+    if $user_acc.is_valid_token?()
+      case check_update_token_file($user_acc, $rhodes_home, true)
       when 2
-        BuildOutput.note( "Token and subscription are valid", "Token check")
-        $subcription = t_hash[:ft]
+        BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check")
       when 1
-        BuildOutput.warning("Token is valid, could not check subcription", "Token check")
+        BuildOutput.put_log( BuildOutput::WARNING,"Token is valid, could not check subcription", "Token check")
       when 0
-        BuildOutput.warning("Could not check token online", "Token check")
+        BuildOutput.put_log( BuildOutput::WARNING,"Could not check token online", "Token check")
       else
-        BuildOutput.error("RhoHub API token is not valid!", "Token check")
+        BuildOutput.put_log( BuildOutput::ERROR,"RhoHub API token is not valid!", "Token check")
         exit 1
       end
     end
   end
 
   task :clear => [:initialize] do
-    files = [$token_file, $salt_file]
-
-    begin
-      files.each do |f_name|
-        if File.exists?(f_name)
-          File.delete(f_name)
-        end
-      end
-    rescue => e
-      puts "could not delete token files"
-      raise
-    end
+    RhoHubAccount.remove_account_files($rhodes_home)
   end
 
   task :setup => [:read] do
-    # 4. if token is empty
-    #   a. read plain text file or ask user to enter token manually
-    #   b. check token inline, exit if not valid
-
-    if $token.nil? || $token.empty?
+    if !$user_acc.is_valid_token?()
       BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you should set RhoHub API token for it.
 Register at http://rhohub.com and get your API token there.
 It is located in your profile (rightmost toolbar item).
@@ -829,22 +593,8 @@ Inside your profile configuration select 'API token' menu item. Then run command
       if tok.empty?
         exit 1
       else
-        t_hash = {:token => tok}
-        case check_update_token_file($token_file, $token_preamble_len, t_hash, $salt, true)
-        when 2
-          puts "Token and subscription are valid"
-          $subcription = t_hash[:ft]
-        when 1
-          BuildOutput.put_log("Token is valid, could not check subcription", "Token check")
-        when 0
-          BuildOutput.put_log("Could not check token online", "Token check")
-        else
-          BuildOutput.error("RhoHub API token is not valid!", "Token check")
-          exit 1
-        end
+        Rake::Task["token:set"].invoke(tok)
       end
-
-      $token = tok
     end
   end
 end
@@ -888,7 +638,7 @@ def to_boolean(s)
 end
 
 def rhohub_git_match(str)
-  res = /git@git\.rhohub\.com:(.*?)\/(.*?).git/i.match(str)
+  res = /git@git(?:.*?)\.rhohub\.com:(.*?)\/(.*?).git/i.match(str)
   res.nil? ? { :str => "", :user => "", :app => "" } : { :str => "#{res[1]}/#{res[2]}", :user => res[1], :app => res[2] }
 end
 
@@ -938,6 +688,7 @@ def http_get(url, proxy, save_to, show_info = false)
       puts "0%#{'.'*(50-6)}100%"
       http.request_get(uri.path) do |resp|
         length = resp['Content-Length'].to_i
+        length = length > 1 ? length : 1
         last_p = 0
         done = 0
         resp.read_body do |segment|
@@ -945,6 +696,9 @@ def http_get(url, proxy, save_to, show_info = false)
           if show_info
             done += segment.length
             dot = (done * 50 / length).to_i
+            if dot > 50
+              dot = 50
+            end
             while last_p < dot
               print "="
               last_p += 1
@@ -1148,6 +902,7 @@ def rhohub_start_build(app_id, build_flags)
   return build_id, result
 end
 
+$rhodes_ver_default = '3.5.1.14'
 
 namespace "rhohub" do
   desc "Get project infromation from rhohub"
@@ -1213,6 +968,8 @@ namespace "rhohub" do
     if !File.exist?($rhohub_bin)
       FileUtils::mkdir_p $rhohub_bin
     end
+
+    $rhodes_ver = get_conf('rhohub/rhodesgem',$rhodes_ver_default)
   end
 
   desc "List avaliable builds"
@@ -1263,20 +1020,24 @@ namespace "rhohub" do
         result = http_get(link, $proxy, $rhohub_home, true)
 
         if !result.nil?
-          Jake.unzip(result, $rhohub_temp)
+          if successfull
+            Jake.unzip(result, $rhohub_temp)
 
-          dirs = Dir.entries($rhohub_temp).select {|entry| File.directory? File.join($rhohub_temp,entry) and !(entry =='.' || entry == '..') }
-          
-          dirs.each do |dir|
-            puts "Removing previous application from bin folder"
-            FileUtils.rm_rf(Dir.glob(File.join($rhohub_bin,dir)))
-          end
+            dirs = Dir.entries($rhohub_temp).select {|entry| File.directory? File.join($rhohub_temp,entry) and !(entry =='.' || entry == '..') }
+            
+            dirs.each do |dir|
+              puts "Removing previous application from bin folder"
+              FileUtils.rm_rf(Dir.glob(File.join($rhohub_bin,dir)))
+            end
 
-          if dirs.length > 0
-            FileUtils.cp_r File.join($rhohub_temp,'.'), $rhohub_bin
+            if dirs.length > 0
+              FileUtils.cp_r File.join($rhohub_temp,'.'), $rhohub_bin
 
-            dest = File.join($rhohub_bin, dirs.first)
-            puts "Check #{dest} directory"
+              dest = File.join($rhohub_bin, dirs.first)
+              puts "Check #{dest} directory"
+            end
+          else
+            BuildOutput.put_log( BuildOutput::ERROR, File.read(result), 'build error')
           end
         else
           puts "Could not get any result"
@@ -1294,9 +1055,6 @@ namespace "rhohub" do
       puts "Nothing to download"
     end
   end
-
-  $rhodes_ver = '3.5.1.14'
-  #$rhodes_ver = '4.0.0'
 
   def do_platform_build(platform_name, platform_list, build_info = {}, config_override = nil)
     platform_version = find_platform_version(platform_name, platform_list, config_override, true)
@@ -1780,10 +1538,10 @@ namespace "config" do
     end
 
     if $re_app || $rhoelements_features.length() > 0
-      if !check_subscription_re($subcription)
-        if $subcription.nil?
+      if !check_subscription_re($user_acc.subscription)
+        if !$user_acc.is_valid_subscription?
           BuildOutput.error([
-            'Subscription infromation is not downloaded. Please connect to internet and run build command again.'],
+            'Subscription information is not downloaded. Please connect to internet and run build command again.'],
             'Could not build licensed features.')
         else
           msg = ['You have free subcription on rhohub.com. RhoElements featuers are available only for paid accounts.']

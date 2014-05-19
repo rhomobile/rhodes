@@ -525,6 +525,21 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             		}
             
            // if(!(path.contains(".")))
+               if((path.contains(".mp4") && (audioEncoder!=MediaRecorder.AudioEncoder.AAC)) ||
+            	(path.contains(".3gpp") && (audioEncoder==MediaRecorder.AudioEncoder.AAC)	))
+            {
+            	Map<String, Object> tempprops = new HashMap<String, Object>();
+                tempprops.put("status", "error");
+                tempprops.put("message", "fileName and encoder are NOT in sync");
+                tempprops.put("fileName", "");
+                if(storedMethodResult!=null)
+                	{
+                		storedMethodResult.set(tempprops);
+                		System.out.println("Stop storedMethodResult="+storedMethodResult);
+                	}
+                storedMethodResult=null;
+                return;
+            }
             
           //  System.out.println("IsPathContainExtension(path)="+IsPathContainExtension(path));
             if(!IsPathContainExtension(path))

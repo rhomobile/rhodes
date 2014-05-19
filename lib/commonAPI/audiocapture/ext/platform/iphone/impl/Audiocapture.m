@@ -17,6 +17,10 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     maxDuration = 20000;
     destination = [self getPreparedFileNameWithName:@""];
     
+    [self setProperty:PROPERTY_SOURCE propertyValue:@"mic" methodResult:nil];
+    [self setProperty:PROPERTY_MAX_DURATION propertyValue:@"20000" methodResult:nil];
+    [self setProperty:PROPERTY_FILE_NAME propertyValue:@"AudioCapture" methodResult:nil];
+    
     return self;
 }
 

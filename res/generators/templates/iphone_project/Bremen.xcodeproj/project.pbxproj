@@ -18,7 +18,6 @@
 		5C59AB4212DDA22E00ED4A1E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C59AB4112DDA22E00ED4A1E /* Security.framework */; };
 		BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
-		BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99910B1B9A900BAAFAB /* Settings.bundle */; };
 		C0539BFE1767169700D53DF7 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0539BFD1767169700D53DF7 /* MediaPlayer.framework */; };
 		C076329B186DDD24005019BA /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C076329A186DDD24005019BA /* ExternalAccessory.framework */; };
 		F51668E00FFD5F740079F023 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51668DF0FFD5F740079F023 /* AudioToolbox.framework */; };
@@ -98,7 +97,6 @@
 		BD72CCE4112D629F003B7D27 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
-		BDFBD99910B1B9A900BAAFAB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		C0539BFD1767169700D53DF7 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/MediaPlayer.framework; sourceTree = DEVELOPER_DIR; };
 		C076329A186DDD24005019BA /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/ExternalAccessory.framework; sourceTree = DEVELOPER_DIR; };
 		F51668DF0FFD5F740079F023 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -209,7 +207,6 @@
 				FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */,
 				FA3D8EAA182B831400231D0E /* iTunesArtwork */,
 				FA52317212E750F300AB55CC /* Resources */,
-				BDFBD99910B1B9A900BAAFAB /* Settings.bundle */,
 				BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				FAF3BF2F18E26C4A00860FCA /* Rhodes */,
@@ -397,7 +394,6 @@
 				FA20C1B1182AFD870036D304 /* BluePushpin.png in Resources */,
 				BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */,
 				FA20C1AA182AFD760036D304 /* forward_btn.png in Resources */,
-				BDFBD99A10B1B9A900BAAFAB /* Settings.bundle in Resources */,
 				FA20C1F5182B01DF0036D304 /* Default-LandscapeLeft.png in Resources */,
 				FA6DFCE618232A2C00A3B595 /* icon144.png in Resources */,
 				FA6DFCE918232A2C00A3B595 /* icon57.png in Resources */,
