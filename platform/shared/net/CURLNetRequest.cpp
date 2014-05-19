@@ -148,7 +148,16 @@ INetResponse *CURLNetRequest::makeResponse(char const *body, size_t bodysize, in
     return resp.release();
 }
 
-static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+{
+    String *pStr = (String *)opaque;
+    size_t nBytes = size*nmemb;
+    RAWTRACE1("Received %d bytes", nBytes);
+    pStr->append((const char *)ptr, nBytes);
+    return nBytes;
+}
+
+size_t CURLNetRequest::curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
     Hashtable<String,String>* pHeaders = (Hashtable<String,String>*)opaque;
     size_t nBytes = size*nmemb;
@@ -176,21 +185,27 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
     return nBytes;
 }
 
-static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+size_t CURLNetRequest::curlBodyDataCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
-    String *pStr = (String *)opaque;
-    size_t nBytes = size*nmemb;
-    RAWTRACE1("Received %d bytes", nBytes);
-    pStr->append((const char *)ptr, nBytes);
-    return nBytes;
-}
-
-static size_t curlBodyBinaryCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
-{
-    Vector<char> *pBody = (Vector<char> *)opaque;
+    Vector<char> *pBody = ((RequestState*)opaque)->respChunk;
     size_t nBytes = size*nmemb;
     RAWTRACE1("Received %d bytes", nBytes);
     std::copy((char*)ptr, (char*)ptr + nBytes, std::back_inserter(*pBody));
+    
+    RequestState* state = (RequestState*)opaque;
+    if ( state->request->m_pCallback != 0 )
+    {
+        if (state->receivingHeaders)
+        {
+            NetResponse resp = NetResponse( state->request->makeResponse(0, 0, state->request->getResponseCode(CURLE_OK, 0, 0, 0)));
+            state->request->m_pCallback->didReceiveResponse(resp, state->headers);
+        }
+        
+        state->request->m_pCallback->didReceiveData((const char*)ptr, nBytes);
+        
+    }
+    
+    
     return nBytes;
 }
 
@@ -243,6 +258,11 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
         Vector<char> respChunk;
         
+        RequestState state;
+        state.respChunk = &respChunk;
+        state.headers = pHeaders;
+        state.request = this;
+        
         ProxySettings proxySettings;
         proxySettings.initFromConfig();
 		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings );
@@ -250,10 +270,10 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         CURL *curl = m_curl.curl();
         if (pHeaders) {
             curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
-            curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
+            curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &CURLNetRequest::curlHeaderCallback);
         }
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &state);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CURLNetRequest::curlBodyDataCallback);
 		//curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 2);
 		//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2);        
         
@@ -313,6 +333,19 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 
 	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )		   
 	   rho_net_impl_network_indicator(0);
+    
+    if ( m_pCallback != 0 )
+    {
+        NetResponse r = makeResponse(respBody, nRespCode);
+        if (r.isOK())
+        {
+            m_pCallback->didFinishLoading();
+        }
+        else
+        {
+            m_pCallback->didFail(r);
+        }
+    }
 
     return makeResponse(respBody, nRespCode);
 }

@@ -68,6 +68,8 @@ struct CMultipartItem
     String m_strDataPrefix;
 };
 
+class INetRequestCallback;
+
 struct INetRequestImpl
 {
     virtual ~INetRequestImpl(void){;}
@@ -82,6 +84,8 @@ struct INetRequestImpl
     virtual void setSslVerifyPeer(boolean mode) = 0;
 
     virtual INetResponse* createEmptyNetResponse() = 0;
+    
+    virtual void setCallback(INetRequestCallback*) = 0;
 };
 
 typedef rho::common::CAutoPtr<rho::net::INetResponse> NetResponsePtr;
@@ -161,8 +165,12 @@ public:
 
     String resolveUrl(const String& strUrl);
     void cancel();
+    
+    void setCallback(INetRequestCallback*);
 
 };
+
+
 
 }
 }
@@ -171,5 +179,88 @@ typedef rho::net::CNetResponseWrapper NetResponse;
 typedef rho::net::CNetRequestHolder NetRequest;
 
 rho::net::CNetRequestWrapper getNetRequest(rho::net::CNetRequestHolder* pHolder = 0);
+
+namespace rho
+{
+
+namespace common
+{
+    class CRhoThread;
+}
+
+namespace net
+{
+
+class INetRequestCallback
+{
+  public:
+    virtual ~INetRequestCallback() {}
+
+    virtual void didReceiveResponse(NetResponse&, const Hashtable<String,String>* headers) = 0;
+    virtual void didReceiveData(const char*, int) = 0;
+    virtual void didFinishLoading() = 0;
+    virtual void didFail(NetResponse&) = 0;
+
+};
+
+class CAsyncNetRequest
+{
+
+private:
+  String m_method;
+  String m_url;
+  String m_body;
+  net::IRhoSession* m_pSession;
+  Hashtable<String,String> m_headers;
+  INetRequestCallback* m_pCallback;
+
+  net::CNetRequestWrapper  m_request;
+
+public:
+
+  CAsyncNetRequest()
+    : m_pSession(0)
+    , m_pCallback(0)
+    , m_request(::getNetRequest())
+  {
+  }
+  
+  void setMethod(const String& method) { m_method = method; }
+  void setUrl(const String& url) { m_url = url; }
+  void setBody(const String& body) { m_body = body; }
+  void setSession( IRhoSession* pSession ) { m_pSession = pSession; }
+  void setCallback( INetRequestCallback* pCallback ) { m_pCallback = pCallback; }
+  void setHeaders( const Hashtable<String, String> headers ) { m_headers = headers; }
+  
+
+  void run(common::CRhoThread &)
+  {
+    m_request.setCallback(m_pCallback);
+    /*NetResponse resp = */m_request.doRequest(m_method.c_str(),m_url,m_body,m_pSession,&m_headers);
+/*
+    if ( m_pCallback != 0 )
+    {
+      if ( resp.isOK() )
+      {
+//        m_pCallback->didReceiveResponse(resp,&m_headers);
+//        m_pCallback->didReceiveData(resp.getCharData(),resp.getDataSize());
+        m_pCallback->didFinishLoading(0,.0);
+      }
+      else
+      {
+        m_pCallback->didFail(resp);
+      }
+    }
+*/
+  }
+
+  void cancel()
+  {
+    m_request.cancel();
+  }
+};
+
+}
+}
 
 

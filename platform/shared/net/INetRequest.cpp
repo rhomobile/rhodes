@@ -223,6 +223,11 @@ void CNetRequestWrapper::cancel()
   m_pReqImpl->cancel();
 }
 
+void CNetRequestWrapper::setCallback(rho::net::INetRequestCallback* callback )
+{
+  m_pReqImpl->setCallback(callback);
+}
+
 }
 }
 
