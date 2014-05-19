@@ -37,6 +37,12 @@ CRhoTimer::CTimerItem::CTimerItem(int nInterval, const char* szCallback, const c
 	m_overflow = m_oFireTime.addMillis(nInterval);
 }
 
+CRhoTimer::CNativeTimerItem::CNativeTimerItem(int nInterval, CRhoTimer::ICallback* callback):
+    m_nInterval(nInterval), m_pCallback(callback)
+{
+	m_oFireTime = CTimeInterval::getCurrentTime();
+}
+
 unsigned long CRhoTimer::getNextTimeout()
 {
     if ( m_arItems.size() == 0 )

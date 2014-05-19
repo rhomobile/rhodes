@@ -31,9 +31,7 @@ EventSource* EventSource::create(const String& url, IEventSourceReceiver* receiv
 
     EventSource* source = new EventSource(url, receiver, eventSourceInit);
 
-//    source->setPendingActivity(source);
     source->scheduleInitialConnect();
-//    source->suspendIfNeeded();
 
     return source;
 }
@@ -58,37 +56,18 @@ void EventSource::connect()
         headers.put("Last-Event-ID", m_lastEventId);
 
     m_requestInFlight = true;
+    
+    net::CAsyncNetRequest* req = new net::CAsyncNetRequest();
+    
+    req->setMethod("GET");
+    req->setUrl(m_url);
+    req->setHeaders(headers);
+    req->setCallback(this);
 
-    new common::CRhoCallInThread<CAsyncNetRequest>( 
-      new CAsyncNetRequest( "GET", m_url, "", 0, &headers, this )
-    );
+    new common::CRhoCallInThread<net::CAsyncNetRequest>( req );
 
-/*
-    ResourceRequest request(m_url);
-    request.setHTTPMethod("GET");
-    request.setHTTPHeaderField("Accept", "text/event-stream");
-    request.setHTTPHeaderField("Cache-Control", "no-cache");
-    if (!m_lastEventId.isEmpty())
-        request.setHTTPHeaderField("Last-Event-ID", m_lastEventId);
-
-    SecurityOrigin* origin = scriptExecutionContext()->securityOrigin();
-
-    ThreadableLoaderOptions options;
-    options.sendLoadCallbacks = SendCallbacks;
-    options.sniffContent = DoNotSniffContent;
-    options.allowCredentials = (origin->canRequest(m_url) || m_withCredentials) ? AllowStoredCredentials : DoNotAllowStoredCredentials;
-    options.preflightPolicy = PreventPreflight;
-    options.crossOriginRequestPolicy = UseAccessControl;
-    options.dataBufferingPolicy = DoNotBufferData;
-    options.securityOrigin = origin;
-
-    m_loader = ThreadableLoader::create(scriptExecutionContext(), this, request, options);
-
-    if (m_loader)
-        m_requestInFlight = true;
-*/        
 }
-/*
+
 void EventSource::networkRequestEnded()
 {
     if (!m_requestInFlight)
@@ -98,10 +77,10 @@ void EventSource::networkRequestEnded()
 
     if (m_state != CLOSED)
         scheduleReconnect();
-    else
-        unsetPendingActivity(this);
+//    else
+//        unsetPendingActivity(this);
 }
-*/
+
 void EventSource::scheduleInitialConnect()
 {
     //ASSERT(m_state == CONNECTING);
@@ -220,7 +199,7 @@ void EventSource::didReceiveData(const char* data, int length)
     parseEventStream();
 }
 
-void EventSource::didFinishLoading(unsigned long, double)
+void EventSource::didFinishLoading()
 {
     ASSERT(m_state == OPEN);
     ASSERT(m_requestInFlight);
@@ -322,8 +301,6 @@ void EventSource::parseEventStream()
         //m_receiveBuf.remove(0, bufPos);
 }
 
-extern unsigned long long rho_atoi64( const char *str );
-
 void EventSource::parseEventStreamLine(unsigned bufPos, int fieldLength, int lineLength)
 {
     if (!lineLength) {
@@ -369,7 +346,7 @@ void EventSource::parseEventStreamLine(unsigned bufPos, int fieldLength, int lin
             else {
                 String value((const char*)&m_receiveBuf[bufPos], (size_t)valueLength);
                 bool ok;
-                unsigned long long retry = rho_atoi64(value.c_str());//value.toUInt64(&ok);
+                unsigned long long retry = atoll(value.c_str());//value.toUInt64(&ok);
                 if (ok)
                     m_reconnectDelay = retry;
             }

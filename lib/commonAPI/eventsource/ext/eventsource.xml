@@ -53,7 +53,7 @@
 
         <METHODS>
 
-            <METHOD name="create" constructor="true" runInThread="none" generateDoc="false">
+            <METHOD name="create" constructor="true" hasCallback="none" generateDoc="false">
                 <DESC></DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
