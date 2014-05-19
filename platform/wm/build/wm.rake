@@ -1203,7 +1203,8 @@ namespace "device" do
     task :production_with_prebuild_binary => ['config:wm'] do
       require 'rhodes/containers'
       container_path = Rhodes::Containers::get_container_path_prefix('wm', $app_config)
-      Jake.run3("rake device:wm:apply_container[#{container_path}] --trace", $app_path)
+      Rake::Task['device:wm:apply_container'].invoke(container_path)
+      Rake::Task['build:bundle:noxruby'].invoke
       Rake::Task['device:wm:cab'].invoke
     end
   end
@@ -1312,7 +1313,7 @@ namespace "device" do
     task :build_with_prebuild_binary => ["build:win32:set_release_config", "build:win32:rhobundle", "config:win32:application"] do
       require 'rhodes/containers'
       container_path = Rhodes::Containers::get_container_path_prefix('win32', $app_config)
-      Jake.run3("rake device:win32:apply_container[#{container_path}] --trace", $app_path)
+      Rake::Task['device:win32:apply_container'].invoke(container_path)
       createWin32Production(true,false)
     end
 
