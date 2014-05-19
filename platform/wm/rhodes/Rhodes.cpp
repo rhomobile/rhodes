@@ -30,6 +30,7 @@
 #include "browser/CEBrowserEngine.h"
 #include "LogMemory.h"
 
+#include "logging/RhoLog.h"
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
 #include "common/rhoparams.h"
@@ -40,6 +41,7 @@
 #include "common/RhoFilePath.h"
 #include "common/app_build_capabilities.h"
 #include "common/app_build_configs.h"
+#include "api_generator/js_helpers.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -62,6 +64,7 @@ extern "C" void registerRhoExtension();
 extern "C" void rho_webview_navigate(const char* url, int index);
 extern "C" void createPowerManagementThread();
 static void rho_platform_check_restart_application();
+static void set_bridge_direct_callback();
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
@@ -505,6 +508,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
 
+    set_bridge_direct_callback();
+
     bool bRE1App = false;
 
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
@@ -729,14 +734,12 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	INITCOMMONCONTROLSEX ctrl;
 
 #if defined(OS_WINCE)
-	if(RhoBluetoothManager::LoadBthUtil())
+	/*if(RhoBluetoothManager::LoadBthUtil())
 		winversion = 1;
 	else
-		winversion = 2;
+		winversion = 2;*/
+	LoadAYGShell();
 #endif
-
-    if(winversion == 1)
-		LoadAYGShell();
 
 	//Required to use datetime picker controls.
 	ctrl.dwSize = sizeof(ctrl);
@@ -942,6 +945,7 @@ extern "C" void Init_fcntl(void)
 extern "C" BOOL LoadAYGShell()
 {
 	bool bReturnValue = FALSE;
+	winversion = 2;
 	g_hAygShellDLL = LoadLibrary(L"aygshell.dll");
 	if (!g_hAygShellDLL)
 	{
@@ -977,8 +981,12 @@ extern "C" BOOL LoadAYGShell()
 			LOG(ERROR) + "Unable to load RegistryGetDWORD, WAN Status event will be unavailable";
 		}
 		else
+		{
+			winversion = 1;
 			bReturnValue = TRUE;
+		}
 	}
+
 	return bReturnValue;	
 }
 
@@ -1147,3 +1155,89 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 }
 
 #endif //!_WIN32_WCE
+
+// see bridge_cb.h
+//
+typedef struct {
+    unsigned size;
+    char *data;
+} BridgeCB_String;
+
+typedef int (* BridgeCB_Callback)(const BridgeCB_String *request, BridgeCB_String *result, void *user_data);
+typedef VOID (WINAPI *BridgeCB_SetCallback)(BridgeCB_Callback callback, void *user_data);
+typedef BOOL (WINAPI *BridgeCB_Allocate)(BridgeCB_String *string, unsigned size);
+
+extern "C" VOID WINAPI BridgeCB_set_callback(BridgeCB_Callback callback, void *user_data);
+extern void BridgeCB_set_callback_if_none(BridgeCB_Callback callback, void *user_data);
+extern "C" BOOL WINAPI BridgeCB_allocate(BridgeCB_String *string, unsigned size);
+extern bool BridgeCB_call(const BridgeCB_String *request, BridgeCB_String *result);
+//
+// see bridge_cb.h
+
+static BridgeCB_Allocate allocate;
+
+static int bridge_direct_callback(const BridgeCB_String *request, BridgeCB_String *result, void *user_data)
+{
+    // js_entry_point requires null-terminated string. Lets make one.
+    char *data = (char *)malloc(request->size + 1);
+    if (data == 0)
+    {
+        RAWLOG_ERROR1("bridge_direct_callback: malloc(%u) returns 0.", request->size + 1);
+        return 0;
+    }
+    memcpy(data, request->data, request->size);
+    data[request->size] = '\0';
+
+    LOG(TRACE) + "bridge_direct_callback: before rho::apiGenerator::js_entry_point.";
+
+    rho::String answer = rho::apiGenerator::js_entry_point(data);
+
+    LOG(TRACE) + "bridge_direct_callback: after rho::apiGenerator::js_entry_point.";
+
+    free(data);
+
+    if (!(*allocate)(result, answer.size()))
+    {
+        RAWLOG_ERROR1("bridge_direct_callback: (*allocate)(..., %u) fails.", answer.size());
+        return 0;
+    }
+    memcpy(result->data, answer.c_str(), answer.size());
+    return 1;
+}
+
+static void set_bridge_direct_callback()
+{
+    rho::String rePath = rho_native_reruntimepath();
+
+    int last = rePath.find_last_of('/');
+    int pre_last = rePath.substr(0, last).find_last_of('/');
+
+    rho::StringW fullPath = rho::common::convertToStringW(rePath.substr(0, pre_last)) + + L"\\NPAPI\\bridge.dll";
+    
+    HINSTANCE hInstance = LoadLibrary(fullPath.c_str());
+    if (hInstance == NULL)
+    {
+        RAWLOG_ERROR("set_bridge_direct_callback: LoadLibrary(L\"bridge.dll\") returns NULL.");
+        return;
+    }
+
+    allocate = (BridgeCB_Allocate)GetProcAddress(hInstance, L"BridgeCB_allocate");
+    if (allocate == NULL)
+    {
+        RAWLOG_ERROR("set_bridge_direct_callback: GetProcAddress(..., L\"BridgeCB_allocate\") returns NULL.");
+        return;
+    }
+
+    BridgeCB_SetCallback set_callback = (BridgeCB_SetCallback)GetProcAddress(hInstance, L"BridgeCB_set_callback");
+    if (set_callback == NULL)
+    {
+        RAWLOG_ERROR("set_bridge_direct_callback: GetProcAddress(..., L\"BridgeCB_set_callback\") returns NULL.");
+        return;
+    }
+
+    LOG(TRACE) + "set_bridge_direct_callback: before set_callback.";
+
+    (*set_callback)(bridge_direct_callback, 0);
+
+    LOG(TRACE) + "set_bridge_direct_callback: after set_callback.";
+}
