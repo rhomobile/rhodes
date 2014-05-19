@@ -10,16 +10,16 @@ extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, 
 namespace rho
 {
 
-BrowserFactory* BrowserFactory::g_BrowserFactory = 0;
+BrowserFactory* BrowserFactory::g_browserFactory = 0;
 
 IBrowserFactory* BrowserFactory::getInstance()
 {
-    if (g_BrowserFactory == 0)
+    if (g_browserFactory == 0)
     {
-        g_BrowserFactory = new BrowserFactory();
+        g_browserFactory = new BrowserFactory();
     }
 
-    return g_BrowserFactory;
+    return g_browserFactory;
 }
 
 IBrowserEngine* BrowserFactory::create(HWND hwndParent)
@@ -34,15 +34,22 @@ IBrowserEngine* BrowserFactory::create(HWND hwndParent)
 }
 
 //
-IBrowserFactory::EBrowserEngine BrowserFactory::getCurrentBrowserType()
+EBrowserEngine BrowserFactory::getCurrentBrowserType()
 {
     //#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-    //    return IBrowserFactory::eWebkit;
+    //    return eWebkit;
     //#elif defined(OS_PLATFORM_MOTCE)
-    //    return IBrowserFactory::eIE_CE;
+    //    return eIE_CE;
     //#else
-        return IBrowserFactory::eIE_WM;
+        return eIE_WM;
     //#endif 
+
+    return eNone;
 }
 
+}
+
+extern "C" bool rho_wmimpl_is_browser_ieforwm()
+{
+    return (bool)(rho::eIE_WM == rho::BrowserFactory::getCurrentBrowserType());
 }

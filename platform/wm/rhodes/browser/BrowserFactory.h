@@ -4,26 +4,24 @@
 
 namespace rho
 {
+
+    enum EBrowserEngine
+{
+    eNone,
+    eIE_CE,
+    eIE_WM,
+    eWebkit,
+};
     
 struct IBrowserFactory
 {
-    enum EBrowserEngine
-    {
-        eNone,
-        eIE_CE,
-        eIE_WM,
-        eWebkit,
-    };
-
-    virtual IBrowserEngine* create(HWND hWnd) = 0;
-    //
-    virtual EBrowserEngine getCurrentBrowserType() = 0;
+    virtual IBrowserEngine* create(HWND hWnd) = 0;    
 };
  
 class BrowserFactory : public IBrowserFactory
 {
 private:
-    static BrowserFactory* g_BrowserFactory;
+    static BrowserFactory* g_browserFactory;
 
 public:
     //
@@ -31,7 +29,7 @@ public:
     //
     IBrowserEngine* create(HWND hWnd);
     //
-    EBrowserEngine getCurrentBrowserType();
+    static EBrowserEngine getCurrentBrowserType();
 };
 
 }
