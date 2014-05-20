@@ -42,8 +42,9 @@ private:
     void InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEventID);
 
     static DWORD WINAPI NavigationTimeoutThread( LPVOID lpParameter );
+    static DWORD WINAPI CIEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter);
     static LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
+    
 public:
 
     static CIEBrowserEngine* getInstance();
