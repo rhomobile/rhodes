@@ -12,6 +12,7 @@ import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.RhoConf;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -71,7 +72,15 @@ public class GoogleWebView implements IRhoWebView {
             public void run() {
                 Logger.T(TAG, "Web settings is applying now");
                 
-                float z= RhodesActivity.safeGetInstance().getZoomValue();
+                float z=1.5;
+                try{
+                z=Float.parseFloat(RhoConf.getString("PageZoom"));
+                }
+                catch(NumberFormatException ex)
+                {
+                	Logger.E(TAG, "NumberFormatException,message="+ex.getMessage());
+                	z=1.5;
+                }
                mWebView.setInitialScale((int)(z*100));
                 //mWebView.setInitialScale(0);
                 mWebView.setVerticalScrollBarEnabled(true);
