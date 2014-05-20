@@ -703,6 +703,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 {
     int fActive = LOWORD(wParam);
     LOG(INFO) + "ACTIVATE: " + fActive;
+    bool bIndiCatorIconEnabled=false;
 
     if ( m_bLoading && !fActive )
     {
@@ -716,14 +717,32 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		SendMessage( m_hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
 	}
 
+#if defined(_WIN32_WCE) 
+	wchar_t szClassName[30];
+	if (lParam && GetClassName((HWND)lParam, szClassName, 29))
+	{
+		if (wcsncmp(szClassName, L"PB_INDICATOR", 12) == 0)
+		{
+			bIndiCatorIconEnabled = true;
+		}
+	}
+#endif
+
     if (lParam) //We get activate from some internal window
     {
-        LOG(INFO) + "Get activate from child window. Skip it.";
+        //LOG(INFO) + "Get activate from child window. Skip it.";
 #if defined(_WIN32_WCE) 
         if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
 	        RhoSetFullScreen(true);
 #endif
-        return 0;
+        //return 0;
+        
+       	if (!(bIndiCatorIconEnabled && fActive))
+		{
+	        LOG(INFO) + "Get activate from child window. Skip it.";
+		return 0;
+		}
+        
     }
 
     ProcessActivate( fActive, wParam, lParam );    
