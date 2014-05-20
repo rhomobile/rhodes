@@ -11,6 +11,12 @@
 
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 
+#ifdef OS_ANDROID
+#include <jni.h>
+extern "C" void* rho_nativethread_start();
+JNIEnv* jnienv();
+#endif //OS_ANDROID
+
 using namespace rho;
 using namespace rho::json;
 using namespace rho::common;
@@ -21,6 +27,13 @@ using namespace rho::apiGenerator;
 <%= api_generator_MakeJSMethodDecl($cur_module.name, module_method.native_name, module_method.access == ModuleMethod::ACCESS_STATIC)%>
 {
     RAWTRACE3("<%=module_method.native_name%>(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
+#ifdef OS_ANDROID
+    if ( jnienv() == 0 )
+    {
+        rho_nativethread_start();
+    }
+#endif
 
     rho::apiGenerator::CMethodResult oRes;
 
@@ -213,7 +226,7 @@ else %>
         <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.native_name %>( <%= functor_params %> oRes );<%
 end %>
     }<% end %>
-
+    
     return oRes.toJSON();
 
 }
