@@ -13,6 +13,7 @@ IMPLEMENT_LOGCLASS(CIEBrowserEngine,"IEBrowser");
 
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd( WPARAM wParam, LPARAM lParam );
+extern "C" void rho_wmimpl_create_ieBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -139,6 +140,9 @@ LRESULT CIEBrowserEngine::CreateEngine()
 
     if (!m_hwndTabHTML)
         return S_FALSE;
+
+    CloseHandle (CreateThread(NULL, 0, 
+        &CIEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
 
     return S_OK;
 }
@@ -326,19 +330,11 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
                 free(metaTag2->tcContents);
                 delete metaTag2;
             }
-
-            //EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
-            //rho::browser::MetaHandler(m_tabID, metaTag2);
         }
         break;
     case PB_ONTOPMOSTWINDOW:
         LOG(INFO) + "START PB_ONTOPMOSTWINDOW";
-        /*return*/ ///CRhoWKBrowserEngine::ProcessOnTopMostWnd((HWND)lParam,(int)wParam); 
-        //LRESULT rtRes = g_pAppManager->ProcessOnTopMostWnd((HWND)lParam,(int)wParam); 
         LRESULT rtRes = rho_wm_appmanager_ProcessOnTopMostWnd(wParam, lParam);
-        //if(rtRes == S_FALSE){
-        //	PostMessage(PB_GEN_QUIT,0,0);//we have not successfully processed the topMostWindow so shutdown
-        //}
         LOG(INFO) + "END PB_ONTOPMOSTWINDOW";
         return rtRes;
         break;
@@ -573,4 +569,46 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
     }
 
 	return 0;
+}
+
+#define  PB_ENGINE_IE_MOBILE
+
+DWORD WINAPI CIEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
+{
+    //  We are passed a pointer to the engine we are interested in.
+    CIEBrowserEngine* pEngine = (CIEBrowserEngine*)lpParameter;
+
+    //  The window tree appears as follows on CE:
+    //  +--m_htmlHWND
+    //     |
+    //     +--child of m_htmlHWND
+    //        |
+    //        +--child which receives Windows Messages
+
+    //  The window tree appears as follows on WM:
+    //  +--m_htmlHWND
+    //     |
+    //     +--child of m_htmlHWND which receives Windows Messages
+
+    //  Obtain the created HTML HWND
+    HWND hwndHTML = NULL;
+    HWND hwndHTMLMessageWindow = NULL;
+
+    while (hwndHTMLMessageWindow == NULL)
+    {
+        hwndHTML = pEngine->GetHTMLWND(0);
+
+        if (hwndHTML != NULL)
+        {
+            hwndHTMLMessageWindow = GetWindow(hwndHTML, GW_CHILD);
+        }
+
+        //  Failed to find the desired child window, take a short nap before 
+        //  trying again as the window is still creating.
+        Sleep(100);
+    }
+
+    PostMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+
+    return 0;
 }
