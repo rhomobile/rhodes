@@ -642,7 +642,11 @@ def rhohub_git_match(str)
   res.nil? ? { :str => "", :user => "", :app => "" } : { :str => "#{res[1]}/#{res[2]}", :user => res[1], :app => res[2] }
 end
 
-def http_get(url, proxy, save_to, show_info = false)
+def split_number_in_groups(number)
+  number.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1'")
+end
+
+def http_get(url, proxy, save_to)
   uri = URI.parse(url)
 
   if !(proxy.nil? || proxy.empty?)
@@ -667,13 +671,19 @@ def http_get(url, proxy, save_to, show_info = false)
 
   if File.exists?(f_name)
     if File.stat(f_name).size == header_resp.content_length
-      puts "File #{f_name} is already in the cache" if show_info
+      if block_given?
+        yield(header_resp.content_length, header_resp.content_length, "File #{f_name} from #{url} is already in the cache")
+      end
 
       return f_name
     end
   end
 
-  puts "Downloading #{url}, size #{header_resp.content_length.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1'")} bytes" if show_info
+  size_delimited = split_number_in_groups(header_resp.content_length)
+
+  if block_given?
+    yield(0, header_resp.content_length, "Downloading #{size_delimited} bytes")
+  end
 
   if save_to.nil?
     res = ""
@@ -683,34 +693,35 @@ def http_get(url, proxy, save_to, show_info = false)
     result = res.body
   else
     f = File.open(f_name, "wb")
+    done = 0
     begin
       result = false
-      puts "0%#{'.'*(50-6)}100%"
-      http.request_get(uri.path) do |resp|
+
+      http.request_get(uri.path) do |resp| 
+        last_p = 0
         length = resp['Content-Length'].to_i
         length = length > 1 ? length : 1
-        last_p = 0
-        done = 0
+        
         resp.read_body do |segment|
           f.write(segment)
-          if show_info
+          if  block_given?
             done += segment.length
-            dot = (done * 50 / length).to_i
-            if dot > 50
-              dot = 50
+            dot = (done * 100 / length).to_i
+            if dot > 100
+              dot = 100
             end
-            while last_p < dot
-              print "="
-              last_p += 1
+            if last_p < dot
+              last_p = dot
+              yield(done, header_resp.content_length, "Downloaded #{last_p}% from #{size_delimited} bytes")
             end
           end
         end
       end
       result = f_name
     ensure
-      puts " finished!" if show_info
       f.close()
     end
+    yield(done, header_resp.content_length, "Download finished")
   end
 
   result
@@ -833,19 +844,33 @@ def check_rhohub_result(result)
   end
 end
 
+TIME_FORMAT = '%02d:%02d:%02d.%02d'
 
-TIME_FORMAT = '%02d:%02d:%02d'
+def put_message_with_timestamp(start_time, message, no_newline = false)
+  seconds = ((Time.now - start_time)*100).floor
 
-def wait_and_get_download_link(app_id, build_id, proxy)
+  cleaner = ' ' * 80
+
+  seconds, msecs = seconds.divmod(100)
+  minutes, seconds = seconds.divmod(60)
+  hours, minutes = minutes.divmod(3600)
+  
+  time = sprintf TIME_FORMAT, hours, minutes, seconds, msecs
+
+  data = "[#{time}] #{message}#{cleaner}"
+  if no_newline
+    print " #{data}\r"
+  else
+    puts " #{data}"
+  end
+end
+
+def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to = nil, unzip_to = nil)
   app_request = {:app_id => app_id, :id => build_id}
   last_stat = ""
-  status = ""
+  status = "",
 
   puts("Application build progress: \n")
-
-  started = Time.now
-
-  spinner = ['|', '/', '-', '\\'].cycle
 
   begin
     result = JSON.parse(Rhohub::Build.show(app_request))
@@ -855,11 +880,11 @@ def wait_and_get_download_link(app_id, build_id, proxy)
 
     case status
     when "queued"
-      desc = "Your build request is in the build queue. Please wait!"
+      desc = "Build is queued. Please wait"
       sleep(2)
     when "started"
-      desc = "Your application is building right now. Please wait.."
-      sleep(0.5)
+      desc = "Build is started. Please wait"
+      sleep(1)
     when "completed"
       desc = "Build is ready to be downloaded."
       message = "ready".green
@@ -870,18 +895,33 @@ def wait_and_get_download_link(app_id, build_id, proxy)
 
     build_complete = %w[completed failed].include?(status)
 
-    seconds = (Time.now - started).floor
-
-    hours, seconds = seconds.divmod(3600)
-    minutes, seconds = seconds.divmod(60)
-
-    out = sprintf TIME_FORMAT, hours, minutes, seconds
-    print " \r[#{out}] #{spinner.next} Current status is: #{message.bold}. #{desc}" + ' ' * 20 
+    put_message_with_timestamp(start_time, "Current status: #{desc}", true)
 
   end while !build_complete
-  puts ""
 
-  return (status == "completed"), result["download_link"]
+  puts " "
+
+  result_link = result["download_link"]
+
+  if !(save_to.nil? || save_to.empty?)
+    result_link = http_get(result["download_link"], proxy, save_to) do |current, total, msg|
+      put_message_with_timestamp(start_time, "Current status: #{msg}", true)
+    end
+
+    puts " "
+
+    if !(unzip_to.nil? || unzip_to.empty?)
+      if (status == "completed")
+        Jake.unzip(result_link, unzip_to) do |a,b,msg|
+          put_message_with_timestamp(start_time, "Current status: #{msg}", true)
+        end
+
+        puts " "
+      end
+    end
+  end
+
+  return (status == "completed"), result_link
 end
 
 def rhohub_start_build(app_id, build_flags)
@@ -903,6 +943,7 @@ def rhohub_start_build(app_id, build_flags)
 end
 
 $rhodes_ver_default = '3.5.1.14'
+$latest_platform = nil
 
 namespace "rhohub" do
   desc "Get project infromation from rhohub"
@@ -1015,29 +1056,29 @@ namespace "rhohub" do
       build_hash = builds.find {|f| f["id"] == build_id }
 
       if !build_hash.nil?
-        successfull, link = wait_and_get_download_link($rhohub_app_id, build_id, $proxy)
+        start_time = Time.now
+        successfull, file = wait_and_get_build($rhohub_app_id, build_id, $proxy, start_time, $rhohub_home, $rhohub_temp)
 
-        result = http_get(link, $proxy, $rhohub_home, true)
-
-        if !result.nil?
+        if !file.nil?
           if successfull
-            Jake.unzip(result, $rhohub_temp)
-
             dirs = Dir.entries($rhohub_temp).select {|entry| File.directory? File.join($rhohub_temp,entry) and !(entry =='.' || entry == '..') }
             
             dirs.each do |dir|
-              puts "Removing previous application from bin folder"
+              put_message_with_timestamp(start_time, "Removing previous application from bin folder #{dir}") 
               FileUtils.rm_rf(Dir.glob(File.join($rhohub_bin,dir)))
+              $latest_platform = dir
             end
 
             if dirs.length > 0
               FileUtils.cp_r File.join($rhohub_temp,'.'), $rhohub_bin
 
               dest = File.join($rhohub_bin, dirs.first)
-              puts "Check #{dest} directory"
+
+              put_message_with_timestamp(start_time, "Done, application unpacked into #{dest}")
             end
           else
-            BuildOutput.put_log( BuildOutput::ERROR, File.read(result), 'build error')
+            put_message_with_timestamp(start_time, "Done with build errors")
+            BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
           end
         else
           puts "Could not get any result"
@@ -1162,6 +1203,18 @@ namespace "rhohub" do
 
         do_platform_build( $build_platform, $platform_list)
       end
+    end
+  end
+
+  desc "Run build with id"
+  task :run, [:build_id] do |t, args|
+    build_id = args.build_id
+
+    Rake::Task["rhohub:download"].invoke(build_id)
+
+    case $latest_platform
+    when "android"
+      
     end
   end
 end
