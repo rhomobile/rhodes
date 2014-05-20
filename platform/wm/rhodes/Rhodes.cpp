@@ -228,17 +228,6 @@ HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
 
-//rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
-//{
-//#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-//    return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-//#elif defined(OS_PLATFORM_MOTCE)
-//    return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-//#else
-//    return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-//#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-//}
-
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw()
 {
 	m_bRestarting      = false;

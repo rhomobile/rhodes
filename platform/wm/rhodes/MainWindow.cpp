@@ -60,7 +60,7 @@
 #endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
-UINT WM_LICENSE_SCREEN          = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
+UINT WM_LICENSE_SCREEN = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
 
 #include "DateTimePicker.h"
 
@@ -69,7 +69,6 @@ extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" void rho_geoimpl_turngpsoff();
 extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 
-rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent);
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 bool m_SuspendedThroughPowerButton = false;
 
@@ -354,7 +353,6 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
 
 void CMainWindow::initBrowserWindow()
 {
-    //m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
     m_pBrowserEng = rho::BrowserFactory::getInstance()->create(m_hWnd);
 
     CRect rect;
