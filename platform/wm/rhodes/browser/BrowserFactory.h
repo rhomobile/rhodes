@@ -1,15 +1,15 @@
 #pragma once
 
+#include "common/RhoStd.h"
 #include "IBrowserEngine.h"
 
 namespace rho
 {
 
-    enum EBrowserEngine
+enum EBrowserEngineType
 {
     eNone,
-    eIE_CE,
-    eIE_WM,
+    eIE,
     eWebkit,
 };
     
@@ -20,16 +20,33 @@ struct IBrowserFactory
  
 class BrowserFactory : public IBrowserFactory
 {
+public:
+    static const char* IETag;
+    static const char* webkitTag;
+
+private:
+    EBrowserEngineType m_selBrowserType;
+
 private:
     static BrowserFactory* g_browserFactory;
+
+    BrowserFactory() : m_selBrowserType(eNone) {}
+    //
+    IBrowserEngine* createWebkit(HWND hwndParent);
+    //
+    IBrowserEngine* createIE(HWND hwndParent);
+    //
+    EBrowserEngineType convertBrowserType(rho::String browserType);
+    //
+    EBrowserEngineType getBrowserType() const;
 
 public:
     //
     static IBrowserFactory* getInstance();
     //
-    IBrowserEngine* create(HWND hWnd);
+    static EBrowserEngineType getCurrentBrowserType();
     //
-    static EBrowserEngine getCurrentBrowserType();
+    IBrowserEngine* create(HWND hWnd);
 };
 
 }

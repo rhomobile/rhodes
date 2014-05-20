@@ -12,6 +12,7 @@
 IMPLEMENT_LOGCLASS(CIEBrowserEngine,"IEBrowser");
 
 extern "C" HWND rho_wmimpl_get_mainwnd();
+extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd( WPARAM wParam, LPARAM lParam );
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -329,6 +330,17 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
             //EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
             //rho::browser::MetaHandler(m_tabID, metaTag2);
         }
+        break;
+    case PB_ONTOPMOSTWINDOW:
+        LOG(INFO) + "START PB_ONTOPMOSTWINDOW";
+        /*return*/ ///CRhoWKBrowserEngine::ProcessOnTopMostWnd((HWND)lParam,(int)wParam); 
+        //LRESULT rtRes = g_pAppManager->ProcessOnTopMostWnd((HWND)lParam,(int)wParam); 
+        LRESULT rtRes = rho_wm_appmanager_ProcessOnTopMostWnd(wParam, lParam);
+        //if(rtRes == S_FALSE){
+        //	PostMessage(PB_GEN_QUIT,0,0);//we have not successfully processed the topMostWindow so shutdown
+        //}
+        LOG(INFO) + "END PB_ONTOPMOSTWINDOW";
+        return rtRes;
         break;
     }
 
