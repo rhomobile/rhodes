@@ -91,12 +91,11 @@ class CURLNetRequest : public INetRequestImpl
     
     struct RequestState
     {
-        RequestState() : receivingHeaders(true), respCode(0), respChunk(0), request(0) {}
+        RequestState() : respCode(0), respChunk(0), request(0) {}
         
         int respCode;
         Hashtable<String, String>* headers;
         Vector<char>* respChunk;
-        bool receivingHeaders;
         CURLNetRequest* request;
     };
     

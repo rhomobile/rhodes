@@ -1,5 +1,6 @@
 #include "EventSource.h"
 #include "common/RhodesApp.h"
+#include "logging/RhoLog.h"
 
 namespace rho {
 
@@ -14,7 +15,7 @@ inline EventSource::EventSource(const String& url, IEventSourceReceiver* receive
 //    , m_decoder(TextResourceDecoder::create("text/plain", "UTF-8"))
 //    , m_connectTimer(this, &EventSource::connectTimerFired)
     , m_discardTrailingNewline(false)
-    , m_requestInFlight(false)
+    , m_pNetRequest(0)
     , m_reconnectDelay(defaultReconnectDelay)
     , m_pReceiver(receiver)
 {
@@ -38,15 +39,14 @@ EventSource* EventSource::create(const String& url, IEventSourceReceiver* receiv
 
 EventSource::~EventSource()
 {
-    //ASSERT(m_state == CLOSED);
-    //ASSERT(!m_requestInFlight);
+  close();
 }
 
 void EventSource::connect()
 {
 
-//    ASSERT(m_state == CONNECTING);
-//    ASSERT(!m_requestInFlight);
+    ASSERT(m_state == CONNECTING);
+    ASSERT(m_pNetRequest == 0);
 
     Hashtable<String,String> headers;
 
@@ -55,25 +55,23 @@ void EventSource::connect()
     if (!m_lastEventId.empty())
         headers.put("Last-Event-ID", m_lastEventId);
 
-    m_requestInFlight = true;
+    m_pNetRequest = new net::CAsyncNetRequest();
     
-    net::CAsyncNetRequest* req = new net::CAsyncNetRequest();
-    
-    req->setMethod("GET");
-    req->setUrl(m_url);
-    req->setHeaders(headers);
-    req->setCallback(this);
+    m_pNetRequest->setMethod("GET");
+    m_pNetRequest->setUrl(m_url);
+    m_pNetRequest->setHeaders(headers);
+    m_pNetRequest->setCallback(this);
 
-    new common::CRhoCallInThread<net::CAsyncNetRequest>( req );
+    new common::CRhoCallInThread<net::CAsyncNetRequest>( m_pNetRequest );
 
 }
 
 void EventSource::networkRequestEnded()
 {
-    if (!m_requestInFlight)
+    if (m_pNetRequest == 0)
         return;
 
-    m_requestInFlight = false;
+    m_pNetRequest = 0;
 
     if (m_state != CLOSED)
         scheduleReconnect();
@@ -83,11 +81,9 @@ void EventSource::networkRequestEnded()
 
 void EventSource::scheduleInitialConnect()
 {
-    //ASSERT(m_state == CONNECTING);
-    //ASSERT(!m_requestInFlight);
+    ASSERT(m_state == CONNECTING);
+    ASSERT(m_pNetRequest == 0);
 
-    //m_connectTimer.startOneShot(0);
-    
 //    ::RHODESAPP().getTimer().addNativeTimer(0,this);
     connect();
 }
@@ -97,7 +93,8 @@ void EventSource::scheduleReconnect()
     m_state = CONNECTING;
 //    m_connectTimer.startOneShot(m_reconnectDelay / 1000.0);
     ::RHODESAPP().getTimer().addNativeTimer(m_reconnectDelay / 1000.0,this);
-//    dispatchEvent(Event::create(eventNames().errorEvent, false, false));
+
+    m_pReceiver->onError("Lost connection. Scheduling reconnect.");
 }
 
 bool EventSource::onTimer()
@@ -105,12 +102,7 @@ bool EventSource::onTimer()
   connect();
   return true;
 }
-/*
-void EventSource::connectTimerFired(Timer<EventSource>*)
-{
-    connect();
-}
-*/
+
 String EventSource::url() const
 {
     return m_url;
@@ -129,30 +121,31 @@ EventSource::State EventSource::readyState() const
 void EventSource::close()
 {
     if (m_state == CLOSED) {
-        ASSERT(!m_requestInFlight);
+        ASSERT(m_pNetRequest == 0);
         return;
     }
 
-    // Stop trying to connect/reconnect if EventSource was explicitly closed or if ActiveDOMObject::stop() was called.
-//    if (m_connectTimer.isActive())
-//        m_connectTimer.stop();
+    ::RHODESAPP().getTimer().stopNativeTimer(this);
 
-//    if (m_requestInFlight)
-//        m_loader->cancel();
+    if (m_pNetRequest != 0)
+    {
+      m_pNetRequest->setCallback(0);
+      m_pNetRequest->cancel();
+    }
 //    else {
 //        m_state = CLOSED;
 //        unsetPendingActivity(this);
 //    }
+
+    m_state = CLOSED;
 }
 
 
 
 void EventSource::didReceiveResponse(NetResponse& response, const Hashtable<String,String>* headers)
 {
-//    ASSERT(m_state == CONNECTING);
-//    ASSERT(m_requestInFlight);
+    ASSERT(m_state==CONNECTING);
 
-//    m_eventStreamOrigin = SecurityOrigin::create(response.url())->toString();
     int statusCode = response.getRespCode();
     bool mimeTypeIsValid = headers->get("content-type") == "text/event-stream";
     bool responseIsValid = statusCode == 200 && mimeTypeIsValid;
@@ -161,42 +154,35 @@ void EventSource::didReceiveResponse(NetResponse& response, const Hashtable<Stri
         // If we have a charset, the only allowed value is UTF-8 (case-insensitive).
         responseIsValid = charset.empty() || (strcasecmp(charset.c_str(), "UTF-8")==0);
         if (!responseIsValid) {
-/*            StringBuilder message;
-            message.appendLiteral("EventSource's response has a charset (\"");
-            message.append(charset);
-            message.appendLiteral("\") that is not UTF-8. Aborting the connection.");
-            // FIXME: We are missing the source line.
-            scriptExecutionContext()->addConsoleMessage(JSMessageSource, ErrorMessageLevel, message.toString());*/
+          LOG(ERROR) + "EventSource's response has a charset (\"" + charset + "\") that is not UTF-8. Aborting the connection.";
         }
     } else {
         // To keep the signal-to-noise ratio low, we only log 200-response with an invalid MIME type.
         if (statusCode == 200 && !mimeTypeIsValid) {
-/*            StringBuilder message;
-            message.appendLiteral("EventSource's response has a MIME type (\"");
-            message.append(response.mimeType());
-            message.appendLiteral("\") that is not \"text/event-stream\". Aborting the connection.");
-            // FIXME: We are missing the source line.
-            scriptExecutionContext()->addConsoleMessage(JSMessageSource, ErrorMessageLevel, message.toString());*/
+          LOG(ERROR) + "EventSource's response has a MIME type (\"" + headers->get("content-type") + "\") that is not \"text/event-stream\". Aborting the connection.";
         }
     }
 
     if (responseIsValid) {
         m_state = OPEN;
         m_pReceiver->onOpen();
-        //dispatchEvent(Event::create(eventNames().openEvent, false, false));
     } else {
         m_pReceiver->onError("");
-        //m_loader->cancel();
-        //dispatchEvent(Event::create(eventNames().errorEvent, false, false));
+        m_pNetRequest->cancel();
     }
 }
 
 void EventSource::didReceiveData(const char* data, int length)
 {
-    ASSERT(m_state == OPEN);
-    ASSERT(m_requestInFlight);
+    if ( m_state != OPEN )
+    {
+      m_pReceiver->onError("Received data but connection is not opened correctly.");
+      m_pNetRequest->cancel();
+      return;
+    }
 
-//    append(m_receiveBuf, m_decoder->decode(data, length));
+    ASSERT(m_pNetRequest != 0);
+
     m_receiveBuf.insert(m_receiveBuf.end(),data,data+length);
     parseEventStream();
 }
@@ -204,7 +190,7 @@ void EventSource::didReceiveData(const char* data, int length)
 void EventSource::didFinishLoading()
 {
     ASSERT(m_state == OPEN);
-    ASSERT(m_requestInFlight);
+    ASSERT(m_pNetRequest != 0);
 
     if (m_receiveBuf.size() > 0 || m_data.size() > 0) {
         parseEventStream();
@@ -221,7 +207,7 @@ void EventSource::didFinishLoading()
 void EventSource::didFail(NetResponse& error)
 {
     ASSERT(m_state != CLOSED);
-    ASSERT(m_requestInFlight);
+    ASSERT(m_pNetRequest != 0);
 
 //    if (error.isCancellation())
 //        m_state = CLOSED;
@@ -360,12 +346,5 @@ void EventSource::stop()
 {
     close();
 }
-/*
-PassRefPtr<MessageEvent> EventSource::createMessageEvent()
-{
-    RefPtr<MessageEvent> event = MessageEvent::create();
-    event->initMessageEvent(m_eventName.isEmpty() ? eventNames().messageEvent : AtomicString(m_eventName), false, false, SerializedScriptValue::create(String::adopt(m_data)), m_eventStreamOrigin, m_lastEventId, 0, 0);
-    return event.release();
-}*/
 
 } // namespace rho

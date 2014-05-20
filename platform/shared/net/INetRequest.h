@@ -196,14 +196,15 @@ class INetRequestCallback
   public:
     virtual ~INetRequestCallback() {}
 
-    virtual void didReceiveResponse(NetResponse&, const Hashtable<String,String>* headers) = 0;
+    virtual void didReceiveResponse(NetResponse&, const Hashtable<String,String>* headers);
+//    virtual void didReceiveHeader(int code, const String& header, const String& value, const Hashtable<String,String>* headers) = 0;
     virtual void didReceiveData(const char*, int) = 0;
     virtual void didFinishLoading() = 0;
     virtual void didFail(NetResponse&) = 0;
 
 };
 
-class CAsyncNetRequest
+class CAsyncNetRequest : public INetRequestCallback
 {
 
 private:
@@ -215,6 +216,8 @@ private:
   INetRequestCallback* m_pCallback;
 
   net::CNetRequestWrapper  m_request;
+
+  common::CMutex m_mxCallbackAccess;
 
 public:
 
@@ -229,35 +232,23 @@ public:
   void setUrl(const String& url) { m_url = url; }
   void setBody(const String& body) { m_body = body; }
   void setSession( IRhoSession* pSession ) { m_pSession = pSession; }
-  void setCallback( INetRequestCallback* pCallback ) { m_pCallback = pCallback; }
+  void setCallback( INetRequestCallback* pCallback )
+  { 
+    synchronized(m_mxCallbackAccess)
+    {
+      m_pCallback = pCallback; 
+    }
+  }
   void setHeaders( const Hashtable<String, String> headers ) { m_headers = headers; }
   
 
-  void run(common::CRhoThread &)
-  {
-    m_request.setCallback(m_pCallback);
-    /*NetResponse resp = */m_request.doRequest(m_method.c_str(),m_url,m_body,m_pSession,&m_headers);
-/*
-    if ( m_pCallback != 0 )
-    {
-      if ( resp.isOK() )
-      {
-//        m_pCallback->didReceiveResponse(resp,&m_headers);
-//        m_pCallback->didReceiveData(resp.getCharData(),resp.getDataSize());
-        m_pCallback->didFinishLoading(0,.0);
-      }
-      else
-      {
-        m_pCallback->didFail(resp);
-      }
-    }
-*/
-  }
+  void run(common::CRhoThread &);
+  void cancel();
 
-  void cancel()
-  {
-    m_request.cancel();
-  }
+  virtual void didReceiveResponse(NetResponse& resp, const Hashtable<String,String>* headers);
+  virtual void didReceiveData(const char* ptr, int len);
+  virtual void didFinishLoading();
+  virtual void didFail(NetResponse& resp);
 };
 
 }

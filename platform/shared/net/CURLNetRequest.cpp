@@ -159,10 +159,25 @@ static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void 
 
 size_t CURLNetRequest::curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
-    Hashtable<String,String>* pHeaders = (Hashtable<String,String>*)opaque;
+    Hashtable<String,String>* pHeaders = ((RequestState*)opaque)->headers;
+
+    RequestState* state = (RequestState*)opaque;
+
+    if ( 0==state->respCode ) {
+      state->respCode = state->request->getResponseCode(CURLE_OK, 0, 0, 0);
+    }
+
     size_t nBytes = size*nmemb;
     String strHeader((const char *)ptr, nBytes);
     RAWTRACE1("Received header: %s", strHeader.c_str());
+
+    if (strHeader == "\r\n" || strHeader == "\n") {
+        if ( state->request->m_pCallback != 0 )
+        {
+          NetResponse r = state->request->makeResponse(0,0,state->respCode);
+          state->request->m_pCallback->didReceiveResponse(r,state->headers);
+        }
+    }
     
     int nSep = strHeader.find(':');
     if (nSep > 0 )
@@ -194,18 +209,9 @@ size_t CURLNetRequest::curlBodyDataCallback(void *ptr, size_t size, size_t nmemb
     
     RequestState* state = (RequestState*)opaque;
     if ( state->request->m_pCallback != 0 )
-    {
-        if (state->receivingHeaders)
-        {
-            NetResponse resp = NetResponse( state->request->makeResponse(0, 0, state->request->getResponseCode(CURLE_OK, 0, 0, 0)));
-            state->request->m_pCallback->didReceiveResponse(resp, state->headers);
-            state->receivingHeaders = false;
-        }
-        
-        state->request->m_pCallback->didReceiveData((const char*)ptr, nBytes);
-        
-    }
-    
+    {        
+        state->request->m_pCallback->didReceiveData((const char*)ptr, nBytes);        
+    }     
     
     return nBytes;
 }
@@ -270,7 +276,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 
         CURL *curl = m_curl.curl();
         if (pHeaders) {
-            curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
+            curl_easy_setopt(curl, CURLOPT_HEADERDATA, &state);
             curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &CURLNetRequest::curlHeaderCallback);
         }
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &state);
