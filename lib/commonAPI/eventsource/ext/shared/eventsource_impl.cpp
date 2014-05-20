@@ -30,9 +30,9 @@ namespace rho {
     {
         rho::common::CAutoPtr<EventSource> m_es;
         
-        rho::apiGenerator::CMethodResult* m_onOpenCallback;
-        rho::apiGenerator::CMethodResult* m_onMessageCallback;
-        rho::apiGenerator::CMethodResult* m_onErrorCallback;
+        rho::apiGenerator::CMethodResult m_onOpenCallback;
+        rho::apiGenerator::CMethodResult m_onMessageCallback;
+        rho::apiGenerator::CMethodResult m_onErrorCallback;
 
       public:
         CEventSourceImpl() :
@@ -44,17 +44,17 @@ namespace rho {
         
         virtual void setOnopen(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::setOnOpen";
-            m_onOpenCallback = &oResult;
+            m_onOpenCallback = oResult;
         }
 
         virtual void setOnmessage(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::setOnmessage";
-            m_onMessageCallback = &oResult;
+            m_onMessageCallback = oResult;
         }
         
         virtual void setOnerror(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::setOnerror";
-            m_onErrorCallback = &oResult;
+            m_onErrorCallback = oResult;
         }
         
         virtual void getUrl(rho::apiGenerator::CMethodResult& oResult) {
@@ -90,27 +90,21 @@ namespace rho {
     
         virtual void onOpen() {
             LOG(INFO) + "CEventSourceImpl::onOpen";
-            if ( m_onOpenCallback != 0 ) {
-              m_onOpenCallback->set((void*)0);
-            }
+            m_onOpenCallback.set((void*)0);
         }
         
         virtual void onError(const String& error) {
             LOG(INFO) + "CEventSourceImpl::onError - " + error;
-            if ( m_onErrorCallback != 0 ) {
-              m_onErrorCallback->set(error);
-            }
+            m_onErrorCallback.set(error);
 
         }
         
         virtual void onMessage(const String& event, const String& message, const String& eventId) {
             LOG(INFO) + "CEventSourceImpl::onMessage - " + message;
-            if ( m_onMessageCallback != 0 ) {
-              Hashtable<String,String> params;
-              params.put("event",event);
-              params.put("data",message);
-              m_onMessageCallback->set(params);
-            }
+            Hashtable<String,String> params;
+            params.put("event",event);
+            params.put("data",message);
+            m_onMessageCallback.set(params);
         }
 
     };
