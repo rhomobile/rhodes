@@ -8,9 +8,6 @@
 
 namespace rho {
 
-
-
-
 class EventSource : public common::CRhoTimer::ICallback, public net::INetRequestCallback  {
 public:
 
@@ -41,11 +38,7 @@ private:
     static const State CLOSED = 2;
 
     State readyState() const;
-/*
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(open);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(message);
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(error);
-*/
+
     void close();
 
 private:
@@ -55,10 +48,7 @@ private:
     virtual void didReceiveData(const char*, int);
     virtual void didFinishLoading();
     virtual void didFail(NetResponse&);
-/*
-    virtual void didFailAccessControlCheck(const ResourceError&) OVERRIDE;
-    virtual void didFailRedirectCheck() OVERRIDE;
-*/
+
     virtual void stop();
 
     void connect();
@@ -66,12 +56,10 @@ private:
     void networkRequestEnded();
     void scheduleInitialConnect();
     void scheduleReconnect();
-//    void connectTimerFired(Timer<EventSource>*);
     virtual bool onTimer();
     void abortConnectionAttempt();
     void parseEventStream();
     void parseEventStreamLine(unsigned pos, int fieldLength, int lineLength);
-//    PassRefPtr<MessageEvent> createMessageEvent();
 
     String m_url;
     bool m_withCredentials;
@@ -79,7 +67,9 @@ private:
 
     Vector<unsigned char> m_receiveBuf;
     bool m_discardTrailingNewline;
-    bool m_requestInFlight;
+
+      //Actually thread executor would own net request so we don't have to manage its lifetime. Just need to make sure we don't access killed object.
+    net::CAsyncNetRequest* m_pNetRequest;
 
     String m_eventName;
     Vector<unsigned char> m_data;

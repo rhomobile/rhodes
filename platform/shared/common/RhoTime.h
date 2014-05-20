@@ -266,6 +266,7 @@ public:
     unsigned long getNextTimeout();
     boolean checkTimers();
     void stopTimer(const char* szCallback);
+    void stopNativeTimer(CRhoTimer::ICallback* callback);
 };
 
 }

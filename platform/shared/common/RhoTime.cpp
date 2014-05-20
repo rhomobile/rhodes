@@ -140,5 +140,23 @@ void CRhoTimer::stopTimer(const char* szCallback)
     }
 }
 
+void CRhoTimer::stopNativeTimer(CRhoTimer::ICallback* callback)
+{
+  if ( 0 == callback )
+  {
+    m_arNativeItems.removeAllElements();
+  }
+
+  for( int i = (int)m_arNativeItems.size()-1; i >= 0; i--)
+  {
+    CNativeTimerItem oItem = m_arNativeItems.elementAt(i);
+    if ( oItem.m_pCallback == callback )
+    {
+      m_arNativeItems.removeElementAt(i);
+    }
+  }
+  
+}
+
 }
 }
