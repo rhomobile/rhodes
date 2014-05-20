@@ -300,6 +300,7 @@ void EventSource::parseEventStreamLine(unsigned bufPos, int fieldLength, int lin
                 m_currentlyParsedEventId = String();
             }
             m_pReceiver->onMessage(m_eventName,String(m_data.begin(),m_data.end()),m_lastEventId);
+            m_data.clear();
             //dispatchEvent(createMessageEvent());
         }
         if (!m_eventName.empty())
