@@ -87,7 +87,9 @@ void EventSource::scheduleInitialConnect()
     //ASSERT(!m_requestInFlight);
 
     //m_connectTimer.startOneShot(0);
-    ::RHODESAPP().getTimer().addNativeTimer(0,this);
+    
+//    ::RHODESAPP().getTimer().addNativeTimer(0,this);
+    connect();
 }
 
 void EventSource::scheduleReconnect()
