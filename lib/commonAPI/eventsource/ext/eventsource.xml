@@ -60,6 +60,7 @@
                         <DESC></DESC>
                     </PARAM>
                     <PARAM name="init" type="HASH" optional="true">
+                        <CAN_BE_NIL/>
                         <DESC></DESC>
                     </PARAM>
 

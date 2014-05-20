@@ -199,6 +199,7 @@ size_t CURLNetRequest::curlBodyDataCallback(void *ptr, size_t size, size_t nmemb
         {
             NetResponse resp = NetResponse( state->request->makeResponse(0, 0, state->request->getResponseCode(CURLE_OK, 0, 0, 0)));
             state->request->m_pCallback->didReceiveResponse(resp, state->headers);
+            state->receivingHeaders = false;
         }
         
         state->request->m_pCallback->didReceiveData((const char*)ptr, nBytes);
