@@ -474,7 +474,7 @@ end
 $def_rhohub_url = 'https://app.rhohub.com/api/v1'
 
 namespace "token" do
-  task :initialize => "config:initialize" do
+  task :initialize => "config:load" do
     $rhohub = get_conf('rhohub/url', $def_rhohub_url)
 
     if ($rhohub != $def_rhohub_url)
@@ -1268,10 +1268,7 @@ def find_proxy()
 end
 
 namespace "config" do
-  task :initialize do
-    $binextensions = []
-    $app_extensions_list = {}
-
+  task :load do
     buildyml = 'rhobuild.yml'
 
     # read shared config
@@ -1290,6 +1287,47 @@ namespace "config" do
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
 
+    $app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
+
+    if $app_path.nil? #if we are called from the rakefile directly, this wont be set
+      #load the apps path and config
+
+      $app_path = $config["env"]["app"] unless $config["env"].nil?
+        
+      if $app_path.nil?
+        b_y = File.join(Dir.pwd(),'build.yml')
+        if File.exists?(b_y)
+          $app_path = Dir.pwd()
+        end
+      end
+    end
+
+    $app_config = {}
+
+    if (!$app_path.nil?)
+      # read application config
+      $app_config = Jake.config(File.open(File.join($app_path, "build.yml"))) if $app_config_disable_reread != true
+
+      if File.exists?(File.join($app_path, "app_rakefile"))
+        load File.join($app_path, "app_rakefile")
+        $app_rakefile_exist = true
+        Rake::Task["app:config"].invoke
+      end
+    end
+
+    $proxy = get_conf('connection/proxy', find_proxy())
+
+    if !($proxy.nil? || $proxy.empty?)
+      puts "Using proxy: #{$proxy}"
+    end
+
+    $re_app = ($app_config["app_type"] == 'rhoelements') || !($app_config['capabilities'].nil? || $app_config['capabilities'].index('shared_runtime').nil?)
+  end
+
+  task :initialize => [:load] do
+    $binextensions = []
+    $app_extensions_list = {}
+
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
       $rubypath = "res/build-tools/RhoRuby.exe"
@@ -1302,43 +1340,20 @@ namespace "config" do
       end
     end
 
-    $app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
-
-    if $app_path.nil? #if we are called from the rakefile directly, this wont be set
-      #load the apps path and config
-
-      $app_path = $config["env"]["app"]
-      unless File.exists? $app_path
-        puts "Could not find rhodes application. Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml"
-        exit 1
-      end
+    if $app_path.nil? || !(File.exists?($app_path))
+      puts "Could not find rhodes application. Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml"
+      exit 1
     end
 
     ENV["RHO_APP_PATH"] = $app_path.to_s
     ENV["ROOT_PATH"]    = $app_path.to_s + '/app/'
     ENV["APP_TYPE"]     = "rhodes"
 
-    # read application config
-    $app_config = Jake.config(File.open(File.join($app_path, "build.yml"))) if $app_config_disable_reread != true
-    if File.exists?(File.join($app_path, "app_rakefile"))
-      load File.join($app_path, "app_rakefile")
-      $app_rakefile_exist = true
-      Rake::Task["app:config"].invoke
-    end
 
     $app_config['wm'] = {} unless $app_config['wm'].is_a?(Hash)
     $app_config['wm']['webkit_outprocess'] = '1' if $app_config['wm']['webkit_outprocess'].nil?
 
     Jake.set_bbver($app_config["bbver"].to_s)
-
-    $proxy = get_conf('connection/proxy', find_proxy())
-
-    if !($proxy.nil? || $proxy.empty?)
-      puts "Using proxy: #{$proxy}"
-    end
-
-
-    $re_app = ($app_config["app_type"] == 'rhoelements') || !($app_config['capabilities'].nil? || $app_config['capabilities'].index('shared_runtime').nil?)
   end
 
   task :common => ["token:setup"] do
