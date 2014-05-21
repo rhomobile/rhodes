@@ -382,8 +382,10 @@ void CAppCallbacksQueue::processUiCreated()
     {
         if ( rho_ruby_is_started() )
             callCallback("/system/uicreated");
+#if !defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME) || !defined(OS_ANDROID)
         else
             rho_webview_navigate(startPath.c_str(), 0);
+#endif
     }
     m_uistate = ui_created_processed;
 }
