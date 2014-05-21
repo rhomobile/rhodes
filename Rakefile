@@ -587,8 +587,13 @@ It is located in your profile (rightmost toolbar item).
 Inside your profile configuration select 'API token' menu item. Then run command
 
 `rake token:set[<Your_RhoHub_API_token>]`")
-      puts "You can also paste your RhoHub token right now (or just press enter to stop build):"
-      tok = STDIN.gets.chomp
+
+      tok = ""
+
+      if STDIN.tty? && STDOUT.tty? 
+        puts "You can also paste your RhoHub token right now (or just press enter to stop build):"
+        tok = STDIN.gets.chomp
+      end
     
       if tok.empty?
         exit 1
