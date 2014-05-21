@@ -1356,7 +1356,7 @@ namespace "config" do
     Jake.set_bbver($app_config["bbver"].to_s)
   end
 
-  task :common => ["token:setup"] do
+  task :common => ["token:setup", :initialize] do
     puts "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
 
     if $app_config && !$app_config["sdk"].nil?
