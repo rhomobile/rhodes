@@ -80,7 +80,7 @@ unsigned long CRhoTimer::getNextTimeout()
 {
     synchronized(m_mxAccess);
 
-    if ( (m_arItems.size() == 0) || (m_arNativeItems.size() == 0) )
+    if ( (m_arItems.size() == 0) && (m_arNativeItems.size() == 0) )
         return 0;
 
     CTimeInterval curTime = CTimeInterval::getCurrentTime();
