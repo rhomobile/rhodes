@@ -1646,12 +1646,9 @@ void CRhodesApp::initAppUrls()
 
     m_isJSFSApp = false;
 
-    if (!rho_wmimpl_is_browser_ieforwm())
-    {
 #ifdef RHO_NO_RUBY_API
         m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
 #endif
-    }
 
 #ifdef OS_WINCE
     if (isWebkitOutofProcess())
