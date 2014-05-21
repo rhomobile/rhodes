@@ -69,6 +69,8 @@ extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" void rho_geoimpl_turngpsoff();
 extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 
+extern "C" double rho_wmimpl_get_pagezoom();
+
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 bool m_SuspendedThroughPowerButton = false;
 
@@ -1589,7 +1591,7 @@ void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
     RAWLOGC_INFO("WebView", "Page load complete." );
 
     PROF_STOP("BROWSER_PAGE");
-
+	RHODESAPP().getExtManager().zoomPage( (float)rho_wmimpl_get_pagezoom());
     RHODESAPP().getExtManager().onNavigateComplete(url);
 }
 
