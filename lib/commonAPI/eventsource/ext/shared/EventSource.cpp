@@ -7,13 +7,14 @@ namespace rho {
 
 const unsigned long long EventSource::defaultReconnectDelay = 3000;
 
+IMPLEMENT_LOGCLASS(EventSource,"EventSource");
+
 inline EventSource::EventSource(const String& url, IEventSourceReceiver* receiver, const Hashtable<String,String>& eventSourceInit)
     :
       m_url(url)
     , m_withCredentials(false)
     , m_state(CONNECTING)
 //    , m_decoder(TextResourceDecoder::create("text/plain", "UTF-8"))
-//    , m_connectTimer(this, &EventSource::connectTimerFired)
     , m_discardTrailingNewline(false)
     , m_pNetRequest(0)
     , m_reconnectDelay(defaultReconnectDelay)
@@ -25,12 +26,21 @@ inline EventSource::EventSource(const String& url, IEventSourceReceiver* receive
 EventSource* EventSource::create(const String& url, IEventSourceReceiver* receiver, const Hashtable<String,String>& eventSourceInit )
 {
 
+    LOG(TRACE) + "Creating EventSource with URL: " + url;
+
     if (url.empty()) {
         return 0;
     }
 
+    String fullUrl(
+      (url.find("://")==String::npos)?
+        (RHODESAPP().getCurrentUrl(-1) + url):
+        (url)
+    );
 
-    EventSource* source = new EventSource(url, receiver, eventSourceInit);
+    LOG(TRACE) + "Full URL for EventSource: " + fullUrl;
+
+    EventSource* source = new EventSource(fullUrl, receiver, eventSourceInit);
 
     source->scheduleInitialConnect();
 
@@ -44,6 +54,8 @@ EventSource::~EventSource()
 
 void EventSource::connect()
 {
+
+    LOG(TRACE) + "Connecting EventSource: " + m_url;
 
     ASSERT(m_state == CONNECTING);
     ASSERT(m_pNetRequest == 0);
@@ -68,6 +80,8 @@ void EventSource::connect()
 
 void EventSource::networkRequestEnded()
 {
+    LOG(TRACE) + "networkRequestEnded";
+
     if (m_pNetRequest == 0)
         return;
 
@@ -81,24 +95,28 @@ void EventSource::networkRequestEnded()
 
 void EventSource::scheduleInitialConnect()
 {
+    LOG(TRACE) + "scheduleInitialConnect";
+
     ASSERT(m_state == CONNECTING);
     ASSERT(m_pNetRequest == 0);
 
-//    ::RHODESAPP().getTimer().addNativeTimer(0,this);
-    connect();
+    ::RHODESAPP().getTimer().addNativeTimer(0,this);
+//    connect();
 }
 
 void EventSource::scheduleReconnect()
 {
-    m_state = CONNECTING;
-//    m_connectTimer.startOneShot(m_reconnectDelay / 1000.0);
-    ::RHODESAPP().getTimer().addNativeTimer(m_reconnectDelay / 1000.0,this);
+    LOG(TRACE) + "scheduleReconnect";
 
+    m_state = CONNECTING;
+    ::RHODESAPP().getTimer().addNativeTimer(m_reconnectDelay,this);
     m_pReceiver->onError("Lost connection. Scheduling reconnect.");
 }
 
 bool EventSource::onTimer()
 {
+  LOG(TRACE) + "onTimer";
+
   connect();
   return true;
 }
@@ -120,6 +138,8 @@ EventSource::State EventSource::readyState() const
 
 void EventSource::close()
 {
+    LOG(TRACE) + "close";
+
     if (m_state == CLOSED) {
         ASSERT(m_pNetRequest == 0);
         return;
@@ -144,6 +164,8 @@ void EventSource::close()
 
 void EventSource::didReceiveResponse(NetResponse& response, const Hashtable<String,String>* headers)
 {
+    LOG(TRACE) + "didReceiveResponse";
+
     ASSERT(m_state==CONNECTING);
 
     int statusCode = response.getRespCode();
@@ -174,6 +196,8 @@ void EventSource::didReceiveResponse(NetResponse& response, const Hashtable<Stri
 
 void EventSource::didReceiveData(const char* data, int length)
 {
+    LOG(TRACE) + "didReceiveData";
+
     if ( m_state != OPEN )
     {
       m_pReceiver->onError("Received data but connection is not opened correctly.");
@@ -189,6 +213,8 @@ void EventSource::didReceiveData(const char* data, int length)
 
 void EventSource::didFinishLoading()
 {
+    LOG(TRACE) + "didFinishLoading";
+
     ASSERT(m_state == OPEN);
     ASSERT(m_pNetRequest != 0);
 
@@ -206,6 +232,8 @@ void EventSource::didFinishLoading()
 
 void EventSource::didFail(NetResponse& error)
 {
+    LOG(TRACE) + "didFail";
+
     ASSERT(m_state != CLOSED);
     ASSERT(m_pNetRequest != 0);
 
@@ -345,6 +373,8 @@ void EventSource::parseEventStreamLine(unsigned bufPos, int fieldLength, int lin
 
 void EventSource::stop()
 {
+    LOG(TRACE) + "stop";
+
     close();
 }
 

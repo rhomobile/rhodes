@@ -8,6 +8,8 @@
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
 
+#include <algorithm>
+
 namespace rho {
     
     using namespace apiGenerator;
@@ -34,6 +36,8 @@ namespace rho {
         rho::apiGenerator::CMethodResult m_onMessageCallback;
         rho::apiGenerator::CMethodResult m_onErrorCallback;
 
+        Hashtable<String,rho::apiGenerator::CMethodResult> m_eventTypeCallbacks;
+
       public:
         CEventSourceImpl() :
             m_onErrorCallback(0), m_onMessageCallback(0), m_onOpenCallback(0)
@@ -59,17 +63,17 @@ namespace rho {
         
         virtual void getUrl(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::getUrl";
-            oResult.set("");            
+            oResult.set(m_es->url());            
         }
         
         virtual void getReadyState(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::getReadyState";
-            oResult.set("");
+            oResult.set(m_es->readyState());
         }
         
         virtual void getWithCredentials(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::getWithCredentials";
-            oResult.set("");
+            oResult.set(m_es->withCredentials());
         }
         
         virtual void create( const rho::String& url,  const rho::Hashtable<rho::String, rho::String>& settings, rho::apiGenerator::CMethodResult& oResult) {
@@ -79,11 +83,21 @@ namespace rho {
 
         virtual void addEventListener( const rho::String& event, rho::apiGenerator::CMethodResult& oResult) {
           LOG(INFO) + "CEventSourceImpl::addEventListener: + " + event;
+
+          String evtLower;
+          std::transform(event.begin(), event.end(), std::back_inserter(evtLower), &::tolower);
+
+          if ((!evtLower.empty()) && (evtLower!="message"))
+          {
+            m_eventTypeCallbacks.put(evtLower,oResult);
+          }
+
         }
 
         
         virtual void close(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::close";
+            m_es->close();
         }
         
     private:
@@ -91,12 +105,21 @@ namespace rho {
         virtual void onOpen() {
             LOG(INFO) + "CEventSourceImpl::onOpen";
             m_onOpenCallback.set((void*)0);
+
+            if (m_eventTypeCallbacks.containsKey("open"))
+            {
+              m_eventTypeCallbacks.get("open").set((void*)0);
+            }
         }
         
         virtual void onError(const String& error) {
             LOG(INFO) + "CEventSourceImpl::onError - " + error;
             m_onErrorCallback.set(error);
 
+            if (m_eventTypeCallbacks.containsKey("error"))
+            {
+              m_eventTypeCallbacks.get("error").set(error);
+            }
         }
         
         virtual void onMessage(const String& event, const String& message, const String& eventId) {
@@ -105,6 +128,15 @@ namespace rho {
             params.put("event",event);
             params.put("data",message);
             m_onMessageCallback.set(params);
+
+            String evtLower;
+            std::transform(event.begin(), event.end(), std::back_inserter(evtLower), &::tolower);
+
+            if (m_eventTypeCallbacks.containsKey(evtLower))
+            {
+              m_eventTypeCallbacks.get(evtLower).set(params);
+            }
+
         }
 
     };

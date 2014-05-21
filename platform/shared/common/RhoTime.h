@@ -28,6 +28,8 @@
 #define _RHOTIME_H_
 
 #include "RhoStd.h"
+#include "RhoThread.h"
+#include "RhoMutexLock.h"
 
 #if !defined( WINDOWS_PLATFORM )
 #include <sys/time.h>
@@ -241,6 +243,26 @@ private:
         CNativeTimerItem(int nInterval, CRhoTimer::ICallback* callback);
     };
 
+    class CTimerThread : public CRhoThread
+    {
+      CRhoTimer& m_timer;
+    public:
+      CTimerThread(CRhoTimer& timer) : m_timer(timer) {}    
+
+      virtual void run()
+      {
+        while(!isStopping())
+        {
+          m_timer.checkTimers();
+          unsigned long to = m_timer.getNextTimeout();
+          wait(0==to?-1:to);
+        }
+      }
+    };
+
+
+    CMutex m_mxAccess;
+    CTimerThread m_checkerThread;
 
     Vector<CTimerItem> m_arItems;
     Vector<CNativeTimerItem> m_arNativeItems;
@@ -249,19 +271,12 @@ private:
     void callTimerCallback(CTimerItem& oItem);
 
 
-
 public:
-    CRhoTimer(){}
+    CRhoTimer();
+    ~CRhoTimer();
 
-    void addTimer(int nInterval, const char* szCallback, const char* szCallbackData)
-    {
-        m_arItems.addElement(CTimerItem(nInterval, szCallback, szCallbackData));
-    }
-
-    void addNativeTimer(int nInterval, CRhoTimer::ICallback* callback)
-    {
-        m_arNativeItems.addElement(CNativeTimerItem(nInterval, callback));
-    }
+    void addTimer(int nInterval, const char* szCallback, const char* szCallbackData);
+    void addNativeTimer(int nInterval, CRhoTimer::ICallback* callback);
 
     unsigned long getNextTimeout();
     boolean checkTimers();

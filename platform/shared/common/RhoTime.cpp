@@ -43,9 +43,44 @@ CRhoTimer::CNativeTimerItem::CNativeTimerItem(int nInterval, CRhoTimer::ICallbac
 	m_oFireTime = CTimeInterval::getCurrentTime();
 }
 
+CRhoTimer::CRhoTimer() : m_checkerThread(*this)
+{
+  m_checkerThread.start(IRhoRunnable::epNormal);
+}
+
+CRhoTimer::~CRhoTimer()
+{
+  m_checkerThread.stop(1000);
+}
+
+void CRhoTimer::addTimer(int nInterval, const char* szCallback, const char* szCallbackData)
+{
+    RAWTRACE2("CRhoTimer::addTimer %d, %s", nInterval, szCallback);
+
+    synchronized(m_mxAccess)
+    {
+      m_arItems.addElement(CTimerItem(nInterval, szCallback, szCallbackData));
+      m_checkerThread.stopWait();
+    }
+}
+
+void CRhoTimer::addNativeTimer(int nInterval, CRhoTimer::ICallback* callback)
+{
+    RAWTRACE1("CRhoTimer::addNativeTimer %d", nInterval);
+
+    synchronized(m_mxAccess)
+    {
+      m_arNativeItems.addElement(CNativeTimerItem(nInterval, callback));
+      m_checkerThread.stopWait();
+    }
+}
+
+
 unsigned long CRhoTimer::getNextTimeout()
 {
-    if ( m_arItems.size() == 0 )
+    synchronized(m_mxAccess);
+
+    if ( (m_arItems.size() == 0) || (m_arNativeItems.size() == 0) )
         return 0;
 
     CTimeInterval curTime = CTimeInterval::getCurrentTime();
@@ -55,26 +90,49 @@ unsigned long CRhoTimer::getNextTimeout()
     {
         unsigned long nInterval = 0;
         if ( m_arItems.elementAt(i).m_oFireTime.toULong() > curTime.toULong() )
-		{
+    		{
             nInterval = m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
-		}
-		else
-		{	
-		nInterval=nMinInterval+m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
-		}
+    		}
+    		else
+    		{	
+        		nInterval=nMinInterval+m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+    		}
 
         if ( nInterval < nMinInterval )
             nMinInterval = nInterval;
     }
 
+    for( int i = 0; i < (int)m_arNativeItems.size(); i++ )
+    {
+        unsigned long nInterval = 0;
+        if ( m_arNativeItems.elementAt(i).m_oFireTime.toULong() > curTime.toULong() )
+    		{
+            nInterval = m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+    		}
+    		else
+    		{	
+        		nInterval=nMinInterval+m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+    		}
+
+        if ( nInterval < nMinInterval )
+            nMinInterval = nInterval;
+    }
+
+
     if ( nMinInterval < 100 )
         nMinInterval = 100;
+
+    RAWTRACE1("CRhoTimer::getNextTimeout: %d",nMinInterval);
 
     return nMinInterval;
 }
 
 boolean CRhoTimer::checkTimers()
 {
+    RAWTRACE("CRhoTimer::checkTimers");
+
+    synchronized(m_mxAccess);
+
     boolean bRet = false;
     CTimeInterval curTime = CTimeInterval::getCurrentTime();
     for( int i = (int)m_arItems.size()-1; i >= 0; i--)
@@ -85,6 +143,7 @@ boolean CRhoTimer::checkTimers()
 
 			if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
 			{
+        RAWTRACE("CRhoTimer::checkTimers: firing timer");
 				m_arItems.removeElementAt(i);
 				if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
 					bRet = true;
@@ -99,6 +158,7 @@ boolean CRhoTimer::checkTimers()
 			{
 				if((curTime.toULong()-oItem.m_oFireTime.toULong())<=oItem.m_nInterval)
 				{
+          RAWTRACE("CRhoTimer::checkTimers: firing timer");
 					m_arItems.removeElementAt(i);
 					if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
 						bRet = true;
@@ -115,6 +175,7 @@ boolean CRhoTimer::checkTimers()
         CNativeTimerItem oItem = m_arNativeItems.elementAt(i);
         if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
         {
+            RAWTRACE("CRhoTimer::checkTimers: firing native timer");
             m_arNativeItems.removeElementAt(i);
             if ( oItem.m_pCallback->onTimer() )
                 bRet = true;
@@ -127,6 +188,10 @@ boolean CRhoTimer::checkTimers()
 
 void CRhoTimer::stopTimer(const char* szCallback)
 {
+    RAWTRACE1("CRhoTimer::stopTimer: %s",szCallback);
+
+    synchronized(m_mxAccess);
+
     if ( !szCallback || !*szCallback)
         m_arItems.removeAllElements();
 
@@ -142,6 +207,10 @@ void CRhoTimer::stopTimer(const char* szCallback)
 
 void CRhoTimer::stopNativeTimer(CRhoTimer::ICallback* callback)
 {
+  RAWTRACE("CRhoTimer::stopNativeTimer");
+
+  synchronized(m_mxAccess);
+
   if ( 0 == callback )
   {
     m_arNativeItems.removeAllElements();
@@ -155,7 +224,7 @@ void CRhoTimer::stopNativeTimer(CRhoTimer::ICallback* callback)
       m_arNativeItems.removeElementAt(i);
     }
   }
-  
+
 }
 
 }
