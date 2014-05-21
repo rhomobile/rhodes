@@ -31,6 +31,8 @@ raise 'ANDROID_NDK is not set' if ANDROID_NDK.nil?
 ANDROID_API_LEVEL = ENV['ANDROID_API_LEVEL']
 raise 'ANDROID_API_LEVEL is not set' if ANDROID_API_LEVEL.nil?
 
+$debug = ENV['RHO_DEBUG'] == 'true'
+
 cd SOURCEPATH
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')

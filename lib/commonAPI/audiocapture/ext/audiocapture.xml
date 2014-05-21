@@ -98,7 +98,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
             <METHOD name="cancel">
-                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved.</DESC>
+                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved. In android, it will delete the file if it exists.</DESC>
 				        <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
         </METHODS>
@@ -149,6 +149,13 @@ The default values will be applied for duration if no values are provided by the
                 <DESC>
                     <![CDATA[
 In Windows, 'getProperty' or 'getProperties' for fileName will return the complete path along with the extension name. For example: If file name was set to '\\Application\\AudioCapture', then 'getProperty' or 'getProperties' will return '\Application\AudioCapture.wav'. If file name was set to 'AudioCapture', then 'getProperty' or 'getProperties' will return '\AudioCapture.wav'. In android, the fileName will return whatever is set with or without extension.
+                    ]]>
+                </DESC>
+			</REMARK>
+			<REMARK title="General">
+                <DESC>
+                    <![CDATA[
+On Quitting of the Application, Android will save the data in the file and gracefully exit.
                     ]]>
                 </DESC>
 			</REMARK>
