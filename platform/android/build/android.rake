@@ -65,6 +65,7 @@ ANDROID_PERMISSIONS = {
     'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH'],
     'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR'],
     'sdcard' => 'WRITE_EXTERNAL_STORAGE',
+    'read_sdcard' => 'READ_EXTERNAL_STORAGE',
     'push' => nil,
     'motorola' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest|
       add_motosol_sdk(manifest)
