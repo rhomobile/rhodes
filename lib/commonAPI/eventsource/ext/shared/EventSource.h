@@ -5,6 +5,7 @@
 #include "common/RhoThread.h"
 #include "common/RhoTime.h"
 #include "net/INetRequest.h"
+#include "logging/RhoLog.h"
 
 namespace rho {
 
@@ -22,15 +23,6 @@ public:
 
     static EventSource* create( const String& url, IEventSourceReceiver* receiver, const Hashtable<String,String>& init );
     virtual ~EventSource();
-    
-private:
-    
-    IEventSourceReceiver* m_pReceiver;
-    
-    static const unsigned long long defaultReconnectDelay;
-
-    String url() const;
-    bool withCredentials() const;
 
     typedef short State;
     static const State CONNECTING = 0;
@@ -38,10 +30,17 @@ private:
     static const State CLOSED = 2;
 
     State readyState() const;
-
     void close();
+    String url() const;
+    bool withCredentials() const;
 
+    DEFINE_LOGCLASS;
+    
 private:
+    
+    IEventSourceReceiver* m_pReceiver;    
+    static const unsigned long long defaultReconnectDelay;
+
     EventSource(const String&, IEventSourceReceiver* receiver, const Hashtable<String,String>& init );
 
     virtual void didReceiveResponse(NetResponse&, const Hashtable<String,String>* headers);
