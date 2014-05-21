@@ -706,7 +706,12 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     String_replace(strSrcW, L'/', L'\\' );
     String_replace(strDstW, L'/', L'\\' );
 
+#if defined(OS_WINRT)
+    //TODO: implemented for Windows RT
+    return 0;
+#else
     return copyFolder(strSrcW, strDstW, false);
+#endif
 #elif defined (OS_ANDROID)
 
     return iterateFolderTree(String(szSrcFolderPath), CopyFileFunctor(szSrcFolderPath, szDstFolderPath));
@@ -727,7 +732,12 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     String_replace(strSrcW, L'/', L'\\' );
     String_replace(strDstW, L'/', L'\\' );
 
+#if defined(OS_WINRT)
+    //TODO: implemented for Windows RT
+    return 0;
+#else
     return copyFolder(strSrcW, strDstW, true);
+#endif
 #elif defined (OS_ANDROID)
 
     return iterateFolderTree(String(szSrcFolderPath), MoveFileFunctor(szSrcFolderPath, szDstFolderPath));

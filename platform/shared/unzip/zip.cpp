@@ -675,6 +675,7 @@ void GetNow(lutime_t *pft, WORD *dosdate, WORD *dostime)
   *pft = filetime2timet(ft);
 }
 
+#if !defined(_WINRT_LIB)
 DWORD GetFilePosZ(HANDLE hfout)
 { return SetFilePointer(hfout,0,0,FILE_CURRENT);
 }
@@ -730,6 +731,7 @@ ZRESULT GetFileInfo(HANDLE hf, ulg *attr, long *size, iztimes *times, ulg *times
   }
   return ZR_OK;
 }
+#endif
 #endif
 // ----------------------------------------------------------------------
 
@@ -2382,9 +2384,14 @@ ZRESULT TZip::Create(void *z,unsigned int len,DWORD flags)
 #endif
     // now we have hfout. Either we duplicated the handle and we close it ourselves
     // (while the caller closes h themselves), or we couldn't duplicate it.
-    DWORD res=GetFilePosZ(hfout);
+#if defined(_WINRT_LIB)
+	ocanseek = false;
+    ooffset = 0;
+#else
+	DWORD res=GetFilePosZ(hfout);
     ocanseek = (res!=0xFFFFFFFF);
     ooffset = ocanseek ? res : 0;
+#endif
     return ZR_OK;
   }
   else if (flags==ZIP_FILENAME)
@@ -2392,7 +2399,7 @@ ZRESULT TZip::Create(void *z,unsigned int len,DWORD flags)
 #ifdef ZIP_STD
     hfout = fopen(fn,"wb");
     if (hfout==0) return ZR_NOFILE;
-#else
+#elif !defined(_WINRT_LIB)
     hfout = CreateFile(fn,GENERIC_WRITE,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
     if (hfout==INVALID_HANDLE_VALUE) {hfout=0; return ZR_NOFILE;}
 #endif
@@ -2407,7 +2414,7 @@ ZRESULT TZip::Create(void *z,unsigned int len,DWORD flags)
 #ifdef ZIP_STD
     if (z!=0) obuf=(char*)z;
     else return ZR_ARGS;
-#else
+#elif !defined(_WINRT_LIB)
     if (z!=0) obuf=(char*)z;
     else
     { hmapout = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,size,NULL);
@@ -2474,7 +2481,7 @@ bool TZip::oseek(unsigned int pos)
   { 
 #ifdef ZIP_STD
     fseek(hfout,pos+ooffset,SEEK_SET);
-#else
+#elif !defined(_WINRT_LIB)
     SetFilePointer(hfout,pos+ooffset,NULL,FILE_BEGIN);
 #endif
     return true;
@@ -2518,7 +2525,7 @@ ZRESULT TZip::open_file(const TCHAR *fn)
   if (hf==0) return ZR_NOFILE;
   ZRESULT res = open_handle(hf,0);
   if (res!=ZR_OK) {fclose(hf); return res;}
-#else
+#elif !defined(_WINRT_LIB)
   HANDLE hf = CreateFile(fn,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,0,NULL);
   if (hf==INVALID_HANDLE_VALUE) return ZR_NOFILE;
   ZRESULT res = open_handle(hf,0);
@@ -2533,10 +2540,11 @@ ZRESULT TZip::open_handle(HANDLE hf,unsigned int len)
   bool canseek;
 #ifdef ZIP_STD
     struct stat st; fstat(fileno(hf),&st); canseek = S_ISREG(st.st_mode);
-#else
+#elif !defined(_WINRT_LIB)
   DWORD res = SetFilePointer(hfout,0,0,FILE_CURRENT);
   canseek = (res!=0xFFFFFFFF);
 #endif
+#if !defined(_WINRT_LIB)
   if (canseek)
   { ZRESULT res = GetFileInfo(hf,&attr,&isize,&times,&timestamp);
     if (res!=ZR_OK) return res;
@@ -2549,11 +2557,16 @@ ZRESULT TZip::open_handle(HANDLE hf,unsigned int len)
     return ZR_OK;
   }
   else
+#endif
   { attr= 0x80000000;      // just a normal file
     isize = -1;            // can't know size until at the end
     if (len!=0) isize=len; // unless we were told explicitly!
     iseekable=false;
-    WORD dosdate, dostime; GetNow(&times.atime, &dosdate, &dostime);
+    WORD dosdate, dostime;
+#if defined(_WINRT_LIB)
+#else
+	GetNow(&times.atime, &dosdate, &dostime);
+#endif
     times.mtime=times.atime;
     times.ctime=times.atime;
     timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);
@@ -2770,7 +2783,7 @@ ZRESULT TZip::Add(const TCHAR *odstzn, void *src,unsigned int len, DWORD flags)
   // generate some random bytes
 #ifdef ZIP_STD
   if (!has_seeded) srand((unsigned)time(0));
-#else
+#elif !defined(_WINRT_LIB)
   if (!has_seeded) srand(GetTickCount()^(unsigned long)GetDesktopWindow());
 #endif
   char encbuf[12]; for (int i=0; i<12; i++) encbuf[i]=(char)((rand()>>7)&0xff);

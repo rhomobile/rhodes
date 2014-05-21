@@ -303,9 +303,9 @@
     <ClCompile Include="..\..\shared\api_generator\MethodResult.cpp">
       <Filter>api_generator</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\shared\api_generator\StringifyHelper.cpp">
+    <ClCompile Include="..\..\shared\api_generator\StringifyHelper.cpp">
       <Filter>api_generator</Filter>
-    </ClInclude>
+    </ClCompile>
     <ClCompile Include="..\..\shared\net\ssl.cpp">
       <Filter>net</Filter>
     </ClCompile>

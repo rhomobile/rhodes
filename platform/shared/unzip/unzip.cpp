@@ -232,9 +232,11 @@ FILETIME timet2filetime(const lutime_t t)
 
 #else
 // ----------------------------------------------------------------------
+#if !defined(_WINRT_LIB)
 DWORD GetFilePosU(HANDLE hfout)
 { return SetFilePointer(hfout,0,0,FILE_CURRENT);
 }
+#endif
 
 FILETIME timet2filetime(const lutime_t t)
 { LONGLONG i = Int32x32To64(t,10000000) + 116444736000000000LL;
@@ -259,9 +261,11 @@ FILETIME dosdatetime2filetime(WORD dosdate,WORD dostime)
   return ft;
 }
 
+#if !defined(_WINRT_LIB)
 bool FileExists(const TCHAR *fn)
 { return (GetFileAttributes(fn)!=0xFFFFFFFF);
 }
+#endif
 #endif
 // ----------------------------------------------------------------------
 
@@ -2777,15 +2781,19 @@ LUFILE *lufopen(void *z,unsigned int len,DWORD flags,ZRESULT *err)
 #ifdef ZIP_STD
       h=fopen((const char*)z,"rb");
       if (h==0) {*err=ZR_NOFILE; return NULL;}
-#else
+#elif !defined(_WINRT_LIB)
       h=CreateFile((const TCHAR*)z,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
       if (h==INVALID_HANDLE_VALUE) {*err=ZR_NOFILE; return NULL;}
 #endif
       mustclosehandle=true;
     }
     // test if we can seek on it. We can't use GetFileType(h)==FILE_TYPE_DISK since it's not on CE.
+#if defined(_WINRT_LIB)
+	canseek = false;
+#else
     DWORD res = GetFilePosU(h);
     canseek = (res!=0xFFFFFFFF);
+#endif
   }
   LUFILE *lf = new LUFILE;
   if (flags==ZIP_HANDLE||flags==ZIP_FILENAME)
@@ -2793,7 +2801,9 @@ LUFILE *lufopen(void *z,unsigned int len,DWORD flags,ZRESULT *err)
     lf->canseek=canseek;
     lf->h=h; lf->herr=false;
     lf->initial_offset=0;
+#if !defined(_WINRT_LIB)
     if (canseek) lf->initial_offset = GetFilePosU(h);
+#endif
   }
   else
   { lf->is_handle=false;
@@ -2823,8 +2833,11 @@ int luferror(LUFILE *stream)
 }
 
 long int luftell(LUFILE *stream)
-{ if (stream->is_handle && stream->canseek) return GetFilePosU(stream->h)-stream->initial_offset;
-  else if (stream->is_handle) return 0;
+{
+#if !defined(_WINRT_LIB)
+  if (stream->is_handle && stream->canseek) return GetFilePosU(stream->h)-stream->initial_offset; else
+#endif
+  if (stream->is_handle) return 0;
   return stream->pos;
 }
 
@@ -2833,7 +2846,7 @@ int lufseek(LUFILE *stream, long offset, int whence)
   { 
 #ifdef ZIP_STD
     return fseek(stream->h,stream->initial_offset+offset,whence);
-#else
+#elif !defined(_WINRT_LIB)
     if (whence==SEEK_SET) SetFilePointer(stream->h,stream->initial_offset+offset,0,FILE_BEGIN);
     else if (whence==SEEK_CUR) SetFilePointer(stream->h,offset,NULL,FILE_CURRENT);
     else if (whence==SEEK_END) SetFilePointer(stream->h,offset,NULL,FILE_END);
@@ -3930,8 +3943,13 @@ ZRESULT TUnzip::Open(void *z,unsigned int len,DWORD flags)
   //
   if (flags==ZIP_HANDLE)
   { // test if we can seek on it. We can't use GetFileType(h)==FILE_TYPE_DISK since it's not on CE.
+    bool canseek;
+#if defined(_WINRT_LIB)
+	canseek = false;
+#else
     DWORD res = GetFilePosU((HANDLE)z);
-    bool canseek = (res!=0xFFFFFFFF);
+    canseek = (res!=0xFFFFFFFF);
+#endif
     if (!canseek) return ZR_SEEK;
   }
   ZRESULT e; LUFILE *f = lufopen(z,len,flags,&e);
@@ -4052,7 +4070,12 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
   WORD dostime = (WORD)(ufi.dosDate&0xFFFF);
   WORD dosdate = (WORD)((ufi.dosDate>>16)&0xFFFF);
   FILETIME ftd = dosdatetime2filetime(dosdate,dostime);
-  FILETIME ft; LocalFileTimeToFileTime(&ftd,&ft);
+  FILETIME ft;
+#if defined(_WINRT_LIB)
+  ft = ftd;
+#else
+  LocalFileTimeToFileTime(&ftd,&ft);
+#endif
   ze->atime=ft; ze->ctime=ft; ze->mtime=ft;
   // the zip will always have at least that dostime. But if it also has
   // an extra header, then we'll instead get the info from that.
@@ -4125,7 +4148,7 @@ void EnsureDirectory(const TCHAR *rootdir, const TCHAR *dir)
     if (len>0 && (rd[len-1]=='/' || rd[len-1]=='\\')) rd[len-1]=0;
 #ifdef ZIP_STD
     if (!FileExists(rd)) lumkdir(rd);
-#else
+#elif !defined(_WINRT_LIB)
     if (!FileExists(rd)) CreateDirectory(rd,0);
 #endif
   }
@@ -4143,7 +4166,7 @@ void EnsureDirectory(const TCHAR *rootdir, const TCHAR *dir)
   size_t len=_tcslen(cd); _tcsncpy(cd+len,dir,MAX_PATH-len); cd[MAX_PATH-1]=0;
 #ifdef ZIP_STD
   if (!FileExists(cd)) lumkdir(cd);
-#else
+#elif !defined(_WINRT_LIB)
   if (!FileExists(cd))
   { CreateDirectory(cd,0);
   }
@@ -4204,12 +4227,17 @@ ZRESULT TUnzip::Unzip(int index,void *dst,unsigned int len,DWORD flags)
     const TCHAR *name=ufn; const TCHAR *c=name; while (*c!=0) {if (*c=='/' || *c=='\\') name=c+1; c++;}
     TCHAR dir[MAX_PATH]; _tcsncpy(dir,ufn,MAX_PATH); if (name==ufn) *dir=0; else dir[name-ufn]=0;
     bool isabsolute = (dir[0]=='/' || dir[0]=='\\' || (dir[0]!=0 && dir[1]==':'));
+#if defined(_WINRT_LIB)
+	if (isabsolute) {wcscpy(fn,dir); wcscat(fn,name); EnsureDirectory(0,dir);}
+    else {wcscpy(fn,rootdir); wcscat(fn,dir); wcscat(fn,name); EnsureDirectory(rootdir,dir);}
+#else
     if (isabsolute) {_tsprintf(fn,_T("%s%s"),dir,name); EnsureDirectory(0,dir);}
     else {_tsprintf(fn,_T("%s%s%s"),rootdir,dir,name); EnsureDirectory(rootdir,dir);}
+#endif
     //
 #ifdef ZIP_STD
     h = fopen(fn,"wb");
-#else
+#elif !defined(_WINRT_LIB)
     h = CreateFile(fn,GENERIC_WRITE,0,NULL,CREATE_ALWAYS,ze.attr,NULL);
 #endif
   }
@@ -4236,7 +4264,9 @@ ZRESULT TUnzip::Unzip(int index,void *dst,unsigned int len,DWORD flags)
   if (flags!=ZIP_HANDLE) fclose(h);
   if (*fn!=0) {struct utimbuf ubuf; ubuf.actime=ze.atime; ubuf.modtime=ze.mtime; utime(fn,&ubuf);}
 #else
+#if !defined(_WINRT_LIB)
   if (!haderr) SetFileTime(h,&ze.ctime,&ze.atime,&ze.mtime); // may fail if it was a pipe
+#endif
   if (flags!=ZIP_HANDLE) CloseHandle(h);
 #endif
   if (haderr!=0) return haderr;

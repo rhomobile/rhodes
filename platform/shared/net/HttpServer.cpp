@@ -486,8 +486,8 @@ bool CHttpServer::run()
                 }
 
                 RAWTRACE("Connection accepted, process it...");
-                VALUE val;
 #ifndef RHO_NO_RUBY_API                
+                VALUE val;
                 if (rho_ruby_is_started())
                 {
                     if ( !RHOCONF().getBool("enable_gc_while_request") )                
