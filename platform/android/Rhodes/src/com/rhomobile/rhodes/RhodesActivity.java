@@ -142,7 +142,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             if(pageZoom !=null && pageZoom.length()>0)
 		RhoConf.setString("PageZoom", pageZoom);
             else
-            	RhoConf.setString("PageZoom", "1.5");
+            	RhoConf.setString("PageZoom", "1.0");
 
         } catch (Throwable e) {
             Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
