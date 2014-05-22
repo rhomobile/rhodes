@@ -1,20 +1,13 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
-
 <API>
     <MODULE name="AudioCapture" parent="Rho">
         <HELP_OVERVIEW>Audio capture API</HELP_OVERVIEW>
         <MORE_HELP>
-		## Enabling the API
+## Enabling the API
 In order to use this API you must include the following extension in your `build.yml`
     :::ruby
     extensions: ["audiocapture"]
-
-The `audiocapture` extension is also included automatically if you specify the following in your `build.yml`
-    :::ruby
-    app_type: "rhoelements"
-
-NOTE: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
 
 ## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
