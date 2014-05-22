@@ -8,12 +8,18 @@
 #include "CEBrowserEngine.h"
 #include "common/RhoConf.h"
 #include "MainWindow.h"
+#include "EngineDefines.h"
 
 #if defined(_WIN32_WCE)
 #include <webvw.h>
 #endif
+//////////////////////////////////////////////////////////////////////////
 
-//#define MAX_URL 1024
+extern "C" HWND rho_wmimpl_get_mainwnd();
+
+IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
+
+//////////////////////////////////////////////////////////////////////////
 
 UINT WM_BROWSER_ONDOCUMENTCOMPLETE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONDOCUMENTCOMPLETE");
 UINT WM_BROWSER_ONNAVIGATECOMPLETE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONNAVIGATECOMPLETE");
@@ -25,107 +31,7 @@ UINT WM_BROWSER_ONSETSIPSTATE           = ::RegisterWindowMessage(L"RHODES_WM_BR
 UINT WM_BROWSER_ONALERTPOPUP            = ::RegisterWindowMessage(L"WM_BROWSER_ONALERTPOPUP");
 UINT WM_BROWSER_ONAUTHENTICATIONREQUEST = ::RegisterWindowMessage(L"WM_BROWSER_ONAUTHENTICATIONREQUEST");
 
-extern "C" void rho_wm_impl_CheckLicense();
-
-IMPLEMENT_LOGCLASS(CEBrowserEngine,"IEBrowser");
-
-namespace
-{
-
-BOOL IsRelativeURL(LPCTSTR tcURL)
-{
-    //  The URL is relative if it starts with a '.'
-    if (tcURL && wcsnicmp(tcURL, L".", 1) == 0)
-        return TRUE;
-    else
-        return FALSE;
-}
-
-int GetProtocolFromURL(LPCTSTR tcURL, LPTSTR lpRetStr)
-{
-    TCHAR* ptcStart = wcsstr(tcURL, L"://");
-    if (ptcStart == NULL)
-        return 0;  //  Protocol not specified
-
-    ptcStart += 3;
-
-    wcsncpy(lpRetStr, tcURL, (ptcStart - tcURL));
-    lpRetStr[(ptcStart - tcURL)-3] = NULL;
-
-    return (ptcStart - tcURL) - 3; 
-}
-
-BOOL DereferenceURL(LPCTSTR tcRelativeURLConst, TCHAR* tcDereferencedURL, TCHAR* tcCurrentURL)
-{
-    BOOL retVal = FALSE;
-    TCHAR tcRelativeURL[MAX_URL];
-    wcscpy(tcRelativeURL, tcRelativeURLConst);
-
-    if (tcRelativeURL)
-    {
-        //  First work out how many levels we need to navigate up from the 
-        //  current URL (specified as ../)
-        int iLevelsUp = 0;
-        wchar_t* temp = wcsstr(tcRelativeURL, L"..");
-        while (temp != NULL && (wcslen(temp) >= 2))
-        {
-            iLevelsUp++;
-            temp = wcsstr(temp + 2, L"..");
-        }
-
-        //  We now know how many levels up we want to go from the current URL.
-        //  Starting at the end of the current URL search for '/' or '\' and 
-        //  work out if we can go up that many levels.
-        TCHAR* pSzCurrentURL = tcCurrentURL + wcslen(tcCurrentURL) - 1;
-        //  We do not want to include the protocol slashs in our search
-        TCHAR tempProtocol[10];
-        memset(tempProtocol, 0, 10 * sizeof(TCHAR));
-        int iLengthOfProtocol = GetProtocolFromURL(tcCurrentURL, tempProtocol) + 3;
-        while (pSzCurrentURL != tcCurrentURL + iLengthOfProtocol - 1)
-        {
-            if (*pSzCurrentURL == L'/' || *pSzCurrentURL == L'\\')
-            {
-                iLevelsUp--;
-                if (iLevelsUp == -1)
-                {
-                    //  pSzCurrentURL is pointing to the end of the URL 
-                    //  we want to use as our base
-                    break;
-                }
-            }
-
-            pSzCurrentURL--;
-        }
-
-        if (iLevelsUp != -1)
-        {
-            return FALSE;
-        }
-
-        int iFirstNonRelativeCharacter = wcsspn(tcRelativeURL, L"./\\");
-        if (iFirstNonRelativeCharacter == wcslen(tcRelativeURL))
-        {
-            return FALSE;
-        }
-
-        TCHAR* pSzRelativeURLFilePathAndName = tcRelativeURL;
-        pSzRelativeURLFilePathAndName += iFirstNonRelativeCharacter;
-
-        //  Test the new URL is not too long
-        if ((pSzCurrentURL - tcCurrentURL + 1) + 
-            wcslen(pSzRelativeURLFilePathAndName) > MAX_URL)
-        {
-            return FALSE;
-        }
-
-        wcsncpy(tcDereferencedURL, tcCurrentURL, pSzCurrentURL - tcCurrentURL + 1);
-        wcscat(tcDereferencedURL, pSzRelativeURLFilePathAndName);
-        retVal = TRUE;
-    }
-    return retVal;
-}
-
-} //end of anonymous namespace
+//////////////////////////////////////////////////////////////////////////
 
 CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     : m_ulRefs(0)
@@ -294,9 +200,9 @@ BOOL CEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 	{		
 		TCHAR tcDereferencedURL[MAX_URL];
 		memset(tcDereferencedURL, 0, MAX_URL * sizeof(TCHAR));
-		if (IsRelativeURL(tcURL))
+        if (rho::browser::IsRelativeURL(tcURL))
 		{
-			if (!DereferenceURL(tcURL, tcDereferencedURL, m_tcNavigatedURL))
+            if (!rho::browser::DereferenceURL(tcURL, tcDereferencedURL, m_tcNavigatedURL))
 				return S_FALSE;
 		}
 		else
@@ -608,8 +514,10 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
         m_bLoadingComplete = true;
         InvalidateRect(GetHTMLWND(0), NULL, FALSE);
+        ParseTags();
 
 		retVal = S_OK;
+        
 		break;
 
 	case DISPID_BEFORENAVIGATE2:
@@ -752,14 +660,18 @@ BOOL CEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 
 LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
 {
+    bHandled = TRUE;
+
     switch (uMsg) 
     {
     case PB_ONMETA:
-        RHODESAPP().getExtManager().onSetPropertiesData( (LPCWSTR)wParam, (LPCWSTR)lParam );
+        {
+            EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
+            rho::browser::MetaHandler(m_tabID, metaTag2);
+        }
         break;
     }
 
-    bHandled = TRUE;
     return 0;
 }
 
@@ -861,7 +773,6 @@ void CEBrowserEngine::OnDocumentComplete(LPCTSTR url)
         m_bLoadingComplete = true;
 
         ResizeOnTab(0, m_rcViewSize);
-        rho_wm_impl_CheckLicense();
     }
 }
 
@@ -888,5 +799,123 @@ bool CEBrowserEngine::DeRegisterForPrimaryMessage(unsigned int iMsgId)
 int CEBrowserEngine::NewTab() { return 0; }
 int CEBrowserEngine::SwitchTab(int iTabID){ return 0;}
 BOOL CEBrowserEngine::CloseTab(int iTabID) { return false; }
+
+/**
+* \author	Darryn Campbell (DCC, JRQ768)
+* \date		October 2009
+*/
+HRESULT CEBrowserEngine::ParseTags()
+{
+	IDispatch* pDisp;
+	m_pBrowser->get_Document(&pDisp);
+		
+	if (pDisp != NULL )
+	{
+		IHTMLDocument2* pHTMLDocument2;
+		HRESULT hr;
+		
+		hr = pDisp->QueryInterface( IID_IHTMLDocument2, (void**)&pHTMLDocument2 );
+		// Finished with pDisp so release
+		pDisp->Release();
+
+		if (hr == S_OK)
+		{
+			IHTMLElementCollection* pColl;
+			hr = pHTMLDocument2->get_all( &pColl );
+			
+			// Finished so release
+			pHTMLDocument2->Release();
+
+			if (hr == S_OK)
+			{
+				LONG celem;
+				hr = pColl->get_length( &celem );
+
+				if ( hr == S_OK )
+				{
+					for ( int i=0; i< celem; i++ )
+					{
+						VARIANT varIndex;
+						varIndex.vt = VT_UINT;
+						varIndex.lVal = i;
+						VARIANT var2;
+						VariantInit( &var2 );
+						IDispatch* pDisp2; 
+
+						hr = pColl->item( varIndex, var2, &pDisp2 );
+
+						if ( hr == S_OK )
+						{
+							BSTR bstr;
+							memset(&bstr, 0, sizeof(BSTR));
+							IHTMLMetaElement* pMetaElem;
+							hr = pDisp2->QueryInterface( IID_IHTMLMetaElement, 
+								(void **)&pMetaElem );
+							if ( hr == S_OK )
+							{
+								//  The engine uses its own definition of 
+								//  meta tags, must HTTP Equiv and Contents
+								EngineMETATag metaTag;
+								memset(&metaTag, 0, sizeof(metaTag));
+								TCHAR tcHttpEquiv[MAX_URL], tcContents[MAX_URL];
+								memset(tcHttpEquiv, 0, MAX_URL);
+								memset(tcContents, 0, MAX_URL);
+								//  Obtain the HTTP Equiv from the IE 
+								//  component, stored in bstr
+								if (S_OK == pMetaElem->get_httpEquiv(&bstr)) 
+								{
+									if (bstr != 0) 
+									{
+										//  Copy the HTTP Equiv returned
+										//  from the IE Component into our 
+										//  Meta Tag Structure
+										wcsncpy(tcHttpEquiv, bstr, MAX_URL);
+										metaTag.tcHTTPEquiv = tcHttpEquiv;
+										::SysFreeString(bstr);
+									}
+									else if	(S_OK == pMetaElem->get_name(&bstr))
+									{
+										//  Failed to get the HTTP Equiv, try and get the <META Name...>
+										if (bstr != 0)
+										{
+											//  Copy the HTTP Equiv returned
+											//  from the IE Component into our 
+											//  Meta Tag Structure
+											wcsncpy(tcHttpEquiv, bstr, MAX_URL);
+											metaTag.tcHTTPEquiv = tcHttpEquiv;
+											::SysFreeString(bstr);
+										}
+									}
+								}
+								if (metaTag.tcHTTPEquiv && S_OK == pMetaElem->get_content(&bstr)) 
+								{
+									if (bstr != 0) 
+									{
+										//  Copy the Contents returned
+										//  from the IE component into our
+										//  Meta Tag Structure
+										wcsncpy(tcContents, bstr, MAX_URL);
+										metaTag.tcContents = (TCHAR*) tcContents;
+										::SysFreeString(bstr);
+										//  Invoke the Meta Tag Callback.
+										//  This blocks whilst the callback
+										//  code is handled so metaTag does not
+										//  go out of scope.
+                                        PostMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)&metaTag);
+									}
+								}
+								pMetaElem->Release();
+							}
+							pDisp2->Release();
+						}
+					}
+				}
+				pColl->Release();
+			}
+		}
+	}
+	return S_OK;
+}
+
 
 #endif //!defined( OS_WINCE )
