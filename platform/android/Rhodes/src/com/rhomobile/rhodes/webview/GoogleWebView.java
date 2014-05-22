@@ -72,14 +72,14 @@ public class GoogleWebView implements IRhoWebView {
             public void run() {
                 Logger.T(TAG, "Web settings is applying now");
                 
-                float z=(float) 1.5;
+                float z=(float) 0.0;
                 try{
                 z=Float.parseFloat(RhoConf.getString("PageZoom"));
                 }
                 catch(NumberFormatException ex)
                 {
                 	Logger.E(TAG, "NumberFormatException,message="+ex.getMessage());
-                	z=(float) 1.5;
+                	z=(float) 0.0;
                 }
                mWebView.setInitialScale((int)(z*150));
                 //mWebView.setInitialScale(0);
