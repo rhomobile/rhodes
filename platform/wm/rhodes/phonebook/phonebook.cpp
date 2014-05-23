@@ -30,23 +30,28 @@
 #include "phonebook.h"
 
 void* openPhonebook() {
-#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
-	CNativeAddressBook* phonebook = new CNativeAddressBook();
+#if defined (_WIN32_WCE) //&& !defined( OS_PLATFORM_MOTCE )
+	if(RHO_IS_WMDEVICE)
+	{
+		CNativeAddressBook* phonebook = new CNativeAddressBook();
 
-	if (!phonebook->openAB()) {
-		delete phonebook;
-		return NULL;
+		if (!phonebook->openAB()) {
+			delete phonebook;
+			return NULL;
+		}
+
+		return phonebook;
 	}
 
-	return phonebook;
+	return NULL;
 #else
 	return NULL;
 #endif
 }
 
 void  closePhonebook(void* pb) {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	if (pb) {
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if (RHO_IS_WMDEVICE && pb) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
 		delete phonebook;
 	}
@@ -57,9 +62,9 @@ void _addRecordValue(const char* key, const char* value, void* hash) {
 	addStrToHash(*((unsigned long*)hash), key, value);
 }
 
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
 static VALUE _getRecord(CABRecord* record) {
-	if (record) {
+	if (RHO_IS_WMDEVICE && record) {
         CHoldRubyValue hash(rho_ruby_createHash());
 		record->enumValues(_addRecordValue,&(hash.m_value));
 		return hash;
@@ -69,8 +74,8 @@ static VALUE _getRecord(CABRecord* record) {
 #endif
 
 VALUE getallPhonebookRecords(void* pb) {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	if (pb) {
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if (RHO_IS_WMDEVICE && pb) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
         VALUE valGc = rho_ruby_disable_gc();
         CHoldRubyValue hash(rho_ruby_createHash());
@@ -90,7 +95,7 @@ VALUE getallPhonebookRecords(void* pb) {
 
         rho_ruby_enable_gc(valGc);
 		return hash;
-	}
+	}	
 #endif
 	return rho_ruby_get_NIL();	
 }
@@ -105,8 +110,8 @@ VALUE getPhonebookRecords(void* pb, rho_param* params) {
 
 
 VALUE getPhonebookRecord(void* pb, char* id) {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	if (pb && id) {
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if (RHO_IS_WMDEVICE && pb && id) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
 		CABRecord* record = phonebook->getRecord(id);
 		if (record) {
@@ -131,16 +136,19 @@ VALUE getnextPhonebookRecord(void* pb) {
 //==================================================================================
 
 void* createRecord(void* pb) {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	return new CABOutlookRecord(NULL);
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(RHO_IS_WMDEVICE)
+		return new CABOutlookRecord(NULL);
+
+	return NULL;
 #else
 	return NULL;
 #endif
 }
 
 void* openPhonebookRecord(void* pb, char* id) {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	if (pb && id) {
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if (RHO_IS_WMDEVICE && pb && id) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
 		return phonebook->getRecord(id);
 	}
@@ -149,8 +157,8 @@ void* openPhonebookRecord(void* pb, char* id) {
 }
 
 int setRecordValue(void* record, char* prop, char* value) {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	if (record) {
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if (RHO_IS_WMDEVICE && record) {
 		CABRecord* r = (CABRecord*)record;
 		r->setValue(prop,value);
 	}
@@ -159,8 +167,8 @@ int setRecordValue(void* record, char* prop, char* value) {
 }
 
 int addRecord(void* pb, void* record) {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	if (pb && record) {
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if (RHO_IS_WMDEVICE && pb && record) {
 		CNativeAddressBook* phonebook = (CNativeAddressBook*)pb;
 		phonebook->addRecord((CABRecord*)record);
 		delete record;
@@ -170,8 +178,8 @@ int addRecord(void* pb, void* record) {
 }
 
 int saveRecord(void* pb, void* record) {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	if (record) {
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if (RHO_IS_WMDEVICE && record) {
 		CABRecord* r = (CABRecord*)record;
 		LOGC(INFO,"Phonebook") + "About to save:";
 		r->dump();
@@ -183,8 +191,8 @@ int saveRecord(void* pb, void* record) {
 }
 
 int deleteRecord(void* pb, void* record) {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	if (record) {
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if (RHO_IS_WMDEVICE && record) {
 		CABRecord* r = (CABRecord*)record;
 		r->remove();
 		delete r;
@@ -194,8 +202,11 @@ int deleteRecord(void* pb, void* record) {
 }
 
 const char* phonebook_get_authorization_status() {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	return "Authorized";
+#if defined (_WIN32_WCE)//&& !defined( OS_PLATFORM_MOTCE )
+	if(RHO_IS_WMDEVICE) 
+		return "Authorized";
+
+	return "Restricted";
 #else
 	return "Restricted";
 #endif

@@ -29,7 +29,7 @@
 
 #include "ext/rho/rhoruby.h"
 
-#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )
+#if _WIN32_WCE > 0x499// && !defined( OS_PLATFORM_MOTCE )
 
 #include "logging/RhoLog.h"
 #include "common/RhoMutexLock.h"
