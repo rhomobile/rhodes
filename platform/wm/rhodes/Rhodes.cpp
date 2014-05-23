@@ -29,6 +29,7 @@
 #include "IEBrowserEngine.h"
 #include "CEBrowserEngine.h"
 #include "LogMemory.h"
+#include "camera/Camera.h"
 
 #include "logging/RhoLog.h"
 #include "common/RhodesApp.h"
@@ -127,6 +128,7 @@ extern "C" bool rho_wmimpl_get_resize_on_sip()
 
 #if defined(_WIN32_WCE)
 #include <regext.h>
+#include "soundfile.h"
 #include "bluetooth/Bluetooth.h"
 
 // Global Notification Handle
@@ -145,13 +147,30 @@ typedef HRESULT (WINAPI* LPFN_REGISTRY_CLOSENOTIFICATION_T) (HREGNOTIFY);
 typedef HRESULT (WINAPI* LPFN_REGISTRY_NOTIFYWINDOW_T) (HKEY, LPCTSTR, LPCTSTR, HWND, UINT, DWORD, NOTIFICATIONCONDITION*, HREGNOTIFY*);
 typedef HRESULT (WINAPI* LPFN_REGISTRY_GETSTRING_T) (HKEY, LPCTSTR, LPCTSTR, LPTSTR, UINT);
 typedef HRESULT (WINAPI* LPFN_REGISTRY_GETDWORD_T) (HKEY, LPCTSTR, LPCTSTR, DWORD*);
+typedef HRESULT (WINAPI* LPFN_CAMERA_CAPTURE_T)(PSHCAMERACAPTURE);
+typedef BOOL (WINAPI* LPFN_GETOPEN_FILEEX_T)(LPOPENFILENAMEEX);
+typedef HRESULT (WINAPI* LPFN_SND_STOP_T)(__in SND_SCOPE, __reserved HSOUND);
+typedef HRESULT (WINAPI* LPFN_SND_CLOSE_T)(__in HSOUND);
+typedef HRESULT (WINAPI* LPFN_SND_PLAYASYNC_T)(__in HSOUND, DWORD);
+typedef HRESULT (WINAPI* LPFN_SND_OPEN_T)(__in LPCTSTR,  __out HSOUND*);
+typedef HRESULT (WINAPI* LPFN_SND_GETSOUNDFILELIST_T)(SND_EVENT, DWORD, SNDFILEINFO**, int*);
 
+
+extern "C" LPFN_SND_STOP_T lpfn_snd_stop = NULL;
+extern "C" LPFN_SND_CLOSE_T lpfn_snd_close = NULL;
+extern "C" LPFN_SND_PLAYASYNC_T lpfn_snd_playasync = NULL;
+extern "C" LPFN_SND_OPEN_T lpfn_snd_open = NULL;
+extern "C" LPFN_SND_GETSOUNDFILELIST_T lpfn_snd_getsndflist = NULL;
 LPFN_REGISTRY_CLOSENOTIFICATION_T	lpfn_Registry_CloseNotification = NULL;
 LPFN_REGISTRY_NOTIFYWINDOW_T		lpfn_Registry_NotifyWindow = NULL;		
 LPFN_REGISTRY_GETSTRING_T			lpfn_Registry_GetString = NULL;			
 LPFN_REGISTRY_GETDWORD_T			lpfn_Registry_GetDWORD = NULL;
+extern "C" LPFN_CAMERA_CAPTURE_T               lpfn_Camera_Capture = NULL;
+extern "C" LPFN_GETOPEN_FILEEX_T               lpfn_GetOpen_FileEx = NULL;
 HMODULE g_hAygShellDLL = NULL;	
 extern "C" BOOL LoadAYGShell();
+HMODULE g_hSndDLL = NULL;	
+extern "C" BOOL LoadSoundDll();
 
 #endif
 
@@ -739,6 +758,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	else
 		winversion = 2;*/
 	LoadAYGShell();
+	LoadSoundDll();
 #endif
 
 	//Required to use datetime picker controls.
@@ -962,6 +982,8 @@ extern "C" BOOL LoadAYGShell()
 			(LPFN_REGISTRY_GETSTRING_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetString"));
 		lpfn_Registry_GetDWORD = 
 			(LPFN_REGISTRY_GETDWORD_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetDWORD"));
+		lpfn_Camera_Capture = (LPFN_CAMERA_CAPTURE_T)GetProcAddress(g_hAygShellDLL, _T("SHCameraCapture"));
+		lpfn_GetOpen_FileEx = (LPFN_GETOPEN_FILEEX_T)GetProcAddress(g_hAygShellDLL, _T("GetOpenFileNameEx"));
 
 		if (!lpfn_Registry_CloseNotification)
 		{
@@ -985,6 +1007,34 @@ extern "C" BOOL LoadAYGShell()
 			winversion = 1;
 			bReturnValue = TRUE;
 		}
+	}
+
+	return bReturnValue;	
+}
+
+extern "C" BOOL LoadSoundDll()
+{
+	bool bReturnValue = FALSE;
+	g_hSndDLL = LoadLibrary(L"soundfile.dll");
+	if (!g_hSndDLL)
+	{
+		//  Error loading AygShell.dll (used for Retrieving values from the Registry)
+		LOG(INFO) + "Failed to load SoundFile.dll, WAN status event will not be available";
+	}
+	else
+	{
+		lpfn_snd_stop = 
+			(LPFN_SND_STOP_T)GetProcAddress(g_hSndDLL, _T("SndStop"));
+		lpfn_snd_close = 
+			(LPFN_SND_CLOSE_T)GetProcAddress(g_hSndDLL, _T("SndClose"));
+		lpfn_snd_open = 
+			(LPFN_SND_OPEN_T)GetProcAddress(g_hSndDLL, _T("SndOpen"));
+		lpfn_snd_playasync = 
+			(LPFN_SND_PLAYASYNC_T)GetProcAddress(g_hSndDLL, _T("SndPlayAsync"));
+		lpfn_snd_getsndflist = (LPFN_SND_GETSOUNDFILELIST_T)GetProcAddress(g_hSndDLL, _T("SndGetSoundFileList"));
+
+	
+		bReturnValue = TRUE;
 	}
 
 	return bReturnValue;	
