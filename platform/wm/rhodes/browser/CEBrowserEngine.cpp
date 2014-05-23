@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 extern "C" HWND rho_wmimpl_get_mainwnd();
+extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam);
 
 IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
 
@@ -670,8 +671,22 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
     case PB_ONMETA:
         {
             EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
-            rho::browser::MetaHandler(m_tabID, metaTag2);
+
+            RHODESAPP().getExtManager().onSetPropertiesData( (LPCWSTR)wParam, (LPCWSTR)lParam );
+
+            if (metaTag2 && wcscmp(metaTag2->tcHTTPEquiv, L"initialiseRhoElementsExtension") != 0)
+            {
+                free(metaTag2->tcHTTPEquiv);
+                free(metaTag2->tcContents);
+                delete metaTag2;
+            }
         }
+        break;
+    case PB_ONTOPMOSTWINDOW:
+        LOG(INFO) + "START PB_ONTOPMOSTWINDOW";
+        LRESULT rtRes = rho_wm_appmanager_ProcessOnTopMostWnd(wParam, lParam);
+        LOG(INFO) + "END PB_ONTOPMOSTWINDOW";
+        return rtRes;
         break;
     }
 
