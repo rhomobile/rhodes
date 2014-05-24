@@ -151,6 +151,7 @@ void EventSource::close()
     {
       m_pNetRequest->setCallback(0);
       m_pNetRequest->cancel();
+      m_pNetRequest = 0;
     }
 //    else {
 //        m_state = CLOSED;
