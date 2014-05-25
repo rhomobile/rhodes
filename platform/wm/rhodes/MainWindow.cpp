@@ -53,13 +53,14 @@
 #include "statistic/RhoProfiler.h"
 #include "coreapi/ext/shared/Intent.h"
 #include "coreapi/ext/platform/wm/src/Intents.h"
+#include "browser/BrowserFactory.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
 #endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
-UINT WM_LICENSE_SCREEN          = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
+UINT WM_LICENSE_SCREEN = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
 
 #include "DateTimePicker.h"
 
@@ -70,7 +71,6 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 
 extern "C" double rho_wmimpl_get_pagezoom();
 
-rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent);
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 bool m_SuspendedThroughPowerButton = false;
 
@@ -223,8 +223,8 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
     if (!bDestroy)
     {
-		if(RHO_IS_WMDEVICE)
-			SetFullScreen(bFull);
+		//if(RHO_IS_WMDEVICE)
+		//	SetFullScreen(bFull);
 
 		if ( bFull )
 			hideSIPButton();
@@ -355,7 +355,7 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
 
 void CMainWindow::initBrowserWindow()
 {
-    m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+    m_pBrowserEng = rho::BrowserFactory::getInstance()->create(m_hWnd);
 
     CRect rect;
     GetWindowRect(&rect);

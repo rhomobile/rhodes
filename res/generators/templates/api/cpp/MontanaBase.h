@@ -10,6 +10,7 @@ namespace <%= parent.downcase() %> {<%
 end %>
 
 using namespace rho::apiGenerator;
+using namespace rho;
 
 // hash keys used in properties and parameters <% 
 if $cur_module.hash_key_names.size > 0 %>

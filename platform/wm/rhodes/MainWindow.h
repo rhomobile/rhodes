@@ -40,7 +40,7 @@
 #include "SyncStatusDlg.h"
 #include "rho/rubyext/NativeToolbar.h"
 #include "rho/rubyext/NativeTabbar.h"
-#include "IBrowserEngine.h"
+#include "browser/IBrowserEngine.h"
 #include "common/app_build_capabilities.h"
 
 #include "LogView.h"

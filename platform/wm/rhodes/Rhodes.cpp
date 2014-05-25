@@ -26,8 +26,8 @@
 
 #include "stdafx.h"
 #include "MainWindow.h"
-#include "IEBrowserEngine.h"
-#include "CEBrowserEngine.h"
+#include "browser/IEBrowserEngine.h"
+#include "browser/CEBrowserEngine.h"
 #include "LogMemory.h"
 #include "camera/Camera.h"
 
@@ -69,7 +69,7 @@ static void set_bridge_direct_callback();
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
-extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
+//extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 
 #if !defined(APP_BUILD_CAPABILITY_MOTOROLA)
@@ -246,17 +246,6 @@ static String g_strCmdLine;
 HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
-
-rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
-{
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-    return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-#elif defined(OS_PLATFORM_MOTCE)
-    return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-#else
-    return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-}
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw()
 {
