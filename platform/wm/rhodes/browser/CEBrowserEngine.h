@@ -40,6 +40,7 @@ public:
 
 private:
 	
+    HRESULT ParseTags();
     LRESULT CreateEngine();
 
 	static DWORD WINAPI NavigationTimeoutThread( LPVOID lpParameter );

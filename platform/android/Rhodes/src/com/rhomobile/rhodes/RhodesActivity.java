@@ -81,6 +81,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
 	private long uiThreadId = 0;
 	
+
+	
 	public long getUiThreadId() {
 		return uiThreadId;
 	}
@@ -109,7 +111,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         }
     }
 
-    private void initConfig(String path) {
+  private void initConfig(String path) {
         InputStream configIs = null;
         Config config = new Config();
         ApplicationInfo appInfo = getAppInfo();
@@ -135,6 +137,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             String CAPath = config.getValue("CAPath");
             if (CAPath != null && CAPath.length() > 0)
                 RhoConf.setString("CAPath", CAPath);
+                
+            String pageZoom=config.getValue("PageZoom");
+            if(pageZoom !=null && pageZoom.length()>0)
+		RhoConf.setString("PageZoom", pageZoom);
+            else
+            	RhoConf.setString("PageZoom", "1.0");
 
         } catch (Throwable e) {
             Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());

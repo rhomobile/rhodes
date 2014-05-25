@@ -72,6 +72,7 @@ void rho_db_init_attr_manager();
 void rho_sys_app_exit();
 void rho_sys_report_app_started();
 void rho_conf_show_log();
+bool rho_wmimpl_is_browser_ieforwm();
 
 #ifdef OS_ANDROID
 void rho_file_set_fs_mode(int mode);
@@ -1646,7 +1647,7 @@ void CRhodesApp::initAppUrls()
     m_isJSFSApp = false;
 
 #ifdef RHO_NO_RUBY_API
-    m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
+        m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
 #endif
 
 #ifdef OS_WINCE
