@@ -464,11 +464,26 @@ def check_subscription_re(subscr)
   unsigned = subscr.gsub(/"signature":"[^"]*"/, '"signature":""')
   hash = Digest::SHA1.hexdigest(unsigned)
 
+  level = 0
+
   if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
-    return (!resp["features"].nil? && (resp["features"]["isFree"]==false))
+    if (!resp["features"].nil?)
+      if !to_boolean(resp["features"]["isFree"])
+        case resp["features"]["plan"]
+        when "premium"
+          level = 2
+        when "enterprise"
+          level = 2
+        when "silver"
+          level = 1
+        when "gold"
+          level = 2
+        end
+      end
+    end
   end
 
-  false
+  level
 end
 
 $def_rhohub_url = 'https://app.rhohub.com/api/v1'
@@ -953,6 +968,14 @@ $latest_platform = nil
 namespace "rhohub" do
   desc "Get project infromation from rhohub"
   task :initialize => ["config:initialize","token:setup"] do
+
+    if check_subscription_re($user_acc.subscription) < 1
+      BuildOutput.error(
+        ['Cloud build is supported only for paid accounts. In order to upgrade your account please',
+         'log in https://app.rhohub.com/ and select "change plan" menu item in your profile settings.'],
+        'Free account limitation')
+      exit 1
+    end
     #check current folder
     result = Jake.run2("git",%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
 
@@ -1637,7 +1660,7 @@ namespace "config" do
     end
 
     if $re_app || $rhoelements_features.length() > 0
-      if !check_subscription_re($user_acc.subscription)
+      if check_subscription_re($user_acc.subscription) < 1
         if !$user_acc.is_valid_subscription?
           BuildOutput.error([
             'Subscription information is not downloaded. Please connect to internet and run build command again.'],
