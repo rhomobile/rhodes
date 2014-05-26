@@ -1079,7 +1079,11 @@ namespace "rhohub" do
 
               dest = File.join($rhohub_bin, dirs.first)
 
+              $unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
+
               put_message_with_timestamp(start_time, "Done, application unpacked into #{dest}")
+            else
+              $unpacked_file_list = []
             end
           else
             put_message_with_timestamp(start_time, "Done with build errors")
@@ -1211,16 +1215,34 @@ namespace "rhohub" do
     end
   end
 
-  desc "Run build with id"
-  task :run, [:build_id] do |t, args|
+  def run_binary_on(platform, file_list, devsim)
+    case platform
+    when "android"
+      to_run = file_list.find{|f| /.apk/ =~ f}
+      if !to_run.nil?
+        Rake::Task["run:#{platform}:#{devsim}:package"].invoke(to_run)
+      else
+        BuildOutput.error( 'Could not find apk file for android project', 'No file')
+      end
+    end
+  end
+
+  desc "Run binary on the simulator with id"
+  task "run:simulator", [:build_id] do |t, args|
     build_id = args.build_id
 
     Rake::Task["rhohub:download"].invoke(build_id)
 
-    case $latest_platform
-    when "android"
-      
-    end
+    run_binary_on($latest_platform, $unpacked_file_list, 'simulator')
+  end
+
+  desc "Run binary on the simulator with id"
+  task "run:device", [:build_id] do |t, args|
+    build_id = args.build_id
+
+    Rake::Task["rhohub:download"].invoke(build_id)
+
+    run_binary_on($latest_platform, $unpacked_file_list, 'device')
   end
 end
 

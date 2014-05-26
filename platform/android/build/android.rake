@@ -2242,6 +2242,30 @@ namespace "run" do
       end
     end
 
+    desc "Run downloaded binary package on device"
+    task "simulator:package", [:package_file, :package_name] => ['config:android:emulator'] do |t, args|
+      package_file = args.package_file
+      package_name = args.package_name.nil? ? $app_package_name : args.package_name
+
+      throw "You must pass package name" if package_file.nil?
+      throw "No file to run" if !File.exists?(package_file)
+
+      AndroidTools.run_emulator
+
+      AndroidTools.load_app_and_run('-e', File.expand_path(package_file), package_name)
+    end
+
+    desc "Run downloaded binary package on simulator"
+    task "device:package", [:package_file, :package_name] => ['config:android:device'] do |t, args|
+      package_file = args.package_file
+      package_name = args.package_name.nil? ? $app_package_name : args.package_name
+
+      throw "You must pass package name" if package_file.nil?
+      throw "No file to run" if !File.exists?(package_file)
+
+      AndroidTools.load_app_and_run('-d', File.expand_path(package_file), package_name)
+    end
+
     task :spec => "run:android:emulator:spec" do
     end
 
@@ -2257,6 +2281,18 @@ namespace "run" do
       AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
 
       AndroidTools.logcat_process('-e')
+
+      sleepRubyProcess
+    end
+
+    desc "build and install on device"
+    task :device => "device:android:debug" do
+      AndroidTools.kill_adb_logcat('-d')
+
+      apkfile = File.join $targetdir, $appname + "-debug.apk"
+      AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
+
+      AndroidTools.logcat_process('-d')
 
       sleepRubyProcess
     end
@@ -2282,18 +2318,6 @@ namespace "run" do
       $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
 
       Rake::Task["run:rhosimulator_debug"].invoke
-    end
-
-    desc "build and install on device"
-    task :device => "device:android:debug" do
-      AndroidTools.kill_adb_logcat('-d')
-
-      apkfile = File.join $targetdir, $appname + "-debug.apk"
-      AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
-
-      AndroidTools.logcat_process('-d')
-
-      sleepRubyProcess
     end
   end
 
