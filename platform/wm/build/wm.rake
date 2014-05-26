@@ -528,10 +528,7 @@ namespace "config" do
 
       $app_icon_path = $app_path + "/icon/icon.ico"
       $app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exists? $app_icon_path
-      cp $app_icon_path, $startdir + "/platform/wm/rhodes/resources/icon.ico"
       cp $app_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.ico"
-      resfile = $startdir + "/platform/wm/bin/win32/rhodes/" +$buildcfg + "/Rhodes.res"
-      rm resfile if File.exists? resfile
 
       $qt_icon_path = $app_path + "/icon/icon.png"
       $qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exists? $qt_icon_path
