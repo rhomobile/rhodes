@@ -223,8 +223,8 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
     if (!bDestroy)
     {
-		//if(RHO_IS_WMDEVICE)
-		//	SetFullScreen(bFull);
+		if(RHO_IS_WMDEVICE)
+			SetFullScreen(bFull);
 
 		if ( bFull )
 			hideSIPButton();
