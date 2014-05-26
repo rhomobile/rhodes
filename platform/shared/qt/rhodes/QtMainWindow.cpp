@@ -94,7 +94,14 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_proxy(QNetworkProxy(QNetworkProxy::DefaultProxy))
     //TODO: m_SyncStatusDlg
 {
-#ifdef OS_WINDOWS_DESKTOP
+#if !defined(RHODES_EMULATOR)
+    QPixmap icon("icon.png");
+    QApplication::setWindowIcon(icon);
+    QApplication::setApplicationDisplayName(QString::fromStdString(RHOCONF().getString("title_text")));
+    QApplication::setApplicationName(QString::fromStdString(RHOCONF().getString("app_name")));
+    QApplication::setApplicationVersion(QString::fromStdString(RHOCONF().getString("app_version")));
+    QApplication::setOrganizationName(QString::fromStdString(RHOCONF().getString("org_name")));
+#elif defined(OS_WINDOWS_DESKTOP)
     QPixmap icon(":/images/rho.png");
     QApplication::setWindowIcon(icon);
 #endif
@@ -829,7 +836,9 @@ void QtMainWindow::on_actionAbout_triggered()
 #ifdef RHODES_EMULATOR
     QMessageBox::about(this, RHOSIMULATOR_NAME, QString(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebKit v" QTWEBKIT_VERSION_STR ")\n(WebKit v%1)").arg(qWebKitVersion()));
 #else
-    QMessageBox::about(this, APPLICATION_NAME, APPLICATION_NAME " v" APPLICATION_VERSION);
+    QMessageBox::about(this, QString::fromStdString(RHOCONF().getString("title_text")), QString("%1 v%2")
+        .arg(QString::fromStdString(RHOCONF().getString("app_name")))
+        .arg(QString::fromStdString(RHOCONF().getString("app_version"))));
 #endif
 
 #endif
