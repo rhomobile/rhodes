@@ -26,6 +26,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import com.rhomobile.rhodes.Logger;
+
 public class WebSocketClient {
     private static final String TAG = "WebSocketClient";
 
@@ -139,16 +141,30 @@ public class WebSocketClient {
                     mParser.start(stream);
 
                 } catch (EOFException ex) {
-                    Log.d(TAG, "WebSocket EOF!", ex);
-                    mListener.onDisconnect(0, "EOF");
-
+                    Logger.E(TAG,"WebSocket EOF! " + ex.toString());
+                    mListener.onError(ex);
+                    if ( mSocket != null ) {
+                      disconnect();
+                    } else {
+                      mListener.onDisconnect(0, "EOF");
+                    }
                 } catch (SSLException ex) {
                     // Connection reset by peer
-                    Log.d(TAG, "Websocket SSL error!", ex);
-                    mListener.onDisconnect(0, "SSL");
-
-                } catch (Exception ex) {
+                    Logger.E(TAG,"Websocket SSL error! " + ex.toString());
                     mListener.onError(ex);
+                    if ( mSocket != null ) {
+                      disconnect();
+                    } else {
+                      mListener.onDisconnect(0, "SSL");
+                    }
+                } catch (Exception ex) {
+                    Logger.E(TAG,ex.toString());
+                    mListener.onError(ex);
+                    if ( mSocket != null ) {
+                      disconnect();
+                    } else {
+                      mListener.onDisconnect(0, "Websocket disconnected.");
+                    }
                 }
             }
         });
@@ -162,12 +178,11 @@ public class WebSocketClient {
                 public void run() {
                     try {
                         mSocket.close();
-                        mSocket = null;
-                        mListener.onDisconnect(0,"Websocket disconnected from client side");
                     } catch (IOException ex) {
-                        Log.d(TAG, "Error while disconnecting", ex);
-                        mListener.onError(ex);
+                        //Close socket silently as it may throw IO error if smth needs to be flushed before actual close.                        
                     }
+                    mSocket = null;
+                    mListener.onDisconnect(0,"Websocket disconnected.");
                 }
             });
         }
@@ -243,7 +258,7 @@ public class WebSocketClient {
                         outputStream.write(frame);
                         outputStream.flush();
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     mListener.onError(e);
                 }
             }

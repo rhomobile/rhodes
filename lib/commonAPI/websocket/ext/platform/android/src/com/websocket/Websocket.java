@@ -17,8 +17,6 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     private static final int STATE_CLOSED       = 3;
     
     private int mState = -1;
-
-
     
     private static final String TAG = "Websocket";
     
@@ -26,7 +24,6 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     private IMethodResult mOnMessage;
     private IMethodResult mOnError;
     private IMethodResult mOnClose;
-    
     
     private WebSocketClient mClient;
     private WebsocketFactory mFactory;
@@ -78,6 +75,11 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     @Override
     public void create(String url, String protocols, IMethodResult result) {
         Logger.I(TAG,"Websocket create, url:" + url);
+
+        if ( url.length() == 0 ) {
+          result.setError("Websocket URL is empty.");
+          return;
+        }
         
         mURL = url;
 
