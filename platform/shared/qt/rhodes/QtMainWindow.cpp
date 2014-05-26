@@ -95,7 +95,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     //TODO: m_SyncStatusDlg
 {
 #if !defined(RHODES_EMULATOR)
-    QPixmap icon("icon.png");
+    QPixmap icon(QCoreApplication::applicationDirPath().append(QDir::separator()).append("icon.png"));
     QApplication::setWindowIcon(icon);
     QApplication::setApplicationDisplayName(QString::fromStdString(RHOCONF().getString("title_text")));
     QApplication::setApplicationName(QString::fromStdString(RHOCONF().getString("app_name")));

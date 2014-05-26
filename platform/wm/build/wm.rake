@@ -1700,6 +1700,8 @@ namespace "run" do
     cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
     Rake::Task["build:win32:deployqt"].invoke
 
+    cp $qt_icon_path, $startdir + "/platform/wm/bin/win32/rhodes/" +$buildcfg + "/icon.png"
+
     args = [' ']
     #    chdir $config["build"]["wmpath"]
     #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
