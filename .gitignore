@@ -15,13 +15,13 @@ lib/commonAPI/*/*/*/generated/
 lib/commonAPI/*/*/*/*/generated/
 lib/commonAPI/*/*/*/*/*/debug/
 lib/commonAPI/*/ext/platform/iphone/build/
-lib/commonAPI/javascriptvm/ext/platform/iphone/build/*
 lib/extensions/*/*/*/generated/
 lib/extensions/*/*/*/*/generated/
 lib/extensions/*/ext/*/platform/iphone/build/
-lib/extensions/*/ext/platform/iphone/build/
 lib/extensions/*/ext/iphone/build/
 lib/extensions/openssl.so/wm/tmp/
+lib/*/*/ext/platform/iphone/*.a
+lib/*/*/ext/*/platform/iphone/*.a
 platform/iphone/*/*.link
 platform/iphone/*/build/
 platform/iphone/*/rholog.txt
@@ -273,6 +273,7 @@ platform/osx/bin/rubylib/*
 platform/osx/bin/sqlite3/*
 platform/osx/bin/syncengine/*
 platform/osx/bin/RhoSimulator/generated_files/*
+platform/osx/bin/RhoSimulator/RhoSimulator.app
 platform/osx/bin/RhoSimulator/tmp/*
 platform/build/*.build/*
 
