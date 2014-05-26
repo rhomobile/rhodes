@@ -640,6 +640,11 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         	sendException(ex);
           //  throw new RuntimeException(ex);
         }
+        catch(Exception e)
+		{
+			sendException(e);
+			System.out.println("GOTCHA!!!!=="+e.getMessage());
+		}
        
     }
 
@@ -789,7 +794,11 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	 Map<String, Object> tempprops = new HashMap<String, Object>();
         {
         	try {
-                releaseRecorder();
+                 if (mRecorder != null) {
+            mRecorder.reset();
+            mRecorder.release();
+            mRecorder = null;
+        }
             } 
             catch(Exception e)
             {
