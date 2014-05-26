@@ -1309,14 +1309,18 @@ namespace "config" do
 
     $app_config = {}
 
-    if (!$app_path.nil?)
-      # read application config
-      $app_config = Jake.config(File.open(File.join($app_path, "build.yml"))) if $app_config_disable_reread != true
+    if (!$app_path.nil?) 
+      app_yml = File.join($app_path, "build.yml")
 
-      if File.exists?(File.join($app_path, "app_rakefile"))
-        load File.join($app_path, "app_rakefile")
-        $app_rakefile_exist = true
-        Rake::Task["app:config"].invoke
+      if File.exists?(app_yml)
+        # read application config
+        $app_config = Jake.config(File.open(app_yml)) if $app_config_disable_reread != true
+
+        if File.exists?(File.join($app_path, "app_rakefile"))
+          load File.join($app_path, "app_rakefile")
+          $app_rakefile_exist = true
+          Rake::Task["app:config"].invoke
+        end
       end
     end
 
