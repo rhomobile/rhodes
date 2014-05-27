@@ -1216,7 +1216,7 @@ namespace "device" do
     puts "out_dir - "  + out_dir
 
     mkdir_p $targetdir unless skip_nsis
-    mkdir_p $tmpdir
+    mkdir_p $tmpdir unless skip_deployqt
     mkdir_p out_dir
 
     cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
@@ -1278,9 +1278,11 @@ namespace "device" do
 
     chdir $tmpdir
 
-    target_rho_dir = File.join($tmpdir, "rho")
-    rm_rf target_rho_dir
-    mv $srcdir, target_rho_dir
+    if !skip_deployqt
+      target_rho_dir = File.join($tmpdir, "rho")
+      rm_rf target_rho_dir
+      mv $srcdir, target_rho_dir
+    end
 
     $target_path = $tmpdir
     Rake::Task["build:win32:deployqt"].invoke unless skip_deployqt
@@ -1313,6 +1315,10 @@ namespace "device" do
       Rake::Task["device:win32:build_with_prebuild_binary"].invoke
     end
     task :build_with_prebuild_binary => ["build:win32:set_release_config", "build:win32:rhobundle", "config:win32:application"] do
+      mkdir_p $tmpdir
+      target_rho_dir = File.join($tmpdir, "rho")
+      rm_rf target_rho_dir
+      mv $srcdir, target_rho_dir
       container_path = determine_prebuild_path_win('win32', $app_config)
       Rake::Task['device:win32:apply_container'].invoke(container_path)
       createWin32Production(true,false)
