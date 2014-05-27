@@ -43,7 +43,13 @@ end
 
 def determine_prebuild_path_win(platform,config)
   require 'rhodes/containers'
-  Rhodes::Containers::get_container_path_prefix(platform, config)
+  if platform == 'win32' && !config.nil? && config.is_a?(Hash) && config.has_key?("app_type")
+    conf = config.clone
+    conf.delete("app_type")
+  else
+    conf = config
+  end
+  Rhodes::Containers::get_container_path_prefix(platform, conf)
 end
 
 def additional_dlls_paths
@@ -1198,8 +1204,7 @@ namespace "device" do
     end
 
     task :production_with_prebuild_binary => ['config:wm'] do
-      require 'rhodes/containers'
-      container_path = Rhodes::Containers::get_container_path_prefix('wm', $app_config)
+      container_path = determine_prebuild_path_win('wm', $app_config)
       Rake::Task['device:wm:apply_container'].invoke(container_path)
       Rake::Task['build:bundle:noxruby'].invoke
       Rake::Task['device:wm:cab'].invoke
@@ -1308,8 +1313,7 @@ namespace "device" do
       Rake::Task["device:win32:build_with_prebuild_binary"].invoke
     end
     task :build_with_prebuild_binary => ["build:win32:set_release_config", "build:win32:rhobundle", "config:win32:application"] do
-      require 'rhodes/containers'
-      container_path = Rhodes::Containers::get_container_path_prefix('win32', $app_config)
+      container_path = determine_prebuild_path_win('win32', $app_config)
       Rake::Task['device:win32:apply_container'].invoke(container_path)
       createWin32Production(true,false)
     end
@@ -1336,7 +1340,9 @@ namespace "device" do
         'bin/tmp/rho/apps/rhoconfig.txt*',
         'bin/tmp/rho/apps/rhofilelist.txt',
         'bin/tmp/rho/apps/app',
-        'bin/tmp/rho/apps/public/api'
+        'bin/tmp/rho/apps/app_manifest.txt',
+        'bin/tmp/rho/apps/public/api',
+        'bin/tmp/rho/apps/public/public.txt'
       ]
 
       pack_7z($app_path, ['bin'], File.join(container_prefix_path, 'application_override.7z'), bin_exclude_files)
