@@ -1,2 +1,2 @@
-ext/audiocapture/platform/android/src/com/audiocapture/audioCapture.java
+ext/audiocapture/platform/android/src/com/audiocapture/Audiocapture.java
 ext/audiocapture/platform/android/src/com/audiocapture/ExtAudioRecorder.java
