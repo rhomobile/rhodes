@@ -36,7 +36,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="encoder" type="STRING">
-                <DESC>Encoder to compress recorded audio.</DESC>
+                <DESC>Encoder to compress recorded audio. In Android devices the supported encoder type is dependent upon device hardware snd vendor.</DESC>
 				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
                     
@@ -148,7 +148,7 @@ In Windows, 'getProperty' or 'getProperties' for fileName will return the comple
 			<REMARK title="General">
                 <DESC>
                     <![CDATA[
-On Quitting of the Application, Android will save the data in the file and gracefully exit.
+On Quitting of the Application, Android will save the data in the file and gracefully exit. 
                     ]]>
                 </DESC>
 			</REMARK>
