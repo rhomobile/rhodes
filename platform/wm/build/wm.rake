@@ -1715,13 +1715,13 @@ namespace "run" do
 
   desc "Run win32"
   task :win32 => ["build:win32"] do
-    if $target_path.nil?
+    unless $prebuild_win32
       rundir = $config["build"]["wmpath"]
       $target_path = File.join( rundir, "bin/win32/rhodes", $buildcfg )
-      exefile = 'rhodes.exe'
+      exefile = "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe"
     else
       rundir = $target_path
-      exefile = $appname + '.exe'
+      exefile = $target_path + '/' + $appname + '.exe'
     end
 
     cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), $target_path
@@ -1732,7 +1732,7 @@ namespace "run" do
     args = [' ']
     #    chdir rundir
     #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
-    Jake.run2 $target_path + '/' + exefile, args, {:directory => rundir, :nowait => true}
+    Jake.run2 exefile, args, {:directory => rundir, :nowait => true}
 
     $stdout.flush
     chdir $startdir
