@@ -223,8 +223,11 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
     if (!bDestroy)
     {
+#if !defined(_DEBUG)
+        //With MC3000c50b full screen functionality is not working in debug mode
 		if(RHO_IS_WMDEVICE)
 			SetFullScreen(bFull);
+#endif
 
 		if ( bFull )
 			hideSIPButton();
