@@ -257,9 +257,22 @@ class RhoHubAccount
     @info = {
       :subscription => nil,
       :token => nil,
-      :time => 0
+      :time => 0,
+      :server => nil
     }
     @changed = true
+  end
+
+  def server()
+    @info[:server]
+  end
+
+  def server=(value)
+    if value != @info[:server]
+      @changed = true
+    end
+
+    @info[:server] = value
   end
 
   def token()
@@ -291,7 +304,14 @@ class RhoHubAccount
   end
 
   def is_valid_subscription?()
-    !(@info[:subscription].nil? || @info[:subscription].empty?)
+    return false if (@info[:subscription].nil? || @info[:subscription].empty?)
+
+    begin
+      diff = JSON.parse(@info[:subscription])["tokenValidUntil"] - Time.now.to_i
+      diff > 0
+    rescue Exception => e
+      false
+    end
   end
 
   def time()
