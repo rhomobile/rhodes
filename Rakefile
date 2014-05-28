@@ -1697,7 +1697,7 @@ namespace "config" do
       if check_subscription_re($user_acc.subscription) < 1
         if !$user_acc.is_valid_subscription?
           BuildOutput.error([
-            'Subscription information is not downloaded. Please connect to internet and run build command again.'],
+            'Subscription information is not downloaded. Please verify your internet connection and run build command again.'],
             'Could not build licensed features.')
         else
           msg = ['You have free subcription on rhohub.com. RhoElements featuers are available only for paid accounts.']
