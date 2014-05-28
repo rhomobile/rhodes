@@ -15,6 +15,8 @@ enum EBrowserEngineType
     
 struct IBrowserFactory
 {
+    virtual void checkLicense(HWND hParent, HINSTANCE hLicenseInstance) = 0;    
+
     virtual IBrowserEngine* create(HWND hWnd) = 0;    
 };
  
@@ -26,11 +28,12 @@ public:
 
 private:
     EBrowserEngineType m_selBrowserType;
+    bool               m_bLicenseChecked;
 
-private:
     static BrowserFactory* g_browserFactory;
 
-    BrowserFactory() : m_selBrowserType(eNone) {}
+private:
+    BrowserFactory() : m_selBrowserType(eNone), m_bLicenseChecked(false) {}
     //
     IBrowserEngine* createWebkit(HWND hwndParent);
     //
@@ -47,6 +50,8 @@ public:
     static EBrowserEngineType getCurrentBrowserType();
     //
     IBrowserEngine* create(HWND hWnd);
+    //
+    void checkLicense(HWND hParent, HINSTANCE hLicenseInstance);
 };
 
 }
