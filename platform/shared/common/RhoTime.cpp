@@ -41,6 +41,7 @@ CRhoTimer::CNativeTimerItem::CNativeTimerItem(int nInterval, CRhoTimer::ICallbac
     m_nInterval(nInterval), m_pCallback(callback)
 {
 	m_oFireTime = CTimeInterval::getCurrentTime();
+    m_overflow = m_oFireTime.addMillis(nInterval);
 }
 
 CRhoTimer::CRhoTimer() : m_checkerThread(*this)
@@ -143,7 +144,7 @@ boolean CRhoTimer::checkTimers()
 
 			if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
 			{
-        RAWTRACE("CRhoTimer::checkTimers: firing timer");
+                RAWTRACE("CRhoTimer::checkTimers: firing timer");
 				m_arItems.removeElementAt(i);
 				if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
 					bRet = true;
@@ -152,18 +153,15 @@ boolean CRhoTimer::checkTimers()
 		}
 		else
 		{
-
-
 			if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
 			{
 				if((curTime.toULong()-oItem.m_oFireTime.toULong())<=oItem.m_nInterval)
 				{
-          RAWTRACE("CRhoTimer::checkTimers: firing timer");
+                    RAWTRACE("CRhoTimer::checkTimers: firing timer");
 					m_arItems.removeElementAt(i);
 					if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
 						bRet = true;
 				}
-
 
 			}
 
@@ -173,12 +171,30 @@ boolean CRhoTimer::checkTimers()
     for( int i = (int)m_arNativeItems.size()-1; i >= 0; i--)
     {
         CNativeTimerItem oItem = m_arNativeItems.elementAt(i);
-        if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
+        
+        if(oItem.m_overflow==false)
+		{
+            if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
+            {
+                RAWTRACE("CRhoTimer::checkTimers: firing native timer");
+                m_arNativeItems.removeElementAt(i);
+                if ( oItem.m_pCallback->onTimer() )
+                    bRet = true;
+            }
+        }
+        else
         {
-            RAWTRACE("CRhoTimer::checkTimers: firing native timer");
-            m_arNativeItems.removeElementAt(i);
-            if ( oItem.m_pCallback->onTimer() )
-                bRet = true;
+            if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
+			{
+				if((curTime.toULong()-oItem.m_oFireTime.toULong())<=oItem.m_nInterval)
+				{
+                    RAWTRACE("CRhoTimer::checkTimers: firing native timer");
+                    m_arNativeItems.removeElementAt(i);
+                    if ( oItem.m_pCallback->onTimer() )
+                        bRet = true;
+				}
+
+			}
         }
     }
 

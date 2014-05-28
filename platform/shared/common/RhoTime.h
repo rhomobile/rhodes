@@ -239,6 +239,7 @@ private:
         int m_nInterval;
         CTimeInterval m_oFireTime;
         CRhoTimer::ICallback* m_pCallback;
+        bool m_overflow;
 
         CNativeTimerItem(int nInterval, CRhoTimer::ICallback* callback);
     };

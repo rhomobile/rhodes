@@ -236,8 +236,9 @@ void CNetRequestWrapper::setCallback(rho::net::INetRequestCallback* callback )
 
 void CAsyncNetRequest::run(common::CRhoThread &)
 {
-  m_request.setCallback(this);
-  m_request.doRequest(m_method.c_str(),m_url,m_body,m_pSession,&m_headers);
+  CNetRequestWrapper net = ::getNetRequest(&m_request);
+  net.setCallback(this);
+  net.doRequest(m_method.c_str(),m_url,m_body,m_pSession,&m_headers);
 }
 
 void CAsyncNetRequest::cancel()
