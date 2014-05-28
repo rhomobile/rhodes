@@ -372,7 +372,7 @@ def get_conf(key_path, default = nil)
   key_sections = key_path.split('/').reject { |c| c.empty? }
 
   [$app_config, $config, $shared_conf].each do |config|
-    if !config.nil? 
+    if !config.nil?
       curr = config
       key_sections.each_with_index do |section, i|
         if !curr[section].nil?
@@ -380,7 +380,7 @@ def get_conf(key_path, default = nil)
         else
           break
         end
-        if (i == key_sections.length-1) && !curr.nil? 
+        if (i == key_sections.length-1) && !curr.nil?
           result = curr
         end
       end
@@ -410,38 +410,56 @@ def get_app_list()
   result
 end
 
-def check_update_token_file(user_acc, token_folder, check_subcription = false)
+
+def sort_by_distance(array, template)
+  template.nil? ? array : array.sort_by { |s| distance(template, s) }
+end
+
+def check_update_token_file(server_list, user_acc, token_folder, check_subcription = false)
   is_vaild = -2
 
   if user_acc.is_valid_token?()
     Rhohub.token = user_acc.token
 
-    is_vaild = user_acc.is_outdated() ? 0 : 2 
+    is_vaild = user_acc.is_outdated() ? 0 : 2
 
-    if SiteChecker.is_available? && (user_acc.is_outdated() || (check_subcription && !user_acc.is_valid_subscription?()))
-      if (check_subcription && !user_acc.is_valid_subscription?())
-        puts "Downloading user subscription information"
-        begin
-          subscription = Rhohub::Subscription.check()
-          user_acc.subscription = subscription
-          is_vaild = 2
-        rescue Exception => e
-          subscription = nil
-        end
-      end
+    if (user_acc.is_outdated() || (check_subcription && !user_acc.is_valid_subscription?()))
 
-      if is_vaild < 2
-        user_apps = nil
-        begin
-          user_apps = get_app_list()
-        rescue Exception => e
-          user_apps = nil
+      sort_by_distance(server_list, user_acc.server).each do |server|
+        SiteChecker.site = server
+        Rhohub.url = server
+
+        if SiteChecker.is_available?
+          if (check_subcription && !user_acc.is_valid_subscription?())
+            puts "Downloading user subscription information"
+            begin
+              subscription = Rhohub::Subscription.check()
+              user_acc.subscription = subscription
+              is_vaild = 2
+            rescue Exception => e
+              subscription = nil
+            end
+          end
+
+          if is_vaild < 2
+            user_apps = nil
+            begin
+              user_apps = get_app_list()
+            rescue Exception => e
+              user_apps = nil
+            end
+            if user_apps.nil?
+              user_acc.token = nil
+              is_vaild = -1
+            else
+              is_vaild = 1
+            end
+          end
         end
-        if user_apps.nil?
-          user_acc.token = nil
-          is_vaild = -1
-        else
-          is_vaild = 1
+
+        if is_vaild > 0
+          user_acc.server = server
+          break
         end
       end
     end
@@ -512,24 +530,18 @@ def read_and_delete_files( file_list )
   result
 end
 
-$def_rhohub_url = 'https://app.rhohub.com/api/v1'
+$server_list = ['https://app.rhohub.com/api/v1', 'https://appstaging.rhohub.com/api/v1']
 
 namespace "token" do
   task :initialize => "config:load" do
-    $rhohub = get_conf('rhohub/url', $def_rhohub_url)
+    $user_acc = RhoHubAccount.new()
 
-    if ($rhohub != $def_rhohub_url)
-      puts "Using alternative rhohub api url: #{$rhohub}"
-    end
-
-    SiteChecker.site = $rhohub
-    Rhohub.url = $rhohub
+    SiteChecker.site = $server_list.first
+    Rhohub.url = $server_list.first
     if !($proxy.nil? || $proxy.empty?)
       SiteChecker.proxy = $proxy
       RestClient.proxy = $proxy
     end
-
-    $user_acc = RhoHubAccount.new()
   end
 
   task :login => [:initialize] do
@@ -538,17 +550,17 @@ namespace "token" do
       exit 1
     end
 
-    puts "Login to #{$rhohub}"
+    puts "Login to rhohub"
 
     if $stdin.tty?
       print "Username: "
       username = STDIN.gets.chomp.downcase
       if username.empty?
         BuildOutput.note( "Empty username, build stopped")
-        
+
         exit 1
       end
-      
+
       print "Password: "
 
       STDIN.tty?
@@ -566,10 +578,20 @@ namespace "token" do
     end
 
     token = nil
-    begin
-      info = Rhohub::Token.login(username, password)
-      token = JSON.parse(info)["token"]
-    rescue Exception => e
+
+    sort_by_distance($server_list, $user_acc.server).each do |server|
+      Rhohub.url = server
+      begin
+        info = Rhohub::Token.login(username, password)
+        token = JSON.parse(info)["token"]
+        $user_acc.server = server
+      rescue Exception => e
+        token = nil
+      end
+      break if !token.nil?
+    end
+
+    if token.nil?
       BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at https://app.rhohub.com/forgot", "Invalid username or password" )
       exit 1
     end
@@ -603,7 +625,7 @@ namespace "token" do
 
     if $user_acc.is_valid_token?()
       # check existing API token
-      case check_update_token_file($user_acc, $rhodes_home, $re_app)
+      case check_update_token_file($server_list, $user_acc, $rhodes_home, $re_app)
       when 2
         #BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
       when 1
@@ -649,7 +671,7 @@ namespace "token" do
     end
 
     if $user_acc.is_valid_token?()
-      case check_update_token_file($user_acc, $rhodes_home, true)
+      case check_update_token_file($server_list, $user_acc, $rhodes_home, true)
       when 2
         BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check")
       when 1
@@ -669,7 +691,7 @@ namespace "token" do
 
   task :setup => [:read] do
     if !$user_acc.is_valid_token?()
-      have_input = STDIN.tty? && STDOUT.tty? 
+      have_input = STDIN.tty? && STDOUT.tty?
 
       BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you need to log in into your rhohub account.
 If you don't have accout please register at http://rhohub.com." + ( have_input ? "To stop build just press enter." : "") )
@@ -776,11 +798,11 @@ def http_get(url, proxy, save_to)
     begin
       result = false
 
-      http.request_get(uri.path) do |resp| 
+      http.request_get(uri.path) do |resp|
         last_p = 0
         length = resp['Content-Length'].to_i
         length = length > 1 ? length : 1
-        
+
         resp.read_body do |segment|
           f.write(segment)
           if  block_given?
@@ -933,7 +955,7 @@ def put_message_with_timestamp(start_time, message, no_newline = false)
   seconds, msecs = seconds.divmod(100)
   minutes, seconds = seconds.divmod(60)
   hours, minutes = minutes.divmod(3600)
-  
+
   time = sprintf TIME_FORMAT, hours, minutes, seconds, msecs
 
   data = "[#{time}] #{message}#{cleaner}"
@@ -947,7 +969,7 @@ end
 def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to = nil, unzip_to = nil)
   app_request = {:app_id => app_id, :id => build_id}
   last_stat = ""
-  status = "",
+  status = ""
 
   puts("Application build progress: \n")
 
@@ -1036,7 +1058,7 @@ namespace "rhohub" do
       BuildOutput.error(
         ['Cloud build is supported only for paid accounts. In order to upgrade your account please',
          'log in https://app.rhohub.com/ and select "change plan" menu item in your profile settings.'],
-        'Free account limitation')
+      'Free account limitation')
       exit 1
     end
     #check current folder
@@ -1061,13 +1083,13 @@ namespace "rhohub" do
 
     if $apps.nil?
       BuildOutput.error("Could not get rhohub project list. Check your internet connection and proxy settings.", "Rhohub build")
-      
+
       raise Exception.new("Could not get rhohub project list")
     end
 
     if $apps.empty?
       BuildOutput.error("You do not have any RhoHub projects, please create progect first in order to use cloud build system", "Rhohub build")
-     
+
       raise Exception.new("Empty project list")
     end
 
@@ -1083,7 +1105,7 @@ namespace "rhohub" do
     end
     $rhohub_app_id = $rhohub_app["id"]
 
-    if $app_path.empty? 
+    if $app_path.empty?
       BuildOutput.error("Could not run cloud build, app_path is not set", "Rhohub build")
       exit 1
     end
@@ -1153,9 +1175,9 @@ namespace "rhohub" do
         if !file.nil?
           if successfull
             dirs = Dir.entries($rhohub_temp).select {|entry| File.directory? File.join($rhohub_temp,entry) and !(entry =='.' || entry == '..') }
-            
+
             dirs.each do |dir|
-              put_message_with_timestamp(start_time, "Removing previous application from bin folder #{dir}") 
+              put_message_with_timestamp(start_time, "Removing previous application from bin folder #{dir}")
               FileUtils.rm_rf(Dir.glob(File.join($rhohub_bin,dir)))
               $latest_platform = dir
             end
@@ -1269,7 +1291,7 @@ namespace "rhohub" do
         if !missing.empty?
           raise Exception.new("Could not load #{missing.join(', ')}")
         end
-        
+
         options = {
           :upload_cert => File.new(cert_file, 'rb'),
           :upload_profile => File.new(profile_file, 'rb'),
@@ -1351,7 +1373,7 @@ def find_proxy()
   proxy = nil
 
   best_proxy = ENV.max_by do |k, v|
-    val = priority.index(k.downcase) 
+    val = priority.index(k.downcase)
     if val.nil?
       -1
     else
@@ -1359,7 +1381,7 @@ def find_proxy()
     end
   end
 
-  # check for 
+  # check for
   if !priority.index(best_proxy[0].downcase).nil?
     proxy = best_proxy[1]
 
@@ -1406,7 +1428,7 @@ namespace "config" do
       #load the apps path and config
 
       $app_path = $config["env"]["app"] unless $config["env"].nil?
-        
+
       if $app_path.nil?
         b_y = File.join(Dir.pwd(),'build.yml')
         if File.exists?(b_y)
@@ -1417,7 +1439,7 @@ namespace "config" do
 
     $app_config = {}
 
-    if (!$app_path.nil?) 
+    if (!$app_path.nil?)
       app_yml = File.join($app_path, "build.yml")
 
       if File.exists?(app_yml)
@@ -1726,18 +1748,18 @@ namespace "config" do
       if check_subscription_re($user_acc.subscription) < 1
         if !$user_acc.is_valid_subscription?
           BuildOutput.error([
-            'Subscription information is not downloaded. Please verify your internet connection and run build command again.'],
-            'Could not build licensed features.')
+                            'Subscription information is not downloaded. Please verify your internet connection and run build command again.'],
+                            'Could not build licensed features.')
         else
           msg = ['You have free subcription on rhohub.com. RhoElements featuers are available only for paid accounts.']
           if $rhoelements_features.length() > 0
             msg.concat(['The following features are only available in RhoElements v2 and above:',
-            $rhoelements_features,
-            'For more information go to http://www.motorolasolutions.com/rhoelements '])
+                        $rhoelements_features,
+                        'For more information go to http://www.motorolasolutions.com/rhoelements '])
           end
           msg.concat(
             ['In order to upgrade your account please log in https://app.rhohub.com/',
-            'Select "change plan" menu item in your profile settings.'])
+             'Select "change plan" menu item in your profile settings.'])
           BuildOutput.error(msg, 'Could not build licensed features.')
         end
         raise Exception.new("Could not build licensed features")
@@ -1755,16 +1777,16 @@ namespace "config" do
         rescue Exception => e
         end
       else
-        $rhoelements_features = []      
+        $rhoelements_features = []
       end
     end
 
 
     if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
       BuildOutput.warning([
-        'The following features are only available in RhoElements v2 and above:',
-        $rhoelements_features,
-        'For more information go to http://www.motorolasolutions.com/rhoelements '])
+                            'The following features are only available in RhoElements v2 and above:',
+                            $rhoelements_features,
+      'For more information go to http://www.motorolasolutions.com/rhoelements '])
     end
 
     if $current_platform == "win32" && $winxpe_build
@@ -1813,8 +1835,8 @@ namespace "config" do
 
     if !$js_application && !Dir.exists?(File.join($app_path, "app"))
       BuildOutput.error([
-        "Add javascript_application:true to build.yml, since application does not contain app folder.",
-        "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
+                          "Add javascript_application:true to build.yml, since application does not contain app folder.",
+                          "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
       ]);
       exit(1)
     end
@@ -2228,9 +2250,9 @@ def init_extensions(dest, mode = "")
 
   if ($ruby_only_extensions_list)
     BuildOutput.warning([
-      'The following extensions do not have JavaScript API: ', 
-      $ruby_only_extensions_list.join(', '), 
-      'Use RMS 4.0 extensions to provide JavaScript API'])
+                          'The following extensions do not have JavaScript API: ',
+                          $ruby_only_extensions_list.join(', '),
+    'Use RMS 4.0 extensions to provide JavaScript API'])
   end
 
   return ext_xmls_paths if mode == "get_ext_xml_paths"
@@ -2864,9 +2886,9 @@ namespace "build" do
 
       if ($minification_failed_list)
         BuildOutput.warning([
-            ' The JavaScript or CSS files failed to minify:',
-            $minification_failed_list,
-            ' See log for details '])
+                              ' The JavaScript or CSS files failed to minify:',
+                              $minification_failed_list,
+        ' See log for details '])
       end
 
       fc.puts(output)
