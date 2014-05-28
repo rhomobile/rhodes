@@ -712,10 +712,7 @@ def http_get(url, proxy, save_to)
 
   f_name = File.join(save_to,uri.path[%r{[^/]+\z}])
 
-  if uri.scheme == "https"  # enable SSL/TLS
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  end
+  http.use_ssl = true if uri.scheme == 'https'
 
   header_resp = nil
 
