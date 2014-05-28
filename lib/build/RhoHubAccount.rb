@@ -291,7 +291,14 @@ class RhoHubAccount
   end
 
   def is_valid_subscription?()
-    !(@info[:subscription].nil? || @info[:subscription].empty?)
+    return false if (@info[:subscription].nil? || @info[:subscription].empty?)
+
+    begin
+      diff = JSON.parse(@info[:subscription])["tokenValidUntil"] - Time.now.to_i
+      diff > 0
+    rescue Exception => e
+      false
+    end
   end
 
   def time()
