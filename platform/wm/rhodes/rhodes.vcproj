@@ -418,7 +418,7 @@
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
 				AdditionalOptions=" /subsystem:windowsce,5.0 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib comsuppw.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OutDir)"
@@ -454,7 +454,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\JSApp_FSTest"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\EB"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -2821,46 +2821,6 @@
 			<File
 				RelativePath=".\phonebook\NativeAddressBook.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|WT41N0c70PSDK (ARMv4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|WT41N0c70PSDK (ARMv4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\phonebook\NativeAddressBook.h"
@@ -2875,7 +2835,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
