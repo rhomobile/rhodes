@@ -745,7 +745,7 @@ end
 
 def rhohub_git_match(str)
   res = /git@git(?:.*?)\.rhohub\.com:(.*?)\/(.*?).git/i.match(str)
-  res.nil? ? { :str => "", :user => "", :app => "" } : { :str => "#{res[1]}/#{res[2]}", :user => res[1], :app => res[2] }
+  res.nil? ? {} : { :str => "#{res[1]}/#{res[2]}", :user => res[1], :app => res[2] }
 end
 
 def split_number_in_groups(number)
@@ -1103,7 +1103,13 @@ namespace "rhohub" do
     $rhohub_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
 
     if $rhohub_app[:dist] > 0
-      puts "WARNING! Could not find #{user_proj[:str]} using #{$rhohub_app[:user_proj][:str]} instead"
+      if $rhohub_app[:user] != user_proj[:user]
+        BuildOutput.error("Current user account is #{$rhohub_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", "Rhohub build")
+      else
+        project_names = $apps.map{ |e| " - #{e[:user_proj][:app].to_s}" }.join($/)
+        BuildOutput.error("Could not find #{user_proj[:app].bold} in current user application list: \n#{project_names}", "Rhohub build")
+      end
+      raise Exception.new("User or application list mismatch")
     end
     $rhohub_app_id = $rhohub_app["id"]
 
@@ -1144,7 +1150,7 @@ namespace "rhohub" do
         end
       end
     else
-      BuildOutput.note("You don't have any build request. To start new build use 'rake rhohub:build:<platform>:<target>' command", "Rhomobile build list is empty")
+      BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake rhohub:build:<platform>:<target>' command", "Build list is empty")
     end
   end
 
