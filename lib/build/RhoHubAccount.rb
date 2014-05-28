@@ -257,9 +257,22 @@ class RhoHubAccount
     @info = {
       :subscription => nil,
       :token => nil,
-      :time => 0
+      :time => 0,
+      :server => nil
     }
     @changed = true
+  end
+
+  def server()
+    @info[:server]
+  end
+
+  def server=(value)
+    if value != @info[:server]
+      @changed = true
+    end
+
+    @info[:server] = value
   end
 
   def token()
