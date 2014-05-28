@@ -539,27 +539,35 @@ namespace "token" do
     end
 
     puts "Login to #{$rhohub}"
-    print "Username: "
-    uname = STDIN.gets.chomp.downcase
-    if uname.empty?
-      BuildOutput.note( "Empty username, build stopped")
+
+    if $stdin.tty?
+      print "Username: "
+      username = STDIN.gets.chomp.downcase
+      if username.empty?
+        BuildOutput.note( "Empty username, build stopped")
+        
+        exit 1
+      end
       
-      exit 1
-    end
-    
-    print "Password: "
-    pwd = STDIN.noecho(&:gets).chomp
-    print $/
+      print "Password: "
 
-    if pwd.empty?
-      BuildOutput.note( "Empty password, build stopped")
+      STDIN.tty?
+      password = STDIN.noecho(&:gets).chomp
+      print $/
 
-      exit 1
+      if password.empty?
+        BuildOutput.note( "Empty password, build stopped")
+
+        exit 1
+      end
+    else
+      username = STDIN.readline.chomp
+      password = STDIN.readline.chomp
     end
 
     token = nil
     begin
-      info = Rhohub::Token.login(uname, pwd)
+      info = Rhohub::Token.login(username, password)
       token = JSON.parse(info)["token"]
     rescue Exception => e
       BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at https://app.rhohub.com/forgot", "Invalid username or password" )
