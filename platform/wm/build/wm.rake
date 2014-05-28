@@ -1050,7 +1050,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
     end
 
     task :after_bundle do
-      win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
+      win32rhopath = ($prebuild_win32 ? $tmpdir : 'platform/wm/bin/win32/rhodes/' + $buildcfg) + '/rho'
       mkdir_p win32rhopath
       namepath = File.join(win32rhopath,"name.txt")
       old_appname = File.read(namepath) if File.exists?(namepath)
@@ -1058,13 +1058,24 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       confpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
       confpath_content = File.read(confpath) if File.exists?(confpath)
 
-      rm_rf win32rhopath + 'lib'
-      rm_rf win32rhopath + 'apps'
-      rm_rf win32rhopath + 'db' if old_appname != $appname
+      if $prebuild_win32
+        $target_path = $tmpdir
+        if not File.directory?($target_path)
+          Dir.mkdir($target_path)
+        end
+        target_rho_dir = File.join($tmpdir, "rho")
+        rm_rf target_rho_dir
+        mv $srcdir, target_rho_dir
+      else
+        win32rhopath = win32rhopath + '/'
+        rm_rf win32rhopath + 'lib'
+        rm_rf win32rhopath + 'apps'
+        rm_rf win32rhopath + 'db' if old_appname != $appname
 
-      cp_r $srcdir + '/lib', win32rhopath
-      cp_r $srcdir + '/apps', win32rhopath
-      cp_r $srcdir + '/db', win32rhopath
+        cp_r $srcdir + '/lib', win32rhopath
+        cp_r $srcdir + '/apps', win32rhopath
+        cp_r $srcdir + '/db', win32rhopath
+      end
 
       File.open(namepath, "w") { |f| f.write($appname) }
       File.open(confpath, "w") { |f| f.write(confpath_content) }  if old_appname == $appname && confpath_content && confpath_content.length()>0
@@ -1315,10 +1326,6 @@ namespace "device" do
       Rake::Task["device:win32:build_with_prebuild_binary"].invoke
     end
     task :build_with_prebuild_binary => ["build:win32:set_release_config", "build:win32:rhobundle", "config:win32:application"] do
-      mkdir_p $tmpdir
-      target_rho_dir = File.join($tmpdir, "rho")
-      rm_rf target_rho_dir
-      mv $srcdir, target_rho_dir
       container_path = determine_prebuild_path_win('win32', $app_config)
       Rake::Task['device:win32:apply_container'].invoke(container_path)
       createWin32Production(true,false)
@@ -1708,16 +1715,24 @@ namespace "run" do
 
   desc "Run win32"
   task :win32 => ["build:win32"] do
+    unless $prebuild_win32
+      rundir = $config["build"]["wmpath"]
+      $target_path = File.join( rundir, "bin/win32/rhodes", $buildcfg )
+      exefile = "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe"
+    else
+      rundir = $target_path
+      exefile = $target_path + '/' + $appname + '.exe'
+    end
 
-    cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
-    Rake::Task["build:win32:deployqt"].invoke
+    cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), $target_path
+    Rake::Task["build:win32:deployqt"].invoke unless $prebuild_win32
 
-    cp $qt_icon_path, $startdir + "/platform/wm/bin/win32/rhodes/" +$buildcfg + "/icon.png"
+    cp $qt_icon_path, $target_path + "/icon.png"
 
     args = [' ']
-    #    chdir $config["build"]["wmpath"]
+    #    chdir rundir
     #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
-    Jake.run2 "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => true}
+    Jake.run2 exefile, args, {:directory => rundir, :nowait => true}
 
     $stdout.flush
     chdir $startdir
@@ -1745,6 +1760,20 @@ namespace "run" do
     task :rhosimulator_debug => ["config:set_win32_platform", "config:common"] do
       $rhosim_config = "platform='win32'\r\n"
       Rake::Task["run:rhosimulator_debug"].invoke
+    end
+
+    task :package do
+      $prebuild_win32 = true
+      Rake::Task["run:win32:run_with_prebuild_binary"].invoke
+    end
+
+    task :run_with_prebuild_binary => ["build:win32:set_release_config", "build:win32:rhobundle", "config:win32:application"] do
+      container_path = determine_prebuild_path_win('win32', $app_config)
+      Rake::Task['device:win32:apply_container'].invoke(container_path)
+
+      createWin32Production(true,true)
+
+      Rake::Task['run:win32'].invoke()
     end
 
     task :delete_db do

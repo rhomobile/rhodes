@@ -26,8 +26,7 @@
 
 #include "stdafx.h"
 #include "MainWindow.h"
-#include "browser/IEBrowserEngine.h"
-#include "browser/CEBrowserEngine.h"
+#include "browser/BrowserFactory.h"
 #include "LogMemory.h"
 #include "camera/Camera.h"
 
@@ -804,9 +803,6 @@ static void rho_platform_check_restart_application()
 
 typedef bool (WINAPI *PCSD)();
 
-#ifdef APP_BUILD_CAPABILITY_MOTOROLA
-extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent, HINSTANCE hLicenseInstance);
-#endif
 extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj);
 
 typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR, LPCWSTR);
@@ -859,7 +855,7 @@ extern "C" void rho_wm_impl_CheckLicense()
 #ifdef APP_BUILD_CAPABILITY_MOTOROLA
     if ( nRes == 0 )
     {
-        rho_wm_impl_CheckLicenseWithBarcode(getMainWnd(),hLicenseInstance);
+        rho::BrowserFactory::getInstance()->checkLicense(getMainWnd(), hLicenseInstance);
         return;
     }
 #endif
