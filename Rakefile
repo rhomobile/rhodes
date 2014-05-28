@@ -28,15 +28,16 @@ require 'find'
 require 'erb'
 
 #require 'rdoc/task'
-require 'openssl'
-require 'digest/sha2'
-require 'rexml/document'
-require 'pathname'
-require 'securerandom'
 require 'base64'
+require 'digest/sha2'
+require 'io/console'
 require 'json'
-require 'open-uri'
 require 'net/https'
+require 'open-uri'
+require 'openssl'
+require 'pathname'
+require 'rexml/document'
+require 'securerandom'
 require 'uri'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
@@ -464,7 +465,7 @@ def check_subscription_re(subscr)
   unsigned = subscr.gsub(/"signature":"[^"]*"/, '"signature":""')
   hash = Digest::SHA1.hexdigest(unsigned)
 
-  level = 0
+  level = -1
 
   if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
     if (!resp["features"].nil?)
@@ -478,6 +479,8 @@ def check_subscription_re(subscr)
           level = 1
         when "gold"
           level = 2
+        else
+          level = 0
         end
       end
     end
@@ -504,6 +507,48 @@ namespace "token" do
     end
 
     $user_acc = RhoHubAccount.new()
+  end
+
+  task :login => [:initialize] do
+    if !SiteChecker.is_available?
+      BuildOutput.error( "Could not connect to server, please check your internet connection and try again.", "#{$rhohub} is inaccessible")
+      exit 1
+    end
+
+    puts "Login to #{$rhohub}"
+    print "Username: "
+    uname = STDIN.gets.chomp.downcase
+    if uname.empty?
+      BuildOutput.note( "Empty username, build stopped")
+      
+      exit 1
+    end
+    
+    print "Password: "
+    pwd = STDIN.noecho(&:gets).chomp
+    print $/
+
+    if pwd.empty?
+      BuildOutput.note( "Empty password, build stopped")
+
+      exit 1
+    end
+
+    token = nil
+    begin
+      info = Rhohub::Token.login(uname, pwd)
+      token = JSON.parse(info)["token"]
+    rescue Exception => e
+      BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at https://app.rhohub.com/forgot", "Invalid username or password" )
+      exit 1
+    end
+
+    if !(token.nil? || token.empty?) && RhoHubAccount.is_valid_token?(token)
+      Rake::Task["token:set"].invoke(token)
+    else
+      BuildOutput.error( "Could not receive rhohub API token from server", "Internal error" )
+      exit 1
+    end
   end
 
   task :read => [:initialize] do
@@ -596,25 +641,10 @@ namespace "token" do
 
   task :setup => [:read] do
     if !$user_acc.is_valid_token?()
-      BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you should set RhoHub API token for it.
-Register at http://rhohub.com and get your API token there.
-It is located in your profile (rightmost toolbar item).
-Inside your profile configuration select 'API token' menu item. Then run command
+      BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you need to log in into your rhohub account.
+If you don't have accout please register at http://rhohub.com. To stop build just press enter.")
 
-`rake token:set[<Your_RhoHub_API_token>]`")
-
-      tok = ""
-
-      if STDIN.tty? && STDOUT.tty? 
-        puts "You can also paste your RhoHub token right now (or just press enter to stop build):"
-        tok = STDIN.gets.chomp
-      end
-    
-      if tok.empty?
-        exit 1
-      else
-        Rake::Task["token:set"].invoke(tok)
-      end
+      Rake::Task["token:login"].invoke()
     end
   end
 end
@@ -966,6 +996,10 @@ $rhodes_ver_default = '3.5.1.14'
 $latest_platform = nil
 
 namespace "rhohub" do
+  desc "Login using interactive mode"
+  task :login => ["token:login"] do
+  end
+
   desc "Get project infromation from rhohub"
   task :initialize => ["config:initialize","token:setup"] do
 
