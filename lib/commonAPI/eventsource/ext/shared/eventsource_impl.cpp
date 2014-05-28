@@ -78,17 +78,23 @@ namespace rho {
         
         virtual void create( const rho::String& url,  const rho::Hashtable<rho::String, rho::String>& settings, rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::create: " + url;
+            
+            if ( url.empty() ) {
+                oResult.setArgError("Failed to construct 'EventSource': Cannot open an EventSource to an empty URL.");
+                return;
+            }
+            
             m_es = EventSource::create(url, this, settings );
         }
 
         virtual void addEventListener( const rho::String& event, rho::apiGenerator::CMethodResult& oResult) {
+        
           LOG(INFO) + "CEventSourceImpl::addEventListener: + " + event;
 
-          String evtLower;
-          std::transform(event.begin(), event.end(), std::back_inserter(evtLower), &::tolower);
-
-          if ((!evtLower.empty()) && (evtLower!="message"))
+          if (!event.empty())
           {
+            String evtLower;
+            std::transform(event.begin(), event.end(), std::back_inserter(evtLower), &::tolower);
             m_eventTypeCallbacks.put(evtLower,oResult);
           }
 
@@ -127,6 +133,8 @@ namespace rho {
             Hashtable<String,String> params;
             params.put("event",event);
             params.put("data",message);
+            params.put("lastEventId",eventId);
+            params.put("origin",m_es->url());
             m_onMessageCallback.set(params);
 
             String evtLower;

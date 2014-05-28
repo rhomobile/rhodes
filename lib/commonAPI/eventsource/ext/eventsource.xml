@@ -25,14 +25,17 @@
 
             <PROPERTY name="onopen" type="CALLBACK">
                 <DESC></DESC>
+                <CALLBACK type="HASH"/>
             </PROPERTY>
             
             <PROPERTY name="onmessage" type="CALLBACK">
                 <DESC></DESC>
+                <CALLBACK type="HASH"/>
             </PROPERTY>
             
             <PROPERTY name="onerror" type="CALLBACK">
                 <DESC></DESC>
+                <CALLBACK type="HASH"/>              
             </PROPERTY>
             
             
@@ -79,7 +82,7 @@
                   <DESC></DESC>
                 </PARAM>
               </PARAMS>        
-              <CALLBACK/>
+              <CALLBACK type="HASH"/>
             </METHOD>
             
         </METHODS>

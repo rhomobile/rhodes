@@ -215,7 +215,7 @@ private:
   Hashtable<String,String> m_headers;
   INetRequestCallback* m_pCallback;
 
-  net::CNetRequestWrapper  m_request;
+  /*net::CNetRequestWrapper*/NetRequest  m_request;
 
   common::CMutex m_mxCallbackAccess;
 
@@ -224,7 +224,7 @@ public:
   CAsyncNetRequest()
     : m_pSession(0)
     , m_pCallback(0)
-    , m_request(::getNetRequest())
+    //, m_request(::getNetRequest())
   {
   }
   

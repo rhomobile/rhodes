@@ -356,6 +356,9 @@ void EventSource::parseEventStreamLine(unsigned bufPos, int fieldLength, int lin
             m_data.push_back('\n');
         } else if (field == "event")
             m_eventName = valueLength ? String((const char*)&m_receiveBuf[bufPos], (size_t)valueLength) : "";
+            if ( m_eventName.empty() ) {
+                m_eventName = "message";
+            }
         else if (field == "id")
             m_currentlyParsedEventId = valueLength ? String((const char*)&m_receiveBuf[bufPos], (size_t)valueLength) : "";
         else if (field == "retry") {
