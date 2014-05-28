@@ -391,9 +391,20 @@ class RhoHubAccount
 
             if data_hash == Digest::SHA2.hexdigest(data)
               packed = JSON.parse(data)
-              self.token = packed["token"]
-              self.time = packed["time"]
-              self.subscription = packed["subscription"]
+              packed.each do |key, value|
+                case key
+                when "token"
+                  self.token = value
+                when "time"
+                  self.time = value
+                when "subscription"
+                  self.subscription = value
+                when "server"
+                  self.server = value
+                else
+                  raise "Unknown key #{key} in config"
+                end
+              end
 
               @changed = false
 

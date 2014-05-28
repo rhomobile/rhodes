@@ -609,6 +609,8 @@ namespace "token" do
       $user_acc.read_token_from_files($rhodes_home)
     end
 
+    Rhohub.url = sort_by_distance($server_list, $user_acc.server).first
+
     if !$user_acc.is_valid_token?()
       last_read_token = nil
 
@@ -828,7 +830,7 @@ def http_get(url, proxy, save_to)
   result
 end
 
-def show_build_infromation(build_hash, proxy)
+def show_build_infromation(build_hash)
   label = case build_hash["status"]
   when "queued"
     "queued".cyan
@@ -1133,11 +1135,16 @@ namespace "rhohub" do
     show_log = to_boolean(args.show_log)
 
     builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
-    builds.each do |build|
-      show_build_infromation(build, $proxy)
-      if show_log
-        show_build_messages(build, $proxy, $rhohub_home)
+
+    if !builds.empty?
+      builds.each do |build|
+        show_build_infromation(build)
+        if show_log
+          show_build_messages(build, $proxy, $rhohub_home)
+        end
       end
+    else
+      BuildOutput.note("You don't have any build request. To start new build use 'rake rhohub:build:<platform>:<target>' command", "Rhomobile build list is empty")
     end
   end
 
@@ -1234,7 +1241,7 @@ namespace "rhohub" do
     build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
 
     if (!build_id.nil?)
-      show_build_infromation(res, $proxy)
+      show_build_infromation(res)
     end
 
     check_rhohub_result(res)
