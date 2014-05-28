@@ -489,6 +489,29 @@ def check_subscription_re(subscr)
   level
 end
 
+def read_and_delete_files( file_list )
+  result = []
+  if file_list.kind_of?(String)
+    file_list = [file_list]
+  end
+
+  if file_list.kind_of?(Array)
+    file_list.each do |read_file|
+      f_size = File.size?(read_file)
+      if !f_size.nil? && f_size < 1024
+        begin
+          result << File.read(read_file)
+          File.delete(read_file)
+        rescue Exception => e
+          puts "Reading file exception #{e.inspect}"
+        end
+      end
+    end
+  end
+
+  result
+end
+
 $def_rhohub_url = 'https://app.rhohub.com/api/v1'
 
 namespace "token" do
@@ -556,6 +579,20 @@ namespace "token" do
       $user_acc.read_token_from_files($rhodes_home)
     end
 
+    if !$user_acc.is_valid_token?()
+      last_read_token = nil
+
+      files = [Rake.application.original_dir, $app_path, $rhodes_home].map{|d| File.join(d,'token.txt')}
+
+      read_and_delete_files(files).each do |token|
+        if RhoHubAccount.is_valid_token?(token)
+          last_read_token = token
+        end
+      end
+
+      $user_acc.token = last_read_token
+    end
+
     if $user_acc.is_valid_token?()
       # check existing API token
       case check_update_token_file($user_acc, $rhodes_home, $re_app)
@@ -567,23 +604,6 @@ namespace "token" do
         BuildOutput.put_log( BuildOutput::WARNING, "Could not check token online", "Token check" );
       else
         BuildOutput.put_log( BuildOutput::ERROR, "RhoHub API token is not valid!", "Token check" );
-      end
-    end
-
-    if !$user_acc.is_valid_token?()
-      token_source = File.join($app_path,'token.txt')
-
-      if File.exists?(token_source)
-        begin
-          tok = File.read(token_source)
-          File.delete(token_source)
-        rescue Exception => e
-          puts "Token file exception #{e.inspect}"
-        end
-
-        $user_acc.token = tok
-
-        check_update_token_file($user_acc, $rhodes_home, $re_app)
       end
     end
 
