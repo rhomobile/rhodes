@@ -12,13 +12,12 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.rho.screenorientation.IScreenOrientationSingleton;
-import com.rho.screenorientation.ScreenOrientationSingletonBase;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
 
-class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implements IScreenOrientationSingleton
+class ScreenOrientationSingleton implements IScreenOrientationSingleton
 {
 	private static final String UPSIDE_DOWN = "upsideDown";
 	private static final String LEFT_HANDED = "leftHanded";
@@ -50,7 +49,7 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 		}
 	};
 
-	public ScreenOrientationSingleton(ScreenOrientationFactory factory)
+	public ScreenOrientationSingleton()
 	{
 		super();
 		mSensorManager = (SensorManager) RhodesActivity.safeGetInstance().getSystemService("sensor");
