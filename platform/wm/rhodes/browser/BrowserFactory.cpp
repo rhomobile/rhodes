@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 
+#include <algorithm>
+
 #include <common/rhoconf.h>
 
 #include "BrowserFactory.h"
@@ -10,6 +12,7 @@
 
 extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" const char* rho_wmimpl_get_webengine();
+extern "C" const char* get_app_build_config_item(const char* key);
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
 extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent, HINSTANCE hLicenseInstance);
@@ -20,8 +23,8 @@ extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, 
 
 //////////////////////////////////////////////////////////////////////////
 
-const char* rho::BrowserFactory::IETag     = "IE";
-const char* rho::BrowserFactory::webkitTag = "WebKit";
+const char* rho::BrowserFactory::IETag     = "ie";
+const char* rho::BrowserFactory::webkitTag = "webkit";
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -59,13 +62,16 @@ IBrowserEngine* BrowserFactory::createIE(HWND hwndParent)
 
 EBrowserEngineType BrowserFactory::convertBrowserType(rho::String browserType)
 {
-    rho::String browserTypeTag = browserType; //TODO - convert to uppercase
+    rho::String browserTypeTag;
     
+    std::transform(browserType.begin(), browserType.end(), 
+        std::back_inserter(browserTypeTag), ::tolower);
+
     if (browserTypeTag == String(IETag))
     {
         return eIE;
     }
-    else if (browserTypeTag == webkitTag)
+    else if (browserTypeTag == String(webkitTag))
     {
         return eWebkit;
     }
@@ -95,17 +101,25 @@ void BrowserFactory::checkLicense(HWND hParent, HINSTANCE hLicenseInstance)
 
 IBrowserEngine* BrowserFactory::create(HWND hwndParent)
 {
-    EBrowserEngineType selBrowserType = eNone;
-    String             xmlConfigType  = rho_wmimpl_get_webengine();
-    String             rhoConfigType  = RHOCONF().getString("webengine");
+    EBrowserEngineType selBrowserType  = eNone;
+    String             xmlConfigType   = rho_wmimpl_get_webengine();
+    String             rhoConfigType   = RHOCONF().getString("webengine");
+    String             buildConfigType = get_app_build_config_item("webengine");
 
-    if (xmlConfigType.empty())
+    if (buildConfigType.empty())
     {
-        selBrowserType = convertBrowserType(rhoConfigType);
+        if (xmlConfigType.empty())
+        {
+            selBrowserType = convertBrowserType(rhoConfigType);
+        }
+        else
+        {
+            selBrowserType = convertBrowserType(xmlConfigType);
+        }
     }
     else
     {
-        selBrowserType = convertBrowserType(xmlConfigType);
+        selBrowserType = convertBrowserType(buildConfigType);
     }
 
     if (selBrowserType == eNone)
@@ -119,9 +133,11 @@ IBrowserEngine* BrowserFactory::create(HWND hwndParent)
     switch (selBrowserType)
     {
     case eWebkit:
+        LOG(INFO) + "Webkit browser engine was created.";
         return createWebkit(hwndParent);
         break;    
     case eIE:
+        LOG(INFO) + "IE browser engine was created.";
         return createIE(hwndParent);
         break;
     case eNone:
