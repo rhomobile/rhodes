@@ -361,6 +361,16 @@ int CJSONEntry::getInt(const char* name)
 
     return nRes;
 }
+    
+int64 CJSONEntry::getInt64(const char* name)
+{
+    int64 nRes = 0;
+    struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
+    if ( obj != 0 )
+        nRes = json_object_get_int(obj);
+    
+    return nRes;
+}
 
 uint64 CJSONEntry::getUInt64(const char* name)
 {
@@ -388,6 +398,15 @@ int CJSONEntry::getInt() const
     if ( m_object != 0 )
         nRes = static_cast<int>(json_object_get_int(m_object));
 
+    return nRes;
+}
+    
+int64 CJSONEntry::getInt64() const
+{
+    int64 nRes = 0;
+    if ( m_object != 0 )
+        nRes = json_object_get_int(m_object);
+    
     return nRes;
 }
 

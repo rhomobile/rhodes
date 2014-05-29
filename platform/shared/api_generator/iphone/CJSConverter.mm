@@ -131,7 +131,7 @@
         return [NSString stringWithUTF8String:jsonEntry->getString()];
     }
     if (jsonEntry->isInteger()) {
-        return [NSNumber numberWithInt:jsonEntry->getInt()];
+        return [NSNumber numberWithLongLong:jsonEntry->getInt64()];
     }
     if (jsonEntry->isFloat()) {
         return [NSNumber numberWithDouble:jsonEntry->getDouble()];

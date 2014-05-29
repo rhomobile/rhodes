@@ -58,9 +58,11 @@ public:
     boolean isBoolean() const;
 
     int getInt(const char* name);
+    int64 getInt64(const char* name);
     uint64 getUInt64(const char* name);
     double getDouble(const char* name);
     int getInt() const;
+    int64 getInt64() const;
     uint64 getUInt64() const;
     double getDouble() const;
     boolean getBoolean() const;
