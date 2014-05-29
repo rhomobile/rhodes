@@ -295,7 +295,7 @@ def build_cab
   end
 
   webkit = 'none'
-  if $webkit_capability
+  if $is_webkit_engine && $webkit_capability 
     webkit = $webkit_out_of_process ? 'out_of_process' : 'in_process'
   end
 
@@ -412,7 +412,9 @@ namespace "config" do
     $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $build_cab = true 
-      
+    $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if $app_config["wm"]["webengine"].nil?
+    $is_webkit_engine = false if $is_webkit_engine.nil?
+
     begin
       if $webkit_capability || $motorola_capability
         require "rhoelements-data"
