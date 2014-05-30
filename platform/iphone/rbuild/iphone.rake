@@ -2352,14 +2352,27 @@ namespace "clean" do
 
       end
 
+      # check hash for remove only current application
       found = true
 
       while found do
         found = false
         Find.find($simdir) do |path|
           if File.basename(path) == "rhorunner.app"
-            $guid = File.basename(File.dirname(path))
-            found = true
+
+            if File.exists?(File.join(path, 'name'))
+                name = File.read(File.join(path, 'name'))
+                puts "found app name: #{name}"
+                guid = File.basename(File.dirname(path))
+                puts "found guid: #{guid}"
+                if name == $app_config['name']
+                  puts '>> We found our application !'
+                  $guid = guid
+                  found = true
+                end
+            end
+
+
           end
         end
 

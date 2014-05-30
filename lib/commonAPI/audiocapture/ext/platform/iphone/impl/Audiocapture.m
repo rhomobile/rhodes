@@ -328,7 +328,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         //int durInMilis = (int)actualDuration;
         
         //fire OK
-        [self fireCallback:CALLBACK_STATUS_OK param_name:HK_FILE_NAME param_value:destination];//[NSString stringWithFormat:@"%d", durInMilis]];
+        [self fireCallback:CALLBACK_STATUS_OK param_name:HK_FILE_NAME param_value:[@"file://" stringByAppendingString:destination]];//[NSString stringWithFormat:@"%d", durInMilis]];
     }];
     
     dispatch_release(queue);
