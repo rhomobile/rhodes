@@ -300,7 +300,7 @@ def build_cab
   end
 
   dir = File.join($startdir, $builddir)
-
+  
   args = [
     'build_inf.js',
     '"' + $appname + ".inf\"",               #0
@@ -412,7 +412,7 @@ namespace "config" do
     $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $build_cab = true 
-    $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if $app_config["wm"]["webengine"].nil?
+    $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
     $is_webkit_engine = true if $is_webkit_engine.nil?
 
     begin
