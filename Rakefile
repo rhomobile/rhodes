@@ -1049,13 +1049,35 @@ $rhodes_ver_default = '3.5.1.14'
 $latest_platform = nil
 
 namespace "rhohub" do
+  desc "Initialize rhohub functionality"
+  task :initialize => ["config:initialize"] do
+    if $app_path.empty?
+      BuildOutput.error("Could not run cloud build, app_path is not set", "Rhohub build")
+      exit 1
+    end
+
+    $rhohub_home = File.join($app_path, 'rhohub')
+    if !File.exist?($rhohub_home)
+      FileUtils::mkdir_p $rhohub_home
+    end
+    $rhohub_temp = File.join($rhohub_home, 'temp')
+    if !File.exist?($rhohub_temp)
+      FileUtils::mkdir_p $rhohub_temp
+    end
+    $rhohub_bin = File.join($app_path, 'bin')
+    if !File.exist?($rhohub_bin)
+      FileUtils::mkdir_p $rhohub_bin
+    end
+
+    $rhodes_ver = get_conf('rhohub/rhodesgem',$rhodes_ver_default)    
+  end
+
   desc "Login using interactive mode"
   task :login => ["token:login"] do
   end
 
   desc "Get project infromation from rhohub"
-  task :initialize => ["config:initialize","token:setup"] do
-
+  task :find_app => ["config:initialize", "token:setup", :initialize] do
     if check_subscription_re($user_acc.subscription) < 1
       BuildOutput.error(
         ['Cloud build is supported only for paid accounts. In order to upgrade your account please',
@@ -1112,30 +1134,10 @@ namespace "rhohub" do
       raise Exception.new("User or application list mismatch")
     end
     $rhohub_app_id = $rhohub_app["id"]
-
-    if $app_path.empty?
-      BuildOutput.error("Could not run cloud build, app_path is not set", "Rhohub build")
-      exit 1
-    end
-
-    $rhohub_home = File.join($app_path, 'rhohub')
-    if !File.exist?($rhohub_home)
-      FileUtils::mkdir_p $rhohub_home
-    end
-    $rhohub_temp = File.join($rhohub_home, 'temp')
-    if !File.exist?($rhohub_temp)
-      FileUtils::mkdir_p $rhohub_temp
-    end
-    $rhohub_bin = File.join($app_path, 'bin')
-    if !File.exist?($rhohub_bin)
-      FileUtils::mkdir_p $rhohub_bin
-    end
-
-    $rhodes_ver = get_conf('rhohub/rhodesgem',$rhodes_ver_default)
   end
 
   desc "List avaliable builds"
-  task :list_builds, [:show_log] => [:initialize] do |t, args|
+  task :list_builds, [:show_log] => [:find_app] do |t, args|
     args.with_defaults(:show_log => "false")
 
     show_log = to_boolean(args.show_log)
@@ -1155,7 +1157,7 @@ namespace "rhohub" do
   end
 
   desc "Download build into app\\bin folder"
-  task :download, [:build_id] => [:initialize] do |t, args|
+  task :download, [:build_id] => [:find_app] do |t, args|
     FileUtils.rm_rf(Dir.glob(File.join($rhohub_temp,'*')))
 
     builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
@@ -1261,7 +1263,7 @@ namespace "rhohub" do
 
   namespace :build do
     desc "Prepare for cloud build"
-    task :initialize => ["rhohub:initialize"] do
+    task :initialize => ["rhohub:find_app"] do
       $platform_list = get_build_platforms()
     end
 
@@ -1334,6 +1336,26 @@ namespace "rhohub" do
         do_platform_build( $build_platform, $platform_list)
       end
     end
+  end
+
+  namespace "cache" do
+    desc "Clear local file cache"
+    task :clear => ["rhohub:initialize"] do
+      files = []
+
+      if !($rhohub_home.nil? || $rhohub_home.empty?)
+        files = Dir.glob(File.join($rhohub_temp,'*'))
+      end
+
+      if !files.empty?
+        FileUtils.rm_rf(files)
+        BuildOutput.put_log( BuildOutput::NOTE, "Removed #{files.size} file(s) from chache", "Could build cahce clear" )
+      else
+        BuildOutput.put_log( BuildOutput::NOTE, "Cache is already empty", "Could build cahce clear" )
+      end
+
+    end
+    
   end
 
   def run_binary_on(platform, file_list, devsim)
