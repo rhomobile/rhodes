@@ -14,6 +14,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,8 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private boolean mLogDebug = false;
     private boolean mFirstNavigate = true;
     private IRhoWebViewConfig mWebViewConfig = null;
+    private Integer mLastActivityRequestCode = Integer.valueOf(0);
+    private SparseArray<IRhoListener> mActivityResultListeners;
 
     private IRhoWebView makeDefExtData(View view) {
         return RhodesActivity.safeGetInstance().getMainView().getWebView(view);
@@ -68,6 +71,24 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             throw new IllegalArgumentException("Cannot get " + className + "." + idName, e);
         }
     }
+    
+    @Override
+    public int getActivityResultNextRequestCode(IRhoListener listener) {
+        
+        synchronized (mLastActivityRequestCode) {
+            ++mLastActivityRequestCode;
+            mActivityResultListeners.append(mLastActivityRequestCode.intValue(), listener);
+        }
+        return mLastActivityRequestCode;
+    }
+    
+    @Override
+    public void dropActivityResultRequestCode(int requestCode) {
+        synchronized (mLastActivityRequestCode) {
+            mActivityResultListeners.delete(requestCode);
+        }
+    }
+
 
 	@Override
 	public IRhoExtension getExtByName(String strName) {
@@ -825,8 +846,10 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         }
     }
     public void onActivityResult(RhodesActivity activity, int reqCode, int resCode, Intent intent) {
-        for (IRhoListener listener: mListeners) {
+        IRhoListener listener = mActivityResultListeners.get(reqCode);
+        if (listener != null) {
             listener.onActivityResult(activity, reqCode, resCode, intent);
+            dropActivityResultRequestCode(reqCode);
         }
     }
 

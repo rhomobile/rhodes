@@ -21,6 +21,7 @@ import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.ContextFactory;
 
 public class IntentSingleton extends AbstractRhoListener implements IIntentSingleton, IIntentFactory, IRhoListener {
@@ -28,7 +29,6 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     
     private IMethodResult methodResult;
     
-    private int lastRequest = 0;
     private List<Map.Entry<Integer, IMethodResult>> localMethodResults = new ArrayList<Map.Entry<Integer, IMethodResult>>();
 
     private String constant(String name) {
@@ -262,7 +262,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
             if (result.hasCallback()) {
                 int request;
                 synchronized (localMethodResults) {
-                    request = lastRequest;
+                    request = RhoExtManager.getInstance().getActivityResultNextRequestCode(this);
                     final Integer finalKey = Integer.valueOf(request);
                     Map.Entry<Integer, IMethodResult> entry = new Map.Entry<Integer, IMethodResult>() {
                         Integer key = finalKey;
@@ -272,7 +272,6 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                         @Override public IMethodResult setValue(IMethodResult v) { return result; }
                     };
                     localMethodResults.add(entry);
-                    ++lastRequest;
                 }
                 RhodesActivity.safeGetInstance().startActivityForResult(intent, request);
                 Logger.T(TAG, "Start activity for result: " + intent);
