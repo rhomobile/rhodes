@@ -415,7 +415,7 @@ def sort_by_distance(array, template)
   template.nil? ? array : array.sort_by { |s| distance(template, s) }
 end
 
-def check_update_token_file(server_list, user_acc, token_folder, check_subcription = false)
+def check_update_token_file(server_list, user_acc, token_folder, subscription_level = -1)
   is_vaild = -2
 
   if user_acc.is_valid_token?()
@@ -423,14 +423,14 @@ def check_update_token_file(server_list, user_acc, token_folder, check_subcripti
 
     is_vaild = user_acc.is_outdated() ? 0 : 2
 
-    if (user_acc.is_outdated() || (check_subcription && !user_acc.is_valid_subscription?()))
+    if (user_acc.is_outdated() || (subscription_level > user_acc.subscription_level))
 
       sort_by_distance(server_list, user_acc.server).each do |server|
         SiteChecker.site = server
         Rhohub.url = server
 
         if SiteChecker.is_available?
-          if (check_subcription && !user_acc.is_valid_subscription?())
+          if (subscription_level > user_acc.subscription_level)
             puts "Downloading user subscription information"
             begin
               subscription = Rhohub::Subscription.check()
@@ -472,39 +472,6 @@ def check_update_token_file(server_list, user_acc, token_folder, check_subcripti
   end
 
   is_vaild
-end
-
-def check_subscription_re(subscr)
-  begin
-    resp = JSON.parse(subscr)
-  rescue Exception => e
-    return false
-  end
-  unsigned = subscr.gsub(/"signature":"[^"]*"/, '"signature":""')
-  hash = Digest::SHA1.hexdigest(unsigned)
-
-  level = -1
-
-  if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
-    if (!resp["features"].nil?)
-      if !to_boolean(resp["features"]["isFree"])
-        case resp["features"]["plan"]
-        when "premium"
-          level = 2
-        when "enterprise"
-          level = 2
-        when "silver"
-          level = 1
-        when "gold"
-          level = 2
-        else
-          level = 0
-        end
-      end
-    end
-  end
-
-  level
 end
 
 def read_and_delete_files( file_list )
@@ -604,7 +571,9 @@ namespace "token" do
     end
   end
 
-  task :read => [:initialize] do
+  task :read, [:force_re_app_check] => [:initialize] do |t, args|
+    args.with_defaults(:force_re_app_check => "false")
+
     if !$user_acc.read_token_from_env()
       $user_acc.read_token_from_files($rhodes_home)
     end
@@ -626,8 +595,10 @@ namespace "token" do
     end
 
     if $user_acc.is_valid_token?()
+      force_re_app_check = ($re_app || to_boolean(args[:force_re_app_check]))
+
       # check existing API token
-      case check_update_token_file($server_list, $user_acc, $rhodes_home, $re_app)
+      case check_update_token_file($server_list, $user_acc, $rhodes_home, force_re_app_check ? 1 : 0 )
       when 2
         #BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
       when 1
@@ -636,6 +607,7 @@ namespace "token" do
         BuildOutput.put_log( BuildOutput::WARNING, "Could not check token online", "Token check" );
       else
         BuildOutput.put_log( BuildOutput::ERROR, "RhoHub API token is not valid!", "Token check" );
+        exit 1
       end
     end
 
@@ -673,7 +645,7 @@ namespace "token" do
     end
 
     if $user_acc.is_valid_token?()
-      case check_update_token_file($server_list, $user_acc, $rhodes_home, true)
+      case check_update_token_file($server_list, $user_acc, $rhodes_home, 3)
       when 2
         BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check")
       when 1
@@ -705,9 +677,14 @@ If you don't have accout please register at http://rhohub.com." + ( have_input ?
   end
 end
 
-def distance(a, b)
-  as = a.to_s.downcase
-  bs = b.to_s.downcase
+def distance(a, b, case_insensitive = false)
+  as = a.to_s
+  bs = b.to_s
+
+  if case_insensitive
+    as = as.downcase
+    bs = bs.downcase
+  end
 
   rows = as.size + 1
   cols = bs.size + 1
@@ -740,7 +717,13 @@ end
 
 #------------------------------------------------------------------------
 def to_boolean(s)
-  !!(s =~ /^(true|t|yes|y|1)$/i)
+  if s.kind_of?(String)
+    !!(s =~ /^(true|t|yes|y|1)$/i)
+  elsif s.kind_of?(TrueClass)
+    true
+  else
+    false
+  end
 end
 
 def rhohub_git_match(str)
@@ -892,16 +875,18 @@ def get_build_platforms()
   build_platforms
 end
 
-def find_platform_version(platform, platform_list, override, info, is_lex = false)
+def find_platform_version(platform, platform_list, default_ver, info, is_lex = false)
   platfom_conf = platform_list[platform]
   if platfom_conf.empty?
     raise Exception.new("Could not find any #{platform} sdk on rhohub")
   end
 
-  req_ver = override
+  req_ver = nil
 
   req_ver = $app_config[platform]["version"] unless $app_config[platform].nil?
   req_ver = $config[platform]["version"] if req_ver.nil? and !$config[platform].nil?
+
+  req_ver = default_ver if req_ver.nil? 
 
   best = platfom_conf.first
 
@@ -915,12 +900,7 @@ def find_platform_version(platform, platform_list, override, info, is_lex = fals
         end
       end
     else
-      best_dist = distance(best[:ver],req_ver)
-      platfom_conf.each do |ver|
-        if best_dist > distance(ver[:ver],req_ver)
-          best = ver
-        end
-      end
+      best = platfom_conf.min_by{ |el| distance(el[:ver],req_ver, true) }
     end
 
     if info
@@ -1049,14 +1029,41 @@ $rhodes_ver_default = '3.5.1.14'
 $latest_platform = nil
 
 namespace "rhohub" do
+  desc "Initialize rhohub functionality"
+  task :initialize => ["config:initialize"] do
+    if $app_path.empty?
+      BuildOutput.error("Could not run cloud build, app_path is not set", "Rhohub build")
+      exit 1
+    end
+
+    $rhohub_home = File.join($app_path, 'rhohub')
+    if !File.exist?($rhohub_home)
+      FileUtils::mkdir_p $rhohub_home
+    end
+    $rhohub_temp = File.join($rhohub_home, 'temp')
+    if !File.exist?($rhohub_temp)
+      FileUtils::mkdir_p $rhohub_temp
+    end
+    $rhohub_bin = File.join($app_path, 'bin')
+    if !File.exist?($rhohub_bin)
+      FileUtils::mkdir_p $rhohub_bin
+    end
+
+    $rhodes_ver = get_conf('rhohub/rhodesgem',$rhodes_ver_default)    
+  end
+
   desc "Login using interactive mode"
   task :login => ["token:login"] do
   end
 
   desc "Get project infromation from rhohub"
-  task :initialize => ["config:initialize","token:setup"] do
+  task :find_app => ["config:initialize", "token:setup", :initialize] do
+    if $user_acc.subscription_level < 1
+      Rake::Task["token:read"].reenable
+      Rake::Task["token:read"].invoke("true")
+    end
 
-    if check_subscription_re($user_acc.subscription) < 1
+    if $user_acc.subscription_level() < 1
       BuildOutput.error(
         ['Cloud build is supported only for paid accounts. In order to upgrade your account please',
          'log in https://app.rhohub.com/ and select "change plan" menu item in your profile settings.'],
@@ -1112,35 +1119,15 @@ namespace "rhohub" do
       raise Exception.new("User or application list mismatch")
     end
     $rhohub_app_id = $rhohub_app["id"]
-
-    if $app_path.empty?
-      BuildOutput.error("Could not run cloud build, app_path is not set", "Rhohub build")
-      exit 1
-    end
-
-    $rhohub_home = File.join($app_path, 'rhohub')
-    if !File.exist?($rhohub_home)
-      FileUtils::mkdir_p $rhohub_home
-    end
-    $rhohub_temp = File.join($rhohub_home, 'temp')
-    if !File.exist?($rhohub_temp)
-      FileUtils::mkdir_p $rhohub_temp
-    end
-    $rhohub_bin = File.join($app_path, 'bin')
-    if !File.exist?($rhohub_bin)
-      FileUtils::mkdir_p $rhohub_bin
-    end
-
-    $rhodes_ver = get_conf('rhohub/rhodesgem',$rhodes_ver_default)
   end
 
   desc "List avaliable builds"
-  task :list_builds, [:show_log] => [:initialize] do |t, args|
+  task :list_builds, [:show_log] => [:find_app] do |t, args|
     args.with_defaults(:show_log => "false")
 
     show_log = to_boolean(args.show_log)
 
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
+    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id})).sort{ |a, b| b["id"].to_i <=> a["id"].to_i}
 
     if !builds.empty?
       builds.each do |build|
@@ -1155,17 +1142,17 @@ namespace "rhohub" do
   end
 
   desc "Download build into app\\bin folder"
-  task :download, [:build_id] => [:initialize] do |t, args|
+  task :download, [:build_id] => [:find_app] do |t, args|
     FileUtils.rm_rf(Dir.glob(File.join($rhohub_temp,'*')))
 
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
+    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id})).sort{ |a, b| b["id"].to_i <=> a["id"].to_i}
 
     if !builds.empty?
 
       build_id = args.build_id
 
       if build_id.nil? || build_id.empty?
-        result = builds.max_by{|l| l["id"].to_i}
+        result = builds.first
         build_id = result["id"].to_i
         puts "Build id is not set, downloading latest one (#{build_id})"
         #builds.sort{|a, b| b["id"]<=>a["id"]}.first
@@ -1227,8 +1214,8 @@ namespace "rhohub" do
     end
   end
 
-  def do_platform_build(platform_name, platform_list, build_info = {}, config_override = nil)
-    platform_version = find_platform_version(platform_name, platform_list, config_override, true)
+  def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
+    platform_version = find_platform_version(platform_name, platform_list, config_override, true, is_lexicographic_ver)
 
     puts "Running rhohub build using #{platform_version[:tag]} command"
 
@@ -1261,7 +1248,7 @@ namespace "rhohub" do
 
   namespace :build do
     desc "Prepare for cloud build"
-    task :initialize => ["rhohub:initialize"] do
+    task :initialize => ["rhohub:find_app"] do
       $platform_list = get_build_platforms()
     end
 
@@ -1270,7 +1257,7 @@ namespace "rhohub" do
       task :production => ["build:initialize"] do
         $build_platform = "android"
 
-        do_platform_build( $build_platform, $platform_list)
+        do_platform_build( $build_platform, $platform_list, false)
       end
     end
 
@@ -1279,7 +1266,7 @@ namespace "rhohub" do
       task :production => ["build:initialize"] do
         $build_platform = "wm"
 
-        do_platform_build( $build_platform, $platform_list)
+        do_platform_build( $build_platform, $platform_list, false)
       end
     end
 
@@ -1315,14 +1302,14 @@ namespace "rhohub" do
           options[:cert_pw] = cert_pw
         end
 
-        do_platform_build( $build_platform, $platform_list, options, 'development')
+        do_platform_build( $build_platform, $platform_list, true, options, 'development')
       end
 
       desc "Build iphone distribution version"
       task :distribution => ["build:initialize"] do
         $build_platform = "iphone"
 
-        do_platform_build( $build_platform, $platform_list, {}, 'distribution')
+        do_platform_build( $build_platform, $platform_list, true, {}, 'distribution')
       end
     end
 
@@ -1331,9 +1318,29 @@ namespace "rhohub" do
       task :production => ["build:initialize"] do
         $build_platform = "win32"
 
-        do_platform_build( $build_platform, $platform_list)
+        do_platform_build( $build_platform, $platform_list, false)
       end
     end
+  end
+
+  namespace "cache" do
+    desc "Clear local file cache"
+    task :clear => ["rhohub:initialize"] do
+      files = []
+
+      if !($rhohub_home.nil? || $rhohub_home.empty?)
+        files = Dir.glob(File.join($rhohub_temp,'*'))
+      end
+
+      if !files.empty?
+        FileUtils.rm_rf(files)
+        BuildOutput.put_log( BuildOutput::NOTE, "Removed #{files.size} file(s) from cache", "Could build cache clear" )
+      else
+        BuildOutput.put_log( BuildOutput::NOTE, "Cache is already empty", "Could build cache clear" )
+      end
+
+    end
+    
   end
 
   def run_binary_on(platform, file_list, devsim)
@@ -1758,7 +1765,11 @@ namespace "config" do
     end
 
     if $re_app || $rhoelements_features.length() > 0
-      if check_subscription_re($user_acc.subscription) < 1
+      if $user_acc.subscription_level < 1
+        Rake::Task["token:read"].reenable
+        Rake::Task["token:read"].invoke("true")
+      end
+      if $user_acc.subscription_level < 1
         if !$user_acc.is_valid_subscription?
           BuildOutput.error([
                             'Subscription information is not downloaded. Please verify your internet connection and run build command again.'],
