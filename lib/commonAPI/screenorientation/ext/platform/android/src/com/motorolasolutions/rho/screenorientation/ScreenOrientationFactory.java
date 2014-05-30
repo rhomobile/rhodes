@@ -1,24 +1,24 @@
 package com.motorolasolutions.rho.screenorientation;
 
+import com.rho.screenorientation.IScreenOrientation;
 import com.rho.screenorientation.IScreenOrientationFactory;
-import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.api.RhoApiFactory;
+import com.rho.screenorientation.IScreenOrientationSingleton;
 
-public class ScreenOrientationFactory
-        extends RhoApiFactory< ScreenOrientation, ScreenOrientationSingleton>
-        implements IScreenOrientationFactory
+public class ScreenOrientationFactory implements IScreenOrientationFactory
 {
-    private static String TAG = ScreenOrientationFactory.class.getSimpleName(); 
-    
+    private IScreenOrientationSingleton mSingleton;
+
     @Override
-    protected ScreenOrientationSingleton createSingleton() {
-	Logger.D(TAG, "createSingleton()");
-        return new ScreenOrientationSingleton(this);
+    public IScreenOrientationSingleton getApiSingleton() {
+        if (mSingleton == null) {
+            mSingleton = new ScreenOrientationSingleton();
+        }
+        return mSingleton;
     }
 
     @Override
-    protected ScreenOrientation createApiObject(String id) {
-	Logger.D(TAG, "createApiObject() -- id: " + id);
-        return new ScreenOrientation(id);
-    }
+    public IScreenOrientation getApiObject(String id) {
+        return null;
+    } 
+    
 }
