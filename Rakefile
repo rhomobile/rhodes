@@ -705,9 +705,14 @@ If you don't have accout please register at http://rhohub.com." + ( have_input ?
   end
 end
 
-def distance(a, b)
-  as = a.to_s.downcase
-  bs = b.to_s.downcase
+def distance(a, b, case_insensitive = false)
+  as = a.to_s
+  bs = b.to_s
+
+  if case_insensitive
+    as = as.downcase
+    bs = bs.downcase
+  end
 
   rows = as.size + 1
   cols = bs.size + 1
@@ -892,16 +897,18 @@ def get_build_platforms()
   build_platforms
 end
 
-def find_platform_version(platform, platform_list, override, info, is_lex = false)
+def find_platform_version(platform, platform_list, default_ver, info, is_lex = false)
   platfom_conf = platform_list[platform]
   if platfom_conf.empty?
     raise Exception.new("Could not find any #{platform} sdk on rhohub")
   end
 
-  req_ver = override
+  req_ver = nil
 
   req_ver = $app_config[platform]["version"] unless $app_config[platform].nil?
   req_ver = $config[platform]["version"] if req_ver.nil? and !$config[platform].nil?
+
+  req_ver = default_ver if req_ver.nil? 
 
   best = platfom_conf.first
 
@@ -915,12 +922,7 @@ def find_platform_version(platform, platform_list, override, info, is_lex = fals
         end
       end
     else
-      best_dist = distance(best[:ver],req_ver)
-      platfom_conf.each do |ver|
-        if best_dist > distance(ver[:ver],req_ver)
-          best = ver
-        end
-      end
+      best = platfom_conf.min_by{ |el| distance(el[:ver],req_ver, true) }
     end
 
     if info
@@ -1229,8 +1231,8 @@ namespace "rhohub" do
     end
   end
 
-  def do_platform_build(platform_name, platform_list, build_info = {}, config_override = nil)
-    platform_version = find_platform_version(platform_name, platform_list, config_override, true)
+  def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
+    platform_version = find_platform_version(platform_name, platform_list, config_override, true, is_lexicographic_ver)
 
     puts "Running rhohub build using #{platform_version[:tag]} command"
 
@@ -1272,7 +1274,7 @@ namespace "rhohub" do
       task :production => ["build:initialize"] do
         $build_platform = "android"
 
-        do_platform_build( $build_platform, $platform_list)
+        do_platform_build( $build_platform, $platform_list, false)
       end
     end
 
@@ -1281,7 +1283,7 @@ namespace "rhohub" do
       task :production => ["build:initialize"] do
         $build_platform = "wm"
 
-        do_platform_build( $build_platform, $platform_list)
+        do_platform_build( $build_platform, $platform_list, false)
       end
     end
 
@@ -1317,14 +1319,14 @@ namespace "rhohub" do
           options[:cert_pw] = cert_pw
         end
 
-        do_platform_build( $build_platform, $platform_list, options, 'development')
+        do_platform_build( $build_platform, $platform_list, true, options, 'development')
       end
 
       desc "Build iphone distribution version"
       task :distribution => ["build:initialize"] do
         $build_platform = "iphone"
 
-        do_platform_build( $build_platform, $platform_list, {}, 'distribution')
+        do_platform_build( $build_platform, $platform_list, true, {}, 'distribution')
       end
     end
 
@@ -1333,7 +1335,7 @@ namespace "rhohub" do
       task :production => ["build:initialize"] do
         $build_platform = "win32"
 
-        do_platform_build( $build_platform, $platform_list)
+        do_platform_build( $build_platform, $platform_list, false)
       end
     end
   end
@@ -1349,9 +1351,9 @@ namespace "rhohub" do
 
       if !files.empty?
         FileUtils.rm_rf(files)
-        BuildOutput.put_log( BuildOutput::NOTE, "Removed #{files.size} file(s) from chache", "Could build cahce clear" )
+        BuildOutput.put_log( BuildOutput::NOTE, "Removed #{files.size} file(s) from cache", "Could build cache clear" )
       else
-        BuildOutput.put_log( BuildOutput::NOTE, "Cache is already empty", "Could build cahce clear" )
+        BuildOutput.put_log( BuildOutput::NOTE, "Cache is already empty", "Could build cache clear" )
       end
 
     end
