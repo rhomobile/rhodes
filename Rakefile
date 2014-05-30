@@ -1142,7 +1142,7 @@ namespace "rhohub" do
 
     show_log = to_boolean(args.show_log)
 
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
+    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id})).sort{ |a, b| b["id"].to_i <=> a["id"].to_i}
 
     if !builds.empty?
       builds.each do |build|
@@ -1160,14 +1160,14 @@ namespace "rhohub" do
   task :download, [:build_id] => [:find_app] do |t, args|
     FileUtils.rm_rf(Dir.glob(File.join($rhohub_temp,'*')))
 
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
+    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id})).sort{ |a, b| b["id"].to_i <=> a["id"].to_i}
 
     if !builds.empty?
 
       build_id = args.build_id
 
       if build_id.nil? || build_id.empty?
-        result = builds.max_by{|l| l["id"].to_i}
+        result = builds.first
         build_id = result["id"].to_i
         puts "Build id is not set, downloading latest one (#{build_id})"
         #builds.sort{|a, b| b["id"]<=>a["id"]}.first
