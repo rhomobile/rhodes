@@ -24,6 +24,16 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     return self;
 }
 
+
+-(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue methodResult:(id<IMethodResult>)methodResult {
+    [super setProperty:propertyName propertyValue:propertyValue methodResult:methodResult];
+    if ([PROPERTY_MAX_DURATION compare:propertyName] == NSOrderedSame) {
+        int dur = [self getMaxDurationWithHash:nil];
+        [super setProperty:PROPERTY_MAX_DURATION propertyValue:[NSString stringWithFormat:@"%@", [NSNumber numberWithInt:dur]] methodResult:nil];
+    }
+}
+
+
 - (void) startCommand {
     
     NSLog(@"$$$ AudioCapture.start");
