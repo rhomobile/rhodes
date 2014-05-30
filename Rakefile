@@ -415,7 +415,7 @@ def sort_by_distance(array, template)
   template.nil? ? array : array.sort_by { |s| distance(template, s) }
 end
 
-def check_update_token_file(server_list, user_acc, token_folder, check_subcription = false)
+def check_update_token_file(server_list, user_acc, token_folder, subscription_level = -1)
   is_vaild = -2
 
   if user_acc.is_valid_token?()
@@ -423,14 +423,14 @@ def check_update_token_file(server_list, user_acc, token_folder, check_subcripti
 
     is_vaild = user_acc.is_outdated() ? 0 : 2
 
-    if (user_acc.is_outdated() || (check_subcription && !user_acc.is_valid_subscription?()))
+    if (user_acc.is_outdated() || (subscription_level > user_acc.subscription_level))
 
       sort_by_distance(server_list, user_acc.server).each do |server|
         SiteChecker.site = server
         Rhohub.url = server
 
         if SiteChecker.is_available?
-          if (check_subcription && !user_acc.is_valid_subscription?())
+          if (subscription_level > user_acc.subscription_level)
             puts "Downloading user subscription information"
             begin
               subscription = Rhohub::Subscription.check()
@@ -472,39 +472,6 @@ def check_update_token_file(server_list, user_acc, token_folder, check_subcripti
   end
 
   is_vaild
-end
-
-def check_subscription_re(subscr)
-  begin
-    resp = JSON.parse(subscr)
-  rescue Exception => e
-    return false
-  end
-  unsigned = subscr.gsub(/"signature":"[^"]*"/, '"signature":""')
-  hash = Digest::SHA1.hexdigest(unsigned)
-
-  level = -1
-
-  if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
-    if (!resp["features"].nil?)
-      if !to_boolean(resp["features"]["isFree"])
-        case resp["features"]["plan"]
-        when "premium"
-          level = 2
-        when "enterprise"
-          level = 2
-        when "silver"
-          level = 1
-        when "gold"
-          level = 2
-        else
-          level = 0
-        end
-      end
-    end
-  end
-
-  level
 end
 
 def read_and_delete_files( file_list )
@@ -604,7 +571,9 @@ namespace "token" do
     end
   end
 
-  task :read => [:initialize] do
+  task :read, [:force_re_app_check] => [:initialize] do |t, args|
+    args.with_defaults(:force_re_app_check => "false")
+
     if !$user_acc.read_token_from_env()
       $user_acc.read_token_from_files($rhodes_home)
     end
@@ -626,8 +595,10 @@ namespace "token" do
     end
 
     if $user_acc.is_valid_token?()
+      force_re_app_check = ($re_app || to_boolean(args[:force_re_app_check]))
+
       # check existing API token
-      case check_update_token_file($server_list, $user_acc, $rhodes_home, $re_app)
+      case check_update_token_file($server_list, $user_acc, $rhodes_home, force_re_app_check ? 1 : 0 )
       when 2
         #BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
       when 1
@@ -636,6 +607,7 @@ namespace "token" do
         BuildOutput.put_log( BuildOutput::WARNING, "Could not check token online", "Token check" );
       else
         BuildOutput.put_log( BuildOutput::ERROR, "RhoHub API token is not valid!", "Token check" );
+        exit 1
       end
     end
 
@@ -673,7 +645,7 @@ namespace "token" do
     end
 
     if $user_acc.is_valid_token?()
-      case check_update_token_file($server_list, $user_acc, $rhodes_home, true)
+      case check_update_token_file($server_list, $user_acc, $rhodes_home, 3)
       when 2
         BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check")
       when 1
@@ -745,7 +717,13 @@ end
 
 #------------------------------------------------------------------------
 def to_boolean(s)
-  !!(s =~ /^(true|t|yes|y|1)$/i)
+  if s.kind_of?(String)
+    !!(s =~ /^(true|t|yes|y|1)$/i)
+  elsif s.kind_of?(TrueClass)
+    true
+  else
+    false
+  end
 end
 
 def rhohub_git_match(str)
@@ -1080,7 +1058,12 @@ namespace "rhohub" do
 
   desc "Get project infromation from rhohub"
   task :find_app => ["config:initialize", "token:setup", :initialize] do
-    if check_subscription_re($user_acc.subscription) < 1
+    if $user_acc.subscription_level < 1
+      Rake::Task["token:read"].reenable
+      Rake::Task["token:read"].invoke("true")
+    end
+
+    if $user_acc.subscription_level() < 1
       BuildOutput.error(
         ['Cloud build is supported only for paid accounts. In order to upgrade your account please',
          'log in https://app.rhohub.com/ and select "change plan" menu item in your profile settings.'],
@@ -1782,7 +1765,11 @@ namespace "config" do
     end
 
     if $re_app || $rhoelements_features.length() > 0
-      if check_subscription_re($user_acc.subscription) < 1
+      if $user_acc.subscription_level < 1
+        Rake::Task["token:read"].reenable
+        Rake::Task["token:read"].invoke("true")
+      end
+      if $user_acc.subscription_level < 1
         if !$user_acc.is_valid_subscription?
           BuildOutput.error([
                             'Subscription information is not downloaded. Please verify your internet connection and run build command again.'],
