@@ -413,7 +413,7 @@ namespace "config" do
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $build_cab = true 
     $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if $app_config["wm"]["webengine"].nil?
-    $is_webkit_engine = false if $is_webkit_engine.nil?
+    $is_webkit_engine = true if $is_webkit_engine.nil?
 
     begin
       if $webkit_capability || $motorola_capability
