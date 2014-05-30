@@ -314,6 +314,53 @@ class RhoHubAccount
     end
   end
 
+  def to_boolean(s)
+    if s.kind_of?(String)
+      !!(s =~ /^(true|t|yes|y|1)$/i)
+    elsif s.kind_of?(TrueClass)
+      true
+    else
+      false
+    end
+  end
+
+  def subscription_level()
+    return -1 if !is_valid_subscription?()
+    begin
+      resp = JSON.parse(subscription)
+    rescue Exception => e
+      return -1
+    end
+
+    unsigned = subscription.gsub(/"signature":"[^"]*"/, '"signature":""')
+    hash = Digest::SHA1.hexdigest(unsigned)
+
+    level = -1
+
+    if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
+      if (!resp["features"].nil?)
+        if !to_boolean(resp["features"]["isFree"])
+          case resp["features"]["plan"]
+          when "premium"
+            level = 2
+          when "enterprise"
+            level = 2
+          when "silver"
+            level = 1
+          when "gold"
+            level = 2
+          else
+            level = 0
+          end
+        else
+          level = 0
+        end
+      end
+    end
+
+    level
+  end
+
   def time()
     @info[:time]
   end
