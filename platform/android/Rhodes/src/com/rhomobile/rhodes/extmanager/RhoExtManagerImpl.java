@@ -52,7 +52,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private boolean mFirstNavigate = true;
     private IRhoWebViewConfig mWebViewConfig = null;
     private Integer mLastActivityRequestCode = Integer.valueOf(0);
-    private SparseArray<IRhoListener> mActivityResultListeners;
+    private SparseArray<IRhoListener> mActivityResultListeners = new SparseArray<IRhoListener>();
 
     private IRhoWebView makeDefExtData(View view) {
         return RhodesActivity.safeGetInstance().getMainView().getWebView(view);
