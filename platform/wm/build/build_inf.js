@@ -439,9 +439,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
                 p("");
                 p("[CopyConfig]");
-                if (!is_custom_config) {
-                    p("\"Config.xml\",\"Config.xml\",,0");
-                }
+                p("\"Config.xml\",\"Config.xml\",,0");
                 p("\"Plugin.xml\",\"Plugin.xml\",,0");
                 p("\"RegEx.xml\",\"RegEx.xml\",,0");
                 p("");
@@ -463,9 +461,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
                 p("");
                 p("[CopyConfigPers]");
-                if (!is_custom_config) {
-                    p("\"Config.xml\",\"Config.xml\",,0");
-                }
+                p("\"Config.xml\",\"Config.xml\",,0");
                 p("\"Plugin.xml\",\"Plugin.xml\",,0");
                 p("\"RegEx.xml\",\"RegEx.xml\",,0");
                 p("");
@@ -481,9 +477,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 if (!is_persistent)
                 {
                     p("[CopyConfig]");
-                    if (!is_custom_config) {
-                        p("\"Config.xml\",\"Config.xml\",,0");
-                    }
+                    p("\"Config.xml\",\"Config.xml\",,0");
                     p("\"Plugin.xml\",\"Plugin.xml\",,0");
                     p("\"RegEx.xml\",\"RegEx.xml\",,0");
                 }
@@ -491,9 +485,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 {
                     p("");
                     p("[CopyConfigPers]");
-                    if (!is_custom_config) {
-                        p("\"Config.xml\",\"Config.xml\",,0");
-                    }
+                    p("\"Config.xml\",\"Config.xml\",,0");
                     p("\"Plugin.xml\",\"Plugin.xml\",,0");
                     p("\"RegEx.xml\",\"RegEx.xml\",,0");
                 }
