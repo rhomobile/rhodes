@@ -104,7 +104,10 @@ IBrowserEngine* BrowserFactory::create(HWND hwndParent)
     EBrowserEngineType selBrowserType  = eNone;
     String             xmlConfigType   = rho_wmimpl_get_webengine();
     String             rhoConfigType   = RHOCONF().getString("webengine");
-    String             buildConfigType = get_app_build_config_item("webengine");
+    String             buildConfigType; 
+    
+    if (get_app_build_config_item("webengine"))
+        buildConfigType = get_app_build_config_item("webengine");
 
     if (buildConfigType.empty())
     {
