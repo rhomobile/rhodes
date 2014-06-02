@@ -712,7 +712,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 {
     int fActive = LOWORD(wParam);
     LOG(INFO) + "ACTIVATE: " + fActive;
-	bool bDebugButtons = false;
+	bool bNativeWindow = false;
 
     if ( m_bLoading && !fActive )
     {
@@ -730,10 +730,11 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	wchar_t szClassName[15];
 	if (lParam && GetClassName((HWND)lParam, szClassName, 14))
 	{
-		if(wcsncmp(szClassName, L"PB_ADDRESSBAR", 14) == 0 ||
-			wcsncmp(szClassName, L"PB_BUTTON", 9) == 0)
+		if(wcsncmp(szClassName, L"PB_ADDRESSBAR", 13) == 0 ||
+			wcsncmp(szClassName, L"PB_BUTTON", 9) == 0 ||
+			wcsncmp(szClassName, L"PB_INDICATOR", 12) == 0)
 		{
-			bDebugButtons = true;
+			bNativeWindow = true;
 		}
 	}
 #endif
@@ -747,7 +748,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		//  Ignore the activate msg from the child window if
 		//  1. If it is from any window other than a debug window or
 		//  2. It is a de-activate
-		if (!(bDebugButtons && fActive))
+		if (!(bNativeWindow && fActive))
 		{
 	        LOG(INFO) + "Get activate from child window. Skip it.";
 			return 0;
