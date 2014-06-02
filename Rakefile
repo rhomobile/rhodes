@@ -424,42 +424,51 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
     is_vaild = user_acc.is_outdated() ? 0 : 2
 
     if (user_acc.is_outdated() || (subscription_level > user_acc.subscription_level))
+      servors = sort_by_distance(server_list, user_acc.server)
 
-      sort_by_distance(server_list, user_acc.server).each do |server|
-        SiteChecker.site = server
-        Rhohub.url = server
+      servors.each do |srv|
+        Rhohub.url = srv
 
-        if SiteChecker.is_available?
-          if (subscription_level > user_acc.subscription_level)
-            puts "Downloading user subscription information"
-            begin
-              subscription = Rhohub::Subscription.check()
-              user_acc.subscription = subscription
-              is_vaild = 2
-            rescue Exception => e
-              subscription = nil
-            end
+        if (subscription_level > user_acc.subscription_level)
+          puts "Downloading user subscription information from #{srv}"
+          begin
+            subscription = Rhohub::Subscription.check()
+            user_acc.subscription = subscription
+          rescue Exception => e
+            puts "failed: #{e.inspect}"
           end
 
-          if is_vaild < 2
-            user_apps = nil
-            begin
-              user_apps = get_app_list()
-            rescue Exception => e
-              user_apps = nil
-            end
-            if user_apps.nil?
-              user_acc.token = nil
-              is_vaild = -1
-            else
-              is_vaild = 1
-            end
+          if user_acc.subscription_level >= subscription_level
+            user_acc.server = srv
+            break
           end
         end
+      end
 
-        if is_vaild > 0
-          user_acc.server = server
-          break
+      is_vaild = user_acc.subscription_level >= 0 ? 2 : 0
+
+      if is_vaild == 0
+        servors.each do |srv|
+          Rhohub.url = srv
+
+          user_apps = nil
+          begin
+            user_apps = get_app_list()
+          rescue Exception => e
+            user_apps = nil
+          end
+
+          if user_apps.nil?
+            user_acc.token = nil
+            is_vaild = -1
+          else
+            is_vaild = 1
+          end
+
+          if is_vaild > 0
+            user_acc.server = srv
+            break
+          end
         end
       end
     end
@@ -747,7 +756,10 @@ def http_get(url, proxy, save_to)
 
   f_name = File.join(save_to,uri.path[%r{[^/]+\z}])
 
-  http.use_ssl = true if uri.scheme == 'https'
+  if uri.scheme == "https"  # enable SSL/TLS
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  end
 
   header_resp = nil
 

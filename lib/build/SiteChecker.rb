@@ -24,7 +24,10 @@ class SiteChecker
 						http = Net::HTTP.new(uri.host, uri.port)
 					end
 
-					http.use_ssl = true if uri.scheme == "https"  # enable SSL/TLS
+					if uri.scheme == "https"  # enable SSL/TLS
+						http.use_ssl = true
+						http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+					end
 
 					http.start {
 						http.request_get(uri.path) {|res|}
