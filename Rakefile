@@ -592,7 +592,8 @@ namespace "token" do
     if !$user_acc.is_valid_token?()
       last_read_token = nil
 
-      files = [Rake.application.original_dir, $app_path, $rhodes_home].map{|d| File.join(d,'token.txt')}
+      search_paths = [Rake.application.original_dir, $app_path, $rhodes_home]
+      files = search_paths.compact.uniq.map{|d| File.join(d,'token.txt')}
 
       read_and_delete_files(files).each do |token|
         if RhoHubAccount.is_valid_token?(token)
