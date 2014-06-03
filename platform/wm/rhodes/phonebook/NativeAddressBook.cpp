@@ -43,6 +43,11 @@ IMPLEMENT_LOGCLASS(CABOutlookRecord,"ABOutlookRecord");
 IMPLEMENT_LOGCLASS(CABSimRecord,"ABSimRecord");
 IMPLEMENT_LOGCLASS(CNativeAddressBook,"NativeAddressBook");
 
+LPFN_SIM_DEINITIALIZE_T lpfn_sim_deinitialize;
+LPFN_SIM_INITIALIZE_T lpfn_sim_initialize;
+LPFN_SIM_READ_PHONEBOOK_ENTRY_T lpfn_sim_read_phonebook_entry;
+LPFN_SIM_GET_DEV_CAPS_T lpfn_sim_get_dev_caps;
+
 // Note that return type is std::string, not LPCSTR!!!
 // It is required to get live object even after function exit
 // In case if it is LPCSTR we actually get pointer to the
@@ -364,17 +369,58 @@ int CNativeAddressBook::addOutlookRecord(CABOutlookRecord* record)
 	return 1;
 }
 
+BOOL CNativeAddressBook::LoadSimMgr()
+{
+	bool bReturnValue = FALSE;
+	m_hSimMgrDLL = LoadLibrary(L"cellcore.dll");
+	if (!m_hSimMgrDLL)
+	{
+		//  Error loading CellCore.dll (used for Connection Manager)
+		LOG(INFO) + "Failed to load CellCore.dll, Sim functionality will not be available";
+	}
+	else
+	{
+		lpfn_sim_deinitialize = 
+			(LPFN_SIM_DEINITIALIZE_T)GetProcAddress(m_hSimMgrDLL, _T("SimInitialize"));
+		lpfn_sim_initialize = 
+			(LPFN_SIM_INITIALIZE_T)GetProcAddress(m_hSimMgrDLL, _T("SimDeinitialize"));
+		lpfn_sim_read_phonebook_entry = 
+			(LPFN_SIM_READ_PHONEBOOK_ENTRY_T)GetProcAddress(m_hSimMgrDLL, _T("SimReadPhonebookEntry"));
+		lpfn_sim_get_dev_caps = 
+			(LPFN_SIM_GET_DEV_CAPS_T)GetProcAddress(m_hSimMgrDLL, _T("SimGetDevCaps"));
+
+		if (!lpfn_sim_deinitialize)
+		{
+			LOG(ERROR) + "Unable to load SimDeinitialize";
+			bReturnValue = FALSE;
+		}
+		else if (!lpfn_sim_initialize)
+		{
+			LOG(ERROR) + "Unable to load SimInitialize";
+		}
+		else
+			bReturnValue = TRUE;
+	}
+	return bReturnValue;
+}
+
 bool CNativeAddressBook::initSimAB()
 {
-	HRESULT h = SimInitialize(0, NULL, 0, &m_hSim);
+	if(!LoadSimMgr()) 
+	{
+		LOG(INFO)  + "SimMgr is not found";
+		return false;;
+	}
+	
+	HRESULT h = lpfn_sim_initialize(0, NULL, 0, &m_hSim);
 	if (SUCCEEDED(h))
 	{
-		if (SUCCEEDED(SimGetDevCaps(m_hSim, SIM_CAPSTYPE_ALL, &m_SimCaps))) 
+		if (SUCCEEDED(lpfn_sim_get_dev_caps(m_hSim, SIM_CAPSTYPE_ALL, &m_SimCaps))) 
 		{
 				return true;				
 		}
 		LOG(ERROR) + "Failed to get SIM capabilities.";
-		SimDeinitialize(m_hSim);
+		lpfn_sim_deinitialize(m_hSim);
 		m_hSim = NULL;
 	}
 	LOG(ERROR) + "Failed to init SIM. Error=" + (int)h;
@@ -384,7 +430,7 @@ bool CNativeAddressBook::initSimAB()
 
 bool CNativeAddressBook::closeSimAB()
 {
-	SimDeinitialize(m_hSim);
+	lpfn_sim_deinitialize(m_hSim);
 	return false;
 }
 
@@ -447,7 +493,7 @@ int CABSimRecord::load()
 	SIMPHONEBOOKENTRY entry;
 	
 	String name, address;
-	HRESULT hr = SimReadPhonebookEntry(m_hSim, SIM_PBSTORAGE_SIM, m_index, &entry);
+	HRESULT hr = lpfn_sim_read_phonebook_entry(m_hSim, SIM_PBSTORAGE_SIM, m_index, &entry);
 	if (SUCCEEDED(hr))
 	{
 		char buf[128];

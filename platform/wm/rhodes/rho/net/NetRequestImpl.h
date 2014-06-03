@@ -157,6 +157,8 @@ public :
 
     virtual INetResponse* createEmptyNetResponse(){ return new CNetResponseImpl(); }
 
+    virtual void setCallback(INetRequestCallback* callback) { }
+
     static void deinitConnection();
 
 private:

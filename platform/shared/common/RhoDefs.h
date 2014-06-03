@@ -48,7 +48,20 @@
 #endif
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8)
+// 0 - win32 desktop, 1 - wm, 2 - mot ce
+extern int winversion;
+
+#define WIN_PLATFORM_WIN32 0
+#define WIN_PLATFORM_WM 1
+#define WIN_PLATFORM_MOTCE 2
+
+#define IS_CURRENT_PLATFORM(p) ((bool)(p == winversion))
+
 #define WINDOWS_PLATFORM
+
+#define RHO_IS_WMDEVICE winversion==1
+#define RHO_IS_CEDEVICE winversion==2
+#define RHO_IS_WIN32DEVICE winversion==0
 #endif
 
 #ifdef __cplusplus

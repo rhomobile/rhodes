@@ -12,6 +12,7 @@ import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.RhoConf;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -59,6 +60,7 @@ public class GoogleWebView implements IRhoWebView {
         OsVersionManager.registerSelector(Build.VERSION_CODES.ECLAIR_MR1, IWebSettingsProvider.class, WebSettingsProviderEclairMR1.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.FROYO, IWebSettingsProvider.class, WebSettingsProviderFroyo.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.JELLY_BEAN, IWebSettingsProvider.class, WebSettingsProviderJellyBean.class.getCanonicalName());
+        OsVersionManager.registerSelector(Build.VERSION_CODES.KITKAT, IWebSettingsProvider.class, WebSettingsProviderKitKat.class.getCanonicalName());
 
         mInitialized = true;
     }
@@ -69,7 +71,18 @@ public class GoogleWebView implements IRhoWebView {
             @Override
             public void run() {
                 Logger.T(TAG, "Web settings is applying now");
-                mWebView.setInitialScale(0);
+                
+                float z=(float) 0.0;
+                try{
+                z=Float.parseFloat(RhoConf.getString("PageZoom"));
+                }
+                catch(NumberFormatException ex)
+                {
+                	Logger.E(TAG, "NumberFormatException,message="+ex.getMessage());
+                	z=(float) 0.0;
+                }
+               mWebView.setInitialScale((int)(z*150));
+                //mWebView.setInitialScale(0);
                 mWebView.setVerticalScrollBarEnabled(true);
                 mWebView.setHorizontalScrollBarEnabled(true);
                 mWebView.setVerticalScrollbarOverlay(true);

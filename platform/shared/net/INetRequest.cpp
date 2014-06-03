@@ -218,6 +218,81 @@ String CNetRequestWrapper::resolveUrl(const String& strUrl)
     return RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
 
+void CNetRequestWrapper::cancel()
+{
+  if ( m_pHolder != 0 )
+  {
+    m_pHolder->cancel();
+  }
+}
+
+void CNetRequestWrapper::setCallback(rho::net::INetRequestCallback* callback )
+{
+  m_pReqImpl->setCallback(callback);
+}
+
+
+
+
+void CAsyncNetRequest::run(common::CRhoThread &)
+{
+  CNetRequestWrapper net = ::getNetRequest(&m_request);
+  net.setCallback(this);
+  net.doRequest(m_method.c_str(),m_url,m_body,m_pSession,&m_headers);
+}
+
+void CAsyncNetRequest::cancel()
+{
+  m_request.cancel();
+}
+
+  void CAsyncNetRequest::didReceiveResponse(NetResponse& resp, const Hashtable<String,String>* headers)
+  {
+    synchronized(m_mxCallbackAccess)
+    {
+      if ( m_pCallback != 0 )
+      {
+        m_pCallback->didReceiveResponse(resp,headers);
+      }
+    }
+  }
+
+  void CAsyncNetRequest::didReceiveData(const char* ptr, int len) 
+  {
+    synchronized(m_mxCallbackAccess)
+    {
+      if ( m_pCallback != 0 )
+      {
+        m_pCallback->didReceiveData(ptr,len);
+      }
+    }
+  }
+
+  void CAsyncNetRequest::didFinishLoading()
+  {
+    synchronized(m_mxCallbackAccess)
+    {
+      if ( m_pCallback != 0 )
+      {
+        m_pCallback->didFinishLoading();
+      }
+    }
+  }
+
+  void CAsyncNetRequest::didFail(NetResponse& resp)
+  {
+    synchronized(m_mxCallbackAccess)
+    {
+      if ( m_pCallback != 0 )
+      {
+        m_pCallback->didFail(resp);
+      }
+    }
+  }
+
+
+
+
 }
 }
 

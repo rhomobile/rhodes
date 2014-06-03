@@ -32,6 +32,7 @@ load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
 require 'tempfile'
 
+include FileUtils
 
 USE_OWN_STLPORT = false
 #USE_TRACES = # see androidcommon.rb
@@ -64,6 +65,7 @@ ANDROID_PERMISSIONS = {
     'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH'],
     'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR'],
     'sdcard' => 'WRITE_EXTERNAL_STORAGE',
+    'read_sdcard' => 'READ_EXTERNAL_STORAGE',
     'push' => nil,
     'motorola' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest|
       add_motosol_sdk(manifest)
@@ -276,14 +278,6 @@ namespace "config" do
 
     $uri_host = $app_config["android"]["URIHost"] unless $app_config["android"].nil?
 
-    # Here is switch between release/debug configuration used for
-    # building native libraries
-    if $app_config["debug"].nil?
-      $build_release = true
-    else
-      $build_release = !$app_config["debug"].to_i
-    end
-
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
     $rhobindir = File.join($androidpath, "bin")
@@ -462,7 +456,7 @@ namespace "config" do
 
     $native_libs = ["sqlite", "curl", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
-    if $build_release
+    unless $debug
       $confdir = "release"
     else
       $confdir = "debug"
@@ -667,6 +661,15 @@ namespace "config" do
                 end
               end
 
+              resource_packages = extconf_android['resource_packages'] if extconf_android
+              if resource_packages
+                if resource_packages.is_a? Array
+                  resource_packages.each do |package|
+                    $ext_android_library_deps[package] = ""
+                  end
+                end
+              end
+
               additional_sources = extconf["android_additional_sources_list"]
               additional_sources = extconf_android['source_list'] if additional_sources.nil? and extconf_android
               unless additional_sources.nil?
@@ -826,6 +829,7 @@ namespace "build" do
       ENV["RHO_ANDROID_TMP_DIR"] = $tmpdir
       ENV["NEON_ROOT"] = $neon_root unless $neon_root.nil?
       ENV["CONFIG_XML"] = $config_xml unless $config_xml.nil?
+      ENV["RHO_DEBUG"] = $debug.to_s
 
       $ext_android_build_scripts.each do |ext, builddata|
         
@@ -1610,6 +1614,9 @@ namespace "build" do
         val = 'true' if $app_config["capabilities"].index(k) != nil
         f.puts "  public static final boolean #{k.upcase}_ENABLED = #{val};"
       end
+      
+      f.puts "  public static final boolean DEBUG_ENABLED = #{$debug.to_s};"
+      
       f.puts "}"
       #end
       Jake.modify_file_if_content_changed($app_capabilities_java, f)
@@ -2235,6 +2242,30 @@ namespace "run" do
       end
     end
 
+    desc "Run downloaded binary package on device"
+    task "simulator:package", [:package_file, :package_name] => ['config:android:emulator'] do |t, args|
+      package_file = args.package_file
+      package_name = args.package_name.nil? ? $app_package_name : args.package_name
+
+      throw "You must pass package name" if package_file.nil?
+      throw "No file to run" if !File.exists?(package_file)
+
+      AndroidTools.run_emulator
+
+      AndroidTools.load_app_and_run('-e', File.expand_path(package_file), package_name)
+    end
+
+    desc "Run downloaded binary package on simulator"
+    task "device:package", [:package_file, :package_name] => ['config:android:device'] do |t, args|
+      package_file = args.package_file
+      package_name = args.package_name.nil? ? $app_package_name : args.package_name
+
+      throw "You must pass package name" if package_file.nil?
+      throw "No file to run" if !File.exists?(package_file)
+
+      AndroidTools.load_app_and_run('-d', File.expand_path(package_file), package_name)
+    end
+
     task :spec => "run:android:emulator:spec" do
     end
 
@@ -2250,6 +2281,18 @@ namespace "run" do
       AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
 
       AndroidTools.logcat_process('-e')
+
+      sleepRubyProcess
+    end
+
+    desc "build and install on device"
+    task :device => "device:android:debug" do
+      AndroidTools.kill_adb_logcat('-d')
+
+      apkfile = File.join $targetdir, $appname + "-debug.apk"
+      AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
+
+      AndroidTools.logcat_process('-d')
 
       sleepRubyProcess
     end
@@ -2275,18 +2318,6 @@ namespace "run" do
       $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
 
       Rake::Task["run:rhosimulator_debug"].invoke
-    end
-
-    desc "build and install on device"
-    task :device => "device:android:debug" do
-      AndroidTools.kill_adb_logcat('-d')
-
-      apkfile = File.join $targetdir, $appname + "-debug.apk"
-      AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
-
-      AndroidTools.logcat_process('-d')
-
-      sleepRubyProcess
     end
   end
 

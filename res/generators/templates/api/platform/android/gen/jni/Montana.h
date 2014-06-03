@@ -149,15 +149,15 @@ end %>
 
         run(env, jhTask.get(), result, <%=
 if method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UNDEFINED
-    "apiGenerator::NOT_FORCE_THREAD"
+    "rho::apiGenerator::NOT_FORCE_THREAD"
 elsif method.run_in_thread == ModuleMethod::RUN_IN_THREAD_NONE
-    "apiGenerator::FORCE_CURRENT_THREAD"
+    "rho::apiGenerator::FORCE_CURRENT_THREAD"
 elsif method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI
-    "apiGenerator::FORCE_UI_THREAD"
+    "rho::apiGenerator::FORCE_UI_THREAD"
 elsif method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE
-    "apiGenerator::FORCE_MODULE_THREAD"
+    "rho::apiGenerator::FORCE_MODULE_THREAD"
 elsif method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED
-    "apiGenerator::FORCE_NEW_THREAD"
+    "rho::apiGenerator::FORCE_NEW_THREAD"
 end %>);
         if(env->ExceptionCheck() == JNI_TRUE)
         {

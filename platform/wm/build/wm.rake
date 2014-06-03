@@ -24,13 +24,32 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-def pack_7z(where, what, archive)
-  what = what.join(' ') if what.kind_of?(Array)
-  Jake.run3("7za a \"#{archive}\" #{what} -bd", where)
+def get_7z_path()
+  if RUBY_PLATFORM =~ /(win|w)32$/
+    File.join($startdir,'res/build-tools/7za')
+  else
+    '7za'
+  end
+end
+
+def pack_7z(where, what, archive, exclude = [])
+  what = what.map {|p| "\"#{p}\""}
+  Jake.run3(get_7z_path() + " a \"#{archive}\" #{what.join(' ')} -bd" + (exclude.map {|f| " -x!#{f}"}).join(' '), where)
 end
 
 def unpack_7z(where, archive)
-  Jake.run3("7za x \"#{archive}\" -bd -y", where)
+  Jake.run3(get_7z_path()+" x \"#{archive}\" -bd -y", where)
+end
+
+def determine_prebuild_path_win(platform,config)
+  require 'rhodes/containers'
+  if platform == 'win32' && !config.nil? && config.is_a?(Hash) && config.has_key?("app_type")
+    conf = config.clone
+    conf.delete("app_type")
+  else
+    conf = config
+  end
+  Rhodes::Containers::get_container_path_prefix(platform, conf)
 end
 
 def additional_dlls_paths
@@ -95,7 +114,7 @@ def sign(cabfile, signature)
 end
 
 # make a *.cpy and *.reg files for persistent installation
-def makePersistentFiles(dstDir, additional_paths, webkit_dir, regkeys_filename)
+def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_process, regkeys_filename)
   cf = File.new(File.join(dstDir, $appname + ".cpy"), "w+")
 
   if cf.nil?
@@ -132,6 +151,7 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, regkeys_filename)
 
     Dir.glob("**/*").each { |f|
       if File.directory?(f) == false && File.extname(f) != ".lib" && File.extname(f) != ".exp"
+        next if File.basename(f) == (webkit_out_of_process ? 'WebkitPlatformDeliveryCompiledAsDLL.dll' : 'OutProcessWK.exe')
         path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
         path.gsub!("/", "\\")
         cf.puts(path)
@@ -254,10 +274,10 @@ def stuff_around_appname
 end
 
 def build_cab
-  build_platform = 'wm6'
-  build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-  build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
-  build_platform = 'ce7' if $sdk == "WT41N0c70PSDK (ARMV4I)"
+  #build_platform = 'wm6'
+  #build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+  build_platform = 'ce5' #if $sdk == "MC3000c50b (ARMV4I)"
+  #build_platform = 'ce7' if $sdk == "WT41N0c70PSDK (ARMV4I)"
 
   reg_keys_filename = File.join(File.dirname(__FILE__), 'regs.txt');
   puts 'remove file with registry keys'
@@ -271,25 +291,30 @@ def build_cab
   end
 
   if $build_persistent_cab && !$use_shared_runtime
-    makePersistentFiles($srcdir, additional_dlls_paths, $webkit_capability ? $wk_data_dir : nil, reg_keys_filename)
+    makePersistentFiles($srcdir, additional_dlls_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
+  end
+
+  webkit = 'none'
+  if $is_webkit_engine && $webkit_capability 
+    webkit = $webkit_out_of_process ? 'out_of_process' : 'in_process'
   end
 
   dir = File.join($startdir, $builddir)
-
+  
   args = [
     'build_inf.js',
-    $appname + ".inf",                        #0
+    '"' + $appname + ".inf\"",               #0
     build_platform,                           #1
     '"' + $app_config["name"] +'"',           #2
-    $app_config["vendor"],                    #3
+    '"' + $app_config["vendor"] + '"',        #3
     '"' + $srcdir + '"',                      #4
     $hidden_app,                              #5
-    ($webkit_capability ? "1" : "0"),         #6
-    $wk_data_dir,                             #7
+    webkit,                                   #6
+    '"' + $wk_data_dir + '"',                 #7
     ($use_shared_runtime  ? "1" : "0"),       #8
     ($motorola_capability ? "1" : "0"),       #9
     ($run_on_startup      ? "1" : "0"),       #10
-    $srcdir,                                  #11
+    '"' + $srcdir + '"',                      #11
     ($build_persistent_cab ? "1" : "0")       #12
   ]
 
@@ -297,7 +322,7 @@ def build_cab
 
   Jake.run3("cscript #{args.join(' ')}", dir)
 
-  Jake.run3("\"#{$cabwiz}\" #{$appname}.inf", dir)
+  Jake.run3("\"#{$cabwiz}\" \"#{$appname}.inf\"", dir)
   Jake.run3('cscript cleanup.js', dir)
 
   mkdir_p $targetdir
@@ -307,7 +332,7 @@ def build_cab
   File.open(File.join($targetdir, 'app_info.txt'), 'w') { |f| f.write("#{$app_config['vendor']} #{$appname}/#{$appname}.exe") }
 
   if not $config['build']['wmsign'].nil? and $config['build']['wmsign'] != ''
-    sign("#{$targetdir}/#{$appname}.cab", $config['build']['wmsign'])
+    sign("\"#{$targetdir}/#{$appname}.cab\"", $config['build']['wmsign'])
   end
 
   rm File.join(dir, 'cleanup.js')
@@ -343,10 +368,11 @@ namespace "config" do
     puts " $current_platform : #{$current_platform}"
 
     unless $sdk
-      $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
-      $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
-      value = ENV['rho_wm_sdk']
-      $sdk = value if value      
+      #$sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
+      #$sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
+      #value = ENV['rho_wm_sdk']
+      #$sdk = value if value  
+      $sdk = "MC3000c50b (ARMV4I)"    
     end
 
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
@@ -376,6 +402,7 @@ namespace "config" do
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
+    $webkit_out_of_process = $app_config['wm']['webkit_outprocess'] == '1'
     $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("motorola").nil?) 
     $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
     $additional_dlls_path = nil
@@ -385,7 +412,9 @@ namespace "config" do
     $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $build_cab = true 
-      
+    $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
+    $is_webkit_engine = true if $is_webkit_engine.nil?
+
     begin
       if $webkit_capability || $motorola_capability
         require "rhoelements-data"
@@ -431,6 +460,8 @@ namespace "config" do
     end
 
     task :qt do
+      next if $prebuild_win32
+
       $msvc_version = $app_config["win32"]["msvc"] if $app_config["win32"] && $app_config["win32"]["msvc"]
 
       # use Visual Studio 2012 by default
@@ -505,9 +536,7 @@ namespace "config" do
 
       $app_icon_path = $app_path + "/icon/icon.ico"
       $app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exists? $app_icon_path
-      cp $app_icon_path, $startdir + "/platform/wm/rhodes/resources/icon.ico"
-      resfile = $startdir + "/platform/wm/bin/win32/rhodes/" +$buildcfg + "/Rhodes.res"
-      rm resfile if File.exists? resfile
+      cp $app_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.ico"
 
       $qt_icon_path = $app_path + "/icon/icon.png"
       $qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exists? $qt_icon_path
@@ -551,7 +580,7 @@ namespace "build" do
   namespace "wm" do
   
     task :extensions => "config:wm" do
-      if $use_shared_runtime then next end
+      next if $use_shared_runtime || $prebuild_win32
 
       extensions_lib = ''
       pre_targetdeps = ''
@@ -916,6 +945,8 @@ namespace "build" do
     end
 
     task :extensions => "config:wm" do
+      next if $prebuild_win32
+
       extensions_lib = ''
       pre_targetdeps = ''
 
@@ -1021,7 +1052,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
     end
 
     task :after_bundle do
-      win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
+      win32rhopath = ($prebuild_win32 ? $tmpdir : 'platform/wm/bin/win32/rhodes/' + $buildcfg) + '/rho'
       mkdir_p win32rhopath
       namepath = File.join(win32rhopath,"name.txt")
       old_appname = File.read(namepath) if File.exists?(namepath)
@@ -1029,13 +1060,24 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       confpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
       confpath_content = File.read(confpath) if File.exists?(confpath)
 
-      rm_rf win32rhopath + 'lib'
-      rm_rf win32rhopath + 'apps'
-      rm_rf win32rhopath + 'db' if old_appname != $appname
+      if $prebuild_win32
+        $target_path = $tmpdir
+        if not File.directory?($target_path)
+          Dir.mkdir($target_path)
+        end
+        target_rho_dir = File.join($tmpdir, "rho")
+        rm_rf target_rho_dir
+        mv $srcdir, target_rho_dir
+      else
+        win32rhopath = win32rhopath + '/'
+        rm_rf win32rhopath + 'lib'
+        rm_rf win32rhopath + 'apps'
+        rm_rf win32rhopath + 'db' if old_appname != $appname
 
-      cp_r $srcdir + '/lib', win32rhopath
-      cp_r $srcdir + '/apps', win32rhopath
-      cp_r $srcdir + '/db', win32rhopath
+        cp_r $srcdir + '/lib', win32rhopath
+        cp_r $srcdir + '/apps', win32rhopath
+        cp_r $srcdir + '/db', win32rhopath
+      end
 
       File.open(namepath, "w") { |f| f.write($appname) }
       File.open(confpath, "w") { |f| f.write(confpath_content) }  if old_appname == $appname && confpath_content && confpath_content.length()>0
@@ -1078,6 +1120,8 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
   #desc "Build rhodes for win32"
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
+    next if $prebuild_win32
+
     chdir $config["build"]["wmpath"]
 
     ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
@@ -1111,13 +1155,17 @@ namespace "device" do
       Dir.glob("#{container_prefix_path}*") {|f| rm_r(f)}
       mkdir_p container_prefix_path
 
-      pack_7z($app_path, 'bin', File.join(container_prefix_path, 'application_override.7z'))
-      pack_7z($startdir, [
+      rhodes_gem_paths = ([
         'platform/wm/RhoLaunch/RhoLaunch.ico',
         'platform/wm/rhodes/resources/icon.ico',
-        'platform/wm/bin',
+        'platform/wm/bin/**/license_rc.dll',
+        'platform/wm/bin/**/rhodes.exe',
+        'platform/wm/bin/**/RhoLaunch.exe',
         'platform/wm/build/regs.txt'
-      ], File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+      ].map {|p| Dir.glob(p)}).flatten
+
+      pack_7z($app_path, ['bin'], File.join(container_prefix_path, 'application_override.7z'))
+      pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
     end
 
     desc 'Applies application container. See also device:wm:make_container.'
@@ -1167,14 +1215,21 @@ namespace "device" do
       build_cab if $build_cab
 
     end
+
+    task :production_with_prebuild_binary => ['config:wm'] do
+      container_path = determine_prebuild_path_win('wm', $app_config)
+      Rake::Task['device:wm:apply_container'].invoke(container_path)
+      Rake::Task['build:bundle:noxruby'].invoke
+      Rake::Task['device:wm:cab'].invoke
+    end
   end
 
-  def createWin32Production()
+  def createWin32Production(skip_deployqt = false, skip_nsis = false)
     out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
     puts "out_dir - "  + out_dir
 
-    mkdir_p $targetdir
-    mkdir_p $tmpdir
+    mkdir_p $targetdir unless skip_nsis
+    mkdir_p $tmpdir unless skip_deployqt
     mkdir_p out_dir
 
     cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
@@ -1203,46 +1258,54 @@ namespace "device" do
       readme_line = 'File "' + readme_filename + '"'
     end
 
-    # custumize install script for application
-    install_script = File.read(script_name)
-    install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
-    install_script = install_script.gsub(/%APPNAME%/, $appname)
-    install_script = install_script.gsub(/%APPVERSION%/, $app_version)
-    install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
-    install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
-    install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
-    install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
-    install_script = install_script.gsub(/%APPICON%/, "icon.ico")
-    install_script = install_script.gsub(/%GROUP_NAME%/, $app_config["vendor"])
-    install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
-    install_script = install_script.gsub(/%LICENSE_FILE%/, license_line)
-    install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
-    install_script = install_script.gsub(/%README_FILE%/, readme_line)
-    install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
-    install_script = install_script.gsub(/%QT_VSPEC_FILES%/, ($qt_version == 4 ? 'File *.manifest' : 'File /r "platforms"'))
-    install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
-    File.open(app_script_name, "w") { |file| file.puts install_script }
+    if !skip_nsis
+      # custumize install script for application
+      install_script = File.read(script_name)
+      install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
+      install_script = install_script.gsub(/%APPNAME%/, $appname)
+      install_script = install_script.gsub(/%APPVERSION%/, $app_version)
+      install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
+      install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
+      install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
+      install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
+      install_script = install_script.gsub(/%APPICON%/, "icon.ico")
+      install_script = install_script.gsub(/%GROUP_NAME%/, $app_config["vendor"])
+      install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
+      install_script = install_script.gsub(/%LICENSE_FILE%/, license_line)
+      install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
+      install_script = install_script.gsub(/%README_FILE%/, readme_line)
+      install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
+      install_script = install_script.gsub(/%QT_VSPEC_FILES%/, ($qt_version == 4 ? 'File *.manifest' : 'File /r "platforms"'))
+      install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
+      File.open(app_script_name, "w") { |file| file.puts install_script }
+    end
 
     puts "$appname - " + $appname
 
     cp $app_icon_path, $tmpdir + "/icon.ico"
+    cp $qt_icon_path, $tmpdir + "/icon.png"
 
-    File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + "/" + $appname + "/" + $appname + ".exe") }
+    if !skip_nsis
+      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + "/" + $appname + "/" + $appname + ".exe") }
+    end
 
     chdir $tmpdir
 
-    target_rho_dir = File.join($tmpdir, "rho")
-    rm_rf target_rho_dir
-    mv $srcdir, target_rho_dir
+    if !skip_deployqt
+      target_rho_dir = File.join($tmpdir, "rho")
+      rm_rf target_rho_dir
+      mv $srcdir, target_rho_dir
+    end
 
     $target_path = $tmpdir
-    Rake::Task["build:win32:deployqt"].invoke
+    Rake::Task["build:win32:deployqt"].invoke unless skip_deployqt
 
-    puts "$nsis - " + $nsis
-    args = [$tmpdir + "/" + $appname + ".nsi"]
-    puts "arg = " + args.to_s
-
-    puts Jake.run2($nsis, args, {:nowait => false} )
+    if !skip_nsis
+      puts "$nsis - " + $nsis
+      args = ['"' + $tmpdir + "/" + $appname + ".nsi\""]
+      puts "arg = " + args.to_s
+      puts Jake.run2($nsis, args, {:nowait => false} )
+    end
   end
 
   namespace "winxpe" do
@@ -1256,8 +1319,59 @@ namespace "device" do
   namespace "win32" do
     desc "Build installer for Windows"
     task :production => ["build:win32:set_release_config", "build:win32"] do
-      createWin32Production
+      createWin32Production()
     end
+
+    desc "Build Windows for production, use prebuild binaries"
+    task :production_with_prebuild_binary do
+      $prebuild_win32 = true
+      Rake::Task["device:win32:build_with_prebuild_binary"].invoke
+    end
+    task :build_with_prebuild_binary => ["build:win32:set_release_config", "build:win32:rhobundle", "config:win32:application"] do
+      container_path = determine_prebuild_path_win('win32', $app_config)
+      Rake::Task['device:win32:apply_container'].invoke(container_path)
+      createWin32Production(true,false)
+    end
+
+    desc 'Creates application container. See also device:win32:apply_container.'
+    task :make_container, [:container_prefix_path] => ["build:win32:set_release_config", "build:win32"] do |t, args|
+      createWin32Production(false,true)
+
+      container_prefix_path = args[:container_prefix_path]
+
+      Dir.glob("#{container_prefix_path}*") {|f| rm_r(f)}
+      mkdir_p container_prefix_path
+
+      cd $startdir
+      rhodes_gem_paths = ([
+        'platform/wm/bin/win32/rhodes/**/rhodes.exe'
+      ].map {|p| Dir.glob(p)}).flatten
+      bin_exclude_files = [
+        'bin/tmp/*.exe',
+        'bin/tmp/*.time',
+        'bin/tmp/*.ico',
+        'bin/tmp/*.png',
+        'bin/tmp/rho/RhoBundleMap.txt',
+        'bin/tmp/rho/apps/rhoconfig.txt*',
+        'bin/tmp/rho/apps/rhofilelist.txt',
+        'bin/tmp/rho/apps/app',
+        'bin/tmp/rho/apps/app_manifest.txt',
+        'bin/tmp/rho/apps/public/api',
+        'bin/tmp/rho/apps/public/public.txt'
+      ]
+
+      pack_7z($app_path, ['bin'], File.join(container_prefix_path, 'application_override.7z'), bin_exclude_files)
+      pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
+    desc 'Applies application container. See also device:win32:make_container'
+    task :apply_container, [:container_prefix_path] do |t, args|
+      container_prefix_path = args[:container_prefix_path]
+
+      unpack_7z($app_path, File.join(container_prefix_path, 'application_override.7z'))
+      unpack_7z($startdir, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+    end
+
   end
 end
 
@@ -1573,7 +1687,7 @@ namespace "run" do
 
         cd $startdir + "/res/build-tools"
         detool = "detool.exe"
-        args   = [$detoolappflag, 'devcab', $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
+        args   = [$detoolappflag, 'devcab', '"' + $targetdir + '/' +  $appname + ".cab\"", '"' + $appname + '"', ( $use_shared_runtime ? "1" : "0")]
         puts "\nStarting application on the device"
         puts "Please, connect you device via ActiveSync.\n\n"
         log_file = gelLogPath
@@ -1591,7 +1705,7 @@ namespace "run" do
 
       cd $startdir + "/res/build-tools"
       detool = "detool.exe"
-      args   = [$detoolappflag, 'emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
+      args   = [$detoolappflag, 'emucab', "\"#{$wm_emulator}\"", '"' + $targetdir + '/' +  $appname + ".cab\"", '"' + $appname + '"', ( $use_shared_runtime ? "1" : "0")]
       log_file = gelLogPath
 
       Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
@@ -1603,14 +1717,24 @@ namespace "run" do
 
   desc "Run win32"
   task :win32 => ["build:win32"] do
+    unless $prebuild_win32
+      rundir = $config["build"]["wmpath"]
+      $target_path = File.join( rundir, "bin/win32/rhodes", $buildcfg )
+      exefile = "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe"
+    else
+      rundir = $target_path
+      exefile = $target_path + '/' + $appname + '.exe'
+    end
 
-    cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
-    Rake::Task["build:win32:deployqt"].invoke
+    cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), $target_path
+    Rake::Task["build:win32:deployqt"].invoke unless $prebuild_win32
+
+    cp $qt_icon_path, $target_path + "/icon.png"
 
     args = [' ']
-    #    chdir $config["build"]["wmpath"]
+    #    chdir rundir
     #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
-    Jake.run2 "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => true}
+    Jake.run2 exefile, args, {:directory => rundir, :nowait => true}
 
     $stdout.flush
     chdir $startdir
@@ -1638,6 +1762,20 @@ namespace "run" do
     task :rhosimulator_debug => ["config:set_win32_platform", "config:common"] do
       $rhosim_config = "platform='win32'\r\n"
       Rake::Task["run:rhosimulator_debug"].invoke
+    end
+
+    task :package do
+      $prebuild_win32 = true
+      Rake::Task["run:win32:run_with_prebuild_binary"].invoke
+    end
+
+    task :run_with_prebuild_binary => ["build:win32:set_release_config", "build:win32:rhobundle", "config:win32:application"] do
+      container_path = determine_prebuild_path_win('win32', $app_config)
+      Rake::Task['device:win32:apply_container'].invoke(container_path)
+
+      createWin32Production(true,true)
+
+      Rake::Task['run:win32'].invoke()
     end
 
     task :delete_db do

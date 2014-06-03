@@ -45,32 +45,37 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 {
 #if defined( OS_WINCE )
 
-#if !defined (OS_PLATFORM_MOTCE)
-	SHINITDLGINFO shidi;
-	shidi.dwMask = SHIDIM_FLAGS; 
-	shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;//SHIDIF_DONEBUTTON | SHIDIF_SIZEDLGFULLSCREEN |SHIDIF_EMPTYMENU; 
-	shidi.hDlg = m_hWnd; 
-	SHInitDialog(&shidi);
+//#if !defined (OS_PLATFORM_MOTCE)
+	if(RHO_IS_WMDEVICE)
+	{
+		SHINITDLGINFO shidi;
+		shidi.dwMask = SHIDIM_FLAGS; 
+		shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;//SHIDIF_DONEBUTTON | SHIDIF_SIZEDLGFULLSCREEN |SHIDIF_EMPTYMENU; 
+		shidi.hDlg = m_hWnd; 
+		SHInitDialog(&shidi);
 
-    SHMENUBARINFO mbi = { sizeof(mbi), 0 };
-    mbi.hwndParent = m_hWnd;
-    mbi.nToolBarId = IDR_LOGMENUBAR; // ID of toolbar resource
-    mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
-    mbi.dwFlags    = SHCMBF_HMENU;
-    SHCreateMenuBar(&mbi);
+		SHMENUBARINFO mbi = { sizeof(mbi), 0 };
+		mbi.hwndParent = m_hWnd;
+		mbi.nToolBarId = IDR_LOGMENUBAR; // ID of toolbar resource
+		mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
+		mbi.dwFlags    = SHCMBF_HMENU;
+		SHCreateMenuBar(&mbi);
+	}
+	//    SendDlgItemMessage(IDC_LOGEDIT,WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FONT),0);
+	//#else
+	else
+	{
+		SetWindowLong(GWL_STYLE,(long)WS_BORDER);
+		ShowWindow(SW_MAXIMIZE);
 
-//    SendDlgItemMessage(IDC_LOGEDIT,WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FONT),0);
-#else
-	SetWindowLong(GWL_STYLE,(long)WS_BORDER);
-	ShowWindow(SW_MAXIMIZE);
-
-	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
-	CommandBar_AddAdornments(m_hWndCommandBar, 0, 0 );
-	HMENU menu = LoadMenu(0, MAKEINTRESOURCE(IDR_LOGMENUBAR));
-	CommandBar_InsertMenubarEx(m_hWndCommandBar, 0, (LPTSTR)menu, 0);
-	CommandBar_DrawMenuBar(m_hWndCommandBar, 0);
-    CommandBar_Show(m_hWndCommandBar, TRUE);
-#endif
+		m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+		CommandBar_AddAdornments(m_hWndCommandBar, 0, 0 );
+		HMENU menu = LoadMenu(0, MAKEINTRESOURCE(IDR_LOGMENUBAR));
+		CommandBar_InsertMenubarEx(m_hWndCommandBar, 0, (LPTSTR)menu, 0);
+		CommandBar_DrawMenuBar(m_hWndCommandBar, 0);
+		CommandBar_Show(m_hWndCommandBar, TRUE);
+	}
+//#endif
 
     loadLogText();
 

@@ -68,6 +68,8 @@ struct CMultipartItem
     String m_strDataPrefix;
 };
 
+class INetRequestCallback;
+
 struct INetRequestImpl
 {
     virtual ~INetRequestImpl(void){;}
@@ -82,6 +84,8 @@ struct INetRequestImpl
     virtual void setSslVerifyPeer(boolean mode) = 0;
 
     virtual INetResponse* createEmptyNetResponse() = 0;
+    
+    virtual void setCallback(INetRequestCallback*) = 0;
 };
 
 typedef rho::common::CAutoPtr<rho::net::INetResponse> NetResponsePtr;
@@ -160,8 +164,13 @@ public:
     rho::net::CNetResponseWrapper pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders,bool overwriteFile,bool createFolders, bool* pFileExistsFlag = 0 );
 
     String resolveUrl(const String& strUrl);
+    void cancel();
+    
+    void setCallback(INetRequestCallback*);
 
 };
+
+
 
 }
 }
@@ -170,5 +179,79 @@ typedef rho::net::CNetResponseWrapper NetResponse;
 typedef rho::net::CNetRequestHolder NetRequest;
 
 rho::net::CNetRequestWrapper getNetRequest(rho::net::CNetRequestHolder* pHolder = 0);
+
+namespace rho
+{
+
+namespace common
+{
+    class CRhoThread;
+}
+
+namespace net
+{
+
+class INetRequestCallback
+{
+  public:
+    virtual ~INetRequestCallback() {}
+
+    virtual void didReceiveResponse(NetResponse&, const Hashtable<String,String>* headers) = 0;
+//    virtual void didReceiveHeader(int code, const String& header, const String& value, const Hashtable<String,String>* headers) = 0;
+    virtual void didReceiveData(const char*, int) = 0;
+    virtual void didFinishLoading() = 0;
+    virtual void didFail(NetResponse&) = 0;
+
+};
+
+class CAsyncNetRequest : public INetRequestCallback
+{
+
+private:
+  String m_method;
+  String m_url;
+  String m_body;
+  net::IRhoSession* m_pSession;
+  Hashtable<String,String> m_headers;
+  INetRequestCallback* m_pCallback;
+
+  /*net::CNetRequestWrapper*/NetRequest  m_request;
+
+  common::CMutex m_mxCallbackAccess;
+
+public:
+
+  CAsyncNetRequest()
+    : m_pSession(0)
+    , m_pCallback(0)
+    //, m_request(::getNetRequest())
+  {
+  }
+  
+  void setMethod(const String& method) { m_method = method; }
+  void setUrl(const String& url) { m_url = url; }
+  void setBody(const String& body) { m_body = body; }
+  void setSession( IRhoSession* pSession ) { m_pSession = pSession; }
+  void setCallback( INetRequestCallback* pCallback )
+  { 
+    synchronized(m_mxCallbackAccess)
+    {
+      m_pCallback = pCallback; 
+    }
+  }
+  void setHeaders( const Hashtable<String, String> headers ) { m_headers = headers; }
+  
+
+  void run(common::CRhoThread &);
+  void cancel();
+
+  virtual void didReceiveResponse(NetResponse& resp, const Hashtable<String,String>* headers);
+  virtual void didReceiveData(const char* ptr, int len);
+  virtual void didFinishLoading();
+  virtual void didFail(NetResponse& resp);
+};
+
+}
+}
 
 

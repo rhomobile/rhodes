@@ -41,7 +41,10 @@ LRESULT CLogOptionsDlg::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 LRESULT CLogOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#if defined( OS_WINCE ) && !defined (OS_PLATFORM_MOTCE)
+#if defined( OS_WINCE )
+if(winversion == 1)
+{
+//#if defined( OS_WINCE ) && !defined (OS_PLATFORM_MOTCE)
 	SHINITDLGINFO shidi;
 	shidi.dwMask = SHIDIM_FLAGS; 
 	shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;//SHIDIF_DONEBUTTON | SHIDIF_SIZEDLGFULLSCREEN |SHIDIF_EMPTYMENU; 
@@ -54,13 +57,18 @@ LRESULT CLogOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     mbi.dwFlags    = SHCMBF_HMENU;
     SHCreateMenuBar(&mbi);
-#elif defined (OS_PLATFORM_MOTCE) 
+}
+else if(winversion == 2)
+{
+//#elif defined (OS_PLATFORM_MOTCE) 
 	SetWindowLong(GWL_STYLE,(long)WS_BORDER);
 
 	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
 	CommandBar_AddAdornments(m_hWndCommandBar, CMDBAR_OK, 0 );
     CommandBar_Show(m_hWndCommandBar, TRUE);
-#endif //OS_WINCE
+//#endif //OS_WINCE
+}
+#endif
 
     SendDlgItemMessage(IDC_CBXLEVELS,CB_ADDSTRING,0,  (LPARAM)_T("Trace"));
     SendDlgItemMessage(IDC_CBXLEVELS,CB_ADDSTRING,0,  (LPARAM)_T("Info"));

@@ -40,7 +40,7 @@
 #include "SyncStatusDlg.h"
 #include "rho/rubyext/NativeToolbar.h"
 #include "rho/rubyext/NativeTabbar.h"
-#include "IBrowserEngine.h"
+#include "browser/IBrowserEngine.h"
 #include "common/app_build_capabilities.h"
 
 #include "LogView.h"
@@ -58,7 +58,7 @@
 #define PB_SCREEN_ORIENTATION_CHANGED	WM_USER + 11
 #define PB_NEWGPSDATA					WM_USER + 12
 
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 
 extern UINT WM_BROWSER_ONDOCUMENTCOMPLETE;
 extern UINT WM_BROWSER_ONNAVIGATECOMPLETE;
@@ -127,12 +127,12 @@ namespace rho
 }
 
 class CMainWindow :
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+//#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	public CFrameWindowImpl<CMainWindow>, 
-	public CFullScreenFrame<CMainWindow, false>
-#else
-    public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
-#endif
+	public CFullScreenFrame<CMainWindow, false>//,
+//#else
+  ///  public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
+//#endif
 #if !defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) && !defined(OS_PLATFORM_MOTCE)
     ,public IDispEventImpl<ID_BROWSER, CMainWindow>
 #endif
@@ -211,9 +211,7 @@ public:
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_TOOLBAR_ITEM_FIRST, ID_CUSTOM_TOOLBAR_ITEM_LAST, OnCustomToolbarItemCommand)
-#if defined( OS_PLATFORM_MOTCE )
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
-#endif
 
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
 		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
@@ -235,7 +233,7 @@ public:
         MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
         MESSAGE_HANDLER(WM_HOTKEY, OnHotKey);
         MESSAGE_HANDLER(WM_TIMER, OnTimer);
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
         MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATECOMPLETE, OnNavigateComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONTITLECHANGE, OnTitleChange);
@@ -282,10 +280,7 @@ private:
     LRESULT OnSetCookieCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    
-#if defined( OS_PLATFORM_MOTCE )
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-#endif
 
 	LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -310,7 +305,7 @@ private:
 
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
     LRESULT OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -385,10 +380,8 @@ private:
     CMenu   m_mainMenu;
 #endif //_WIN32_WCE
 
-// #if defined( OS_PLATFORM_MOTCE )
     int   m_menuBarHeight;
     HWND  g_hWndCommandBar;	// command bar handle
-// #endif
 
 #if defined(_WIN32_WCE)
     // Used to manage SIP state. Also used to adjust window for SIP.
@@ -421,6 +414,4 @@ private:
     void ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam );
 };
 
-#if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE ) 
 HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );
-#endif
