@@ -41,4 +41,16 @@ class Rhohub::Build < Rhohub::Base
       super({},'platforms')
     end
   end
+
+  def self.supported_gems
+    catch_all do
+      super({},'supported_gems')
+    end
+  end
+
+  def self.user_status
+    catch_all do 
+      super({},'user_status')
+    end
+  end
 end

@@ -264,7 +264,7 @@ class RhoHubAccount
   end
 
   def server()
-    @info[:server]
+    @info[:server].nil? ? "" : @info[:server]
   end
 
   def server=(value)
@@ -304,14 +304,21 @@ class RhoHubAccount
   end
 
   def is_valid_subscription?()
-    return false if (@info[:subscription].nil? || @info[:subscription].empty?)
+    remaining_subscription_time() > 0
+  end
 
-    begin
-      diff = JSON.parse(@info[:subscription])["tokenValidUntil"] - Time.now.to_i
-      diff > 0
-    rescue Exception => e
-      false
+  def remaining_subscription_time()
+    diff = 0
+
+    if !(@info[:subscription].nil? || @info[:subscription].empty?)
+      begin
+        diff = [0,(JSON.parse(@info[:subscription])["tokenValidUntil"]).to_i - Time.now.to_i].max
+      rescue Exception => e
+        diff = 0
+      end
     end
+
+    diff
   end
 
   def to_boolean(s)
@@ -324,37 +331,44 @@ class RhoHubAccount
     end
   end
 
-  def subscription_level()
-    return -1 if !is_valid_subscription?()
+  def subsciption_plan()
+    text = "free" 
+
     begin
       resp = JSON.parse(subscription)
+      unsigned = subscription.gsub(/"signature":"[^"]*"/, '"signature":""')
+      hash = Digest::SHA1.hexdigest(unsigned)
+
+      if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
+        if !(resp["features"].nil? && resp["features"]["plan"].nil?)
+          text = resp["features"]["plan"]
+        end
+      else
+        text = "invalid"
+      end
     rescue Exception => e
-      return -1
     end
 
-    unsigned = subscription.gsub(/"signature":"[^"]*"/, '"signature":""')
-    hash = Digest::SHA1.hexdigest(unsigned)
+    text
+  end
 
+  def subscription_level()
     level = -1
 
-    if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
-      if (!resp["features"].nil?)
-        if !to_boolean(resp["features"]["isFree"])
-          case resp["features"]["plan"]
-          when "premium"
-            level = 2
-          when "enterprise"
-            level = 2
-          when "silver"
-            level = 1
-          when "gold"
-            level = 2
-          else
-            level = 0
-          end
-        else
-          level = 0
-        end
+    if is_valid_subscription?()
+      case subsciption_plan()
+      when "premium"
+        level = 2
+      when "gold"
+        level = 2
+      when "enterprise"
+        level = 1
+      when "silver"
+        level = 1
+      when "free"
+        level = 0
+      else
+        level = -1
       end
     end
 
@@ -372,6 +386,10 @@ class RhoHubAccount
 
   def is_outdated()
     (@info[:time] - Time.now.to_i > @@min_update_interval) || @changed
+  end
+
+  def remaining_time()
+    [0,@info[:time] + @@min_update_interval - Time.now.to_i].max
   end
 
   def read_token_from_env()
