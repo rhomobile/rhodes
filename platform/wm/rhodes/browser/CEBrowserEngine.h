@@ -32,18 +32,18 @@ class CEBrowserEngine :
     DEFINE_LOGCLASS;
 
 public:
-
 	CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance);
 	virtual ~CEBrowserEngine(void);
 	
 	BOOL Reload(BOOL bFromCache);
 
 private:
-	
+    static DWORD WINAPI RegisterWndProcThread(LPVOID lpParameter);
+    static DWORD WINAPI NavigationTimeoutThread( LPVOID lpParameter );
+
+private:
     HRESULT ParseTags();
     LRESULT CreateEngine();
-
-	static DWORD WINAPI NavigationTimeoutThread( LPVOID lpParameter );
 
 	BOOL GetPageSize (int *pwidth, int *pheight);
 

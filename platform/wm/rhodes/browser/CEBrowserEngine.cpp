@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 extern "C" HWND rho_wmimpl_get_mainwnd();
+extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam);
 
 IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
 
@@ -141,6 +142,9 @@ LRESULT CEBrowserEngine::CreateEngine()
 			bDeviceCausesDoubleBackspace = TRUE;
 		}
 	}
+
+    CloseHandle (CreateThread(NULL, 0, 
+        &CEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
 
 Cleanup:
 	if (pUnk)
@@ -667,8 +671,22 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
     case PB_ONMETA:
         {
             EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
-            rho::browser::MetaHandler(m_tabID, metaTag2);
+
+            RHODESAPP().getExtManager().onSetPropertiesData( (LPCWSTR)wParam, (LPCWSTR)lParam );
+
+            if (metaTag2 && wcscmp(metaTag2->tcHTTPEquiv, L"initialiseRhoElementsExtension") != 0)
+            {
+                free(metaTag2->tcHTTPEquiv);
+                free(metaTag2->tcContents);
+                delete metaTag2;
+            }
         }
+        break;
+    case PB_ONTOPMOSTWINDOW:
+        LOG(INFO) + "START PB_ONTOPMOSTWINDOW";
+        LRESULT rtRes = rho_wm_appmanager_ProcessOnTopMostWnd(wParam, lParam);
+        LOG(INFO) + "END PB_ONTOPMOSTWINDOW";
+        return rtRes;
         break;
     }
 
@@ -915,6 +933,55 @@ HRESULT CEBrowserEngine::ParseTags()
 		}
 	}
 	return S_OK;
+}
+
+
+/**
+* \author	Darryn Campbell (DCC, JRQ768)
+* \date		November 2009 (DCC: Initial Creation)
+*/
+DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
+{
+	//  We are passed a pointer to the engine we are interested in.
+	CEBrowserEngine* pEngine = reinterpret_cast<CEBrowserEngine*>(lpParameter);
+
+	//  The window tree appears as follows on CE:
+	//  +--m_htmlHWND
+	//     |
+	//     +--child of m_htmlHWND
+	//        |
+	//        +--child which receives Windows Messages
+
+	//  The window tree appears as follows on WM:
+	//  +--m_htmlHWND
+	//     |
+	//     +--child of m_htmlHWND which receives Windows Messages
+
+	//  Obtain the created HTML HWND
+	HWND hwndHTML = NULL;
+	HWND hwndHTMLChild1 = NULL;
+	HWND hwndHTMLMessageWindow = NULL;
+
+    while (hwndHTMLMessageWindow == NULL)
+	{
+		hwndHTML = pEngine->GetHTMLWND(0);
+
+        if (hwndHTML != NULL)
+		{
+            hwndHTMLChild1 = ::GetWindow(hwndHTML, GW_CHILD);
+
+            if (hwndHTMLChild1 != NULL)
+			{
+                hwndHTMLMessageWindow = ::GetWindow(hwndHTMLChild1, GW_CHILD);
+			}
+		}
+
+        Sleep(100);
+	}
+
+    PostMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+
+    return 0;
 }
 
 
