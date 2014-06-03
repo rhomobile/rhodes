@@ -1,4 +1,5 @@
 class String
+
   def capitalize_first
     self.slice(0, 1).capitalize + self.slice(1..-1)
   end
@@ -11,24 +12,37 @@ class String
       downcase
   end
 
-  def black;          "\033[30m#{self}\033[0m" end
-  def red;            "\033[31m#{self}\033[0m" end
-  def green;          "\033[32m#{self}\033[0m" end
-  def brown;          "\033[33m#{self}\033[0m" end
-  def blue;           "\033[34m#{self}\033[0m" end
-  def magenta;        "\033[35m#{self}\033[0m" end
-  def cyan;           "\033[36m#{self}\033[0m" end
-  def gray;           "\033[37m#{self}\033[0m" end
-  def bg_black;       "\033[40m#{self}\0330m"  end
-  def bg_red;         "\033[41m#{self}\033[0m" end
-  def bg_green;       "\033[42m#{self}\033[0m" end
-  def bg_brown;       "\033[43m#{self}\033[0m" end
-  def bg_blue;        "\033[44m#{self}\033[0m" end
-  def bg_magenta;     "\033[45m#{self}\033[0m" end
-  def bg_cyan;        "\033[46m#{self}\033[0m" end
-  def bg_gray;        "\033[47m#{self}\033[0m" end
-  def bold;           "\033[1m#{self}\033[22m" end
-  def underline;      "\033[4m#{self}\033[24m" end
-  def reverse_color;  "\033[7m#{self}\033[27m" end
-
+  # table of helper functions
+  {  
+    :black           => ["\033[30m","\033[0m"],
+    :red             => ["\033[31m","\033[0m"],
+    :green           => ["\033[32m","\033[0m"],
+    :brown           => ["\033[33m","\033[0m"],
+    :blue            => ["\033[34m","\033[0m"],
+    :magenta         => ["\033[35m","\033[0m"],
+    :cyan            => ["\033[36m","\033[0m"],
+    :gray            => ["\033[37m","\033[0m"],
+    :bg_black        => ["\033[40m","\0330m"],
+    :bg_red          => ["\033[41m","\033[0m"],
+    :bg_green        => ["\033[42m","\033[0m"],
+    :bg_brown        => ["\033[43m","\033[0m"],
+    :bg_blue         => ["\033[44m","\033[0m"],
+    :bg_magenta      => ["\033[45m","\033[0m"],
+    :bg_cyan         => ["\033[46m","\033[0m"],
+    :bg_gray         => ["\033[47m","\033[0m"],
+    :bold            => ["\033[1m","\033[22m"],
+    :underline       => ["\033[4m","\033[24m"],
+    :reverse_color   => ["\033[7m","\033[27m"]
+  }.each do |name, format|
+    # use colorizer only for TTY
+    if STDOUT.tty?
+      send :define_method, name do
+        [format[0],self,format[1]].join
+      end 
+    else
+      send :define_method, name do 
+        self
+      end
+    end
+  end
 end

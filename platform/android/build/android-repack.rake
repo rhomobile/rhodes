@@ -67,7 +67,6 @@ namespace 'device' do
 
       capabilities = []
       capabilities.concat(app_config['capabilities']) if app_config['capabilities']
-      capabilities.concat(prebuilt_config['capabilities']) if prebuilt_config['capabilities']
       capabilities.uniq!
 
       capabilities.each do |cap|

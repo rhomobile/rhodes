@@ -410,18 +410,32 @@ def get_app_list()
   result
 end
 
+def from_boolean(v)
+  v == true ? "YES" : "NO"
+end
+
+def time_to_str(time)
+  dhms = [60,60,24].reduce([time]) { |m,o| m.unshift(m.shift.divmod(o)).flatten }
+  best = []
+  ["day","hour","minute","second"].each_with_index do |v, i|
+    if dhms[i] > 0
+      best << dhms[i].to_s + " " + v + ((dhms[i] > 1) ? "s" : "")
+    end
+  end
+  best.empty? ? "now" : best.first(2).join(" ")
+end
 
 def sort_by_distance(array, template)
   template.nil? ? array : array.sort_by { |s| distance(template, s) }
 end
 
 def check_update_token_file(server_list, user_acc, token_folder, subscription_level = -1)
-  is_vaild = -2
+  is_valid = -2
 
   if user_acc.is_valid_token?()
     Rhohub.token = user_acc.token
 
-    is_vaild = user_acc.is_outdated() ? 0 : 2
+    is_valid = user_acc.is_outdated() ? 0 : 2
 
     if (user_acc.is_outdated() || (subscription_level > user_acc.subscription_level))
       servors = sort_by_distance(server_list, user_acc.server)
@@ -445,9 +459,9 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
         end
       end
 
-      is_vaild = user_acc.subscription_level >= 0 ? 2 : 0
+      is_valid = user_acc.subscription_level >= 0 ? 2 : 0
 
-      if is_vaild == 0
+      if is_valid == 0
         servors.each do |srv|
           Rhohub.url = srv
 
@@ -460,12 +474,12 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
 
           if user_apps.nil?
             user_acc.token = nil
-            is_vaild = -1
+            is_valid = -1
           else
-            is_vaild = 1
+            is_valid = 1
           end
 
-          if is_vaild > 0
+          if is_valid > 0
             user_acc.server = srv
             break
           end
@@ -477,10 +491,10 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
       user_acc.save_token(token_folder)
     end
   else
-    is_vaild = -2
+    is_valid = -2
   end
 
-  is_vaild
+  is_valid
 end
 
 def read_and_delete_files( file_list )
@@ -627,13 +641,28 @@ namespace "token" do
   end
 
   task :check => [:read] do
-    puts "SubscriptionValid[#{$user_acc.is_valid_subscription?() ? 'YES' : 'NO'}]"
-    puts "TokenValid[#{$user_acc.is_valid_token?() ? 'YES' : 'NO'}]"
+    puts "TokenValid[#{from_boolean($user_acc.is_valid_token?())}]"
+    puts "TokenChecked[#{from_boolean($user_acc.remaining_time() > 0)}]" 
+    puts "SubscriptionValid[#{from_boolean($user_acc.is_valid_subscription?())}]"
+    puts "SubscriptionChecked[#{from_boolean($user_acc.remaining_subscription_time() > 0)}]"
+  end
 
-    if ($user_acc.is_valid_token?())
-      exit 0
-    else
-      exit 1
+  desc "Show token and user subscription infomation"
+  task :info => [:read] do
+    puts "Login complete: " + from_boolean($user_acc.is_valid_token?())
+    if $user_acc.is_valid_token?()
+      token_remaining = $user_acc.remaining_time()
+      if token_remaining > 0
+        puts "Token will be checked after " + time_to_str($user_acc.remaining_time())
+      else
+        puts "Token should be checked"
+      end
+      puts "Subscription plan: " + $user_acc.subsciption_plan()
+      subs_valid = $user_acc.is_valid_subscription?()
+      puts "Subscription valid: " + from_boolean(subs_valid)
+      if subs_valid
+        puts "Subscription will be valid for " + time_to_str($user_acc.remaining_subscription_time()) 
+      end
     end
   end
 
