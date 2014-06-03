@@ -148,12 +148,36 @@ INetResponse *CURLNetRequest::makeResponse(char const *body, size_t bodysize, in
     return resp.release();
 }
 
-static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
-    Hashtable<String,String>* pHeaders = (Hashtable<String,String>*)opaque;
+    String *pStr = (String *)opaque;
+    size_t nBytes = size*nmemb;
+    RAWTRACE1("Received %d bytes", nBytes);
+    pStr->append((const char *)ptr, nBytes);
+    return nBytes;
+}
+
+size_t CURLNetRequest::curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+{
+    Hashtable<String,String>* pHeaders = ((RequestState*)opaque)->headers;
+
+    RequestState* state = (RequestState*)opaque;
+
+    if ( 0==state->respCode ) {
+      state->respCode = state->request->getResponseCode(CURLE_OK, 0, 0, 0);
+    }
+
     size_t nBytes = size*nmemb;
     String strHeader((const char *)ptr, nBytes);
     RAWTRACE1("Received header: %s", strHeader.c_str());
+
+    if (strHeader == "\r\n" || strHeader == "\n") {
+        if ( state->request->m_pCallback != 0 )
+        {
+          NetResponse r = state->request->makeResponse(0,0,state->respCode);
+          state->request->m_pCallback->didReceiveResponse(r,state->headers);
+        }
+    }
     
     int nSep = strHeader.find(':');
     if (nSep > 0 )
@@ -176,35 +200,30 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
     return nBytes;
 }
 
-static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+size_t CURLNetRequest::curlBodyDataCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
-    String *pStr = (String *)opaque;
+    RequestState* state = (RequestState*)opaque;
     size_t nBytes = size*nmemb;
     RAWTRACE1("Received %d bytes", nBytes);
-    pStr->append((const char *)ptr, nBytes);
-    return nBytes;
-}
 
-static size_t curlBodyBinaryCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
-{
-    Vector<char> *pBody = (Vector<char> *)opaque;
-    size_t nBytes = size*nmemb;
-    RAWTRACE1("Received %d bytes", nBytes);
-    std::copy((char*)ptr, (char*)ptr + nBytes, std::back_inserter(*pBody));
-    return nBytes;
-}
-
-static size_t curlBodyFileCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
-{
-    size_t nBytes = size*nmemb;
-    RAWTRACE1("Received %d bytes", nBytes);
-    common::CRhoFile* file = (common::CRhoFile*)opaque;
-    file->write(ptr, nBytes);
-    file->flush();
+    if ( state->pFile != 0 )
+    {
+      state->pFile->write(ptr, nBytes);
+      state->pFile->flush();
+    }
+    else
+    {
+      Vector<char> *pBody = state->respChunk;
+      std::copy((char*)ptr, (char*)ptr + nBytes, std::back_inserter(*pBody));
+    }
+    
+    if ( state->request->m_pCallback != 0 )
+    {        
+        state->request->m_pCallback->didReceiveData((const char*)ptr, nBytes);        
+    }     
     
     return nBytes;
 }
-
 
 extern "C" int rho_net_ping_network(const char* szHost);	
 
@@ -255,24 +274,24 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
         Vector<char> respChunk;
         
+        RequestState state;
+        state.respChunk = &respChunk;
+        state.headers = pHeaders;
+        state.pFile = oFile;
+        state.request = this;
+        
         ProxySettings proxySettings;
         proxySettings.initFromConfig();
 		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings );
 
         CURL *curl = m_curl.curl();
         if (pHeaders) {
-            curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
-            curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
+            curl_easy_setopt(curl, CURLOPT_HEADERDATA, &state);
+            curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &CURLNetRequest::curlHeaderCallback);
         }
-        
-        if ( oFile != 0 ) {
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, oFile);
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyFileCallback);
-        
-        } else {
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
-        }
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &state);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CURLNetRequest::curlBodyDataCallback);
 		
         if (nStartFrom > 0)
 		{
@@ -330,6 +349,19 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 
 	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )		   
 	   rho_net_impl_network_indicator(0);
+    
+    if ( m_pCallback != 0 )
+    {
+        NetResponse r = makeResponse(respBody, nRespCode);
+        if (r.isOK())
+        {
+            m_pCallback->didFinishLoading();
+        }
+        else
+        {
+            m_pCallback->didFail(r);
+        }
+    }
 
     return makeResponse(respBody, nRespCode);
 }

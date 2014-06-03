@@ -10,8 +10,8 @@
 
 //#include "../../common/Public/PBPlugin.h"
 #pragma once
-#include <snapi.h>
-#include <regext.h>
+#include "snapi.h"
+#include "regext.h"
 #define INITGUID
 ///  Globally unique identifier for the Internet
 static const GUID IID_DestNetInternet = {0x436ef144, 0xb4fb, 0x4863, 0xa0, 0x41, 0x8f, 0x90, 0x5a, 0x62, 0xc5, 0x72};

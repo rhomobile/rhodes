@@ -11,6 +11,7 @@ $appincdir = ENV["RHO_INC"]
 raise "RHO_INC is not set" if $appincdir.nil?
 $androidndkpath = ENV['ANDROID_NDK']
 raise 'ANDROID_NDK is not set' if $androidndkpath.nil?
+$debug = ENV['RHO_DEBUG'] == 'true'
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 

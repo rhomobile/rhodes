@@ -100,7 +100,7 @@ public class RhoWebChromeClient extends WebChromeClient {
     }
     
     public void onConsoleMessage(String message, int lineNumber, String sourceID) {
-        Logger.D(TAG, message + " -- From line " + lineNumber + " of " + sourceID);
+        Logger.I(TAG, message + " -- From line " + lineNumber + " of " + sourceID);
     }
 
     public void onExceededDatabaseQuota(String url, String databaseIdentifier, long currentQuota, long estimatedSize,

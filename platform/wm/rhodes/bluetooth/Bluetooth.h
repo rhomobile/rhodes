@@ -28,12 +28,12 @@
 
 #include <windows.h>
 
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
+#if defined( OS_WINCE) //&& !defined( OS_PLATFORM_MOTCE )
 
 #include <winsock2.h>
 #include <ws2bth.h>
-#include <bthapi.h>
-#include <bthutil.h>
+#include "bthapi.h"
+#include "bthutil.h"
 
 
 #define MAX_NAME_SIZE 1024
@@ -46,14 +46,8 @@
 
 
 
-
-
-
-
-
-
-
-
+typedef int (WINAPI* LPFN_BTH_GETMODE_T)	(DWORD*);
+typedef int (WINAPI* LPFN_BTH_SETMODE_T)	(DWORD);
 
 #define RHO_BT_OK  "OK"
 #define RHO_BT_CANCEL  "CANCEL"
@@ -235,7 +229,8 @@ public:
 
 	void terminateDiscoverThread();
 	void terminateDiscoverByNameThread();
-    void terminateDiscoveredThread();    
+    void terminateDiscoveredThread(); 
+	static BOOL LoadBthUtil();
 
 private:
 
@@ -277,6 +272,7 @@ private:
 
 	static DWORD WINAPI runThreadReadData(LPVOID voidArg);
 	static DWORD WINAPI runThreadDiscovered(LPVOID data);
+	static HMODULE m_hBthUtilDLL;
 
 };
 

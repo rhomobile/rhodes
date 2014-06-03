@@ -89,7 +89,20 @@ class CURLNetRequest : public INetRequestImpl
         String mStrBody;
     };
     
+    struct RequestState
+    {
+        RequestState() : respCode(0), respChunk(0), request(0), pFile(0) {}
+        
+        int respCode;
+        Hashtable<String, String>* headers;
+        Vector<char>* respChunk;
+        CURLNetRequest* request;
+        common::CRhoFile* pFile;
+    };
+    
 public:
+    CURLNetRequest() : m_pCallback(0) {}
+    
     virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
     virtual INetResponse* pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
     virtual INetResponse* pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
@@ -100,6 +113,8 @@ public:
     virtual void setSslVerifyPeer(boolean mode){m_curl.sslVerifyPeer(mode);}
 
     virtual INetResponse* createEmptyNetResponse();
+    
+    virtual void setCallback(INetRequestCallback* callback) { m_pCallback = callback; }
 private:
     INetResponse* doPull(const char *method, const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
     int getResponseCode(CURLcode err, String const &body, IRhoSession* oSession);
@@ -110,8 +125,13 @@ private:
     INetResponse *makeResponse(Vector<char> const &body, int nErrorCode);
     INetResponse *makeResponse(char const *body, size_t bodysize, int nErrorCode);
 	CURLcode doCURLPerform(const String& strUrl);
+    
+    static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque);
+    static size_t curlBodyDataCallback(void *ptr, size_t size, size_t nmemb, void *opaque);
+
 
     CURLHolder m_curl;
+    INetRequestCallback* m_pCallback;
 };
 
 } // namespace net
