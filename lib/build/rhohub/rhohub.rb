@@ -28,6 +28,10 @@ module Rhohub
       base_url += '/subscription'
     when 'token'
       base_url += '/token'
+    when 'supported_gems'
+      base_url += '/build/supported_gems'
+    when 'user_status'
+      base_url += '/build/user_status'
     else
       base_url += "/app/#{options[:app_id]}/builds" if options.has_key?(:app_id) && !options.has_key?(:id) # POST, INDEX
       base_url += "/app/#{options[:app_id]}/builds/#{options[:id]}"  if options.has_key?(:id) && options.has_key?(:app_id) # DELETE, SHOW                  
