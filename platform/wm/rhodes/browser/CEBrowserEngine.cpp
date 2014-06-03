@@ -867,14 +867,15 @@ HRESULT CEBrowserEngine::ParseTags()
 							BSTR bstr;
 							memset(&bstr, 0, sizeof(BSTR));
 							IHTMLMetaElement* pMetaElem;
-							hr = pDisp2->QueryInterface( IID_IHTMLMetaElement, 
-								(void **)&pMetaElem );
+							
+                            hr = pDisp2->QueryInterface( IID_IHTMLMetaElement, (void **)&pMetaElem );
+
 							if ( hr == S_OK )
 							{
 								//  The engine uses its own definition of 
 								//  meta tags, must HTTP Equiv and Contents
-								EngineMETATag metaTag;
-								memset(&metaTag, 0, sizeof(metaTag));
+								EngineMETATag *metaTag = new EngineMETATag;
+								//memset(&metaTag, 0, sizeof(metaTag));
 								TCHAR tcHttpEquiv[MAX_URL], tcContents[MAX_URL];
 								memset(tcHttpEquiv, 0, MAX_URL);
 								memset(tcContents, 0, MAX_URL);
@@ -888,7 +889,8 @@ HRESULT CEBrowserEngine::ParseTags()
 										//  from the IE Component into our 
 										//  Meta Tag Structure
 										wcsncpy(tcHttpEquiv, bstr, MAX_URL);
-										metaTag.tcHTTPEquiv = tcHttpEquiv;
+                                        metaTag->tcHTTPEquiv = new WCHAR[wcslen(tcHttpEquiv)+1];
+                                        wcsncpy(metaTag->tcHTTPEquiv, tcHttpEquiv, MAX_URL);
 										::SysFreeString(bstr);
 									}
 									else if	(S_OK == pMetaElem->get_name(&bstr))
@@ -900,12 +902,13 @@ HRESULT CEBrowserEngine::ParseTags()
 											//  from the IE Component into our 
 											//  Meta Tag Structure
 											wcsncpy(tcHttpEquiv, bstr, MAX_URL);
-											metaTag.tcHTTPEquiv = tcHttpEquiv;
+                                            metaTag->tcHTTPEquiv = new WCHAR[wcslen(tcHttpEquiv)+1];
+											metaTag->tcHTTPEquiv = tcHttpEquiv;
 											::SysFreeString(bstr);
 										}
 									}
 								}
-								if (metaTag.tcHTTPEquiv && S_OK == pMetaElem->get_content(&bstr)) 
+								if (metaTag->tcHTTPEquiv && S_OK == pMetaElem->get_content(&bstr)) 
 								{
 									if (bstr != 0) 
 									{
@@ -913,13 +916,14 @@ HRESULT CEBrowserEngine::ParseTags()
 										//  from the IE component into our
 										//  Meta Tag Structure
 										wcsncpy(tcContents, bstr, MAX_URL);
-										metaTag.tcContents = (TCHAR*) tcContents;
+                                        metaTag->tcContents = new WCHAR[wcslen(tcContents)+1];
+                                        wcsncpy(metaTag->tcContents, tcContents, MAX_URL);
 										::SysFreeString(bstr);
 										//  Invoke the Meta Tag Callback.
 										//  This blocks whilst the callback
 										//  code is handled so metaTag does not
 										//  go out of scope.
-                                        PostMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)&metaTag);
+                                        PostMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)metaTag);
 									}
 								}
 								pMetaElem->Release();
@@ -964,7 +968,7 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
 
     while (hwndHTMLMessageWindow == NULL)
 	{
-		hwndHTML = pEngine->GetHTMLWND(0);
+        hwndHTML = pEngine->GetHTMLWND(0);
 
         if (hwndHTML != NULL)
 		{
