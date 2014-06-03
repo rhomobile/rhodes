@@ -732,7 +732,7 @@ bool CEBrowserEngine::isExistJavascript(const wchar_t* szJSFunction, int index)
         }
     }
 
-    OLECHAR FAR* szJSMethodName = (OLECHAR *)szJSFunction;
+    OLECHAR FAR* szJSMethodName = (OLECHAR *)functionName;
     LPDISPATCH   pDisp          = (IDispatch FAR*)NULL;
     bool         retVal         = false;
 
