@@ -1020,8 +1020,8 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
   return (status == "completed"), result_link
 end
 
-def rhohub_start_build(app_id, build_flags)
-  result = JSON.parse(Rhohub::Build.create({:app_id => app_id}, build_flags))
+def rhohub_start_build(app_id, build_params)
+  build_hash = {:app_id => app_id}
 
   build_id = nil
 
@@ -1238,11 +1238,11 @@ namespace "rhohub" do
       'rhodes_version' => $rhodes_ver
     }
 
-    build_flags = { :build => build_hash }
-
     build_info.each do |k, v|
-      build_flags[k] = v
+      build_hash[k] = v
     end
+
+    build_flags = { :build => build_hash }
 
     build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
 
@@ -1306,8 +1306,8 @@ namespace "rhohub" do
         end
 
         options = {
-          :upload_cert => File.new(cert_file, 'rb'),
-          :upload_profile => File.new(profile_file, 'rb'),
+          :upload_cert => Base64.urlsafe_encode64(File.read(cert_file)),
+          :upload_profile => Base64.urlsafe_encode64(File.read(profile_file)),
           :bundle_identifier => get_conf('iphone/BundleIdentifier')
         }
 
