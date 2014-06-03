@@ -641,8 +641,10 @@ namespace "token" do
   end
 
   task :check => [:read] do
-    puts "TokenValid[#{$user_acc.is_valid_token?() ? 'YES' : 'NO'}]"
-    puts "SubscriptionValid[#{$user_acc.is_valid_subscription?() ? 'YES' : 'NO'}]"
+    puts "TokenValid[#{from_boolean($user_acc.is_valid_token?())}]"
+    puts "TokenChecked[#{from_boolean($user_acc.remaining_time() > 0)}]" 
+    puts "SubscriptionValid[#{from_boolean($user_acc.is_valid_subscription?())}]"
+    puts "SubscriptionChecked[#{from_boolean($user_acc.remaining_subscription_time() > 0)}]"
   end
 
   desc "Show token and user subscription infomation"
