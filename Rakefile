@@ -521,6 +521,13 @@ def read_and_delete_files( file_list )
 end
 
 $server_list = ['https://app.rhohub.com/api/v1', 'https://appstaging.rhohub.com/api/v1']
+$selected_server = $server_list.first
+$cloud_brand = "rhomobile"
+
+def get_server(url)
+  scheme, userinfo, host, port, registry, path, opaque, query, fragment =  URI.split(url)
+  URI.build([scheme, nil, host, port, nil, nil, nil, nil, nil])
+end
 
 namespace "token" do
   task :initialize => "config:load" do
@@ -535,18 +542,13 @@ namespace "token" do
   end
 
   task :login => [:initialize] do
-    if !SiteChecker.is_available?
-      BuildOutput.error( "Could not connect to server, please check your internet connection and try again.", "#{$rhohub} is inaccessible")
-      exit 1
-    end
-
-    puts "Login to rhohub"
+    puts 'Login to cloud build system'
 
     if $stdin.tty?
       print "Username: "
       username = STDIN.gets.chomp.downcase
       if username.empty?
-        BuildOutput.note( "Empty username, build stopped")
+        BuildOutput.note('Empty username, login stopped')
 
         exit 1
       end
@@ -558,7 +560,7 @@ namespace "token" do
       print $/
 
       if password.empty?
-        BuildOutput.note( "Empty password, build stopped")
+        BuildOutput.note('Empty password, login stopped')
 
         exit 1
       end
@@ -582,14 +584,15 @@ namespace "token" do
     end
 
     if token.nil?
-      BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at https://app.rhohub.com/forgot", "Invalid username or password" )
+      srv_adress = URI.join( get_server($user_acc.server), '/forgot')
+      BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at #{srv_adress}", 'Invalid username or password')
       exit 1
     end
 
     if !(token.nil? || token.empty?) && RhoHubAccount.is_valid_token?(token)
       Rake::Task["token:set"].invoke(token)
     else
-      BuildOutput.error( "Could not receive rhohub API token from server", "Internal error" )
+      BuildOutput.error( "Could not receive #{$cloud_brand} API token from server", 'Internal error')
       exit 1
     end
   end
@@ -628,9 +631,9 @@ namespace "token" do
       when 1
         BuildOutput.put_log( BuildOutput::WARNING, "Token is valid, could not check subcription", "Token check" );
       when 0
-        BuildOutput.put_log( BuildOutput::WARNING, "Could not check token online", "Token check" );
+        BuildOutput.put_log( BuildOutput::WARNING, "Cloud not check token online", "Token check" );
       else
-        BuildOutput.put_log( BuildOutput::ERROR, "RhoHub API token is not valid!", "Token check" );
+        BuildOutput.put_log( BuildOutput::ERROR, "#{$cloud_brand.capitalize} API token is not valid!", 'Token check');
         exit 1
       end
     end
@@ -638,6 +641,12 @@ namespace "token" do
     if $user_acc.is_valid_token?()
       Rhohub.token = $user_acc.token
     end
+
+    if $user_acc.server.empty?
+      $user_acc.server = $server_list.first
+    end
+
+    $selected_server = URI.join($user_acc.server, '/').to_s
   end
 
   task :check => [:read] do
@@ -679,7 +688,7 @@ namespace "token" do
     if RhoHubAccount.is_valid_token?(args[:token])
       $user_acc.token = args[:token]
     else
-      BuildOutput.error("Invalid RhoHub API token !", "Token check")
+      BuildOutput.error('Invalid Rhomobile API token !', 'Token check')
       exit 1
     end
 
@@ -690,9 +699,10 @@ namespace "token" do
       when 1
         BuildOutput.put_log( BuildOutput::WARNING,"Token is valid, could not check subcription", "Token check")
       when 0
-        BuildOutput.put_log( BuildOutput::WARNING,"Could not check token online", "Token check")
+        BuildOutput.put_log( BuildOutput::ERROR, 'Could not check token online', 'Token check')
+        exit 1
       else
-        BuildOutput.put_log( BuildOutput::ERROR,"RhoHub API token is not valid!", "Token check")
+        BuildOutput.put_log( BuildOutput::ERROR, 'Rhomobile API token is not valid!', 'Token check')
         exit 1
       end
     end
@@ -706,11 +716,11 @@ namespace "token" do
     if !$user_acc.is_valid_token?()
       have_input = STDIN.tty? && STDOUT.tty?
 
-      BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you need to log in into your rhohub account.
-If you don't have accout please register at http://rhohub.com." + ( have_input ? "To stop build just press enter." : "") )
+      BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you need to log in into your rhomobile account.
+If you don't have accout please register at " + URI.join($server_list.first, '/').to_s + ( have_input ? 'To stop build just press enter.' : '') )
 
       if have_input
-        Rake::Task["token:login"].invoke()
+        Rake::Task['token:login'].invoke()
       end
     end
   end
@@ -765,7 +775,7 @@ def to_boolean(s)
   end
 end
 
-def rhohub_git_match(str)
+def cloud_url_git_match(str)
   res = /git@git(?:.*?)\.rhohub\.com:(.*?)\/(.*?).git/i.match(str)
   res.nil? ? {} : { :str => "#{res[1]}/#{res[2]}", :user => res[1], :app => res[2] }
 end
@@ -920,7 +930,7 @@ end
 def find_platform_version(platform, platform_list, default_ver, info, is_lex = false)
   platfom_conf = platform_list[platform]
   if platfom_conf.empty?
-    raise Exception.new("Could not find any #{platform} sdk on rhohub")
+    raise Exception.new("Could not find any #{platform} sdk on cloud build server")
   end
 
   req_ver = nil
@@ -961,7 +971,7 @@ def find_platform_version(platform, platform_list, default_ver, info, is_lex = f
   best
 end
 
-def check_rhohub_result(result)
+def check_cloud_build_result(result)
   if !(result["text"].nil?)
     e_msg = "Error running build: #{result["text"]}"
     BuildOutput.error(e_msg)
@@ -992,7 +1002,6 @@ end
 
 def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to = nil, unzip_to = nil)
   app_request = {:app_id => app_id, :id => build_id}
-  last_stat = ""
   status = ""
 
   puts("Application build progress: \n")
@@ -1000,7 +1009,6 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
   begin
     result = JSON.parse(Rhohub::Build.show(app_request))
 
-    message = status = result["status"]
     desc = ''
 
     case status
@@ -1012,10 +1020,8 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
       sleep(1)
     when "completed"
       desc = "Build is ready to be downloaded."
-      message = "ready".green
     when "failed"
       desc = "Build failed."
-      message = "error!".red
     end
 
     build_complete = %w[completed failed].include?(status)
@@ -1024,7 +1030,7 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
 
   end while !build_complete
 
-  puts " "
+  puts
 
   result_link = result["download_link"]
 
@@ -1033,7 +1039,7 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
       put_message_with_timestamp(start_time, "Current status: #{msg}", true)
     end
 
-    puts " "
+    puts
 
     if !(unzip_to.nil? || unzip_to.empty?)
       if (status == "completed")
@@ -1041,7 +1047,7 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
           put_message_with_timestamp(start_time, "Current status: #{msg}", true)
         end
 
-        puts " "
+        puts
       end
     end
   end
@@ -1049,16 +1055,15 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
   return (status == "completed"), result_link
 end
 
-def rhohub_start_build(app_id, build_params)
-  build_hash = {:app_id => app_id}
 
-  build_id = nil
+def start_cloud_build(app_id, build_params)
+  result = JSON.parse(Rhohub::Build.create({:app_id => app_id}, build_params))
 
-  if !(result["status"].nil? && result["id"].nil?)
-    build_id = result["id"].to_i
+  if !(result['status'].nil? && result['id'].nil?)
+    build_id = result['id'].to_i
 
     if (!build_id.nil?)
-      result = JSON.parse(Rhohub::Build.show({:app_id => $rhohub_app_id, :id => build_id}))
+      result = JSON.parse(Rhohub::Build.show({:app_id => $app_cloud_id, :id => build_id}))
     end
   else
     build_id = -1
@@ -1070,124 +1075,128 @@ end
 $rhodes_ver_default = '3.5.1.14'
 $latest_platform = nil
 
-namespace "rhohub" do
-  desc "Initialize rhohub functionality"
-  task :initialize => ["config:initialize"] do
+namespace 'rhohub' do
+  task :set_paths => ['config:initialize'] do
     if $app_path.empty?
-      BuildOutput.error("Could not run cloud build, app_path is not set", "Rhohub build")
+      BuildOutput.error('Could not run cloud build, app_path is not set', 'Rhohub build')
       exit 1
     end
 
-    $rhohub_home = File.join($app_path, 'rhohub')
-    if !File.exist?($rhohub_home)
-      FileUtils::mkdir_p $rhohub_home
+    $cloud_build_home = File.join($app_path, '.cbc')
+    if !File.exist?($cloud_build_home)
+      FileUtils::mkdir_p $cloud_build_home
     end
-    $rhohub_temp = File.join($rhohub_home, 'temp')
-    if !File.exist?($rhohub_temp)
-      FileUtils::mkdir_p $rhohub_temp
+    $cloud_build_temp = File.join($cloud_build_home, 'temp')
+    if !File.exist?($cloud_build_temp)
+      FileUtils::mkdir_p $cloud_build_temp
     end
-    $rhohub_bin = File.join($app_path, 'bin')
-    if !File.exist?($rhohub_bin)
-      FileUtils::mkdir_p $rhohub_bin
+    $cloud_build_bin = File.join($app_path, 'bin')
+    if !File.exist?($cloud_build_bin)
+      FileUtils::mkdir_p $cloud_build_bin
     end
 
     $rhodes_ver = get_conf('rhohub/rhodesgem',$rhodes_ver_default)    
   end
 
-  desc "Login using interactive mode"
-  task :login => ["token:login"] do
-  end
-
-  desc "Get project infromation from rhohub"
-  task :find_app => ["config:initialize", "token:setup", :initialize] do
+  desc 'Initialize cloud build functionality'
+  task :initialize => ['config:initialize', 'token:setup', :set_paths] do
     if $user_acc.subscription_level < 1
-      Rake::Task["token:read"].reenable
-      Rake::Task["token:read"].invoke("true")
+      Rake::Task['token:read'].reenable
+      Rake::Task['token:read'].invoke('true')
     end
 
     if $user_acc.subscription_level() < 1
       BuildOutput.error(
         ['Cloud build is supported only for paid accounts. In order to upgrade your account please',
-         'log in https://app.rhohub.com/ and select "change plan" menu item in your profile settings.'],
+         "log in #{$selected_server} and select \"change plan\" menu item in your profile settings."],
       'Free account limitation')
       exit 1
     end
+  end
+
+  desc 'Login using interactive mode'
+  task :login => ['token:login'] do
+  end
+
+  desc 'Get project infromation from server'
+  task :find_app => [:initialize] do
+
     #check current folder
-    result = Jake.run2("git",%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
+    result = Jake.run2('git',%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
 
     if result.nil? || result.empty?
-      BuildOutput.error("Current project folder #{$app_path} is not versioned by git", "Rhohub build")
-      raise Exception.new("Not versioned by git")
+      BuildOutput.error("Current project folder #{$app_path} is not versioned by git", 'Rhohub build')
+      raise Exception.new('Not versioned by git')
     end
 
-    user_proj = rhohub_git_match(result)
+    user_proj = cloud_url_git_match(result)
 
     if !user_proj.empty?
       puts "RhoHub User: #{user_proj[:user]}, application: #{user_proj[:app]}"
     else
-      BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by rhohub cloud build system", "Rhohub build")
-      raise Exception.new("Not versioned on github")
+      BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Rhohub build')
+      raise Exception.new('Not versioned on github')
     end
 
     #get app list
     $apps = get_app_list() unless !$apps.nil?
 
     if $apps.nil?
-      BuildOutput.error("Could not get rhohub project list. Check your internet connection and proxy settings.", "Rhohub build")
+      BuildOutput.error('Could not get project list from cloud build server. Check your internet connection and proxy settings.', 'Rhohub build')
 
-      raise Exception.new("Could not get rhohub project list")
+      raise Exception.new('Could not get project list from server')
     end
 
     if $apps.empty?
-      BuildOutput.error("You do not have any RhoHub projects, please create progect first in order to use cloud build system", "Rhohub build")
+      BuildOutput.error('You do not have any RhoHub projects, please create progect first in order to use cloud build system', 'Rhohub build')
 
-      raise Exception.new("Empty project list")
+      raise Exception.new('Empty project list')
     end
 
     $apps.each do |item|
-      item[:user_proj] = rhohub_git_match(item["git_repo_url"])
+      item[:user_proj] = cloud_url_git_match(item['git_repo_url'])
       item[:dist]=distance(user_proj[:str], item[:user_proj][:str])
     end
 
-    $rhohub_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
+    $cloud_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
 
-    if $rhohub_app[:dist] > 0
-      if $rhohub_app[:user] != user_proj[:user]
-        BuildOutput.error("Current user account is #{$rhohub_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", "Rhohub build")
+    if $cloud_app[:dist] > 0
+      if $cloud_app[:user] != user_proj[:user]
+        BuildOutput.error("Current user account is #{$cloud_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", 'Rhohub build')
       else
         project_names = $apps.map{ |e| " - #{e[:user_proj][:app].to_s}" }.join($/)
-        BuildOutput.error("Could not find #{user_proj[:app].bold} in current user application list: \n#{project_names}", "Rhohub build")
+        BuildOutput.error("Could not find #{user_proj[:app].bold} in current user application list: \n#{project_names}", 'Rhohub build')
       end
-      raise Exception.new("User or application list mismatch")
+      raise Exception.new('User or application list mismatch')
     end
-    $rhohub_app_id = $rhohub_app["id"]
+    $app_cloud_id = $cloud_app['id']
   end
 
-  desc "List avaliable builds"
+  desc 'List avaliable builds'
   task :list_builds, [:show_log] => [:find_app] do |t, args|
-    args.with_defaults(:show_log => "false")
+    args.with_defaults(:show_log => 'false')
 
     show_log = to_boolean(args.show_log)
 
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id})).sort{ |a, b| b["id"].to_i <=> a["id"].to_i}
+    builds = JSON.parse(Rhohub::Build.list({:app_id => $app_cloud_id})).sort{ |a, b| b['id'].to_i <=> a['id'].to_i}
 
     if !builds.empty?
       builds.each do |build|
         show_build_infromation(build)
         if show_log
-          show_build_messages(build, $proxy, $rhohub_home)
+          show_build_messages(build, $proxy, $cloud_build_home)
         end
       end
     else
-      BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake rhohub:build:<platform>:<target>' command", "Build list is empty")
+      BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake rhohub:build:<platform>:<target>' command", 'Build list is empty')
     end
   end
 
   desc "Download build into app\\bin folder"
   task :download, [:build_id] => [:find_app] do |t, args|
-    FileUtils.rm_rf(Dir.glob(File.join($rhohub_temp,'*')))
+    FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
 
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id})).sort{ |a, b| b["id"].to_i <=> a["id"].to_i}
+    builds = JSON.parse(Rhohub::Build.list({:app_id => $app_cloud_id})).sort{ |a, b| b['id'].to_i <=> a['id'].to_i}
 
     if !builds.empty?
 
@@ -1195,7 +1204,7 @@ namespace "rhohub" do
 
       if build_id.nil? || build_id.empty?
         result = builds.first
-        build_id = result["id"].to_i
+        build_id = result['id'].to_i
         puts "Build id is not set, downloading latest one (#{build_id})"
         #builds.sort{|a, b| b["id"]<=>a["id"]}.first
       else
@@ -1204,30 +1213,30 @@ namespace "rhohub" do
 
       if build_id <= 0
         if build_id.abs < builds.length
-          build_id = builds[(build_id).abs]["id"].to_i
+          build_id = builds[(build_id).abs]['id'].to_i
         end
       end
 
-      build_hash = builds.find {|f| f["id"] == build_id }
+      build_hash = builds.find {|f| f['id'] == build_id }
 
       if !build_hash.nil?
         start_time = Time.now
-        successfull, file = wait_and_get_build($rhohub_app_id, build_id, $proxy, start_time, $rhohub_home, $rhohub_temp)
+        successfull, file = wait_and_get_build($app_cloud_id, build_id, $proxy, start_time, $cloud_build_home, $cloud_build_temp)
 
         if !file.nil?
           if successfull
-            dirs = Dir.entries($rhohub_temp).select {|entry| File.directory? File.join($rhohub_temp,entry) and !(entry =='.' || entry == '..') }
+            dirs = Dir.entries($cloud_build_temp).select {|entry| File.directory? File.join($cloud_build_temp,entry) and !(entry =='.' || entry == '..') }
 
             dirs.each do |dir|
               put_message_with_timestamp(start_time, "Removing previous application from bin folder #{dir}")
-              FileUtils.rm_rf(Dir.glob(File.join($rhohub_bin,dir)))
+              FileUtils.rm_rf(Dir.glob(File.join($cloud_build_bin,dir)))
               $latest_platform = dir
             end
 
             if dirs.length > 0
-              FileUtils.cp_r File.join($rhohub_temp,'.'), $rhohub_bin
+              FileUtils.cp_r File.join($cloud_build_temp,'.'), $cloud_build_bin
 
-              dest = File.join($rhohub_bin, dirs.first)
+              dest = File.join($cloud_build_bin, dirs.first)
 
               $unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
 
@@ -1236,15 +1245,15 @@ namespace "rhohub" do
               $unpacked_file_list = []
             end
           else
-            put_message_with_timestamp(start_time, "Done with build errors")
+            put_message_with_timestamp(start_time, 'Done with build errors')
             BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
           end
         else
-          puts "Could not get any result"
+          puts 'Could not get any result'
         end
       else
         str = build_id.to_s
-        match = builds.collect{ |h| { :id => h["id"], :dist => distance(str, h["id"].to_s) } }.min_by{|a| a[:dist]}
+        match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.min_by{|a| a[:dist]}
         if match[:dist] < 3
           puts "Could not find #{build_id}, did you mean #{match[:id]}?"
         else
@@ -1252,18 +1261,18 @@ namespace "rhohub" do
         end
       end
     else
-      puts "Nothing to download"
+      puts 'Nothing to download'
     end
   end
 
   def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
     platform_version = find_platform_version(platform_name, platform_list, config_override, true, is_lexicographic_ver)
 
-    puts "Running rhohub build using #{platform_version[:tag]} command"
+    puts "Running cloud build using #{platform_version[:tag]} command"
 
     build_hash = {
       'target_device' => platform_version[:tag],
-      'version_tag' => "master",
+      'version_tag' => 'master',
       'rhodes_version' => $rhodes_ver
     }
 
@@ -1273,13 +1282,13 @@ namespace "rhohub" do
 
     build_flags = { :build => build_hash }
 
-    build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
+    build_id, res = start_cloud_build($app_cloud_id, build_flags)
 
     if (!build_id.nil?)
       show_build_infromation(res)
     end
 
-    check_rhohub_result(res)
+    check_cloud_build_result(res)
   end
 
   def list_missing_files(files_array)
@@ -1289,40 +1298,42 @@ namespace "rhohub" do
   end
 
   namespace :build do
-    desc "Prepare for cloud build"
-    task :initialize => ["rhohub:find_app"] do
+    desc 'Prepare for cloud build'
+    task :initialize => ['rhohub:find_app'] do
       $platform_list = get_build_platforms()
+
+      puts JSON.pretty_generate($platform_list)
     end
 
     namespace :android do
-      desc "Build adnroid production version"
-      task :production => ["build:initialize"] do
-        $build_platform = "android"
+      desc 'Build adnroid production version'
+      task :production => ['build:initialize'] do
+        $build_platform = 'android'
 
         do_platform_build( $build_platform, $platform_list, false)
       end
     end
 
     namespace :wm do
-      desc "Build wm production version"
-      task :production => ["build:initialize"] do
-        $build_platform = "wm"
+      desc 'Build wm production version'
+      task :production => ['build:initialize'] do
+        $build_platform = 'wm'
 
         do_platform_build( $build_platform, $platform_list, false)
       end
     end
 
     namespace :iphone do
-      desc "Build iphone development version"
-      task :development => ["build:initialize"] do
-        $build_platform = "iphone"
+      desc 'Build iphone development version'
+      task :development => ['build:initialize'] do
+        $build_platform = 'iphone'
 
         profile_file = get_conf('iphone/production/mobileprovision_file')
         cert_file = get_conf('iphone/production/certificate_file')
         cert_pw = get_conf('iphone/production/certificate_password')
 
         if profile_file.nil? || cert_file.nil?
-          raise Exception.new("You should specify mobileprovision_file and certificate_file in iphone:production section of your build.yml")
+          raise Exception.new('You should specify mobileprovision_file and certificate_file in iphone:production section of your build.yml')
         end
 
         profile_file = File.expand_path(profile_file, $app_path)
@@ -1370,8 +1381,8 @@ namespace "rhohub" do
     task :clear => ["rhohub:initialize"] do
       files = []
 
-      if !($rhohub_home.nil? || $rhohub_home.empty?)
-        files = Dir.glob(File.join($rhohub_temp,'*'))
+      if !($cloud_build_home.nil? || $cloud_build_home.empty?)
+        files = Dir.glob(File.join($cloud_build_temp,'*'))
       end
 
       if !files.empty?
@@ -1817,14 +1828,14 @@ namespace "config" do
                             'Subscription information is not downloaded. Please verify your internet connection and run build command again.'],
                             'Could not build licensed features.')
         else
-          msg = ['You have free subcription on rhohub.com. RhoElements featuers are available only for paid accounts.']
+          msg = ["You have free subcription on #{$selected_server}. RhoElements featuers are available only for paid accounts."]
           if $rhoelements_features.length() > 0
             msg.concat(['The following features are only available in RhoElements v2 and above:',
                         $rhoelements_features,
                         'For more information go to http://www.motorolasolutions.com/rhoelements '])
           end
           msg.concat(
-            ['In order to upgrade your account please log in https://app.rhohub.com/',
+            ["In order to upgrade your account please log in to #{$selected_server}",
              'Select "change plan" menu item in your profile settings.'])
           BuildOutput.error(msg, 'Could not build licensed features.')
         end
