@@ -34,7 +34,6 @@ public:
         bench_time.tm_year = 2009 - 1900;
         time_t bench_time_ms = mktime(&bench_time)*1000;
         unsigned long now_time_ms = CTimeInterval::getCurrentTime().toULong();
-        LOG(INFO) + "Times in ms are: " + bench_time_ms + ", " + now_time_ms;
         CNewORMSingleton::base_temp_obj_id_ = now_time_ms - bench_time_ms;
     }
 
@@ -45,13 +44,12 @@ public:
     virtual void generateId(rho::apiGenerator::CMethodResult& oResult) 
     {
         CNewORMSingleton::base_temp_obj_id_ += 1;
-        LOG(INFO) + "Generated id is : " + CNewORMSingleton::base_temp_obj_id_;
         oResult.set(CNewORMSingleton::base_temp_obj_id_);
     }
     
     virtual void useNewOrm(rho::apiGenerator::CMethodResult& oResult) 
     {
-        LOG(INFO) + "MZV_DEBUG: calling useNewOrm";
+        LOG(INFO) + "calling useNewOrm";
         oResult.set( RHOCONF().getInt("use_new_orm") ? true : false );
     }
 
@@ -79,7 +77,7 @@ public:
     virtual void databaseLocalReset(rho::apiGenerator::CMethodResult& oResult) 
     {
 
-        LOG(INFO) + " Calling databaseLocalReset";
+        LOG(INFO) + "calling databaseLocalReset";
         // clean local data
         for(HashtablePtr<String, CNewORMModelImpl*>::iterator cIt = CNewORMModelImpl::models().begin(); 
             cIt != CNewORMModelImpl::models().end(); 
@@ -200,11 +198,7 @@ public:
                              const bool resetLocalModels,
                              rho::apiGenerator::CMethodResult& oResult)
     {
-        LOG(INFO) + "MZV_DEBUG, databaseFullResetEx params are : ";
-        for(size_t i = 0; i < modelNames.size(); ++i) {
-            LOG(INFO) + "MZV_DEBUG, model is : " + modelNames[i];
-        }
-        
+        LOG(INFO) + "calling databaseFullResetEx";
         if(modelNames.empty()) {
             databaseFullReset(resetClientInfo, resetLocalModels, oResult);
             return;
@@ -299,8 +293,7 @@ public:
 
     void databaseFullReset(const bool resetClientInfo, const bool resetLocalModels, rho::apiGenerator::CMethodResult& oResult)
     {
-        LOG(INFO) + ", databaseFullReset : MZV_DEBUG: resetClientInfo : " + resetClientInfo + ", resetLocalModels : " + resetLocalModels;
-    
+        LOG(INFO) + "databaseFullReset : resetClientInfo : " + resetClientInfo + ", resetLocalModels : " + resetLocalModels;
         int old_poll_interval = -1;
         if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
         {
