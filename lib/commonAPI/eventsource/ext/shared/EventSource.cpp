@@ -49,6 +49,8 @@ EventSource* EventSource::create(const String& url, IEventSourceReceiver* receiv
 
 EventSource::~EventSource()
 {
+  LOG(TRACE) + "EventSource dtor";
+
   close();
 }
 
@@ -67,14 +69,18 @@ void EventSource::connect()
     if (!m_lastEventId.empty())
         headers.put("Last-Event-ID", m_lastEventId);
 
-    m_pNetRequest = new net::CAsyncNetRequest();
+    {    
+      common::CMutexLock lock(m_mxReqAccess);
     
-    m_pNetRequest->setMethod("GET");
-    m_pNetRequest->setUrl(m_url);
-    m_pNetRequest->setHeaders(headers);
-    m_pNetRequest->setCallback(this);
+      m_pNetRequest = new net::CAsyncNetRequest();
+   
+      m_pNetRequest->setMethod("GET");
+      m_pNetRequest->setUrl(m_url);
+      m_pNetRequest->setHeaders(headers);
+      m_pNetRequest->setCallback(this);
 
-    new common::CRhoCallInThread<net::CAsyncNetRequest>( m_pNetRequest );
+      new common::CRhoCallInThread<net::CAsyncNetRequest>( m_pNetRequest );
+  }
 
 }
 
@@ -82,10 +88,14 @@ void EventSource::networkRequestEnded()
 {
     LOG(TRACE) + "networkRequestEnded";
 
-    if (m_pNetRequest == 0)
+    {    
+      common::CMutexLock lock(m_mxReqAccess);
+
+      if (m_pNetRequest == 0)
         return;
 
-    m_pNetRequest = 0;
+      m_pNetRequest = 0;
+    }
 
     if (m_state != CLOSED)
         scheduleReconnect();
@@ -147,16 +157,16 @@ void EventSource::close()
 
     ::RHODESAPP().getTimer().stopNativeTimer(this);
 
-    if (m_pNetRequest != 0)
-    {
-      m_pNetRequest->setCallback(0);
-      m_pNetRequest->cancel();
-      m_pNetRequest = 0;
+    {    
+      common::CMutexLock lock(m_mxReqAccess);
+
+      if (m_pNetRequest != 0)
+      {
+        m_pNetRequest->setCallback(0);
+        m_pNetRequest->requestCancel();
+        m_pNetRequest = 0;
+      }
     }
-//    else {
-//        m_state = CLOSED;
-//        unsetPendingActivity(this);
-//    }
 
     m_state = CLOSED;
 }
@@ -190,8 +200,8 @@ void EventSource::didReceiveResponse(NetResponse& response, const Hashtable<Stri
         m_state = OPEN;
         m_pReceiver->onOpen();
     } else {
+        close();
         m_pReceiver->onError("");
-        m_pNetRequest->cancel();
     }
 }
 
@@ -201,8 +211,8 @@ void EventSource::didReceiveData(const char* data, int length)
 
     if ( m_state != OPEN )
     {
+      close();
       m_pReceiver->onError("Received data but connection is not opened correctly.");
-      m_pNetRequest->cancel();
       return;
     }
 

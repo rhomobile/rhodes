@@ -44,7 +44,10 @@ namespace rho {
         {
         }
         
-        virtual ~CEventSourceImpl() {}
+        virtual ~CEventSourceImpl() 
+        {
+          LOG(TRACE) + "CEventSourceImpl dtor";
+        }
         
         virtual void setOnopen(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::setOnOpen";

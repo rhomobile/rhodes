@@ -4,6 +4,7 @@
 #include "common/rhoStd.h"
 #include "common/RhoThread.h"
 #include "common/RhoTime.h"
+#include "common/RhoMutexLock.h"
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"
 
@@ -69,6 +70,7 @@ private:
 
       //Actually thread executor would own net request so we don't have to manage its lifetime. Just need to make sure we don't access killed object.
     net::CAsyncNetRequest* m_pNetRequest;
+    common::CMutex m_mxReqAccess;
 
     String m_eventName;
     Vector<unsigned char> m_data;
