@@ -103,11 +103,10 @@ void rho_wmsys_run_app_with_show(const wchar_t* szPath, const wchar_t* szParams,
         if ( String_startsWith(strPath, "http:") || String_startsWith(strPath, "ftp:") )
         {
             //Try to run internet explorer
-#ifdef OS_PLATFORM_MOTCE
-            se.lpFile = L"iesample.exe";
-#else
-            se.lpFile = L"iexplore.exe";
-#endif
+			if(RHO_IS_CEDEVICE)
+				se.lpFile = L"iesample.exe";
+			else
+				se.lpFile = L"iexplore.exe";
 
             StringW strParamsW = szPath;
             if ( szParams && *szParams )

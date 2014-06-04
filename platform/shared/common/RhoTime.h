@@ -28,6 +28,8 @@
 #define _RHOTIME_H_
 
 #include "RhoStd.h"
+#include "RhoThread.h"
+#include "RhoMutexLock.h"
 
 #if !defined( WINDOWS_PLATFORM )
 #include <sys/time.h>
@@ -160,10 +162,21 @@ public:
         return *this;
     }
 
-    void addMillis(int nMs)
+	bool addMillis(int nMs)
     {
-        m_nativeTime += nMs;
-    }
+        unsigned long temp=m_nativeTime;
+		m_nativeTime=m_nativeTime+nMs;
+		if((m_nativeTime<temp)||(m_nativeTime<nMs))
+		{
+		return true;
+		}
+		else
+		{
+		return false;
+		}
+
+	}
+
 
     static CTimeInterval getCurrentTime(){
         CTimeInterval res;
@@ -199,30 +212,77 @@ inline CTimeInterval operator-(const CTimeInterval& time1, const CTimeInterval& 
 
 class CRhoTimer
 {
+public:
+    class ICallback
+    {
+    public:
+      virtual ~ICallback() {}
+
+      virtual bool onTimer() = 0;
+    };
+
+private:
+
     struct CTimerItem
     {
         int m_nInterval;
         CTimeInterval m_oFireTime;
         String m_strCallback;
         String m_strCallbackData;
+		bool m_overflow;
 
         CTimerItem(int nInterval, const char* szCallback, const char* szCallbackData);
     };
 
+    struct CNativeTimerItem
+    {
+        int m_nInterval;
+        CTimeInterval m_oFireTime;
+        CRhoTimer::ICallback* m_pCallback;
+        bool m_overflow;
+
+        CNativeTimerItem(int nInterval, CRhoTimer::ICallback* callback);
+    };
+
+    class CTimerThread : public CRhoThread
+    {
+      CRhoTimer& m_timer;
+    public:
+      CTimerThread(CRhoTimer& timer) : m_timer(timer) {}    
+
+      virtual void run()
+      {
+        while(!isStopping())
+        {
+          m_timer.checkTimers();
+          unsigned long to = m_timer.getNextTimeout();
+          wait(0==to?-1:to);
+        }
+      }
+    };
+
+
+    CMutex m_mxAccess;
+    CTimerThread m_checkerThread;
+
     Vector<CTimerItem> m_arItems;
+    Vector<CNativeTimerItem> m_arNativeItems;
+
 
     void callTimerCallback(CTimerItem& oItem);
-public:
-    CRhoTimer(){}
 
-    void addTimer(int nInterval, const char* szCallback, const char* szCallbackData)
-    {
-        m_arItems.addElement(CTimerItem(nInterval, szCallback, szCallbackData));
-    }
+
+public:
+    CRhoTimer();
+    ~CRhoTimer();
+
+    void addTimer(int nInterval, const char* szCallback, const char* szCallbackData);
+    void addNativeTimer(int nInterval, CRhoTimer::ICallback* callback);
 
     unsigned long getNextTimeout();
     boolean checkTimers();
     void stopTimer(const char* szCallback);
+    void stopNativeTimer(CRhoTimer::ICallback* callback);
 };
 
 }

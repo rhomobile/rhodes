@@ -709,7 +709,7 @@ BOOL CWAN::LoadConnectionManager()
 		}
 		else if (!lpfn_ConMgr_EnumDestinations)
 		{
-			LOG(ERROR) + "Unable to load ConnMgrEstablishConnection";
+			LOG(ERROR) + "Unable to load ConnMgrEnumDestinations";
 		}
 		else if (!lpfn_ConMgr_ReleaseConnection)
 		{

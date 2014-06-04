@@ -30,9 +30,14 @@
 #include <map>
 #include <vector>
 
-#include <pimstore.h>
-#include <simmgr.h>
+#include "pimstore.h"
+#include "simmgr.h"
 #include "logging/RhoLog.h"
+
+typedef HRESULT (WINAPI* LPFN_SIM_DEINITIALIZE_T)	(HSIM hSim);
+typedef HRESULT (WINAPI* LPFN_SIM_READ_PHONEBOOK_ENTRY_T)	(HSIM hSim, DWORD dwLocation, DWORD dwIndex, LPSIMPHONEBOOKENTRY lpPhonebookEntry);
+typedef HRESULT (WINAPI* LPFN_SIM_GET_DEV_CAPS_T)	(HSIM hSim, DWORD dwCapsType, LPSIMCAPS lpSimCaps);
+typedef HRESULT (WINAPI* LPFN_SIM_INITIALIZE_T)	(DWORD dwFlags, SIMCALLBACK lpfnCallBack, DWORD dwParam, LPHSIM lphSim );
 
 typedef void (*ab_callback_t)(const char*, const char*, void*);
 
@@ -138,4 +143,6 @@ protected:
 	bool closeSimAB();
 	int getAllSimPhonebookRecords(std::vector<CABRecord*>& records);
 	CABRecord* getSimRecord(int id);
+	BOOL LoadSimMgr();
+	HMODULE m_hSimMgrDLL;
 };

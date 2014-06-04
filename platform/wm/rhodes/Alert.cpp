@@ -26,8 +26,8 @@
 
 #include "stdafx.h"
 
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
-#include <soundfile.h>
+#if defined(_WIN32_WCE)// && !defined( OS_PLATFORM_MOTCE )
+#include "soundfile.h"
 #endif
 
 #include <common/RhodesApp.h>
@@ -42,6 +42,17 @@
 using namespace rho::json;
 
 extern "C" HWND getMainWnd();
+typedef HRESULT (WINAPI* LPFN_SND_STOP_T)(__in SND_SCOPE, __reserved HSOUND);
+typedef HRESULT (WINAPI* LPFN_SND_CLOSE_T)(__in HSOUND);
+typedef HRESULT (WINAPI* LPFN_SND_PLAYASYNC_T)(__in HSOUND, DWORD);
+typedef HRESULT (WINAPI* LPFN_SND_OPEN_T)(__in LPCTSTR,  __out HSOUND*);
+
+
+
+extern "C" LPFN_SND_STOP_T lpfn_snd_stop;
+extern "C" LPFN_SND_CLOSE_T lpfn_snd_close;
+extern "C" LPFN_SND_PLAYASYNC_T lpfn_snd_playasync;
+extern "C" LPFN_SND_OPEN_T lpfn_snd_open;
 
 /**
  ********************************************************************************
@@ -377,7 +388,7 @@ void CAlert::showPopup(CAlertDialog::Params *params)
 	::PostMessage(main_wnd, WM_ALERT_SHOW_POPUP, 0, (LPARAM ) params);
 }
 
-#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )
+#if _WIN32_WCE > 0x499 //&& !defined( OS_PLATFORM_MOTCE )
 void CAlert::vibrate(int duration_ms)
 {
     CVibrate::getCVibrate().toggle(duration_ms);
@@ -397,8 +408,8 @@ void CAlert::playFile(String fileName)
     }
 
     StringW strPathW = convertToStringW(path);
-    HRESULT hr = SndOpen( strPathW.c_str(), &hSound);
-    hr = SndPlayAsync (hSound, 0);
+    HRESULT hr = lpfn_snd_open( strPathW.c_str(), &hSound);
+    hr = lpfn_snd_playasync(hSound, 0);
       
     if (hr != S_OK) {
         LOG(WARNING) + "OnAlertPlayFile: failed to play file"; 
@@ -406,8 +417,8 @@ void CAlert::playFile(String fileName)
     
     WaitForSingleObject(hSound, INFINITE);
                         
-    hr = SndClose(hSound);
-    SndStop(SND_SCOPE_PROCESS, NULL);
+    hr = lpfn_snd_close(hSound);
+    lpfn_snd_stop(SND_SCOPE_PROCESS, NULL);
 }
 
 #endif //_WIN32_WCE
@@ -556,14 +567,16 @@ extern "C" void alert_show_popup(rho_param *p)
 }*/
 
 extern "C" void alert_vibrate(int duration_ms) {
-#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )
-    CAlert::vibrate(duration_ms);
+#if _WIN32_WCE > 0x499// && !defined( OS_PLATFORM_MOTCE )
+	if(RHO_IS_WMDEVICE)
+		CAlert::vibrate(duration_ms);
 #endif
 }
 
 extern "C" void alert_play_file(char* file_name, char* media_type) {
-#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )
-    CAlert::playFile(file_name);
+#if _WIN32_WCE > 0x499 //&& !defined( OS_PLATFORM_MOTCE )
+	if(RHO_IS_WMDEVICE)
+		CAlert::playFile(file_name);
 #endif
 }
 

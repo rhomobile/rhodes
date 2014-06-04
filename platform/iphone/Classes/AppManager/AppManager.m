@@ -467,7 +467,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 - (void) openURLComand:(NSString*)url {
     
-    RAWLOG_INFO1("rho_sys_open_url: %s", url);
+    RAWLOG_INFO1("rho_sys_open_url: %s", [url UTF8String]);
 	
 	NSString* strUrl = url;//[NSString stringWithUTF8String:url];
 	BOOL res = FALSE;

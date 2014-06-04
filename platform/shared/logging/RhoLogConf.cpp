@@ -140,23 +140,6 @@ void LogSettings::closeRemoteLog()
 	    m_pSocketSink = 0;
 	}
 }
-/*
-void LogSettings::initRemoteLog()
-{
-
-#if defined( OS_PLATFORM_MOTCE )// && !defined (APP_BUILD_CAPABILITY_BARCODE)
-    //TODO: remote log prevent loading app - stuck on loading.png when no barcode. very strange!
-    OSVERSIONINFO osv = {0};
-	osv.dwOSVersionInfoSize = sizeof(osv);
-	if (GetVersionEx(&osv) && osv.dwMajorVersion == 5)
-		return;
-#endif
-
-	m_strLogURL = RHOCONF().getString("rhologurl"); 
-
-	if(!m_pSocketSink && m_strLogURL != "")
-		m_pSocketSink = new CLogSocketSink(*this);
-}*/
 
 void LogSettings::reinitRemoteLog() 
 {

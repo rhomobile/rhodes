@@ -25,18 +25,20 @@ namespace 'device' do
       
     end
 
-    def determine_prebuild_path(config)
+  module AndroidPrebuild
+
+    def self.determine_prebuild_path(config)
       require 'rhodes/containers'
       Rhodes::Containers::get_container_path_prefix('android', config)
     end
 
-    def make_app_bundle
+    def self.make_app_bundle
       $use_prebuild_data = true
       Rake::Task['build:android:rhobundle'].execute
       return $appassets
     end
 
-    def generate_manifest(prebuilt_config,app_config)
+    def self.generate_manifest(prebuilt_config,app_config)
 
       version = {'major' => 0, 'minor' => 0, 'patch' => 0, "build" => 0}
       if $app_config["version"]
@@ -65,7 +67,6 @@ namespace 'device' do
 
       capabilities = []
       capabilities.concat(app_config['capabilities']) if app_config['capabilities']
-      capabilities.concat(prebuilt_config['capabilities']) if prebuilt_config['capabilities']
       capabilities.uniq!
 
       capabilities.each do |cap|
@@ -201,7 +202,7 @@ namespace 'device' do
       return $appmanifest
     end
 
-    def build_resources(prebuilt_builddir)
+    def self.build_resources(prebuilt_builddir)
       set_app_name_android($appname)
 
       puts 'EXT:  add additional files to project before build'
@@ -241,7 +242,7 @@ namespace 'device' do
       return $appres
     end
 
-    def get_underscore_files_from_bundle(bundle_path)
+    def self.get_underscore_files_from_bundle(bundle_path)
       underscores = []
 
       Dir.glob(File.join(bundle_path, "**/*")).each do |f|
@@ -253,15 +254,15 @@ namespace 'device' do
       return underscores
     end
 
-    def get_native_libs_path(prebuilt_path)
+    def self.get_native_libs_path(prebuilt_path)
       return File.join(prebuilt_path,'native')
     end
 
-    def make_output_path
+    def self.make_output_path
       return $targetdir + '/' + $appname + '_signed.apk'
     end
 
-    def make_package(manifest_path, resources_path, assets_path, underscore_files, native_libs_path, classes_dex, output_path)
+    def self.make_package(manifest_path, resources_path, assets_path, underscore_files, native_libs_path, classes_dex, output_path)
 
       resourcepkg = $bindir + "/rhodes.ap_"
 
@@ -379,16 +380,13 @@ namespace 'device' do
     end
 
 
-    task :production_with_prebuild_binary do
-      production_with_prebuild_binary
-    end
 
-    def production_with_prebuild_binary
+    def self.production_with_prebuild_binary
       Rake::Task['config:android'].invoke
 
       prebuilt_path = determine_prebuild_path($app_config)
-      bundle_path = make_app_bundle
 
+      bundle_path = make_app_bundle
 
       prebuilt_config = Jake.config(File.open(File.join(prebuilt_path, 'build.yml')))
 
@@ -410,6 +408,13 @@ namespace 'device' do
       classes_dex = File.join(prebuilt_path,'classes.dex')
       make_package(manifest_path,resources_path,assets_path,underscore_files,native_libs_path, classes_dex, output_path)
     end
+
+  end
+
+    task :production_with_prebuild_binary do
+      AndroidPrebuild.production_with_prebuild_binary
+    end
+
   end
 end
 

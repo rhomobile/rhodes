@@ -620,12 +620,17 @@ bool CHttpServer::receive_request(ByteVector &request)
         }
         
         if (n == 0) {
-            RAWLOG_ERROR("Connection gracefully closed before we receive any data");
-            return false;
+            if(!r.empty()) {
+                if (verbose) RAWTRACE("Client closed connection gracefully");
+                break;
+            } else {
+                RAWLOG_ERROR("Connection gracefully closed before we receive any data");
+                return false;
+            }
+        } else {
+            if (verbose) RAWTRACE1("Actually read %d bytes", n);
+            r.insert(r.end(), &buf[0], &buf[0] + n);
         }
-        
-        if (verbose) RAWTRACE1("Actually read %d bytes", n);
-        r.insert(r.end(), &buf[0], &buf[0] + n);
     }
     
     if (!r.empty()) {
