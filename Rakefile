@@ -1082,7 +1082,7 @@ end
 $rhodes_ver_default = '3.5.1.14'
 $latest_platform = nil
 
-namespace 'rhohub' do
+namespace 'cloud' do
   task :set_paths => ['config:initialize'] do
     if $app_path.empty?
       BuildOutput.error('Could not run cloud build, app_path is not set', 'Rhohub build')
@@ -1195,7 +1195,7 @@ namespace 'rhohub' do
         end
       end
     else
-      BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake rhohub:build:<platform>:<target>' command", 'Build list is empty')
+      BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
     end
   end
 
@@ -1306,7 +1306,7 @@ namespace 'rhohub' do
 
   namespace :build do
     desc 'Prepare for cloud build'
-    task :initialize => ['rhohub:find_app'] do
+    task :initialize => ['cloud:find_app'] do
       $platform_list = get_build_platforms()
 
       puts JSON.pretty_generate($platform_list)
@@ -1385,7 +1385,7 @@ namespace 'rhohub' do
 
   namespace "cache" do
     desc "Clear local file cache"
-    task :clear => ["rhohub:initialize"] do
+    task :clear => ["cloud:initialize"] do
       files = []
 
       if !($cloud_build_home.nil? || $cloud_build_home.empty?)
@@ -1419,7 +1419,7 @@ namespace 'rhohub' do
   task "run:simulator", [:build_id] do |t, args|
     build_id = args.build_id
 
-    Rake::Task["rhohub:download"].invoke(build_id)
+    Rake::Task["cloud:download"].invoke(build_id)
 
     run_binary_on($latest_platform, $unpacked_file_list, 'simulator')
   end
@@ -1428,7 +1428,7 @@ namespace 'rhohub' do
   task "run:device", [:build_id] do |t, args|
     build_id = args.build_id
 
-    Rake::Task["rhohub:download"].invoke(build_id)
+    Rake::Task["cloud:download"].invoke(build_id)
 
     run_binary_on($latest_platform, $unpacked_file_list, 'device')
   end
