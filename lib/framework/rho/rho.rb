@@ -92,14 +92,7 @@ module Rho
           load_models_from_file(Rho::RhoFSConnector::get_app_manifest_filename)
         end
       else
-        puts "MZV_DEBUG: Loading NewRHOM"
         Rhom::Rhom.get_instance().load_models(app_manifest_filename)
-        puts "MZV_DEBUG: checking what we have"
-        models = Rho::NewORMModel.enumerate
-        models.each do |model|
-          puts "MZV_DEBUG: we have here #{model.class.name}, #{model.model_name}, #{model.loaded}"
-        end
-        puts " some generated id is : #{Rho::NewORM.generateId}"
       end
     end
 
