@@ -526,7 +526,15 @@ $cloud_brand = "rhomobile"
 
 def get_server(url)
   scheme, userinfo, host, port, registry, path, opaque, query, fragment =  URI.split(url)
-  URI.build([scheme, nil, host, port, nil, nil, nil, nil, nil])
+  case scheme
+    when "http"
+      URI::HTTP.build({:host => host, :port => port}).to_s
+    when "https"
+      URI::HTTPS.build({:host => host, :port => port}).to_s
+    else
+      ""
+  end
+
 end
 
 namespace "token" do
@@ -646,7 +654,7 @@ namespace "token" do
       $user_acc.server = $server_list.first
     end
 
-    $selected_server = URI.join($user_acc.server, '/').to_s
+    $selected_server = get_server($user_acc.server)
   end
 
   task :check => [:read] do
@@ -1001,15 +1009,14 @@ def put_message_with_timestamp(start_time, message, no_newline = false)
 end
 
 def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to = nil, unzip_to = nil)
-  app_request = {:app_id => app_id, :id => build_id}
-  status = ""
-
   puts("Application build progress: \n")
+
+  app_request = {:app_id => app_id, :id => build_id}
 
   begin
     result = JSON.parse(Rhohub::Build.show(app_request))
 
-    desc = ''
+    status = result["status"]
 
     case status
     when "queued"
