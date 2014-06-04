@@ -13,9 +13,7 @@ module Rhom
         end
 
         def self.method_missing(method_sym, *args, &block)
-          puts "MZV_DEBUG: we are in method missing #{method_sym}"
           if klass_model.respond_to?(method_sym)
-            puts "MZV_DEBUG: we are trying to call ORMModel #{method_sym}, #{args.inspect}, #{block}"
             # convert all symbols into strings
             args.collect! { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
             klass_model.send(method_sym, *args)
@@ -119,7 +117,6 @@ module Rhom
         end
 
         def self._normalize_conditions(what, conditions, op)
-          puts "MZV_DEBUG : make_conditions : #{what}, #{conditions}, #{op}"
           if !op
             retV = []
             if !conditions
@@ -204,7 +201,6 @@ module Rhom
 
         def self.find(*args, &block)
           raise "OrmFindError: invalid arguments" if args[0].nil? or args.length == 0
-          puts "MZV_DEBUG: we are in find  #{args.inspect}"
           args[0] = args[0].to_s
           args[1] = args[1] || {}
           retVal = nil
@@ -216,10 +212,8 @@ module Rhom
             _normalize_args_for_find(args[0], args[1], normalized_string_args, normalized_vector_args)
             # Build Where Conditions
             cond_str, quests = _normalize_conditions(args[0], args[1][:conditions], args[1][:op])
-            puts " we have here : #{cond_str}, #{quests.inspect}"
             normalized_string_args[:conditions] = cond_str || ""
             normalized_vector_args[:quests] = quests || []
-            puts "MZV_DEBUG: we have here options before find as #{args[0]} , #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
             retVal = klass_model.findObjects(args[0],
                                            normalized_string_args,
                                            normalized_vector_args[:quests],
@@ -244,7 +238,6 @@ module Rhom
                 args[1][:quests] = args[1][:conditions][1..-1]
                 args[1][:conditions] = args[1][:conditions][0]
               end
-              puts "MZV_DEBUG: we are here and #{args[0]}, #{args[1][:conditions].inspect}, #{args[1][:quests].inspect}"
               retVal = klass_model.findObjectsPropertyBagByCondArray(args[0],
                                                                     args[1][:conditions],
                                                                     args[1][:quests],
@@ -253,7 +246,6 @@ module Rhom
             end
           end
 
-          puts "MZV_DEBUG: find has returned : #{retVal.inspect}"
           if retVal.is_a?Array
             return retVal unless retVal.size() > 0
 
@@ -265,7 +257,6 @@ module Rhom
               orm_objs << self.new(obj)
             end
             _order_array(orm_objs, args[1][:order], args[1][:orderdir], &block)
-            puts "MZV_DEBUG: orm_objs : #{orm_objs.inspect}"
             return orm_objs
           end
           retVal
@@ -298,7 +289,6 @@ module Rhom
 
         # deletes all records matching conditions (optionally nil)
         def self.delete_all(*args)
-          puts "MZV_DEBUG: we are in delete_all  #{args.inspect}"
           args[0] ||= {}
           retVal = nil
 
@@ -309,10 +299,8 @@ module Rhom
             _normalize_args_for_find("all", args[0], normalized_string_args, normalized_vector_args)
             # Build Where Conditions
             cond_str, quests = _normalize_conditions("all", args[0][:conditions], args[0][:op])
-            puts " we have here : #{cond_str}, #{quests.inspect}"
             normalized_string_args[:conditions] = cond_str || ""
             normalized_vector_args[:quests] = quests || []
-            puts " before passing to delete_all #{args[1]}, #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
             # call API function
             retVal = klass_model.deleteObjects(normalized_string_args,
                                                normalized_vector_args[:quests])
@@ -330,12 +318,9 @@ module Rhom
                 quests = conditions[1..-1]
                 conditions = conditions[0]
               end
-              puts "we are here and #{conditions.inspect}, #{quests.inspect}"
               retVal = klass_model.deleteObjectsPropertyBagByCondArray(conditions, quests, normalized_string_args)
             end
           end
-
-          puts "MZV_DEBUG: delete_all has returned : #{retVal.inspect}"
           retVal
         end
 
@@ -418,7 +403,6 @@ module Rhom
         end
 
         def method_missing(method_sym, *args, &block)
-          puts "MZV_DEBUG: we are in #{self.class.name} method missing and #{method_sym}, #{args.inspect}"
           unless method_sym == Fixnum
             if method_sym[-1] == '='
               s_name = method_sym.to_s.chop
