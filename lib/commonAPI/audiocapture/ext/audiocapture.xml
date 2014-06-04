@@ -36,7 +36,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="encoder" type="STRING">
-                <DESC>Encoder to compress recorded audio. In Android devices the supported encoder type is dependent upon device hardware snd vendor.</DESC>
+                <DESC>Encoder to compress recorded audio. In Android devices the supported encoder type is dependent upon device hardware and vendor.</DESC>
 				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
                     
