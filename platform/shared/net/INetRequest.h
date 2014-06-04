@@ -30,6 +30,7 @@
 #include "common/InputStream.h"
 #include "common/AutoPointer.h"
 #include "common/RhoMutexLock.h"
+#include "common/RhoTime.h"
 
 namespace rho {
 namespace common {
@@ -204,7 +205,7 @@ class INetRequestCallback
 
 };
 
-class CAsyncNetRequest : public INetRequestCallback
+class CAsyncNetRequest : public INetRequestCallback, private common::CRhoTimer::ICallback
 {
 
 private:
@@ -227,6 +228,8 @@ public:
     //, m_request(::getNetRequest())
   {
   }
+
+  ~CAsyncNetRequest();
   
   void setMethod(const String& method) { m_method = method; }
   void setUrl(const String& url) { m_url = url; }
@@ -240,15 +243,19 @@ public:
     }
   }
   void setHeaders( const Hashtable<String, String> headers ) { m_headers = headers; }
-  
 
   void run(common::CRhoThread &);
   void cancel();
+  void requestCancel(); //will perform cancel in timer thread
 
   virtual void didReceiveResponse(NetResponse& resp, const Hashtable<String,String>* headers);
   virtual void didReceiveData(const char* ptr, int len);
   virtual void didFinishLoading();
   virtual void didFail(NetResponse& resp);
+
+private:
+  virtual bool onTimer();
+
 };
 
 }
