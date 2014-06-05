@@ -24,6 +24,12 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+def timed_report(text="")
+  puts Time.now.strftime("[%H:%M:%S] ") + text
+end
+
+timed_report("loading std libs")
+
 require 'find'
 require 'erb'
 
@@ -39,6 +45,8 @@ require 'pathname'
 require 'rexml/document'
 require 'securerandom'
 require 'uri'
+
+timed_report("done loading std libs")
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -64,6 +72,8 @@ end
 
 #------------------------------------------------------------------------
 
+timed_report("require rhodes ruby libs")
+
 $app_basedir = pwd
 $startdir = File.dirname(__FILE__)
 $startdir.gsub!('\\', '/')
@@ -87,6 +97,9 @@ load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
 #load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
+
+timed_report("done require rhodes ruby libs")
+
 
 
 #------------------------------------------------------------------------
@@ -538,7 +551,8 @@ def get_server(url)
 end
 
 namespace "token" do
-  task :initialize => "config:load" do
+  task :initialize => "config:load" do |t|
+    timed_report("starting #{t.name}")
     $user_acc = RhoHubAccount.new()
 
     SiteChecker.site = $server_list.first
@@ -547,6 +561,7 @@ namespace "token" do
       SiteChecker.proxy = $proxy
       RestClient.proxy = $proxy
     end
+    timed_report("done #{t.name}")
   end
 
   task :login => [:initialize] do
@@ -606,6 +621,7 @@ namespace "token" do
   end
 
   task :read, [:force_re_app_check] => [:initialize] do |t, args|
+    timed_report("starting #{t.name}")
     args.with_defaults(:force_re_app_check => "false")
 
     if !$user_acc.read_token_from_env()
@@ -655,13 +671,16 @@ namespace "token" do
     end
 
     $selected_server = get_server($user_acc.server)
+    timed_report("done #{t.name}")
   end
 
-  task :check => [:read] do
+  task :check => [:read] do |t|
+    timed_report("starting #{t.name}")
     puts "TokenValid[#{from_boolean($user_acc.is_valid_token?())}]"
     puts "TokenChecked[#{from_boolean($user_acc.remaining_time() > 0)}]" 
     puts "SubscriptionValid[#{from_boolean($user_acc.is_valid_subscription?())}]"
     puts "SubscriptionChecked[#{from_boolean($user_acc.remaining_subscription_time() > 0)}]"
+    timed_report("ending #{t.name}")
   end
 
   desc "Show token and user subscription infomation"
