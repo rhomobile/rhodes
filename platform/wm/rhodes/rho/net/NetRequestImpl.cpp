@@ -1035,7 +1035,7 @@ extern "C" BOOL LoadConnectionManager()
 		lpfn_ConMgr_ReleaseConnection = 
 			(LPFN_CONMGR_RELEASECONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrReleaseConnection"));
 		lpfn_ConMgr_MapUrl = 
-			(LPFN_CONMGR_MAPURL_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrMapUrl"));
+			(LPFN_CONMGR_MAPURL_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrMapURL"));
 		lpfn_ConMgr_ConnectionStatus = 
 			(LPFN_CONMGR_CONNECTIONSTATUS_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrConnectionStatus"));
 
