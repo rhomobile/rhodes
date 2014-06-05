@@ -43,6 +43,17 @@ class Rhohub::Base
     resp.body
   end
 
+
+  def self.user_status(options,resource)
+    resp = RestClient.get Rhohub.resource_url(options,resource), {:AUTHORIZATION => Rhohub.token, :content_type => :json, :accept => :json}
+    resp.body
+  end
+
+  def self.supported_gems(options,resource)
+    resp = RestClient.get Rhohub.resource_url(options,resource), {:AUTHORIZATION => Rhohub.token, :content_type => :json, :accept => :json}
+    resp.body
+  end
+
   def self.login(options,resource)
     resp = RestClient.post Rhohub.resource_url(options,resource), {:login => options[:username].downcase, :password => options[:password], :content_type => :json, :accept => :json}
     resp.body
