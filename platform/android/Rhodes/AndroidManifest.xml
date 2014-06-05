@@ -94,6 +94,8 @@
 		
         <service
             android:name="com.rhomobile.rhodes.RhodesService" />
+        <service
+            android:name="com.rhomobile.rhodes.ConnectionCheckingService" />
         
         <uses-library android:name="com.google.android.maps" />
         
