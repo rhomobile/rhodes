@@ -58,6 +58,7 @@
     <activity android:name='com.rhomobile.rhodes.mapview.MapView' android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='true'/>
+    <service android:name='com.rhomobile.rhodes.ConnectionCheckingService' android:exported='true'/>
 
     <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false'>
       <grant-uri-permission android:pathPrefix='/rhodes/apps/'/>
