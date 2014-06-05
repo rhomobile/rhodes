@@ -12,6 +12,24 @@ class String
       downcase
   end
 
+  # from natcmp gem
+  def self.natcmp(str1, str2, ignoreCase=true)
+    strArrays = [str1,str2].collect do |str|
+      str = str.downcase if ignoreCase
+      str.tr(" \t\r\n", '').split(/(\d+)/)
+    end
+
+    minSize = strArrays.min_by { |arr| arr.size }.size
+
+    1.step(minSize-1, 2) do |i|
+      unless strArrays.any? { |arr| arr[i] =~ /^0/ }
+        strArrays.each { |arr| arr[i] = arr[i].to_i }
+      end
+    end
+
+    strArrays[0] <=> strArrays[1]
+  end
+
   # table of helper functions
   {  
     :black           => ["\033[30m","\033[0m"],

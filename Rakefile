@@ -935,6 +935,28 @@ def get_build_platforms()
   build_platforms
 end
 
+def best_match(target, list, is_lex = false)
+  best = list.first
+
+  if !(target.nil?)
+    if !is_lex
+      sorted = list.sort{|a, b| String.natcmp(b, a)}
+      best = sorted.first
+      sorted.each do |item|
+        if String.natcmp(target, item) < 0
+          best = item
+        else
+          break
+        end
+      end
+    else
+      best = list.min_by{ |el| distance(el, target, true) }
+    end
+  end
+
+  best
+end
+
 def find_platform_version(platform, platform_list, default_ver, info, is_lex = false)
   platfom_conf = platform_list[platform]
   if platfom_conf.empty?
@@ -946,14 +968,14 @@ def find_platform_version(platform, platform_list, default_ver, info, is_lex = f
   req_ver = $app_config[platform]["version"] unless $app_config[platform].nil?
   req_ver = $config[platform]["version"] if req_ver.nil? and !$config[platform].nil?
 
-  req_ver = default_ver if req_ver.nil? 
+  req_ver = default_ver if req_ver.nil?
 
   best = platfom_conf.first
 
   if !(req_ver.nil? || req_ver.empty?)
     if !is_lex
-      platfom_conf.sort{|a, b| b[:ver]<=>a[:ver]}.each do |ver|
-        if ver[:ver] >= req_ver
+      platfom_conf.sort{|a, b| String.natcmp(b[:ver],a[:ver])}.each do |ver|
+        if String.natcmp(req_ver, ver[:ver]) < 0
           best = ver
         else
           break
@@ -1101,8 +1123,6 @@ namespace 'cloud' do
     if !File.exist?($cloud_build_bin)
       FileUtils::mkdir_p $cloud_build_bin
     end
-
-    $rhodes_ver = get_conf('rhohub/rhodesgem',$rhodes_ver_default)    
   end
 
   desc 'Initialize cloud build functionality'
@@ -1111,18 +1131,47 @@ namespace 'cloud' do
       Rake::Task['token:read'].reenable
       Rake::Task['token:read'].invoke('true')
     end
-
-    if $user_acc.subscription_level() < 1
-      BuildOutput.error(
-        ['Cloud build is supported only for paid accounts. In order to upgrade your account please',
-         "log in #{$selected_server} and select \"change plan\" menu item in your profile settings."],
-      'Free account limitation')
-      exit 1
-    end
   end
 
   desc 'Login using interactive mode'
   task :login => ['token:login'] do
+  end
+
+  desc 'Check current remote build status'
+  task :info => ['token:read'] do
+    status = nil
+
+    begin
+      status = JSON.parse(Rhohub::Build.user_status())
+      puts "Cloud build is #{status["cloud_build_enabled"] ? 'enabled' : 'disabled'} for '#{$user_acc.subsciption_plan}' plan" if status["cloud_build_enabled"]
+      puts "Builds limit: #{status["builds_remaining"] < 0 ? 'not set' : status["builds_remaining"].to_s + ' requests' }" if status["builds_remaining"]
+      puts "Free build queue slots: #{status["free_queue_slots"]}" if status["free_queue_slots"]
+
+    rescue Exception => e
+      BuildOutput.error(
+          ["Could not get user builds infromation #{e.inspect}"],
+          'Server response error')
+    end
+
+    begin
+      gems_supported = JSON.parse(Rhohub::Build.supported_gems())
+    rescue Exception => e
+      gems_supported = nil
+    end
+
+    if gems_supported["versions"]
+      versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
+      fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
+
+      puts "Server gem versions: " + versions.join(', ')
+      puts "Fast build supported for: " + fast_builds.join(', ')
+
+      best = $app_config["sdkversion"].nil? ? fast_builds.first : $app_config["sdkversion"]
+
+      best = best_match(best, versions, false)
+
+      puts "Using build.yml sdkversion setting selecting gem: " + best
+    end
   end
 
   desc 'Get project infromation from server'
@@ -1307,9 +1356,74 @@ namespace 'cloud' do
   namespace :build do
     desc 'Prepare for cloud build'
     task :initialize => ['cloud:find_app'] do
-      $platform_list = get_build_platforms()
+      status = nil
 
-      puts JSON.pretty_generate($platform_list)
+      begin
+        stutus = JSON.parse(Rhohub::Build.user_status())
+      rescue Exception => e
+        status = nil
+        BuildOutput.error(
+            ["Could not get user builds infromation #{e.inspect}"],
+            'Server response error')
+      end
+
+      # client side check
+      build_enabled = false
+
+      if !(status.nil? || status.emtpy?)
+        build_enabled = status["cloud_build_enabled"]== true
+        remaining_builds = status["builds_remaining"]
+        if remaining_builds > 0
+          BuildOutput.note(
+              ["You have #{remaining_builds} builds remaining"],
+              'Account builds limitation')
+        elsif remaining_builds == 0
+          BuildOutput.error(
+              ["Build count limit reached on your #{$user_acc.subsciption_plan} plan. Please login to #{$selected_server} and check details."],
+              'Account builds limitation')
+          exit 1
+        end
+        free_queue_slots = status["free_queue_slots"]
+        if free_queue_slots == 0
+          BuildOutput.error(
+              ['Maximum parallel builds count reached. Please try again later.'],
+              'Account builds limitation')
+          exit 1
+        end
+      else
+        build_enabled = $user_acc.subscription_level() > 0
+      end
+
+      if !build_enabled
+        BuildOutput.note(
+          ["Cloud build is not supported on your #{$user_acc.subsciption_plan} account type. In order to upgrade your account please",
+           "login to #{$selected_server} and select \"change plan\" menu item in your profile settings."],
+          'Free account limitation')
+        exit 1
+      end
+
+      begin
+        gems_supported = JSON.parse(Rhohub::Build.supported_gems())
+      rescue Exception => e
+        gems_supported = nil
+      end
+
+      best = get_conf('rhohub/rhodesgem',$rhodes_ver_default)
+
+      if !gems_supported.nil?
+        versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
+        fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
+
+        best = $app_config["sdkversion"].nil? ? fast_builds.first : $app_config["sdkversion"]
+
+        best = best_match(best, versions, false)
+      end
+
+      $rhodes_ver = best
+
+      puts "Using server gem version #{$rhodes_ver}"
+
+      $platform_list = get_build_platforms()
     end
 
     namespace :android do
