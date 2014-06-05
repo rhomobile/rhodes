@@ -2203,6 +2203,17 @@ def find_ext_ingems(extname)
   extpath
 end
 
+def common_prefix(paths)
+  return '' if paths.empty?
+  return paths.first.split('/').slice(0...-1).join('/') if paths.length <= 1
+  arr = paths.sort
+  first = arr.first.split('/')
+  last = arr.last.split('/')
+  i = 0
+  i += 1 while first[i] == last[i] && i <= first.length
+  first.slice(0, i).join('/')
+end
+
 def write_modules_js(folder, filename, modules, do_separate_js_modules)
   f = StringIO.new("", "w+")
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -2218,12 +2229,38 @@ def write_modules_js(folder, filename, modules, do_separate_js_modules)
   Jake.modify_file_if_content_changed(File.join(folder,filename), f)
 
   if modules && do_separate_js_modules
-    modules.each do |m|
+    common = common_prefix(modules)
+
+    # Glue all modules based on assumption that FrameworkName.ExtName.*.js should be in one file
+    groups = modules.group_by do |mod|
+      path, name = File.split(mod)
+      name_parts = name.ext().split('.')
+      if name_parts.size > 2
+        res = name_parts.first(2).join('.')
+      else
+        res = name
+      end
+      res
+    end
+
+    groups.each do |k, v|
       f = StringIO.new("", "w+")
 
-      modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
-      f.puts( "// Module #{modulename}\n\n" )
-      f.write(File.read(m))
+      if v.size > 1
+        fname = k.end_with?(".js") ? k : k + ".js"
+      else
+        fname = v.first
+      end
+
+      modulename = fname.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+
+      f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+      f.puts( "// Module #{modulename}" )
+
+      v.each do |fname|
+        f.puts "\n// From file #{fname.gsub(common,'')}\n\n"
+        f.write(File.read(fname))
+      end
 
       Jake.modify_file_if_content_changed(File.join(folder, modulename+'.js'), f)
     end
