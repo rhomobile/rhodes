@@ -1000,11 +1000,11 @@ extern "C" BOOL LoadAYGShell()
 extern "C" BOOL LoadSoundDll()
 {
 	bool bReturnValue = FALSE;
-	g_hSndDLL = LoadLibrary(L"soundfile.dll");
+	g_hSndDLL = LoadLibrary(L"aygshell.dll");
 	if (!g_hSndDLL)
 	{
 		//  Error loading AygShell.dll (used for Retrieving values from the Registry)
-		LOG(INFO) + "Failed to load SoundFile.dll, WAN status event will not be available";
+		LOG(INFO) + "Failed to load sound api";
 	}
 	else
 	{
