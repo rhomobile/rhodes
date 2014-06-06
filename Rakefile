@@ -2262,7 +2262,7 @@ def write_modules_js(folder, filename, modules, do_separate_js_modules)
         f.write(File.read(fname))
       end
 
-      Jake.modify_file_if_content_changed(File.join(folder, modulename+'.js'), f)
+      Jake.modify_file_if_content_changed(File.join(folder, modulename.downcase+'.js'), f)
     end
   end
 end
