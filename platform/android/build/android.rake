@@ -437,7 +437,7 @@ namespace "config" do
       puts "Looking for Motorola API SDK add-on..." if USE_TRACES
       motosol_jars = ['com.motorolasolutions.scanner', 'com.motorolasolutions.msr']
       simulscan_jars = ['com.symbol.emdk.simulscan']
-      $motosol_classpath = AndroidTools::get_addon_classpath(motosol_jars) + ':' + AndroidTools::get_addon_classpath(simulscan_jars)
+      $motosol_classpath = AndroidTools::get_addon_classpath(motosol_jars) + $path_separator + AndroidTools::get_addon_classpath(simulscan_jars)
     end
 
     # Detect Google API add-on path
