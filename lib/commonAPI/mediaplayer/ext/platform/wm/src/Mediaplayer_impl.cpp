@@ -196,6 +196,20 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 				// Local file, just change the name to a format the WM/CE understands.
 				m_lpzFilename = s2ws(filename);
 			}
+			
+			/****************************************/
+			/* 
+				SR ID - EMBPD00128123
+				Issue Description - Video Files are not getting played in MediaPlayer with Native Application on WM
+				Fix Provided - Issue was reproducing because of CreateProcess Microsoft API which donot understand the path which consists of space.
+							   Hence we need to put an extra double inverted at the front & at the end of the string.
+				Developer Name - Abhineet Agarwal
+				File Name - Mediaplayer_impl.cpp
+				Function Name - startvideo
+				Date - 09/06/2014
+			*/
+			/****************************************/
+			m_lpzFilename = L"\"" + m_lpzFilename + L"\""; 
 
 			// Launch the video player.
 			if (!CreateProcess(L"\\windows\\WMPlayer.exe", m_lpzFilename.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi))
