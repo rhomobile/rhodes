@@ -96,7 +96,7 @@ void CHostTracker::run()
 					//replace back slash in badlink url to front slash
 					rho::StringW badUrl = replaceString(m_szBadLinkUrl, L"\\", L"/");
 
-					LOG(ERROR)  + "CHostTracker::run navigated url"+  navUrl.c_str();
+					LOG(ERROR)  + "CHostTracker::run navigated url"+  navUrl.c_str(); 
 					LOG(ERROR)  + "CHostTracker::run badlink url"+  badUrl.c_str();
 					
 					if(std::string::npos == navUrl.find(badUrl))
