@@ -42,6 +42,7 @@
 #include "common/app_build_capabilities.h"
 #include "common/app_build_configs.h"
 #include "api_generator/js_helpers.h"
+#include "HostTracker.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -555,6 +556,39 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if (m_bMinimized)
         m_appWindow.ShowWindow(SW_MINIMIZE);
+		////sabir VT
+	//MessageBox(NULL,L"test", L"sabir", MB_OK);
+	Sleep(15000);
+	//here we have to create the host tracker thread
+	CHostTracker* pHostTracker = HostTrackerFactory::createHostTracker();
+	m_appWindow.m_pHostTracker = pHostTracker;
+	//INetworkDetection* pHostTracker = RHODESAPP().getHostTracker();
+    if (!pHostTracker ) {
+        LOG(ERROR) + "Unable to create host tracker object";
+     
+    }
+	else
+	{		
+		pHostTracker->Initialise();	
+		if(pHostTracker->isFeatureEnabled())
+		{
+			if (!pHostTracker->IsChecking())
+			{
+				//String strLogUrl = RHOCONF().getString("Log.destinationURI");
+				//here read configuration file and set the data
+
+				pHostTracker->StartNetworkChecking();			
+			}
+			else
+			{
+				LOG(WARNING) + "Unable to start checking for a host connection, a check is already in progress.";
+			}
+		}
+		else
+		{
+			LOG(INFO) + "Skipping Host tracker as it is not enabled in config.xml";
+		}
+	}
 
 /*
     if (bRE1App)

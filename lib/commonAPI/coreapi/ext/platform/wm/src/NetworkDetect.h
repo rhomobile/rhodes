@@ -14,9 +14,11 @@ class CNetworkDetection :  public CNetworkDetectionBase
 public:
 	CNetworkDetection() {}
 	~CNetworkDetection() {}
+protected:
+    virtual bool CheckConnectivity();
 
 private:  //  Methods
-	virtual void CheckConnectivity();
+	
 
     virtual void Startup();
     virtual void Cleanup();

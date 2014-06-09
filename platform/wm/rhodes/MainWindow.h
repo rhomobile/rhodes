@@ -42,6 +42,7 @@
 #include "rho/rubyext/NativeTabbar.h"
 #include "browser/IBrowserEngine.h"
 #include "common/app_build_capabilities.h"
+#include "HostTracker.h"
 
 #include "LogView.h"
 
@@ -412,6 +413,8 @@ private:
 	WMNetworkStatusMonitor m_networkStatusMonitor;
 
     void ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam );
+public:
+		CHostTracker* m_pHostTracker;
 };
 
 HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );

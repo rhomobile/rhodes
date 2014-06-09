@@ -5,11 +5,11 @@
 	Name="coreAPI"
 	>
 	<UserMacro
-		Name="RHO_ROOT_"
+		Name="RHO_ROOT"
 		Value="..\..\..\..\..\..\..\rhodes"
 	/>
 	<UserMacro
-		Name="TEMP_FILES_DIR_"
+		Name="TEMP_FILES_DIR"
 		Value="$(RHO_ROOT)\platform\wm\bin\$(PlatformName)\extensions\$(ProjectName)"
 	/>
 </VisualStudioPropertySheet>

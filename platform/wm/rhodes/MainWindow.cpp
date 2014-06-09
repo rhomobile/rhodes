@@ -95,6 +95,7 @@ CMainWindow::CMainWindow()
     mNativeViewType = "";
     g_hWndCommandBar = 0;
     m_pBrowserEng = NULL;
+	m_pHostTracker = NULL;
 
 	
 	
@@ -598,7 +599,24 @@ LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/
 
 LRESULT CMainWindow::OnNavigateComplete(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
+	//put before complete as the url string memory will be deallocated by ProcessNavigateComplete;
+	if(NULL != m_pHostTracker)
+	{
+		if(m_pHostTracker->isWaitingForWindowMsg())
+		{
+			m_pHostTracker->SetNavigatedUrl((LPCTSTR)lParam);	
+			//PostThreadMessage(m_pHostTracker->getThreadID(),WM_BROWSER_ONNAVIGATECOMPLETE,0,0);
+		}
+	}	
     ProcessNavigateComplete( (LPCTSTR)lParam );
+	if(NULL != m_pHostTracker)
+	{
+		if(m_pHostTracker->isWaitingForWindowMsg())
+		{
+			//m_pHostTracker->SetNavigatedUrl((LPCTSTR)lParam);	
+			PostThreadMessage(m_pHostTracker->getThreadID(),WM_BROWSER_ONNAVIGATECOMPLETE,0,0);
+		}
+	}	
 
     free((void*)lParam);
     return 0;

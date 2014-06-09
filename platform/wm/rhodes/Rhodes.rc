@@ -294,6 +294,13 @@ FONT 8, "MS Shell Dlg"
 BEGIN
 END
 
+IDD_CONNECTION_DLG DIALOG  40, 40, 90, 40
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_BORDER | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "",IDC_STATIC_CONNECTION_MSG,7,15,82,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -392,6 +399,14 @@ BEGIN
         RIGHTMARGIN, 128
         TOPMARGIN, 7
         BOTTOMMARGIN, 98
+    END
+
+    IDD_CONNECTION_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
     END
 END
 #endif    // APSTUDIO_INVOKED
