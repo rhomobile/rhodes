@@ -12,7 +12,7 @@ public:
 	virtual ~CHostTracker();
 	virtual void run();	
 	virtual bool SetConnectionTimeout (unsigned int iTimeout);
-	virtual bool Initialise();
+	virtual bool InitConfig();
 	virtual bool SetConnectionDlgTimeout (unsigned int iTimeout);
 	virtual bool SetBadLinkUrl(const wchar_t* badLinkUrl);
 	virtual bool SetNavigatedUrl(const wchar_t* navigatedUrl);

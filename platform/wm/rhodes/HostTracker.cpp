@@ -58,7 +58,7 @@ void CHostTracker::run()
 			if(NULL == m_hConnectDlg)
 			{
 				//check failed 2s ping timeout			
-				CreateThread(NULL,0,&CHostTracker::ConnectionDlgCreator,NULL,0,0);
+				CloseHandle(CreateThread(NULL,0,&CHostTracker::ConnectionDlgCreator,NULL,0,0));
 			}
 			badLinkTimer = badLinkTimer + m_iPingTimeOut;
 			if(badLinkTimer >= m_iConnectionDlgTimeout)
@@ -96,12 +96,13 @@ void CHostTracker::run()
 					//replace back slash in badlink url to front slash
 					rho::StringW badUrl = replaceString(m_szBadLinkUrl, L"\\", L"/");
 
-					LOG(INFO)  + "CHostTracker::run navigated url"+  navUrl.c_str();
-					LOG(INFO)  + "CHostTracker::run badlink url"+  badUrl.c_str();
+					LOG(ERROR)  + "CHostTracker::run navigated url"+  navUrl.c_str();
+					LOG(ERROR)  + "CHostTracker::run badlink url"+  badUrl.c_str();
 					
 					if(std::string::npos == navUrl.find(badUrl))
 					{
-						//if navigated out of badlink, resume our thread by breaking this loop						
+						//if navigated out of badlink, resume our thread by breaking this loop	
+						LOG(ERROR)  + "CHostTracker::run thread will be resumed as it is a diffrent page";
 						break;
 
 					}
@@ -125,9 +126,8 @@ void CHostTracker::run()
 		}
 	}
 }
-bool CHostTracker::Initialise()
-{
-	CNetworkDetection::Initialise();
+bool CHostTracker::InitConfig()
+{	
 	stHostTrackerConfigInfo* configInfo = rho_wmimpl_get_hostTrackerInfo();
 	m_bIsFeatureEnabled = configInfo->isTrackConnectionSet;
 	SetHost(configInfo->szHostName);
