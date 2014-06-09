@@ -559,25 +559,24 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		////sabir VT
 	//MessageBox(NULL,L"test", L"sabir", MB_OK);
 	Sleep(15000);
-	//here we have to create the host tracker thread
-	CHostTracker* pHostTracker = HostTrackerFactory::createHostTracker();
-	m_appWindow.m_pHostTracker = pHostTracker;
+	//here we have to create the host tracker thread	
+	
 	//INetworkDetection* pHostTracker = RHODESAPP().getHostTracker();
-    if (!pHostTracker ) {
+    if (!m_appWindow.m_pHostTracker ) {
         LOG(ERROR) + "Unable to create host tracker object";
      
     }
 	else
 	{		
-		pHostTracker->Initialise();	
-		if(pHostTracker->isFeatureEnabled())
+		m_appWindow.m_pHostTracker->InitConfig();	
+		if(m_appWindow.m_pHostTracker->isFeatureEnabled())
 		{
-			if (!pHostTracker->IsChecking())
+			if (!m_appWindow.m_pHostTracker->IsChecking())
 			{
 				//String strLogUrl = RHOCONF().getString("Log.destinationURI");
 				//here read configuration file and set the data
-
-				pHostTracker->StartNetworkChecking();			
+				m_appWindow.m_pHostTracker->Initialise();
+				m_appWindow.m_pHostTracker->StartNetworkChecking();			
 			}
 			else
 			{
