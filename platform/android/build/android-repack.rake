@@ -414,7 +414,23 @@ namespace 'device' do
         FileUtils.mkdir_p( target_res )
         
         cp_r( File.join(prebuilt_res,'.'), target_res, { :verbose => true } )
-        cp_r( File.join(app_res,'.'), target_res, { :verbose => true } )
+
+        rhostrings = File.join(prebuilt_res, "values", "strings.xml")
+        appstrings = File.join(target_res, "values", "strings.xml")
+        doc = REXML::Document.new(File.new(rhostrings))
+        doc.elements["resources/string[@name='app_name']"].text = $appname
+        File.open(appstrings, "w") { |f| doc.write f }
+
+        iconappname = File.join($app_path, "icon", "icon.png")
+
+        ['drawable', 'drawable-hdpi', 'drawable-mdpi', 'drawable-ldpi'].each do |dpi|
+            drawable = File.join(target_res, dpi)
+            iconresname = File.join(drawable, "icon.png")
+            rm_f iconresname
+            cp iconappname, iconresname if File.exist? drawable
+        end
+
+        #cp_r( File.join(app_res,'.'), target_res, { :verbose => true } )
 
         return target_res
     end
