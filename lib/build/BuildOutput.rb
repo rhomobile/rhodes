@@ -23,22 +23,25 @@ class BuildOutput
   end
 
   class << self
+    def prepare_message(message)
+      if message.kind_of?(Array)
+        out = []
+        message.flatten(1).each do |line|
+          out.concat( line.split($/) )
+        end
+      else
+        out = message.split($/) 
+      end
+
+      out
+    end
+
     def decorate_message( message, title )
       message_content = []
 
       message_content << ' **** ' + title + '*' * (105 - title.length)
 
-      out = []
-      
-      if message.kind_of?(Array)
-        message.flatten(1).each do |line|
-          out.concat( line.split($/) )
-        end
-      else
-        out.concat( message.split($/) )
-      end
-
-      message_content.concat( out.map{|el| ' ' * 3 + el })
+      message_content.concat( prepare_message(message).map{|el| ' ' * 3 + el })
 
       message_content << ' ' + '*' * (110)
 
@@ -65,12 +68,21 @@ class BuildOutput
         return
       end
 
+      title = MESSAGES[level] + (title.nil? ? " " : (": " + title + " "))
+
       message = {
         :level => level,
-        :content => decorate_message(message, MESSAGES[level] + (title.nil? ? " " : (": " + title + " ")))
+        :title => title,
+        :content => prepare_message(message)
       }
 
-      @@mqueue << message
+      last = @@mqueue.last
+
+      if !last.nil? && (last[:level] == level) && (last[:title] == title)
+        last[:content].concat(message[:content])
+      else
+        @@mqueue << message
+      end
     end
 
     def put_log(level, message, title = nil)
@@ -104,7 +116,7 @@ class BuildOutput
       txt = []
       @@mqueue.sort_by { |hsh| hsh[:level] }
       @@mqueue.each do |message|
-        out = message[:content].join($/)
+        out = decorate_message( message[:content], message[:title] ).join($/)
         col = col_message(message[:level], out)
         message[:output] = out
         message[:color] = col
