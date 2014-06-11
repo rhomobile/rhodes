@@ -395,28 +395,28 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }*/
     // Note: In this sample, we don't respond differently to different hr success codes.
 
-    SetLastError(0);
-    HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
+    //SetLastError(0);
+//    HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
 
-    if ( !m_bRestarting && hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
-    {
+  //  if ( !m_bRestarting && hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+    //{
         // Rho Running so could bring to foreground
-        HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
+      //  HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
 
-        if (hWnd)
-        {
-            ShowWindow(hWnd, SW_SHOW);
-            SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
-            SetForegroundWindow( hWnd );
+        //if (hWnd)
+        //{
+          //  ShowWindow(hWnd, SW_SHOW);
+            //SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+            //SetForegroundWindow( hWnd );
 
-            COPYDATASTRUCT cds = {0};
-            cds.cbData = m_strTabName.length()+1;
-            cds.lpData = (char*)m_strTabName.c_str();
-            SendMessage( hWnd, WM_COPYDATA, (WPARAM)WM_WINDOW_SWITCHTAB, (LPARAM)(LPVOID)&cds);
-        }
+            //COPYDATASTRUCT cds = {0};
+            //cds.cbData = m_strTabName.length()+1;
+            //cds.lpData = (char*)m_strTabName.c_str();
+            //SendMessage( hWnd, WM_COPYDATA, (WPARAM)WM_WINDOW_SWITCHTAB, (LPARAM)(LPVOID)&cds);
+        //}
 
-        return S_FALSE;
-    }
+        //return S_FALSE;
+    //}
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
     {
@@ -439,6 +439,31 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
+ SetLastError(0);
+ HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
+
+    if ( !m_bRestarting && hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        // Rho Running so could bring to foreground
+        HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
+
+        if (hWnd)
+        {
+            ShowWindow(hWnd, SW_SHOW);
+            SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+            SetForegroundWindow( hWnd );
+
+            COPYDATASTRUCT cds = {0};
+            cds.cbData = m_strTabName.length()+1;
+            cds.lpData = (char*)m_strTabName.c_str();
+            SendMessage( hWnd, WM_COPYDATA, (WPARAM)WM_WINDOW_SWITCHTAB, (LPARAM)(LPVOID)&cds);
+        }
+
+        return S_FALSE;
+    }
+
+
 
     LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
 
