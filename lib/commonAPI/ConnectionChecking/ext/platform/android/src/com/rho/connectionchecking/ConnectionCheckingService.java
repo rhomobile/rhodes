@@ -287,57 +287,53 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 	private final String TAG="ConnectionPageNavEvent";
 	String criticalUri="";
 	boolean isPageNavigationError=false;
-	@Override
+@Override
 	public boolean onNewConfig(IRhoExtManager extManager,
 			IRhoConfig config, String name, boolean res) {
-		System.out.println("ConnectionCheckingListener----onNewConfig");
-		
-		 String ip=config.getValue("hosturl");
-        //RhoConf.setString("HostURL", ip);
-        String to=config.getValue("timeout");
-        //RhoConf.setString("Timeout", to);
-        String tc=config.getValue("trackconnection");
-        //RhoConf.setString("TrackConnection", ir);
-        String msg=config.getValue("message");
-        //RhoConf.setString("Message", msg);
-        				   
-        String pi=config.getValue("pollinterval");
-        //RhoConf.setString("PollInterval", pi);
-        
-        String badlinkUrl=config.getValue("badlinkuri");
-        //RhoConf.setString("BadLinkURI", badlinkUrl);
-		System.out.println("onNewConfig...HostURL="+ip+" Timeout"+to+"TrackConnection "+tc+"Message"+msg+"PollInterval"+pi);
-		boolean shouldRestart=shouldRestartService(ip,to,tc,msg,pi);
-		
-		ConnectionCheckingSingleton.HOST=ip;
-		ConnectionCheckingSingleton.MESSAGE=msg;
-		ConnectionCheckingSingleton.BADLINK_URI=badlinkUrl;
-		try{
-		ConnectionCheckingSingleton.TIMEOUT=Integer.parseInt(to);
-		ConnectionCheckingSingleton.POLLI_INTERVAL=Integer.parseInt(pi);
-		ConnectionCheckingSingleton.TRACK_CONNECTION=Integer.parseInt(tc);
-		}
-		catch(NumberFormatException ex)
+		System.out.println("ConnectionCheckingListener----onNewConfig,name="+name);
+		if(name.equalsIgnoreCase("rhoelementsext"))
 		{
-			Logger.E(TAG, ex.getMessage());
+			 String ip=config.getValue("hosturl");
+		     String to=config.getValue("timeout");
+		     String tc=config.getValue("trackconnection");
+		     String msg=config.getValue("message");
+		     String pi=config.getValue("pollinterval");
+		     String badlinkUrl=config.getValue("badlinkuri");
+				
+		     System.out.println("onNewConfig...HostURL="+ip+" Timeout"+to+"TrackConnection "+tc+"Message"+msg+"PollInterval"+pi);
+			 boolean shouldRestart=shouldRestartService(ip,to,tc,msg,pi);
+				
+				ConnectionCheckingSingleton.HOST=ip;
+				ConnectionCheckingSingleton.MESSAGE=msg;
+				ConnectionCheckingSingleton.BADLINK_URI=badlinkUrl;
+				try{
+				ConnectionCheckingSingleton.TIMEOUT=Integer.parseInt(to);
+				ConnectionCheckingSingleton.POLLI_INTERVAL=Integer.parseInt(pi);
+				ConnectionCheckingSingleton.TRACK_CONNECTION=Integer.parseInt(tc);
+				}
+				catch(NumberFormatException ex)
+				{
+					Logger.E(TAG, ex.getMessage());
+				}
+				
+				try{ 
+		 	   if(shouldRestart)
+		 	   {									   
+		     	Intent conIntent=new Intent(RhodesActivity.getContext(),ConnectionCheckingService.class);
+		     	
+		     	RhodesActivity.getContext().stopService(conIntent);
+		     	if(ConnectionCheckingSingleton.TRACK_CONNECTION==1)
+		     		RhodesActivity.getContext().startService(conIntent);
+		     	
+		 	   }
+		    }
+		    catch(NumberFormatException ex)
+		    {
+		 	   System.out.println("NumberFormatException...in TrackConnection.Not starting the Service,error="+ex.getMessage());
+		    }
+		    
 		}
 		
-		try{ 
- 	   if(shouldRestart)
- 	   {									   
-     	Intent conIntent=new Intent(RhodesActivity.getContext(),ConnectionCheckingService.class);
-     	
-     	RhodesActivity.getContext().stopService(conIntent);
-     	if(ConnectionCheckingSingleton.TRACK_CONNECTION==1)
-     		RhodesActivity.getContext().startService(conIntent);
-     	
- 	   }
-    }
-    catch(NumberFormatException ex)
-    {
- 	   System.out.println("NumberFormatException...in TrackConnection.Not starting the Service,error="+ex.getMessage());
-    }
-    
     
 		
 		
@@ -350,6 +346,7 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 		
 		
 	}
+	
 	
 	private boolean shouldRestartService(String ip,String to,String tc,String msg,String pi)
 	{
