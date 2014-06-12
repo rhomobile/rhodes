@@ -24,11 +24,6 @@ public class ConnectionCheckingListener extends AbstractRhoListener {
 	
 	}
 	
-	@Override
-	public void onCreate(RhodesActivity activity, Intent intent) {
-		
-		super.onCreate(activity, intent);
-		
-	}
+	
 
 }
