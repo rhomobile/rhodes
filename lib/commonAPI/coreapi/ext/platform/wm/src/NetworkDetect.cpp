@@ -21,7 +21,7 @@ void CNetworkDetection::Startup()
 * \author	Darryn Campbell (DCC, JRQ768)
 * \date		August 2011 (Initial Creation)
 */
-void CNetworkDetection::CheckConnectivity()
+bool CNetworkDetection::CheckConnectivity()
 {
 	bool bConnectSuccessful = false;
 	struct addrinfo hints, *result = NULL, *ptr = NULL;
@@ -137,5 +137,6 @@ void CNetworkDetection::CheckConnectivity()
 			m_pDetectCallback.set(detectedCallbackData);
 		}
 	}
+	return bConnectSuccessful;
 }
 
