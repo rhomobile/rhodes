@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.rhomobile.rhodes.api.IMethodResult;
 
-class ConnectionCheckingSingleton extends ConnectionCheckingSingletonBase implements IConnectionCheckingSingleton {
+class ConnectionCheckingSingleton   implements IConnectionCheckingSingleton {
 	
 	public static String HOST="192.168.7.129";//DUmmy
 	public static String MESSAGE="Establishing Connection";
@@ -19,7 +19,8 @@ class ConnectionCheckingSingleton extends ConnectionCheckingSingletonBase implem
 	
 	
     public ConnectionCheckingSingleton(ConnectionCheckingFactory factory) {
-        super(factory);
+       // super(factory);
+    	super();
     }
 
     List<Object> getIDs() {
@@ -29,70 +30,47 @@ class ConnectionCheckingSingleton extends ConnectionCheckingSingletonBase implem
         return ids;
     }
     
-    @Override
-    protected String getInitialDefaultID() {
-        return (String)(getIDs().get(0));
-    }
-
+  
 	@Override
 	public void getHostURL(IMethodResult result) {
-		// TODO Auto-generated method stub
 		
+		result.set(ConnectionCheckingSingleton.HOST);
 	}
 
-	@Override
-	public void setHostURL(String hostURL, IMethodResult result) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	@Override
 	public void getTrackConnection(IMethodResult result) {
-		// TODO Auto-generated method stub
+		result.set(ConnectionCheckingSingleton.TRACK_CONNECTION);
 		
 	}
 
-	@Override
-	public void setTrackConnection(int trackConnection, IMethodResult result) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	@Override
 	public void getTimeout(IMethodResult result) {
-		// TODO Auto-generated method stub
+		result.set(ConnectionCheckingSingleton.TIMEOUT);
 		
 	}
 
-	@Override
-	public void setTimeout(int timeout, IMethodResult result) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	@Override
 	public void getPollInterval(IMethodResult result) {
-		// TODO Auto-generated method stub
+		result.set(ConnectionCheckingSingleton.POLLI_INTERVAL);
 		
 	}
 
-	@Override
-	public void setPollInterval(int pollInterval, IMethodResult result) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	@Override
 	public void getMessage(IMethodResult result) {
-		// TODO Auto-generated method stub
+		result.set(ConnectionCheckingSingleton.MESSAGE);
 		
 	}
 
-	@Override
-	public void setMessage(String message, IMethodResult result) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
+	
     
 }
