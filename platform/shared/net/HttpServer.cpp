@@ -43,9 +43,12 @@
 
 #if !defined(OS_WINCE)
 #include <common/stat.h>
+#define HTTP_EAGAIN_TIMEOUT 10
+#define HTTP_EAGAIN_TIMEOUT_STR "10"
 #else
 #include "CompatWince.h"
-
+#define HTTP_EAGAIN_TIMEOUT 60
+#define HTTP_EAGAIN_TIMEOUT_STR "60"
 #ifdef EAGAIN
 #undef EAGAIN
 #endif
@@ -592,7 +595,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 				continue;
 #endif
 
-#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP))
+#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
             if (e == EAGAIN || e == WSAEWOULDBLOCK) {
 #else
             if (e == EAGAIN) {
@@ -600,9 +603,9 @@ bool CHttpServer::receive_request(ByteVector &request)
                 if (!r.empty())
                     break;
                 
-                if(++attempts > 100)
+                if(++attempts > (HTTP_EAGAIN_TIMEOUT*10))
                 {
-                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for 10 sec. Cancel recieve.");
+                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
                     return false;
                 }
 

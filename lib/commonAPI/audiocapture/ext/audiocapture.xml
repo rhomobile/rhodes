@@ -148,7 +148,7 @@ In Windows, 'getProperty' or 'getProperties' for fileName will return the comple
 			<REMARK title="General">
                 <DESC>
                     <![CDATA[
-On Quitting of the Application, Android will save the data in the file and gracefully exit. 
+On Quitting of the Application, Android will save the data in the file and gracefully exit. In Android, during suspend/resume or screen timeout the audio will keep on recording.
                     ]]>
                 </DESC>
 			</REMARK>
@@ -284,13 +284,13 @@ Alert.show_popup(Rho.AudioCapture.fileName)
                                 </RUBY>
                                 <JAVASCRIPT><![CDATA[
 #Setting fileName without extension
-Rho::AudioCapture.fileName = "sample";
+Rho.AudioCapture.fileName = "sample";
 
 // The returned value is "sample";
 alert(Rho.AudioCapture.fileName);
 
 #Setting fileName with fullpath
-Rho::AudioCapture.fileName = Rho::Application.userFolder + 'mysound';
+Rho.AudioCapture.fileName = Rho.Application.userFolder + 'mysound';
 
 // The returned value is (this is example for simulator) "/Users/MOHUS/Library/Application Support/iPhone Simulator/7.1/Applications/376D660D-B6C7-4E6E-8B69-38E7C681DAC5/Documents/apps/mysound";
 alert(Rho.AudioCapture.fileName);

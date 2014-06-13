@@ -6,15 +6,15 @@ class String
 
   def underscore
     self.gsub(/::/, '/').
-      gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-      gsub(/([a-z\d])([A-Z])/,'\1_\2').
-      tr('- ', '_').
-      downcase
+        gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
+        gsub(/([a-z\d])([A-Z])/, '\1_\2').
+        tr('- ', '_').
+        downcase
   end
 
   # from natcmp gem
   def self.natcmp(str1, str2, ignoreCase=true)
-    strArrays = [str1,str2].collect do |str|
+    strArrays = [str1, str2].collect do |str|
       str = str.downcase if ignoreCase
       str.tr(" \t\r\n", '').split(/(\d+)/)
     end
@@ -52,13 +52,14 @@ class String
     :underline       => ["\033[4m","\033[24m"],
     :reverse_color   => ["\033[7m","\033[27m"]
   }.each do |name, format|
-    # use colorizer only for TTY
-    if STDOUT.tty?
+    # use colorizer only for TTY for non windows systems
+    is_win = (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+    if STDOUT.tty? && !is_win
       send :define_method, name do
-        [format[0],self,format[1]].join
-      end 
+        [format[0], self, format[1]].join
+      end
     else
-      send :define_method, name do 
+      send :define_method, name do
         self
       end
     end
