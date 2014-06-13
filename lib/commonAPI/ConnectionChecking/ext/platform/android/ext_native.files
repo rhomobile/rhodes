@@ -1,7 +1,0 @@
-ext/platform/android/generated/jni/ConnectionChecking.cpp
-ext/platform/android/generated/jni/connectionchecking_ruby_wrap.cpp
-ext/platform/android/generated/jni/connectionchecking_js_wrap.cpp
-ext/platform/android/jni/ConnectionChecking_impl.cpp
-ext/shared/generated/connectionchecking_api_init.cpp
-ext/shared/generated/connectionchecking_js_api.cpp
-ext/shared/generated/connectionchecking_ruby_api.c

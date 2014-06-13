@@ -1,9 +1,0 @@
-ext/platform/android/generated/src/com/rho/connectionchecking/ConnectionCheckingBase.java
-ext/platform/android/generated/src/com/rho/connectionchecking/ConnectionCheckingFactorySingleton.java
-ext/platform/android/generated/src/com/rho/connectionchecking/ConnectionCheckingSingletonBase.java
-ext/platform/android/generated/src/com/rho/connectionchecking/IConnectionChecking.java
-ext/platform/android/generated/src/com/rho/connectionchecking/IConnectionCheckingFactory.java
-ext/platform/android/generated/src/com/rho/connectionchecking/IConnectionCheckingSingleton.java
-ext/platform/android/src/com/rho/connectionchecking/ConnectionChecking.java
-ext/platform/android/src/com/rho/connectionchecking/ConnectionCheckingFactory.java
-ext/platform/android/src/com/rho/connectionchecking/ConnectionCheckingSingleton.java
