@@ -148,7 +148,7 @@ In Windows, 'getProperty' or 'getProperties' for fileName will return the comple
 			<REMARK title="General">
                 <DESC>
                     <![CDATA[
-On Quitting of the Application, Android will save the data in the file and gracefully exit. 
+On Quitting of the Application, Android will save the data in the file and gracefully exit. In Android, during suspend/resume or screen timeout the audio will keep on recording.
                     ]]>
                 </DESC>
 			</REMARK>
