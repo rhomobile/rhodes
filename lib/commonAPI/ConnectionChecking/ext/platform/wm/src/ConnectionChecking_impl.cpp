@@ -62,7 +62,7 @@ namespace rho {
 			}
 			else
 			{
-				LOG(INFO) + "Skipping Host tracker as it is not enabled in config.xml";
+				LOG(INFO) + "Skipping connection check as it is not enabled in config.xml";
 			}
 		}
 
