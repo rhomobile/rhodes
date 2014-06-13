@@ -36,6 +36,7 @@
 
 #if defined(_WIN32_WCE)
 #include "connmgr.h"
+
 typedef HRESULT (WINAPI* LPFN_CONMGR_RELEASECONNECTION_T) (HANDLE, LONG);
 typedef HRESULT (WINAPI* LPFN_CONMGR_ESTABLISHCONNECTION_T)	(CONNMGR_CONNECTIONINFO*,HANDLE*);
 typedef HRESULT (WINAPI* LPFN_CONMGR_MAPURL_T)	(LPCTSTR, GUID*, DWORD*);
@@ -43,10 +44,12 @@ typedef HRESULT (WINAPI* LPFN_CONMGR_CONNECTIONSTATUS_T) (HANDLE, DWORD*);
 
 LPFN_CONMGR_RELEASECONNECTION_T		lpfn_ConMgr_ReleaseConnection = NULL;
 LPFN_CONMGR_ESTABLISHCONNECTION_T	lpfn_ConMgr_EstablishConnection = NULL;
-LPFN_CONMGR_MAPURL_T lpfn_ConMgr_MapUrl = NULL;
+LPFN_CONMGR_MAPURL_T                lpfn_ConMgr_MapUrl = NULL;
 LPFN_CONMGR_CONNECTIONSTATUS_T		lpfn_ConMgr_ConnectionStatus = NULL;
+
 HMODULE g_hConnManDLL = NULL;	
 extern "C" BOOL LoadConnectionManager();
+
 #endif
 
 #ifdef OS_WINCE
@@ -55,10 +58,12 @@ extern "C" int strnicmp( const char *s1, const char *s2, size_t count );
 
 namespace rho {
 namespace net {
+
 IMPLEMENT_LOGCLASS(CNetRequestImpl,"Net");
+
 common::CMutex CNetRequestImpl::m_mxInternet;
-HINTERNET CNetRequestImpl::m_hInternet;
-HANDLE    CNetRequestImpl::m_hWceConnMgrConnection;
+HINTERNET      CNetRequestImpl::m_hInternet;
+HANDLE         CNetRequestImpl::m_hWceConnMgrConnection;
 
 CNetRequestImpl::CNetRequestImpl()
 {
@@ -72,8 +77,10 @@ CNetRequestImpl::CNetRequestImpl()
     m_sslVerifyPeer = true;
 
 #if !defined(OS_WINDOWS_DESKTOP)
-	if(winversion == 1 && !g_hConnManDLL)
+	if(RHO_IS_WMDEVICE && !g_hConnManDLL)
+    {
 		LoadConnectionManager();
+    }
 #endif
 }
 
@@ -887,8 +894,12 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
     if (!bLocalHost)
     {
         common::CMutexLock lock(m_mxInternet);
-        if ( !SetupInternetConnection(url) )
-            return false;
+
+        if (RHO_IS_WMDEVICE)
+        {
+            if ( !SetupInternetConnection(url) )
+                return false;
+        }
     }
 
     common::CMutexLock lock(m_mxInternet);
@@ -930,8 +941,10 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
     m_hInternet = NULL;
 
 #if defined (_WIN32_WCE)
-    if ( m_hWceConnMgrConnection )
+    if ( m_hWceConnMgrConnection && RHO_IS_WMDEVICE)
+    {
         lpfn_ConMgr_ReleaseConnection(m_hWceConnMgrConnection, FALSE);
+    }
 
     m_hWceConnMgrConnection = NULL;
 #endif //_WIN32_WCE
@@ -1023,6 +1036,7 @@ extern "C" BOOL LoadConnectionManager()
 {
 	bool bReturnValue = FALSE;
 	g_hConnManDLL = LoadLibrary(L"cellcore.dll");
+
 	if (!g_hConnManDLL)
 	{
 		//  Error loading CellCore.dll (used for Connection Manager)
@@ -1030,14 +1044,10 @@ extern "C" BOOL LoadConnectionManager()
 	}
 	else
 	{
-		lpfn_ConMgr_EstablishConnection = 
-			(LPFN_CONMGR_ESTABLISHCONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrEstablishConnection"));
-		lpfn_ConMgr_ReleaseConnection = 
-			(LPFN_CONMGR_RELEASECONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrReleaseConnection"));
-		lpfn_ConMgr_MapUrl = 
-			(LPFN_CONMGR_MAPURL_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrMapURL"));
-		lpfn_ConMgr_ConnectionStatus = 
-			(LPFN_CONMGR_CONNECTIONSTATUS_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrConnectionStatus"));
+		lpfn_ConMgr_EstablishConnection = (LPFN_CONMGR_ESTABLISHCONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrEstablishConnection"));
+		lpfn_ConMgr_ReleaseConnection   = (LPFN_CONMGR_RELEASECONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrReleaseConnection"));
+		lpfn_ConMgr_MapUrl              = (LPFN_CONMGR_MAPURL_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrMapURL"));
+		lpfn_ConMgr_ConnectionStatus    = (LPFN_CONMGR_CONNECTIONSTATUS_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrConnectionStatus"));
 
 		if (!lpfn_ConMgr_EstablishConnection)
 		{
