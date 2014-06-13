@@ -20,6 +20,9 @@ namespace 'device' do
         FileUtils::mkdir_p File.join(target_path,'native','lib',arch)
         FileUtils.cp(lib, File.join(target_path,'native','lib',arch))
       }
+      
+      cp_r( File.join($bindir,'tmp', 'assets' ), File.join( target_path, 'assets' ) )
+      cp_r( File.join($bindir,'tmp', 'res' ), File.join( target_path, 'res' ) )
 
       FileUtils.cp( File.join($app_path,'build.yml'), target_path )
       
@@ -379,7 +382,58 @@ namespace 'device' do
 
     end
 
+    def self.merge_assets( prebuilt_assets, app_assets )
+        target_assets = app_assets + '_merged'
+        
+        FileUtils.mkdir_p( target_assets )
+        
+        cp_r( File.join(prebuilt_assets,'.'), target_assets, { :verbose => true } )
+        cp_r( File.join(app_assets,'.'), target_assets, { :verbose => true } )
 
+        hash = nil
+        ["apps", "db", "lib"].each do |d|
+            # Calculate hash of directories
+            hash = get_dir_hash(File.join(target_assets, d), hash)
+        end
+
+        rm File.join(target_assets, "hash")
+        rm File.join(target_assets, "name")
+        rm File.join(target_assets, "rho.dat")
+
+        Jake.build_file_map(target_assets, "rho.dat")
+
+        File.open(File.join(target_assets, "hash"), "w") { |f| f.write(hash.hexdigest) }
+        File.open(File.join(target_assets, "name"), "w") { |f| f.write($appname) }
+
+        return target_assets
+    end
+
+    def self.merge_resources( prebuilt_res, app_res )
+        target_res = app_res + '_merged'
+        
+        FileUtils.mkdir_p( target_res )
+        
+        cp_r( File.join(prebuilt_res,'.'), target_res, { :verbose => true } )
+
+        rhostrings = File.join(prebuilt_res, "values", "strings.xml")
+        appstrings = File.join(target_res, "values", "strings.xml")
+        doc = REXML::Document.new(File.new(rhostrings))
+        doc.elements["resources/string[@name='app_name']"].text = $appname
+        File.open(appstrings, "w") { |f| doc.write f }
+
+        iconappname = File.join($app_path, "icon", "icon.png")
+
+        ['drawable', 'drawable-hdpi', 'drawable-mdpi', 'drawable-ldpi'].each do |dpi|
+            drawable = File.join(target_res, dpi)
+            iconresname = File.join(drawable, "icon.png")
+            rm_f iconresname
+            cp iconappname, iconresname if File.exist? drawable
+        end
+
+        #cp_r( File.join(app_res,'.'), target_res, { :verbose => true } )
+
+        return target_res
+    end
 
     def self.production_with_prebuild_binary
       Rake::Task['config:android'].invoke
@@ -395,7 +449,8 @@ namespace 'device' do
       prebuilt_builddir = File.join(bundle_path,'bin','target','android',$confdir)
       resources_path = build_resources(prebuilt_builddir)
 
-      assets_path = bundle_path
+      assets_path = merge_assets( File.join( prebuilt_path,'assets' ), bundle_path )
+      resources_path = merge_resources( File.join( prebuilt_path,'res' ), resources_path )
 
       underscore_files = get_underscore_files_from_bundle(bundle_path)
 

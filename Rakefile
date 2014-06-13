@@ -1191,7 +1191,7 @@ namespace 'cloud' do
       puts "RhoHub User: #{user_proj[:user]}, application: #{user_proj[:app]}"
     else
       BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Rhohub build')
-      raise Exception.new('Not versioned on github')
+      raise Exception.new('Hosted on server not supported by cloud build system')
     end
 
     #get app list
@@ -3089,9 +3089,10 @@ namespace "build" do
 
       output = true
       status = nil
+      error = nil
       begin
 
-        Open3.popen2("java","-jar","#{$minifier}","--type","#{type}") do |stdin, stdout, wait_thr|
+        Open3.popen3("java","-jar","#{$minifier}","--type","#{type}") do |stdin, stdout, stderr, wait_thr|
           stdin.binmode
 
           while buffer = f.read(4096)
@@ -3101,29 +3102,26 @@ namespace "build" do
           stdin.close
 
           output = stdout.read
+          error = stderr.read
 
           status = wait_thr.value
         end
 
       rescue Exception => e
         puts "Minify error: #{e.inspect}"
+        error = e.inspect
         #raise e
       end
 
       if !status || !status.exitstatus.zero?
         puts "WARNING: Minification error!"
 
-        output = File.read(filename)
-        $minification_failed_list = [] if !$minification_failed_list
-        $minification_failed_list << filename
-        #exit 1
-      end
+        error = output if error.nil?
 
-      if ($minification_failed_list)
-        BuildOutput.warning([
-                              ' The JavaScript or CSS files failed to minify:',
-                              $minification_failed_list,
-        ' See log for details '])
+        BuildOutput.warning(['Failied to minify ' + filename, 'Output: ' + error], 'Minification error')
+
+        output = File.read(filename)
+        #exit 1
       end
 
       fc.puts(output)
