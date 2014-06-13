@@ -1,0 +1,14 @@
+entry: Init_ConnectionChecking_extension
+javaentry: com.connectionchecking.ConnectionChecking
+libraries: ["ConnectionChecking"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+
+project_paths:
+  wp8: ext/platform/wp8/ConnectionCheckingLib.vcxproj
+  wm: ext/platform/wm/ConnectionChecking.vcproj
+  
+xml_api_paths: ext/ConnectionChecking.xml
+
+platforms: ["wm", "android"]

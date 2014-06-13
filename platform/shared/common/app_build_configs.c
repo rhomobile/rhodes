@@ -5,12 +5,18 @@
 //#include "app_build_configs.h"
 
 static const char* keys[] = { ""
+,"moto-plugins"
+,"shared-runtime"
+,"webkit_outprocess"
 };
 
 static const char* values[] = { ""
+,"ALL"
+,"1"
+,"0"
 };
 
-#define APP_BUILD_CONFIG_COUNT 1
+#define APP_BUILD_CONFIG_COUNT 4
 
 const char* get_app_build_config_item(const char* key) {
   int i;
