@@ -79,6 +79,7 @@ struct IRhoExtension
     virtual void OnAppActivate(bool bActivate, const CRhoExtData& oExtData){}
     virtual void OnWindowChanged(LPVOID lparam){}
     virtual bool onHTMLWndMsg(MSG& oMsg){return false;}
+	virtual void OnLicenseScreen(bool bActivate, const CRhoExtData& oExtData){}
 };
 
 struct IRhoExtManager
@@ -145,6 +146,7 @@ public:
     long OnGeolocationData(int nEnum, void* pData);
     long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo);
     long OnLicenseError(const wchar_t* szUrlBeingNavigatedTo);
+	void OnLicenseScreen(bool bActivate);
     void OnAppActivate(bool bActivate);
     void OnWindowChanged(LPVOID lparam);
 	DWORD getProcessId();
