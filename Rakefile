@@ -1505,7 +1505,7 @@ namespace 'cloud' do
       files = []
 
       if !($cloud_build_home.nil? || $cloud_build_home.empty?)
-        files = Dir.glob(File.join($cloud_build_temp,'*'))
+        files.concat( Dir.glob(File.join($cloud_build_home,'*')).reject { |el| File.directory?(el) } )
       end
 
       if !files.empty?
