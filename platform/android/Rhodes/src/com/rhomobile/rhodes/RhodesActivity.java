@@ -143,7 +143,24 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		RhoConf.setString("PageZoom", pageZoom);
             else
             	RhoConf.setString("PageZoom", "1.0");
-
+            	
+            	
+            	 String ip=config.getValue("HostURL");
+            RhoConf.setString("HostURL", ip);
+            String to=config.getValue("Timeout");
+            RhoConf.setString("Timeout", to);
+            String ir=config.getValue("TrackConnection");
+            RhoConf.setString("TrackConnection", ir);
+            String msg=config.getValue("Message");
+            RhoConf.setString("Message", msg);
+            				   
+            String pi=config.getValue("PollInterval");
+            RhoConf.setString("PollInterval", pi);
+            
+            String badlinkUrl=config.getValue("BadLinkURI");
+            RhoConf.setString("BadLinkURI", badlinkUrl);
+            
+           
         } catch (Throwable e) {
             Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
             //Logger.W(TAG, e);
