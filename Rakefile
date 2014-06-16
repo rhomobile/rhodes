@@ -487,7 +487,7 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
       end
     end
 
-    Rhohub.url = user_acc.server
+    Rhohub.url = user_acc.server if is_valid > 0
 
     if (user_acc.is_valid_token?() && user_acc.changed)
       user_acc.save_token(token_folder)
