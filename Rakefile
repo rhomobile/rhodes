@@ -487,6 +487,8 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
       end
     end
 
+    Rhohub.url = user_acc.server if is_valid > 0
+
     if (user_acc.is_valid_token?() && user_acc.changed)
       user_acc.save_token(token_folder)
     end
@@ -873,40 +875,6 @@ def http_get(url, proxy, save_to)
   result
 end
 
-def show_build_infromation(build_hash)
-  label = case build_hash["status"]
-  when "queued"
-    "queued".cyan
-  when "started"
-    "started".blue
-  when "completed"
-    "completed".green
-  when "failed"
-    "failed".red
-  end
-
-  puts "Build ##{build_hash["id"]} is #{label}"
-
-  dl = build_hash["download_link"]
-
-  if !(dl.nil? || dl.empty?)
-    puts "  Download link : #{dl.underline}"
-  end
-end
-
-def show_build_messages(build_hash, proxy, save_to)
-  if build_hash["status"] == "failed"
-    if !(build_hash["download_link"].nil? || build_hash["download_link"].empty?)
-      error_file = http_get(build_hash["download_link"], proxy, save_to)
-
-      if !error_file.nil?
-        error = File.read(error_file)
-        puts "  Build error:\n#{error.red}"
-      end
-    end
-  end
-end
-
 def get_build_platforms()
   build_caps = JSON.parse(Rhohub::Build.platforms())
 
@@ -934,6 +902,66 @@ def get_build_platforms()
 
   build_platforms
 end
+
+def find_platform_by_command(platforms, command)
+  result = "not found"
+
+  command = "iphone:development" if command == "iphone:ad_hoc"
+  command = "iphone:distribution" if command == "iphone:app_store"
+  platforms.each do |platform, content|
+    content.each do |el|
+      if el[:tag] == command
+        result = "#{platform} #{el[:ver]}".strip()
+        break
+      end
+    end
+
+  end
+
+  result
+end
+
+
+def show_build_infromation(build_hash, platforms)
+  build_staes = {
+      "queued" => "queued".cyan,
+      "started" => "started".blue,
+      "completed" => "completed".green,
+      "failed" => "failed".red
+  }
+
+  label = build_staes[ build_hash["status"] ]
+
+  message = ""
+  if build_hash["target_device"] && build_hash["rhodes_version"] && build_hash["version"]
+    build_ver = find_platform_by_command(platforms, build_hash["target_device"])
+    message = "Rhodes version: #{build_hash["rhodes_version"].cyan}, app version: #{build_hash["version"].cyan}, target: #{build_ver.blue}"
+  end
+
+  puts "Build ##{build_hash["id"]} is #{label}"
+  puts "  #{message}" unless message.nil? || message.empty?
+
+  dl = build_hash["download_link"]
+
+  if !(dl.nil? || dl.empty?)
+    puts "  Download link : #{dl.underline}"
+  end
+end
+
+def show_build_messages(build_hash, proxy, save_to)
+  if build_hash["status"] == "failed"
+    if !(build_hash["download_link"].nil? || build_hash["download_link"].empty?)
+      error_file = http_get(build_hash["download_link"], proxy, save_to)
+
+      if !error_file.nil?
+        error = File.read(error_file)
+        puts "  Build error:\n#{error.red}"
+      end
+    end
+  end
+end
+
+
 
 def best_match(target, list, is_lex = false)
   best = list.first
@@ -1232,13 +1260,14 @@ namespace 'cloud' do
   task :list_builds, [:show_log] => [:find_app] do |t, args|
     args.with_defaults(:show_log => 'false')
 
+    $platform_list = get_build_platforms() unless $platform_list
     show_log = to_boolean(args.show_log)
 
     builds = JSON.parse(Rhohub::Build.list({:app_id => $app_cloud_id})).sort{ |a, b| b['id'].to_i <=> a['id'].to_i}
 
     if !builds.empty?
       builds.each do |build|
-        show_build_infromation(build)
+        show_build_infromation(build, $platform_list)
         if show_log
           show_build_messages(build, $proxy, $cloud_build_home)
         end
@@ -1341,7 +1370,7 @@ namespace 'cloud' do
     build_id, res = start_cloud_build($app_cloud_id, build_flags)
 
     if (!build_id.nil?)
-      show_build_infromation(res)
+      show_build_infromation(res, platform_list)
     end
 
     check_cloud_build_result(res)
@@ -1423,7 +1452,7 @@ namespace 'cloud' do
 
       puts "Using server gem version #{$rhodes_ver}"
 
-      $platform_list = get_build_platforms()
+      $platform_list = get_build_platforms() unless $platform_list
     end
 
     namespace :android do
@@ -1503,7 +1532,7 @@ namespace 'cloud' do
       files = []
 
       if !($cloud_build_home.nil? || $cloud_build_home.empty?)
-        files = Dir.glob(File.join($cloud_build_temp,'*'))
+        files.concat( Dir.glob(File.join($cloud_build_home,'*')).reject { |el| File.directory?(el) } )
       end
 
       if !files.empty?
