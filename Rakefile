@@ -1057,6 +1057,8 @@ def put_message_with_timestamp(start_time, message, no_newline = false)
   else
     puts " #{data}"
   end
+
+  STDOUT.flush
 end
 
 def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to = nil, unzip_to = nil)
