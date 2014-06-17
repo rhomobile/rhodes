@@ -280,6 +280,8 @@ def build_cab
   #build_platform = 'ce7' if $sdk == "WT41N0c70PSDK (ARMV4I)"
 
   reg_keys_filename = File.join(File.dirname(__FILE__), 'regs.txt');
+  com_dlls_filename = File.join(File.dirname(__FILE__), 'comdlls.txt');
+  
   puts 'remove file with registry keys'
   rm reg_keys_filename if File.exists? reg_keys_filename
 
@@ -290,6 +292,20 @@ def build_cab
     end
   end
 
+  if $comdll_files && $comdll_files.size > 0
+    puts 'add com dlls names to file'
+    reg_string = ""
+     
+    File.open(com_dlls_filename, 'w') do |f|
+      $comdll_files.each { |key| 
+        reg_string = reg_string + key[0..-1] + "," 
+      }
+
+      reg_string = reg_string[0..-2]
+      f.write(reg_string)
+    end
+  end
+  
   if $build_persistent_cab && !$use_shared_runtime
     makePersistentFiles($srcdir, additional_dlls_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
   end
@@ -347,6 +363,11 @@ end
 def ext_add_reg_key(ext, key)
   puts "extension " + ext + " add regkey to cab. key: " + key
   $regkeys << key
+end
+
+def ext_add_reg_com_dll(ext, dll_name)
+  puts "extension " + ext + " add COM dll to registration. dll: " + dll_name
+  $comdll_files << dll_name
 end
 
 namespace "config" do
@@ -585,8 +606,9 @@ namespace "build" do
       extensions_lib = ''
       pre_targetdeps = ''
 
-      $regkeys = Array.new
-
+      $regkeys      = Array.new
+      $comdll_files = Array.new
+      
       puts "$app_extensions_list : #{$app_extensions_list}"
       
       $app_extensions_list.each do |ext, commin_ext_path |
@@ -622,6 +644,7 @@ namespace "build" do
                 end
               end
             end
+            
             if $app_config["wm"] && ($app_config["wm"]["regkeys"] != nil) && $app_config["wm"]["regkeys"].kind_of?(Array)
               $app_config["wm"]["regkeys"].each do |keygroup|
                 if (ext_config["regkeys_#{keygroup}"] != nil)
@@ -633,7 +656,13 @@ namespace "build" do
             end
           end
           puts 'end read reg key'
-
+ 
+          if (ext_config["wm"] != nil && ext_config["wm"]["register"] != nil)
+            ext_config["wm"]["register"].each do |key|
+              ext_add_reg_com_dll(ext, key)
+            end
+          end          
+          
           if ext != 'openssl.so'
             extensions_lib << " #{ext}.lib"
             pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
