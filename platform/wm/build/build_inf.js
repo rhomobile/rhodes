@@ -242,6 +242,42 @@ function fill_registry_keys() {
 	}
 }
 
+function es_find(es, item) {
+    for (var i in es) {
+        if (es[i].localname === item) {
+           return true;        
+         }
+    }
+    
+    return false;
+}
+
+function fill_register_com_dlls(es) {
+    var regfName = "comdlls.txt";
+    var dlls = new Array();
+    var finalContents = "";
+    
+    var f = resolve_dublicates(es);
+
+    if (fso.FileExists(regfName)) {
+        var regf = fso.OpenTextFile(regfName);
+        var contents = regf.ReadAll();
+        regf.Close();
+        
+        dlls = contents.split(",");          
+        
+        for(var i=0; i<dlls.length; i++) 
+        {
+           if (es_find(f, dlls[i])) 
+           {
+               finalContents = finalContents + dlls[i] + ",";              
+           }
+        }
+
+        p("CESelfRegister=" + finalContents.slice(0, -1));
+    }
+}
+
 function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_mode,
                 rhogempath,usereruntime,include_motocaps,is_custom_config,autorun,autorun_path,is_persistent) {
 
@@ -270,6 +306,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     p("BuildMax=0xE0000000");
     p("");
     p("[DefaultInstall]");
+    fill_register_com_dlls(es);
+       
     if (show_shortcut && (!usereruntime)){
         if (autorun) 
         {
@@ -511,8 +549,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     }
     p("");
     p("[RegKeys]");
-    fill_registry_keys()
-    p("");
+    fill_registry_keys();
+    p("");    
 }
 
 function main() {
