@@ -818,13 +818,20 @@ def http_get(url, proxy, save_to)
     header_resp = http.head(uri.path)
   }
 
+  if !header_resp.kind_of?(Net::HTTPSuccess)
+    if block_given?
+      yield(header_resp.content_length, -1, "Server error #{header_resp.inspect}")
+    end
+    return false, "Server error: #{header_resp.inspect}"
+  end
+
   if File.exists?(f_name)
     if File.stat(f_name).size == header_resp.content_length
       if block_given?
         yield(header_resp.content_length, header_resp.content_length, "File #{f_name} from #{url} is already in the cache")
       end
 
-      return f_name
+      return true, f_name
     end
   end
 
@@ -870,10 +877,10 @@ def http_get(url, proxy, save_to)
     ensure
       f.close()
     end
-    yield(done, header_resp.content_length, "Download finished")
+    yield(done, header_resp.content_length, "Download finished") if block_given?
   end
 
-  result
+  return true, result
 end
 
 def get_build_platforms()
@@ -923,7 +930,7 @@ def find_platform_by_command(platforms, command)
 end
 
 
-def show_build_infromation(build_hash, platforms)
+def show_build_information(build_hash, platforms)
   build_staes = {
       "queued" => "queued".cyan,
       "started" => "started".blue,
@@ -934,12 +941,15 @@ def show_build_infromation(build_hash, platforms)
   label = build_staes[ build_hash["status"] ]
 
   message = ""
-  if build_hash["target_device"] && build_hash["rhodes_version"] && build_hash["version"]
-    build_ver = find_platform_by_command(platforms, build_hash["target_device"])
-    message = "Rhodes version: #{build_hash["rhodes_version"].cyan}, app version: #{build_hash["version"].cyan}, target: #{build_ver.blue}"
+  target = ""
+  if build_hash["target_device"]
+    target = ", target platform: " + find_platform_by_command(platforms, build_hash["target_device"]).blue
+  end
+  if build_hash["rhodes_version"] && build_hash["version"]
+    message = "Rhodes version: #{build_hash["rhodes_version"].cyan}, app version: #{build_hash["version"].cyan}"
   end
 
-  puts "Build ##{build_hash["id"]} is #{label}"
+  puts "Build ##{build_hash["id"]}: #{label}#{target}"
   puts "  #{message}" unless message.nil? || message.empty?
 
   dl = build_hash["download_link"]
@@ -952,11 +962,13 @@ end
 def show_build_messages(build_hash, proxy, save_to)
   if build_hash["status"] == "failed"
     if !(build_hash["download_link"].nil? || build_hash["download_link"].empty?)
-      error_file = http_get(build_hash["download_link"], proxy, save_to)
+      is_ok, error_file = http_get(build_hash["download_link"], proxy, save_to)
 
-      if !error_file.nil?
+      if is_ok
         error = File.read(error_file)
-        puts "  Build error:\n#{error.red}"
+        BuildOutput.put_log(BuildOutput::ERROR, error, "Build log")
+      else
+        BuildOutput.put_log(BuildOutput::ERROR, error_file, "Server error")
       end
     end
   end
@@ -1095,20 +1107,24 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
   result_link = result["download_link"]
 
   if !(save_to.nil? || save_to.empty?)
-    result_link = http_get(result["download_link"], proxy, save_to) do |current, total, msg|
+    is_ok, result_link = http_get(result["download_link"], proxy, save_to) do |current, total, msg|
       put_message_with_timestamp(start_time, "Current status: #{msg}", true)
     end
 
     puts
 
-    if !(unzip_to.nil? || unzip_to.empty?)
-      if (status == "completed")
-        Jake.unzip(result_link, unzip_to) do |a,b,msg|
-          put_message_with_timestamp(start_time, "Current status: #{msg}", true)
-        end
+    if is_ok
+      if !(unzip_to.nil? || unzip_to.empty?)
+        if (status == "completed")
+          Jake.unzip(result_link, unzip_to) do |a,b,msg|
+            put_message_with_timestamp(start_time, "Current status: #{msg}", true)
+          end
 
-        puts
+          puts
+        end
       end
+    else
+      put_message_with_timestamp(start_time, "Server error: #{result_link}", true)
     end
   end
 
@@ -1130,6 +1146,48 @@ def start_cloud_build(app_id, build_params)
   end
 
   return build_id, result
+end
+
+def get_builds_list(app_id)
+  result = []
+  begin
+    result = JSON.parse(Rhohub::Build.list({:app_id => app_id})).sort{ |a, b| a['id'].to_i <=> b['id'].to_i}
+  rescue Exception => e
+    puts "Got exception #{e.inspect}"
+  end
+
+  result
+end
+
+
+def match_build_id(build_id, builds)
+  unless build_id.nil? || build_id.empty?
+    found_id = build_id.to_i
+
+    found = nil
+
+    if found_id <= 0
+      if found_id.abs < builds.length
+        found = builds[(found_id).abs]
+      end
+    else
+      found = builds.find {|f| f['id'] == found_id }
+    end
+
+    return [found].compact
+  end
+
+  builds
+end
+
+def filter_by_status(builds, filter = [])
+  result = builds
+
+  unless filter.nil? || filter.empty?
+    result = builds.select{ |el| filter.index(el['status']) != nil }
+  end
+
+  result
 end
 
 $rhodes_ver_default = '3.5.1.14'
@@ -1259,53 +1317,100 @@ namespace 'cloud' do
     $app_cloud_id = $cloud_app['id']
   end
 
-  desc 'List avaliable builds'
-  task :list_builds, [:show_log] => [:find_app] do |t, args|
-    args.with_defaults(:show_log => 'false')
+  namespace :show do
+    desc 'Show error logs of failed builds'
+    task :fail_log, [:build_id] => ['cloud:find_app']  do |t, args|
+      args.with_defaults(:build_id => nil)
 
-    $platform_list = get_build_platforms() unless $platform_list
-    show_log = to_boolean(args.show_log)
+      build_id = args.build_id
 
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $app_cloud_id})).sort{ |a, b| b['id'].to_i <=> a['id'].to_i}
+      $platform_list = get_build_platforms() unless $platform_list
 
-    if !builds.empty?
-      builds.each do |build|
-        show_build_infromation(build, $platform_list)
-        if show_log
-          show_build_messages(build, $proxy, $cloud_build_home)
+      builds = get_builds_list($app_cloud_id)
+
+      unless builds.nil?
+        match = match_build_id(build_id, builds)
+
+        unless match.empty?
+          failed = match_build_id(build_id, filter_by_status(builds, ['failed']))
+
+          unless failed.empty?
+            failed.each do |build_hash|
+              show_build_information(build_hash, $platform_list)
+
+              show_build_messages(build_hash, $proxy, $cloud_build_home)
+            end
+          else
+            puts (match.size > 1 ? "There are no failed builds" : "Build #{build_id} status is #{match.first['status'].blue}" )
+          end
+        else
+          str = build_id.to_s
+          match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.reject{|a| a[:dist] > 1}
+
+          puts "Could not find #{build_id} in builds list: #{builds.map{|el| el["id"]}.join(', ')}"
+
+          unless match.empty?
+            puts "Did you mean #{match.map{|el| el[:id]}.join(', ')}?"
+          end
         end
+      else
+        BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
       end
-    else
-      BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
     end
+
+
+    desc 'Show status of one build, or all builds if optional parameter is not set'
+    task :build, [:build_id] => ['cloud:find_app'] do |t, args|
+      args.with_defaults(:build_id => nil)
+
+      build_id = args.build_id
+
+      $platform_list = get_build_platforms() unless $platform_list
+
+      builds = get_builds_list($app_cloud_id)
+      match  = match_build_id(build_id, builds)
+
+      unless builds.nil?
+        unless match.empty?
+          match.each do |build|
+            puts
+            show_build_information(build, $platform_list)
+          end
+        else
+          str = build_id.to_s
+          match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.reject{|a| a[:dist] > 1}
+
+          puts "Could not find #{build_id} in builds list: #{builds.map{|el| el["id"]}.join(', ')}"
+
+          unless match.empty?
+            puts "Did you mean #{match.map{|el| el[:id]}.join(', ')}?"
+          end
+        end
+      else
+        BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
+      end
+    end
+
+  end
+
+  desc 'List avaliable builds'
+  task :list_builds => [:find_app] do
+    Rake::Task['cloud:show_builds'].invoke()
   end
 
   desc "Download build into app\\bin folder"
   task :download, [:build_id] => [:find_app] do |t, args|
     FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
 
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $app_cloud_id})).sort{ |a, b| b['id'].to_i <=> a['id'].to_i}
+    build_id = args.build_id
+
+    builds = get_builds_list($app_cloud_id)
+    matching_builds  = match_build_id(build_id, builds)
 
     if !builds.empty?
+      build_hash = matching_builds.first
 
-      build_id = args.build_id
-
-      if build_id.nil? || build_id.empty?
-        result = builds.first
-        build_id = result['id'].to_i
-        puts "Build id is not set, downloading latest one (#{build_id})"
-        #builds.sort{|a, b| b["id"]<=>a["id"]}.first
-      else
-        build_id = args.build_id.to_i
-      end
-
-      if build_id <= 0
-        if build_id.abs < builds.length
-          build_id = builds[(build_id).abs]['id'].to_i
-        end
-      end
-
-      build_hash = builds.find {|f| f['id'] == build_id }
+      build_id = build_hash['id']
 
       if !build_hash.nil?
         start_time = Time.now
@@ -1373,7 +1478,7 @@ namespace 'cloud' do
     build_id, res = start_cloud_build($app_cloud_id, build_flags)
 
     if (!build_id.nil?)
-      show_build_infromation(res, platform_list)
+      show_build_information(res, platform_list)
     end
 
     check_cloud_build_result(res)
