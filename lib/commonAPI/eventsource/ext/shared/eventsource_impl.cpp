@@ -7,6 +7,7 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
+#include "common/RhoMutexLock.h"
 
 #include <algorithm>
 
@@ -37,6 +38,8 @@ namespace rho {
         rho::apiGenerator::CMethodResult m_onErrorCallback;
 
         Hashtable<String,rho::apiGenerator::CMethodResult> m_eventTypeCallbacks;
+        
+        common::CMutex m_mxCallbackAccess;
 
       public:
         CEventSourceImpl() :
@@ -51,16 +54,22 @@ namespace rho {
         
         virtual void setOnopen(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::setOnOpen";
+
+            common::CMutexLock lock(m_mxCallbackAccess);
             m_onOpenCallback = oResult;
         }
 
         virtual void setOnmessage(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::setOnmessage";
+
+            common::CMutexLock lock(m_mxCallbackAccess);
             m_onMessageCallback = oResult;
         }
         
         virtual void setOnerror(rho::apiGenerator::CMethodResult& oResult) {
             LOG(INFO) + "CEventSourceImpl::setOnerror";
+
+            common::CMutexLock lock(m_mxCallbackAccess);
             m_onErrorCallback = oResult;
         }
         
@@ -98,6 +107,8 @@ namespace rho {
           {
             String evtLower;
             std::transform(event.begin(), event.end(), std::back_inserter(evtLower), &::tolower);
+
+            common::CMutexLock lock(m_mxCallbackAccess);
             m_eventTypeCallbacks.put(evtLower,oResult);
           }
 
@@ -113,6 +124,8 @@ namespace rho {
     
         virtual void onOpen() {
             LOG(INFO) + "CEventSourceImpl::onOpen";
+
+            common::CMutexLock lock(m_mxCallbackAccess);
             m_onOpenCallback.set((void*)0);
 
             if (m_eventTypeCallbacks.containsKey("open"))
@@ -123,6 +136,8 @@ namespace rho {
         
         virtual void onError(const String& error) {
             LOG(INFO) + "CEventSourceImpl::onError - " + error;
+
+            common::CMutexLock lock(m_mxCallbackAccess);
             m_onErrorCallback.set(error);
 
             if (m_eventTypeCallbacks.containsKey("error"))
@@ -138,6 +153,8 @@ namespace rho {
             params.put("data",message);
             params.put("lastEventId",eventId);
             params.put("origin",m_es->url());
+
+            common::CMutexLock lock(m_mxCallbackAccess);
             m_onMessageCallback.set(params);
 
             String evtLower;
