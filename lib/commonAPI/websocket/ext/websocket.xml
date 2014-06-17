@@ -29,19 +29,19 @@
 
          <PROPERTIES >
 -
-            <PROPERTY name="onopen" type="CALLBACK">
+            <PROPERTY name="onopen" type="CALLBACK" runInThread="none">
                 <DESC>This callback is fired when connection is established.</DESC>
             </PROPERTY>
             
-            <PROPERTY name="onmessage" type="CALLBACK">
+            <PROPERTY name="onmessage" type="CALLBACK" runInThread="none">
                 <DESC>This callback is fired when message is received. Use callback argument's 'data' attribute to access received message.</DESC>
             </PROPERTY>
             
-            <PROPERTY name="onerror" type="CALLBACK">
+            <PROPERTY name="onerror" type="CALLBACK" runInThread="none">
                 <DESC>This callback is fired if error occurs. Use callback argument's 'message' attribute to access error message.</DESC>
             </PROPERTY>
             
-            <PROPERTY name="onclose" type="CALLBACK">
+            <PROPERTY name="onclose" type="CALLBACK" runInThread="none">
                 <DESC>This callback is fired when connection is closed. It's argument provides two members - 'code' and 'reason'.'</DESC>
             </PROPERTY>            
             
@@ -68,7 +68,7 @@
 
         <METHODS>
 
-            <METHOD name="create" hasCallback="none" constructor="true" generateDoc="false">
+            <METHOD name="create" hasCallback="none" constructor="true" generateDoc="false" runInThread="none">
                 <PLATFORM>Android</PLATFORM>
                 <DESC>Constructor function for Websocket object</DESC>
                 <PARAMS>
@@ -87,12 +87,12 @@
                 </RETURN>
             </METHOD>
             
-            <METHOD name="close" hasCallback="none" destructor="true">
+            <METHOD name="close" hasCallback="none" destructor="true" runInThread="none">
                 <DESC>Closes the connection.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </METHOD>
             
-            <METHOD name="send" hasCallback="none">
+            <METHOD name="send" hasCallback="none" runInThread="none">
                 <PLATFORM>Android</PLATFORM>
                 <DESC>Transmits data using the connection.</DESC>
                 <PARAMS>
