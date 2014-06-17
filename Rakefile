@@ -1563,10 +1563,14 @@ namespace 'cloud' do
       end
 
       if !build_enabled
-        BuildOutput.note(
-          ["Cloud build is not supported on your #{$user_acc.subsciption_plan} account type. In order to upgrade your account please",
-           "login to #{$selected_server} and select \"change plan\" menu item in your profile settings."],
-          'Free account limitation')
+        if $user_acc.subscription_level() < 0
+          BuildOutput.note(['Cloud build was disabled locally. Your subscription information is outdated or not downloaded, please connect to internet and run this command again'],'Could not build licensed features.')
+        else
+          BuildOutput.note(
+            ["Cloud build is not supported on your #{$user_acc.subsciption_plan} account type. In order to upgrade your account please",
+             "login to #{$selected_server} and select \"change plan\" menu item in your profile settings."],
+            'Free account limitation')
+        end
         exit 1
       end
 
@@ -2087,7 +2091,7 @@ namespace "config" do
       if $user_acc.subscription_level < 1
         if !$user_acc.is_valid_subscription?
           BuildOutput.error([
-                            'Subscription information is not downloaded. Please verify your internet connection and run build command again.'],
+                            'Your subscription information is outdated or not downloaded. Please verify your internet connection and run build command again.'],
                             'Could not build licensed features.')
         else
           msg = ["You have free subcription on #{$selected_server}. RhoElements featuers are available only for paid accounts."]
