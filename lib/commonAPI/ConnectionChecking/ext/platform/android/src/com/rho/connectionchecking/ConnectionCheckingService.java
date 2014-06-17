@@ -288,7 +288,7 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 	String criticalUri="";
 	boolean isPageNavigationError=false;
 @Override
-	public boolean onNewConfig(IRhoExtManager extManager,
+public boolean onNewConfig(IRhoExtManager extManager,
 			IRhoConfig config, String name, boolean res) {
 		System.out.println("ConnectionCheckingListener----onNewConfig,name="+name);
 		if(name.equalsIgnoreCase("rhoelementsext"))
@@ -304,17 +304,43 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 			 boolean shouldRestart=shouldRestartService(ip,to,tc,msg,pi);
 				
 				ConnectionCheckingSingleton.HOST=ip;
+				if(!(Patterns.WEB_URL.matcher(ConnectionCheckingSingleton.HOST).matches()))
+					ConnectionCheckingSingleton.HOST="192.168.7.29";
 				ConnectionCheckingSingleton.MESSAGE=msg;
 				ConnectionCheckingSingleton.BADLINK_URI=badlinkUrl;
 				try{
 				ConnectionCheckingSingleton.TIMEOUT=Integer.parseInt(to);
-				ConnectionCheckingSingleton.POLLI_INTERVAL=Integer.parseInt(pi);
-				ConnectionCheckingSingleton.TRACK_CONNECTION=Integer.parseInt(tc);
 				}
 				catch(NumberFormatException ex)
 				{
 					Logger.E(TAG, ex.getMessage());
+					ConnectionCheckingSingleton.TIMEOUT=30000;
+					
 				}
+				try{
+				ConnectionCheckingSingleton.POLLI_INTERVAL=Integer.parseInt(pi);
+				}
+				catch(NumberFormatException ex)
+				{
+					Logger.E(TAG, ex.getMessage());
+					ConnectionCheckingSingleton.POLLI_INTERVAL=5000;
+				}
+				try{
+				ConnectionCheckingSingleton.TRACK_CONNECTION=Integer.parseInt(tc);
+				
+				}
+				catch(NumberFormatException ex)
+				{
+					Logger.E(TAG, ex.getMessage());
+					ConnectionCheckingSingleton.TIMEOUT=0;
+				}
+				
+				if((ConnectionCheckingSingleton.TIMEOUT/ConnectionCheckingSingleton.POLLI_INTERVAL)< 3)
+				{
+					ConnectionCheckingSingleton.TIMEOUT=30000;
+					ConnectionCheckingSingleton.POLLI_INTERVAL=5000;
+				}
+				
 				
 				try{ 
 		 	   if(shouldRestart)
@@ -322,7 +348,7 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 		     	Intent conIntent=new Intent(RhodesActivity.getContext(),ConnectionCheckingService.class);
 		     	
 		     	RhodesActivity.getContext().stopService(conIntent);
-		     	if(ConnectionCheckingSingleton.TRACK_CONNECTION==1)
+		     	if(ConnectionCheckingSingleton.TRACK_CONNECTION!=0)
 		     		RhodesActivity.getContext().startService(conIntent);
 		     	
 		 	   }
@@ -346,6 +372,7 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 		
 		
 	}
+	
 	
 	
 	private boolean shouldRestartService(String ip,String to,String tc,String msg,String pi)
