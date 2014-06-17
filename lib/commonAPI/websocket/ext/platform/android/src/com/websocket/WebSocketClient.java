@@ -19,6 +19,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.Socket;
 import java.net.URI;
 import java.security.KeyManagementException;
@@ -139,52 +140,47 @@ public class WebSocketClient {
 
                     // Now decode websocket frames.
                     mParser.start(stream);
+                    if ( mSocket != null ) {
+                        disconnect("EOF");
+                    }
 
                 } catch (EOFException ex) {
                     Logger.E(TAG,"WebSocket EOF! " + ex.toString());
                     mListener.onError(ex);
-                    if ( mSocket != null ) {
-                      disconnect();
-                    } else {
-                      mListener.onDisconnect(0, "EOF");
-                    }
+                    disconnect("EOF");
                 } catch (SSLException ex) {
                     // Connection reset by peer
                     Logger.E(TAG,"Websocket SSL error! " + ex.toString());
                     mListener.onError(ex);
-                    if ( mSocket != null ) {
-                      disconnect();
-                    } else {
-                      mListener.onDisconnect(0, "SSL");
-                    }
+                    disconnect("SSL: " + ex.toString());
                 } catch (Exception ex) {
                     Logger.E(TAG,ex.toString());
+                    
                     mListener.onError(ex);
-                    if ( mSocket != null ) {
-                      disconnect();
-                    } else {
-                      mListener.onDisconnect(0, "Websocket disconnected.");
-                    }
+                    disconnect(ex.toString());
                 }
             }
         });
         mThread.start();
     }
 
-    public void disconnect() {
+    public void disconnect( final String reason ) {
         if (mSocket != null) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Socket s = mSocket;
+                    mSocket = null;
                     try {
-                        mSocket.close();
+                        s.close();
                     } catch (IOException ex) {
                         //Close socket silently as it may throw IO error if smth needs to be flushed before actual close.                        
                     }
-                    mSocket = null;
-                    mListener.onDisconnect(0,"Websocket disconnected.");
+                    mListener.onDisconnect(0,"Websocket disconnected: " + reason);
                 }
             });
+        } else {
+            mListener.onDisconnect(0,"Websocket disconnected: " + reason);
         }
     }
 
