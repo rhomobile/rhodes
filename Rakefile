@@ -526,7 +526,8 @@ $server_list = ['https://app.rhohub.com/api/v1', 'https://appstaging.rhohub.com/
 $selected_server = $server_list.first
 $cloud_brand = "rhomobile"
 
-def get_server(url)
+def get_server(url, default)
+  url = default if url.nil? || url.empty?
   scheme, userinfo, host, port, registry, path, opaque, query, fragment =  URI.split(url)
   case scheme
     when "http"
@@ -594,7 +595,7 @@ namespace "token" do
     end
 
     if token.nil?
-      srv_adress = URI.join( get_server($user_acc.server), '/forgot')
+      srv_adress = URI.join( get_server($user_acc.server, $server_list.first), '/forgot')
       BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at #{srv_adress}", 'Invalid username or password')
       exit 1
     end
@@ -656,7 +657,7 @@ namespace "token" do
       $user_acc.server = $server_list.first
     end
 
-    $selected_server = get_server($user_acc.server)
+    $selected_server = get_server($user_acc.server, $server_list.first)
   end
 
   task :check => [:read] do
