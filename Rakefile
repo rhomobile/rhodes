@@ -1490,6 +1490,37 @@ namespace 'cloud' do
     failed
   end
 
+  def get_iphone_options()
+    profile_file = get_conf('iphone/production/mobileprovision_file')
+    cert_file = get_conf('iphone/production/certificate_file')
+    cert_pw = get_conf('iphone/production/certificate_password')
+
+    if profile_file.nil? || cert_file.nil?
+      raise Exception.new('You should specify mobileprovision_file and certificate_file in iphone:production section of your build.yml')
+    end
+
+    profile_file = File.expand_path(profile_file, $app_path)
+    cert_file = File.expand_path(cert_file, $app_path)
+
+    missing = list_missing_files([profile_file, cert_file])
+
+    if !missing.empty?
+      raise Exception.new("Could not load #{missing.join(', ')}")
+    end
+
+    options = {
+      :upload_cert => Base64.urlsafe_encode64(File.read(cert_file)),
+      :upload_profile => Base64.urlsafe_encode64(File.read(profile_file)),
+      :bundle_identifier => get_conf('iphone/BundleIdentifier')
+    }
+
+    if !cert_pw.nil? && !cert_pw.empty?
+      options[:cert_pw] = cert_pw
+    end
+
+    options
+  end
+
   namespace :build do
     desc 'Prepare for cloud build'
     task :initialize => ['cloud:find_app'] do
@@ -1586,41 +1617,14 @@ namespace 'cloud' do
       task :development => ['build:initialize'] do
         $build_platform = 'iphone'
 
-        profile_file = get_conf('iphone/production/mobileprovision_file')
-        cert_file = get_conf('iphone/production/certificate_file')
-        cert_pw = get_conf('iphone/production/certificate_password')
-
-        if profile_file.nil? || cert_file.nil?
-          raise Exception.new('You should specify mobileprovision_file and certificate_file in iphone:production section of your build.yml')
-        end
-
-        profile_file = File.expand_path(profile_file, $app_path)
-        cert_file = File.expand_path(cert_file, $app_path)
-
-        missing = list_missing_files([profile_file, cert_file])
-
-        if !missing.empty?
-          raise Exception.new("Could not load #{missing.join(', ')}")
-        end
-
-        options = {
-          :upload_cert => Base64.urlsafe_encode64(File.read(cert_file)),
-          :upload_profile => Base64.urlsafe_encode64(File.read(profile_file)),
-          :bundle_identifier => get_conf('iphone/BundleIdentifier')
-        }
-
-        if !cert_pw.nil? && !cert_pw.empty?
-          options[:cert_pw] = cert_pw
-        end
-
-        do_platform_build( $build_platform, $platform_list, true, options, 'development')
+        do_platform_build( $build_platform, $platform_list, true, get_iphone_options(), 'development')
       end
 
       desc "Build iphone distribution version"
       task :distribution => ["build:initialize"] do
         $build_platform = "iphone"
 
-        do_platform_build( $build_platform, $platform_list, true, {}, 'distribution')
+        do_platform_build( $build_platform, $platform_list, true, get_iphone_options(), 'distribution')
       end
     end
 
