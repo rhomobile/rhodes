@@ -845,5 +845,7 @@ WSAEnumProtocolsA(
         }
     }
 
+    free(protocolInfo);
+
     return protocolsNum;
 }
