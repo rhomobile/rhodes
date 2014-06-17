@@ -23,17 +23,17 @@
         
         <PROPERTIES>
 
-            <PROPERTY name="onopen" type="CALLBACK">
+            <PROPERTY name="onopen" type="CALLBACK" runInThread="none">
                 <DESC></DESC>
                 <CALLBACK type="HASH"/>
             </PROPERTY>
             
-            <PROPERTY name="onmessage" type="CALLBACK">
+            <PROPERTY name="onmessage" type="CALLBACK" runInThread="none">
                 <DESC></DESC>
                 <CALLBACK type="HASH"/>
             </PROPERTY>
             
-            <PROPERTY name="onerror" type="CALLBACK">
+            <PROPERTY name="onerror" type="CALLBACK" runInThread="none">
                 <DESC></DESC>
                 <CALLBACK type="HASH"/>              
             </PROPERTY>
@@ -56,7 +56,7 @@
 
         <METHODS>
 
-            <METHOD name="create" constructor="true" hasCallback="none" generateDoc="false">
+            <METHOD name="create" constructor="true" hasCallback="none" generateDoc="false" runInThread="none">
                 <DESC></DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
@@ -72,7 +72,7 @@
             </METHOD>
             
             
-            <METHOD name="close" hasCallback="none" destructor="true">
+            <METHOD name="close" hasCallback="none" destructor="true" runInThread="none">
 
             </METHOD>
 
