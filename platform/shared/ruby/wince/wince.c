@@ -751,34 +751,32 @@ WSASocketA(
     int nSize = 0;
     WSAPROTOCOL_INFOW lpProtocolInfoW;
 
-    lpProtocolInfoW.dwServiceFlags1    = lpProtocolInfo->dwServiceFlags1;
-    lpProtocolInfoW.dwServiceFlags2    = lpProtocolInfo->dwServiceFlags2;
-    lpProtocolInfoW.dwServiceFlags3    = lpProtocolInfo->dwServiceFlags3;
-    lpProtocolInfoW.dwServiceFlags4    = lpProtocolInfo->dwServiceFlags4;
-    lpProtocolInfoW.dwProviderFlags    = lpProtocolInfo->dwProviderFlags;
-    lpProtocolInfoW.ProviderId         = lpProtocolInfo->ProviderId;
-    lpProtocolInfoW.dwCatalogEntryId   = lpProtocolInfo->dwCatalogEntryId;
-    lpProtocolInfoW.ProtocolChain      = lpProtocolInfo->ProtocolChain;
-    lpProtocolInfoW.iVersion           = lpProtocolInfo->iVersion;
-    lpProtocolInfoW.iAddressFamily     = lpProtocolInfo->iAddressFamily;
-    lpProtocolInfoW.iMaxSockAddr       = lpProtocolInfo->iMaxSockAddr;
-    lpProtocolInfoW.iMinSockAddr       = lpProtocolInfo->iMinSockAddr;
-    lpProtocolInfoW.iSocketType        = lpProtocolInfo->iSocketType;
-    lpProtocolInfoW.iProtocol          = lpProtocolInfo->iProtocol;
-    lpProtocolInfoW.iProtocolMaxOffset = lpProtocolInfo->iProtocolMaxOffset;
-    lpProtocolInfoW.iNetworkByteOrder  = lpProtocolInfo->iNetworkByteOrder;
-    lpProtocolInfoW.iSecurityScheme    = lpProtocolInfo->iSecurityScheme;
-    lpProtocolInfoW.dwMessageSize      = lpProtocolInfo->dwMessageSize;
-    lpProtocolInfoW.dwProviderReserved = lpProtocolInfo->dwProviderReserved;
+	if (lpProtocolInfo != NULL) {
+		lpProtocolInfoW.dwServiceFlags1    = lpProtocolInfo->dwServiceFlags1;
+		lpProtocolInfoW.dwServiceFlags2    = lpProtocolInfo->dwServiceFlags2;
+		lpProtocolInfoW.dwServiceFlags3    = lpProtocolInfo->dwServiceFlags3;
+		lpProtocolInfoW.dwServiceFlags4    = lpProtocolInfo->dwServiceFlags4;
+		lpProtocolInfoW.dwProviderFlags    = lpProtocolInfo->dwProviderFlags;
+		lpProtocolInfoW.ProviderId         = lpProtocolInfo->ProviderId;
+		lpProtocolInfoW.dwCatalogEntryId   = lpProtocolInfo->dwCatalogEntryId;
+		lpProtocolInfoW.ProtocolChain      = lpProtocolInfo->ProtocolChain;
+		lpProtocolInfoW.iVersion           = lpProtocolInfo->iVersion;
+		lpProtocolInfoW.iAddressFamily     = lpProtocolInfo->iAddressFamily;
+		lpProtocolInfoW.iMaxSockAddr       = lpProtocolInfo->iMaxSockAddr;
+		lpProtocolInfoW.iMinSockAddr       = lpProtocolInfo->iMinSockAddr;
+		lpProtocolInfoW.iSocketType        = lpProtocolInfo->iSocketType;
+		lpProtocolInfoW.iProtocol          = lpProtocolInfo->iProtocol;
+		lpProtocolInfoW.iProtocolMaxOffset = lpProtocolInfo->iProtocolMaxOffset;
+		lpProtocolInfoW.iNetworkByteOrder  = lpProtocolInfo->iNetworkByteOrder;
+		lpProtocolInfoW.iSecurityScheme    = lpProtocolInfo->iSecurityScheme;
+		lpProtocolInfoW.dwMessageSize      = lpProtocolInfo->dwMessageSize;
+		lpProtocolInfoW.dwProviderReserved = lpProtocolInfo->dwProviderReserved;
 
-    nSize = MultiByteToWideChar(CP_UTF8, 0, lpProtocolInfo->szProtocol, -1, NULL, 0);
-    
-    if ( nSize > 1 )
-    {
-        MultiByteToWideChar(CP_UTF8, 0, lpProtocolInfo->szProtocol, -1, lpProtocolInfoW.szProtocol, nSize);
-    }
-
-    return WSASocketW(af, type, protocol, &lpProtocolInfoW, g, dwFlags);
+		nSize = MultiByteToWideChar(CP_UTF8, 0, lpProtocolInfo->szProtocol, -1, NULL, 0);
+		if (nSize > 1)
+			MultiByteToWideChar(CP_UTF8, 0, lpProtocolInfo->szProtocol, -1, lpProtocolInfoW.szProtocol, nSize);
+	}
+	return WSASocketW(af, type, protocol, (lpProtocolInfo != NULL ? &lpProtocolInfoW : NULL), g, dwFlags);
 }
 
 int
