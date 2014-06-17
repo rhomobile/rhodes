@@ -253,7 +253,7 @@ private void navigatetoBadLink()
 					
 					sleep(ConnectionCheckingSingleton.POLLI_INTERVAL);
 					if(counterTimeout!=0)
-						counterTimeout=counterTimeout+5000;
+						counterTimeout=counterTimeout+ConnectionCheckingSingleton.POLLI_INTERVAL;
 				} catch (InterruptedException e) {
 					
 					e.printStackTrace();
