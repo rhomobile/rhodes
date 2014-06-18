@@ -242,9 +242,10 @@ function fill_registry_keys() {
 	}
 }
 
+
 function es_find(es, item) {
     for (var i in es) {
-        if (es[i].localname === item) {
+        if (es[i].name === item) {
            return true;        
          }
     }
@@ -257,7 +258,7 @@ function fill_register_com_dlls(es) {
     var dlls = new Array();
     var finalContents = "";
     
-    var f = resolve_dublicates(es);
+    var f = get_file_list(es);
 
     if (fso.FileExists(regfName)) {
         var regf = fso.OpenTextFile(regfName);
@@ -274,7 +275,10 @@ function fill_register_com_dlls(es) {
            }
         }
 
-        p("CESelfRegister=" + finalContents.slice(0, -1));
+        if (finalContents.lenght != 0)
+        {
+          p("CESelfRegister=" + finalContents.slice(0, -1));
+        }
     }
 }
 
