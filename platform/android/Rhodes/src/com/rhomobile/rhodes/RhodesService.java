@@ -1478,5 +1478,12 @@ public class RhodesService extends Service {
             }
         }
         RhodesActivity.safeGetInstance().getMenu().setMenu(nativeMenu);
+        if (Build.VERSION.SDK_INT >= 11) {
+        	PerformOnUiThread.exec(new Runnable() {
+        		public void run() {
+        			RhodesActivity.safeGetInstance().invalidateOptionsMenu();
+        		}
+        	});
+        }
     }
 }
