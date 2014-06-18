@@ -37,36 +37,70 @@ namespace rho {
 		}
 		virtual void getTimeout(rho::apiGenerator::CMethodResult& oResult)
 		{
-			oResult.set(static_cast<unsigned long>(m_pHostTracker->getDailogTimeout()));
+			oResult.set(m_pHostTracker->getDailogTimeout());
 		}
 		virtual void getPollInterval(rho::apiGenerator::CMethodResult& oResult)
 		{
-			oResult.set(static_cast<unsigned long>(m_pHostTracker->getPollInterval()));
+			oResult.set(m_pHostTracker->getPollInterval());
 		}
 		virtual void getMessage(rho::apiGenerator::CMethodResult& oResult)
 		{
 			oResult.set(m_pHostTracker->getMessage());
 		}
 
-		//overides IRhoExtention
-		virtual void onNavigateComplete(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData){
-			m_pHostTracker->resumeNetworkChecking(szUrlBeingNavigatedTo);			
-		}
-		void StartNetworkChecking()
+		void InitNetworkChecking()
 		{
 			m_pHostTracker->InitConfig();	
 			if(m_pHostTracker->isFeatureEnabled())
 			{
-				m_pHostTracker->StartNetworkChecking();	
-				LOG(INFO) + "Host tracker started";
-			}
-			else
-			{
-				LOG(INFO) + "Skipping connection check as it is not enabled in config.xml";
+				m_pHostTracker->StartNetworkChecking();		
 			}
 		}
 
 
+		//overides IRhoExtention
+		virtual void onNavigateComplete(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData)
+		{
+			if(m_pHostTracker->isFeatureEnabled())
+			{
+				m_pHostTracker->SetNavigatedUrl(szUrlBeingNavigatedTo);
+				m_pHostTracker->fireEvent(eNavigateCompleteEventIndex);			
+			}			
+		}	
+		virtual void OnLicenseScreen(bool bActivate, const CRhoExtData& oExtData)
+		{
+			if(bActivate)
+			{
+				if(m_pHostTracker->isFeatureEnabled())
+				{
+					m_pHostTracker->fireEvent(eLicenseScreenPopupEventIndex);			
+				}
+				
+			}
+			else
+			{
+				if(m_pHostTracker->isFeatureEnabled())
+				{
+					m_pHostTracker->fireEvent(eLicenseScreenHidesEventIndex);	
+					
+				}
+				
+
+			}
+		}
+
+		virtual bool onWndMsg(MSG& oMsg)
+		{
+			if(m_pHostTracker)
+			{
+				if(m_pHostTracker->isFeatureEnabled())
+				{
+					return m_pHostTracker->onWndMsg(oMsg);
+				}
+
+			}
+		}
+		
 	};
 
 	class CConnectionCheckingSingleton: public CConnectionCheckingSingletonBase
@@ -86,7 +120,7 @@ namespace rho {
 		CConnectionCheckingFactory::setInstance( new CConnectionCheckingFactory() );
 		Init_ConnectionChecking_API();
 		CConnectionCheckingImpl* ptr = (CConnectionCheckingImpl*)CConnectionCheckingFactory::getConnectionCheckingSingletonS();
-		ptr->StartNetworkChecking();
+		ptr->InitNetworkChecking();
 	}
 
 	IConnectionChecking* CConnectionCheckingFactory::createModuleByID(const rho::String& strID)
