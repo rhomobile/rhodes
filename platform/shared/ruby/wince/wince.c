@@ -753,7 +753,8 @@ WSASocketA(
     int nSize = 0;
     WSAPROTOCOL_INFOW lpProtocolInfoW;
 
-	if (lpProtocolInfo != NULL) {
+	if (lpProtocolInfo != NULL)
+    {
 		lpProtocolInfoW.dwServiceFlags1    = lpProtocolInfo->dwServiceFlags1;
 		lpProtocolInfoW.dwServiceFlags2    = lpProtocolInfo->dwServiceFlags2;
 		lpProtocolInfoW.dwServiceFlags3    = lpProtocolInfo->dwServiceFlags3;
@@ -775,10 +776,12 @@ WSASocketA(
 		lpProtocolInfoW.dwProviderReserved = lpProtocolInfo->dwProviderReserved;
 
 		nSize = MultiByteToWideChar(CP_UTF8, 0, lpProtocolInfo->szProtocol, -1, NULL, 0);
-		if (nSize > 1)
+
+        if (nSize > 1)
 			MultiByteToWideChar(CP_UTF8, 0, lpProtocolInfo->szProtocol, -1, lpProtocolInfoW.szProtocol, nSize);
 	}
-	return WSASocketW(af, type, protocol, (lpProtocolInfo != NULL ? &lpProtocolInfoW : NULL), g, dwFlags);
+
+    return WSASocketW(af, type, protocol, (lpProtocolInfo != NULL ? &lpProtocolInfoW : NULL), g, dwFlags);
 }
 
 int
