@@ -401,6 +401,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         
+        mAppMenu.enumerateMenu(menu);
         Logger.T(TAG, "onCreateOptionsMenu");
         
         return mAppMenu.getItemsCount() != 0;
