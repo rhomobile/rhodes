@@ -40,10 +40,15 @@ namespace rho {
         Hashtable<String,rho::apiGenerator::CMethodResult> m_eventTypeCallbacks;
         
         common::CMutex m_mxCallbackAccess;
+        
+        bool m_openEventPending;
+        bool m_errorEventPending;
+        String m_errorMessagePending;
 
       public:
         CEventSourceImpl() :
-            m_onErrorCallback(0), m_onMessageCallback(0), m_onOpenCallback(0)
+            m_onErrorCallback(0), m_onMessageCallback(0), m_onOpenCallback(0),
+            m_openEventPending(false), m_errorEventPending(false)
         {
         }
         
@@ -57,6 +62,11 @@ namespace rho {
 
             common::CMutexLock lock(m_mxCallbackAccess);
             m_onOpenCallback = oResult;
+            
+            if (m_openEventPending && m_onOpenCallback.hasCallback()) {
+                m_openEventPending = false;
+                dispatchOpenEvent();
+            }
         }
 
         virtual void setOnmessage(rho::apiGenerator::CMethodResult& oResult) {
@@ -71,6 +81,12 @@ namespace rho {
 
             common::CMutexLock lock(m_mxCallbackAccess);
             m_onErrorCallback = oResult;
+            
+            if ( m_errorEventPending && m_onErrorCallback.hasCallback() ) {
+                m_errorEventPending = false;
+                dispatchErrorEvent( m_errorMessagePending );
+                
+            }
         }
         
         virtual void getUrl(rho::apiGenerator::CMethodResult& oResult) {
@@ -110,6 +126,14 @@ namespace rho {
 
             common::CMutexLock lock(m_mxCallbackAccess);
             m_eventTypeCallbacks.put(evtLower,oResult);
+            
+            if ( m_openEventPending && ( event=="open" ) ) {
+                m_openEventPending = false;
+                dispatchOpenEvent();
+            } else if ( m_errorEventPending && ( event=="error" ) ) {
+                m_errorEventPending = false;
+                dispatchErrorEvent(m_errorMessagePending);
+            }
           }
 
         }
@@ -126,11 +150,11 @@ namespace rho {
             LOG(INFO) + "CEventSourceImpl::onOpen";
 
             common::CMutexLock lock(m_mxCallbackAccess);
-            m_onOpenCallback.set((void*)0);
-
-            if (m_eventTypeCallbacks.containsKey("open"))
-            {
-              m_eventTypeCallbacks.get("open").set((void*)0);
+            
+            if ( canDispatchOpenEvent() ) {
+                dispatchOpenEvent();
+            } else {
+                m_openEventPending = true;
             }
         }
         
@@ -138,11 +162,12 @@ namespace rho {
             LOG(INFO) + "CEventSourceImpl::onError - " + error;
 
             common::CMutexLock lock(m_mxCallbackAccess);
-            m_onErrorCallback.set(error);
-
-            if (m_eventTypeCallbacks.containsKey("error"))
-            {
-              m_eventTypeCallbacks.get("error").set(error);
+            
+            if ( canDispatchErrorEvent() ) {
+                dispatchErrorEvent( error   );
+            } else {
+                m_errorEventPending = true;
+                m_errorMessagePending = error;
             }
         }
         
@@ -164,7 +189,32 @@ namespace rho {
             {
               m_eventTypeCallbacks.get(evtLower).set(params);
             }
+        }
+        
+        void dispatchOpenEvent() {
+            m_onOpenCallback.set((void*)0);
 
+            if (m_eventTypeCallbacks.containsKey("open"))
+            {
+              m_eventTypeCallbacks.get("open").set((void*)0);
+            }
+        }
+        
+        void dispatchErrorEvent( const String& error ) {
+            m_onErrorCallback.set(error);
+
+            if (m_eventTypeCallbacks.containsKey("error"))
+            {
+              m_eventTypeCallbacks.get("error").set(error);
+            }
+        }
+        
+        bool canDispatchOpenEvent() {
+            return m_onOpenCallback.hasCallback() || ( m_eventTypeCallbacks.containsKey("open") && ( m_eventTypeCallbacks.get("open").hasCallback() ) );
+        }
+        
+        bool canDispatchErrorEvent() {
+            return m_onErrorCallback.hasCallback() || ( m_eventTypeCallbacks.containsKey("error") && ( m_eventTypeCallbacks.get("error").hasCallback() ) );
         }
 
     };
