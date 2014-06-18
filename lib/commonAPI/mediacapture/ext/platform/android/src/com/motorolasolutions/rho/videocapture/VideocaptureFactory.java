@@ -100,4 +100,13 @@ public class VideocaptureFactory
     public void onSaveInstanceState(Bundle outState) {
         // TODO Auto-generated method stub
     }
+
+	@Override
+	public void onEBLicenseVisible() { }
+
+	@Override
+	public void onEBLicenseHidden() { }
+
+	@Override
+	public void onEBLicenseDestroyed() { }
 }
