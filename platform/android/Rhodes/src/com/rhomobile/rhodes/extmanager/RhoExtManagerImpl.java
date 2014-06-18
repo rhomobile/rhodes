@@ -873,6 +873,24 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             listener.onConfigurationChanged(activity, newConfig);
         }
     }
+    
+    public void onEBLicenseVisible() {
+        for (IRhoListener listener: mListeners) {
+            listener.onEBLicenseVisible();
+        }
+    }
+    
+    public void onEBLicenseHidden() {
+        for (IRhoListener listener: mListeners) {
+            listener.onEBLicenseHidden();
+        }
+    }
+    
+    public void onEBLicenseDestroyed() {
+        for (IRhoListener listener: mListeners) {
+            listener.onEBLicenseDestroyed();
+        }
+    }
 
     @Override
     public void setWebViewConfig(IRhoWebViewConfig config) {
