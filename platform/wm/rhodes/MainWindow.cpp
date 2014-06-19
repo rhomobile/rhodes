@@ -1452,6 +1452,8 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
         if ( !m_bFullScreenBeforeLicense )
             RhoSetFullScreen(false);
     }
+	//send messages to extention which looks for license screens
+	RHODESAPP().getExtManager().OnLicenseScreen(static_cast<bool>(wParam));
 
 /*		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
 		if(hTaskBar) {

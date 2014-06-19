@@ -3,7 +3,9 @@
 #include "logging/RhoLog.h"
 #include "INetworkDetect.h"
 #if defined( OS_WP8 ) || defined( OS_WINCE )
+#ifndef _HOST_TRACKER
 #include "winsock2.h"
+#endif
 #endif
 
 
@@ -30,7 +32,7 @@ public:
 	virtual rho::apiGenerator::CMethodResult GetCallback() {return m_pDetectCallback;}
 
 protected:  //  Methods
-	virtual void CheckConnectivity() = 0;
+	virtual bool CheckConnectivity() = 0;
     
     virtual void Startup() = 0;
     virtual void Cleanup() = 0;
