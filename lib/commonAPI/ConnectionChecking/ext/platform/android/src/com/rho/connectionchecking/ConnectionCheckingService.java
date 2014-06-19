@@ -353,6 +353,8 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 				ConnectionCheckingSingleton.BADLINK_URI=badlinkUrl;
 				try{
 				ConnectionCheckingSingleton.TIMEOUT=Integer.parseInt(to);
+				if(ConnectionCheckingSingleton.TIMEOUT<30000)
+					ConnectionCheckingSingleton.TIMEOUT=30000;
 				}
 				catch(NumberFormatException ex)
 				{
@@ -362,6 +364,8 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 				}
 				try{
 				ConnectionCheckingSingleton.POLLI_INTERVAL=Integer.parseInt(pi);
+				if(ConnectionCheckingSingleton.POLLI_INTERVAL<5000)
+					ConnectionCheckingSingleton.POLLI_INTERVAL=5000;
 				}
 				catch(NumberFormatException ex)
 				{
