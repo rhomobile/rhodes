@@ -22,6 +22,8 @@ import android.app.Service;
 
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Patterns;
+import android.webkit.URLUtil;
 
 
 
@@ -49,12 +51,37 @@ public class ConnectionCheckingService extends Service{
 	{
 		return conThread;
 	}
+	/*public boolean shouldRestart()
+	{
+		
+	}*/
 	public void restartThread()
 	{
 		conThread=new ConThread();
 		conThread.start();
 	}
-	
+	public void handleLicenseCreate()
+	{
+		if(conThread.isDialoguePresent)
+			
+		 {
+			killDialogue();
+			conThread.isDialoguePresent=false;
+			
+		 }
+		if(conThread.runtheThread)
+			conThread.runtheThread=false;
+		conThread.counterTimeout=0;	
+		/*if(conThread.isAlive())
+			conThread.stop();*/
+		/*try{
+		conThread.notify();
+		}
+		catch(Exception ex)
+		{
+			
+		}*/
+	}
 @Override
 public void onCreate() {
 	
@@ -62,8 +89,8 @@ public void onCreate() {
 	
 	ConnectionCheckingDialogue.createBuilder(RhodesActivity.safeGetInstance());
 	sInstance=this;
-	conThread=new ConThread();
-	conThread.start();
+	//conThread=new ConThread();
+	//conThread.start();
 	
 }
 private void showDialogue()
@@ -118,6 +145,7 @@ private void navigatetoBadLink()
 		int pingTimeout=1000;//hardcoded to 1 secs
 		int counterTimeout=0;
 		int to=0;
+		
 		public ConThread()
 		{
 			try{
@@ -215,7 +243,7 @@ private void navigatetoBadLink()
 			
 			while(runtheThread)
 			{
-				
+				System.out.println("Thread ID="+Thread.currentThread().getId()+" runtheThread="+runtheThread);
 				if(isReachable(pingTimeout))
 				{
 					
@@ -252,11 +280,13 @@ private void navigatetoBadLink()
 				try {
 					
 					sleep(ConnectionCheckingSingleton.POLLI_INTERVAL);
+					//wait(ConnectionCheckingSingleton.POLLI_INTERVAL);
 					if(counterTimeout!=0)
 						counterTimeout=counterTimeout+ConnectionCheckingSingleton.POLLI_INTERVAL;
 				} catch (InterruptedException e) {
 					
 					e.printStackTrace();
+					
 				}
 				catch(Exception e)
 				{
@@ -287,8 +317,21 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 	private final String TAG="ConnectionPageNavEvent";
 	String criticalUri="";
 	boolean isPageNavigationError=false;
-@Override
-public boolean onNewConfig(IRhoExtManager extManager,
+	static String curLink="";
+	public static boolean isCurLinkBadLink()
+	{
+		boolean badlink=false;
+		String chopBadLink=ConnectionCheckingSingleton.BADLINK_URI.substring(8);
+		
+		if(curLink.contains(chopBadLink))
+			badlink=true;
+		
+		
+		return badlink;
+	}
+	
+	@Override
+	public boolean onNewConfig(IRhoExtManager extManager,
 			IRhoConfig config, String name, boolean res) {
 		System.out.println("ConnectionCheckingListener----onNewConfig,name="+name);
 		if(name.equalsIgnoreCase("rhoelementsext"))
@@ -373,8 +416,7 @@ public boolean onNewConfig(IRhoExtManager extManager,
 		
 	}
 	
-	
-	
+	//////
 	private boolean shouldRestartService(String ip,String to,String tc,String msg,String pi)
 	{
 		boolean restart=false;
@@ -396,7 +438,7 @@ public boolean onNewConfig(IRhoExtManager extManager,
 		
 		System.out.println("ConnectionPageNavEvent...onNavigateComplete,url="+url);
 		Logger.I(TAG, "ConnectionPageNavEvent...onNavigateComplete,url="+url);
-		
+		curLink=url;
 		if(isPageNavigationError==true)
 			criticalUri=url;
 		else
