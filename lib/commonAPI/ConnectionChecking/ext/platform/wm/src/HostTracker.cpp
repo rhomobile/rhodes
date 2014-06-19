@@ -65,16 +65,12 @@ void CHostTracker::run()
 				}
 			case eLicenseScreenPopupEventIndex:
 				{
-					mode = eHideConnectionBox;
-					badLinkTimer = 0;
-					nPollInterval = INFINITE;
+					mode = OnLicenseScreenPopupEvent(nPollInterval, badLinkTimer);
 					break;
 				}
 			case eLicenseScreenHidesEventIndex:
 				{
-					mode = eNone;
-					badLinkTimer = 0;
-					nPollInterval = 0;
+					mode = OnLicenseScreenHideEvent(nPollInterval, badLinkTimer);
 					break;
 				}
 			case eNavigateCompleteEventIndex:
@@ -194,14 +190,12 @@ rho::StringW  CHostTracker::getMessage()
 eConnectionBoxMode CHostTracker::OnTimeoutEvent(int& nPollInterval, int& nBadLinkTimer)
 {
 	eConnectionBoxMode mode = eNone;
-	m_bIsOnBadlink = false;
 	nBadLinkTimer = nBadLinkTimer + nPollInterval;
 	nPollInterval = m_iNetworkPollInterval;
 	if( CheckConnectivity())
 	{			
 		mode = eHideConnectionBox;
 		nBadLinkTimer =0;
-
 	}
 	else
 	{	
@@ -218,7 +212,6 @@ eConnectionBoxMode CHostTracker::OnTimeoutEvent(int& nPollInterval, int& nBadLin
 			nBadLinkTimer =0;
 			mode = eHideConnectionBox;
 			nPollInterval = INFINITE;//once dlg time out happens we have to infinite until we get a navcomplete or any other event
-			m_bIsOnBadlink = true;
 
 		}	
 	}	
@@ -227,24 +220,34 @@ eConnectionBoxMode CHostTracker::OnTimeoutEvent(int& nPollInterval, int& nBadLin
 eConnectionBoxMode CHostTracker::OnNavCompleteEvent(int& nPollInterval, int& nBadLinkTimer)
 {
 	eConnectionBoxMode mode = eNone;
-	nPollInterval = INFINITE;
-	nBadLinkTimer = 0;
-	rho::StringW navUrl = replaceString(m_szNavigatedUrl, L"%20", L" ");
-	//replace back slash in badlink url to front slash
-	rho::StringW badUrl = replaceString(m_szBadLinkUrl, L"\\", L"/");
-
-
-	LOG(INFO)  + "CHostTracker::run navigated url"+  navUrl.c_str(); 
-	LOG(INFO)  + "CHostTracker::run badlink url"+  badUrl.c_str();
-
-	if(std::string::npos == navUrl.find(badUrl))
-	{	
-		//user moved out of badlink page, resume thread
+	if(m_bIsOnBadlink)
+	{
+		mode = eHideConnectionBox;
+		nPollInterval = INFINITE;
+		nBadLinkTimer = 0;			
+	}
+	else
+	{
+		mode = eNone;
 		nPollInterval = 0;
+		nBadLinkTimer = 0;	
 	}
 	return mode;
 }
-
+eConnectionBoxMode CHostTracker::OnLicenseScreenPopupEvent(int& nPollInterval, int& nBadLinkTimer)
+{
+	eConnectionBoxMode mode = eHideConnectionBox;
+	nBadLinkTimer = 0;
+	nPollInterval = INFINITE;
+	return mode;
+}
+eConnectionBoxMode CHostTracker::OnLicenseScreenHideEvent(int& nPollInterval, int& nBadLinkTimer)
+{
+	eConnectionBoxMode mode = eNone;
+	nBadLinkTimer = 0;
+	nPollInterval = 0;
+	return mode;
+}
 void CHostTracker::HandleConnectionBox(eConnectionBoxMode& mode)
 {
 	switch(mode)
@@ -286,14 +289,13 @@ void CHostTracker::fireEvent(eEventIndex eventIdx)
 		}
 	case eNavigateCompleteEventIndex:
 		{
-			if(m_bIsOnBadlink)
+			m_bIsOnBadlink = isNavigatedToBadLink();
+			//set this even if we already navigated to a badlink due to dialog timeout
+			if (m_hEvents[eNavigateCompleteEventIndex])
 			{
-				//set this even if we already navigated to a badlink due to dialog timeout
-				if (m_hEvents[eNavigateCompleteEventIndex])
-				{
-					SetEvent(m_hEvents[eNavigateCompleteEventIndex]);
-				}
+				SetEvent(m_hEvents[eNavigateCompleteEventIndex]);
 			}
+
 			break;
 		}
 	default:
@@ -346,3 +348,19 @@ void CHostTracker::closeAllEvents()
 	}
 }
 
+bool CHostTracker::isNavigatedToBadLink()
+{
+	bool isBadLink = true;
+	rho::StringW navUrl = replaceString(m_szNavigatedUrl, L"%20", L" ");
+	//replace back slash in badlink url to front slash
+	rho::StringW badUrl = replaceString(m_szBadLinkUrl, L"\\", L"/");
+
+	LOG(INFO)  + "CHostTracker::run navigated url"+  navUrl.c_str(); 
+	LOG(INFO)  + "CHostTracker::run badlink url"+  badUrl.c_str();
+
+	if(std::string::npos == navUrl.find(badUrl))
+	{		
+		isBadLink = false;
+	}
+	return isBadLink;
+}
