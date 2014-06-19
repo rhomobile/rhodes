@@ -334,6 +334,7 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 	public boolean onNewConfig(IRhoExtManager extManager,
 			IRhoConfig config, String name, boolean res) {
 		System.out.println("ConnectionCheckingListener----onNewConfig,name="+name);
+		try{
 		if(name.equalsIgnoreCase("rhoelementsext"))
 		{
 			 String ip=config.getValue("hosturl");
@@ -408,7 +409,11 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 		}
 		
     
-		
+		}
+		catch(Exception ex)
+		{
+			
+		}
 		
 		
 		return super.onNewConfig(extManager, config, name, res);
