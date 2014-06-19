@@ -40,10 +40,7 @@ namespace rho {
         Hashtable<String,rho::apiGenerator::CMethodResult> m_eventTypeCallbacks;
         
         common::CMutex m_mxCallbackAccess;
-        
-        bool m_openEventPending;
-        bool m_errorEventPending;
-        String m_errorMessagePending;
+
 
       public:
         CEventSourceImpl() :
@@ -149,6 +146,7 @@ namespace rho {
         virtual void onOpen() {
             LOG(INFO) + "CEventSourceImpl::onOpen";
 
+
             common::CMutexLock lock(m_mxCallbackAccess);
             
             if ( canDispatchOpenEvent() ) {
@@ -160,6 +158,7 @@ namespace rho {
         
         virtual void onError(const String& error) {
             LOG(INFO) + "CEventSourceImpl::onError - " + error;
+
 
             common::CMutexLock lock(m_mxCallbackAccess);
             
