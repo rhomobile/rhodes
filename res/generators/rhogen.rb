@@ -1,9 +1,6 @@
 require 'rubygems'
 require 'templater'
 require 'thread'
-#TODO: This is temporary, see https://www.pivotaltracker.com/story/show/3399292
-gem 'activesupport', '~> 2.3.5'
-require 'active_support'
 require 'uuid'
 require 'yaml'
 require 'rexml/document'
@@ -719,7 +716,7 @@ module Rhogen
       Dir.chdir("extensions/#{name}/ext")
       args = []
       args << 'api'
-      args << Dir.pwd+"/#{namefixed.downcase}.xml"
+      args << Dir.pwd+"/#{namecamelcase}.xml"
       Jake.run(source_root+'/../../../../bin/rhogen', args)
     end
 
@@ -734,7 +731,7 @@ module Rhogen
 
     template :extension_apigen_xml do |template|
       template.source = 'extensions/montana/ext/montana.xml'
-      template.destination = "extensions/#{name}/ext/#{namefixed}.xml"
+      template.destination = "extensions/#{name}/ext/#{namecamelcase}.xml"
     end
 
     template :build do |template|
