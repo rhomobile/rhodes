@@ -295,6 +295,13 @@ private void navigatetoBadLink()
 					Logger.E(TAG, "excetion in Thread run()"+e.getMessage());
 				}
 			}
+			
+		if(isDialoguePresent)
+		{
+			killDialogue();
+			isDialoguePresent=false;
+			counterTimeout=0;
+		}	
 		
 		System.out.println("Thread is about to exit");
 		}
