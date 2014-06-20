@@ -41,6 +41,9 @@ namespace rho {
         
         common::CMutex m_mxCallbackAccess;
 
+        bool m_openEventPending;
+        bool m_errorEventPending;
+        String m_errorMessagePending;
 
       public:
         CEventSourceImpl() :
