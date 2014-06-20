@@ -278,9 +278,10 @@ private void navigatetoBadLink()
 				}
 				
 				try {
-					
+					Logger.I(TAG,"Thread is going to sleep");
 					sleep(ConnectionCheckingSingleton.POLLI_INTERVAL);
 					//wait(ConnectionCheckingSingleton.POLLI_INTERVAL);
+					Logger.I(TAG,"Thread is awaken");
 					if(counterTimeout!=0)
 						counterTimeout=counterTimeout+ConnectionCheckingSingleton.POLLI_INTERVAL;
 				} catch (InterruptedException e) {
