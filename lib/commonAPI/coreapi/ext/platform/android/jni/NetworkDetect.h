@@ -9,7 +9,7 @@ public:
 	~CNetworkDetection() {}
 
 private:  //  Methods
-	virtual void CheckConnectivity();
+	virtual bool CheckConnectivity();
 
     virtual void Startup();
     virtual void Cleanup();
