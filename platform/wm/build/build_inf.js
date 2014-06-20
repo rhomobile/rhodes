@@ -342,15 +342,18 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     p("");
     p("[SourceDisksNames]");
     p("1=,\"\",,\"" + srcdir + "\"");
-    if (usereruntime) {
+    
+    if (usereruntime) 
+    {
         p("2=,\"\",,\"" + srcdir + "\\..\\\"");
     } 
     else 
     {
         p("2=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
+        p("3=,\"\",," + rhogempath + "\"\\\"");
+        
         if (webkit_mode != 'none')
-        {
-            p("3=,\"\",," + rhogempath + "\"\\\"");
+        {            
             p("4=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
             p("5=,\"\",," + rhogempath + "\"\\Config\\\"");
         }
@@ -358,14 +361,16 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         {
             if(include_motocaps)
             {
-                p("3=,\"\",," + rhogempath + "\"\\Config\\\"");
+                p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
             }
         }
     }
     get_source_disks_names(es);
     p("");
     p("[SourceDisksFiles]");
-    if (usereruntime) {
+    
+    if (usereruntime) 
+    {
         p("\"" + name + ".lnk\"=2");
     }
     else 
@@ -377,10 +382,11 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
 
         p("\"" + name + ".exe\"=2");
         p("\"" + "RhoLaunch" + ".exe\"=2");
+        p("\"prtlib.dll\"=3");
+        
         if (webkit_mode != 'none') 
         {
-            p("\"eklibrary.dll\"=3");
-            p("\"prtlib.dll\"=3");
+            p("\"eklibrary.dll\"=3");            
             p("\"ipc_manager.dll\"=3");
             p(webkit_file + "=3");
             p("\"openssl.dll\"=3");
@@ -400,10 +406,10 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             {
                 if (!is_custom_config) 
                 {
-                    p("\"Config.xml\"=3");
+                    p("\"Config.xml\"=4");
                 }
-                p("\"Plugin.xml\"=3");
-                p("\"RegEx.xml\"=3");
+                p("\"Plugin.xml\"=4");
+                p("\"RegEx.xml\"=4");
             }
         }
     }
