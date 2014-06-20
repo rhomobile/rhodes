@@ -51,8 +51,11 @@ private:
                       rho::StringW replaceWith);
 	eConnectionBoxMode OnTimeoutEvent(int& nPollInterval, int& nBadLinkTimer);
 	eConnectionBoxMode OnNavCompleteEvent(int& nPollInterval, int& nBadLinkTimer);
+	eConnectionBoxMode OnLicenseScreenPopupEvent(int& nPollInterval, int& nBadLinkTimer);
+	eConnectionBoxMode OnLicenseScreenHideEvent(int& nPollInterval, int& nBadLinkTimer);
 	void HandleConnectionBox(eConnectionBoxMode& mode);     
 	void closeAllEvents();
+	bool isNavigatedToBadLink();
 	rho::StringW m_szBadLinkUrl;
 	rho::StringW m_szNavigatedUrl;	
 	int m_iConnectionDlgTimeout;
