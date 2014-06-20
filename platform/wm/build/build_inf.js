@@ -448,8 +448,16 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             p("CopyConfig=0,\"%InstallDir%\\Config\"");
         }
     }
-    if ((!usereruntime) && (webkit_mode == 'none') && include_motocaps) {
-        p("CopyConfig=0,\"%InstallDir%\\Config\"");
+    if ((!usereruntime) && (webkit_mode == 'none') && include_motocaps) 
+    {
+        if (is_persistent) 
+        {
+            p("CopyConfigPers=0,\"Application\\" + name + "\\Config\"");
+        }
+        else
+        {
+            p("CopyConfig=0,\"%InstallDir%\\Config\"");
+        }    
     }
     
     get_destination_dirs(es,is_persistent,name);
