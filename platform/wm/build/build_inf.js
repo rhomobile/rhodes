@@ -426,7 +426,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     if (autorun) {
         p("ShortcutsAutorun=0,\"%CE4%\"");
     }
-    if ((!usereruntime) && (webkit_mode != 'none')) {
+    if (!usereruntime) {
         p("CopySystemFiles=0,\"%CE2%\"");
     }
     if(is_persistent)
@@ -450,7 +450,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             p("CopyConfig=0,\"%InstallDir%\\Config\"");
         }
     }
-    else
+    else if (webkit_mode == 'none')
     {
         if (is_persistent) 
         {
@@ -461,7 +461,6 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         else {
             p("CopyConfig=0,\"%InstallDir%\\Config\"");
         }
-
     }
     
     if ((!usereruntime) && (webkit_mode == 'none') && include_motocaps) 
