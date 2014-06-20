@@ -15,7 +15,7 @@ import com.rhomobile.rhodes.extmanager.AbstractRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
-
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.app.Service;
@@ -42,7 +42,27 @@ public class ConnectionCheckingService extends Service{
 		
 		return null;
 	}
-	
+	public static boolean isLicensePopupComing()
+	{
+		
+		boolean res = false;
+		try
+		{
+			Class.forName("com.symbol.enterprisebrowser.EBLicense", false, ContextFactory.getContext().getClassLoader());
+			res = true; //EB will come
+			//System.out.println(" isLicensePopupComing= "+res);
+		}
+		catch (ClassNotFoundException e)
+		{
+			//System.out.println("ClassNotFoundException isLicensePopupComing= "+res);
+			Logger.E(TAG, "ClassNotFoundException,res="+res);
+		}
+		catch(Exception e)
+		{
+			Logger.E(TAG, "Exception,res="+res);
+		}
+		return res;
+	}
 	public static ConnectionCheckingService getInstance()
 	{
 		return sInstance;
@@ -89,9 +109,12 @@ public void onCreate() {
 	
 	ConnectionCheckingDialogue.createBuilder(RhodesActivity.safeGetInstance());
 	sInstance=this;
-	//conThread=new ConThread();
-	//conThread.start();
 	
+	if(!isLicensePopupComing())
+	{
+		conThread=new ConThread();
+		conThread.start();
+	}
 }
 private void showDialogue()
 {
