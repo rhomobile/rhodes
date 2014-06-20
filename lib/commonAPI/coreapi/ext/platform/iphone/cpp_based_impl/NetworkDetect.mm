@@ -21,7 +21,7 @@ void CNetworkDetection::Startup()
 {
 }
 
-void CNetworkDetection::CheckConnectivity()
+bool CNetworkDetection::CheckConnectivity()
 {
     bool bConnectSuccessful = false;
     
@@ -130,5 +130,6 @@ void CNetworkDetection::CheckConnectivity()
 		}
 	}
 
+    return bConnectSuccessful;
 }
 
