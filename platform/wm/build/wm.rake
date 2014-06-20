@@ -342,6 +342,8 @@ def build_cab
   Jake.run3('cscript cleanup.js', dir)
 
   mkdir_p $targetdir
+  rm File.join(dir, "comdlls.txt") if File.exist? File.join(dir, "comdlls.txt")
+  rm File.join(dir, "regs.txt") if File.exist? File.join(dir, "regs.txt")
   mv File.join(dir, "#{$appname}.inf"), $targetdir
   mv File.join(dir, "#{$appname}.cab"), $targetdir
 
