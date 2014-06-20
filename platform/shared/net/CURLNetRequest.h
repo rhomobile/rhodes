@@ -91,12 +91,13 @@ class CURLNetRequest : public INetRequestImpl
     
     struct RequestState
     {
-        RequestState() : respCode(0), respChunk(0), request(0) {}
+        RequestState() : respCode(0), respChunk(0), request(0), pFile(0) {}
         
         int respCode;
         Hashtable<String, String>* headers;
         Vector<char>* respChunk;
         CURLNetRequest* request;
+        common::CRhoFile* pFile;
     };
     
 public:
