@@ -1390,7 +1390,7 @@ namespace "device" do
         'bin/tmp/rho/apps/public/public.txt'
       ]
 
-      pack_7z($app_path, ['bin'], File.join(container_prefix_path, 'application_override.7z'), bin_exclude_files)
+      pack_7z($app_path, ['bin/RhoBundle'], File.join(container_prefix_path, 'application_override.7z'), bin_exclude_files)
       pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
     end
 
