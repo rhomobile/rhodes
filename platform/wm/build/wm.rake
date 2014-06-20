@@ -1248,6 +1248,7 @@ namespace "device" do
     task :production_with_prebuild_binary => ['config:wm'] do
       container_path = determine_prebuild_path_win('wm', $app_config)
       Rake::Task['device:wm:apply_container'].invoke(container_path)
+      $skip_build_extensions = true
       Rake::Task['build:bundle:noxruby'].invoke
       Rake::Task['device:wm:cab'].invoke
     end
