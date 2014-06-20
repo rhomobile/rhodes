@@ -40,6 +40,10 @@ import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.Config;
+import com.rhomobile.rhodes.ConnectionCheckingService;
+
+
+
 
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -53,6 +57,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Environment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -81,7 +86,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
 	private long uiThreadId = 0;
 	
-
+	
 	
 	public long getUiThreadId() {
 		return uiThreadId;
@@ -143,6 +148,25 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		RhoConf.setString("PageZoom", pageZoom);
             else
             	RhoConf.setString("PageZoom", "1.0");
+            
+            String ip=config.getValue("HostURL");
+            RhoConf.setString("HostURL", ip);
+            String to=config.getValue("Timeout");
+            RhoConf.setString("Timeout", to);
+            String ir=config.getValue("TrackConnection");
+            RhoConf.setString("TrackConnection", ir);
+            String msg=config.getValue("Message");
+            RhoConf.setString("Message", msg);
+            				   
+            String pi=config.getValue("PollInterval");
+            RhoConf.setString("PollInterval", pi);
+            
+            String badlinkUrl=config.getValue("BadLinkURI");
+            RhoConf.setString("BadLinkURI", badlinkUrl);
+            
+            System.out.println("HostURL="+ip+" Timeout"+to+"TrackConnection "+ir+"Message"+msg+"PollInterval"+pi);
+            
+            
 
         } catch (Throwable e) {
             Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
@@ -206,6 +230,26 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
+        
+        
+      
+        
+       try{ 
+    	   if(Integer.parseInt(RhoConf.getString("TrackConnection"))==1)
+        {									   
+        	Intent conIntent=new Intent(this.getApplicationContext(),ConnectionCheckingService.class);
+        															 
+        	System.out.println("ConnectionCheckingService is about to start");
+        	
+        	
+        		this.startService(conIntent);
+        }
+       }
+       catch(NumberFormatException ex)
+       {
+    	   System.out.println("NumberFormatException...in TrackConnection.Not starting the Service,error="+ex.getMessage());
+       }
+        
     }
 
     public MainView switchToSimpleMainView(MainView currentView) {
