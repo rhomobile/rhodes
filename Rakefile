@@ -1263,9 +1263,14 @@ namespace 'cloud' do
 
     rhohub_make_request($user_acc.server) do
       status = JSON.parse(Rhohub::Build.user_status())
+    end
+
+    if !status.nil? && status['text'].nil?
       puts "Cloud build is #{status["cloud_build_enabled"] ? 'enabled' : 'disabled'} for '#{$user_acc.subsciption_plan}' plan" if status["cloud_build_enabled"]
       puts "Builds limit: #{status["builds_remaining"] < 0 ? 'not set' : status["builds_remaining"].to_s + ' requests' }" if status["builds_remaining"]
       puts "Free build queue slots: #{status["free_queue_slots"]}" if status["free_queue_slots"]
+    else
+      puts "Could build server #{$user_acc.server} does not returned user information"
     end
 
     begin
@@ -1274,7 +1279,7 @@ namespace 'cloud' do
       gems_supported = nil
     end
 
-    if gems_supported["versions"]
+    if !gems_supported.nil? && gems_supported["versions"]
       versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
       fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
 
@@ -1286,6 +1291,8 @@ namespace 'cloud' do
       best = best_match(best, versions, false)
 
       puts "Using build.yml sdkversion setting selecting gem: " + best
+    else
+      puts "Could build server #{$user_acc.server} does not returned rhodes gems information"
     end
   end
 
