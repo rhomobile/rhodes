@@ -1,0 +1,41 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="ConnectionChecking" parent="Rho">
+        <HELP_OVERVIEW>Example extension api</HELP_OVERVIEW>
+        <MORE_HELP>This is example of API. Implementation contain in extension.</MORE_HELP>
+    
+        <TEMPLATES>
+           
+            
+        </TEMPLATES>
+
+         <PROPERTIES access="static" generateDoc="false">
+            <DESC>list of properties supported by instance of object</DESC>
+            <PROPERTY name="hostURL" type="STRING"  readOnly="true">
+                <DESC>The URL to be checked for connection</DESC>
+            </PROPERTY>
+			<PROPERTY name="trackConnection" type="INTEGER"  readOnly="true" >
+                <DESC>whether this feature to be implemeneted or not</DESC>
+            </PROPERTY>
+			<PROPERTY name="timeout" type="INTEGER"  readOnly="true">
+                <DESC>The total time for checking the connection.</DESC>
+            </PROPERTY>
+			<PROPERTY name="pollInterval" type="INTEGER"  readOnly="true" >
+                <DESC>The time gap between sucessive cheking.</DESC>
+            </PROPERTY>
+			<PROPERTY name="message" type="STRING"  readOnly="true">
+                <DESC>The message to be displayed during connection checking</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+
+       
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>    
