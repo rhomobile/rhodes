@@ -1258,7 +1258,7 @@ namespace 'cloud' do
   end
 
   desc 'Check current remote build status'
-  task :info => ['token:read'] do
+  task :info => ['token:setup'] do
     status = nil
 
     rhohub_make_request($user_acc.server) do
@@ -1433,7 +1433,7 @@ namespace 'cloud' do
 
   desc 'List avaliable builds'
   task :list_builds => [:find_app] do
-    Rake::Task['cloud:show_builds'].invoke()
+    Rake::Task['cloud:show:build'].invoke()
   end
 
   desc "Download build into app\\bin folder"
