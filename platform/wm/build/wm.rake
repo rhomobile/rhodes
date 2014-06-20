@@ -1250,6 +1250,7 @@ namespace "device" do
     task :production_with_prebuild_binary => ['config:wm'] do
       container_path = determine_prebuild_path_win('wm', $app_config)
       Rake::Task['device:wm:apply_container'].invoke(container_path)
+      $skip_build_extensions = true
       Rake::Task['build:bundle:noxruby'].invoke
       Rake::Task['device:wm:cab'].invoke
     end
@@ -1391,7 +1392,7 @@ namespace "device" do
         'bin/tmp/rho/apps/public/public.txt'
       ]
 
-      pack_7z($app_path, ['bin'], File.join(container_prefix_path, 'application_override.7z'), bin_exclude_files)
+      pack_7z($app_path, ['bin/RhoBundle'], File.join(container_prefix_path, 'application_override.7z'), bin_exclude_files)
       pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
     end
 

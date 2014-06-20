@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConnectionChecking", "ConnectionChecking.vcproj", "{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|MC3000c50b (ARMV4I) = Debug|MC3000c50b (ARMV4I)
+		Debug|Win32 = Debug|Win32
+		Debug|Windows Mobile 6 Professional SDK (ARMV4I) = Debug|Windows Mobile 6 Professional SDK (ARMV4I)
+		Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I) = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		Debug|WT41N0c70PSDK (ARMv4I) = Debug|WT41N0c70PSDK (ARMv4I)
+		Release|MC3000c50b (ARMV4I) = Release|MC3000c50b (ARMV4I)
+		Release|Win32 = Release|Win32
+		Release|Windows Mobile 6 Professional SDK (ARMV4I) = Release|Windows Mobile 6 Professional SDK (ARMV4I)
+		Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I) = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		Release|WT41N0c70PSDK (ARMv4I) = Release|WT41N0c70PSDK (ARMv4I)
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|MC3000c50b (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|MC3000c50b (ARMV4I).Build.0 = Debug|MC3000c50b (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|MC3000c50b (ARMV4I).Deploy.0 = Debug|MC3000c50b (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|Win32.Build.0 = Debug|Win32
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Debug|Windows Mobile 6 Professional SDK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|Windows Mobile 6 Professional SDK (ARMV4I).Build.0 = Debug|Windows Mobile 6 Professional SDK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|Windows Mobile 6 Professional SDK (ARMV4I).Deploy.0 = Debug|Windows Mobile 6 Professional SDK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Build.0 = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Deploy.0 = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Debug|WT41N0c70PSDK (ARMv4I).ActiveCfg = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|MC3000c50b (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|MC3000c50b (ARMV4I).Build.0 = Release|MC3000c50b (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|MC3000c50b (ARMV4I).Deploy.0 = Release|MC3000c50b (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|Win32.ActiveCfg = Release|Win32
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|Win32.Build.0 = Release|Win32
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Release|Windows Mobile 6 Professional SDK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|Windows Mobile 6 Professional SDK (ARMV4I).Build.0 = Release|Windows Mobile 6 Professional SDK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|Windows Mobile 6 Professional SDK (ARMV4I).Deploy.0 = Release|Windows Mobile 6 Professional SDK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Build.0 = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Deploy.0 = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{EB2F52D1-D4F5-0131-A0FC-3CA9F4678169}.Release|WT41N0c70PSDK (ARMv4I).ActiveCfg = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

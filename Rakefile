@@ -399,15 +399,7 @@ end
 #token handling
 
 def get_app_list()
-  result = nil
-  begin
-    result = JSON.parse(Rhohub::App.list())
-  rescue Exception => e
-    puts "Could not get result #{e.inspect}"
-    raise
-  end
-
-  result
+  result = JSON.parse(Rhohub::App.list())
 end
 
 def from_boolean(v)
@@ -429,6 +421,42 @@ def sort_by_distance(array, template)
   template.nil? ? array : array.sort_by { |s| distance(template, s) }
 end
 
+def rhohub_make_request(srv)
+  if block_given?
+    build_was_proxy_problem = false
+
+    begin
+      yield
+
+    rescue Timeout::Error, Errno::ETIMEDOUT, Errno::EINVAL, Errno::ECONNRESET,
+        Errno::ECONNREFUSED, SocketError => e
+      unless RestClient.proxy.nil? || RestClient.proxy.empty?
+        BuildOutput.put_log(BuildOutput::WARNING,'Could not connect using proxy server, retrying without proxy','Connection problem')
+        RestClient.proxy = ''
+        build_was_proxy_problem = true
+        retry
+      else
+        if build_was_proxy_problem
+          BuildOutput.put_log(BuildOutput::WARNING,"Could not connect to server #{get_server(srv,'')}\n#{e.inspect}",'Network problem')
+        else
+          BuildOutput.put_log(BuildOutput::WARNING,"Could not connect to server #{get_server(srv,'')}. If you are behind proxy please set http(s)_proxy ENV variable",'Network problem')
+        end
+        exit 1
+      end
+
+    rescue EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+      puts "Http request problem: #{e.inspect}"
+
+    rescue RestClient::RequestFailed => e
+      puts "Http request problem: #{e.message}"
+
+    rescue RestClient::ExceptionWithResponse => e
+      # do nothing, this is is 404 or something like that
+    end
+  end
+end
+
+
 def check_update_token_file(server_list, user_acc, token_folder, subscription_level = -1)
   is_valid = -2
 
@@ -444,12 +472,11 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
         Rhohub.url = srv
 
         if (subscription_level > user_acc.subscription_level)
-          puts "Downloading user subscription information from #{srv}"
-          begin
+          puts "Connecting to #{get_server(srv,'')}"
+
+          rhohub_make_request(srv) do
             subscription = Rhohub::Subscription.check()
             user_acc.subscription = subscription
-          rescue Exception => e
-            puts "failed: #{e.inspect}"
           end
 
           if user_acc.subscription_level >= subscription_level
@@ -457,6 +484,10 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
             break
           end
         end
+      end
+
+      if RestClient.proxy != $proxy
+        $proxy = RestClient.proxy
       end
 
       is_valid = user_acc.subscription_level >= 0 ? 2 : 0
@@ -584,12 +615,12 @@ namespace "token" do
 
     sort_by_distance($server_list, $user_acc.server).each do |server|
       Rhohub.url = server
-      begin
+      rhohub_make_request(server) do
         info = Rhohub::Token.login(username, password)
         token = JSON.parse(info)["token"]
-        $user_acc.server = server
-      rescue Exception => e
-        token = nil
+        if token != nil
+          $user_acc.server = server
+        end
       end
       break if !token.nil?
     end
@@ -679,9 +710,9 @@ namespace "token" do
       end
       puts "Subscription plan: " + $user_acc.subsciption_plan()
       subs_valid = $user_acc.is_valid_subscription?()
-      puts "Subscription valid: " + from_boolean(subs_valid)
+      puts "Local subscripton cache valid: " + from_boolean(subs_valid)
       if subs_valid
-        puts "Subscription will be valid for " + time_to_str($user_acc.remaining_subscription_time()) 
+        puts "Local subscription cache will be valid for " + time_to_str($user_acc.remaining_subscription_time())
       end
     end
   end
@@ -787,8 +818,8 @@ def to_boolean(s)
 end
 
 def cloud_url_git_match(str)
-  res = /git@git(?:.*?)\.rhohub\.com:(.*?)\/(.*?).git/i.match(str)
-  res.nil? ? {} : { :str => "#{res[1]}/#{res[2]}", :user => res[1], :app => res[2] }
+  res = /git@(git.*?\.rhohub\.com):(.*?)\/(.*?).git/i.match(str)
+  res.nil? ? {} : { :str => "#{res[1]}:#{res[2]}/#{res[3]}", :server => res[1],  :user => res[2], :app => res[3] }
 end
 
 def split_number_in_groups(number)
@@ -1227,19 +1258,19 @@ namespace 'cloud' do
   end
 
   desc 'Check current remote build status'
-  task :info => ['token:read'] do
+  task :info => ['token:setup'] do
     status = nil
 
-    begin
+    rhohub_make_request($user_acc.server) do
       status = JSON.parse(Rhohub::Build.user_status())
+    end
+
+    if !status.nil? && status['text'].nil?
       puts "Cloud build is #{status["cloud_build_enabled"] ? 'enabled' : 'disabled'} for '#{$user_acc.subsciption_plan}' plan" if status["cloud_build_enabled"]
       puts "Builds limit: #{status["builds_remaining"] < 0 ? 'not set' : status["builds_remaining"].to_s + ' requests' }" if status["builds_remaining"]
       puts "Free build queue slots: #{status["free_queue_slots"]}" if status["free_queue_slots"]
-
-    rescue Exception => e
-      BuildOutput.error(
-          ["Could not get user builds infromation #{e.inspect}"],
-          'Server response error')
+    else
+      puts "Could build server #{$user_acc.server} does not returned user information"
     end
 
     begin
@@ -1248,7 +1279,7 @@ namespace 'cloud' do
       gems_supported = nil
     end
 
-    if gems_supported["versions"]
+    if !gems_supported.nil? && gems_supported["versions"]
       versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
       fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
 
@@ -1260,6 +1291,8 @@ namespace 'cloud' do
       best = best_match(best, versions, false)
 
       puts "Using build.yml sdkversion setting selecting gem: " + best
+    else
+      puts "Could build server #{$user_acc.server} does not returned rhodes gems information"
     end
   end
 
@@ -1283,8 +1316,11 @@ namespace 'cloud' do
       raise Exception.new('Hosted on server not supported by cloud build system')
     end
 
-    #get app list
-    $apps = get_app_list() unless !$apps.nil?
+    rhohub_make_request($user_acc.server) do
+
+      #get app list
+      $apps = get_app_list() unless !$apps.nil?
+    end
 
     if $apps.nil?
       BuildOutput.error('Could not get project list from cloud build server. Check your internet connection and proxy settings.', 'Rhohub build')
@@ -1306,7 +1342,9 @@ namespace 'cloud' do
     $cloud_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
 
     if $cloud_app[:dist] > 0
-      if $cloud_app[:user] != user_proj[:user]
+      if $cloud_app[:user_proj][:server] != user_proj[:server]
+        BuildOutput.error("Current user account is on #{$cloud_app[:user_proj][:server].bold} but project in working directory is on #{user_proj[:server].bold}", 'Rhohub build')
+      elsif $cloud_app[:user] != user_proj[:user]
         BuildOutput.error("Current user account is #{$cloud_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", 'Rhohub build')
       else
         project_names = $apps.map{ |e| " - #{e[:user_proj][:app].to_s}" }.join($/)
@@ -1395,7 +1433,7 @@ namespace 'cloud' do
 
   desc 'List avaliable builds'
   task :list_builds => [:find_app] do
-    Rake::Task['cloud:show_builds'].invoke()
+    Rake::Task['cloud:show:build'].invoke()
   end
 
   desc "Download build into app\\bin folder"
