@@ -710,9 +710,9 @@ namespace "token" do
       end
       puts "Subscription plan: " + $user_acc.subsciption_plan()
       subs_valid = $user_acc.is_valid_subscription?()
-      puts "Subscription valid: " + from_boolean(subs_valid)
+      puts "Local subscripton cache valid: " + from_boolean(subs_valid)
       if subs_valid
-        puts "Subscription will be valid for " + time_to_str($user_acc.remaining_subscription_time()) 
+        puts "Local subscription cache will be valid for " + time_to_str($user_acc.remaining_subscription_time())
       end
     end
   end
