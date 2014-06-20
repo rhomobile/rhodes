@@ -143,7 +143,11 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		RhoConf.setString("PageZoom", pageZoom);
             else
             	RhoConf.setString("PageZoom", "1.0");
-
+            	
+            	
+            
+            
+           
         } catch (Throwable e) {
             Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
             //Logger.W(TAG, e);
@@ -384,6 +388,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         
+        mAppMenu.enumerateMenu(menu);
         Logger.T(TAG, "onCreateOptionsMenu");
         
         return mAppMenu.getItemsCount() != 0;
