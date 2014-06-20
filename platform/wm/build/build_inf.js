@@ -326,15 +326,15 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     p("AddReg=RegKeys");
     if (is_persistent)
     {
-        p("CopyFiles=CopyToInstallDir,CopyPersistent" +
-           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBinPers,CopyNPAPIPers,CopyConfigPers,CopySystemFilesPers" : "")+
+        p("CopyFiles=CopyToInstallDir,CopyPersistent,CopySystemFilesPers" +
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBinPers,CopyNPAPIPers,CopyConfigPers" : "")+
            (!usereruntime && (webkit_mode == 'none') && include_motocaps? ",CopyConfigPers" : "")+
            get_copyfiles_sections(es,is_persistent));
     }
     else
     {
-        p("CopyFiles=CopyToInstallDir"+
-           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI,CopyConfig,CopySystemFiles" : "") +
+        p("CopyFiles=CopyToInstallDir,CopySystemFiles"+
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "") +
            (!usereruntime && (webkit_mode == 'none') && include_motocaps? ",CopyConfig" : "")+
            (show_shortcut && usereruntime ? ",Shortcuts" : "")+
            get_copyfiles_sections(es,is_persistent));
@@ -434,13 +434,15 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     else {
         p("CopyToInstallDir=0,\"%InstallDir%\"");    
     }    
-    if ((!usereruntime) && (webkit_mode != 'none')) {
-        if (is_persistent) {
+    
+    if ((!usereruntime) && (webkit_mode != 'none')) 
+    {
+        if (is_persistent) 
+        {
             p("CopyWebKitBinPers=0,\"Application\\" + name + "\"");
             p("CopyNPAPIPers=0,\"Application\\" + name + "\\NPAPI\"");
             p("CopyConfigPers=0,\"Application\\" + name + "\\Config\"");
-			p("CopySystemFilesPers=0,\"Application\\" + name + "\"");
-			
+			p("CopySystemFilesPers=0,\"Application\\" + name + "\"");			
         }
         else {
             p("CopyWebKitBin=0,\"%InstallDir%\"");
@@ -448,6 +450,20 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             p("CopyConfig=0,\"%InstallDir%\\Config\"");
         }
     }
+    else
+    {
+        if (is_persistent) 
+        {
+            p("CopyConfigPers=0,\"Application\\" + name + "\\Config\"");
+            p("CopySystemFilesPers=0,\"Application\\" + name + "\"");
+            
+        }
+        else {
+            p("CopyConfig=0,\"%InstallDir%\\Config\"");
+        }
+
+    }
+    
     if ((!usereruntime) && (webkit_mode == 'none') && include_motocaps) 
     {
         if (is_persistent) 
@@ -478,6 +494,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
         p("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
+        
         if (webkit_mode != 'none') {
             p("");
             if (!is_persistent)
@@ -536,6 +553,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                     p("\"Config.xml\",\"Config.xml\",,0");
                     p("\"Plugin.xml\",\"Plugin.xml\",,0");
                     p("\"RegEx.xml\",\"RegEx.xml\",,0");
+                    p("[CopySystemFiles]");
+                    p("\"prtlib.dll\",\"prtlib.dll\",,0");                    
                 }
                 else
                 {
@@ -544,6 +563,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                     p("\"Config.xml\",\"Config.xml\",,0");
                     p("\"Plugin.xml\",\"Plugin.xml\",,0");
                     p("\"RegEx.xml\",\"RegEx.xml\",,0");
+                    p("");
+                    p("[CopySystemFilesPers]");
+                    p("\"prtlib.dll\",\"prtlib.dll\",,0");                    
                 }
             }
         }
