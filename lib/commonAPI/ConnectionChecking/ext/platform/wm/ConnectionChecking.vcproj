@@ -747,10 +747,6 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\src\ConnectionChecking.rc"
-			>
-		</File>
-		<File
 			RelativePath=".\src\ConnectionChecking_impl.cpp"
 			>
 		</File>

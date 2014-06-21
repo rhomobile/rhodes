@@ -69,23 +69,18 @@ namespace rho {
 		}	
 		virtual void OnLicenseScreen(bool bActivate, const CRhoExtData& oExtData)
 		{
-			if(bActivate)
+			if(m_pHostTracker->isFeatureEnabled())
 			{
-				if(m_pHostTracker->isFeatureEnabled())
+				if(bActivate)
 				{
-					m_pHostTracker->fireEvent(eLicenseScreenPopupEventIndex);			
-				}
-				
-			}
-			else
-			{
-				if(m_pHostTracker->isFeatureEnabled())
-				{
-					m_pHostTracker->fireEvent(eLicenseScreenHidesEventIndex);	
-					
-				}
-				
+					m_pHostTracker->fireEvent(eLicenseScreenPopupEventIndex);	
 
+				}
+				else
+				{
+					m_pHostTracker->fireEvent(eLicenseScreenHidesEventIndex);
+
+				}
 			}
 		}
 
@@ -99,6 +94,7 @@ namespace rho {
 				}
 
 			}
+			return false;			
 		}
 		
 	};

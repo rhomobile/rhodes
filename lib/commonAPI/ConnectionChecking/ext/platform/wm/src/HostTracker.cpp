@@ -89,15 +89,17 @@ void CHostTracker::run()
 bool CHostTracker::InitConfig()
 {	
 	stHostTrackerConfigInfo* configInfo = rho_wmimpl_get_hostTrackerInfo();
-	m_bIsFeatureEnabled = configInfo->isTrackConnectionSet;
-	SetHost(configInfo->szHostName);
-	SetPort(configInfo->iPort);
-	SetNetworkPollInterval(configInfo->iPollInterval);
-	SetConnectionTimeout(configInfo->iPingTimeout);
-	SetConnectionDlgTimeout(configInfo->iDialogTimeout);
-	SetBadLinkUrl(rho_wmimpl_get_BadLinkURLPath());
-	m_szConnectionDlgMsg = rho_wmimpl_get_HostTrackerDlgMsg();
-
+	m_bIsFeatureEnabled = configInfo->isTrackConnectionSet;	
+	if(m_bIsFeatureEnabled)
+	{
+		SetHost(configInfo->szHostName);
+		SetPort(configInfo->iPort);
+		SetNetworkPollInterval(configInfo->iPollInterval);
+		SetConnectionTimeout(configInfo->iPingTimeout);
+		SetConnectionDlgTimeout(configInfo->iDialogTimeout);
+		SetBadLinkUrl(rho_wmimpl_get_BadLinkURLPath());
+		m_szConnectionDlgMsg = rho_wmimpl_get_HostTrackerDlgMsg();	
+	}
 	
 	return true;
 }
@@ -193,12 +195,14 @@ eConnectionBoxMode CHostTracker::OnTimeoutEvent(int& nPollInterval, int& nBadLin
 	nBadLinkTimer = nBadLinkTimer + nPollInterval;
 	nPollInterval = m_iNetworkPollInterval;
 	if( CheckConnectivity())
-	{			
+	{	
+		LOG(INFO) + "ConnectionChecking: CheckConnectivity passed";
 		mode = eHideConnectionBox;
 		nBadLinkTimer =0;
 	}
 	else
 	{	
+		LOG(INFO) + "ConnectionChecking: CheckConnectivity failed";
 		mode = eShowConnectionBox;
 		nBadLinkTimer = nBadLinkTimer + m_iPingTimeOut;
 		if(nBadLinkTimer >= m_iConnectionDlgTimeout)

@@ -26,6 +26,7 @@
 #define IDD_SYNCSTATUS                  122
 #define IDD_MAPVIEW                     123
 #define IDD_TAKE_SIGNATURE              124
+#define IDD_CONNECTION_DLG              125
 #define IDR_SIGNATURE_MENU              126
 #define IDM_SAVE                        127
 #define IDC_STATIC_PROMPT               1001
@@ -51,6 +52,7 @@
 #define ID_TIME_CAPTION                 1021
 #define IDC_BUTTON1                     1022
 #define IDC_BT_CANCEL                   1022
+#define IDC_STATIC_CONNECTION_MSG       1022
 #define IDC_BT_STATIC                   1023
 #define IDC_BUTTON_ZOOM_OUT             1023
 #define IDS_EXIT                        10001
