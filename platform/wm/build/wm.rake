@@ -52,29 +52,72 @@ def determine_prebuild_path_win(platform,config)
   Rhodes::Containers::get_container_path_prefix(platform, conf)
 end
 
+def get_yaml_section(yaml_map, keys_array)
+  section = yaml_map
+  
+  keys_array.each { |key|
+    return nil if section[key.to_s].nil?
+    
+    section = section[key.to_s]
+  }
+  
+  section 
+end
+
+def additional_dlls_paths_common(files_path_keys)
+  $additional_dlls_paths_tmp = [] 
+
+  $app_extensions_list.each do |ext, commin_ext_path|
+    next unless commin_ext_path
+
+    ext_config_path = File.join(commin_ext_path, 'ext.yml')
+
+    next unless File.exist?(ext_config_path)
+
+    ext_config = Jake.config(File.open(ext_config_path))
+
+    files_path = get_yaml_section(ext_config, files_path_keys)    
+      
+    next unless files_path
+
+    is_prebuilt     = ext_config[$current_platform] && ext_config[$current_platform]['exttype'] && ext_config[$current_platform]['exttype'] == 'prebuilt'
+    is_project_path = ext_config['project_paths'] && ext_config['project_paths'][$current_platform] != nil
+
+    next unless File.exists?(File.join(commin_ext_path, 'ext', 'build.bat')) || is_prebuilt || is_project_path
+
+    $additional_dlls_paths_tmp << File.expand_path(files_path, commin_ext_path)
+  end
+
+  $additional_dlls_paths_tmp
+end
+
 def additional_dlls_paths
   unless defined?($additional_dlls_paths_)
+    
     $additional_dlls_paths_ = []
-
-    $app_extensions_list.each do |ext, commin_ext_path|
-      next unless commin_ext_path
-
-      ext_config_path = File.join(commin_ext_path, 'ext.yml')
-
-      next unless File.exist?(ext_config_path)
-
-      ext_config = Jake.config(File.open(ext_config_path))
-
-      next unless ext_config['files']
-
-      is_prebuilt = ext_config[$current_platform] && ext_config[$current_platform]['exttype'] && ext_config[$current_platform]['exttype'] == 'prebuilt'
-      is_project_path = ext_config['project_paths'] && ext_config['project_paths'][$current_platform] != nil
-
-      next unless File.exists?(File.join(commin_ext_path, 'ext', 'build.bat')) || is_prebuilt || is_project_path
-
-      $additional_dlls_paths_ << File.expand_path(ext_config['files'], commin_ext_path)
-    end
+        
+    common_files = ["wm", "files", "common"]
+         
+    additional_dlls_paths_ = additional_dlls_paths_common(common_files)  
   end
+  
+  $additional_dlls_paths_
+end
+
+def additional_dlls_persistent_paths  
+  unless defined?($additional_dlls_paths_)
+ 
+    $additional_dlls_paths_ = []
+    
+    common_files     = ["wm", "files", "common"]
+    $additional_dlls_paths_ = additional_dlls_paths_common(common_files)
+    
+    persistent_files = ["wm", "files", "persistent"]
+    persistent_dlls_paths_ = additional_dlls_paths_common(persistent_files)
+       
+    $additional_dlls_paths_.concat(persistent_dlls_paths_)
+  end
+  
   $additional_dlls_paths_
 end
 
@@ -136,13 +179,25 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_proc
     additional_paths.each { |dir|
       chdir dir
 
-      Dir.glob("**/*").each { |f|
-        if File.directory?(f) == false
-          path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
+      if File.exist? "files.yml"
+        files_config = YAML::load(File.open("files.yml"))
+        #files_config = Jake.config(File.open("files.yml"))
+
+        continue unless files_config["files"] || files_config["files"]["persistent"]
+
+        files_config["files"]["persistent"].each { |path|
           path.gsub!("/", "\\")
           cf.puts(path)
-        end
-      }
+        }
+      else       
+        Dir.glob("**/*").each { |f|
+          if File.directory?(f) == false
+            path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
+            path.gsub!("/", "\\")
+            cf.puts(path)
+          end
+        }
+      end
     }
   end
 
@@ -307,7 +362,7 @@ def build_cab
   end
   
   if $build_persistent_cab && !$use_shared_runtime
-    makePersistentFiles($srcdir, additional_dlls_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
+    makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
   end
 
   webkit = 'none'
@@ -334,8 +389,12 @@ def build_cab
     ($build_persistent_cab ? "1" : "0")       #12
   ]
 
-  args.concat(additional_dlls_paths) unless $use_shared_runtime
-
+  if $build_persistent_cab && !$use_shared_runtime
+    args.concat(additional_dlls_persistent_paths)
+  else
+    args.concat(additional_dlls_paths)
+  end
+  
   Jake.run3("cscript #{args.join(' ')}", dir)
 
   Jake.run3("\"#{$cabwiz}\" \"#{$appname}.inf\"", dir)
