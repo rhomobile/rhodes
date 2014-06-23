@@ -5,11 +5,11 @@
 	Name="emmlapi"
 	>
 	<UserMacro
-		Name="RHO_ROOT"
+		Name="RHO_ROOT_"
 		Value="..\..\..\..\..\..\..\rhodes"
 	/>
 	<UserMacro
-		Name="TEMP_FILES_DIR"
+		Name="TEMP_FILES_DIR_"
 		Value="$(RHO_ROOT)\platform\wm\bin\$(PlatformName)\extensions\$(ProjectName)"
 	/>
 </VisualStudioPropertySheet>

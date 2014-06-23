@@ -179,11 +179,32 @@ RHO_GLOBAL int rho_sys_set_sleeping(int sleeping) {
 RHO_GLOBAL void rho_sys_app_exit()
 {
     JNIEnv *env = jnienv();
+
+    int isKill = 0;
+    void *q = NULL;
+    if (env == 0) {
+    	isKill = 1;
+    	q = rho_nativethread_start();
+    	env = jnienv();
+    }
+    if (env == 0) {
+    	RAWLOG_ERROR("JNIEnv is not set for this thread!!! WTF ?!");
+    }
+
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "exit", "()V");
+    jmethodID mid = NULL;
+    if (isKill) {
+    	mid = getJNIClassStaticMethod(env, cls, "kill", "()V");
+    }
+    else {
+    	mid = getJNIClassStaticMethod(env, cls, "exit", "()V");
+    }
     if (!mid) return;
     env->CallStaticVoidMethod(cls, mid);
+    if (q != NULL) {
+    	rho_nativethread_end(q);
+    }
 }
 
 RHO_GLOBAL void rho_sys_run_app(const rho::String& appname, const rho::String& params, rho::apiGenerator::CMethodResult& result)
