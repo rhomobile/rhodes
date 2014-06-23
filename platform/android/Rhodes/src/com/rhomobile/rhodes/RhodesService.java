@@ -105,6 +105,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.Process;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.WindowManager;
@@ -530,6 +531,11 @@ public class RhodesService extends Service {
 		return ra.getMainView();
 	}
 
+	public static void kill() {
+		Logger.I(TAG, "kkkill !!!");
+		Process.killProcess(Process.myPid());
+	}
+	
 	public static void exit() {
 	    PerformOnUiThread.exec(new Runnable() {
 	        @Override
@@ -542,12 +548,12 @@ public class RhodesService extends Service {
                     RhodesService service = RhodesService.getInstance();
                     if (service != null)
                     {
-                        Logger.T(TAG, "stop RhodesService");
+                        Logger.I(TAG, "stop RhodesService");
                         service.wakeLock.reset();
                         service.stopSelf();
                     }
                     
-                    Logger.T(TAG, "stop RhodesApplication");
+                    Logger.I(TAG, "stop RhodesApplication");
                     RhodesApplication.stop();
                 }
                 catch (Exception e) {
