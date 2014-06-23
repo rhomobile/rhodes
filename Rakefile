@@ -1199,7 +1199,7 @@ def match_build_id(build_id, builds)
 
     if found_id <= 0
       if found_id.abs < builds.length
-        found = builds[(found_id).abs]
+        found = builds[builds.length - (found_id).abs - 1]
       end
     else
       found = builds.find {|f| f['id'] == found_id }
@@ -1379,7 +1379,7 @@ namespace 'cloud' do
               show_build_messages(build_hash, $proxy, $cloud_build_home)
             end
           else
-            puts (match.size > 1 ? "There are no failed builds" : "Build #{build_id} status is #{match.first['status'].blue}" )
+            puts (match.size > 1 ? "There are no failed builds" : "Build #{build_id} status is #{match.last['status'].blue}" )
           end
         else
           str = build_id.to_s
@@ -1446,7 +1446,7 @@ namespace 'cloud' do
     matching_builds  = match_build_id(build_id, builds)
 
     if !builds.empty?
-      build_hash = matching_builds.first
+      build_hash = matching_builds.last
 
       build_id = build_hash['id']
 
