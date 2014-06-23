@@ -77,7 +77,7 @@ def additional_dlls_paths_common(files_path_keys)
     ext_config = Jake.config(File.open(ext_config_path))
 
     files_path = get_yaml_section(ext_config, files_path_keys)    
-      
+
     next unless files_path
 
     is_prebuilt     = ext_config[$current_platform] && ext_config[$current_platform]['exttype'] && ext_config[$current_platform]['exttype'] == 'prebuilt'
@@ -93,12 +93,12 @@ end
 
 def additional_dlls_paths
   unless defined?($additional_dlls_paths_)
-    
+
     $additional_dlls_paths_ = []
         
     common_files = ["wm", "files", "common"]
          
-    additional_dlls_paths_ = additional_dlls_paths_common(common_files)  
+    $additional_dlls_paths_ = additional_dlls_paths_common(common_files)  
   end
   
   $additional_dlls_paths_
