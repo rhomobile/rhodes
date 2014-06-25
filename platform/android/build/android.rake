@@ -912,14 +912,36 @@ namespace "build" do
           cp_r add, addspath if File.directory? add
         end
       end
-      #$ext_android_library_deps.each do |package, path|
-      #  res = File.join path, 'res'
-      #  assets = File.join path, 'assets'
-      #  addspath = File.join($app_builddir, 'extensions', package, 'adds')
-      #  mkdir_p addspath
+      $ext_android_library_deps.each do |package, path|
+        next if path.nil? or path == ''
+        
+        puts "Library resources: #{path}"
+
+        res = File.join path, 'res'
+        assets = File.join path, 'assets'
+        packagepath = File.join $app_builddir,'extensions',package
+        addspath = File.join packagepath,'adds'
+        
+        Dir.glob(File.join(res,'**','*.*')) do |p|
+          puts p
+          unless File.directory? p
+            rel_path = p.gsub path, ''
+            target = File.join addspath, rel_path
+            if File.basename(File.dirname(rel_path)) =~ /^values/
+              target = File.join addspath, File.dirname(rel_path), "#{package}.#{File.basename(rel_path)}"
+            end
+            mkdir_p File.dirname(target)
+            cp p, target
+          end
+        end
       #  cp_r res, addspath if File.directory? res
-      #  cp_r assets, addspath if File.directory? assets
-      #end
+        cp_r assets, addspath if File.directory? assets
+        
+        Dir.glob(File.join(path,'**','*.jar')) do |jar|
+          mkdir_p packagepath
+          cp jar, packagepath
+        end
+      end
     end #task :extensions
 
     task :libsqlite => "config:android" do
