@@ -47,7 +47,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Enable / disable web plug-ins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
-            <PROPERTY name="navigationTimeout" type="INTEGER" default="0">
+            <PROPERTY name="navigationTimeout" type="INTEGER" default="45000">
                 <DESC>Can be defined in config.xml: Navigation\\NavTimeout. Number of milliseconds(maximum is 45000) before the browser times out and navigates to the page specified in the badlink setting. If it is determined that the destination is unreachable regardless of wait time, the badlink may be loaded before NAVTIMEOUT. This is the time taken to establish communication with the server, not the time taken to fully load the page.</DESC>
                 <MORE_HELP>Note that the navigation timeout will not be invoked when navigating to the start page, best practice is to store your first page locally to avoid connectivity issues at start up, you can then redirect to an online page if desired.</MORE_HELP>
                 <PLATFORM>WM</PLATFORM>
