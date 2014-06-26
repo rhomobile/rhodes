@@ -12,6 +12,7 @@ import com.rhomobile.rhodes.Logger;
 public class RhoApiPropertyBag implements
         IRhoApiPropertyBag {
     private static final String TAG = RhoApiPropertyBag.class.getSimpleName();
+    private static final String ID_KEY = "id";
 
     private HashMap<String, String> mProperties;
     private List<String> mAllowedNames;
@@ -29,11 +30,15 @@ public class RhoApiPropertyBag implements
     public RhoApiPropertyBag(String id) {
         mAllowedNames = null;
         mProperties = new HashMap<String, String>();
+        mProperties.put(ID_KEY, id);
     }
 
     public RhoApiPropertyBag(List<String> allowedNames, String id) {
         mAllowedNames = allowedNames;
+        mAllowedNames.add(id);
+        
         mProperties = new HashMap<String, String>();
+        mProperties.put(ID_KEY, id);
     }
 
     //@Override
@@ -112,7 +117,9 @@ public class RhoApiPropertyBag implements
     }
 
     public void clearAllProperties(Map<String, Class<?> > customProps, RhoApiObject apiObject, IMethodResult result) {
+        String id = getPropertiesMap().get(ID_KEY); 
         getPropertiesMap().clear();
+        getPropertiesMap().put(ID_KEY, id);
 
         for(Map.Entry<String, Class<?> > prop: customProps.entrySet()) {
             Class<? extends RhoApiObject> clazz = apiObject.getClass().asSubclass(RhoApiObject.class);
