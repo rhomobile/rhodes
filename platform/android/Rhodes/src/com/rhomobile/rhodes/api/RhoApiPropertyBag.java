@@ -26,12 +26,12 @@ public class RhoApiPropertyBag implements
 
     public Map<String, String> getPropertiesMap() { return mProperties; }
 
-    public RhoApiPropertyBag() {
+    public RhoApiPropertyBag(String id) {
         mAllowedNames = null;
         mProperties = new HashMap<String, String>();
     }
 
-    public RhoApiPropertyBag(List<String> allowedNames) {
+    public RhoApiPropertyBag(List<String> allowedNames, String id) {
         mAllowedNames = allowedNames;
         mProperties = new HashMap<String, String>();
     }
