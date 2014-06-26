@@ -1547,8 +1547,8 @@ namespace 'cloud' do
     end
 
     options = {
-      :upload_cert => Base64.urlsafe_encode64(File.read(cert_file)),
-      :upload_profile => Base64.urlsafe_encode64(File.read(profile_file)),
+      :upload_cert => Base64.urlsafe_encode64(File.open(cert_file, 'rb') { |io| io.read }),
+      :upload_profile => Base64.urlsafe_encode64(File.open(profile_file, 'rb') { |io| io.read }),
       :bundle_identifier => get_conf('iphone/BundleIdentifier')
     }
 
