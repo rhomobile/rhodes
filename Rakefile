@@ -1440,6 +1440,16 @@ namespace 'cloud' do
       puts JSON.pretty_generate(get_build_platforms())
     end
 
+    task :apps => ['cloud:initialize'] do
+      apps = []
+      rhohub_make_request($user_acc.server) do
+        #get app list
+        apps = get_app_list()
+      end
+      puts JSON.pretty_generate(apps)
+
+    end
+
   end
 
   desc 'List avaliable builds'
