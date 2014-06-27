@@ -1083,8 +1083,10 @@ end
 
 TIME_FORMAT = '%02d:%02d:%02d.%02d'
 
-def put_message_with_timestamp(start_time, message, no_newline = false)
-  seconds = ((Time.now - start_time)*100).floor
+$start_time = Time.now
+
+def put_message_with_timestamp( message, no_newline = false)
+  seconds = ((Time.now - $start_time)*100).floor
 
   cleaner = ' ' * 80
 
@@ -1104,7 +1106,7 @@ def put_message_with_timestamp(start_time, message, no_newline = false)
   STDOUT.flush
 end
 
-def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to = nil, unzip_to = nil)
+def wait_and_get_build(app_id, build_id, proxy, save_to = nil, unzip_to = nil)
   puts("Application build progress: \n")
 
   app_request = {:app_id => app_id, :id => build_id}
@@ -1129,7 +1131,7 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
 
     build_complete = %w[completed failed].include?(status)
 
-    put_message_with_timestamp(start_time, "Current status: #{desc}", true)
+    put_message_with_timestamp("Current status: #{desc}", true)
 
   end while !build_complete
 
@@ -1139,7 +1141,7 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
 
   if !(save_to.nil? || save_to.empty?)
     is_ok, result_link = http_get(result["download_link"], proxy, save_to) do |current, total, msg|
-      put_message_with_timestamp(start_time, "Current status: #{msg}", true)
+      put_message_with_timestamp("Current status: #{msg}", true)
     end
 
     puts
@@ -1148,14 +1150,14 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
       if !(unzip_to.nil? || unzip_to.empty?)
         if (status == "completed")
           Jake.unzip(result_link, unzip_to) do |a,b,msg|
-            put_message_with_timestamp(start_time, "Current status: #{msg}", true)
+            put_message_with_timestamp("Current status: #{msg}", true)
           end
 
           puts
         end
       end
     else
-      put_message_with_timestamp(start_time, "Server error: #{result_link}", true)
+      put_message_with_timestamp("Server error: #{result_link}", true)
     end
   end
 
@@ -1192,7 +1194,7 @@ end
 
 
 def match_build_id(build_id, builds)
-  unless build_id.nil? || build_id.empty?
+  if !build_id.nil? && (build_id.kind_of?(Integer) || !build_id.empty?)
     found_id = build_id.to_i
 
     found = nil
@@ -1273,27 +1275,7 @@ namespace 'cloud' do
       puts "Could build server #{$user_acc.server} does not returned user information"
     end
 
-    begin
-      gems_supported = JSON.parse(Rhohub::Build.supported_gems())
-    rescue Exception => e
-      gems_supported = nil
-    end
-
-    if !gems_supported.nil? && gems_supported["versions"]
-      versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
-      fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
-
-      puts "Server gem versions: " + versions.join(', ')
-      puts "Fast build supported for: " + fast_builds.join(', ')
-
-      best = $app_config["sdkversion"].nil? ? fast_builds.first : $app_config["sdkversion"]
-
-      best = best_match(best, versions, false)
-
-      puts "Using build.yml sdkversion setting selecting gem: " + best
-    else
-      puts "Could build server #{$user_acc.server} does not returned rhodes gems information"
-    end
+    Rake::Task['cloud:show:gems'].invoke()
   end
 
   desc 'Get project infromation from server'
@@ -1429,6 +1411,45 @@ namespace 'cloud' do
       end
     end
 
+    desc 'Show server supported gems'
+    task :gems => ['cloud:initialize'] do
+      begin
+        gems_supported = JSON.parse(Rhohub::Build.supported_gems())
+      rescue Exception => e
+        gems_supported = nil
+      end
+
+      if !gems_supported.nil? && gems_supported["versions"]
+        versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
+        fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
+
+        puts "Server gem versions: " + versions.join(', ')
+        puts "Fast build supported for: " + fast_builds.join(', ')
+
+        best = $app_config["sdkversion"].nil? ? fast_builds.first : $app_config["sdkversion"]
+
+        best = best_match(best, versions, false)
+
+        puts "Using build.yml sdkversion setting selecting gem: " + best
+      else
+        puts "Could build server #{$user_acc.server} does not returned rhodes gems information"
+      end
+    end
+
+    task :platforms => ['cloud:initialize'] do
+      puts JSON.pretty_generate(get_build_platforms())
+    end
+
+    task :apps => ['cloud:initialize'] do
+      apps = []
+      rhohub_make_request($user_acc.server) do
+        #get app list
+        apps = get_app_list()
+      end
+      puts JSON.pretty_generate(apps)
+
+    end
+
   end
 
   desc 'List avaliable builds'
@@ -1436,63 +1457,86 @@ namespace 'cloud' do
     Rake::Task['cloud:show:build'].invoke()
   end
 
-  desc "Download build into app\\bin folder"
-  task :download, [:build_id] => [:find_app] do |t, args|
-    FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
+  def deploy_build()
+    dirs = Dir.entries($cloud_build_temp).select {|entry| File.directory? File.join($cloud_build_temp,entry) and !(entry =='.' || entry == '..') }
 
-    build_id = args.build_id
+    dirs.each do |dir|
+      put_message_with_timestamp("Removing previous application from bin folder #{dir}")
+      FileUtils.rm_rf(Dir.glob(File.join($cloud_build_bin,dir)))
+      $latest_platform = dir
+    end
+
+    if dirs.length > 0
+      FileUtils.cp_r File.join($cloud_build_temp,'.'), $cloud_build_bin
+
+      dest = File.join($cloud_build_bin, dirs.first)
+
+      unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
+
+      put_message_with_timestamp("Done, application unpacked into #{dest}")
+    end
+
+    unpacked_file_list
+  end
+
+  def get_build(build_id)
+    result = false
+    message = 'none'
 
     builds = get_builds_list($app_cloud_id)
-    matching_builds  = match_build_id(build_id, builds)
 
     if !builds.empty?
-      build_hash = matching_builds.last
+      matching_builds  = match_build_id(build_id, builds)
 
-      build_id = build_hash['id']
+      if !matching_builds.empty?
+        build_hash = matching_builds.last
 
-      if !build_hash.nil?
-        start_time = Time.now
-        successfull, file = wait_and_get_build($app_cloud_id, build_id, $proxy, start_time, $cloud_build_home, $cloud_build_temp)
+        build_id = build_hash['id']
 
-        if !file.nil?
-          if successfull
-            dirs = Dir.entries($cloud_build_temp).select {|entry| File.directory? File.join($cloud_build_temp,entry) and !(entry =='.' || entry == '..') }
+        if !build_hash.nil?
+          FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
 
-            dirs.each do |dir|
-              put_message_with_timestamp(start_time, "Removing previous application from bin folder #{dir}")
-              FileUtils.rm_rf(Dir.glob(File.join($cloud_build_bin,dir)))
-              $latest_platform = dir
-            end
+          $start_time = Time.now
+          successful, file = wait_and_get_build($app_cloud_id, build_id, $proxy, $cloud_build_home, $cloud_build_temp)
 
-            if dirs.length > 0
-              FileUtils.cp_r File.join($cloud_build_temp,'.'), $cloud_build_bin
-
-              dest = File.join($cloud_build_bin, dirs.first)
-
-              $unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
-
-              put_message_with_timestamp(start_time, "Done, application unpacked into #{dest}")
+          if !file.nil?
+            if successful
+              result = true
+              message = file
             else
-              $unpacked_file_list = []
+              put_message_with_timestamp('Done with build errors')
+              BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
             end
           else
-            put_message_with_timestamp(start_time, 'Done with build errors')
-            BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
+            message = 'Could not get any result from server'
           end
-        else
-          puts 'Could not get any result'
         end
       else
         str = build_id.to_s
         match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.min_by{|a| a[:dist]}
         if match[:dist] < 3
-          puts "Could not find #{build_id}, did you mean #{match[:id]}?"
+          message = "Could not find build ##{build_id}, did you mean #{match[:id]}?"
         else
-          puts "Could not find #{build_id}"
+          message = "Could not find build ##{build_id}"
         end
       end
     else
-      puts 'Nothing to download'
+      message = 'Nothing to download'
+    end
+
+    return result, message
+  end
+
+  desc "Download build into app\\bin folder"
+  task :download, [:build_id] => [:find_app] do |t, args|
+    is_ok, data = get_build(args.build_id)
+
+    $unpacked_file_list = []
+
+    if is_ok
+      $unpacked_file_list = deploy_build()
+    else
+      BuildOutput.put_log(BuildOutput::ERROR, data, 'build error')
     end
   end
 
@@ -1520,6 +1564,8 @@ namespace 'cloud' do
     end
 
     check_cloud_build_result(res)
+
+    build_id
   end
 
   def list_missing_files(files_array)
@@ -1547,8 +1593,8 @@ namespace 'cloud' do
     end
 
     options = {
-      :upload_cert => Base64.urlsafe_encode64(File.read(cert_file)),
-      :upload_profile => Base64.urlsafe_encode64(File.read(profile_file)),
+      :upload_cert => Base64.urlsafe_encode64(File.open(cert_file, 'rb') { |io| io.read }),
+      :upload_profile => Base64.urlsafe_encode64(File.open(profile_file, 'rb') { |io| io.read }),
       :bundle_identifier => get_conf('iphone/BundleIdentifier')
     }
 
@@ -1558,6 +1604,117 @@ namespace 'cloud' do
 
     options
   end
+
+  def run_binary_on(platform, file_list, devsim)
+    case platform
+      when "android"
+        to_run = file_list.find{|f| /.apk/ =~ f}
+        if !to_run.nil?
+          Rake::Task["run:#{platform}:#{devsim}:package"].invoke(to_run)
+        else
+          BuildOutput.error( 'Could not find apk file for android project', 'No file')
+        end
+    end
+  end
+
+  def build_deploy_run(target, run_target = nil)
+    res =  target.split(':')
+
+    platform = res.first
+
+    data = nil
+
+    if res.length > 1
+      data = res.last
+    end
+
+    if platform == 'iphone'
+      options = get_iphone_options()
+    else
+      options = {}
+    end
+
+    b_id = do_platform_build( platform, $platform_list, platform == 'iphone', options, data)
+    is_ok, res = get_build(b_id)
+    if is_ok
+      files = deploy_build()
+      unless files.empty?
+        if run_target
+          run_binary_on(platform, files, run_target)
+        end
+      end
+    else
+      BuildOutput.put_log(BuildOutput::ERROR, res, 'build error')
+    end
+  end
+
+  # android
+  # both simulator and device are supported
+
+  desc 'Build and run for android application on a simulator'
+  task :android => ['build:initialize'] do
+    build_deploy_run('android', 'simulator')
+  end
+
+  desc 'Andorid cloud build and run on the device'
+  task 'android:device' => ['build:initialize'] do
+    build_deploy_run('android', 'device')
+  end
+
+  desc 'Android cloud build and download'
+  task 'android:download' => ['build:initialize'] do
+    build_deploy_run('android')
+  end
+
+  # iphone
+
+  # iphone does not support simulator cloud builds
+
+  # desc 'Build and run for iphone application on a simulator'
+  # task :iphone => ['build:initialize'] do
+  #   build_deploy_run('iphone', 'simulator')
+  # end
+
+  desc 'Iphone cloud build and run on the device'
+  task 'iphone:device' => ['build:initialize'] do
+    build_deploy_run('iphone:development', 'device')
+  end
+
+  desc 'Iphone cloud build and download'
+  task 'iphone:download' => ['build:initialize'] do
+    build_deploy_run('iphone:development')
+  end
+
+  # win mobile
+
+  desc 'Build and run for windows mobile application on a simulator'
+  task :wm => ['build:initialize'] do
+    build_deploy_run('wm', 'simulator')
+  end
+
+  desc 'Windows mobile cloud build and run on the device'
+  task 'wm:device' => ['build:initialize'] do
+    build_deploy_run('wm', 'device')
+  end
+
+  desc 'Windows mobile cloud build and download'
+  task 'wm:download' => ['build:initialize'] do
+    build_deploy_run('wm')
+  end
+
+  # win32
+  # win32 does not have simulator version
+
+  # desc 'Build and run win32 application'
+  # task :win32 => ['build:initialize'] do
+  #   build_deploy_run('win32', '')
+  # end
+
+  desc 'Build win32 application'
+  task 'win32:download' => ['build:initialize'] do
+    build_deploy_run('win32')
+  end
+
 
   namespace :build do
     desc 'Prepare for cloud build'
@@ -1698,18 +1855,6 @@ namespace 'cloud' do
 
     end
     
-  end
-
-  def run_binary_on(platform, file_list, devsim)
-    case platform
-    when "android"
-      to_run = file_list.find{|f| /.apk/ =~ f}
-      if !to_run.nil?
-        Rake::Task["run:#{platform}:#{devsim}:package"].invoke(to_run)
-      else
-        BuildOutput.error( 'Could not find apk file for android project', 'No file')
-      end
-    end
   end
 
   desc "Run binary on the simulator with id"

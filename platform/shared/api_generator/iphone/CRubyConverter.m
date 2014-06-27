@@ -69,6 +69,7 @@
     }
     else if ([objectiveC_value isKindOfClass:[CMethodResultError class]]) {
         CMethodResultError* errorObject = (CMethodResultError*)objectiveC_value;
+        rb_raise(rho_ruby_get_NIL(), "error with code [%d] description [%s]", [errorObject getErrorCode], [[errorObject getErrorDescription] UTF8String]);
         
     }
     // ToDo: Support CMethodResultError
