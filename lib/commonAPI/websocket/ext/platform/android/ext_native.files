@@ -1,7 +1,7 @@
-ext/platform/android/generated/jni/Websocket.cpp
+ext/platform/android/generated/jni/WebSocket.cpp
 ext/platform/android/generated/jni/websocket_ruby_wrap.cpp
 ext/platform/android/generated/jni/websocket_js_wrap.cpp
-ext/platform/android/jni/Websocket_impl.cpp
+ext/platform/android/jni/WebSocket_impl.cpp
 ext/shared/generated/websocket_api_init.cpp
 ext/shared/generated/websocket_js_api.cpp
 ext/shared/generated/websocket_ruby_api.c

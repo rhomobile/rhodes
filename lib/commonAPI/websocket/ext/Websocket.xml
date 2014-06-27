@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Websocket">
+    <MODULE name="WebSocket" parent="Rho">
         <HELP_OVERVIEW>This API provides access to the WebSocket protocol for two-way communication with a remote host.</HELP_OVERVIEW>
     
         <TEMPLATES>
