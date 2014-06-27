@@ -37,7 +37,7 @@ extern "C" void Init_WebSocket(void)
         
         RAWTRACE("Initializing Java factory");
 
-        CWebSocketBase::setJavaFactory(env, jFactory);
+        rho::CWebSocketBase::setJavaFactory(env, jFactory);
 
         RAWTRACE("Deleting JNI reference");
 
