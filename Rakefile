@@ -707,6 +707,7 @@ namespace "token" do
         puts "Token will be checked after " + time_to_str($user_acc.remaining_time())
       else
         puts "Token should be checked"
+        BuildOutput.warning( "Unable to connect to RhoMobile.com servers to validate your token information.\nPlease ensure you have a valid network connection and your proxy settings are configured correctly.", 'Token check error')
       end
       puts "Subscription plan: " + $user_acc.subsciption_plan()
       subs_valid = $user_acc.is_valid_subscription?()
