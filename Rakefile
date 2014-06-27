@@ -1488,34 +1488,36 @@ namespace 'cloud' do
     if !builds.empty?
       matching_builds  = match_build_id(build_id, builds)
 
-      build_hash = matching_builds.last
+      if !matching_builds.empty?
+        build_hash = matching_builds.last
 
-      build_id = build_hash['id']
+        build_id = build_hash['id']
 
-      if !build_hash.nil?
-        FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
+        if !build_hash.nil?
+          FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
 
-        $start_time = Time.now
-        successful, file = wait_and_get_build($app_cloud_id, build_id, $proxy, $cloud_build_home, $cloud_build_temp)
+          $start_time = Time.now
+          successful, file = wait_and_get_build($app_cloud_id, build_id, $proxy, $cloud_build_home, $cloud_build_temp)
 
-        if !file.nil?
-          if successful
-            result = true
-            message = file
+          if !file.nil?
+            if successful
+              result = true
+              message = file
+            else
+              put_message_with_timestamp('Done with build errors')
+              BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
+            end
           else
-            put_message_with_timestamp('Done with build errors')
-            BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
+            message = 'Could not get any result from server'
           end
-        else
-          message = 'Could not get any result from server'
         end
       else
         str = build_id.to_s
         match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.min_by{|a| a[:dist]}
         if match[:dist] < 3
-          message = "Could not find #{build_id}, did you mean #{match[:id]}?"
+          message = "Could not find build ##{build_id}, did you mean #{match[:id]}?"
         else
-          message = "Could not find #{build_id}"
+          message = "Could not find build ##{build_id}"
         end
       end
     else
@@ -1534,7 +1536,7 @@ namespace 'cloud' do
     if is_ok
       $unpacked_file_list = deploy_build()
     else
-      puts data
+      BuildOutput.put_log(BuildOutput::ERROR, data, 'build error')
     end
   end
 
@@ -1642,7 +1644,7 @@ namespace 'cloud' do
         end
       end
     else
-      puts res
+      BuildOutput.put_log(BuildOutput::ERROR, res, 'build error')
     end
   end
 
