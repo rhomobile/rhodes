@@ -575,9 +575,9 @@ boolean CRhodesApp::callTimerCallback(const String& strUrl, const String& strDat
 		
     if ( strData.length() > 0 )
         strBody += "&" + strData;
-
-    String strReply;
-    return m_httpServer->call_ruby_method(strUrl, strBody, strReply);
+    
+    callCallbackWithData(strUrl, "", strData, false);
+    return true;
 }
 
 void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
@@ -800,7 +800,7 @@ void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBar
     }
 
     strBody += "&rho_callback=1";
-    //getNetRequest().pushData( strCallbackUrl, strBody, null );
+
     runCallbackInThread(strCallbackUrl, strBody);
 }
 
