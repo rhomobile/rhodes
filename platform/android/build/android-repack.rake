@@ -26,6 +26,27 @@ namespace 'device' do
 
       FileUtils.cp( File.join($app_path,'build.yml'), target_path )
       
+      #save manifest changes
+      $ext_android_manifest_changes.each do |ext, manifest_changes|
+        addspath = File.join(target_path, 'extensions', ext, 'adds')
+        mkdir_p addspath
+        manifest_changes.each do |path|
+          if File.extname(path) == '.xml'
+            cp path, File.join(addspath, 'AndroidManifest.xml')
+          else
+            if File.extname(path) == '.rb'
+              cp path, File.join(addspath, 'AndroidManifest.rb')
+            else
+              if File.extname(path) == '.erb'
+                cp path, addspath
+              else
+                raise "Wrong AndroidManifest patch file: #{path}"
+              end
+            end
+          end
+        end
+      end
+      
     end
 
   module AndroidPrebuild
@@ -41,7 +62,7 @@ namespace 'device' do
       return $appassets
     end
 
-    def self.generate_manifest(prebuilt_config,app_config)
+    def self.generate_manifest(prebuilt_path,prebuilt_config,app_config)
 
       version = {'major' => 0, 'minor' => 0, 'patch' => 0, "build" => 0}
       if $app_config["version"]
@@ -78,11 +99,6 @@ namespace 'device' do
         cap = [cap] unless cap.is_a? Array
 
         cap.each do |cap_item|
-          if cap_item.is_a? Proc
-            #caps_proc << cap_item
-            next
-          end
-
           if cap_item.is_a? String
             usesPermissions << "android.permission.#{cap_item}"
             next
@@ -106,6 +122,7 @@ namespace 'device' do
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
+      puts "Apply app's extensions manifest changes in generator..."
       Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', 'AndroidManifest.rb')).each do |extscript|
         puts "Evaluating #{extscript}"
         eval(File.new(extscript).read)
@@ -119,16 +136,63 @@ namespace 'device' do
         generator.applicationManifestAdds << exttemplate
       end
 
-      manifest = generator.render $rhomanifesterb
+      puts "Apply container's extensions manifest changes in generator..."
+      $app_config['extensions'].each { |ext|
+        addspath = File.join(prebuilt_path,'extensions',ext,'adds')
+        if (File.directory?(addspath))
+        
+            extscript = File.join(addspath,'AndroidManifest.rb')
+            if (File.file?(extscript))
+                puts "Evaluating #{extscript}"
+                eval(File.new(extscript).read)
+            end
 
+            Dir.glob(File.join(addspath, 'Manifest*.erb')).each do |exttemplate|
+                puts "Adding template #{exttemplate}"
+                generator.manifestManifestAdds << exttemplate
+            end
+
+            Dir.glob(File.join(addspath, 'Application*.erb')).each do |exttemplate|
+                puts "Adding template #{exttemplate}"
+                generator.applicationManifestAdds << exttemplate
+            end
+            
+
+        end
+        
+      }
+
+      manifest = generator.render $rhomanifesterb
       File.open($appmanifest, "w") { |f| f.write manifest }
 
+      ext_manifest_changes = []
 
+      puts "Collecting legacy manifest changes for container extensions..."
+      $app_config['extensions'].each { |ext|
+        extmanifest = File.join(prebuilt_path,'extensions',ext,'adds','AndroidManifest.xml')
+        if (File.file?(extmanifest))
+            ext_manifest_changes << extmanifest
+        end
+      }
+
+      puts "Collecting legacy manifest changes for app extensions..."
+      Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', 'AndroidManifest.xml')).each do |ext_manifest|
+        if File.file? ext_manifest
+            ext_manifest_changes << ext_manifest
+        end
+      end
+
+      puts "Applying legacy manifest changes..."
+      apply_manifest_ext_changes($appmanifest,ext_manifest_changes)
+
+      return $appmanifest
+    end
+
+    def self.apply_manifest_ext_changes(target_manifest, manifest_changes)
       #######################################################
       # Deprecated staff below
 
-
-      app_f = File.new($appmanifest)
+      app_f = File.new(target_manifest)
       manifest_orig_doc = REXML::Document.new(app_f)
       app_f.close
       dst_manifest = manifest_orig_doc.elements["manifest"]
@@ -143,7 +207,7 @@ namespace 'device' do
         end
       end
 
-      Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', 'AndroidManifest.xml')).each do |ext_manifest|
+      manifest_changes.each do |ext_manifest|
 
         if File.exists? ext_manifest
           puts 'AndroidManifest.xml['+ext_manifest+'] from native extension found !'
@@ -193,16 +257,13 @@ namespace 'device' do
       end
 
       puts 'delete original manifest'
-      File.delete($appmanifest)
+      File.delete(target_manifest)
 
-      updated_f = File.open($appmanifest, "w")
+      updated_f = File.open(target_manifest, "w")
       manifest_orig_doc.write updated_f, 2
       updated_f.close
 
-      #rm tappmanifest
       puts 'Manifest updated by extension is saved!'
-
-      return $appmanifest
     end
 
     def self.build_resources(prebuilt_builddir)
@@ -444,7 +505,7 @@ namespace 'device' do
 
       prebuilt_config = Jake.config(File.open(File.join(prebuilt_path, 'build.yml')))
 
-      manifest_path = generate_manifest(prebuilt_config,$app_config)
+      manifest_path = generate_manifest(prebuilt_path,prebuilt_config,$app_config)
 
       prebuilt_builddir = File.join(bundle_path,'bin','target','android',$confdir)
       resources_path = build_resources(prebuilt_builddir)
