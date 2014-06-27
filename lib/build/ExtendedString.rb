@@ -1,18 +1,77 @@
 class String
 
   def capitalize_first
-    self.slice(0, 1).capitalize + self.slice(1..-1)
+    str = to_s
+    empty? ? str : str[0..0].upcase << str[1..-1]
   end
 
+  # Converts a string to camelcase. This method leaves the first character
+  # as given. This allows other methods to be used first, such as #uppercase
+  # and #lowercase.
+  def camel_case(*separators)
+    case separators.first
+      when Symbol, TrueClass, FalseClass, NilClass
+        first_letter = separators.shift
+    end
+
+    separators = ['_', '\s'] if separators.empty?
+
+    str = self.dup
+
+    separators.each do |s|
+      str = str.gsub(/(?:#{s}+)([a-z])/){ $1.upcase }
+    end
+
+    case first_letter
+      when :upper, true
+        str = str.gsub(/(\A|\s)([a-z])/){ $1 + $2.upcase }
+      when :lower, false
+        str = str.gsub(/(\A|\s)([A-Z])/){ $1 + $2.downcase }
+    end
+
+    str
+  end
+
+  # Converts a string to module name representation.
+  #
+  # This is essentially #camelcase, but it also converts
+  # '/' to '::' which is useful for converting paths to
+  # namespaces.
+  def modulize
+    #gsub('__','/'). # why was this ever here?
+    gsub(/__(.?)/){ "::#{$1.upcase}" }.
+        gsub(/\/(.?)/){ "::#{$1.upcase}" }.
+        gsub(/(?:_+|-+)([a-z])/){ $1.upcase }.
+        gsub(/(\A|\s)([a-z])/){ $1 + $2.upcase }
+  end
+
+  def humanize
+    gsub(/_/, " ").capitalize
+  end
+
+  # Underscore a string such that camelcase, dashes and spaces are
+  # replaced by underscores. This is the reverse of {#camelcase},
+  # albeit not an exact inverse.
   def underscore
-    self.gsub(/::/, '/').
-        gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
-        gsub(/([a-z\d])([A-Z])/, '\1_\2').
-        tr('- ', '_').
+    #gsub(/::/, '/').
+    gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+        gsub(/([a-z\d])([A-Z])/,'\1_\2').
+        tr('-', '_').
+        gsub(/\s/, '_').
+        gsub(/__+/, '_').
         downcase
   end
 
+  def titleize
+    underscore.humanize.gsub(/\b('?[a-z])/) { $1.capitalize }
+  end
+
+  def hard_wrap(width = 80)
+    gsub(/(.{1,#{width}})(\s+|$)/, "\\1\n").strip
+  end
+
   # from natcmp gem
+  # Natural comaration based on numbers in strings
   def self.natcmp(str1, str2, ignoreCase=true)
     strArrays = [str1, str2].collect do |str|
       str = str.downcase if ignoreCase
@@ -29,6 +88,26 @@ class String
 
     strArrays[0] <=> strArrays[1]
   end
+
+  def black; self end
+  def red; self end
+  def green; self end
+  def brown; self end
+  def blue; self end
+  def magenta; self end
+  def cyan; self end
+  def gray; self end
+  def bg_black; self end
+  def bg_red; self end
+  def bg_green; self end
+  def bg_brown; self end
+  def bg_blue; self end
+  def bg_magenta; self end
+  def bg_cyan; self end
+  def bg_gray; self end
+  def bold; self end
+  def underline; self end
+  def reverse_color; self end
 
   # table of helper functions
   {  
@@ -57,10 +136,6 @@ class String
     if STDOUT.tty? && !is_win
       send :define_method, name do
         [format[0], self, format[1]].join
-      end
-    else
-      send :define_method, name do
-        self
       end
     end
   end
