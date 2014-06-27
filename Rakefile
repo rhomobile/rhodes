@@ -2774,6 +2774,10 @@ def init_extensions(dest, mode = "")
               endJSModules << f if add
               next
             end
+            if (fBaseName == "#{extname}-postDef.js")
+              puts "add post-def module: #{f}"
+              endJSModules << f
+            end
 
             if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
               startJSModules.unshift(f)
@@ -4082,6 +4086,10 @@ namespace "run" do
               add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
               endJSModules << f if add
               next
+            end
+            if (fBaseName == "#{extname}-postDef.js")
+              puts "add post-def module: #{f}"
+              endJSModules << f
             end
 
             if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
