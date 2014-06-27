@@ -1295,7 +1295,7 @@ namespace 'cloud' do
       puts "RhoHub User: #{user_proj[:user]}, application: #{user_proj[:app]}"
     else
       BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Rhohub build')
-      raise Exception.new('Hosted on server not supported by cloud build system')
+      raise Exception.new('Application repository is not hosted on cloud build serer')
     end
 
     rhohub_make_request($user_acc.server) do
