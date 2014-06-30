@@ -263,7 +263,7 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_proc
         value_name = "\"" + parts[2] + "\"="
       end
 
-      val = parts[4].gsub(/[^0-9A-Za-z.\\\/\-{}]/, '')
+      val = parts[4].gsub(/[^0-9A-Za-z.\\\/\-{} *]/, '')
 
       if parts[3] == "0x00010001"
         value_name += "dword:"
@@ -273,6 +273,7 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_proc
       end
 
       rf.puts value_name
+      rf.puts
     end
   end
 
@@ -389,9 +390,9 @@ def build_cab
     ($build_persistent_cab ? "1" : "0")       #12
   ]
 
-  if $build_persistent_cab && !$use_shared_runtime
+  if $build_persistent_cab
     args.concat(additional_dlls_persistent_paths)
-  else
+  elsif !$use_shared_runtime
     args.concat(additional_dlls_paths)
   end
   
