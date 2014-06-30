@@ -41,7 +41,7 @@ if $cur_module.is_template_default_instance %>
     RAWTRACE(__FUNCTION__);
 
     rho::apiGenerator::CMethodResult result(false);
-    ObjectProxy::setDefaultID(strObjID);
+    ObjectProxy::setDefaultID(argv.getItem(0).getString());
     return CMethodResultConvertor().toJSON(result);
 } <%
 end %>
