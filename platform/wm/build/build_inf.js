@@ -333,9 +333,10 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     }
     else
     {
-        p("CopyFiles=CopyToInstallDir,CopySystemFiles"+
+        p("CopyFiles=CopyToInstallDir"+
            (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "") +
-           (!usereruntime && (webkit_mode == 'none') && include_motocaps? ",CopyConfig" : "")+
+           (!usereruntime && (webkit_mode == 'none') && include_motocaps ? ",CopyConfig" : "") +
+           (!usereruntime && include_motocaps ? ",CopySystemFiles" : "") +
            (show_shortcut && usereruntime ? ",Shortcuts" : "")+
            get_copyfiles_sections(es,is_persistent));
     }
