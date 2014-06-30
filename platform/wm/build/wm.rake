@@ -489,8 +489,7 @@ namespace "config" do
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
     $build_persistent_cab = Jake.getBuildBoolProp("persistent")
-    $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
-    $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
+    $run_on_startup = Jake.getBuildBoolProp("startAtBoot")    
     $build_cab = true 
     $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
     $is_webkit_engine = true if $is_webkit_engine.nil?
