@@ -1189,7 +1189,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 			headers.push_back(Header("Content-Range", buf));
 			send_response(create_response("416 Request Range Not Satisfiable",headers));
             fclose(fp);
-            delete buf;
+            delete[] buf;
             return false;
         }
 		
@@ -1211,7 +1211,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     if (!send_response(create_response(start_line, headers))) {
         RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
         fclose(fp);
-        delete buf;
+        delete[] buf;
         return false;
     }
     
@@ -1234,7 +1234,7 @@ PROF_STOP("LOW_FILE");
 				RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)need_to_read);
 			}
             fclose(fp);
-            delete buf;
+            delete[] buf;
             return false;
         }
         
@@ -1243,7 +1243,7 @@ PROF_STOP("LOW_FILE");
         if (!send_response_body(String(buf, n))) {
             RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
             fclose(fp);
-            delete buf;
+            delete[] buf;
             return false;
         }
     }
@@ -1251,7 +1251,7 @@ PROF_STOP("LOW_FILE");
 PROF_START("LOW_FILE");
     fclose(fp);
 PROF_STOP("LOW_FILE");
-    delete buf;
+    delete[] buf;
     if (verbose) RAWTRACE1("File %s was sent successfully", path.c_str());
     return false;
 }
