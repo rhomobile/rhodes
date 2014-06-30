@@ -1,4 +1,4 @@
-package com.websocket;
+package com.rho.websocket;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.api.MethodResult;
 import com.rhomobile.rhodes.Logger;
 
-public class Websocket extends WebsocketBase implements IWebsocket {
+public class WebSocket extends WebSocketBase implements IWebSocket {
 
     private static final int STATE_CONNECTING   = 0;
     private static final int STATE_OPEN         = 1;
@@ -18,7 +18,7 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     
     private int mState = -1;
     
-    private static final String TAG = "Websocket";
+    private static final String TAG = "WebSocket";
     
     private IMethodResult mOnOpen;
     private IMethodResult mOnMessage;
@@ -26,7 +26,7 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     private IMethodResult mOnClose;
     
     private WebSocketClient mClient;
-    private WebsocketFactory mFactory;
+    private WebSocketFactory mFactory;
     private String mURL;
     
     private boolean mOpenEventPending = false;
@@ -36,15 +36,15 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     private int mCloseCodePending;
     private String mCloseReasonPending;
     
-    public Websocket(WebsocketFactory factory, String id) {
+    public WebSocket(WebSocketFactory factory, String id) {
         super(id);
         
-        Logger.I(TAG,"Websocket ctor, id: " + id);
+        Logger.I(TAG,"WebSocket ctor, id: " + id);
         mFactory = factory;
     }
     
     synchronized public void setOnopen(IMethodResult result) {
-        Logger.I(TAG,"Websocket setOnopen");
+        Logger.I(TAG,"WebSocket setOnopen");
         mOnOpen = result;
         if ( mOpenEventPending && ( mOnOpen != null ) && ( mOnOpen.hasCallback() ) ) {
             Logger.I(TAG,"Pending open event, calling callback immediately");
@@ -54,12 +54,12 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     }
     
     synchronized public void setOnmessage(IMethodResult result) {
-        Logger.I(TAG,"Websocket setOnmessage");
+        Logger.I(TAG,"WebSocket setOnmessage");
         mOnMessage = result;
     }
     
     synchronized public void setOnerror(IMethodResult result) {
-        Logger.I(TAG,"Websocket setOnerror");
+        Logger.I(TAG,"WebSocket setOnerror");
         mOnError = result;
         if ( mErrorEventPending && ( mOnError != null ) && ( mOnError.hasCallback() ) ) {
             Logger.I(TAG,"Pending error event, calling callback immediately");
@@ -70,7 +70,7 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     }
     
     synchronized public void setOnclose(IMethodResult result) {
-        Logger.I(TAG,"Websocket setOnclose");
+        Logger.I(TAG,"WebSocket setOnclose");
         mOnClose = result;
         if ( mCloseEventPending && ( mOnClose != null ) && ( mOnClose.hasCallback() ) ) {
             Logger.I(TAG,"Pending close event, calling callback immediately");
@@ -98,10 +98,10 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     
     @Override
     public void create(String url, String protocols, IMethodResult result) {
-        Logger.I(TAG,"Websocket create, url:" + url);
+        Logger.I(TAG,"WebSocket create, url:" + url);
 
         if ( url.length() == 0 ) {
-          result.setError("Websocket URL is empty.");
+          result.setError("WebSocket URL is empty.");
           return;
         }
         
@@ -111,7 +111,7 @@ public class Websocket extends WebsocketBase implements IWebsocket {
             @Override
             public void onConnect() {
             
-                synchronized( Websocket.this ) {
+                synchronized( WebSocket.this ) {
                     mState = STATE_OPEN;
                     
                     if ( (mOnOpen != null) && (mOnOpen.hasCallback() ) ) {
@@ -124,21 +124,21 @@ public class Websocket extends WebsocketBase implements IWebsocket {
             
             @Override
             public void onMessage(String message) {
-                synchronized( Websocket.this ) {
+                synchronized( WebSocket.this ) {
                     dispatchMessageEvent(message);
                 }
             }
             
             @Override
             public void onMessage(byte[] data) {
-                synchronized( Websocket.this ) {
+                synchronized( WebSocket.this ) {
                     dispatchMessageEvent(new String(data));
                 }
             }
                       
             @Override
             public void onDisconnect(int code, String reason) {
-                synchronized( Websocket.this ) {
+                synchronized( WebSocket.this ) {
                     mState = STATE_CLOSED;
                     
                     if ( ( mOnClose != null ) && ( mOnClose.hasCallback() ) ) {
@@ -153,7 +153,7 @@ public class Websocket extends WebsocketBase implements IWebsocket {
                       
             @Override
             public void onError(Exception error) {
-                synchronized( Websocket.this ) {
+                synchronized( WebSocket.this ) {
                     if ( ( mOnError != null ) && ( mOnError.hasCallback() ) ) {
                         dispatchErrorEvent(error);
                     } else {
@@ -201,7 +201,7 @@ public class Websocket extends WebsocketBase implements IWebsocket {
     }
     
     private void dispatchErrorEvent(Exception e) {
-        Logger.E(TAG,"Websocket error: " + e.getMessage());
+        Logger.E(TAG,"WebSocket error: " + e.getMessage());
 
         if ( mOnError != null ) {
             Map<String,Object> result = new HashMap<String,Object>();

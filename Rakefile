@@ -707,6 +707,7 @@ namespace "token" do
         puts "Token will be checked after " + time_to_str($user_acc.remaining_time())
       else
         puts "Token should be checked"
+        BuildOutput.warning( "Unable to connect to RhoMobile.com servers to validate your token information.\nPlease ensure you have a valid network connection and your proxy settings are configured correctly.", 'Token check error')
       end
       puts "Subscription plan: " + $user_acc.subsciption_plan()
       subs_valid = $user_acc.is_valid_subscription?()
@@ -2773,6 +2774,10 @@ def init_extensions(dest, mode = "")
               endJSModules << f if add
               next
             end
+            if (fBaseName == "#{extname}-postDef.js")
+              puts "add post-def module: #{f}"
+              endJSModules << f
+            end
 
             if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
               startJSModules.unshift(f)
@@ -4081,6 +4086,10 @@ namespace "run" do
               add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
               endJSModules << f if add
               next
+            end
+            if (fBaseName == "#{extname}-postDef.js")
+              puts "add post-def module: #{f}"
+              endJSModules << f
             end
 
             if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
