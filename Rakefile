@@ -407,11 +407,11 @@ def from_boolean(v)
 end
 
 def time_to_str(time)
-  dhms = [60,60,24].reduce([time]) { |m,o| m.unshift(m.shift.divmod(o)).flatten }
+  d_h_m_s = [60,60,24].reduce([time]) { |m,o| m.unshift(m.shift.divmod(o)).flatten }
   best = []
   ["day","hour","minute","second"].each_with_index do |v, i|
-    if dhms[i] > 0
-      best << dhms[i].to_s + " " + v + ((dhms[i] > 1) ? "s" : "")
+    if d_h_m_s[i] > 0
+      best << d_h_m_s[i].to_s + " " + v + ((d_h_m_s[i] > 1) ? "s" : "")
     end
   end
   best.empty? ? "now" : best.first(2).join(" ")
@@ -466,9 +466,9 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
     is_valid = user_acc.is_outdated() ? 0 : 2
 
     if (user_acc.is_outdated() || (subscription_level > user_acc.subscription_level))
-      servors = sort_by_distance(server_list, user_acc.server)
+      servers_sorted = sort_by_distance(server_list, user_acc.server)
 
-      servors.each do |srv|
+      servers_sorted.each do |srv|
         Rhohub.url = srv
 
         if (subscription_level > user_acc.subscription_level)
@@ -493,7 +493,7 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
       is_valid = user_acc.subscription_level >= 0 ? 2 : 0
 
       if is_valid == 0
-        servors.each do |srv|
+        servers_sorted.each do |srv|
           Rhohub.url = srv
 
           user_apps = nil
@@ -559,7 +559,7 @@ $cloud_brand = "rhomobile"
 
 def get_server(url, default)
   url = default if url.nil? || url.empty?
-  scheme, userinfo, host, port, registry, path, opaque, query, fragment =  URI.split(url)
+  scheme, user_info, host, port, registry, path, opaque, query, fragment =  URI.split(url)
   case scheme
     when "http"
       URI::HTTP.build({:host => host, :port => port}).to_s
@@ -626,8 +626,8 @@ namespace "token" do
     end
 
     if token.nil?
-      srv_adress = URI.join( get_server($user_acc.server, $server_list.first), '/forgot')
-      BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at #{srv_adress}", 'Invalid username or password')
+      srv_address = URI.join( get_server($user_acc.server, $server_list.first), '/forgot')
+      BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at #{srv_address}", 'Invalid username or password')
       exit 1
     end
 
@@ -963,14 +963,14 @@ end
 
 
 def show_build_information(build_hash, platforms)
-  build_staes = {
+  build_states = {
       "queued" => "queued".cyan,
       "started" => "started".blue,
       "completed" => "completed".green,
       "failed" => "failed".red
   }
 
-  label = build_staes[ build_hash["status"] ]
+  label = build_states[ build_hash["status"] ]
 
   message = ""
   target = ""
@@ -1031,8 +1031,8 @@ def best_match(target, list, is_lex = false)
 end
 
 def find_platform_version(platform, platform_list, default_ver, info, is_lex = false)
-  platfom_conf = platform_list[platform]
-  if platfom_conf.empty?
+  platform_conf = platform_list[platform]
+  if platform_conf.empty?
     raise Exception.new("Could not find any #{platform} sdk on cloud build server")
   end
 
@@ -1043,11 +1043,11 @@ def find_platform_version(platform, platform_list, default_ver, info, is_lex = f
 
   req_ver = default_ver if req_ver.nil?
 
-  best = platfom_conf.first
+  best = platform_conf.first
 
   if !(req_ver.nil? || req_ver.empty?)
     if !is_lex
-      platfom_conf.sort{|a, b| String.natcmp(b[:ver],a[:ver])}.each do |ver|
+      platform_conf.sort{|a, b| String.natcmp(b[:ver],a[:ver])}.each do |ver|
         if String.natcmp(req_ver, ver[:ver]) < 0
           best = ver
         else
@@ -1055,7 +1055,7 @@ def find_platform_version(platform, platform_list, default_ver, info, is_lex = f
         end
       end
     else
-      best = platfom_conf.min_by{ |el| distance(el[:ver],req_ver, true) }
+      best = platform_conf.min_by{ |el| distance(el[:ver],req_ver, true) }
     end
 
     if info
@@ -1723,7 +1723,7 @@ namespace 'cloud' do
       status = nil
 
       begin
-        stutus = JSON.parse(Rhohub::Build.user_status())
+        status = JSON.parse(Rhohub::Build.user_status())
       rescue Exception => e
         status = nil
         BuildOutput.error(
@@ -2550,8 +2550,8 @@ def write_modules_js(folder, filename, modules, do_separate_js_modules)
 
   if modules
     modules.each do |m|
-      modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
-      f.puts( "// Module #{modulename}\n\n" )
+      module_name = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+      f.puts( "// Module #{module_name}\n\n" )
       f.write(File.read(m))
     end
   end
@@ -2582,17 +2582,17 @@ def write_modules_js(folder, filename, modules, do_separate_js_modules)
         fname = v.first
       end
 
-      modulename = fname.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+      module_name = fname.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
 
       f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-      f.puts( "// Module #{modulename}" )
+      f.puts( "// Module #{module_name}" )
 
       v.each do |fname|
         f.puts "\n// From file #{fname.gsub(common,'')}\n\n"
         f.write(File.read(fname))
       end
 
-      Jake.modify_file_if_content_changed(File.join(folder, modulename.downcase+'.js'), f)
+      Jake.modify_file_if_content_changed(File.join(folder, module_name.downcase+'.js'), f)
     end
   end
 end
