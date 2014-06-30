@@ -1,15 +1,15 @@
 #include "rhodes.h"
-#include "Websocket.h"
+#include "WebSocket.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "Websocket_impl"
+#define DEFAULT_LOGCATEGORY "WebSocket_impl"
 
-#define WEBSOCKET_FACTORY_CLASS "com.websocket.WebsocketFactory"
+#define WEBSOCKET_FACTORY_CLASS "com.websocket.WebSocketFactory"
 
-extern "C" void Init_Websocket_API(void);
+extern "C" void Init_WebSocket_API(void);
 
-extern "C" void Init_Websocket(void)
+extern "C" void Init_WebSocket(void)
 {
     RAWTRACE(__FUNCTION__);
 
@@ -37,7 +37,7 @@ extern "C" void Init_Websocket(void)
         
         RAWTRACE("Initializing Java factory");
 
-        CWebsocketBase::setJavaFactory(env, jFactory);
+        rho::CWebSocketBase::setJavaFactory(env, jFactory);
 
         RAWTRACE("Deleting JNI reference");
 
@@ -45,17 +45,17 @@ extern "C" void Init_Websocket(void)
 
         RAWTRACE("Initializing API");
 
-        Init_Websocket_API();
+        Init_WebSocket_API();
 
-        RAWTRACE("Init_Websocket succeeded");
+        RAWTRACE("Init_WebSocket succeeded");
     }
     else
     {
-        RAWLOG_ERROR("Failed to initialize Websocket API: jnienv() is failed");
+        RAWLOG_ERROR("Failed to initialize WebSocket API: jnienv() is failed");
     }
 
 }
 
-extern "C" void Init_Websocket_extension() {
-    Init_Websocket();
+extern "C" void Init_WebSocket_extension() {
+    Init_WebSocket();
 }
