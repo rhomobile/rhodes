@@ -2356,6 +2356,7 @@ namespace "config" do
 
     $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
 
+    $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
 
     puts '%%%_%%% $js_application = '+$js_application.to_s
@@ -2851,6 +2852,10 @@ def init_extensions(dest, mode = "")
   if extjsmodulefiles.count > 0
     puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
     write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
+    
+    if $use_shared_runtime
+      cp File.join(rhoapi_js_folder, "rhoapi-modules.js"), File.join(rhoapi_js_folder, "ebapi-modules.js")
+    end
   end
   # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
   if !$shared_rt_js_appliction
