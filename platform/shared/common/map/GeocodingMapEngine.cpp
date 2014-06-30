@@ -184,7 +184,7 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
         url += "latlng=";
         sprintf(buf, "%f,%f", (float)cmd->latitude, (float)cmd->longitude);
         url += buf;
-        delete buf;
+        delete[] buf;
     }
     else {
         url += "address=";
@@ -314,7 +314,7 @@ public:
         rho_net_request_with_data(norm_url, buf);
         rho_http_free(norm_url);
         
-        delete buf;
+        delete[] buf;
         //delete this;
     }
 
@@ -340,7 +340,7 @@ public:
         rho_net_request_with_data(norm_url, buf);
         rho_http_free(norm_url);
                 
-        delete buf;
+        delete[] buf;
         //delete this;
     }
     
