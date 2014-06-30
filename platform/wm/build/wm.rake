@@ -307,9 +307,9 @@ def stuff_around_appname
   wm_icon = $app_path + '/icon/icon.ico'
   if $use_shared_runtime
     if $js_application
-      shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
+      shortcut_content = '"\\Program Files\\EnterpriseBrowser\\EnterpriseBrowser.exe" -jsapproot="\\Program Files\\' + $appname + '"'
     else
-      shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
+      shortcut_content = '"\\Program Files\\EnterpriseBrowser\\EnterpriseBrowser.exe" -approot="\\Program Files\\' + $appname + '"'
     end
 
     if File.exists? wm_icon then
@@ -330,10 +330,7 @@ def stuff_around_appname
 end
 
 def build_cab
-  #build_platform = 'wm6'
-  #build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
   build_platform = 'ce5' #if $sdk == "MC3000c50b (ARMV4I)"
-  #build_platform = 'ce7' if $sdk == "WT41N0c70PSDK (ARMV4I)"
 
   reg_keys_filename = File.join(File.dirname(__FILE__), 'regs.txt');
   com_dlls_filename = File.join(File.dirname(__FILE__), 'comdlls.txt');
