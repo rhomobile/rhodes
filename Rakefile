@@ -2764,52 +2764,53 @@ def init_extensions(dest, mode = "")
           end
         end
 
-        unless rhoapi_js_folder.nil?
-          Dir.glob(extpath + "/public/api/*.js").each do |f|
-            fBaseName = File.basename(f)
-            if (fBaseName.start_with?("rhoapi-native") )
-              endJSModules << f if fBaseName == "rhoapi-native.all.js"
-              next
-            end
-            if (fBaseName == "rhoapi-force.ajax.js")
-              add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
-              add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
-              endJSModules << f if add
-              next
-            end
-            if (fBaseName == "#{extname}-postDef.js")
-              puts "add post-def module: #{f}"
-              endJSModules << f
+        if !$skip_build_extensions
+          unless rhoapi_js_folder.nil?
+            Dir.glob(extpath + "/public/api/*.js").each do |f|
+              fBaseName = File.basename(f)
+              if (fBaseName.start_with?("rhoapi-native") )
+                endJSModules << f if fBaseName == "rhoapi-native.all.js"
+                next
+              end
+              if (fBaseName == "rhoapi-force.ajax.js")
+                add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
+                add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
+                endJSModules << f if add
+                next
+              end
+              if (fBaseName == "#{extname}-postDef.js")
+                puts "add post-def module: #{f}"
+                endJSModules << f
+              end
+
+              if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
+                startJSModules.unshift(f)
+              elsif f.downcase().end_with?("rhoapi.js")
+                startJSModules << f
+              elsif f.downcase().end_with?("rho.application.js")
+                endJSModules << f
+              elsif f.downcase().end_with?("rho.database.js")
+                endJSModules << f
+              elsif f.downcase().end_with?("rho.newormhelper.js")
+                endJSModules << f
+              elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                puts "add #{f} to startJSModules_opt.."
+                startJSModules_opt << f
+              else
+                extjsmodulefiles << f
+              end
             end
 
-            if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
-              startJSModules.unshift(f)
-            elsif f.downcase().end_with?("rhoapi.js")
-              startJSModules << f
-            elsif f.downcase().end_with?("rho.application.js")
-              endJSModules << f
-            elsif f.downcase().end_with?("rho.database.js")
-              endJSModules << f
-            elsif f.downcase().end_with?("rho.newormhelper.js")
-              endJSModules << f
-            elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
-              puts "add #{f} to startJSModules_opt.."
-              startJSModules_opt << f
-            else
-              extjsmodulefiles << f
+            Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
+              if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                puts "add #{f} to extjsmodulefiles_opt.."
+                extjsmodulefiles_opt << f
+              else
+                puts "add #{f} to extjsmodulefiles.."
+                extjsmodulefiles << f
+              end
             end
           end
-
-          Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-            if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
-              puts "add #{f} to extjsmodulefiles_opt.."
-              extjsmodulefiles_opt << f
-            else
-              puts "add #{f} to extjsmodulefiles.."
-              extjsmodulefiles << f
-            end
-          end
-
         end
 
       end
@@ -2846,27 +2847,29 @@ def init_extensions(dest, mode = "")
   extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
   extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
   #
-  if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
-    rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
-    mkdir_p rhoapi_js_folder
-  end
-  #
-  if extjsmodulefiles.count > 0
-    puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
+  if !$skip_build_extensions
+    if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
+      rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
+      mkdir_p rhoapi_js_folder
+    end
+    #
+    if extjsmodulefiles.count > 0
+      puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
+      write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
     
-    if $use_shared_runtime
-      cp File.join(rhoapi_js_folder, "rhoapi-modules.js"), File.join(rhoapi_js_folder, "ebapi-modules.js")
+      if $use_shared_runtime
+        cp File.join(rhoapi_js_folder, "rhoapi-modules.js"), File.join(rhoapi_js_folder, "ebapi-modules.js")
+      end
+    end
+    # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
+    if !$shared_rt_js_appliction
+      if extjsmodulefiles_opt.count > 0
+        puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
+        write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+      end
     end
   end
-  # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
-  if !$shared_rt_js_appliction
-    if extjsmodulefiles_opt.count > 0
-      puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-      write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
-    end
-  end
-
+  
   return if mode == "update_rho_modules_js"
 
   if $config["platform"] != "bb"
@@ -2896,7 +2899,7 @@ def init_extensions(dest, mode = "")
 
     Jake.modify_file_if_content_changed( exts, f )
 
-    if !extscsharp.nil?
+    if !extscsharp.nil? && !$skip_build_extensions
       # C# extensions initialization
       f = StringIO.new("", "w+")
       f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -3373,8 +3376,10 @@ namespace "build" do
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
 
-      if not $minify_types.empty?
-        minify_js_and_css($srcdir,$minify_types)
+      if !$skip_build_extensions
+        if not $minify_types.empty? && 
+          minify_js_and_css($srcdir,$minify_types)
+        end
       end
 
       chdir startdir
