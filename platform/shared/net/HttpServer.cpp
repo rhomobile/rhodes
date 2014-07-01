@@ -638,9 +638,10 @@ bool CHttpServer::receive_request(ByteVector &request)
     
     if (!r.empty()) {
         request.insert(request.end(), r.begin(), r.end());
-        request.push_back('\0');
-        if ( !rho_conf_getBool("log_skip_post") )
-            RAWTRACE1("Received request:\n%s", &request[0]);
+        if ( !rho_conf_getBool("log_skip_post") ) {
+            String strRequest(request.begin(),request.end());
+            RAWTRACE1("Received request:\n%s", strRequest.c_str());
+        }
     }
     return true;
 }
