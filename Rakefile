@@ -2754,7 +2754,9 @@ def init_extensions(dest, mode = "")
                 #api generator
                 if gen_checker.check(xml_path)
                   puts 'start running rhogen with api key'
-                  Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                  if !$skip_build_extensions
+                    Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                  end 
                 end
               end
             end
@@ -3028,10 +3030,8 @@ def common_bundle_start( startdir, dest)
   chdir start
   clear_linker_settings
 
-  if !$skip_build_extensions
-    init_extensions(dest)
-  end
-
+  init_extensions(dest)
+  
   chdir startdir
 
   if File.exists? app + '/app'
