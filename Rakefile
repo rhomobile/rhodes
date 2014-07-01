@@ -297,7 +297,7 @@ end
 
 #------------------------------------------------------------------------
 
-#TODO:  call clean from all platfroms scripts
+#TODO:  call clean from all platforms scripts
 namespace "clean" do
   task :common => "config:common" do
     if $config["platform"] == "bb"
@@ -407,11 +407,11 @@ def from_boolean(v)
 end
 
 def time_to_str(time)
-  dhms = [60,60,24].reduce([time]) { |m,o| m.unshift(m.shift.divmod(o)).flatten }
+  d_h_m_s = [60,60,24].reduce([time]) { |m,o| m.unshift(m.shift.divmod(o)).flatten }
   best = []
   ["day","hour","minute","second"].each_with_index do |v, i|
-    if dhms[i] > 0
-      best << dhms[i].to_s + " " + v + ((dhms[i] > 1) ? "s" : "")
+    if d_h_m_s[i] > 0
+      best << d_h_m_s[i].to_s + " " + v + ((d_h_m_s[i] > 1) ? "s" : "")
     end
   end
   best.empty? ? "now" : best.first(2).join(" ")
@@ -466,9 +466,9 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
     is_valid = user_acc.is_outdated() ? 0 : 2
 
     if (user_acc.is_outdated() || (subscription_level > user_acc.subscription_level))
-      servors = sort_by_distance(server_list, user_acc.server)
+      servers_sorted = sort_by_distance(server_list, user_acc.server)
 
-      servors.each do |srv|
+      servers_sorted.each do |srv|
         Rhohub.url = srv
 
         if (subscription_level > user_acc.subscription_level)
@@ -493,7 +493,7 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
       is_valid = user_acc.subscription_level >= 0 ? 2 : 0
 
       if is_valid == 0
-        servors.each do |srv|
+        servers_sorted.each do |srv|
           Rhohub.url = srv
 
           user_apps = nil
@@ -559,7 +559,7 @@ $cloud_brand = "rhomobile"
 
 def get_server(url, default)
   url = default if url.nil? || url.empty?
-  scheme, userinfo, host, port, registry, path, opaque, query, fragment =  URI.split(url)
+  scheme, user_info, host, port, registry, path, opaque, query, fragment =  URI.split(url)
   case scheme
     when "http"
       URI::HTTP.build({:host => host, :port => port}).to_s
@@ -626,8 +626,8 @@ namespace "token" do
     end
 
     if token.nil?
-      srv_adress = URI.join( get_server($user_acc.server, $server_list.first), '/forgot')
-      BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at #{srv_adress}", 'Invalid username or password')
+      srv_address = URI.join( get_server($user_acc.server, $server_list.first), '/forgot')
+      BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at #{srv_address}", 'Invalid username or password')
       exit 1
     end
 
@@ -698,7 +698,7 @@ namespace "token" do
     puts "SubscriptionChecked[#{from_boolean($user_acc.remaining_subscription_time() > 0)}]"
   end
 
-  desc "Show token and user subscription infomation"
+  desc "Show token and user subscription information"
   task :info => [:read] do
     puts "Login complete: " + from_boolean($user_acc.is_valid_token?())
     if $user_acc.is_valid_token?()
@@ -740,7 +740,7 @@ namespace "token" do
       when 2
         BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check")
       when 1
-        BuildOutput.put_log( BuildOutput::WARNING,"Token is valid, could not check subcription", "Token check")
+        BuildOutput.put_log( BuildOutput::WARNING,"Token is valid, could not check subscription", "Token check")
       when 0
         BuildOutput.put_log( BuildOutput::ERROR, 'Could not check token online', 'Token check')
         exit 1
@@ -760,7 +760,7 @@ namespace "token" do
       have_input = STDIN.tty? && STDOUT.tty?
 
       BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you need to log in into your rhomobile account.
-If you don't have accout please register at " + URI.join($server_list.first, '/').to_s + ( have_input ? 'To stop build just press enter.' : '') )
+If you don't have account please register at " + URI.join($server_list.first, '/').to_s + ( have_input ? 'To stop build just press enter.' : '') )
 
       if have_input
         Rake::Task['token:login'].invoke()
@@ -963,14 +963,14 @@ end
 
 
 def show_build_information(build_hash, platforms)
-  build_staes = {
+  build_states = {
       "queued" => "queued".cyan,
       "started" => "started".blue,
       "completed" => "completed".green,
       "failed" => "failed".red
   }
 
-  label = build_staes[ build_hash["status"] ]
+  label = build_states[ build_hash["status"] ]
 
   message = ""
   target = ""
@@ -1031,8 +1031,8 @@ def best_match(target, list, is_lex = false)
 end
 
 def find_platform_version(platform, platform_list, default_ver, info, is_lex = false)
-  platfom_conf = platform_list[platform]
-  if platfom_conf.empty?
+  platform_conf = platform_list[platform]
+  if platform_conf.empty?
     raise Exception.new("Could not find any #{platform} sdk on cloud build server")
   end
 
@@ -1043,11 +1043,11 @@ def find_platform_version(platform, platform_list, default_ver, info, is_lex = f
 
   req_ver = default_ver if req_ver.nil?
 
-  best = platfom_conf.first
+  best = platform_conf.first
 
   if !(req_ver.nil? || req_ver.empty?)
     if !is_lex
-      platfom_conf.sort{|a, b| String.natcmp(b[:ver],a[:ver])}.each do |ver|
+      platform_conf.sort{|a, b| String.natcmp(b[:ver],a[:ver])}.each do |ver|
         if String.natcmp(req_ver, ver[:ver]) < 0
           best = ver
         else
@@ -1055,7 +1055,7 @@ def find_platform_version(platform, platform_list, default_ver, info, is_lex = f
         end
       end
     else
-      best = platfom_conf.min_by{ |el| distance(el[:ver],req_ver, true) }
+      best = platform_conf.min_by{ |el| distance(el[:ver],req_ver, true) }
     end
 
     if info
@@ -1230,7 +1230,7 @@ $latest_platform = nil
 namespace 'cloud' do
   task :set_paths => ['config:initialize'] do
     if $app_path.empty?
-      BuildOutput.error('Could not run cloud build, app_path is not set', 'Rhohub build')
+      BuildOutput.error('Could not run cloud build, app_path is not set', 'Cloud server build')
       exit 1
     end
 
@@ -1279,24 +1279,24 @@ namespace 'cloud' do
     Rake::Task['cloud:show:gems'].invoke()
   end
 
-  desc 'Get project infromation from server'
+  desc 'Get project information from server'
   task :find_app => [:initialize] do
 
     #check current folder
     result = Jake.run2('git',%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
 
     if result.nil? || result.empty?
-      BuildOutput.error("Current project folder #{$app_path} is not versioned by git", 'Rhohub build')
+      BuildOutput.error("Current project folder #{$app_path} is not versioned by git", 'Cloud server build')
       raise Exception.new('Not versioned by git')
     end
 
     user_proj = cloud_url_git_match(result)
 
     if !user_proj.empty?
-      puts "RhoHub User: #{user_proj[:user]}, application: #{user_proj[:app]}"
+      puts "Cloud build server user: #{user_proj[:user]}, application: #{user_proj[:app]}"
     else
-      BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Rhohub build')
-      raise Exception.new('Application repository is not hosted on cloud build serer')
+      BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Cloud build')
+      raise Exception.new('Application repository is not hosted on cloud build server')
     end
 
     rhohub_make_request($user_acc.server) do
@@ -1306,13 +1306,13 @@ namespace 'cloud' do
     end
 
     if $apps.nil?
-      BuildOutput.error('Could not get project list from cloud build server. Check your internet connection and proxy settings.', 'Rhohub build')
+      BuildOutput.error('Could not get project list from cloud build server. Check your internet connection and proxy settings.', 'Cloud build')
 
       raise Exception.new('Could not get project list from server')
     end
 
     if $apps.empty?
-      BuildOutput.error('You do not have any RhoHub projects, please create progect first in order to use cloud build system', 'Rhohub build')
+      BuildOutput.error('You do not have any cloud server projects, please create project first in order to use cloud build system', 'Cloud build')
 
       raise Exception.new('Empty project list')
     end
@@ -1326,12 +1326,12 @@ namespace 'cloud' do
 
     if $cloud_app[:dist] > 0
       if $cloud_app[:user_proj][:server] != user_proj[:server]
-        BuildOutput.error("Current user account is on #{$cloud_app[:user_proj][:server].bold} but project in working directory is on #{user_proj[:server].bold}", 'Rhohub build')
+        BuildOutput.error("Current user account is on #{$cloud_app[:user_proj][:server].bold} but project in working directory is on #{user_proj[:server].bold}", 'Cloud build')
       elsif $cloud_app[:user] != user_proj[:user]
-        BuildOutput.error("Current user account is #{$cloud_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", 'Rhohub build')
+        BuildOutput.error("Current user account is #{$cloud_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", 'Cloud build')
       else
         project_names = $apps.map{ |e| " - #{e[:user_proj][:app].to_s}" }.join($/)
-        BuildOutput.error("Could not find #{user_proj[:app].bold} in current user application list: \n#{project_names}", 'Rhohub build')
+        BuildOutput.error("Could not find #{user_proj[:app].bold} in current user application list: \n#{project_names}", 'Cloud build')
       end
       raise Exception.new('User or application list mismatch')
     end
@@ -1453,7 +1453,7 @@ namespace 'cloud' do
 
   end
 
-  desc 'List avaliable builds'
+  desc 'List available builds'
   task :list_builds => [:find_app] do
     Rake::Task['cloud:show:build'].invoke()
   end
@@ -1657,7 +1657,7 @@ namespace 'cloud' do
     build_deploy_run('android', 'simulator')
   end
 
-  desc 'Andorid cloud build and run on the device'
+  desc 'Android cloud build and run on the device'
   task 'android:device' => ['build:initialize'] do
     build_deploy_run('android', 'device')
   end
@@ -1723,18 +1723,18 @@ namespace 'cloud' do
       status = nil
 
       begin
-        stutus = JSON.parse(Rhohub::Build.user_status())
+        status = JSON.parse(Rhohub::Build.user_status())
       rescue Exception => e
         status = nil
         BuildOutput.error(
-            ["Could not get user builds infromation #{e.inspect}"],
+            ["Could not get user builds information #{e.inspect}"],
             'Server response error')
       end
 
       # client side check
       build_enabled = false
 
-      if !(status.nil? || status.emtpy?)
+      if !(status.nil? || status.empty?)
         build_enabled = status["cloud_build_enabled"]== true
         remaining_builds = status["builds_remaining"]
         if remaining_builds > 0
@@ -1795,7 +1795,7 @@ namespace 'cloud' do
     end
 
     namespace :android do
-      desc 'Build adnroid production version'
+      desc 'Build android production version'
       task :production => ['build:initialize'] do
         $build_platform = 'android'
 
@@ -2278,7 +2278,7 @@ namespace "config" do
                             'Your subscription information is outdated or not downloaded. Please verify your internet connection and run build command again.'],
                             'Could not build licensed features.')
         else
-          msg = ["You have free subcription on #{$selected_server}. RhoElements featuers are available only for paid accounts."]
+          msg = ["You have free subscription on #{$selected_server}. RhoElements features are available only for paid accounts."]
           if $rhoelements_features.length() > 0
             msg.concat(['The following features are only available in RhoElements v2 and above:',
                         $rhoelements_features,
@@ -2370,7 +2370,7 @@ namespace "config" do
     end
 
     $shared_rt_js_appliction = ($js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime'))
-    puts "%%%_%%% $shared_rt_js_appliction = #{$shared_rt_js_appliction}"
+    puts "%%%_%%% $shared_rt_js_application = #{$shared_rt_js_appliction}"
     $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction
 
     if $current_platform == "bb"
@@ -2550,8 +2550,8 @@ def write_modules_js(folder, filename, modules, do_separate_js_modules)
 
   if modules
     modules.each do |m|
-      modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
-      f.puts( "// Module #{modulename}\n\n" )
+      module_name = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+      f.puts( "// Module #{module_name}\n\n" )
       f.write(File.read(m))
     end
   end
@@ -2582,17 +2582,17 @@ def write_modules_js(folder, filename, modules, do_separate_js_modules)
         fname = v.first
       end
 
-      modulename = fname.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+      module_name = fname.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
 
       f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-      f.puts( "// Module #{modulename}" )
+      f.puts( "// Module #{module_name}" )
 
       v.each do |fname|
         f.puts "\n// From file #{fname.gsub(common,'')}\n\n"
         f.write(File.read(fname))
       end
 
-      Jake.modify_file_if_content_changed(File.join(folder, modulename.downcase+'.js'), f)
+      Jake.modify_file_if_content_changed(File.join(folder, module_name.downcase+'.js'), f)
     end
   end
 end
@@ -2980,7 +2980,7 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
       map_items = file_map.select {|f| f[:path] == filepath[start_path.size+8..-1] }
 
       if map_items.size > 1
-        puts "WARRNING, duplicate file records."
+        puts "WARNING, duplicate file records."
       end
 
       if !map_items.nil? && map_items.size != 0
@@ -3456,7 +3456,7 @@ namespace "build" do
 
         error = output if error.nil?
 
-        BuildOutput.warning(['Failied to minify ' + filename, 'Output: ' + error], 'Minification error')
+        BuildOutput.warning(['Failed to minify ' + filename, 'Output: ' + error], 'Minification error')
 
         output = File.read(filename)
         #exit 1
