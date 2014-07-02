@@ -1253,6 +1253,7 @@ namespace "device" do
         'platform/wm/build/regs.txt'
       ].map {|p| Dir.glob(p)}).flatten
 
+      cp('build.yml', container_prefix_path)
       pack_7z($app_path, ['bin/RhoBundle'], File.join(container_prefix_path, 'application_override.7z'))
       pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
     end
@@ -1260,6 +1261,12 @@ namespace "device" do
     desc 'Applies application container. See also device:wm:make_container.'
     task :apply_container, [:container_prefix_path] do |t, args|
       container_prefix_path = args[:container_prefix_path]
+
+      File.open(File.join(container_prefix_path, 'build.yml')) do |f|
+        container_build_yml = Jake.config(f)
+        Jake.normalize_build_yml(container_build_yml)
+        $app_config['wm']['webkit_outprocess'] = container_build_yml['wm']['webkit_outprocess']
+      end
 
       unpack_7z($app_path, File.join(container_prefix_path, 'application_override.7z'))
       unpack_7z($startdir, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
