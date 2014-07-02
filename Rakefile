@@ -1502,7 +1502,7 @@ namespace 'cloud' do
     unpacked_file_list
   end
 
-  def get_build(build_id)
+  def get_build(build_id, show_info = false)
     result = false
     message = 'none'
 
@@ -1520,7 +1520,7 @@ namespace 'cloud' do
 
             $platform_list = get_build_platforms() unless $platform_list
 
-            show_build_information(build_hash, $platform_list, {:hide_link => true})
+            show_build_information(build_hash, $platform_list, {:hide_link => true}) if show_info
 
             FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
 
@@ -1560,7 +1560,7 @@ namespace 'cloud' do
 
   desc "Download build into app\\bin folder"
   task :download, [:build_id] => [:find_app] do |t, args|
-    is_ok, data = get_build(args.build_id)
+    is_ok, data = get_build(args.build_id, true)
 
     $unpacked_file_list = []
 
