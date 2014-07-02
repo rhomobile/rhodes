@@ -68,7 +68,7 @@ class Jake
     res
   end
 
-  def self.normalize_build_yml(yml)
+  def self.normalize_build_yml(yml = $app_config)
     yml['wm'] = {} unless yml['wm'].is_a?(Hash)
     yml['wm']['webkit_outprocess'] = '1' if yml['wm']['webkit_outprocess'].nil?
   end
