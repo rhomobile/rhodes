@@ -1253,7 +1253,7 @@ namespace "device" do
         'platform/wm/build/regs.txt'
       ].map {|p| Dir.glob(p)}).flatten
 
-      cp('build.yml', container_prefix_path)
+      cp(File.join($app_path, 'build.yml'), container_prefix_path)
       pack_7z($app_path, ['bin/RhoBundle'], File.join(container_prefix_path, 'application_override.7z'))
       pack_7z($startdir, rhodes_gem_paths, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
     end
