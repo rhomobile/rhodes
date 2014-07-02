@@ -388,7 +388,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame bar_info:(NSDictionary*)bar_info web_bkg_color:(UIColor*)web_bkg_color {
-	[self init];
+	self = [self init];
 	
 	self.mTabBarCallback = nil;
     

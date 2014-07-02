@@ -63,10 +63,13 @@
 @synthesize url, loaded, reload, view;
 
 - (id)init {
-    url = nil;
-	view = nil;
-    loaded = NO;
-    reload = NO;
+    self = [super init];
+    if (self) {
+        url = nil;
+        view = nil;
+        loaded = NO;
+        reload = NO;
+    }
     return self;
 }
 

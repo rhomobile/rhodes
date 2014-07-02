@@ -159,9 +159,10 @@
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
     
     NSString *initUrl = nil;
-    
-	self.myFont = [UIFont fontWithName:@"Helvetica-Bold" size:16.0];
-	[self.myFont release];
+
+    UIFont* font = [UIFont fontWithName:@"Helvetica-Bold" size:16.0];
+	self.myFont = font;
+	[font release];
 	
 	self.preferredSize = 0;
 	self.groupBottomIndex = -1;

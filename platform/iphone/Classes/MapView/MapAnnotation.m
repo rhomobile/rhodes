@@ -34,7 +34,7 @@
 @synthesize type, title, subtitle, address, url, coordinateString, resolvedAddress, coordinate, image, image_x_offset, image_y_offset;
 
 -(id) init {
-    [super init];
+    self = [super init];
     type = [[NSString alloc] initWithFormat:@"ann"];
     title = [[NSString alloc] initWithFormat:@""];
     subtitle = [[NSString alloc] initWithFormat:@""];

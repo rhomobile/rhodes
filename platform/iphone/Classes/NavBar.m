@@ -69,7 +69,7 @@ void create_navbar(NSDictionary *p)
     if (!rho_rhodesapp_check_mode())
         return;
     
-    NSString *title = nil;
+    NSString *title = @"";
     NSMutableArray *left = [NSMutableArray arrayWithCapacity:3];
     NSMutableArray *right = [NSMutableArray arrayWithCapacity:3];
     

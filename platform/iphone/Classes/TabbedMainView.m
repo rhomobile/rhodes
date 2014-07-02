@@ -58,9 +58,12 @@
 @synthesize url, loaded, reload;
 
 - (id)init {
-    url = nil;
-    loaded = NO;
-    reload = NO;
+    self = [super init];
+    if (self) {
+        url = nil;
+        loaded = NO;
+        reload = NO;
+    }
     return self;
 }
 
@@ -333,6 +336,7 @@
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info {
+    self = [super init];
 	[SimpleMainView disableHiddenOnStart];
     CGRect frame = [[v view] frame];
     frame.origin.x = 0;

@@ -41,7 +41,7 @@
 
 
 - (id)initWithRect:(CGRect)rect nvview:(UIView*)nvview delegate:(NVDelegate*)delegate {
-	[self init];
+	self = [self init];
 	
 	nvDelegate = delegate;
 	self.view.frame = rect;

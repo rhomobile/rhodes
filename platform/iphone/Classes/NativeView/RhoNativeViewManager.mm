@@ -71,6 +71,7 @@ static int currentID = 1;
 @synthesize type_name, nv_view, nv_factory, tab_index, nv_id, start_params, message;
 
 - (id)init {
+    self = [super init];
     type_name = nil;
 	nv_view = NULL;
 	nv_factory = NULL;
