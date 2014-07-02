@@ -962,7 +962,7 @@ def find_platform_by_command(platforms, command)
 end
 
 
-def show_build_information(build_hash, platforms)
+def show_build_information(build_hash, platforms, opts = {})
   build_states = {
       "queued" => "queued".cyan,
       "started" => "started".blue,
@@ -982,11 +982,11 @@ def show_build_information(build_hash, platforms)
   end
 
   puts "Build ##{build_hash["id"]}: #{label}#{target}"
-  puts "  #{message}" unless message.nil? || message.empty?
+  puts "  #{message}" unless message.nil? || message.empty? || opts[:hide_ver]
 
   dl = build_hash["download_link"]
 
-  if !(dl.nil? || dl.empty?)
+  if !(dl.nil? || dl.empty?) && !(opts[:hide_link])
     puts "  Download link : #{dl.underline}"
   end
 end
@@ -1105,6 +1105,18 @@ def put_message_with_timestamp( message, no_newline = false)
   end
 
   STDOUT.flush
+end
+
+def valid_build_id(id)
+  if id.kind_of?(NilClass)
+    true
+  elsif id.kind_of?(Integer)
+    true
+  elsif id.kind_of?(String)
+    Integer(id) != nil rescue false
+  else
+    false
+  end
 end
 
 def wait_and_get_build(app_id, build_id, proxy, save_to = nil, unzip_to = nil)
@@ -1350,6 +1362,11 @@ namespace 'cloud' do
       builds = get_builds_list($app_cloud_id)
 
       unless builds.nil?
+        if !valid_build_id(build_id)
+          BuildOutput.error("Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}", 'Invalid build id')
+          raise Exception.new('Invalid build id')
+        end
+
         match = match_build_id(build_id, builds)
 
         unless match.empty?
@@ -1357,7 +1374,7 @@ namespace 'cloud' do
 
           unless failed.empty?
             failed.each do |build_hash|
-              show_build_information(build_hash, $platform_list)
+              show_build_information(build_hash, $platform_list, {:hide_link => true})
 
               show_build_messages(build_hash, $proxy, $cloud_build_home)
             end
@@ -1392,6 +1409,11 @@ namespace 'cloud' do
       match  = match_build_id(build_id, builds)
 
       unless builds.nil?
+        if !valid_build_id(build_id)
+          BuildOutput.error("Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}", 'Invalid build id')
+          raise Exception.new('Invalid build id')
+        end
+
         unless match.empty?
           match.each do |build|
             puts
@@ -1487,39 +1509,47 @@ namespace 'cloud' do
     builds = get_builds_list($app_cloud_id)
 
     if !builds.empty?
-      matching_builds  = match_build_id(build_id, builds)
+      if valid_build_id(build_id)
+        matching_builds  = match_build_id(build_id, builds)
 
-      if !matching_builds.empty?
-        build_hash = matching_builds.last
+        if !matching_builds.empty?
+          build_hash = matching_builds.last
 
-        build_id = build_hash['id']
+          if !build_hash.nil?
+            build_id = build_hash['id']
 
-        if !build_hash.nil?
-          FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
+            $platform_list = get_build_platforms() unless $platform_list
 
-          $start_time = Time.now
-          successful, file = wait_and_get_build($app_cloud_id, build_id, $proxy, $cloud_build_home, $cloud_build_temp)
+            show_build_information(build_hash, $platform_list, {:hide_link => true})
 
-          if !file.nil?
-            if successful
-              result = true
-              message = file
+            FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
+
+            $start_time = Time.now
+            successful, file = wait_and_get_build($app_cloud_id, build_id, $proxy, $cloud_build_home, $cloud_build_temp)
+
+            if !file.nil?
+              if successful
+                result = true
+                message = file
+              else
+                put_message_with_timestamp('Done with build errors')
+                BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
+              end
             else
-              put_message_with_timestamp('Done with build errors')
-              BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
+              message = 'Could not get any result from server'
             end
+          end
+        else
+          str = build_id.to_s
+          match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.min_by{|a| a[:dist]}
+          if match[:dist] < 3
+            message = "Could not find build ##{build_id}, did you mean #{match[:id]}?"
           else
-            message = 'Could not get any result from server'
+            message = "Could not find build ##{build_id}"
           end
         end
       else
-        str = build_id.to_s
-        match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.min_by{|a| a[:dist]}
-        if match[:dist] < 3
-          message = "Could not find build ##{build_id}, did you mean #{match[:id]}?"
-        else
-          message = "Could not find build ##{build_id}"
-        end
+        message = "Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}"
       end
     else
       message = 'Nothing to download'
@@ -1561,7 +1591,7 @@ namespace 'cloud' do
     build_id, res = start_cloud_build($app_cloud_id, build_flags)
 
     if (!build_id.nil?)
-      show_build_information(res, platform_list)
+      show_build_information(res, platform_list, {:hide_link => true})
     end
 
     check_cloud_build_result(res)

@@ -1,5 +1,15 @@
 class String
 
+  # Returns true if string contains numeric value
+  def numeric?
+    Float(self) != nil rescue false
+  end
+
+  # Returns true if string contains integer value
+  def int?
+    Integer(self) != nil rescue false
+  end
+
   def capitalize_first
     str = to_s
     empty? ? str : str[0..0].upcase << str[1..-1]
