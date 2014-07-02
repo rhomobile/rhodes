@@ -1803,6 +1803,50 @@ namespace "run" do
       puts "\nStarting application on the WM6 emulator\n\n"
       Jake.run(detool,args)
     end
+
+    desc "Install .cab and run on the Windows Mobile device"
+    task "device:package", [:package_path] => ["config:wm"] do |t, args|
+
+      cab_path = args.package_path
+
+      fail "Wrong cab file path #{cab_path.inspect}" if cab_path.nil? || cab_path.empty? || !File.exists?(cab_path)
+
+      # kill all running detool
+      kill_detool
+
+      cd $startdir + "/res/build-tools"
+      detool = "detool.exe"
+      args   = [$detoolappflag, 'devcab', %Q["#{cab_path}"], '"' + $appname + '"', ( $use_shared_runtime ? "1" : "0")]
+      puts "\nStarting application on the device"
+      puts "Please, connect you device via ActiveSync.\n\n"
+      log_file = gelLogPath
+
+      # temporary disable log from device (caused enormous delays)
+      # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+      Jake.run(detool,args)
+    end
+
+    desc "Install .cab and run on the Windows Mobile emulator"
+    task "simulator:package", [:package_path] => ["config:wm"] do |t, args|
+
+      cab_path = args.package_path
+
+      fail "Wrong cab file path #{cab_path.inspect}" if cab_path.nil? || cab_path.empty? || !File.exists?(cab_path)
+
+      # kill all running detool
+      kill_detool
+
+      cd $startdir + "/res/build-tools"
+      detool = "detool.exe"
+      args   = [$detoolappflag, 'emucab', %Q["#{cab_path}"], '"' + $appname + '"', ( $use_shared_runtime ? "1" : "0")]
+      puts "\nStarting application on the device"
+      puts "Please, connect you device via ActiveSync.\n\n"
+      log_file = gelLogPath
+
+      # temporary disable log from device (caused enormous delays)
+      # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+      Jake.run(detool,args)
+    end
   end
 
   desc "Run win32"
