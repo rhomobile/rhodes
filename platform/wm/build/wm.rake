@@ -1237,12 +1237,9 @@ namespace "device" do
       
     desc 'Creates application container. See also device:wm:apply_container.'
     task :make_container, [:container_prefix_path] => :production do |t, args|
-      if container_prefix_path.nil?
-        puts "ERROR: prefix path should be fill"
-        exit 1
-      end
-      
       container_prefix_path = args[:container_prefix_path]
+
+      fail 'container_prefix_path is not set.' if container_prefix_path.nil?
 
       Dir.glob("#{container_prefix_path}*") {|f| rm_r(f)}
       mkdir_p container_prefix_path
