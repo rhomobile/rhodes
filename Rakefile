@@ -1275,6 +1275,212 @@ end
 $rhodes_ver_default = '3.5.1.14'
 $latest_platform = nil
 
+def deploy_build()
+  platform = nil
+
+  dirs = Dir.entries($cloud_build_temp).select {|entry| File.directory? File.join($cloud_build_temp,entry) and !(entry =='.' || entry == '..') }
+
+  dirs.each do |dir|
+    put_message_with_timestamp("Removing previous application from bin folder #{dir}")
+    FileUtils.rm_rf(Dir.glob(File.join($cloud_build_bin,dir)))
+    platform = dir
+  end
+
+  if dirs.length > 0
+    FileUtils.cp_r File.join($cloud_build_temp,'.'), $cloud_build_bin
+
+    dest = File.join($cloud_build_bin, dirs.first)
+
+    unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
+
+    put_message_with_timestamp("Done, application unpacked into #{dest}")
+  end
+
+  return unpacked_file_list, platform
+end
+
+def get_build(build_id, show_info = false)
+  result = false
+  message = 'none'
+
+  builds = get_builds_list($app_cloud_id)
+
+  if !builds.empty?
+    if valid_build_id(build_id)
+      matching_builds  = match_build_id(build_id, builds)
+
+      if !matching_builds.empty?
+        build_hash = matching_builds.last
+
+        if !build_hash.nil?
+          build_id = build_hash['id']
+
+          $platform_list = get_build_platforms() unless $platform_list
+
+          show_build_information(build_hash, $platform_list, {:hide_link => true}) if show_info
+
+          FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
+
+          $start_time = Time.now
+          successful, file = wait_and_get_build($app_cloud_id, build_id, $proxy, $cloud_build_home, $cloud_build_temp)
+
+          if !file.nil?
+            if successful
+              result = true
+              message = file
+            else
+              put_message_with_timestamp('Done with build errors')
+              BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
+            end
+          else
+            message = 'Could not get any result from server'
+          end
+        end
+      else
+        str = build_id.to_s
+        match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.min_by{|a| a[:dist]}
+        if match[:dist] < 3
+          message = "Could not find build ##{build_id}, did you mean #{match[:id]}?"
+        else
+          message = "Could not find build ##{build_id}"
+        end
+      end
+    else
+      message = "Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}"
+    end
+  else
+    message = 'Nothing to download'
+  end
+
+  return result, message
+end
+
+def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
+  platform_version = find_platform_version(platform_name, platform_list, config_override, true, is_lexicographic_ver)
+
+  puts "Running cloud build using #{platform_version[:tag]} command"
+
+  build_hash = {
+      'target_device' => platform_version[:tag],
+      'version_tag' => 'master',
+      'rhodes_version' => $rhodes_ver
+  }
+
+  build_info.each do |k, v|
+    build_hash[k] = v
+  end
+
+  build_flags = { :build => build_hash }
+
+  build_id, res = start_cloud_build($app_cloud_id, build_flags)
+
+  if (!build_id.nil?)
+    show_build_information(res, platform_list, {:hide_link => true})
+  end
+
+  check_cloud_build_result(res)
+
+  build_id
+end
+
+def list_missing_files(files_array)
+  failed = files_array.select{|file| !File.exists?(file)}
+
+  failed
+end
+
+def get_iphone_options()
+  profile_file = get_conf('iphone/production/mobileprovision_file')
+  cert_file = get_conf('iphone/production/certificate_file')
+  cert_pw = get_conf('iphone/production/certificate_password')
+
+  if profile_file.nil? || cert_file.nil?
+    raise Exception.new('You should specify mobileprovision_file and certificate_file in iphone:production section of your build.yml')
+  end
+
+  profile_file = File.expand_path(profile_file, $app_path)
+  cert_file = File.expand_path(cert_file, $app_path)
+
+  missing = list_missing_files([profile_file, cert_file])
+
+  if !missing.empty?
+    raise Exception.new("Could not load #{missing.join(', ')}")
+  end
+
+  options = {
+      :upload_cert => Base64.urlsafe_encode64(File.open(cert_file, 'rb') { |io| io.read }),
+      :upload_profile => Base64.urlsafe_encode64(File.open(profile_file, 'rb') { |io| io.read }),
+      :bundle_identifier => get_conf('iphone/BundleIdentifier')
+  }
+
+  if !cert_pw.nil? && !cert_pw.empty?
+    options[:cert_pw] = cert_pw
+  end
+
+  options
+end
+
+def run_binary_on(platform, file_list, devsim)
+  puts file_list.inspect
+
+  case platform
+    when 'android'
+      to_run = file_list.find{|f| /.apk/ =~ f}
+
+    when 'iphone'
+      to_run = file_list.find{|f| /.ipa/ =~ f}
+
+    when 'wm'
+      to_run = file_list.find{|f| /.cab/ =~ f}
+
+    else
+      to_run = nil
+  end
+
+  if !to_run.nil?
+    Rake::Task["run:#{platform}:#{devsim}:package"].invoke(to_run)
+  else
+    BuildOutput.error( 'Could not find ipa file for iphone project', 'No file')
+  end
+end
+
+def get_build_and_run(build_id, run_target)
+  is_ok, res = get_build(build_id)
+  if is_ok
+    files, platform = deploy_build()
+    unless files.empty?
+      if run_target
+        run_binary_on(platform, files, run_target)
+      end
+    end
+  else
+    BuildOutput.put_log(BuildOutput::ERROR, res, 'build error')
+  end
+end
+
+def build_deploy_run(target, run_target = nil)
+  res =  target.split(':')
+
+  platform = res.first
+
+  data = nil
+
+  if res.length > 1
+    data = res.last
+  end
+
+  if platform == 'iphone'
+    options = get_iphone_options()
+  else
+    options = {}
+  end
+
+  b_id = do_platform_build( platform, $platform_list, platform == 'iphone', options, data)
+
+  get_build_and_run(b_id, run_target)
+end
+
+
 namespace 'cloud' do
   task :set_paths => ['config:initialize'] do
     if $app_path.empty?
@@ -1516,84 +1722,6 @@ namespace 'cloud' do
     Rake::Task['cloud:show:build'].invoke()
   end
 
-  def deploy_build()
-    dirs = Dir.entries($cloud_build_temp).select {|entry| File.directory? File.join($cloud_build_temp,entry) and !(entry =='.' || entry == '..') }
-
-    dirs.each do |dir|
-      put_message_with_timestamp("Removing previous application from bin folder #{dir}")
-      FileUtils.rm_rf(Dir.glob(File.join($cloud_build_bin,dir)))
-      $latest_platform = dir
-    end
-
-    if dirs.length > 0
-      FileUtils.cp_r File.join($cloud_build_temp,'.'), $cloud_build_bin
-
-      dest = File.join($cloud_build_bin, dirs.first)
-
-      unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
-
-      put_message_with_timestamp("Done, application unpacked into #{dest}")
-    end
-
-    unpacked_file_list
-  end
-
-  def get_build(build_id, show_info = false)
-    result = false
-    message = 'none'
-
-    builds = get_builds_list($app_cloud_id)
-
-    if !builds.empty?
-      if valid_build_id(build_id)
-        matching_builds  = match_build_id(build_id, builds)
-
-        if !matching_builds.empty?
-          build_hash = matching_builds.last
-
-          if !build_hash.nil?
-            build_id = build_hash['id']
-
-            $platform_list = get_build_platforms() unless $platform_list
-
-            show_build_information(build_hash, $platform_list, {:hide_link => true}) if show_info
-
-            FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
-
-            $start_time = Time.now
-            successful, file = wait_and_get_build($app_cloud_id, build_id, $proxy, $cloud_build_home, $cloud_build_temp)
-
-            if !file.nil?
-              if successful
-                result = true
-                message = file
-              else
-                put_message_with_timestamp('Done with build errors')
-                BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
-              end
-            else
-              message = 'Could not get any result from server'
-            end
-          end
-        else
-          str = build_id.to_s
-          match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.min_by{|a| a[:dist]}
-          if match[:dist] < 3
-            message = "Could not find build ##{build_id}, did you mean #{match[:id]}?"
-          else
-            message = "Could not find build ##{build_id}"
-          end
-        end
-      else
-        message = "Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}"
-      end
-    else
-      message = 'Nothing to download'
-    end
-
-    return result, message
-  end
-
   desc "Download build into app\\bin folder"
   task :download, [:build_id] => [:find_app] do |t, args|
     is_ok, data = get_build(args.build_id, true)
@@ -1601,117 +1729,9 @@ namespace 'cloud' do
     $unpacked_file_list = []
 
     if is_ok
-      $unpacked_file_list = deploy_build()
+      $unpacked_file_list, $latest_platform = deploy_build()
     else
       BuildOutput.put_log(BuildOutput::ERROR, data, 'build error')
-    end
-  end
-
-  def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
-    platform_version = find_platform_version(platform_name, platform_list, config_override, true, is_lexicographic_ver)
-
-    puts "Running cloud build using #{platform_version[:tag]} command"
-
-    build_hash = {
-      'target_device' => platform_version[:tag],
-      'version_tag' => 'master',
-      'rhodes_version' => $rhodes_ver
-    }
-
-    build_info.each do |k, v|
-      build_hash[k] = v
-    end
-
-    build_flags = { :build => build_hash }
-
-    build_id, res = start_cloud_build($app_cloud_id, build_flags)
-
-    if (!build_id.nil?)
-      show_build_information(res, platform_list, {:hide_link => true})
-    end
-
-    check_cloud_build_result(res)
-
-    build_id
-  end
-
-  def list_missing_files(files_array)
-    failed = files_array.select{|file| !File.exists?(file)}
-
-    failed
-  end
-
-  def get_iphone_options()
-    profile_file = get_conf('iphone/production/mobileprovision_file')
-    cert_file = get_conf('iphone/production/certificate_file')
-    cert_pw = get_conf('iphone/production/certificate_password')
-
-    if profile_file.nil? || cert_file.nil?
-      raise Exception.new('You should specify mobileprovision_file and certificate_file in iphone:production section of your build.yml')
-    end
-
-    profile_file = File.expand_path(profile_file, $app_path)
-    cert_file = File.expand_path(cert_file, $app_path)
-
-    missing = list_missing_files([profile_file, cert_file])
-
-    if !missing.empty?
-      raise Exception.new("Could not load #{missing.join(', ')}")
-    end
-
-    options = {
-      :upload_cert => Base64.urlsafe_encode64(File.open(cert_file, 'rb') { |io| io.read }),
-      :upload_profile => Base64.urlsafe_encode64(File.open(profile_file, 'rb') { |io| io.read }),
-      :bundle_identifier => get_conf('iphone/BundleIdentifier')
-    }
-
-    if !cert_pw.nil? && !cert_pw.empty?
-      options[:cert_pw] = cert_pw
-    end
-
-    options
-  end
-
-  def run_binary_on(platform, file_list, devsim)
-    case platform
-      when "android"
-        to_run = file_list.find{|f| /.apk/ =~ f}
-        if !to_run.nil?
-          Rake::Task["run:#{platform}:#{devsim}:package"].invoke(to_run)
-        else
-          BuildOutput.error( 'Could not find apk file for android project', 'No file')
-        end
-    end
-  end
-
-  def build_deploy_run(target, run_target = nil)
-    res =  target.split(':')
-
-    platform = res.first
-
-    data = nil
-
-    if res.length > 1
-      data = res.last
-    end
-
-    if platform == 'iphone'
-      options = get_iphone_options()
-    else
-      options = {}
-    end
-
-    b_id = do_platform_build( platform, $platform_list, platform == 'iphone', options, data)
-    is_ok, res = get_build(b_id)
-    if is_ok
-      files = deploy_build()
-      unless files.empty?
-        if run_target
-          run_binary_on(platform, files, run_target)
-        end
-      end
-    else
-      BuildOutput.put_log(BuildOutput::ERROR, res, 'build error')
     end
   end
 
@@ -1925,21 +1945,13 @@ namespace 'cloud' do
   end
 
   desc "Run binary on the simulator with id"
-  task "run:simulator", [:build_id] do |t, args|
-    build_id = args.build_id
-
-    Rake::Task["cloud:download"].invoke(build_id)
-
-    run_binary_on($latest_platform, $unpacked_file_list, 'simulator')
+  task "run:simulator", [:build_id] => [:find_app] do |t, args|
+    get_build_and_run(args.build_id, 'simulator')
   end
 
   desc "Run binary on the simulator with id"
-  task "run:device", [:build_id] do |t, args|
-    build_id = args.build_id
-
-    Rake::Task["cloud:download"].invoke(build_id)
-
-    run_binary_on($latest_platform, $unpacked_file_list, 'device')
+  task "run:device", [:build_id] => [:find_app] do |t, args|
+    get_build_and_run(args.build_id, 'device')
   end
 end
 
