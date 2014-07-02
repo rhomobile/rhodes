@@ -24,6 +24,85 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+module WM
+  def self.config
+    unless $sdk
+      #$sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
+      #$sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
+      #value = ENV['rho_wm_sdk']
+      #$sdk = value if value
+      $sdk = "MC3000c50b (ARMV4I)"
+    end
+
+    $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
+    $builddir = $config["build"]["wmpath"] + "/build"
+    $vcbindir = $config["build"]["wmpath"] + "/bin"
+    $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
+    $bindir = $app_path + "/bin"
+    $rhobundledir =  $app_path + "/RhoBundle"
+    $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
+    $srcdir =  $bindir + "/RhoBundle"
+    $buildcfg = $app_config["buildcfg"] unless $buildcfg
+    $buildcfg = "Release" unless $buildcfg
+    $detoolappflag = $js_application == true ? "js" : "ruby"
+    $tmp_dir = File.join($bindir, "tmp")
+
+    if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
+        $targetdir = $bindir + "/target/wm6p"
+    else
+        $targetdir = $bindir + "/target/#{$sdk}"
+    end
+
+    $tmpdir =  $bindir +"/tmp"
+    $vcbuild = $config["env"]["paths"]["vcbuild"]
+    $vcbuild = "vcbuild" if $vcbuild.nil?
+    $nsis    = $config["env"]["paths"]["nsis"]
+    $nsis    = "makensis.exe" if $nsis.nil?
+    $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
+    $cabwiz = "cabwiz" if $cabwiz.nil?
+    $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?)
+    $webkit_out_of_process = $app_config['wm']['webkit_outprocess'] == '1'
+    $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("motorola").nil?)
+    $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
+    $additional_dlls_path = nil
+    $additional_regkeys = nil
+    $use_direct_deploy = "yes"
+    $build_persistent_cab = Jake.getBuildBoolProp("persistent")
+    $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
+    $build_cab = true
+    $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
+    $is_webkit_engine = true if $is_webkit_engine.nil?
+
+    begin
+      if $webkit_capability || $motorola_capability
+        require "rhoelements-data"
+        $wk_data_dir = $data_dir[0]
+      end
+    rescue Exception => e
+      puts "rhoelements gem is't found, webkit capability is disabled"
+      $webkit_capability = false
+      $motorola_capability = false
+    end
+
+    unless $build_solution
+      $build_solution = ($js_application and $app_config["capabilities"].index('shared_runtime')) ? 'rhodes_js.sln' : 'rhodes.sln'
+    end
+
+    if $app_config["wm"].nil?
+      $port = "11000"
+    else
+      $port = $app_config["wm"]["logport"].nil? ? "11000" : $app_config["wm"]["logport"]
+    end
+
+    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
+
+    $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
+    $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
+
+    puts "$sdk [#{$sdk}]"
+  end
+end
+
 def get_7z_path()
   if RUBY_PLATFORM =~ /(win|w)32$/
     File.join($startdir,'res/build-tools/7za')
@@ -447,80 +526,7 @@ namespace "config" do
   task :wm => [:set_wm_platform, "config:common"] do
     puts " $current_platform : #{$current_platform}"
 
-    unless $sdk
-      #$sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
-      #$sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
-      #value = ENV['rho_wm_sdk']
-      #$sdk = value if value  
-      $sdk = "MC3000c50b (ARMV4I)"    
-    end
-
-    $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
-    $builddir = $config["build"]["wmpath"] + "/build"
-    $vcbindir = $config["build"]["wmpath"] + "/bin"
-    $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
-    $bindir = $app_path + "/bin"
-    $rhobundledir =  $app_path + "/RhoBundle"
-    $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
-    $srcdir =  $bindir + "/RhoBundle"
-    $buildcfg = $app_config["buildcfg"] unless $buildcfg
-    $buildcfg = "Release" unless $buildcfg
-    $detoolappflag = $js_application == true ? "js" : "ruby" 
-    $tmp_dir = File.join($bindir, "tmp")
-
-    if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
-        $targetdir = $bindir + "/target/wm6p"
-    else
-        $targetdir = $bindir + "/target/#{$sdk}"
-    end
-        
-    $tmpdir =  $bindir +"/tmp"
-    $vcbuild = $config["env"]["paths"]["vcbuild"]
-    $vcbuild = "vcbuild" if $vcbuild.nil?
-    $nsis    = $config["env"]["paths"]["nsis"]
-    $nsis    = "makensis.exe" if $nsis.nil?
-    $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
-    $cabwiz = "cabwiz" if $cabwiz.nil?
-    $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
-    $webkit_out_of_process = $app_config['wm']['webkit_outprocess'] == '1'
-    $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("motorola").nil?) 
-    $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
-    $additional_dlls_path = nil
-    $additional_regkeys = nil
-    $use_direct_deploy = "yes"
-    $build_persistent_cab = Jake.getBuildBoolProp("persistent")
-    $run_on_startup = Jake.getBuildBoolProp("startAtBoot")    
-    $build_cab = true 
-    $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
-    $is_webkit_engine = true if $is_webkit_engine.nil?
-
-    begin
-      if $webkit_capability || $motorola_capability
-        require "rhoelements-data"
-        $wk_data_dir = $data_dir[0]
-      end
-    rescue Exception => e
-      puts "rhoelements gem is't found, webkit capability is disabled"
-      $webkit_capability = false
-      $motorola_capability = false
-    end
-        
-    unless $build_solution
-      $build_solution = ($js_application and $app_config["capabilities"].index('shared_runtime')) ? 'rhodes_js.sln' : 'rhodes.sln'
-    end
-
-    if $app_config["wm"].nil?
-      $port = "11000"
-    else
-      $port = $app_config["wm"]["logport"].nil? ? "11000" : $app_config["wm"]["logport"]
-    end
-
-    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
-
-    $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
-    $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
-
-    puts "$sdk [#{$sdk}]"
+    WM.config
   end
 
   namespace :wm do
@@ -1266,6 +1272,7 @@ namespace "device" do
         container_build_yml = Jake.config(f)
         Jake.normalize_build_yml(container_build_yml)
         $app_config['wm']['webkit_outprocess'] = container_build_yml['wm']['webkit_outprocess']
+        WM.config
       end
 
       unpack_7z($app_path, File.join(container_prefix_path, 'application_override.7z'))
