@@ -2091,8 +2091,7 @@ namespace "config" do
     ENV["APP_TYPE"]     = "rhodes"
 
 
-    $app_config['wm'] = {} unless $app_config['wm'].is_a?(Hash)
-    $app_config['wm']['webkit_outprocess'] = '1' if $app_config['wm']['webkit_outprocess'].nil?
+    Jake.normalize_build_yml($app_config)
 
     Jake.set_bbver($app_config["bbver"].to_s)
   end
