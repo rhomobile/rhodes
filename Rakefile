@@ -3492,7 +3492,7 @@ namespace "build" do
       f.write(File.read(filename))
       f.rewind()
 
-      require 'Open3'
+      require 'open3'
       f.rewind()
       fc = StringIO.new("","w+")
 
