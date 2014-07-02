@@ -1430,7 +1430,8 @@ def run_binary_on(platform, file_list, devsim)
     when 'iphone'
       to_run = file_list.find{|f| /.ipa/ =~ f}
 
-    when 'wm'
+    when /wm.+/
+      platform = 'wm'
       to_run = file_list.find{|f| /.cab/ =~ f}
 
     else
@@ -1440,7 +1441,7 @@ def run_binary_on(platform, file_list, devsim)
   if !to_run.nil?
     Rake::Task["run:#{platform}:#{devsim}:package"].invoke(to_run)
   else
-    BuildOutput.error( 'Could not find ipa file for iphone project', 'No file')
+    BuildOutput.error( "Could not find executable file for #{platform} project", 'No file')
   end
 end
 
