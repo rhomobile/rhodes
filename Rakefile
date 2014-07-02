@@ -827,6 +827,23 @@ def split_number_in_groups(number)
   number.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1'")
 end
 
+MAX_BUFFER_SIZE = 1024*1024
+
+def fill_with_zeroes(file, size)
+  buffer = "\0" * MAX_BUFFER_SIZE
+  to_write = size
+  while to_write > MAX_BUFFER_SIZE
+    file.write(buffer)
+    to_write -= buffer.length
+  end
+  if to_write > 0
+    buffer = "\0" * to_write
+    file.write(buffer)
+  end
+  file.flush
+  file.seek(0)
+end
+
 def http_get(url, proxy, save_to)
   uri = URI.parse(url)
 
@@ -881,9 +898,13 @@ def http_get(url, proxy, save_to)
     result = res.body
   else
     f = File.open(f_name, "wb")
+    fill_with_zeroes(f, header_resp.content_length)
     done = 0
     begin
       result = false
+
+      buffer = []
+      buffer_size = 0
 
       http.request_get(uri.path) do |resp|
         last_p = 0
@@ -891,9 +912,19 @@ def http_get(url, proxy, save_to)
         length = length > 1 ? length : 1
 
         resp.read_body do |segment|
-          f.write(segment)
+          chunk_size = segment.length
+
+          if buffer_size + chunk_size > MAX_BUFFER_SIZE
+            f.write(buffer.join(''))
+            buffer = [segment]
+            buffer_size = chunk_size
+          else
+            buffer << segment
+            buffer_size += chunk_size
+          end
+
           if  block_given?
-            done += segment.length
+            done += chunk_size
             dot = (done * 100 / length).to_i
             if dot > 100
               dot = 100
@@ -904,6 +935,11 @@ def http_get(url, proxy, save_to)
             end
           end
         end
+        unless buffer.empty?
+          f.write(buffer.join(''))
+          f.flush
+        end
+
       end
       result = f_name
     ensure
