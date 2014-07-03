@@ -464,7 +464,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM</PLATFORM>
             </METHOD>
 
-            <METHOD name="replaceCurrentBundle"  deprecated="true">
+            <METHOD name="replaceCurrentBundle"  deprecated="true" generateDoc="false">
                 <DESC>Replace application bundle.</DESC>
                 <PARAMS>
                     <PARAM name="pathToBundle" type="STRING">
