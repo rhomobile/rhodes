@@ -2936,7 +2936,7 @@ def init_extensions(dest, mode = "")
       puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
       write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
     
-      if $use_shared_runtime
+      if $use_shared_runtime || $shared_rt_js_appliction
         cp File.join(rhoapi_js_folder, "rhoapi-modules.js"), File.join(rhoapi_js_folder, "ebapi-modules.js")
       end
     end
