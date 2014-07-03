@@ -487,7 +487,7 @@ public class MethodResult implements IMethodResult {
     @Override
     public void set(Throwable ex) {
         mStrResult = ex.getMessage();
-        if(mStrResult.length() == 0) {
+        if(mStrResult == null || mStrResult.length() == 0) {
             mStrResult = ex.getClass().getSimpleName();
         }
         mResultType = ResultType.typeError;
