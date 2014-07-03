@@ -1275,33 +1275,82 @@ end
 $rhodes_ver_default = '3.5.1.14'
 $latest_platform = nil
 
-def deploy_build()
-  platform = nil
+def deploy_build(platform)
+  files = Dir.glob(File.join($cloud_build_temp,'**','*')).select {|entry| File.file?(entry) }
 
-  dirs = Dir.entries($cloud_build_temp).select {|entry| File.directory? File.join($cloud_build_temp,entry) and !(entry =='.' || entry == '..') }
+  detected_bin = nil
+  detected_platform = nil
+  log_file = nil
 
-  dirs.each do |dir|
-    put_message_with_timestamp("Removing previous application from bin folder #{dir}")
-    FileUtils.rm_rf(Dir.glob(File.join($cloud_build_bin,dir)))
-    platform = dir
+  files.each do |fname|
+    case fname
+      when /\.ipa/
+        detected_bin = fname
+        detected_platform = 'iphone'
+      when /\.cab/
+        detected_bin = fname
+        detected_platform = 'wm'
+      when /\.apk/
+        detected_bin = fname
+        detected_platform = 'android'
+      when /\.msi/
+        detected_bin = fname
+        detected_platform = 'win32'
+      when /log\.txt/i
+        log_file = fname
+    end
   end
 
-  if dirs.length > 0
-    FileUtils.cp_r File.join($cloud_build_temp,'.'), $cloud_build_bin
-
-    dest = File.join($cloud_build_bin, dirs.first)
-
-    unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
-
-    put_message_with_timestamp("Done, application unpacked into #{dest}")
+  if detected_bin.nil?
+    BuildOutput::error("Could not find executable for platform #{platform}",'Application deployment')
+    fail 'Missing executable'
+  elsif !platform.include?(detected_platform)
+    BuildOutput::error("Executable platfrom missmatch, build for #{platform} has an executable #{detected_bin} that belongs to #{detected_platform}")
+    fail 'Executable platform missmatch'
   end
 
-  return unpacked_file_list, platform
+  dest = File.join($cloud_build_bin, detected_platform)
+
+  if !File.exists?(dest)
+    FileUtils.mkpath(dest)
+  else
+    FileUtils.rm_rf("#{dest}/.", secure: true)
+  end
+
+
+  FileUtils.mv(detected_bin, dest)
+
+  unless log_file.nil?
+    FileUtils.mv(log_file, dest)
+  end
+
+  remaining = (files - [detected_bin, log_file])
+
+  unless remaining.empty?
+    misc = File.join(dest, 'misc')
+
+    FileUtils.mkpath(misc)
+
+    remaining.each do |src|
+      FileUtils.mv(src, misc)
+    end
+  end
+
+  unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
+
+  unless $cloud_build_temp.empty?
+    FileUtils.rm_rf($cloud_build_temp, secure: true)
+  end
+
+  put_message_with_timestamp("Done, application files deployed to #{dest}")
+
+  return unpacked_file_list
 end
 
 def get_build(build_id, show_info = false)
   result = false
   message = 'none'
+  platform = 'none'
 
   builds = get_builds_list($app_cloud_id)
 
@@ -1318,6 +1367,8 @@ def get_build(build_id, show_info = false)
           $platform_list = get_build_platforms() unless $platform_list
 
           show_build_information(build_hash, $platform_list, {:hide_link => true}) if show_info
+
+          platform = find_platform_by_command($platform_list, build_hash["target_device"])
 
           FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
 
@@ -1352,7 +1403,7 @@ def get_build(build_id, show_info = false)
     message = 'Nothing to download'
   end
 
-  return result, message
+  return result, message, platform
 end
 
 def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
@@ -1446,9 +1497,9 @@ def run_binary_on(platform, file_list, devsim)
 end
 
 def get_build_and_run(build_id, run_target)
-  is_ok, res = get_build(build_id)
+  is_ok, res, platform = get_build(build_id)
   if is_ok
-    files, platform = deploy_build()
+    files = deploy_build(platform)
     unless files.empty?
       if run_target
         run_binary_on(platform, files, run_target)
@@ -1725,12 +1776,12 @@ namespace 'cloud' do
 
   desc "Download build into app\\bin folder"
   task :download, [:build_id] => [:find_app] do |t, args|
-    is_ok, data = get_build(args.build_id, true)
+    is_ok, data, $latest_platform = get_build(args.build_id, true)
 
     $unpacked_file_list = []
 
     if is_ok
-      $unpacked_file_list, $latest_platform = deploy_build()
+      $unpacked_file_list = deploy_build($latest_platform)
     else
       BuildOutput.put_log(BuildOutput::ERROR, data, 'build error')
     end
