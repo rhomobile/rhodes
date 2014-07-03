@@ -759,7 +759,7 @@ namespace "token" do
     if !$user_acc.is_valid_token?()
       have_input = STDIN.tty? && STDOUT.tty?
 
-      BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you need to log in into your rhomobile account.
+      BuildOutput.put_log( BuildOutput::NOTE, "In order to use #{$re_app ? 'Rhoelements' :  'Rhodes'} framework you need to log in into your rhomobile account.
 If you don't have account please register at " + URI.join($server_list.first, '/').to_s + ( have_input ? 'To stop build just press enter.' : '') )
 
       if have_input
