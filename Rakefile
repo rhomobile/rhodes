@@ -453,6 +453,10 @@ def rhohub_make_request(srv)
     rescue RestClient::ExceptionWithResponse => e
       # do nothing, this is is 404 or something like that
     end
+
+    if RestClient.proxy != $proxy
+      $proxy = RestClient.proxy
+    end
   end
 end
 
@@ -484,10 +488,6 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
             break
           end
         end
-      end
-
-      if RestClient.proxy != $proxy
-        $proxy = RestClient.proxy
       end
 
       is_valid = user_acc.subscription_level >= 0 ? 2 : 0
