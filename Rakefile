@@ -1302,7 +1302,10 @@ def deploy_build(platform)
   end
 
   if detected_bin.nil?
-    BuildOutput::error("Could not find executable for platform #{platform}",'Application deployment')
+    BuildOutput::error("Could not find executable for platform #{platform}\nYou should check #{$cloud_build_temp}",'Application deployment')
+    unless log_file.nil?
+      BuildOutput::error("Build log:\n#{File.read(log_file).gsub(/\e\[(\d+)(;\d+)*m/,'')}",'Application deployment')
+    end
     fail 'Missing executable'
   elsif !platform.include?(detected_platform)
     BuildOutput::error("Executable platfrom missmatch, build for #{platform} has an executable #{detected_bin} that belongs to #{detected_platform}")
