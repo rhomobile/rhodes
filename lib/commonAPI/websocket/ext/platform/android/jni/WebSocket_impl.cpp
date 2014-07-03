@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebSocket_impl"
 
-#define WEBSOCKET_FACTORY_CLASS "com.websocket.WebSocketFactory"
+#define WEBSOCKET_FACTORY_CLASS "com.rho.websocket.WebSocketFactory"
 
 extern "C" void Init_WebSocket_API(void);
 
