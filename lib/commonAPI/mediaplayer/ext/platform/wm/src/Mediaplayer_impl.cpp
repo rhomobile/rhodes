@@ -64,6 +64,17 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 		m_hPlayThread = CreateThread(NULL, 0, (&rho::CMediaplayerSingleton::playThreadProc), this, 0, NULL);
 		return (m_hPlayThread != NULL);
 	}
+    rho::StringW replaceString(rho::StringW inputString,
+        rho::StringW toReplace,
+        rho::StringW replaceWith)
+    {		
+        size_t f;
+        while( (f= inputString.find(toReplace))!= -1)
+        {
+            inputString.replace(f, toReplace.length(), replaceWith);
+        }
+        return inputString;
+    }
 
 	static DWORD WINAPI playThreadProc(LPVOID lpParam)
 	{
@@ -196,20 +207,51 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 				// Local file, just change the name to a format the WM/CE understands.
 				m_lpzFilename = s2ws(filename);
 			}
-			
-			/****************************************/
-			/* 
-				SR ID - EMBPD00128123
-				Issue Description - Video Files are not getting played in MediaPlayer with Native Application on WM
-				Fix Provided - Issue was reproducing because of CreateProcess Microsoft API which donot understand the path which consists of space.
-							   Hence we need to put an extra double inverted at the front & at the end of the string.
-				Developer Name - Abhineet Agarwal
-				File Name - Mediaplayer_impl.cpp
-				Function Name - startvideo
-				Date - 09/06/2014
-			*/
-			/****************************************/
-			m_lpzFilename = L"\"" + m_lpzFilename + L"\""; 
+            /****************************************/
+            /* 
+            SR ID - EMBPD00142480
+            Issue Description - Video files are not getting played in CE devices through Rhoelements application
+            Fix Provided - WinCE devices accepts only back slash in the path to play media files.
+            Also CE CreateProcess API doesn't accept quates in the API for meadia file path to handle space.
+            A conditional fix is given for WM devices and CE devices.
+            Developer Name - Sabir VT
+            File Name - Mediaplayer_impl.cpp
+            Function Name - startvideo
+            Date - 04/07/2014
+            */
+            /****************************************/
+            bool bRunningOnWM = false;
+            OSVERSIONINFO osvi;
+            memset(&osvi, 0, sizeof(OSVERSIONINFO));
+            osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+            GetVersionEx(&osvi);
+            bRunningOnWM = (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2) ||
+                (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1);		
+            if(bRunningOnWM)
+            {
+                //for WM devices, we enter here
+
+                /****************************************/
+                /* 
+                SR ID - EMBPD00128123
+                Issue Description - Video Files are not getting played in MediaPlayer with Native Application on WM
+                Fix Provided - Issue was reproducing because of CreateProcess Microsoft API which donot understand the path which consists of space.
+                Hence we need to put an extra double inverted at the front & at the end of the string.
+                Developer Name - Abhineet Agarwal
+                File Name - Mediaplayer_impl.cpp
+                Function Name - startvideo
+                Date - 09/06/2014
+                */
+                /****************************************/
+                m_lpzFilename = L"\"" + m_lpzFilename + L"\"";              
+            }
+            else
+            {
+                //for CE devices we enter here
+                //replace front slash with back slash if the path contains front slash
+                m_lpzFilename = replaceString(m_lpzFilename, L"/", L"\\");
+            }		
+
 
 			// Launch the video player.
 			if (!CreateProcess(L"\\windows\\WMPlayer.exe", m_lpzFilename.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi))
