@@ -144,16 +144,15 @@ BOOL CALLBACK CHostTracker::ConnectDlgProc(HWND hwnd, UINT Message, WPARAM wPara
     return TRUE;
 }
 rho::StringW CHostTracker::replaceString(rho::StringW inputString,
-                      rho::StringW toReplace,
-                      rho::StringW replaceWith)
-{
-	rho::StringW outString;
-	size_t f;
-	 while( (f= inputString.find(toReplace))!= -1)
-	 {
-		 outString = inputString.replace(f, toReplace.length(), replaceWith);
-	 }
-	 return outString;
+                                         rho::StringW toReplace,
+                                         rho::StringW replaceWith)
+{	
+    size_t f;
+    while( (f= inputString.find(toReplace))!= -1)
+    {
+        inputString.replace(f, toReplace.length(), replaceWith);
+    }
+    return inputString;
 }
 bool CHostTracker::StartNetworkChecking()
 {
