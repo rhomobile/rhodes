@@ -132,7 +132,7 @@
       <PreprocessorDefinitions>_LIB;_WINRT_LIB;WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;../winrtsock/include;../winrtsock/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;../winrtsock/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
       <DisableSpecificWarnings>4244;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
