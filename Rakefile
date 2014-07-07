@@ -1317,7 +1317,7 @@ def deploy_build(platform)
   if !File.exists?(dest)
     FileUtils.mkpath(dest)
   else
-    FileUtils.rm_rf("#{dest}/.", secure: true)
+    FileUtils.rm_rf(Dir.glob(File.join(dest,'*')), secure: true)
   end
 
 
@@ -1332,7 +1332,9 @@ def deploy_build(platform)
   unless remaining.empty?
     misc = File.join(dest, 'misc')
 
-    FileUtils.mkpath(misc)
+    if !File.exists?(misc)
+      FileUtils.mkpath(misc)
+    end
 
     remaining.each do |src|
       FileUtils.mv(src, misc)
@@ -1475,18 +1477,18 @@ def get_iphone_options()
 end
 
 def run_binary_on(platform, file_list, devsim)
-  puts file_list.inspect
-
   case platform
-    when 'android'
+    when /android/
       to_run = file_list.find{|f| /.apk/ =~ f}
+      platform = 'android'
 
-    when 'iphone'
+    when /iphone/
       to_run = file_list.find{|f| /.ipa/ =~ f}
+      platform = 'iphone'
 
     when /wm.+/
-      platform = 'wm'
       to_run = file_list.find{|f| /.cab/ =~ f}
+      platform = 'wm'
 
     else
       to_run = nil
@@ -1499,10 +1501,13 @@ def run_binary_on(platform, file_list, devsim)
   end
 end
 
-def get_build_and_run(build_id, run_target)
-  is_ok, res, platform = get_build(build_id)
+def get_build_and_run(build_id, platform, run_target)
+  is_ok, res, build_platform = get_build(build_id)
   if is_ok
-    files = deploy_build(platform)
+    unless build_platform.include?(platform)
+      BuildOutput.error( "Build platform missmatch", 'build error')
+    end
+    files = deploy_build(build_platform)
     unless files.empty?
       if run_target
         run_binary_on(platform, files, run_target)
@@ -1532,7 +1537,7 @@ def build_deploy_run(target, run_target = nil)
 
   b_id = do_platform_build( platform, $platform_list, platform == 'iphone', options, data)
 
-  get_build_and_run(b_id, run_target)
+  get_build_and_run(b_id, platform, run_target)
 end
 
 
