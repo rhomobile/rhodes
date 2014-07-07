@@ -121,7 +121,19 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
                     return; 
                 }
                  
-                m_rotation = orientation;    
+                // Start code to rotate picture
+                android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+                android.hardware.Camera.getCameraInfo(0, info);
+                orientation = (orientation + 45) / 90 * 90;
+                int rotation = 0;
+                //if (info.facing == CameraInfo.CAMERA_FACING_FRONT) {
+                //    rotation = (info.orientation - orientation + 360) % 360;
+                //} else {  // back-facing camera
+                rotation = (info.orientation + orientation) % 360;
+                //}
+                
+                m_rotation = rotation;
+                // End code
              }   
         };
     
@@ -367,23 +379,28 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
             int imgH = 0;
 
             //int nOrient = RhodesService.getInstance().getScreenOrientation();
-            int nCamRotate = 90;
-            if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) ) {
-                nCamRotate = 0;
-            }
-            if (mIsFrontCamera) {
-                nCamRotate = 0;
-                parameters.set("rotation", nCamRotate );//.setRotation(270);
-            }
+            // Start code to rotate picture
+            int nCamRotate = m_rotation;
+            //int nCamRotate = 90;
+            //if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) ) {
+            //    nCamRotate = 0;
+            //}
+            //if (mIsFrontCamera) {
+            //    nCamRotate = 0;
+            //    parameters.set("rotation", nCamRotate );//.setRotation(270);
+            //}
+            // End code
             Logger.D(TAG, "Camera rotation: " + nCamRotate );
             parameters.set("rotation", nCamRotate );
             
-            int deviceRotation = AndroidFunctionalityManager.getAndroidFunctionality().getDeviceRotation(ContextFactory.getUiContext());
-            if (deviceRotation >= 0) {
-                // platform from 2.2
-                parameters.set("rotation", deviceRotation );
-                Logger.D(TAG, "Camera rotation resetup for platforms >= 2.2: " + deviceRotation );
-            }
+            // Start code to rotate picture
+            //int deviceRotation = AndroidFunctionalityManager.getAndroidFunctionality().getDeviceRotation(ContextFactory.getUiContext());
+            //if (deviceRotation >= 0) {
+            //    // platform from 2.2
+            //    parameters.set("rotation", deviceRotation );
+            //    Logger.D(TAG, "Camera rotation resetup for platforms >= 2.2: " + deviceRotation );
+            //}
+            // End code
             
             //Utils.platformLog(TAG, "$$$   parameters.set(rotation, "+String.valueOf(nCamRotate)+" );");
             if ((mSettings != null) && (mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {

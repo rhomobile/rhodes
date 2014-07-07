@@ -34,6 +34,13 @@ import com.rhomobile.rhodes.Logger;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 
+// Start code to rotate picture
+// import android.media.ExifInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+// End code
+
 public class ImageCaptureCallback implements PictureCallback {
 	
 	private static final String TAG = "ImageCapture";
@@ -61,15 +68,53 @@ public class ImageCaptureCallback implements PictureCallback {
 		try {
 			Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
 
-			if (osCommon != null) {
-				osCommon.write(data);
-				osCommon.flush();
-				osCommon.close();
-			}
-			OutputStream osOwn = new FileOutputStream(filePath);
-			osOwn.write(data);
-			osOwn.flush();
-			osOwn.close();
+		            // Start code to rotate picture
+		            //ExifInterface exif = new ExifInterface(filePath);
+		            //int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_NORMAL);
+		            //Logger.E(TAG, "PICTURE EXIF ORIENTATION: " + exifOrientation);
+		            
+		            Camera.Parameters parameters = camera.getParameters();
+		            int rotate = Integer.parseInt(parameters.get("rotation"));
+		            //Logger.E(TAG, "PICTURE CALLBACK ORIENTATION: " + rotate);
+		            
+		            if (rotate != 0) {
+		                
+		                //Bitmap bmp = BitmapFactory.decodeFile(filePath);
+		                Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+		                data = null;
+		                // Logger.E(TAG, filePath);
+		                
+		                Matrix matrix = new Matrix();
+		                matrix.postRotate(rotate);
+		                bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+		                matrix = null;
+		                
+		                if (osCommon != null) {
+		                    //Logger.E(TAG, "osCommon");
+		                    bmp.compress(Bitmap.CompressFormat.JPEG, 85, osCommon);
+		                    osCommon.flush();
+		                    osCommon.close();
+		                }
+		                OutputStream osOwn = new FileOutputStream(filePath);
+		                bmp.compress(Bitmap.CompressFormat.JPEG, 85, osOwn);
+		                osOwn.flush();
+		                osOwn.close();
+		                bmp = null;
+		                
+		            } else {
+		                
+		                if (osCommon != null) {
+		                    osCommon.write(data);
+		                    osCommon.flush();
+		                    osCommon.close();
+		                }
+		                OutputStream osOwn = new FileOutputStream(filePath);
+		                osOwn.write(data);
+		                osOwn.flush();
+		                osOwn.close();
+		                data = null;
+		            }
+		            // End code
 
 			com.rhomobile.rhodes.camera.Camera.doCallback(filePath, mImgWidth, mImgHeight, mImgFormat);
 			mOwner.finish();
