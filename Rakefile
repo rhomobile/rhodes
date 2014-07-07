@@ -3518,7 +3518,7 @@ namespace "build" do
       Dir.glob("**/*.erb") { |f| rm f }
 
       if !$skip_build_extensions
-        if not $minify_types.empty? && 
+        if not $minify_types.empty?
           minify_js_and_css($srcdir,$minify_types)
         end
       end
