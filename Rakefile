@@ -1317,7 +1317,7 @@ def deploy_build(platform)
   if !File.exists?(dest)
     FileUtils.mkpath(dest)
   else
-    FileUtils.rm_rf("#{dest}/.", secure: true)
+    FileUtils.rm_rf(File.join(dest,'.'), secure: true)
   end
 
 
