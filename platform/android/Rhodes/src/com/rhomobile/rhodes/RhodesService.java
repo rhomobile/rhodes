@@ -105,6 +105,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.Process;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.WindowManager;
@@ -530,6 +531,11 @@ public class RhodesService extends Service {
 		return ra.getMainView();
 	}
 
+	public static void kill() {
+		Logger.I(TAG, "kkkill !!!");
+		Process.killProcess(Process.myPid());
+	}
+	
 	public static void exit() {
 	    PerformOnUiThread.exec(new Runnable() {
 	        @Override
@@ -542,12 +548,12 @@ public class RhodesService extends Service {
                     RhodesService service = RhodesService.getInstance();
                     if (service != null)
                     {
-                        Logger.T(TAG, "stop RhodesService");
+                        Logger.I(TAG, "stop RhodesService");
                         service.wakeLock.reset();
                         service.stopSelf();
                     }
                     
-                    Logger.T(TAG, "stop RhodesApplication");
+                    Logger.I(TAG, "stop RhodesApplication");
                     RhodesApplication.stop();
                 }
                 catch (Exception e) {
@@ -873,81 +879,88 @@ public class RhodesService extends Service {
 		TimeZone tz = cal.getTimeZone();
 		return tz.getDisplayName();
 	}
-	
-	public static void runApplication(String appName, Object params) {
-		try {
-			Context ctx = RhodesService.getContext();
-			PackageManager mgr = ctx.getPackageManager();
-			PackageInfo info = mgr.getPackageInfo(appName, PackageManager.GET_ACTIVITIES);
-			if (info.activities.length == 0) {
-				Logger.E(TAG, "No activities found for application package [" + appName + "]");
-				return;
-			}
-			String className = null;
-			{
-				//Utils.platformLog("$$$", "Enumerate all MAIN activities :");
 
-				Intent main_intent = new Intent(Intent.ACTION_MAIN);
-				//main_intent.addCategory(Intent.CATEGORY_DEFAULT);
-				//main_intent.addCategory(Intent.CATEGORY_LAUNCHER);
-				
-				List<ResolveInfo> activities = mgr.queryIntentActivities(main_intent, 0/*PackageManager.MATCH_DEFAULT_ONLY*/);
-				
-				Iterator<ResolveInfo> activities_iterator = activities.iterator();
-				while (activities_iterator.hasNext()) {
-					ResolveInfo resolve_info = activities_iterator.next();
-					//Utils.platformLog("$$$", "     ACTIVITY NAME["+resolve_info.activityInfo.name+"] TARGET["+resolve_info.activityInfo.targetActivity+"]");					
-					if (appName.equals(resolve_info.activityInfo.packageName)) {
-						// we found our activity !
-						className = resolve_info.activityInfo.name;
-						break;
-					}
-				}
-			}
-			if (className == null) {
-				Logger.E(TAG, "No MAIN activities found in application package [" + appName+"]");
-				return;				
-			}
-			
-			//ActivityInfo ainfo = info.activities[0];
-			//String className = ainfo.name;
-			if (className.startsWith(".")) {
-				className = appName + className;
-			}
+    public void resolveAppName(String appName, Intent intent) throws IllegalArgumentException {
+        PackageManager mgr = getPackageManager();
+        PackageInfo info;
+        try {
+            info = mgr.getPackageInfo(appName, PackageManager.GET_ACTIVITIES);
+        } catch (NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if (info.activities.length == 0) {
+            throw new IllegalArgumentException("Application activities were not found: " + appName);
+        }
+        String className = null;
+        {
+            Intent main_intent = new Intent(Intent.ACTION_MAIN);
+            //main_intent.addCategory(Intent.CATEGORY_DEFAULT);
+            //main_intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            
+            List<ResolveInfo> activities = mgr.queryIntentActivities(main_intent, 0/*PackageManager.MATCH_DEFAULT_ONLY*/);
+            
+            Iterator<ResolveInfo> activities_iterator = activities.iterator();
+            while (activities_iterator.hasNext()) {
+                ResolveInfo resolve_info = activities_iterator.next();
+                //Utils.platformLog("$$$", "     ACTIVITY NAME["+resolve_info.activityInfo.name+"] TARGET["+resolve_info.activityInfo.targetActivity+"]");                  
+                if (appName.equals(resolve_info.activityInfo.packageName)) {
+                    // we found our activity !
+                    className = resolve_info.activityInfo.name;
+                    break;
+                }
+            }
+        }
+        if (className == null) {
+            throw new IllegalArgumentException("Application has no activities wich can handle intent with MAIN action: " + appName);
+        }
+        if (className.startsWith(".")) {
+            className = appName + className;
+        }
+        intent.setClassName(appName, className);
+    }
 
-			
-			Intent intent = new Intent();
-			intent.setClassName(appName, className);
-			Utils.platformLog("$$$", "START ACTIVITY P["+appName+"] A["+className+"]");
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			if (params != null) {
-				Bundle startParams = new Bundle();
-				if (params instanceof String) {
-					if (((String)params).length() != 0) {
-						String[] paramStrings = ((String)params).split("&");
-						for(int i = 0; i < paramStrings.length; ++i) {
-							String key = paramStrings[i];
-							String value = "";
-							int splitIdx = key.indexOf('=');
-							if (splitIdx != -1) {
-								value = key.substring(splitIdx + 1); 
-								key = key.substring(0, splitIdx);
-							}
-							startParams.putString(key, value);
-						}
-					}
-				}
-				else
-					throw new IllegalArgumentException("Unknown type of incoming parameter");
+    public void parseAppParams(Object params, Intent intent) throws IllegalArgumentException {
+        if (params != null) {
+            Bundle startParams = new Bundle();
+            if (params instanceof String) {
+                if (((String) params).length() != 0) {
+                    String[] paramStrings = ((String) params).split("&");
+                    for (int i = 0; i < paramStrings.length; ++i) {
+                        String key = paramStrings[i];
+                        String value = "";
+                        int splitIdx = key.indexOf('=');
+                        if (splitIdx != -1) {
+                            value = key.substring(splitIdx + 1);
+                            key = key.substring(0, splitIdx);
+                        }
+                        startParams.putString(key, value);
+                    }
+                }
+            }
+            else {
+                throw new IllegalArgumentException("Unknown type of incoming parameter: " + params.getClass().getSimpleName());
+            }
 
-				intent.putExtras(startParams);
-			}
-			ctx.startActivity(intent);
-		}
-		catch (Exception e) {
-			Logger.E(TAG, "Can't run application " + appName + ": " + e.getMessage());
-		}
-	}
+            intent.putExtras(startParams);
+        }
+    }
+
+    public static void runApplication(String appName, Object params) {
+        try {
+            RhodesService service = getInstance();
+            Context ctx = RhodesService.getContext();
+
+            Intent intent = new Intent();
+            service.resolveAppName(appName, intent);
+            service.parseAppParams(params, intent);
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(intent);
+        } catch (Throwable e) {
+            Logger.E(TAG, "Can't run application " + appName);
+            Logger.E(TAG, e);
+        }
+    }
 	
 	public static boolean isAppInstalled(String appName) {
 		try {
@@ -1471,5 +1484,12 @@ public class RhodesService extends Service {
             }
         }
         RhodesActivity.safeGetInstance().getMenu().setMenu(nativeMenu);
+        if (Build.VERSION.SDK_INT >= 11) {
+        	PerformOnUiThread.exec(new Runnable() {
+        		public void run() {
+        			RhodesActivity.safeGetInstance().invalidateOptionsMenu();
+        		}
+        	});
+        }
     }
 }

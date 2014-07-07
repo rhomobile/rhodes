@@ -72,6 +72,7 @@ void rho_db_init_attr_manager();
 void rho_sys_app_exit();
 void rho_sys_report_app_started();
 void rho_conf_show_log();
+bool rho_wmimpl_is_browser_ieforwm();
 
 #ifdef OS_ANDROID
 void rho_file_set_fs_mode(int mode);
@@ -574,9 +575,9 @@ boolean CRhodesApp::callTimerCallback(const String& strUrl, const String& strDat
 		
     if ( strData.length() > 0 )
         strBody += "&" + strData;
-
-    String strReply;
-    return m_httpServer->call_ruby_method(strUrl, strBody, strReply);
+    
+    callCallbackWithData(strUrl, "", strData, false);
+    return true;
 }
 
 void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
@@ -799,7 +800,7 @@ void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBar
     }
 
     strBody += "&rho_callback=1";
-    //getNetRequest().pushData( strCallbackUrl, strBody, null );
+
     runCallbackInThread(strCallbackUrl, strBody);
 }
 
@@ -1646,7 +1647,7 @@ void CRhodesApp::initAppUrls()
     m_isJSFSApp = false;
 
 #ifdef RHO_NO_RUBY_API
-    m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
+        m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
 #endif
 
 #ifdef OS_WINCE

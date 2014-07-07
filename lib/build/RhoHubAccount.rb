@@ -257,9 +257,22 @@ class RhoHubAccount
     @info = {
       :subscription => nil,
       :token => nil,
-      :time => 0
+      :time => 0,
+      :server => nil
     }
     @changed = true
+  end
+
+  def server()
+    @info[:server].nil? ? "" : @info[:server]
+  end
+
+  def server=(value)
+    if value != @info[:server]
+      @changed = true
+    end
+
+    @info[:server] = value
   end
 
   def token()
@@ -291,7 +304,75 @@ class RhoHubAccount
   end
 
   def is_valid_subscription?()
-    !(@info[:subscription].nil? || @info[:subscription].empty?)
+    remaining_subscription_time() > 0
+  end
+
+  def remaining_subscription_time()
+    diff = 0
+
+    if !(@info[:subscription].nil? || @info[:subscription].empty?)
+      begin
+        diff = [0,(JSON.parse(@info[:subscription])["tokenValidUntil"]).to_i - Time.now.to_i].max
+      rescue Exception => e
+        diff = 0
+      end
+    end
+
+    diff
+  end
+
+  def to_boolean(s)
+    if s.kind_of?(String)
+      !!(s =~ /^(true|t|yes|y|1)$/i)
+    elsif s.kind_of?(TrueClass)
+      true
+    else
+      false
+    end
+  end
+
+  def subsciption_plan()
+    text = "free" 
+
+    begin
+      resp = JSON.parse(subscription)
+      unsigned = subscription.gsub(/"signature":"[^"]*"/, '"signature":""')
+      hash = Digest::SHA1.hexdigest(unsigned)
+
+      if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
+        if !(resp["features"].nil? && resp["features"]["plan"].nil?)
+          text = resp["features"]["plan"]
+        end
+      else
+        text = "invalid"
+      end
+    rescue Exception => e
+    end
+
+    text
+  end
+
+  def subscription_level()
+    level = -1
+
+    if is_valid_subscription?()
+      case subsciption_plan()
+      when "premium"
+        level = 2
+      when "gold"
+        level = 2
+      when "enterprise"
+        level = 1
+      when "silver"
+        level = 1
+      when "free"
+        level = 0
+      else
+        level = -1
+      end
+    end
+
+    level
   end
 
   def time()
@@ -305,6 +386,10 @@ class RhoHubAccount
 
   def is_outdated()
     (@info[:time] - Time.now.to_i > @@min_update_interval) || @changed
+  end
+
+  def remaining_time()
+    [0,@info[:time] + @@min_update_interval - Time.now.to_i].max
   end
 
   def read_token_from_env()
@@ -371,9 +456,20 @@ class RhoHubAccount
 
             if data_hash == Digest::SHA2.hexdigest(data)
               packed = JSON.parse(data)
-              self.token = packed["token"]
-              self.time = packed["time"]
-              self.subscription = packed["subscription"]
+              packed.each do |key, value|
+                case key
+                when "token"
+                  self.token = value
+                when "time"
+                  self.time = value
+                when "subscription"
+                  self.subscription = value
+                when "server"
+                  self.server = value
+                else
+                  raise "Unknown key #{key} in config"
+                end
+              end
 
               @changed = false
 

@@ -9,6 +9,7 @@ SUBDIRS = rubylib rholib sqlite3 syncengine \
 ../../../lib/extensions/digest-sha2/ext/digest-sha2.pro \
 ../../../lib/extensions/fcntl/ext/fcntl.pro \
 ../../../lib/extensions/openssl/ext/openssl.pro \
+../../../lib/extensions/serialport/ext/serialport.pro \
 ../../../lib/extensions/zlib/ext/zlib.pro
 
 unix:!macx {

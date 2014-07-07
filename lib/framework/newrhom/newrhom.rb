@@ -13,7 +13,6 @@ module Rhom
 		end
 
     def initialize
-    	puts "MZV_DEBUG: Calling Rhom.initialize"
       @models = {}
     end
 
@@ -28,7 +27,6 @@ module Rhom
     @all_models_loaded = false
     def load_all_sources()
       return if @all_models_loaded
-      puts "MZV_DEBUG: load_all_sources"
 
       begin
         models.values.each do |src|
@@ -84,16 +82,12 @@ end
     def _load_model(model_name)
       return if !models.has_key?(model_name) || models[model_name].loaded
 
-      puts "MZV_DEBUG: _load_model: #{model_name}, #{models[model_name].getProperty('file_path')}"
-
       RhomObjectFactory.init_object(models[model_name])
       require "#{models[model_name].getProperty('file_path')}"
 
       modelClass = nil
       modelClass = Object.const_get(model_name) if Object.const_defined?(model_name)
-      puts "MZV_DEBUG: _load_model: #{model_name}, #{modelClass.klass_model.model_name}, #{modelClass.klass_model.getAllProperties.inspect}"
       if modelClass
-        puts "MZV_DEBUG: model class found"                            
         unless modelClass.respond_to?( :klass_model )
           puts "ERROR: Invalid model definition. Add 'include Rhom::PropertyBag' or 'include Rhom::FixedSchema' to model class"
         end    

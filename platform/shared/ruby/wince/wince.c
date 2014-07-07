@@ -10,10 +10,12 @@
 
 #include <windows.h>
 #include <tchar.h>
-#include "wince.h"
-#include "ruby\config.h"
 #include <errno.h>
 #include <process.h>
+#include <winsock2.h>
+
+#include "wince.h"
+#include "ruby\config.h"
 #include "ruby.h"
 
 /* global for GetCommandLineA */
@@ -748,8 +750,38 @@ WSASocketA(
     IN DWORD dwFlags
     )
 {
-    //TODO:WSASocketA 
-	return 0;
+    int nSize = 0;
+    WSAPROTOCOL_INFOW lpProtocolInfoW;
+
+	if (lpProtocolInfo != NULL)
+    {
+		lpProtocolInfoW.dwServiceFlags1    = lpProtocolInfo->dwServiceFlags1;
+		lpProtocolInfoW.dwServiceFlags2    = lpProtocolInfo->dwServiceFlags2;
+		lpProtocolInfoW.dwServiceFlags3    = lpProtocolInfo->dwServiceFlags3;
+		lpProtocolInfoW.dwServiceFlags4    = lpProtocolInfo->dwServiceFlags4;
+		lpProtocolInfoW.dwProviderFlags    = lpProtocolInfo->dwProviderFlags;
+		lpProtocolInfoW.ProviderId         = lpProtocolInfo->ProviderId;
+		lpProtocolInfoW.dwCatalogEntryId   = lpProtocolInfo->dwCatalogEntryId;
+		lpProtocolInfoW.ProtocolChain      = lpProtocolInfo->ProtocolChain;
+		lpProtocolInfoW.iVersion           = lpProtocolInfo->iVersion;
+		lpProtocolInfoW.iAddressFamily     = lpProtocolInfo->iAddressFamily;
+		lpProtocolInfoW.iMaxSockAddr       = lpProtocolInfo->iMaxSockAddr;
+		lpProtocolInfoW.iMinSockAddr       = lpProtocolInfo->iMinSockAddr;
+		lpProtocolInfoW.iSocketType        = lpProtocolInfo->iSocketType;
+		lpProtocolInfoW.iProtocol          = lpProtocolInfo->iProtocol;
+		lpProtocolInfoW.iProtocolMaxOffset = lpProtocolInfo->iProtocolMaxOffset;
+		lpProtocolInfoW.iNetworkByteOrder  = lpProtocolInfo->iNetworkByteOrder;
+		lpProtocolInfoW.iSecurityScheme    = lpProtocolInfo->iSecurityScheme;
+		lpProtocolInfoW.dwMessageSize      = lpProtocolInfo->dwMessageSize;
+		lpProtocolInfoW.dwProviderReserved = lpProtocolInfo->dwProviderReserved;
+
+		nSize = MultiByteToWideChar(CP_UTF8, 0, lpProtocolInfo->szProtocol, -1, NULL, 0);
+
+        if (nSize > 1)
+			MultiByteToWideChar(CP_UTF8, 0, lpProtocolInfo->szProtocol, -1, lpProtocolInfoW.szProtocol, nSize);
+	}
+
+    return WSASocketW(af, type, protocol, (lpProtocolInfo != NULL ? &lpProtocolInfoW : NULL), g, dwFlags);
 }
 
 int
@@ -760,6 +792,63 @@ WSAEnumProtocolsA(
     IN OUT LPDWORD lpdwBufferLength
     )
 {
-    //TODO: WSAEnumProtocolsA
-    return 0;
+    unsigned long bufferLenght = 0, bufferLenghtA = 0;
+    int protocolsNum = 0, nSize = 0, err = 0, idx = 0;
+    LPWSAPROTOCOL_INFOW  protocolInfo = 0;
+    LPWSAPROTOCOL_INFOA _lpProtocolBuffer = 0, _lpProtocolBuffer1 = 0;
+
+    if (lpProtocolBuffer == NULL)
+    {        
+        protocolsNum = WSAEnumProtocolsW(lpiProtocols, NULL, &bufferLenght);
+
+        bufferLenghtA = bufferLenght / sizeof(WSAPROTOCOL_INFOW);
+        bufferLenghtA = bufferLenghtA * sizeof(WSAPROTOCOL_INFOA);
+
+        *lpdwBufferLength = bufferLenghtA;
+
+        return protocolsNum;
+    }
+
+    WSAEnumProtocolsW(NULL, NULL, &bufferLenght);
+
+    protocolInfo = (WSAPROTOCOL_INFOW *)malloc(bufferLenght);
+
+    protocolsNum = WSAEnumProtocolsW(lpiProtocols, protocolInfo, &bufferLenght);
+
+    if (lpProtocolBuffer && protocolsNum != SOCKET_ERROR)
+    {
+        for (idx=0; idx<protocolsNum; ++idx)
+        {
+            lpProtocolBuffer[idx].dwServiceFlags1    = protocolInfo[idx].dwServiceFlags1;
+            lpProtocolBuffer[idx].dwServiceFlags2    = protocolInfo[idx].dwServiceFlags2;
+            lpProtocolBuffer[idx].dwServiceFlags3    = protocolInfo[idx].dwServiceFlags3;
+            lpProtocolBuffer[idx].dwServiceFlags4    = protocolInfo[idx].dwServiceFlags4;
+            lpProtocolBuffer[idx].dwProviderFlags    = protocolInfo[idx].dwProviderFlags;
+            lpProtocolBuffer[idx].ProviderId         = protocolInfo[idx].ProviderId;
+            lpProtocolBuffer[idx].dwCatalogEntryId   = protocolInfo[idx].dwCatalogEntryId;
+            lpProtocolBuffer[idx].ProtocolChain      = protocolInfo[idx].ProtocolChain;
+            lpProtocolBuffer[idx].iVersion           = protocolInfo[idx].iVersion;
+            lpProtocolBuffer[idx].iAddressFamily     = protocolInfo[idx].iAddressFamily;
+            lpProtocolBuffer[idx].iMaxSockAddr       = protocolInfo[idx].iMaxSockAddr;
+            lpProtocolBuffer[idx].iMinSockAddr       = protocolInfo[idx].iMinSockAddr;
+            lpProtocolBuffer[idx].iSocketType        = protocolInfo[idx].iSocketType;
+            lpProtocolBuffer[idx].iProtocol          = protocolInfo[idx].iProtocol;
+            lpProtocolBuffer[idx].iProtocolMaxOffset = protocolInfo[idx].iProtocolMaxOffset;
+            lpProtocolBuffer[idx].iNetworkByteOrder  = protocolInfo[idx].iNetworkByteOrder;
+            lpProtocolBuffer[idx].iSecurityScheme    = protocolInfo[idx].iSecurityScheme;
+            lpProtocolBuffer[idx].dwMessageSize      = protocolInfo[idx].dwMessageSize;
+            lpProtocolBuffer[idx].dwProviderReserved = protocolInfo[idx].dwProviderReserved;
+
+            nSize = WideCharToMultiByte(CP_UTF8, 0, protocolInfo[idx].szProtocol, -1, NULL, 0, NULL, NULL);
+
+            if ( nSize > 1 )
+            {
+                WideCharToMultiByte(CP_UTF8, 0, protocolInfo[idx].szProtocol, -1, lpProtocolBuffer[idx].szProtocol, nSize, NULL, NULL);
+            }
+        }
+    }
+
+    free(protocolInfo);
+
+    return protocolsNum;
 }

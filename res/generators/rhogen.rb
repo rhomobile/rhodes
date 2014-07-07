@@ -719,7 +719,7 @@ module Rhogen
       Dir.chdir("extensions/#{name}/ext")
       args = []
       args << 'api'
-      args << Dir.pwd+"/#{namefixed.downcase}.xml"
+      args << Dir.pwd+"/#{namecamelcase}.xml"
       Jake.run(source_root+'/../../../../bin/rhogen', args)
     end
 
@@ -734,7 +734,7 @@ module Rhogen
 
     template :extension_apigen_xml do |template|
       template.source = 'extensions/montana/ext/montana.xml'
-      template.destination = "extensions/#{name}/ext/#{namefixed}.xml"
+      template.destination = "extensions/#{name}/ext/#{namecamelcase}.xml"
     end
 
     template :build do |template|

@@ -28,15 +28,16 @@ require 'find'
 require 'erb'
 
 #require 'rdoc/task'
-require 'openssl'
-require 'digest/sha2'
-require 'rexml/document'
-require 'pathname'
-require 'securerandom'
 require 'base64'
+require 'digest/sha2'
+require 'io/console'
 require 'json'
-require 'open-uri'
 require 'net/https'
+require 'open-uri'
+require 'openssl'
+require 'pathname'
+require 'rexml/document'
+require 'securerandom'
 require 'uri'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
@@ -78,13 +79,13 @@ require File.join(pwd, 'lib/build/rhohub.rb')
 require File.join(pwd, 'lib/build/BuildOutput.rb')
 require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 
-load File.join(pwd, 'platform/bb/build/bb.rake')
+#load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
 load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
-load File.join(pwd, 'platform/symbian/build/symbian.rake')
+#load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
@@ -120,7 +121,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine"]
 
 $winxpe_build = false
 
@@ -296,7 +297,7 @@ end
 
 #------------------------------------------------------------------------
 
-#TODO:  call clean from all platfroms scripts
+#TODO:  call clean from all platforms scripts
 namespace "clean" do
   task :common => "config:common" do
     if $config["platform"] == "bb"
@@ -371,7 +372,7 @@ def get_conf(key_path, default = nil)
   key_sections = key_path.split('/').reject { |c| c.empty? }
 
   [$app_config, $config, $shared_conf].each do |config|
-    if !config.nil? 
+    if !config.nil?
       curr = config
       key_sections.each_with_index do |section, i|
         if !curr[section].nil?
@@ -379,7 +380,7 @@ def get_conf(key_path, default = nil)
         else
           break
         end
-        if (i == key_sections.length-1) && !curr.nil? 
+        if (i == key_sections.length-1) && !curr.nil?
           result = curr
         end
       end
@@ -398,148 +399,322 @@ end
 #token handling
 
 def get_app_list()
-  result = nil
-  begin
-    result = JSON.parse(Rhohub::App.list())
-  rescue Exception => e
-    puts "Could not get result #{e.inspect}"
-    raise
-  end
-
-  result
+  result = JSON.parse(Rhohub::App.list())
 end
 
-def check_update_token_file(user_acc, token_folder, check_subcription = false)
-  is_vaild = -2
+def from_boolean(v)
+  v == true ? "YES" : "NO"
+end
+
+def time_to_str(time)
+  d_h_m_s = [60,60,24].reduce([time]) { |m,o| m.unshift(m.shift.divmod(o)).flatten }
+  best = []
+  ["day","hour","minute","second"].each_with_index do |v, i|
+    if d_h_m_s[i] > 0
+      best << d_h_m_s[i].to_s + " " + v + ((d_h_m_s[i] > 1) ? "s" : "")
+    end
+  end
+  best.empty? ? "now" : best.first(2).join(" ")
+end
+
+def sort_by_distance(array, template)
+  template.nil? ? array : array.sort_by { |s| distance(template, s) }
+end
+
+def rhohub_make_request(srv)
+  if block_given?
+    build_was_proxy_problem = false
+
+    begin
+      yield
+
+    rescue Timeout::Error, Errno::ETIMEDOUT, Errno::EINVAL, Errno::ECONNRESET,
+        Errno::ECONNREFUSED, SocketError => e
+      unless RestClient.proxy.nil? || RestClient.proxy.empty?
+        BuildOutput.put_log(BuildOutput::WARNING,'Could not connect using proxy server, retrying without proxy','Connection problem')
+        RestClient.proxy = ''
+        build_was_proxy_problem = true
+        retry
+      else
+        if build_was_proxy_problem
+          BuildOutput.put_log(BuildOutput::WARNING,"Could not connect to server #{get_server(srv,'')}\n#{e.inspect}",'Network problem')
+        else
+          BuildOutput.put_log(BuildOutput::WARNING,"Could not connect to server #{get_server(srv,'')}. If you are behind proxy please set http(s)_proxy ENV variable",'Network problem')
+        end
+        exit 1
+      end
+
+    rescue EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+      puts "Http request problem: #{e.inspect}"
+
+    rescue RestClient::RequestFailed => e
+      puts "Http request problem: #{e.message}"
+
+    rescue RestClient::ExceptionWithResponse => e
+      # do nothing, this is is 404 or something like that
+    end
+
+    if RestClient.proxy != $proxy
+      $proxy = RestClient.proxy
+    end
+  end
+end
+
+
+def check_update_token_file(server_list, user_acc, token_folder, subscription_level = -1)
+  is_valid = -2
 
   if user_acc.is_valid_token?()
     Rhohub.token = user_acc.token
 
-    is_vaild = user_acc.is_outdated() ? 0 : 2 
+    is_valid = user_acc.is_outdated() ? 0 : 2
 
-    if SiteChecker.is_available? && (user_acc.is_outdated() || (check_subcription && !user_acc.is_valid_subscription?()))
-      if (check_subcription && !user_acc.is_valid_subscription?())
-        puts "Downloading user subscription information"
-        begin
-          subscription = Rhohub::Subscription.check()
-          user_acc.subscription = subscription
-          is_vaild = 2
-        rescue Exception => e
-          subscription = nil
+    if (user_acc.is_outdated() || (subscription_level > user_acc.subscription_level))
+      servers_sorted = sort_by_distance(server_list, user_acc.server)
+
+      servers_sorted.each do |srv|
+        Rhohub.url = srv
+
+        if (subscription_level > user_acc.subscription_level)
+          puts "Connecting to #{get_server(srv,'')}"
+
+          rhohub_make_request(srv) do
+            subscription = Rhohub::Subscription.check()
+            user_acc.subscription = subscription
+          end
+
+          if user_acc.subscription_level >= subscription_level
+            user_acc.server = srv
+            break
+          end
         end
       end
 
-      if is_vaild < 2
-        user_apps = nil
-        begin
-          user_apps = get_app_list()
-        rescue Exception => e
+      is_valid = user_acc.subscription_level >= 0 ? 2 : 0
+
+      if is_valid == 0
+        servers_sorted.each do |srv|
+          Rhohub.url = srv
+
           user_apps = nil
-        end
-        if user_apps.nil?
-          user_acc.token = nil
-          is_vaild = -1
-        else
-          is_vaild = 1
+          begin
+            user_apps = get_app_list()
+          rescue Exception => e
+            user_apps = nil
+          end
+
+          if user_apps.nil?
+            user_acc.token = nil
+            is_valid = -1
+          else
+            is_valid = 1
+          end
+
+          if is_valid > 0
+            user_acc.server = srv
+            break
+          end
         end
       end
     end
+
+    Rhohub.url = user_acc.server if is_valid > 0
 
     if (user_acc.is_valid_token?() && user_acc.changed)
       user_acc.save_token(token_folder)
     end
   else
-    is_vaild = -2
+    is_valid = -2
   end
 
-  is_vaild
+  is_valid
 end
 
-def check_subscription_re(subscr)
-  begin
-    resp = JSON.parse(subscr)
-  rescue Exception => e
-    return false
-  end
-  unsigned = subscr.gsub(/"signature":"[^"]*"/, '"signature":""')
-  hash = Digest::SHA1.hexdigest(unsigned)
-
-  if (resp["signature"] == Digest::SHA1.hexdigest(unsigned))
-    return (!resp["features"].nil? && (resp["features"]["isFree"]==false))
+def read_and_delete_files( file_list )
+  result = []
+  if file_list.kind_of?(String)
+    file_list = [file_list]
   end
 
-  false
+  if file_list.kind_of?(Array)
+    file_list.each do |read_file|
+      f_size = File.size?(read_file)
+      if !f_size.nil? && f_size < 1024
+        begin
+          result << File.read(read_file)
+          File.delete(read_file)
+        rescue Exception => e
+          puts "Reading file exception #{e.inspect}"
+        end
+      end
+    end
+  end
+
+  result
 end
 
-$def_rhohub_url = 'https://app.rhohub.com/api/v1'
+$server_list = ['https://app.rhohub.com/api/v1', 'https://appstaging.rhohub.com/api/v1']
+$selected_server = $server_list.first
+$cloud_brand = "rhomobile"
+
+def get_server(url, default)
+  url = default if url.nil? || url.empty?
+  scheme, user_info, host, port, registry, path, opaque, query, fragment =  URI.split(url)
+  case scheme
+    when "http"
+      URI::HTTP.build({:host => host, :port => port}).to_s
+    when "https"
+      URI::HTTPS.build({:host => host, :port => port}).to_s
+    else
+      ""
+  end
+
+end
 
 namespace "token" do
   task :initialize => "config:load" do
-    $rhohub = get_conf('rhohub/url', $def_rhohub_url)
+    $user_acc = RhoHubAccount.new()
 
-    if ($rhohub != $def_rhohub_url)
-      puts "Using alternative rhohub api url: #{$rhohub}"
-    end
-
-    SiteChecker.site = $rhohub
-    Rhohub.url = $rhohub
+    SiteChecker.site = $server_list.first
+    Rhohub.url = $server_list.first
     if !($proxy.nil? || $proxy.empty?)
       SiteChecker.proxy = $proxy
       RestClient.proxy = $proxy
     end
-
-    $user_acc = RhoHubAccount.new()
   end
 
-  task :read => [:initialize] do
+  task :login => [:initialize] do
+    puts 'Login to cloud build system'
+
+    if $stdin.tty?
+      print "Username: "
+      username = STDIN.gets.chomp.downcase
+      if username.empty?
+        BuildOutput.note('Empty username, login stopped')
+
+        exit 1
+      end
+
+      print "Password: "
+
+      STDIN.tty?
+      password = STDIN.noecho(&:gets).chomp
+      print $/
+
+      if password.empty?
+        BuildOutput.note('Empty password, login stopped')
+
+        exit 1
+      end
+    else
+      username = STDIN.readline.chomp
+      password = STDIN.readline.chomp
+    end
+
+    token = nil
+
+    sort_by_distance($server_list, $user_acc.server).each do |server|
+      Rhohub.url = server
+      rhohub_make_request(server) do
+        info = Rhohub::Token.login(username, password)
+        token = JSON.parse(info)["token"]
+        if token != nil
+          $user_acc.server = server
+        end
+      end
+      break if !token.nil?
+    end
+
+    if token.nil?
+      srv_address = URI.join( get_server($user_acc.server, $server_list.first), '/forgot')
+      BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at #{srv_address}", 'Invalid username or password')
+      exit 1
+    end
+
+    if !(token.nil? || token.empty?) && RhoHubAccount.is_valid_token?(token)
+      Rake::Task["token:set"].invoke(token)
+    else
+      BuildOutput.error( "Could not receive #{$cloud_brand} API token from server", 'Internal error')
+      exit 1
+    end
+  end
+
+  task :read, [:force_re_app_check] => [:initialize] do |t, args|
+    args.with_defaults(:force_re_app_check => "false")
+
     if !$user_acc.read_token_from_env()
       $user_acc.read_token_from_files($rhodes_home)
     end
 
+    Rhohub.url = sort_by_distance($server_list, $user_acc.server).first
+
+    if !$user_acc.is_valid_token?()
+      last_read_token = nil
+
+      search_paths = [Rake.application.original_dir, $app_path, $rhodes_home]
+      files = search_paths.compact.uniq.map{|d| File.join(d,'token.txt')}
+
+      read_and_delete_files(files).each do |token|
+        if RhoHubAccount.is_valid_token?(token)
+          last_read_token = token
+        end
+      end
+
+      $user_acc.token = last_read_token
+    end
+
     if $user_acc.is_valid_token?()
+      force_re_app_check = ($re_app || to_boolean(args[:force_re_app_check]))
+
       # check existing API token
-      case check_update_token_file($user_acc, $rhodes_home, $re_app)
+      case check_update_token_file($server_list, $user_acc, $rhodes_home, force_re_app_check ? 1 : 0 )
       when 2
         #BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
       when 1
         BuildOutput.put_log( BuildOutput::WARNING, "Token is valid, could not check subcription", "Token check" );
       when 0
-        BuildOutput.put_log( BuildOutput::WARNING, "Could not check token online", "Token check" );
+        BuildOutput.put_log( BuildOutput::WARNING, "Cloud not check token online", "Token check" );
       else
-        BuildOutput.put_log( BuildOutput::ERROR, "RhoHub API token is not valid!", "Token check" );
-      end
-    end
-
-    if !$user_acc.is_valid_token?()
-      token_source = File.join($app_path,'token.txt')
-
-      if File.exists?(token_source)
-        begin
-          tok = File.read(token_source)
-          File.delete(token_source)
-        rescue Exception => e
-          puts "Token file exception #{e.inspect}"
-        end
-
-        $user_acc.token = tok
-
-        check_update_token_file($user_acc, $rhodes_home, $re_app)
+        BuildOutput.put_log( BuildOutput::ERROR, "#{$cloud_brand.capitalize} API token is not valid!", 'Token check');
+        exit 1
       end
     end
 
     if $user_acc.is_valid_token?()
       Rhohub.token = $user_acc.token
     end
+
+    if $user_acc.server.empty?
+      $user_acc.server = $server_list.first
+    end
+
+    $selected_server = get_server($user_acc.server, $server_list.first)
   end
 
   task :check => [:read] do
-    puts "SubscriptionValid[#{$user_acc.is_valid_subscription?() ? 'YES' : 'NO'}]"
-    puts "TokenValid[#{$user_acc.is_valid_token?() ? 'YES' : 'NO'}]"
+    puts "TokenValid[#{from_boolean($user_acc.is_valid_token?())}]"
+    puts "TokenChecked[#{from_boolean($user_acc.remaining_time() > 0)}]" 
+    puts "SubscriptionValid[#{from_boolean($user_acc.is_valid_subscription?())}]"
+    puts "SubscriptionChecked[#{from_boolean($user_acc.remaining_subscription_time() > 0)}]"
+  end
 
-    if ($user_acc.is_valid_token?())
-      exit 0
-    else
-      exit 1
+  desc "Show token and user subscription information"
+  task :info => [:read] do
+    puts "Login complete: " + from_boolean($user_acc.is_valid_token?())
+    if $user_acc.is_valid_token?()
+      token_remaining = $user_acc.remaining_time()
+      if token_remaining > 0
+        puts "Token will be checked after " + time_to_str($user_acc.remaining_time())
+      else
+        puts "Token should be checked"
+        BuildOutput.warning( "Unable to connect to RhoMobile.com servers to validate your token information.\nPlease ensure you have a valid network connection and your proxy settings are configured correctly.", 'Token check error')
+      end
+      puts "Subscription plan: " + $user_acc.subsciption_plan()
+      subs_valid = $user_acc.is_valid_subscription?()
+      puts "Local subscripton cache valid: " + from_boolean(subs_valid)
+      if subs_valid
+        puts "Local subscription cache will be valid for " + time_to_str($user_acc.remaining_subscription_time())
+      end
     end
   end
 
@@ -556,20 +731,21 @@ namespace "token" do
     if RhoHubAccount.is_valid_token?(args[:token])
       $user_acc.token = args[:token]
     else
-      BuildOutput.error("Invalid RhoHub API token !", "Token check")
+      BuildOutput.error('Invalid Rhomobile API token !', 'Token check')
       exit 1
     end
 
     if $user_acc.is_valid_token?()
-      case check_update_token_file($user_acc, $rhodes_home, true)
+      case check_update_token_file($server_list, $user_acc, $rhodes_home, 3)
       when 2
         BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check")
       when 1
-        BuildOutput.put_log( BuildOutput::WARNING,"Token is valid, could not check subcription", "Token check")
+        BuildOutput.put_log( BuildOutput::WARNING,"Token is valid, could not check subscription", "Token check")
       when 0
-        BuildOutput.put_log( BuildOutput::WARNING,"Could not check token online", "Token check")
+        BuildOutput.put_log( BuildOutput::ERROR, 'Could not check token online', 'Token check')
+        exit 1
       else
-        BuildOutput.put_log( BuildOutput::ERROR,"RhoHub API token is not valid!", "Token check")
+        BuildOutput.put_log( BuildOutput::ERROR, 'Rhomobile API token is not valid!', 'Token check')
         exit 1
       end
     end
@@ -581,32 +757,26 @@ namespace "token" do
 
   task :setup => [:read] do
     if !$user_acc.is_valid_token?()
-      BuildOutput.put_log( BuildOutput::NOTE, "In order to use Rhodes framework you should set RhoHub API token for it.
-Register at http://rhohub.com and get your API token there.
-It is located in your profile (rightmost toolbar item).
-Inside your profile configuration select 'API token' menu item. Then run command
+      have_input = STDIN.tty? && STDOUT.tty?
 
-`rake token:set[<Your_RhoHub_API_token>]`")
+      BuildOutput.put_log( BuildOutput::NOTE, "In order to use #{$re_app ? 'Rhoelements' :  'Rhodes'} framework you need to log in into your rhomobile account.
+If you don't have account please register at " + URI.join($server_list.first, '/').to_s + ( have_input ? 'To stop build just press enter.' : '') )
 
-      tok = ""
-
-      if STDIN.tty? && STDOUT.tty? 
-        puts "You can also paste your RhoHub token right now (or just press enter to stop build):"
-        tok = STDIN.gets.chomp
-      end
-    
-      if tok.empty?
-        exit 1
-      else
-        Rake::Task["token:set"].invoke(tok)
+      if have_input
+        Rake::Task['token:login'].invoke()
       end
     end
   end
 end
 
-def distance(a, b)
-  as = a.to_s.downcase
-  bs = b.to_s.downcase
+def distance(a, b, case_insensitive = false)
+  as = a.to_s
+  bs = b.to_s
+
+  if case_insensitive
+    as = as.downcase
+    bs = bs.downcase
+  end
 
   rows = as.size + 1
   cols = bs.size + 1
@@ -639,16 +809,39 @@ end
 
 #------------------------------------------------------------------------
 def to_boolean(s)
-  !!(s =~ /^(true|t|yes|y|1)$/i)
+  if s.kind_of?(String)
+    !!(s =~ /^(true|t|yes|y|1)$/i)
+  elsif s.kind_of?(TrueClass)
+    true
+  else
+    false
+  end
 end
 
-def rhohub_git_match(str)
-  res = /git@git(?:.*?)\.rhohub\.com:(.*?)\/(.*?).git/i.match(str)
-  res.nil? ? { :str => "", :user => "", :app => "" } : { :str => "#{res[1]}/#{res[2]}", :user => res[1], :app => res[2] }
+def cloud_url_git_match(str)
+  res = /git@(git.*?\.rhohub\.com):(.*?)\/(.*?).git/i.match(str)
+  res.nil? ? {} : { :str => "#{res[1]}:#{res[2]}/#{res[3]}", :server => res[1],  :user => res[2], :app => res[3] }
 end
 
 def split_number_in_groups(number)
   number.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1'")
+end
+
+MAX_BUFFER_SIZE = 1024*1024
+
+def fill_with_zeroes(file, size)
+  buffer = "\0" * MAX_BUFFER_SIZE
+  to_write = size
+  while to_write > MAX_BUFFER_SIZE
+    file.write(buffer)
+    to_write -= buffer.length
+  end
+  if to_write > 0
+    buffer = "\0" * to_write
+    file.write(buffer)
+  end
+  file.flush
+  file.seek(0)
 end
 
 def http_get(url, proxy, save_to)
@@ -674,13 +867,20 @@ def http_get(url, proxy, save_to)
     header_resp = http.head(uri.path)
   }
 
+  if !header_resp.kind_of?(Net::HTTPSuccess)
+    if block_given?
+      yield(header_resp.content_length, -1, "Server error #{header_resp.inspect}")
+    end
+    return false, "Server error: #{header_resp.inspect}"
+  end
+
   if File.exists?(f_name)
     if File.stat(f_name).size == header_resp.content_length
       if block_given?
         yield(header_resp.content_length, header_resp.content_length, "File #{f_name} from #{url} is already in the cache")
       end
 
-      return f_name
+      return true, f_name
     end
   end
 
@@ -698,19 +898,33 @@ def http_get(url, proxy, save_to)
     result = res.body
   else
     f = File.open(f_name, "wb")
+    fill_with_zeroes(f, header_resp.content_length)
     done = 0
     begin
       result = false
 
-      http.request_get(uri.path) do |resp| 
+      buffer = []
+      buffer_size = 0
+
+      http.request_get(uri.path) do |resp|
         last_p = 0
         length = resp['Content-Length'].to_i
         length = length > 1 ? length : 1
-        
+
         resp.read_body do |segment|
-          f.write(segment)
+          chunk_size = segment.length
+
+          if buffer_size + chunk_size > MAX_BUFFER_SIZE
+            f.write(buffer.join(''))
+            buffer = [segment]
+            buffer_size = chunk_size
+          else
+            buffer << segment
+            buffer_size += chunk_size
+          end
+
           if  block_given?
-            done += segment.length
+            done += chunk_size
             dot = (done * 100 / length).to_i
             if dot > 100
               dot = 100
@@ -721,49 +935,20 @@ def http_get(url, proxy, save_to)
             end
           end
         end
+        unless buffer.empty?
+          f.write(buffer.join(''))
+          f.flush
+        end
+
       end
       result = f_name
     ensure
       f.close()
     end
-    yield(done, header_resp.content_length, "Download finished")
+    yield(done, header_resp.content_length, "Download finished") if block_given?
   end
 
-  result
-end
-
-def show_build_infromation(build_hash, proxy)
-  label = case build_hash["status"]
-  when "queued"
-    "queued".cyan
-  when "started"
-    "started".blue
-  when "completed"
-    "completed".green
-  when "failed"
-    "failed".red
-  end
-
-  puts "Build ##{build_hash["id"]} is #{label}"
-
-  dl = build_hash["download_link"]
-
-  if !(dl.nil? || dl.empty?)
-    puts "  Download link : #{dl.underline}"
-  end
-end
-
-def show_build_messages(build_hash, proxy, save_to)
-  if build_hash["status"] == "failed"
-    if !(build_hash["download_link"].nil? || build_hash["download_link"].empty?)
-      error_file = http_get(build_hash["download_link"], proxy, save_to)
-
-      if !error_file.nil?
-        error = File.read(error_file)
-        puts "  Build error:\n#{error.red}"
-      end
-    end
-  end
+  return true, result
 end
 
 def get_build_platforms()
@@ -794,35 +979,119 @@ def get_build_platforms()
   build_platforms
 end
 
-def find_platform_version(platform, platform_list, override, info, is_lex = false)
-  platfom_conf = platform_list[platform]
-  if platfom_conf.empty?
-    raise Exception.new("Could not find any #{platform} sdk on rhohub")
+def find_platform_by_command(platforms, command)
+  result = "not found"
+
+  command = "iphone:development" if command == "iphone:ad_hoc"
+  command = "iphone:distribution" if command == "iphone:app_store"
+  platforms.each do |platform, content|
+    content.each do |el|
+      if el[:tag] == command
+        result = "#{platform} #{el[:ver]}".strip()
+        break
+      end
+    end
+
   end
 
-  req_ver = override
+  result
+end
+
+
+def show_build_information(build_hash, platforms, opts = {})
+  build_states = {
+      "queued" => "queued".cyan,
+      "started" => "started".blue,
+      "completed" => "completed".green,
+      "failed" => "failed".red
+  }
+
+  label = build_states[ build_hash["status"] ]
+
+  message = ""
+  target = ""
+  if build_hash["target_device"]
+    target = ", target platform: " + find_platform_by_command(platforms, build_hash["target_device"]).blue
+  end
+  if build_hash["rhodes_version"] && build_hash["version"]
+    message = "Rhodes version: #{build_hash["rhodes_version"].cyan}, app version: #{build_hash["version"].cyan}"
+  end
+
+  puts "Build ##{build_hash["id"]}: #{label}#{target}"
+  puts "  #{message}" unless message.nil? || message.empty? || opts[:hide_ver]
+
+  dl = build_hash["download_link"]
+
+  if !(dl.nil? || dl.empty?) && !(opts[:hide_link])
+    puts "  Download link : #{dl.underline}"
+  end
+end
+
+def show_build_messages(build_hash, proxy, save_to)
+  if build_hash["status"] == "failed"
+    if !(build_hash["download_link"].nil? || build_hash["download_link"].empty?)
+      is_ok, error_file = http_get(build_hash["download_link"], proxy, save_to)
+
+      if is_ok
+        error = File.read(error_file)
+        BuildOutput.put_log(BuildOutput::ERROR, error, "Build log")
+      else
+        BuildOutput.put_log(BuildOutput::ERROR, error_file, "Server error")
+      end
+    end
+  end
+end
+
+
+
+def best_match(target, list, is_lex = false)
+  best = list.first
+
+  if !(target.nil?)
+    if !is_lex
+      sorted = list.sort{|a, b| String.natcmp(b, a)}
+      best = sorted.first
+      sorted.each do |item|
+        if String.natcmp(target, item) < 0
+          best = item
+        else
+          break
+        end
+      end
+    else
+      best = list.min_by{ |el| distance(el, target, true) }
+    end
+  end
+
+  best
+end
+
+def find_platform_version(platform, platform_list, default_ver, info, is_lex = false)
+  platform_conf = platform_list[platform]
+  if platform_conf.empty?
+    raise Exception.new("Could not find any #{platform} sdk on cloud build server")
+  end
+
+  req_ver = nil
 
   req_ver = $app_config[platform]["version"] unless $app_config[platform].nil?
   req_ver = $config[platform]["version"] if req_ver.nil? and !$config[platform].nil?
 
-  best = platfom_conf.first
+  req_ver = default_ver if req_ver.nil?
+
+  best = platform_conf.first
 
   if !(req_ver.nil? || req_ver.empty?)
     if !is_lex
-      platfom_conf.sort{|a, b| b[:ver]<=>a[:ver]}.each do |ver|
-        if ver[:ver] >= req_ver
+      platform_conf.sort{|a, b| String.natcmp(b[:ver],a[:ver])}.each do |ver|
+        if String.natcmp(req_ver, ver[:ver]) < 0
           best = ver
         else
           break
         end
       end
     else
-      best_dist = distance(best[:ver],req_ver)
-      platfom_conf.each do |ver|
-        if best_dist > distance(ver[:ver],req_ver)
-          best = ver
-        end
-      end
+      best = platform_conf.min_by{ |el| distance(el[:ver],req_ver, true) }
     end
 
     if info
@@ -841,7 +1110,7 @@ def find_platform_version(platform, platform_list, override, info, is_lex = fals
   best
 end
 
-def check_rhohub_result(result)
+def check_cloud_build_result(result)
   if !(result["text"].nil?)
     e_msg = "Error running build: #{result["text"]}"
     BuildOutput.error(e_msg)
@@ -851,15 +1120,17 @@ end
 
 TIME_FORMAT = '%02d:%02d:%02d.%02d'
 
-def put_message_with_timestamp(start_time, message, no_newline = false)
-  seconds = ((Time.now - start_time)*100).floor
+$start_time = Time.now
+
+def put_message_with_timestamp( message, no_newline = false)
+  seconds = ((Time.now - $start_time)*100).floor
 
   cleaner = ' ' * 80
 
   seconds, msecs = seconds.divmod(100)
   minutes, seconds = seconds.divmod(60)
   hours, minutes = minutes.divmod(3600)
-  
+
   time = sprintf TIME_FORMAT, hours, minutes, seconds, msecs
 
   data = "[#{time}] #{message}#{cleaner}"
@@ -868,20 +1139,31 @@ def put_message_with_timestamp(start_time, message, no_newline = false)
   else
     puts " #{data}"
   end
+
+  STDOUT.flush
 end
 
-def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to = nil, unzip_to = nil)
-  app_request = {:app_id => app_id, :id => build_id}
-  last_stat = ""
-  status = "",
+def valid_build_id(id)
+  if id.kind_of?(NilClass)
+    true
+  elsif id.kind_of?(Integer)
+    true
+  elsif id.kind_of?(String)
+    Integer(id) != nil rescue false
+  else
+    false
+  end
+end
 
+def wait_and_get_build(app_id, build_id, proxy, save_to = nil, unzip_to = nil)
   puts("Application build progress: \n")
+
+  app_request = {:app_id => app_id, :id => build_id}
 
   begin
     result = JSON.parse(Rhohub::Build.show(app_request))
 
-    message = status = result["status"]
-    desc = ''
+    status = result["status"]
 
     case status
     when "queued"
@@ -892,53 +1174,54 @@ def wait_and_get_build(app_id, build_id, proxy, start_time = Time.now, save_to =
       sleep(1)
     when "completed"
       desc = "Build is ready to be downloaded."
-      message = "ready".green
     when "failed"
       desc = "Build failed."
-      message = "error!".red
     end
 
     build_complete = %w[completed failed].include?(status)
 
-    put_message_with_timestamp(start_time, "Current status: #{desc}", true)
+    put_message_with_timestamp("Current status: #{desc}", true)
 
   end while !build_complete
 
-  puts " "
+  puts
 
   result_link = result["download_link"]
 
   if !(save_to.nil? || save_to.empty?)
-    result_link = http_get(result["download_link"], proxy, save_to) do |current, total, msg|
-      put_message_with_timestamp(start_time, "Current status: #{msg}", true)
+    is_ok, result_link = http_get(result["download_link"], proxy, save_to) do |current, total, msg|
+      put_message_with_timestamp("Current status: #{msg}", true)
     end
 
-    puts " "
+    puts
 
-    if !(unzip_to.nil? || unzip_to.empty?)
-      if (status == "completed")
-        Jake.unzip(result_link, unzip_to) do |a,b,msg|
-          put_message_with_timestamp(start_time, "Current status: #{msg}", true)
+    if is_ok
+      if !(unzip_to.nil? || unzip_to.empty?)
+        if (status == "completed")
+          Jake.unzip(result_link, unzip_to) do |a,b,msg|
+            put_message_with_timestamp("Current status: #{msg}", true)
+          end
+
+          puts
         end
-
-        puts " "
       end
+    else
+      put_message_with_timestamp("Server error: #{result_link}", true)
     end
   end
 
   return (status == "completed"), result_link
 end
 
-def rhohub_start_build(app_id, build_flags)
-  result = JSON.parse(Rhohub::Build.create({:app_id => app_id}, build_flags))
 
-  build_id = nil
+def start_cloud_build(app_id, build_params)
+  result = JSON.parse(Rhohub::Build.create({:app_id => app_id}, build_params))
 
-  if !(result["status"].nil? && result["id"].nil?)
-    build_id = result["id"].to_i
+  if !(result['status'].nil? && result['id'].nil?)
+    build_id = result['id'].to_i
 
     if (!build_id.nil?)
-      result = JSON.parse(Rhohub::Build.show({:app_id => $rhohub_app_id, :id => build_id}))
+      result = JSON.parse(Rhohub::Build.show({:app_id => $app_cloud_id, :id => build_id}))
     end
   else
     build_id = -1
@@ -947,257 +1230,742 @@ def rhohub_start_build(app_id, build_flags)
   return build_id, result
 end
 
+def get_builds_list(app_id)
+  result = []
+  begin
+    result = JSON.parse(Rhohub::Build.list({:app_id => app_id})).sort{ |a, b| a['id'].to_i <=> b['id'].to_i}
+  rescue Exception => e
+    puts "Got exception #{e.inspect}"
+  end
+
+  result
+end
+
+
+def match_build_id(build_id, builds)
+  if !build_id.nil? && (build_id.kind_of?(Integer) || !build_id.empty?)
+    found_id = build_id.to_i
+
+    found = nil
+
+    if found_id <= 0
+      if found_id.abs < builds.length
+        found = builds[builds.length - (found_id).abs - 1]
+      end
+    else
+      found = builds.find {|f| f['id'] == found_id }
+    end
+
+    return [found].compact
+  end
+
+  builds
+end
+
+def filter_by_status(builds, filter = [])
+  result = builds
+
+  unless filter.nil? || filter.empty?
+    result = builds.select{ |el| filter.index(el['status']) != nil }
+  end
+
+  result
+end
+
 $rhodes_ver_default = '3.5.1.14'
 $latest_platform = nil
 
-namespace "rhohub" do
-  desc "Get project infromation from rhohub"
-  task :initialize => ["config:initialize","token:setup"] do
-    #check current folder
-    result = Jake.run2("git",%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
+def deploy_build(platform)
+  files = Dir.glob(File.join($cloud_build_temp,'**','*')).select {|entry| File.file?(entry) }
 
-    if result.nil? || result.empty?
-      BuildOutput.error("Current project folder #{$app_path} is not versioned by git", "Rhohub build")
-      raise Exception.new("Not versioned by git")
-    end
+  detected_bin = nil
+  detected_platform = nil
+  log_file = nil
 
-    user_proj = rhohub_git_match(result)
-
-    if !user_proj.empty?
-      puts "RhoHub User: #{user_proj[:user]}, application: #{user_proj[:app]}"
-    else
-      BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by rhohub cloud build system", "Rhohub build")
-      raise Exception.new("Not versioned on github")
-    end
-
-    #get app list
-    $apps = get_app_list() unless !$apps.nil?
-
-    if $apps.nil?
-      BuildOutput.error("Could not get rhohub project list. Check your internet connection and proxy settings.", "Rhohub build")
-      
-      raise Exception.new("Could not get rhohub project list")
-    end
-
-    if $apps.empty?
-      BuildOutput.error("You do not have any RhoHub projects, please create progect first in order to use cloud build system", "Rhohub build")
-     
-      raise Exception.new("Empty project list")
-    end
-
-    $apps.each do |item|
-      item[:user_proj] = rhohub_git_match(item["git_repo_url"])
-      item[:dist]=distance(user_proj[:str], item[:user_proj][:str])
-    end
-
-    $rhohub_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
-
-    if $rhohub_app[:dist] > 0
-      puts "WARNING! Could not find #{user_proj[:str]} using #{$rhohub_app[:user_proj][:str]} instead"
-    end
-    $rhohub_app_id = $rhohub_app["id"]
-
-    if $app_path.empty? 
-      BuildOutput.error("Could not run cloud build, app_path is not set", "Rhohub build")
-      exit 1
-    end
-
-    $rhohub_home = File.join($app_path, 'rhohub')
-    if !File.exist?($rhohub_home)
-      FileUtils::mkdir_p $rhohub_home
-    end
-    $rhohub_temp = File.join($rhohub_home, 'temp')
-    if !File.exist?($rhohub_temp)
-      FileUtils::mkdir_p $rhohub_temp
-    end
-    $rhohub_bin = File.join($app_path, 'bin')
-    if !File.exist?($rhohub_bin)
-      FileUtils::mkdir_p $rhohub_bin
-    end
-
-    $rhodes_ver = get_conf('rhohub/rhodesgem',$rhodes_ver_default)
-  end
-
-  desc "List avaliable builds"
-  task :list_builds, [:show_log] => [:initialize] do |t, args|
-    args.with_defaults(:show_log => "false")
-
-    show_log = to_boolean(args.show_log)
-
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
-    builds.each do |build|
-      show_build_infromation(build, $proxy)
-      if show_log
-        show_build_messages(build, $proxy, $rhohub_home)
-      end
+  files.each do |fname|
+    case fname
+      when /\.ipa/
+        detected_bin = fname
+        detected_platform = 'iphone'
+      when /\.cab/
+        detected_bin = fname
+        detected_platform = 'wm'
+      when /\.apk/
+        detected_bin = fname
+        detected_platform = 'android'
+      when /\.msi/
+        detected_bin = fname
+        detected_platform = 'win32'
+      when /log\.txt/i
+        log_file = fname
     end
   end
 
-  desc "Download build into app\\bin folder"
-  task :download, [:build_id] => [:initialize] do |t, args|
-    FileUtils.rm_rf(Dir.glob(File.join($rhohub_temp,'*')))
+  if detected_bin.nil?
+    BuildOutput::error("Could not find executable for platform #{platform}\nYou should check #{$cloud_build_temp}",'Application deployment')
+    unless log_file.nil?
+      BuildOutput::error("Build log:\n#{File.read(log_file).gsub(/\e\[(\d+)(;\d+)*m/,'')}",'Application deployment')
+    end
+    fail 'Missing executable'
+  elsif !platform.include?(detected_platform)
+    BuildOutput::error("Executable platfrom missmatch, build for #{platform} has an executable #{detected_bin} that belongs to #{detected_platform}")
+    fail 'Executable platform missmatch'
+  end
 
-    builds = JSON.parse(Rhohub::Build.list({:app_id => $rhohub_app_id}))
+  dest = File.join($cloud_build_bin, detected_platform)
 
-    if !builds.empty?
+  if !File.exists?(dest)
+    FileUtils.mkpath(dest)
+  else
+    FileUtils.rm_rf(File.join(dest,'.'), secure: true)
+  end
 
-      build_id = args.build_id
 
-      if build_id.nil? || build_id.empty?
-        result = builds.max_by{|l| l["id"].to_i}
-        build_id = result["id"].to_i
-        puts "Build id is not set, downloading latest one (#{build_id})"
-        #builds.sort{|a, b| b["id"]<=>a["id"]}.first
-      else
-        build_id = args.build_id.to_i
-      end
+  FileUtils.mv(detected_bin, dest)
 
-      if build_id <= 0
-        if build_id.abs < builds.length
-          build_id = builds[(build_id).abs]["id"].to_i
-        end
-      end
+  unless log_file.nil?
+    FileUtils.mv(log_file, dest)
+  end
 
-      build_hash = builds.find {|f| f["id"] == build_id }
+  remaining = (files - [detected_bin, log_file])
 
-      if !build_hash.nil?
-        start_time = Time.now
-        successfull, file = wait_and_get_build($rhohub_app_id, build_id, $proxy, start_time, $rhohub_home, $rhohub_temp)
+  unless remaining.empty?
+    misc = File.join(dest, 'misc')
 
-        if !file.nil?
-          if successfull
-            dirs = Dir.entries($rhohub_temp).select {|entry| File.directory? File.join($rhohub_temp,entry) and !(entry =='.' || entry == '..') }
-            
-            dirs.each do |dir|
-              put_message_with_timestamp(start_time, "Removing previous application from bin folder #{dir}") 
-              FileUtils.rm_rf(Dir.glob(File.join($rhohub_bin,dir)))
-              $latest_platform = dir
-            end
+    FileUtils.mkpath(misc)
 
-            if dirs.length > 0
-              FileUtils.cp_r File.join($rhohub_temp,'.'), $rhohub_bin
+    remaining.each do |src|
+      FileUtils.mv(src, misc)
+    end
+  end
 
-              dest = File.join($rhohub_bin, dirs.first)
+  unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
 
-              put_message_with_timestamp(start_time, "Done, application unpacked into #{dest}")
+  unless $cloud_build_temp.empty?
+    FileUtils.rm_rf($cloud_build_temp, secure: true)
+  end
+
+  put_message_with_timestamp("Done, application files deployed to #{dest}")
+
+  return unpacked_file_list
+end
+
+def get_build(build_id, show_info = false)
+  result = false
+  message = 'none'
+  platform = 'none'
+
+  builds = get_builds_list($app_cloud_id)
+
+  if !builds.empty?
+    if valid_build_id(build_id)
+      matching_builds  = match_build_id(build_id, builds)
+
+      if !matching_builds.empty?
+        build_hash = matching_builds.last
+
+        if !build_hash.nil?
+          build_id = build_hash['id']
+
+          $platform_list = get_build_platforms() unless $platform_list
+
+          show_build_information(build_hash, $platform_list, {:hide_link => true}) if show_info
+
+          platform = find_platform_by_command($platform_list, build_hash["target_device"])
+
+          FileUtils.rm_rf(Dir.glob(File.join($cloud_build_temp,'*')))
+
+          $start_time = Time.now
+          successful, file = wait_and_get_build($app_cloud_id, build_id, $proxy, $cloud_build_home, $cloud_build_temp)
+
+          if !file.nil?
+            if successful
+              result = true
+              message = file
+            else
+              put_message_with_timestamp('Done with build errors')
+              BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
             end
           else
-            put_message_with_timestamp(start_time, "Done with build errors")
-            BuildOutput.put_log( BuildOutput::ERROR, File.read(file), 'build error')
+            message = 'Could not get any result from server'
           end
-        else
-          puts "Could not get any result"
         end
       else
         str = build_id.to_s
-        match = builds.collect{ |h| { :id => h["id"], :dist => distance(str, h["id"].to_s) } }.min_by{|a| a[:dist]}
+        match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.min_by{|a| a[:dist]}
         if match[:dist] < 3
-          puts "Could not find #{build_id}, did you mean #{match[:id]}?"
+          message = "Could not find build ##{build_id}, did you mean #{match[:id]}?"
         else
-          puts "Could not find #{build_id}"
+          message = "Could not find build ##{build_id}"
         end
       end
     else
-      puts "Nothing to download"
+      message = "Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}"
     end
+  else
+    message = 'Nothing to download'
   end
 
-  def do_platform_build(platform_name, platform_list, build_info = {}, config_override = nil)
-    platform_version = find_platform_version(platform_name, platform_list, config_override, true)
+  return result, message, platform
+end
 
-    puts "Running rhohub build using #{platform_version[:tag]} command"
+def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
+  platform_version = find_platform_version(platform_name, platform_list, config_override, true, is_lexicographic_ver)
 
-    build_hash = {
+  puts "Running cloud build using #{platform_version[:tag]} command"
+
+  build_hash = {
       'target_device' => platform_version[:tag],
-      'version_tag' => "master",
+      'version_tag' => 'master',
       'rhodes_version' => $rhodes_ver
-    }
+  }
 
-    build_flags = { :build => build_hash }
-
-    build_info.each do |k, v|
-      build_flags[k] = v
-    end
-
-    build_id, res = rhohub_start_build($rhohub_app_id, build_flags)
-
-    if (!build_id.nil?)
-      show_build_infromation(res, $proxy)
-    end
-
-    check_rhohub_result(res)
+  build_info.each do |k, v|
+    build_hash[k] = v
   end
 
-  def list_missing_files(files_array)
-    failed = files_array.select{|file| !File.exists?(file)}
+  build_flags = { :build => build_hash }
 
-    failed
+  build_id, res = start_cloud_build($app_cloud_id, build_flags)
+
+  if (!build_id.nil?)
+    show_build_information(res, platform_list, {:hide_link => true})
   end
+
+  check_cloud_build_result(res)
+
+  build_id
+end
+
+def list_missing_files(files_array)
+  failed = files_array.select{|file| !File.exists?(file)}
+
+  failed
+end
+
+def get_iphone_options()
+  profile_file = get_conf('iphone/production/mobileprovision_file')
+  cert_file = get_conf('iphone/production/certificate_file')
+  cert_pw = get_conf('iphone/production/certificate_password')
+
+  if profile_file.nil? || cert_file.nil?
+    raise Exception.new('You should specify mobileprovision_file and certificate_file in iphone:production section of your build.yml')
+  end
+
+  profile_file = File.expand_path(profile_file, $app_path)
+  cert_file = File.expand_path(cert_file, $app_path)
+
+  missing = list_missing_files([profile_file, cert_file])
+
+  if !missing.empty?
+    raise Exception.new("Could not load #{missing.join(', ')}")
+  end
+
+  options = {
+      :upload_cert => Base64.urlsafe_encode64(File.open(cert_file, 'rb') { |io| io.read }),
+      :upload_profile => Base64.urlsafe_encode64(File.open(profile_file, 'rb') { |io| io.read }),
+      :bundle_identifier => get_conf('iphone/BundleIdentifier')
+  }
+
+  if !cert_pw.nil? && !cert_pw.empty?
+    options[:cert_pw] = cert_pw
+  end
+
+  options
+end
+
+def run_binary_on(platform, file_list, devsim)
+  puts file_list.inspect
+
+  case platform
+    when 'android'
+      to_run = file_list.find{|f| /.apk/ =~ f}
+
+    when 'iphone'
+      to_run = file_list.find{|f| /.ipa/ =~ f}
+
+    when /wm.+/
+      platform = 'wm'
+      to_run = file_list.find{|f| /.cab/ =~ f}
+
+    else
+      to_run = nil
+  end
+
+  if !to_run.nil?
+    Rake::Task["run:#{platform}:#{devsim}:package"].invoke(to_run)
+  else
+    BuildOutput.error( "Could not find executable file for #{platform} project", 'No file')
+  end
+end
+
+def get_build_and_run(build_id, run_target)
+  is_ok, res, platform = get_build(build_id)
+  if is_ok
+    files = deploy_build(platform)
+    unless files.empty?
+      if run_target
+        run_binary_on(platform, files, run_target)
+      end
+    end
+  else
+    BuildOutput.put_log(BuildOutput::ERROR, res, 'build error')
+  end
+end
+
+def build_deploy_run(target, run_target = nil)
+  res =  target.split(':')
+
+  platform = res.first
+
+  data = nil
+
+  if res.length > 1
+    data = res.last
+  end
+
+  if platform == 'iphone'
+    options = get_iphone_options()
+  else
+    options = {}
+  end
+
+  b_id = do_platform_build( platform, $platform_list, platform == 'iphone', options, data)
+
+  get_build_and_run(b_id, run_target)
+end
+
+
+namespace 'cloud' do
+  task :set_paths => ['config:initialize'] do
+    if $app_path.empty?
+      BuildOutput.error('Could not run cloud build, app_path is not set', 'Cloud server build')
+      exit 1
+    end
+
+    $cloud_build_home = File.join($app_path, '.cbc')
+    if !File.exist?($cloud_build_home)
+      FileUtils::mkdir_p $cloud_build_home
+    end
+    $cloud_build_temp = File.join($cloud_build_home, 'temp')
+    if !File.exist?($cloud_build_temp)
+      FileUtils::mkdir_p $cloud_build_temp
+    end
+    $cloud_build_bin = File.join($app_path, 'bin')
+    if !File.exist?($cloud_build_bin)
+      FileUtils::mkdir_p $cloud_build_bin
+    end
+  end
+
+  desc 'Initialize cloud build functionality'
+  task :initialize => ['config:initialize', 'token:setup', :set_paths] do
+    if $user_acc.subscription_level < 1
+      Rake::Task['token:read'].reenable
+      Rake::Task['token:read'].invoke('true')
+    end
+  end
+
+  desc 'Login using interactive mode'
+  task :login => ['token:login'] do
+  end
+
+  desc 'Check current remote build status'
+  task :info => ['token:setup'] do
+    status = nil
+
+    rhohub_make_request($user_acc.server) do
+      status = JSON.parse(Rhohub::Build.user_status())
+    end
+
+    if !status.nil? && status['text'].nil?
+      puts "Cloud build is #{status["cloud_build_enabled"] ? 'enabled' : 'disabled'} for '#{$user_acc.subsciption_plan}' plan" if status["cloud_build_enabled"]
+      puts "Builds limit: #{status["builds_remaining"] < 0 ? 'not set' : status["builds_remaining"].to_s + ' requests' }" if status["builds_remaining"]
+      puts "Free build queue slots: #{status["free_queue_slots"]}" if status["free_queue_slots"]
+    else
+      puts "Could build server #{$user_acc.server} does not returned user information"
+    end
+
+    Rake::Task['cloud:show:gems'].invoke()
+  end
+
+  desc 'Get project information from server'
+  task :find_app => [:initialize] do
+
+    #check current folder
+    result = Jake.run2('git',%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
+
+    if result.nil? || result.empty?
+      BuildOutput.error("Current project folder #{$app_path} is not versioned by git", 'Cloud server build')
+      raise Exception.new('Not versioned by git')
+    end
+
+    user_proj = cloud_url_git_match(result)
+
+    if !user_proj.empty?
+      puts "Cloud build server user: #{user_proj[:user]}, application: #{user_proj[:app]}"
+    else
+      BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Cloud build')
+      raise Exception.new('Application repository is not hosted on cloud build server')
+    end
+
+    rhohub_make_request($user_acc.server) do
+
+      #get app list
+      $apps = get_app_list() unless !$apps.nil?
+    end
+
+    if $apps.nil?
+      BuildOutput.error('Could not get project list from cloud build server. Check your internet connection and proxy settings.', 'Cloud build')
+
+      raise Exception.new('Could not get project list from server')
+    end
+
+    if $apps.empty?
+      BuildOutput.error('You do not have any cloud server projects, please create project first in order to use cloud build system', 'Cloud build')
+
+      raise Exception.new('Empty project list')
+    end
+
+    $apps.each do |item|
+      item[:user_proj] = cloud_url_git_match(item['git_repo_url'])
+      item[:dist]=distance(user_proj[:str], item[:user_proj][:str])
+    end
+
+    $cloud_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
+
+    if $cloud_app[:dist] > 0
+      if $cloud_app[:user_proj][:server] != user_proj[:server]
+        BuildOutput.error("Current user account is on #{$cloud_app[:user_proj][:server].bold} but project in working directory is on #{user_proj[:server].bold}", 'Cloud build')
+      elsif $cloud_app[:user] != user_proj[:user]
+        BuildOutput.error("Current user account is #{$cloud_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", 'Cloud build')
+      else
+        project_names = $apps.map{ |e| " - #{e[:user_proj][:app].to_s}" }.join($/)
+        BuildOutput.error("Could not find #{user_proj[:app].bold} in current user application list: \n#{project_names}", 'Cloud build')
+      end
+      raise Exception.new('User or application list mismatch')
+    end
+    $app_cloud_id = $cloud_app['id']
+  end
+
+  namespace :show do
+    desc 'Show error logs of failed builds'
+    task :fail_log, [:build_id] => ['cloud:find_app']  do |t, args|
+      args.with_defaults(:build_id => nil)
+
+      build_id = args.build_id
+
+      $platform_list = get_build_platforms() unless $platform_list
+
+      builds = get_builds_list($app_cloud_id)
+
+      unless builds.nil?
+        if !valid_build_id(build_id)
+          BuildOutput.error("Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}", 'Invalid build id')
+          raise Exception.new('Invalid build id')
+        end
+
+        match = match_build_id(build_id, builds)
+
+        unless match.empty?
+          failed = match_build_id(build_id, filter_by_status(builds, ['failed']))
+
+          unless failed.empty?
+            failed.each do |build_hash|
+              show_build_information(build_hash, $platform_list, {:hide_link => true})
+
+              show_build_messages(build_hash, $proxy, $cloud_build_home)
+            end
+          else
+            puts (match.size > 1 ? "There are no failed builds" : "Build #{build_id} status is #{match.last['status'].blue}" )
+          end
+        else
+          str = build_id.to_s
+          match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.reject{|a| a[:dist] > 1}
+
+          puts "Could not find #{build_id} in builds list: #{builds.map{|el| el["id"]}.join(', ')}"
+
+          unless match.empty?
+            puts "Did you mean #{match.map{|el| el[:id]}.join(', ')}?"
+          end
+        end
+      else
+        BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
+      end
+    end
+
+
+    desc 'Show status of one build, or all builds if optional parameter is not set'
+    task :build, [:build_id] => ['cloud:find_app'] do |t, args|
+      args.with_defaults(:build_id => nil)
+
+      build_id = args.build_id
+
+      $platform_list = get_build_platforms() unless $platform_list
+
+      builds = get_builds_list($app_cloud_id)
+      match  = match_build_id(build_id, builds)
+
+      unless builds.nil?
+        if !valid_build_id(build_id)
+          BuildOutput.error("Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}", 'Invalid build id')
+          raise Exception.new('Invalid build id')
+        end
+
+        unless match.empty?
+          match.each do |build|
+            puts
+            show_build_information(build, $platform_list)
+          end
+        else
+          str = build_id.to_s
+          match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.reject{|a| a[:dist] > 1}
+
+          puts "Could not find #{build_id} in builds list: #{builds.map{|el| el["id"]}.join(', ')}"
+
+          unless match.empty?
+            puts "Did you mean #{match.map{|el| el[:id]}.join(', ')}?"
+          end
+        end
+      else
+        BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
+      end
+    end
+
+    desc 'Show server supported gems'
+    task :gems => ['cloud:initialize'] do
+      begin
+        gems_supported = JSON.parse(Rhohub::Build.supported_gems())
+      rescue Exception => e
+        gems_supported = nil
+      end
+
+      if !gems_supported.nil? && gems_supported["versions"]
+        versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
+        fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
+
+        puts "Server gem versions: " + versions.join(', ')
+        puts "Fast build supported for: " + fast_builds.join(', ')
+
+        best = $app_config["sdkversion"].nil? ? fast_builds.first : $app_config["sdkversion"]
+
+        best = best_match(best, versions, false)
+
+        puts "Using build.yml sdkversion setting selecting gem: " + best
+      else
+        puts "Could build server #{$user_acc.server} does not returned rhodes gems information"
+      end
+    end
+
+    task :platforms => ['cloud:initialize'] do
+      puts JSON.pretty_generate(get_build_platforms())
+    end
+
+    task :apps => ['cloud:initialize'] do
+      apps = []
+      rhohub_make_request($user_acc.server) do
+        #get app list
+        apps = get_app_list()
+      end
+      puts JSON.pretty_generate(apps)
+
+    end
+
+  end
+
+  desc 'List available builds'
+  task :list_builds => [:find_app] do
+    Rake::Task['cloud:show:build'].invoke()
+  end
+
+  desc "Download build into app\\bin folder"
+  task :download, [:build_id] => [:find_app] do |t, args|
+    is_ok, data, $latest_platform = get_build(args.build_id, true)
+
+    $unpacked_file_list = []
+
+    if is_ok
+      $unpacked_file_list = deploy_build($latest_platform)
+    else
+      BuildOutput.put_log(BuildOutput::ERROR, data, 'build error')
+    end
+  end
+
+  # android
+  # both simulator and device are supported
+
+  desc 'Build and run for android application on a simulator'
+  task :android => ['build:initialize'] do
+    build_deploy_run('android', 'simulator')
+  end
+
+  desc 'Android cloud build and run on the device'
+  task 'android:device' => ['build:initialize'] do
+    build_deploy_run('android', 'device')
+  end
+
+  desc 'Android cloud build and download'
+  task 'android:download' => ['build:initialize'] do
+    build_deploy_run('android')
+  end
+
+  # iphone
+
+  # iphone does not support simulator cloud builds
+
+  # desc 'Build and run for iphone application on a simulator'
+  # task :iphone => ['build:initialize'] do
+  #   build_deploy_run('iphone', 'simulator')
+  # end
+
+  desc 'Iphone cloud build and run on the device'
+  task 'iphone:device' => ['build:initialize'] do
+    build_deploy_run('iphone:development', 'device')
+  end
+
+  desc 'Iphone cloud build and download'
+  task 'iphone:download' => ['build:initialize'] do
+    build_deploy_run('iphone:development')
+  end
+
+  # win mobile
+
+  desc 'Build and run for windows mobile application on a simulator'
+  task :wm => ['build:initialize'] do
+    build_deploy_run('wm', 'simulator')
+  end
+
+  desc 'Windows mobile cloud build and run on the device'
+  task 'wm:device' => ['build:initialize'] do
+    build_deploy_run('wm', 'device')
+  end
+
+  desc 'Windows mobile cloud build and download'
+  task 'wm:download' => ['build:initialize'] do
+    build_deploy_run('wm')
+  end
+
+  # win32
+  # win32 does not have simulator version
+
+  # desc 'Build and run win32 application'
+  # task :win32 => ['build:initialize'] do
+  #   build_deploy_run('win32', '')
+  # end
+
+  desc 'Build win32 application'
+  task 'win32:download' => ['build:initialize'] do
+    build_deploy_run('win32')
+  end
+
 
   namespace :build do
-    desc "Prepare for cloud build"
-    task :initialize => ["rhohub:initialize"] do
-      $platform_list = get_build_platforms()
+    desc 'Prepare for cloud build'
+    task :initialize => ['cloud:find_app'] do
+      status = nil
+
+      begin
+        status = JSON.parse(Rhohub::Build.user_status())
+      rescue Exception => e
+        status = nil
+        BuildOutput.error(
+            ["Could not get user builds information #{e.inspect}"],
+            'Server response error')
+      end
+
+      # client side check
+      build_enabled = false
+
+      if !(status.nil? || status.empty?)
+        build_enabled = status["cloud_build_enabled"]== true
+        remaining_builds = status["builds_remaining"]
+        if remaining_builds > 0
+          BuildOutput.note(
+              ["You have #{remaining_builds} builds remaining"],
+              'Account builds limitation')
+        elsif remaining_builds == 0
+          BuildOutput.error(
+              ["Build count limit reached on your #{$user_acc.subsciption_plan} plan. Please login to #{$selected_server} and check details."],
+              'Account builds limitation')
+          exit 1
+        end
+        free_queue_slots = status["free_queue_slots"]
+        if free_queue_slots == 0
+          BuildOutput.error(
+              ['Maximum parallel builds count reached. Please try again later.'],
+              'Account builds limitation')
+          exit 1
+        end
+      else
+        build_enabled = $user_acc.subscription_level() > 0
+      end
+
+      if !build_enabled
+        if $user_acc.subscription_level() < 0
+          BuildOutput.note(['Cloud build was disabled locally. Your subscription information is outdated or not downloaded, please connect to internet and run this command again'],'Could not build licensed features.')
+        else
+          BuildOutput.note(
+            ["Cloud build is not supported on your #{$user_acc.subsciption_plan} account type. In order to upgrade your account please",
+             "login to #{$selected_server} and select \"change plan\" menu item in your profile settings."],
+            'Free account limitation')
+        end
+        exit 1
+      end
+
+      begin
+        gems_supported = JSON.parse(Rhohub::Build.supported_gems())
+      rescue Exception => e
+        gems_supported = nil
+      end
+
+      best = get_conf('rhohub/rhodesgem',$rhodes_ver_default)
+
+      if !gems_supported.nil?
+        versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
+        fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
+
+        best = $app_config["sdkversion"].nil? ? fast_builds.first : $app_config["sdkversion"]
+
+        best = best_match(best, versions, false)
+      end
+
+      $rhodes_ver = best
+
+      puts "Using server gem version #{$rhodes_ver}"
+
+      $platform_list = get_build_platforms() unless $platform_list
     end
 
     namespace :android do
-      desc "Build adnroid production version"
-      task :production => ["build:initialize"] do
-        $build_platform = "android"
+      desc 'Build android production version'
+      task :production => ['build:initialize'] do
+        $build_platform = 'android'
 
-        do_platform_build( $build_platform, $platform_list)
+        do_platform_build( $build_platform, $platform_list, false)
       end
     end
 
     namespace :wm do
-      desc "Build wm production version"
-      task :production => ["build:initialize"] do
-        $build_platform = "wm"
+      desc 'Build wm production version'
+      task :production => ['build:initialize'] do
+        $build_platform = 'wm'
 
-        do_platform_build( $build_platform, $platform_list)
+        do_platform_build( $build_platform, $platform_list, false)
       end
     end
 
     namespace :iphone do
-      desc "Build iphone development version"
-      task :development => ["build:initialize"] do
-        $build_platform = "iphone"
+      desc 'Build iphone development version'
+      task :development => ['build:initialize'] do
+        $build_platform = 'iphone'
 
-        profile_file = get_conf('iphone/production/mobileprovision_file')
-        cert_file = get_conf('iphone/production/certificate_file')
-        cert_pw = get_conf('iphone/production/certificate_password')
-
-        if profile_file.nil? || cert_file.nil?
-          raise Exception.new("You should specify mobileprovision_file and certificate_file in iphone:production section of your build.yml")
-        end
-
-        profile_file = File.expand_path(profile_file, $app_path)
-        cert_file = File.expand_path(cert_file, $app_path)
-
-        missing = list_missing_files([profile_file, cert_file])
-
-        if !missing.empty?
-          raise Exception.new("Could not load #{missing.join(', ')}")
-        end
-        
-        options = {
-          :upload_cert => File.new(cert_file, 'rb'),
-          :upload_profile => File.new(profile_file, 'rb'),
-          :bundle_identifier => get_conf('iphone/BundleIdentifier')
-        }
-
-        if !cert_pw.nil? && !cert_pw.empty?
-          options[:cert_pw] = cert_pw
-        end
-
-        do_platform_build( $build_platform, $platform_list, options, 'development')
+        do_platform_build( $build_platform, $platform_list, true, get_iphone_options(), 'development')
       end
 
       desc "Build iphone distribution version"
       task :distribution => ["build:initialize"] do
         $build_platform = "iphone"
 
-        do_platform_build( $build_platform, $platform_list, {}, 'distribution')
+        do_platform_build( $build_platform, $platform_list, true, get_iphone_options(), 'distribution')
       end
     end
 
@@ -1206,21 +1974,39 @@ namespace "rhohub" do
       task :production => ["build:initialize"] do
         $build_platform = "win32"
 
-        do_platform_build( $build_platform, $platform_list)
+        do_platform_build( $build_platform, $platform_list, false)
       end
     end
   end
 
-  desc "Run build with id"
-  task :run, [:build_id] do |t, args|
-    build_id = args.build_id
+  namespace "cache" do
+    desc "Clear local file cache"
+    task :clear => ["cloud:initialize"] do
+      files = []
 
-    Rake::Task["rhohub:download"].invoke(build_id)
+      if !($cloud_build_home.nil? || $cloud_build_home.empty?)
+        files.concat( Dir.glob(File.join($cloud_build_home,'*')).reject { |el| File.directory?(el) } )
+      end
 
-    case $latest_platform
-    when "android"
-      
+      if !files.empty?
+        FileUtils.rm_rf(files)
+        BuildOutput.put_log( BuildOutput::NOTE, "Removed #{files.size} file(s) from cache", "Could build cache clear" )
+      else
+        BuildOutput.put_log( BuildOutput::NOTE, "Cache is already empty", "Could build cache clear" )
+      end
+
     end
+    
+  end
+
+  desc "Run binary on the simulator with id"
+  task "run:simulator", [:build_id] => [:find_app] do |t, args|
+    get_build_and_run(args.build_id, 'simulator')
+  end
+
+  desc "Run binary on the simulator with id"
+  task "run:device", [:build_id] => [:find_app] do |t, args|
+    get_build_and_run(args.build_id, 'device')
   end
 end
 
@@ -1243,7 +2029,7 @@ def find_proxy()
   proxy = nil
 
   best_proxy = ENV.max_by do |k, v|
-    val = priority.index(k.downcase) 
+    val = priority.index(k.downcase)
     if val.nil?
       -1
     else
@@ -1251,7 +2037,7 @@ def find_proxy()
     end
   end
 
-  # check for 
+  # check for
   if !priority.index(best_proxy[0].downcase).nil?
     proxy = best_proxy[1]
 
@@ -1298,7 +2084,7 @@ namespace "config" do
       #load the apps path and config
 
       $app_path = $config["env"]["app"] unless $config["env"].nil?
-        
+
       if $app_path.nil?
         b_y = File.join(Dir.pwd(),'build.yml')
         if File.exists?(b_y)
@@ -1310,13 +2096,17 @@ namespace "config" do
     $app_config = {}
 
     if (!$app_path.nil?)
-      # read application config
-      $app_config = Jake.config(File.open(File.join($app_path, "build.yml"))) if $app_config_disable_reread != true
+      app_yml = File.join($app_path, "build.yml")
 
-      if File.exists?(File.join($app_path, "app_rakefile"))
-        load File.join($app_path, "app_rakefile")
-        $app_rakefile_exist = true
-        Rake::Task["app:config"].invoke
+      if File.exists?(app_yml)
+        # read application config
+        $app_config = Jake.config(File.open(app_yml)) if $app_config_disable_reread != true
+
+        if File.exists?(File.join($app_path, "app_rakefile"))
+          load File.join($app_path, "app_rakefile")
+          $app_rakefile_exist = true
+          Rake::Task["app:config"].invoke
+        end
       end
     end
 
@@ -1355,8 +2145,7 @@ namespace "config" do
     ENV["APP_TYPE"]     = "rhodes"
 
 
-    $app_config['wm'] = {} unless $app_config['wm'].is_a?(Hash)
-    $app_config['wm']['webkit_outprocess'] = '1' if $app_config['wm']['webkit_outprocess'].nil?
+    Jake.normalize_build_yml($app_config)
 
     Jake.set_bbver($app_config["bbver"].to_s)
   end
@@ -1611,21 +2400,25 @@ namespace "config" do
     end
 
     if $re_app || $rhoelements_features.length() > 0
-      if !check_subscription_re($user_acc.subscription)
+      if $user_acc.subscription_level < 1
+        Rake::Task["token:read"].reenable
+        Rake::Task["token:read"].invoke("true")
+      end
+      if $user_acc.subscription_level < 1
         if !$user_acc.is_valid_subscription?
           BuildOutput.error([
-            'Subscription information is not downloaded. Please connect to internet and run build command again.'],
-            'Could not build licensed features.')
+                            'Your subscription information is outdated or not downloaded. Please verify your internet connection and run build command again.'],
+                            'Could not build licensed features.')
         else
-          msg = ['You have free subcription on rhohub.com. RhoElements featuers are available only for paid accounts.']
+          msg = ["You have free subscription on #{$selected_server}. RhoElements features are available only for paid accounts."]
           if $rhoelements_features.length() > 0
             msg.concat(['The following features are only available in RhoElements v2 and above:',
-            $rhoelements_features,
-            'For more information go to http://www.motorolasolutions.com/rhoelements '])
+                        $rhoelements_features,
+                        'For more information go to http://www.motorolasolutions.com/rhoelements '])
           end
           msg.concat(
-            ['In order to upgrade your account please log in https://app.rhohub.com/',
-            'Select "change plan" menu item in your profile settings.'])
+            ["In order to upgrade your account please log in to #{$selected_server}",
+             'Select "change plan" menu item in your profile settings.'])
           BuildOutput.error(msg, 'Could not build licensed features.')
         end
         raise Exception.new("Could not build licensed features")
@@ -1643,16 +2436,16 @@ namespace "config" do
         rescue Exception => e
         end
       else
-        $rhoelements_features = []      
+        $rhoelements_features = []
       end
     end
 
 
     if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
       BuildOutput.warning([
-        'The following features are only available in RhoElements v2 and above:',
-        $rhoelements_features,
-        'For more information go to http://www.motorolasolutions.com/rhoelements '])
+                            'The following features are only available in RhoElements v2 and above:',
+                            $rhoelements_features,
+      'For more information go to http://www.motorolasolutions.com/rhoelements '])
     end
 
     if $current_platform == "win32" && $winxpe_build
@@ -1695,20 +2488,21 @@ namespace "config" do
 
     $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
 
+    $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
 
     puts '%%%_%%% $js_application = '+$js_application.to_s
 
     if !$js_application && !Dir.exists?(File.join($app_path, "app"))
       BuildOutput.error([
-        "Add javascript_application:true to build.yml, since application does not contain app folder.",
-        "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
+                          "Add javascript_application:true to build.yml, since application does not contain app folder.",
+                          "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
       ]);
       exit(1)
     end
 
     $shared_rt_js_appliction = ($js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime'))
-    puts "%%%_%%% $shared_rt_js_appliction = #{$shared_rt_js_appliction}"
+    puts "%%%_%%% $shared_rt_js_application = #{$shared_rt_js_appliction}"
     $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction
 
     if $current_platform == "bb"
@@ -1871,14 +2665,25 @@ def find_ext_ingems(extname)
   extpath
 end
 
+def common_prefix(paths)
+  return '' if paths.empty?
+  return paths.first.split('/').slice(0...-1).join('/') if paths.length <= 1
+  arr = paths.sort
+  first = arr.first.split('/')
+  last = arr.last.split('/')
+  i = 0
+  i += 1 while first[i] == last[i] && i <= first.length
+  first.slice(0, i).join('/')
+end
+
 def write_modules_js(folder, filename, modules, do_separate_js_modules)
   f = StringIO.new("", "w+")
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
 
   if modules
     modules.each do |m|
-      modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
-      f.puts( "// Module #{modulename}\n\n" )
+      module_name = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+      f.puts( "// Module #{module_name}\n\n" )
       f.write(File.read(m))
     end
   end
@@ -1886,14 +2691,40 @@ def write_modules_js(folder, filename, modules, do_separate_js_modules)
   Jake.modify_file_if_content_changed(File.join(folder,filename), f)
 
   if modules && do_separate_js_modules
-    modules.each do |m|
+    common = common_prefix(modules)
+
+    # Glue all modules based on assumption that FrameworkName.ExtName.*.js should be in one file
+    groups = modules.group_by do |mod|
+      path, name = File.split(mod)
+      name_parts = name.ext().split('.')
+      if name_parts.size > 2
+        res = name_parts.first(2).join('.')
+      else
+        res = name
+      end
+      res
+    end
+
+    groups.each do |k, v|
       f = StringIO.new("", "w+")
 
-      modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
-      f.puts( "// Module #{modulename}\n\n" )
-      f.write(File.read(m))
+      if v.size > 1
+        fname = k.end_with?(".js") ? k : k + ".js"
+      else
+        fname = v.first
+      end
 
-      Jake.modify_file_if_content_changed(File.join(folder, modulename+'.js'), f)
+      module_name = fname.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+
+      f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+      f.puts( "// Module #{module_name}" )
+
+      v.each do |fname|
+        f.puts "\n// From file #{fname.gsub(common,'')}\n\n"
+        f.write(File.read(fname))
+      end
+
+      Jake.modify_file_if_content_changed(File.join(folder, module_name.downcase+'.js'), f)
     end
   end
 end
@@ -2055,7 +2886,9 @@ def init_extensions(dest, mode = "")
                 #api generator
                 if gen_checker.check(xml_path)
                   puts 'start running rhogen with api key'
-                  Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                  if !$skip_build_extensions
+                    Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                  end 
                 end
               end
             end
@@ -2063,48 +2896,53 @@ def init_extensions(dest, mode = "")
           end
         end
 
-        unless rhoapi_js_folder.nil?
-          Dir.glob(extpath + "/public/api/*.js").each do |f|
-            fBaseName = File.basename(f)
-            if (fBaseName.start_with?("rhoapi-native") )
-              endJSModules << f if fBaseName == "rhoapi-native.all.js"
-              next
-            end
-            if (fBaseName == "rhoapi-force.ajax.js")
-              add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
-              add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
-              endJSModules << f if add
-              next
+        if !$skip_build_extensions
+          unless rhoapi_js_folder.nil?
+            Dir.glob(extpath + "/public/api/*.js").each do |f|
+              fBaseName = File.basename(f)
+              if (fBaseName.start_with?("rhoapi-native") )
+                endJSModules << f if fBaseName == "rhoapi-native.all.js"
+                next
+              end
+              if (fBaseName == "rhoapi-force.ajax.js")
+                add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
+                add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
+                endJSModules << f if add
+                next
+              end
+              if (fBaseName == "#{extname}-postDef.js")
+                puts "add post-def module: #{f}"
+                endJSModules << f
+              end
+
+              if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
+                startJSModules.unshift(f)
+              elsif f.downcase().end_with?("rhoapi.js")
+                startJSModules << f
+              elsif f.downcase().end_with?("rho.application.js")
+                endJSModules << f
+              elsif f.downcase().end_with?("rho.database.js")
+                endJSModules << f
+              elsif f.downcase().end_with?("rho.newormhelper.js")
+                endJSModules << f
+              elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                puts "add #{f} to startJSModules_opt.."
+                startJSModules_opt << f
+              else
+                extjsmodulefiles << f
+              end
             end
 
-            if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
-              startJSModules.unshift(f)
-            elsif f.downcase().end_with?("rhoapi.js")
-              startJSModules << f
-            elsif f.downcase().end_with?("rho.application.js")
-              endJSModules << f
-            elsif f.downcase().end_with?("rho.database.js")
-              endJSModules << f
-            elsif f.downcase().end_with?("rho.newormhelper.js")
-              endJSModules << f
-            elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
-              puts "add #{f} to startJSModules_opt.."
-              startJSModules_opt << f
-            else
-              extjsmodulefiles << f
+            Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
+              if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+                puts "add #{f} to extjsmodulefiles_opt.."
+                extjsmodulefiles_opt << f
+              else
+                puts "add #{f} to extjsmodulefiles.."
+                extjsmodulefiles << f
+              end
             end
           end
-
-          Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-            if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
-              puts "add #{f} to extjsmodulefiles_opt.."
-              extjsmodulefiles_opt << f
-            else
-              puts "add #{f} to extjsmodulefiles.."
-              extjsmodulefiles << f
-            end
-          end
-
         end
 
       end
@@ -2116,9 +2954,9 @@ def init_extensions(dest, mode = "")
 
   if ($ruby_only_extensions_list)
     BuildOutput.warning([
-      'The following extensions do not have JavaScript API: ', 
-      $ruby_only_extensions_list.join(', '), 
-      'Use RMS 4.0 extensions to provide JavaScript API'])
+                          'The following extensions do not have JavaScript API: ',
+                          $ruby_only_extensions_list.join(', '),
+    'Use RMS 4.0 extensions to provide JavaScript API'])
   end
 
   return ext_xmls_paths if mode == "get_ext_xml_paths"
@@ -2141,23 +2979,38 @@ def init_extensions(dest, mode = "")
   extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
   extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
   #
-  if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
-    rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
-    mkdir_p rhoapi_js_folder
-  end
-  #
-  if extjsmodulefiles.count > 0
-    puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-    write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
-  end
-  # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
-  if !$shared_rt_js_appliction
-    if extjsmodulefiles_opt.count > 0
-      puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-      write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+  if !$skip_build_extensions
+    if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
+      rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
+      mkdir_p rhoapi_js_folder
+    end
+    #
+    if extjsmodulefiles.count > 0
+      puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
+      write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
+    
+      if $use_shared_runtime || $shared_rt_js_appliction
+        start_path = Dir.pwd
+        chdir rhoapi_js_folder
+        
+        Dir.glob("**/*").each { |f|
+          $new_name = f.to_s.dup
+          $new_name.sub! 'rho', 'eb'
+          cp File.join(rhoapi_js_folder, f.to_s), File.join(rhoapi_js_folder, $new_name)
+        }
+        
+        chdir start_path       
+      end
+    end
+    # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
+    if !$shared_rt_js_appliction
+      if extjsmodulefiles_opt.count > 0
+        puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
+        write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+      end
     end
   end
-
+  
   return if mode == "update_rho_modules_js"
 
   if $config["platform"] != "bb"
@@ -2187,7 +3040,7 @@ def init_extensions(dest, mode = "")
 
     Jake.modify_file_if_content_changed( exts, f )
 
-    if !extscsharp.nil?
+    if !extscsharp.nil? && !$skip_build_extensions
       # C# extensions initialization
       f = StringIO.new("", "w+")
       f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -2271,7 +3124,7 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
       map_items = file_map.select {|f| f[:path] == filepath[start_path.size+8..-1] }
 
       if map_items.size > 1
-        puts "WARRNING, duplicate file records."
+        puts "WARNING, duplicate file records."
       end
 
       if !map_items.nil? && map_items.size != 0
@@ -2321,10 +3174,8 @@ def common_bundle_start( startdir, dest)
   chdir start
   clear_linker_settings
 
-  if !$skip_build_extensions
-    init_extensions(dest)
-  end
-
+  init_extensions(dest)
+  
   chdir startdir
 
   if File.exists? app + '/app'
@@ -2666,8 +3517,10 @@ namespace "build" do
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
 
-      if not $minify_types.empty?
-        minify_js_and_css($srcdir,$minify_types)
+      if !$skip_build_extensions
+        if not $minify_types.empty? && 
+          minify_js_and_css($srcdir,$minify_types)
+        end
       end
 
       chdir startdir
@@ -2714,15 +3567,16 @@ namespace "build" do
       f.write(File.read(filename))
       f.rewind()
 
-      require 'Open3'
+      require 'open3'
       f.rewind()
       fc = StringIO.new("","w+")
 
       output = true
       status = nil
+      error = nil
       begin
 
-        Open3.popen2("java","-jar","#{$minifier}","--type","#{type}") do |stdin, stdout, wait_thr|
+        Open3.popen3("java","-jar","#{$minifier}","--type","#{type}") do |stdin, stdout, stderr, wait_thr|
           stdin.binmode
 
           while buffer = f.read(4096)
@@ -2732,29 +3586,26 @@ namespace "build" do
           stdin.close
 
           output = stdout.read
+          error = stderr.read
 
           status = wait_thr.value
         end
 
       rescue Exception => e
         puts "Minify error: #{e.inspect}"
+        error = e.inspect
         #raise e
       end
 
       if !status || !status.exitstatus.zero?
         puts "WARNING: Minification error!"
 
-        output = File.read(filename)
-        $minification_failed_list = [] if !$minification_failed_list
-        $minification_failed_list << filename
-        #exit 1
-      end
+        error = output if error.nil?
 
-      if ($minification_failed_list)
-        BuildOutput.warning([
-            ' The JavaScript or CSS files failed to minify:',
-            $minification_failed_list,
-            ' See log for details '])
+        BuildOutput.warning(['Failed to minify ' + filename, 'Output: ' + error], 'Minification error')
+
+        output = File.read(filename)
+        #exit 1
       end
 
       fc.puts(output)
@@ -3386,6 +4237,10 @@ namespace "run" do
               add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
               endJSModules << f if add
               next
+            end
+            if (fBaseName == "#{extname}-postDef.js")
+              puts "add post-def module: #{f}"
+              endJSModules << f
             end
 
             if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")

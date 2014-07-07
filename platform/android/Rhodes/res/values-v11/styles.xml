@@ -1,0 +1,9 @@
+<resources>
+    <style name="PopupTheme" parent="android:Theme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+    <style name="NoActionBar" parent="android:Theme.Holo.NoActionBar">
+    </style>
+</resources>

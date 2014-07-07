@@ -288,12 +288,12 @@ void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/, bool bByNam
     if (!getAppWindow().getWebKitEngine())
         return;
 
-    if ( index >= (int)m_arTabs.size() )
+    if (( index >= (int)m_arTabs.size() )||(index<0))
     {
         LOG(ERROR) + "Invalid Tab Index: " + index;
         return;
     }
-
+    
     bool bNewTab = !m_arTabs[index].m_hwndTab;
     if ( !m_arTabs[index].m_hwndTab )
     {

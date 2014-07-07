@@ -1,8 +1,10 @@
 #ifndef _NETWORKDETECT_H_
 #define _NETWORKDETECT_H_
 #pragma once
+#ifndef _HOST_TRACKER
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#endif
 #include "../../../shared/NetworkDetectBase.h"
 
 /**
@@ -14,12 +16,15 @@ class CNetworkDetection :  public CNetworkDetectionBase
 public:
 	CNetworkDetection() {}
 	~CNetworkDetection() {}
+protected:
+    virtual bool CheckConnectivity();
+	virtual void Cleanup();
 
 private:  //  Methods
-	virtual void CheckConnectivity();
+	
 
     virtual void Startup();
-    virtual void Cleanup();
+    
 
 };
 #endif

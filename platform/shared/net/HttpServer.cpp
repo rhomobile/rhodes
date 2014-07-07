@@ -43,9 +43,12 @@
 
 #if !defined(OS_WINCE)
 #include <common/stat.h>
+#define HTTP_EAGAIN_TIMEOUT 10
+#define HTTP_EAGAIN_TIMEOUT_STR "10"
 #else
 #include "CompatWince.h"
-
+#define HTTP_EAGAIN_TIMEOUT 60
+#define HTTP_EAGAIN_TIMEOUT_STR "60"
 #ifdef EAGAIN
 #undef EAGAIN
 #endif
@@ -592,7 +595,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 				continue;
 #endif
 
-#if defined(OS_WP8) || defined(OS_WINRT) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP))
+#if defined(OS_WP8) || defined(OS_WINRT) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
             if (e == EAGAIN || e == WSAEWOULDBLOCK) {
 #else
             if (e == EAGAIN) {
@@ -600,9 +603,9 @@ bool CHttpServer::receive_request(ByteVector &request)
                 if (!r.empty())
                     break;
                 
-                if(++attempts > 100)
+                if(++attempts > (HTTP_EAGAIN_TIMEOUT*10))
                 {
-                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for 10 sec. Cancel recieve.");
+                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
                     return false;
                 }
 
@@ -620,18 +623,25 @@ bool CHttpServer::receive_request(ByteVector &request)
         }
         
         if (n == 0) {
-            RAWLOG_ERROR("Connection gracefully closed before we receive any data");
-            return false;
+            if(!r.empty()) {
+                if (verbose) RAWTRACE("Client closed connection gracefully");
+                break;
+            } else {
+                RAWLOG_ERROR("Connection gracefully closed before we receive any data");
+                return false;
+            }
+        } else {
+            if (verbose) RAWTRACE1("Actually read %d bytes", n);
+            r.insert(r.end(), &buf[0], &buf[0] + n);
         }
-        
-        if (verbose) RAWTRACE1("Actually read %d bytes", n);
-        r.insert(r.end(), &buf[0], &buf[0] + n);
     }
     
     if (!r.empty()) {
         request.insert(request.end(), r.begin(), r.end());
-        if ( !rho_conf_getBool("log_skip_post") )
-            RAWTRACE1("Received request:\n%s", &request[0]);
+        if ( !rho_conf_getBool("log_skip_post") ) {
+            String strRequest(request.begin(),request.end());
+            RAWTRACE1("Received request:\n%s", strRequest.c_str());
+        }
     }
     return true;
 }

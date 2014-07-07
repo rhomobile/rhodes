@@ -435,8 +435,9 @@ namespace "config" do
     # Look for Motorola SDK addon
     if $use_motosol_api_classpath
       puts "Looking for Motorola API SDK add-on..." if USE_TRACES
-      motosol_jars = ['com.motorolasolutions.scanner', 'com.motorolasolutions.msr', 'com.motorolasolutions.dpx']
-      $motosol_classpath = AndroidTools::get_addon_classpath(motosol_jars)
+      motosol_jars = ['com.motorolasolutions.scanner', 'com.motorolasolutions.msr']
+      simulscan_jars = ['com.symbol.emdk.simulscan']
+      $motosol_classpath = AndroidTools::get_addon_classpath(motosol_jars) + $path_separator + AndroidTools::get_addon_classpath(simulscan_jars)
     end
 
     # Detect Google API add-on path
@@ -563,11 +564,7 @@ namespace "config" do
         $app_config['capabilities'].delete('webkit_browser')
         $app_config['capabilities'].delete('shared_runtime')
       end
-      
-      if $app_config['capabilities'].index('shared_runtime')
-        $app_config['extensions'] << 'rhoelements-license'
-      end
-      
+
       $file_map_name = "rho.dat"
     end
 
@@ -915,14 +912,36 @@ namespace "build" do
           cp_r add, addspath if File.directory? add
         end
       end
-      #$ext_android_library_deps.each do |package, path|
-      #  res = File.join path, 'res'
-      #  assets = File.join path, 'assets'
-      #  addspath = File.join($app_builddir, 'extensions', package, 'adds')
-      #  mkdir_p addspath
+      $ext_android_library_deps.each do |package, path|
+        next if path.nil? or path == ''
+        
+        puts "Library resources: #{path}"
+
+        res = File.join path, 'res'
+        assets = File.join path, 'assets'
+        packagepath = File.join $app_builddir,'extensions',package
+        addspath = File.join packagepath,'adds'
+        
+        Dir.glob(File.join(res,'**','*.*')) do |p|
+          puts p
+          unless File.directory? p
+            rel_path = p.gsub path, ''
+            target = File.join addspath, rel_path
+            if File.basename(File.dirname(rel_path)) =~ /^values/
+              target = File.join addspath, File.dirname(rel_path), "#{package}.#{File.basename(rel_path)}"
+            end
+            mkdir_p File.dirname(target)
+            cp p, target
+          end
+        end
       #  cp_r res, addspath if File.directory? res
-      #  cp_r assets, addspath if File.directory? assets
-      #end
+        cp_r assets, addspath if File.directory? assets
+        
+        Dir.glob(File.join(path,'**','*.jar')) do |jar|
+          mkdir_p packagepath
+          cp jar, packagepath
+        end
+      end
     end #task :extensions
 
     task :libsqlite => "config:android" do
@@ -2242,6 +2261,30 @@ namespace "run" do
       end
     end
 
+    desc "Run downloaded binary package on device"
+    task "simulator:package", [:package_file, :package_name] => ['config:android:emulator'] do |t, args|
+      package_file = args.package_file
+      package_name = args.package_name.nil? ? $app_package_name : args.package_name
+
+      throw "You must pass package name" if package_file.nil?
+      throw "No file to run" if !File.exists?(package_file)
+
+      AndroidTools.run_emulator
+
+      AndroidTools.load_app_and_run('-e', File.expand_path(package_file), package_name)
+    end
+
+    desc "Run downloaded binary package on simulator"
+    task "device:package", [:package_file, :package_name] => ['config:android:device'] do |t, args|
+      package_file = args.package_file
+      package_name = args.package_name.nil? ? $app_package_name : args.package_name
+
+      throw "You must pass package name" if package_file.nil?
+      throw "No file to run" if !File.exists?(package_file)
+
+      AndroidTools.load_app_and_run('-d', File.expand_path(package_file), package_name)
+    end
+
     task :spec => "run:android:emulator:spec" do
     end
 
@@ -2257,6 +2300,18 @@ namespace "run" do
       AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
 
       AndroidTools.logcat_process('-e')
+
+      sleepRubyProcess
+    end
+
+    desc "build and install on device"
+    task :device => "device:android:debug" do
+      AndroidTools.kill_adb_logcat('-d')
+
+      apkfile = File.join $targetdir, $appname + "-debug.apk"
+      AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
+
+      AndroidTools.logcat_process('-d')
 
       sleepRubyProcess
     end
@@ -2282,18 +2337,6 @@ namespace "run" do
       $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
 
       Rake::Task["run:rhosimulator_debug"].invoke
-    end
-
-    desc "build and install on device"
-    task :device => "device:android:debug" do
-      AndroidTools.kill_adb_logcat('-d')
-
-      apkfile = File.join $targetdir, $appname + "-debug.apk"
-      AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
-
-      AndroidTools.logcat_process('-d')
-
-      sleepRubyProcess
     end
   end
 

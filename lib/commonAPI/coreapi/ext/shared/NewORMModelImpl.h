@@ -259,7 +259,6 @@ namespace rho {
     public:
         CNewORMModelSingletonImpl(): CNewORMModelSingletonBase()
         {
-            LOG(INFO) + "MZV_DEBUG: calling init_once";
             CNewORMModelImpl::init_once();
         }
         

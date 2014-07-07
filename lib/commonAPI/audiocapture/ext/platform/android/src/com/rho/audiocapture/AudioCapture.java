@@ -23,6 +23,7 @@ import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.Capabilities;
 
 public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     
@@ -468,7 +469,22 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
                 storedMethodResult=null;
                 return;
             }
-           
+            if(path.contains("sdcard") && (Capabilities.READ_SDCARD_ENABLED==true))
+            {
+            	 Map<String, Object> tempprops = new HashMap<String, Object>();
+                 tempprops.put("status", "error");
+                 tempprops.put("message", "writing to sdcard permission is NOT there in build.yml");
+                 tempprops.put("fileName", "");
+                 if(storedMethodResult!=null)
+                 	{
+                 		
+                	 storedMethodResult.set(tempprops);
+                 	
+                 	}
+                 storedMethodResult=null;
+                 return;
+            	
+            }
             if(path.contains("/"))
             {
             	String str=path.substring(0, path.lastIndexOf("/"));
@@ -640,6 +656,11 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         	sendException(ex);
           //  throw new RuntimeException(ex);
         }
+        catch(Exception e)
+		{
+			sendException(e);
+			System.out.println("GOTCHA!!!!=="+e.getMessage());
+		}
        
     }
 
@@ -789,7 +810,11 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     	 Map<String, Object> tempprops = new HashMap<String, Object>();
         {
         	try {
-                releaseRecorder();
+                 if (mRecorder != null) {
+            mRecorder.reset();
+            mRecorder.release();
+            mRecorder = null;
+        }
             } 
             catch(Exception e)
             {

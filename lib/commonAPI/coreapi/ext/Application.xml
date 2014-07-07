@@ -253,7 +253,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
         <EXAMPLES>
-           <EXAMPLE title="Set the locale">
+            <!-- This example commented out because setLocale is not exposed in docs. -->
+            <!-- <EXAMPLE title="Set the locale">
             <SECTIONS>
               <SECTION>
                <DESC>If your application is internationalized, you may want to set the locale depending on the user's preference.</DESC>
@@ -275,7 +276,7 @@ alert(current_locale)
                </CODE>
                </SECTION>
                </SECTIONS>
-           </EXAMPLE>
+           </EXAMPLE> -->
            <EXAMPLE title="Get folders where items are stored">
             <SECTIONS>
               <SECTION>

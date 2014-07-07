@@ -130,7 +130,7 @@
 #endif
 
 //#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
-#include <aygshell.h>
+//#include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
 //#include <tpcshell.h> // Required for SHSendBackToFocusWindow
 //#endif // SHELL_AYGSHELL

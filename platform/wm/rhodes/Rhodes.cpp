@@ -26,9 +26,9 @@
 
 #include "stdafx.h"
 #include "MainWindow.h"
-#include "IEBrowserEngine.h"
-#include "CEBrowserEngine.h"
+#include "browser/BrowserFactory.h"
 #include "LogMemory.h"
+#include "camera/Camera.h"
 
 #include "logging/RhoLog.h"
 #include "common/RhodesApp.h"
@@ -68,7 +68,7 @@ static void set_bridge_direct_callback();
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
-extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
+//extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 
 #if !defined(APP_BUILD_CAPABILITY_MOTOROLA)
@@ -127,6 +127,7 @@ extern "C" bool rho_wmimpl_get_resize_on_sip()
 
 #if defined(_WIN32_WCE)
 #include <regext.h>
+#include "soundfile.h"
 #include "bluetooth/Bluetooth.h"
 
 // Global Notification Handle
@@ -145,13 +146,30 @@ typedef HRESULT (WINAPI* LPFN_REGISTRY_CLOSENOTIFICATION_T) (HREGNOTIFY);
 typedef HRESULT (WINAPI* LPFN_REGISTRY_NOTIFYWINDOW_T) (HKEY, LPCTSTR, LPCTSTR, HWND, UINT, DWORD, NOTIFICATIONCONDITION*, HREGNOTIFY*);
 typedef HRESULT (WINAPI* LPFN_REGISTRY_GETSTRING_T) (HKEY, LPCTSTR, LPCTSTR, LPTSTR, UINT);
 typedef HRESULT (WINAPI* LPFN_REGISTRY_GETDWORD_T) (HKEY, LPCTSTR, LPCTSTR, DWORD*);
+typedef HRESULT (WINAPI* LPFN_CAMERA_CAPTURE_T)(PSHCAMERACAPTURE);
+typedef BOOL (WINAPI* LPFN_GETOPEN_FILEEX_T)(LPOPENFILENAMEEX);
+typedef HRESULT (WINAPI* LPFN_SND_STOP_T)(__in SND_SCOPE, __reserved HSOUND);
+typedef HRESULT (WINAPI* LPFN_SND_CLOSE_T)(__in HSOUND);
+typedef HRESULT (WINAPI* LPFN_SND_PLAYASYNC_T)(__in HSOUND, DWORD);
+typedef HRESULT (WINAPI* LPFN_SND_OPEN_T)(__in LPCTSTR,  __out HSOUND*);
+typedef HRESULT (WINAPI* LPFN_SND_GETSOUNDFILELIST_T)(SND_EVENT, DWORD, SNDFILEINFO**, int*);
 
+
+extern "C" LPFN_SND_STOP_T lpfn_snd_stop = NULL;
+extern "C" LPFN_SND_CLOSE_T lpfn_snd_close = NULL;
+extern "C" LPFN_SND_PLAYASYNC_T lpfn_snd_playasync = NULL;
+extern "C" LPFN_SND_OPEN_T lpfn_snd_open = NULL;
+extern "C" LPFN_SND_GETSOUNDFILELIST_T lpfn_snd_getsndflist = NULL;
 LPFN_REGISTRY_CLOSENOTIFICATION_T	lpfn_Registry_CloseNotification = NULL;
 LPFN_REGISTRY_NOTIFYWINDOW_T		lpfn_Registry_NotifyWindow = NULL;		
 LPFN_REGISTRY_GETSTRING_T			lpfn_Registry_GetString = NULL;			
 LPFN_REGISTRY_GETDWORD_T			lpfn_Registry_GetDWORD = NULL;
+extern "C" LPFN_CAMERA_CAPTURE_T               lpfn_Camera_Capture = NULL;
+extern "C" LPFN_GETOPEN_FILEEX_T               lpfn_GetOpen_FileEx = NULL;
 HMODULE g_hAygShellDLL = NULL;	
 extern "C" BOOL LoadAYGShell();
+HMODULE g_hSndDLL = NULL;	
+extern "C" BOOL LoadSoundDll();
 
 #endif
 
@@ -227,17 +245,6 @@ static String g_strCmdLine;
 HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
-
-rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
-{
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-    return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-#elif defined(OS_PLATFORM_MOTCE)
-    return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-#else
-    return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-}
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw()
 {
@@ -388,28 +395,28 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }*/
     // Note: In this sample, we don't respond differently to different hr success codes.
 
-    SetLastError(0);
-    HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
+    //SetLastError(0);
+//    HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
 
-    if ( !m_bRestarting && hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
-    {
+  //  if ( !m_bRestarting && hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+    //{
         // Rho Running so could bring to foreground
-        HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
+      //  HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
 
-        if (hWnd)
-        {
-            ShowWindow(hWnd, SW_SHOW);
-            SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
-            SetForegroundWindow( hWnd );
+        //if (hWnd)
+        //{
+          //  ShowWindow(hWnd, SW_SHOW);
+            //SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+            //SetForegroundWindow( hWnd );
 
-            COPYDATASTRUCT cds = {0};
-            cds.cbData = m_strTabName.length()+1;
-            cds.lpData = (char*)m_strTabName.c_str();
-            SendMessage( hWnd, WM_COPYDATA, (WPARAM)WM_WINDOW_SWITCHTAB, (LPARAM)(LPVOID)&cds);
-        }
+            //COPYDATASTRUCT cds = {0};
+            //cds.cbData = m_strTabName.length()+1;
+            //cds.lpData = (char*)m_strTabName.c_str();
+            //SendMessage( hWnd, WM_COPYDATA, (WPARAM)WM_WINDOW_SWITCHTAB, (LPARAM)(LPVOID)&cds);
+        //}
 
-        return S_FALSE;
-    }
+        //return S_FALSE;
+    //}
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
     {
@@ -432,6 +439,31 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
+ SetLastError(0);
+ HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
+
+    if ( !m_bRestarting && hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        // Rho Running so could bring to foreground
+        HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
+
+        if (hWnd)
+        {
+            ShowWindow(hWnd, SW_SHOW);
+            SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+            SetForegroundWindow( hWnd );
+
+            COPYDATASTRUCT cds = {0};
+            cds.cbData = m_strTabName.length()+1;
+            cds.lpData = (char*)m_strTabName.c_str();
+            SendMessage( hWnd, WM_COPYDATA, (WPARAM)WM_WINDOW_SWITCHTAB, (LPARAM)(LPVOID)&cds);
+        }
+
+        return S_FALSE;
+    }
+
+
 
     LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
 
@@ -739,6 +771,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	else
 		winversion = 2;*/
 	LoadAYGShell();
+	LoadSoundDll();
 #endif
 
 	//Required to use datetime picker controls.
@@ -795,9 +828,6 @@ static void rho_platform_check_restart_application()
 
 typedef bool (WINAPI *PCSD)();
 
-#ifdef APP_BUILD_CAPABILITY_MOTOROLA
-extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent, HINSTANCE hLicenseInstance);
-#endif
 extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj);
 
 typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR, LPCWSTR);
@@ -850,7 +880,7 @@ extern "C" void rho_wm_impl_CheckLicense()
 #ifdef APP_BUILD_CAPABILITY_MOTOROLA
     if ( nRes == 0 )
     {
-        rho_wm_impl_CheckLicenseWithBarcode(getMainWnd(),hLicenseInstance);
+        rho::BrowserFactory::getInstance()->checkLicense(getMainWnd(), hLicenseInstance);
         return;
     }
 #endif
@@ -962,6 +992,8 @@ extern "C" BOOL LoadAYGShell()
 			(LPFN_REGISTRY_GETSTRING_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetString"));
 		lpfn_Registry_GetDWORD = 
 			(LPFN_REGISTRY_GETDWORD_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetDWORD"));
+		lpfn_Camera_Capture = (LPFN_CAMERA_CAPTURE_T)GetProcAddress(g_hAygShellDLL, _T("SHCameraCapture"));
+		lpfn_GetOpen_FileEx = (LPFN_GETOPEN_FILEEX_T)GetProcAddress(g_hAygShellDLL, _T("GetOpenFileNameEx"));
 
 		if (!lpfn_Registry_CloseNotification)
 		{
@@ -985,6 +1017,34 @@ extern "C" BOOL LoadAYGShell()
 			winversion = 1;
 			bReturnValue = TRUE;
 		}
+	}
+
+	return bReturnValue;	
+}
+
+extern "C" BOOL LoadSoundDll()
+{
+	bool bReturnValue = FALSE;
+	g_hSndDLL = LoadLibrary(L"aygshell.dll");
+	if (!g_hSndDLL)
+	{
+		//  Error loading AygShell.dll (used for Retrieving values from the Registry)
+		LOG(INFO) + "Failed to load sound api";
+	}
+	else
+	{
+		lpfn_snd_stop = 
+			(LPFN_SND_STOP_T)GetProcAddress(g_hSndDLL, _T("SndStop"));
+		lpfn_snd_close = 
+			(LPFN_SND_CLOSE_T)GetProcAddress(g_hSndDLL, _T("SndClose"));
+		lpfn_snd_open = 
+			(LPFN_SND_OPEN_T)GetProcAddress(g_hSndDLL, _T("SndOpen"));
+		lpfn_snd_playasync = 
+			(LPFN_SND_PLAYASYNC_T)GetProcAddress(g_hSndDLL, _T("SndPlayAsync"));
+		lpfn_snd_getsndflist = (LPFN_SND_GETSOUNDFILELIST_T)GetProcAddress(g_hSndDLL, _T("SndGetSoundFileList"));
+
+	
+		bReturnValue = TRUE;
 	}
 
 	return bReturnValue;	

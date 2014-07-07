@@ -53,13 +53,14 @@
 #include "statistic/RhoProfiler.h"
 #include "coreapi/ext/shared/Intent.h"
 #include "coreapi/ext/platform/wm/src/Intents.h"
+#include "browser/BrowserFactory.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
 #endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
-UINT WM_LICENSE_SCREEN          = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
+UINT WM_LICENSE_SCREEN = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
 
 #include "DateTimePicker.h"
 
@@ -70,7 +71,6 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 
 extern "C" double rho_wmimpl_get_pagezoom();
 
-rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent);
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 bool m_SuspendedThroughPowerButton = false;
 
@@ -223,8 +223,11 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
     if (!bDestroy)
     {
+#if !defined(_DEBUG)
+        //With MC3000c50b full screen functionality is not working in debug mode
 		if(RHO_IS_WMDEVICE)
 			SetFullScreen(bFull);
+#endif
 
 		if ( bFull )
 			hideSIPButton();
@@ -355,7 +358,7 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
 
 void CMainWindow::initBrowserWindow()
 {
-    m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+    m_pBrowserEng = rho::BrowserFactory::getInstance()->create(m_hWnd);
 
     CRect rect;
     GetWindowRect(&rect);
@@ -709,7 +712,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 {
     int fActive = LOWORD(wParam);
     LOG(INFO) + "ACTIVATE: " + fActive;
-	bool bDebugButtons = false;
+	bool bNativeWindow = false;
 
     if ( m_bLoading && !fActive )
     {
@@ -727,10 +730,11 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	wchar_t szClassName[15];
 	if (lParam && GetClassName((HWND)lParam, szClassName, 14))
 	{
-		if(wcsncmp(szClassName, L"PB_ADDRESSBAR", 14) == 0 ||
-			wcsncmp(szClassName, L"PB_BUTTON", 9) == 0)
+		if(wcsncmp(szClassName, L"PB_ADDRESSBAR", 13) == 0 ||
+			wcsncmp(szClassName, L"PB_BUTTON", 9) == 0 ||
+			wcsncmp(szClassName, L"PB_INDICATOR", 12) == 0)
 		{
-			bDebugButtons = true;
+			bNativeWindow = true;
 		}
 	}
 #endif
@@ -744,7 +748,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		//  Ignore the activate msg from the child window if
 		//  1. If it is from any window other than a debug window or
 		//  2. It is a de-activate
-		if (!(bDebugButtons && fActive))
+		if (!(bNativeWindow && fActive))
 		{
 	        LOG(INFO) + "Get activate from child window. Skip it.";
 			return 0;
@@ -1448,6 +1452,8 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
         if ( !m_bFullScreenBeforeLicense )
             RhoSetFullScreen(false);
     }
+	//send messages to extention which looks for license screens
+	RHODESAPP().getExtManager().OnLicenseScreen(static_cast<bool>(wParam));
 
 /*		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
 		if(hTaskBar) {

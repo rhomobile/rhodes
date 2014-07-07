@@ -67,6 +67,12 @@ class Jake
     res = self.config_parse(conf)
     res
   end
+
+  def self.normalize_build_yml(yml = $app_config)
+    yml['wm'] = {} unless yml['wm'].is_a?(Hash)
+    yml['wm']['webkit_outprocess'] = '1' if yml['wm']['webkit_outprocess'].nil?
+  end
+
   def self.set_bbver(bbver)
     @@bbver = bbver
   end
@@ -933,6 +939,7 @@ class Jake
     app_version = "\r\napp_version='#{$app_config["version"]}'"
     app_version += "\r\napp_name='#{$app_config["name"]}'"
     app_version += "\r\ntitle_text='#{$app_config["name"]}'"  if $current_platform == "win32"
+    app_version += "\r\norg_name='#{$app_config["vendor"]}'"  if $current_platform == "win32"
 
     File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
     File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
