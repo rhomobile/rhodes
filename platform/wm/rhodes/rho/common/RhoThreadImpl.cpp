@@ -28,6 +28,9 @@
 
 #include "RhoThreadImpl.h"
 
+#if defined(OS_WINRT)
+#define CreateEvent CreateEventEx
+#endif
 
 namespace rho{
 namespace common{
@@ -56,7 +59,12 @@ static DWORD WINAPI runProc(void* pv) throw()
 
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
+#if !defined(OS_WINRT)
     m_hThread = ::CreateThread(NULL, 0, runProc, pRunnable, 0, NULL);
+#else
+	//TODO: implement threads
+	m_hThread = null;
+#endif
     setThreadPriority(ePriority);
 }
 
@@ -68,7 +76,11 @@ void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
     else if (ePriority == IRhoRunnable::epLow)
         nPriority = THREAD_PRIORITY_LOWEST;
 
+#if !defined(OS_WINRT)
     ::SetThreadPriority(m_hThread,nPriority);
+#else
+	//TODO: implement threads
+#endif
 }
 
 void CRhoThreadImpl::stop(unsigned int nTimeoutToKillMs)
@@ -76,6 +88,7 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKillMs)
     stopWait();
     if ( m_hThread )
     {
+#if !defined(OS_WINRT)
         DWORD dwRes = ::WaitForSingleObject( m_hThread, nTimeoutToKillMs );
         if ( dwRes != WAIT_OBJECT_0 )
         {
@@ -83,17 +96,25 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKillMs)
             ::TerminateThread(m_hThread,0);
         }
         ::CloseHandle(m_hThread);
+#else
+		//TODO: implement threads
+#endif
         m_hThread = null;
     }
 }
 
 int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
+#if !defined(OS_WINRT)
     DWORD dwRes = ::WaitForSingleObject( m_hAwakeEvent, nTimeoutMs );
     if ( dwRes == WAIT_FAILED )
         LOG(ERROR) + "WaitForSingleObject failed. ID: " + ::GetCurrentThreadId() + "; Result: " + dwRes;
 
     return dwRes == WAIT_TIMEOUT ? 1 : 0;
+#else
+	//TODO: implement threads
+	return 0;
+#endif
 }
 
 void CRhoThreadImpl::stopWait()
