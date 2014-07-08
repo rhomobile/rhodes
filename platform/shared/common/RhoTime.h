@@ -164,7 +164,11 @@ public:
 
 	bool addMillis(int nMs)
     {
-        unsigned long temp=m_nativeTime;
+#if defined( OS_WP8 ) || defined( OS_WINRT )
+		ULONGLONG temp=m_nativeTime;
+#else
+		unsigned long temp=m_nativeTime;
+#endif
 		m_nativeTime=m_nativeTime+nMs;
 		if((m_nativeTime<temp)||(m_nativeTime<nMs))
 		{
