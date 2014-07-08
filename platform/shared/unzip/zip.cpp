@@ -2537,7 +2537,9 @@ ZRESULT TZip::open_file(const TCHAR *fn)
 ZRESULT TZip::open_handle(HANDLE hf,unsigned int len)
 { hfin=0; bufin=0; selfclosehf=false; crc=CRCVAL_INITIAL; isize=0; csize=0; ired=0;
   if (hf==0 || hf==INVALID_HANDLE_VALUE) return ZR_ARGS;
+#if !defined(_WINRT_LIB)
   bool canseek;
+#endif
 #ifdef ZIP_STD
     struct stat st; fstat(fileno(hf),&st); canseek = S_ISREG(st.st_mode);
 #elif !defined(_WINRT_LIB)
@@ -2563,10 +2565,7 @@ ZRESULT TZip::open_handle(HANDLE hf,unsigned int len)
     if (len!=0) isize=len; // unless we were told explicitly!
     iseekable=false;
     WORD dosdate, dostime;
-#if defined(_WINRT_LIB)
-#else
 	GetNow(&times.atime, &dosdate, &dostime);
-#endif
     times.mtime=times.atime;
     times.ctime=times.atime;
     timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);

@@ -2846,11 +2846,13 @@ int lufseek(LUFILE *stream, long offset, int whence)
   { 
 #ifdef ZIP_STD
     return fseek(stream->h,stream->initial_offset+offset,whence);
-#elif !defined(_WINRT_LIB)
+#else
+#if !defined(_WINRT_LIB)
     if (whence==SEEK_SET) SetFilePointer(stream->h,stream->initial_offset+offset,0,FILE_BEGIN);
     else if (whence==SEEK_CUR) SetFilePointer(stream->h,offset,NULL,FILE_CURRENT);
     else if (whence==SEEK_END) SetFilePointer(stream->h,offset,NULL,FILE_END);
     else return 19; // EINVAL
+#endif
     return 0;
 #endif
   }
