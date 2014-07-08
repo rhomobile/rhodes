@@ -451,6 +451,14 @@ namespace 'device' do
         cp_r( File.join(prebuilt_assets,'.'), target_assets, { :verbose => true } )
         cp_r( File.join(app_assets,'.'), target_assets, { :verbose => true } )
 
+        target_public_api = File.join(target_assets,'apps','public','api')
+        FileUtils.mkdir_p( target_public_api )
+        cp_r( File.join(prebuilt_assets,'apps','public','api','.'), target_public_api, { :verbose => true } )
+
+        target_db = File.join( target_assets, 'db' )
+        FileUtils.mkdir_p( target_db )
+        cp_r( File.join(prebuilt_assets,'db','.'), target_db, { :verbose => true } )
+
         hash = nil
         ["apps", "db", "lib"].each do |d|
             # Calculate hash of directories
