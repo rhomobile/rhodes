@@ -222,7 +222,28 @@ jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char con
 {
     RAWTRACE1("rho_cast<jstring, string>: %s", s);
 
-    return s ? env->NewStringUTF(s) : (jstring)0;
+    jstring ret = (jstring)0;
+
+    if ( s != 0 )
+    {
+      int len = strlen(s);
+      jbytearray barr = env->NewByteArray(len);
+      env->SetByteArrayRegion(barr, 0, len, (jbyte const *)s);
+
+      //call Java.String ctor
+
+      env->ReleaseByteArray(barr);
+    }
+
+    return ret;
+
+//    return s ? env->NewStringUTF(s) : (jstring)0;
+}
+
+jstring rho_cast_helper<jstring, const std::string&>::operator()(JNIEnv *env, const std::string& s)
+{
+    RAWTRACE("rho_cast<jstring, const std::string&>: %s" , s.c_str());
+    
 }
 
 jclass RhoJniConvertor::clsBoolean;
