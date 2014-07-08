@@ -239,7 +239,7 @@ CURLcode CURLNetRequest::doCURLPerform(const String& strUrl)
 {
 	CURLcode err = m_curl.perform();
 
-	if ( err !=  CURLE_OK && !RHODESAPP().isBaseUrl(strUrl.c_str()) && err != CURLE_OBSOLETE4 )
+	if ( err !=  CURLE_OK && !RHODESAPP().isBaseUrl(strUrl.c_str()) && err != CURLE_NOT_BUILT_IN )
 	{
 		long statusCode = 0;
 		curl_easy_getinfo(m_curl.curl(), CURLINFO_RESPONSE_CODE, &statusCode);
@@ -811,7 +811,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
             else
                 RAWLOG_INFO1("   CURLNetRequest: METHOD = [%s]", mStrMethod.c_str());
 
-			return CURLE_OBSOLETE4; 
+      			return CURLE_NOT_BUILT_IN; 
         }
     
         int running;

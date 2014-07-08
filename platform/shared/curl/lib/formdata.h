@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,7 +20,6 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: formdata.h,v 1.29 2009-09-17 14:23:27 yangtse Exp $
  ***************************************************************************/
 
 enum formtype {
@@ -71,11 +70,11 @@ typedef struct FormInfo {
 
 int Curl_FormInit(struct Form *form, struct FormData *formdata );
 
-CURLcode
-Curl_getFormData(struct FormData **,
-                 struct curl_httppost *post,
-                 const char *custom_contenttype,
-                 curl_off_t *size);
+CURLcode Curl_getformdata(struct SessionHandle *data,
+                          struct FormData **,
+                          struct curl_httppost *post,
+                          const char *custom_contenttype,
+                          curl_off_t *size);
 
 /* fread() emulation */
 size_t Curl_FormReader(char *buffer,

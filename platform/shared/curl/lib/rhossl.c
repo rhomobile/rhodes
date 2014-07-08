@@ -26,7 +26,7 @@
  * but sslgen.c should ever call or use these functions.
  */
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -43,11 +43,9 @@
 #include "formdata.h" /* for the boundary function */
 #include "url.h" /* for the ssl config check function */
 #include "inet_pton.h"
-#include "ssluse.h"
 #include "connect.h"
 #include "strequal.h"
 #include "select.h"
-#include "sslgen.h"
 #include "rawstr.h"
 
 #define _MPRINTF_REPLACE /* use the internal *printf() functions */
@@ -61,8 +59,11 @@ extern void * rho_ssl_create_storage();
 extern void rho_ssl_free_storage(void *);
 extern CURLcode rho_ssl_connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage, char* host_name);
 extern void rho_ssl_shutdown(void *storage);
-extern ssize_t rho_ssl_send(const void *mem, size_t len, void *storage);
+extern ssize_t rho_ssl_send(const void *mem, size_t len, int* wouldblock, void *storage);
 extern ssize_t rho_ssl_recv(char *buf, size_t size, int *wouldblock, void *storage);
+
+ssize_t Curl_rhossl_send(struct connectdata *conn, int sockindex, const void *mem, size_t len, CURLcode* curlcode);
+ssize_t Curl_rhossl_recv(struct connectdata *conn, int sockindex, char *buf, size_t size, CURLcode* curlcode);
 
 /**
  * Global SSL init
@@ -102,6 +103,8 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
         return retcode;
     
     *done = (bool)idone;
+    conn->recv[sockindex] = Curl_rhossl_recv;
+    conn->send[sockindex] = Curl_rhossl_send;
     connssl->state = ssl_connection_complete;
     
     return retcode;
@@ -154,18 +157,33 @@ int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex)
     return 0;
 }
 
-ssize_t Curl_rhossl_send(struct connectdata *conn, int sockindex, const void *mem, size_t len)
+ssize_t Curl_rhossl_send(struct connectdata *conn, int sockindex, const void *mem, size_t len, CURLcode* curlcode)
 {
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
-    return rho_ssl_send(mem, len, connssl->storage);
+    int wouldblock = 0;
+    ssize_t ret = rho_ssl_send(mem, len, &wouldblock, connssl->storage);
+    if(-1==ret) {
+        if (wouldblock!=0) {
+            *curlcode = CURLE_AGAIN;
+        } else {
+            *curlcode = CURLE_SEND_ERROR;
+        }
+    }
+    return ret;
 }
 
-ssize_t Curl_rhossl_recv(struct connectdata *conn, int sockindex, char *buf, size_t size, bool *wouldblock)
+ssize_t Curl_rhossl_recv(struct connectdata *conn, int sockindex, char *buf, size_t size, CURLcode* curlcode)
 {
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
-    int iw = *wouldblock;
-    ssize_t ret = rho_ssl_recv(buf, size, &iw, connssl->storage);
-    *wouldblock = (bool)iw;
+    int wouldblock = 0;
+    ssize_t ret = rho_ssl_recv(buf, size, &wouldblock, connssl->storage);
+    if (-1==ret) {
+        if (wouldblock!=0) {
+            *curlcode = CURLE_AGAIN;
+        } else {
+            *curlcode = CURLE_RECV_ERROR;
+        }
+    }
     return ret;
 }
 

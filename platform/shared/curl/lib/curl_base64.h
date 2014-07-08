@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,13 +20,13 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: curl_base64.h,v 1.2 2009-06-04 23:55:56 yangtse Exp $
  ***************************************************************************/
 
-size_t Curl_base64_encode(struct SessionHandle *data,
-                          const char *inputbuff, size_t insize,
-                          char **outptr);
+CURLcode Curl_base64_encode(struct SessionHandle *data,
+                            const char *inputbuff, size_t insize,
+                            char **outptr, size_t *outlen);
 
-size_t Curl_base64_decode(const char *src, unsigned char **outptr);
+CURLcode Curl_base64_decode(const char *src,
+                            unsigned char **outptr, size_t *outlen);
 
 #endif /* HEADER_CURL_BASE64_H */

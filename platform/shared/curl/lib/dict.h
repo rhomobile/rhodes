@@ -20,7 +20,6 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: dict.h,v 1.14 2009-06-04 23:55:56 yangtse Exp $
  ***************************************************************************/
 
 #ifndef CURL_DISABLE_DICT

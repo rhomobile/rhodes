@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,10 +18,9 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: curl_memrchr.c,v 1.2 2009-09-28 18:13:35 danf Exp $
  ***************************************************************************/
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #include "curl_memrchr.h"
 
@@ -51,8 +50,8 @@ Curl_memrchr(const void *s, int c, size_t n)
 
   p += n - 1;
 
-  while (p >= q) {
-    if (*p == (unsigned char)c)
+  while(p >= q) {
+    if(*p == (unsigned char)c)
       return (void *)p;
     p--;
   }
