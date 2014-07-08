@@ -1317,7 +1317,7 @@ def deploy_build(platform)
   if !File.exists?(dest)
     FileUtils.mkpath(dest)
   else
-    FileUtils.rm_rf(File.join(dest,'.'), secure: true)
+    FileUtils.rm_rf(Dir.glob(File.join(dest,'*')), secure: true)
   end
 
 
@@ -1329,10 +1329,14 @@ def deploy_build(platform)
 
   remaining = (files - [detected_bin, log_file])
 
+  detected_bin = File.join(dest, File.basename(detected_bin))
+
   unless remaining.empty?
     misc = File.join(dest, 'misc')
 
-    FileUtils.mkpath(misc)
+    if !File.exists?(misc)
+      FileUtils.mkpath(misc)
+    end
 
     remaining.each do |src|
       FileUtils.mv(src, misc)
@@ -1347,7 +1351,7 @@ def deploy_build(platform)
 
   put_message_with_timestamp("Done, application files deployed to #{dest}")
 
-  return unpacked_file_list
+  return unpacked_file_list, detected_platform, detected_bin
 end
 
 def get_build(build_id, show_info = false)
@@ -1474,38 +1478,22 @@ def get_iphone_options()
   options
 end
 
-def run_binary_on(platform, file_list, devsim)
-  puts file_list.inspect
-
-  case platform
-    when 'android'
-      to_run = file_list.find{|f| /.apk/ =~ f}
-
-    when 'iphone'
-      to_run = file_list.find{|f| /.ipa/ =~ f}
-
-    when /wm.+/
-      platform = 'wm'
-      to_run = file_list.find{|f| /.cab/ =~ f}
-
-    else
-      to_run = nil
-  end
-
-  if !to_run.nil?
-    Rake::Task["run:#{platform}:#{devsim}:package"].invoke(to_run)
+def run_binary_on(platform, package, devsim)
+  if !package.nil?
+    Rake::Task["run:#{platform}:#{devsim}:package"].invoke(package)
   else
     BuildOutput.error( "Could not find executable file for #{platform} project", 'No file')
   end
 end
 
 def get_build_and_run(build_id, run_target)
-  is_ok, res, platform = get_build(build_id)
+  is_ok, res, build_platform = get_build(build_id)
   if is_ok
-    files = deploy_build(platform)
+    files, platform, package = deploy_build(build_platform)
+    puts files, platform, package
     unless files.empty?
       if run_target
-        run_binary_on(platform, files, run_target)
+        run_binary_on(platform, package, run_target)
       end
     end
   else
@@ -3518,7 +3506,7 @@ namespace "build" do
       Dir.glob("**/*.erb") { |f| rm f }
 
       if !$skip_build_extensions
-        if not $minify_types.empty? && 
+        if not $minify_types.empty?
           minify_js_and_css($srcdir,$minify_types)
         end
       end
