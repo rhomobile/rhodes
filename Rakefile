@@ -1293,7 +1293,7 @@ def deploy_build(platform)
       when /\.apk/
         detected_bin = fname
         detected_platform = 'android'
-      when /\.msi/
+      when /\.(exe|msi)/
         detected_bin = fname
         detected_platform = 'win32'
       when /log\.txt/i
