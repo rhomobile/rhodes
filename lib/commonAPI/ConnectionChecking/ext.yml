@@ -1,0 +1,17 @@
+entry: Init_ConnectionChecking_extension
+javaentry: com.connectionchecking.ConnectionChecking
+libraries: ["ConnectionChecking"]
+android:
+  manifest_changes: ext/platform/android/ApplicationManifestAdds.erb
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+  rhodes_listener: com.rho.connectionchecking.ConnectionCheckingListener
+wp8:
+  csharp_impl: yes
+  root_namespace: rho
+
+project_paths:
+  wp8: ext/platform/wp8/ConnectionCheckingLib.vcxproj
+  wm: ext/platform/wm/ConnectionChecking.vcproj
+  
+xml_api_paths: ext/ConnectionChecking.xml

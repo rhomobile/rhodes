@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.view.KeyEvent;
+import android.os.Bundle;
 
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
@@ -45,4 +46,16 @@ public abstract class AbstractRhoListener implements IRhoListener {
 
 	@Override
 	public boolean onKey(int keyCode, KeyEvent event){ return false; }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {}
+    
+    @Override
+	public void onEBLicenseHidden() { }
+
+    @Override
+    public void onEBLicenseVisible() { }
+    
+    @Override
+    public void onEBLicenseDestroyed() { }
 }

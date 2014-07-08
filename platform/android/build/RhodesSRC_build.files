@@ -108,6 +108,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderEcla
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderEclairMR1.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderFroyo.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderJellyBean.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderKitKat.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoConfig.java

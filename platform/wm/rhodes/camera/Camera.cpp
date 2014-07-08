@@ -37,6 +37,11 @@
 #pragma warning ( disable : 4800 )
 #endif
 
+typedef HRESULT (WINAPI* LPFN_CAMERA_CAPTURE_T)(PSHCAMERACAPTURE);
+typedef BOOL (WINAPI* LPFN_GETOPEN_FILEEX_T)(LPOPENFILENAMEEX);
+extern "C" LPFN_CAMERA_CAPTURE_T lpfn_Camera_Capture;
+extern "C" LPFN_GETOPEN_FILEEX_T lpfn_GetOpen_FileEx;
+
 extern "C" HWND getMainWnd();
 
 //#if defined(_WIN32_WCE)
@@ -52,51 +57,54 @@ Camera::~Camera(void) {
 HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) 
 {
     HRESULT         hResult = S_OK;
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
-    SHCAMERACAPTURE shcc;
+#if defined(_WIN32_WCE) //&& !defined( OS_PLATFORM_MOTCE )
+	if(RHO_IS_WMDEVICE)
+	{
+		SHCAMERACAPTURE shcc;
 
-    StringW imageDir;
-    convertToStringW(rho_rhodesapp_getblobsdirpath(), imageDir);
+		StringW imageDir;
+		convertToStringW(rho_rhodesapp_getblobsdirpath(), imageDir);
 
-	StringW strFileName = generate_filename(L".jpg");
+		StringW strFileName = generate_filename(L".jpg");
 
-    // Set the SHCAMERACAPTURE structure.
-    ZeroMemory(&shcc, sizeof(shcc));
-    shcc.cbSize             = sizeof(shcc);
-    shcc.hwndOwner          = hwndOwner;
-    shcc.pszInitialDir      = imageDir.c_str();
-    shcc.pszDefaultFileName = strFileName.c_str();
-    shcc.pszTitle           = TEXT("Camera");
-    shcc.VideoTypes			= CAMERACAPTURE_VIDEOTYPE_MESSAGING;
-    shcc.nResolutionWidth   = 176;
-    shcc.nResolutionHeight  = 144;
-    shcc.StillQuality       = CAMERACAPTURE_STILLQUALITY_LOW;
-    shcc.nVideoTimeLimit    = 15;
-    shcc.Mode               = CAMERACAPTURE_MODE_STILL;
+		// Set the SHCAMERACAPTURE structure.
+		ZeroMemory(&shcc, sizeof(shcc));
+		shcc.cbSize             = sizeof(shcc);
+		shcc.hwndOwner          = hwndOwner;
+		shcc.pszInitialDir      = imageDir.c_str();
+		shcc.pszDefaultFileName = strFileName.c_str();
+		shcc.pszTitle           = TEXT("Camera");
+		shcc.VideoTypes			= CAMERACAPTURE_VIDEOTYPE_MESSAGING;
+		shcc.nResolutionWidth   = 176;
+		shcc.nResolutionHeight  = 144;
+		shcc.StillQuality       = CAMERACAPTURE_STILLQUALITY_LOW;
+		shcc.nVideoTimeLimit    = 15;
+		shcc.Mode               = CAMERACAPTURE_MODE_STILL;
 
-    // Display the Camera Capture dialog.
-    hResult = SHCameraCapture(&shcc);
+		// Display the Camera Capture dialog.
+		hResult = lpfn_Camera_Capture(&shcc);
 
-    // The next statements will execute only after the user takes
-    // a picture or video, or closes the Camera Capture dialog.
-    if (S_OK == hResult) 
-    {
-        LOG(INFO) + "takePicture get file: " + shcc.szFile;
-        
-        LPTSTR fname = get_file_name( shcc.szFile, imageDir.c_str() );
-		if (fname) {
+		// The next statements will execute only after the user takes
+		// a picture or video, or closes the Camera Capture dialog.
+		if (S_OK == hResult) 
+		{
+			LOG(INFO) + "takePicture get file: " + shcc.szFile;
 
-			StringCchCopy( pszFilename, MAX_PATH, fname );
-			free(fname);
-		} else {
-            LOG(ERROR) + "takePicture error get file: " + shcc.szFile;
+			LPTSTR fname = get_file_name( shcc.szFile, imageDir.c_str() );
+			if (fname) {
 
-			hResult = E_INVALIDARG;
+				StringCchCopy( pszFilename, MAX_PATH, fname );
+				free(fname);
+			} else {
+				LOG(ERROR) + "takePicture error get file: " + shcc.szFile;
+
+				hResult = E_INVALIDARG;
+			}
+		}else
+		{
+			LOG(ERROR) + "takePicture failed with code: " + LOGFMT("0x%X") + hResult;
 		}
-    }else
-    {
-        LOG(ERROR) + "takePicture failed with code: " + LOGFMT("0x%X") + hResult;
-    }
+	}
 #endif //_WIN32_WCE
 
     return hResult;
@@ -105,8 +113,9 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
 HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) 
 {
 	RHO_ASSERT(pszFilename);
-#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_MOTCE )
-	OPENFILENAMEEX ofn = {0};
+#if defined( _WIN32_WCE ) //&& !defined( OS_PLATFORM_MOTCE )
+	OPENFILENAMEEX ofnex = {0};
+	OPENFILENAME ofn = {0};
 #else
     OPENFILENAME ofn = {0};
 #endif
@@ -119,9 +128,17 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
 	ofn.nMaxFile        = MAX_PATH;
 	ofn.lpstrInitialDir = NULL;
 	ofn.lpstrTitle      = _T("Select an image");
-#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_MOTCE )
-	ofn.ExFlags         = OFN_EXFLAG_THUMBNAILVIEW|OFN_EXFLAG_NOFILECREATE|OFN_EXFLAG_LOCKDIRECTORY;
-    if (GetOpenFileNameEx(&ofn))
+#if defined( _WIN32_WCE ) //&& !defined( OS_PLATFORM_MOTCE )
+	BOOL bRes = false;
+	if(RHO_IS_WMDEVICE)
+	{
+		ofnex.ExFlags = OFN_EXFLAG_THUMBNAILVIEW|OFN_EXFLAG_NOFILECREATE|OFN_EXFLAG_LOCKDIRECTORY;
+		bRes = lpfn_GetOpen_FileEx(&ofnex);
+	}
+	else
+		bRes = GetOpenFileName(&ofn);
+
+    if (bRes)
 #else
     if (GetOpenFileName(&ofn))
 #endif

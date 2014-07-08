@@ -148,12 +148,36 @@ INetResponse *CURLNetRequest::makeResponse(char const *body, size_t bodysize, in
     return resp.release();
 }
 
-static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
-    Hashtable<String,String>* pHeaders = (Hashtable<String,String>*)opaque;
+    String *pStr = (String *)opaque;
+    size_t nBytes = size*nmemb;
+    RAWTRACE1("Received %d bytes", nBytes);
+    pStr->append((const char *)ptr, nBytes);
+    return nBytes;
+}
+
+size_t CURLNetRequest::curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+{
+    Hashtable<String,String>* pHeaders = ((RequestState*)opaque)->headers;
+
+    RequestState* state = (RequestState*)opaque;
+
+    if ( 0==state->respCode ) {
+      state->respCode = state->request->getResponseCode(CURLE_OK, 0, 0, 0);
+    }
+
     size_t nBytes = size*nmemb;
     String strHeader((const char *)ptr, nBytes);
     RAWTRACE1("Received header: %s", strHeader.c_str());
+
+    if (strHeader == "\r\n" || strHeader == "\n") {
+        if ( state->request->m_pCallback != 0 )
+        {
+          NetResponse r = state->request->makeResponse(0,0,state->respCode);
+          state->request->m_pCallback->didReceiveResponse(r,state->headers);
+        }
+    }
     
     int nSep = strHeader.find(':');
     if (nSep > 0 )
@@ -176,21 +200,28 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
     return nBytes;
 }
 
-static size_t curlBodyStringCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
+size_t CURLNetRequest::curlBodyDataCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
 {
-    String *pStr = (String *)opaque;
+    RequestState* state = (RequestState*)opaque;
     size_t nBytes = size*nmemb;
     RAWTRACE1("Received %d bytes", nBytes);
-    pStr->append((const char *)ptr, nBytes);
-    return nBytes;
-}
 
-static size_t curlBodyBinaryCallback(void *ptr, size_t size, size_t nmemb, void *opaque)
-{
-    Vector<char> *pBody = (Vector<char> *)opaque;
-    size_t nBytes = size*nmemb;
-    RAWTRACE1("Received %d bytes", nBytes);
-    std::copy((char*)ptr, (char*)ptr + nBytes, std::back_inserter(*pBody));
+    if ( state->pFile != 0 )
+    {
+      state->pFile->write(ptr, nBytes);
+      state->pFile->flush();
+    }
+    else
+    {
+      Vector<char> *pBody = state->respChunk;
+      std::copy((char*)ptr, (char*)ptr + nBytes, std::back_inserter(*pBody));
+    }
+    
+    if ( state->request->m_pCallback != 0 )
+    {        
+        state->request->m_pCallback->didReceiveData((const char*)ptr, nBytes);        
+    }     
+    
     return nBytes;
 }
 
@@ -243,20 +274,25 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
         Vector<char> respChunk;
         
+        RequestState state;
+        state.respChunk = &respChunk;
+        state.headers = pHeaders;
+        state.pFile = oFile;
+        state.request = this;
+        
         ProxySettings proxySettings;
         proxySettings.initFromConfig();
 		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings );
 
         CURL *curl = m_curl.curl();
         if (pHeaders) {
-            curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
-            curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &curlHeaderCallback);
+            curl_easy_setopt(curl, CURLOPT_HEADERDATA, &state);
+            curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &CURLNetRequest::curlHeaderCallback);
         }
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
-		//curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 2);
-		//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2);        
-        
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &state);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CURLNetRequest::curlBodyDataCallback);
+		
         if (nStartFrom > 0)
 		{
 			RAWLOG_INFO1("CURLNetRequest::doPull - resuming from %d",nStartFrom);
@@ -271,37 +307,37 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
             statusCode = 500;
         
         RAWTRACE2("CURLNetRequest::doPull - Status code: %d, response size: %d", (int)statusCode, respChunk.size() );
-		
-		if (statusCode == 416 )
-		{
-			//Do nothing, file is already loaded
-		}else if (statusCode == 206) {
-            if (oFile)
-                oFile->write(&respChunk[0], respChunk.size());
-            else
+        
+        switch (statusCode) {
+        case 416:
+    		//Do nothing, file is already loaded
+            break;
+            
+        case 206:
+            if ( oFile!= 0 ) {
+                oFile->flush();
+            } else {
                 std::copy(respChunk.begin(), respChunk.end(), std::back_inserter(respBody));
+            }
             // Clear counter of attempts because 206 response does not considered to be failed attempt
             nAttempts = 0;
-		}
-        else {
-			if (oFile && (statusCode == 206 || statusCode == 200) ) {
-				if ( respChunk.size() > 0 )
-				{
-					oFile->movePosToStart();
-					oFile->write(&respChunk[0], respChunk.size());
-				}
-            }
-            else
+            break;
+
+        default:
+            if ( 0 == oFile ) {
                 respBody = respChunk;
+            }
+            break;
         }
         
-        if (err == CURLE_OPERATION_TIMEDOUT && respChunk.size() > 0) {
+		if (err == CURLE_OPERATION_TIMEDOUT ) {
             RAWLOG_INFO("Connection was closed by timeout, but we have part of data received; try to restore connection");
             nRespCode = -1;
+            
 			if ( oFile != 0 ) {
 				oFile->flush();
 				nStartFrom = oFile->size();
-			} else {
+			} else if ( respChunk.size() > 0 ) {
 				nStartFrom = respBody.size();
 			}
             continue;
@@ -313,6 +349,19 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 
 	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )		   
 	   rho_net_impl_network_indicator(0);
+    
+    if ( m_pCallback != 0 )
+    {
+        NetResponse r = makeResponse(respBody, nRespCode);
+        if (r.isOK())
+        {
+            m_pCallback->didFinishLoading();
+        }
+        else
+        {
+            m_pCallback->didFail(r);
+        }
+    }
 
     return makeResponse(respBody, nRespCode);
 }
@@ -611,7 +660,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     }
     
     curl_easy_setopt(m_curl, CURLOPT_CONNECTTIMEOUT, timeout);
-	curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
+	//curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
 	
     curl_easy_setopt(m_curl, CURLOPT_TCP_NODELAY, 0); //enable Nagle algorithm
     

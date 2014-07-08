@@ -72,6 +72,7 @@ void rho_db_init_attr_manager();
 void rho_sys_app_exit();
 void rho_sys_report_app_started();
 void rho_conf_show_log();
+bool rho_wmimpl_is_browser_ieforwm();
 
 #ifdef OS_ANDROID
 void rho_file_set_fs_mode(int mode);
@@ -381,8 +382,10 @@ void CAppCallbacksQueue::processUiCreated()
     {
         if ( rho_ruby_is_started() )
             callCallback("/system/uicreated");
+#if !defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME) || !defined(OS_ANDROID)
         else
             rho_webview_navigate(startPath.c_str(), 0);
+#endif
     }
     m_uistate = ui_created_processed;
 }
@@ -572,9 +575,9 @@ boolean CRhodesApp::callTimerCallback(const String& strUrl, const String& strDat
 		
     if ( strData.length() > 0 )
         strBody += "&" + strData;
-
-    String strReply;
-    return m_httpServer->call_ruby_method(strUrl, strBody, strReply);
+    
+    callCallbackWithData(strUrl, "", strData, false);
+    return true;
 }
 
 void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
@@ -705,11 +708,14 @@ void CRhodesApp::callUiDestroyedCallback()
     
     if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed))
     {
-        String strUrl = m_strHomeUrl + "/system/uidestroyed";
-        NetResponse resp = getNetRequest().pullData( strUrl, null );
-        if ( !resp.isOK() )
+        if ( rho_ruby_is_started() )
         {
-            LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+          String strUrl = m_strHomeUrl + "/system/uidestroyed";
+          NetResponse resp = getNetRequest().pullData( strUrl, null );
+          if ( !resp.isOK() )
+          {
+              LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+          }
         }
     }
 }
@@ -794,7 +800,7 @@ void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBar
     }
 
     strBody += "&rho_callback=1";
-    //getNetRequest().pushData( strCallbackUrl, strBody, null );
+
     runCallbackInThread(strCallbackUrl, strBody);
 }
 
@@ -1508,6 +1514,9 @@ void CRhodesApp::initHttpServer()
 
 const char* CRhodesApp::getFreeListeningPort()
 {
+  if ( m_isJSFSApp )
+    return "";
+
 	if ( m_strListeningPorts.length() > 0 )
 		return m_strListeningPorts.c_str();
 
@@ -1622,22 +1631,31 @@ int CRhodesApp::determineFreeListeningPort()
 	
 	return nFreePort;
 }
-	
+
+#ifdef OS_WINCE
+bool CRhodesApp::isWebkitOutofProcess()
+{
+    const char* szOutprocess = get_app_build_config_item("webkit_outprocess");
+    return szOutprocess && strcmp(szOutprocess, "1") == 0;
+}
+#endif
+
 void CRhodesApp::initAppUrls() 
 {
     CRhodesAppBase::initAppUrls(); 
-   
-#if defined( OS_WINCE ) && !defined(OS_PLATFORM_MOTCE)
-    TCHAR oem[257];
-    SystemParametersInfo(SPI_GETPLATFORMNAME, sizeof(oem), oem, 0);
-    LOG(INFO) + "Device name: " + oem;
-    //if ((_tcscmp(oem, _T("MC75"))==0) || (_tcscmp(oem, _T("MC75A"))==0))
-    //   m_strHomeUrl = "http://localhost:";
-    //else
-       m_strHomeUrl = "http://127.0.0.1:";
-#else
-    m_strHomeUrl = "http://127.0.0.1:";
+
+    m_isJSFSApp = false;
+
+#ifdef RHO_NO_RUBY_API
+        m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
 #endif
+
+#ifdef OS_WINCE
+    if (isWebkitOutofProcess())
+        m_isJSFSApp = false; //We need local server for out of process webkit, it use sockets to call common API
+#endif
+
+    m_strHomeUrl = "http://127.0.0.1:";
     m_strHomeUrl += getFreeListeningPort();
 
 #ifndef RHODES_EMULATOR
@@ -1650,18 +1668,13 @@ void CRhodesApp::initAppUrls()
 
     //write local server url to file
 #ifdef OS_WINCE
-    String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
-    CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
-    modifyRhoApiFile();
+    if (!m_isJSFSApp)
+    {
+        String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
+        CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
+        modifyRhoApiFile();
+    }
 #endif
-    
-    m_isJSFSApp = false;
-#ifndef OS_WINCE
-#ifdef RHO_NO_RUBY_API
-	m_isJSFSApp = String_startsWith(getStartUrl(), "file:") ? true : false;
-#endif
-#endif
-
 }
 
 void CRhodesApp::modifyRhoApiFile()

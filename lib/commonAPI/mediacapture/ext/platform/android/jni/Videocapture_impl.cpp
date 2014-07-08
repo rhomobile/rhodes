@@ -55,7 +55,3 @@ extern "C" void Init_Videocapture(void)
     }
 
 }
-
-extern "C" void Init_Videocapture_extension() {
-    Init_Videocapture();
-}

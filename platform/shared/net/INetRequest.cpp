@@ -27,7 +27,7 @@
 #include "INetRequest.h"
 
 #include "common/RhoFile.h"
-#include "common/RhodesAppBase.h"
+#include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
 #include "net/URI.h"
 
@@ -217,6 +217,96 @@ String CNetRequestWrapper::resolveUrl(const String& strUrl)
 {
     return RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
+
+void CNetRequestWrapper::cancel()
+{
+  if ( m_pHolder != 0 )
+  {
+    m_pHolder->cancel();
+  }
+}
+
+void CNetRequestWrapper::setCallback(rho::net::INetRequestCallback* callback )
+{
+  m_pReqImpl->setCallback(callback);
+}
+
+
+CAsyncNetRequest::~CAsyncNetRequest()
+{
+  RHODESAPP().getTimer().stopNativeTimer(this);
+}
+
+void CAsyncNetRequest::run(common::CRhoThread &)
+{
+  CNetRequestWrapper net = ::getNetRequest(&m_request);
+  net.setCallback(this);
+  net.doRequest(m_method.c_str(),m_url,m_body,m_pSession,&m_headers);
+}
+
+void CAsyncNetRequest::cancel()
+{
+  m_request.cancel();
+}
+
+void CAsyncNetRequest::requestCancel()
+{
+    RHODESAPP().getTimer().addNativeTimer(0,this);
+}
+
+bool CAsyncNetRequest::onTimer()
+{
+  cancel();
+  return true;
+}
+
+
+  void CAsyncNetRequest::didReceiveResponse(NetResponse& resp, const Hashtable<String,String>* headers)
+  {
+    synchronized(m_mxCallbackAccess)
+    {
+      if ( m_pCallback != 0 )
+      {
+        m_pCallback->didReceiveResponse(resp,headers);
+      }
+    }
+  }
+
+  void CAsyncNetRequest::didReceiveData(const char* ptr, int len) 
+  {
+    synchronized(m_mxCallbackAccess)
+    {
+      if ( m_pCallback != 0 )
+      {
+        m_pCallback->didReceiveData(ptr,len);
+      }
+    }
+  }
+
+  void CAsyncNetRequest::didFinishLoading()
+  {
+    synchronized(m_mxCallbackAccess)
+    {
+      if ( m_pCallback != 0 )
+      {
+        m_pCallback->didFinishLoading();
+      }
+    }
+  }
+
+  void CAsyncNetRequest::didFail(NetResponse& resp)
+  {
+    synchronized(m_mxCallbackAccess)
+    {
+      if ( m_pCallback != 0 )
+      {
+        m_pCallback->didFail(resp);
+      }
+    }
+  }
+
+
+
 
 }
 }

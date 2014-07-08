@@ -46,11 +46,20 @@
 using namespace rho;
 using namespace rho::common;
 
+static char qt_webview_framework[32] = "";
+
 extern "C" {
 
 const char* rho_sys_qt_getWebviewFramework()
 {
-    return QString("WEBKIT/").append(qWebKitVersion()).toStdString().c_str();
+    if (qt_webview_framework[0] == '\0') {
+        const QByteArray ver = QString("WEBKIT/").append(qWebKitVersion()).toLatin1();
+        if (ver.length() < 32) {
+            strncpy(qt_webview_framework, ver.constData(), ver.length());
+            qt_webview_framework[ver.length()] = '\0';
+        }
+    }
+    return qt_webview_framework;
 }
 
 VALUE phone_number()

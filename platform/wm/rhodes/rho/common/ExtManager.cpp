@@ -82,7 +82,8 @@ CRhoExtData CExtManager::makeExtData()
 #endif
     oData.m_iTabIndex = rho_webview_active_tab();
 #if !defined(OS_WINDOWS_DESKTOP)
-    oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND(oData.m_iTabIndex);
+	if(getAppWindow().getWebKitEngine())
+		oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND(oData.m_iTabIndex);
 #endif
     
     return oData;
@@ -512,7 +513,13 @@ long CExtManager::OnLicenseError(const wchar_t* szUrlBeingNavigatedTo)
 
     return 0;
 }
-
+void CExtManager::OnLicenseScreen(bool bActivate)
+{
+	for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+	{
+		(it->second)->OnLicenseScreen( bActivate, makeExtData() );
+	}
+}
 void CExtManager::OnAppActivate(bool bActivate)
 {
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )

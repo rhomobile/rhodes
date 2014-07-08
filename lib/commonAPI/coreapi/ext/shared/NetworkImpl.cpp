@@ -3,7 +3,7 @@
 #include <list>
 
 #if (defined OS_WINCE || defined OS_WP8)
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
 #include "../platform/wm/src/ConnectionManager.h"
 #endif
 #endif
@@ -52,24 +52,30 @@ public:
 
     CNetworkImpl(): CNetworkSingletonBase()
 	{
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
-		CRhoExtData rhodesData = RHODESAPP().getExtManager().makeExtData();
-		if (rhodesData.m_hBrowserWnd)
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
+		if(winversion == 1)
 		{
-//			m_pConnectionManager = new CWAN(rhodesData.m_hBrowserWnd);
-			m_pConnectionManager = new CWAN(rhodesData.m_hWnd);
-			m_pConnectionManager->Initialise();
+			CRhoExtData rhodesData = RHODESAPP().getExtManager().makeExtData();
+			if (rhodesData.m_hBrowserWnd)
+			{
+	//			m_pConnectionManager = new CWAN(rhodesData.m_hBrowserWnd);
+				m_pConnectionManager = new CWAN(rhodesData.m_hWnd);
+				m_pConnectionManager->Initialise();
+			}
+			else
+				m_pConnectionManager = NULL;
 		}
-		else
-			m_pConnectionManager = NULL;
 #endif
 	}
 
 	~CNetworkImpl()
 	{
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
-		if (m_pConnectionManager)
-			delete m_pConnectionManager;
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
+		if(winversion == 1)
+		{
+			if (m_pConnectionManager)
+				delete m_pConnectionManager;
+		}
 #endif
 	}
 
@@ -93,13 +99,16 @@ public:
 	virtual void stopDetectingConnection(rho::apiGenerator::CMethodResult& oResult);
     virtual void connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult);
     virtual void disconnectWan(rho::apiGenerator::CMethodResult& oResult);
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
     virtual bool onWndMsg(MSG& oMsg)
 	{
-		if (oMsg.message == WM_USER_CONNECTION_MANGER_STATUS)
+		if(winversion == 1)
 		{
-			if (!m_pConnectionManager) {return FALSE;}
-				m_pConnectionManager->ConnectionManagerStatusUpdate();
+			if (oMsg.message == WM_USER_CONNECTION_MANGER_STATUS)
+			{
+				if (!m_pConnectionManager) {return FALSE;}
+					m_pConnectionManager->ConnectionManagerStatusUpdate();
+			}
 		}
 		return FALSE;
 	}
@@ -114,7 +123,7 @@ private:
 	//  RE1 Network API
 //	std::list<INetworkDetection*> m_networkPollers;
     std::auto_ptr<INetworkDetection> m_networkPoller;
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
 	CWAN *m_pConnectionManager;
 #endif
     void setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest, rho::apiGenerator::CMethodResult& oResult );
@@ -642,20 +651,26 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 
 void CNetworkImpl::connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined OS_WINCE)&& !defined(OS_PLATFORM_MOTCE) 
-	//  Only applicable to WM/CE, specific to connection manager
-	//  There is only a single object for connection manager access as you can only have
-	//  one physical connection.
-	m_pConnectionManager->SetWanCallback(oResult);
-	m_pConnectionManager->Connect(convertToStringW(connectionDestination).c_str(), TRUE);
+#if (defined OS_WINCE)//&& !defined(OS_PLATFORM_MOTCE) 
+	if(winversion == 1)
+	{
+		//  Only applicable to WM/CE, specific to connection manager
+		//  There is only a single object for connection manager access as you can only have
+		//  one physical connection.
+		m_pConnectionManager->SetWanCallback(oResult);
+		m_pConnectionManager->Connect(convertToStringW(connectionDestination).c_str(), TRUE);
+	}
 #endif
 }
 
 void CNetworkImpl::disconnectWan(rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
-	//  Only applicable to WM/CE, specific to connection manager
-	m_pConnectionManager->Disconnect(TRUE);
+#if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
+	if(winversion == 1)
+	{
+		//  Only applicable to WM/CE, specific to connection manager
+		m_pConnectionManager->Disconnect(TRUE);
+	}
 #endif
 }
     

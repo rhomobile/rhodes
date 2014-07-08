@@ -40,6 +40,8 @@
 
 #include "statistic/RhoProfiler.h"
 
+#import "RhoExtManager/RhoExtManagerSingletone.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SimpleMainView"
@@ -1104,6 +1106,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
     const char* curl = [[url absoluteString] UTF8String];
     RAWLOG_INFO1("WebView shouldStartLoadWithRequest( %s )", curl);
     
+    
+    BOOL res = [[RhoExtManagerSingletone getExtensionManager] onBeforeNavigate:[url absoluteString] tabIndex:thisTabIndex];
+    if (res) {
+        // one from extension block this URL
+        return NO;
+    }
     
     BOOL external = NO;
     

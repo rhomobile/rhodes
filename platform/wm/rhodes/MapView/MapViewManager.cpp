@@ -101,23 +101,28 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	SetWindowText(_T("MapView"));
 
 #if defined(_WIN32_WCE) 
+	if(RHO_IS_WMDEVICE)
+	{
+		//#if !defined (OS_PLATFORM_MOTCE)
+		SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
+		RHO_ASSERT(SHInitDialog(&shidi));
 
-#if !defined (OS_PLATFORM_MOTCE)
-	SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
-	RHO_ASSERT(SHInitDialog(&shidi));
 
+		SHMENUBARINFO mbi = { sizeof(mbi), 0 };
+		mbi.hwndParent = m_hWnd;
+		mbi.nToolBarId = IDR_GETURL_MENUBAR;//IDR_MAPVIEW;
+		mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
 
-	SHMENUBARINFO mbi = { sizeof(mbi), 0 };
-	mbi.hwndParent = m_hWnd;
-	mbi.nToolBarId = IDR_GETURL_MENUBAR;//IDR_MAPVIEW;
-	mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
-	
-	SHCreateMenuBar(&mbi);
-#else
-	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
-	CommandBar_AddAdornments(m_hWndCommandBar, 0, 0 );
-    CommandBar_Show(m_hWndCommandBar, TRUE);
-#endif //OS_WINCE
+		SHCreateMenuBar(&mbi);
+	}
+	else
+	{
+		//#else
+		m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+		CommandBar_AddAdornments(m_hWndCommandBar, 0, 0 );
+		CommandBar_Show(m_hWndCommandBar, TRUE);
+	}
+//#endif //OS_WINCE
 
 	//::SetWindowLong(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, 
 	//	GWL_EXSTYLE,

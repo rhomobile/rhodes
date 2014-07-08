@@ -67,6 +67,12 @@ class Jake
     res = self.config_parse(conf)
     res
   end
+
+  def self.normalize_build_yml(yml = $app_config)
+    yml['wm'] = {} unless yml['wm'].is_a?(Hash)
+    yml['wm']['webkit_outprocess'] = '1' if yml['wm']['webkit_outprocess'].nil?
+  end
+
   def self.set_bbver(bbver)
     @@bbver = bbver
   end
@@ -648,6 +654,166 @@ class Jake
     return file_map
   end
 
+  def self.list_zip_files(source_zip)
+    have_zip = false
+    begin
+      require 'zip'
+
+      have_zip = true
+    rescue Exception => e   
+      have_zip = false
+    end
+
+    files = {}
+
+    total_files = 0
+    total_size = 0
+    lines = 0
+
+    if !have_zip
+      res = run2("unzip", ['-l', source_zip], {:hide_output => true}) do |line|
+        lines = 0
+
+        r1 = /([\d]+)\s+(\d\d-\d\d-\d[\d]+)\s+(\d\d:\d\d)\s+([^\s]+)/.match(line)
+        if !r1.nil?
+          files[r1[4]]=r1[1].to_i
+        else
+          m = /([\d]+)\s+([\d]+)(?:.*?)files/.match(line)
+          if m.nil?
+            total_files = lines - 3
+          else
+            total_files = m[2]
+            total_size = m[1]
+          end
+        end
+
+        true
+      end
+
+      if $? != 0
+        puts res
+        exit
+      end
+    else
+      Zip::File.open(source_zip) { |zip_file|
+        zip_file.each_with_index { |f, index|
+          files[f.name] = f.size
+        }
+      }
+    end
+
+    if !files.empty?
+      total_files = 0
+      total_size = 0
+      files.each do |name,size|
+        total_files += 1
+        total_size += size
+      end
+    end
+
+    return files, total_files, total_size
+  end
+
+  def self.unzip(source_zip, dest_folder)
+    have_zip = false
+    begin
+      require 'zip'
+
+      have_zip = true
+    rescue Exception => e   
+      have_zip = false
+    end
+
+    if have_zip || RUBY_PLATFORM =~ /(win|w)32$/
+      begin
+        require 'rubygems'
+        require 'zip'
+        require 'find'
+        require 'fileutils'
+        include FileUtils
+
+        Zip::File.open(source_zip) { |zip_file|
+          last_path = ""
+          acc_size = 0
+          total_size = zip_file.inject(0) { |acc, inp| acc + inp.size }
+          total_files = zip_file.size
+
+          zip_file.each_with_index { |f, index|
+            if block_given?
+              yield(acc_size, total_size, "Unpacking files: #{(acc_size*100)/total_size}%")
+            end
+            acc_size += f.size
+            f_path=File.join(dest_folder, f.name)
+            d_path=File.dirname(f_path)
+            if last_path != d_path && !File.exists?(d_path)
+              FileUtils.mkdir_p(d_path)
+              last_path = d_path
+            end
+            zip_file.extract(f, f_path) 
+          }
+
+          if block_given?
+            yield(acc_size, total_size, "Unpacking files: #{(acc_size*100)/total_size}%")
+          end
+        }
+      rescue Exception => e
+        puts "ERROR : #{e}"
+        puts 'Require "rubyzip" gem for make zip file !'
+        puts 'Install gem by "gem install rubyzip"'
+        raise
+      end
+    else
+      files, total_files, total_size = list_zip_files(source_zip)
+
+      last = 0
+      num_files = 0
+      acc_size = 0
+      progress = 0
+
+      res = run2("unzip", [source_zip, '-d', dest_folder], {:hide_output => true, :directory => dest_folder}) do |line|
+        if line =~ /Archive:/
+          #do nothing
+        else
+          m = /\s+(.*?):\s+(.*?)\s+/.match(line)
+          if !m.nil?
+            fname = m[2].gsub(dest_folder+'/','') 
+            size = files[fname]
+            if size != nil
+              last = size
+            end
+          end
+        end
+
+        if total_size != 0
+          acc_size += last
+          last = 0
+          progress = acc_size * 100 / total_size
+        else
+          progress = num_files * 100 / total_files
+        end
+
+        if block_given?
+          yield(progress, 100, "Unpacking files: #{progress}%")
+        end
+
+        num_files += 1
+
+        true
+      end
+       
+      if total_size != 0
+        acc_size += last
+        progress = acc_size * 100 / total_size
+      else
+        progress = files * 100 / total_files
+      end
+
+      if block_given?
+        yield(progress, 100, "Unpacking files: #{progress}%")
+      end
+    end
+  end
+
   def self.zip_upgrade_bundle(folder_path, zip_file_path)
 
       File.delete(zip_file_path) if File.exists?(zip_file_path)
@@ -773,6 +939,7 @@ class Jake
     app_version = "\r\napp_version='#{$app_config["version"]}'"
     app_version += "\r\napp_name='#{$app_config["name"]}'"
     app_version += "\r\ntitle_text='#{$app_config["name"]}'"  if $current_platform == "win32"
+    app_version += "\r\norg_name='#{$app_config["vendor"]}'"  if $current_platform == "win32"
 
     File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
     File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }

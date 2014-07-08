@@ -242,8 +242,54 @@ function fill_registry_keys() {
 	}
 }
 
-function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
+
+function es_find(es, item) {
+    for (var i in es) {
+        if (es[i].name === item) {
+           return true;        
+         }
+    }
+    
+    return false;
+}
+
+function fill_register_com_dlls(es) {
+    var regfName = "comdlls.txt";
+    var dlls = new Array();
+    var finalContents = "";
+    
+    var f = get_file_list(es);
+
+    if (fso.FileExists(regfName)) {
+        var regf = fso.OpenTextFile(regfName);
+        var contents = regf.ReadAll();
+        regf.Close();
+        
+        dlls = contents.split(",");          
+        
+        for(var i=0; i<dlls.length; i++) 
+        {
+           if (es_find(f, dlls[i])) 
+           {
+               finalContents = finalContents + dlls[i] + ",";              
+           }
+        }
+
+        if (finalContents.lenght != 0)
+        {
+          p("CESelfRegister=" + finalContents.slice(0, -1));
+        }
+    }
+}
+
+function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_mode,
                 rhogempath,usereruntime,include_motocaps,is_custom_config,autorun,autorun_path,is_persistent) {
+
+    var webkit_file = {
+        'out_of_process': '"OutProcessWK.exe"'                       ,
+        'in_process'    : '"WebkitPlatformDeliveryCompiledAsDLL.dll"'
+    }[webkit_mode];
+
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
     p("Provider=\""+vendor+"\"");
@@ -264,6 +310,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     p("BuildMax=0xE0000000");
     p("");
     p("[DefaultInstall]");
+    fill_register_com_dlls(es);
+       
     if (show_shortcut && (!usereruntime)){
         if (autorun) 
         {
@@ -278,31 +326,35 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     p("AddReg=RegKeys");
     if (is_persistent)
     {
-        p("CopyFiles=CopyToInstallDir,CopyPersistent" +
-           (!usereruntime && webkit ? ",CopyWebKitBinPers,CopyNPAPIPers,CopyConfigPers,CopySystemFilesPers" : "")+
-           (!usereruntime && !webkit && include_motocaps? ",CopyConfigPers" : "")+
+        p("CopyFiles=CopyToInstallDir,CopyPersistent,CopySystemFilesPers" +
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBinPers,CopyNPAPIPers,CopyConfigPers" : "")+
+           (!usereruntime && (webkit_mode == 'none') && include_motocaps? ",CopyConfigPers" : "")+
            get_copyfiles_sections(es,is_persistent));
     }
     else
     {
         p("CopyFiles=CopyToInstallDir"+
-           (!usereruntime && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig,CopySystemFiles" : "") +
-           (!usereruntime && !webkit && include_motocaps? ",CopyConfig" : "")+
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "") +
+           (!usereruntime && (webkit_mode == 'none') && include_motocaps ? ",CopyConfig" : "") +
+           (!usereruntime && include_motocaps ? ",CopySystemFiles" : "") +
            (show_shortcut && usereruntime ? ",Shortcuts" : "")+
            get_copyfiles_sections(es,is_persistent));
     }
     p("");
     p("[SourceDisksNames]");
     p("1=,\"\",,\"" + srcdir + "\"");
-    if (usereruntime) {
+    
+    if (usereruntime) 
+    {
         p("2=,\"\",,\"" + srcdir + "\\..\\\"");
     } 
     else 
     {
         p("2=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
-        if (webkit)
-        {
-            p("3=,\"\",," + rhogempath + "\"\\\"");
+        p("3=,\"\",," + rhogempath + "\"\\\"");
+        
+        if (webkit_mode != 'none')
+        {            
             p("4=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
             p("5=,\"\",," + rhogempath + "\"\\Config\\\"");
         }
@@ -310,14 +362,16 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
         {
             if(include_motocaps)
             {
-                p("3=,\"\",," + rhogempath + "\"\\Config\\\"");
+                p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
             }
         }
     }
     get_source_disks_names(es);
     p("");
     p("[SourceDisksFiles]");
-    if (usereruntime) {
+    
+    if (usereruntime) 
+    {
         p("\"" + name + ".lnk\"=2");
     }
     else 
@@ -329,12 +383,13 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
 
         p("\"" + name + ".exe\"=2");
         p("\"" + "RhoLaunch" + ".exe\"=2");
-        if (webkit) 
+        p("\"prtlib.dll\"=3");
+        
+        if (webkit_mode != 'none') 
         {
-            p("\"eklibrary.dll\"=3");
-            p("\"prtlib.dll\"=3");
+            p("\"eklibrary.dll\"=3");            
             p("\"ipc_manager.dll\"=3");
-            p("\"OutProcessWK.exe\"=3");
+            p(webkit_file + "=3");
             p("\"openssl.dll\"=3");
             p("\"Ekioh.dll\"=3");
             p("\"npwtg_jsobjects.dll\"=4");
@@ -352,10 +407,10 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             {
                 if (!is_custom_config) 
                 {
-                    p("\"Config.xml\"=3");
+                    p("\"Config.xml\"=4");
                 }
-                p("\"Plugin.xml\"=3");
-                p("\"RegEx.xml\"=3");
+                p("\"Plugin.xml\"=4");
+                p("\"RegEx.xml\"=4");
             }
         }
     }
@@ -372,7 +427,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     if (autorun) {
         p("ShortcutsAutorun=0,\"%CE4%\"");
     }
-    if ((!usereruntime) && webkit) {
+    if (!usereruntime) {
         p("CopySystemFiles=0,\"%CE2%\"");
     }
     if(is_persistent)
@@ -380,13 +435,15 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     else {
         p("CopyToInstallDir=0,\"%InstallDir%\"");    
     }    
-    if ((!usereruntime) && webkit) {
-        if (is_persistent) {
+    
+    if ((!usereruntime) && (webkit_mode != 'none')) 
+    {
+        if (is_persistent) 
+        {
             p("CopyWebKitBinPers=0,\"Application\\" + name + "\"");
             p("CopyNPAPIPers=0,\"Application\\" + name + "\\NPAPI\"");
             p("CopyConfigPers=0,\"Application\\" + name + "\\Config\"");
-			p("CopySystemFilesPers=0,\"Application\\" + name + "\"");
-			
+			p("CopySystemFilesPers=0,\"Application\\" + name + "\"");			
         }
         else {
             p("CopyWebKitBin=0,\"%InstallDir%\"");
@@ -394,8 +451,29 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("CopyConfig=0,\"%InstallDir%\\Config\"");
         }
     }
-    if ((!usereruntime) && (!webkit) && include_motocaps) {
-        p("CopyConfig=0,\"%InstallDir%\\Config\"");
+    else if (webkit_mode == 'none')
+    {
+        if (is_persistent) 
+        {
+            p("CopyConfigPers=0,\"Application\\" + name + "\\Config\"");
+            p("CopySystemFilesPers=0,\"Application\\" + name + "\"");
+            
+        }
+        else {
+            p("CopyConfig=0,\"%InstallDir%\\Config\"");
+        }
+    }
+    
+    if ((!usereruntime) && (webkit_mode == 'none') && include_motocaps) 
+    {
+        if (is_persistent) 
+        {
+            p("CopyConfigPers=0,\"Application\\" + name + "\\Config\"");
+        }
+        else
+        {
+            p("CopyConfig=0,\"%InstallDir%\\Config\"");
+        }    
     }
     
     get_destination_dirs(es,is_persistent,name);
@@ -416,14 +494,15 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
         p("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
-        if (webkit) {
+        
+        if (webkit_mode != 'none') {
             p("");
             if (!is_persistent)
             {
                 p("[CopyWebKitBin]");
                 p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
                 p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
-                p("\"OutProcessWK.exe\",\"OutProcessWK.exe\",,0");
+                p(webkit_file + "," + webkit_file + ",,0");
                 p("\"openssl.dll\",\"openssl.dll\",,0");
                 p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
@@ -433,9 +512,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
                 p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
                 p("");
                 p("[CopyConfig]");
-                if (!is_custom_config) {
-                    p("\"Config.xml\",\"Config.xml\",,0");
-                }
+                p("\"Config.xml\",\"Config.xml\",,0");
                 p("\"Plugin.xml\",\"Plugin.xml\",,0");
                 p("\"RegEx.xml\",\"RegEx.xml\",,0");
                 p("");
@@ -447,7 +524,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
                 p("[CopyWebKitBinPers]");
                 p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
                 p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
-                p("\"OutProcessWK.exe\",\"OutProcessWK.exe\",,0");
+                p(webkit_file + "," + webkit_file + ",,0");
                 p("\"openssl.dll\",\"openssl.dll\",,0");
                 p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
@@ -457,9 +534,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
                 p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
                 p("");
                 p("[CopyConfigPers]");
-                if (!is_custom_config) {
-                    p("\"Config.xml\",\"Config.xml\",,0");
-                }
+                p("\"Config.xml\",\"Config.xml\",,0");
                 p("\"Plugin.xml\",\"Plugin.xml\",,0");
                 p("\"RegEx.xml\",\"RegEx.xml\",,0");
                 p("");
@@ -475,21 +550,22 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
                 if (!is_persistent)
                 {
                     p("[CopyConfig]");
-                    if (!is_custom_config) {
-                        p("\"Config.xml\",\"Config.xml\",,0");
-                    }
+                    p("\"Config.xml\",\"Config.xml\",,0");
                     p("\"Plugin.xml\",\"Plugin.xml\",,0");
                     p("\"RegEx.xml\",\"RegEx.xml\",,0");
+                    p("[CopySystemFiles]");
+                    p("\"prtlib.dll\",\"prtlib.dll\",,0");                    
                 }
                 else
                 {
                     p("");
                     p("[CopyConfigPers]");
-                    if (!is_custom_config) {
-                        p("\"Config.xml\",\"Config.xml\",,0");
-                    }
+                    p("\"Config.xml\",\"Config.xml\",,0");
                     p("\"Plugin.xml\",\"Plugin.xml\",,0");
                     p("\"RegEx.xml\",\"RegEx.xml\",,0");
+                    p("");
+                    p("[CopySystemFilesPers]");
+                    p("\"prtlib.dll\",\"prtlib.dll\",,0");                    
                 }
             }
         }
@@ -513,8 +589,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     }
     p("");
     p("[RegKeys]");
-    fill_registry_keys()
-    p("");
+    fill_registry_keys();
+    p("");    
 }
 
 function main() {
@@ -540,7 +616,7 @@ function main() {
     var srcdir = args(4)
     var is_icon = fso.FileExists(srcdir+"/icon/icon.ico");
     var show_shortcut = (args(5) == "0");
-    var include_webkit = (args(6) == "1");
+    var webkit_mode = args(6);
     var usereruntime = (args(8) == "1");
     var include_motocaps = (args(9) == "1");
     var is_custom_config = fso.FileExists(srcdir+"/apps/Config.xml");
@@ -576,7 +652,7 @@ function main() {
     }
 
     pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,
-             is_icon,include_webkit,args(7),usereruntime,include_motocaps,is_custom_config,is_autorun,autorun_path,is_persistent);
+             is_icon,webkit_mode,args(7),usereruntime,include_motocaps,is_custom_config,is_autorun,autorun_path,is_persistent);
 
     output_file.Close();
 }

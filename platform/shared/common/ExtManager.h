@@ -37,7 +37,7 @@ extern "C" void rho_sys_minimize();
 #endif
 #if defined(RHODES_QT_PLATFORM) && defined(OS_MACOSX)
 extern "C" void rho_qt_sys_minimize();
-extern "C" void rho_qt_sys_bring_to_front();
+extern "C" void rho_qt_sys_restore_window();
 #endif
 
 #if defined(WINDOWS_PLATFORM)
@@ -79,6 +79,7 @@ struct IRhoExtension
     virtual void OnAppActivate(bool bActivate, const CRhoExtData& oExtData){}
     virtual void OnWindowChanged(LPVOID lparam){}
     virtual bool onHTMLWndMsg(MSG& oMsg){return false;}
+	virtual void OnLicenseScreen(bool bActivate, const CRhoExtData& oExtData){}
 };
 
 struct IRhoExtManager
@@ -145,6 +146,7 @@ public:
     long OnGeolocationData(int nEnum, void* pData);
     long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo);
     long OnLicenseError(const wchar_t* szUrlBeingNavigatedTo);
+	void OnLicenseScreen(bool bActivate);
     void OnAppActivate(bool bActivate);
     void OnWindowChanged(LPVOID lparam);
 	DWORD getProcessId();
@@ -239,7 +241,7 @@ public:
         rho_sys_bring_to_front();
 #endif
 #if defined(RHODES_QT_PLATFORM) && defined(OS_MACOSX)
-        rho_qt_sys_bring_to_front();
+        rho_qt_sys_restore_window();
 #endif
         //UNSUPPORTED
     }
