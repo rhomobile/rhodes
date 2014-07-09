@@ -49,6 +49,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <VALUE constName="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
                         <DESC></DESC>
                     </VALUE>
+                    <VALUE constName="PLATFORM_WINRT" value ="WINRT">
+                        <DESC></DESC>
+                    </VALUE>
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">

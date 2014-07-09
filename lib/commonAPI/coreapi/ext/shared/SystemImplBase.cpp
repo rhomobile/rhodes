@@ -35,7 +35,7 @@ int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char 
         if ( rho::String_startsWith( zipPath, "/") || rho::String_startsWith( zipPath, "\\") )
             zipPath = zipPath.substr(1);
 
-#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8)
+#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8) && !defined(OS_WINRT)
 		if ( isDir )
 			res = ZipAddFolder( hz, convertToStringW(zipPath).c_str(), convertToStringW(filePath).c_str() );
 		else
@@ -95,6 +95,8 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 #elif defined(WINDOWS_PLATFORM)
 #if defined(OS_WP8)
 	oResult.set( PLATFORM_WP8 );
+#elif defined(OS_WINRT)
+	oResult.set( PLATFORM_WINRT );
 #else
 	oResult.set( PLATFORM_WM_CE );
 #endif
@@ -221,7 +223,7 @@ void CSystemImplBase::zipFile( const rho::String& localPathToZip,  const rho::St
 {
     ZRESULT res;
 
-#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8)
+#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8) && !defined(OS_WINRT)
     rho::StringW strZipFilePathW;
     convertToStringW(localPathToZip.c_str(), strZipFilePathW);
 

@@ -363,7 +363,7 @@ void CAppCallbacksQueue::processUiCreated()
     rho::String startPath = RHOCONF().getString("start_path");
 
     // handle security token validation
-    #ifndef OS_WP8
+    #if !defined(OS_WP8) && !defined(OS_WINRT)
     rho::String invalidSecurityTokenStartPath =  RHOCONF().getString("invalid_security_token_start_path");
 
     if (RHODESAPP().isSecurityTokenNotPassed()) {

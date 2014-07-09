@@ -351,7 +351,7 @@ extern "C" void rho_sys_app_exit()
 	CRhoRuntime::getInstance()->getMainPage()->exitCommand();
 }
 
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_WINRT)
 extern "C" void rho_net_impl_network_indicator(int active)
 {
 	//TODO: rho_net_ping_network
