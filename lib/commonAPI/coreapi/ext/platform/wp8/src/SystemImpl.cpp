@@ -93,6 +93,7 @@ void CSystemImpl::getOsVersion(CMethodResult& oResult)
 {
 	OSVERSIONINFO osv;
 	osv.dwOSVersionInfoSize = sizeof(osv);
+#if defined(OS_WP8)
 	if (!GetVersionEx(&osv))
     {
         LOG(ERROR) + "GetVersionEx failed.";
@@ -107,6 +108,9 @@ void CSystemImpl::getOsVersion(CMethodResult& oResult)
 
         oResult.set(StringW(buf));
     }
+#else
+	//TODO: implement for WinRT
+#endif
 }
 
 void CSystemImpl::getShowKeyboard(rho::apiGenerator::CMethodResult& oResult)
@@ -157,7 +161,11 @@ void CSystemImpl::getPpiY(CMethodResult& oResult)
 
 void CSystemImpl::getPhoneId(CMethodResult& oResult)
 {
+#if defined(OS_WP8)
 	oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
+#else
+	//TODO: implement for WinRT
+#endif
 }
 
 void CSystemImpl::getDeviceName(CMethodResult& oResult)
@@ -200,7 +208,11 @@ void CSystemImpl::getOemInfo(CMethodResult& oResult)
 
 void CSystemImpl::getUuid(CMethodResult& oResult)
 {
+#if defined(OS_WP8)
 	oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
+#else
+	//TODO: implement for WinRT
+#endif
 }
 
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
@@ -248,6 +260,7 @@ void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethod
 
 void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult)
 {
+#if defined(OS_WP8)
 	IIterable<Package^>^ packages = InstallationManager::FindPackagesForCurrentPublisher();
 	IIterator<Package^>^ it = packages->First();
 	do
@@ -259,6 +272,9 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
         
         }
 	}while(it->MoveNext());
+#else
+	//TODO: implement for WinRT
+#endif
 
 	oResult.set(false);
 }
@@ -276,6 +292,7 @@ void CSystemImpl::openUrl( const rho::String& url, CMethodResult& oResult)
 
 void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, CMethodResult& oResult)
 {
+#if defined(OS_WP8)
 	IIterable<Package^>^ packages = InstallationManager::FindPackagesForCurrentPublisher();
 	IIterator<Package^>^ it = packages->First();
 	do
@@ -288,6 +305,9 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
         
         }
 	}while(it->MoveNext());
+#else
+	//TODO: implement for WinRT
+#endif
 }
 
 void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
@@ -347,7 +367,11 @@ void CSystemImpl::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)
 
 void CSystemImpl::getScreenSleeping(rho::apiGenerator::CMethodResult& oResult)
 {
+#if defined(OS_WP8)
 	oResult.set(Windows::Phone::System::SystemProtection::ScreenLocked);
+#else
+	//TODO: implement for WinRT
+#endif
 }
 
 void CSystemImpl::setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult)

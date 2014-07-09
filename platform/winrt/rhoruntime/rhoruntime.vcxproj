@@ -95,31 +95,37 @@
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -136,6 +142,7 @@
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -153,6 +160,7 @@
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -170,6 +178,7 @@
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -187,6 +196,7 @@
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -204,6 +214,7 @@
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -221,6 +232,7 @@
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
