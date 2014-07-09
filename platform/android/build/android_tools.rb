@@ -312,10 +312,18 @@ def  run_emulator(options = {})
 end
 module_function :run_emulator
 
+def device_options(device)
+  if device =~ /^-/
+    return [device]
+  else
+    return ['-s', device]
+  end
+end
+module_function :device_options
+
 def run_application (device_flag, pkgname)
   puts "Starting application.."
-  args = []
-  args << device_flag
+  args = device_options(device_flag)
   args << "shell"
   args << "am"
   args << "start"
@@ -330,7 +338,7 @@ module_function :run_application
 def application_running(device_flag, pkgname)
   pkg = pkgname.gsub(/\./, '\.')
   system("\"#{$adb}\" start-server")
-  `"#{$adb}" #{device_flag} shell ps`.split.each do |line|
+  `"#{$adb}" #{device_options(device_flag).join(' ')} shell ps`.split.each do |line|
     return true if line =~ /#{pkg}/
   end
   false
@@ -338,19 +346,25 @@ end
 module_function :application_running
 
 def load_app_and_run(device_flag, apkfile, pkgname)
-  device = 'started emulator'
+  device_id = nil
+  device = device_flag
   if device_flag == '-d'
     device = 'connected device'
+  elsif device_flag == '-e'
+    device = 'started emulator'
+  else
+    device_id = device_flag
   end
 
   puts "Loading package..."
 
-  argv = [$adb, device_flag, "install", "-r", apkfile]
-  cmd = ""
-  argv.each { |arg| cmd << "#{arg} "}
+  argv = [$adb] + device_options(device_flag)
+  argv << 'install'
+  argv << '-r'
+  argv << apkfile
+
+  cmd = argv.join(' ')
   argv = cmd if RUBY_VERSION =~ /^1\.8/
-  #cmd = "#{$adb} #{device_flag} install -r #{apkfile}"
-  #puts "CMD: #{cmd}"
 
   count = 0
   done = false
@@ -406,16 +420,20 @@ end
 module_function :load_app_and_run
 
 def kill_adb_logcat(device_flag, log_path = $applog_path)
-  puts 'search for adb logcat to kill ========================================'
+  puts 'Look for \'adb logcat\' processes'
 
-  cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+(-[e|d])\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
+  device_opts = device_options device_flag
+  match_str = device_opts.join(' ')
+  
+  #cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+(-(d|e|s\s+\S+))\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
+  cmd_re = /"?#{Regexp.escape($adb)}"?\s+(-(d|e|s\s+\S+))\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
   processes = Jake.get_process_list
   log_shell_pids = []
 
   processes.each do |proc|
     match_data = cmd_re.match proc[:cmd]
     if match_data
-      log_shell_pids << proc[:pid] unless match_data[1] == device_flag
+      log_shell_pids << proc[:pid] unless match_data[1] == match_str
     end
   end
 
@@ -473,7 +491,10 @@ module_function :kill_adb_and_emulator
 
 def logcat(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
-    cmd_re = Regexp.new "\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>\s+\"?#{log_path}\"?"
+    device_opts = device_options device_flag
+    device_re = device_opts.join('\s+')
+  
+    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
     pids = Jake.get_process_list
     log_pids = []
 
@@ -484,7 +505,7 @@ def logcat(device_flag = '-e', log_path = $applog_path)
     if log_pids.empty?
       rm_rf log_path if File.exist?(log_path)
       puts 'Starting new logcat'
-      Thread.new { Jake.run($adb, [device_flag, 'logcat', '>', log_path], nil, true) }
+      Thread.new { Jake.run($adb, device_opts + ['logcat', '>', log_path], nil, true) }
     end
   end
 end
@@ -492,7 +513,10 @@ module_function :logcat
 
 def logcat_process(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
-    cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
+    device_opts = device_options device_flag
+    device_re = device_opts.join('\s+')
+  
+    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
     pids = Jake.get_process_list
     log_pids = []
 
@@ -502,7 +526,7 @@ def logcat_process(device_flag = '-e', log_path = $applog_path)
 
     if log_pids.empty?
       puts 'Starting new logcat process'
-      Thread.new { system("\"#{$adb}\" #{device_flag} logcat > \"#{log_path}\"") }
+      Thread.new { system("\"#{$adb}\" #{device_opts.join(' ')} logcat > \"#{log_path}\"") }
     end
   end
 end
@@ -510,7 +534,7 @@ module_function :logcat_process
 
 def logclear(device_flag = '-e')
   return if(device_flag == '-e' and !is_emulator_running)
-  Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true)
+  Jake.run($adb, device_options(device_flag) + ['logcat', '-c'], nil, true)
 end
 module_function :logclear
 
