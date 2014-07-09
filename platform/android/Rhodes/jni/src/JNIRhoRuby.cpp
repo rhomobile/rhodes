@@ -280,7 +280,7 @@ jobject rho_cast_helper<jobject, VALUE>::operator()(JNIEnv *env, VALUE value)
         value = rb_funcall(value, rb_intern("to_s"), 0);
     case RUBY_T_STRING:
         RAWTRACE("Convert to String object");
-        return env->NewStringUTF(RSTRING_PTR(value));
+        return rho_cast<jstring>((const char*)RSTRING_PTR(value));
     case RUBY_T_ARRAY:
         RAWTRACE("Convert to Collection object");
         return convertRubyArrayToJavaCollection(value);
@@ -368,7 +368,7 @@ jstring rho_cast_helper<jstring, VALUE>::operator()(JNIEnv *env, VALUE value)
     if (NIL_P(value))
         return 0;
 
-    return env->NewStringUTF(RSTRING_PTR(value));
+    return rho_cast_helper<jstring,const char*>()(env,(const char*)RSTRING_PTR(value));
 }
 
 jobjectArray rho_cast_helper<jobjectArray, VALUE>::operator()(JNIEnv *env, VALUE value)

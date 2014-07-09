@@ -209,7 +209,7 @@ struct rho_cast_helper<jstring, char [N]>
 template <>
 struct rho_cast_helper<jstring, std::string>
 {
-    jstring operator()(JNIEnv *env, std::string const &s) { return rho_cast_helper<jstring, char const *>()(env, s.c_str());}
+    jstring operator()(JNIEnv *env, std::string const &s);
 };
 
 template <>

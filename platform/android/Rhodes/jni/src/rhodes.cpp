@@ -227,23 +227,40 @@ jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char con
     if ( s != 0 )
     {
       int len = strlen(s);
-      jbytearray barr = env->NewByteArray(len);
+      jbyteArray barr = env->NewByteArray(len);
       env->SetByteArrayRegion(barr, 0, len, (jbyte const *)s);
 
-      //call Java.String ctor
+      jclass& stringCls = getJNIClass(RHODES_JAVA_CLASS_STRING);
 
-      env->ReleaseByteArray(barr);
+      jmethodID stringCtor = getJNIClassMethod(env, stringCls, "<init>", "([B)V");
+
+      ret = (jstring)env->NewObject(stringCls, stringCtor, barr);
+
+      env->DeleteLocalRef(barr);
     }
 
     return ret;
-
-//    return s ? env->NewStringUTF(s) : (jstring)0;
 }
 
-jstring rho_cast_helper<jstring, const std::string&>::operator()(JNIEnv *env, const std::string& s)
+jstring rho_cast_helper<jstring, std::string>::operator()(JNIEnv *env, const std::string& s)
 {
-    RAWTRACE("rho_cast<jstring, const std::string&>: %s" , s.c_str());
-    
+    RAWTRACE1("rho_cast<jstring, const std::string&>: %s" , s.c_str());
+
+    jstring ret = (jstring)0;
+
+    int len = s.length();
+    jbyteArray barr = env->NewByteArray(len);
+    env->SetByteArrayRegion(barr, 0, len, (jbyte const *)s.c_str());
+
+    jclass& stringCls = getJNIClass(RHODES_JAVA_CLASS_STRING);
+
+    jmethodID stringCtor = getJNIClassMethod(env, stringCls, "<init>", "([B)V");
+
+    ret = (jstring)env->NewObject(stringCls, stringCtor, barr);
+
+    env->DeleteLocalRef(barr);
+
+    return ret;    
 }
 
 jclass RhoJniConvertor::clsBoolean;

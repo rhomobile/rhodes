@@ -71,7 +71,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getInvalidSec
         message = conf_message;
     }
     
-    jstring objStr = env->NewStringUTF(message);
+    jstring objStr = rho_cast<jstring>(env,message);
     return objStr;
     
     
