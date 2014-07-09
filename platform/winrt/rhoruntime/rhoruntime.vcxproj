@@ -255,6 +255,9 @@
     <ProjectReference Include="..\..\..\lib\commonAPI\coreapi\ext\platform\winrt\Coreapi.vcxproj">
       <Project>{39b99c39-3c85-411a-a728-f44aa6c75336}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\lib\commonAPI\rubyvm_stub\ext\platform\winrt\RubyvmStub.vcxproj">
+      <Project>{2dd96506-8cf2-47e5-826b-e7576f8929ef}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\curl\curl.vcxproj">
       <Project>{a9d10818-2510-4896-a37b-42ecf367dea7}</Project>
     </ProjectReference>

@@ -8,6 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rhodes", "rhodes\rhodes.csp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhoruntime", "rhoruntime\rhoruntime.vcxproj", "{02AD685C-6EF6-4049-A2D7-9CACD64038FC}"
 	ProjectSection(ProjectDependencies) = postProject
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF} = {2DD96506-8CF2-47E5-826B-E7576F8929EF}
 		{6AED860C-7D5C-4B02-96E1-C32AE1206CC2} = {6AED860C-7D5C-4B02-96E1-C32AE1206CC2}
 		{A9D10818-2510-4896-A37B-42ECF367DEA7} = {A9D10818-2510-4896-A37B-42ECF367DEA7}
 		{39B99C39-3C85-411A-A728-F44AA6C75336} = {39B99C39-3C85-411A-A728-F44AA6C75336}
@@ -37,6 +38,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Coreapi", "..\..\lib\commonAPI\coreapi\ext\platform\winrt\Coreapi.vcxproj", "{39B99C39-3C85-411A-A728-F44AA6C75336}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winrtsock", "winrtsock\winrtsock.vcxproj", "{BF4854E9-C02B-49FE-B9DD-D6373D3BB0EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RubyvmStub", "..\..\lib\commonAPI\rubyvm_stub\ext\platform\winrt\RubyvmStub.vcxproj", "{2DD96506-8CF2-47E5-826B-E7576F8929EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -257,6 +260,28 @@ Global
 		{BF4854E9-C02B-49FE-B9DD-D6373D3BB0EF}.Release|x64.Build.0 = Release|x64
 		{BF4854E9-C02B-49FE-B9DD-D6373D3BB0EF}.Release|x86.ActiveCfg = Release|Win32
 		{BF4854E9-C02B-49FE-B9DD-D6373D3BB0EF}.Release|x86.Build.0 = Release|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|ARM.Build.0 = Debug|ARM
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|Win32.Build.0 = Debug|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|x64.ActiveCfg = Debug|x64
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|x64.Build.0 = Debug|x64
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|x86.ActiveCfg = Debug|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Debug|x86.Build.0 = Debug|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|Any CPU.ActiveCfg = Release|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|ARM.ActiveCfg = Release|ARM
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|ARM.Build.0 = Release|ARM
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|Win32.ActiveCfg = Release|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|Win32.Build.0 = Release|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|x64.ActiveCfg = Release|x64
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|x64.Build.0 = Release|x64
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|x86.ActiveCfg = Release|Win32
+		{2DD96506-8CF2-47E5-826B-E7576F8929EF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
