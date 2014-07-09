@@ -2491,7 +2491,7 @@ namespace "config" do
     $minify_types << "js" if minify_js or obfuscate_js
     $minify_types << "css" if minify_css or obfuscate_css
 
-    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.8.jar')
+    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.8-rhomodified.jar')
 
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
@@ -3573,8 +3573,30 @@ namespace "build" do
       cmd = "java -jar #{$minifier} -o \"x$:x\""
       
       files_to_minify.each { |f| cmd += " #{f}" }
-      
-      Jake.run3(cmd)
+
+      require 'open3'
+
+      status = nil
+      error = nil
+
+      begin
+        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+          output = stdout.read
+          error = stderr.read
+          status = wait_thr.value
+        end
+      rescue Exception => e
+        puts "Minify error: #{e.inspect}"
+        error = e.inspect
+      end
+
+      puts "Minification done: #{status}"
+
+      if !status || !status.exitstatus.zero?
+        puts "WARNING: Minification error!"
+        error = output if error.nil?
+        BuildOutput.warning(['Minification errors occured. Minificator stderr output: ' + error], 'Minification error')
+      end     
     end
 
     def minify_inplace(filename,type)
