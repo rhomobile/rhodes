@@ -132,7 +132,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -150,7 +149,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -168,7 +166,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -186,7 +183,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -204,7 +200,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -222,7 +217,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -256,6 +250,26 @@
     <ClCompile Include="..\..\wp8\rhoruntime\GeoLocationImpl.cpp" />
     <ClCompile Include="..\..\wp8\rhoruntime\WebViewImpl.cpp" />
     <ClCompile Include="..\..\wp8\rhoruntime\rhoruntime.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\lib\commonAPI\coreapi\ext\platform\winrt\Coreapi.vcxproj">
+      <Project>{39b99c39-3c85-411a-a728-f44aa6c75336}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\curl\curl.vcxproj">
+      <Project>{a9d10818-2510-4896-a37b-42ecf367dea7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\rholib\rholib.vcxproj">
+      <Project>{6aed860c-7d5c-4b02-96e1-c32ae1206cc2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\sqlite3\sqlite3.vcxproj">
+      <Project>{5fd7004d-9e31-4e7b-88b9-47fd97e8e592}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\syncengine\syncengine.vcxproj">
+      <Project>{5987dfb2-d8a8-4688-8683-b40848e9f9f7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\winrtsock\winrtsock.vcxproj">
+      <Project>{bf4854e9-c02b-49fe-b9dd-d6373d3bb0ef}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
