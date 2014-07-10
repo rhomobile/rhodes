@@ -158,6 +158,8 @@ public class YUICompressor {
                     if (type.equalsIgnoreCase("js")) {
 
                             final String localFilename = inputFilename;
+                      
+                        try {
 
                             JavaScriptCompressor compressor = new JavaScriptCompressor(in, new ErrorReporter() {
 
@@ -198,7 +200,6 @@ public class YUICompressor {
                                 out = new OutputStreamWriter(new FileOutputStream(outputFilename), charset);
                             }
 
-                        try {
                             compressor.compress(out, linebreakpos, munge, verbose,
                                     preserveAllSemiColons, disableOptimizations);
 
@@ -206,7 +207,7 @@ public class YUICompressor {
                             hadErrors = true;
                             errorOccured = true;
                             System.err.println("[YUI] Error minifying " + inputFilename);
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
 
                     } else if (type.equalsIgnoreCase("css")) {
@@ -229,7 +230,7 @@ public class YUICompressor {
                             hadErrors = true;
                             errorOccured = true;
                             System.err.println("[YUI] Error minifying " + inputFilename);
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
                     }
 
@@ -262,7 +263,9 @@ public class YUICompressor {
 
                       try {
                         if (errorOccured) {
-                          Files.delete(Paths.get(outputFilename));
+                          if (new File(outputFilename).exists()) {
+                            Files.delete(Paths.get(outputFilename));
+                          }
                         } else {
                           Files.move(Paths.get(outputFilename),Paths.get(preservedOutputFilename),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                         }
