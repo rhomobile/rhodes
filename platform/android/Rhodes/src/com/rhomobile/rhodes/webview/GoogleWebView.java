@@ -199,6 +199,8 @@ public class GoogleWebView implements IRhoWebView {
     @Override
     public void setZoom(double scale) {
         mWebView.setInitialScale((int)(scale * 100));
+        String webUrl = mWebView.getUrl();
+        mWebView.loadUrl(webUrl);
     }
 
     @Override
