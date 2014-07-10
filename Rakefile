@@ -3595,7 +3595,7 @@ namespace "build" do
       if !status || !status.exitstatus.zero?
         puts "WARNING: Minification error!"
         error = output if error.nil?
-        BuildOutput.warning(['Minification errors occured. Minificator stderr output: ' + error], 'Minification error')
+        BuildOutput.warning(["Minification errors occured. Minificator stderr output: \n" + error], 'Minification error')
       end     
     end
 
