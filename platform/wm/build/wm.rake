@@ -1460,7 +1460,6 @@ namespace "device" do
         'bin/tmp/rho/apps/rhofilelist.txt',
         'bin/tmp/rho/apps/app',
         'bin/tmp/rho/apps/app_manifest.txt',
-        'bin/tmp/rho/apps/public/api',
         'bin/tmp/rho/apps/public/public.txt'
       ]
 
