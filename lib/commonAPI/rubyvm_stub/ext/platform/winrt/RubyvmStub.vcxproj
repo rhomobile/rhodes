@@ -144,7 +144,7 @@
       <PreprocessorDefinitions>_LIB;_WINRT_LIB;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <SDLCheck>false</SDLCheck>
@@ -160,7 +160,7 @@
       <PreprocessorDefinitions>_LIB;_WINRT_LIB;NDEBUG;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <SDLCheck>false</SDLCheck>
@@ -176,7 +176,7 @@
       <PreprocessorDefinitions>_LIB;_WINRT_LIB;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <SDLCheck>false</SDLCheck>
@@ -192,7 +192,7 @@
       <PreprocessorDefinitions>_LIB;_WINRT_LIB;NDEBUG;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <SDLCheck>false</SDLCheck>
@@ -208,7 +208,7 @@
       <PreprocessorDefinitions>_LIB;_WINRT_LIB;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <SDLCheck>false</SDLCheck>
@@ -224,7 +224,7 @@
       <PreprocessorDefinitions>_LIB;_WINRT_LIB;NDEBUG;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\winrt\winrtsock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <SDLCheck>false</SDLCheck>

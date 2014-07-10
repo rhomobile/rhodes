@@ -475,6 +475,19 @@ WaitForSingleObjectWP8(
 	return WaitForSingleObjectEx(hHandle, dwMilliseconds, 0);
 }
 
+DWORD
+WINAPI
+WaitForMultipleObjectsWP8(
+    _In_ DWORD nCount,
+    _In_reads_(nCount) CONST HANDLE *lpHandles,
+    _In_ BOOL bWaitAll,
+    _In_ DWORD dwMilliseconds
+    )
+{
+	// TODO: implement for WinRT
+	return 0;
+}
+
 BOOL WINAPI GetExitCodeThreadWP8(
   _In_   HANDLE hThread,
   _Out_  LPDWORD lpExitCode
