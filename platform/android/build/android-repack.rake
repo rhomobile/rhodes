@@ -58,6 +58,10 @@ namespace 'device' do
 
     def self.make_app_bundle
       $use_prebuild_data = true
+      $skip_build_rhodes_main = true
+      $skip_build_extensions = true
+      $skip_build_xmls = true
+
       Rake::Task['build:android:rhobundle'].execute
       return $appassets
     end
