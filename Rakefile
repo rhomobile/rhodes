@@ -831,7 +831,7 @@ MAX_BUFFER_SIZE = 1024*1024
 
 def fill_with_zeroes(file, size)
   buffer = "\0" * MAX_BUFFER_SIZE
-  to_write = size
+  to_write = [size, 0].max
   while to_write > MAX_BUFFER_SIZE
     file.write(buffer)
     to_write -= buffer.length
@@ -854,7 +854,9 @@ def http_get(url, proxy, save_to)
     http = Net::HTTP.new(uri.host, uri.port)
   end
 
-  f_name = File.join(save_to,uri.path[%r{[^/]+\z}])
+  server_file_name = uri.path[%r{[^/]+\z}]
+
+  f_name = File.join(save_to, server_file_name)
 
   if uri.scheme == "https"  # enable SSL/TLS
     http.use_ssl = true
@@ -897,7 +899,9 @@ def http_get(url, proxy, save_to)
     }
     result = res.body
   else
-    f = File.open(f_name, "wb")
+    temp_name = File.join(save_to,File.basename(server_file_name,'.*')+'.tmp')
+    f = File.open(temp_name, "wb")
+
     fill_with_zeroes(f, header_resp.content_length)
     done = 0
     begin
@@ -945,6 +949,7 @@ def http_get(url, proxy, save_to)
     ensure
       f.close()
     end
+    FileUtils.mv(temp_name, f_name)
     yield(done, header_resp.content_length, "Download finished") if block_given?
   end
 
@@ -1293,7 +1298,7 @@ def deploy_build(platform)
       when /\.apk/
         detected_bin = fname
         detected_platform = 'android'
-      when /\.msi/
+      when /\.(exe|msi)/
         detected_bin = fname
         detected_platform = 'win32'
       when /log\.txt/i
@@ -1329,6 +1334,8 @@ def deploy_build(platform)
 
   remaining = (files - [detected_bin, log_file])
 
+  detected_bin = File.join(dest, File.basename(detected_bin))
+
   unless remaining.empty?
     misc = File.join(dest, 'misc')
 
@@ -1349,7 +1356,7 @@ def deploy_build(platform)
 
   put_message_with_timestamp("Done, application files deployed to #{dest}")
 
-  return unpacked_file_list
+  return unpacked_file_list, detected_platform, detected_bin
 end
 
 def get_build(build_id, show_info = false)
@@ -1476,41 +1483,22 @@ def get_iphone_options()
   options
 end
 
-def run_binary_on(platform, file_list, devsim)
-  case platform
-    when /android/
-      to_run = file_list.find{|f| /.apk/ =~ f}
-      platform = 'android'
-
-    when /iphone/
-      to_run = file_list.find{|f| /.ipa/ =~ f}
-      platform = 'iphone'
-
-    when /wm.+/
-      to_run = file_list.find{|f| /.cab/ =~ f}
-      platform = 'wm'
-
-    else
-      to_run = nil
-  end
-
-  if !to_run.nil?
-    Rake::Task["run:#{platform}:#{devsim}:package"].invoke(to_run)
+def run_binary_on(platform, package, devsim)
+  if !package.nil?
+    Rake::Task["run:#{platform}:#{devsim}:package"].invoke(package)
   else
     BuildOutput.error( "Could not find executable file for #{platform} project", 'No file')
   end
 end
 
-def get_build_and_run(build_id, platform, run_target)
+def get_build_and_run(build_id, run_target)
   is_ok, res, build_platform = get_build(build_id)
   if is_ok
-    unless build_platform.include?(platform)
-      BuildOutput.error( "Build platform missmatch", 'build error')
-    end
-    files = deploy_build(build_platform)
+    files, platform, package = deploy_build(build_platform)
+    puts files, platform, package
     unless files.empty?
       if run_target
-        run_binary_on(platform, files, run_target)
+        run_binary_on(platform, package, run_target)
       end
     end
   else
@@ -1537,7 +1525,7 @@ def build_deploy_run(target, run_target = nil)
 
   b_id = do_platform_build( platform, $platform_list, platform == 'iphone', options, data)
 
-  get_build_and_run(b_id, platform, run_target)
+  get_build_and_run(b_id, run_target)
 end
 
 
