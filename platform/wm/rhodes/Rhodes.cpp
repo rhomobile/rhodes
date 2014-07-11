@@ -91,7 +91,7 @@ extern "C" {
 	void rho_wmimpl_set_startpage(const char* path);
 	const char* rho_wmimpl_get_logpath();
 	const char* rho_wmimpl_get_logurl();
-	const char* rho_wmimpl_get_httpproxy();
+	const char* rho_wmimpl_get_httpproxy();  
 	bool rho_wmimpl_get_fullscreen();
 	void rho_wmimpl_set_is_version2(const char* path);
 	bool rho_wmimpl_get_is_version2();
