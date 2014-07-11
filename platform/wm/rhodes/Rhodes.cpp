@@ -91,6 +91,7 @@ extern "C" {
 	void rho_wmimpl_set_startpage(const char* path);
 	const char* rho_wmimpl_get_logpath();
 	const char* rho_wmimpl_get_logurl();
+	const char* rho_wmimpl_get_httpproxy();
 	bool rho_wmimpl_get_fullscreen();
 	void rho_wmimpl_set_is_version2(const char* path);
 	bool rho_wmimpl_get_is_version2();
@@ -436,6 +437,12 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         RHOCONF().setBool("full_screen", true, false);
     if (rho_wmimpl_get_logmemperiod())
         LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
+    //SR EMBPD00121468
+    //Network api via proxy is not working with proxy enable using config.xml 
+    //Sabir: The values were getting set from rhoconfig.txt from function rho_logconf_Init
+    //fix: we have to override http_proxy_host using config.xml value
+    rho::String szHttpProxy =  rho_wmimpl_get_httpproxy();
+    parseHttpProxyURI(szHttpProxy);
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
