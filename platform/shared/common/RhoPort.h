@@ -201,7 +201,7 @@ void WINAPI TlsShutdownWP8();
 
 VOID WINAPI SleepWP8(_In_ DWORD dwMilliseconds);
 
-#if !defined(OS_WINRT)
+//#if !defined(OS_WINRT)
 int
 wsprintfA(
     _Out_ LPSTR,
@@ -889,7 +889,7 @@ SetFileTime(
     _In_opt_ CONST FILETIME * lpLastAccessTime,
     _In_opt_ CONST FILETIME * lpLastWriteTime
     );
-#endif // OS_WINRT
+//#endif // OS_WINRT
 
 #ifdef __cplusplus
 }
