@@ -101,8 +101,15 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <ProjectReference Include="..\rhoruntime\rhoruntime.vcxproj">
+      <Project>{02ad685c-6ef6-4049-a2d7-9cacd64038fc}</Project>
+      <Name>rhoruntime</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\wp8\rhodes\MainPageWrapper.cs">
+      <Link>MainPageWrapper.cs</Link>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
