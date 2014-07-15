@@ -7,7 +7,7 @@ using namespace std;
 
 unsigned long int timevalTomiliseconds(const timeval* time)
 {
-    return ((time->tv_sec * 1000) + (time->tv_usec / 1000));
+    return time ? ((time->tv_sec * 1000) + (time->tv_usec / 1000)) : 0;
 }
 
 int __stdcall select(int /*nfds*/, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, const struct timeval *timeout)
@@ -27,9 +27,21 @@ int __stdcall select(int /*nfds*/, fd_set *readfds, fd_set *writefds, fd_set *ex
     //Probably should memcpy these based on fd_count
     //just in case FD_SETSIZE is defined different from when
     //we compile it
-    fd_set local_readfds = *readfds;
-    fd_set local_writefds = *writefds;
-    fd_set local_exceptfds = *exceptfds;
+    fd_set local_readfds;
+    fd_set local_writefds;
+    fd_set local_exceptfds;
+    if (readfds)
+		local_readfds = *readfds;
+	else
+		memchr(&local_readfds, 0, sizeof(local_readfds));
+    if (writefds)
+		local_writefds = *writefds;
+	else
+		memchr(&local_writefds, 0, sizeof(local_writefds));
+    if (exceptfds)
+		local_exceptfds = *exceptfds;
+	else
+		memchr(&local_exceptfds, 0, sizeof(local_exceptfds));
 
     while (!finished)
     {
