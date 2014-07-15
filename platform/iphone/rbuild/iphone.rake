@@ -2830,7 +2830,13 @@ namespace "device" do
 
         prov_file_path = File.join($app_path, 'production/embedded.mobileprovision')
 
+        entitlements = nil
+
         if !$app_config["iphone"].nil?
+          entitlements = $app_config["iphone"]["entitlements"]
+          if entitlements == ""
+            entitlements = nil
+          end
           if !$app_config["iphone"]["production"].nil?
             if !$app_config["iphone"]["production"]["mobileprovision_file"].nil?
               test_name = $app_config["iphone"]["production"]["mobileprovision_file"]
@@ -2851,7 +2857,50 @@ namespace "device" do
         cp prov_file_path, File.join(parent_app_bin, "Payload/"+appname+".app/embedded.mobileprovision")
 
         #/usr/bin/codesign -f -s "iPhone Distribution: Certificate Name" --resource-rules "Payload/Application.app/ResourceRules.plist" "Payload/Application.app"
-        Jake.run('/usr/bin/codesign', ['-f', '-s', '"'+$signidentity+'"', '-i', '"'+$app_config["iphone"]["BundleIdentifier"]+'"', 'Payload/'+appname+'.app'])
+
+        if entitlements == nil
+           if $app_config['capabilities'].index('push')
+              #make fix file
+              tmp_ent_dir = File.join($app_path, "/project/iphone/push_fix_entitlements")
+              rm_rf tmp_ent_dir
+              mkdir_p tmp_ent_dir
+              entitlements = File.join(tmp_ent_dir, "Entitlements.plist")
+
+              File.open(entitlements, 'w') do |f|
+                  f.puts "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                  f.puts "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
+                  f.puts "<plist version=\"1.0\">"
+                  f.puts "<dict>"
+                  f.puts "<key>aps-environment</key>"
+                  if $configuration == "Distribution"
+                    f.puts "<string>production</string>"
+                  else
+                    f.puts "<string>development</string>"
+                  end
+                  f.puts "<key>get-task-allow</key>"
+	                f.puts "<true/>"
+                  f.puts "</dict>"
+                  f.puts "</plist>"
+              end
+
+
+
+           end
+        end
+
+        if entitlements != nil
+            tst_path = File.join($app_path, entitlements)
+           if File.exists? tst_path
+              entitlements = tst_path
+           end
+        end
+
+
+        if entitlements != nil
+            Jake.run('/usr/bin/codesign', ['-f', '-s', '"'+$signidentity+'"', '-i', '"'+$app_config["iphone"]["BundleIdentifier"]+'"', '--entitlements="'+entitlements+'"', 'Payload/'+appname+'.app'])
+        else
+            Jake.run('/usr/bin/codesign', ['-f', '-s', '"'+$signidentity+'"', '-i', '"'+$app_config["iphone"]["BundleIdentifier"]+'"', 'Payload/'+appname+'.app'])
+        end
         #Jake.run('/usr/bin/codesign', ['-f', '-s', '"'+$signidentity+'"', '--resource-rules', 'Payload/prebuild.app/ResourceRules.plist', 'Payload/prebuild.app'])
 
         unless $?.success?
