@@ -28,7 +28,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </ALIASES>
 
             <METHOD name="create" hasCallback="optional" runInThread="ui">
-                <DESC>Removes the current tabbar / toolbar and replaces it with this one. Callback will be called when tab is switched.</DESC>
+                <DESC>Removes the current tabbar / toolbar and replaces it with this one. Callback will be called when tab is switched.  Whilst the actual number of tabs you can create will depend on the memory available on your device there is an absolute upper limit of 30 tabs in any one application.</DESC>
                 <PARAMS>
                     <PARAM name="tabElements" type="ARRAY">
                         <DESC>Array of Tab elements.</DESC>
