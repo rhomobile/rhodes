@@ -2066,7 +2066,11 @@ def get_ssl_cert_bundle_store(rhodes_home, proxy)
       http = Net::HTTP.new(url.host, url.port)
     end
 
-    http.use_ssl = true if url.scheme == "https"
+    if url.scheme == "https"  # enable SSL/TLS
+      http.use_ssl = true
+      # there is no way to verify connection here :/
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
 
     http.start do |http|
       resp = http.get(url.path)
