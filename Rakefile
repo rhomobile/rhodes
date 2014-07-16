@@ -831,7 +831,7 @@ MAX_BUFFER_SIZE = 1024*1024
 
 def fill_with_zeroes(file, size)
   buffer = "\0" * MAX_BUFFER_SIZE
-  to_write = size
+  to_write = [size, 0].max
   while to_write > MAX_BUFFER_SIZE
     file.write(buffer)
     to_write -= buffer.length
@@ -854,7 +854,9 @@ def http_get(url, proxy, save_to)
     http = Net::HTTP.new(uri.host, uri.port)
   end
 
-  f_name = File.join(save_to,uri.path[%r{[^/]+\z}])
+  server_file_name = uri.path[%r{[^/]+\z}]
+
+  f_name = File.join(save_to, server_file_name)
 
   if uri.scheme == "https"  # enable SSL/TLS
     http.use_ssl = true
@@ -897,7 +899,9 @@ def http_get(url, proxy, save_to)
     }
     result = res.body
   else
-    f = File.open(f_name, "wb")
+    temp_name = File.join(save_to,File.basename(server_file_name,'.*')+'.tmp')
+    f = File.open(temp_name, "wb")
+
     fill_with_zeroes(f, header_resp.content_length)
     done = 0
     begin
@@ -945,6 +949,7 @@ def http_get(url, proxy, save_to)
     ensure
       f.close()
     end
+    FileUtils.mv(temp_name, f_name)
     yield(done, header_resp.content_length, "Download finished") if block_given?
   end
 
@@ -1293,7 +1298,7 @@ def deploy_build(platform)
       when /\.apk/
         detected_bin = fname
         detected_platform = 'android'
-      when /\.msi/
+      when /\.(exe|msi)/
         detected_bin = fname
         detected_platform = 'win32'
       when /log\.txt/i

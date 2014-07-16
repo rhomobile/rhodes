@@ -197,6 +197,7 @@ def cc_def_args
     args << "-Wextra"
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
+    args << '-Wno-unused-parameter'
     args << "-mandroid"
     args << "-DANDROID"
     args << "-DOS_ANDROID"
