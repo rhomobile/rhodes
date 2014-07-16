@@ -1,6 +1,12 @@
 
-class CabBuilder
+require File.join(File.dirname(__FILE__), 'CabBuilderBase.rb')
 
+class CabBuilderPersistent
+
+  def initialize(app_name, srcdir, hidden_app, wk_data_dir, run_on_startup, additional_dlls_persistent_paths, regs_dlls)
+    super(app_name, srcdir, hidden_app, wk_data_dir, run_on_startup, additional_dlls_persistent_paths, regs_dlls)
+  end
+=begin
   @@inf_file = nil  
   
   def saveInfFile(filepath)
@@ -88,5 +94,6 @@ class CabBuilder
    
   def fillRegKeys
   end
+=end
      
 end
