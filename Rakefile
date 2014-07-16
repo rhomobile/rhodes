@@ -2051,6 +2051,42 @@ def find_proxy()
   proxy
 end
 
+def get_ssl_cert_bundle_store(rhodes_home, proxy)
+  crt_file = File.join(rhodes_home, "crt.pem")
+
+  #lets get that file once a month
+  if !(File.exists?(crt_file)) || ((Time.now - File.mtime(crt_file)).to_i > 30 * 24 * 60 * 60)
+    url = URI.parse("https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt")
+
+    if !(proxy.nil? || proxy.empty?)
+      proxy_uri = URI.parse(proxy)
+      http = Net::HTTP.new(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password )
+    else
+      http = Net::HTTP.new(uri.host, uri.port)
+    end
+
+    http.use_ssl = true if uri.scheme == "https"
+
+    http.start do |http|
+      resp = http.get(url.path)
+      if resp.code == "200"
+        open(crt_file, "wb") do |file|
+          file.write(resp.body)
+        end
+        puts "done"
+      else
+        abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
+      end
+    end
+  end
+
+  cert_store = OpenSSL::X509::Store.new
+  cert_store.set_default_paths
+  cert_store.add_file crt_file
+
+  return cert_store
+end
+
 namespace "config" do
   task :load do
     buildyml = 'rhobuild.yml'
@@ -2107,6 +2143,15 @@ namespace "config" do
 
     if !($proxy.nil? || $proxy.empty?)
       puts "Using proxy: #{$proxy}"
+    end
+
+
+    # I hate that way of dealing with ssl, but we need to get working
+    # set of certificates from somewhere for windows
+    # so lets solve it less hacky, get mozilla's bundle of certs converted by cURL team
+    # and use it for accessing via rest client
+    if (/cygwin|mswin|mingw|bccwin/ =~ RUBY_PLATFORM) != nil
+      Rhohub.cert_store = get_ssl_cert_bundle_store($rhodes_home, $proxy)
     end
 
     $re_app = ($app_config["app_type"] == 'rhoelements') || !($app_config['capabilities'].nil? || $app_config['capabilities'].index('shared_runtime').nil?)
