@@ -2056,16 +2056,17 @@ def get_ssl_cert_bundle_store(rhodes_home, proxy)
 
   #lets get that file once a month
   if !(File.exists?(crt_file)) || ((Time.now - File.mtime(crt_file)).to_i > 30 * 24 * 60 * 60)
+    puts "getting cert bundle"
     url = URI.parse("https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt")
 
     if !(proxy.nil? || proxy.empty?)
       proxy_uri = URI.parse(proxy)
-      http = Net::HTTP.new(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password )
+      http = Net::HTTP.new(url.host, url.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password )
     else
-      http = Net::HTTP.new(uri.host, uri.port)
+      http = Net::HTTP.new(url.host, url.port)
     end
 
-    http.use_ssl = true if uri.scheme == "https"
+    http.use_ssl = true if url.scheme == "https"
 
     http.start do |http|
       resp = http.get(url.path)
@@ -2073,7 +2074,6 @@ def get_ssl_cert_bundle_store(rhodes_home, proxy)
         open(crt_file, "wb") do |file|
           file.write(resp.body)
         end
-        puts "done"
       else
         abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
       end
