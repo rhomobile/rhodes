@@ -2528,7 +2528,7 @@ namespace "config" do
     $minify_types << "js" if minify_js or obfuscate_js
     $minify_types << "css" if minify_css or obfuscate_css
 
-    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
+    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.8-rhomodified.jar')
 
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
@@ -3584,22 +3584,56 @@ namespace "build" do
 
     def minify_js_and_css(dir,types)
       pattern = types.join(',')
+      
+      files_to_minify = []
+      
       Dir.glob( File.join(dir,'**',"*.{#{pattern}}") ) do |f|
         if File.file?(f) and !File.fnmatch("*.min.*",f)
           next if is_exclude_folder($obfuscate_exclude, f )
           next if is_exclude_folder( $minify_exclude, f )
 
           ext = File.extname(f)
-          type = nil
-          if ext == '.js' then
-            type = 'js'
-          elsif ext == '.css' then
-            type = 'css'
+          
+          if (ext == '.js') or (ext == '.css') then
+            files_to_minify << f
           end
-
-          minify_inplace(f,type) if type
+          
         end
       end
+      
+      minify_inplace_batch(files_to_minify) if files_to_minify.length>0
+    end
+    
+    def minify_inplace_batch(files_to_minify)
+      puts "minifying file list: #{files_to_minify}"
+
+      cmd = "java -jar #{$minifier} -o \"x$:x\""
+      
+      files_to_minify.each { |f| cmd += " #{f}" }
+
+      require 'open3'
+
+      status = nil
+      error = nil
+
+      begin
+        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+          output = stdout.read
+          error = stderr.read
+          status = wait_thr.value
+        end
+      rescue Exception => e
+        puts "Minify error: #{e.inspect}"
+        error = e.inspect
+      end
+
+      puts "Minification done: #{status}"
+
+      if !status || !status.exitstatus.zero?
+        puts "WARNING: Minification error!"
+        error = output if error.nil?
+        BuildOutput.warning(["Minification errors occured. Minificator stderr output: \n" + error], 'Minification error')
+      end     
     end
 
     def minify_inplace(filename,type)
