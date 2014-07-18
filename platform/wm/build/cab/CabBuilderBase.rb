@@ -11,49 +11,81 @@ class CabBuilderBase
   @@dst_disk_names = nil #
   @@dst_disk_files = nil #
   
-  def initialize(app_name, srcdir, hidden_app, wk_data_dir, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
+  @@settings = 
+   [{:sdk => 'wm6',   :path => 'Windows Mobile 6 Professional SDK (ARMV4I)', :minver => 'VersionMin=5.02', :maxver => 'VersionMax=7.99'},
+    {:sdk => 'wm653', :path => 'Windows Mobile 6.5.3 Professional DTK (ARMV4I)', :minver => 'VersionMin=5.02', :maxver => 'VersionMax=7.99'},
+    {:sdk => 'ce5',   :path => 'MC3000c50b (ARMV4I)', :minver => 'VersionMin=5.00', :maxver => 'VersionMax=7.99'},
+    {:sdk => 'ce7',   :path => 'WT41N0c70PSDK (ARMV4I)', :minver => 'VersionMin=5.00', :maxver => 'VersionMax=7.99'}]
+
+  def initialize(app_name, setup_paths, hidden_app, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
+    puts "@@setup_paths= " +  setup_paths.to_s
+     
+    @@setup_paths           = setup_paths # hash of :webkit_data, :vcbin, :src
     @@app_name              = app_name
-    @@srcdir                = srcdir
-    @@hidden_app            = hidden_app
-    @@wk_data_dir           = wk_data_dir    
+    @@hidden_app            = hidden_app   
     @@run_on_startup        = run_on_startup
     @@additional_dlls_paths = additional_dlls_paths
     @@regs_dlls             = regs_dlls
     @@regkeys               = regkeys
     
-    @@is_icon          = File.exist? File.join(srcdir, "icon", "icon.ico")
-    @@is_custom_config = File.exist? File.join(srcdir, "apps", "Config.xml")
+    @@is_icon          = File.exist? File.join(@@setup_paths[:src], "icon", "icon.ico")
+    @@is_custom_config = File.exist? File.join(@@setup_paths[:src], "apps", "Config.xml")
   end
   
+  ###################################################################
+    
   def getDirsForParse
     sources = Array.new
     
     source = Hash.new
-    source[:id]   = "db"
-    source[:path] = "..\\..\\..\\platform\\shared\\db\\res\\db"
+    source[:id]       = "db"
+    source[:path]     = "..\\..\\..\\platform\\shared\\db\\res\\db"
+    source[:dst_path] = "rho"
+    source[:filter]   = "*"
     sources << source
     
     source = Hash.new
-    source[:id]   = "lib"
-    source[:path] = File.join @@srcdir, "lib"
+    source[:id]       = "lib"
+    source[:path]     = File.join @@setup_paths[:src], "lib"
+    source[:dst_path] = "rho"
+    source[:filter]   = "*"
     sources << source
     
     source = Hash.new
-    source[:id]   = "apps"
-    source[:path] = File.join @@srcdir, "apps"
+    source[:id]       = "apps"
+    source[:path]     = File.join @@setup_paths[:src], "apps"
+    source[:dst_path] = "rho"
+    source[:filter]   = "*"
     sources << source
     
     path_idx = 1
     
     @@additional_dlls_paths.each { |path|
       source = Hash.new
-      source[:id]   = "add" +path_idx.to_s 
-      source[:path] = path
+      source[:id]       = "add" +path_idx.to_s 
+      source[:path]     = path
+      source[:dst_path] = ""
+      source[:filter] = "*"
+        
       sources << source
       
       path_idx = path_idx + 1      
     }
     
+    source = Hash.new
+    source[:id]       = ""
+    source[:path]     = @@setup_paths[:vcbin]
+    source[:dst_path] = ""
+    source[:filter]   = "*.dll"
+    sources << source
+    
+    source = Hash.new
+    source[:id]       = ""
+    source[:path]     = @@setup_paths[:vcbin]
+    source[:dst_path] = ""
+    source[:filter]   = @@app_name + ".exe"
+    sources << source
+        
     return sources
   end
   
@@ -68,74 +100,8 @@ class CabBuilderBase
       @@inf_file.close
     end
   end
-    
-  def fillVersion   
-    print("[Version]")    
-    print("Signature=\"$Windows NT$\"")
-    print("Provider=\"rhomobile\"")
-    print("CESignature=\"$Windows CE$\"")
-  end
   
-  def fillStrings
-    print("[Strings]")    
-    print("Manufacturer=\"rhomobile\"")
-  end 
-  
-  def fillCeStrings(app_name)
-    print("[CEStrings]")
-    print("AppName=\" + app_name + \"")
-    print("InstallDir=%CE1%\\%AppName%")
-  end
-  
-  def fillCeDevice
-    print("[CEDevice]") 
-    print("VersionMin=5.00")
-    print("VersionMax=7.99")
-    print("BuildMax=0xE0000000")
-  end
-  
-  def fillDefInstall(regs_dlls)
-    
-    print("[DefaultInstall]")
-         
-    if (!regs_dlls.nil? && regs_dlls.lenght > 0)
-      regs_dlls_string = ""
-      
-      regs_dlls.each do |dll|
-        regs_dlls_string += dll.to_s
-        regs_dlls_string += "," 
-      end
-      
-      print("CESelfRegister=" + regs_dlls_string)
-    end
-    
-    print("CEShortcuts=Shortcuts")
-    print("AddReg=RegKeys")
-  end
-    
-  def fillFile 
-    fillVersion
-    print("")
-    fillStrings
-    print("")
-    fillCeStrings(@@regs_dlls)
-    print("")
-    fillCeDevice
-    print("")
-    fillDefInstall(nil)
-    print("")
-    fillSourceDiskNames
-    print("")
-    fillSourceDiskFiles
-    print("")
-    fillDstDirs
-    print("")
-    fillCopyFilesSections
-    print("")
-    fillRegKeys
-  end
-  
-  def parseDirsReqursive(dir, disk_names, disk_files, dir_idx)
+  def parseDirsReqursive(dir, filter, disk_names, disk_files, dir_idx)
     curr_dir_idx = dir_idx + 1        
     curr_dir     = Dir.pwd
     
@@ -149,12 +115,12 @@ class CabBuilderBase
       
       chdir dir
       
-      Dir.glob("*").each { |f|
+      Dir.glob(filter).each { |f|
 
         next if f == "." || f == ".."
         
         if File.directory?(f)
-          curr_dir_idx = parseDirsReqursive(File.join(dir, f), disk_names, disk_files, curr_dir_idx)
+          curr_dir_idx = parseDirsReqursive(File.join(dir, f), filter, disk_names, disk_files, curr_dir_idx)
         else
           file_hash = Hash.new
            
@@ -178,20 +144,90 @@ class CabBuilderBase
     curr_dir_idx = 0
     curr_dir = Dir.pwd
     
+    puts "curr=" + Dir.pwd
+    
     if dirs_for_parse.kind_of?(Array)
       dirs_for_parse.each { |dir|
-        curr_dir_idx = parseDirsReqursive(dir[:path], @@src_disk_names, @@src_disk_files, curr_dir_idx)
+        curr_dir_idx = parseDirsReqursive(dir[:path], dir[:filter], @@src_disk_names, @@src_disk_files, curr_dir_idx)
       }  
     end
     
     chdir curr_dir
   end
+  
+  #################################################################################
   def print(data)
     if @@inf_file && @@inf_file.kind_of?(File)
       @@inf_file.puts(data)  
     end     
   end
   
+  def fillVersion   
+    print("[Version]")
+    print("Signature=\"$Windows NT$\"")
+    print("Provider=\"rhomobile\"")
+    print("CESignature=\"$Windows CE$\"")
+  end
+ 
+  def fillStrings
+    print("[Strings]")
+    print("Manufacturer=\"rhomobile\"")
+  end 
+ 
+  def fillCeStrings(app_name)
+    print("[CEStrings]")
+    print("AppName=\" + app_name + \"")
+    print("InstallDir=%CE1%\\%AppName%")
+  end
+ 
+  def fillCeDevice
+    print("[CEDevice]")
+    print("VersionMin=5.00")
+    print("VersionMax=7.99")
+    print("BuildMax=0xE0000000")
+  end
+ 
+  def fillDefInstall(regs_dlls)
+   
+    print("[DefaultInstall]")
+        
+    if (!regs_dlls.nil? && regs_dlls.lenght > 0)
+      regs_dlls_string = ""
+     
+      regs_dlls.each do |dll|
+        regs_dlls_string += dll.to_s
+        regs_dlls_string += "," 
+      end
+     
+      print("CESelfRegister=" + regs_dlls_string)
+    end
+   
+    print("CEShortcuts=Shortcuts")
+    print("AddReg=RegKeys")
+  end
+   
+  def fillFile 
+    fillVersion
+    print("")
+    fillStrings
+    print("")
+    fillCeStrings(@@regs_dlls)
+    print("")
+    fillCeDevice
+    print("")
+    fillDefInstall(nil)
+    print("")
+    fillSourceDiskNames
+    print("")
+    fillSourceDiskFiles
+    print("")
+    fillDstDirs
+    print("")
+    fillCopyFilesSections
+    print("")
+    fillRegKeys
+  end
+ 
   def fillSourceDiskNames
     print("[SourceDisksNames]")
     @@src_disk_names.each { |disk|

@@ -4,16 +4,15 @@ require File.join(File.dirname(__FILE__), 'CabBuilderBase.rb')
 class CabBuilderWebkit
 
   def initialize(app_name, 
-                 srcdir, 
+                 setup_paths,
                  hidden_app, 
-                 wk_data_dir, 
                  run_on_startup, 
                  additional_dlls_paths,
                  webkit_out_of_process, 
                  regs_dlls,
                  regkeys)
                  
-    super(app_name, srcdir, hidden_app, wk_data_dir, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
+    super(app_name, setup_paths, hidden_app, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
     
     @@webkit_out_of_process = webkit_out_of_process
   end

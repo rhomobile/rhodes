@@ -4,15 +4,14 @@ require File.join(File.dirname(__FILE__), 'CabBuilderBase.rb')
 class CabBuilderRERuntime
 
   def initialize(app_name, 
-                 srcdir, 
+                 setup_paths,
                  hidden_app, 
-                 wk_data_dir, 
                  run_on_startup, 
                  additional_dlls_paths, 
                  regs_dlls,
                  regkeys)
                  
-    super(app_name, srcdir, hidden_app, wk_data_dir, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
+    super(app_name, setup_paths, hidden_app, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
   end
 
   def getDirsForParse
@@ -49,12 +48,13 @@ class CabBuilderRERuntime
     return sources
   end
   
-  def fillCopyToInstallDir
+  def fillCopyToInstallDir      
     print("[CopyToInstallDir]")
     print("\"" + @@app_name + ".lnk\",\"" + @@app_name + ".lnk\",,0");    
   end
   
   def fillCopyConfig
+    puts "fillCopyConfig RERuntime"
     print("[CopyConfig]")
   end
   

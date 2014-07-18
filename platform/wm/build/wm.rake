@@ -416,66 +416,21 @@ end
 
 def build_cab
   build_platform = 'ce5' #if $sdk == "MC3000c50b (ARMV4I)"
-
-  #reg_keys_filename = File.join(File.dirname(__FILE__), 'regs.txt');
-  #com_dlls_filename = File.join(File.dirname(__FILE__), 'comdlls.txt');
-  
-  #puts 'remove file with registry keys'
-  #rm reg_keys_filename if File.exists? reg_keys_filename
-
-  #if $regkeys && $regkeys.size > 0
-  #  puts 'add registry keys to file'
-  #  File.open(reg_keys_filename, 'w') do |f|
-  #    $regkeys.each { |key| f.puts(key + "\n") }
-  #  end
-  #end
-
-  #if $comdll_files && $comdll_files.size > 0
-  #  puts 'add com dlls names to file'
-  #  reg_string = ""
-     
-  #  File.open(com_dlls_filename, 'w') do |f|
-  #    $comdll_files.each { |key| 
-  #      reg_string = reg_string + key[0..-1] + "," 
-  #    }
-
-  #    reg_string = reg_string[0..-2]
-  #    f.write(reg_string)
-  #  end
-  #end
   
   if $build_persistent_cab && !$use_shared_runtime
     makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
   end
 
-  #webkit = 'none'
-  #if $is_webkit_engine && $webkit_capability 
-  #  webkit = $webkit_out_of_process ? 'out_of_process' : 'in_process'
-  #end
-
-  dir = File.join($startdir, $builddir)
-  
-  #args = [
-  #  'build_inf.js',
-  #  '"' + $appname + ".inf\"",               #0
-  #  build_platform,                           #1
-  #  '"' + $app_config["name"] +'"',           #2
-  #  '"' + $app_config["vendor"] + '"',        #3
-  #  '"' + $srcdir + '"',                      #4
-  #  $hidden_app,                              #5
-  #  webkit,                                   #6
-  #  '"' + $wk_data_dir + '"',                 #7
-  #  ($use_shared_runtime  ? "1" : "0"),       #8
-  #  ($motorola_capability ? "1" : "0"),       #9
-  #  ($run_on_startup      ? "1" : "0"),       #10
-  #  '"' + $srcdir + '"',                      #11
-  #  ($build_persistent_cab ? "1" : "0")       #12
-  #]
-
   cabBuilder = nil
   
+  setup_paths = {
+    :webkit_data => $wk_data_dir,
+    :vcbin       => File.join($startdir, "platform", 'wm', "bin", $sdk, "Rhodes", $buildcfg),
+    :src         => $srcdir
+  }
+  
   if $use_shared_runtime
-    cabBuilder = CabBuilderRERuntime.new($app_config["name"], $srcdir, $hidden_app, $wk_data_dir, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
+    cabBuilder = CabBuilderRERuntime.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
   else
     if $build_persistent_cab
       puts "persistent cab"
@@ -487,25 +442,21 @@ def build_cab
     elsif       
       if $is_webkit_engine && $webkit_capability
         puts "CabBuilderWebkit"
-        cabBuilder = CabBuilderWebkit.new($app_config["name"], $srcdir, $hidden_app, $wk_data_dir, $run_on_startup, $webkit_out_of_process, additional_dlls_paths, $comdll_files, $regkeys)
+        cabBuilder = CabBuilderWebkit.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, $webkit_out_of_process, additional_dlls_paths, $comdll_files, $regkeys)
       else
         puts "CabBuilderIE"
-        cabBuilder = CabBuilderIE.new($app_config["name"], $srcdir, $hidden_app, $wk_data_dir, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
+        cabBuilder = CabBuilderIE.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
       end
     end
   end
     
-  cabBuilder.saveInfFile(File.join(dir, $appname + ".inf"))
+  cabBuilder.saveInfFile(File.join($startdir, $builddir, $appname + ".inf"))
   exit 1 
   
-  #Jake.run3("cscript #{args.join(' ')}", dir)
-
   Jake.run3("\"#{$cabwiz}\" \"#{$appname}.inf\"", dir)
   Jake.run3('cscript cleanup.js', dir)
 
   mkdir_p $targetdir
-  #rm File.join(dir, "comdlls.txt") if File.exist? File.join(dir, "comdlls.txt")
-  #rm File.join(dir, "regs.txt") if File.exist? File.join(dir, "regs.txt")
   mv File.join(dir, "#{$appname}.inf"), $targetdir
   mv File.join(dir, "#{$appname}.cab"), $targetdir
 
