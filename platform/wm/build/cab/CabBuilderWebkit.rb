@@ -8,12 +8,49 @@ class CabBuilderWebkit
                  hidden_app, 
                  wk_data_dir, 
                  run_on_startup, 
-                 additional_dlls_persistent_paths, 
-                 regs_dlls)
+                 additional_dlls_paths,
+                 webkit_out_of_process, 
+                 regs_dlls,
+                 regkeys)
                  
-    super(app_name, srcdir, hidden_app, wk_data_dir, run_on_startup, additional_dlls_persistent_paths, regs_dlls)
+    super(app_name, srcdir, hidden_app, wk_data_dir, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
+    
+    @@webkit_out_of_process = webkit_out_of_process
   end
 
+  def getDirsForParse
+    puts "getDirsForParse for Webkit"
+    sources = Array.new
+    
+    source = Hash.new
+    source[:id] = "db"
+    source[:path] = "..\\..\\..\\platform\\shared\\db\\res\\db"
+    sources << source
+    
+    source = Hash.new
+    source[:id] = "lib"
+    source[:path] = File.join @@srcdir, "lib"
+    sources << source
+    
+    source = Hash.new
+    source[:id] = "apps"
+    source[:path] = File.join @@srcdir, "apps"
+    sources << source
+    
+    path_idx = 1
+    
+    @@additional_dlls_paths.each { |path|
+      source = Hash.new
+      source[:id] = "add" + path_idx.to_s 
+      source[:path] = path
+      sources << source     
+      
+      path_idx = path_idx + 1 
+    }
+    
+    return sources
+  end
+  
   def fillCopyToInstallDir
     print("[CopyToInstallDir]")
     print("\"" + @@app_name + ".exe\",\"" + @@app_name + ".exe\",,0");
@@ -37,7 +74,13 @@ class CabBuilderWebkit
     print("[CopyWebKitBin]");
     print("\"eklibrary.dll\",\"eklibrary.dll\",,0");
     print("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
-    print(webkit_file + "," + webkit_file + ",,0");
+    
+    if @@webkit_out_of_process
+      print("\"OutProcessWK.exe\"" + "," + "\"OutProcessWK.exe\""+ ",,0");
+    else
+      print("\"WebkitPlatformDeliveryCompiledAsDLL.dll\"" + "," + "\"WebkitPlatformDeliveryCompiledAsDLL.dll\"" + ",,0");
+    end
+    
     print("\"openssl.dll\",\"openssl.dll\",,0");
     print("\"Ekioh.dll\",\"Ekioh.dll\",,0");     
   end
