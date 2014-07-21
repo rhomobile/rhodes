@@ -47,6 +47,15 @@ public class WebView {
 		public NavigateTask(String u, int i) {
 			url = u;
 			index = i;
+			//Check For Case sensitivity of HTML and html also for HTM and htm
+			if(url.contains("HTML") || url.contains("HTM"))
+    			{
+    				if(url.contains("HTML"))
+    					url=url.replace("HTML", "html");
+    				else	
+    					url=url.replace("HTM", "htm");
+    			
+    			}
 		}
 
         public void run() {
