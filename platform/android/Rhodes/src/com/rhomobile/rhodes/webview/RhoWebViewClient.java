@@ -70,6 +70,17 @@ public class RhoWebViewClient extends WebViewClient
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Logger.I(TAG, "Loading URL: " + url);
+         if(url.contains("HTML") || url.contains("HTM"))
+        {
+        	if(url.contains("HTML"))
+        		url=url.replace("HTML", "html");
+        	else
+        		url=url.replace("HTM", "htm");
+        }
+        
+        
+        
+        
         boolean res = RhodesService.getInstance().handleUrlLoading(url);
         if (!res) {
             Logger.profStart("BROWSER_PAGE");
