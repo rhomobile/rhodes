@@ -627,10 +627,34 @@ def check_sdk(sdkname)
       end
 end
 
+
+def get_xcode_version
+  info_path = '/Applications/XCode.app/Contents/version.plist'
+  ret_value = '0.0'
+  if File.exists? info_path
+    nextline = false
+    File.new(info_path,"r").read.each_line do |line|
+      #puts '$$$           '+line
+      if nextline
+        ret_value = extract_value_from_strings(line)
+        nextline = false
+      end
+      nextline = true if line =~ /CFBundleShortVersionString/
+    end
+  else
+    puts '$$$ can not find XCode version file ['+info_path+']'
+  end
+  puts '$$$ XCode version is '+ret_value
+  return ret_value
+end
+
 def kill_iphone_simulator
   puts 'kill "iPhone Simulator"'
   `killall -9 "iPhone Simulator"`
   `killall -9 iphonesim`
+  `killall -9 iphonesim_43`
+  `killall -9 iphonesim_51`
+  `killall -9 iphonesim_6`
 end
 
 namespace "config" do
@@ -674,6 +698,14 @@ namespace "config" do
 
     $devroot = '/Applications/Xcode.app/Contents/Developer' if $devroot.nil?
     $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_51') if $iphonesim.nil?
+
+    #check for XCode 6
+    xcode_version = get_xcode_version
+    if xcode_version[0].to_i >= 6
+      $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_6')
+    end
+
+
     $xcodebuild = $devroot + "/usr/bin/xcodebuild"
     if !File.exists? $xcodebuild
         $devroot = '/Developer'
@@ -682,7 +714,13 @@ namespace "config" do
     else
         #additional checking for iphonesimulator version
       if !File.exists? '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework'
-         $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43')
+        #check for XCode 6
+        xcode_version = get_xcode_version
+        if xcode_version[0].to_i >= 6
+          $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_6')
+        else
+          $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43')
+        end
       end
     end
 
