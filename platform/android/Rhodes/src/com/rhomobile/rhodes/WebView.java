@@ -52,7 +52,7 @@ public class WebView {
 			{
 	    	     		url=url.replace(".HTML", ".html");
 	    	         	url=url.replace(".HTM", ".htm");
-	    	         	Logger.I(TAG,"Replaced to lowercase html extension");
+	    	         	Logger.I(TAG,"Replaced to lowercase html extension,url="+ url);
 	    	     	}
 		}
 
