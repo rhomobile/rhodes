@@ -70,13 +70,13 @@ public class RhoWebViewClient extends WebViewClient
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Logger.I(TAG, "Loading URL: " + url);
-         if(url.contains("HTML") || url.contains("HTM"))
+        
+        if (url.contains(".HTM")) 
         {
-        	if(url.contains("HTML"))
-        		url=url.replace("HTML", "html");
-        	else
-        		url=url.replace("HTM", "htm");
-        }
+    	     url=url.replace(".HTML", ".html");
+    	     url=url.replace(".HTM", ".htm");
+    	     Logger.I(TAG, "Changed to lower case html, url="+ url);
+    	}
         
         
         
