@@ -48,18 +48,23 @@ class CabBuilderRERuntime
     return sources
   end
   
+  def fillDstDirs    
+    print("[DestinationDirs]")
+    print("Shortcuts=0,\"%CE11%\"")       if @@hidden_app == false
+    print("ShortcutsAutorun=0,\"%CE4%\"") if @@run_on_startup == true
+    print("CopyToInstallDir=0,\"%InstallDir%\"");
+  end
+  
   def fillCopyToInstallDir      
     print("[CopyToInstallDir]")
     print("\"" + @@app_name + ".lnk\",\"" + @@app_name + ".lnk\",,0");    
   end
   
   def fillCopyConfig
-    puts "fillCopyConfig RERuntime"
     print("[CopyConfig]")
   end
   
   def fillCopySystemFiles
-    print("[CopySystemFiles]")
   end
    
 end

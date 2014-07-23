@@ -101,7 +101,7 @@ class CabBuilderBase
     end
   end
   
-  def parseDirsReqursive(dir, filter, disk_names, disk_files, dir_idx)
+  def parseDirsReqursive(dir, relative_path, filter, dst_path, disk_names, disk_files, dst_disk_names, dir_idx)
     curr_dir_idx = dir_idx + 1        
     curr_dir     = Dir.pwd
     
@@ -120,7 +120,16 @@ class CabBuilderBase
         next if f == "." || f == ".."
         
         if File.directory?(f)
-          curr_dir_idx = parseDirsReqursive(File.join(dir, f), filter, disk_names, disk_files, curr_dir_idx)
+          dir_name = f
+          rel_path = File.join relative_path, f
+          
+          dst_disk = Hash.new          
+          dst_disk[:name] = rel_path.clone.gsub("/", "_")
+          dst_disk[:path] = File.join dst_path, rel_path
+
+          dst_disk_names << dst_disk
+          
+          curr_dir_idx = parseDirsReqursive(File.join(dir, f), rel_path, filter, dst_path, disk_names, disk_files, dst_disk_names, curr_dir_idx)
         else
           file_hash = Hash.new
            
@@ -139,16 +148,15 @@ class CabBuilderBase
   
   def parseDirs(dirs_for_parse)
     @@src_disk_names = Array.new
-    @@src_disk_files = Array.new
+    @@src_disk_files = Array.new    
+    @@dst_disk_names = Array.new
     
     curr_dir_idx = 0
     curr_dir = Dir.pwd
     
-    puts "curr=" + Dir.pwd
-    
     if dirs_for_parse.kind_of?(Array)
       dirs_for_parse.each { |dir|
-        curr_dir_idx = parseDirsReqursive(dir[:path], dir[:filter], @@src_disk_names, @@src_disk_files, curr_dir_idx)
+        curr_dir_idx = parseDirsReqursive(dir[:path], "", dir[:filter], dir[:dst_path], @@src_disk_names, @@src_disk_files, @@dst_disk_names, curr_dir_idx)
       }  
     end
     
@@ -156,6 +164,7 @@ class CabBuilderBase
   end
   
   #################################################################################
+  
   def print(data)
     if @@inf_file && @@inf_file.kind_of?(File)
       @@inf_file.puts(data)  
@@ -245,7 +254,15 @@ class CabBuilderBase
   
   def fillDstDirs    
     print("[DestinationDirs]")
-    #@@dst_disk_names = nil
+    print("Shortcuts=0,\"%CE11%\"")       if @@hidden_app == false
+    print("ShortcutsAutorun=0,\"%CE4%\"") if @@run_on_startup == true
+    print("CopySystemFiles=0,\"%CE2%\"");
+    print("CopyToInstallDir=0,\"%InstallDir%\"")
+    
+    @@dst_disk_names.each { |disk|      
+      print "copyfiles" + disk[:name] + "=0,\"" + File.join("%InstallDir%", disk[:path].gsub("/", "\\"))
+    }
+    
   end
   
   def fillCopyFilesSections
@@ -265,13 +282,25 @@ class CabBuilderBase
     print("[CopyToInstallDir]")
   end
   
+  def fillCopyToInstallDir
+    print("[CopyToInstallDir]")
+    print("\"" + @@app_name + ".exe\",\"" + @@app_name + ".exe\",,0");
+    print("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
+    print("\"license_rc.dll\",\"license_rc.dll\",,0");
+  end
+  
   def fillCopyConfig
     print("[CopyConfig]")
+    print("\"Config.xml\",\"Config.xml\",,0");
+    print("\"Plugin.xml\",\"Plugin.xml\",,0");
+    print("\"RegEx.xml\",\"RegEx.xml\",,0");
   end
   
   def fillCopySystemFiles
     print("[CopySystemFiles]")
+    print("\"prtlib.dll\",\"prtlib.dll\",,0")
   end
+
    
   def fillRegKeys
     print("[RegKeys]")
