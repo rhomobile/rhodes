@@ -78,7 +78,8 @@ module WM
     $build_cab = true
     $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
     $is_webkit_engine = true if $is_webkit_engine.nil?
-
+    $hidden_app = false
+    
     begin
       if $webkit_capability || $motorola_capability
         require "rhoelements-data"
@@ -429,6 +430,8 @@ def build_cab
     :src         => $srcdir
   }
   
+  dir = File.join($startdir, $builddir)
+  
   if $use_shared_runtime
     cabBuilder = CabBuilderRERuntime.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
   else
@@ -450,11 +453,9 @@ def build_cab
     end
   end
     
-  cabBuilder.saveInfFile(File.join($startdir, $builddir, $appname + ".inf"))
-  exit 1 
+  cabBuilder.saveInfFile(File.join(dir, $appname + ".inf"))
   
   Jake.run3("\"#{$cabwiz}\" \"#{$appname}.inf\"", dir)
-  Jake.run3('cscript cleanup.js', dir)
 
   mkdir_p $targetdir
   mv File.join(dir, "#{$appname}.inf"), $targetdir
@@ -465,8 +466,7 @@ def build_cab
   if not $config['build']['wmsign'].nil? and $config['build']['wmsign'] != ''
     sign("\"#{$targetdir}/#{$appname}.cab\"", $config['build']['wmsign'])
   end
-
-  rm File.join(dir, 'cleanup.js')
+  
 end
 
 def clean_ext_vsprops(ext_path)

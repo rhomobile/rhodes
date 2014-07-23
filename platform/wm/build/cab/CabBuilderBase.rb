@@ -20,6 +20,8 @@ class CabBuilderBase
   def initialize(app_name, setup_paths, hidden_app, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
     puts "@@setup_paths= " +  setup_paths.to_s
      
+    puts "hidden_app=" + hidden_app.to_s
+    
     @@setup_paths           = setup_paths # hash of :webkit_data, :vcbin, :src
     @@app_name              = app_name
     @@hidden_app            = hidden_app   
@@ -85,7 +87,21 @@ class CabBuilderBase
     source[:dst_path] = ""
     source[:filter]   = @@app_name + ".exe"
     sources << source
-        
+
+    source = Hash.new
+    source[:id]       = ""
+    source[:path]     = @@setup_paths[:vcbin]
+    source[:dst_path] = ""
+    source[:filter]   = "RhoLaunch.exe"
+    sources << source
+            
+    source = Hash.new
+    source[:id]       = "Config"
+    source[:path]     = File.join @@setup_paths[:webkit_data], "Config"
+    source[:dst_path] = "Config"
+    source[:filter]   = "*"
+    sources << source
+    
     return sources
   end
   
@@ -108,7 +124,7 @@ class CabBuilderBase
     if File.exist? dir
       
       dir_src_hash = Hash.new
-      dir_src_hash[:number] = curr_dir_idx
+      dir_src_hash[:number] = dir_idx
       dir_src_hash[:path]   = dir
       
       disk_names << dir_src_hash
@@ -139,7 +155,7 @@ class CabBuilderBase
           file_src_hash = Hash.new
            
           file_src_hash[:name]   = f.to_s
-          file_src_hash[:number] = curr_dir_idx
+          file_src_hash[:number] = dir_idx
           
           disk_files << file_src_hash 
           
@@ -195,7 +211,7 @@ class CabBuilderBase
  
   def fillCeStrings(app_name)
     print("[CEStrings]")
-    print("AppName=\" + app_name + \"")
+    print("AppName=\"" + @@app_name + "\"")
     print("InstallDir=%CE1%\\%AppName%")
   end
  
@@ -206,6 +222,11 @@ class CabBuilderBase
     print("BuildMax=0xE0000000")
   end
  
+  def fillPredefineFileCopies
+    #return "CopyToInstallDir, CopyConfig, CopySystemFiles"
+    return "CopyToInstallDir, CopyConfig"
+  end
+  
   def fillDefInstall(regs_dlls)
    
     print("[DefaultInstall]")
@@ -217,12 +238,19 @@ class CabBuilderBase
         regs_dlls_string += dll.to_s
         regs_dlls_string += "," 
       end
-     
+           
       print("CESelfRegister=" + regs_dlls_string)
     end
-   
+    
+    copy_files_string = fillPredefineFileCopies
+    
+    @@dst_disk_names.each { |disk|
+      copy_files_string = copy_files_string + ", copyfiles" + disk[:name] 
+    }
+       
     print("CEShortcuts=Shortcuts")
     print("AddReg=RegKeys")
+    print("CopyFiles=" + copy_files_string)
   end
    
   def fillFile 
@@ -266,11 +294,12 @@ class CabBuilderBase
     print("[DestinationDirs]")
     print("Shortcuts=0,\"%CE11%\"")       if @@hidden_app == false
     print("ShortcutsAutorun=0,\"%CE4%\"") if @@run_on_startup == true
-    print("CopySystemFiles=0,\"%CE2%\"");
+    #print("CopySystemFiles=0,\"%CE2%\"");
     print("CopyToInstallDir=0,\"%InstallDir%\"")
+    print("CopyConfig=0,\"%InstallDir%\\Config\"")
     
     @@dst_disk_names.each { |disk|      
-      print "copyfiles" + disk[:name] + "=0,\"" + File.join("%InstallDir%", disk[:path].gsub("/", "\\"))
+      print "copyfiles" + disk[:name] + "=0,\"" + File.join("%InstallDir%", disk[:path].gsub("/", "\\") + "\"")
     }
     
   end

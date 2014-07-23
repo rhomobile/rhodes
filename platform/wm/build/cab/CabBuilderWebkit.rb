@@ -16,7 +16,27 @@ class CabBuilderWebkit
     
     @@webkit_out_of_process = webkit_out_of_process
   end
- 
+
+  def getDirsForParse
+    sources = super
+    
+    source = Hash.new
+    source[:id]       = "NPAPI"
+    source[:path]     = File.join @@setup_paths[:webkit_data], "NPAPI"
+    source[:dst_path] = "NPAPI"
+    source[:filter]   = "*"
+    sources << source
+
+    source = Hash.new
+    source[:id]       = "WebKitBin"
+    source[:path]     = @@setup_paths[:webkit_data]
+    source[:dst_path] = ""
+    source[:filter]   = "*"
+    sources << source
+        
+    return sources 
+  end
+  
   def fillDstDirs        
     super    
     print("CopyWebKitBin=0,\"%InstallDir%\"")
