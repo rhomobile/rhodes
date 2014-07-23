@@ -101,20 +101,25 @@ class CabBuilderBase
     end
   end
   
-  def parseDirsReqursive(dir, relative_path, filter, dst_path, disk_names, disk_files, dst_disk_names, dir_idx)
+  def parseDirsReqursive(dir, relative_path, filter, dst_path, disk_names, disk_files, dst_disk_names, dst_disk_files, dir_idx)
     curr_dir_idx = dir_idx + 1        
     curr_dir     = Dir.pwd
     
     if File.exist? dir
       
-      dir_hash = Hash.new
-      dir_hash[:number] = curr_dir_idx
-      dir_hash[:path]   = dir
+      dir_src_hash = Hash.new
+      dir_src_hash[:number] = curr_dir_idx
+      dir_src_hash[:path]   = dir
       
-      disk_names << dir_hash 
+      disk_names << dir_src_hash
       
       chdir dir
       
+      if !dst_disk_files.nil? && dst_disk_files.kind_of?(Hash) && !dst_disk_files.has_key?("files")
+        dst_disk_files[:files] = Array.new
+      #else
+      end
+              
       Dir.glob(filter).each { |f|
 
         next if f == "." || f == ".."
@@ -123,20 +128,24 @@ class CabBuilderBase
           dir_name = f
           rel_path = File.join relative_path, f
           
-          dst_disk = Hash.new          
-          dst_disk[:name] = rel_path.clone.gsub("/", "_")
-          dst_disk[:path] = File.join dst_path, rel_path
+          dst_disk_hash = Hash.new          
+          dst_disk_hash[:name] = rel_path.clone.gsub("/", "_")
+          dst_disk_hash[:path] = File.join dst_path, rel_path
 
-          dst_disk_names << dst_disk
+          dst_disk_names << dst_disk_hash
           
-          curr_dir_idx = parseDirsReqursive(File.join(dir, f), rel_path, filter, dst_path, disk_names, disk_files, dst_disk_names, curr_dir_idx)
+          curr_dir_idx = parseDirsReqursive(File.join(dir, f), rel_path, filter, dst_path, disk_names, disk_files, dst_disk_names, dst_disk_hash, curr_dir_idx)
         else
-          file_hash = Hash.new
+          file_src_hash = Hash.new
            
-          file_hash[:name]   = f.to_s
-          file_hash[:number] = curr_dir_idx
+          file_src_hash[:name]   = f.to_s
+          file_src_hash[:number] = curr_dir_idx
           
-          disk_files << file_hash
+          disk_files << file_src_hash 
+          
+          if !dst_disk_files.nil? && dst_disk_files.kind_of?(Hash)
+            dst_disk_files[:files] << f.to_s     
+          end                   
         end
       }
     end      
@@ -150,13 +159,14 @@ class CabBuilderBase
     @@src_disk_names = Array.new
     @@src_disk_files = Array.new    
     @@dst_disk_names = Array.new
+    @@dst_disk_files = Array.new
     
     curr_dir_idx = 0
     curr_dir = Dir.pwd
     
     if dirs_for_parse.kind_of?(Array)
       dirs_for_parse.each { |dir|
-        curr_dir_idx = parseDirsReqursive(dir[:path], "", dir[:filter], dir[:dst_path], @@src_disk_names, @@src_disk_files, @@dst_disk_names, curr_dir_idx)
+        curr_dir_idx = parseDirsReqursive(dir[:path], "", dir[:filter], dir[:dst_path], @@src_disk_names, @@src_disk_files, @@dst_disk_names, nil, curr_dir_idx)
       }  
     end
     
@@ -272,10 +282,18 @@ class CabBuilderBase
     print("")
     fillCopyConfig
     print("")
-    
-    #@@dst_disk_files.each { |files|
+
+    @@dst_disk_names.each { |disk|      
+      print "[copyfiles" + disk[:name] + "]"
+        
+      if !disk[:files].nil?        
+        disk[:files].each { |file|
+          print "\"" + file + "\",\"" + file + "\",,0"
+        }
+      end        
       
-    #}
+      print ""
+    }
   end
   
   def fillCopyToInstallDir
@@ -300,7 +318,6 @@ class CabBuilderBase
     print("[CopySystemFiles]")
     print("\"prtlib.dll\",\"prtlib.dll\",,0")
   end
-
    
   def fillRegKeys
     print("[RegKeys]")
