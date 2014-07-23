@@ -134,14 +134,55 @@ BOOL CALLBACK CHostTracker::ConnectDlgProc(HWND hwnd, UINT Message, WPARAM wPara
     switch(Message)
     {
 		case WM_INITDIALOG:
-			{				
-				SetDlgItemText(hwnd, IDC_STATIC_CONNECTION_MSG, m_szConnectionDlgMsg.c_str());
-				return TRUE;
-			}
-        default:
-            return FALSE;
-    }
-    return TRUE;
+			{	
+				HWND hParentWnd; 
+				RECT rc, rcDlg, rcParent; 
+				// Get the owner window and dialog box rectangles. 
+				hParentWnd = GetParent(hwnd);
+				GetWindowRect(hParentWnd, &rcParent); 
+				//fill the desired location for the dalog box
+				rcDlg.left =0;
+				rcDlg.top =0;
+				rcDlg.right = rcParent.right - 40; //initialize width
+				rcDlg.bottom = 80; //initialize height			
+				CopyRect(&rc, &rcParent); 
+
+				// Offset the owner rectangles so that right and bottom 
+				// values represent the width and height, and then offset the owner again 
+				// to discard space taken up by the dialog box. 
+				OffsetRect(&rc, -rc.left, -rc.top); 
+				OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom); 
+
+				// The new position is the sum of half the remaining space and the owner's 
+				// original position. 
+
+				SetWindowPos(hwnd, 
+					HWND_TOP, 
+					rcParent.left + (rc.right / 2), 
+					rcParent.top + (rc.bottom / 2), 
+					rcDlg.right, rcDlg.bottom,         
+					SWP_NOACTIVATE); 
+				
+				GetWindowRect(hwnd, &rcDlg);
+
+				
+				HWND hWndDlgText = CreateWindowEx(0,
+					L"STATIC",
+					m_szConnectionDlgMsg.c_str(),
+					WS_CHILD | WS_VISIBLE | SS_LEFT,
+					5, 20, rcDlg.right, 40,
+					hwnd,
+					NULL,
+					rho_wmimpl_get_appinstance(),
+					NULL);	
+
+				break; 
+			}				
+	
+		default:
+			return FALSE;
+	}
+	return TRUE;
 }
 rho::StringW CHostTracker::replaceString(rho::StringW inputString,
                                          rho::StringW toReplace,
