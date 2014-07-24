@@ -2051,6 +2051,46 @@ def find_proxy()
   proxy
 end
 
+def get_ssl_cert_bundle_store(rhodes_home, proxy)
+  crt_file = File.join(rhodes_home, "crt.pem")
+
+  #lets get that file once a month
+  if !(File.exists?(crt_file)) || ((Time.now - File.mtime(crt_file)).to_i > 30 * 24 * 60 * 60)
+    puts "getting cert bundle"
+    url = URI.parse("https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt")
+
+    if !(proxy.nil? || proxy.empty?)
+      proxy_uri = URI.parse(proxy)
+      http = Net::HTTP.new(url.host, url.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password )
+    else
+      http = Net::HTTP.new(url.host, url.port)
+    end
+
+    if url.scheme == "https"  # enable SSL/TLS
+      http.use_ssl = true
+      # there is no way to verify connection here :/
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+
+    http.start do |http|
+      resp = http.get(url.path)
+      if resp.code == "200"
+        open(crt_file, "wb") do |file|
+          file.write(resp.body)
+        end
+      else
+        abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
+      end
+    end
+  end
+
+  cert_store = OpenSSL::X509::Store.new
+  cert_store.set_default_paths
+  cert_store.add_file crt_file
+
+  return cert_store
+end
+
 namespace "config" do
   task :load do
     buildyml = 'rhobuild.yml'
@@ -2107,6 +2147,15 @@ namespace "config" do
 
     if !($proxy.nil? || $proxy.empty?)
       puts "Using proxy: #{$proxy}"
+    end
+
+
+    # I hate that way of dealing with ssl, but we need to get working
+    # set of certificates from somewhere for windows
+    # so lets solve it less hacky, get mozilla's bundle of certs converted by cURL team
+    # and use it for accessing via rest client
+    if (/cygwin|mswin|mingw|bccwin/ =~ RUBY_PLATFORM) != nil
+      Rhohub.cert_store = get_ssl_cert_bundle_store($rhodes_home, $proxy)
     end
 
     $re_app = ($app_config["app_type"] == 'rhoelements') || !($app_config['capabilities'].nil? || $app_config['capabilities'].index('shared_runtime').nil?)
@@ -2479,7 +2528,7 @@ namespace "config" do
     $minify_types << "js" if minify_js or obfuscate_js
     $minify_types << "css" if minify_css or obfuscate_css
 
-    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.7.jar')
+    $minifier          = File.join(File.dirname(__FILE__),'res/build-tools/yuicompressor-2.4.8-rhomodified.jar')
 
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
@@ -3535,22 +3584,56 @@ namespace "build" do
 
     def minify_js_and_css(dir,types)
       pattern = types.join(',')
+      
+      files_to_minify = []
+      
       Dir.glob( File.join(dir,'**',"*.{#{pattern}}") ) do |f|
         if File.file?(f) and !File.fnmatch("*.min.*",f)
           next if is_exclude_folder($obfuscate_exclude, f )
           next if is_exclude_folder( $minify_exclude, f )
 
           ext = File.extname(f)
-          type = nil
-          if ext == '.js' then
-            type = 'js'
-          elsif ext == '.css' then
-            type = 'css'
+          
+          if (ext == '.js') or (ext == '.css') then
+            files_to_minify << f
           end
-
-          minify_inplace(f,type) if type
+          
         end
       end
+      
+      minify_inplace_batch(files_to_minify) if files_to_minify.length>0
+    end
+    
+    def minify_inplace_batch(files_to_minify)
+      puts "minifying file list: #{files_to_minify}"
+
+      cmd = "java -jar #{$minifier} -o \"x$:x\""
+      
+      files_to_minify.each { |f| cmd += " #{f}" }
+
+      require 'open3'
+
+      status = nil
+      error = nil
+
+      begin
+        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+          output = stdout.read
+          error = stderr.read
+          status = wait_thr.value
+        end
+      rescue Exception => e
+        puts "Minify error: #{e.inspect}"
+        error = e.inspect
+      end
+
+      puts "Minification done: #{status}"
+
+      if !status || !status.exitstatus.zero?
+        puts "WARNING: Minification error!"
+        error = output if error.nil?
+        BuildOutput.warning(["Minification errors occured. Minificator stderr output: \n" + error], 'Minification error')
+      end     
     end
 
     def minify_inplace(filename,type)
