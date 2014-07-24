@@ -24,6 +24,13 @@ class CabBuilderIE < CabBuilderBase
     source[:filter]   = "prtlib.dll"
     sources << source
     
+    source = Hash.new
+    source[:id]       = "Config"
+    source[:path]     = File.join @@setup_paths[:webkit_data], "Config"
+    source[:dst_path] = "Config"
+    source[:filter]   = "*"
+    sources << source
+    
     return sources
   end
      

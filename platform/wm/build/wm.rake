@@ -438,14 +438,14 @@ def build_cab
     if $build_persistent_cab
       puts "persistent cab"
       if $is_webkit_engine && $webkit_capability
-        #cabBuilder = CabBuilderPersistentWebkit.new($app_config["name"], $srcdir, $hidden_app, $wk_data_dir, $run_on_startup, additional_dlls_persistent_paths, $comdll_files, $regkeys)
+        #cabBuilder = CabBuilderPersistentWebkit.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
       else
-        #cabBuilder = CabBuilderPersistentIE.new($app_config["name"], $srcdir, $hidden_app, $wk_data_dir, $run_on_startup, additional_dlls_persistent_paths, $comdll_files, $regkeys)
+        #cabBuilder = CabBuilderPersistentIE.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
       end
     elsif       
       if $is_webkit_engine && $webkit_capability
         puts "CabBuilderWebkit"
-        cabBuilder = CabBuilderWebkit.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, $webkit_out_of_process, additional_dlls_paths, $comdll_files, $regkeys)
+        cabBuilder = CabBuilderWebkit.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys, $webkit_out_of_process)
       else
         puts "CabBuilderIE"
         cabBuilder = CabBuilderIE.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)

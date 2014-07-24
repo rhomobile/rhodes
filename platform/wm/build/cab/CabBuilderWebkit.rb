@@ -1,31 +1,37 @@
 
 require File.join(File.dirname(__FILE__), 'CabBuilderBase.rb')
 
-class CabBuilderWebkit
+class CabBuilderWebkit < CabBuilderBase
 
   def initialize(app_name, 
-                 setup_paths,
+                 setup_paths, 
                  hidden_app, 
                  run_on_startup, 
-                 additional_dlls_paths,
-                 webkit_out_of_process, 
+                 additional_dlls_paths, 
                  regs_dlls,
-                 regkeys)
+                 regkeys,
+                 webkit_out_of_process)
                  
     super(app_name, setup_paths, hidden_app, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
     
     @@webkit_out_of_process = webkit_out_of_process
   end
 
+  def fillPredefineFileCopies
+    return "CopyToInstallDir,CopySystemFiles,CopyWebKitBin"
+  end
+  
   def getDirsForParse
     sources = super
     
+=begin
     source = Hash.new
     source[:id]       = "NPAPI"
     source[:path]     = File.join @@setup_paths[:webkit_data], "NPAPI"
     source[:dst_path] = "NPAPI"
     source[:filter]   = "*"
     sources << source
+=end
 
     source = Hash.new
     source[:id]       = "WebKitBin"
@@ -40,7 +46,7 @@ class CabBuilderWebkit
   def fillDstDirs        
     super    
     print("CopyWebKitBin=0,\"%InstallDir%\"")
-    print("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"")
+    #print("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"")
   end
   
   def fillCopyWebKitBin
@@ -67,7 +73,9 @@ class CabBuilderWebkit
   
   def fillCopyFilesSections
     super
-    fillCopyNPAPI
+    #fillCopyNPAPI
+    print ""
+    fillCopyWebKitBin
   end
    
 end

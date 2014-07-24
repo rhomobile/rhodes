@@ -94,13 +94,6 @@ class CabBuilderBase
     source[:dst_path] = ""
     source[:filter]   = "RhoLaunch.exe"
     sources << source
-            
-    source = Hash.new
-    source[:id]       = "Config"
-    source[:path]     = File.join @@setup_paths[:webkit_data], "Config"
-    source[:dst_path] = "Config"
-    source[:filter]   = "*"
-    sources << source
     
     return sources
   end
