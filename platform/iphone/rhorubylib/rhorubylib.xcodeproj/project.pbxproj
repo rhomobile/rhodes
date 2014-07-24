@@ -17,15 +17,25 @@
 		5CE99AE71413BECA000DD51D /* dln_find.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CE99AE61413BECA000DD51D /* dln_find.c */; };
 		5CE99AEA1413BEE7000DD51D /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CE99AE81413BEE7000DD51D /* node.c */; };
 		5CE99AEB1413BEE7000DD51D /* node.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE99AE91413BEE7000DD51D /* node.h */; };
-		5CF8DBC610B1D45C00247AB4 /* addrinfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC010B1D45C00247AB4 /* addrinfo.h */; };
-		5CF8DBC710B1D45C00247AB4 /* constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC110B1D45C00247AB4 /* constants.h */; };
-		5CF8DBCA10B1D45C00247AB4 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CF8DBC410B1D45C00247AB4 /* socket.c */; };
-		5CF8DBCB10B1D45C00247AB4 /* sockport.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC510B1D45C00247AB4 /* sockport.h */; };
 		BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD28516011608C9A003DE4E9 /* ringtones_wrap.c */; };
 		BD807BB01259E25A00A4E4B2 /* calendar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD807BAF1259E25A00A4E4B2 /* calendar_wrap.c */; };
 		BD807BC31259E37900A4E4B2 /* event_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD807BC11259E37900A4E4B2 /* event_wrap.c */; };
 		BD807BC41259E37900A4E4B2 /* event.h in Headers */ = {isa = PBXBuildFile; fileRef = BD807BC21259E37900A4E4B2 /* event.h */; };
 		BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD9E5E0F1186B44B0053049C /* navbar_wrap.c */; };
+		C51D2AAA197E6097001965A7 /* ancdata.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2A9C197E6097001965A7 /* ancdata.c */; };
+		C51D2AAB197E6097001965A7 /* basicsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2A9D197E6097001965A7 /* basicsocket.c */; };
+		C51D2AAC197E6097001965A7 /* constants.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2A9E197E6097001965A7 /* constants.c */; };
+		C51D2AAD197E6097001965A7 /* init.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2A9F197E6097001965A7 /* init.c */; };
+		C51D2AAE197E6097001965A7 /* ipsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA0197E6097001965A7 /* ipsocket.c */; };
+		C51D2AAF197E6097001965A7 /* option.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA1197E6097001965A7 /* option.c */; };
+		C51D2AB0197E6097001965A7 /* raddrinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA2197E6097001965A7 /* raddrinfo.c */; };
+		C51D2AB1197E6097001965A7 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA3197E6097001965A7 /* socket.c */; };
+		C51D2AB2197E6097001965A7 /* sockssocket.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA4197E6097001965A7 /* sockssocket.c */; };
+		C51D2AB3197E6097001965A7 /* tcpserver.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA5197E6097001965A7 /* tcpserver.c */; };
+		C51D2AB4197E6097001965A7 /* tcpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA6197E6097001965A7 /* tcpsocket.c */; };
+		C51D2AB5197E6097001965A7 /* udpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA7197E6097001965A7 /* udpsocket.c */; };
+		C51D2AB6197E6097001965A7 /* unixserver.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA8197E6097001965A7 /* unixserver.c */; };
+		C51D2AB7197E6097001965A7 /* unixsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = C51D2AA9197E6097001965A7 /* unixsocket.c */; };
 		F51668800FFD39D80079F023 /* alert_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F516687F0FFD39D80079F023 /* alert_wrap.c */; };
 		F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FE70F008AA600E46829 /* phonebook_wrap.c */; };
 		F5E360690EB6A62A00226287 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360220EB6A62A00226287 /* array.c */; };
@@ -133,15 +143,25 @@
 		5CE99AE61413BECA000DD51D /* dln_find.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dln_find.c; sourceTree = "<group>"; };
 		5CE99AE81413BEE7000DD51D /* node.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = node.c; sourceTree = "<group>"; };
 		5CE99AE91413BEE7000DD51D /* node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = node.h; sourceTree = "<group>"; };
-		5CF8DBC010B1D45C00247AB4 /* addrinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = addrinfo.h; path = ext/socket/addrinfo.h; sourceTree = "<group>"; };
-		5CF8DBC110B1D45C00247AB4 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = ext/socket/constants.h; sourceTree = "<group>"; };
-		5CF8DBC410B1D45C00247AB4 /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = socket.c; path = ext/socket/socket.c; sourceTree = "<group>"; };
-		5CF8DBC510B1D45C00247AB4 /* sockport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sockport.h; path = ext/socket/sockport.h; sourceTree = "<group>"; };
 		BD28516011608C9A003DE4E9 /* ringtones_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ringtones_wrap.c; path = ext/ringtones/ringtones_wrap.c; sourceTree = "<group>"; };
 		BD807BAF1259E25A00A4E4B2 /* calendar_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = calendar_wrap.c; path = ext/calendar/calendar_wrap.c; sourceTree = "<group>"; };
 		BD807BC11259E37900A4E4B2 /* event_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = event_wrap.c; path = ext/calendar/event_wrap.c; sourceTree = "<group>"; };
 		BD807BC21259E37900A4E4B2 /* event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = event.h; path = ext/calendar/event.h; sourceTree = "<group>"; };
 		BD9E5E0F1186B44B0053049C /* navbar_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = navbar_wrap.c; path = ext/navbar/navbar_wrap.c; sourceTree = "<group>"; };
+		C51D2A9C197E6097001965A7 /* ancdata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ancdata.c; path = ext/socket_192/ancdata.c; sourceTree = "<group>"; };
+		C51D2A9D197E6097001965A7 /* basicsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = basicsocket.c; path = ext/socket_192/basicsocket.c; sourceTree = "<group>"; };
+		C51D2A9E197E6097001965A7 /* constants.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = constants.c; path = ext/socket_192/constants.c; sourceTree = "<group>"; };
+		C51D2A9F197E6097001965A7 /* init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = init.c; path = ext/socket_192/init.c; sourceTree = "<group>"; };
+		C51D2AA0197E6097001965A7 /* ipsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ipsocket.c; path = ext/socket_192/ipsocket.c; sourceTree = "<group>"; };
+		C51D2AA1197E6097001965A7 /* option.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = option.c; path = ext/socket_192/option.c; sourceTree = "<group>"; };
+		C51D2AA2197E6097001965A7 /* raddrinfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = raddrinfo.c; path = ext/socket_192/raddrinfo.c; sourceTree = "<group>"; };
+		C51D2AA3197E6097001965A7 /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = socket.c; path = ext/socket_192/socket.c; sourceTree = "<group>"; };
+		C51D2AA4197E6097001965A7 /* sockssocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sockssocket.c; path = ext/socket_192/sockssocket.c; sourceTree = "<group>"; };
+		C51D2AA5197E6097001965A7 /* tcpserver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tcpserver.c; path = ext/socket_192/tcpserver.c; sourceTree = "<group>"; };
+		C51D2AA6197E6097001965A7 /* tcpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tcpsocket.c; path = ext/socket_192/tcpsocket.c; sourceTree = "<group>"; };
+		C51D2AA7197E6097001965A7 /* udpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = udpsocket.c; path = ext/socket_192/udpsocket.c; sourceTree = "<group>"; };
+		C51D2AA8197E6097001965A7 /* unixserver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unixserver.c; path = ext/socket_192/unixserver.c; sourceTree = "<group>"; };
+		C51D2AA9197E6097001965A7 /* unixsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unixsocket.c; path = ext/socket_192/unixsocket.c; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D38F7B5E110647510030B1F4 /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = ext/rho/extensions.c; sourceTree = "<group>"; };
 		F516687F0FFD39D80079F023 /* alert_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = alert_wrap.c; path = ../../shared/ruby/ext/alert/alert_wrap.c; sourceTree = SOURCE_ROOT; };
@@ -326,10 +346,20 @@
 		5CF8DBBE10B1D40400247AB4 /* socket */ = {
 			isa = PBXGroup;
 			children = (
-				5CF8DBC010B1D45C00247AB4 /* addrinfo.h */,
-				5CF8DBC110B1D45C00247AB4 /* constants.h */,
-				5CF8DBC410B1D45C00247AB4 /* socket.c */,
-				5CF8DBC510B1D45C00247AB4 /* sockport.h */,
+				C51D2A9C197E6097001965A7 /* ancdata.c */,
+				C51D2A9D197E6097001965A7 /* basicsocket.c */,
+				C51D2A9E197E6097001965A7 /* constants.c */,
+				C51D2A9F197E6097001965A7 /* init.c */,
+				C51D2AA0197E6097001965A7 /* ipsocket.c */,
+				C51D2AA1197E6097001965A7 /* option.c */,
+				C51D2AA2197E6097001965A7 /* raddrinfo.c */,
+				C51D2AA3197E6097001965A7 /* socket.c */,
+				C51D2AA4197E6097001965A7 /* sockssocket.c */,
+				C51D2AA5197E6097001965A7 /* tcpserver.c */,
+				C51D2AA6197E6097001965A7 /* tcpsocket.c */,
+				C51D2AA7197E6097001965A7 /* udpsocket.c */,
+				C51D2AA8197E6097001965A7 /* unixserver.c */,
+				C51D2AA9197E6097001965A7 /* unixsocket.c */,
 			);
 			name = socket;
 			sourceTree = "<group>";
@@ -662,9 +692,6 @@
 				F5E362410EB785C100226287 /* crt_externs.h in Headers */,
 				F5E362990EB7927100226287 /* thread_pthread.h in Headers */,
 				5C76527F0FD3E3C100CB43FD /* rhoruby.h in Headers */,
-				5CF8DBC610B1D45C00247AB4 /* addrinfo.h in Headers */,
-				5CF8DBC710B1D45C00247AB4 /* constants.h in Headers */,
-				5CF8DBCB10B1D45C00247AB4 /* sockport.h in Headers */,
 				BD807BC41259E37900A4E4B2 /* event.h in Headers */,
 				5CE99AEB1413BEE7000DD51D /* node.h in Headers */,
 			);
@@ -734,6 +761,7 @@
 				F5E360740EB6A62A00226287 /* dln.c in Sources */,
 				F5E360760EB6A62A00226287 /* dmyencoding.c in Sources */,
 				F5E360770EB6A62A00226287 /* dmyext.c in Sources */,
+				C51D2AB6197E6097001965A7 /* unixserver.c in Sources */,
 				F5E360780EB6A62A00226287 /* enum.c in Sources */,
 				F5E360790EB6A62A00226287 /* enumerator.c in Sources */,
 				F5E3607A0EB6A62A00226287 /* error.c in Sources */,
@@ -744,11 +772,15 @@
 				F5E360820EB6A62A00226287 /* inits.c in Sources */,
 				F5E360830EB6A62A00226287 /* io.c in Sources */,
 				F5E360840EB6A62A00226287 /* iseq.c in Sources */,
+				C51D2AAA197E6097001965A7 /* ancdata.c in Sources */,
 				F5E360860EB6A62A00226287 /* load.c in Sources */,
 				F5E360870EB6A62A00226287 /* marshal.c in Sources */,
 				F5E360880EB6A62A00226287 /* math.c in Sources */,
+				C51D2AAD197E6097001965A7 /* init.c in Sources */,
+				C51D2AAF197E6097001965A7 /* option.c in Sources */,
 				F5E360890EB6A62A00226287 /* numeric.c in Sources */,
 				F5E3608A0EB6A62A00226287 /* object.c in Sources */,
+				C51D2AAE197E6097001965A7 /* ipsocket.c in Sources */,
 				F5E3608B0EB6A62A00226287 /* pack.c in Sources */,
 				F5E3608C0EB6A62A00226287 /* proc.c in Sources */,
 				F5E3608D0EB6A62A00226287 /* process.c in Sources */,
@@ -761,11 +793,16 @@
 				F5E360950EB6A62A00226287 /* regerror.c in Sources */,
 				F5E360960EB6A62A00226287 /* regexec.c in Sources */,
 				F5E360980EB6A62A00226287 /* regparse.c in Sources */,
+				C51D2AB7197E6097001965A7 /* unixsocket.c in Sources */,
+				C51D2AB3197E6097001965A7 /* tcpserver.c in Sources */,
 				F5E3609A0EB6A62A00226287 /* regsyntax.c in Sources */,
 				F5E3609C0EB6A62A00226287 /* ruby.c in Sources */,
 				F5E3609D0EB6A62A00226287 /* safe.c in Sources */,
 				F5E3609E0EB6A62A00226287 /* signal.c in Sources */,
 				F5E3609F0EB6A62A00226287 /* sprintf.c in Sources */,
+				C51D2AAC197E6097001965A7 /* constants.c in Sources */,
+				C51D2AB1197E6097001965A7 /* socket.c in Sources */,
+				C51D2AB0197E6097001965A7 /* raddrinfo.c in Sources */,
 				F5E360A00EB6A62A00226287 /* st.c in Sources */,
 				F5E360A10EB6A62A00226287 /* strftime.c in Sources */,
 				F5E360A20EB6A62A00226287 /* string.c in Sources */,
@@ -773,6 +810,7 @@
 				F5E360A40EB6A62A00226287 /* thread.c in Sources */,
 				F5E360A50EB6A62A00226287 /* time.c in Sources */,
 				F5E360A60EB6A62A00226287 /* transcode.c in Sources */,
+				C51D2AB5197E6097001965A7 /* udpsocket.c in Sources */,
 				F5E360A80EB6A62A00226287 /* util.c in Sources */,
 				F5E360A90EB6A62A00226287 /* variable.c in Sources */,
 				F5E360AA0EB6A62A00226287 /* version.c in Sources */,
@@ -789,6 +827,7 @@
 				F5E363050EB79F8400226287 /* lgamma_r.c in Sources */,
 				F5E363080EB7A0DB00226287 /* newline.c in Sources */,
 				F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */,
+				C51D2AB2197E6097001965A7 /* sockssocket.c in Sources */,
 				5C76527E0FD3E3C100CB43FD /* rhoruby.c in Sources */,
 				5C7652800FD3E3C100CB43FD /* rhosupport.c in Sources */,
 				5C7652830FD3E3E000CB43FD /* stringio.c in Sources */,
@@ -796,16 +835,17 @@
 				46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */,
 				46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */,
 				F5FD0A3D10619E7900B7B8ED /* mapview_wrap.c in Sources */,
-				5CF8DBCA10B1D45C00247AB4 /* socket.c in Sources */,
 				5C79894D113BD1D0005F8736 /* geolocation_wrap.c in Sources */,
 				BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */,
 				BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */,
 				FACC2099123A5F300088A447 /* bluetooth_wrap.c in Sources */,
 				BD807BB01259E25A00A4E4B2 /* calendar_wrap.c in Sources */,
+				C51D2AB4197E6097001965A7 /* tcpsocket.c in Sources */,
 				BD807BC31259E37900A4E4B2 /* event_wrap.c in Sources */,
 				FA522E5112DEA22800AB55CC /* nativeviewmanager_wrap.c in Sources */,
 				5CE99AE71413BECA000DD51D /* dln_find.c in Sources */,
 				5CE99AEA1413BEE7000DD51D /* node.c in Sources */,
+				C51D2AAB197E6097001965A7 /* basicsocket.c in Sources */,
 				FA5AC04E14681D5900B147A2 /* encdb.c in Sources */,
 				FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */,
 				FA5AC05014681D5900B147A2 /* iso_8859_1.c in Sources */,
@@ -820,7 +860,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LIBRARY = "libstdc++";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -850,7 +889,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LIBRARY = "libstdc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
@@ -876,7 +914,6 @@
 		1DEB91F008733DB70010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -891,7 +928,6 @@
 		1DEB91F108733DB70010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -904,7 +940,6 @@
 		46B0043910332DDD00D0C2F4 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -918,7 +953,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LIBRARY = "libstdc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;

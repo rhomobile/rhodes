@@ -47,6 +47,13 @@ public class WebView {
 		public NavigateTask(String u, int i) {
 			url = u;
 			index = i;
+			//Check For Case sensitivity of HTML and html also for HTM and htm
+			if (url.contains(".HTM")) 
+			{
+	    	     		url=url.replace(".HTML", ".html");
+	    	         	url=url.replace(".HTM", ".htm");
+	    	         	Logger.I(TAG,"Replaced to lowercase html extension,url="+ url);
+	    	     	}
 		}
 
         public void run() {
