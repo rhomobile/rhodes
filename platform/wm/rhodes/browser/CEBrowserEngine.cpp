@@ -180,9 +180,9 @@ Cleanup:
     SetWindowLong(m_hwndTabHTML, GWL_STYLE, lStyle);
 	SetParent(m_hwndTabHTML, m_hwndParent);
 
-	//ShowWindow(m_hwndTabHTML, SW_SHOW);
-	//SetForegroundWindow(m_hwndTabHTML);
-	//MoveWindow(m_hwndTabHTML, m_rcViewSize.left, m_rcViewSize.top, (m_rcViewSize.right-m_rcViewSize.left), (m_rcViewSize.bottom-m_rcViewSize.top), FALSE);
+	ShowWindow(m_hwndTabHTML, SW_SHOW);
+	SetForegroundWindow(m_hwndTabHTML);
+	MoveWindow(m_hwndTabHTML, m_rcViewSize.left, m_rcViewSize.top, (m_rcViewSize.right-m_rcViewSize.left), (m_rcViewSize.bottom-m_rcViewSize.top), FALSE);
 
 	return S_OK;		
 };
