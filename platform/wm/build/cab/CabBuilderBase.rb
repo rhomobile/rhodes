@@ -9,7 +9,6 @@ class CabBuilderBase
   @@src_disk_names = nil # Array<Hash<id, path>>; 
   @@src_disk_files = nil # Array<Hash<id, name>>
   @@dst_disk_names = nil #
-  @@dst_disk_files = nil #
   
   @@settings = 
    [{:sdk => 'wm6',   :path => 'Windows Mobile 6 Professional SDK (ARMV4I)', :minver => 'VersionMin=5.02', :maxver => 'VersionMax=7.99'},
@@ -17,6 +16,8 @@ class CabBuilderBase
     {:sdk => 'ce5',   :path => 'MC3000c50b (ARMV4I)', :minver => 'VersionMin=5.00', :maxver => 'VersionMax=7.99'},
     {:sdk => 'ce7',   :path => 'WT41N0c70PSDK (ARMV4I)', :minver => 'VersionMin=5.00', :maxver => 'VersionMax=7.99'}]
 
+  ###################################################################
+      
   def initialize(app_name, setup_paths, hidden_app, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
     puts "@@setup_paths= " +  setup_paths.to_s     
     puts "@@hidden_app=" + hidden_app.to_s
@@ -175,7 +176,6 @@ class CabBuilderBase
     @@src_disk_names = Array.new
     @@src_disk_files = Array.new    
     @@dst_disk_names = Array.new
-    @@dst_disk_files = Array.new
     
     curr_dir_idx = 0
     curr_dir     = Dir.pwd
@@ -184,14 +184,14 @@ class CabBuilderBase
       dirs_for_parse.each { |dir|
         dst_disk_hash = nil
         
-        #if !dir[:dst_path].empty?
-        #  dst_disk_hash = Hash.new     
-        #  dst_disk_hash[:name]   = "" 
-        #  dst_disk_hash[:path]   = dir[:dst_path]
-        #  dst_disk_hash[:number] = curr_dir_idx
-        #    
-        #  @@dst_disk_names << dst_disk_hash
-        #end
+        if !dir[:dst_path].empty?
+          dst_disk_hash = Hash.new     
+          dst_disk_hash[:name]   = "" 
+          dst_disk_hash[:path]   = dir[:dst_path]
+          dst_disk_hash[:number] = curr_dir_idx
+            
+          @@dst_disk_names << dst_disk_hash
+        end
         
         curr_dir_idx = parseDirsReqursive(dir[:path], "", dir[:filter], dir[:dst_path], @@src_disk_names, @@src_disk_files, @@dst_disk_names, dst_disk_hash, curr_dir_idx)
       }  
@@ -234,7 +234,7 @@ class CabBuilderBase
   end
  
   def fillPredefineFileCopies
-    return "CopyToInstallDir,CopyConfig,CopySystemFiles"
+    return "CopyToInstallDir,CopySystemFiles"
   end
   
   def fillDefInstall(regs_dlls)
@@ -312,7 +312,6 @@ class CabBuilderBase
     print("ShortcutsAutorun=0,\"%CE4%\"") if @@run_on_startup == true
     print("CopySystemFiles=0,\"%CE2%\"");
     print("CopyToInstallDir=0,\"%InstallDir%\"")
-    print("CopyConfig=0,\"%InstallDir%\\Config\"")
     
     @@dst_disk_names.each { |disk|      
       if !disk[:files].nil? && !disk[:files].empty?    
@@ -324,11 +323,9 @@ class CabBuilderBase
   
   def fillCopyFilesSections
     fillCopyToInstallDir
-    print("")
+    print ""
     fillCopySystemFiles
-    print("")
-    fillCopyConfig
-    print("")
+    print ""
 
     @@dst_disk_names.each { |disk|      
       if !disk[:files].nil? && !disk[:files].empty?       
@@ -353,14 +350,7 @@ class CabBuilderBase
     print("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
     print("\"license_rc.dll\",\"license_rc.dll\",,0");
   end
-  
-  def fillCopyConfig
-    print("[CopyConfig]")
-    print("\"Config.xml\",\"Config.xml\",,0");
-    print("\"Plugin.xml\",\"Plugin.xml\",,0");
-    print("\"RegEx.xml\",\"RegEx.xml\",,0");
-  end
-  
+    
   def fillCopySystemFiles
     print("[CopySystemFiles]")
     print("\"prtlib.dll\",\"prtlib.dll\",,0")
