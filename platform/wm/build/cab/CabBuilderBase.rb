@@ -18,9 +18,8 @@ class CabBuilderBase
     {:sdk => 'ce7',   :path => 'WT41N0c70PSDK (ARMV4I)', :minver => 'VersionMin=5.00', :maxver => 'VersionMax=7.99'}]
 
   def initialize(app_name, setup_paths, hidden_app, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
-    puts "@@setup_paths= " +  setup_paths.to_s
-     
-    puts "hidden_app=" + hidden_app.to_s
+    puts "@@setup_paths= " +  setup_paths.to_s     
+    puts "@@hidden_app=" + hidden_app.to_s
     
     @@setup_paths           = setup_paths # hash of :webkit_data, :vcbin, :src
     @@app_name              = app_name
@@ -56,7 +55,7 @@ class CabBuilderBase
     source = Hash.new
     source[:id]       = "apps"
     source[:path]     = File.join @@setup_paths[:src], "apps"
-    source[:dst_path] = "rho"
+    source[:dst_path] = "rho\\apps"
     source[:filter]   = "*"
     sources << source
     
@@ -64,7 +63,7 @@ class CabBuilderBase
     
     @@additional_dlls_paths.each { |path|
       source = Hash.new
-      source[:id]       = "add" +path_idx.to_s 
+      source[:id]       = "add" + path_idx.to_s 
       source[:path]     = path
       source[:dst_path] = ""
       source[:filter] = "*"
@@ -121,6 +120,7 @@ class CabBuilderBase
     curr_dir_idx = dir_idx + 1        
     curr_dir     = Dir.pwd
     
+    puts "dir=" + dir.to_s
     if File.exist? dir
       
       dir_src_hash = Hash.new
@@ -133,7 +133,6 @@ class CabBuilderBase
       
       if !dst_disk_files.nil? && dst_disk_files.kind_of?(Hash) && !dst_disk_files.has_key?("files")
         dst_disk_files[:files] = Array.new
-      #else
       end
               
       Dir.glob(filter).each { |f|
@@ -143,10 +142,11 @@ class CabBuilderBase
         if File.directory?(f)
           dir_name = f
           rel_path = File.join relative_path, f
-          
-          dst_disk_hash = Hash.new          
-          dst_disk_hash[:name] = rel_path.clone.gsub("/", "_")
-          dst_disk_hash[:path] = File.join dst_path, rel_path
+                         
+          dst_disk_hash = Hash.new     
+          dst_disk_hash[:name]   = rel_path.clone.gsub("/", "_")
+          dst_disk_hash[:path]   = File.join dst_path, rel_path
+          dst_disk_hash[:number] = curr_dir_idx
 
           dst_disk_names << dst_disk_hash
           
@@ -164,7 +164,7 @@ class CabBuilderBase
           end                   
         end
       }
-    end      
+    end
     
     chdir curr_dir
     
@@ -178,11 +178,22 @@ class CabBuilderBase
     @@dst_disk_files = Array.new
     
     curr_dir_idx = 0
-    curr_dir = Dir.pwd
+    curr_dir     = Dir.pwd
     
     if dirs_for_parse.kind_of?(Array)
       dirs_for_parse.each { |dir|
-        curr_dir_idx = parseDirsReqursive(dir[:path], "", dir[:filter], dir[:dst_path], @@src_disk_names, @@src_disk_files, @@dst_disk_names, nil, curr_dir_idx)
+        dst_disk_hash = nil
+        
+        #if !dir[:dst_path].empty?
+        #  dst_disk_hash = Hash.new     
+        #  dst_disk_hash[:name]   = "" 
+        #  dst_disk_hash[:path]   = dir[:dst_path]
+        #  dst_disk_hash[:number] = curr_dir_idx
+        #    
+        #  @@dst_disk_names << dst_disk_hash
+        #end
+        
+        curr_dir_idx = parseDirsReqursive(dir[:path], "", dir[:filter], dir[:dst_path], @@src_disk_names, @@src_disk_files, @@dst_disk_names, dst_disk_hash, curr_dir_idx)
       }  
     end
     
@@ -223,8 +234,7 @@ class CabBuilderBase
   end
  
   def fillPredefineFileCopies
-    #return "CopyToInstallDir, CopyConfig, CopySystemFiles"
-    return "CopyToInstallDir, CopyConfig"
+    return "CopyToInstallDir,CopyConfig,CopySystemFiles"
   end
   
   def fillDefInstall(regs_dlls)
@@ -245,10 +255,16 @@ class CabBuilderBase
     copy_files_string = fillPredefineFileCopies
     
     @@dst_disk_names.each { |disk|
-      copy_files_string = copy_files_string + ", copyfiles" + disk[:name] 
+      if !disk[:files].nil? && !disk[:files].empty?   
+        copy_files_string = copy_files_string + ",copyfiles_add" + disk[:number].to_s + disk[:name]
+      end
     }
-       
-    print("CEShortcuts=Shortcuts")
+     
+    shortcut_string = ""
+    shortcut_string = shortcut_string + "Shortcuts"         if @@hidden_app == false
+    shortcut_string = shortcut_string + ",ShortcutsAutorun" if @@run_on_startup == true
+
+    print("CEShortcuts=" + shortcut_string) 
     print("AddReg=RegKeys")
     print("CopyFiles=" + copy_files_string)
   end
@@ -294,12 +310,14 @@ class CabBuilderBase
     print("[DestinationDirs]")
     print("Shortcuts=0,\"%CE11%\"")       if @@hidden_app == false
     print("ShortcutsAutorun=0,\"%CE4%\"") if @@run_on_startup == true
-    #print("CopySystemFiles=0,\"%CE2%\"");
+    print("CopySystemFiles=0,\"%CE2%\"");
     print("CopyToInstallDir=0,\"%InstallDir%\"")
     print("CopyConfig=0,\"%InstallDir%\\Config\"")
     
     @@dst_disk_names.each { |disk|      
-      print "copyfiles" + disk[:name] + "=0,\"" + File.join("%InstallDir%", disk[:path].gsub("/", "\\") + "\"")
+      if !disk[:files].nil? && !disk[:files].empty?    
+        print "copyfiles_add" + disk[:number].to_s + disk[:name] + "=0,\"" + File.join("%InstallDir%", disk[:path] + "\"").gsub("/", "\\")
+      end
     }
     
   end
@@ -313,15 +331,15 @@ class CabBuilderBase
     print("")
 
     @@dst_disk_names.each { |disk|      
-      print "[copyfiles" + disk[:name] + "]"
-        
-      if !disk[:files].nil?        
+      if !disk[:files].nil? && !disk[:files].empty?       
+        print "[copyfiles_add" + disk[:number].to_s + disk[:name] + "]"
+          
         disk[:files].each { |file|
           print "\"" + file + "\",\"" + file + "\",,0"
         }
+        
+        print ""
       end        
-      
-      print ""
     }
   end
   

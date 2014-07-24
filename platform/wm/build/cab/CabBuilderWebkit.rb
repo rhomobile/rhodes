@@ -41,7 +41,6 @@ class CabBuilderWebkit
     super    
     print("CopyWebKitBin=0,\"%InstallDir%\"")
     print("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"")
-    print("CopyConfig=0,\"%InstallDir%\\Config\"")
   end
   
   def fillCopyWebKitBin
@@ -64,6 +63,11 @@ class CabBuilderWebkit
     print("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
     print("\"bridge.dll\",\"bridge.dll\",,0");
     print("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
+  end
+  
+  def fillCopyFilesSections
+    super
+    fillCopyNPAPI
   end
    
 end
