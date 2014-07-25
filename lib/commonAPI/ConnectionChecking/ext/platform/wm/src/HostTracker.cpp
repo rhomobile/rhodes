@@ -1,4 +1,5 @@
 #include <common/RhodesApp.h>
+#include <time.h>
 #include "resource.h"
 #include "HostTracker.h"
 #include "HostTrackerConfigInfo.h"
@@ -18,72 +19,200 @@ CHostTracker* HostTrackerFactory::createHostTracker() {
 
 HWND CHostTracker::m_hConnectDlg = NULL;
 rho::StringW CHostTracker::m_szConnectionDlgMsg;
+HBRUSH CHostTracker::m_hbrBackground = NULL;
 
 CHostTracker::CHostTracker()
 {
 	m_hConnectDlg = NULL;	
+	m_hTimeOutProcId = NULL;
+	m_hbrBackground = CreateSolidBrush(RGB(255, 255, 255));
 }
 CHostTracker::~CHostTracker()
 {
 	StopNetworkChecking();
 	closeAllEvents();
+	if(NULL != m_hbrBackground)
+	{
+		DeleteObject(m_hbrBackground);
+	}
 
 }
 void CHostTracker::run()
-{
-	
-	bool bConnectDialogTimeOut = false;	
-	bool isConnectionBoxDisplayed = false;
-	bool canResumeThread = true;
-	int badLinkTimer = 0; //on timeout this variable desides whether to display box or not
-	int nPollInterval = INFINITE; //this will be modified within the thread based on various events.
-	eConnectionBoxMode mode = eNone;
+{		
 	//here we create the events used to perform various jobs
-	m_hEvents[eCancelEventIndex] = CreateEvent(NULL, FALSE, FALSE, NULL);
-	m_hEvents[eLicenseScreenPopupEventIndex] = CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_hEvents[eCancelEventIndex] = CreateEvent(NULL, FALSE, FALSE, NULL);	
+	m_hTimeOutProcCancelEvent = CreateEvent(NULL, TRUE, FALSE, NULL);	
 	m_hEvents[eLicenseScreenHidesEventIndex] = CreateEvent(NULL, FALSE, FALSE, NULL);
-	m_hEvents[eNavigateCompleteEventIndex] = CreateEvent(NULL, FALSE, FALSE, NULL);
-	
-	while(canResumeThread)
+	//do not start the loop till license screen hides
+	LOG(INFO)  + "waiting for license screen hide event";
+	WaitForSingleObject(m_hEvents[eLicenseScreenHidesEventIndex], INFINITE);	
+
+	//if start page is not a badlink, we start TimeoutProc now
+	if(false == m_bIsOnBadlink)
+	{
+		TimeoutProcHandler(true);
+	}	
+	LOG(INFO)  + "starting event listner";
+	EventListner();	
+
+}
+void CHostTracker::EventListner (void)
+{
+	bool bResume = true;
+	m_hEvents[eLicenseScreenPopupEventIndex] = CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_hEvents[eNavigateCompleteEventIndex] = CreateEvent(NULL, FALSE, FALSE, NULL);	
+	while(bResume)
 	{
 		//let us wait for the events here
-		DWORD dwEvent = WaitForMultipleObjects(4, m_hEvents, FALSE, nPollInterval);
-		if (dwEvent == WAIT_TIMEOUT)
+		DWORD dwEvent = WaitForMultipleObjects(4, m_hEvents, FALSE, INFINITE);
+		DWORD dwEventIndex = dwEvent - WAIT_OBJECT_0;                 
+		switch(dwEventIndex)
 		{
-			mode = OnTimeoutEvent(nPollInterval, badLinkTimer);
+		case eCancelEventIndex:
+			{
+				LOG(INFO)  + "cancel event handler is invoked";
+				bResume = false;
+				//fire cancel event for timeoutproc
+				TimeoutProcHandler(false);
+				break;
+			}
+		case eLicenseScreenPopupEventIndex:
+			{
+				LOG(INFO)  + "License popup event handler is invoked";
+				//fire cancel event for timeoutproc
+				TimeoutProcHandler(false);
+				break;
+			}
+		case eLicenseScreenHidesEventIndex:
+			{
+				LOG(INFO)  + "license hide event handler is invoked";
+				//start the timeoutproc
+				TimeoutProcHandler(true);
+				break;
+			}
+		case eNavigateCompleteEventIndex:
+			{
+				LOG(INFO)  + "nav complete event handler is invoked";
+				//if navigate to a badlink, fire cancel event for timeoutproc
+				//else start the timeoutproc
+				if(m_bIsOnBadlink)
+				{
+					TimeoutProcHandler(false);
+				}
+				else
+				{
+					TimeoutProcHandler(true);
+				}
+				break;
+			}
+		}
+
+	}
+}
+void CHostTracker::TimeoutProcHandler(bool bStartThread)
+{
+	if(bStartThread)
+	{	
+		//start the thread only after 2 seconds
+		wait(2000);
+		if(NULL == m_hTimeOutProcId)
+		{			
+			LOG(INFO) + "Starting TimeoutProc";
+			m_hTimeOutProcId = CreateThread (NULL, 0, TimeoutProc, this, 0, NULL);
 		}
 		else
 		{
-			DWORD dwEventIndex = dwEvent - WAIT_OBJECT_0;                 
-			switch(dwEventIndex)
-			{
-			case eCancelEventIndex:
-				{
-					canResumeThread = false;
-					mode = eHideConnectionBox;
-					break;
-				}
-			case eLicenseScreenPopupEventIndex:
-				{
-					mode = OnLicenseScreenPopupEvent(nPollInterval, badLinkTimer);
-					break;
-				}
-			case eLicenseScreenHidesEventIndex:
-				{
-					mode = OnLicenseScreenHideEvent(nPollInterval, badLinkTimer);
-					break;
-				}
-			case eNavigateCompleteEventIndex:
-				{
-					mode = OnNavCompleteEvent(nPollInterval, badLinkTimer);
-					break;
-				}
-			}
+			LOG(WARNING) + "TimeoutProc Already running";
 		}
-		HandleConnectionBox(mode);
-
-
 	}
+	else
+	{
+		if(NULL != m_hTimeOutProcId)
+		{
+			if(m_hTimeOutProcCancelEvent)
+			{
+				LOG(INFO) + "firing cancel event for timeoutproc";
+				SetEvent(m_hTimeOutProcCancelEvent);
+				//never allow multiple timeproc, wait till safe exit
+				WaitForSingleObject(m_hTimeOutProcId, INFINITE);
+				CloseHandle(m_hTimeOutProcId);
+				m_hTimeOutProcId = NULL;
+				//resetting the event manually so that even if the thread would have alredy terminated, 
+				//signal will be moved to non signald state
+				ResetEvent(m_hTimeOutProcCancelEvent);
+				LOG(INFO) + "Stoping TimeoutProc";
+
+			}
+
+		}
+	}
+}
+DWORD CHostTracker::TimeoutProc (LPVOID pparam)
+{
+	CHostTracker *pthis = (CHostTracker*) pparam;
+	pthis->ProcessTimeout ();
+	return 0;
+}
+void CHostTracker::ProcessTimeout (void)
+{
+    bool bContinue = true;
+    bool bConnectionExist = false;
+    double dBadLinkTimer = 0;
+	double dDuration;
+	clock_t start;
+    WCHAR logBuff[1024];
+    while(bContinue)
+	{	
+		start = clock();		
+        if(CheckConnectivity())
+        {
+            LOG(INFO) + "ConnectionChecking: CheckConnectivity passed";
+            bConnectionExist = true;
+            //on success hide dialog box
+            HandleConnectionBox(eHideConnectionBox);
+            //reset timer
+            dBadLinkTimer =0.0;
+
+        }
+        else
+        {
+			dDuration = ( clock() - start ) / (double) CLOCKS_PER_SEC;
+            LOG(INFO) + "ConnectionChecking: CheckConnectivity failed";
+            bConnectionExist = false;
+            //on failure display connection box
+            HandleConnectionBox(eShowConnectionBox);
+        }
+        if((WaitForSingleObject (m_hTimeOutProcCancelEvent, m_iNetworkPollInterval) == WAIT_TIMEOUT))
+        {
+            //if timed out
+            if(false == bConnectionExist)
+            {
+                //if no connectivity increment timer and check for Dialog timeout condition
+                dBadLinkTimer = dBadLinkTimer + dDuration + m_iNetworkPollInterval;
+                wsprintf(logBuff, L"BadLinkTimer updated to nBadLinkTimer= %f,", dBadLinkTimer);
+                LOG(INFO) + logBuff;
+                if(dBadLinkTimer >= m_iConnectionDlgTimeout)
+                {
+                    LOG(INFO) + "ConnectionChecking: dialog timeout reached";
+                    //hide connection box
+                    HandleConnectionBox(eHideConnectionBox);
+                    //navigate to badlink
+                    rho::String navUrl = rho::common::convertToStringA(m_szBadLinkUrl);
+
+                    RHODESAPP().navigateToUrl(navUrl.c_str());
+                    //terminate the thread
+                    bContinue = false;
+
+                }
+            }
+        }
+        else
+        {
+			HandleConnectionBox(eHideConnectionBox);
+            //if EventListner fired a cancel event
+            bContinue = false;
+        }
+    }
 
 }
 bool CHostTracker::InitConfig()
@@ -92,12 +221,21 @@ bool CHostTracker::InitConfig()
 	m_bIsFeatureEnabled = configInfo->isTrackConnectionSet;	
 	if(m_bIsFeatureEnabled)
 	{
+		WCHAR logBuff[1024];
+		LOG(INFO)  + "Setting host name as "+  configInfo->szHostName.c_str(); 
 		SetHost(configInfo->szHostName);
+		wsprintf(logBuff, L"Setting port no: %d ", configInfo->iPort);
+		LOG(INFO)  + logBuff;
 		SetPort(configInfo->iPort);
+		wsprintf(logBuff, L"Setting poll interval: %d ", configInfo->iPollInterval);
+		LOG(INFO)  + logBuff;
 		SetNetworkPollInterval(configInfo->iPollInterval);
 		SetConnectionTimeout(configInfo->iPingTimeout);
+		wsprintf(logBuff, L"Setting dialog timeout as: %d ", configInfo->iDialogTimeout);
+		LOG(INFO)  + logBuff;
 		SetConnectionDlgTimeout(configInfo->iDialogTimeout);
 		SetBadLinkUrl(rho_wmimpl_get_BadLinkURLPath());
+		LOG(INFO) + "Setting badlink as " + m_szBadLinkUrl.c_str();
 		m_szConnectionDlgMsg = rho_wmimpl_get_HostTrackerDlgMsg();	
 	}
 	
@@ -131,53 +269,85 @@ bool CHostTracker::SetNavigatedUrl(const wchar_t* navigatedUrl)
 }
 BOOL CALLBACK CHostTracker::ConnectDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
+	
     switch(Message)
     {
 		case WM_INITDIALOG:
 			{	
-				HWND hParentWnd; 
-				RECT rc, rcDlg, rcParent; 
-				// Get the owner window and dialog box rectangles. 
-				hParentWnd = GetParent(hwnd);
-				GetWindowRect(hParentWnd, &rcParent); 
-				//fill the desired location for the dalog box
-				rcDlg.left =0;
-				rcDlg.top =0;
-				rcDlg.right = rcParent.right - 40; //initialize width
-				rcDlg.bottom = 80; //initialize height			
-				CopyRect(&rc, &rcParent); 
-
-				// Offset the owner rectangles so that right and bottom 
-				// values represent the width and height, and then offset the owner again 
-				// to discard space taken up by the dialog box. 
-				OffsetRect(&rc, -rc.left, -rc.top); 
-				OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom); 
-
-				// The new position is the sum of half the remaining space and the owner's 
-				// original position. 
-
+				LONG lLeft = 0;
+				LONG lTop = 0;
+				LONG lRight = 0;
+				LONG lBottom = 0;
+				GenerateConnectionBoxCoordinates(hwnd,lLeft, lTop, lRight, lBottom);
+				//now set the new positon for the dialog box
 				SetWindowPos(hwnd, 
 					HWND_TOP, 
-					rcParent.left + (rc.right / 2), 
-					rcParent.top + (rc.bottom / 2), 
-					rcDlg.right, rcDlg.bottom,         
-					SWP_NOACTIVATE); 
+					lLeft, 
+					lTop, 
+					lRight, 
+					lBottom,         
+					SWP_NOACTIVATE);
 				
-				GetWindowRect(hwnd, &rcDlg);
-
-				
+				//draw a label on the dialog box, which fully occupy the area of dialogbox
 				HWND hWndDlgText = CreateWindowEx(0,
 					L"STATIC",
 					m_szConnectionDlgMsg.c_str(),
-					WS_CHILD | WS_VISIBLE | SS_LEFT,
-					5, 20, rcDlg.right, 40,
+					WS_CHILD | WS_VISIBLE | SS_LEFT ,
+					0, 0, lRight, lBottom,
 					hwnd,
 					NULL,
 					rho_wmimpl_get_appinstance(),
-					NULL);	
+					NULL);				
+
 
 				break; 
-			}				
+			}	
+		case WM_CTLCOLORDLG:
+			{				
+				return (LONG)m_hbrBackground;		
+			}
+		case WM_CTLCOLORSTATIC:
+			{				
+				return (LONG)m_hbrBackground;
+			}
+		case WM_SETTINGCHANGE:
+			{
+				// Determine whether wParam's contains 
+				// the value SETTINGCHANGE_RESET.
+				if (wParam == SETTINGCHANGE_RESET)
+				{
+					// Redraw to fit the dimensions of the new client area.
+					LONG lLeft = 0;
+					LONG lTop = 0;
+					LONG lRight = 0;
+					LONG lBottom = 0;
+					GenerateConnectionBoxCoordinates(hwnd,lLeft, lTop, lRight, lBottom);
+
+					//now set the new positon for the dialog box
+					SetWindowPos(hwnd, 
+						HWND_TOP, 
+						lLeft, 
+						lTop, 
+						lRight, 
+						lBottom,         
+						SWP_SHOWWINDOW);
+					HWND hWndDlgText = GetWindow(hwnd, GW_CHILD);
+					if(NULL != hwnd)
+					{
+						SetWindowPos(hWndDlgText,
+							HWND_TOP,					
+							0,
+							0, 
+							lRight, 
+							lBottom,
+							SWP_SHOWWINDOW
+							);
+					}
+
+				}
+				break;
+			}
+
 	
 		default:
 			return FALSE;
@@ -229,86 +399,53 @@ rho::StringW  CHostTracker::getMessage()
 {
 	return m_szConnectionDlgMsg;
 }
-eConnectionBoxMode CHostTracker::OnTimeoutEvent(int& nPollInterval, int& nBadLinkTimer)
+void CHostTracker::GenerateConnectionBoxCoordinates(HWND hwnd, LONG& lLeft, LONG& lTop, LONG& lRight, LONG& lBottom)
 {
-	eConnectionBoxMode mode = eNone;
-	nBadLinkTimer = nBadLinkTimer + nPollInterval;
-	nPollInterval = m_iNetworkPollInterval;
-	if( CheckConnectivity())
-	{	
-		LOG(INFO) + "ConnectionChecking: CheckConnectivity passed";
-		mode = eHideConnectionBox;
-		nBadLinkTimer =0;
-	}
-	else
-	{	
-		LOG(INFO) + "ConnectionChecking: CheckConnectivity failed";
-		mode = eShowConnectionBox;
-		nBadLinkTimer = nBadLinkTimer + m_iPingTimeOut;
-		if(nBadLinkTimer >= m_iConnectionDlgTimeout)
-		{
-			//navigate to badlink
-			rho::String navUrl = rho::common::convertToStringA(m_szBadLinkUrl);
+	HWND hParentWnd; 
+	RECT rcDlg, rcParent;			
 
-			RHODESAPP().navigateToUrl(navUrl.c_str());
 
-			//set badlink counter to zero
-			nBadLinkTimer =0;
-			mode = eHideConnectionBox;
-			nPollInterval = INFINITE;//once dlg time out happens we have to infinite until we get a navcomplete or any other event
+	//As the coordinates varies from devices to device,height decison
+	//based on the coordinates is not a good approach
+	//hence hardcode the height of the dialog box in dialog units, and convert it to
+	//pixel value at runtime using MapDialogRect API
+	rcDlg.left =0;
+	rcDlg.top =0;
+	rcDlg.right = 0; 
+	rcDlg.bottom  = 60;////initialize width
 
-		}	
-	}	
-	return mode;
+	MapDialogRect(hwnd, &rcDlg);
+
+	//now calculate the left, top, right at runtime
+	//Get the owner window and dialog box rectangles. 
+	hParentWnd = GetParent(hwnd);
+	GetWindowRect(hParentWnd, &rcParent); 
+
+	lLeft = 20; //hardcoded to start with a margin of 20 from left
+	lTop = (rcParent.bottom / 2) - (rcDlg.bottom / 2); //top  parentHeight/2 - dlgHeight/2
+	lRight = rcParent.right-40; //width is parent width-40 (20 used for margins on both side)
+	lBottom = rcDlg.bottom;
 }
-eConnectionBoxMode CHostTracker::OnNavCompleteEvent(int& nPollInterval, int& nBadLinkTimer)
-{
-	eConnectionBoxMode mode = eNone;
-	if(m_bIsOnBadlink)
-	{
-		mode = eHideConnectionBox;
-		nPollInterval = INFINITE;
-		nBadLinkTimer = 0;			
-	}
-	else
-	{
-		mode = eNone;
-		nPollInterval = 0;
-		nBadLinkTimer = 0;	
-	}
-	return mode;
-}
-eConnectionBoxMode CHostTracker::OnLicenseScreenPopupEvent(int& nPollInterval, int& nBadLinkTimer)
-{
-	eConnectionBoxMode mode = eHideConnectionBox;
-	nBadLinkTimer = 0;
-	nPollInterval = INFINITE;
-	return mode;
-}
-eConnectionBoxMode CHostTracker::OnLicenseScreenHideEvent(int& nPollInterval, int& nBadLinkTimer)
-{
-	eConnectionBoxMode mode = eNone;
-	nBadLinkTimer = 0;
-	nPollInterval = 0;
-	return mode;
-}
-void CHostTracker::HandleConnectionBox(eConnectionBoxMode& mode)
+void CHostTracker::HandleConnectionBox(eConnectionBoxMode mode)
 {
 	switch(mode)
 	{
 	case eShowConnectionBox:
 		{
+			LOG(INFO) + "inside show connection box";
 			if(NULL == m_hConnectDlg)//if dlg not present create
 			{
-				PostMessage(getMainWnd(), WM_ON_CONNECTION_BOX, 1, 0);     
+				LOG(INFO) + "inside create dialog, posting message";
+				PostMessage(getMainWnd(), WM_ON_CONNECTION_BOX, 1, 0);  				
 			}
 			break;
 		}
 	case eHideConnectionBox:
-		{
+		{			
 			if(NULL != m_hConnectDlg)//if dlg present kill it
 			{
-				PostMessage(getMainWnd(), WM_ON_CONNECTION_BOX, 0, 0);
+				LOG(INFO) + "inside hide connection box, posting message";
+				PostMessage(getMainWnd(), WM_ON_CONNECTION_BOX, 0, 0);  				
 			}
 			break;
 		}
@@ -316,6 +453,7 @@ void CHostTracker::HandleConnectionBox(eConnectionBoxMode& mode)
 }
 void CHostTracker::fireEvent(eEventIndex eventIdx)
 {
+	WCHAR logBuff[1024];
 	switch(eventIdx)
 	{
 	
@@ -326,6 +464,7 @@ void CHostTracker::fireEvent(eEventIndex eventIdx)
 				//fire this event if not on badlink
 				if (m_hEvents[eLicenseScreenHidesEventIndex])
 				{
+					LOG(INFO) + "Firing license screen hide event";
 					SetEvent(m_hEvents[eLicenseScreenHidesEventIndex]);
 				}
 			}
@@ -337,6 +476,7 @@ void CHostTracker::fireEvent(eEventIndex eventIdx)
 			//set this even if we already navigated to a badlink due to dialog timeout
 			if (m_hEvents[eNavigateCompleteEventIndex])
 			{
+				LOG(INFO) + "Firing nav complete event";
 				SetEvent(m_hEvents[eNavigateCompleteEventIndex]);
 			}
 
@@ -346,6 +486,8 @@ void CHostTracker::fireEvent(eEventIndex eventIdx)
 		{			
 			if (m_hEvents[eventIdx])
 			{
+				wsprintf(logBuff, L"Firing event with inde = %d", eventIdx);
+				LOG(INFO) + logBuff;
 				SetEvent(m_hEvents[eventIdx]);
 			}
 			break;
@@ -357,25 +499,35 @@ bool CHostTracker::onWndMsg(MSG& oMsg)
 	bool retStatus = false;
 	if(oMsg.message == WM_ON_CONNECTION_BOX)
 	{
-		bool bCreate = static_cast<bool>(oMsg.wParam);
+		int bCreate = (int)(oMsg.wParam);
 		if(bCreate)
 		{
-			m_hConnectDlg = CreateDialog(rho_wmimpl_get_appinstance(), MAKEINTRESOURCE(IDD_CONNECTION_DLG),
-				oMsg.hwnd, &CHostTracker::ConnectDlgProc);
-			if(m_hConnectDlg != NULL)
+			if(NULL == m_hConnectDlg)
 			{
-				ShowWindow(m_hConnectDlg, SW_SHOW);
-			}
-			else
-			{
-				LOG(ERROR) + "CreateDialog in CHostTracker returned NULL"; 
-					
+				LOG(INFO) + "inside onwndmsg create dialog";
+				m_hConnectDlg = CreateDialog(rho_wmimpl_get_appinstance(), MAKEINTRESOURCE(IDD_CONNECTION_DLG),
+					oMsg.hwnd, &CHostTracker::ConnectDlgProc);
+				if(m_hConnectDlg != NULL)
+				{
+					ShowWindow(m_hConnectDlg, SW_SHOW);		
+					UpdateWindow(m_hConnectDlg);
+				}
+				else
+				{
+					LOG(ERROR) + "CreateDialog failed"; 
+				}  
 			}
 		}
 		else
 		{
-			DestroyWindow(m_hConnectDlg);
-			m_hConnectDlg = NULL;
+			LOG(INFO) + "inside onwndmsg destroy";
+			if(NULL != m_hConnectDlg)//if dlg present kill it
+			{
+				LOG(INFO) + "inside destroy dialog";
+				DestroyWindow(m_hConnectDlg);
+				m_hConnectDlg = NULL;
+
+			}
 		}
 		retStatus = true;
 	}
@@ -388,7 +540,13 @@ void CHostTracker::closeAllEvents()
 		if(m_hEvents[nIndex])
 		{
 			CloseHandle(m_hEvents[nIndex]);
+			m_hEvents[nIndex] = NULL;
 		}
+	}
+	if(m_hTimeOutProcCancelEvent)
+	{
+		CloseHandle(m_hTimeOutProcCancelEvent);
+		m_hTimeOutProcCancelEvent=NULL;
 	}
 }
 
