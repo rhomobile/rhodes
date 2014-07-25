@@ -4,7 +4,7 @@
 //
 #define IDD_CONNECTION_DLG              125
 
-#define IDC_STATIC_CONNECTION_MSG       1022
+
 
 // Next default values for new objects
 // 
