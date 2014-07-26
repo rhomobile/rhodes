@@ -27,7 +27,7 @@
 #common function tools to work with android devices
 #
 # uses following globals
-# $adb
+# $adb, $applog_path
 
 #USE_TRACES = Rake.application.options.trace
 
