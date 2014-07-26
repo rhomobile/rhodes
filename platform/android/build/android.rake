@@ -423,6 +423,7 @@ namespace "config" do
 
     $applog_path = nil
     $applog_file = $app_config["applog"]
+    $applog_file = "rholog.txt" if $applog_file.nil?
 
     if !$applog_file.nil?
       $applog_path = File.join($app_path, $applog_file)
