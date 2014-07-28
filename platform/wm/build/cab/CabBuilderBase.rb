@@ -114,7 +114,6 @@ class CabBuilderBase
     curr_dir_idx = dir_idx + 1        
     curr_dir     = Dir.pwd
     
-    puts "dir=" + dir.to_s
     if File.exist? dir
       
       dir_src_hash = Hash.new
