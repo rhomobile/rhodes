@@ -23,15 +23,6 @@ class CabBuilderWebkit < CabBuilderBase
   
   def getDirsForParse
     sources = super
-    
-=begin
-    source = Hash.new
-    source[:id]       = "NPAPI"
-    source[:path]     = File.join @@setup_paths[:webkit_data], "NPAPI"
-    source[:dst_path] = "NPAPI"
-    source[:filter]   = "*"
-    sources << source
-=end
 
     source = Hash.new
     source[:id]       = "WebKitBin"
@@ -46,7 +37,6 @@ class CabBuilderWebkit < CabBuilderBase
   def fillDstDirs        
     super    
     print("CopyWebKitBin=0,\"%InstallDir%\"")
-    #print("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"")
   end
   
   def fillCopyWebKitBin
@@ -63,17 +53,9 @@ class CabBuilderWebkit < CabBuilderBase
     print("\"openssl.dll\",\"openssl.dll\",,0");
     print("\"Ekioh.dll\",\"Ekioh.dll\",,0");     
   end
-  
-  def fillCopyNPAPI    
-    print("[CopyNPAPI]");
-    print("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
-    print("\"bridge.dll\",\"bridge.dll\",,0");
-    print("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
-  end
-  
+    
   def fillCopyFilesSections
     super
-    #fillCopyNPAPI
     print ""
     fillCopyWebKitBin
   end
