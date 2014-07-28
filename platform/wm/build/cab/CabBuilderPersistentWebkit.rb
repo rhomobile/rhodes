@@ -1,99 +1,80 @@
 
 require File.join(File.dirname(__FILE__), 'CabBuilderBase.rb')
 
-class CabBuilderPersistent
+class CabBuilderPersistentWebkit < CabBuilderBase
 
-  def initialize(app_name, srcdir, hidden_app, wk_data_dir, run_on_startup, additional_dlls_persistent_paths, regs_dlls)
-    super(app_name, srcdir, hidden_app, wk_data_dir, run_on_startup, additional_dlls_persistent_paths, regs_dlls)
-  end
-=begin
-  @@inf_file = nil  
-  
-  def saveInfFile(filepath)
-    FileUtils.rm_f filepath
-
-    f = File.new(filepath, "w+")
-
-
+  def initialize(app_name, 
+                 setup_paths, 
+                 hidden_app, 
+                 run_on_startup, 
+                 additional_dlls_paths, 
+                 regs_dlls,
+                 regkeys,
+                 webkit_out_of_process)
+                 
+    super(app_name, setup_paths, hidden_app, run_on_startup, additional_dlls_paths, regs_dlls, regkeys)
     
-    f.close
+    @@webkit_out_of_process = webkit_out_of_process
   end
   
-  def fill 
-    fillVersion
-    fillStrings
-    fillCeStrings("")
-    fillCeDevice
-    fillDefInstall
-    fillSourceDiskNames
-    fillSourceDiskFiles
-    fillDstDirs
-    fillCopyFilesSections
-    fillRegKeys
+  def fillPredefineFileCopies
+    return "CopyToInstallDir,CopySystemFiles,CopyWebKitBin"
   end
   
-  def print(data)
-    if @@inf_file && @@inf_file.kind_of?(File)
-      @@inf_file.puts(data)  
-    end     
+  def getDirsForParse
+    sources = super
+
+    source = Hash.new
+    source[:id]       = "WebKitBin"
+    source[:path]     = @@setup_paths[:webkit_data]
+    source[:dst_path] = ""
+    source[:filter]   = "*"
+    sources << source
+        
+    return sources 
   end
-  
-  def fillVersion   
-    print("[Version]")    
-    print("Signature=\"$Windows NT$\"")
-    print("Provider=\"rhomobile\"")
-    print("CESignature=\"$Windows CE$\"")
-  end
-  
-  def fillStrings
-    print("[Strings]")    
-    print("Manufacturer=\"rhomobile\"")
-  end 
   
   def fillCeStrings(app_name)
     print("[CEStrings]")
-    print("AppName=\" + app_name + \"")
-    print("InstallDir=%CE1%\%AppName%")
+    print("AppName=\"" + @@app_name + "\"")
   end
   
-  def fillCeDevice
-    print("[CEDevice]") 
-    print("VersionMin=5.00")
-    print("VersionMax=7.99")
-    print("BuildMax=0xE0000000")
-  end
-  
-  def fillDefInstall(regs_dlls)
+  def fillCopyWebKitBin
+    print("[CopyWebKitBin]");
+    print("\"eklibrary.dll\",\"eklibrary.dll\",,0");
+    print("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
     
-    print("[DefaultInstall]")
-    
-    if (!regs_dlls.nil? && regs_dlls.lenght > 0)
-      CESelfRegister=CeODAX.dll,NoSIP.dll,PocketBrowser.dll
+    if @@webkit_out_of_process
+      print("\"OutProcessWK.exe\"" + "," + "\"OutProcessWK.exe\""+ ",,0");
+    else
+      print("\"WebkitPlatformDeliveryCompiledAsDLL.dll\"" + "," + "\"WebkitPlatformDeliveryCompiledAsDLL.dll\"" + ",,0");
     end
     
-    print("CEShortcuts=Shortcuts")
-    print("AddReg=RegKeys")
+    print("\"openssl.dll\",\"openssl.dll\",,0");
+    print("\"Ekioh.dll\",\"Ekioh.dll\",,0");     
+  end
     
-    
-    #CopyFiles=CopyToInstallDir,CopyConfig,CopySystemFiles,copyfiles_db,copyfiles_lib,copyfiles_apps,copyfiles_apps_public,copyfiles_apps_public_api,copyfiles_apps_public_jquery,copyfiles_apps_public_re1,copyfiles_add13,copyfiles_add13_Bin,copyfiles_add13_HTML,copyfiles_add13_HTML_images,copyfiles_add13_Image,copyfiles_add13_MPM,copyfiles_add13_Plugin
-
-  end
-  
-  def fillSourceDiskNames
-  end
-  
-  def fillSourceDiskFiles
-  end
-  
-
-  def fillDstDirs
-  end
-  
   def fillCopyFilesSections
+    super
+    print ""
+    fillCopyWebKitBin
   end
-   
-  def fillRegKeys
+  
+  def fillDstDirs    
+    app_dir = File.join("\Application", @@app_name).gsub("/", "\\")
+    
+    print("[DestinationDirs]")
+    print("Shortcuts=0,\"%CE11%\"")       if @@hidden_app == false
+    print("ShortcutsAutorun=0,\"%CE4%\"") if @@run_on_startup == true
+    print("CopySystemFiles=0,\"%CE2%\"");
+    print("CopyToInstallDir=0,\"" + app_dir + "\"")
+    print("CopyWebKitBin=0,\"" + app_dir + "\"")
+    
+    @@dst_disk_names.each { |disk|      
+      if !disk[:files].nil? && !disk[:files].empty?    
+        print "copyfiles_add" + disk[:number].to_s + disk[:name] + "=0,\"" + File.join(app_dir, disk[:path] + "\"").gsub("/", "\\")
+      end
+    }      
   end
-=end
-     
+
 end

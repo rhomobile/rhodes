@@ -245,7 +245,7 @@ def sign(cabfile, signature)
 end
 
 # make a *.cpy and *.reg files for persistent installation
-def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_process, regkeys_filename)
+def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_process)#, regkeys_filename)
   cf = File.new(File.join(dstDir, $appname + ".cpy"), "w+")
 
   if cf.nil?
@@ -269,7 +269,6 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_proc
 
       if File.exist? "files.yml"
         files_config = YAML::load(File.open("files.yml"))
-        #files_config = Jake.config(File.open("files.yml"))
 
         continue unless files_config["files"] || files_config["files"]["persistent"]
 
@@ -317,8 +316,9 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_proc
 
   rf = File.new(File.join(dstDir, $appname + ".reg"), "w+")
 
-  if File.exist?(regkeys_filename)
-    File.readlines(regkeys_filename).each do |line|
+  if !$regkeys.nil? #File.exist?(regkeys_filename)
+    #File.readlines(regkeys_filename).each do |line|
+    $regkeys.each { |line|
       parts = line.split(",")
 
       if parts.length < 5
@@ -362,10 +362,11 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_proc
 
       rf.puts value_name
       rf.puts
-    end
+    #end
+    }
   end
 
-  rf.close
+  #rf.close
 
   chdir currDir
 end
@@ -421,7 +422,7 @@ def build_cab
   build_platform = 'ce5' #if $sdk == "MC3000c50b (ARMV4I)"
   
   if $build_persistent_cab && !$use_shared_runtime
-    makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
+    makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process)#, reg_keys_filename)
   end
 
   cabBuilder = nil
@@ -437,14 +438,15 @@ def build_cab
   if $use_shared_runtime
     cabBuilder = CabBuilderRERuntime.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
   else
-    if $build_persistent_cab
-      puts "persistent cab"
+    if $build_persistent_cab      
       if $is_webkit_engine && $webkit_capability
-        #cabBuilder = CabBuilderPersistentWebkit.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
+        puts "CabBuilderPersistentWebkit"
+        cabBuilder = CabBuilderPersistentWebkit.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys, $webkit_out_of_process)
       else
-        #cabBuilder = CabBuilderPersistentIE.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
+        puts "CabBuilderPersistentIE"
+        cabBuilder = CabBuilderPersistentIE.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys)
       end
-    elsif       
+    else       
       if $is_webkit_engine && $webkit_capability
         puts "CabBuilderWebkit"
         cabBuilder = CabBuilderWebkit.new($app_config["name"], setup_paths, $hidden_app, $run_on_startup, additional_dlls_paths, $comdll_files, $regkeys, $webkit_out_of_process)
