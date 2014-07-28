@@ -27,8 +27,10 @@
 dir = File.dirname(__FILE__)
 
 require File.join(dir, 'cab/CabBuilderIE.rb')
-require File.join(dir, 'cab/CabBuilderPersistent.rb')
 require File.join(dir, 'cab/CabBuilderWebkit.rb')
+require File.join(dir, 'cab/CabBuilderPersistentIE.rb')
+require File.join(dir, 'cab/CabBuilderPersistentWebkit.rb')
+require File.join(dir, 'cab/CabBuilderRERuntime.rb')
 
 module WM
   def self.config
