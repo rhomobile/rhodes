@@ -904,10 +904,21 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 
     common::CMutexLock lock(m_mxInternet);
 
-    if (m_hInternet)
-        return true;
+    /****************************************/
+    //SR ID - EMBPD00120791
+    //Issue Description - <System API>Proxy is not getting set using Rho.System.httpProxyURI.
+    //Fix Provided - Closing existing HINTERNET handle i.e. m_hInternet and recreating the m_hInternet as we don't know when user will set the proxy using httpProxyURI.
+    //Developer Name - Abhineet Agarwal
+    //File Name - NetRequestImpl.cpp
+    //Function Name - initConnection(rho::boolean bLocalHost, LPCTSTR url)
+    //Date - 10/07/2014
+    /****************************************/
+    if (m_hInternet){
+	 InternetCloseHandle(m_hInternet);
+	 m_hInternet = NULL;
+    } 
 
-	if (RHOCONF().isExist("http_proxy_host")) {
+    if (RHOCONF().isExist("http_proxy_host")) {
 		rho::String proxyName = RHOCONF().getString("http_proxy_host");
 
 		if (RHOCONF().isExist("http_proxy_port")) {

@@ -423,6 +423,7 @@ namespace "config" do
 
     $applog_path = nil
     $applog_file = $app_config["applog"]
+    $applog_file = "rholog.txt" if $applog_file.nil?
 
     if !$applog_file.nil?
       $applog_path = File.join($app_path, $applog_file)
@@ -923,15 +924,14 @@ namespace "build" do
         addspath = File.join packagepath,'adds'
         
         Dir.glob(File.join(res,'**','*.*')) do |p|
-          puts p
           unless File.directory? p
             rel_path = p.gsub path, ''
             target = File.join addspath, rel_path
             if File.basename(File.dirname(rel_path)) =~ /^values/
               target = File.join addspath, File.dirname(rel_path), "#{package}.#{File.basename(rel_path)}"
             end
-            mkdir_p File.dirname(target)
-            cp p, target
+            mkdir_p File.dirname(target) unless File.exists?(File.dirname(target))
+            Jake.copyIfNeeded p, target
           end
         end
       #  cp_r res, addspath if File.directory? res
@@ -2261,7 +2261,7 @@ namespace "run" do
       end
     end
 
-    desc "Run downloaded binary package on device"
+    desc "Run downloaded binary package on emulator"
     task "simulator:package", [:package_file, :package_name] => ['config:android:emulator'] do |t, args|
       package_file = args.package_file
       package_name = args.package_name.nil? ? $app_package_name : args.package_name
@@ -2274,15 +2274,17 @@ namespace "run" do
       AndroidTools.load_app_and_run('-e', File.expand_path(package_file), package_name)
     end
 
-    desc "Run downloaded binary package on simulator"
-    task "device:package", [:package_file, :package_name] => ['config:android:device'] do |t, args|
-      package_file = args.package_file
-      package_name = args.package_name.nil? ? $app_package_name : args.package_name
+    desc "Run downloaded binary package on device"
+    task "device:package", [:package_path, :device_id] => ['config:android:device'] do |t, args|
+      args.with_defaults(:device_id => '-d')
 
-      throw "You must pass package name" if package_file.nil?
-      throw "No file to run" if !File.exists?(package_file)
+      throw "You must pass path to package" if args.package_path.nil?
 
-      AndroidTools.load_app_and_run('-d', File.expand_path(package_file), package_name)
+      package_path = File.expand_path(args.package_path)
+
+      throw "Package file does not exist: #{package_path}" if !File.exists?(package_path)
+
+      AndroidTools.load_app_and_run(args.device_id, package_path, $app_package_name)
     end
 
     task :spec => "run:android:emulator:spec" do
@@ -2304,14 +2306,15 @@ namespace "run" do
       sleepRubyProcess
     end
 
-    desc "build and install on device"
-    task :device => "device:android:debug" do
-      AndroidTools.kill_adb_logcat('-d')
+    desc "build, install and run on device"
+    task :device, [:device_id] => "device:android:debug" do |t, args|
+      args.with_defaults(:device_id => '-d')
+      AndroidTools.kill_adb_logcat(args.device_id)
 
       apkfile = File.join $targetdir, $appname + "-debug.apk"
-      AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
+      AndroidTools.load_app_and_run(args.device_id, apkfile, $app_package_name)
 
-      AndroidTools.logcat_process('-d')
+      AndroidTools.logcat_process(args.device_id)
 
       sleepRubyProcess
     end

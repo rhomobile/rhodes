@@ -573,7 +573,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     dst.flush();
     dst.close();
     
-    delete buf;
+    delete[] buf;
 
     return 0;
 }
