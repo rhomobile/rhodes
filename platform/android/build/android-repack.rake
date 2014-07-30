@@ -340,6 +340,7 @@ namespace 'device' do
       resourcepkg = $bindir + "/rhodes.ap_"
 
       puts "Packaging Assets and Jars"
+      print_timestamp('Packaging Assets and Jars START')
 
       args = ["package", "-f", "-M", manifest_path, "-S", resources_path, "-A", assets_path, "-I", $androidjar, "-F", resourcepkg]
       if $no_compression
@@ -353,8 +354,10 @@ namespace 'device' do
       unless $?.success?
         raise "Error running AAPT (1)"
       end
+      print_timestamp('Packaging Assets and Jars FINISH')
 
       # Workaround: manually add files starting with '_' because aapt silently ignore such files when creating package
+      print_timestamp('Packaging underscore START')
       underscore_files.each do |relpath|
         puts "Add #{relpath} to #{resourcepkg}..."
         args = ["uf", resourcepkg, relpath]
@@ -363,8 +366,11 @@ namespace 'device' do
           raise "Error packaging assets"
         end
       end
+      print_timestamp('Packaging underscore FINISH')
 
       puts "Packaging Native Libs"
+
+      print_timestamp('Packaging Native Libs START')
 
       args = ["uf", resourcepkg]
       Dir.glob(File.join(native_libs_path,'**','lib*.so')) do |lib|
@@ -375,14 +381,18 @@ namespace 'device' do
       unless $?.success?
         raise "Error packaging native libraries"
       end
-
+      print_timestamp('Packaging Native Libs FINISH')
       dexfile = classes_dex
       simple_apkfile = $targetdir + "/" + $appname + "_tmp.apk"
       final_apkfile = output_path
       signed_apkfile = $targetdir + "/" + $appname + "_tmp_signed.apk"
       resourcepkg = $bindir + "/rhodes.ap_"
 
+
+      print_timestamp('build APK START')
       apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, false
+
+      print_timestamp('build APK FINISH')
 
       if not File.exists? $keystore
         puts "Generating private keystore..."
@@ -409,6 +419,7 @@ namespace 'device' do
         end
       end
 
+      print_timestamp('Signing APK file START')
       puts "Signing APK file"
       args = []
       args << "-sigalg"
@@ -430,7 +441,11 @@ namespace 'device' do
         exit 1
       end
 
+      print_timestamp('Signing APK file FINISH')
+
       puts "Align APK file"
+
+      print_timestamp('Align APK file START')
       args = []
       args << "-f"
       args << "-v"
@@ -442,6 +457,7 @@ namespace 'device' do
         puts "Error running zipalign"
         exit 1
       end
+      print_timestamp('Align APK file FINISH')
       #remove temporary files
       rm_rf simple_apkfile
       rm_rf signed_apkfile
