@@ -57,17 +57,19 @@ namespace 'device' do
     end
 
     def self.make_app_bundle
+      print_timestamp('AndroidPrebuild.make_app_bundle START')
       $use_prebuild_data = true
       $skip_build_rhodes_main = true
       $skip_build_extensions = true
       $skip_build_xmls = true
 
       Rake::Task['build:android:rhobundle'].execute
+      print_timestamp('AndroidPrebuild.make_app_bundle FINISH')
       return $appassets
     end
 
     def self.generate_manifest(prebuilt_path,prebuilt_config,app_config)
-
+      print_timestamp('AndroidPrebuild.generate_manifest START')
       version = {'major' => 0, 'minor' => 0, 'patch' => 0, "build" => 0}
       if $app_config["version"]
         if $app_config["version"] =~ /^(\d+)$/
@@ -188,13 +190,14 @@ namespace 'device' do
 
       puts "Applying legacy manifest changes..."
       apply_manifest_ext_changes($appmanifest,ext_manifest_changes)
-
+      print_timestamp('AndroidPrebuild.generate_manifest FINISH')
       return $appmanifest
     end
 
     def self.apply_manifest_ext_changes(target_manifest, manifest_changes)
       #######################################################
       # Deprecated staff below
+      print_timestamp('AndroidPrebuild.apply_manifest_ext_changes START')
 
       app_f = File.new(target_manifest)
       manifest_orig_doc = REXML::Document.new(app_f)
@@ -266,11 +269,12 @@ namespace 'device' do
       updated_f = File.open(target_manifest, "w")
       manifest_orig_doc.write updated_f, 2
       updated_f.close
-
+      print_timestamp('AndroidPrebuild.apply_manifest_ext_changes FINISH')
       puts 'Manifest updated by extension is saved!'
     end
 
     def self.build_resources(prebuilt_builddir)
+      print_timestamp('AndroidPrebuild.build_resources START')
       set_app_name_android($appname)
 
       puts 'EXT:  add additional files to project before build'
@@ -307,6 +311,7 @@ namespace 'device' do
         cp_r lib, File.join($applibs,arch,file)
       end
 =end
+      print_timestamp('AndroidPrebuild.build_resources FINISH')
       return $appres
     end
 
@@ -331,7 +336,7 @@ namespace 'device' do
     end
 
     def self.make_package(manifest_path, resources_path, assets_path, underscore_files, native_libs_path, classes_dex, output_path)
-
+      print_timestamp('AndroidPrebuild.make_package START')
       resourcepkg = $bindir + "/rhodes.ap_"
 
       puts "Packaging Assets and Jars"
@@ -444,10 +449,11 @@ namespace 'device' do
       File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
         f.puts $app_package_name
       end
-
+      print_timestamp('AndroidPrebuild.make_package FINISH')
     end
 
     def self.merge_assets( prebuilt_assets, app_assets )
+        print_timestamp('AndroidPrebuild.merge_assets START')
         target_assets = app_assets + '_merged'
         
         FileUtils.mkdir_p( target_assets )
@@ -477,11 +483,12 @@ namespace 'device' do
 
         File.open(File.join(target_assets, "hash"), "w") { |f| f.write(hash.hexdigest) }
         File.open(File.join(target_assets, "name"), "w") { |f| f.write($appname) }
-
+        print_timestamp('AndroidPrebuild.merge_assets FINISH')
         return target_assets
     end
 
     def self.merge_resources( prebuilt_res, app_res )
+        print_timestamp('AndroidPrebuild.merge_resources START')
         target_res = app_res + '_merged'
         
         FileUtils.mkdir_p( target_res )
@@ -504,11 +511,12 @@ namespace 'device' do
         end
 
         #cp_r( File.join(app_res,'.'), target_res, { :verbose => true } )
-
+        print_timestamp('AndroidPrebuild.merge_resources FINISH')
         return target_res
     end
 
     def self.production_with_prebuild_binary
+      print_timestamp('AndroidPrebuild.production_with_prebuild_binary START')
       Rake::Task['config:android'].invoke
 
       prebuilt_path = determine_prebuild_path($app_config)
@@ -535,6 +543,7 @@ namespace 'device' do
 
       classes_dex = File.join(prebuilt_path,'classes.dex')
       make_package(manifest_path,resources_path,assets_path,underscore_files,native_libs_path, classes_dex, output_path)
+      print_timestamp('AndroidPrebuild.production_with_prebuild_binary FINISH')
     end
 
   end
