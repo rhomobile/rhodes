@@ -358,6 +358,7 @@ def prepare_production_ipa (app_path, app_name)
   Dir.chdir currentdir
   rm_rf tmp_dir
 
+  return ipa_file_path
 end
 
 def copy_all_png_from_icon_folder_to_product(app_path)
@@ -817,6 +818,7 @@ namespace "build" do
   namespace "iphone" do
 #    desc "Build iphone rhobundle"
     task :rhobundle => ["config:iphone"] do
+      print_timestamp('build:iphone:rhobundle START')
 
       ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
 
@@ -849,6 +851,9 @@ namespace "build" do
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
 
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
+
+      print_timestamp('build:iphone:rhobundle FINISH')
+
     end
 
     task :upgrade_package => ["build:iphone:rhobundle"] do
@@ -1158,6 +1163,9 @@ namespace "build" do
       $stdout.flush
       $app_extensions_list.each do |ext, commin_ext_path |
           if commin_ext_path != nil
+
+            print_timestamp('process extension "'+ext+'" START')
+
             #puts '########################  ext='+ext.to_s+'        path='+commin_ext_path.to_s
             extpath = File.join( commin_ext_path, 'ext')
 
@@ -1228,6 +1236,9 @@ namespace "build" do
                 build_extension_lib(extpath, sdk, target_dir, xcodeproject, xcodetarget, depfile)
               end
             end
+
+            print_timestamp('process extension "'+ext+'" FINISH')
+
           end
       end
 
@@ -1293,6 +1304,10 @@ namespace "build" do
               libname = libes.first
               prebuiltpath = Dir.glob(File.join(extpath, '**', 'iphone'))
               if prebuiltpath != nil && prebuiltpath.count > 0
+
+                print_timestamp('build extension "'+ext+'" START')
+
+
                  prebuiltpath = prebuiltpath.first
 
                  libpath = File.join(prebuiltpath, "lib"+libname+".a")
@@ -1334,6 +1349,7 @@ namespace "build" do
                         cp_r artefact, File.join($app_builddir, "extensions", ext)
                     end
                  end
+                print_timestamp('build extension "'+ext+'" FINISH')
 
               end
             end
@@ -1346,6 +1362,8 @@ namespace "build" do
 
 
     task :extensions => "config:iphone" do
+      print_timestamp('build:iphone:extensions START')
+
       simulator = $sdk =~ /iphonesimulator/
       target_dir = ''
       if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
@@ -1356,6 +1374,9 @@ namespace "build" do
       end
 
       build_extension_libs($sdk, target_dir)
+
+      print_timestamp('build:iphone:extensions FINISH')
+
     end
 
 
@@ -1606,6 +1627,7 @@ namespace "build" do
 
     desc "make/change generated XCode project for build application"
     task :setup_xcode_project => ["config:iphone"] do
+      print_timestamp('build:iphone:setup_xcode_project START')
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
@@ -1634,6 +1656,7 @@ namespace "build" do
       end
 
       copy_generated_sources_and_binaries
+      print_timestamp('build:iphone:make_xcode_project FINISH')
 
     end
 
@@ -1681,7 +1704,7 @@ namespace "build" do
 
     task :make_xcode_project => ["config:iphone"] do
 
-
+      print_timestamp('build:iphone:make_xcode_project START')
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
@@ -1743,6 +1766,7 @@ namespace "build" do
 
       rm_rf 'project/iphone/toremoved'
       rm_rf 'project/iphone/toremovef'
+      print_timestamp('build:iphone:make_xcode_project FINISH')
 
     end
 
@@ -1760,7 +1784,7 @@ namespace "build" do
 
 #    desc "Build rhodes"
     task :rhodes_old => ["config:iphone", "build:iphone:rhobundle"] do
-
+      print_timestamp('build:iphone:rhodes START')
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
       appname_project = appname_fixed.slice(0, 1).capitalize + appname_fixed.slice(1..-1) + ".xcodeproj"
@@ -1860,6 +1884,8 @@ namespace "build" do
         puts 'XCode return next error code = '+ret.to_s
         exit 1
       end
+
+      print_timestamp('build:iphone:rhodes FINISH')
 
     end
 
@@ -2126,7 +2152,7 @@ namespace "run" do
   end
 
   task :buildsim => ["config:iphone", "build:iphone:rhodes"] do
-
+     print_timestamp('run:buildsim START')
      unless $sdk =~ /^iphonesimulator/
        puts "SDK must be one of the iphonesimulator sdks to run in the iphone simulator"
        exit 1
@@ -2262,12 +2288,15 @@ namespace "run" do
         f << "(version 1)\n(debug deny)\n(allow default)\n"
         f.close
      #end
+    print_timestamp('run:buildsim FINISH')
   end
 
   # split this off separate so running it normally is run:iphone
   # testing we will not launch emulator directly
   desc "Builds everything, launches iphone simulator"
   task :iphone => :buildsim do
+
+    print_timestamp('run:iphone START')
 
     mkdir_p $tmpdir
     log_name  =   File.join($tmpdir, 'logout')
@@ -2302,6 +2331,7 @@ namespace "run" do
     #}
     end
 
+    print_timestamp('application was launched in simulator')
     if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
        thr.join
     else
@@ -2317,7 +2347,7 @@ namespace "run" do
        puts 'application is started in Simulator'
        exit
     end
-
+    print_timestamp('run:iphone FINISH')
     puts "end build iphone app"
     exit
   end
@@ -2619,7 +2649,7 @@ namespace "device" do
   namespace "iphone" do
     desc "Builds and signs iphone for production"
     task :production => ["config:iphone", "build:iphone:rhodes"] do
-
+    print_timestamp('device:iphone:production START')
     #copy build results to app folder
 
     app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration)
@@ -2650,10 +2680,15 @@ namespace "device" do
     puts 'copy result build package to application target folder ...'
     cp_r src_file, dst_file
     make_app_info
-    prepare_production_ipa(app_path, appname)
+    ipapath = prepare_production_ipa(app_path, appname)
     prepare_production_plist(app_path, appname)
     copy_all_png_from_icon_folder_to_product(app_path)
-
+    print_timestamp('device:iphone:production FINISH')
+      puts '************************************'
+      puts '*'
+      puts "SUCCESS ! Production package builded and placed into : "+ipapath
+      puts '*'
+      puts '************************************'
     end
 
     def determine_prebuild_path_iphone(config)
@@ -2664,6 +2699,8 @@ namespace "device" do
 
     desc "Builds and signs iphone for production, use prebuild binaries"
     task :production_with_prebuild_binary => ["config:iphone"] do
+
+      print_timestamp('device:iphone:production_with_prebuild_binary START')
 
       currentdir = Dir.pwd()
 
@@ -2682,6 +2719,7 @@ namespace "device" do
 
       chdir $app_path
 
+      print_timestamp('bundle was builded')
 
       parent_app_bin = File.join($app_path, 'project/iphone/binp')
       rm_rf parent_app_bin
@@ -2691,6 +2729,8 @@ namespace "device" do
       chdir parent_app_bin
       #cmd "%{unzip "+parent_ipa_path+" -d "+parent_app_bin+" }"
       Jake.run('unzip', [parent_ipa_path, '-d', parent_app_bin])
+
+      print_timestamp('parent IPA was unzipped')
 
       #copy bundle from bin to binp
       src_bundle_folder = File.join($app_path, "/project/iphone/bin/RhoBundle/")
@@ -2857,7 +2897,7 @@ namespace "device" do
       else
         puts '$$$ executable is already have executable attribute !!! $$$'
       end
-
+      print_timestamp('application bundle was updated')
 
       #sign
       if !is_simulator
@@ -2947,7 +2987,7 @@ namespace "device" do
 
       end
 
-
+      print_timestamp('updated application was signed')
 
       sh %{zip -r -y temporary_archive.zip .}
 
@@ -2966,6 +3006,7 @@ namespace "device" do
       #Jake.run('zip', ['-qr', ipaname, 'Payload'])
       Dir.chdir currentdir
 
+      print_timestamp('device:iphone:production_with_prebuild_binary FINISH')
       puts '************************************'
       puts '*'
       puts "SUCCESS ! Production package builded and placed into : "+File.join(app_path, ipaname)
@@ -2999,6 +3040,7 @@ namespace "device" do
 
     task :production_with_prebuild_libs => ["config:iphone"] do
 
+      print_timestamp('device:iphone:production_with_prebuild_libs START')
 
       rm_rf File.join($app_path, "project/iphone")
       $use_prebuild_data = true
@@ -3041,7 +3083,7 @@ namespace "device" do
       prepare_production_ipa(app_path, appname)
       prepare_production_plist(app_path, appname)
       copy_all_png_from_icon_folder_to_product(app_path)
-
+      print_timestamp('device:iphone:production_with_prebuild_libs FINISH')
     end
 
 
