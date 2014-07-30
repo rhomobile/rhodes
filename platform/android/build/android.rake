@@ -197,6 +197,45 @@ namespace 'project' do
   end
 end
 
+# Finds file in a given locations
+# file_name should contain required file
+# path_array could be
+# - String with location,
+# - Array of strings of locations,
+# - Array of arrays of directories - will be joined using File.join.
+
+def find_file(file_name, path_array)
+  result = nil
+  lookup = []
+
+  unless path_array.empty?
+    search_paths = path_array
+
+    if path_array.first.kind_of? String
+      search_paths = [path_array]
+    end
+
+    search_paths.each do |elem| 
+      full_path = (elem.kind_of?(String)) ? elem : File.join(elem)
+
+      files = Dir.glob(File.join(full_path, file_name))
+
+      unless files.empty?
+        result = files.sort.last
+        break
+      else
+        lookup << full_path
+      end
+    end
+  end
+
+  if result.nil?
+    fail "Could not find file #{file_name} at #{lookup.join(', ')}"
+  end
+
+  result
+end
+
 namespace "config" do
   task :set_android_platform do
     $current_platform = "android"
@@ -356,9 +395,21 @@ namespace "config" do
     end
 
     $androidbin = File.join($androidsdkpath, "tools", "android" + $bat_ext)
-    $adb = File.join($androidsdkpath, "tools", "adb" + $exe_ext)
-    $adb = File.join($androidsdkpath, "platform-tools", "adb" + $exe_ext) unless File.exists? $adb
-    $zipalign = File.join($androidsdkpath, "tools", "zipalign" + $exe_ext)
+    $adb = find_file( "adb" + $exe_ext, 
+      [
+        [$androidsdkpath, "tools"],
+        [$androidsdkpath, "platform-tools"]
+      ]
+    )
+
+    $zipalign = find_file( "zipalign" + $exe_ext, 
+      [
+        [$androidsdkpath, "tools"], 
+        [build_tools_path],
+        [$androidsdkpath,'build-tools','*']
+      ] 
+    )
+
     $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
     $sdklibjar = File.join($androidsdkpath, 'tools', 'lib', 'sdklib.jar')
 
