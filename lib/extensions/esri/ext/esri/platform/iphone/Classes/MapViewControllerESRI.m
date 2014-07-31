@@ -836,6 +836,10 @@ static RhoCloseMapTaskESRI* instance_close = nil;
     callout.title = (NSString*)[feature attributeForKey:@"Name"];
     callout.detail =(NSString*)[feature attributeForKey:@"Descr"];
     
+    if ((callout.detail == nil) || ([callout.detail isKindOfClass:[NSNull class]])) {
+        callout.detail = @"";
+    }
+    
     NSNumber* n = (NSNumber*)[feature attributeForKey:@"y_offset"];
     
     int y_offset = [n intValue];
@@ -848,6 +852,14 @@ static RhoCloseMapTaskESRI* instance_close = nil;
     offset.x = 0;
     offset.y = -y_offset;
     
+    NSString* url = (NSString*)[feature attributeForKey:@"URL"];
+    if ((url == nil) || ([url isKindOfClass:[NSNull class]])) {
+        callout.accessoryButtonHidden = YES;
+    }
+    else {
+        callout.accessoryButtonHidden = NO;
+    }
+    
     //[self.mapView.callout showCalloutAt:mapPoint screenOffset:offset animated:NO];
     //[callout moveCalloutTo:mapPoint screenOffset:offset animated:NO];
     return YES;
@@ -858,14 +870,18 @@ static RhoCloseMapTaskESRI* instance_close = nil;
     //Handle tap on the accessory button when callout was displayed for a graphic
     //NSDictionary* dict = callout.representedFeature.attributes;
     NSString* url = (NSString*)[callout.representedFeature attributeForKey:@"URL"];//[dict objectForKey:@"URL"];
-    NSLog(@"Callout tapped... Url = %@\n", url);
-    //id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
-    //[mainView navigateRedirect:url tab:[mainView activeTab]];
-    if ([url length] > 0) {
-        rho_webview_navigate([url UTF8String], 0);
-        [self close];
+    if ((url == nil) || ([url isKindOfClass:[NSNull class]])) {
+        NSLog(@"Callout tapped... Url = NIL");
     }
-    
+    else {
+        NSLog(@"Callout tapped... Url = %@\n", url);
+        //id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
+        //[mainView navigateRedirect:url tab:[mainView activeTab]];
+        if ([url length] > 0) {
+            rho_webview_navigate([url UTF8String], 0);
+            [self close];
+        }
+    }
     
 }
 
@@ -892,8 +908,8 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 	point = (AGSPoint*)AGSGeometryGeographicToWebMercator(point);
 	
 	//set the text and detail text based on 'Name' and 'Descr' fields in the attributes
-	self.calloutTemplate.titleTemplate = @"${Name}";
-	self.calloutTemplate.detailTemplate = @"${Descr}";
+	//self.calloutTemplate.titleTemplate = @"${Name}";
+	//self.calloutTemplate.detailTemplate = @"${Descr}";
 	
 	//title - @"Name",
 	//street adress - @"Match_addr",
