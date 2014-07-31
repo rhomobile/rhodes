@@ -21,7 +21,6 @@
 		FA42C20B12EA68FA007FB3FE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C20A12EA68FA007FB3FE /* MapKit.framework */; };
 		FA42C20D12EA68FA007FB3FE /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C20C12EA68FA007FB3FE /* QuartzCore.framework */; };
 		FA42C20F12EA68FA007FB3FE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C20E12EA68FA007FB3FE /* UIKit.framework */; };
-		FA42C21B12EA6928007FB3FE /* libArcGIS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA42C21A12EA6928007FB3FE /* libArcGIS.a */; };
 		FA42C2D212EA731E007FB3FE /* ESRIViewFactoryRegister.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA42C2D112EA731E007FB3FE /* ESRIViewFactoryRegister.mm */; };
 /* End PBXBuildFile section */
 
@@ -41,7 +40,6 @@
 		FA42C20A12EA68FA007FB3FE /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		FA42C20C12EA68FA007FB3FE /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		FA42C20E12EA68FA007FB3FE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		FA42C21A12EA6928007FB3FE /* libArcGIS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libArcGIS.a; path = ../../../../../../../../Library/SDKs/ArcGIS/iOS.sdk/usr/local/lib/libArcGIS.a; sourceTree = SOURCE_ROOT; };
 		FA42C2D112EA731E007FB3FE /* ESRIViewFactoryRegister.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ESRIViewFactoryRegister.mm; path = Classes/ESRIViewFactoryRegister.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -57,7 +55,6 @@
 				FA42C20B12EA68FA007FB3FE /* MapKit.framework in Frameworks */,
 				FA42C20D12EA68FA007FB3FE /* QuartzCore.framework in Frameworks */,
 				FA42C20F12EA68FA007FB3FE /* UIKit.framework in Frameworks */,
-				FA42C21B12EA6928007FB3FE /* libArcGIS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,7 +72,6 @@
 		0867D691FE84028FC02AAC07 /* ESRI */ = {
 			isa = PBXGroup;
 			children = (
-				FA42C21A12EA6928007FB3FE /* libArcGIS.a */,
 				08FB77AEFE84172EC02AAC07 /* Classes */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
@@ -159,6 +155,8 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "ESRI" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -199,9 +197,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_MODULES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DSTROOT = /tmp/ESRI.dst;
+				FRAMEWORK_SEARCH_PATHS = "$(HOME)/Library/SDKs/ArcGIS/iOS/";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -210,15 +210,17 @@
 				GCC_PREFIX_HEADER = ESRI_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				LIBRARY_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/lib";
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
+					"-framework",
+					ArcGIS,
 				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = ESRI;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
-				USER_HEADER_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/include/**";
+				USER_HEADER_SEARCH_PATHS = "";
 				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
@@ -228,22 +230,26 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_MODULES = YES;
 				DEAD_CODE_STRIPPING = NO;
 				DSTROOT = /tmp/ESRI.dst;
+				FRAMEWORK_SEARCH_PATHS = "$(HOME)/Library/SDKs/ArcGIS/iOS/";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ESRI_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				LIBRARY_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/lib";
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
+					"-framework",
+					ArcGIS,
 				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = ESRI;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
-				USER_HEADER_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/include/**";
+				USER_HEADER_SEARCH_PATHS = "";
 				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;

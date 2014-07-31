@@ -648,7 +648,10 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 	
 
 	// set the delegate for the map view
-	self.mapView.mapViewDelegate = self;
+	//self.mapView.mapViewDelegate = self;
+    //MOHUS
+    // self.mapView.to
+    self.mapView.callout.delegate = self;
 	
 	
 	
@@ -666,14 +669,20 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 	AGSTiledMapServiceLayer *tiledLayer = [[AGSTiledMapServiceLayer alloc] initWithURL:baseURL];
 	
 	//Add it to the map view
-	UIView<AGSLayerView>* lyr = [self.mapView addMapLayer:tiledLayer withName:@"Tiled Layer"];
+	//UIView<AGSLayerView>* lyr = [self.mapView addMapLayer:tiledLayer withName:@"Tiled Layer"];
+    [self.mapView addMapLayer:tiledLayer withName:@"Basemap Tiled Layer"];
+    
+    
+    //Add a basemap tiled layer
+    
 	
 	//release to avoid memory leaks
 	[tiledLayer release];
 	
 	// Setting these two properties lets the map draw while still performing a zoom/pan
-	lyr.drawDuringPanning = scrollEnabled;
-	lyr.drawDuringZooming = zoomEnabled;
+	
+    //lyr.drawDuringPanning = scrollEnabled;
+	//lyr.drawDuringZooming = zoomEnabled;
 	
 	
 	//if (mapType == ESRI_MapType_Hybrid) {
@@ -685,10 +694,10 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 		self.dynamicLayer.visibleLayers = [NSArray arrayWithObjects:[NSNumber numberWithInt:2], nil];
 		
 		//name the layer. This is the name that is displayed if there was a property page, tocs, etc...
-		self.dynamicLayerView = [self.mapView addMapLayer:self.dynamicLayer withName:@"Dynamic Layer"];
+		//self.dynamicLayerView = [self.mapView addMapLayer:self.dynamicLayer withName:@"Dynamic Layer"];
 		
 		//set transparency
-		self.dynamicLayerView.alpha = 1.0;
+		//self.dynamicLayerView.alpha = 1.0;
 	}
 	
     
@@ -792,7 +801,8 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 	
 	// comment to disable the GPS on start up
 	if (showsUserLocation) {
-		[self.mapView.gps start];
+		//[self.mapView.gps start];
+        [self.mapView.locationDisplay startDataSource];
 	}
 }
 
@@ -806,6 +816,8 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 
 - (void)mapView:(AGSMapView *) mapView didClickCalloutAccessoryButtonForGraphic:(AGSGraphic *) graphic
 {
+    //MOHUS
+    /*
 	NSDictionary* dict = graphic.attributes;
     NSString* url = [dict objectForKey:@"URL"];
     NSLog(@"Callout tapped... Url = %@\n", url);
@@ -815,6 +827,46 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 		rho_webview_navigate([url UTF8String], 0);	
 		[self close];
 	}
+     */
+}
+
+
+-(BOOL)callout:(AGSCallout*)callout willShowForFeature:(id<AGSFeature>)feature layer:(AGSLayer<AGSHitTestable>*)layer mapPoint:(AGSPoint*)mapPoint{
+    //Specify the callout's contents
+    callout.title = (NSString*)[feature attributeForKey:@"Name"];
+    callout.detail =(NSString*)[feature attributeForKey:@"Descr"];
+    
+    NSNumber* n = (NSNumber*)[feature attributeForKey:@"y_offset"];
+    
+    int y_offset = [n intValue];
+    callout.autoAdjustWidth = YES;
+    //callout.screenOffset.y = -y_offset;
+    //self.mapView.callout.image = [UIImage imageNamed:@"<my_image.png>"];
+    callout.delegate = self;
+    
+    CGPoint offset;
+    offset.x = 0;
+    offset.y = -y_offset;
+    
+    //[self.mapView.callout showCalloutAt:mapPoint screenOffset:offset animated:NO];
+    //[callout moveCalloutTo:mapPoint screenOffset:offset animated:NO];
+    return YES;
+}
+
+
+- (void) didClickAccessoryButtonForCallout: (AGSCallout *) callout {
+    //Handle tap on the accessory button when callout was displayed for a graphic
+    //NSDictionary* dict = callout.representedFeature.attributes;
+    NSString* url = (NSString*)[callout.representedFeature attributeForKey:@"URL"];//[dict objectForKey:@"URL"];
+    NSLog(@"Callout tapped... Url = %@\n", url);
+    //id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
+    //[mainView navigateRedirect:url tab:[mainView activeTab]];
+    if ([url length] > 0) {
+        rho_webview_navigate([url UTF8String], 0);
+        [self close];
+    }
+    
+    
 }
 
 
@@ -826,10 +878,13 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 								url:(NSString*)url 
 {
 	AGSPictureMarkerSymbol *marker = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"BluePushpin.png"];
-	marker.xoffset = 9;
-	marker.yoffset = -16;
-	marker.hotspot = CGPointMake(-9, -11);
+	//marker.xoffset = 9;
+	//marker.yoffset = -16;
+	//marker.hotspot = CGPointMake(-9, -11);
 	
+    
+    int y_offset = (int)(marker.image.size.height / 2);
+    NSNumber* y_offset_number = [NSNumber numberWithInt:y_offset];
 	
 	AGSSpatialReference *sr = [AGSSpatialReference spatialReferenceWithWKID:4326];
 	AGSPoint *point = [[AGSPoint alloc] initWithX:longitude y:latitude spatialReference:sr];
@@ -860,10 +915,28 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 	
 	if (url != nil) 
 		[attributes setObject:url forKey:@"URL"];
+    
+    [attributes setObject:y_offset_number forKey:@"y_offset"];
 	
 	//create the graphic
+    //MOHUS
+    ///*
+    
+    AGSSimpleMarkerSymbol* myMarkerSymbol = [AGSSimpleMarkerSymbol simpleMarkerSymbol];
+    //myMarkerSymbol.color = [UIColor blueColor];
+    //myMarkerSymbol.style = AGSSimpleMarkerSymbolStyleDiamond;
+    //myMarkerSymbol.outline.color = [UIColor whiteColor];
+    //myMarkerSymbol.outline.width = 3;
+    
+    CGPoint lead;
+    lead.x = 0;
+    lead.y = y_offset;
+    
+    marker.leaderPoint = lead;
+    
+    
 	AGSGraphic *graphic = [[AGSGraphic alloc] initWithGeometry: point
-														symbol:marker 
+														symbol:marker
 													attributes:attributes
 										  infoTemplateDelegate:self.calloutTemplate];
 	
@@ -875,10 +948,10 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 	//[attributes release];
 
 	self.mapView.callout.width = 250;
-	//[self.mapView showCalloutAtPoint:(AGSPoint*)graphic.geometry forGraphic:graphic animated:YES];	
-	
-	
-	[self.graphicsLayer dataChanged];
+	//[self.mapView showCalloutAtPoint:(AGSPoint*)graphic.geometry forGraphic:graphic animated:YES];
+	//*/
+	//MOHUS
+	//[self.graphicsLayer dataChanged];
 	
 }
 	
@@ -898,12 +971,12 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 
 
 + (double)centerLatitude {
-	AGSPoint* p = (AGSPoint*)AGSGeometryWebMercatorToGeographic(mc.mapView.envelope.center);
+	AGSPoint* p = (AGSPoint*)AGSGeometryWebMercatorToGeographic(mc.mapView.visibleAreaEnvelope.center);
 	return p.y;
 }
 
 + (double)centerLongitude {
-	AGSPoint* p = (AGSPoint*)AGSGeometryWebMercatorToGeographic(mc.mapView.envelope.center);
+	AGSPoint* p = (AGSPoint*)AGSGeometryWebMercatorToGeographic(mc.mapView.visibleAreaEnvelope.center);
 	return p.x;
 }
 
