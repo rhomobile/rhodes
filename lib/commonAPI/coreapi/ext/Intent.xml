@@ -17,22 +17,35 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
     </MORE_HELP>
          <MORE_HELP_EB>
 ## Enabling the API
-In order to use this API you must TBD INSERT Eb specific instructions here
+In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+
+* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+
+If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+
+ex:
+
+* ebapi.js - core APIs needed 
+* eb.intent.js - just the Fle API
+* other individual JavaScript files included with the Enterprise Browser installation
 
         </MORE_HELP_EB>
        <TEMPLATES>
         </TEMPLATES>
         <METHODS  access="STATIC">
             <METHOD name="send" hasCallback="optional">
-                <DESC>Sends an intent. The receiver of the intent can either be another RhoMobile application that is listening for this Intent characteristic or on Android can be a native Android application setup with an Intent-Filter that will trigger based on the parameters of this method. 
-***NOTE: On Android, the callback should only be used when the intentType is set to START_ACTIVITY.***
-***NOTE: On Android, the only valid way to pass private file from package directly to another application is set 'uri' parameter with content URI. In most cases it is also needed to add extension of exported file to 'android:no_compression' list at build.yml***
+                <DESC>Sends an intent. The receiver of the intent can either be another RhoMobile  application that is listening for this Intent characteristic or on Android can be a native Android application setup with an Intent-Filter that will trigger based on the parameters of this method. 
+
+>Note: On Android, the callback should only be used when the intentType is set to START_ACTIVITY. On Android, the only valid way to pass private file from package directly to another application is set 'uri' parameter with content URI. In most cases it is also needed to add extension of exported file to 'android:no_compression' list at build.yml
+
 `build.yml:`
+
     :::ruby
     android:
       no_compression: ['pdf','html','css']
 
 `JavaScript:`
+
     :::javascript
     var params = {
         intentType: Rho.Intent.START_ACTIVITY,
@@ -40,6 +53,7 @@ In order to use this API you must TBD INSERT Eb specific instructions here
         uri: "content://com.rhomobile.sample/rhodata/apps/public/sample.pdf"
     }
     Rho.Intent.send(params);    
+
 </DESC>
                 <PARAMS>
                     <PARAM name="params" type="HASH">
@@ -68,7 +82,9 @@ In order to use this API you must TBD INSERT Eb specific instructions here
                             <PARAM name="action" type="STRING">
                                 <PLATFORM>Android</PLATFORM>
                                 <DESC>Intent action. See [Android docs](http://developer.android.com/reference/android/content/Intent.html#setAction(java.lang.String\)). for possible values.
-***NOTE: Use the Constant Value instead of the actual Constant Name. Ex: For the Constant [ACTION_PICK](http://developer.android.com/reference/android/content/Intent.html#ACTION_PICK) use 'android.intent.action.PICK'***
+
+> NOTE: Use the Constant Value instead of the actual Constant Name. Ex: For the Constant [ACTION_PICK](http://developer.android.com/reference/android/content/Intent.html#ACTION_PICK) use 'android.intent.action.PICK'
+
 </DESC>
                             </PARAM>
                             <PARAM name="categories" type="ARRAY">
@@ -86,6 +102,11 @@ In order to use this API you must TBD INSERT Eb specific instructions here
 * Android it is application package name.
 * Windows it is the executable name.
 </DESC>
+                                <DESC_EB>Explicit name of the application on the device to run. The platform will determine what value to use. 
+
+* Android it is application package name.
+* Windows it is the executable name.
+</DESC_EB>
                             </PARAM>
                             <PARAM name="targetClass" type="STRING">
                                 <PLATFORM>Android</PLATFORM>
@@ -93,7 +114,7 @@ In order to use this API you must TBD INSERT Eb specific instructions here
                             </PARAM>
                             <PARAM name="uri" type="STRING">
                                 <DESC>Open the application associated with the URI. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix usually executes the Web Browser installed on system and open URL in executed browser.
-***NOTE: For Android, this is similar to [Intent.setData()](http://developer.android.com/reference/android/content/Intent.html#setData(android.net.Uri\)). For example, if you were sending a [Map Intent](http://developer.android.com/guide/components/intents-common.html#Maps) you would set this value to something like `geo:47.6,-122.3`***
+>NOTE: For Android, this is similar to [Intent.setData()](http://developer.android.com/reference/android/content/Intent.html#setData(android.net.Uri\)). For example, if you were sending a [Map Intent](http://developer.android.com/guide/components/intents-common.html#Maps) you would set this value to something like `geo:47.6,-122.3`***
 </DESC>
                             </PARAM>
                             <PARAM name="mimeType" type="STRING">
@@ -110,7 +131,7 @@ For Android, this is similar to [Intent.putExtra()](http://developer.android.com
     :::java
     intent.putExtra(Intent.EXTRA_TEXT, 'Here is the text I am passing to the Intent');
 
-`RhoMobile JavaScript:`
+`JavaScript:`
     :::javascript
     var data = {"android.intent.extra.TEXT":"Here is the text I am passing to the Intent"}
 
@@ -132,10 +153,10 @@ Notice the use of the full constant string "android.intent.extra.TEXT" in place 
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="startListening" hasCallback="mandatory" runInThread="none">
+            <METHOD name="startListening" hasCallback="mandatory" runInThread="none" productException="eb">
                 <DESC>Start listening for custom intents. 
 
-NOTE: For Android, this is how we have implemented [Android Intent Filters](http://developer.android.com/guide/components/intents-filters.html#Receiving). In order to listen for Intents you will have to update the `AndroidManifest.erb` file and add a special section to it. This file is now generated with RhoMobile Version 4.1 when you create a new project. The file is located in the root of project.
+>NOTE: For Android, this is how we have implemented [Android Intent Filters](http://developer.android.com/guide/components/intents-filters.html#Receiving). In order to listen for Intents you will have to update the `AndroidManifest.erb` file and add a special section to it. This file is now generated with RhoMobile Version 4.1 when you create a new project. The file is located in the root of project.
 
 Add the following snippet to AndroidManifest.erb within the `manifest` tags
 <![CDATA[
@@ -154,7 +175,7 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
                         Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="stopListening" hasCallback="none">
+            <METHOD name="stopListening" hasCallback="none" productException="eb">
                 <DESC>Stop listening for custom intents.</DESC>
             </METHOD>
         </METHODS>
