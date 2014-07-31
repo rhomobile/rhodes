@@ -5,8 +5,8 @@
         <ALIASES>
             <ALIAS new="videocapture" deprecated="true"/>
         </ALIASES>
-        <HELP_OVERVIEW>captures video files from the default camera device.</HELP_OVERVIEW>
-        <MORE_HELP>Only the foreground RhoElements application is given access to capture video, when an application is sent to the background any capture that is in progress will be canceled and it will automatically relinquish control of the video hardware. When brought back to the foreground, an application previously using the video capture will have its previous configuration (eg. name etc.) reapplied to the plug-in automatically. Please note that any file transfer that is in progress continues even if the application is sent to the background.
+        <HELP_OVERVIEW>captures video files from the default camera device.Only the foreground application is given access to capture video, when an application is sent to the background any capture that is in progress will be canceled and it will automatically relinquish control of the video hardware. When brought back to the foreground, an application previously using the video capture will have its previous configuration (eg. name etc.) reapplied to the plug-in automatically. Please note that any file transfer that is in progress continues even if the application is sent to the background.</HELP_OVERVIEW>
+        <MORE_HELP>
 ## Enabling the API
 In order to use this API you must include the following extension in your `build.yml`
     :::ruby
@@ -17,7 +17,11 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
         </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+In order to use this API you must TBD INSERT Eb specific instructions here
 
+        </MORE_HELP_EB>
         <TEMPLATES>
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
