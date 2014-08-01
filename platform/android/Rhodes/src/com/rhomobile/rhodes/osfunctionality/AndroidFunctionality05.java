@@ -47,7 +47,7 @@ class AndroidFunctionality05 extends AndroidFunctionality04 implements AndroidFu
             //account = accounts[0];
             for(int i=0;i<accounts.length;i++)
            	{
-            		if(!(Patterns.EMAIL_ADDRESS.matcher(accounts[i].name).matches()))
+            		if((Patterns.EMAIL_ADDRESS.matcher(accounts[i].name).matches()))
             			{
             				account=accounts[i];
             				break;
