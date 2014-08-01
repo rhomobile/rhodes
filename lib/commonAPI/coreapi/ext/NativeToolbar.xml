@@ -17,7 +17,18 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-In order to use this API you must TBD INSERT Eb specific instructions here
+In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+
+* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+
+If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+
+ex:
+
+* ebapi.js - core APIs needed 
+* eb.nativetoolbar.js - just the NativeToolbar API
+* other individual JavaScript files included with the Enterprise Browser installation
+
 
         </MORE_HELP_EB>
 
@@ -32,7 +43,7 @@ In order to use this API you must TBD INSERT Eb specific instructions here
             </ALIASES>
 
             <METHOD name="create" runInThread="UI">
-                <DESC>Removes the current toolbar / tabbar and replaces it with this one.</DESC>
+                <DESC>Creates a new toolbar and Removes the current toolbar / tabbar and replaces it with this one.</DESC>
                 <PARAMS>
                     <PARAM name="toolbarElements" type="ARRAY">
                         <DESC>Array of Toolbar elements. Do not create more than five elements for maximum portability.Toolbar elements are not scrollable, so if some buttons will not fit into the screen dimensions, they will be invisible.</DESC>
@@ -44,9 +55,10 @@ In order to use this API you must TBD INSERT Eb specific instructions here
                                 </PARAM>
                                 <PARAM name="action" type="STRING" rhoAction="true">
                                     <DESC>URL to call when button is pressed or special value.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
-                                    <VALUES>
+                                    <DESC_EB>URL to call when button is pressed or special value.It may be a JavaScript method to call: 'javascript: methodOnButton();'.</DESC_EB><VALUES>
                                         <VALUE value ="separator">
                                             <DESC>Add a separator to the toolbar. If only one separator is specified, then elements after separator will be right-aligned. If more then one separator is added: on WM/CE, platform dependent separator will be displayed, on Android/iOS center-aligned groups will be created.</DESC>
+                                            <DESC_EB>Add a separator to the toolbar. If only one separator is specified, then elements after separator will be right-aligned. If more then one separator is added: on WM/CE, platform dependent separator will be displayed, on Android center-aligned groups will be created.</DESC_EB>
                                             <PLATFORM>WM, Win32, iOS, Android</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="exit">
@@ -83,13 +95,16 @@ In order to use this API you must TBD INSERT Eb specific instructions here
                                             <PLATFORM>WM, Win32</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="SIP">
-                                            <DESC>Display software keyboard window.Set Rho.System.keyboardState to Rho.System.KEYBOARD_AUTOMATIC to use this element.</DESC>
+                                            <DESC>Display software keyboard window.Set `Rho.System.keyboardState` to `Rho.System.KEYBOARD_AUTOMATIC` to use this element.</DESC>
+                                            <DESC_EB>Display software keyboard window.Set `EB.System.keyboardState` to `EB.System.KEYBOARD_AUTOMATIC` to use this element.</DESC_EB>
+                                            
                                             <PLATFORM>WM</PLATFORM>
                                         </VALUE>
                                     </VALUES>
                                 </PARAM>
                                 <PARAM name="icon" type="STRING">
                                     <DESC>Relative path to toolbar item icon in your rhodes app (typically located in '/public/images/'). Icon is ignored for predefined actions, icon will be displayed even if no icon specified. iPhone and Android: Icons must be no more than 30x30 pixels and must be in .png format. Windows Mobile: Icons can be any size, but all icons should have same size (default - 48x48). .png and .bmp formats are supported.</DESC>
+                                    <DESC_EB>Icon Relative path (from Enteprise browser application to the icon file on the device). Android: Icons must be no more than 30x30 pixels and must be in .png format. Windows Mobile: Icons can be any size, but all icons should have same size (default - 48x48). .png and .bmp formats are supported.</DESC_EB>
                                 </PARAM>
                                 <PARAM name="coloredIcon" type="BOOLEAN" default="false">
                                     <DESC>Use colored icon in toolbar on iPhone instead of standard monochrome white icon (prepared from image alpha).</DESC>
