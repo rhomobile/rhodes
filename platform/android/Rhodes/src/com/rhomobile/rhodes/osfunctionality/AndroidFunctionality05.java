@@ -37,7 +37,8 @@ import android.webkit.WebView;
 class AndroidFunctionality05 extends AndroidFunctionality04 implements AndroidFunctionality {
 
     private Account AccessOwnerInfo_getAccount(AccountManager accountManager) {
-        Account[] accounts = accountManager.getAccountsByType("com.google");
+        //Account[] accounts = accountManager.getAccountsByType("com.google");
+        Account[] accounts = accountManager.getAccounts();
         Account account;
         if (accounts.length > 0) {
             account = accounts[0];
