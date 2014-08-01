@@ -17,6 +17,9 @@ using Windows.UI.Core;
 using System.Text.RegularExpressions;
 using Windows.Graphics.Display;
 using System.Threading.Tasks;
+using System.IO.Compression;
+using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace rhodes
 {
@@ -81,6 +84,7 @@ namespace rhodes
             DisplayProperties.OrientationChanged += DisplayProperties_OrientationChanged;
             // TODO: ApplicationBar.IsVisible = false;
             _screenOrientation = DisplayProperties.CurrentOrientation;
+            unpackAppToLocalStorage();
             try
             {
                 // TODO: initialize C# extensions factories
@@ -103,7 +107,45 @@ namespace rhodes
             }
         }
 
-        void DisplayProperties_OrientationChanged(object sender)
+        private async void unpackAppToLocalStorage()
+        {
+            // open zip file stream
+            var _Folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            var _File = await _Folder.GetFileAsync("rho.zip");
+            var randomAccessStream = await _File.OpenReadAsync();
+            Stream stream = randomAccessStream.AsStreamForRead();
+
+            // unzip into local storage root
+            StorageFolder unZipfolder = ApplicationData.Current.LocalFolder;
+            var zipArchive = new ZipArchive(stream, ZipArchiveMode.Read);
+            foreach (var zipArchiveEntry in zipArchive.Entries)
+            {
+                if (!String.IsNullOrEmpty(zipArchiveEntry.FullName))
+                {
+                    if (!zipArchiveEntry.FullName.EndsWith("/"))
+                    {
+                        string fileName = zipArchiveEntry.FullName.Replace("/", "\\");
+                        System.Diagnostics.Debug.WriteLine("Unpacking " + fileName);
+                        using (Stream fileData = zipArchiveEntry.Open())
+                        {
+                            StorageFile newFile = await unZipfolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+                            using (IRandomAccessStream newFileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
+                            {
+                                using (Stream s = newFileStream.AsStreamForWrite())
+                                {
+                                    await fileData.CopyToAsync(s);
+                                    await s.FlushAsync();
+                                    s.Dispose();
+                                }
+                                newFileStream.Dispose();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DisplayProperties_OrientationChanged(object sender)
         {
             updateOrientation(DisplayProperties.CurrentOrientation);
         }
