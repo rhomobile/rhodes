@@ -31,6 +31,7 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.util.Patterns;
 
 
 //Android 2.0
@@ -38,11 +39,23 @@ class AndroidFunctionality05 extends AndroidFunctionality04 implements AndroidFu
 
     private Account AccessOwnerInfo_getAccount(AccountManager accountManager) {
         //Account[] accounts = accountManager.getAccountsByType("com.google");
-        Account[] accounts = accountManager.getAccounts();
-        Account account;
+       Account[] accounts = accountManager.getAccounts();
+        
+        Account account=null;
+        Account acc;
         if (accounts.length > 0) {
-            account = accounts[0];
+            //account = accounts[0];
+            for(int i=0;i<accounts.length;i++)
+           	{
+            		if(!(Patterns.EMAIL_ADDRESS.matcher(accounts[i].name).matches()))
+            			{
+            				account=accounts[i];
+            				break;
+            			}
+            		
+            }
         } else {
+        	
             account = null;
         }
         return account;
