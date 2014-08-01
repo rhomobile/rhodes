@@ -2,8 +2,8 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="Push" parent="Rho">
-        <HELP_OVERVIEW>The Push API provides access to Push messaging functionality</HELP_OVERVIEW>
-        <MORE_HELP>Use this API to give your application the ability to receive server initiated messages.
+        <HELP_OVERVIEW>The Push API provides access to Push messaging functionality. Use this API to give your application the ability to receive server initiated messages.</HELP_OVERVIEW>
+        <MORE_HELP>
 ## Enabling the API
 In order to use this API you must include the following extension in your `build.yml`:
 
@@ -24,7 +24,17 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-In order to use this API you must TBD INSERT Eb specific instructions here
+In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+
+* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+
+If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+
+ex:
+
+* ebapi.js - core APIs needed 
+* eb.push.js - just the Push API
+* other individual JavaScript files included with the Enterprise Browser installation
 
         </MORE_HELP_EB>
         <PLATFORM>WM, Android, iOS</PLATFORM>
@@ -51,6 +61,7 @@ In order to use this API you must TBD INSERT Eb specific instructions here
 
             <PROPERTY name="userNotifyMode" type="STRING" default="backgroundNotifications" deprecated="true">
                 <DESC>UI notification mode. Use `Rho.Notification` instead.</DESC>
+                <DESC_EB>UI notification mode. Use `EB.Notification` instead.</DESC_EB>
                 <PLATFORM>Android</PLATFORM>
                 <APPLIES rubyOnly="true"/>
                 <VALUES>

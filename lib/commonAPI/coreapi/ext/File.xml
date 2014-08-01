@@ -26,7 +26,7 @@ If you wish to minimize the amount of JavaScript being included, you can choose 
 ex:
 
 * ebapi.js - core APIs needed 
-* eb.rhofile.js - just the Fle API
+* eb.rhofile.js - just the File API
 * other individual JavaScript files included with the Enterprise Browser installation
 
         </MORE_HELP_EB>
