@@ -637,6 +637,7 @@ namespace "config" do
       $ext_android_adds = {}
       $ext_android_library_deps = {}
       $ext_android_platform_lib = []
+      $ext_android_additional_jar_refs = []
 
       $app_extensions_list.each do |ext, extpath|
             next if extpath.nil?
@@ -781,6 +782,11 @@ namespace "config" do
                   mkdir_p libdirpath unless File.directory? libdirpath
                   Jake.copyIfNeeded lib, libdirpath
                 end
+              end
+
+              jar_refs = extconf_android["jar_refs"] if extconf_android
+              if jar_refs
+                jar_refs.each { |jar| $ext_android_additional_jar_refs << File.join(extpath,jar) }
               end
 
               puts "#{extyml} is processed"
@@ -1895,6 +1901,10 @@ namespace "build" do
       classpath += $path_separator + $v4support_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
+          classpath += $path_separator + jar
+      end
+
+      $ext_android_additional_jar_refs.each do |jar|
           classpath += $path_separator + jar
       end
 

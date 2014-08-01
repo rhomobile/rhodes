@@ -1,0 +1,18 @@
+entry: Init_WebViewClientSSLAuth_extension
+javaentry: com.webviewclientsslauth.WebViewClientSSLAuth
+libraries: ["WebViewClientSSLAuth"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+  jar_refs: ["ext/platform/android/jars/clientcertrequesthandler.jar"]
+  rhodes_listener: com.rho.webviewclientsslauth.RhodesListener
+
+wp8:
+  csharp_impl: yes
+  root_namespace: rho
+
+project_paths:
+  wp8: ext/platform/wp8/WebViewClientSSLAuthLib.vcxproj
+  wm: ext/platform/wm/WebViewClientSSLAuth.vcproj
+  
+xml_api_paths: ext/WebViewClientSSLAuth.xml

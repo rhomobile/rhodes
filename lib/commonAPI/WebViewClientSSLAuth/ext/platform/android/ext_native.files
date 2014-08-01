@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/WebViewClientSSLAuth.cpp
+ext/platform/android/generated/jni/webviewclientsslauth_ruby_wrap.cpp
+ext/platform/android/generated/jni/webviewclientsslauth_js_wrap.cpp
+ext/platform/android/jni/WebViewClientSSLAuth_impl.cpp
+ext/shared/generated/webviewclientsslauth_api_init.cpp
+ext/shared/generated/webviewclientsslauth_js_api.cpp
+ext/shared/generated/webviewclientsslauth_ruby_api.c

@@ -31,7 +31,7 @@ public class GoogleWebView implements IRhoWebView {
     private static final String TAG = GoogleWebView.class.getSimpleName(); 
 
     private WebChromeClient mChromeClient;
-    private WebViewClient mWebViewClient;
+    protected WebViewClient mWebViewClient;
     private static Boolean mInitialized = false;
 
     private android.webkit.WebView mWebView;
@@ -108,7 +108,7 @@ public class GoogleWebView implements IRhoWebView {
             }
         });
     }
-    
+
     @Override
     public void setConfig(IRhoWebViewConfig config) {
         mConfig = config;

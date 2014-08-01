@@ -1,0 +1,30 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="WebViewClientSSLAuth" parent="Rho">
+        <HELP_OVERVIEW>This extension will provide support for client SSL auth in WebView.</HELP_OVERVIEW>
+        <MORE_HELP>Only works on android 4.1.x</MORE_HELP>
+    
+        <TEMPLATES>
+        </TEMPLATES>
+
+         <PROPERTIES access="STATIC">
+            <DESC>list of properties supported by module</DESC>
+            <PROPERTY name="clientKeyPath" type="STRING" >
+                <DESC>Path to the client private key and certificate storage. PKCS12 format is required. This property mirrors rhoconfig.txt option 'clientSSLCertificate'.</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="clientKeyPassword" type="STRING" >
+                <DESC>Password for the client private key storage. This property mirrors rhoconfig.txt option 'clientSSLCertificatePassword'.</DESC>
+            </PROPERTY>
+
+        </PROPERTIES>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>    
