@@ -29,41 +29,14 @@ public:
 class CMediaplayerSingleton: public CMediaplayerSingletonBase
 {
 
-	static HANDLE	m_hPlayThread;			/// Handle to player thread
-	static HANDLE	m_hPlayProcess;			/// Handle to player process
-	static StringW  lFilename;
-
+	static HANDLE	m_hPlayThread;			/// Handle to play thread
+	static HANDLE m_hStopMediaEvent;
+	String szVideoFileName;
+	static bool m_bIsRunning;               //start and stop of playthread decided by this flag
     ~CMediaplayerSingleton(){}
     virtual rho::String getInitialDefaultID();
     virtual void enumerate(CMethodResult& oResult);
-
-	/**
-	* Function to kill the player thread so that VideoCapture can unlock
-	* any in-use media files
-	*/
-	void KillPlayer()
-	{
-		if (m_hPlayProcess)
-		{
-			TerminateProcess(m_hPlayProcess, -1);
-			WaitForSingleObject(m_hPlayProcess, 500);
-			CloseHandle(m_hPlayProcess);
-			m_hPlayProcess = NULL;
-		}
-		if (m_hPlayThread)
-		{
-			TerminateThread(m_hPlayThread, -1);
-			CloseHandle(m_hPlayThread);
-			m_hPlayThread = NULL;
-		}
-	}
-
-	bool playLocalAudio()
-	{
-		LOG(INFO) + __FUNCTION__ + ": playLocalAudio called";
-		m_hPlayThread = CreateThread(NULL, 0, (&rho::CMediaplayerSingleton::playThreadProc), this, 0, NULL);
-		return (m_hPlayThread != NULL);
-	}
+	
     rho::StringW replaceString(rho::StringW inputString,
         rho::StringW toReplace,
         rho::StringW replaceWith)
@@ -75,229 +48,247 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
         }
         return inputString;
     }
-
 	static DWORD WINAPI playThreadProc(LPVOID lpParam)
 	{
 		DWORD dwRet = S_OK;
-
 		CMediaplayerSingleton *pMediaplayer = (CMediaplayerSingleton *)lpParam;
 
 		if (pMediaplayer)
 		{
-			LOG(INFO) + __FUNCTION__ + "pMediaplayer object exists: using lFilename: " + lFilename.c_str(); 
-			if (!PlaySound(lFilename.c_str(), NULL, SND_FILENAME|SND_SYNC|SND_NODEFAULT)) {
-				LOG(INFO) + __FUNCTION__ + " PlaySound function failed ";
-				dwRet = false;
-			}
-
-			CloseHandle(pMediaplayer->m_hPlayThread);
-			pMediaplayer->m_hPlayThread = NULL;
-		}
+			m_bIsRunning = true;
+			pMediaplayer->playMedia();
+			m_bIsRunning = false;
+		}		
 
 		return dwRet;
 	}
-	
-	// Play an audio file.
-	virtual void start( const rho::String& filename, rho::apiGenerator::CMethodResult& oResult)
+	void playMedia()
 	{
-		// Check that the filename is not empty or NULL.
-		if (!filename.empty() && (!m_hPlayThread))
-		{
-			// Download the audio file and store name in lFilename
-			if(String_startsWith(filename, "http://") || String_startsWith(filename, "https://"))
-			{
-				rho::common::CRhoFile::deleteFile("download.wav");
-				// Networked code
-				LOG(INFO) + __FUNCTION__ + "Attempting to download the file. " + filename;
-				NetRequest oNetRequest;
-				Hashtable<String,String> mapHeaders;
-				bool overwriteFile = true;
-				bool createFolders = false;
-				bool fileExists = false;
-				String& newfilename = String("download.wav");
-
-				// Call the download function with the url and new filename the temp filename to be used.
-				net::CNetRequestHolder *requestHolder = new net::CNetRequestHolder();
-				requestHolder->setSslVerifyPeer(false);
-				NetResponse resp = getNetRequest(requestHolder).pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
-
-				delete requestHolder;
-
-				if (!resp.isOK())
-				{
-					LOG(INFO) + __FUNCTION__ + "Could not download the file";
-					return; // Don't attempt to play the file.
-				}
-				else
-				{
-					LOG(INFO) + __FUNCTION__ + "Could download the file";
-					lFilename = s2ws(newfilename);
-				}	
-			}
-			else
-			{
-				// Store the local filename away.
-				lFilename = s2ws(filename);
-			}
-
-			// Launch the audio player.
-			playLocalAudio();
-		}
-	}
-
-	// Stop playing an audio file.
-    virtual void stop(rho::apiGenerator::CMethodResult& oResult)
-	{
-		// If the player is currently playing an audio file, stop it.
-		PlaySound(NULL, NULL, 0);
-		LOG(INFO) + __FUNCTION__ + " Stopping audio playback";
-		if (WaitForSingleObject(m_hPlayThread, 500) == WAIT_TIMEOUT)
-		{
-			TerminateThread(m_hPlayThread, -1);
-			CloseHandle(m_hPlayThread);
-			m_hPlayThread = NULL;
-		}
-	}
-
-	// Start playing a video file.
-    virtual void startvideo( const rho::String& filename, rho::apiGenerator::CMethodResult& oResult)
-	{
-		// Attempt to kill the player.  If we don't do this, WMP holds a lock on the file and we cannot delete it.
-		KillPlayer();
-		rho::common::CRhoFile::deleteFile("download.wmv");
+		
+		LOG(INFO) + __FUNCTION__ + " starting media player.";
 
 		// Check that the filename is not empty or NULL.
-		if (!filename.empty() &&  (!m_hPlayProcess))
+		if (!szVideoFileName.empty())
 		{
 			PROCESS_INFORMATION pi;
 			StringW m_lpzFilename;
 
-			if (String_startsWith(filename, "http://") || String_startsWith(filename, "https://"))
+			if (String_startsWith(szVideoFileName, "http://") || String_startsWith(szVideoFileName, "https://"))
 			{
 				// Networked code
-				LOG(INFO) + __FUNCTION__ + "Attempting to download the file. " + filename;
+				LOG(INFO) + __FUNCTION__ + "Attempting to download the file. " + szVideoFileName;
 				NetRequest oNetRequest;
 				Hashtable<String,String> mapHeaders;
 				bool overwriteFile = true;
 				bool createFolders = false;
 				bool fileExists = false;
-				String& newfilename = String("download.wmv");
-
-				// Call the download function with the url and new filename the temp filename to be used.
-				net::CNetRequestHolder *requestHolder = new net::CNetRequestHolder();
-				requestHolder->setSslVerifyPeer(false);
-
-				NetResponse resp = getNetRequest(requestHolder).pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
-
-				delete requestHolder;
-
-				if (!resp.isOK())
+				//get the file extention 
+				String szFileExtn;
+				size_t extIndex = szVideoFileName.rfind(".");
+				if(-1 != extIndex)
 				{
-					LOG(INFO) + __FUNCTION__ + "Could not download the file";
-					return; // Don't attempt to play the file.
+					szFileExtn = szVideoFileName.substr( extIndex );
+					if(!szFileExtn.empty())
+					{
+						String& newfilename = String("download") + szFileExtn;
+
+						//delete the folder	
+						rho::common::CRhoFile::deleteFile(newfilename.c_str());
+				
+
+						// Call the download function with the url and new filename the temp filename to be used.
+						net::CNetRequestHolder *requestHolder = new net::CNetRequestHolder();
+						requestHolder->setSslVerifyPeer(false);
+
+						NetResponse resp = getNetRequest(requestHolder).pullFile( szVideoFileName, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+
+						delete requestHolder;
+
+						if (!resp.isOK())
+						{
+							LOG(INFO) + __FUNCTION__ + " Could not download the file";
+							return; // Don't attempt to play the file.
+						}
+						else
+						{
+							LOG(INFO) + __FUNCTION__ + " Could download the file";
+							m_lpzFilename = s2ws(newfilename);
+						}
+
+
+					}
+					else
+					{
+						LOG(INFO) + __FUNCTION__ + " file extention is empty ";
+					}
 				}
 				else
 				{
-					LOG(INFO) + __FUNCTION__ + "Could download the file";
-					m_lpzFilename = s2ws(newfilename);
+					LOG(INFO) + __FUNCTION__ + " invalid file extention ";
+
 				}
 			}
 			else
 			{
 				// Local file, just change the name to a format the WM/CE understands.
-				m_lpzFilename = s2ws(filename);
+				m_lpzFilename = s2ws(szVideoFileName);
 			}
-            /****************************************/
-            /* 
-            SR ID - EMBPD00142480
-            Issue Description - Video files are not getting played in CE devices through Rhoelements application
-            Fix Provided - WinCE devices accepts only back slash in the path to play media files.
-            Also CE CreateProcess API doesn't accept quates in the API for meadia file path to handle space.
-            A conditional fix is given for WM devices and CE devices.
-            Developer Name - Sabir VT
-            File Name - Mediaplayer_impl.cpp
-            Function Name - startvideo
-            Date - 04/07/2014
-            */
-            /****************************************/
-            bool bRunningOnWM = false;
-            OSVERSIONINFO osvi;
-            memset(&osvi, 0, sizeof(OSVERSIONINFO));
-            osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-            GetVersionEx(&osvi);
-            bRunningOnWM = (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2) ||
-                (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1);		
-            if(bRunningOnWM)
-            {
-                //for WM devices, we enter here
-
-                /****************************************/
-                /* 
-                SR ID - EMBPD00128123
-                Issue Description - Video Files are not getting played in MediaPlayer with Native Application on WM
-                Fix Provided - Issue was reproducing because of CreateProcess Microsoft API which donot understand the path which consists of space.
-                Hence we need to put an extra double inverted at the front & at the end of the string.
-                Developer Name - Abhineet Agarwal
-                File Name - Mediaplayer_impl.cpp
-                Function Name - startvideo
-                Date - 09/06/2014
-                */
-                /****************************************/
-                m_lpzFilename = L"\"" + m_lpzFilename + L"\"";              
-            }
-            else
-            {
-                //for CE devices we enter here
-                //replace front slash with back slash if the path contains front slash
-                m_lpzFilename = replaceString(m_lpzFilename, L"/", L"\\");
-            }		
-
-
-			// Launch the video player.
-			if (!CreateProcess(L"\\windows\\WMPlayer.exe", m_lpzFilename.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi))
+			if(!m_lpzFilename.empty())
 			{
-				// for WinCE CEPlayer we need to set a registry key to make sure it launches full screen
-				HKEY hKey = 0;
-				LPCWSTR subkey = L"SOFTWARE\\Microsoft\\CEPlayer";
-
-				if( RegOpenKeyEx(HKEY_LOCAL_MACHINE,subkey,0,0,&hKey) == ERROR_SUCCESS)
+				String szFile = rho::common::convertToStringA(m_lpzFilename.c_str());
+				if(rho::common::CRhoFile::isFileExist(szFile.c_str()))
 				{
-					DWORD dwType = REG_DWORD;
-					DWORD dwData = 1; // Set AlwaysFullSize to 1
-					RegSetValueEx(hKey, L"AlwaysFullSize", 0, dwType, (BYTE*)&dwData, sizeof(dwData));
-					RegCloseKey(hKey);
-				}
 
-				if (!CreateProcess(L"\\windows\\CEPlayer.exe", m_lpzFilename.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi))
-				{
-					// if CEPlayer doesn't exist either, try VPlayer
-					if (!CreateProcess(L"\\windows\\VPlayer.exe", m_lpzFilename.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi))
+
+					/****************************************/
+					/* 
+					SR ID - EMBPD00142480
+					Issue Description - Video files are not getting played in CE devices through Rhoelements application
+					Fix Provided - WinCE devices accepts only back slash in the path to play media files.
+					Also CE CreateProcess API doesn't accept quates in the API for meadia file path to handle space.
+					A conditional fix is given for WM devices and CE devices.
+					Developer Name - Sabir VT
+					File Name - Mediaplayer_impl.cpp
+					Function Name - startvideo
+					Date - 04/07/2014
+					*/
+					/****************************************/
+					bool bRunningOnWM = false;
+					OSVERSIONINFO osvi;
+					memset(&osvi, 0, sizeof(OSVERSIONINFO));
+					osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+					GetVersionEx(&osvi);
+					bRunningOnWM = (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2) ||
+						(osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1);		
+					if(bRunningOnWM)
 					{
-						LOG(INFO) + __FUNCTION__ +  "Error launching MediaPlayer";
-						return;
+						//for WM devices, we enter here
+
+						/****************************************/
+						/* 
+						SR ID - EMBPD00128123
+						Issue Description - Video Files are not getting played in MediaPlayer with Native Application on WM
+						Fix Provided - Issue was reproducing because of CreateProcess Microsoft API which donot understand the path which consists of space.
+						Hence we need to put an extra double inverted at the front & at the end of the string.
+						Developer Name - Abhineet Agarwal
+						File Name - Mediaplayer_impl.cpp
+						Function Name - startvideo
+						Date - 09/06/2014
+						*/
+						/****************************************/
+						m_lpzFilename = L"\"" + m_lpzFilename + L"\"";              
 					}
+					else
+					{
+						//for CE devices we enter here
+						//replace front slash with back slash if the path contains front slash
+						m_lpzFilename = replaceString(m_lpzFilename, L"/", L"\\");
+					}		
+
+
+					// Launch the video player.
+					if (!CreateProcess(L"\\windows\\WMPlayer.exe", m_lpzFilename.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi))
+					{
+						// for WinCE CEPlayer we need to set a registry key to make sure it launches full screen
+						HKEY hKey = 0;
+						LPCWSTR subkey = L"SOFTWARE\\Microsoft\\CEPlayer";
+
+						if( RegOpenKeyEx(HKEY_LOCAL_MACHINE,subkey,0,0,&hKey) == ERROR_SUCCESS)
+						{
+							DWORD dwType = REG_DWORD;
+							DWORD dwData = 1; // Set AlwaysFullSize to 1
+							RegSetValueEx(hKey, L"AlwaysFullSize", 0, dwType, (BYTE*)&dwData, sizeof(dwData));
+							RegCloseKey(hKey);
+						}
+
+						if (!CreateProcess(L"\\windows\\CEPlayer.exe", m_lpzFilename.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi))
+						{
+							// if CEPlayer doesn't exist either, try VPlayer
+							if (!CreateProcess(L"\\windows\\VPlayer.exe", m_lpzFilename.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi))
+							{
+								LOG(INFO) + __FUNCTION__ +  "Error launching MediaPlayer";
+								return;
+							}
+						}
+
+
+					}
+					//let us wait here till some once closes the process
+					HANDLE hEvents[2] = {m_hStopMediaEvent, pi.hProcess}; 					
+					DWORD dwEvent = WaitForMultipleObjects(2, hEvents, FALSE, INFINITE);					  
+					if(0 == dwEvent)
+					{
+						TerminateProcess(pi.hProcess, -1);
+						WaitForSingleObject(pi.hProcess, 500);
+						CloseHandle(pi.hThread);				
+						CloseHandle(pi.hProcess);
+					}
+					LOG(INFO) + __FUNCTION__ + " stopping media player.";
+
 				}
-
-				m_hPlayProcess = pi.hProcess;
-				m_hPlayThread = pi.hThread;
+				else
+				{
+					LOG(INFO) + __FUNCTION__ + " file does not exist ";
+				}
 			}
+			else
+			{
+				LOG(INFO) + __FUNCTION__ + " file name is empty ";
+			}
+		}
 
-			m_hPlayProcess = pi.hProcess;
-			m_hPlayThread = pi.hThread;
+
+
+	}
+	
+	
+	// Play an audio file.
+	virtual void start( const rho::String& filename, rho::apiGenerator::CMethodResult& oResult)
+	{
+		startvideo(filename, oResult);
+		
+	}
+
+	// Stop playing an audio file.
+    virtual void stop(rho::apiGenerator::CMethodResult& oResult)
+	{
+		stopvideo(oResult);
+	}
+
+	// Start playing a video file.
+	virtual void startvideo( const rho::String& filename, rho::apiGenerator::CMethodResult& oResult)
+	{
+		LOG(INFO) + __FUNCTION__ + " start video called";
+		if(false == m_bIsRunning)
+		{
+			//if thread not running
+			szVideoFileName = filename;
+			m_hPlayThread = CreateThread (NULL, 0, playThreadProc, this, 0, NULL);			   
+		}
+		else
+		{
+			LOG(INFO) + __FUNCTION__ + " media player already running";
 		}
 	}
 
 	// Stop playing a video file.
     virtual void stopvideo(rho::apiGenerator::CMethodResult& oResult)
 	{
-		// If the player is currently playing a video file, stop it.
-		TerminateProcess(m_hPlayProcess, -1);
-		WaitForSingleObject(m_hPlayProcess, 500);
-		CloseHandle(m_hPlayThread);
-		m_hPlayThread = NULL;
-		CloseHandle(m_hPlayProcess);
-		m_hPlayProcess = NULL;
-		LOG(INFO) + __FUNCTION__ + " stopping video player.";
+		LOG(INFO) + __FUNCTION__ + " stop video called.";
+		if(true == m_bIsRunning)
+		{
+			//if thread running
+			SetEvent(m_hStopMediaEvent);
+			WaitForSingleObject(m_hPlayThread, INFINITE);
+			ResetEvent(m_hStopMediaEvent);
+			CloseHandle(m_hPlayThread);
+			m_hPlayThread = NULL;
+		}
+		else
+		{
+			LOG(INFO) + __FUNCTION__ + " media player not running to stop.";
+		}
+		
 	}
 
     virtual void getAllRingtones(rho::apiGenerator::CMethodResult& oResult)
@@ -316,10 +307,9 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 	}
 };
 
-StringW CMediaplayerSingleton::lFilename;
-
 HANDLE CMediaplayerSingleton::m_hPlayThread = NULL;
-HANDLE CMediaplayerSingleton::m_hPlayProcess = NULL;
+HANDLE CMediaplayerSingleton::m_hStopMediaEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+bool CMediaplayerSingleton::m_bIsRunning = false;
 
 class CMediaplayerFactory: public CMediaplayerFactoryBase
 {
