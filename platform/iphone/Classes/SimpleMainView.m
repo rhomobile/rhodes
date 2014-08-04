@@ -373,6 +373,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 - (UIWebView*)newWebView:(CGRect)frame {
     UIWebView *w = [[UIWebView alloc] initWithFrame:frame];
     w.scalesPageToFit = YES;
+    if ( !rho_conf_getBool("WebView.enableBounce") )
+        [[w scrollView] setBounces:NO];
     w.userInteractionEnabled = YES;
     w.multipleTouchEnabled = YES;
     w.clipsToBounds = NO;
