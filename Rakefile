@@ -1887,18 +1887,32 @@ namespace 'cloud' do
           if remaining_builds > 0
             BuildOutput.note(
                 ["You have #{remaining_builds} builds remaining"],
-                'Account builds limitation')
+                'Account limitation')
           elsif remaining_builds == 0
             BuildOutput.error(
                 ["Build count limit reached on your #{$user_acc.subsciption_plan} plan. Please login to #{$selected_server} and check details."],
-                'Account builds limitation')
+                'Account limitation')
             exit 1
           end
           free_queue_slots = status["free_queue_slots"]
+
           if free_queue_slots == 0
+            $platform_list = get_build_platforms() unless $platform_list
+
+            builds = filter_by_status(get_builds_list($app_cloud_id),['queued'])
+
+            puts "There are #{builds.length} builds queued:\n\n"
+
+            builds.each do |build|
+              show_build_information(build, $platform_list)
+            end
+
+            puts
+
             BuildOutput.error(
-                ['Maximum parallel builds count reached. Please try again later.'],
-                'Account builds limitation')
+                ['Could not start build because all build slots are used.',
+                'Please wait until running builds will finish and try again.'],
+                'Build server limitation')
             exit 1
           end
         end
