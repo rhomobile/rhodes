@@ -647,8 +647,8 @@ static Rhodes *instance = NULL;
         
         const char *szRootPath = rho_native_rhopath();
         const char *szUserPath = rho_native_rhouserpath();
-        NSLog(@"Init logconf");
-        rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
+        //NSLog(@"Init logconf");
+        //rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
         InitMemoryInfoCollector();
         NSLog(@"Create rhodes app");
         rho_rhodesapp_create_with_separate_user_path(szRootPath, szUserPath);
@@ -717,6 +717,11 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     [CRhoURLProtocol initAndRegister];
     
     [NSThread setThreadPriority:1.0];
+    
+    const char *szRootPath = rho_native_rhopath();
+    const char *szUserPath = rho_native_rhouserpath();
+    NSLog(@"Init logconf");
+    rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
     
     NSLog(@"Create new detached thread for initialization stuff");
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];

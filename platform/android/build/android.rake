@@ -197,12 +197,53 @@ namespace 'project' do
   end
 end
 
+# Finds file in a given locations
+# file_name should contain required file
+# path_array could be
+# - String with location,
+# - Array of strings of locations,
+# - Array of arrays of directories - will be joined using File.join.
+
+def find_file(file_name, path_array)
+  result = nil
+  lookup = []
+
+  unless path_array.empty?
+    search_paths = path_array
+
+    if path_array.first.kind_of? String
+      search_paths = [path_array]
+    end
+
+    search_paths.each do |elem| 
+      full_path = (elem.kind_of?(String)) ? elem : File.join(elem)
+
+      files = Dir.glob(File.join(full_path, file_name))
+
+      unless files.empty?
+        result = files.sort.last
+        break
+      else
+        lookup << full_path
+      end
+    end
+  end
+
+  if result.nil?
+    fail "Could not find file #{file_name} at #{lookup.join(', ')}"
+  end
+
+  result
+end
+
 namespace "config" do
   task :set_android_platform do
     $current_platform = "android"
   end
 
   task :android => :set_android_platform do
+    print_timestamp('config:android START')
+
     Rake::Task["config:common"].invoke
 
     $java = $config["env"]["paths"]["java"]
@@ -354,9 +395,21 @@ namespace "config" do
     end
 
     $androidbin = File.join($androidsdkpath, "tools", "android" + $bat_ext)
-    $adb = File.join($androidsdkpath, "tools", "adb" + $exe_ext)
-    $adb = File.join($androidsdkpath, "platform-tools", "adb" + $exe_ext) unless File.exists? $adb
-    $zipalign = File.join($androidsdkpath, "tools", "zipalign" + $exe_ext)
+    $adb = find_file( "adb" + $exe_ext, 
+      [
+        [$androidsdkpath, "tools"],
+        [$androidsdkpath, "platform-tools"]
+      ]
+    )
+
+    $zipalign = find_file( "zipalign" + $exe_ext, 
+      [
+        [$androidsdkpath, "tools"], 
+        [build_tools_path],
+        [$androidsdkpath,'build-tools','*']
+      ] 
+    )
+
     $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
     $sdklibjar = File.join($androidsdkpath, 'tools', 'lib', 'sdklib.jar')
 
@@ -539,6 +592,9 @@ namespace "config" do
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
 
+
+    print_timestamp('config:android FINISH')
+
   end #task 'config:android'
 
   namespace 'android' do
@@ -571,6 +627,8 @@ namespace "config" do
 
     task :extensions => ['config:android', 'build:bundle:noxruby'] do
 
+      print_timestamp('android:extensions START')
+
       $ext_android_rhodes_activity_listener = []
       $ext_android_additional_sources = {}
       $ext_android_additional_lib = []
@@ -587,6 +645,9 @@ namespace "config" do
             extyml = File.join(extpath, "ext.yml")
             if File.file? extyml
               puts "#{extyml} is processing..."
+
+              print_timestamp(' extension "'+ext+'" processing START')
+
 
               extconf = Jake.config(File.open(extyml))
               extconf_android = extconf['android']
@@ -723,6 +784,8 @@ namespace "config" do
               end
 
               puts "#{extyml} is processed"
+              print_timestamp(' extension "'+ext+'" processing FINISH')
+
             end
 
             if exttype == 'rakefile'
@@ -748,6 +811,7 @@ namespace "config" do
       end # $app_extensions_list.each
 
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
+      print_timestamp('android:extensions FINISH')
 
     end #task :extensions
 
@@ -789,6 +853,7 @@ namespace "build" do
 
     desc "Build RhoBundle for android"
     task :rhobundle => ["config:android", :extensions] do
+      print_timestamp('build:android:rhobundle START')
 
       $srcdir = $appassets
       Rake::Task["build:bundle:noxruby"].invoke
@@ -801,6 +866,7 @@ namespace "build" do
 
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(hash.hexdigest) }
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($appname) }
+      print_timestamp('build:android:rhobundle FINISH')
     end
 
     desc "Build RhoBundle for Eclipse project"
@@ -812,6 +878,7 @@ namespace "build" do
 
     desc 'Building native extensions'
     task :extensions => ["config:android:extensions", :genconfig] do
+      print_timestamp('build:android:extensions START')
 
       Rake::Task["build:bundle:noxruby"].invoke
 
@@ -942,9 +1009,12 @@ namespace "build" do
           cp jar, packagepath
         end
       end
+      print_timestamp('build:android:extensions FINISH')
     end #task :extensions
 
     task :libsqlite => "config:android" do
+      print_timestamp('build:android:libsqlite START')
+
       srcdir = File.join($shareddir, "sqlite")
       objdir = $objdir["sqlite"]
       libname = $libname["sqlite"]
@@ -971,9 +1041,11 @@ namespace "build" do
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: sqlite"
       end
+      print_timestamp('build:android:libsqlite FINISH')
     end
 
     task :libcurl => "config:android" do
+      print_timestamp('build:android:libcurl START')
       # Steps to get curl_config.h from fresh libcurl sources:
       #export PATH=<ndkroot>/build/prebuilt/linux-x86/arm-eabi-4.2.1/bin:$PATH
       #export CC=arm-eabi-gcc
@@ -1012,9 +1084,11 @@ namespace "build" do
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: curl"
       end
+      print_timestamp('build:android:libcurl FINISH')
     end
 
     task :libruby => "config:android" do
+      print_timestamp('build:android:libruby START')
       srcdir = File.join $shareddir, "ruby"
       objdir = $objdir["ruby"]
       libname = $libname["ruby"]
@@ -1050,9 +1124,11 @@ namespace "build" do
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: ruby"
       end
+      print_timestamp('build:android:libruby FINISH')
     end
 
     task :libjson => "config:android" do
+      print_timestamp('build:android:libjson START')
       srcdir = File.join $shareddir, "json"
       objdir = $objdir["json"]
       libname = $libname["json"]
@@ -1081,9 +1157,11 @@ namespace "build" do
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: json"
       end
+      print_timestamp('build:android:libjson FINISH')
     end
 
     task :librholog => "config:android" do
+      print_timestamp('build:android:librholog START')
       srcdir = File.join $shareddir, "logging"
       objdir = $objdir["rholog"]
       libname = $libname["rholog"]
@@ -1111,9 +1189,11 @@ namespace "build" do
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rholog"
       end
+      print_timestamp('build:android:librholog FINISH')
     end
 
     task :librhomain => "config:android" do
+      print_timestamp('build:android:librhomain START')
       srcdir = $shareddir
       objdir = $objdir["rhomain"]
       libname = $libname["rhomain"]
@@ -1142,9 +1222,11 @@ namespace "build" do
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhomain"
       end
+      print_timestamp('build:android:librhomain FINISH')
     end
 
     task :librhocommon => "config:android" do
+      print_timestamp('build:android:librhocommon START')
       objdir = $objdir["rhocommon"]
       libname = $libname["rhocommon"]
       sourcelist = File.join($builddir, 'librhocommon_build.files')
@@ -1174,9 +1256,11 @@ namespace "build" do
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhocommon"
       end
+      print_timestamp('build:android:librhocommon FINISH')
     end
 
     task :librhodb => "config:android" do
+      print_timestamp('build:android:librhodb START')
       srcdir = File.join $shareddir, "db"
       objdir = $objdir["rhodb"]
       libname = $libname["rhodb"]
@@ -1206,9 +1290,11 @@ namespace "build" do
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhodb"
       end
+      print_timestamp('build:android:librhodb FINISH')
     end
 
     task :librhosync => "config:android" do
+      print_timestamp('build:android:librhosync START')
       srcdir = File.join $shareddir, "sync"
       objdir = $objdir["rhosync"]
       libname = $libname["rhosync"]
@@ -1238,11 +1324,13 @@ namespace "build" do
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhosync"
       end
+      print_timestamp('build:android:librhosync FINISH')
     end
 
     task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
 
     task :genconfig => "config:android" do
+      print_timestamp('build:android:genconfig START')
       mkdir_p $appincdir unless File.directory? $appincdir
 
       # Generate genconfig.h
@@ -1306,11 +1394,11 @@ namespace "build" do
         puts "No need to regenerate genconfig.h"
         $stdout.flush
       end
-
+      print_timestamp('build:android:genconfig FINISH')
     end
 
     task :librhodes => [:libs, :extensions, :genconfig] do
-
+      print_timestamp('build:android:librhodes START')
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
 
       args = []
@@ -1404,10 +1492,11 @@ namespace "build" do
         cc_run('rake', args, nil, false) or raise "Build failed: rhodes"
         #Jake.run3("rake #{args.join(' ')}")
       end
+      print_timestamp('build:android:librhodes FINISH')
     end
 
     task :manifest => ["config:android", :extensions] do
-
+      print_timestamp('build:android:manifest START')
       version = {'major' => 0, 'minor' => 0, 'patch' => 0, "build" => 0}
       if $app_config["version"]
         if $app_config["version"] =~ /^(\d+)$/
@@ -1560,10 +1649,13 @@ namespace "build" do
       updated_f.close
 
       #rm tappmanifest
+      print_timestamp('build:android:manifest FINISH')
       puts 'Manifest updated by extension is saved!'
     end
 
     task :resources => [:rhobundle, :extensions, :librhodes] do
+      print_timestamp('build:android:resources START')
+
       set_app_name_android($appname)
 
       puts 'EXT:  add additional files to project before build'
@@ -1598,6 +1690,7 @@ namespace "build" do
         file = File.basename(lib)
         cp_r lib, File.join($applibs,arch,file)
       end
+      print_timestamp('build:android:resources FINISH')
     end
 
     task :fulleclipsebundle => [:resources, :librhodes] do
@@ -1749,7 +1842,7 @@ namespace "build" do
 
     #desc "Build Rhodes for android"
     task :rhodes => [:rhobundle, :librhodes, :manifest, :resources, :gensourcesjava] do
-
+      print_timestamp('build:android:rhodes START')
       rm_rf $tmpdir + "/Rhodes"
       mkdir_p $tmpdir + "/Rhodes"
 
@@ -1789,9 +1882,11 @@ namespace "build" do
       java_build(jar, File.join($tmpdir, 'Rhodes'), classpath, javafilelists)
 
       $android_jars = [jar]
+      print_timestamp('build:android:rhodes FINISH')
     end
 
     task :extensions_java => [:rhodes, :extensions] do
+      print_timestamp('build:android:extensions_java START')
       puts 'Compile extensions java code'
 
       classpath = $androidjar
@@ -1829,11 +1924,13 @@ namespace "build" do
 
         classpath += $path_separator + extjar
       end
-      
+
+      print_timestamp('build:android:extensions_java FINISH')
       $android_jars << $v4support_classpath
     end
 
     task :upgrade_package => :rhobundle do
+      print_timestamp('build:android:upgrade_package START')
       #puts '$$$$$$$$$$$$$$$$$$'
       #puts 'targetdir = '+$targetdir.to_s
       #puts 'bindir = '+$bindir.to_s
@@ -1842,6 +1939,7 @@ namespace "build" do
       zip_file_path = File.join(android_targetdir, 'upgrade_bundle.zip')
       Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
       Jake.zip_upgrade_bundle($bindir, zip_file_path)
+      print_timestamp('build:android:upgrade_package FINISH')
     end
 
     task :upgrade_package_partial => ["build:android:rhobundle"] do
@@ -1936,6 +2034,7 @@ end
 
 namespace "package" do
   task :android => "build:android:all" do
+    print_timestamp('package:android START')
     puts "Running dx utility"
     args = []
     args << "-Xmx1024m"
@@ -2006,6 +2105,7 @@ namespace "package" do
     unless $?.success?
       raise "Error packaging native libraries"
     end
+    print_timestamp('package:android FINISH')
   end
 end
 
@@ -2014,6 +2114,7 @@ namespace "device" do
 
     desc "Build debug self signed for device"
     task :debug => "package:android" do
+      print_timestamp('device:android:debug START')
       dexfile = $bindir + "/classes.dex"
       simple_apkfile = $targetdir + "/" + $appname + "-tmp.apk"
       final_apkfile = $targetdir + "/" + $appname + "-debug.apk"
@@ -2040,7 +2141,7 @@ namespace "device" do
       File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
         f.puts $app_package_name
       end
-
+      print_timestamp('device:android:debug FINISH')
     end
 
     task :install => :debug do
@@ -2056,6 +2157,7 @@ namespace "device" do
 
     desc "Build production signed for device"
     task :production => "package:android" do
+      print_timestamp('device:android:production START')
       dexfile = $bindir + "/classes.dex"
       simple_apkfile = $targetdir + "/" + $appname + "_tmp.apk"
       final_apkfile = $targetdir + "/" + $appname + "_signed.apk"
@@ -2129,6 +2231,7 @@ namespace "device" do
       File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
         f.puts $app_package_name
       end
+      print_timestamp('device:android:production FINISH')
     end
 
     #task :getlog => "config:android" do

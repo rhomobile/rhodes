@@ -168,6 +168,8 @@ private void navigatetoBadLink()
 		int pingTimeout=1000;//hardcoded to 1 secs
 		int counterTimeout=0;
 		int to=0;
+		long s=0;
+		long f=0;
 		
 		public ConThread()
 		{
@@ -218,13 +220,17 @@ private void navigatetoBadLink()
 			
 				System.out.println("before socketAddress...host="+host+" AND  port"+port);
 				SocketAddress socketAddress = new InetSocketAddress(host,port);
-
+				s=System.currentTimeMillis();
 				// this method will block no more than timeout ms.
 				socket.connect(socketAddress, 1000);
+				f=System.currentTimeMillis();
+				counterTimeout= counterTimeout+(int)(f-s);
 			}
 			catch (Exception e)
 			{
+				f=System.currentTimeMillis();
 				System.out.println("Exception in connect..."+e.getMessage());
+				counterTimeout= counterTimeout+(int)(f-s);
 				Logger.E(TAG, "Exception in connect..."+e.getMessage());
 			}
 			finally
@@ -280,13 +286,14 @@ private void navigatetoBadLink()
 				else
 				{
 		
-					if(counterTimeout>ConnectionCheckingSingleton.TIMEOUT)
+					if(counterTimeout>=ConnectionCheckingSingleton.TIMEOUT)
 					{
 						
 						navigatetoBadLink();
 						killDialogue();
 						counterTimeout=0;
 						runtheThread=false;
+						isDialoguePresent=false;
 						break;
 					}
 					else
@@ -296,17 +303,17 @@ private void navigatetoBadLink()
 							showDialogue();
 						
 						isDialoguePresent=true;
-						counterTimeout=counterTimeout+pingTimeout;
+						//counterTimeout=counterTimeout+pingTimeout;
 					}
 				}
 				
 				try {
 					Logger.I(TAG,"Thread is going to sleep");
-					sleep(ConnectionCheckingSingleton.POLLI_INTERVAL);
-					//wait(ConnectionCheckingSingleton.POLLI_INTERVAL);
+					int sleepTime=(ConnectionCheckingSingleton.TIMEOUT-counterTimeout<ConnectionCheckingSingleton.POLLI_INTERVAL)?(ConnectionCheckingSingleton.TIMEOUT-counterTimeout-(int)(f-s)):ConnectionCheckingSingleton.POLLI_INTERVAL;
+					sleep(sleepTime);
 					Logger.I(TAG,"Thread is awaken");
 					if(counterTimeout!=0)
-						counterTimeout=counterTimeout+ConnectionCheckingSingleton.POLLI_INTERVAL;
+						counterTimeout=counterTimeout+sleepTime;
 				} catch (InterruptedException e) {
 					
 					e.printStackTrace();

@@ -3,6 +3,8 @@
 <API>
     <MODULE name="LogCapture" parent="Rho">
         <HELP_OVERVIEW>The LogCapture class is used for capturing logging events.
+        </HELP_OVERVIEW>
+        <MORE_HELP>
 ## Enabling the API           
 In order to use this API you must include the following extension in your `build.yml`
     :::ruby
@@ -13,7 +15,13 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-        </HELP_OVERVIEW>
+
+        </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+In order to use this API you must TBD INSERT Eb specific instructions here
+
+        </MORE_HELP_EB>
         
         <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="excludeCategories" type="STRING" default="">

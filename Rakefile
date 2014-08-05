@@ -89,6 +89,17 @@ load File.join(pwd, 'platform/wp8/build/wp.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
+$timestamp_start_milliseconds = 0
+
+def print_timestamp(msg = 'just for info')
+  if $timestamp_start_milliseconds == 0
+    $timestamp_start_milliseconds = (Time.now.to_f*1000.0).to_i
+  end
+  curmillis = (Time.now.to_f*1000.0).to_i - $timestamp_start_milliseconds
+
+  puts '-$TIME$- message [ '+msg+' ] time is { '+Time.now.utc.iso8601+' } milliseconds from start ('+curmillis.to_s+')'
+end
+
 #------------------------------------------------------------------------
 
 def get_dir_hash(dir, init = nil)
@@ -1871,22 +1882,39 @@ namespace 'cloud' do
       if !(status.nil? || status.empty?)
         build_enabled = status["cloud_build_enabled"]== true
         remaining_builds = status["builds_remaining"]
-        if remaining_builds > 0
-          BuildOutput.note(
-              ["You have #{remaining_builds} builds remaining"],
-              'Account builds limitation')
-        elsif remaining_builds == 0
-          BuildOutput.error(
-              ["Build count limit reached on your #{$user_acc.subsciption_plan} plan. Please login to #{$selected_server} and check details."],
-              'Account builds limitation')
-          exit 1
-        end
-        free_queue_slots = status["free_queue_slots"]
-        if free_queue_slots == 0
-          BuildOutput.error(
-              ['Maximum parallel builds count reached. Please try again later.'],
-              'Account builds limitation')
-          exit 1
+
+        if build_enabled
+          if remaining_builds > 0
+            BuildOutput.note(
+                ["You have #{remaining_builds} builds remaining"],
+                'Account limitation')
+          elsif remaining_builds == 0
+            BuildOutput.error(
+                ["Build count limit reached on your #{$user_acc.subsciption_plan} plan. Please login to #{$selected_server} and check details."],
+                'Account limitation')
+            exit 1
+          end
+          free_queue_slots = status["free_queue_slots"]
+
+          if free_queue_slots == 0
+            $platform_list = get_build_platforms() unless $platform_list
+
+            builds = filter_by_status(get_builds_list($app_cloud_id),['queued'])
+
+            puts "There are #{builds.length} builds queued:\n\n"
+
+            builds.each do |build|
+              show_build_information(build, $platform_list)
+            end
+
+            puts
+
+            BuildOutput.error(
+                ['Could not start build because all build slots are used.',
+                'Please wait until running builds will finish and try again.'],
+                'Build server limitation')
+            exit 1
+          end
         end
       else
         build_enabled = $user_acc.subscription_level() > 0
@@ -2093,6 +2121,9 @@ end
 
 namespace "config" do
   task :load do
+
+    print_timestamp('First timestamp')
+
     buildyml = 'rhobuild.yml'
 
     # read shared config
@@ -2194,6 +2225,7 @@ namespace "config" do
 
   task :common => ["token:setup", :initialize] do
     puts "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
+    print_timestamp('config:common')
 
     if $app_config && !$app_config["sdk"].nil?
       BuildOutput.note('To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.','You use sdk parameter in build.yml')
@@ -2784,6 +2816,10 @@ def is_ext_supported(extpath)
 end
 
 def init_extensions(dest, mode = "")
+
+
+  print_timestamp('init_extensions() START')
+
   extentries = []
   extentries_init = []
   nativelib = []
@@ -2991,6 +3027,8 @@ def init_extensions(dest, mode = "")
 
       add_extension(extpath, dest) if !dest.nil? && mode == ""
     end
+
+
   end
 
 
@@ -3052,8 +3090,12 @@ def init_extensions(dest, mode = "")
       end
     end
   end
-  
-  return if mode == "update_rho_modules_js"
+
+
+  if mode == "update_rho_modules_js"
+    print_timestamp('init_extensions() FINISH')
+    return
+  end
 
   if $config["platform"] != "bb"
     f = StringIO.new("", "w+")
@@ -3143,7 +3185,7 @@ def init_extensions(dest, mode = "")
     chdir dest
     $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
   end
-  puts "end of init extension"
+  print_timestamp('init_extensions() FINISH')
   #exit
 end
 
@@ -3187,7 +3229,7 @@ end
 
 def common_bundle_start( startdir, dest)
 
-  puts "common_bundle_start"
+  print_timestamp('common_bundle_start() START')
 
   app = $app_path
 
@@ -3284,6 +3326,7 @@ def common_bundle_start( startdir, dest)
     Dir.glob("**/.svn").each { |f| rm_rf f }
     Dir.glob("**/CVS").each { |f| rm_rf f }
   end
+  print_timestamp('common_bundle_start() FINISH')
 end #end of common_bundle_start
 
 def create_manifest
@@ -3365,9 +3408,12 @@ namespace "build" do
     end
 
     task :xruby do
+
       if $js_application
         return
       end
+
+      print_timestamp('build:bundle:xruby START')
 
       #needs $config, $srcdir, $excludelib, $bindir
       app = $app_path
@@ -3432,6 +3478,9 @@ namespace "build" do
         exit 1
       end
       chdir startdir
+
+      print_timestamp('build:bundle:xruby FINISH')
+
     end
 
     # its task for compiling ruby code in rhostudio
