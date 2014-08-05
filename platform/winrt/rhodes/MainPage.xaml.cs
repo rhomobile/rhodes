@@ -107,7 +107,7 @@ namespace rhodes
             }
         }
 
-        private async void unpackAppToLocalStorage()
+        private async Task unpackAppToLocalStorage()
         {
             // open zip file stream
             var _Folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
@@ -122,25 +122,46 @@ namespace rhodes
             {
                 if (!String.IsNullOrEmpty(zipArchiveEntry.FullName))
                 {
-                    if (!zipArchiveEntry.FullName.EndsWith("/"))
+                    if (zipArchiveEntry.Name == "")
                     {
-                        string fileName = zipArchiveEntry.FullName.Replace("/", "\\");
-                        System.Diagnostics.Debug.WriteLine("Unpacking " + fileName);
-                        using (Stream fileData = zipArchiveEntry.Open())
-                        {
-                            StorageFile newFile = await unZipfolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-                            using (IRandomAccessStream newFileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
-                            {
-                                using (Stream s = newFileStream.AsStreamForWrite())
-                                {
-                                    await fileData.CopyToAsync(s);
-                                    await s.FlushAsync();
-                                    s.Dispose();
-                                }
-                                newFileStream.Dispose();
-                            }
-                        }
+                        System.Diagnostics.Debug.WriteLine("Creating folder " + zipArchiveEntry.FullName);
+                        await CreateRecursiveFolder(unZipfolder, zipArchiveEntry);
                     }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("Unpacking " + zipArchiveEntry.FullName);
+                        await ExtractFile(unZipfolder, zipArchiveEntry);
+                    }
+                }
+            }
+        }
+
+        private async Task CreateRecursiveFolder(StorageFolder folder, ZipArchiveEntry entry)
+        {
+            var steps = entry.FullName.Split('/').ToList();
+            steps.RemoveAt(steps.Count() - 1);
+            foreach (var i in steps)
+            {
+                await folder.CreateFolderAsync(i, CreationCollisionOption.OpenIfExists);
+                folder = await folder.GetFolderAsync(i);
+            }
+        }
+
+        private async Task ExtractFile(StorageFolder folder, ZipArchiveEntry entry)
+        {
+            var steps = entry.FullName.Split('/').ToList();
+            steps.RemoveAt(steps.Count() - 1);
+            foreach (var i in steps)
+                folder = await folder.GetFolderAsync(i);
+
+            using (Stream fileData = entry.Open())
+            {
+                StorageFile outputFile = await folder.CreateFileAsync(entry.Name, CreationCollisionOption.ReplaceExisting);
+                using (Stream outputFileStream = await outputFile.OpenStreamForWriteAsync())
+                {
+                    await fileData.CopyToAsync(outputFileStream);
+                    await outputFileStream.FlushAsync();
+                    outputFileStream.Dispose();
                 }
             }
         }
