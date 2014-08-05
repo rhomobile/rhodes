@@ -29,11 +29,21 @@ public:
 class CMediaplayerSingleton: public CMediaplayerSingletonBase
 {
 
-	static HANDLE	m_hPlayThread;			/// Handle to play thread
+	static HANDLE	m_hMediaThread;			/// Handle to play media thread
+	static HANDLE	m_hPlayThread;			/// Handle to play audio wav file thread
 	static HANDLE m_hStopMediaEvent;
 	String szVideoFileName;
+	static StringW  lFilename;
 	static bool m_bIsRunning;               //start and stop of playthread decided by this flag
-    ~CMediaplayerSingleton(){}
+	~CMediaplayerSingleton()
+	{
+		CloseHandle(m_hMediaThread);
+		m_hMediaThread = NULL;
+		CloseHandle(m_hPlayThread);
+		m_hMediaThread = NULL;
+		CloseHandle(m_hStopMediaEvent);
+		m_hMediaThread = NULL;
+	}
     virtual rho::String getInitialDefaultID();
     virtual void enumerate(CMethodResult& oResult);
 	
@@ -48,7 +58,7 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
         }
         return inputString;
     }
-	static DWORD WINAPI playThreadProc(LPVOID lpParam)
+	static DWORD WINAPI mediaThreadProc(LPVOID lpParam)
 	{
 		DWORD dwRet = S_OK;
 		CMediaplayerSingleton *pMediaplayer = (CMediaplayerSingleton *)lpParam;
@@ -218,11 +228,13 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 					DWORD dwEvent = WaitForMultipleObjects(2, hEvents, FALSE, INFINITE);					  
 					if(0 == dwEvent)
 					{
-						TerminateProcess(pi.hProcess, -1);
-						WaitForSingleObject(pi.hProcess, 500);
-						CloseHandle(pi.hThread);				
-						CloseHandle(pi.hProcess);
+						TerminateProcess(pi.hProcess, -1);						
 					}
+					LOG(INFO) + __FUNCTION__ + " windows media player is going to be terminated.";
+					WaitForSingleObject(pi.hProcess, INFINITE);
+					LOG(INFO) + __FUNCTION__ + " windows media player terminated.";
+					CloseHandle(pi.hThread);				
+					CloseHandle(pi.hProcess);
 					LOG(INFO) + __FUNCTION__ + " stopping media player.";
 
 				}
@@ -240,19 +252,88 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 
 
 	}
-	
+	bool playLocalAudio()
+	{
+		LOG(INFO) + __FUNCTION__ + ": playLocalAudio called";
+		m_hPlayThread = CreateThread(NULL, 0, (&rho::CMediaplayerSingleton::playThreadProc), this, 0, NULL);
+		return (m_hPlayThread != NULL);
+	}
+	static DWORD WINAPI playThreadProc(LPVOID lpParam)
+	{
+		DWORD dwRet = S_OK;
+
+		CMediaplayerSingleton *pMediaplayer = (CMediaplayerSingleton *)lpParam;
+
+		if (pMediaplayer)
+		{
+			LOG(INFO) + __FUNCTION__ + "pMediaplayer object exists: using lFilename: " + lFilename.c_str(); 
+			if (!PlaySound(lFilename.c_str(), NULL, SND_FILENAME|SND_SYNC|SND_NODEFAULT)) {
+				LOG(INFO) + __FUNCTION__ + " PlaySound function failed, API supports only wav extention ";
+				dwRet = false;
+			}
+
+			CloseHandle(pMediaplayer->m_hPlayThread);
+			pMediaplayer->m_hPlayThread = NULL;
+		}
+
+		return dwRet;
+	}	
 	
 	// Play an audio file.
 	virtual void start( const rho::String& filename, rho::apiGenerator::CMethodResult& oResult)
 	{
-		startvideo(filename, oResult);
+		// Check that the filename is not empty or NULL.
+		if (!filename.empty() && (!m_hPlayThread))
+		{
+			// Download the audio file and store name in lFilename
+			if(String_startsWith(filename, "http://") || String_startsWith(filename, "https://"))
+			{
+				rho::common::CRhoFile::deleteFile("download.wav");
+				// Networked code
+				LOG(INFO) + __FUNCTION__ + "Attempting to download the file. " + filename;
+				NetRequest oNetRequest;
+				Hashtable<String,String> mapHeaders;
+				bool overwriteFile = true;
+				bool createFolders = false;
+				bool fileExists = false;
+				String& newfilename = String("download.wav");
+
+				// Call the download function with the url and new filename the temp filename to be used.
+				net::CNetRequestHolder *requestHolder = new net::CNetRequestHolder();
+				requestHolder->setSslVerifyPeer(false);
+				NetResponse resp = getNetRequest(requestHolder).pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+
+				delete requestHolder;
+
+				if (!resp.isOK())
+				{
+					LOG(INFO) + __FUNCTION__ + " Could not download the file";
+					return; // Don't attempt to play the file.
+				}
+				else
+				{
+					LOG(INFO) + __FUNCTION__ + " Could download the file";
+					lFilename = s2ws(newfilename);
+				}	
+			}
+			else
+			{
+				// Store the local filename away.
+				lFilename = s2ws(filename);
+			}
+
+			// Launch the audio player.
+			playLocalAudio();
+		}
 		
 	}
 
 	// Stop playing an audio file.
     virtual void stop(rho::apiGenerator::CMethodResult& oResult)
 	{
-		stopvideo(oResult);
+		// If the player is currently playing an audio file, stop it.
+		PlaySound(NULL, NULL, 0);
+		LOG(INFO) + __FUNCTION__ + " Stopping audio playback";		
 	}
 
 	// Start playing a video file.
@@ -263,7 +344,7 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 		{
 			//if thread not running
 			szVideoFileName = filename;
-			m_hPlayThread = CreateThread (NULL, 0, playThreadProc, this, 0, NULL);			   
+			m_hMediaThread = CreateThread (NULL, 0, mediaThreadProc, this, 0, NULL);			   
 		}
 		else
 		{
@@ -279,10 +360,10 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 		{
 			//if thread running
 			SetEvent(m_hStopMediaEvent);
-			WaitForSingleObject(m_hPlayThread, INFINITE);
+			WaitForSingleObject(m_hMediaThread, INFINITE);
 			ResetEvent(m_hStopMediaEvent);
-			CloseHandle(m_hPlayThread);
-			m_hPlayThread = NULL;
+			CloseHandle(m_hMediaThread);
+			m_hMediaThread = NULL;
 		}
 		else
 		{
@@ -307,7 +388,9 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 	}
 };
 
+StringW CMediaplayerSingleton::lFilename;
 HANDLE CMediaplayerSingleton::m_hPlayThread = NULL;
+HANDLE CMediaplayerSingleton::m_hMediaThread = NULL;
 HANDLE CMediaplayerSingleton::m_hStopMediaEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 bool CMediaplayerSingleton::m_bIsRunning = false;
 
