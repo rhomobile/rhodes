@@ -26,7 +26,7 @@ If you wish to minimize the amount of JavaScript being included, you can choose 
 ex:
 
 * ebapi.js - core APIs needed 
-* eb.intent.js - just the Fle API
+* eb.intent.js - just the Intent API
 * other individual JavaScript files included with the Enterprise Browser installation
 
         </MORE_HELP_EB>
@@ -90,7 +90,7 @@ ex:
                             <PARAM name="categories" type="ARRAY">
                                 <PLATFORM>Android</PLATFORM>
                                 <DESC>List of intent categories. See [Android docs](http://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String\)) for possible values.
-***NOTE: Use the Constant Value instead of the actual Constant Name. Ex: For the Constant [CATEGORY_HOME](http://developer.android.com/reference/android/content/Intent.html#CATEGORY_HOME) use 'android.intent.category.HOME'***
+> NOTE: Use the Constant Value instead of the actual Constant Name. Ex: For the Constant [CATEGORY_HOME](http://developer.android.com/reference/android/content/Intent.html#CATEGORY_HOME) use 'android.intent.category.HOME'
 
 </DESC>
                                 <PARAM type="STRING"/>
@@ -114,12 +114,12 @@ ex:
                             </PARAM>
                             <PARAM name="uri" type="STRING">
                                 <DESC>Open the application associated with the URI. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix usually executes the Web Browser installed on system and open URL in executed browser.
->NOTE: For Android, this is similar to [Intent.setData()](http://developer.android.com/reference/android/content/Intent.html#setData(android.net.Uri\)). For example, if you were sending a [Map Intent](http://developer.android.com/guide/components/intents-common.html#Maps) you would set this value to something like `geo:47.6,-122.3`***
+>NOTE: For Android, this is similar to [Intent.setData()](http://developer.android.com/reference/android/content/Intent.html#setData(android.net.Uri\)). For example, if you were sending a [Map Intent](http://developer.android.com/guide/components/intents-common.html#Maps) you would set this value to something like `geo:47.6,-122.3`
 </DESC>
                             </PARAM>
                             <PARAM name="mimeType" type="STRING">
                                 <DESC>MIME type of data defined in the intent. For example, for Plain Text I would use `text/plain`
-***NOTE: For Android, this is similar to [Intent.setType()](http://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String\))***
+>NOTE: For Android, this is similar to [Intent.setType()](http://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String\))
 </DESC>
                             </PARAM>
                             <PARAM name="data" type="HASH">
@@ -156,7 +156,7 @@ Notice the use of the full constant string "android.intent.extra.TEXT" in place 
             <METHOD name="startListening" hasCallback="mandatory" runInThread="none" productException="eb">
                 <DESC>Start listening for custom intents. 
 
->NOTE: For Android, this is how we have implemented [Android Intent Filters](http://developer.android.com/guide/components/intents-filters.html#Receiving). In order to listen for Intents you will have to update the `AndroidManifest.erb` file and add a special section to it. This file is now generated with RhoMobile Version 4.1 when you create a new project. The file is located in the root of project.
+For Android, this is how we have implemented [Android Intent Filters](http://developer.android.com/guide/components/intents-filters.html#Receiving). In order to listen for Intents you will have to update the `AndroidManifest.erb` file and add a special section to it. This file is now generated with RhoMobile Version 4.1 when you create a new project. The file is located in the root of project.
 
 Add the following snippet to AndroidManifest.erb within the `manifest` tags
 <![CDATA[
