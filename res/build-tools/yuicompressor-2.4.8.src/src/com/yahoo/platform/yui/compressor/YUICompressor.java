@@ -14,8 +14,6 @@ import org.mozilla.javascript.EvaluatorException;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class YUICompressor {
 
@@ -260,16 +258,22 @@ public class YUICompressor {
                     }
 
                     if ( preservedOutputFilename != null ) {
+                    
+                      File outputFile = new File(outputFilename);
+                      File targetFile = new File(preservedOutputFilename);
 
                       try {
                         if (errorOccured) {
-                          if (new File(outputFilename).exists()) {
-                            Files.delete(Paths.get(outputFilename));
+                          if (outputFile.exists()) {
+                            outputFile.delete();
                           }
                         } else {
-                          Files.move(Paths.get(outputFilename),Paths.get(preservedOutputFilename),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                          if (targetFile.exists()) {
+                            targetFile.delete();
+                          }
+                          outputFile.renameTo(targetFile);
                         }
-                      } catch ( IOException e ) {
+                      } catch ( SecurityException e ) {
                         hadErrors = true;
                         e.printStackTrace();
                       }

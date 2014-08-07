@@ -1882,22 +1882,39 @@ namespace 'cloud' do
       if !(status.nil? || status.empty?)
         build_enabled = status["cloud_build_enabled"]== true
         remaining_builds = status["builds_remaining"]
-        if remaining_builds > 0
-          BuildOutput.note(
-              ["You have #{remaining_builds} builds remaining"],
-              'Account builds limitation')
-        elsif remaining_builds == 0
-          BuildOutput.error(
-              ["Build count limit reached on your #{$user_acc.subsciption_plan} plan. Please login to #{$selected_server} and check details."],
-              'Account builds limitation')
-          exit 1
-        end
-        free_queue_slots = status["free_queue_slots"]
-        if free_queue_slots == 0
-          BuildOutput.error(
-              ['Maximum parallel builds count reached. Please try again later.'],
-              'Account builds limitation')
-          exit 1
+
+        if build_enabled
+          if remaining_builds > 0
+            BuildOutput.note(
+                ["You have #{remaining_builds} builds remaining"],
+                'Account limitation')
+          elsif remaining_builds == 0
+            BuildOutput.error(
+                ["Build count limit reached on your #{$user_acc.subsciption_plan} plan. Please login to #{$selected_server} and check details."],
+                'Account limitation')
+            exit 1
+          end
+          free_queue_slots = status["free_queue_slots"]
+
+          if free_queue_slots == 0
+            $platform_list = get_build_platforms() unless $platform_list
+
+            builds = filter_by_status(get_builds_list($app_cloud_id),['queued'])
+
+            puts "There are #{builds.length} builds queued:\n\n"
+
+            builds.each do |build|
+              show_build_information(build, $platform_list)
+            end
+
+            puts
+
+            BuildOutput.error(
+                ['Could not start build because all build slots are used.',
+                'Please wait until running builds will finish and try again.'],
+                'Build server limitation')
+            exit 1
+          end
         end
       else
         build_enabled = $user_acc.subscription_level() > 0

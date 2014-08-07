@@ -539,7 +539,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
         CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::DocumentTimeoutThread, (LPVOID)this, 0, NULL));
 
-        //SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);
+        SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);
 
 		retVal = S_OK;
 		break;
@@ -758,7 +758,10 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-        if ( RHODESAPP().getExtManager().onWndMsg(msg) )
+        if(msg.message == WM_PAINT)
+			RHODESAPP().getExtManager().onHTMLWndMsg(msg);
+		
+		if ( RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 		
 		if (msg.message == WM_KEYDOWN && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
