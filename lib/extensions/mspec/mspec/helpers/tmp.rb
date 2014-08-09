@@ -7,15 +7,20 @@ SPEC_TEMP_DIR = "#{File.expand_path(Dir.pwd)}/rubyspec_temp"
 
 SPEC_TEMP_UNIQUIFIER = "0"
 
+SPEC_TMEM_DIR_PID = Process.pid
+
 at_exit do
   begin
-    Dir.delete SPEC_TEMP_DIR if File.directory? SPEC_TEMP_DIR
+    if SPEC_TMEM_DIR_PID == Process.pid
+      Dir.delete SPEC_TEMP_DIR if File.directory? SPEC_TEMP_DIR
+    end
   rescue SystemCallError
     STDERR.puts <<-EOM
 
 -----------------------------------------------------
 The rubyspec temp directory is not empty. Ensure that
-all specs are cleaning up temporary files.
+all specs are cleaning up temporary files:
+  #{SPEC_TEMP_DIR}
 -----------------------------------------------------
 
     EOM
@@ -27,7 +32,7 @@ end
 
 class Object
   def tmp(name, uniquify=true)
-    Dir.mkdir SPEC_TEMP_DIR unless File.exists? SPEC_TEMP_DIR
+    Dir.mkdir SPEC_TEMP_DIR unless File.exist? SPEC_TEMP_DIR
 
     if uniquify and !name.empty?
       slash = name.rindex "/"

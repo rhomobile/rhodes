@@ -1,5 +1,6 @@
 require 'mspec/runner/mspec'
 require 'mspec/runner/actions/tally'
+
 require 'rbconfig'
 
 class SpecGuard
@@ -132,6 +133,10 @@ class SpecGuard
         RUBY_NAME =~ /^macruby/
       when :maglev
         RUBY_NAME =~ /^maglev/
+      when :topaz
+        RUBY_NAME =~ /^topaz/
+      when :opal
+        RUBY_NAME =~ /^opal/
       else
         false
       end
@@ -162,7 +167,7 @@ class SpecGuard
 
   def os?(*oses)
     oses.any? do |os|
-      host_os = ::RbConfig::CONFIG['host_os'] || RUBY_PLATFORM
+      host_os = RbConfig::CONFIG['host_os'] || RUBY_PLATFORM
       host_os.downcase!
       host_os.match(os.to_s) || windows?(os, host_os)
     end

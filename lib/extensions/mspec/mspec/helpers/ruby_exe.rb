@@ -22,14 +22,18 @@ require 'mspec/guards/platform'
 #
 #   `#{RUBY_EXE} -e #{'puts "hello, world."'}`
 #
-# The ruby_exe helper also accepts an options hash with two
-# keys: :options and :args. For example:
+# The ruby_exe helper also accepts an options hash with three
+# keys: :options, :args and :env. For example:
 #
-#   ruby_exe('file.rb', :options => "-w", :args => "> file.txt")
+#   ruby_exe('file.rb', :options => "-w",
+#                       :args => "> file.txt",
+#                       :env => { :FOO => "bar" })
 #
 # will be executed as
 #
 #   `#{RUBY_EXE} -w #{'file.rb'} > file.txt`
+#
+# with access to ENV["FOO"] with value "bar".
 #
 # If +nil+ is passed for the first argument, the command line
 # will be built only from the options hash.
@@ -82,6 +86,8 @@ class Object
         "bin/jruby"
       when 'maglev'
         "maglev-ruby"
+      when 'topaz'
+        "topaz"
       when 'ironruby'
         "ir"
       end
@@ -98,41 +104,60 @@ class Object
   def resolve_ruby_exe
     [:env, :engine, :name, :install_name].each do |option|
       next unless cmd = ruby_exe_options(option)
-      exe = cmd.split.first
+      exe, *rest = cmd.split(" ")
 
       # It has been reported that File.executable is not reliable
       # on Windows platforms (see commit 56bc555c). So, we check the
-      # platform. 
-      if File.exists?(exe) and (PlatformGuard.windows? or File.executable?(exe))
-        return cmd
+      # platform.
+      if File.exist?(exe) and (PlatformGuard.windows? or File.executable?(exe))
+        return [File.expand_path(exe), *rest].join(" ")
       end
     end
     nil
   end
 
   def ruby_exe(code, opts = {})
-    body = code
+    env = opts[:env] || {}
     working_dir = opts[:dir] || "."
     Dir.chdir(working_dir) do
-      if code and not File.exists?(code)
-        if opts[:escape]
-          code = "'#{code}'"
-        else
-          code = code.inspect
-        end
-        body = "-e #{code}"
+      saved_env = {}
+      env.each do |key, value|
+        key = key.to_s
+        saved_env[key] = ENV[key] if ENV.key? key
+        ENV[key] = value
       end
-      cmd = [RUBY_EXE, ENV['RUBY_FLAGS'], opts[:options], body, opts[:args]]
-      `#{cmd.compact.join(' ')}`
+
+      begin
+        `#{ruby_cmd(code, opts)}`
+      ensure
+        saved_env.each { |key, value| ENV[key] = value }
+        env.keys.each do |key|
+          key = key.to_s
+          ENV.delete key unless saved_env.key? key
+        end
+      end
     end
   end
 
-#RHO
-#  unless Object.const_defined?(:RUBY_EXE) and RUBY_EXE
-#    require 'rbconfig'
-#
-#    RUBY_EXE = resolve_ruby_exe or
-#      raise Exception, "Unable to find a suitable ruby executable."
-#  end
-#RHO  
+  def ruby_cmd(code, opts = {})
+    body = code
+
+    if code and not File.exist?(code)
+      if opts[:escape]
+        code = "'#{code}'"
+      else
+        code = code.inspect
+      end
+      body = "-e #{code}"
+    end
+
+    [RUBY_EXE, ENV['RUBY_FLAGS'], opts[:options], body, opts[:args]].compact.join(' ')
+  end
+
+  unless Object.const_defined?(:RUBY_EXE) and RUBY_EXE
+    require 'rbconfig'
+
+    RUBY_EXE = resolve_ruby_exe or
+      raise Exception, "Unable to find a suitable ruby executable."
+  end
 end

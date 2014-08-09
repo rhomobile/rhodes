@@ -10,4 +10,3 @@ require 'mspec/runner/formatters/method'
 require 'mspec/runner/formatters/yaml'
 require 'mspec/runner/formatters/profile'
 require 'mspec/runner/formatters/junit'
-

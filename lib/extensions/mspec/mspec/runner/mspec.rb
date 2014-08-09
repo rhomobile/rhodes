@@ -4,8 +4,6 @@ require 'mspec/runner/tag'
 require 'fileutils'
 
 module MSpec
-  @count = 0
-  @exc_count = 0
 
   @exit    = nil
   @start   = nil
@@ -26,37 +24,9 @@ module MSpec
   @features     = {}
   @exception    = nil
   @randomize    = nil
+  @repeat       = nil
   @expectation  = nil
   @expectations = false
-  @backtrace = false  
-  @file_count = 0
-  @is_network_available = false
-  @errorMessages = nil
-
-
-  def self.exc_count
-    @exc_count
-  end
-  
-  def self.count
-    @count
-  end
-
-  def self.errorMessages
-    @errorMessages   
-  end
-    
-  def self.is_network_available
-    @is_network_available
-  end
-
-  def self.file_count
-    @file_count
-  end
-
-  def self.backtrace=(backtrace)
-    @backtrace = backtrace
-  end
 
   def self.describe(mod, options=nil, &block)
     state = ContextState.new mod, options
@@ -64,7 +34,7 @@ module MSpec
 
     MSpec.register_current state
     state.describe(&block)
-    @count+=state.examples.length
+
     state.process unless state.shared? or current
   end
 
@@ -79,38 +49,14 @@ module MSpec
 
     shuffle files if randomize?
     files.each do |file|
-#RHO
-	  puts "MSpec processing file: #{file}"
-				
-	  if file.is_a?(Array)
-		  settings=file[1]
-		  settings.each do |setting|
-			  run_spec(file[0],setting)
-		  end
-	  else
-		  run_spec(file,nil)
-	  end
-#RHO
-		#      @env = Object.new
-		#      @env.extend MSpec
+      @env = Object.new
+      @env.extend MSpec
 
-		#      store :file, file
-		#      actions :load
-		#      protect("loading #{file}") { Kernel.load file }
-		#      actions :unload
+      store :file, file
+      actions :load
+      protect("loading #{file}") { Kernel.load file }
+      actions :unload
     end
-  end
-
-  def self.run_spec(file,settings)
-	@env = Object.new
-	@env.extend MSpec
-
-	$spec_settings = settings
-
-	store :file, file
-	actions :load
-	protect("loading #{file}") { Kernel.load file }
-	actions :unload
   end
 
   def self.actions(action, *args)
@@ -125,11 +71,6 @@ module MSpec
     rescue SystemExit
       raise
     rescue Exception => exc
-      #RHO
-      puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")
-      @exc_count+=1
-      #RHO
-      
       register_exit 1
       actions :exception, ExceptionState.new(current && current.state, location, exc)
       return false
@@ -187,7 +128,6 @@ module MSpec
 
   # Stores the list of files to be evaluated.
   def self.register_files(files)
-    @file_count = files.length if files
     store :files, files
   end
 
@@ -288,6 +228,16 @@ module MSpec
 
   def self.randomize?
     @randomize == true
+  end
+
+  def self.repeat=(times)
+    @repeat = times
+  end
+
+  def self.repeat
+    (@repeat || 1).times do
+      yield
+    end
   end
 
   def self.shuffle(ary)
@@ -404,6 +354,6 @@ module MSpec
   # Removes the tag file associated with a spec file.
   def self.delete_tags
     file = tags_file
-    File.delete file if File.exists? file
+    File.delete file if File.exist? file
   end
 end
