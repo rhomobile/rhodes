@@ -262,10 +262,7 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-		if(msg.message == WM_PAINT)
-			RHODESAPP().getExtManager().onHTMLWndMsg(msg);
-		
-		if ( RHODESAPP().getExtManager().onWndMsg(msg) )
+		if (msg.message != WM_PAINT && RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 
         if (!mainWnd.TranslateAccelerator(&msg))
@@ -273,6 +270,9 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+
+		if(msg.message == WM_PAINT)
+			RHODESAPP().getExtManager().onHTMLWndMsg(msg);	
     }
 }
 
