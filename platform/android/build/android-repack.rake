@@ -376,9 +376,12 @@ namespace 'device' do
 
       abis = $abis
 
+      #replace 'arm' to 'armeabi'
+      abis.map! { |abi| abi == 'arm' ? 'armeabi' : abi }
+
       Dir.glob(File.join(native_libs_path,'**','lib*.so')) do |lib|
         arch = File.basename(File.dirname(lib))
-        args << "lib/#{arch}/#{File.basename(lib)}" if arch in abis
+        args << "lib/#{arch}/#{File.basename(lib)}" if abis.include?(arch)
         abis.delete(arch)
       end
 
