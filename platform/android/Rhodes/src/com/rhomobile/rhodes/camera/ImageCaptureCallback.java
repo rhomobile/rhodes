@@ -51,7 +51,7 @@ public class ImageCaptureCallback implements PictureCallback {
 	private String mImgFormat;
 	private int dev_rotation = 0;
 
-	public ImageCaptureCallback(ImageCapture owner, String u, OutputStream o, String f, int w, int h, String format) {
+	public ImageCaptureCallback(ImageCapture owner, String u, OutputStream o, String f, int w, int h, String format,int _dev_rotation) {
 		mOwner = owner;
 		callbackUrl = u;
 		osCommon = o;
@@ -59,6 +59,7 @@ public class ImageCaptureCallback implements PictureCallback {
 		mImgWidth = w;
 		mImgHeight = h;
 		mImgFormat = format;
+		dev_rotation =_dev_rotation;
 	}
 
 /*	public void onPictureTaken(byte[] data, Camera camera) {

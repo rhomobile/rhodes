@@ -100,12 +100,12 @@ ex:
 
 * iOS it is BundleURLScheme of executed application. 
 * Android it is application package name.
-* Windows it is the executable name.
+* Windows it is the application/executable name. For shared runtime based applications, the application name is taken from the "Name" attribute from the Config.xml file. Hence use the application name which is mentioned in config.xml.
 </DESC>
                                 <DESC_EB>Explicit name of the application on the device to run. The platform will determine what value to use. 
 
 * Android it is application package name.
-* Windows it is the executable name.
+* Windows it is the application/executable name. For shared runtime based applications, the application name is taken from the "Name" attribute from the Config.xml file. Hence use the application name which is mentioned in config.xml.
 </DESC_EB>
                             </PARAM>
                             <PARAM name="targetClass" type="STRING">
