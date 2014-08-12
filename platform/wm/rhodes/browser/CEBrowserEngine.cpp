@@ -1055,5 +1055,33 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
     return 0;
 }
 
+BOOL CEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab) 
+{ 
+	LPDISPATCH pDisp = NULL;
+	LPOLECOMMANDTARGET pCmdTarg = NULL;
+	if (S_OK != m_pBrowser->get_Document(&pDisp)) 
+		return S_FALSE;
+	if (pDisp == NULL)
+		return S_FALSE;
+	pDisp->QueryInterface(IID_IOleCommandTarget, (LPVOID*)&pCmdTarg);
+	if (pCmdTarg == NULL)
+		return S_FALSE;
+	VARIANT vaZoomFactor;   // input arguments
+	VariantInit(&vaZoomFactor);
+	V_VT(&vaZoomFactor) = VT_I4;
+	V_I4(&vaZoomFactor) = nZoom;
+	pCmdTarg->Exec(NULL,
+				OLECMDID_ZOOM,
+				OLECMDEXECOPT_DONTPROMPTUSER,
+				&vaZoomFactor,
+				NULL);
+	VariantClear(&vaZoomFactor);
+	if (pCmdTarg)
+	   pCmdTarg->Release(); // release document's command target
+	if (pDisp)
+	   pDisp->Release();    // release document's dispatch interface
+	return S_OK;
+}
+
 
 #endif //!defined( OS_WINCE )
