@@ -262,7 +262,7 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-        if ( RHODESAPP().getExtManager().onWndMsg(msg) )
+		if (msg.message != WM_PAINT && RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 
         if (!mainWnd.TranslateAccelerator(&msg))
@@ -270,6 +270,9 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+
+		if(msg.message == WM_PAINT)
+			RHODESAPP().getExtManager().onHTMLWndMsg(msg);	
     }
 }
 
@@ -569,6 +572,20 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
     }
 
 	return 0;
+}
+
+BOOL CIEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
+{
+	BOOL bRetVal = PostMessage(m_hwndTabHTML, DTM_ZOOMLEVEL, 0, 
+								(LPARAM)(DWORD) nZoom);
+
+	if (bRetVal)
+	{
+		//m_dwCurrentTextZoomLevel = dwZoomLevel;
+		return S_OK;
+	}
+	else
+		return S_FALSE;
 }
 
 #define  PB_ENGINE_IE_MOBILE

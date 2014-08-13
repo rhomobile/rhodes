@@ -208,6 +208,7 @@ def kill_detool
 end
 
 def sign(cabfile, signature)
+  print_timestamp('signing CAB file START')
   puts "Singing .cab file"
 
   cabsigntool = $cabwiz[0, $cabwiz.index("CabWiz")] + "Security\\CabSignTool\\cabsigntool" if $config["env"]["paths"]["cabwiz"]
@@ -231,7 +232,7 @@ def sign(cabfile, signature)
   else
     puts "\nFailed to sign .cab file!\n\n"
   end
-
+  print_timestamp('signing CAB file FINISH')
   $stdout.flush
 end
 
@@ -409,6 +410,7 @@ def stuff_around_appname
 end
 
 def build_cab
+  print_timestamp('build CAB file START')
   build_platform = 'ce5' #if $sdk == "MC3000c50b (ARMV4I)"
 
   reg_keys_filename = File.join(File.dirname(__FILE__), 'regs.txt');
@@ -490,6 +492,7 @@ def build_cab
   end
 
   rm File.join(dir, 'cleanup.js')
+  print_timestamp('build CAB file FINISH')
 end
 
 def clean_ext_vsprops(ext_path)
@@ -547,7 +550,7 @@ namespace "config" do
     task :qt do
       next if $prebuild_win32
 
-      $msvc_version = $app_config["win32"]["msvc"] if $app_config["win32"] && $app_config["win32"]["msvc"]
+      $msvc_version = $app_config["win32"]["msvc"] if $app_config && $app_config["win32"] && $app_config["win32"]["msvc"]
 
       # use Visual Studio 2012 by default
       $vs_version = 2012
@@ -665,6 +668,7 @@ namespace "build" do
   namespace "wm" do
   
     task :extensions => "config:wm" do
+      print_timestamp('build:wm:extensions START')
       next if $use_shared_runtime || $prebuild_win32
 
       extensions_lib = ''
@@ -677,6 +681,7 @@ namespace "build" do
       
       $app_extensions_list.each do |ext, commin_ext_path |
           next unless commin_ext_path
+          print_timestamp('process extension "'+ext+'" START')
           
           extpath = File.join( commin_ext_path, 'ext')
           ext_config_path = File.join( commin_ext_path, "ext.yml")
@@ -821,9 +826,10 @@ namespace "build" do
           end
           
           chdir $startdir
-          
+          print_timestamp('process extension "'+ext+'" FINISH')
       end      
       generate_extensions_pri(extensions_lib, pre_targetdeps)
+      print_timestamp('build:wm:extensions FINISH')
     end
 
     #    desc "Build wm rhobundle"
@@ -832,6 +838,7 @@ namespace "build" do
     end
 
     task :rhodes => ["config:wm", "build:wm:rhobundle"] do
+      print_timestamp('build:wm:rhodes START')
       if $use_shared_runtime then next end
 
       chdir $config["build"]["wmpath"]
@@ -852,11 +859,12 @@ namespace "build" do
         exit 1
       end
       chdir $startdir
+      print_timestamp('build:wm:rhodes FINISH')
     end
 
     task :devrhobundle => ["config:set_wm_platform", "build:wm:rhobundle", "win32:after_bundle"]
     
-    task :upgrade_package => ["build:wm:rhobundle"] do        
+    task :upgrade_package => ["build:wm:rhobundle"] do
       mkdir_p $targetdir if not File.exists? $targetdir
       zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
       Jake.zip_upgrade_bundle( $bindir, zip_file_path)
@@ -1266,6 +1274,7 @@ namespace "device" do
 
     desc 'Applies application container. See also device:wm:make_container.'
     task :apply_container, [:container_prefix_path] do |t, args|
+      print_timestamp('device:wm:apply_container START')
       container_prefix_path = args[:container_prefix_path]
 
       File.open(File.join(container_prefix_path, 'build.yml')) do |f|
@@ -1277,18 +1286,21 @@ namespace "device" do
 
       unpack_7z($app_path, File.join(container_prefix_path, 'application_override.7z'))
       unpack_7z($startdir, File.join(container_prefix_path, 'rhodes_gem_override.7z'))
+      print_timestamp('device:wm:apply_container FINISH')
     end
 
     desc 'Build cab'
     task :cab => ['config:wm'] do
+      print_timestamp('device:wm:cab START')
       Jake.make_rhoconfig_txt
       stuff_around_appname
       build_cab
+      print_timestamp('device:wm:cab FINISH')
     end
 
     desc "Build production for device or emulator"
     task :production, [:exclude_dirs] => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
-
+      print_timestamp('device:wm:production START')
       if $use_shared_runtime
         rm_rf $srcdir + '/lib'
       end
@@ -1316,15 +1328,17 @@ namespace "device" do
       stuff_around_appname
 
       build_cab if $build_cab
-
+      print_timestamp('device:wm:production FINISH')
     end
 
     task :production_with_prebuild_binary => ['config:wm'] do
+      print_timestamp('device:wm:production_with_prebuild_binary START')
       container_path = determine_prebuild_path_win('wm', $app_config)
       Rake::Task['device:wm:apply_container'].invoke(container_path)
       $skip_build_extensions = true
       Rake::Task['build:bundle:noxruby'].invoke
       Rake::Task['device:wm:cab'].invoke
+      print_timestamp('device:wm:production_with_prebuild_binary FINISH')
     end
   end
 
@@ -1460,7 +1474,6 @@ namespace "device" do
         'bin/tmp/rho/apps/rhofilelist.txt',
         'bin/tmp/rho/apps/app',
         'bin/tmp/rho/apps/app_manifest.txt',
-        'bin/tmp/rho/apps/public/api',
         'bin/tmp/rho/apps/public/public.txt'
       ]
 

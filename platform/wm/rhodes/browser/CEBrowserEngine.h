@@ -40,6 +40,7 @@ public:
 private:
     static DWORD WINAPI RegisterWndProcThread(LPVOID lpParameter);
     static DWORD WINAPI NavigationTimeoutThread( LPVOID lpParameter );
+    static DWORD WINAPI DocumentTimeoutThread( LPVOID lpParameter );
 
 private:
     HRESULT ParseTags();
@@ -101,7 +102,7 @@ private:
     
     virtual BOOL    GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab) { return FALSE; }
     virtual BOOL    ZoomPageOnTab(float fZoom, UINT iTab) { return FALSE; }
-    virtual BOOL    ZoomTextOnTab(int nZoom, UINT iTab) { return FALSE; }
+    virtual BOOL    ZoomTextOnTab(int nZoom, UINT iTab);
     virtual int     GetTextZoomOnTab(UINT iTab) { return 2; }   
     virtual void    NotifyEngineOfSipPosition() {}
     virtual void    setNavigationTimeout(unsigned int dwMilliseconds){}
@@ -112,26 +113,29 @@ private:
 private:	
     //  Attributes
 
-    TCHAR	          m_tcNavigatedURL[MAX_URL];	///< The current URL loaded or being navigated to
-    ULONG	          m_ulRefs;					///< COM reference counter
     IWebBrowser2	 *m_pBrowser;	///< Pointer to Microsoft IE Browser component
     IConnectionPoint *m_pCP;			///< Web Browser Connection Point
     IOleObject       *m_pObject;		///< IOleObject reference 
+    HWND              m_hwndParent;
+    HINSTANCE         m_hInstance;
+
+    HANDLE	          m_hNavigated;     ///< Event handle set on document complete or on navigation error, used to stop the navigation timeout thread.
+    HANDLE            m_hDocComp;
+
+    TCHAR	          m_tcNavigatedURL[MAX_URL];	///< The current URL loaded or being navigated to
+    ULONG	          m_ulRefs;					///< COM reference counter
     BOOL	          m_bInPlaceActive;			///< Whether or not one of the container's objects is activated in place    
     TCHAR	          m_tcCurrentPageTitle[MAX_URL];///< The title of the currently loaded page    
-    HANDLE	          m_hNavigated;     ///< Event handle set on document complete or on navigation error, used to stop the navigation timeout thread.
     int               m_tabID;
     HWND              m_hwndTabHTML;
-    //CHistory*	m_BrowserHistory;		///< This tab's browser history
     BOOL              bRunningOnWM;				///< Whether or not the COM engine is running on Windows Mobile.
-    BOOL	m_bTextSelectionEnabled;
-    BOOL	bDeviceCausesDoubleBackspace;	///< For EMBPD00023872, some devices will cause a double backspace when the backspace key is pressed, this variable is used to determine the result of PreProcessMessage.
-    RECT    m_rcViewSize;
+    BOOL	          m_bTextSelectionEnabled;
+    BOOL	          bDeviceCausesDoubleBackspace;	///< For EMBPD00023872, some devices will cause a double backspace when the backspace key is pressed, this variable is used to determine the result of PreProcessMessage.
+    RECT              m_rcViewSize;
 
-    unsigned int m_dwNavigationTimeout;
-    HWND         m_hwndParent;
-    HINSTANCE    m_hInstance;
-    BOOL         m_bLoadingComplete;
+    unsigned int      m_dwNavigationTimeout;
+    BOOL              m_bLoadingComplete;
+
 
 #pragma region not_implemented_virtual_functions
 	//virtual functions not implemented

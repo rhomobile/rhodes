@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
   <MODULE name="RhoFile" parent="Rho" generateUnderscoreRubyNames="true">
-    <HELP_OVERVIEW>File I/O</HELP_OVERVIEW>
+    <HELP_OVERVIEW>This API provides several methods for access to files and folders found on the device's local file system.</HELP_OVERVIEW>
     <MORE_HELP>Use this API to access local files for reading and writing. Only string data can be read and written with this API. Please note that binary files are not supported. Strings filled with \0 will be truncated to the last non \0 character. 
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
@@ -15,6 +15,21 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
   </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+
+* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+
+If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+
+ex:
+
+* ebapi.js - core APIs needed 
+* eb.rhofile.js - just the File API
+* other individual JavaScript files included with the Enterprise Browser installation
+
+        </MORE_HELP_EB>
 
     <ALIASES>
     </ALIASES>

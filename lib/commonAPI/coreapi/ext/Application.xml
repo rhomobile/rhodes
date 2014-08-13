@@ -15,18 +15,35 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
 </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+
+* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+
+If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+
+ex:
+
+* ebapi.js - core APIs needed 
+* eb.application.js - just the Application API
+* other individual JavaScript files included with the Enterprise Browser installation
+
+        </MORE_HELP_EB>
+
         <TEMPLATES>
         </TEMPLATES>
 
         <PROPERTIES access="STATIC" generateAccessors="true">
-            <PROPERTY name="appBundleFolder" type="STRING" readOnly="true">
+            <PROPERTY name="appBundleFolder" type="STRING" readOnly="true" productException="eb">
                 <DESC>Path to apps/app folder inside the application bundle.</DESC>
             </PROPERTY>
-            <PROPERTY name="appsBundleFolder" type="STRING" readOnly="true">
+            <PROPERTY name="appsBundleFolder" type="STRING" readOnly="true" productException="eb">
                 <DESC>Path to apps folder inside the application bundle.</DESC>
             </PROPERTY>
             <PROPERTY name="bundleFolder" type="STRING" readOnly="true">
                 <DESC>Path to application bundle folder.</DESC>
+                <DESC_EB>Path to the Enterprise Browser folder on the device.</DESC_EB>
             </PROPERTY>
             <PROPERTY name="userFolder" type="STRING" readOnly="true">
                 <DESC>Path to folder where the application can write files and create subfolders.</DESC>
@@ -55,6 +72,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             <PROPERTY name="version" type="STRING" readOnly="true">
                 <DESC>Version from build time configuration file (build.yml).</DESC>
+                <DESC_EB>Version of Enterprise Browser.</DESC_EB>
             </PROPERTY>
             <PROPERTY name="title" type="STRING">
                 <DESC>Define Window caption text. If missed - caption from page used. Not supported on Windows CE devices.</DESC>
@@ -79,6 +97,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         </PARAM>
                         <PARAM name="action" type="STRING"  rhoAction="true">
                             <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or JavaScript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
+                            <DESC_EB>URL to page which will be loaded. Or it can be a JavaScript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC_EB>
                         </PARAM>
                     </PARAMS>
                 </PARAM>
@@ -93,16 +112,19 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, Android, Win32, WP8</PLATFORM>
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
-                <DESC>Is the security token check was failed. Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
+                <DESC>Indicates if the security token check was failed. Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
+                <DESC_EB>Indicates if the security token check was failed. Security token can be passed as command line parameter '-security_token=token_value' to the application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC_EB>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="invalidSecurityTokenStartPath" type="STRING" readOnly="true">
                 <DESC>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
+                <DESC_EB>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path; This file is located in the installation folder of the EnetrpriseBrowser application installed on the device.</DESC_EB>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
             
             <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true" generateDoc="false">
                 <DESC>The version of RhoMobile platform, which was used to build the application.</DESC>
+                <DESC_EB>The version of Enteprise Browser platform, which was used to build the application.</DESC_EB>
             </PROPERTY>
 
             <PROPERTY name="badLinkURI" type="STRING" readOnly="true">
@@ -133,7 +155,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="STRING"/>
             </METHOD>
             <METHOD name="databaseFilePath">
-                <DESC>Path to database file by partition name. Please note that this function does not create a database file. This function only generates the file path based on the application path and partition name.</DESC>
+                <DESC>Path to the ORM database file by partition name. Please note that this function does not create a database file. This function only generates the file path based on the application path and partition name.</DESC>
                 <PARAMS>
                     <PARAM name="partitionName" type="STRING">
                         <DESC>Partition name.</DESC>
@@ -168,17 +190,19 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
             <METHOD name="minimize">
                 <DESC>Minimize or move the application to background. When running in RhoSimulator this method is supported only for Windows OS.</DESC>
+                <DESC_EB>Minimize or move the application to background. </DESC_EB>
                 <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
             <METHOD name="restore">
-                <DESC>Restores the application to be in the foreground. When running in RhoSimulator the method is supported only for windows OS.</DESC>
+                <DESC>Restores the application to be in the foreground. When running in RhoSimulator the method is supported only for Windows OS.</DESC>
+                <DESC_EB>Restores the application to be in the foreground.</DESC_EB>
                 <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
-                <DESC>This method allows your application to register for application specific events like application activation/deactivation, UI creation/destruction as well as others. Check the Callback tab for details.</DESC>
+                <DESC>This method allows your application to register for application specific events like application activation/deactivation, UI creation/destruction as well as others. Check the Callback section for details.</DESC>
                 <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
-                    <DESC>Application events are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start up/shut down activities. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. NB: Event firing behavior depends on platform.</DESC>
+                    <DESC>Application events are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start up/shut down activities. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. Note: Event firing behavior depends on platform.</DESC>
                     <PARAMS>
                         <PARAM name="applicationEvent" type="STRING">
                             <DESC></DESC>
@@ -189,28 +213,29 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 <VALUE constName="APP_EVENT_DEACTIVATED" value ="Deactivated">
                                     <DESC>The application has been deactivated.</DESC>
                                 </VALUE>
-                                <VALUE constName="APP_EVENT_UICREATED" value ="UICreated">
-                                    <DESC>Generated before the start page is loaded. There are no means to set callback and catch event in javascript. Ruby Application class descendant can to set callback and process this event.</DESC>
+                                <VALUE constName="APP_EVENT_UICREATED" value ="UICreated" productException="eb">
+                                    <DESC>Generated before the start page is loaded. There are no means to set callback and catch event in JavaScript. Ruby Application class descendant can set callback and process this event.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_UIDESTROYED" value ="UIDestroyed">
                                     <DESC>This event is triggered when the application is closing and the UI has been cleared.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_OFF" value ="ScreenOff">
-                                    <DESC>Device screen was turned off when power button was pressed or due to idle timeout. NB: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.Not supported on Windows CE.</DESC>
+                                    <DESC>Device screen was turned off when power button was pressed or due to idle timeout. Note: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.Not supported on Windows CE.</DESC>
+                                    <DESC_EB>Device screen was turned off when power button was pressed or due to idle timeout. On Android the application is not deactivated.Not supported on Windows CE.</DESC_EB>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_ON" value ="ScreenOn">
                                     <DESC>Device screen was turned on and unlocked.Not supported on Windows CE.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
                                 </VALUE>
-                                <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged">
+                                <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged" productException="eb">
                                     <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only.</DESC>
                                 </VALUE>
-                                <VALUE constName="APP_EVENT_CONFIGCONFLICT" value ="ConfigConflict">
+                                <VALUE constName="APP_EVENT_CONFIGCONFLICT" value ="ConfigConflict" productException="eb">
                                     <DESC>This is available under Ruby Only.</DESC>
                                     <APPLIES rubyOnly="true"/>
                                 </VALUE>
-                                <VALUE constName="APP_EVENT_DBMIGRATESOURCE" value ="DBMigrateSource">
+                                <VALUE constName="APP_EVENT_DBMIGRATESOURCE" value ="DBMigrateSource" productException="eb">
                                     <DESC>This is available under Ruby Only.</DESC>
                                     <APPLIES rubyOnly="true"/>
                                 </VALUE>

@@ -15,6 +15,21 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+
+* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+
+If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+
+ex:
+
+* ebapi.js - core APIs needed 
+* eb.network.js - just the NativeToolbar API
+* other individual JavaScript files included with the Enterprise Browser installation
+
+        </MORE_HELP_EB>
         
         <TEMPLATES>
         </TEMPLATES>
@@ -331,7 +346,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <DESC>The current data connection type available to RhoElements as provided by the Network. Values can be 'Unavailable', GPRS, 1XRTT, EVDO, EDGE, UMTS, EVDV or HSDPA.</DESC>
                         </PARAM>
                         <PARAM name="connectionTypeConnected" type="STRING">
-                            <DESC>The data connection type to which RhoElements is currently connected. The values returned are identical to connectionTypeAvailable, with the exception that 'Not Connected' replaces 'Unavailable'.</DESC>
+                            <DESC>The data connection type to which the device is currently connected. The values returned are identical to connectionTypeAvailable, with the exception that 'Not Connected' replaces 'Unavailable'.</DESC>
                         </PARAM>
                         <PARAM name="connectionManagerMessage" type="STRING">
                             <DESC>This is the last received status from the Connection Manager. Do NOT use this parameter to determine if you are able to physically send / receive data to a remote host, it only provides an indication of whether the Connection Manager believes the connection is available. To determine if you are connected to a remote host use the detectConnection method.</DESC>

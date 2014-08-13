@@ -29,11 +29,14 @@ package com.rhomobile.rhodes.camera;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import com.rhomobile.rhodes.Logger;
-
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 
+import com.rhomobile.rhodes.Logger;
 public class ImageCaptureCallback implements PictureCallback {
 	
 	private static final String TAG = "ImageCapture";
@@ -46,8 +49,9 @@ public class ImageCaptureCallback implements PictureCallback {
 	private int mImgWidth;
 	private int mImgHeight;
 	private String mImgFormat;
+	private int dev_rotation = 0;
 
-	public ImageCaptureCallback(ImageCapture owner, String u, OutputStream o, String f, int w, int h, String format) {
+	public ImageCaptureCallback(ImageCapture owner, String u, OutputStream o, String f, int w, int h, String format,int _dev_rotation) {
 		mOwner = owner;
 		callbackUrl = u;
 		osCommon = o;
@@ -55,9 +59,10 @@ public class ImageCaptureCallback implements PictureCallback {
 		mImgWidth = w;
 		mImgHeight = h;
 		mImgFormat = format;
+		dev_rotation =_dev_rotation;
 	}
 
-	public void onPictureTaken(byte[] data, Camera camera) {
+/*	public void onPictureTaken(byte[] data, Camera camera) {
 		try {
 			Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
 
@@ -72,6 +77,92 @@ public class ImageCaptureCallback implements PictureCallback {
 			osOwn.close();
 
 			com.rhomobile.rhodes.camera.Camera.doCallback(filePath, mImgWidth, mImgHeight, mImgFormat);
+			mOwner.finish();
+
+		} catch (Exception e) {
+			Logger.E(TAG, e);
+		}
+	}*/
+	
+	public void onPictureTaken(byte[] data, Camera camera) {
+		try {
+			Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
+
+			if (osCommon != null) {
+				osCommon.write(data);
+				osCommon.flush();
+				osCommon.close();
+			}
+			OutputStream osOwn = new FileOutputStream(filePath);
+			osOwn.write(data);
+			osOwn.flush();
+			osOwn.close();
+
+			Bitmap rotatedBitmap = null;
+			Bitmap bm = null;
+
+			try {
+
+				BitmapFactory.Options bounds = new BitmapFactory.Options();
+				bounds.inScaled = false;
+				bounds.inDither = false;
+				bounds.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+				bm = BitmapFactory.decodeFile(filePath, bounds);
+				int rotationAngle = 0;
+				if ((dev_rotation > 45) && (dev_rotation < 135)) {
+					rotationAngle = 180;
+
+				} else if ((dev_rotation > 134) && (dev_rotation < 225)) {
+					rotationAngle = 270;
+
+				} else if ((dev_rotation > 224) && (dev_rotation < 315)) {
+					rotationAngle = 0;
+
+				} else {
+					rotationAngle = 90;
+
+				}
+
+				Matrix matrix = new Matrix();
+				matrix.postRotate(rotationAngle);
+
+				rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(),
+						bm.getHeight(), matrix, true);
+
+			} catch (Exception e) {
+				Logger.E(TAG, e.getMessage());
+
+			}
+
+			if (rotatedBitmap != null) {
+				try {
+
+					FileOutputStream out = new FileOutputStream(filePath);
+					rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+					out.flush();
+					out.close();
+
+				} catch (Exception e) {
+					Logger.E(TAG, e.getMessage());
+				}
+			}
+
+			mImgWidth = rotatedBitmap.getWidth();
+			mImgHeight = rotatedBitmap.getHeight();
+
+			if (rotatedBitmap != null) {
+				rotatedBitmap.recycle();
+				rotatedBitmap = null;
+			}
+
+			if (bm != null) {
+				bm.recycle();
+				bm = null;
+			}
+
+			com.rhomobile.rhodes.camera.Camera.doCallback(filePath, mImgWidth,
+					mImgHeight, mImgFormat);
 			mOwner.finish();
 
 		} catch (Exception e) {

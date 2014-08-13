@@ -15,6 +15,21 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+
+* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+
+If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+
+ex:
+
+* ebapi.js - core APIs needed 
+* eb.system.js - just the System API
+* other individual JavaScript files included with the Enterprise Browser installation
+
+        </MORE_HELP_EB>
         <ALIASES>
             <ALIAS new="System" deprecated="true"/>
         </ALIASES>
@@ -103,7 +118,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android).</DESC>
             </PROPERTY>
             <PROPERTY name="osVersion" type="STRING" readOnly="true">
-                <DESC>Version OS of device. Examples: '4.6.0.192' (BB), '3.0' (iPhone), '1.6' (Android).</DESC>
+                <DESC>Version OS of device. Examples:  '4.1' (Android).</DESC>
             </PROPERTY>
             <PROPERTY name="locale" type="STRING" readOnly="true">
                 <DESC>Current device locale Like 'en', 'ru' etc.</DESC>
@@ -114,7 +129,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <PROPERTY name="isEmulator" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if the application is running on a platform emulator.</DESC>
             </PROPERTY>
-            <PROPERTY name="isRhoSimulator" type="BOOLEAN" readOnly="true">
+            <PROPERTY name="isRhoSimulator" type="BOOLEAN" readOnly="true" productException="eb">
                 <DESC>Returns true if the application is running on RhoSimulator.</DESC>
             </PROPERTY>
             <PROPERTY name="hasCalendar" type="BOOLEAN" readOnly="true">
@@ -138,7 +153,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
-                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password) in rhoconfig.txt. To set proxy for Motorola WebKit for Windows Mobile/CE use config.xml settings.</DESC>
+                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password). To set proxy for Motorola WebKit for Windows Mobile/CE use config.xml settings.</DESC>
                 <PLATFORM>Android, iOS, WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
@@ -247,6 +262,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <METHOD name="openUrl">
                 <DESC>Open the application associated with the URL. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix will execute the Web Browser installed on system and open URL in executed browser. Note: For opening pdf files on android devices it is necessary to add option "no_compression: [ pdf ]" to android section in build.yml
                 </DESC>
+                <DESC_EB>Open the application associated with the URL. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix will execute the Web Browser installed on system and open URL in executed browser. Note: Opening pdf files on Android devices is not supported.
+                </DESC_EB>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>URL as string.</DESC>
@@ -304,6 +321,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <METHOD name="setRegistrySetting">
                 <DESC>Set a value in the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
+                <DESC_EB>Set a value in the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. </DESC_EB>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -365,6 +383,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <METHOD name="getRegistrySetting">
                 <DESC>Retrieve a value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
+                <DESC_EB>Retrieve a value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. </DESC_EB>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -389,6 +408,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             
             <METHOD name="deleteRegistrySetting">
                 <DESC>Deletes the specified value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
+                <DESC_EB>Deletes the specified value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. </DESC_EB>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -636,6 +656,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PARAMS>
                     <PARAM name="appName" type="STRING">
                         <DESC>The name of the application on the device to run. It depends from platform. On iOS it is BundleURLScheme of executed application.</DESC>
+                        <DESC_EB>The name of the application on the device to run. </DESC_EB>
                     </PARAM>
                     <PARAM name="params" type="STRING">
                         <DESC>Start parameters string. Executed Application can receive this string by getStartParams method. Parameter could be just value, or key-value pair separated by '&#61;' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by "&#38;", on other platforms by '&#044;' or '&#032;'.</DESC>
