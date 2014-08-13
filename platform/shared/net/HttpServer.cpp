@@ -402,7 +402,11 @@ bool CHttpServer::init()
 {
 	RAWTRACE("Open listening socket...");
     close_listener();
-    m_listener = socket(AF_INET, SOCK_STREAM, 0);
+    
+    //MOHUS
+    //m_listener = socket(AF_INET, SOCK_STREAM, 0);
+    m_listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    
     if (m_listener == INVALID_SOCKET) {
         RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
         return false;
@@ -419,7 +423,12 @@ bool CHttpServer::init()
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
     sa.sin_port = htons((uint16_t)m_port);
-    sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    
+    //MOHUS
+    //sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    sa.sin_addr.s_addr = htonl(INADDR_ANY);
+    
+    
     if (bind(m_listener, (const sockaddr *)&sa, sizeof(sa)) == SOCKET_ERROR) {
         RAWLOG_ERROR2("Can not bind to port %d: %d", m_port, RHO_NET_ERROR_CODE);
         close_listener();
