@@ -29,7 +29,6 @@ ex:
 * eb.database.js - just the Database API
 * eb.database.sqlite3.js - just the Database API
 * other individual JavaScript files included with the Enterprise Browser installation
-
         </MORE_HELP_EB>
 
     <ALIASES>
@@ -174,27 +173,24 @@ ex:
             <DESC>To insert/update multiple object/models use database transactions. This is the most performant method to initialize your application with a large set of data.</DESC>
             <CODE>
               <RUBY>
-                <![CDATA[
 db = Rho::Database
-  db.startTransaction
-  begin
-    items.each do |item|
-      # create hash of attribute/value pairs
-      data = {
-        :field1 => item['value1'], 
-        :field2 => item['value2'] 
-      } 
-      # Creates a new itemModel object and saves it
-      new_item = itemModel.create(data)
-    end
-   db.commitTransaction
-  rescue
-   db.rollbackTransaction
+db.startTransaction
+begin
+  items.each do |item|
+    # create hash of attribute/value pairs
+    data = {
+      :field1 => item['value1'], 
+      :field2 => item['value2'] 
+    } 
+    # Creates a new itemModel object and saves it
+    new_item = itemModel.create(data)
   end
-  ]]>
+  db.commitTransaction
+rescue
+  db.rollbackTransaction
+end
               </RUBY>
               <JAVASCRIPT>
-                <![CDATA[
 var db = Rho.Database;
 db.startTransaction();
 try
@@ -215,7 +211,6 @@ catch
 {
  db.rollbackTransaction();
 }
-]]>
               </JAVASCRIPT>
             </CODE>
           </SECTION>
