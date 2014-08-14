@@ -33,4 +33,5 @@ public interface IRhoWebView {
     void addJSInterface(Object obj, String name);
     
     void capture(CaptureFormat format, String path);
+    void disableScroll(boolean fingerToScroll);
 }
