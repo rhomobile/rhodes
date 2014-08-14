@@ -97,8 +97,8 @@ ex:
             </PROPERTY>
 
             <PROPERTY name="includeCategories" type="STRING" default="*">
-                <DESC>Comma-separated list of included log categories. Set to '*' to log all categories. Set to '' (empty) to filter out all messages. Default value is '*', it is set in rhoconfig.txt (LogCategories).</DESC>
-                <DESC_EB>Comma-separated list of included log categories. Set to '*' to log all categories. Set to '' (empty) to filter out all messages. Default value is '*', it is set in Config.xml.</DESC_EB>
+                <DESC>Comma-separated list of included log categories. Set to '\*' (asterisk) to log all categories. Set to '' (empty) to filter out all messages. Default value is '\*' (asterisk), it is set in rhoconfig.txt (LogCategories).</DESC>
+                <DESC_EB>Comma-separated list of included log categories. Set to '\*' (asterisk) to log all categories. Set to '' (empty) to filter out all messages. Default value is '\*' (asterisk), it is set in Config.xml.</DESC_EB>
             </PROPERTY>
 
             <PROPERTY name="excludeCategories" type="STRING" default="">
