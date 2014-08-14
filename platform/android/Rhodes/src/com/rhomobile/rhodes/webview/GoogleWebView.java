@@ -21,6 +21,7 @@ import android.graphics.Picture;
 import android.net.Uri;
 import android.os.Build;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
@@ -307,4 +308,19 @@ public class GoogleWebView implements IRhoWebView {
         Logger.I(TAG, "Adding new JS interface: " + name);
         mWebView.addJavascriptInterface(obj, name);
     }
+    
+    @Override
+	public void disableScroll(boolean fingerToScroll) {
+		if(fingerToScroll)
+		{
+			mWebView.setOnTouchListener(new OnTouchListener() {
+				
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					 return (event.getAction() == MotionEvent.ACTION_MOVE);
+				}
+			});
+		}
+		
+	}
 }
