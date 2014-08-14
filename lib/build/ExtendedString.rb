@@ -191,8 +191,8 @@ class Inflections
 
   ## methods
 
-  # Yields a singleton instance of Inflector::Inflections so you can specify
-  # additional inflector rules. If passed an optional locale, rules for other
+  # Yields a singleton instance of Inflections so you can specify
+  # additional Inflections rules. If passed an optional locale, rules for other
   # languages can be specified. If not specified, defaults to <tt>:en</tt>.
   # Only rules for English are provided.
   def inflections(locale = :en)
@@ -466,7 +466,7 @@ class String
     if count == 1
       self.dup
     else
-      Inflector.pluralize(self, locale)
+      Inflections.pluralize(self, locale)
     end
   end
 
@@ -477,7 +477,7 @@ class String
   # By default, this parameter is set to <tt>:en</tt>.
   # You must define your own inflection rules for languages other than English.
   def singularize(locale = :en)
-    Inflector.singularize(self, locale)
+    Inflections.singularize(self, locale)
   end
 
 
@@ -485,14 +485,14 @@ class String
   # in the string. It raises a NameError when the name is not in CamelCase
   # or is not initialized.  
   def constantize
-    Inflector.constantize(self)
+    Inflections.constantize(self)
   end
 
   # +safe_constantize+ tries to find a declared constant with the name specified
   # in the string. It returns nil when the name is not in CamelCase
   # or is not initialized.  
   def safe_constantize
-    Inflector.safe_constantize(self)
+    Inflections.safe_constantize(self)
   end
 
   # By default, +camelize+ converts strings to UpperCamelCase. If the argument to camelize
@@ -500,9 +500,9 @@ class String
   def camelize(first_letter = :upper)
     case first_letter
     when :upper
-      Inflector.camelize(self, true)
+      Inflections.camelize(self, true)
     when :lower
-      Inflector.camelize(self, false)
+      Inflections.camelize(self, false)
     end
   end
   alias_method :camelcase, :camelize
@@ -510,7 +510,7 @@ class String
   # Capitalizes all the words and replaces some characters in the string to create
   # a nicer looking title. +titleize+ is meant for creating pretty output. 
   def titleize
-    Inflector.titleize(self)
+    Inflections.titleize(self)
   end
   alias_method :titlecase, :titleize
 
@@ -518,36 +518,36 @@ class String
   #
   # +underscore+ will also change '::' to '/' to convert namespaces to paths.
   def underscore
-    Inflector.underscore(self)
+    Inflections.underscore(self)
   end
 
   # Replaces underscores with dashes in the string.
   def dasherize
-    Inflector.dasherize(self)
+    Inflections.dasherize(self)
   end
 
   # Removes the module part from the constant expression in the string.
   def demodulize
-    Inflector.demodulize(self)
+    Inflections.demodulize(self)
   end
 
   # Removes the rightmost segment from the constant expression in the string.
   # See also +demodulize+.
   def deconstantize
-    Inflector.deconstantize(self)
+    Inflections.deconstantize(self)
   end
 
   # Creates the name of a table like Rails does for models to table names. This method
   # uses the +pluralize+ method on the last word in the string.
   def tableize
-    Inflector.tableize(self)
+    Inflections.tableize(self)
   end
 
   # Create a class name from a plural table name like Rails does for table names to models.
   # Note that this returns a string and not a class. (To convert to an actual class
   # follow +classify+ with +constantize+.)
   def classify
-    Inflector.classify(self)
+    Inflections.classify(self)
   end
 
   # Capitalizes the first word, turns underscores into spaces, and strips a
@@ -558,14 +558,14 @@ class String
   # optional parameter +capitalize+ to false.
   # By default, this parameter is true.
   def humanize(options = {})
-    Inflector.humanize(self, options)
+    Inflections.humanize(self, options)
   end
 
   # Creates a foreign key name from a class name.
   # +separate_class_name_and_id_with_underscore+ sets whether
   # the method should put '_' between the name and 'id'.
   def foreign_key(separate_class_name_and_id_with_underscore = true)
-    Inflector.foreign_key(self, separate_class_name_and_id_with_underscore)
+    Inflections.foreign_key(self, separate_class_name_and_id_with_underscore)
   end
 
   def capitalize_first
