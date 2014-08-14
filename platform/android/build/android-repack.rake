@@ -373,10 +373,20 @@ namespace 'device' do
       print_timestamp('Packaging Native Libs START')
 
       args = ["uf", resourcepkg]
+
+      abis = $abis
+
+      #replace 'arm' to 'armeabi'
+      abis.map! { |abi| abi == 'arm' ? 'armeabi' : abi }
+
       Dir.glob(File.join(native_libs_path,'**','lib*.so')) do |lib|
         arch = File.basename(File.dirname(lib))
-        args << "lib/#{arch}/#{File.basename(lib)}"
+        args << "lib/#{arch}/#{File.basename(lib)}" if abis.include?(arch)
+        abis.delete(arch)
       end
+
+      puts "WARNING: Requested ABIs not found in container: #{abis}" unless abis.empty?
+
       Jake.run($jarbin, args, native_libs_path)
       unless $?.success?
         raise "Error packaging native libraries"

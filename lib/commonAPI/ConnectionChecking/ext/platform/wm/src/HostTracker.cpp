@@ -293,7 +293,7 @@ BOOL CALLBACK CHostTracker::ConnectDlgProc(HWND hwnd, UINT Message, WPARAM wPara
 					L"STATIC",
 					m_szConnectionDlgMsg.c_str(),
 					WS_CHILD | WS_VISIBLE | SS_LEFT ,
-					0, 0, lRight, lBottom,
+					3, 0, lRight-6, lBottom, //to avoid overlap of characters with the dialog boarder, keep margin for label
 					hwnd,
 					NULL,
 					rho_wmimpl_get_appinstance(),
@@ -336,9 +336,9 @@ BOOL CALLBACK CHostTracker::ConnectDlgProc(HWND hwnd, UINT Message, WPARAM wPara
 					{
 						SetWindowPos(hWndDlgText,
 							HWND_TOP,					
-							0,
+							3,
 							0, 
-							lRight, 
+							lRight -6, 
 							lBottom,
 							SWP_SHOWWINDOW
 							);

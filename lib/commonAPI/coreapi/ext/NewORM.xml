@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="NewORM" parent="Rho">
+    <MODULE name="NewORM" parent="Rho" productException="eb">
         <HELP_OVERVIEW>NewORM CoreAPI module</HELP_OVERVIEW>
         <MORE_HELP>New implementation of the RHOM.</MORE_HELP>
 
