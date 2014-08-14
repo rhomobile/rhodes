@@ -265,6 +265,19 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 		if (msg.message != WM_PAINT && RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 
+		IDispatch* pDisp;
+		SendMessage(m_hwndTabHTML, DTM_BROWSERDISPATCH, 0, (LPARAM) &pDisp); // New HTMLVIEW message
+		if (pDisp != NULL) {
+			//  If the Key is back we do not want to translate it causing the browser
+			//  to navigate back.
+			if ( ((msg.message != WM_KEYUP) && (msg.message != WM_KEYDOWN)) || (msg.wParam != VK_BACK) )
+			{
+				IOleInPlaceActiveObject* pInPlaceObject;
+				pDisp->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&pInPlaceObject );
+				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);	
+			}
+		}
+
         if (!mainWnd.TranslateAccelerator(&msg))
         {
             TranslateMessage(&msg);
