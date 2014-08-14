@@ -380,6 +380,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			const GUID __RPC_FAR *pguidCmdGroup,
 			DWORD nCmdID)
 {
+	/*
 	if (lpMsg && (lpMsg->message == WM_KEYDOWN))
 	{
 		if (lpMsg->wParam == VK_LEFT ||
@@ -411,7 +412,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			return S_FALSE;
 		}
 	}
-
+*/
 	return S_FALSE;
 }
 
@@ -754,20 +755,32 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd) 
 {
-    MSG msg;
+	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-        if(msg.message == WM_PAINT)
-			RHODESAPP().getExtManager().onHTMLWndMsg(msg);
-		
-		if ( RHODESAPP().getExtManager().onWndMsg(msg) )
+        if (msg.message != WM_PAINT && RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
+		
+		if (msg.message == WM_KEYDOWN && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
+		{
+			IDispatch* pDisp;
+			m_pBrowser->get_Document(&pDisp);
+			if (pDisp != NULL)
+			{
+				IOleInPlaceActiveObject* pInPlaceObject;
+				pDisp->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&pInPlaceObject);
+				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);
+			}
+		}
 
-        if (!mainWnd.TranslateAccelerator(&msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+		if (!mainWnd.TranslateAccelerator(&msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		if(msg.message == WM_PAINT)
+			RHODESAPP().getExtManager().onHTMLWndMsg(msg);	
     }
 }
 
@@ -1053,6 +1066,34 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
     PostMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
 
     return 0;
+}
+
+BOOL CEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab) 
+{ 
+	LPDISPATCH pDisp = NULL;
+	LPOLECOMMANDTARGET pCmdTarg = NULL;
+	if (S_OK != m_pBrowser->get_Document(&pDisp)) 
+		return S_FALSE;
+	if (pDisp == NULL)
+		return S_FALSE;
+	pDisp->QueryInterface(IID_IOleCommandTarget, (LPVOID*)&pCmdTarg);
+	if (pCmdTarg == NULL)
+		return S_FALSE;
+	VARIANT vaZoomFactor;   // input arguments
+	VariantInit(&vaZoomFactor);
+	V_VT(&vaZoomFactor) = VT_I4;
+	V_I4(&vaZoomFactor) = nZoom;
+	pCmdTarg->Exec(NULL,
+				OLECMDID_ZOOM,
+				OLECMDEXECOPT_DONTPROMPTUSER,
+				&vaZoomFactor,
+				NULL);
+	VariantClear(&vaZoomFactor);
+	if (pCmdTarg)
+	   pCmdTarg->Release(); // release document's command target
+	if (pDisp)
+	   pDisp->Release();    // release document's dispatch interface
+	return S_OK;
 }
 
 

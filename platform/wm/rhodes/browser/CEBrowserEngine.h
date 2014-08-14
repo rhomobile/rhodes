@@ -102,7 +102,7 @@ private:
     
     virtual BOOL    GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab) { return FALSE; }
     virtual BOOL    ZoomPageOnTab(float fZoom, UINT iTab) { return FALSE; }
-    virtual BOOL    ZoomTextOnTab(int nZoom, UINT iTab) { return FALSE; }
+    virtual BOOL    ZoomTextOnTab(int nZoom, UINT iTab);
     virtual int     GetTextZoomOnTab(UINT iTab) { return 2; }   
     virtual void    NotifyEngineOfSipPosition() {}
     virtual void    setNavigationTimeout(unsigned int dwMilliseconds){}
