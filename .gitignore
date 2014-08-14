@@ -19,6 +19,7 @@ lib/extensions/*/*/*/generated/
 lib/extensions/*/*/*/*/generated/
 lib/extensions/*/ext/*/platform/iphone/build/
 lib/extensions/*/ext/iphone/build/
+lib/extensions/*/ext/platform/iphone/build/
 lib/extensions/openssl.so/wm/tmp/
 lib/*/*/ext/platform/iphone/*.a
 lib/*/*/ext/*/platform/iphone/*.a
