@@ -1656,7 +1656,7 @@ namespace "build" do
       end
 
       copy_generated_sources_and_binaries
-      print_timestamp('build:iphone:make_xcode_project FINISH')
+      print_timestamp('build:iphone:setup_xcode_project FINISH')
 
     end
 
@@ -1763,6 +1763,33 @@ namespace "build" do
       copy_entitlements_file_from_app
 
       Rake::Task['build:bundle:prepare_native_generated_files'].invoke
+
+      #iTunesArtwork
+        itunes_artwork_in_project = File.join($app_path, "/project/iphone/iTunesArtwork")
+        itunes_artwork = File.join($app_path, "/project/iphone/iTunesArtwork")
+
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["production"].nil?
+            if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
+              art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+              if File.exists? art_test_name
+                itunes_artwork = art_test_name
+              else
+                art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
+                if File.exists? art_test_name
+                  itunes_artwork = art_test_name
+                else
+                  itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+                end
+              end
+            end
+          end
+        end
+
+      if itunes_artwork != itunes_artwork_in_project
+        rm_rf itunes_artwork_in_project
+        cp itunes_artwork,itunes_artwork_in_project
+      end
 
       rm_rf 'project/iphone/toremoved'
       rm_rf 'project/iphone/toremovef'
