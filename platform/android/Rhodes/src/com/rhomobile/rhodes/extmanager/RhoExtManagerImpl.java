@@ -851,6 +851,13 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             listener.onActivityResult(activity, reqCode, resCode, intent);
             dropActivityResultRequestCode(reqCode);
         }
+        else {
+            for (IRhoListener legacyListener: mListeners) {
+                if (mActivityResultListeners.indexOfValue(legacyListener) < 0) {
+                    legacyListener.onActivityResult(activity, reqCode, resCode, intent);
+                }
+            }
+        }
     }
 
     public void onSaveInstanceState(Bundle outState) {

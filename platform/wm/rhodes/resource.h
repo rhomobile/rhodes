@@ -52,7 +52,6 @@
 #define ID_TIME_CAPTION                 1021
 #define IDC_BUTTON1                     1022
 #define IDC_BT_CANCEL                   1022
-#define IDC_STATIC_CONNECTION_MSG       1022
 #define IDC_BT_STATIC                   1023
 #define IDC_BUTTON_ZOOM_OUT             1023
 #define IDS_EXIT                        10001

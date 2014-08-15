@@ -67,6 +67,12 @@ class Jake
     res = self.config_parse(conf)
     res
   end
+
+  def self.normalize_build_yml(yml = $app_config)
+    yml['wm'] = {} unless yml['wm'].is_a?(Hash)
+    yml['wm']['webkit_outprocess'] = '1' if yml['wm']['webkit_outprocess'].nil?
+  end
+
   def self.set_bbver(bbver)
     @@bbver = bbver
   end

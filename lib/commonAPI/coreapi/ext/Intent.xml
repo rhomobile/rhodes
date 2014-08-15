@@ -15,19 +15,51 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
     </MORE_HELP>
-        <TEMPLATES>
+         <MORE_HELP_EB>
+## Enabling the API
+There are two methods of enabling the Intent API: 
+
+* Include all ebapi modules or 
+* Include only the API modules you need 
+
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Motorola Enterprise Browser.
+
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the Intent API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.intent.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
+
+        </MORE_HELP_EB>
+       <TEMPLATES>
         </TEMPLATES>
         <METHODS  access="STATIC">
             <METHOD name="send" hasCallback="optional">
-                <DESC>Sends an intent. The receiver of the intent can either be another RhoMobile application that is listening for this Intent characteristic or on Android can be a native Android application setup with an Intent-Filter that will trigger based on the parameters of this method. 
-***NOTE: On Android, the callback should only be used when the intentType is set to START_ACTIVITY.***
-***NOTE: On Android, the only valid way to pass private file from package directly to another application is set 'uri' parameter with content URI. In most cases it is also needed to add extension of exported file to 'android:no_compression' list at build.yml***
+                <DESC>Sends an intent. The receiver of the intent can either be another RhoMobile  application that is listening for this Intent characteristic or on Android can be a native Android application setup with an Intent-Filter that will trigger based on the parameters of this method. 
+
+>Note: On Android, the callback should only be used when the intentType is set to START_ACTIVITY. On Android, the only valid way to pass private file from package directly to another application is set 'uri' parameter with content URI. In most cases it is also needed to add extension of exported file to 'android:no_compression' list at build.yml
+
 `build.yml:`
+
     :::ruby
     android:
       no_compression: ['pdf','html','css']
 
 `JavaScript:`
+
     :::javascript
     var params = {
         intentType: Rho.Intent.START_ACTIVITY,
@@ -35,6 +67,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         uri: "content://com.rhomobile.sample/rhodata/apps/public/sample.pdf"
     }
     Rho.Intent.send(params);    
+
 </DESC>
                 <PARAMS>
                     <PARAM name="params" type="HASH">
@@ -63,13 +96,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <PARAM name="action" type="STRING">
                                 <PLATFORM>Android</PLATFORM>
                                 <DESC>Intent action. See [Android docs](http://developer.android.com/reference/android/content/Intent.html#setAction(java.lang.String\)). for possible values.
-***NOTE: Use the Constant Value instead of the actual Constant Name. Ex: For the Constant [ACTION_PICK](http://developer.android.com/reference/android/content/Intent.html#ACTION_PICK) use 'android.intent.action.PICK'***
+
+> NOTE: Use the Constant Value instead of the actual Constant Name. Ex: For the Constant [ACTION_PICK](http://developer.android.com/reference/android/content/Intent.html#ACTION_PICK) use 'android.intent.action.PICK'
+
 </DESC>
                             </PARAM>
                             <PARAM name="categories" type="ARRAY">
                                 <PLATFORM>Android</PLATFORM>
                                 <DESC>List of intent categories. See [Android docs](http://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String\)) for possible values.
-***NOTE: Use the Constant Value instead of the actual Constant Name. Ex: For the Constant [CATEGORY_HOME](http://developer.android.com/reference/android/content/Intent.html#CATEGORY_HOME) use 'android.intent.category.HOME'***
+> NOTE: Use the Constant Value instead of the actual Constant Name. Ex: For the Constant [CATEGORY_HOME](http://developer.android.com/reference/android/content/Intent.html#CATEGORY_HOME) use 'android.intent.category.HOME'
 
 </DESC>
                                 <PARAM type="STRING"/>
@@ -79,8 +114,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
 * iOS it is BundleURLScheme of executed application. 
 * Android it is application package name.
-* Windows it is the executable name.
+* Windows it is the application/executable name. For shared runtime based applications, the application name is taken from the "Name" attribute from the Config.xml file. Hence use the application name which is mentioned in config.xml.
 </DESC>
+                                <DESC_EB>Explicit name of the application on the device to run. The platform will determine what value to use. 
+
+* Android it is application package name.
+* Windows it is the application/executable name. For shared runtime based applications, the application name is taken from the "Name" attribute from the Config.xml file. Hence use the application name which is mentioned in config.xml.
+</DESC_EB>
                             </PARAM>
                             <PARAM name="targetClass" type="STRING">
                                 <PLATFORM>Android</PLATFORM>
@@ -88,12 +128,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             </PARAM>
                             <PARAM name="uri" type="STRING">
                                 <DESC>Open the application associated with the URI. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix usually executes the Web Browser installed on system and open URL in executed browser.
-***NOTE: For Android, this is similar to [Intent.setData()](http://developer.android.com/reference/android/content/Intent.html#setData(android.net.Uri\)). For example, if you were sending a [Map Intent](http://developer.android.com/guide/components/intents-common.html#Maps) you would set this value to something like `geo:47.6,-122.3`***
+>NOTE: For Android, this is similar to [Intent.setData()](http://developer.android.com/reference/android/content/Intent.html#setData(android.net.Uri\)). For example, if you were sending a [Map Intent](http://developer.android.com/guide/components/intents-common.html#Maps) you would set this value to something like `geo:47.6,-122.3`
 </DESC>
                             </PARAM>
                             <PARAM name="mimeType" type="STRING">
                                 <DESC>MIME type of data defined in the intent. For example, for Plain Text I would use `text/plain`
-***NOTE: For Android, this is similar to [Intent.setType()](http://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String\))***
+>NOTE: For Android, this is similar to [Intent.setType()](http://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String\))
 </DESC>
                             </PARAM>
                             <PARAM name="data" type="HASH">
@@ -105,7 +145,7 @@ For Android, this is similar to [Intent.putExtra()](http://developer.android.com
     :::java
     intent.putExtra(Intent.EXTRA_TEXT, 'Here is the text I am passing to the Intent');
 
-`RhoMobile JavaScript:`
+`JavaScript:`
     :::javascript
     var data = {"android.intent.extra.TEXT":"Here is the text I am passing to the Intent"}
 
@@ -127,10 +167,10 @@ Notice the use of the full constant string "android.intent.extra.TEXT" in place 
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="startListening" hasCallback="mandatory" runInThread="none">
+            <METHOD name="startListening" hasCallback="mandatory" runInThread="none" productException="eb">
                 <DESC>Start listening for custom intents. 
 
-NOTE: For Android, this is how we have implemented [Android Intent Filters](http://developer.android.com/guide/components/intents-filters.html#Receiving). In order to listen for Intents you will have to update the `AndroidManifest.erb` file and add a special section to it. This file is now generated with RhoMobile Version 4.1 when you create a new project. The file is located in the root of project.
+For Android, this is how we have implemented [Android Intent Filters](http://developer.android.com/guide/components/intents-filters.html#Receiving). In order to listen for Intents you will have to update the `AndroidManifest.erb` file and add a special section to it. This file is now generated with RhoMobile Version 4.1 when you create a new project. The file is located in the root of project.
 
 Add the following snippet to AndroidManifest.erb within the `manifest` tags
 <![CDATA[
@@ -149,7 +189,7 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
                         Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="stopListening" hasCallback="none">
+            <METHOD name="stopListening" hasCallback="none" productException="eb">
                 <DESC>Stop listening for custom intents.</DESC>
             </METHOD>
         </METHODS>
