@@ -67,7 +67,7 @@ public:
     virtual bool isExistJavascript(const wchar_t* szJSFunction, int index){return true;}
     virtual void executeJavascript(const wchar_t* szJSFunction, int index);
     virtual BOOL ZoomPageOnTab(float fZoom, UINT iTab);
-    virtual BOOL ZoomTextOnTab(int nZoom, UINT iTab) {return FALSE;}
+    virtual BOOL ZoomTextOnTab(int nZoom, UINT iTab);
     virtual int GetTextZoomOnTab(UINT iTab){return 2;}
     virtual BOOL GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab);
     virtual void OnDocumentComplete(LPCTSTR url);

@@ -44,16 +44,18 @@ public:
 	rho::StringW  getMessage();
 private:
 	static HWND m_hConnectDlg;
-	static rho::StringW m_szConnectionDlgMsg;
-	static BOOL CALLBACK ConnectDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
-	rho::StringW CHostTracker::replaceString(rho::StringW inputString,
+	static HBRUSH m_hbrBackground;
+    static rho::StringW m_szConnectionDlgMsg;
+    static BOOL CALLBACK ConnectDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+    static void GenerateConnectionBoxCoordinates(HWND hwnd, LONG& lLeft, LONG& lTop, LONG& lRight, LONG& lBottom);
+    void TimeoutProcHandler(bool bStartThread);
+    static DWORD TimeoutProc (LPVOID pparam);
+    void ProcessTimeout (void);
+    void EventListner (void);	
+    rho::StringW CHostTracker::replaceString(rho::StringW inputString,
                       rho::StringW toReplace,
-                      rho::StringW replaceWith);
-	eConnectionBoxMode OnTimeoutEvent(int& nPollInterval, int& nBadLinkTimer);
-	eConnectionBoxMode OnNavCompleteEvent(int& nPollInterval, int& nBadLinkTimer);
-	eConnectionBoxMode OnLicenseScreenPopupEvent(int& nPollInterval, int& nBadLinkTimer);
-	eConnectionBoxMode OnLicenseScreenHideEvent(int& nPollInterval, int& nBadLinkTimer);
-	void HandleConnectionBox(eConnectionBoxMode& mode);     
+                      rho::StringW replaceWith);	
+	void HandleConnectionBox(eConnectionBoxMode mode); 
 	void closeAllEvents();
 	bool isNavigatedToBadLink();
 	rho::StringW m_szBadLinkUrl;
@@ -63,6 +65,8 @@ private:
 	bool m_bIsFeatureEnabled;
 	bool m_bIsOnBadlink;
 	HANDLE m_hEvents[4];
+	HANDLE m_hTimeOutProcCancelEvent;
+	HANDLE m_hTimeOutProcId;
 	
 };
 
