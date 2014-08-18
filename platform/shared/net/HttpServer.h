@@ -98,6 +98,7 @@ public:
 public:
     CHttpServer(int port, String const &root);
     CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root);
+    CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server);
     ~CHttpServer();
     
     void register_uri(String const &uri, callback_t const &callback);
@@ -116,6 +117,9 @@ public:
     String create_response(String const &reason, HeaderList const &headers, String const &body);
 
     static int isIndex(String const &uri);
+    
+    int getPort();
+    rho::String getIPAdress();
 
     bool call_ruby_method(String const &uri, String const &body, String& strReply);
 private:
@@ -144,11 +148,14 @@ private:
 private:
     bool m_active;
     int m_port;
+    String m_IP_adress;
     String m_root, m_userroot, m_strRhoRoot, m_strRhoUserRoot, m_strRuntimeRoot;
     SOCKET m_listener;
     SOCKET m_sock;
     std::map<String, callback_t> m_registered;
     bool verbose;
+    bool m_enable_external_access;
+    bool m_started_as_separated_simple_server;
 };
 
 void rho_http_ruby_proc_callback(void *arg, rho::String const &query );
