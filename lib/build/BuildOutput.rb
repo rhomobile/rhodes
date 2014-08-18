@@ -63,6 +63,45 @@ class BuildOutput
       out
     end
 
+    def to_merge(s1, s2)
+      i = 0
+      loop do
+        e1 = s1.next rescue :eof
+        e2 = s2.next rescue :eof
+        if e1 == :eof || e2 == :eof || e1 != e2
+          break
+        else
+          i += 1 
+        end
+      end
+      return i
+    end
+
+    def merge_head_tail(src,msg)  
+      begining = []
+      ending = []
+      result = []
+
+      b_len = to_merge(src.each,msg.each)
+      if (b_len > 0)
+        begining.concat(src.take(b_len))
+        src = src.drop(b_len)
+        msg = msg.drop(b_len)
+      end
+
+      e_len = to_merge(src.reverse_each, msg.reverse_each)
+
+      if (e_len > 0)
+        remaining = src.length - e_len
+        ending = src.drop(remaining)
+        result = begining.concat(src.take(remaining)).concat(msg.take(msg.length - e_len)).concat(ending)
+      else
+        result = begining.concat(src).concat(msg)
+      end
+
+      result
+    end
+
     def log(level, message, title)
       if !LEVELS.include?(level)
         return
@@ -79,7 +118,7 @@ class BuildOutput
       last = @@mqueue.last
 
       if !last.nil? && (last[:level] == level) && (last[:title] == title)
-        last[:content].concat(message[:content])
+        last[:content] =  merge_head_tail(last[:content], message[:content])
       else
         @@mqueue << message
       end

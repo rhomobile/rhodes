@@ -641,6 +641,8 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 1);
     else if (strcasecmp(method, "POST") == 0)
         curl_easy_setopt(m_curl, CURLOPT_POST, 1);
+    else if (strcasecmp(method, "HEAD") == 0)
+        curl_easy_setopt(m_curl, CURLOPT_NOBODY, 1);
 	else
         curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, method);
 

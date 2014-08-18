@@ -380,6 +380,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			const GUID __RPC_FAR *pguidCmdGroup,
 			DWORD nCmdID)
 {
+	/*
 	if (lpMsg && (lpMsg->message == WM_KEYDOWN))
 	{
 		if (lpMsg->wParam == VK_LEFT ||
@@ -411,7 +412,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			return S_FALSE;
 		}
 	}
-
+*/
 	return S_FALSE;
 }
 
@@ -754,17 +755,29 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd) 
 {
-    MSG msg;
+	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
         if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
+		
+		if (msg.message == WM_KEYDOWN && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
+		{
+			IDispatch* pDisp;
+			m_pBrowser->get_Document(&pDisp);
+			if (pDisp != NULL)
+			{
+				IOleInPlaceActiveObject* pInPlaceObject;
+				pDisp->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&pInPlaceObject);
+				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);
+			}
+		}
 
-        if (!mainWnd.TranslateAccelerator(&msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+		if (!mainWnd.TranslateAccelerator(&msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 
 		if(msg.message == WM_PAINT)
 			RHODESAPP().getExtManager().onHTMLWndMsg(msg);	
