@@ -1793,6 +1793,12 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     {
         return TRUE;
     }
+	// workaround for backspace key in text fields:
+	if (control.m_hWnd && (pMsg->message == WM_KEYUP) && (pMsg->wParam == VK_BACK))
+	{
+		control.SendMessage(WM_CHAR, VK_BACK, 1);
+		return TRUE;
+	}
 
     // If the main window used accelerators, we could have called the global
     // ::TranslateAccelerator() function here, instead of simply returning FALSE.
