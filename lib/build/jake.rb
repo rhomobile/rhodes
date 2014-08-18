@@ -224,6 +224,9 @@ class Jake
     $passed ||= 0
     $failed ||= 0
     $faillog = []
+    $junit = []
+    $junitname = ''
+    $junitlogs = {}
     $getdump = false
   end
 
@@ -241,13 +244,25 @@ class Jake
         end
       end
 
+      if line =~ /JUNIT\|(.*)/          # JUNIT| XML
+        $junit << $1
+      elsif line =~ /JUNITNAME\|(.*)/          # JUNITNAME| name
+        $junitname = File.basename($1,'.xml')
+      elsif line =~ /JUNITBLOB\|(.*)/
+        if $junitname && $1
+          $junitlogs[$junitname] = $1
+          $junitname = nil
+        end
+      end
+
       if line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
         $failed += $1.to_i
-        return false
       elsif line =~ /\| \*\*\*Total:\s+(.*)/  # | ***Total:
         $total += $1.to_i
       elsif line =~ /\| \*\*\*Passed:\s+(.*)/ # | ***Passed:
         $passed += $1.to_i
+      elsif line =~ /\| \*\*\*Terminated\s+(.*)/ # | ***Terminated        
+        return false
       end
       # Faillog for MSpec
       if line =~ /\| FAIL:/
@@ -271,7 +286,24 @@ class Jake
   def self.process_spec_results(start)
     finish = Time.now
 
+    jpath = File.join($app_path,'junitrep')
+
+    FileUtils.rm_rf jpath
+
+    FileUtils.mkdir_p jpath
+
+    if $junit.length > 0
+      File.open(File.join(jpath,"junit.xml"), "w") { |io| io << $junit.join($/) }
+    end
+
+    $junitlogs.each do |name, log|
+      if log.length > 0
+        File.open(File.join(jpath,"#{name}.xml"), "w") { |io| io << log.gsub('~~',$/) }
+      end
+    end
+
     FileUtils.rm_rf $app_path + "/faillog.txt"
+
     if $failed.to_i > 0
       puts "************************"
       puts "\n\n"

@@ -564,7 +564,7 @@ def read_and_delete_files( file_list )
   result
 end
 
-$server_list = ['https://app.rhohub.com/api/v1', 'https://appstaging.rhohub.com/api/v1']
+$server_list = ['https://rms.rhomobile.com/api/v1', 'https://rmsstaging.rhomobile.com/api/v1']
 $selected_server = $server_list.first
 $cloud_brand = "rhomobile"
 
