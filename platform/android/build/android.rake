@@ -611,15 +611,10 @@ namespace "config" do
       end
 
       if !$app_config['android'].nil? && !$app_config['android']['abis'].nil? && ($app_config['android']['abis'].index('x86') || $app_config['android']['abis'].index('mips'))
-        $app_config['extensions'].delete('rhoelementsext')
         $app_config['extensions'].delete('rhoelements')
-        $app_config['extensions'].delete('shared-runtime')
-        $app_config['extensions'].delete('motoapi')
           
-        $app_config['capabilities'].delete('motorola')
         $app_config['capabilities'].delete('motorola_browser')
         $app_config['capabilities'].delete('webkit_browser')
-        $app_config['capabilities'].delete('shared_runtime')
       end
 
       $file_map_name = "rho.dat"
