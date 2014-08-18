@@ -74,7 +74,6 @@ class BuildOutput
           i += 1 
         end
       end
-      puts i
       return i
     end
 
