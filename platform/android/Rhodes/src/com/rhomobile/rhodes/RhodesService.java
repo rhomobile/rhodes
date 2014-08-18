@@ -113,6 +113,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.RemoteViews;
 
+
+import java.util.Enumeration;
+import java.net.NetworkInterface;
+import java.net.InetAddress;
+import java.net.Inet4Address;
+import java.net.SocketException;
+
 public class RhodesService extends Service {
 	
 	private static final String TAG = RhodesService.class.getSimpleName();
@@ -1492,4 +1499,30 @@ public class RhodesService extends Service {
         	});
         }
     }
+
+
+
+   public static String getLocalIpAddress()
+{
+   String res = "";
+    try {
+        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+            NetworkInterface intf = en.nextElement();
+            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                InetAddress inetAddress = enumIpAddr.nextElement();
+                if (!inetAddress.isLoopbackAddress() && (inetAddress instanceof Inet4Address)) {
+                    res = inetAddress.getHostAddress().toString();
+                    //Logger.T(TAG, "@@@@@@@@@@@@@@@@ = "+res);
+                }
+             }
+         }
+     } catch (SocketException ex) {
+         //Log.e(LOG_TAG, ex.toString());
+     }
+
+     return res;
+}
+
+
+
 }

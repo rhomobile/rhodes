@@ -1510,8 +1510,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/syncengine/get_src_attrs", callback_get_src_attrs);
     m_httpServer->register_uri("/system/syncengine/is_blob_attr", callback_is_blob_attr);
 
-    m_httpServer->register_uri("/system/update_bundle", callback_system_update_bundle);
-    m_httpServer->register_uri("/system/update_bundle_callback", callback_system_update_bundle_callback);
+
 }
 
 const char* CRhodesApp::getFreeListeningPort()

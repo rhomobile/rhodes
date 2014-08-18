@@ -44,9 +44,6 @@
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
 
-extern "C" void callback_system_update_bundle(void *arg, rho::String const &strQuery);
-extern "C" void callback_system_update_bundle_callback(void *arg, rho::String const &strQuery);
-
 
 namespace rho {
 namespace common {

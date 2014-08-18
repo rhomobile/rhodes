@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <iterator>
 
+
 #if !defined(WINDOWS_PLATFORM)
 #include <arpa/inet.h>
 #endif
@@ -283,9 +284,20 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 #endif
 
-CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
-    :m_active(false), m_port(port), verbose(true)
+    
+CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server)
+    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
 {
+    m_enable_external_access = enable_external_access;
+    m_started_as_separated_simple_server = started_as_separated_simple_server;
+    CHttpServer(port, root, user_root, runtime_root);
+}
+    
+CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
+    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
+{
+    m_enable_external_access = false;
+    m_started_as_separated_simple_server = false;
     m_root = CFilePath::normalizePath(root);
 #ifdef RHODES_EMULATOR
     m_strRhoRoot = m_root;
@@ -306,8 +318,10 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 }
     
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_active(false), m_port(port), verbose(true)
+    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
 {
+    m_enable_external_access = false;
+    m_started_as_separated_simple_server = false;
     
 	m_root = CFilePath::normalizePath(root);
     m_strRuntimeRoot = (m_strRhoRoot = m_root.substr(0, m_root.length()-5)) +
@@ -403,7 +417,6 @@ bool CHttpServer::init()
 	RAWTRACE("Open listening socket...");
     close_listener();
     
-    //MOHUS
     //m_listener = socket(AF_INET, SOCK_STREAM, 0);
     m_listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     
@@ -424,9 +437,12 @@ bool CHttpServer::init()
     sa.sin_family = AF_INET;
     sa.sin_port = htons((uint16_t)m_port);
     
-    //MOHUS
-    //sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    sa.sin_addr.s_addr = htonl(INADDR_ANY);
+    if (m_enable_external_access) {
+        sa.sin_addr.s_addr = htonl(INADDR_ANY);
+    }
+    else {
+        sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    }
     
     
     if (bind(m_listener, (const sockaddr *)&sa, sizeof(sa)) == SOCKET_ERROR) {
@@ -441,10 +457,33 @@ bool CHttpServer::init()
         return false;
     }
     
+    // detect local IP adress
+    struct sockaddr_in sin;
+    memset(&sin, 0, sizeof(sin));
+    //sin.sin_len = sizeof(sin);
+    sin.sin_family = AF_INET; // or AF_INET6 (address family)
+    socklen_t len = sizeof(sin);
+    if (getsockname(m_listener, (struct sockaddr *)&sin, &len) < 0) {
+        // Handle error here
+        RAWLOG_ERROR("Can not detect local IP adress");
+    }
+    else {
+        m_IP_adress = inet_ntoa(sin.sin_addr);
+    }
+    
     RAWLOG_INFO1("Listen for connections on port %d", m_port);
     return true;
 }
 
+int CHttpServer::getPort() {
+    return m_port;
+}
+    
+rho::String CHttpServer::getIPAdress() {
+        
+}
+    
+    
 bool CHttpServer::run()
 {
     LOG(INFO) + "Start HTTP server";
@@ -454,13 +493,14 @@ bool CHttpServer::run()
 
     m_active = true;
 
-    RHODESAPP().notifyLocalServerStarted();
+    if (!m_started_as_separated_simple_server)
+        RHODESAPP().notifyLocalServerStarted();
 
     for(;;) 
     {
         RAWTRACE("Waiting for connections...");
 #ifndef RHO_NO_RUBY_API
-        if (rho_ruby_is_started())
+        if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
             rho_ruby_start_threadidle();
 #endif
         fd_set readfds;
@@ -473,7 +513,7 @@ bool CHttpServer::run()
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
 #ifndef RHO_NO_RUBY_API
-        if (rho_ruby_is_started())
+        if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
             rho_ruby_stop_threadidle();
 #endif
         bool bProcessed = false;
@@ -500,7 +540,7 @@ bool CHttpServer::run()
                 RAWTRACE("Connection accepted, process it...");
                 VALUE val;
 #ifndef RHO_NO_RUBY_API                
-                if (rho_ruby_is_started())
+                if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
                 {
                     if ( !RHOCONF().getBool("enable_gc_while_request") )                
                         val = rho_ruby_disable_gc();
@@ -509,7 +549,7 @@ bool CHttpServer::run()
                 m_sock = conn;
                 bProcessed = process(m_sock);
 #ifndef RHO_NO_RUBY_API
-                if (rho_ruby_is_started())
+                if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
                 {
                     if ( !RHOCONF().getBool("enable_gc_while_request") )
                         rho_ruby_enable_gc(val);
@@ -530,7 +570,7 @@ bool CHttpServer::run()
             return false;
         }
 #ifndef RHO_NO_RUBY_API
-        if (rho_ruby_is_started())
+        if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
         {
             if ( bProcessed )
             {
