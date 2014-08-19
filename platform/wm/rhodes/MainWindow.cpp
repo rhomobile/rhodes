@@ -1187,6 +1187,17 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     return 0;
 }
 
+LRESULT CMainWindow::OnSetNavTimeoutCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    DWORD nNavTimeout = (DWORD)hWndCtl;
+    if ( m_pBrowserEng )
+    {
+		m_pBrowserEng->setNavigationTimeout(nNavTimeout);
+        LOG(INFO) + "NavigationTimeout Set to " + nNavTimeout;
+    }
+    return 0;
+}
+
 LRESULT CMainWindow::OnStopNavigate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     if ( m_pBrowserEng )
