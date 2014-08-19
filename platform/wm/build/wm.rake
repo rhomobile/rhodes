@@ -245,7 +245,7 @@ def sign(cabfile, signature)
 end
 
 # make a *.cpy and *.reg files for persistent installation
-def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_process)#, regkeys_filename)
+def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_process)
   cf = File.new(File.join(dstDir, $appname + ".cpy"), "w+")
 
   if cf.nil?
@@ -316,8 +316,7 @@ def makePersistentFiles(dstDir, additional_paths, webkit_dir, webkit_out_of_proc
 
   rf = File.new(File.join(dstDir, $appname + ".reg"), "w+")
 
-  if !$regkeys.nil? #File.exist?(regkeys_filename)
-    #File.readlines(regkeys_filename).each do |line|
+  if !$regkeys.nil?
     $regkeys.each { |line|
       parts = line.split(",")
 
@@ -422,7 +421,7 @@ def build_cab
   build_platform = 'ce5' #if $sdk == "MC3000c50b (ARMV4I)"
   
   if $build_persistent_cab && !$use_shared_runtime
-    makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process)#, reg_keys_filename)
+    makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process)
   end
 
   cabBuilder = nil
