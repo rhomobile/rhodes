@@ -1,7 +1,7 @@
 require "rspec"
 require "webmock/rspec"
 require "fileutils"
-require_relative "../../lib/rhodes/rho_watcher"
+require_relative "../../lib/build/rhoWatcher"
 
 
 describe "Serve behaviour" do
@@ -50,13 +50,13 @@ describe "Serve behaviour" do
     expect(File.read(@watcher_test_dir + "/upgrade_package_remove_files.txt")).to eq("removed_file.html\n")
   end
 
-  it "Copy bundle to server root" do
+  xit "Create bundles and copy they to server root" do
     @watcher = RhoWatcher.new
     @watcher.applicationRoot = @watcher_test_dir
     @watcher.serverRoot = @watcher_test_dir + "/server_root"
     @watcher.addDevice(RhoDevice.new("192.168.0.1:6000", "android"))
     FileUtils.mkpath @watcher_test_dir + "/bin/target/android/"
-    File.open(@watcher_test_dir + "/bin/target/android/bundle.apk", "w") {}
+    File.open(@watcher_test_dir + "/bin/target/android/bundle.zip", "w") {}
 
     @watcher.copyBundlesToServerRoot()
     expect(File.file?(@watcher_test_dir + "/server_root/android/bundle.zip")).to be true

@@ -78,6 +78,7 @@ require File.join(pwd, 'lib/build/ExtendedString.rb')
 require File.join(pwd, 'lib/build/rhohub.rb')
 require File.join(pwd, 'lib/build/BuildOutput.rb')
 require File.join(pwd, 'lib/build/RhoHubAccount.rb')
+require File.join(pwd, 'lib/build/rhowatcher.rb')
 
 #load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')

@@ -68,7 +68,6 @@ class RhoWatcher
     puts "on file changed"
     self.createDiffFiles(addedFiles, changedFiles, removedFiles)
     self.createBundles
-    self.copyBundlesToServerRoot
     self.sendNotificationsToDevices
   end
 
@@ -86,27 +85,13 @@ class RhoWatcher
 
   def createBundles
     puts "create builds"
-    system "rake build:android:upgrade_package_partial"
-    #Rake::Task.invoke
-  end
-
-  def copyBundlesToServerRoot
-    puts "create zip"
     @devices.each { |each|
-      path = @serverRoot + "/" + each.platform
-      FileUtils.mkpath(path)
-      case each.platform
-        when "iPhone"
-
-        when "android"
-          FileUtils.cp(@applicationRoot + "/bin/target/android/bundle.apk", path + '/bundle.apk')
-          zipFileName = @serverRoot + "/android/bundle.zip"
-          Zip::File.open(zipFileName, Zip::File::CREATE) do |zipFile|
-            zipFile.add("bundle.apk", @applicationRoot + "/bin/target/android/bundle.apk")
-          end
-        else
-          #raise error ?
-      end
+      taskName = "build:#{each.platform}:upgrade_package_partial"
+      Rake::Task[taskName].invoke
+      from = File.join($targetdir, "/upgrade_bundle_partial.zip")
+      to = File.join(@serverRoot, each.platform, 'upgrade_bundle_partial.zip')
+      FileUtils.mkpath(File.dirname(to))
+      FileUtils.cp(from, to)
     }
   end
 
@@ -124,7 +109,7 @@ class RhoWatcher
   end
   @listener.start
 =end
-  self.onFileChanged([],[],[])
+    self.onFileChanged([], [], [])
   end
 
 
