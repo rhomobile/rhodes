@@ -1256,14 +1256,117 @@ def get_builds_list(app_id)
   result
 end
 
+MATCH_INVALID_ID = -1
+MATCH_ANY_ID = 0
+MATCH_EXACT_ID = 1
+MATCH_WILDCARD_ID = 2
+MATCH_LATEST_ID = 3
+MATCH_HISTORY_ID = 4
 
-def match_build_id(build_id, builds)
+RESULT_ANY = 0
+RESULT_EXACT = 1
+RESULT_NO_ANY = -1
+RESULT_NO_STATE = -2
+RESULT_NO_IDX = -3
+RESULT_INVALID_ID = -4
+RESULT_STATE_MISMATCH = -5
+
+def find_build_id(build_id, builds, state_filter = nil)
+  match_type = MATCH_INVALID_ID
+  result = RESULT_INVALID_ID
+  match = []
+  match_id = nil
+  regex = nil
+
+  unless build_id.nil? || build_id.empty?
+    if build_id.kind_of?(Integer) || !!(build_id =~ /^[-+]?[0-9]+$/)
+      match_id = build_id.to_i
+      if match_id <= 0
+        match_type = (match_id == 0) ? MATCH_LATEST_ID : MATCH_HISTORY_ID
+      else
+        match_type = MATCH_EXACT_ID
+      end
+    elsif !!(build_id =~ /^[0-9\*\?]+$/)
+      regex = '^' + Regexp.escape(build_id).gsub("\\*", '.*?').gsub("\\?", '.') + '$'
+      match_type = MATCH_WILDCARD_ID
+    end
+  else
+    match_type = MATCH_ANY_ID
+  end
+
+  if match_type != MATCH_INVALID_ID
+    unless builds.empty?
+      is_filtered = !state_filter.nil?
+
+      filtered = is_filtered ? builds.select{ |el| state_filter.index(el['status']) != nil } : builds
+
+      unless filtered.empty?
+        case match_type
+          when MATCH_ANY_ID
+            match = filtered
+            result = RESULT_ANY
+
+          when MATCH_EXACT_ID, MATCH_WILDCARD_ID
+            if match_type == MATCH_EXACT_ID
+              found = filtered.select {|f| f['id'].to_s == match_id.to_s }
+            else
+              found = filtered.select {|f| !!f['id'].to_s.match(regex) }
+            end
+
+            if found.empty?
+              if is_filtered
+                if match_type == MATCH_EXACT_ID
+                  more_found = builds.select {|f| f['id'] == match_id.to_s }
+                else
+                  more_found = []
+                end
+
+                if more_found.empty?
+                  result = RESULT_NO_IDX
+                else
+                  result = RESULT_STATE_MISMATCH
+                  match = more_found
+                end
+              else
+                result = RESULT_NO_IDX
+              end
+
+              if result == RESULT_NO_IDX && match_type != MATCH_WILDCARD_ID
+                match = filtered.collect{ |h| { :id => h['id'], :build => h, :dist => distance(match_id.to_s, h['id'].to_s) } }.reject{|a| a[:dist] > 1}.map{ |h| h[:build] }
+              end
+            else
+              match = found
+              result = found.length > 1 ? RESULT_ANY : RESULT_EXACT
+            end
+
+          when MATCH_LATEST_ID, MATCH_HISTORY_ID
+            idx = filtered.size + match_id - 1
+            if idx >= 0
+              result = RESULT_EXACT
+              match = [filtered[idx]]
+            else
+              result = RESULT_NO_IDX
+            end
+        end
+      else
+        result = RESULT_NO_STATE
+      end
+    else
+      result = RESULT_NO_ANY
+    end
+  end
+
+  return result, match_type, match
+end
+
+
+def match_build_id(build_id, builds, wildcards = true)
   if !build_id.nil? && (build_id.kind_of?(Integer) || !build_id.empty?)
     found_id = build_id.to_i
 
     found = nil
 
-    if found_id <= 0
+    if found_id <= 0 && wildcards
       if found_id.abs < builds.length
         found = builds[builds.length - (found_id).abs - 1]
       end
@@ -1661,41 +1764,41 @@ namespace 'cloud' do
 
       builds = get_builds_list($app_cloud_id)
 
-      unless builds.nil?
-        if !valid_build_id(build_id)
-          BuildOutput.error("Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}", 'Invalid build id')
+      find_result, find_match_type, matches = find_build_id(build_id, builds, ['failed'])
+
+      case find_result
+        when RESULT_EXACT, RESULT_ANY
+          matches.each do |build_hash|
+            show_build_information(build_hash, $platform_list, {:hide_link => true})
+
+            show_build_messages(build_hash, $proxy, $cloud_build_home)
+          end
+
+        when RESULT_NO_ANY
+          BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
+
+        when RESULT_NO_STATE
+          BuildOutput.note("Oops! You don't have any failed builds. Please write more code and try again.", 'Build list is empty')
+
+        when RESULT_NO_IDX
+          failed_builds = filter_by_status(builds,['failed'])
+          message = [
+              "Could not find #{build_id} in failed builds list:",
+              " * " + failed_builds.map{|el| el['id']}.join(', ')
+          ]
+          message << "Did you mean #{matches.map{|el| el['id']}.join(', ')}?" unless matches.empty?
+
+          BuildOutput.warning( message, 'FailLog')
+
+        when RESULT_INVALID_ID
+          BuildOutput.error( "Invalid build_id: '#{build_id}'", 'Invalid build id')
           raise Exception.new('Invalid build id')
-        end
 
-        match = match_build_id(build_id, builds)
-
-        unless match.empty?
-          failed = match_build_id(build_id, filter_by_status(builds, ['failed']))
-
-          unless failed.empty?
-            failed.each do |build_hash|
-              show_build_information(build_hash, $platform_list, {:hide_link => true})
-
-              show_build_messages(build_hash, $proxy, $cloud_build_home)
-            end
-          else
-            puts (match.size > 1 ? "There are no failed builds" : "Build #{build_id} status is #{match.last['status'].blue}" )
-          end
-        else
-          str = build_id.to_s
-          match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.reject{|a| a[:dist] > 1}
-
-          puts "Could not find #{build_id} in builds list: #{builds.map{|el| el["id"]}.join(', ')}"
-
-          unless match.empty?
-            puts "Did you mean #{match.map{|el| el[:id]}.join(', ')}?"
-          end
-        end
-      else
-        BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
+        when RESULT_STATE_MISMATCH
+          latest = matches.last
+          BuildOutput.warning( "Build #{latest['id']} status is #{latest['status']}", 'FailLog')
       end
     end
-
 
     desc 'Show status of one build, or all builds if optional parameter is not set'
     task :build, [:build_id] => ['cloud:find_app'] do |t, args|
