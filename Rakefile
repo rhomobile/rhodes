@@ -566,7 +566,6 @@ end
 
 $server_list = ['https://rms.rhomobile.com/api/v1', 'https://rmsstaging.rhomobile.com/api/v1']
 $selected_server = $server_list.first
-$cloud_brand = "rhomobile"
 
 def get_server(url, default)
   url = default if url.nil? || url.empty?
@@ -645,7 +644,7 @@ namespace "token" do
     if !(token.nil? || token.empty?) && RhoHubAccount.is_valid_token?(token)
       Rake::Task["token:set"].invoke(token)
     else
-      BuildOutput.error( "Could not receive #{$cloud_brand} API token from server", 'Internal error')
+      BuildOutput.error( "Could not receive API token from cloud build server", 'Internal error')
       exit 1
     end
   end
@@ -686,7 +685,7 @@ namespace "token" do
       when 0
         BuildOutput.put_log( BuildOutput::WARNING, "Cloud not check token online", "Token check" );
       else
-        BuildOutput.put_log( BuildOutput::ERROR, "#{$cloud_brand.capitalize} API token is not valid!", 'Token check');
+        BuildOutput.put_log( BuildOutput::ERROR, "Cloud build server API token is not valid!", 'Token check');
         exit 1
       end
     end
@@ -704,7 +703,7 @@ namespace "token" do
 
   task :check => [:read] do
     puts "TokenValid[#{from_boolean($user_acc.is_valid_token?())}]"
-    puts "TokenChecked[#{from_boolean($user_acc.remaining_time() > 0)}]" 
+    puts "TokenChecked[#{from_boolean($user_acc.remaining_time() > 0)}]"
     puts "SubscriptionValid[#{from_boolean($user_acc.is_valid_subscription?())}]"
     puts "SubscriptionChecked[#{from_boolean($user_acc.remaining_subscription_time() > 0)}]"
   end
@@ -718,7 +717,7 @@ namespace "token" do
         puts "Token will be checked after " + time_to_str($user_acc.remaining_time())
       else
         puts "Token should be checked"
-        BuildOutput.warning( "Unable to connect to RhoMobile.com servers to validate your token information.\nPlease ensure you have a valid network connection and your proxy settings are configured correctly.", 'Token check error')
+        BuildOutput.warning( "Unable to connect to cloud build servers to validate your token information.\nPlease ensure you have a valid network connection and your proxy settings are configured correctly.", 'Token check error')
       end
       puts "Subscription plan: " + $user_acc.subsciption_plan()
       subs_valid = $user_acc.is_valid_subscription?()
@@ -2017,7 +2016,7 @@ namespace 'cloud' do
       end
 
     end
-    
+
   end
 
   desc "Run binary on the simulator with id"
@@ -2966,7 +2965,7 @@ def init_extensions(dest, mode = "")
                   puts 'start running rhogen with api key'
                   if !$skip_build_extensions
                     Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
-                  end 
+                  end
                 end
               end
             end
@@ -3068,18 +3067,18 @@ def init_extensions(dest, mode = "")
     if extjsmodulefiles.count > 0
       puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
       write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
-    
+
       if $use_shared_runtime || $shared_rt_js_appliction
         start_path = Dir.pwd
         chdir rhoapi_js_folder
-        
+
         Dir.glob("**/*").each { |f|
           $new_name = f.to_s.dup
           $new_name.sub! 'rho', 'eb'
           cp File.join(rhoapi_js_folder, f.to_s), File.join(rhoapi_js_folder, $new_name)
         }
-        
-        chdir start_path       
+
+        chdir start_path
       end
     end
     # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
@@ -3259,7 +3258,7 @@ def common_bundle_start( startdir, dest)
   clear_linker_settings
 
   init_extensions(dest)
-  
+
   chdir startdir
 
   if File.exists? app + '/app'
@@ -3633,31 +3632,31 @@ namespace "build" do
 
     def minify_js_and_css(dir,types)
       pattern = types.join(',')
-      
+
       files_to_minify = []
-      
+
       Dir.glob( File.join(dir,'**',"*.{#{pattern}}") ) do |f|
         if File.file?(f) and !File.fnmatch("*.min.*",f)
           next if is_exclude_folder($obfuscate_exclude, f )
           next if is_exclude_folder( $minify_exclude, f )
 
           ext = File.extname(f)
-          
+
           if (ext == '.js') or (ext == '.css') then
             files_to_minify << f
           end
-          
+
         end
       end
-      
+
       minify_inplace_batch(files_to_minify) if files_to_minify.length>0
     end
-    
+
     def minify_inplace_batch(files_to_minify)
       puts "minifying file list: #{files_to_minify}"
 
       cmd = "java -jar #{$minifier} -o \"x$:x\""
-      
+
       files_to_minify.each { |f| cmd += " #{f}" }
 
       require 'open3'
@@ -3682,7 +3681,7 @@ namespace "build" do
         puts "WARNING: Minification error!"
         error = output if error.nil?
         BuildOutput.warning(["Minification errors occured. Minificator stderr output: \n" + error], 'Minification error')
-      end     
+      end
     end
 
     def minify_inplace(filename,type)
