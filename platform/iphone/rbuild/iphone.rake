@@ -866,10 +866,33 @@ namespace "build" do
         Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
 
-    task :upgrade_package_partial => ["build:iphone:rhobundle"] do
+    task :upgrade_package_partial => ["config:iphone"] do
+
+        print_timestamp('build:iphone:upgrade_package_partial START')
+
         #puts '$$$$$$$$$$$$$$$$$$'
         #puts 'targetdir = '+$targetdir.to_s
         #puts 'bindir = '+$bindir.to_s
+
+        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+        iphone_project = File.join($app_path, "/project/iphone/#{appname_fixed}.xcodeproj")
+
+        if !File.exist?(iphone_project)
+
+          puts '$ make iphone XCode project for application'
+          Rake::Task['build:iphone:make_xcode_project'].invoke
+
+        end
+
+
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
+        Rake::Task['build:iphone:rhobundle'].invoke
 
         # process partial update
 
@@ -948,6 +971,8 @@ namespace "build" do
         zip_file_path = File.join($targetdir, "upgrade_bundle_partial.zip")
         Jake.zip_upgrade_bundle( tmp_folder, zip_file_path)
         rm_rf tmp_folder
+        print_timestamp('build:iphone:upgrade_package_partial FINISH')
+
     end
 
 
