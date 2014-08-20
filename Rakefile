@@ -308,14 +308,17 @@ def update_rhodefs_header_file
 end
 
 task :serve, [:uri, :platform]=> ["config:initialize"] do |t, args|
+
   watcher = RhoWatcher.new
-  watcher.serverRoot = "/Users/mva/temp"
+  watcher.serverRoot = "/Users/mva/Temp/"
   watcher.applicationRoot = $app_basedir
   watcher.serverUri = "192.168.0.1:80"
   watcher.addDirectory(watcher.applicationRoot + "/public")
   watcher.addDirectory(watcher.applicationRoot + "/app")
   watcher.addDevice(RhoDevice.new(args.uri, args.platform))
   watcher.run
+
+  watcher.stop
 end
 
 #------------------------------------------------------------------------
@@ -493,7 +496,7 @@ def check_update_token_file(server_list, user_acc, token_folder, subscription_le
     is_valid = user_acc.is_outdated() ? 0 : 2
 
     if (user_acc.is_outdated() || (subscription_level > user_acc.subscription_level))
-      servers_sorted = sort_by_distance(server_list, user_acc.server)
+      servers_sorted = sort_by_distance(server_list, user_acc.webServer)
 
       servers_sorted.each do |srv|
         Rhohub.url = srv
@@ -843,7 +846,7 @@ end
 
 def cloud_url_git_match(str)
   res = /git@(git.*?\.rhohub\.com):(.*?)\/(.*?).git/i.match(str)
-  res.nil? ? {} : { :str => "#{res[1]}:#{res[2]}/#{res[3]}", :server => res[1],  :user => res[2], :app => res[3] }
+  res.nil? ? {} : { :str => "#{res[1]}:#{res[2]}/#{res[3]}", :webServer => res[1],  :user => res[2], :app => res[3] }
 end
 
 def split_number_in_groups(number)
@@ -1650,8 +1653,8 @@ namespace 'cloud' do
     $cloud_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
 
     if $cloud_app[:dist] > 0
-      if $cloud_app[:user_proj][:server] != user_proj[:server]
-        BuildOutput.error("Current user account is on #{$cloud_app[:user_proj][:server].bold} but project in working directory is on #{user_proj[:server].bold}", 'Cloud build')
+      if $cloud_app[:user_proj][:webServer] != user_proj[:webServer]
+        BuildOutput.error("Current user account is on #{$cloud_app[:user_proj][:webServer].bold} but project in working directory is on #{user_proj[:webServer].bold}", 'Cloud build')
       elsif $cloud_app[:user] != user_proj[:user]
         BuildOutput.error("Current user account is #{$cloud_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", 'Cloud build')
       else
