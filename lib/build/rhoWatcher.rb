@@ -29,7 +29,7 @@ class RhoWatcher
   def initialize
     @devices = Array.new
     @pathes = Array.new
-    @listener = nil
+    @port = 3000
   end
 
   def addDevice(aRhoDevice)
@@ -64,6 +64,23 @@ class RhoWatcher
     @applicationRoot
   end
 
+  def startWebServer
+    @webServer = WEBrick::HTTPServer.new :Port => @port, :DocumentRoot => @serverRoot
+    @webServer.mount @serverRoot, WEBrick::HTTPServlet::FileHandler, './'
+
+    webServerThread = Thread.new do
+      puts "Starting local server..."
+      @webServer.start
+    end
+
+    trap 'INT' do
+      self.stop
+    end
+
+    webServerThread.join
+
+  end
+
   def onFileChanged(addedFiles, changedFiles, removedFiles)
     puts "on file changed"
     self.createDiffFiles(addedFiles, changedFiles, removedFiles)
@@ -72,7 +89,8 @@ class RhoWatcher
   end
 
   def stop
-    #  @listener.stop
+    @listener.stop
+    @webServer.shutdown
   end
 
   def createDiffFiles(addedFiles, changedFiles, removedFiles)
@@ -103,12 +121,13 @@ class RhoWatcher
 
 
   def run
-=begin
+    self.startWebServer
+
     @listener = Listen.to(*@pathes) do |modified, added, removed|
-    self.onFileChanged(added, modified, removed)
-  end
-  @listener.start
-=end
+      self.onFileChanged(added, modified, removed)
+    end
+    @listener.start
+
     self.onFileChanged([], [], [])
   end
 
