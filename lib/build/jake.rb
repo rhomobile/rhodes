@@ -224,9 +224,9 @@ class Jake
     $passed ||= 0
     $failed ||= 0
     $faillog = []
-    $junit = []
+    @default_file_name = "junit.xml"
     $junitname = ''
-    $junitlogs = {}
+    $junitlogs = {@default_file_name => []}
     $getdump = false
   end
 
@@ -244,14 +244,14 @@ class Jake
         end
       end
 
-      if line =~ /JUNIT\|(.*)/          # JUNIT| XML
-        $junit << $1
-      elsif line =~ /JUNITNAME\|(.*)/          # JUNITNAME| name
+      if line =~ /JUNIT\| (.*)/          # JUNIT| XML
+        $junitlogs[@default_file_name] << $1
+      elsif line =~ /JUNITNAME\|\s+(.*)/          # JUNITNAME| name
         $junitname = File.basename($1,'.xml')
-      elsif line =~ /JUNITBLOB\|(.*)/
+        $junitlogs[$junitname] = []
+      elsif line =~ /JUNITBLOB\| (.*)/
         if $junitname && $1
-          $junitlogs[$junitname] = $1
-          $junitname = nil
+          $junitlogs[$junitname] << $1
         end
       end
 
@@ -292,13 +292,9 @@ class Jake
 
     FileUtils.mkdir_p jpath
 
-    if $junit.length > 0
-      File.open(File.join(jpath,"junit.xml"), "w") { |io| io << $junit.join($/) }
-    end
-
     $junitlogs.each do |name, log|
       if log.length > 0
-        File.open(File.join(jpath,"#{name}.xml"), "w") { |io| io << log.gsub('~~',$/) }
+        File.open(File.join(jpath,"#{name}.xml"), "w") { |io| io << log.join().gsub('~~',$/) }
       end
     end
 
