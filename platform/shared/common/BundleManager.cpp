@@ -55,6 +55,7 @@ extern "C" int rho_prepare_folder_for_upgrade(const char* szPath);
 
 #if defined OS_ANDROID
 extern "C" void rho_android_file_reload_stat_table();
+extern "C" void rho_android_force_all_files();
 #endif
 
 
@@ -743,16 +744,18 @@ void CReplaceBundleThread::doReplaceBundle()
             return;
         }
     }
-    if (is_partial_update) {
-        filelist.saveToFile();
-#ifdef OS_ANDROID
-        rho_android_file_reload_stat_table();
-#endif                
-    }
+    
     
     LOG(INFO) + "STOP";
     oFT.commit();
 
+    if (is_partial_update) {
+        filelist.saveToFile();
+#ifdef OS_ANDROID
+        rho_android_file_reload_stat_table();
+#endif
+    }
+    
 #ifdef OS_ANDROID
     if (!is_partial_update) {
         //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
@@ -777,6 +780,11 @@ extern "C"
 
 void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode )
 {
+    
+#ifdef OS_ANDROID
+    rho_android_force_all_files();
+#endif
+    
     bool is_finished_flag = false;
     CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, (not_thread_mode ? &is_finished_flag : 0));  
     if (not_thread_mode) {
