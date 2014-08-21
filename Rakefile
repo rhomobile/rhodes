@@ -3347,7 +3347,9 @@ def common_bundle_start( startdir, dest)
   start = pwd
 
   if !$js_application
-    Dir.glob('lib/framework/*').each {|f| cp_r(f, dest, :preserve => true) unless f.to_s == 'autocomplete'}
+    Dir.glob('lib/framework/*').each do |f|
+      cp_r(f, dest, :preserve => true) unless f.to_s == 'lib/framework/autocomplete'
+    end
   end
 
   chdir dest
