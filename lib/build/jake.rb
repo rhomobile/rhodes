@@ -255,13 +255,21 @@ class Jake
         end
       end
 
-      if line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
-        $failed += $1.to_i
-      elsif line =~ /\| \*\*\*Total:\s+(.*)/  # | ***Total:
+      ###
+      # Here we are looking for the following pattern of spec stats:
+      # ...   APP| ***Total:  ...
+      # ...   APP| ***Passed: ...
+      # ...   APP| ***Failed: ...
+      # As soon as the last line found, get out with false result
+      ###
+      if line =~ /\| \*\*\*Total:\s+(.*)/  # | ***Total:
         $total += $1.to_i
       elsif line =~ /\| \*\*\*Passed:\s+(.*)/ # | ***Passed:
         $passed += $1.to_i
-      elsif line =~ /\| \*\*\*Terminated\s+(.*)/ # | ***Terminated        
+      elsif line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
+        $failed += $1.to_i
+        return false
+      elsif line =~ /\| \*\*\*Terminated\s+(.*)/ # | ***Terminated
         return false
       end
       # Faillog for MSpec
@@ -688,7 +696,7 @@ class Jake
       require 'zip'
 
       have_zip = true
-    rescue Exception => e   
+    rescue Exception => e
       have_zip = false
     end
 
@@ -748,7 +756,7 @@ class Jake
       require 'zip'
 
       have_zip = true
-    rescue Exception => e   
+    rescue Exception => e
       have_zip = false
     end
 
@@ -777,7 +785,7 @@ class Jake
               FileUtils.mkdir_p(d_path)
               last_path = d_path
             end
-            zip_file.extract(f, f_path) 
+            zip_file.extract(f, f_path)
           }
 
           if block_given?
@@ -804,7 +812,7 @@ class Jake
         else
           m = /\s+(.*?):\s+(.*?)\s+/.match(line)
           if !m.nil?
-            fname = m[2].gsub(dest_folder+'/','') 
+            fname = m[2].gsub(dest_folder+'/','')
             size = files[fname]
             if size != nil
               last = size
@@ -828,7 +836,7 @@ class Jake
 
         true
       end
-       
+
       if total_size != 0
         acc_size += last
         progress = acc_size * 100 / total_size
