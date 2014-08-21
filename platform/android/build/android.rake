@@ -1942,20 +1942,33 @@ namespace "build" do
       print_timestamp('build:android:upgrade_package FINISH')
     end
 
-    task :upgrade_package_partial => ["build:android:rhobundle"] do
+    task :upgrade_package_partial => ["config:android"] do
+
+      print_timestamp('build:android:upgrade_package_partial START')
       #puts '$$$$$$$$$$$$$$$$$$'
       #puts 'targetdir = '+$targetdir.to_s
       #puts 'bindir = '+$bindir.to_s
 
       # process partial update
 
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
+        Rake::Task['build:android:rhobundle'].invoke
+
+
+
+
+
       add_list_full_name = File.join($app_path, 'upgrade_package_add_files.txt')
       remove_list_full_name = File.join($app_path, 'upgrade_package_remove_files.txt')
 
-      src_folder = File.join($bindir, 'RhoBundle')
+      src_folder = $appassets #File.join($appassets, 'RhoBundle')
       src_folder = File.join(src_folder, 'apps')
 
-      tmp_folder = $bindir + '_tmp_partial'
+      tmp_folder = $appassets + '_tmp_partial'
       rm_rf tmp_folder if File.exists? tmp_folder
       mkdir_p tmp_folder
 
@@ -2024,6 +2037,9 @@ namespace "build" do
       zip_file_path = File.join($targetdir, "upgrade_bundle_partial.zip")
       Jake.zip_upgrade_bundle(tmp_folder, zip_file_path)
       rm_rf tmp_folder
+
+      print_timestamp('build:android:upgrade_package_partial FINISH')
+
     end
 
 
