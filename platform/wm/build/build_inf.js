@@ -372,7 +372,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             }
         }
 
-        p("6=,\"\",," + rhogempath + "\"\\Plugins\\\"");
+        p("6=,\"\",," + rhogempath + "\"\\Plugin\\\"");
     }
     get_source_disks_names(es);
     p("");
@@ -421,7 +421,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("\"RegEx.xml\"=4");
             }
         }
-        each_file(rhogempath + "\\Plugins", function(f) {
+        each_file(rhogempath + "\\Plugin", function(f) {
             p("\"" + f +"\"=6");
         });
     }
@@ -513,7 +513,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
         
         p("[" + (is_persistent ? "CopyBrowserPluginsPers" : "CopyBrowserPlugins") + "]");
-        each_file(rhogempath + "\\Plugins", function(f) {
+        each_file(rhogempath + "\\Plugin", function(f) {
             p("\"" + f +"\",\"" + f +"\",,0");
         });
         p("");
