@@ -4,6 +4,7 @@ class RhoDevice
   def initialize(anUri, aString)
     @uri = anUri
     @platform = aString
+    @serverRoot = Dir.mktmpdir
   end
 
   def uri=(anUri)
