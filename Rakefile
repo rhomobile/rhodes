@@ -307,18 +307,17 @@ def update_rhodefs_header_file
   end
 end
 
-task :serve, [:uri, :platform]=> ["config:initialize"] do |t, args|
+task :serve, [:serverUri, :deviceUri, :platform] => ["config:initialize"] do |t, args|
 
   watcher = RhoWatcher.new
   watcher.serverRoot = "/Users/mva/Temp/"
   watcher.applicationRoot = $app_basedir
-  watcher.serverUri = "192.168.0.1:80"
-  watcher.addDirectory(watcher.applicationRoot + "/public")
-  watcher.addDirectory(watcher.applicationRoot + "/app")
-  watcher.addDevice(RhoDevice.new(args.uri, args.platform))
-  watcher.run
+  watcher.serverUri = URI('http://' + args.serverUri)
+  watcher.addDirectory(File.join($app_basedir, "/public"))
+  watcher.addDirectory(File.join($app_basedir, "/app"))
+  watcher.addDevice(RhoDevice.new(args.deviceUri, args.platform))
 
-  watcher.stop
+  watcher.run
 end
 
 #------------------------------------------------------------------------

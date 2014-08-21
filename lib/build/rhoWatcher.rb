@@ -1,5 +1,4 @@
 require 'listen'
-require 'zip'
 
 class RhoDevice
   def initialize(anUri, aString)
@@ -65,7 +64,7 @@ class RhoWatcher
   end
 
   def startWebServer
-    @webServer = WEBrick::HTTPServer.new :Port => @port, :DocumentRoot => @serverRoot
+    @webServer = WEBrick::HTTPServer.new :BindAddress => @serverUri.host, :Port => @serverUri.port, :DocumentRoot => @serverRoot
     @webServer.mount @serverRoot, WEBrick::HTTPServlet::FileHandler, './'
 
     webServerThread = Thread.new do
