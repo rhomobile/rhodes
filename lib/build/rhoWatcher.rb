@@ -4,7 +4,6 @@ class RhoDevice
   def initialize(anUri, aString)
     @uri = anUri
     @platform = aString
-    @serverRoot = Dir.mktmpdir
   end
 
   def uri=(anUri)
@@ -28,16 +27,16 @@ end
 class RhoWatcher
   def initialize
     @devices = Array.new
-    @pathes = Array.new
-    @port = 3000
+    @directories = Array.new
+    @serverRoot = Dir.mktmpdir
   end
 
   def addDevice(aRhoDevice)
     @devices << aRhoDevice
   end
 
-  def addDirectory(path)
-    @pathes << path
+  def addDirectory(aString)
+    @directories << aString
   end
 
   def serverUri=(uri)
@@ -65,36 +64,27 @@ class RhoWatcher
   end
 
   def startWebServer
+    puts "Create web server..."
     @webServer = WEBrick::HTTPServer.new :BindAddress => @serverUri.host, :Port => @serverUri.port, :DocumentRoot => @serverRoot
     @webServer.mount @serverRoot, WEBrick::HTTPServlet::FileHandler, './'
 
-    webServerThread = Thread.new do
-      puts "Starting local server..."
+    @webServerThread = Thread.new do
+      puts "Starting web server..."
       @webServer.start
     end
-
-    trap 'INT' do
-      self.stop
-    end
-
-    webServerThread.join
-
   end
 
   def onFileChanged(addedFiles, changedFiles, removedFiles)
-    puts "on file changed"
+    puts "On file changed..."
     self.createDiffFiles(addedFiles, changedFiles, removedFiles)
     self.createBundles
     self.sendNotificationsToDevices
   end
 
-  def stop
-    @listener.stop
-    @webServer.shutdown
-  end
+
 
   def createDiffFiles(addedFiles, changedFiles, removedFiles)
-    puts "create diff files"
+    puts "Create diff files..."
     File.open(@applicationRoot + "/upgrade_package_add_files.txt", "w") { |file| addedFiles.each { |each| file.puts(each) }
     changedFiles.each { |each| file.puts(each) }
     }
@@ -102,7 +92,7 @@ class RhoWatcher
   end
 
   def createBundles
-    puts "create builds"
+    puts "Build bundles..."
     @devices.each { |each|
       taskName = "build:#{each.platform}:upgrade_package_partial"
       Rake::Task[taskName].invoke
@@ -114,7 +104,7 @@ class RhoWatcher
   end
 
   def sendNotificationsToDevices
-    puts "send notifications to devices"
+    puts "Send notifications to devices..."
     @devices.each { |each| uri = URI.parse('http://' + each.uri + '/system/update_bundle?http://' + @serverUri + "/" + each.platform + '/bundle.zip')
     Net::HTTP.get_response(uri) }
   end
@@ -122,14 +112,23 @@ class RhoWatcher
 
   def run
     self.startWebServer
-
-    @listener = Listen.to(*@pathes) do |modified, added, removed|
+    puts "Create listener..."
+    puts @directories
+    @listener = Listen.to(*@directories) do |modified, added, removed|
       self.onFileChanged(added, modified, removed)
     end
     @listener.start
 
-    self.onFileChanged([], [], [])
+    trap 'INT' do
+      self.stop
+    end
+
+    @webServerThread.join
   end
 
+  def stop
+    @listener.stop
+    @webServer.shutdown
+  end
 
 end
