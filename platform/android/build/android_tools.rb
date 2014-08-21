@@ -424,7 +424,7 @@ def kill_adb_logcat(device_flag, log_path = $applog_path)
 
   device_opts = device_options device_flag
   match_str = device_opts.join(' ')
-  
+
   #cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+(-(d|e|s\s+\S+))\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
   cmd_re = /"?#{Regexp.escape($adb)}"?\s+(-(d|e|s\s+\S+))\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
   processes = Jake.get_process_list
@@ -483,7 +483,7 @@ def kill_adb_and_emulator
     # Windows
     `taskkill /F /IM adb.exe`
   else
-    `killall -9 adb`
+    `killall -9 adb 2> /dev/null`
   end
   stop_emulator
 end
@@ -493,7 +493,7 @@ def logcat(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
     device_opts = device_options device_flag
     device_re = device_opts.join('\s+')
-  
+
     cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
     pids = Jake.get_process_list
     log_pids = []
@@ -515,7 +515,7 @@ def logcat_process(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
     device_opts = device_options device_flag
     device_re = device_opts.join('\s+')
-  
+
     cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
     pids = Jake.get_process_list
     log_pids = []
@@ -588,9 +588,9 @@ def stop_emulator
     Jake.run3_dont_fail('taskkill /F /IM emulator-arm.exe')
     Jake.run3_dont_fail('taskkill /F /IM emulator.exe')
   else
-    Jake.run3_dont_fail('killall -9 emulator-arm')
-    Jake.run3_dont_fail('killall -9 emulator64-arm')
-    Jake.run3_dont_fail('killall -9 emulator')
+    Jake.run3_dont_fail('killall -9 emulator-arm 2> /dev/null')
+    Jake.run3_dont_fail('killall -9 emulator64-arm 2> /dev/null')
+    Jake.run3_dont_fail('killall -9 emulator 2> /dev/null')
   end
 end
 
