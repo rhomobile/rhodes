@@ -77,29 +77,37 @@ class BuildOutput
       return i
     end
 
-    def merge_head_tail(src,msg)  
+    def merge_head_tail(src, msg)  
       begining = []
       ending = []
       result = []
 
-      b_len = to_merge(src.each,msg.each)
+      # find same headers
+      b_len = to_merge(src.each, msg.each)
       if (b_len > 0)
         begining.concat(src.take(b_len))
         src = src.drop(b_len)
         msg = msg.drop(b_len)
       end
 
+      # find same footers
       e_len = to_merge(src.reverse_each, msg.reverse_each)
-
       if (e_len > 0)
-        remaining = src.length - e_len
-        ending = src.drop(remaining)
-        result = begining.concat(src.take(remaining)).concat(msg.take(msg.length - e_len)).concat(ending)
-      else
-        result = begining.concat(src).concat(msg)
+        ending = src.drop(src.length - e_len)
+        src = src.take(src.length - e_len)
+        msg = msg.take(msg.length - e_len)
       end
 
-      result
+      # special case about joining lines
+
+      if src.length == 1 && msg.length == 1
+        if msg.first.length > src.first.length && msg.first.start_with?(src.first)
+          # warning(["Build message '#{msg} appended from ", " * " + caller.join($/ + " ^ "),'instead of being added to error string'], 'Error in build script')
+          src = []
+        end
+      end
+
+      begining.concat(src).concat(msg).concat(ending)
     end
 
     def log(level, message, title)
