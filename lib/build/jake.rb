@@ -247,7 +247,7 @@ class Jake
       if line =~ /JUNIT\| (.*)/          # JUNIT| XML
         $junitlogs[@default_file_name] << $1
       elsif line =~ /JUNITNAME\|\s+(.*)/          # JUNITNAME| name
-        $junitname = File.basename($1,'.xml')
+        $junitname = File.basename($1.strip,'.xml')
         $junitlogs[$junitname] = []
       elsif line =~ /JUNITBLOB\| (.*)/
         if $junitname && $1
