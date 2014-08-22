@@ -206,6 +206,14 @@ public class RhoFileApi {
 	
 	private static void doForceAllFilesForContext(Context ctx) {
 		
+		// clear cache in WebView
+		View v = RhoExtManager.getInstance().getWebView().getView();
+		if (v instanceof WebView) {
+			WebView wv = (WebView)v;
+			wv.clearCache(true);
+			Log.d(TAG, "%% WebCache was cleaned !!!");
+		}
+
 		if (ourIsForceAllFilesAlreadyDone) {
 			Log.d(TAG, "doForceAllFilesForContext() SKIP %%");
 			return;
@@ -276,13 +284,6 @@ public class RhoFileApi {
 			e.printStackTrace();
 		}
 		
-		// clear cache in WebView
-		View v = RhoExtManager.getInstance().getWebView().getView();
-		if (v instanceof WebView) {
-			WebView wv = (WebView)v;
-			wv.clearCache(true);
-			Log.d(TAG, "%% WebCache was cleaned !!!");
-		}
 	}
 	
 	public static void doForceAllFiles() 
