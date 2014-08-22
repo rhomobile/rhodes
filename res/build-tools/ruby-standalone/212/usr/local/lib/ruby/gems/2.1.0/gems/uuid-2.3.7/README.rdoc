@@ -1,0 +1,129 @@
+= UUID Generator
+
+Generates universally unique identifiers (UUIDs) for use in distributed
+applications. Based on {RFC 4122}[http://www.ietf.org/rfc/rfc4122.txt].
+
+
+== Generating UUIDs
+
+Call #generate to generate a new UUID. The method returns a string in one of
+three formats. The default format is 36 characters long, and contains the 32
+hexadecimal octets and hyphens separating the various value parts. The
+<tt>:compact</tt> format omits the hyphens, while the <tt>:urn</tt> format
+adds the <tt>:urn:uuid</tt> prefix.
+
+For example:
+
+  uuid = UUID.new
+  10.times do
+    p uuid.generate
+  end
+
+
+== UUIDs in Brief
+
+UUID (universally unique identifier) are guaranteed to be unique across time
+and space.
+
+A UUID is 128 bit long, and consists of a 60-bit time value, a 16-bit
+sequence number and a 48-bit node identifier.
+
+The time value is taken from the system clock, and is monotonically
+incrementing.  However, since it is possible to set the system clock
+backward, a sequence number is added.  The sequence number is incremented
+each time the UUID generator is started.  The combination guarantees that
+identifiers created on the same machine are unique with a high degree of
+probability.
+
+Note that due to the structure of the UUID and the use of sequence number,
+there is no guarantee that UUID values themselves are monotonically
+incrementing.  The UUID value cannot itself be used to sort based on order
+of creation.
+
+To guarantee that UUIDs are unique across all machines in the network,
+the IEEE 802 MAC address of the machine's network interface card is used as
+the node identifier.
+
+For more information see {RFC 4122}[http://www.ietf.org/rfc/rfc4122.txt].
+
+
+== UUID State File
+
+The UUID generator uses a state file to hold the MAC address and sequence
+number.
+
+The MAC address is used to generate identifiers that are unique to your
+machine, preventing conflicts in distributed applications. The MAC
+address is six bytes (48 bit) long. It is automatically extracted from
+one of the network cards on your machine.
+
+The sequence number is incremented each time the UUID generator is
+first used by the application, to prevent multiple processes from
+generating the same set of identifiers, and deal with changes to the
+system clock.
+
+The UUID state file is created in <tt>#Dir.tmpdir/ruby-uuid</tt> or the Windows
+common application data directory using mode 0644.  If that directory is not
+writable, the file is created as <tt>.ruby-uuid</tt> in the home directory.
+If you need to create the file with a different mode, use UUID#state_file
+before running the UUID generator.
+
+Note: If you are running on a shared host where the state file is not shared
+between processes, or persisted across restarts (e.g. Heroku, Google App
+Engine) you can simple turn it off:
+
+  UUID.state_file = false
+
+State files are not portable across machines.
+
+If you do not use the state file, UUID generation will attempt to use your
+server's MAC address using the macaddr gem, which runs system commands to
+identify the MAC address and then cache it.  Since this can take a few seconds
+on some operating systems, when using UUID.state_file = false, you should add
+the following line after disabling the state file:
+
+  UUID.generator.next_sequence
+
+Note: when using a forking server (Unicorn, Resque, Pipemaster, etc) you don't
+want your forked processes using the same sequence number.  Make sure to
+increment the sequence number each time a worker forks.
+
+For example, in config/unicorn.rb:
+
+  after_fork do |server, worker|
+    UUID.generator.next_sequence
+  end
+
+
+== Command Line
+
+You can run uuid from the command line, generating new UUID to stdout:
+
+  $ uuid
+
+Multiple UUIDs in a sequence, separated with a newline:
+
+  $ uuid --count 10
+
+You can also run client and server from the command line
+
+  $ uuid --server &
+  $ uuid --socket /var/lib/uuid.sock
+
+
+== Latest and Greatest
+
+Source code and documentation hosted on Github: http://github.com/assaf/uuid
+
+To get UUID from source:
+
+  git clone git://github.com/assaf/uuid.git
+
+
+== License
+
+This package is licensed under the MIT license and/or the Creative
+Commons Attribution-ShareAlike.
+
+:include: MIT-LICENSE
+

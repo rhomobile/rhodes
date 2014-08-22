@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export RUBYLIB=/Users/alexepifanoff/sandbox/customrubies/212/usr/local/lib/ruby/2.1.0/:/Users/alexepifanoff/sandbox/customrubies/212/usr/local/lib/ruby/2.1.0/x86_64-darwin13.0/
+export GEM_PATH=/Users/alexepifanoff/sandbox/customrubies/212/usr/local/lib/ruby/gems/2.1.0/
+export GEM_HOME=/Users/alexepifanoff/sandbox/customrubies/212/usr/local/lib/ruby/gems/2.1.0/
