@@ -4209,7 +4209,7 @@ task :tasks do
   Rake::Task.tasks.each {|t| puts t.to_s.ljust(27) + "# " + t.comment.to_s}
 end
 
-task :switch_app => "config:common" do
+task :switch_app do
   rhobuildyml = File.dirname(__FILE__) + "/rhobuild.yml"
   if File.exists? rhobuildyml
     config = YAML::load_file(rhobuildyml)
