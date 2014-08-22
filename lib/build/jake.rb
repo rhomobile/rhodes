@@ -260,7 +260,9 @@ class Jake
       # ...   APP| ***Total:  ...
       # ...   APP| ***Passed: ...
       # ...   APP| ***Failed: ...
-      # As soon as the last line found, get out with false result
+      # ...
+      # ...   APP| ***Terminated
+      # Bail out as soon as prev. line is found
       ###
       if line =~ /\| \*\*\*Total:\s+(.*)/  # | ***Total:
         $total += $1.to_i
@@ -268,7 +270,6 @@ class Jake
         $passed += $1.to_i
       elsif line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
         $failed += $1.to_i
-        return false
       elsif line =~ /\| \*\*\*Terminated\s+(.*)/ # | ***Terminated
         return false
       end
