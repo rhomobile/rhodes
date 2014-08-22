@@ -296,6 +296,11 @@ class Jake
 
     jpath = File.join($app_path,'junitrep')
 
+    # remove old spec results
+    test_patterns = ['Test*.xml', '*_spec_results.xml']
+    base_path = File.join($app_path,'**')
+    Dir.glob( test_patterns.map{ |pat| File.join(base_path, pat) } ).each { |file_name| File.delete(file_name) }
+      
     FileUtils.rm_rf jpath
 
     FileUtils.mkdir_p jpath
