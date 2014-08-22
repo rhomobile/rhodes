@@ -1,0 +1,96 @@
+2.3.7 (2013-02-18)
+
+Use Dir.tmpdir instead of hardcoded /var/tmp path (Justin Langhorst).
+
+
+2.3.6 (2012-11-18)
+
+Manually setting the state_file path sets mode too (Tom Lea).
+
+When manually setting the state file, set the mode too.  Failure to do so
+causes an implicit conversion of nil to integer on first usage.
+
+Also provided a mode method to set the mode explicitly.
+
+
+Reverted executable loss (Michael Witrant ).
+
+
+2.3.4 (2012-01-23)
+
+Source files are now UTF-8 (Vicente Reig)
+
+2.3.4 (2011-09-01)
+
+Fixed State file mode isn't respected with standard umask (Brandon Turner).
+
+2.3.3 (2011-08-01)
+
+Check if ruby-uuid is writable: it might have been claimed by another user on
+the system already (Andy Lo-A-Foe)
+
+2.3.2 (2011-04-11)
+* Allow usage on environments that don't have MAC address accessible (mikezter)
+* Fix for JRuby expand_path interpretation on windows (pinnymz)
+
+2.3.1 (2010-05-07)
+* Fix: Open state file in binary mode (http://github.com/assaf/uuid/issues#issue/8)
+
+2.3.0 (2010-04-07)
+* Added: UUID.generator returns the current UUID generator.  Particularly useful for calling
+  next_sequence on the generator when forking a process.
+* Added: UUID::Server and UUID::Client so you can have one process serving you UUIDs.
+* Added: UUID command line tool.  Yay!
+
+2.2.0 (2010-02-18)
+* Added: set UUID.state_file = false if you cannot use a state file (e.g. shared hosting environment)
+
+2.1.1 (2010-01-27)
+* Fixed bug which caused UUID.new to fail if the state file was somehow extant but empty
+
+2.1.0 (2009-12-16)
+* Added uuid.validate -- easier to implement than explain why it's wrong.
+
+2.0.2 (2009-06-10)
+* Maintenance release. Added uuid.gemspec file in packaging, tested against
+Ruby 1.9.1.
+
+2.0.1 (2008-08-28)
+* Fixed:    MAC address parses correctly when using colon as separator, not
+            when using hyphen (ruby-mingw32). If your MAC address is all zero
+            (check with UUID.new.inspect), remove the ruby-uuid file, and it
+            will reset to the actual MAC address. (Rasha)
+* Fixed:    UUID.new.inspect not showing full MAC address.
+
+2.0.0 (2008-08-28)
+* Changed:  API. UUID.generate still works as it always did, but the rest of
+            the API is brand spanking new, so if you rely on anything besides
+						UUID.generate, or just curious, check out the rdocs.
+* Changed:  uuid.state replaced by ruby-uuid file. By default stored in
+            /var/tmp, or if that path is not accessible, as .ruby-uuid in the
+            home directory.
+* Changed:  ruby-uuid is now stored as binary file (faster read/write), if you
+            need to have a peek, open irb and type UUID.new.inspect.
+* Changed:  Source code and documentation for this release hosted on the
+            wonderful Github: http://github.com/assaf/uuid
+
+1.0.4 (2007-08-28)
+* Changed:  By default creates the uuid.state file in the working directory,
+            not in the installation directory, which requires sudo privileges
+            (e.g. gem).
+
+1.0.3 (2006-11-08)
+* Fixed:    Work around YAML bug in serializing that occurs when MAC address
+            consists only of decimal digits. Credit: ebuprofen"
+
+1.0.2 (2006-08-19)
+* Changed:  Constants are not conditionally defined (removes warnings when
+            using in Rails.
+
+1.0.1 (2006-07-27)
+* Added:    Regular expressions to test if a string is a UUID.
+* Changed:  When used in ActiveRecord, adds as callback instead of overriding
+            save.
+
+1.0.0 (2005-11-20)
+* Changed:  Separated form reliable-msg into its own package.
