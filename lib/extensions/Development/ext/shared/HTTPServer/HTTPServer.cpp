@@ -54,8 +54,9 @@ void DevHTTPServer::init() {
     
     m_httpServer = new rho::net::CHttpServer(RHO_DEVELOPMENT_SERVER_PORT, szRootPath, szUserPath, szRootPath, true, true);
     
-    m_httpServer->register_uri("/system/update_bundle", callback_system_update_bundle);
-    m_httpServer->register_uri("/system/update_bundle_callback", callback_system_update_bundle_callback);
+    m_httpServer->register_uri("/development/update_bundle", callback_system_update_bundle);
+    m_httpServer->register_uri("/development/update_bundle_callback", callback_system_update_bundle_callback);
+    m_httpServer->register_uri("/development/get_info", callback_system_get_info_callback);
 
     
 #ifdef OS_ANDROID
@@ -114,6 +115,15 @@ DevHTTPServer* DevHTTPServer::getInstance() {
 
 rho::String DevHTTPServer::getLocalIPAdress() {
     return m_local_IP_adress;
+}
+
+rho::String DevHTTPServer::getPort() {
+    rho::String res = "";
+    char ttt[16];
+    int port = m_httpServer->getPort();
+    sprintf(ttt, "%d", port);
+    res = ttt;
+    return res;
 }
 
 void DevHTTPServer::run() {
