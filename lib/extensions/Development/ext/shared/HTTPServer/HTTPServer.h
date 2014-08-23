@@ -36,6 +36,7 @@ public:
     static DevHTTPServer* getInstance();
     
     rho::String getLocalIPAdress();
+    rho::String getPort();
     
 protected:
     virtual void run();
