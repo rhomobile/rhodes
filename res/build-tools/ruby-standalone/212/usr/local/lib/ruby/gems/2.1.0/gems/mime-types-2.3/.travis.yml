@@ -1,0 +1,32 @@
+---
+language: ruby
+rvm:
+  - 2.1.0
+  - 2.0.0
+  - 1.9.3
+  - ruby-head
+  - jruby-19mode
+  - jruby-head
+  - rbx-2
+matrix:
+  allow_failures:
+    - rvm: rbx-2
+gemfile:
+  - Gemfile
+before_script:
+  - |
+    case "${TRAVIS_RUBY_VERSION}" in
+      rbx*)
+        gem install psych
+        ;;
+    esac
+  - rake travis:before -t
+script: rake travis
+after_script:
+  - rake travis:after -t
+notifications:
+  email:
+    recipients:
+      - austin@rubyforge.org
+    on_success: change
+    on_failure: always

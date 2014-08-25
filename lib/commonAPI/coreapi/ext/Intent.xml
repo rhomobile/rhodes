@@ -22,7 +22,7 @@ There are two methods of enabling the Intent API:
 * Include all ebapi modules or 
 * Include only the API modules you need 
 
-For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Motorola Enterprise Browser.
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
 ### Include all JS API modules
 To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
@@ -167,8 +167,9 @@ Notice the use of the full constant string "android.intent.extra.TEXT" in place 
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="startListening" hasCallback="mandatory" runInThread="none" productException="eb">
-                <DESC>Start listening for custom intents. 
+            <METHOD name="startListening" hasCallback="mandatory" runInThread="none" >
+                <DESC_EB>Start listening for custom intents. </DESC_EB>
+                    <DESC>Start listening for custom intents. 
 
 For Android, this is how we have implemented [Android Intent Filters](http://developer.android.com/guide/components/intents-filters.html#Receiving). In order to listen for Intents you will have to update the `AndroidManifest.erb` file and add a special section to it. This file is now generated with RhoMobile Version 4.1 when you create a new project. The file is located in the root of project.
 
@@ -188,6 +189,7 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
                     <DESC>Same format as 'params' argument passed to Rho.Intent.send method 
                         Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
                 </CALLBACK>
+                <PLATFORM_EB>WM</PLATFORM_EB>
             </METHOD>
             <METHOD name="stopListening" hasCallback="none" productException="eb">
                 <DESC>Stop listening for custom intents.</DESC>

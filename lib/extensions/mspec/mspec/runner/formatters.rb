@@ -11,3 +11,5 @@ require 'mspec/runner/formatters/yaml'
 require 'mspec/runner/formatters/profile'
 require 'mspec/runner/formatters/junit'
 
+# RHO
+require 'mspec/runner/formatters/rhospecf'
