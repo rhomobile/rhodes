@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="NewORMModel" parent="Rho">
+    <MODULE name="NewORMModel" parent="Rho" productException="eb">
         <HELP_OVERVIEW>NewORMModel CoreAPI module</HELP_OVERVIEW>
         <MORE_HELP>New implementation of the RHOM Model.</MORE_HELP>
 
@@ -336,6 +336,7 @@
 
             <METHOD name="onSyncDeleteError">
                 <DESC>Handles sync delete errors for the object.</DESC>
+                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="attrHash" type="HASH"/>
@@ -345,6 +346,7 @@
 
             <METHOD name="onSyncUpdateError">
                 <DESC>Handles sync update errors for the object.</DESC>
+                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="attrHash" type="HASH"/>
@@ -355,6 +357,7 @@
 
             <METHOD name="onSyncCreateError">
                 <DESC>Handles sync create errors.</DESC>
+                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="objects" type="ARRAY"/>
                     <PARAM name="action" type="STRING"/>

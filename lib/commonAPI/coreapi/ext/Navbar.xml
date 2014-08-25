@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Navbar" parent="Rho" generateUnderscoreRubyNames="true">
+    <MODULE name="Navbar" parent="Rho" generateUnderscoreRubyNames="true" productException="eb">
         <HELP_OVERVIEW>The NavBar API supports a native navigation bar for iOS devices.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API

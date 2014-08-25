@@ -18,7 +18,7 @@
 #import "MapViewManager.h"
 
 #import <UIKit/UIKit.h>
-#import "ArcGIS.h"
+#import <ArcGIS/ArcGIS.h>
 
 
 // Good view maps, but use ESRI meters for coordinates
@@ -63,7 +63,7 @@ typedef int RHO_ESRI_Map_Type;
 
 
 
-@interface MapViewControllerESRI : UIViewController <AGSMapViewDelegate> {
+@interface MapViewControllerESRI : UIViewController <AGSCalloutDelegate> {
     //GoogleGeocoder* ggeoCoder;
     UIToolbar* toolbar;
     NSString *region_center;

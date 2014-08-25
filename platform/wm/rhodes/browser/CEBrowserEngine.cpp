@@ -39,6 +39,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     , m_bInPlaceActive(true)
     , m_pBrowser(NULL)
     , m_hNavigated(NULL)
+    , m_hDocComp(NULL)
     , m_hwndTabHTML(NULL)
     , bRunningOnWM(FALSE)
     , bDeviceCausesDoubleBackspace(FALSE)
@@ -51,6 +52,8 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
 
 	memset(m_tcCurrentPageTitle, NULL, sizeof(TCHAR) * MAX_URL);
 	memset(m_tcNavigatedURL, 0, sizeof(TCHAR) * MAX_URL);
+
+    CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
 	GetWindowRect(hwndParent, &m_rcViewSize);
     CreateEngine();
@@ -177,9 +180,9 @@ Cleanup:
     SetWindowLong(m_hwndTabHTML, GWL_STYLE, lStyle);
 	SetParent(m_hwndTabHTML, m_hwndParent);
 
-	//ShowWindow(m_hwndTabHTML, SW_SHOW);
-	//SetForegroundWindow(m_hwndTabHTML);
-	//MoveWindow(m_hwndTabHTML, m_rcViewSize.left, m_rcViewSize.top, (m_rcViewSize.right-m_rcViewSize.left), (m_rcViewSize.bottom-m_rcViewSize.top), FALSE);
+	ShowWindow(m_hwndTabHTML, SW_SHOW);
+	SetForegroundWindow(m_hwndTabHTML);
+	MoveWindow(m_hwndTabHTML, m_rcViewSize.left, m_rcViewSize.top, (m_rcViewSize.right-m_rcViewSize.left), (m_rcViewSize.bottom-m_rcViewSize.top), FALSE);
 
 	return S_OK;		
 };
@@ -244,6 +247,10 @@ BOOL CEBrowserEngine::StopOnTab(UINT iTab)
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
 
+        SetEvent(m_hDocComp);
+        CloseHandle(m_hDocComp);
+        m_hDocComp = NULL;
+            
         PostMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
         PostMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
 
@@ -253,22 +260,57 @@ BOOL CEBrowserEngine::StopOnTab(UINT iTab)
 	return FALSE;
 }
 
+DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
+{
+    LOG(INFO) + (L"DocThread Started\n");
+
+    CEBrowserEngine * pEng = reinterpret_cast<CEBrowserEngine*>(lpParameter);
+
+    if(pEng->m_hDocComp == NULL)
+    {
+        pEng->m_hDocComp = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_DOCCOMPLETE_IN_PROGRESS"/*NULL*/);
+
+        if(WaitForSingleObject(pEng->m_hDocComp, pEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
+        {
+            //no point in doing anything as there is no event handler
+            pEng->StopOnTab(pEng->m_tabID);
+            CloseHandle(pEng->m_hDocComp);
+            pEng->m_hDocComp = NULL;
+
+            //send fake document complete event to plug-in modules
+            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, 
+                (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+
+            //send navigation timeout event to hit the local bad link page for recovery from missing document complete event
+            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+                (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+        }
+    }
+
+    LOG(INFO) + (L"DocThread Ended\n");
+
+    return 0;
+}
+
 DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
     CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
 
-    if(pEng->m_hNavigated==NULL)
-        pEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
-
-    if(WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
+    if (pEng->m_dwNavigationTimeout)
     {
-        //no point in doing anything as there is no event handler
-        pEng->StopOnTab(pEng->m_tabID);
-        CloseHandle(pEng->m_hNavigated);
-        pEng->m_hNavigated = NULL;
+        if(pEng->m_hNavigated==NULL)
+            pEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
-        SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
-            (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+        if(WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
+        {
+            //no point in doing anything as there is no event handler
+            pEng->StopOnTab(pEng->m_tabID);
+            CloseHandle(pEng->m_hNavigated);
+            pEng->m_hNavigated = NULL;
+
+            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+                (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+        }
     }
 
     return 0;
@@ -338,6 +380,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			const GUID __RPC_FAR *pguidCmdGroup,
 			DWORD nCmdID)
 {
+	/*
 	if (lpMsg && (lpMsg->message == WM_KEYDOWN))
 	{
 		if (lpMsg->wParam == VK_LEFT ||
@@ -369,7 +412,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			return S_FALSE;
 		}
 	}
-
+*/
 	return S_FALSE;
 }
 
@@ -455,6 +498,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 	switch (dispidMember) 
 	{
 	case DISPID_NAVIGATEERROR:
+        LOG(INFO) + "DISPID_NAVIGATEERROR";
+
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
@@ -471,6 +516,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		break;
 	
 	case DISPID_NAVIGATECOMPLETE2:
+        LOG(INFO) + "DISPID_NAVIGATECOMPLETE2";
+
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
@@ -485,6 +532,12 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 			if(pdparams->rgvarg[0].pvarVal->vt == VT_BSTR && pdparams->rgvarg[0].pvarVal->bstrVal)
 				wcsncpy(tcURL, pdparams->rgvarg[0].pvarVal->bstrVal, MAX_URL-1);
 		}
+
+        SetEvent(m_hDocComp);
+        CloseHandle(m_hDocComp);
+        m_hDocComp = NULL;
+
+        CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::DocumentTimeoutThread, (LPVOID)this, 0, NULL));
 
         SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);
 
@@ -502,6 +555,11 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 	case DISPID_DOCUMENTCOMPLETE:
 		//Validate that there is an event handler
+        LOG(INFO) + "DISPID_DOCUMENTCOMPLETE";
+
+        SetEvent(m_hDocComp);
+        CloseHandle(m_hDocComp);
+        m_hDocComp = NULL;
 
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR) 
 		{
@@ -525,6 +583,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		break;
 
 	case DISPID_BEFORENAVIGATE2:
+        LOG(INFO) + "DISPID_BEFORENAVIGATE2";
+
 		if (pdparams && pdparams->rgvarg[5].pvarVal[0].vt == VT_BSTR) 
 		{
 			if(pdparams->rgvarg[5].pvarVal[0].bstrVal)
@@ -559,7 +619,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
             break;
 		}
 
-		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
+		//CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
 		wcscpy(m_tcNavigatedURL, tcURL);
 
 #ifdef SCROLL_NOTIFY
@@ -576,8 +636,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		break;
 	}
 
-	delete[] tcURL;
-	tcURL = NULL;
+	//delete[] tcURL;
+	//tcURL = NULL;
 
 	return retVal;
 }
@@ -695,17 +755,32 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd) 
 {
-    MSG msg;
+	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-        if ( RHODESAPP().getExtManager().onWndMsg(msg) )
+        if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
+		
+		if (msg.message == WM_KEYDOWN && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
+		{
+			IDispatch* pDisp;
+			m_pBrowser->get_Document(&pDisp);
+			if (pDisp != NULL)
+			{
+				IOleInPlaceActiveObject* pInPlaceObject;
+				pDisp->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&pInPlaceObject);
+				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);
+			}
+		}
 
-        if (!mainWnd.TranslateAccelerator(&msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+		if (!mainWnd.TranslateAccelerator(&msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		if(msg.message == WM_PAINT)
+			RHODESAPP().getExtManager().onHTMLWndMsg(msg);	
     }
 }
 
@@ -879,6 +954,7 @@ HRESULT CEBrowserEngine::ParseTags()
 								TCHAR tcHttpEquiv[MAX_URL], tcContents[MAX_URL];
 								memset(tcHttpEquiv, 0, MAX_URL);
 								memset(tcContents, 0, MAX_URL);
+
 								//  Obtain the HTTP Equiv from the IE 
 								//  component, stored in bstr
 								if (S_OK == pMetaElem->get_httpEquiv(&bstr)) 
@@ -888,9 +964,10 @@ HRESULT CEBrowserEngine::ParseTags()
 										//  Copy the HTTP Equiv returned
 										//  from the IE Component into our 
 										//  Meta Tag Structure
-										wcsncpy(tcHttpEquiv, bstr, MAX_URL);
-                                        metaTag->tcHTTPEquiv = new WCHAR[wcslen(tcHttpEquiv)+1];
-                                        wcsncpy(metaTag->tcHTTPEquiv, tcHttpEquiv, MAX_URL);
+										wcsncpy(tcHttpEquiv, bstr, MAX_URL);                                        
+                                        int httpEquivLenght = wcslen(tcHttpEquiv)+1;
+                                        metaTag->tcHTTPEquiv = new WCHAR[httpEquivLenght];
+                                        wcsncpy(metaTag->tcHTTPEquiv, tcHttpEquiv, httpEquivLenght);
 										::SysFreeString(bstr);
 									}
 									else if	(S_OK == pMetaElem->get_name(&bstr))
@@ -902,12 +979,14 @@ HRESULT CEBrowserEngine::ParseTags()
 											//  from the IE Component into our 
 											//  Meta Tag Structure
 											wcsncpy(tcHttpEquiv, bstr, MAX_URL);
-                                            metaTag->tcHTTPEquiv = new WCHAR[wcslen(tcHttpEquiv)+1];
-											metaTag->tcHTTPEquiv = tcHttpEquiv;
+                                            int httpEquivLenght = wcslen(tcHttpEquiv)+1;
+                                            metaTag->tcHTTPEquiv = new WCHAR[httpEquivLenght];											
+                                            wcsncpy(metaTag->tcHTTPEquiv, tcHttpEquiv, httpEquivLenght);
 											::SysFreeString(bstr);
 										}
 									}
 								}
+
 								if (metaTag->tcHTTPEquiv && S_OK == pMetaElem->get_content(&bstr)) 
 								{
 									if (bstr != 0) 
@@ -916,8 +995,9 @@ HRESULT CEBrowserEngine::ParseTags()
 										//  from the IE component into our
 										//  Meta Tag Structure
 										wcsncpy(tcContents, bstr, MAX_URL);
-                                        metaTag->tcContents = new WCHAR[wcslen(tcContents)+1];
-                                        wcsncpy(metaTag->tcContents, tcContents, MAX_URL);
+                                        int contentsLenght = wcslen(tcContents)+1;
+                                        metaTag->tcContents = new WCHAR[contentsLenght];
+                                        wcsncpy(metaTag->tcContents, tcContents, contentsLenght);
 										::SysFreeString(bstr);
 										//  Invoke the Meta Tag Callback.
 										//  This blocks whilst the callback
@@ -986,6 +1066,34 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
     PostMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
 
     return 0;
+}
+
+BOOL CEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab) 
+{ 
+	LPDISPATCH pDisp = NULL;
+	LPOLECOMMANDTARGET pCmdTarg = NULL;
+	if (S_OK != m_pBrowser->get_Document(&pDisp)) 
+		return S_FALSE;
+	if (pDisp == NULL)
+		return S_FALSE;
+	pDisp->QueryInterface(IID_IOleCommandTarget, (LPVOID*)&pCmdTarg);
+	if (pCmdTarg == NULL)
+		return S_FALSE;
+	VARIANT vaZoomFactor;   // input arguments
+	VariantInit(&vaZoomFactor);
+	V_VT(&vaZoomFactor) = VT_I4;
+	V_I4(&vaZoomFactor) = nZoom;
+	pCmdTarg->Exec(NULL,
+				OLECMDID_ZOOM,
+				OLECMDEXECOPT_DONTPROMPTUSER,
+				&vaZoomFactor,
+				NULL);
+	VariantClear(&vaZoomFactor);
+	if (pCmdTarg)
+	   pCmdTarg->Release(); // release document's command target
+	if (pDisp)
+	   pDisp->Release();    // release document's dispatch interface
+	return S_OK;
 }
 
 

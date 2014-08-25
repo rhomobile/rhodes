@@ -34,6 +34,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class MediaplayerSingleton extends MediaplayerSingletonBase implements IMediaplayerSingleton
 {
@@ -419,8 +420,21 @@ public class MediaplayerSingleton extends MediaplayerSingletonBase implements IM
 		{
 			if(dialog.isShowing()) dialog.hide();
 			mVideoView.stopPlayback();
-			mVideoView.clearFocus();
-			mVideoView.setVisibility(View.GONE);
+			//mVideoView.clearFocus();
+			//mVideoView.setVisibility(View.GONE);.
+			PerformOnUiThread.exec(new Runnable(){
+
+						@Override
+						public void run() {
+							try{
+							mVideoView.clearFocus();
+							mVideoView.setVisibility(View.GONE);
+							}
+							catch(Exception ex)
+							{
+								Logger.E(TAG,ex.getMessage());
+							}
+						}});
 		}
 	}
 	

@@ -1,0 +1,56 @@
+arch=x86_64-darwin13.0
+sitearch=${arch}
+prefix=/Users/alexepifanoff/sandbox/customrubies/212/usr/local
+exec_prefix=${prefix}
+bindir=${exec_prefix}/bin
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+MAJOR=2
+MINOR=1
+TEENY=0
+ruby_version=2.1.0
+RUBY_PROGRAM_VERSION=2.1.2
+RUBY_BASE_NAME=ruby
+RUBY_VERSION_NAME=${RUBY_BASE_NAME}-${ruby_version}
+RUBY_SO_NAME=${RUBY_BASE_NAME}
+RUBY_INSTALL_NAME=${RUBY_BASE_NAME}
+DEFFILE=
+archlibdir=${libdir}/${arch}
+sitearchlibdir=${libdir}/${sitearch}
+archincludedir=${includedir}/${arch}
+sitearchincludedir=${includedir}/${sitearch}
+ruby=${bindir}/${RUBY_INSTALL_NAME}
+rubylibprefix=${libdir}/${RUBY_BASE_NAME}
+rubyarchprefix=${rubylibprefix}/${arch}
+rubysitearchprefix=${rubylibprefix}/${sitearch}
+rubylibdir=${rubylibprefix}/${ruby_version}
+vendordir=${rubylibprefix}/vendor_ruby
+sitedir=${rubylibprefix}/site_ruby
+vendorlibdir=${vendordir}/${ruby_version}
+sitelibdir=${sitedir}/${ruby_version}
+rubyarchdir=${rubylibdir}/${arch}
+vendorarchdir=${vendorlibdir}/${sitearch}
+sitearchdir=${sitelibdir}/${sitearch}
+rubyhdrdir=${includedir}/${RUBY_VERSION_NAME}
+vendorhdrdir=${rubyhdrdir}/vendor_ruby
+sitehdrdir=${rubyhdrdir}/site_ruby
+rubyarchhdrdir=${rubyhdrdir}/${arch}
+vendorarchhdrdir=${vendorhdrdir}/${sitearch}
+sitearchhdrdir=${sitehdrdir}/${sitearch}
+LIBPATH=
+LIBRUBY_A=lib${RUBY_SO_NAME}-static.a
+LIBRUBY_SO=lib${RUBY_SO_NAME}.so.${MAJOR}.${MINOR}.${TEENY}
+LIBRUBY=${LIBRUBY_A}
+LIBRUBYARG_SHARED=
+LIBRUBYARG_STATIC=-l${RUBY_SO_NAME}-static -framework CoreFoundation
+LIBRUBYARG=${LIBRUBYARG_STATIC}
+LIBS=-lpthread -ldl -lobjc
+DLDFLAGS=-Wl,-undefined,dynamic_lookup -Wl,-multiply_defined,suppress
+
+Name: Ruby
+Description: Object Oriented Script Language
+Version: ${ruby_version}
+URL: http://www.ruby-lang.org
+Cflags: -I${rubyarchhdrdir} -I${rubyhdrdir}
+Libs: ${DLDFLAGS} ${LIBRUBYARG_SHARED} ${LIBS}
+Requires:
