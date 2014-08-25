@@ -6,16 +6,30 @@ class JUnitFormatter < YamlFormatter
   def initialize(out=nil)
     super
     @tests = []
+    @spec_path = ''
+  end
+
+  def register
+    super
+    MSpec.register :load, self
+  end
+
+  def load(state = nil)
+    spec_path, spec_file = File.split((MSpec.retrieve(:file)+'.rb').gsub(/^spec\//,''))
+    if (spec_path.empty? || spec_path.nil?) && spec_file =~ /(.*)_spec/i
+      spec_path = $1
+    end
+    @spec_path = encode_for_xml( spec_path.gsub('/','.') )
   end
 
   def after(state = nil)
     super
-    @tests << {:test => state, :exception => false} unless exception?
+    @tests << {:test => state, :spec => @spec_path, :exception => false} unless exception?
   end
 
   def exception(exception)
     super
-    @tests << {:test => exception, :exception => true}
+    @tests << {:test => exception, :spec => @spec_path, :exception => true}
   end
 
   def finish
@@ -47,13 +61,19 @@ class JUnitFormatter < YamlFormatter
     @tests.each do |h|
       description = encode_for_xml h[:test].description
 
+      spec_class = h[:spec]
+
+      if description =~ /^([^\s\.\|:]+)(#|\.|::)([^\s]+)/i
+        spec_class = $1
+      end     
+
 #RHO
 #      printf <<-XML, "Spec", description, 0.0
 #        <testcase classname="%s" name="%s" time="%f">
 #      XML
-	print <<-XML
-		<testcase classname="Spec" name="#{description}" time="0.0">
-	XML
+    print <<-XML
+      <testcase classname="#{spec_class}" name="#{description}" time="0.0">
+    XML
 #RHO
 	if h[:exception]
         outcome = h[:test].failure? ? "failure" : "error"

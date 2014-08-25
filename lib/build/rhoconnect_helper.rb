@@ -266,8 +266,9 @@ module RhoconnectHelper
 		args.each do |arg|
 			cmd = "#{cmd} #{arg}"
 		end
-
+		cmd = "bundle exec #{cmd}" if cmd =~ / start/
 		puts cmd
+
 		if workdir
 			Kernel.system(cmd,:chdir => workdir, :out => @@rc_out)
 		else

@@ -1,4 +1,4 @@
-entry: Init_Websocket_extension
+entry: Init_WebSocket_extension
 javaentry: com.websocket.Websocket
 libraries: ["Websocket"]
 android:

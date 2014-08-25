@@ -15,6 +15,35 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+There are two methods of enabling the Webview API: 
+
+* Include all ebapi modules or 
+* Include only the API modules you need 
+
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
+
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the Webview API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.webview.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
+
+        </MORE_HELP_EB>
 
         <ALIASES>
             <ALIAS new="WebView" deprecated="true"/>
@@ -36,20 +65,22 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             <PROPERTY name="enableZoom" type="BOOLEAN" default="true" readOnly="true">
                 <DESC>Enable WebView zoom. Use 'enable_screen_zoom' parameter in rhoconfig.txt to configure this value.</DESC>
+                <DESC_EB>Enable WebView zoom. Use 'enable_screen_zoom' parameter in Config.xml to configure this value.</DESC_EB>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true" readOnly="true">
                 <DESC>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in rhoconfig.txt to configure this value.</DESC>
+                <DESC_EB>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in Config.xml to configure this value.</DESC_EB>
                 <PLATFORM>WM, Android</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit on Windows Mobile/CE</APPLIES> 
             </PROPERTY>
             <PROPERTY name="enableWebPlugins" type="BOOLEAN" default="true" readOnly="true">
                 <DESC>Enable / disable web plug-ins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC>
+                <DESC_EB>Enable / disable web plug-ins. Use 'enable_web_plugins' parameter in Config.xml to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC_EB>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="navigationTimeout" type="INTEGER" default="45000">
-                <DESC>Can be defined in config.xml: Navigation\\NavTimeout. Number of milliseconds(maximum is 45000) before the browser times out and navigates to the page specified in the badlink setting. If it is determined that the destination is unreachable regardless of wait time, the badlink may be loaded before NAVTIMEOUT. This is the time taken to establish communication with the server, not the time taken to fully load the page.</DESC>
-                <MORE_HELP>Note that the navigation timeout will not be invoked when navigating to the start page, best practice is to store your first page locally to avoid connectivity issues at start up, you can then redirect to an online page if desired.</MORE_HELP>
+                <DESC>Can be defined in config.xml: Navigation\\NavTimeout. Number of milliseconds(maximum is 45000) before the browser times out and navigates to the page specified in the badlink setting. If it is determined that the destination is unreachable regardless of wait time, the badlink may be loaded before NAVTIMEOUT. This is the time taken to establish communication with the server, not the time taken to fully load the page.Note that the navigation timeout will not be invoked when navigating to the start page, best practice is to store your first page locally to avoid connectivity issues at start up, you can then redirect to an online page if desired.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
@@ -77,14 +108,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             <PROPERTY name="userAgent" type="STRING" readOnly="true">
                 <DESC>Defines in config.xml: Navigation\\UserAgent. When visiting a web server the WebKit browser will report its self as the specified user agent. Use the following substitution variables:
-                    %p - platform name ("Windows CE " + version number)
-                    %w - WebKit version number
-                    %e - MotorolaWebKit version number.
+
+* %p - platform name ("Windows CE " + version number)
+* %w - WebKit version number
+* %e - MotorolaWebKit version number.
+
+Use the UserAgent setting to spoof your device to the server, e.g. to view content designed for the desktop on your mobile screen.
+From RhoElements 2.1 onwards the default value was changed to work out of the box with a greater number of server configurations, prior to RhoElements 2.1 the default user agent was: "Mozilla/5.0 (%p) AppleWebKit/%w (KHTML, like Gecko) MotorolaWebKit/%e Safari/%w"
                 </DESC>
-                <MORE_HELP>
-                    Use the UserAgent setting to spoof your device to the server, e.g. to view content designed for the desktop on your mobile screen.
-                    From RhoElements 2.1 onwards the default value was changed to work out of the box with a greater number of server configurations, prior to RhoElements 2.1 the default user agent was: "Mozilla/5.0 (%p) AppleWebKit/%w (KHTML, like Gecko) MotorolaWebKit/%e Safari/%w"
-                </MORE_HELP>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
@@ -148,8 +179,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="navigate">
-                <DESC>Force WebView to navigate to a URL.</DESC>
-                <MORE_HELP>White page flickering during transition may happen if a controller action method doesn't return any rendered value, but instead performs a WebView.navigate(someUrl) call. It is important to avoid using WebView.navigate in Ruby action methods because WebView.navigate is intended to be used in callback methods asynchronously.</MORE_HELP>
+                <DESC>Force WebView to navigate to a URL. White page flickering during transition may happen if a controller action method doesn't return any rendered value, but instead performs a WebView.navigate(someUrl) call. It is important to avoid using WebView.navigate in Ruby action methods because WebView.navigate is intended to be used in callback methods asynchronously.</DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>Navigate to this url.</DESC>
@@ -177,9 +207,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="currentLocation">
-                <DESC>Returns the relative url (location) of the current page(without server and port); the last URL loaded to WebView from Ruby controller action.</DESC>
+                <DESC>Returns the relative url (location) of the current page(without server and port); the last URL loaded to WebView from Ruby controller action.
+
+If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</DESC>
                 <APPLIES rubyOnly="true"/>
-                <MORE_HELP>If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</MORE_HELP>
+                
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.Tab should be loaded once to return current url.</DESC>
@@ -209,9 +241,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="executeJavascript">
-                <DESC>Execute JavaScript on the current page from your controller.</DESC>
+                <DESC>Execute JavaScript on the current page from your controller.
+
+For most mobile platforms, WebView.execute_js has been implemented via redirection to URL with 'javascript:' schema. If WebView.execute_js used in an AJAX call handler method in the controller, it may lead to the situation where the success javascript handler will never be executed. This may happen because, at the moment of success handler should be executed, a URL of the page already has been changed. This means no handlers from the previous page are valid.</DESC>
                 <APPLIES rubyOnly="true"/>
-                <MORE_HELP>For most mobile platforms, WebView.execute_js has been implemented via redirection to URL with 'javascript:' schema. If WebView.execute_js used in an AJAX call handler method in the controller, it may lead to the situation where the success javascript handler will never be executed. This may happen because, at the moment of success handler should be executed, a URL of the page already has been changed. This means no handlers from the previous page are valid.</MORE_HELP>
+                
                 <PARAMS>
                     <PARAM name="javascriptText" type="STRING">
                         <DESC>The call to the JavaScript method on the current page, such as "test();".</DESC>
@@ -227,7 +261,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="active_tab" deprecated="true">
-                <DESC>Use Rho::NativeTabbar.currentTab property: returns the current tab index.</DESC>
+                <DESC>Use NativeTabbar.currentTab property: returns the current tab index.</DESC>
                 <RETURN type="INTEGER">
                 </RETURN>
             </METHOD>
@@ -280,7 +314,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
             <METHOD name="set_menu_items" deprecated="true" generateAPI="false">
                 <PLATFORM>WM,Android</PLATFORM>
-                <DESC>Use Rho::Application.nativeMenu property: set native menu items.</DESC>
+                <DESC>Use Application.nativeMenu property: set native menu items.</DESC>
                 <PARAMS>
                     <PARAM name="menuItems" type="HASH">
                         <DESC>Map of menu items: name to action.</DESC>

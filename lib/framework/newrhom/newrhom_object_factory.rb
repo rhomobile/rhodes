@@ -144,7 +144,7 @@ module Rhom
           self.new(objHash);
         end
 
-        def self._normalize_args_for_find(what, args_hash = {}, normalized_string_args, normalized_vector_args)
+        def self._normalize_args_for_find(what, args_hash, normalized_string_args, normalized_vector_args)
           # 1) Normalize LIMITS
           normalized_string_args.merge!(self.klass_model.buildFindLimits(what, args_hash))
 

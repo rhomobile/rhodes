@@ -26,6 +26,27 @@ namespace 'device' do
 
       FileUtils.cp( File.join($app_path,'build.yml'), target_path )
       
+      #save manifest changes
+      $ext_android_manifest_changes.each do |ext, manifest_changes|
+        addspath = File.join(target_path, 'extensions', ext, 'adds')
+        mkdir_p addspath
+        manifest_changes.each do |path|
+          if File.extname(path) == '.xml'
+            cp path, File.join(addspath, 'AndroidManifest.xml')
+          else
+            if File.extname(path) == '.rb'
+              cp path, File.join(addspath, 'AndroidManifest.rb')
+            else
+              if File.extname(path) == '.erb'
+                cp path, addspath
+              else
+                raise "Wrong AndroidManifest patch file: #{path}"
+              end
+            end
+          end
+        end
+      end
+      
     end
 
   module AndroidPrebuild
@@ -36,13 +57,19 @@ namespace 'device' do
     end
 
     def self.make_app_bundle
+      print_timestamp('AndroidPrebuild.make_app_bundle START')
       $use_prebuild_data = true
+      $skip_build_rhodes_main = true
+      $skip_build_extensions = true
+      $skip_build_xmls = true
+
       Rake::Task['build:android:rhobundle'].execute
+      print_timestamp('AndroidPrebuild.make_app_bundle FINISH')
       return $appassets
     end
 
-    def self.generate_manifest(prebuilt_config,app_config)
-
+    def self.generate_manifest(prebuilt_path,prebuilt_config,app_config)
+      print_timestamp('AndroidPrebuild.generate_manifest START')
       version = {'major' => 0, 'minor' => 0, 'patch' => 0, "build" => 0}
       if $app_config["version"]
         if $app_config["version"] =~ /^(\d+)$/
@@ -78,11 +105,6 @@ namespace 'device' do
         cap = [cap] unless cap.is_a? Array
 
         cap.each do |cap_item|
-          if cap_item.is_a? Proc
-            #caps_proc << cap_item
-            next
-          end
-
           if cap_item.is_a? String
             usesPermissions << "android.permission.#{cap_item}"
             next
@@ -106,6 +128,7 @@ namespace 'device' do
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
+      puts "Apply app's extensions manifest changes in generator..."
       Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', 'AndroidManifest.rb')).each do |extscript|
         puts "Evaluating #{extscript}"
         eval(File.new(extscript).read)
@@ -119,16 +142,64 @@ namespace 'device' do
         generator.applicationManifestAdds << exttemplate
       end
 
-      manifest = generator.render $rhomanifesterb
+      puts "Apply container's extensions manifest changes in generator..."
+      $app_config['extensions'].each { |ext|
+        addspath = File.join(prebuilt_path,'extensions',ext,'adds')
+        if (File.directory?(addspath))
+        
+            extscript = File.join(addspath,'AndroidManifest.rb')
+            if (File.file?(extscript))
+                puts "Evaluating #{extscript}"
+                eval(File.new(extscript).read)
+            end
 
+            Dir.glob(File.join(addspath, 'Manifest*.erb')).each do |exttemplate|
+                puts "Adding template #{exttemplate}"
+                generator.manifestManifestAdds << exttemplate
+            end
+
+            Dir.glob(File.join(addspath, 'Application*.erb')).each do |exttemplate|
+                puts "Adding template #{exttemplate}"
+                generator.applicationManifestAdds << exttemplate
+            end
+            
+
+        end
+        
+      }
+
+      manifest = generator.render $rhomanifesterb
       File.open($appmanifest, "w") { |f| f.write manifest }
 
+      ext_manifest_changes = []
 
+      puts "Collecting legacy manifest changes for container extensions..."
+      $app_config['extensions'].each { |ext|
+        extmanifest = File.join(prebuilt_path,'extensions',ext,'adds','AndroidManifest.xml')
+        if (File.file?(extmanifest))
+            ext_manifest_changes << extmanifest
+        end
+      }
+
+      puts "Collecting legacy manifest changes for app extensions..."
+      Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', 'AndroidManifest.xml')).each do |ext_manifest|
+        if File.file? ext_manifest
+            ext_manifest_changes << ext_manifest
+        end
+      end
+
+      puts "Applying legacy manifest changes..."
+      apply_manifest_ext_changes($appmanifest,ext_manifest_changes)
+      print_timestamp('AndroidPrebuild.generate_manifest FINISH')
+      return $appmanifest
+    end
+
+    def self.apply_manifest_ext_changes(target_manifest, manifest_changes)
       #######################################################
       # Deprecated staff below
+      print_timestamp('AndroidPrebuild.apply_manifest_ext_changes START')
 
-
-      app_f = File.new($appmanifest)
+      app_f = File.new(target_manifest)
       manifest_orig_doc = REXML::Document.new(app_f)
       app_f.close
       dst_manifest = manifest_orig_doc.elements["manifest"]
@@ -143,7 +214,7 @@ namespace 'device' do
         end
       end
 
-      Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', 'AndroidManifest.xml')).each do |ext_manifest|
+      manifest_changes.each do |ext_manifest|
 
         if File.exists? ext_manifest
           puts 'AndroidManifest.xml['+ext_manifest+'] from native extension found !'
@@ -193,19 +264,17 @@ namespace 'device' do
       end
 
       puts 'delete original manifest'
-      File.delete($appmanifest)
+      File.delete(target_manifest)
 
-      updated_f = File.open($appmanifest, "w")
+      updated_f = File.open(target_manifest, "w")
       manifest_orig_doc.write updated_f, 2
       updated_f.close
-
-      #rm tappmanifest
+      print_timestamp('AndroidPrebuild.apply_manifest_ext_changes FINISH')
       puts 'Manifest updated by extension is saved!'
-
-      return $appmanifest
     end
 
     def self.build_resources(prebuilt_builddir)
+      print_timestamp('AndroidPrebuild.build_resources START')
       set_app_name_android($appname)
 
       puts 'EXT:  add additional files to project before build'
@@ -242,6 +311,7 @@ namespace 'device' do
         cp_r lib, File.join($applibs,arch,file)
       end
 =end
+      print_timestamp('AndroidPrebuild.build_resources FINISH')
       return $appres
     end
 
@@ -266,10 +336,11 @@ namespace 'device' do
     end
 
     def self.make_package(manifest_path, resources_path, assets_path, underscore_files, native_libs_path, classes_dex, output_path)
-
+      print_timestamp('AndroidPrebuild.make_package START')
       resourcepkg = $bindir + "/rhodes.ap_"
 
       puts "Packaging Assets and Jars"
+      print_timestamp('Packaging Assets and Jars START')
 
       args = ["package", "-f", "-M", manifest_path, "-S", resources_path, "-A", assets_path, "-I", $androidjar, "-F", resourcepkg]
       if $no_compression
@@ -283,8 +354,10 @@ namespace 'device' do
       unless $?.success?
         raise "Error running AAPT (1)"
       end
+      print_timestamp('Packaging Assets and Jars FINISH')
 
       # Workaround: manually add files starting with '_' because aapt silently ignore such files when creating package
+      print_timestamp('Packaging underscore START')
       underscore_files.each do |relpath|
         puts "Add #{relpath} to #{resourcepkg}..."
         args = ["uf", resourcepkg, relpath]
@@ -293,26 +366,43 @@ namespace 'device' do
           raise "Error packaging assets"
         end
       end
+      print_timestamp('Packaging underscore FINISH')
 
       puts "Packaging Native Libs"
 
+      print_timestamp('Packaging Native Libs START')
+
       args = ["uf", resourcepkg]
+
+      abis = $abis
+
+      #replace 'arm' to 'armeabi'
+      abis.map! { |abi| abi == 'arm' ? 'armeabi' : abi }
+
       Dir.glob(File.join(native_libs_path,'**','lib*.so')) do |lib|
         arch = File.basename(File.dirname(lib))
-        args << "lib/#{arch}/#{File.basename(lib)}"
+        args << "lib/#{arch}/#{File.basename(lib)}" if abis.include?(arch)
+        abis.delete(arch)
       end
+
+      puts "WARNING: Requested ABIs not found in container: #{abis}" unless abis.empty?
+
       Jake.run($jarbin, args, native_libs_path)
       unless $?.success?
         raise "Error packaging native libraries"
       end
-
+      print_timestamp('Packaging Native Libs FINISH')
       dexfile = classes_dex
       simple_apkfile = $targetdir + "/" + $appname + "_tmp.apk"
       final_apkfile = output_path
       signed_apkfile = $targetdir + "/" + $appname + "_tmp_signed.apk"
       resourcepkg = $bindir + "/rhodes.ap_"
 
+
+      print_timestamp('build APK START')
       apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, false
+
+      print_timestamp('build APK FINISH')
 
       if not File.exists? $keystore
         puts "Generating private keystore..."
@@ -339,6 +429,7 @@ namespace 'device' do
         end
       end
 
+      print_timestamp('Signing APK file START')
       puts "Signing APK file"
       args = []
       args << "-sigalg"
@@ -360,7 +451,11 @@ namespace 'device' do
         exit 1
       end
 
+      print_timestamp('Signing APK file FINISH')
+
       puts "Align APK file"
+
+      print_timestamp('Align APK file START')
       args = []
       args << "-f"
       args << "-v"
@@ -372,6 +467,7 @@ namespace 'device' do
         puts "Error running zipalign"
         exit 1
       end
+      print_timestamp('Align APK file FINISH')
       #remove temporary files
       rm_rf simple_apkfile
       rm_rf signed_apkfile
@@ -379,16 +475,25 @@ namespace 'device' do
       File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
         f.puts $app_package_name
       end
-
+      print_timestamp('AndroidPrebuild.make_package FINISH')
     end
 
     def self.merge_assets( prebuilt_assets, app_assets )
+        print_timestamp('AndroidPrebuild.merge_assets START')
         target_assets = app_assets + '_merged'
         
         FileUtils.mkdir_p( target_assets )
         
         cp_r( File.join(prebuilt_assets,'.'), target_assets, { :verbose => true } )
         cp_r( File.join(app_assets,'.'), target_assets, { :verbose => true } )
+
+        target_public_api = File.join(target_assets,'apps','public','api')
+        FileUtils.mkdir_p( target_public_api )
+        cp_r( File.join(prebuilt_assets,'apps','public','api','.'), target_public_api, { :verbose => true } )
+
+        target_db = File.join( target_assets, 'db' )
+        FileUtils.mkdir_p( target_db )
+        cp_r( File.join(prebuilt_assets,'db','.'), target_db, { :verbose => true } )
 
         hash = nil
         ["apps", "db", "lib"].each do |d|
@@ -404,11 +509,12 @@ namespace 'device' do
 
         File.open(File.join(target_assets, "hash"), "w") { |f| f.write(hash.hexdigest) }
         File.open(File.join(target_assets, "name"), "w") { |f| f.write($appname) }
-
+        print_timestamp('AndroidPrebuild.merge_assets FINISH')
         return target_assets
     end
 
     def self.merge_resources( prebuilt_res, app_res )
+        print_timestamp('AndroidPrebuild.merge_resources START')
         target_res = app_res + '_merged'
         
         FileUtils.mkdir_p( target_res )
@@ -431,11 +537,12 @@ namespace 'device' do
         end
 
         #cp_r( File.join(app_res,'.'), target_res, { :verbose => true } )
-
+        print_timestamp('AndroidPrebuild.merge_resources FINISH')
         return target_res
     end
 
     def self.production_with_prebuild_binary
+      print_timestamp('AndroidPrebuild.production_with_prebuild_binary START')
       Rake::Task['config:android'].invoke
 
       prebuilt_path = determine_prebuild_path($app_config)
@@ -444,7 +551,7 @@ namespace 'device' do
 
       prebuilt_config = Jake.config(File.open(File.join(prebuilt_path, 'build.yml')))
 
-      manifest_path = generate_manifest(prebuilt_config,$app_config)
+      manifest_path = generate_manifest(prebuilt_path,prebuilt_config,$app_config)
 
       prebuilt_builddir = File.join(bundle_path,'bin','target','android',$confdir)
       resources_path = build_resources(prebuilt_builddir)
@@ -462,6 +569,7 @@ namespace 'device' do
 
       classes_dex = File.join(prebuilt_path,'classes.dex')
       make_package(manifest_path,resources_path,assets_path,underscore_files,native_libs_path, classes_dex, output_path)
+      print_timestamp('AndroidPrebuild.production_with_prebuild_binary FINISH')
     end
 
   end

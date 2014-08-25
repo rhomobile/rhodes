@@ -14,6 +14,35 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+There are two methods of enabling the Notification API: 
+
+* Include all ebapi modules or 
+* Include only the API modules you need 
+
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
+
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the Notification API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.notification.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
+
+        </MORE_HELP_EB>
         <PLATFORM>iOS, Android, WM</PLATFORM>
         <TEMPLATES>
         </TEMPLATES>
@@ -34,25 +63,34 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 <DESC>Title of the popup window.</DESC>
                             </PARAM>
                             <PARAM name="icon" type="String" default="">
-                                <DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon.</DESC>
-                                <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only predefined icons are supported.</MORE_HELP>
+                                <DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon. On Windows Mobile/CE, Windows and RhoSimulators only predefined icons are supported.</DESC>
+                                <DESC_EB>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon. On Windows Mobile/CE only predefined icons are supported.</DESC_EB>
                                 <PLATFORM>Android</PLATFORM>
                             </PARAM>
                             <PARAM name="buttons" type="Array" default="">
                                 <DESC>Array of buttons. Specify each button either by hash with :id and :title keys or string.When using strings, the `id` and `title` will have the same value.
 For example: 
+
     :::javascript
     buttonHash = [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}];
     buttonString = ['Yes', 'No'];
 
-NOTE: For Android, if TYPE_NOTIFICATION_DIALOG is used, every button in the notification uses an icon. By default a star icon is used. If the button id is 'accept' then the system accept icon is used. If the button id is 'cancel' then the system cancel icon is used.
+>NOTE: For Android, if TYPE_NOTIFICATION_DIALOG is used, every button in the notification uses an icon. By default a star icon is used. If the button id is 'accept' then the system accept icon is used. If the button id is 'cancel' then the system cancel icon is used.
 </DESC>
                             </PARAM>
                             <PARAM name="types" type="Array">
                                 <DESC>List which notification kinds will be shown. Several types may be listed at same time. `TYPE_NOTIFICATION` and `TYPE_NOTIFICATION_DIALOG` take no effect if application is in the foreground. By default `[Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_NOTIFICATION]` is used.
 Example:
+
     :::javascript
     typeToast = [Rho.Notification.TYPE_DIALOG, Rho.Notification.TYPE_TOAST];</DESC>
+<DESC>List which notification kinds will be shown. Several types may be listed at same time. `TYPE_NOTIFICATION` and `TYPE_NOTIFICATION_DIALOG` take no effect if application is in the foreground. By default `[EB.Notification.TYPE_DIALOG, Rho.Notification.TYPE_NOTIFICATION]` is used.
+
+Example:
+
+    :::javascript
+    typeToast = [EB.Notification.TYPE_DIALOG, Rho.Notification.TYPE_TOAST];
+</DESC>    
                                 <PLATFORMS>Android</PLATFORMS>
                                 <VALUES>
                                   <VALUE constName="TYPE_DIALOG" value="dialog">
@@ -63,7 +101,8 @@ Example:
                                   </VALUE>  
                                   <VALUE constName="TYPE_NOTIFICATION_DIALOG" value="notificationDialog">
                                     <DESC>This is the same as `TYPE_DIALOG` + `TYPE_NOTIFICATION`. 
-NOTE: In Android 4.1 and above, buttons are also added to the notification message so the user can interact with the application without application activation (dialog window is not shown if user pressed button in notification). Buttons are not always displayed in the notification area - this depends on screen size and layout and system decides whether to show buttons. You need to drag notification to make buttons appear.</DESC>
+
+>NOTE: In Android 4.1 and above, buttons are also added to the notification message so the user can interact with the application without application activation (dialog window is not shown if user pressed button in notification). Buttons are not always displayed in the notification area - this depends on screen size and layout and system decides whether to show buttons. You need to drag notification to make buttons appear.</DESC>
                                   </VALUE>  
                                   <VALUE constName="TYPE_TOAST" value="toast">
                                     <DESC>Show toast window with message at foreground for a short time. The toast is visible nevertheless the application is at background or foreground but is not shown same time with any foreground pop-up.</DESC>
@@ -90,8 +129,8 @@ NOTE: In Android 4.1 and above, buttons are also added to the notification messa
             </METHOD>
         
             <METHOD name="hidePopup" access="STATIC" hasCallback="none">
-                <DESC>Closes the current popup window.</DESC>
-                <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</MORE_HELP>
+                <DESC>Closes the current popup window. On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</DESC>
+                <DESC_EB>Closes the current popup window. On Windows Mobile/CE only Status window, displayed by showStatus can be hide.</DESC_EB>
                 <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
             </METHOD>
         
@@ -107,9 +146,9 @@ NOTE: In Android 4.1 and above, buttons are also added to the notification messa
                         <DESC>The status message displayed in the popup status window.</DESC>
                     </PARAM>
                     <PARAM name="hide_button_label" type="STRING">
-                        <DESC>The label text for the hide button in the popup status window.</DESC>
+                        <DESC>The label text for the hide button in the popup status window. On Windows Mobile/CE, Windows and RhoSimulators Windows Close icon used to hide the status window.</DESC>
+                        <DESC_EB>The label text for the hide button in the popup status window. On Windows Mobile/CE Close icon used to hide the status window.</DESC_EB>
                         <PLATFORM>iOS, Android, WP8</PLATFORM>
-                        <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators Windows Close icon used to hide the status window.</MORE_HELP>
                     </PARAM>
                 </PARAMS>
             </METHOD>

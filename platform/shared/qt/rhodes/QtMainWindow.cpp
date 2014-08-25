@@ -167,10 +167,15 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     webInspectorWindow->show();
 #endif
 
-    setProxy(QString::fromStdString(RHOCONF().getString("http_proxy_host")),
-             QString::fromStdString(RHOCONF().getString("http_proxy_port")),
-             QString::fromStdString(RHOCONF().getString("http_proxy_login")),
-             QString::fromStdString(RHOCONF().getString("http_proxy_password")));
+    if (RHOCONF().isExist("http_proxy_host"))
+    {
+        setProxy(QString::fromStdString(RHOCONF().getString("http_proxy_host")),
+                 QString::fromStdString(RHOCONF().getString("http_proxy_port")),
+                 QString::fromStdString(RHOCONF().getString("http_proxy_login")),
+                 QString::fromStdString(RHOCONF().getString("http_proxy_password")));
+    } else {
+        unsetProxy();
+    }
 }
 
 QtMainWindow::~QtMainWindow()
