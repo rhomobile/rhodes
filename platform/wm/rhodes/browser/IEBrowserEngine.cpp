@@ -262,7 +262,7 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-		if (msg.message != WM_PAINT && RHODESAPP().getExtManager().onWndMsg(msg) )
+		if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 
 		IDispatch* pDisp;

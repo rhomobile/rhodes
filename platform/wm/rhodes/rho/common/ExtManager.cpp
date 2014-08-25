@@ -238,7 +238,7 @@ void CExtManager::executeJavascript(const wchar_t* szJSFunction)
     nd->index = rho_webview_active_tab();
 #ifndef RHODES_QT_PLATFORM
     nd->url = _tcsdup(szJSFunction);
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
+    ::SendMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
 #else
     nd->url = wcsdup(szJSFunction);
     CMainWindow::getInstance()->executeJavaScriptCommand(nd);
