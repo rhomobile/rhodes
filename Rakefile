@@ -674,10 +674,18 @@ namespace "token" do
     end
 
     if $user_acc.is_valid_token?()
-      force_re_app_check = ($re_app || to_boolean(args[:force_re_app_check]))
+      force_re_app_check_level = 0
+
+      if $re_app
+        force_re_app_check_level = 1
+      end
+
+      if to_boolean(args[:force_re_app_check])
+        force_re_app_check_level = 3
+      end
 
       # check existing API token
-      case check_update_token_file($server_list, $user_acc, $rhodes_home, force_re_app_check ? 1 : 0 )
+      case check_update_token_file($server_list, $user_acc, $rhodes_home, force_re_app_check_level )
       when 2
         #BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
       when 1
@@ -709,7 +717,11 @@ namespace "token" do
   end
 
   desc "Show token and user subscription information"
-  task :info => [:read] do
+  task :info => [:initialize] do
+
+    Rake::Task['token:read'].reenable()
+    Rake::Task['token:read'].invoke(true)
+
     puts "Login complete: " + from_boolean($user_acc.is_valid_token?())
     if $user_acc.is_valid_token?()
       token_remaining = $user_acc.remaining_time()
@@ -1678,6 +1690,9 @@ namespace 'cloud' do
   desc 'Check current remote build status'
   task :info => ['token:setup'] do
     status = nil
+
+    Rake::Task['token:read'].reenable()
+    Rake::Task['token:read'].invoke(true)
 
     rhohub_make_request($user_acc.server) do
       status = JSON.parse(Rhohub::Build.user_status())
