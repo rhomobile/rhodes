@@ -2000,6 +2000,12 @@ namespace 'cloud' do
         build_enabled = status["cloud_build_enabled"]== true
         remaining_builds = status["builds_remaining"]
 
+        # account status is out of sync, re get it
+        if !build_enabled && ($user_acc.subscription_level > 0)
+          Rake::Task['token:read'].reenable()
+          Rake::Task['token:read'].invoke(true)
+        end
+
         if build_enabled
           if remaining_builds > 0
             BuildOutput.note(
