@@ -1,7 +1,12 @@
+#Set $LISTEN_GEM_DEBUGGING to 1 or 2 for debugging
+#More information on https://github.com/guard/listen
+#
+#$LISTEN_GEM_DEBUGGING = 2
+
 require 'pathname'
 require 'listen'
 
-$LISTEN_GEM_DEBUGGING = 2
+
 
 class RhoDevice
   def initialize(anUri, aString)
@@ -24,15 +29,10 @@ class RhoDevice
   def platform
     @platform
   end
-
 end
 
 class RhoWatcher
   def initialize
-
-    Thread.abort_on_exception = true
-
-
     @devices = Array.new
     @listeners = Array.new
     @serverRoot = Dir.mktmpdir
@@ -159,7 +159,6 @@ class RhoWatcher
   end
 
   def stop
-    #@listeners.each { |each| each.stop }
     @webServer.shutdown
   end
 
