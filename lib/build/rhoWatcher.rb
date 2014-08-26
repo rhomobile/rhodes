@@ -28,7 +28,6 @@ end
 class RhoWatcher
   def initialize
     @devices = Array.new
-    @directories = Array.new
     @listeners = Array.new
     @serverRoot = Dir.mktmpdir
   end
@@ -41,7 +40,6 @@ class RhoWatcher
     listener = Listen.to(aString) do |modified, added, removed|
       self.onFileChanged(added, modified, removed)
     end
-    @directories << aString
     @listeners << listener
   end
 
@@ -123,7 +121,7 @@ class RhoWatcher
   def sendNotificationsToDevices
     puts "Send notifications to devices..."
     @devices.each { |each|
-      uri = URI("http://#{each.uri}/system/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/#{each.platform}/#{self.downloadedBundleName}")
+      uri = URI("http://#{each.uri}/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/#{each.platform}/#{self.downloadedBundleName}")
       puts "Send to #{uri}"
       Net::HTTP.get_response(uri)
     }
