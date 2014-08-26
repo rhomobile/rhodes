@@ -26,9 +26,7 @@
 #------------------------------------------------------------------------
 
 require 'pathname'
-require 'yaml'
 require 'socket'
-require 'webrick'
 
 
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
@@ -63,6 +61,8 @@ end
 class Jake
 
   def self.config(configfile)
+    require 'yaml'
+
     conf = YAML::load(configfile)
     res = self.config_parse(conf)
     res
@@ -152,6 +152,8 @@ class Jake
   end
 
   def self.run_local_server(port = 0)
+    require 'webrick'
+
     addr = localip                   #:BindAddress => addr,
     server = WEBrick::HTTPServer.new :Port => port
     port = server.config[:Port]
@@ -161,6 +163,8 @@ class Jake
   end
 
   def self.run_local_server_with_logger(port, log_file)
+    require 'webrick'
+
     addr = localip
     log = WEBrick::Log.new log_file
     access_log = [[log_file, WEBrick::AccessLog::COMBINED_LOG_FORMAT]]
@@ -446,6 +450,8 @@ class Jake
 
   def self.edit_yml(file, out_file = nil)
     out_file = file if out_file.nil?
+
+    require 'yaml'
 
     yml = YAML::load_file(file)
     yield yml
