@@ -1,6 +1,8 @@
 require 'pathname'
 require 'listen'
 
+$LISTEN_GEM_DEBUGGING = 2
+
 class RhoDevice
   def initialize(anUri, aString)
     @uri = anUri
@@ -27,6 +29,10 @@ end
 
 class RhoWatcher
   def initialize
+
+    Thread.abort_on_exception = true
+
+
     @devices = Array.new
     @listeners = Array.new
     @serverRoot = Dir.mktmpdir
@@ -87,6 +93,7 @@ class RhoWatcher
     self.createDiffFiles(addedFiles, changedFiles, removedFiles)
     self.createBundles
     self.sendNotificationsToDevices
+    puts "All devices have been notified"
   end
 
   def relativePath(aString)
@@ -108,6 +115,7 @@ class RhoWatcher
 
   def createBundles
     puts "Build bundles..."
+    #TODO Platform can occur more than once. It need build only once for each platform
     @devices.each { |each|
       taskName = "build:#{each.platform}:upgrade_package_partial"
       Rake::Task[taskName].invoke
@@ -119,18 +127,29 @@ class RhoWatcher
   end
 
   def sendNotificationsToDevices
-    puts "Send notifications to devices..."
+    puts "Start sending notifications to devices..."
     @devices.each { |each|
-      uri = URI("http://#{each.uri}/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/#{each.platform}/#{self.downloadedBundleName}")
-      puts "Send to #{uri}"
-      Net::HTTP.get_response(uri)
+      url = URI("http://#{each.uri}/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/#{each.platform}/#{self.downloadedBundleName}")
+      puts "Send to #{url}"
+      begin
+        http = Net::HTTP.new(url.host, url.port)
+        http.open_timeout = 5
+        http.start() { |http|
+          http.get(url.path)
+        }
+      rescue  Errno::ECONNREFUSED,
+              Net::OpenTimeout  => e
+        #TODO may be it is necessary remove device from list?
+        puts "device #{each.uri} is not accessible"
+      end
     }
+    puts "Finish sending notifications to devices..."
   end
 
   def run
     self.startWebServer
     puts "Start listeners..."
-    @listeners.each {|each| each.start}
+    @listeners.each { |each| each.start }
 
     trap 'INT' do
       self.stop
@@ -140,7 +159,7 @@ class RhoWatcher
   end
 
   def stop
-    @listeners.each {|each| each.stop}
+    #@listeners.each { |each| each.stop }
     @webServer.shutdown
   end
 
