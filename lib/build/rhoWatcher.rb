@@ -29,6 +29,7 @@ class RhoWatcher
   def initialize
     @devices = Array.new
     @directories = Array.new
+    @listeners = Array.new
     @serverRoot = Dir.mktmpdir
   end
 
@@ -37,7 +38,11 @@ class RhoWatcher
   end
 
   def addDirectory(aString)
+    listener = Listen.to(aString) do |modified, added, removed|
+      self.onFileChanged(added, modified, removed)
+    end
     @directories << aString
+    @listeners << listener
   end
 
   def serverUri=(uri)
@@ -124,14 +129,10 @@ class RhoWatcher
     }
   end
 
-
   def run
     self.startWebServer
-    puts "Create listener..."
-    @listener = Listen.to("/Users/mva/projects/rho/samples/test/public", "/Users/mva/projects/rho/samples/test/app") do |modified, added, removed|
-      self.onFileChanged(added, modified, removed)
-    end
-    @listener.start
+    puts "Start listeners..."
+    @listeners.each {|each| each.start}
 
     trap 'INT' do
       self.stop
@@ -141,7 +142,7 @@ class RhoWatcher
   end
 
   def stop
-    @listener.stop
+    @listeners.each {|each| each.stop}
     @webServer.shutdown
   end
 
