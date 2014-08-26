@@ -24,6 +24,12 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require File.join(File.dirname(__FILE__), 'lib/build/required_time.rb')
+
+# RequiredTime.hook()
+
+$task_execution_time = false
+
 require 'find'
 require 'erb'
 
@@ -4664,8 +4670,25 @@ namespace :run do
   end
 end
 
+$running_time = []
+
+module Rake
+  class Task
+    alias :old_invoke :invoke
+    def invoke(*args)
+      start_time = Time.now
+      old_invoke(*args)
+      end_time = Time.now
+      $running_time << [@name, ((end_time.to_f - start_time.to_f)*1000).to_i]
+    end
+  end
+end
+
 #------------------------------------------------------------------------
 
 at_exit do
+  BuildOutput.note(RequiredTime.generate_benchmark_report,"Reqire loading time") if RequiredTime.hooked?
+  BuildOutput.note($running_time.map {|task| "Task '#{task[0]}' - #{task[1]} ms" }, "Task exicution time") if $task_execution_time
+
   print BuildOutput.getLogText
 end
