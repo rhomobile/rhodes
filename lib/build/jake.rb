@@ -466,6 +466,15 @@ class Jake
     File.open(out_file, 'w') {|f| f << doc}
   end
 
+  def self.edit_lines(file, out_file = nil)
+    out_file = file if out_file.nil?
+
+    lines = File.readlines(file)
+    File.open(out_file, 'w') do |f|
+      lines.each { |line| f.puts(yield line) }
+    end
+  end
+
   def self.clean_vsprops(file)
     changed = false
     edit_xml(file) do |doc|
