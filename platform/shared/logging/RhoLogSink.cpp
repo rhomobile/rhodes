@@ -202,8 +202,12 @@ void CLogSocketSink::processCommand(IQueueCommand* pCmd)
     LogCommand *cmd = (LogCommand *)pCmd;
     if (!cmd)
         return;
-	
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+
+	getNet().doRequest( "GET", cmd->m_url+"?LogSeverity="+cmd->m_body[0]+"&LogComment="+cmd->m_body, String(), 0, 0 );
+#else
 	getNet().doRequest( "POST", cmd->m_url, cmd->m_body, 0, 0 );
+#endif
 }
         
 }
