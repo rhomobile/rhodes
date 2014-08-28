@@ -1,12 +1,10 @@
 #Set $LISTEN_GEM_DEBUGGING to 1 or 2 for debugging
 #More information on https://github.com/guard/listen
 #
-#$LISTEN_GEM_DEBUGGING = 2
+$LISTEN_GEM_DEBUGGING = 1
 
 require 'pathname'
 require 'listen'
-
-
 
 class RhoDevice
   def initialize(anUri, aString)
@@ -29,6 +27,10 @@ class RhoDevice
   def platform
     @platform
   end
+
+  def buildTask
+    "build:#{@platform}:upgrade_package_partial"
+  end
 end
 
 class RhoWatcher
@@ -49,16 +51,12 @@ class RhoWatcher
     @listeners << listener
   end
 
-  def serverUri=(uri)
-    @serverUri = uri
+  def serverUri=(anUri)
+    @serverUri = anUri
   end
 
   def serverUri
     @serverUri
-  end
-
-  def serverRoot=(aString)
-    @serverRoot = aString
   end
 
   def serverRoot
@@ -74,26 +72,30 @@ class RhoWatcher
   end
 
   def downloadedBundleName
-    "bundle.zip"
+    'bundle.zip'
   end
 
-  def startWebServer
-    puts "Create web server..."
-    @webServer = WEBrick::HTTPServer.new :BindAddress => @serverUri.host, :Port => @serverUri.port, :DocumentRoot => @serverRoot
-    @webServer.mount @serverRoot, WEBrick::HTTPServlet::FileHandler, './'
-
-    @webServerThread = Thread.new do
-      puts "Starting web server..."
-      @webServer.start
-    end
+  def writeUpdatedListFile(addedFiles, changedFiles)
+    self.writeArrayToFile('upgrade_package_add_files.txt', addedFiles + changedFiles)
   end
+
+  def writeRemovedListFile(removedFiles)
+    self.writeArrayToFile('upgrade_package_remove_files.txt', removedFiles)
+  end
+
+  def writeArrayToFile(filename, anArray)
+    File.open(File.join(@applicationRoot, filename), 'w') { |file|
+      anArray.each { |each| file.puts(self.relativePath(each)) }
+    }
+  end
+
 
   def onFileChanged(addedFiles, changedFiles, removedFiles)
-    puts "On file changed..."
+    puts 'Files changed...'
     self.createDiffFiles(addedFiles, changedFiles, removedFiles)
     self.createBundles
     self.sendNotificationsToDevices
-    puts "All devices have been notified"
+    puts 'All devices have been notified'
   end
 
   def relativePath(aString)
@@ -102,24 +104,23 @@ class RhoWatcher
     second.relative_path_from first
   end
 
+
+
   def createDiffFiles(addedFiles, changedFiles, removedFiles)
-    puts "Create diff files..."
-    File.open(@applicationRoot + "/upgrade_package_add_files.txt", "w") { |file|
-      addedFiles.each { |each| file.puts(self.relativePath(each)) }
-      changedFiles.each { |each| file.puts(self.relativePath(each)) }
-    }
-    File.open(@applicationRoot + "/upgrade_package_remove_files.txt", "w") { |file|
-      removedFiles.each { |each| file.puts(self.relativePath(each)) }
-    }
+    puts 'Create diff files...'
+    self.writeUpdatedListFile(addedFiles, changedFiles)
+    self.writeRemovedListFile(removedFiles)
   end
 
+
+
+
   def createBundles
-    puts "Build bundles..."
+    puts "Building..."
     #TODO Platform can occur more than once. It need build only once for each platform
     @devices.each { |each|
-      taskName = "build:#{each.platform}:upgrade_package_partial"
-      Rake::Task[taskName].invoke
-      from = File.join($targetdir, "/upgrade_bundle_partial.zip")
+      Rake::Task[each.buildTask].invoke
+      from = File.join($targetdir, "upgrade_bundle_partial.zip")
       to = File.join(@serverRoot, each.platform, self.downloadedBundleName)
       FileUtils.mkpath(File.dirname(to))
       FileUtils.cp(from, to)
@@ -127,8 +128,8 @@ class RhoWatcher
   end
 
   def sendNotificationsToDevices
-    puts "Start sending notifications to devices..."
     @devices.each { |each|
+      #TODO Create method urlForUpdate in RhoDevice with "http://#{each.uri}/development/update_bundle" ?
       url = URI("http://#{each.uri}/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/#{each.platform}/#{self.downloadedBundleName}")
       puts "Send to #{url}"
       begin
@@ -143,23 +144,25 @@ class RhoWatcher
         puts "device #{each.uri} is not accessible"
       end
     }
-    puts "Finish sending notifications to devices..."
   end
 
   def run
-    self.startWebServer
-    puts "Start listeners..."
+    webServer = WEBrick::HTTPServer.new :BindAddress => @serverUri.host, :Port => @serverUri.port, :DocumentRoot => @serverRoot
+    webServer.mount @serverRoot, WEBrick::HTTPServlet::FileHandler, './'
+
+    webServerThread = Thread.new do
+      webServer.start
+    end
+    puts 'Web server started'
     @listeners.each { |each| each.start }
+    puts 'File system listeners started'
 
     trap 'INT' do
-      self.stop
+      webServer.shutdown
     end
 
-    @webServerThread.join
+    webServerThread.join
   end
 
-  def stop
-    @webServer.shutdown
-  end
 
 end
