@@ -24,6 +24,12 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require File.join(File.dirname(__FILE__), 'lib/build/required_time.rb')
+
+# RequiredTime.hook()
+
+$task_execution_time = false
+
 require 'find'
 require 'erb'
 
@@ -3510,6 +3516,41 @@ end
 #------------------------------------------------------------------------
 
 namespace "build" do
+  task :set_version, :version, :do_not_save_version do |t, args|
+    version = args[:version]
+    save_version = args[:do_not_save_version] != 'do_not_save_version'
+
+    rhodes_dir = File.dirname(__FILE__)
+
+    File.open(File.join(rhodes_dir, 'version'), 'wb') { |f| f.write(version) } if save_version
+
+    ar_ver = []
+    version.split('.').each do |token|
+      digits = /[0-9]+/.match(token)
+      digits = '0' unless digits
+      ar_ver << digits
+    end
+    ar_ver << '0' while ar_ver.length < 5
+
+    File.open(File.join(rhodes_dir, 'version'), 'wb') { |f| f.write(version) } if save_version
+
+    Jake.edit_lines(File.join(rhodes_dir, 'platform/wm/rhodes/Rhodes.rc')) do |line|
+      case line
+      # FILEVERSION 2,0,0,5
+      # PRODUCTVERSION 2,0,0,5
+      when /^(\s*(?:FILEVERSION|PRODUCTVERSION)\s+)\d+,\d+,\d+,\d+\s*$/
+        "#{$1}#{ar_ver[0, 4].join(',')}"
+      # VALUE "FileVersion", "2, 0, 0, 5"
+      # VALUE "ProductVersion", "2, 0, 0, 5"
+      when /^(\s*VALUE\s+"(?:FileVersion|ProductVersion)",\s*)"\d+,\s*\d+,\s*\d+,\s*\d+"\s*$/
+        "#{$1}\"#{ar_ver[0, 4].join(', ')}\""
+      else
+        line
+      end
+    end
+
+  end
+
   namespace "bundle" do
 
     task :prepare_native_generated_files do
@@ -4664,8 +4705,25 @@ namespace :run do
   end
 end
 
+$running_time = []
+
+module Rake
+  class Task
+    alias :old_invoke :invoke
+    def invoke(*args)
+      start_time = Time.now
+      old_invoke(*args)
+      end_time = Time.now
+      $running_time << [@name, ((end_time.to_f - start_time.to_f)*1000).to_i]
+    end
+  end
+end
+
 #------------------------------------------------------------------------
 
 at_exit do
+  BuildOutput.note(RequiredTime.generate_benchmark_report,"Reqire loading time") if RequiredTime.hooked?
+  BuildOutput.note($running_time.map {|task| "Task '#{task[0]}' - #{task[1]} ms" }, "Task exicution time") if $task_execution_time
+
   print BuildOutput.getLogText
 end
