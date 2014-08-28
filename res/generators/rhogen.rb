@@ -1,13 +1,12 @@
 require 'rubygems'
 require 'templater'
 require 'thread'
-#TODO: This is temporary, see https://www.pivotaltracker.com/story/show/3399292
-gem 'activesupport', '~> 2.3.5'
-require 'active_support'
 require 'uuid'
 require 'yaml'
 require 'rexml/document'
 require 'fileutils'
+require File.join(File.dirname(__FILE__), '/../../lib/build/ExtendedString.rb')
+
 require File.join(File.dirname(__FILE__), '/../../lib/build/jake.rb')
 require File.join(File.dirname(__FILE__), 'rhogen_core.rb')
 
@@ -41,41 +40,6 @@ class Array
   end
 end
 
-class String
-  def capitalize_first
-    self.slice(0, 1).capitalize + self.slice(1..-1)
-  end
-
-  def underscore
-    self.gsub(/::/, '/').
-        gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-        gsub(/([a-z\d])([A-Z])/,'\1_\2').
-        tr('- ', '_').
-        downcase
-  end
-
-  def black;          "\033[30m#{self}\033[0m" end
-  def red;            "\033[31m#{self}\033[0m" end
-  def green;          "\033[32m#{self}\033[0m" end
-  def brown;          "\033[33m#{self}\033[0m" end
-  def blue;           "\033[34m#{self}\033[0m" end
-  def magenta;        "\033[35m#{self}\033[0m" end
-  def cyan;           "\033[36m#{self}\033[0m" end
-  def gray;           "\033[37m#{self}\033[0m" end
-  def bg_black;       "\033[40m#{self}\0330m"  end
-  def bg_red;         "\033[41m#{self}\033[0m" end
-  def bg_green;       "\033[42m#{self}\033[0m" end
-  def bg_brown;       "\033[43m#{self}\033[0m" end
-  def bg_blue;        "\033[44m#{self}\033[0m" end
-  def bg_magenta;     "\033[45m#{self}\033[0m" end
-  def bg_cyan;        "\033[46m#{self}\033[0m" end
-  def bg_gray;        "\033[47m#{self}\033[0m" end
-  def bold;           "\033[1m#{self}\033[22m" end
-  def underline;      "\033[4m#{self}\033[24m" end
-  def reverse_color;  "\033[7m#{self}\033[27m" end
-
-end
-
 # =================================================================
 # Generator
 
@@ -88,7 +52,7 @@ module Rhogen
 
   class BaseGenerator < Templater::Generator
     def class_name
-      name.gsub('-', '_').camel_case
+      name.gsub('-', '_').modulize
     end
 
     alias_method :module_name, :class_name
@@ -277,8 +241,6 @@ module Rhogen
   end
 
   class ModelGenerator < BaseGenerator
-    include ActiveSupport::Inflector
-
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'model')
     end
@@ -306,64 +268,64 @@ module Rhogen
     #template :config do |template|
     #  @model_sync_server = syncserver_exists? ? class_name : ''
     #  template.source = 'config.rb'
-    #  template.destination = "app/#{name.camel_case}/config.rb"
+    #  template.destination = "app/#{name.modulize}/config.rb"
     #end
 
     template :index do |template|
       template.source = 'index.erb'
-      template.destination = "app/#{name.camel_case}/index.erb"
+      template.destination = "app/#{name.modulize}/index.erb"
     end
 
     template :edit do |template|
       template.source = 'edit.erb'
-      template.destination = "app/#{name.camel_case}/edit.erb"
+      template.destination = "app/#{name.modulize}/edit.erb"
     end
 
     template :new do |template|
       template.source = 'new.erb'
-      template.destination = "app/#{name.camel_case}/new.erb"
+      template.destination = "app/#{name.modulize}/new.erb"
     end
 
     template :new do |template|
       template.source = 'show.erb'
-      template.destination = "app/#{name.camel_case}/show.erb"
+      template.destination = "app/#{name.modulize}/show.erb"
     end
 =begin
     template :bb_index do |template|
       template.source = 'index.bb.erb'
-      template.destination = "app/#{name.camel_case}/index.bb.erb"
+      template.destination = "app/#{name.modulize}/index.bb.erb"
     end
 
     template :bb_edit do |template|
       template.source = 'edit.bb.erb'
-      template.destination = "app/#{name.camel_case}/edit.bb.erb"
+      template.destination = "app/#{name.modulize}/edit.bb.erb"
     end
 
     template :bb_new do |template|
       template.source = 'new.bb.erb'
-      template.destination = "app/#{name.camel_case}/new.bb.erb"
+      template.destination = "app/#{name.modulize}/new.bb.erb"
     end
 
     template :bb_show do |template|
       template.source = 'show.bb.erb'
-      template.destination = "app/#{name.camel_case}/show.bb.erb"
+      template.destination = "app/#{name.modulize}/show.bb.erb"
     end
 =end
 
     template :controller do |template|
-      underscore_name = name.camel_case.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
+      underscore_name = name.modulize.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
       template.source = 'controller.rb'
-      template.destination = "app/#{name.camel_case}/#{underscore_name}_controller.rb"
+      template.destination = "app/#{name.modulize}/#{underscore_name}_controller.rb"
     end
 
     template :model do |template|
-      underscore_name = name.camel_case.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
+      underscore_name = name.modulize.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
       template.source = 'model.rb'
-      template.destination = "app/#{name.camel_case}/#{underscore_name}.rb"
+      template.destination = "app/#{name.modulize}/#{underscore_name}.rb"
     end
 
     template :spec do |template|
-      underscore_name = name.camel_case.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
+      underscore_name = name.modulize.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
       template.source = 'spec.rb'
       template.destination = "app/test/#{underscore_name}_spec.rb"
     end
@@ -720,7 +682,7 @@ module Rhogen
       Dir.chdir("extensions/#{name}/ext")
       args = []
       args << 'api'
-      args << Dir.pwd+"/#{namecamelcase}.xml"
+      args << Dir.pwd+"/#{namefixed.downcase}.xml"
       Jake.run(source_root+'/../../../../bin/rhogen', args)
     end
 
@@ -735,7 +697,7 @@ module Rhogen
 
     template :extension_apigen_xml do |template|
       template.source = 'extensions/montana/ext/montana.xml'
-      template.destination = "extensions/#{name}/ext/#{namecamelcase}.xml"
+      template.destination = "extensions/#{name}/ext/#{namefixed}.xml"
     end
 
     template :build do |template|
@@ -967,10 +929,10 @@ module Rhogen
 
 
     #<%= name.downcase %>
-    #<%= name.camel_case %>
+    #<%= name.modulize %>
 
     #template :spec do |template|
-    #  underscore_name = name.camel_case.split(/(?=[A-Z])/).map{|w| w.downcase}.join('_')
+    #  underscore_name = name.modulize.split(/(?=[A-Z])/).map{|w| w.downcase}.join('_')
     #  template.source = 'spec.rb'
     #  template.destination = "app/test/#{underscore_name}_spec.rb"
     #end
