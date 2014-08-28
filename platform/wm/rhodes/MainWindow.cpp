@@ -1784,7 +1784,9 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 	// workaround for backspace key in text fields:
 	if (control.m_hWnd && (pMsg->message == WM_KEYUP) && (pMsg->wParam == VK_BACK))
 	{
-		control.SendMessage(WM_CHAR, VK_BACK, 1);
+		//control.SendMessage(WM_CHAR, VK_BACK, 1);
+		control.SendMessage(WM_KEYDOWN, VK_BACK, 0);
+		control.SendMessage(WM_KEYUP, VK_BACK, 0);
 		//return TRUE;
 	}
 
