@@ -7,11 +7,6 @@ require 'pathname'
 require 'listen'
 
 class RhoDevice
-  def initialize(anUri, aString)
-    @uri = anUri
-    @platform = aString
-  end
-
   def uri=(anUri)
     @uri = anUri
   end
@@ -28,8 +23,28 @@ class RhoDevice
     @platform
   end
 
+  def name=(aString)
+    @name = aString
+  end
+
+  def name
+    @name
+  end
+
+  def applicationName=(aString)
+    @applicationName = aString
+  end
+
+  def applicationName
+    @applicationName
+  end
+
   def buildTask
     "build:#{@platform}:upgrade_package_partial"
+  end
+
+  def to_s
+    "RhoDevice(uri=#{@uri}, name=#{@name}, platform=#{@platform}, appName=#{@applicationName})"
   end
 end
 
@@ -105,7 +120,6 @@ class RhoWatcher
   end
 
 
-
   def createDiffFiles(addedFiles, changedFiles, removedFiles)
     puts 'Create diff files...'
     self.writeUpdatedListFile(addedFiles, changedFiles)
@@ -113,12 +127,11 @@ class RhoWatcher
   end
 
 
-
-
   def createBundles
     puts "Building..."
     #TODO Platform can occur more than once. It need build only once for each platform
     @devices.each { |each|
+      puts each
       Rake::Task[each.buildTask].invoke
       from = File.join($targetdir, "upgrade_bundle_partial.zip")
       to = File.join(@serverRoot, each.platform, self.downloadedBundleName)
@@ -131,24 +144,47 @@ class RhoWatcher
     @devices.each { |each|
       #TODO Create method urlForUpdate in RhoDevice with "http://#{each.uri}/development/update_bundle" ?
       url = URI("http://#{each.uri}/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/#{each.platform}/#{self.downloadedBundleName}")
-      puts "Send to #{url}"
+      puts "Send to #{each}"
       begin
         http = Net::HTTP.new(url.host, url.port)
         http.open_timeout = 5
         http.start() { |http|
           http.get(url.path)
         }
-      rescue  Errno::ECONNREFUSED,
-              Net::OpenTimeout  => e
+      rescue Errno::ECONNREFUSED,
+          Net::OpenTimeout => e
         #TODO may be it is necessary remove device from list?
-        puts "device #{each.uri} is not accessible"
+        puts "#{each} is not accessible"
       end
     }
   end
 
   def run
     webServer = WEBrick::HTTPServer.new :BindAddress => @serverUri.host, :Port => @serverUri.port, :DocumentRoot => @serverRoot
-    webServer.mount @serverRoot, WEBrick::HTTPServlet::FileHandler, './'
+    webServer.mount File.join(@serverRoot, 'download'), WEBrick::HTTPServlet::FileHandler, './download/'
+
+    webServer.mount_proc '/register' do |request, response|
+      requiredKeys = ['ip', 'port', 'deviceName', 'appName', 'platform']
+      puts "Trying to register device from #{request.remote_ip}"
+      #TODO It need to prevent from empty data also
+      if ((request.query.keys - requiredKeys).length != (request.query.keys.length - requiredKeys.length))
+        puts "Invalid register request"
+        response.body = "Invalid request"
+        response.status = 400
+        response.content_length = response.body.length
+      else
+        device = RhoDevice.new
+        device.uri = "#{request.query['ip'].to_s}:#{request.query['port'].to_s}"
+        device.name = request.query['deviceName'].to_s
+        device.platform = request.query['platform'].to_s
+        device.applicationName = request.query['appName'].to_s
+        self.addDevice(device)
+        puts "Device #{device} registered successfully"
+        response.body = "Device registered"
+        response.status = 200
+        response.content_length = response.body.length
+      end
+    end
 
     webServerThread = Thread.new do
       webServer.start
