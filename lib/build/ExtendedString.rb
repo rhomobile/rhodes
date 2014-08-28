@@ -99,6 +99,26 @@ class String
     strArrays[0] <=> strArrays[1]
   end
 
+  def primary
+    self.blue
+  end
+
+  def success
+    self.green
+  end
+
+  def info
+    self.cyan
+  end
+
+  def warning
+    self.magenta
+  end
+
+  def alarm
+    self.red
+  end
+
   def black; self end
   def red; self end
   def green; self end
