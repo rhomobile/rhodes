@@ -56,6 +56,7 @@ class RhoWatcher
   end
 
   def addDevice(aRhoDevice)
+    #TODO It need to prevent register device app twice. What does means "twice"?
     @devices << aRhoDevice
   end
 
@@ -121,21 +122,19 @@ class RhoWatcher
 
 
   def createDiffFiles(addedFiles, changedFiles, removedFiles)
-    puts 'Create diff files...'
+    puts 'Create diff files'.primary
     self.writeUpdatedListFile(addedFiles, changedFiles)
     self.writeRemovedListFile(removedFiles)
   end
 
 
   def createBundles
-    puts "Building..."
+    puts "Building".primary
     #TODO Platform can occur more than once. It need build only once for each platform
     @devices.each { |each|
-      puts each
       Rake::Task[each.buildTask].invoke
       from = File.join($targetdir, "upgrade_bundle_partial.zip")
       to = File.join(@serverRoot, 'download', each.platform, self.downloadedBundleName)
-      puts to
       FileUtils.mkpath(File.dirname(to))
       FileUtils.cp(from, to)
     }
@@ -145,7 +144,7 @@ class RhoWatcher
     @devices.each { |each|
       #TODO Create method urlForUpdate in RhoDevice with "http://#{each.uri}/development/update_bundle" ?
       url = URI("http://#{each.uri}/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/#{each.platform}/#{self.downloadedBundleName}")
-      puts "Send to #{each}"
+      puts "Send to #{each}".primary
       begin
         http = Net::HTTP.new(url.host, url.port)
         http.open_timeout = 5
@@ -155,7 +154,7 @@ class RhoWatcher
       rescue Errno::ECONNREFUSED,
           Net::OpenTimeout => e
         #TODO may be it is necessary remove device from list?
-        puts "#{each} is not accessible"
+        puts "#{each} is not accessible".warning
       end
     }
   end
@@ -166,10 +165,10 @@ class RhoWatcher
 
     webServer.mount_proc '/register' do |request, response|
       requiredKeys = ['ip', 'port', 'deviceName', 'appName', 'platform']
-      puts "Trying to register device from #{request.remote_ip}"
+      puts "Trying to register device from #{request.remote_ip}".primary
       #TODO It need to prevent from empty data also
       if ((request.query.keys - requiredKeys).length != (request.query.keys.length - requiredKeys.length))
-        puts "Invalid register request"
+        puts "Invalid register request".alarm
         response.body = "Invalid request"
         response.status = 400
         response.content_length = response.body.length
@@ -180,7 +179,7 @@ class RhoWatcher
         device.platform = request.query['platform'].to_s
         device.applicationName = request.query['appName'].to_s
         self.addDevice(device)
-        puts "Device #{device} registered successfully"
+        puts "Device #{device} registered successfully".primary
         response.body = "Device registered"
         response.status = 200
         response.content_length = response.body.length
@@ -190,9 +189,9 @@ class RhoWatcher
     webServerThread = Thread.new do
       webServer.start
     end
-    puts 'Web server started'
+    puts 'Web server started'.primary
     @listeners.each { |each| each.start }
-    puts 'File system listeners started'
+    puts 'File system listeners started'.primary
 
     trap 'INT' do
       webServer.shutdown
