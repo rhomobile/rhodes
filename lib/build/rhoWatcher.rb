@@ -134,7 +134,8 @@ class RhoWatcher
       puts each
       Rake::Task[each.buildTask].invoke
       from = File.join($targetdir, "upgrade_bundle_partial.zip")
-      to = File.join(@serverRoot, each.platform, self.downloadedBundleName)
+      to = File.join(@serverRoot, 'download', each.platform, self.downloadedBundleName)
+      puts to
       FileUtils.mkpath(File.dirname(to))
       FileUtils.cp(from, to)
     }
