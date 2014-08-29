@@ -243,9 +243,6 @@
     <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c">
       <Filter>ext\strscan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket\socket.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c">
       <Filter>ext\stringio</Filter>
     </ClCompile>
@@ -254,6 +251,48 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\alert\alert_wrap.c">
       <Filter>ext\alert</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\ancdata.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\basicsocket.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\constants.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\init.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\ipsocket.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\option.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\raddrinfo.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\socket.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\sockssocket.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\tcpserver.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\tcpsocket.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\udpsocket.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\unixserver.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket_192\unixsocket.c">
+      <Filter>ext\sockets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
