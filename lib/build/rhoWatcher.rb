@@ -3,10 +3,12 @@
 #
 $LISTEN_GEM_DEBUGGING = 1
 
+
 require 'pathname'
 require 'listen'
+require_relative 'ExtendedString'
 
-class RhoDevice
+class RhoWatcherSubscriber
   def uri=(anUri)
     @uri = anUri
   end
@@ -44,20 +46,20 @@ class RhoDevice
   end
 
   def to_s
-    "RhoDevice(uri=#{@uri}, name=#{@name}, platform=#{@platform}, appName=#{@applicationName})"
+    "RhoWatcherSubscriber(uri=#{@uri}, name=#{@name}, platform=#{@platform}, appName=#{@applicationName})"
   end
+
 end
 
 class RhoWatcher
   def initialize
-    @devices = Array.new
+    @subscribers = Array.new
     @listeners = Array.new
     @serverRoot = Dir.mktmpdir
   end
 
-  def addDevice(aRhoDevice)
-    #TODO It need to prevent register device app twice. What does means "twice"?
-    @devices << aRhoDevice
+  def addSubscriber(aSubscriber)
+    @subscribers << aSubscriber
   end
 
   def addDirectory(aString)
@@ -91,6 +93,14 @@ class RhoWatcher
     'bundle.zip'
   end
 
+  def hasSubscriberWithUri(aString)
+    (@subscribers.index { |each| each.uri == aString }) != nil
+  end
+
+  def removeSubsriberWithUri(aString)
+    @subscribers.delete_if { |each| each.uri == aString }
+  end
+
   def writeUpdatedListFile(addedFiles, changedFiles)
     self.writeArrayToFile('upgrade_package_add_files.txt', addedFiles + changedFiles)
   end
@@ -110,8 +120,8 @@ class RhoWatcher
     puts 'Files changed...'
     self.createDiffFiles(addedFiles, changedFiles, removedFiles)
     self.createBundles
-    self.sendNotificationsToDevices
-    puts 'All devices have been notified'
+    self.notifySubscribers
+    puts 'Subscribers have been notified'
   end
 
   def relativePath(aString)
@@ -131,7 +141,7 @@ class RhoWatcher
   def createBundles
     puts "Building".primary
     #TODO Platform can occur more than once. It need build only once for each platform
-    @devices.each { |each|
+    @subscribers.each { |each|
       Rake::Task[each.buildTask].invoke
       from = File.join($targetdir, "upgrade_bundle_partial.zip")
       to = File.join(@serverRoot, 'download', each.platform, self.downloadedBundleName)
@@ -140,9 +150,9 @@ class RhoWatcher
     }
   end
 
-  def sendNotificationsToDevices
-    @devices.each { |each|
-      #TODO Create method urlForUpdate in RhoDevice with "http://#{each.uri}/development/update_bundle" ?
+  def notifySubscribers
+    @subscribers.each { |each|
+      #TODO Create method urlForUpdate in Subscriber with "http://#{each.uri}/development/update_bundle" ?
       url = URI("http://#{each.uri}/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/#{each.platform}/#{self.downloadedBundleName}")
       puts "Send to #{each}".primary
       begin
@@ -153,7 +163,7 @@ class RhoWatcher
         }
       rescue Errno::ECONNREFUSED,
           Net::OpenTimeout => e
-        #TODO may be it is necessary remove device from list?
+        #TODO may be it is necessary remove subscriber from list?
         puts "#{each} is not accessible".warning
       end
     }
@@ -161,44 +171,112 @@ class RhoWatcher
 
   def run
     webServer = WEBrick::HTTPServer.new :BindAddress => @serverUri.host, :Port => @serverUri.port, :DocumentRoot => @serverRoot
-    webServer.mount File.join(@serverRoot, 'download'), WEBrick::HTTPServlet::FileHandler, './download/'
-
-    webServer.mount_proc '/register' do |request, response|
-      requiredKeys = ['ip', 'port', 'deviceName', 'appName', 'platform']
-      puts "Trying to register device from #{request.remote_ip}".primary
-      #TODO It need to prevent from empty data also
-      if ((request.query.keys - requiredKeys).length != (request.query.keys.length - requiredKeys.length))
-        puts "Invalid register request".alarm
-        response.body = "Invalid request"
-        response.status = 400
-        response.content_length = response.body.length
-      else
-        device = RhoDevice.new
-        device.uri = "#{request.query['ip'].to_s}:#{request.query['port'].to_s}"
-        device.name = request.query['deviceName'].to_s
-        device.platform = request.query['platform'].to_s
-        device.applicationName = request.query['appName'].to_s
-        self.addDevice(device)
-        puts "Device #{device} registered successfully".primary
-        response.body = "Device registered"
-        response.status = 200
-        response.content_length = response.body.length
-      end
-    end
+    self.configureWebServer(webServer)
 
     webServerThread = Thread.new do
       webServer.start
     end
-    puts 'Web server started'.primary
+    puts 'WebServer started'.primary
     @listeners.each { |each| each.start }
-    puts 'File system listeners started'.primary
+    puts 'FileSystem listeners started'.primary
 
     trap 'INT' do
       webServer.shutdown
     end
 
     webServerThread.join
+
   end
 
+  def configureWebServer(webServer)
+    webServer.mount File.join(@serverRoot, 'download'), WEBrick::HTTPServlet::FileHandler, './download/'
+
+    webServer.mount_proc '/register' do |request, response|
+      puts "Trying to register subscriber from #{request.remote_ip}".primary
+      begin
+        self.onRegisterRequest(request, response)
+      rescue => e
+        puts "Internal Server Error #{e.message}".alarm
+        response.body = 'Internal Server Error'
+        response.status = 500
+        response.content_length = response.body.length
+      end
+    end
+
+    webServer.mount_proc '/unregister' do |request, response|
+      puts "Trying to unregister subscriber from #{request.remote_ip}".primary
+      begin
+        self.onUnregisterRequest(request, response)
+      rescue => e
+        puts "Internal Server Error #{e.message}".alarm
+        response.body = 'Internal Server Error'
+        response.status = 500
+        response.content_length = response.body.length
+      end
+    end
+  end
+
+  def onUnregisterRequest(request, response)
+    requiredKeys = ['ip', 'port']
+    if ((request.query.keys - requiredKeys).length != (request.query.keys.length - requiredKeys.length))
+      puts "Invalid unregister request".alarm
+      response.body = "Invalid request"
+      response.status = 400
+      response.content_length = response.body.length
+      return
+    end
+
+    uri = "#{request.query['ip'].to_s}:#{request.query['port'].to_s}"
+
+    if !hasSubscriberWithUri(uri)
+      puts "Subscriber with uri #{uri} is not registered".warning
+      response.body = "Subscriber is not registered"
+      response.status = 200
+      response.content_length = response.body.length
+      return
+    end
+
+    self.removeSubsriberWithUri(uri)
+    puts "Subscriber with uri #{uri} unregistered".primary
+    response.body = "Subscriber unregistered"
+    response.status = 200
+    response.content_length = response.body.length
+  end
+
+
+  def onRegisterRequest(request, response)
+
+    requiredKeys = ['ip', 'port', 'deviceName', 'appName', 'platform']
+    #TODO It need to prevent from empty data also
+    if ((request.query.keys - requiredKeys).length != (request.query.keys.length - requiredKeys.length))
+      puts "Invalid registration request".alarm
+      response.body = "Invalid request"
+      response.status = 400
+      response.content_length = response.body.length
+      return
+    end
+
+    uri = "#{request.query['ip'].to_s}:#{request.query['port'].to_s}"
+
+    if hasSubscriberWithUri(uri)
+      puts "Subscriber with uri #{uri} already registered".warning
+      response.body = "Subscriber already registered"
+      response.status = 200
+      response.content_length = response.body.length
+      return
+    end
+
+    subscriber = RhoWatcherSubscriber.new
+    subscriber.uri = uri
+    subscriber.name = request.query['deviceName'].to_s
+    subscriber.platform = request.query['platform'].to_s
+    subscriber.applicationName = request.query['appName'].to_s
+
+    self.addSubscriber(subscriber)
+    puts "#{subscriber} registered successfully".primary
+    response.body = "Subscriber registered"
+    response.status = 200
+    response.content_length = response.body.length
+  end
 
 end
