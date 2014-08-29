@@ -71,6 +71,12 @@ public class RhoWebViewClient extends WebViewClient
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Logger.I(TAG, "Loading URL: " + url);
         
+        //RhoElements implementation of "history:back"
+        if(url.equalsIgnoreCase("history:back")) {
+        	view.goBack();
+        	return true;
+        }
+        
         if (url.contains(".HTM")) 
         {
     	     url=url.replace(".HTML", ".html");
