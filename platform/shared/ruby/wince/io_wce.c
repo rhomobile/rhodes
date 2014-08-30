@@ -126,7 +126,7 @@ int rb_w32_open( const char *file, int mode, ... )
 
 RHO_INIT_LOCK(FileHandlers);
 #define  g_nMaxFileHandlers  256
-static HANDLE g_arFileHandlers[g_nMaxFileHandlers];
+static HANDLE g_arFileHandlers[g_nMaxFileHandlers] = {0};
 int get_NewFileNumber()
 {
     int i = 0;
@@ -299,9 +299,12 @@ int _wopen(const wchar_t *path, int oflag, va_list arg)
 
 int close(int fd)
 {
-    HANDLE fHandle = get_OSHandleByFileNumber(fd);
-    set_FileNumber( fd, 0);
+   if (fd-1 < g_nMaxFileHandlers)
+    {
+        HANDLE fHandle = get_OSHandleByFileNumber(fd);
+        set_FileNumber( fd, 0);
 	CloseHandle( fHandle );
+    }
 	return 0;
 }
 
