@@ -75,6 +75,12 @@ public class ConnectionCheckingService extends Service{
 	{
 		
 	}*/
+	public void stopThread()
+	{
+		if(conThread!=null)
+		conThread.runtheThread=false;
+		stopSelf();
+	}
 	public void restartThread()
 	{
 		conThread=new ConThread();
@@ -107,13 +113,21 @@ public void onCreate() {
 	
 	//super.onCreate();
 	
-	ConnectionCheckingDialogue.createBuilder(RhodesActivity.safeGetInstance());
-	sInstance=this;
+	try{
+		//Log.d("Con","Service Oncreate");
+		ConnectionCheckingDialogue.createBuilder(RhodesActivity.safeGetInstance());
+		sInstance=this;
 	
-	if(!isLicensePopupComing())
+		if(!isLicensePopupComing())
+		{
+			conThread=new ConThread();
+			conThread.start();
+		}
+		
+	    }
+	catch(Exception ex)
 	{
-		conThread=new ConThread();
-		conThread.start();
+		stopSelf();
 	}
 }
 private void showDialogue()
@@ -340,13 +354,28 @@ private void navigatetoBadLink()
 	
 	@Override
 	public void onDestroy() {
-		// TODO Auto-generated method stub
-		
+		try{
 		if(conThread.isAlive())
-			conThread.destroy();
+			{
+				try{
+					//conThread.destroy();
+				conThread.runtheThread=false;
+				
+		
+				}
+				catch(Exception ex)
+				{
+					
+				}
+			}
 		
 		conThread=null;
 		super.onDestroy();
+		}
+		catch(Exception ex)
+		{
+			super.onDestroy();
+		}
 	}
 	
 }
