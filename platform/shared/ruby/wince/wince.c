@@ -446,7 +446,7 @@ HANDLE CreateFileA(LPCSTR filename, DWORD access,
 			NULL, creation, 0, NULL);
 	free(wfilename);
 
-	return 0;
+	return h;
 }
 
 /* ---------------- CharNext, CharPrev. ---------------------*/
