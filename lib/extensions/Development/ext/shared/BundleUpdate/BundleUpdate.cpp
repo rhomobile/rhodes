@@ -159,11 +159,11 @@ void callback_system_get_info_callback(void *arg, rho::String const &strQuery) {
     
     rho::String responce = "{\"jsonrpc\": \"2.0\", ";
 
-    responce = responce + "\"IP_Adress\": \"" + s_IP_Adress + "\", ";
-    responce = responce + "\"Port\": \"" + s_Port + "\", ";
-    responce = responce + "\"Device_Friendly_Name\": \"" + s_Device_Friendly_Name + "\", ";
-    responce = responce + "\"Application_Name\": \"" + s_Application_Name + "\", ";
-    responce = responce + "\"Platform\": \"" + s_Platform + "\" ";
+    responce = responce + "\"ip\": \"" + s_IP_Adress + "\", ";
+    responce = responce + "\"port\": \"" + s_Port + "\", ";
+    responce = responce + "\"deviceFriendlyName\": \"" + s_Device_Friendly_Name + "\", ";
+    responce = responce + "\"applicationName\": \"" + s_Application_Name + "\", ";
+    responce = responce + "\"platform\": \"" + s_Platform + "\" ";
     
     responce = responce + "}";
     
