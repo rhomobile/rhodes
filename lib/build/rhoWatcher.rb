@@ -3,7 +3,7 @@
 #
 $LISTEN_GEM_DEBUGGING = 1
 
-
+require 'fileutils'
 require 'pathname'
 require 'listen'
 require_relative 'ExtendedString'
@@ -53,6 +53,7 @@ end
 
 class RhoWatcher
   def initialize
+    @attempt = 0
     @subscribers = Array.new
     @listeners = Array.new
     @serverRoot = Dir.mktmpdir
@@ -90,7 +91,7 @@ class RhoWatcher
   end
 
   def downloadedBundleName
-    'bundle.zip'
+    "bundle_#{@attempt}.zip"
   end
 
   def hasSubscriberWithUri(aString)
@@ -141,9 +142,10 @@ class RhoWatcher
   def createBundles
     puts "Building".primary
 
+    @attempt = @attempt + 1
     buildedPlatforms = []
-    @subscribers.each { |each|
 
+    @subscribers.each { |each|
       if !buildedPlatforms.include?(each.platform)
         puts "#{each.platform} will build"
         buildedPlatforms << each.platform
@@ -185,11 +187,13 @@ class RhoWatcher
       webServer.start
     end
     puts 'WebServer started'.primary
+    puts "Server root: #{@serverRoot}"
     @listeners.each { |each| each.start }
     puts 'FileSystem listeners started'.primary
 
     trap 'INT' do
       webServer.shutdown
+      FileUtils.remove_dir(@serverRoot)
     end
 
     webServerThread.join
