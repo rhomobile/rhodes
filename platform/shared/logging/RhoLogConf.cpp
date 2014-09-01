@@ -34,6 +34,13 @@
 #include "common/app_build_capabilities.h"
 #include "ruby/ext/rho/rhoruby.h"
 
+extern "C" bool rho_wmimpl_IsHttpLogger();
+extern "C" const char* rho_wmimpl_get_logurl();
+extern "C" WORD rho_wmimpl_get_log_port();
+extern "C" bool initHttpLogProtocol(LPCTSTR szLogURI, WORD wLogPort);
+extern "C" bool LogToHttpPort(LPCTSTR pLogMessage);
+
+
 namespace rho{
 common::CMutex LogSettings::m_FlushLock;
 common::CMutex LogSettings::m_CatLock;
@@ -108,6 +115,8 @@ LogSettings::LogSettings()
 
     m_nMaxLogFileSize = 0; 
     m_bLogPrefix = true; 
+
+	m_bLogToHttp = false;
 
     m_strLogURL = "";
 
@@ -251,6 +260,25 @@ void LogSettings::setLogFilePath(const String& logFilePath){
         }
     }
 }
+void LogSettings::initHttpLogger()
+{
+	common::CMutexLock oLock(m_FlushLock);	
+	rho::String szLogURI = rho_wmimpl_get_logurl();
+	WORD wPort = rho_wmimpl_get_log_port();
+	rho::StringW szWlogURI = rho::common::convertToStringW(szLogURI);
+	initHttpLogProtocol(szWlogURI.c_str(), wPort);		//L"157.235.203.63", L"8084"
+	setLogToHttp(true);
+	
+}
+
+bool LogSettings::IsHttpLog()
+{
+	bool bIsHttp = false;
+
+	common::CMutexLock oLock(m_FlushLock);
+	bIsHttp = rho_wmimpl_IsHttpLogger();
+	return bIsHttp;
+}
 
 void LogSettings::clearLog(){
     common::CMutexLock oLock(m_FlushLock);
@@ -285,8 +313,16 @@ void LogSettings::removeAuxSink( ILogSink* sink )
 void LogSettings::internalSinkLogMessage( String& strMsg ){
     common::CMutexLock oLock(m_FlushLock);
 
-	if ( isLogToFile() )
-        m_pFileSink->writeLogMessage(strMsg);
+	if (isLogToHttp() )
+	{
+		rho::StringW szMessage = rho::common::convertToStringW(strMsg);
+		LogToHttpPort(szMessage.c_str());
+	}
+	else
+	{
+
+		if ( isLogToFile() )
+			m_pFileSink->writeLogMessage(strMsg);
 
     if (m_pLogViewSink)
         m_pLogViewSink->writeLogMessage(strMsg);
@@ -295,15 +331,16 @@ void LogSettings::internalSinkLogMessage( String& strMsg ){
     if ( isLogToOutput() )
         m_pOutputSink->writeLogMessage(strMsg);
 
-	if (m_bLogToSocket && m_pSocketSink)
-        m_pSocketSink->writeLogMessage(strMsg);
-    
-    if (m_pAuxSinks.size() > 0)
-    {
-        for (Hashtable<ILogSink*, bool>::const_iterator it = m_pAuxSinks.begin(); it != m_pAuxSinks.end(); it++) {
-            (*it).first->writeLogMessage(strMsg);
-        }
-    }
+		if (m_bLogToSocket && m_pSocketSink)
+			m_pSocketSink->writeLogMessage(strMsg);
+
+		if (m_pAuxSinks.size() > 0)
+		{
+			for (Hashtable<ILogSink*, bool>::const_iterator it = m_pAuxSinks.begin(); it != m_pAuxSinks.end(); it++) {
+				(*it).first->writeLogMessage(strMsg);
+			}
+		}
+	}
 }
 
 bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
@@ -431,15 +468,24 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
 
     LOGCONF().setLogPrefix(true);
 
-	rho::String logPath = oLogPath.makeFullPath("rholog.txt");
-
-    LOGCONF().setLogToFile(true);
-    LOGCONF().setLogFilePath( logPath.c_str() );
-    LOGCONF().setMaxLogFileSize(1024*50);
-
-    rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
-
-    LOGCONF().loadFromConf(RHOCONF());
+	//Sabir VT
+	//LogProtocol support
+	if(LOGCONF().IsHttpLog())
+	{
+		LOGCONF().initHttpLogger();		
+	}
+	else
+	{
+		rho::String logPath = oLogPath.makeFullPath("rholog.txt");
+		LOGCONF().setLogToFile(true);
+		LOGCONF().setLogFilePath( logPath.c_str() );
+		LOGCONF().setMaxLogFileSize(1024*50);
+		rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
+			
+	}	 
+	LOGCONF().loadFromConf(RHOCONF());	
+	
+    
 }
 
 void rho_logconf_Init(const char* szLogPath, const char* szRootPath, const char* szLogPort){

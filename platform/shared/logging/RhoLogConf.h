@@ -80,6 +80,9 @@ class LogSettings{
 
     bool        m_bLogToFile;
     String      m_strLogFilePath;
+
+	bool        m_bLogToHttp;
+
 //    String      m_strLogConfFilePath;
     unsigned int m_nMaxLogFileSize;
     
@@ -121,6 +124,13 @@ public:
 
     const String& getLogFilePath()const{ return m_strLogFilePath;}
     void setLogFilePath(const String& logFilePath);
+
+	//Sabir VT
+	//Logprotocol support
+	bool IsHttpLog();
+	void initHttpLogger();
+	bool isLogToHttp()const{ return m_bLogToHttp;}
+	void setLogToHttp(bool bLogToHttp){ m_bLogToHttp = bLogToHttp;}
 
 //    const String& getLogConfFilePath()const{ return m_strLogConfFilePath;}
 //    void setLogConfFilePath(const char* szLogConfFilePath){ m_strLogConfFilePath = szLogConfFilePath; }
