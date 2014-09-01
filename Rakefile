@@ -307,22 +307,34 @@ def update_rhodefs_header_file
   end
 end
 
-#task :serve, [:serverUri, :deviceUri, :platform] => ["config:initialize"] do |t, args|
-task :serve, [:serverUri] => ["config:initialize"] do |t, args|
 
-  watcher = RhoWatcher.new
-  watcher.serverUri = URI('http://' + args.serverUri)
-  watcher.applicationRoot = $app_basedir
-  watcher.addDirectory(File.join($app_basedir, "/public"))
-  watcher.addDirectory(File.join($app_basedir, "/app"))
-=begin
-  device = RhoDevice.new
-  device.platform = args.platform
-  device.uri = args.deviceUri
-  watcher.addDevice(device)
-=end
+namespace "dev" do
+  task :serve, [:serverUri] => ["config:initialize"] do |t, args|
 
-  watcher.run
+    watcher = RhoWatcher.new
+    watcher.serverUri = URI('http://' + args.serverUri)
+    watcher.applicationRoot = $app_basedir
+    watcher.addDirectory(File.join($app_basedir, "/public"))
+    watcher.addDirectory(File.join($app_basedir, "/app"))
+
+    configFilename = File.join($app_basedir, 'dev-config.yml')
+    if File.exist?(configFilename)
+      config = YAML.load_file(configFilename)
+      config['devices'].each { |each|
+        subscriber = RhoWatcherSubscriber.new
+        subscriber.uri = "#{each['ip']}:#{each['port']}"
+        subscriber.platform = each['platform']
+        subscriber.name = each['name']
+        subscriber.application = each['application']
+        watcher.addSubscriber(subscriber)
+        puts "#{subscriber} added"
+      }
+    else
+      puts "Devices configuration file #{configFilename} not found. Use http request for register/unregister devices"
+    end
+
+    watcher.run
+  end
 end
 
 #------------------------------------------------------------------------

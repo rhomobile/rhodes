@@ -33,12 +33,12 @@ class RhoWatcherSubscriber
     @name
   end
 
-  def applicationName=(aString)
-    @applicationName = aString
+  def application=(aString)
+    @application = aString
   end
 
-  def applicationName
-    @applicationName
+  def application
+    @application
   end
 
   def buildTask
@@ -46,7 +46,7 @@ class RhoWatcherSubscriber
   end
 
   def to_s
-    "RhoWatcherSubscriber(uri=#{@uri}, name=#{@name}, platform=#{@platform}, appName=#{@applicationName})"
+    "RhoWatcherSubscriber(uri=#{@uri}, name=#{@name}, platform=#{@platform}, app=#{@application})"
   end
 
 end
@@ -282,7 +282,7 @@ class RhoWatcher
     subscriber.uri = uri
     subscriber.name = request.query['deviceName'].to_s
     subscriber.platform = request.query['platform'].to_s
-    subscriber.applicationName = request.query['appName'].to_s
+    subscriber.application = request.query['appName'].to_s
 
     self.addSubscriber(subscriber)
     puts "#{subscriber} registered successfully".primary
