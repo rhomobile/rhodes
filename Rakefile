@@ -330,7 +330,7 @@ namespace "dev" do
         puts "#{subscriber} added"
       }
     else
-      puts "Devices configuration file #{configFilename} not found. Use http request for register/unregister devices"
+      puts "Devices configuration file #{configFilename} not found. Use http request for register/unregister devices".warning
     end
 
     watcher.run
