@@ -140,13 +140,21 @@ class RhoWatcher
 
   def createBundles
     puts "Building".primary
-    #TODO Platform can occur more than once. It need build only once for each platform
+
+    buildedPlatforms = []
     @subscribers.each { |each|
-      Rake::Task[each.buildTask].invoke
-      from = File.join($targetdir, "upgrade_bundle_partial.zip")
-      to = File.join(@serverRoot, 'download', each.platform, self.downloadedBundleName)
-      FileUtils.mkpath(File.dirname(to))
-      FileUtils.cp(from, to)
+
+      if !buildedPlatforms.include?(each.platform)
+        puts "#{each.platform} will build"
+        buildedPlatforms << each.platform
+        Rake::Task[each.buildTask].invoke
+        from = File.join($targetdir, "upgrade_bundle_partial.zip")
+        to = File.join(@serverRoot, 'download', each.platform, self.downloadedBundleName)
+        FileUtils.mkpath(File.dirname(to))
+        FileUtils.cp(from, to)
+      else
+        puts "#{each.platform} already built"
+      end
     }
   end
 
