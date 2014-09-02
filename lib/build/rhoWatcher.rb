@@ -41,12 +41,25 @@ class RhoWatcherSubscriber
     @application
   end
 
+  def normalizedPlatformName
+    if ['apple', 'iphone' ].include?(@platform.downcase)
+      return 'iphone'
+    end
+    @platform
+  end
+
   def buildTask
-    "build:#{@platform}:upgrade_package_partial"
+    "build:#{self.normalizedPlatformName}:upgrade_package_partial"
   end
 
   def to_s
     "RhoWatcherSubscriber(uri=#{@uri}, name=#{@name}, platform=#{@platform}, app=#{@application})"
+  end
+
+  def to_hash
+    hash = {}
+    instance_variables.each {|var| hash[var.to_s.delete("@")] = instance_variable_get(var) }
+    hash
   end
 
 end
