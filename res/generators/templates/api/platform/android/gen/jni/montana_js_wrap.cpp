@@ -12,7 +12,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>JS"
 
-typedef <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>Proxy<ArgumentsAdapter<rho::json::CJSONArray> > ObjectProxy;
+typedef <%= CppGen::make_namespace($cur_module.parents)%>C<%= $cur_module.name %>Proxy<ArgumentsAdapter<rho::json::CJSONArray> > ObjectProxy;
 
 using namespace rho::apiGenerator;
 <%
@@ -103,7 +103,7 @@ if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
 <% end
 
 if api_generator_isApiObjectParam(method.result)
-  if method.result.type == MethodParam::TYPE_SELF %>
+  if method.result.type == RhogenCore::TYPE_SELF %>
     result.setObjectClassPath("<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>");
     RAWTRACE("Object class path is set");<%
   else %>

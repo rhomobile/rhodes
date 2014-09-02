@@ -20,7 +20,7 @@ public interface I<%= $cur_module.name %>Singleton
         # next if module_constant.is_deprecated
   next if module_constant.name.nil? || module_constant.name.empty?
 
-  if module_constant.type == MethodParam::TYPE_STRING %>
+  if module_constant.type == RhogenCore::TYPE_STRING %>
     static final String <%= module_constant.name %> = "<%= module_constant.value %>";<%
   else %>
     static final <%= api_generator_java_makeSimpleNativeType(module_constant.type) %> <%= module_constant.name %> = <%= module_constant.value %>;<%

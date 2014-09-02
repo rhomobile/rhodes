@@ -77,13 +77,13 @@ module <%= namespace($cur_module) %>
       # protected field access helpers <%     
       entity.fields.each do |f| %>
       def set<%=f.field_index%>(val) <% case f.type
-            when MethodParam::TYPE_STRING %>
+            when RhogenCore::TYPE_STRING %>
         res = (val.is_a? String) ? val : val.to_s <%
-            when MethodParam::TYPE_INT %>
+            when RhogenCore::TYPE_INT %>
         res = (val.instance_of? Integer) ? val : Integer(val.to_i)<%
-            when MethodParam::TYPE_DOUBLE %>
+            when RhogenCore::TYPE_DOUBLE %>
         res = (val.instance_of? Float) ? val : val.to_f<%
-            when MethodParam::TYPE_BOOL %>
+            when RhogenCore::TYPE_BOOL %>
         res = (val.is_a?(TrueClass) || val.is_a?(FalseClass)) ? val : (val and !!val.match(/^(true|t|yes|y|1)$/i)) <%
          end %>
         <% if debug %>puts "<%= entity.name %>::set_<%=f.name%> : #{res}"<% end %>
@@ -172,7 +172,7 @@ module <%= namespace($cur_module) %>
 <%  
     entity.methods.select{|m| !m.is_generated }.each do |entity_method|
         params = entity_method.params.map do |param|
-            "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
+            "/* #{CppGen::native_type_arg(param)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
 
         call_params = []
