@@ -167,6 +167,7 @@ class RhoWatcher
         to = File.join(@serverRoot, 'download', each.platform, self.downloadedBundleName)
         FileUtils.mkpath(File.dirname(to))
         FileUtils.cp(from, to)
+        puts "Bundle was builded and put into #{to}"
       else
         puts "#{each.platform} already built"
       end
@@ -176,13 +177,14 @@ class RhoWatcher
   def notifySubscribers
     @subscribers.each { |each|
       #TODO Create method urlForUpdate in Subscriber with "http://#{each.uri}/development/update_bundle" ?
-      url = URI("http://#{each.uri}/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/#{each.platform}/#{self.downloadedBundleName}")
-      puts "Send to #{each}".primary
+      query = "/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/download/#{each.platform}/#{self.downloadedBundleName}"
+      url = URI("http://#{each.uri}"+query)
+      puts "Send to #{each}  request #{url}".primary
       begin
         http = Net::HTTP.new(url.host, url.port)
         http.open_timeout = 5
         http.start() { |http|
-          http.get(url.path)
+          http.get(query)
         }
       rescue Errno::ECONNREFUSED,
           Net::OpenTimeout => e
