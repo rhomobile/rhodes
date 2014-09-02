@@ -25,9 +25,7 @@ namespace rho {
         next if module_method.access != ModuleMethod::ACCESS_STATIC
 
         params = ''
-        puts module_method.inspect
         module_method.params.each do |param|
-            puts param.inspect
             params += " #{CppGen::native_type_arg(param)} #{param.name}, "
         end
 
