@@ -1,33 +1,15 @@
-def api_generator_MakeRubyMethodDecl(module_name, module_method, is_static)
-
-    method_name = 'rb_'
-    method_name += 's_' if is_static
-    method_name += module_name + "_" + module_method.native_name
-
-    params = ''
-    if is_static
-       params = 'int argc, VALUE *argv'
-    else
-       params = 'int argc, VALUE *argv, VALUE obj'
-    end
-    
-    "VALUE #{method_name}(#{params})"
-end
-
 class CppGen
   class << self
     def native_type(gen_type)
-      puts "=======\n"
-      pp(gen_type)
       case gen_type.type
-        when RhogenCore::TYPE_STRING
-          res = "rho::String"
         when RhogenCore::TYPE_INT
           res = "int"
         when RhogenCore::TYPE_BOOL
           res = "bool"
         when RhogenCore::TYPE_DOUBLE
           res = "double"
+        when RhogenCore::TYPE_STRING
+          res = "rho::String"
         when RhogenCore::TYPE_ARRAY
           val_type = native_type(gen_type.value)
           res = "rho::Vector<#{val_type}>"
@@ -84,6 +66,220 @@ class CppGen
     end
   end
 end
+
+class JNIGen
+  class << self
+    def hash_table_element_type(sub_params)
+      return "rho::String" unless sub_params
+
+      res = nil
+      sub_params.each do |name, param|
+        type = native_type(param)
+        if res == nil
+          res = type
+        else
+          return "rho::String" unless res == type
+        end
+      end
+
+      res
+    end
+
+    def native_type(param)
+      res = "rho::String"
+      return res unless param
+
+      if param.type == RhogenCore::TYPE_STRING
+        res = "rho::String"
+      elsif param.type == RhogenCore::TYPE_INT
+        res = "int"
+      elsif param.type == RhogenCore::TYPE_BOOL
+        res = "bool"
+      elsif param.type == RhogenCore::TYPE_DOUBLE
+        res = "double"
+      elsif param.type == RhogenCore::TYPE_ARRAY
+        res = "rho::Vector<#{native_type(param.sub_param)}>"
+      elsif param.type == RhogenCore::TYPE_HASH
+        res = "rho::Hashtable<rho::String, rho::String>"
+      else
+        res = "rho::String" # object id
+      end
+
+      res
+    end
+
+    def native_type_arg(param)
+
+      if param.type == RhogenCore::TYPE_STRING
+        res = "const rho::String&"
+      elsif param.type == RhogenCore::TYPE_INT
+        res = "int"
+      elsif param.type == RhogenCore::TYPE_BOOL
+        res = "bool"
+      elsif param.type == RhogenCore::TYPE_DOUBLE
+        res = "double"
+      elsif param.type == RhogenCore::TYPE_ARRAY
+        res = "const rho::Vector<#{native_type(param.sub_param)}>&"
+      elsif param.type == RhogenCore::TYPE_HASH
+        res = "const rho::Hashtable<rho::String, #{hash_table_element_type(param.sub_params)}&>"
+      else
+        res = "const rho::String&" # object id
+      end
+
+      res
+    end
+
+    def JNI_type(gen_type)
+      res = "jstring"
+      case gen_type.type
+        when RhogenCore::TYPE_STRING
+          res = "jstring"
+        when RhogenCore::TYPE_ARRAY
+          res = "jobject"
+        when RhogenCore::TYPE_HASH
+          res = "jobject"
+        when RhogenCore::TYPE_INT
+          res = "jint"
+        when RhogenCore::TYPE_BOOL
+          res = "jboolean"
+        when RhogenCore::TYPE_DOUBLE
+          res = "jdouble"
+        else
+          #raise "Unknown parameter type: #{gen_type}"
+      end
+
+      res
+    end
+  end
+end
+
+class JavaGen
+  class << self
+    def map_element_type(sub_params, parent)
+      unless sub_params
+        puts "Hash sub_params is nil"
+        return "String"
+      end
+
+      res = nil
+      sub_params.each do |param|
+        type = native_type(param, parent)
+        if res == nil
+          res = type
+        else
+          return "Object" unless res == type
+        end
+      end
+
+      res
+    end
+
+    def api_generator_java_makeSimpleNativeType(gen_type)
+
+      case gen_type.type
+        when RhogenCore::TYPE_STRING
+          res = "String"
+        when RhogenCore::TYPE_ARRAY
+          res = "List<String>"
+        when RhogenCore::TYPE_HASH
+          res = "Map<String, String>"
+        when RhogenCore::TYPE_INT
+          res = "int"
+        when RhogenCore::TYPE_BOOL
+          res = "boolean"
+        when RhogenCore::TYPE_DOUBLE
+          res = "double"
+        else
+          res = "String"
+      end
+
+      res
+    end
+
+    def native_type(param, parent=nil)
+      unless param
+        puts "Default java type: String"
+        return "String"
+      end
+
+      if param.type == RhogenCore::TYPE_STRING
+        res = "String"
+      elsif param.type == RhogenCore::TYPE_ARRAY
+        subtype = "String"
+        subtype = native_type(param.value, param) if param.value
+        res = "List<#{subtype}>"
+      elsif param.type == RhogenCore::TYPE_HASH
+        subtype = "String"
+        subtype = map_element_type(param.fields, param) if param.fields
+        res = "Map<String, #{subtype}>"
+      elsif param.type == RhogenCore::TYPE_INT
+        if parent
+          res = "Integer"
+        else
+          res = "int"
+        end
+      elsif param.type == RhogenCore::TYPE_BOOL
+        if parent
+          res = "Boolean"
+        else
+          res = "boolean"
+        end
+      elsif param.type == RhogenCore::TYPE_DOUBLE
+        if parent
+          res = "Double"
+        else
+          res = "double"
+        end
+      else
+        res = "String"
+      end
+
+      res
+    end
+
+    def make_native_type_signature(gen_type)
+
+      if gen_type == RhogenCore::TYPE_STRING
+        res = "Ljava/lang/String;"
+      elsif gen_type == RhogenCore::TYPE_ARRAY
+        res = "Ljava/util/List;"
+      elsif gen_type == RhogenCore::TYPE_HASH
+        res = "Ljava/util/Map;"
+      elsif gen_type == RhogenCore::TYPE_INT
+        res = "I"
+      elsif gen_type == RhogenCore::TYPE_BOOL
+        res = "Z"
+      elsif gen_type == RhogenCore::TYPE_DOUBLE
+        res = "D"
+      else
+        res = "Ljava/lang/String;"
+      end
+
+      res
+    end
+
+    def make_package_name(cur_module)
+      res = "com."
+      cur_module.parents.each do |parent|
+        res += parent.downcase() + "."
+      end
+      res += cur_module.name.downcase
+
+      res
+    end
+
+    def make_package_path(cur_module)
+      res = "com/"
+      cur_module.parents.each do |parent|
+        res += parent.downcase() + "/"
+      end
+      res += cur_module.name.downcase
+
+      res
+    end
+  end
+end
+
 
 def api_generator_cli_conversion(gen_type, var_name)
     
@@ -146,188 +342,6 @@ def api_generator_cs_makeNativeTypeArg(gen_type)
     res
 end
 
-def api_generator_jni_makeHashTableElementType(sub_params)
-    return "rho::String" unless sub_params
-
-    res = nil
-    sub_params.each do |name, param|
-        type = api_generator_jni_makeNativeType(param)
-        if res == nil
-            res = type
-        else
-            return "rho::String" unless res == type
-        end
-    end
-    
-    res
-end
-
-def api_generator_jni_makeNativeType(param)
-    res = "rho::String"
-    return res unless param
-    
-    if param.type == RhogenCore::TYPE_STRING
-        res = "rho::String"
-    elsif param.type == RhogenCore::TYPE_ARRAY
-        res = "rho::Vector<#{api_generator_jni_makeNativeType(param.sub_param)}>"
-    elsif param.type == RhogenCore::TYPE_HASH
-        res = "rho::Hashtable<rho::String, rho::String>"
-    elsif param.type == RhogenCore::TYPE_INT
-        res = "int"
-    elsif param.type == RhogenCore::TYPE_BOOL
-        res = "bool"
-    elsif param.type == RhogenCore::TYPE_DOUBLE
-        res = "double"
-    else
-        res = "rho::String" # object id
-    end
-    
-    res
-end
-
-def api_generator_jni_makeNativeTypeArg(param)
-    
-    if param.type == RhogenCore::TYPE_STRING
-        res = "const rho::String&"
-    elsif param.type == RhogenCore::TYPE_ARRAY
-        res = "const rho::Vector<#{api_generator_jni_makeNativeType(param.sub_param)}>&"
-    elsif param.type == RhogenCore::TYPE_HASH
-        res = "const rho::Hashtable<rho::String, #{api_generator_jni_makeHashTableElementType(param.sub_params)}&>"
-    elsif param.type == RhogenCore::TYPE_INT
-        res = "int"
-    elsif param.type == RhogenCore::TYPE_BOOL
-        res = "bool"
-    elsif param.type == RhogenCore::TYPE_DOUBLE
-        res = "double"
-    else
-        res = "const rho::String&" # object id
-    end
-    
-    res
-end
-
-def api_generator_java_makeMapElementType(sub_params, parent)
-    unless sub_params
-        puts "Hash sub_params is nil"
-        return "String"
-    end
-
-    res = nil
-    sub_params.each do |param|
-        type = api_generator_java_makeNativeType(param, parent)
-        if res == nil
-            res = type
-        else
-            return "Object" unless res == type
-        end
-    end
-    
-    res
-end
-
-def api_generator_java_makeSimpleNativeType(type)
-
-    if type == RhogenCore::TYPE_STRING
-        res = "String"
-    elsif type == RhogenCore::TYPE_ARRAY
-        res = "List<String>"
-    elsif type == RhogenCore::TYPE_HASH
-        res = "Map<String, String>"
-    elsif type == RhogenCore::TYPE_INT
-        res = "int"
-    elsif type == RhogenCore::TYPE_BOOL
-        res = "boolean"
-    elsif type == RhogenCore::TYPE_DOUBLE
-        res = "double"
-    else
-        res = "String"
-    end
-    
-    res
-end
-
-def api_generator_java_makeNativeType(param, parent=nil)
-    unless param
-        puts "Default java type: String"
-        return "String" 
-    end
-
-    if param.type == RhogenCore::TYPE_STRING
-        res = "String"
-    elsif param.type == RhogenCore::TYPE_ARRAY
-        subtype = "String"
-        subtype = api_generator_java_makeNativeType(param.sub_param, param) if param.sub_param
-        res = "List<#{subtype}>"
-    elsif param.type == RhogenCore::TYPE_HASH
-        subtype = "String"
-        subtype = api_generator_java_makeMapElementType(param.sub_params, param) if param.sub_params
-        res = "Map<String, #{subtype}>"
-    elsif param.type == RhogenCore::TYPE_INT
-        if parent
-            res = "Integer"
-        else
-            res = "int"
-        end
-    elsif param.type == RhogenCore::TYPE_BOOL
-        if parent
-            res = "Boolean"
-        else
-            res = "boolean"
-        end
-    elsif param.type == RhogenCore::TYPE_DOUBLE
-        if parent
-            res = "Double"
-        else
-            res = "double"
-        end
-    else
-        res = "String"
-    end
-    
-    res
-end
-
-def api_generator_java_makeNativeTypeSignature(gen_type)
-    
-    if gen_type == RhogenCore::TYPE_STRING
-        res = "Ljava/lang/String;"
-    elsif gen_type == RhogenCore::TYPE_ARRAY
-        res = "Ljava/util/List;"
-    elsif gen_type == RhogenCore::TYPE_HASH
-        res = "Ljava/util/Map;"
-    elsif gen_type == RhogenCore::TYPE_INT
-        res = "I"
-    elsif gen_type == RhogenCore::TYPE_BOOL
-        res = "Z"
-    elsif gen_type == RhogenCore::TYPE_DOUBLE
-        res = "D"
-    else
-        res = "Ljava/lang/String;"
-    end
-    
-    res
-end
-
-def api_generator_jni_makeJNIType(gen_type)
-    if gen_type == RhogenCore::TYPE_STRING
-        res = "jstring"
-    elsif gen_type == RhogenCore::TYPE_ARRAY
-        res = "jobject"
-    elsif gen_type == RhogenCore::TYPE_HASH
-        res = "jobject"
-    elsif gen_type == RhogenCore::TYPE_INT
-        res = "jint"
-    elsif gen_type == RhogenCore::TYPE_BOOL
-        res = "jboolean"
-    elsif gen_type == RhogenCore::TYPE_DOUBLE
-        res = "jdouble"
-    else
-        #raise "Unknown parameter type: #{gen_type}"
-    end
-    
-    res
-end
-
 def api_generator_isApiObjectParam(param)
     return false unless param
 
@@ -368,17 +382,6 @@ def api_generator_ruby_makeApiObjectTypeName(param, cur_module)
     end
 end
 
-def api_generator_MakeJSMethodDecl(module_name, module_method_name, is_static)
-
-    method_name = 'js_'
-    method_name += 's_' if is_static
-    method_name += module_name + "_" + module_method_name
-
-    params = 'const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam'
-
-    "rho::String #{method_name}(#{params})"
-end
-
 def api_generator_CreateSimpleRubyType(gen_type, value)
 
     res = ""
@@ -397,6 +400,22 @@ def api_generator_CreateSimpleRubyType(gen_type, value)
     res
 end
 
+  def api_generator_MakeRubyMethodDecl(module_name, module_method, is_static)
+
+    method_name = 'rb_'
+    method_name += 's_' if is_static
+    method_name += module_name + "_" + module_method.native_name
+
+    params = ''
+    if is_static
+      params = 'int argc, VALUE *argv'
+    else
+      params = 'int argc, VALUE *argv, VALUE obj'
+    end
+
+    "VALUE #{method_name}(#{params})"
+  end
+
 
 def api_generator_getRubyModuleFullName(cur_module)
     module_name = cur_module.parents.join('.')
@@ -410,29 +429,20 @@ def api_generator_getJSModuleName(module_name)
     module_name.gsub('::', '.')    
 end
 
+def api_generator_MakeJSMethodDecl(module_name, module_method_name, is_static)
+
+  method_name = 'js_'
+  method_name += 's_' if is_static
+  method_name += module_name + "_" + module_method_name
+
+  params = 'const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam'
+
+  "rho::String #{method_name}(#{params})"
+end
+
 def api_generator_isSelfModule(cur_module, type)
     return false unless type
     return true if type == RhogenCore::TYPE_SELF
     
     api_generator_getRubyModuleFullName(cur_module) == type.gsub('.', '::')
-end
-
-def api_generator_java_makePackageName(cur_module)
-    res = "com."
-    cur_module.parents.each do |parent|
-        res += parent.downcase() + "."
-    end
-    res += cur_module.name.downcase
-    
-    res
-end
-
-def api_generator_java_makePackagePath(cur_module)
-    res = "com/"
-    cur_module.parents.each do |parent|
-        res += parent.downcase() + "/"
-    end
-    res += cur_module.name.downcase
-    
-    res
 end

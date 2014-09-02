@@ -1,4 +1,4 @@
-package <%= api_generator_java_makePackageName($cur_module) %>;
+package <%= JavaGen::make_package_name($cur_module) %>;
 
 <%
   base = nil
@@ -39,7 +39,7 @@ end %>
     
     params = ''
     module_method.params.each do |param|
-        params += "#{api_generator_java_makeNativeType(param)} #{param.name}, "
+        params += "#{JavaGen::native_type(param)} #{param.name}, "
     end
 
     params += 'IMethodResult result'

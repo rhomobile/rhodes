@@ -1,4 +1,4 @@
-package <%= api_generator_java_makePackageName($cur_module) %>;
+package <%= JavaGen::make_package_name($cur_module) %>;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +63,7 @@ end %>
 
     param_hash = {}
     method.params.each do |param|
-        param_hash[param.name] = api_generator_java_makeNativeType(param)
+        param_hash[param.name] = JavaGen::native_type(param)
     end
 
     if $cur_module.is_template_propertybag or (method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_GETTER and method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_SETTER)
