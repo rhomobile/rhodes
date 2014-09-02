@@ -84,11 +84,11 @@ end %>
     public void <%= method.native_name %>(<% param_hash.each do |name, type| %><%= type %> <%= name %>, <% end %>IMethodResult result) {
                     <%
                     if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
-                        if method.linked_property.type == MethodParam::TYPE_BOOL %>
+                        if method.linked_property.type == RhogenCore::TYPE_BOOL %>
         result.forceBooleanType();<%
-                        elsif method.linked_property.type == MethodParam::TYPE_INT %>
+                        elsif method.linked_property.type == RhogenCore::TYPE_INT %>
         result.forceIntegerType();<%
-                        elsif method.linked_property.type == MethodParam::TYPE_DOUBLE %>
+                        elsif method.linked_property.type == RhogenCore::TYPE_DOUBLE %>
         result.forceDoubleType();<%
                         end %> 
         getProperty("<%= method.linked_property.name %>", result);<%

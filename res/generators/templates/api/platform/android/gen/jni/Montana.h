@@ -109,10 +109,10 @@ param = method.params[index]
   if param.default_value || param.can_be_nil
     def_val = '0';
     if(param.default_value)
-      if(param.type == MethodParam::TYPE_STRING)
+      if(param.type == RhogenCore::TYPE_STRING)
         def_val = "rho_cast<#{api_generator_jni_makeJNIType(param.type)}>(env, \"#{param.default_value}\")"
       else
-        def_val = "rho_cast<#{api_generator_jni_makeJNIType(param.type)}>(env, static_cast<#{api_generator_cpp_makeNativeTypeArg(param.type)}>(#{param.default_value}))"
+        def_val = "rho_cast<#{api_generator_jni_makeJNIType(param.type)}>(env, static_cast<#{CppGen::native_type_arg(param)}>(#{param.default_value}))"
       end
     end %>
 

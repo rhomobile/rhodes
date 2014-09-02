@@ -17,7 +17,7 @@ $cur_module.constants.each do |module_constant|
       cline = ''
       cline = cline + '#define '
       cline = cline + module_constant.name + ' '
-      if module_constant.type == MethodParam::TYPE_STRING
+      if module_constant.type == RhogenCore::TYPE_STRING
            cline = cline + '@"'+module_constant.value + '"'
       else
            cline = cline + module_constant.value
