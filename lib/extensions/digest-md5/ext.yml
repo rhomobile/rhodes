@@ -2,3 +2,6 @@ entry: Init_md5
 libraries: [ "digest-md5" ]
 android:
   exttype: rakefile
+
+project_paths:
+  wp8: ext/wp8/digest-md5.vcxproj
