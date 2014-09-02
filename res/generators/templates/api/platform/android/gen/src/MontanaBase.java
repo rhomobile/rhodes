@@ -13,7 +13,7 @@ import com.rhomobile.rhodes.api.RhoApiPropertyBag; <%
 
 custom_props = {}
 $cur_module.properties.each do |property|
-    custom_props[property.name] = property.type if property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+    custom_props[property.name] = property if property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
 end
 end %>
 
@@ -29,8 +29,8 @@ unless custom_props.empty? %>
     static {
         sCustomAccessNames = new HashMap<String, Class<?> >();
 <%
-custom_props.each do |name, type| %>
-        sCustomAccessNames.put("<%= name %>", <%= api_generator_java_makeSimpleNativeType(type) %>.class);
+custom_props.each do |name, prop| %>
+        sCustomAccessNames.put("<%= name %>", <%= JavaGen::make_simple_native_type(prop) %>.class);
 <%
 end %>
     }<%

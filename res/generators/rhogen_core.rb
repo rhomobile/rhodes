@@ -240,24 +240,23 @@ module RhogenCore
 
       @default_value = default_value
 
-      if SIMPLE_TYPES.include?(type)
-        @default_value = TYPE_TRAITS[type]['default'] if default_value.nil?
-        @kind = KIND_SIMPLE
-      else
-        case type
-          when TYPE_ARRAY
-            @kind = KIND_ARRAY
-            @value = self.class.ty_string()
-          when TYPE_HASH
-            @kind = KIND_HASH
-            @key = self.class.ty_string()
-            @value = self.class.ty_string()
-          when GENERATED_TYPES
-            # Callback, Self
-            @kind = KIND_GENERATED
-          else
-            raise "unknown type #{type}"
-        end
+      case type
+        when *SIMPLE_TYPES
+          @default_value = TYPE_TRAITS[type]['default'] if default_value.nil?
+          @kind = KIND_SIMPLE
+        when *GENERATED_TYPES
+          # Callback, Self
+          @kind = KIND_GENERATED
+        when TYPE_ARRAY
+          @kind = KIND_ARRAY
+          @value = self.class.ty_string()
+        when TYPE_HASH
+          @kind = KIND_HASH
+          @key = self.class.ty_string()
+          @value = self.class.ty_string()
+
+        else
+          raise "unknown type #{type}"
       end
     end
 
@@ -1012,7 +1011,7 @@ module RhogenCore
 
     param_type = xml_param_item.attribute('type').to_s
 
-    default_val = xml_param_item.attribute('default') != nil ? param.default_value = xml_param_item.attribute('default').to_s : nil
+    default_val = xml_param_item.attribute('default') != nil ? xml_param_item.attribute('default').to_s : nil
 
     param = nil
 

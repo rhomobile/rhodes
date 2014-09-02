@@ -174,7 +174,7 @@ class JavaGen
       res
     end
 
-    def api_generator_java_makeSimpleNativeType(gen_type)
+    def make_simple_native_type(gen_type)
 
       case gen_type.type
         when RhogenCore::TYPE_STRING
