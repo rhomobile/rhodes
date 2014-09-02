@@ -8,7 +8,6 @@ rakefile.rb
 rhobuild.yml
 rhobuild.*.yml
 lastbuildoptions.yml
-*.filters
 
 #platform/iphone/Info.plist
 lib/commonAPI/*/*/*/generated/
