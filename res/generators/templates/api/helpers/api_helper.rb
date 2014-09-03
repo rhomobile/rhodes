@@ -70,7 +70,7 @@ end
 class JNIGen
   class << self
     def hash_table_element_type(sub_params)
-      return "rho::String" unless sub_params
+      return "rho::String" if !sub_params || sub_params.empty?
 
       res = nil
       sub_params.each do |name, param|
@@ -156,8 +156,7 @@ end
 class JavaGen
   class << self
     def map_element_type(sub_params, parent)
-      unless sub_params
-        puts "Hash sub_params is nil"
+      if !sub_params || sub_params.empty?
         return "String"
       end
 

@@ -242,7 +242,7 @@ module RhogenCore
 
       case type
         when *SIMPLE_TYPES
-          @default_value = TYPE_TRAITS[type]['default'] if default_value.nil?
+          #@default_value = TYPE_TRAITS[type]['default'] if default_value.nil?
           @kind = KIND_SIMPLE
         when *GENERATED_TYPES
           # Callback, Self
@@ -288,7 +288,6 @@ module RhogenCore
       raise 'no value type defined' if @value.nil?
       @value.type
     end
-
 
     def add_field(field_name, field_type = TYPE_STRING, default_value = nil)
       instance = self.class.new(field_type, default_value)
@@ -345,7 +344,8 @@ module RhogenCore
     class << self
       def from_xml(xml_node, default_type = nil)
         const = self.new()
-        const.name = xml_node.attribute('constName').to_s
+        name_attr = xml_node.attribute('name').nil? ? 'constName' : 'name'
+        const.name = xml_node.attribute(name_attr).to_s
         const.value = xml_node.attribute('value').to_s
         if xml_node.attribute('type') != nil
           const.type = xml_node.attribute('type').to_s.upcase
@@ -952,7 +952,11 @@ module RhogenCore
         str = str + '1, '+name_prefix+'_param'+param_index.to_s
         str = str + ' }'
 
-        prepare_rho_api_param_structure(param.value, name_prefix+'_param'+param_index.to_s, param_index, lines)
+        tmp_ar = []
+        tmp_ar << param.value if param.value
+
+        prepare_rho_api_params_structure_line(tmp_ar, name_prefix+'_param'+param_index.to_s, lines)
+        #prepare_rho_api_param_structure(param.value, name_prefix+'_param'+param_index.to_s, param_index, lines)
         # tmp_ar = []
         # tmp_ar << param.sub_param if param.sub_param
         # prepare_rho_api_params_structure_line(tmp_ar, name_prefix+'_param'+param_index.to_s, lines)
