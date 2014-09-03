@@ -149,10 +149,13 @@ LRESULT CIEBrowserEngine::CreateEngine()
 
 BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 {
+    //setting the navigation timeout to default value
+    setNavigationTimeout(45000);
     //  On Windows Mobile devices it has been observed that attempting to 
     //  navigate to a Javascript function before the page is fully loaded can 
     //  crash PocketBrowser (specifically when using Reload).  This condition
     //  prevents that behaviour.
+    
     if (!m_bLoadingComplete && (wcsnicmp(tcURL, L"JavaScript:", wcslen(L"JavaScript:")) == 0))
     {
         LOG(TRACE) + "Failed to Navigate, Navigation in Progress\n";
@@ -404,10 +407,8 @@ void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEvent
 	{
 		case EEID_BEFORENAVIGATE:
 			m_bLoadingComplete = FALSE;
-			SetEvent(m_hNavigated);
-			CloseHandle(m_hNavigated);
-			m_hNavigated = NULL;
-
+			if(m_hNavigated==NULL)
+				m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 			//  Do not start the Navigation Timeout Timer if the 
 			//  navigation request is a script call.
 			if((!_memicmp(tcURL, L"javascript:", 11 * sizeof(TCHAR)))
@@ -544,6 +545,7 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 					mbstowcs(tcTarget, (LPSTR)pnmHTML->szTarget, MAX_URL);
 				if (tcTarget)
 					mobileTab->InvokeEngineEventLoad(tcTarget, EEID_NAVIGATECOMPLETE);
+
 				break;
 			case NM_PIE_KEYSTATE:
 			case NM_PIE_ALPHAKEYSTATE:
@@ -561,25 +563,53 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
-	CIEBrowserEngine* pIEEng = reinterpret_cast<CIEBrowserEngine*>(lpParameter);
-
+    CIEBrowserEngine* pIEEng = reinterpret_cast<CIEBrowserEngine*>(lpParameter);
+    DWORD dwWaitResult;
     if (pIEEng->m_dwNavigationTimeout != 0)
     {
         LOG(TRACE) + "Mobile NavThread Started\n";
 
-	    if(pIEEng->m_hNavigated==NULL)
-		    pIEEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
-	    if(WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
-	    {
-		    //no point in doing anything as there is no event handler
-		    pIEEng->StopOnTab(0);
-		    CloseHandle(pIEEng->m_hNavigated);
-		    pIEEng->m_hNavigated = NULL;
+		dwWaitResult = WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout);
 
-            SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
-                (WPARAM)pIEEng->m_tabID, (LPARAM)pIEEng->m_tcNavigatedURL);
-	    }
+		switch (dwWaitResult) 
+		{
+			// Event object was signaled
+			case WAIT_OBJECT_0: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:Event object was signaled\n";
+								
+				CloseHandle(pIEEng->m_hNavigated);
+				pIEEng->m_hNavigated = NULL;
+
+				break; 
+			case WAIT_TIMEOUT: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:timeout\n";
+				
+					
+				pIEEng->StopOnTab(0);
+						
+				CloseHandle(pIEEng->m_hNavigated);
+				pIEEng->m_hNavigated = NULL;
+				SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+					(WPARAM)pIEEng->m_tabID, (LPARAM)pIEEng->m_tcNavigatedURL);
+
+				break; 
+
+			// An error occurred
+			default: 
+				LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
+				return 0; 
+		}
+
+
+
+
 
 	    LOG(TRACE) + "NavThread Ended\n";
     }
