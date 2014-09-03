@@ -1,6 +1,3 @@
-require 'JSON'
-require 'pp'
-
 module RhogenCore
 
   TYPE_STRING = 'STRING'
@@ -258,8 +255,6 @@ module RhogenCore
         when TYPE_HASH
           @kind = KIND_HASH
           @key = self.class.ty_string()
-          @value = self.class.ty_string()
-
         else
           raise "unknown type #{type}"
       end
@@ -309,7 +304,24 @@ module RhogenCore
       else
         @field_set[field_name] = @fields.length
         @fields << generated
+
+        if @value.nil?
+          @value = self.class.new(generated.type)
+        elsif @value.type != generated.type
+          if SIMPLE_TYPES.include?(@value.type)
+            if @value.type != TYPE_STRING
+              @value = self.class.ty_string();
+            end
+          else
+            raise "composite type with different parameters could not be overriden"
+          end
+        end
       end
+    end
+
+    def value
+      @value = self.class.ty_string() if @value.nil?
+      @value
     end
 
     def self_type=(val)
@@ -317,7 +329,8 @@ module RhogenCore
       @self_type = val
     end
 
-    attr_accessor :key, :value, :name, :api_style
+    attr_writer :value
+    attr_accessor :key, :name, :api_style
     attr_reader :fields, :field_order, :self_type, :type
   end
 
@@ -1062,7 +1075,7 @@ module RhogenCore
 
             sub_params = []
 
-            puts "Processing params"
+            # puts "Processing params"
 
             xml_param_item.elements.each('PARAMS') do |xml_method_subparams|
               if xml_method_subparams.parent == xml_param_item
@@ -1070,7 +1083,7 @@ module RhogenCore
               end
             end
 
-            puts 'SUB PARAMS' + sub_params.map{|x| x.name}.join(', ')
+            # puts 'SUB PARAMS ' + sub_params.map{|x| x.name+':'+x.type}.join(', ')
 
             if sub_params.empty?
               puts "WARNING: you use HASH type without specified items ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"

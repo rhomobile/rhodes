@@ -16,8 +16,9 @@ class CppGen
           res = "rho::String"
         when RhogenCore::TYPE_ARRAY
           case gen_type.api_style
+            # always and only strings
             when RhogenCore::GeneratedType::API_STYLE_LEGACY
-              val_type = simple_native_type_or_string(gen_type.value)
+              val_type = "rho::String" #simple_native_type_or_string(gen_type.value)
             when RhogenCore::GeneratedType::API_STYLE_COMPLEX
               val_type = native_type(gen_type.value)
           end
@@ -25,9 +26,10 @@ class CppGen
           res = "rho::Vector<#{val_type}>"
         when RhogenCore::TYPE_HASH
           case gen_type.api_style
+            # always and only strings
             when RhogenCore::GeneratedType::API_STYLE_LEGACY
-              key_type = simple_native_type_or_string(gen_type.key)
-              val_type = simple_native_type_or_string(gen_type.value)
+              key_type = "rho::String" #simple_native_type_or_string(gen_type.key)
+              val_type = "rho::String" #simple_native_type_or_string(gen_type.value)
             when RhogenCore::GeneratedType::API_STYLE_COMPLEX
               key_type = native_type(gen_type.key)
               val_type = native_type(gen_type.value)
