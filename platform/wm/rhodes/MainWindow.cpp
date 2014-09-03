@@ -674,6 +674,14 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	//SetForegroundWindow(m_hWnd);
 
 	::ShowWindow( m_hWnd, SW_MINIMIZE );
+	HWND hwnd = ::GetForegroundWindow();
+	if(hwnd!=NULL)
+	{
+		wchar_t szBuf[200];
+		::GetWindowText(hwnd,szBuf,199);
+		if(wcscmp(szBuf, L"Motorola RhoElements") == 0)
+			::ShowWindow(hwnd, SW_MINIMIZE);
+	}
 
 	m_isMinimized = true;
 
@@ -767,7 +775,7 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 	if (m_bFullScreen)
     {
 		//RhoSetFullScreen(fActive!=0);
-        showTaskBar(fActive==0);
+		showTaskBar(fActive==0);
     }
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
@@ -1784,9 +1792,13 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 	// workaround for backspace key in text fields:
 	if (control.m_hWnd && (pMsg->message == WM_KEYUP) && (pMsg->wParam == VK_BACK))
 	{
-		//control.SendMessage(WM_CHAR, VK_BACK, 1);
-		control.SendMessage(WM_KEYDOWN, VK_BACK, 0);
-		control.SendMessage(WM_KEYUP, VK_BACK, 0);
+		if(RHO_IS_CEDEVICE)
+		{
+			control.SendMessage(WM_KEYDOWN, VK_BACK, 0);
+			control.SendMessage(WM_KEYUP, VK_BACK, 0);
+		}
+		else
+			control.SendMessage(WM_CHAR, VK_BACK, 1);
 		//return TRUE;
 	}
 
