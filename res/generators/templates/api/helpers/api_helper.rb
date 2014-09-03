@@ -1,5 +1,9 @@
 class CppGen
   class << self
+    def simple_native_type_or_string(gen_type)
+      RhogenCore::SIMPLE_TYPES.include?(gen_type.type) ? native_type(gen_type) : "rho::String"
+    end
+
     def native_type(gen_type)
       case gen_type.type
         when RhogenCore::TYPE_INT
@@ -11,11 +15,24 @@ class CppGen
         when RhogenCore::TYPE_STRING
           res = "rho::String"
         when RhogenCore::TYPE_ARRAY
-          val_type = native_type(gen_type.value)
+          case gen_type.api_style
+            when RhogenCore::GeneratedType::API_STYLE_LEGACY
+              val_type = simple_native_type_or_string(gen_type.value)
+            when RhogenCore::GeneratedType::API_STYLE_COMPLEX
+              val_type = native_type(gen_type.value)
+          end
+
           res = "rho::Vector<#{val_type}>"
         when RhogenCore::TYPE_HASH
-          key_type = native_type(gen_type.key)
-          val_type = native_type(gen_type.value)
+          case gen_type.api_style
+            when RhogenCore::GeneratedType::API_STYLE_LEGACY
+              key_type = simple_native_type_or_string(gen_type.key)
+              val_type = simple_native_type_or_string(gen_type.value)
+            when RhogenCore::GeneratedType::API_STYLE_COMPLEX
+              key_type = native_type(gen_type.key)
+              val_type = native_type(gen_type.value)
+          end
+
           res = "rho::Hashtable<#{key_type}, #{val_type}>"
         else
           #Module name, pass ID of object
