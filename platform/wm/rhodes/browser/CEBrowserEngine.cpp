@@ -78,6 +78,10 @@ LRESULT CEBrowserEngine::CreateEngine()
 	//we only want to do this once, so check that the m_pBrowser is null
 	if (!m_pBrowser)
 	{
+    
+		CloseHandle (CreateThread(NULL, 0, 
+			&CEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
+		
 		// See if text selection is enabled, so we can pass the correct value through the GetHostInfo() interface
 		//configFunction(m_tabID, L"HTMLStyles\\TextSelectionEnabled", tcConfigSetting);
 		m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
@@ -146,8 +150,6 @@ LRESULT CEBrowserEngine::CreateEngine()
 		}
 	}
 
-    CloseHandle (CreateThread(NULL, 0, 
-        &CEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
 
 Cleanup:
 	if (pUnk)
@@ -1003,7 +1005,7 @@ HRESULT CEBrowserEngine::ParseTags()
 										//  This blocks whilst the callback
 										//  code is handled so metaTag does not
 										//  go out of scope.
-                                        PostMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)metaTag);
+                                        SendMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)metaTag);
 									}
 								}
 								pMetaElem->Release();
@@ -1063,7 +1065,10 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
         Sleep(100);
 	}
 
-    PostMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+	//  Invoke directly as this must be done before all meta tag parsing.  On some devices meta tags were 
+	//  being partially processed causing subsequent meta tags to not be read correctly.
+	rho_wm_appmanager_ProcessOnTopMostWnd((LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+//    SendMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
 
     return 0;
 }
