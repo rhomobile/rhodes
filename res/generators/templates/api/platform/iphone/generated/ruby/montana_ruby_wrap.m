@@ -302,14 +302,17 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
     //[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= [$cur_module.parents.join("."),$cur_module.name].join(".") %>"];
     <% end %>
     <% if module_method.result != nil
-        if RhogenCore::BASE_TYPES.include?(module_method.result.type)
-            if module_method.result.type == RhogenCore::TYPE_ARRAY
-                if !RhogenCore::BASE_TYPES.include?(module_method.result.item_type)
-            %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.item_type %>"];<%
+        case module_method.result.type
+            when *RhogenCore::BASE_TYPES 
+                if module_method.result.type == RhogenCore::TYPE_ARRAY
+                    if !RhogenCore::BASE_TYPES.include?(module_method.result.item_type)
+                %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.item_type %>"];<%
+                    end
                 end
-            end
-        else
-            %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.type %>"];<%
+            when RhogenCore::TYPE_SELF
+                %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.self_type %>"];<%
+            else
+                %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.type %>"];<%
         end
     end %>
 

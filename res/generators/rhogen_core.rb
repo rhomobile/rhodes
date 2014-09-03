@@ -111,6 +111,10 @@ module RhogenCore
     KIND_COMPOSITE = 'COMPOSITE'
     KIND_GENERATED = 'GENERATED'
 
+    API_STYLE_LEGACY = 'LEGACY'
+    API_STYLE_COMPLEX = 'COMPLEX'
+    API_STYLE_VARIANT = 'VARIANT'
+
     class << self
       def ty_string(default_value = '')
         self.new(TYPE_STRING, default_value)
@@ -145,7 +149,7 @@ module RhogenCore
         self.new(TYPE_CALLBACK)
       end
 
-      def ty_object(self_type = TYPE_SELF)
+      def ty_object(self_type = 'none')
         self.new(TYPE_SELF)
         @self_type = self_type
       end
@@ -235,6 +239,7 @@ module RhogenCore
       @field_set = {}
       @self_type = nil
       @name = nil
+      @api_style = API_STYLE_LEGACY
 
       @type = type
 
@@ -312,7 +317,7 @@ module RhogenCore
       @self_type = val
     end
 
-    attr_accessor :key, :value, :name
+    attr_accessor :key, :value, :name, :api_style
     attr_reader :fields, :field_order, :self_type, :type
   end
 
@@ -1467,6 +1472,10 @@ module RhogenCore
       end
       xml_module_method.elements.each('CALLBACK/PARAMS') do |return_params_xml|
         method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN', self_type)
+      end
+
+      if method_result.item_type == TYPE_SELF
+        method_result.item_type = self_type
       end
 
       if (method_result.type == TYPE_ARRAY) && (method_result.item_type == nil)
