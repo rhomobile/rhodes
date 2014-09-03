@@ -154,7 +154,7 @@ void LogSettings::setLogToSocket(bool bLogToSocket)
     {
         m_bLogToSocket = bLogToSocket;
         if(m_pSocketSink == 0)
-			reinitRemoteLog();
+          reinitRemoteLog();
     }
 }
 
@@ -163,10 +163,11 @@ void LogSettings::setLogURL(const char* szLogURL)
     if ( m_strLogURL != szLogURL )
     {
         m_strLogURL = rho::String(szLogURL); 
-        if(m_pSocketSink == 0)
-			reinitRemoteLog();
-		else
-			((CLogSocketSink*)m_pSocketSink)->setUrl(m_strLogURL);
+        if(m_pSocketSink == 0) {
+    			reinitRemoteLog();
+        } else {
+		    	((CLogSocketSink*)m_pSocketSink)->setUrl(m_strLogURL);
+        }
     }
 }
 
@@ -501,6 +502,13 @@ void rho_conf_clean_log()
     LOGCONF().clearLog();
 }
 
+void rho_log_resetup_http_url(const char* http_log_url) 
+{
+    LOGCONF().setLogURL(http_log_url);
+		LOGCONF().setLogToSocket(true);
+    //LOGCONF().reinitRemoteLog();
+}
+
 #ifndef RHO_NO_RUBY
 VALUE rho_conf_get_property_by_name(char* name)
 {
@@ -563,12 +571,6 @@ VALUE rho_conf_read_log(int limit)
     return res;
 }
 
-
-void rho_log_resetup_http_url(const char* http_log_url) 
-{
-    LOGCONF().setLogURL(http_log_url);
-    //LOGCONF().reinitRemoteLog();
-}
 #else
 // we should empty methods for linking with ruby wrappers in case of building pure JavaScript application (when we still have Ruby code but not used it)
     unsigned long rho_conf_get_property_by_name(char* name)
@@ -586,10 +588,6 @@ void rho_log_resetup_http_url(const char* http_log_url)
         return 0;
     }
     
-    
-    void rho_log_resetup_http_url(const char* http_log_url) 
-    {
-    }
 #endif //RHO_NO_RUBY
 
 }
