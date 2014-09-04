@@ -202,6 +202,11 @@ void CLogSocketSink::writeLogMessage( String& strMsg )
 void CLogSocketSink::processCommand(IQueueCommand* pCmd)
 {
     LogCommand *cmd = (LogCommand *)pCmd;
+  
+    /*
+      Checking CRhodesApp instance is needed because net request requires it to be valid.
+      If socket sink is initialized from ext manager, log messages could occur before app instance is set so we will crash.
+    */     
     if (!cmd || (common::CRhodesApp::getInstance()==0))
         return;
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
