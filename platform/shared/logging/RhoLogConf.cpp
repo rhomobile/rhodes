@@ -430,8 +430,9 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
 #endif//!RHO_DEBUG
 
     LOGCONF().setLogPrefix(true);
+#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
 	rho::String logPath = oLogPath.getPath();
-#if !defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+#else
 	rho::String logPath = oLogPath.makeFullPath("rholog.txt");
 #endif
 
