@@ -132,6 +132,10 @@ class RhoWatcher
 
   def onFileChanged(addedFiles, changedFiles, removedFiles)
     puts 'Files changed...'
+    puts "File added: #{addedFiles}"
+    puts "File changed: #{changedFiles}"
+    puts "File removed: #{removedFiles}"
+
     self.createDiffFiles(addedFiles, changedFiles, removedFiles)
     self.createBundles
     self.notifySubscribers
@@ -156,35 +160,41 @@ class RhoWatcher
     puts "Building".primary
 
     @attempt = @attempt + 1
-    buildedPlatforms = []
-
+    puts "Attempt: #{@attempt}"
+    builtPlatforms = []
+   begin
     @subscribers.each { |each|
-      if !buildedPlatforms.include?(each.platform)
-        puts "#{each.platform} will build"
-        buildedPlatforms << each.platform
+      if !builtPlatforms.include?(each.platform)
+        puts "#{each.platform} will built".primary
+        builtPlatforms << each.platform
         Rake::Task[each.buildTask].invoke
         from = File.join($targetdir, "upgrade_bundle_partial.zip")
         to = File.join(@serverRoot, 'download', each.platform, self.downloadedBundleName)
         FileUtils.mkpath(File.dirname(to))
         FileUtils.cp(from, to)
-        puts "Bundle was builded and put into #{to}"
+        puts "Bundle #{each.platform} was built and put into #{to}".primary
       else
-        puts "#{each.platform} already built"
+        puts "#{each.platform} already built".primary
       end
     }
+   rescue => e
+     puts e.inspect
+   end
   end
 
   def notifySubscribers
     @subscribers.each { |each|
-      #TODO Create method urlForUpdate in Subscriber with "http://#{each.uri}/development/update_bundle" ?
-      query = "/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/download/#{each.platform}/#{self.downloadedBundleName}"
+      #TODO Create method urlForUpdate in Subscriber with "http://#{each.uri}/development/update_bundle" or extract below code to RhoWatcher method?
+      ip = each.uri.split(':')[0]
+      port = each.uri.split(':')[1]
+      query = "/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/download/#{each.platform}/#{self.downloadedBundleName}&ip=#{ip}&port=#{port}"
       url = URI("http://#{each.uri}"+query)
       puts "Send to #{each}  request #{url}".primary
       begin
         http = Net::HTTP.new(url.host, url.port)
         http.open_timeout = 5
         http.start() { |http|
-          http.get(query)
+          http.get(url.path + '?' + url.query)
         }
       rescue Errno::ECONNREFUSED,
           Net::OpenTimeout => e
