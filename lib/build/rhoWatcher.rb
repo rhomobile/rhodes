@@ -187,7 +187,7 @@ class RhoWatcher
       #TODO Create method urlForUpdate in Subscriber with "http://#{each.uri}/development/update_bundle" or extract below code to RhoWatcher method?
       ip = each.uri.split(':')[0]
       port = each.uri.split(':')[1]
-      query = "/development/update_bundle?http://#{@serverUri.host}:#{@serverUri.port}/download/#{each.platform}/#{self.downloadedBundleName}&ip=#{ip}&port=#{port}"
+      query = "/development/update_bundle?package_url=http://#{@serverUri.host}:#{@serverUri.port}/download/#{each.platform}/#{self.downloadedBundleName}&server_ip=#{ip}&server_port=#{port}"
       url = URI("http://#{each.uri}"+query)
       puts "Send to #{each}  request #{url}".primary
       begin
