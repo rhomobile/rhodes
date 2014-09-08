@@ -14,7 +14,7 @@
 #include <webvw.h>
 #endif
 //////////////////////////////////////////////////////////////////////////
-
+extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam);
 
@@ -53,7 +53,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
 
 	memset(m_tcCurrentPageTitle, NULL, sizeof(TCHAR) * MAX_URL);
 	memset(m_tcNavigatedURL, 0, sizeof(TCHAR) * MAX_URL);
-
+	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
     CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
 	GetWindowRect(hwndParent, &m_rcViewSize);
@@ -193,7 +193,6 @@ Cleanup:
 BOOL CEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 {
 	LRESULT retVal = S_FALSE;
-	setNavigationTimeout(45000);
 
 	if (!tcURL || wcslen(tcURL) == 0)
 		return S_FALSE;
