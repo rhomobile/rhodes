@@ -135,6 +135,8 @@ private:
 
     unsigned int      m_dwNavigationTimeout;
     BOOL              m_bLoadingComplete;
+    BOOL              m_bNavigationError;
+
 
 
 #pragma region not_implemented_virtual_functions

@@ -46,6 +46,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     , m_tabID(0)
     , m_dwNavigationTimeout(30*1000)
     , m_bLoadingComplete(FALSE)
+    , m_bNavigationError(FALSE)
 {
 	m_hwndParent  = hwndParent;
 	m_hInstance = hInstance;
@@ -192,6 +193,7 @@ Cleanup:
 BOOL CEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 {
 	LRESULT retVal = S_FALSE;
+	setNavigationTimeout(45000);
 
 	if (!tcURL || wcslen(tcURL) == 0)
 		return S_FALSE;
@@ -297,22 +299,57 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
     CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
+	DWORD dwWaitResult;
 
     if (pEng->m_dwNavigationTimeout)
-    {
-        if(pEng->m_hNavigated==NULL)
-            pEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
+    {				
+		dwWaitResult = WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout);
 
-        if(WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
-        {
-            //no point in doing anything as there is no event handler
-            pEng->StopOnTab(pEng->m_tabID);
-            CloseHandle(pEng->m_hNavigated);
-            pEng->m_hNavigated = NULL;
+		switch (dwWaitResult) 
+		{
+			// Event object was signaled
+			case WAIT_OBJECT_0: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:Event object was signaled\n";
+								
+				CloseHandle(pEng->m_hNavigated);
+				pEng->m_hNavigated = NULL;
+				if(pEng->m_bNavigationError)
+				{
+					LOG(INFO) + "NavigationTimeoutThread:m_bNavigationError\n";
+					pEng->StopOnTab(0);
+					Sleep(400);
+					SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, 
+					(WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+					pEng->m_bNavigationError=FALSE;
 
-            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+				}
+				break; 
+			case WAIT_TIMEOUT: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:timeout\n";
+				
+					
+				pEng->StopOnTab(0);
+						
+				CloseHandle(pEng->m_hNavigated);
+				pEng->m_hNavigated = NULL;
+				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, 
                 (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
-        }
+
+				break; 
+
+			// An error occurred
+			default: 
+				LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
+				return 0; 
+		}		
+		
+		
     }
 
     return 0;
@@ -501,7 +538,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 	{
 	case DISPID_NAVIGATEERROR:
         LOG(INFO) + "DISPID_NAVIGATEERROR";
-
+		m_bNavigationError=TRUE;
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
@@ -510,7 +547,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR)
 			wcsncpy(tcURL, pdparams->rgvarg[3].pvarVal->bstrVal, MAX_URL-1);
 		
-        SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, (WPARAM)m_tabID, (LPARAM)tcURL);
+  //      SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, (WPARAM)m_tabID, (LPARAM)tcURL);
 		
         *(pdparams->rgvarg[0].pboolVal) = VARIANT_TRUE;
 		retVal = S_OK;
@@ -620,8 +657,10 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
             m_pBrowser->GoBack();
             break;
 		}
+        if(m_hNavigated==NULL)
+            m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
-		//CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
+		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
 		wcscpy(m_tcNavigatedURL, tcURL);
 
 #ifdef SCROLL_NOTIFY
