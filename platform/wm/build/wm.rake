@@ -1207,16 +1207,6 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
       Rake::Task["build:win32:deployqt"].invoke
     end
-
-    desc 'prints toolchain is required by Windows RhoSimulator.'
-    task :rhosim_toolchain do
-      puts 'VS2012'
-    end
-
-    desc 'prints Qt version is required by Windows RhoSimulator.'
-    task :rhosim_qt_version do
-      puts '5.1.1'
-    end
   end
 
   #desc "Build rhodes for win32"
