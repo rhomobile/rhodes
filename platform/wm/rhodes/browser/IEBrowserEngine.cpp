@@ -57,7 +57,7 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
         m_hparentInst(NULL),
         m_bLoadingComplete(FALSE),
         m_hNavigated(NULL),
-        m_dwNavigationTimeout(0)
+        m_dwNavigationTimeout(45000)
 {
     m_parentHWND = hParentWnd;    
     m_hparentInst = hInstance;
@@ -67,6 +67,11 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
 
     m_tcNavigatedURL[0] = 0;
 	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
+	if(m_dwNavigationTimeout<=0)
+	{
+		LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_dwNavigationTimeout;
+		m_dwNavigationTimeout=45000;
+	}
     CreateEngine();
 }
 
