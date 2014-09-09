@@ -208,7 +208,9 @@ class RhoWatcher
     webServer = WEBrick::HTTPServer.new :BindAddress => @serverUri.host, :Port => @serverUri.port, :DocumentRoot => @serverRoot
     self.configureWebServer(webServer)
 
+
     webServerThread = Thread.new do
+      #WEBrick::Daemon.start
       webServer.start
     end
     puts 'WebServer started'.primary
@@ -216,10 +218,14 @@ class RhoWatcher
     @listeners.each { |each| each.start }
     puts 'FileSystem listeners started'.primary
 
+
+begin
     trap 'INT' do
       webServer.shutdown
       FileUtils.remove_dir(@serverRoot)
     end
+end
+
 
     webServerThread.join
 
@@ -251,6 +257,12 @@ class RhoWatcher
         response.content_length = response.body.length
       end
     end
+
+    webServer.mount_proc '/quit' do |request, response|
+      webServer.shutdown
+    end
+
+
   end
 
   def onUnregisterRequest(request, response)

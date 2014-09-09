@@ -80,6 +80,7 @@ require File.join(pwd, 'lib/build/BuildOutput.rb')
 require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 require File.join(pwd, 'lib/build/rhoDevelopment.rb')
 require File.join(pwd, 'lib/build/rhowatcher.rb')
+require File.join(pwd, 'lib/build/liveUpdating.rb')
 
 #load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
