@@ -3,6 +3,7 @@ require 'uri'
 require 'net/http'
 require 'json'
 require 'yaml'
+require 'typhoeus'
 require_relative 'ExtendedString'
 
 
@@ -149,22 +150,27 @@ class Discovery
 
   def run
     subscribers = self.renameMe
-    self.save(subscribers)
+    if subscribers.empty?
+      puts 'No devices found'.warning
+    else
+      puts subscribers.to_s.info
+      self.saveSubscribers(subscribers)
+    end
   end
 
-  #TODO: Rename this method
+
+#TODO: Rename this method
   def renameMe
     puts "Start discovering".primary
     subscribers = []
     mask = self.ownIP.split('.')[0, 3].join('.')
+    hydra = Typhoeus::Hydra.hydra
     1.upto(254) { |each|
       url = URI("http://#{mask}.#{each}:37579/development/get_info")
-      begin
-        http = Net::HTTP.new(url.host, url.port)
-        http.open_timeout = 0.1
-        http.start() { |http|
-          response = http.get(url.path)
-          puts "#{url} answered: #{response.body}".info
+      request = Typhoeus::Request.new(url)
+      request.options['timeout']= 1
+      request.on_complete do |response|
+        if response.code == 200
           data = JSON.parse(response.body)
           subscriber = {}
           subscriber['uri'] = "#{data['ip']}:#{data['port']}"
@@ -172,20 +178,15 @@ class Discovery
           subscriber['platform'] = data['platform']
           subscriber['application'] = data['applicationName']
           subscribers << subscriber
-        }
-      rescue Errno::ECONNREFUSED, Net::OpenTimeout => e
-        #TODO may be it is necessary remove subscriber from list?
-        puts "#{url} is not accessible. error: #{e.class}".info
+        end
       end
+      hydra.queue request
     }
+    hydra.run
     return subscribers
   end
 
-  def save(anArray)
-    if anArray.empty?
-      puts 'No devices found'.warning
-      return
-    end
+  def saveSubscribers(anArray)
     filename = File.join(@applicationDirectory, 'dev-config.yml')
     if File.exist?(filename)
       config = YAML.load_file(filename)
