@@ -81,8 +81,6 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
         oResult.set( L"ANDROID" );
     else if ( strPlatform.compare("iphone") == 0 )
         oResult.set( L"APPLE" );
-    else if ( strPlatform.compare("symbian") == 0 )
-        oResult.set( L"SYMBIAN" );
     else
         oResult.set( L"UNKNOWN" );
 
@@ -98,8 +96,6 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 #else
 	oResult.set( PLATFORM_WM_CE );
 #endif
-#elif defined(OS_SYMBIAN)
-	oResult.set( L"SYMBIAN" );
 #elif defined(OS_ANDROID)
     oResult.set( PLATFORM_ANDROID );
 #elif defined(OS_LINUX)
