@@ -860,6 +860,23 @@ namespace "build" do
         #puts '$$$$$$$$$$$$$$$$$$'
         #puts 'targetdir = '+$targetdir.to_s
         #puts 'bindir = '+$bindir.to_s
+        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+        iphone_project = File.join($app_path, "/project/iphone/#{appname_fixed}.xcodeproj")
+
+        if !File.exist?(iphone_project)
+
+          puts '$ make iphone XCode project for application'
+          Rake::Task['build:iphone:make_xcode_project'].invoke
+
+        end
+
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
 
         mkdir_p $targetdir if not File.exists? $targetdir
         zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
@@ -951,7 +968,7 @@ namespace "build" do
 
           if File.file?(f)
              #puts '$$$ ['+relpath+']'
-             if not add_files.include?(relpath)
+             if (not add_files.include?(relpath)) && (relpath != 'rhofilelist.txt')
                  rm_rf f
              end
           end
