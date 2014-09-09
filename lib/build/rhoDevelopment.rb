@@ -132,22 +132,25 @@ def extract_changes(old_file_array, new_file_array, add_file_array, remove_file_
 
   #extract new and changes
   new_file_array.each do |item|
+    item_path = extract_item_path(item)
+    item_fixed = item_path
+    item_fixed = item_fixed.gsub('_erb.iseq', '.erb')
+    item_fixed = item_fixed.gsub('.iseq', '.rb')
+
     if !(old_file_array.include?(item))
        #check for folder
        if extract_item_type(item) == 'dir'
           #check for this is new dir !
-          item_path = extract_item_path(item)
           if !(old_file_paths.include?(item_path))
-             add_file_array << item
+             add_file_array << item_fixed
              is_real_changes = true
           end
        else
-         item_path = extract_item_path(item)
          if (item_path != 'rhoconfig.txt') &&
             (item_path != 'rhoconfig.txt.timestamp') &&
             (item_path.index('public/api') != 0) &&
             (item_path != 'app_manifest.txt')
-           add_file_array << item
+           add_file_array << item_fixed
            is_real_changes = true
          end
        end
@@ -157,8 +160,11 @@ def extract_changes(old_file_array, new_file_array, add_file_array, remove_file_
   #make remove list
   old_file_array.each do |item|
     item_path = extract_item_path(item)
+    item_fixed = item_path
+    item_fixed = item_fixed.gsub('_erb.iseq', '.erb')
+    item_fixed = item_fixed.gsub('.iseq', '.rb')
     if !(new_file_paths.include?(item_path))
-       remove_file_array << item
+       remove_file_array << item_fixed
        is_real_changes = true
     end
   end

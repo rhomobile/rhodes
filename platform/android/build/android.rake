@@ -2014,7 +2014,7 @@ namespace "build" do
 
         if File.file?(f)
           #puts '$$$ ['+relpath+']'
-          if not add_files.include?(relpath)
+          if (not add_files.include?(relpath)) && (relpath != 'rhofilelist.txt')
             rm_rf f
           end
         end
