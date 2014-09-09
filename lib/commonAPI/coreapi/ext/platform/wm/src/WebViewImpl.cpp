@@ -5,7 +5,7 @@
 #include "rubyext/WebView.h"
 
 //extern "C" HWND getMainWnd();
-extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal(const wchar_t* szName);
+extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
 
 namespace rho {
@@ -20,9 +20,14 @@ class CWebViewImpl: public CWebViewSingletonBase
     int m_nTextZoom;
 public:
 
-    CWebViewImpl(): m_nNavigationTimeout(0), m_dZoomPage(1.0), m_nTextZoom(1), CWebViewSingletonBase()
+    CWebViewImpl(): m_nNavigationTimeout(45000), m_dZoomPage(1.0), m_nTextZoom(1), CWebViewSingletonBase()
     {
-        convertFromStringW( rho_wmimpl_getNavTimeOutVal( L"Navigation\\NavTimeout" ), m_nNavigationTimeout );
+        convertFromStringW( rho_wmimpl_getNavTimeOutVal(), m_nNavigationTimeout );
+		if(m_nNavigationTimeout<=0)
+		{
+			LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_nNavigationTimeout;
+			m_nNavigationTimeout=45000;
+		}
     }
 
     virtual void getFramework(rho::apiGenerator::CMethodResult& oResult)
