@@ -11,6 +11,7 @@
 
 IMPLEMENT_LOGCLASS(CIEBrowserEngine,"IEBrowser");
 
+extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd( WPARAM wParam, LPARAM lParam );
 extern "C" void rho_wmimpl_create_ieBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
@@ -56,7 +57,7 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
         m_hparentInst(NULL),
         m_bLoadingComplete(FALSE),
         m_hNavigated(NULL),
-        m_dwNavigationTimeout(0)
+        m_dwNavigationTimeout(45000)
 {
     m_parentHWND = hParentWnd;    
     m_hparentInst = hInstance;
@@ -65,7 +66,12 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     GetWindowRect(hParentWnd, &m_rcViewSize);
 
     m_tcNavigatedURL[0] = 0;
-
+	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
+	if(m_dwNavigationTimeout<=0)
+	{
+		LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_dwNavigationTimeout;
+		m_dwNavigationTimeout=45000;
+	}
     CreateEngine();
 }
 
@@ -149,8 +155,6 @@ LRESULT CIEBrowserEngine::CreateEngine()
 
 BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 {
-    //setting the navigation timeout to default value
-    setNavigationTimeout(45000);
     //  On Windows Mobile devices it has been observed that attempting to 
     //  navigate to a Javascript function before the page is fully loaded can 
     //  crash PocketBrowser (specifically when using Reload).  This condition
