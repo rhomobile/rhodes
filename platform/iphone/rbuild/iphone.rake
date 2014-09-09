@@ -866,6 +866,15 @@ namespace "build" do
         Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
 
+    task :check_update => ["config:iphone"] do
+      mkdir_p File.join($app_path, 'development')
+      RhoDevelopment.setup(File.join($app_path, 'development'), 'iphone')
+      is_require_full_update = RhoDevelopment.is_require_full_update
+      result = RhoDevelopment.check_changes_from_last_build(File.join($app_path, 'upgrade_package_add_files.txt'), File.join($app_path, 'upgrade_package_remove_files.txt'))
+      puts '$$$ RhoDevelopment.is_require_full_update() = '+is_require_full_update.to_s
+      puts '$$$ RhoDevelopment.check_changes_from_last_build() = '+result.class.to_s
+    end
+
     task :upgrade_package_partial => ["config:iphone"] do
 
         print_timestamp('build:iphone:upgrade_package_partial START')

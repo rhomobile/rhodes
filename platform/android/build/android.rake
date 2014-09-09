@@ -1931,6 +1931,12 @@ namespace "build" do
 
     task :upgrade_package => :rhobundle do
       print_timestamp('build:android:upgrade_package START')
+
+      $skip_build_rhodes_main = true
+      $skip_build_extensions = true
+      $skip_build_xmls = true
+      $use_prebuild_data = true
+
       #puts '$$$$$$$$$$$$$$$$$$'
       #puts 'targetdir = '+$targetdir.to_s
       #puts 'bindir = '+$bindir.to_s
