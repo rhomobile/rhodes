@@ -20,9 +20,14 @@ class CWebViewImpl: public CWebViewSingletonBase
     int m_nTextZoom;
 public:
 
-    CWebViewImpl(): m_nNavigationTimeout(0), m_dZoomPage(1.0), m_nTextZoom(1), CWebViewSingletonBase()
+    CWebViewImpl(): m_nNavigationTimeout(45000), m_dZoomPage(1.0), m_nTextZoom(1), CWebViewSingletonBase()
     {
         convertFromStringW( rho_wmimpl_getNavTimeOutVal(), m_nNavigationTimeout );
+		if(m_nNavigationTimeout<=0)
+		{
+			LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_nNavigationTimeout;
+			m_nNavigationTimeout=45000;
+		}
     }
 
     virtual void getFramework(rho::apiGenerator::CMethodResult& oResult)
