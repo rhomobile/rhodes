@@ -336,39 +336,11 @@ namespace "dev" do
     watcher.run
   end
 
-  task :discovery, [:ip] => ["config:initialize"] do |t, args|
-    subscribers = []
-    mask = args.ip.split('.')[0, 3].join('.')
-    1.upto(254) { |each|
-      url = URI("http://#{mask}.#{each}:37579/development/get_info")
-      begin
-        http = Net::HTTP.new(url.host, url.port)
-        http.open_timeout = 0.1
-        http.start() { |http|
-          response = http.get(url.path)
-          puts "#{url} answered: #{response.body}"
-          data = JSON.parse(response.body)
-          subscriber = {}
-          subscriber['uri'] = "#{data['ip']}:#{data['port']}"
-          subscriber['name'] = data['deviceFriendlyName']
-          subscriber['platform'] = data['platform']
-          subscriber['application'] = data['applicationName']
-          subscribers << subscriber
-        }
-      rescue => e
-        #TODO may be it is necessary remove subscriber from list?
-        puts "#{url} is not accessible. error: #{e.class}".info
-      end
-    }
-    if subscribers.empty?
-      puts 'No devices found'.warning
-    else
-      puts 'The following devices are found'.primary
-      puts subscribers
-      yml = {'devices' => subscribers}.to_yaml
-      File.open(File.join($app_basedir, 'dev-config.yml'), 'w') { |file| file.write yml }
-    end
+  task :discovery => ["config:initialize"] do
+    discovery = Discovery.new($app_basedir)
+    discovery.run
   end
+
 end
 
 #------------------------------------------------------------------------
