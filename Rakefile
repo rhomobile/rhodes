@@ -91,7 +91,6 @@ load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
-#load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
@@ -4056,25 +4055,6 @@ task :get_version do
     end
   end
 
-  # File.open("platform/symbian/build/release.properties","r") do |f|
-  #     file = f.read
-  #     major = ""
-  #     minor = ""
-  #     build = ""
-  #
-  #     if file.match(/release\.major=(\d+)/)
-  #       major =  $1
-  #     end
-  #     if file.match(/release\.minor=(\d+)/)
-  #       minor =  $1
-  #     end
-  #     if file.match(/build\.number=(\d+)/)
-  #       build =  $1
-  #     end
-  #
-  #     symver = major + "." + minor + "." + build
-  #   end
-
   File.open("platform/android/Rhodes/AndroidManifest.xml","r") do |f|
     file = f.read
     if file.match(/versionName="(\d+\.\d+\.*\d*)"/)
@@ -4110,7 +4090,6 @@ task :get_version do
   puts "Versions:"
   #puts "  Generator:        " + genver
   puts "  iPhone:           " + iphonever
-  #puts "  Symbian:          " + symver
   #puts "  WinMo:            " + wmver
   puts "  Android:          " + androidver
   puts "  Gem:              " + gemver
@@ -4140,14 +4119,6 @@ task :set_version, [:version] do |t,args|
   File.open("platform/iphone/Info.plist","w") do |f|
     f.write origfile.gsub(/CFBundleVersion<\/key>(\s+)<string>(\d+\.\d+\.*\d*)<\/string>/, "CFBundleVersion</key>\n\t<string>#{verstring}</string>")
   end
-
-  # File.open("platform/symbian/build/release.properties","r") { |f| origfile = f.read }
-  # File.open("platform/symbian/build/release.properties","w") do |f|
-  #   origfile.gsub!(/release\.major=(\d+)/,"release.major=#{major}")
-  #   origfile.gsub!(/release\.minor=(\d+)/,"release.minor=#{minor}")
-  #   origfile.gsub!(/build\.number=(\d+)/,"build.number=#{build}")
-  #   f.write origfile
-  # end
 
   File.open("platform/android/Rhodes/AndroidManifest.xml","r") { |f| origfile = f.read }
   File.open("platform/android/Rhodes/AndroidManifest.xml","w") do |f|

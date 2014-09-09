@@ -30,8 +30,6 @@ iphone:
   BundleURLScheme: autocompletehelper
 wp:
   productid: '34ebdf30-feaf-012f-648c-64ce8f469495'
-symbian:
-  uid: '0xeece192a'
 android:
   version: 2.1
 wm:
