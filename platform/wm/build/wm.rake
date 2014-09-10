@@ -143,7 +143,11 @@ module WM
 
       # VALUE "LegalCopyright", "Motorola Solutions Inc., Copyright (C) 2012"
       when /^(\s*VALUE\s+"LegalCopyright",\s*)".*"\s*$/
-        "#{$1}\"#{$app_config['copyright']}\""
+        if $app_config['copyright'].nil?
+          line
+        else
+          "#{$1}\"#{$app_config['copyright']}\""
+        end
 
       else
         line
