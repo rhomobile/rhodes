@@ -101,6 +101,55 @@ module WM
 
     puts "$sdk [#{$sdk}]"
   end
+
+  def self.edit_rhodes_rc
+    rhodes_dir = File.join(File.dirname(__FILE__), '../../..')
+
+    version = File.read(File.join(rhodes_dir, 'version')).chomp
+
+    ar_ver = []
+    version.split('.').each do |token|
+      digits = /[0-9]+/.match(token)
+      digits = '0' unless digits
+      ar_ver << digits
+    end
+    ar_ver << '0' while ar_ver.length < 5
+
+    Jake.edit_lines(File.join(rhodes_dir, 'platform/wm/rhodes/Rhodes.rc')) do |line|
+      case line
+
+      # FILEVERSION 2,0,0,5
+      # PRODUCTVERSION 2,0,0,5
+      when /^(\s*(?:FILEVERSION|PRODUCTVERSION)\s+)\d+,\d+,\d+,\d+\s*$/
+        "#{$1}#{ar_ver[0, 4].join(',')}"
+
+      # VALUE "FileVersion", "2, 0, 0, 5"
+      # VALUE "ProductVersion", "2, 0, 0, 5"
+      when /^(\s*VALUE\s+"(?:FileVersion|ProductVersion)",\s*)"\d+,\s*\d+,\s*\d+,\s*\d+"\s*$/
+        "#{$1}\"#{ar_ver[0, 4].join(', ')}\""
+
+      # VALUE "InternalName", "RhoElements"
+      # VALUE "ProductName", "RhoElements"
+      when /^(\s*VALUE\s+"(?:InternalName|ProductName)",\s*)".*"\s*$/
+        "#{$1}\"#{$appname}\""
+
+      # VALUE "FileDescription", "RhoElements Application"
+      when /^(\s*VALUE\s+"FileDescription",\s*)".*"\s*$/
+        "#{$1}\"#{$appname} application\""
+
+      # VALUE "OriginalFilename", "RhoElements.exe"
+      when /^(\s*VALUE\s+"OriginalFilename",\s*)".*"\s*$/
+        "#{$1}\"#{$appname}.exe\""
+
+      # VALUE "LegalCopyright", "Motorola Solutions Inc., Copyright (C) 2012"
+      when /^(\s*VALUE\s+"LegalCopyright",\s*)".*"\s*$/
+        "#{$1}\"#{$app_config['copyright']}\""
+
+      else
+        line
+      end
+    end
+  end
 end
 
 def get_7z_path()
@@ -844,6 +893,8 @@ namespace "build" do
       chdir $config["build"]["wmpath"]
 
       cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
+
+      WM.edit_rhodes_rc
 
       if $wm_win32_ignore_vsprops
         Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
