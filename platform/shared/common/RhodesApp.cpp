@@ -585,7 +585,11 @@ void CRhodesApp::restartLocalServer(common::CThreadQueue& waitThread)
     LOG(INFO) + "restart local server.";
     m_bRestartServer = true;
 	if(!m_isJSFSApp)
+    {
 		m_httpServer->stop();
+    }else
+        RHODESAPP().notifyLocalServerStarted();
+    
 	stopWait();
 }
 
