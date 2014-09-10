@@ -214,15 +214,18 @@ class CReplaceBundleThread : public rho::common::CRhoThread
     DEFINE_LOGCLASS;
 
     String m_bundle_path;
-    String m_finish_callback;
+    static String m_finish_callback;
     bool mDoNotRestartApp;
+    
+    static bool mCheckFileList;
+    static bool mAllViaCallback;
     
     bool* m_is_finished_flag;
 
     void doReplaceBundle();
 public:
 
-    CReplaceBundleThread(const char* root_path, const char* finish_callback, bool do_not_restart_app, bool* is_finished_flag) 
+    CReplaceBundleThread(const char* root_path, const char* finish_callback, bool do_not_restart_app, bool* is_finished_flag, bool is_check_filelist, bool is_all_responce_only_via_callback)
     {
         m_bundle_path = root_path;
         if (finish_callback != NULL) {
@@ -233,6 +236,8 @@ public:
         }
         mDoNotRestartApp = do_not_restart_app;
         m_is_finished_flag = is_finished_flag;
+        mCheckFileList = is_check_filelist;
+        mAllViaCallback = is_all_responce_only_via_callback;
         start(rho::common::IRhoRunnable::epNormal);
     }
     
@@ -250,6 +255,11 @@ public:
     
 };
 IMPLEMENT_LOGCLASS(CReplaceBundleThread,"RhoBundle");
+    
+String CReplaceBundleThread::m_finish_callback;
+bool CReplaceBundleThread::mCheckFileList;
+bool CReplaceBundleThread::mAllViaCallback;
+   
 
 CFileTransaction::CFileTransaction(const String& strFolder, boolean bRollbackInDestr) : m_strFolder(strFolder), m_bRollbackInDestr(bRollbackInDestr)
 {
@@ -636,7 +646,18 @@ void CReplaceBundleThread::showError(int nError, const String& strError )
     LOG(ERROR) + "Error happen when replace bundle: " + strError + "; Code: " + LOGFMT("%d") + nError;
 
     String strMsg = "Error happen when replace bundle: " + strError;
-    rho_sys_impl_exit_with_errormessage("Bundle update", strMsg.c_str());
+    if (mAllViaCallback) {
+        if (m_finish_callback.size() > 0) {
+            char* norm_url = rho_http_normalizeurl(m_finish_callback.c_str());
+            String query = "&rho_callback=1&status=error&message=";
+            query = query + strMsg.c_str();
+            rho_net_request_with_data(norm_url, query.c_str());
+            rho_http_free(norm_url);
+        }
+    }
+    else {
+        rho_sys_impl_exit_with_errormessage("Bundle update", strMsg.c_str());
+    }
 }
 
 void CReplaceBundleThread::run()
@@ -778,7 +799,7 @@ void CReplaceBundleThread::doReplaceBundle()
 extern "C" 
 {
 
-void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode )
+void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode, bool check_filelist, bool all_via_callback_only)
 {
     
 #ifdef OS_ANDROID
@@ -786,7 +807,7 @@ void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callb
 #endif
     
     bool is_finished_flag = false;
-    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, (not_thread_mode ? &is_finished_flag : 0));  
+    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, (not_thread_mode ? &is_finished_flag : 0), false, false);
     if (not_thread_mode) {
         while (!is_finished_flag) {
             replace_thread->sleep(10);
@@ -830,7 +851,7 @@ void rho_sys_replace_current_bundle(const char* path, rho_param *p)
             }
         }
     }
-    rho_sys_replace_current_bundleEx( path, finish_callback, do_not_restart_app, not_thread_mode );
+    rho_sys_replace_current_bundleEx( path, finish_callback, do_not_restart_app, not_thread_mode , false, false );
 }
 
 int rho_sys_check_rollback_bundle(const char* szRhoPath)
