@@ -88,12 +88,13 @@ class WebServerWrapper
     @@webServer = WEBrick::HTTPServer.new(
         :Port => port,
         :DocumentRoot => documentRoot,
-        #:ServerType => WEBrick::Daemon,
-        :ServerType => WEBrick::SimpleServer,
+        :ServerType => WEBrick::Daemon,
+        #:ServerType => WEBrick::SimpleServer,
         :BindAddress => host
     )
     self.configure
     @@webServer.start
+    STDOUT.reopen(1, "w")
   end
 
   def self.configure
@@ -109,6 +110,11 @@ class WebServerWrapper
       response.status = 200
       response.content_length = response.body.length
     end
+
+    @@webServer.mount_proc '/response_from_device' do |request, response|
+      puts request
+    end
+
   end
 
   def self.isAlive
