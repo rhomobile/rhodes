@@ -24,12 +24,12 @@ class LiveUpdatingConfig
 
   def self.isWebServerAliveRequest
     #TODO Remove hard code
-    URI('http://192.168.1.102:3000/alive')
+    URI("http://#{self.webServerUri}/alive")
   end
 
   def self.stoppingWebServerRequest
     #TODO Remove hard code
-    URI('http://192.168.1.102:3000/quit')
+    URI("#{self.webServerUri}/quit")
   end
 
   def self.webServerUri
@@ -167,8 +167,8 @@ class OneTimeServer
   def sourceChanged?
     result = false
     devDir = File.join(LiveUpdatingConfig::applicationRoot, '.development')
-    updatedListFilename = File.join(devDir, 'upgrade_package_add_files.txt')
-    removedListFilename = File.join(devDir, 'upgrade_package_remove_files.txt')
+    updatedListFilename = File.join(LiveUpdatingConfig::applicationRoot, 'upgrade_package_add_files.txt')
+    removedListFilename = File.join(LiveUpdatingConfig::applicationRoot, 'upgrade_package_remove_files.txt')
     mkdir_p devDir
     LiveUpdatingConfig::subscriberPlatforms.each { |each|
       RhoDevelopment.setup(devDir, each)
