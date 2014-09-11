@@ -2,3 +2,6 @@ entry: Init_sha1
 libraries: [ "digest-sha1" ]
 android:
   exttype: rakefile
+
+project_paths:
+  wp8: ext/wp8/digest-sha1.vcxproj

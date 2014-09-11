@@ -200,7 +200,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <RETURN type="STRING"/>
             </METHOD>
             <METHOD name="quit">
-                <DESC>Quit the application.</DESC>
+                <DESC>Quit the application. Quitting the application while license screen is shown will be slightly delayed.</DESC>
             </METHOD>
             <METHOD name="minimize">
                 <DESC>Minimize or move the application to background. When running in RhoSimulator this method is supported only for Windows OS.</DESC>

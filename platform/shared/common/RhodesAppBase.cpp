@@ -394,9 +394,6 @@ const char* rho_rhodesapp_getplatform()
     if ( strPlatform.compare("iphone") == 0 )
         return "APPLE";
 
-    if ( strPlatform.compare("symbian") == 0 )
-        return "SYMBIAN";
-
     return "UNKNOWN";
 }    
 #else
@@ -412,8 +409,6 @@ const char* rho_rhodesapp_getplatform()
 #else
 	return "WINDOWS";
 #endif
-#elif defined(OS_SYMBIAN)
-	return "SYMBIAN";
 #elif defined(OS_ANDROID)
     return "ANDROID";
 #elif defined(OS_LINUX)

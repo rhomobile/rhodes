@@ -608,7 +608,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     public void onPrompt(View view, String prompt, String defaultResponse, final IPromptResult promptResult) {
-        if (defaultResponse.startsWith("__rhoNativeApiCall")) {
+        if ((defaultResponse != null) &&  defaultResponse.startsWith("__rhoNativeApiCall")) {
             Logger.D(TAG, "Execute JS hook: " + prompt);
             String res = nativeJSCallEntryPoint(prompt);
             Logger.D(TAG, "JS result: " + res);

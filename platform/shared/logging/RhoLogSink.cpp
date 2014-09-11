@@ -28,7 +28,9 @@
 
 #include "common/RhoFile.h"
 #include "common/StringConverter.h"
+#include "common/RhodesApp.h"
 #include "net/RawSocket.h"
+#include "net/URI.h"
 
 #if defined( OS_SYMBIAN )
 #include <e32debug.h>
@@ -200,11 +202,16 @@ void CLogSocketSink::writeLogMessage( String& strMsg )
 void CLogSocketSink::processCommand(IQueueCommand* pCmd)
 {
     LogCommand *cmd = (LogCommand *)pCmd;
-    if (!cmd)
+  
+    /*
+      Checking CRhodesApp instance is needed because net request requires it to be valid.
+      If socket sink is initialized from ext manager, log messages could occur before app instance is set so we will crash.
+    */     
+    if (!cmd || (common::CRhodesApp::getInstance()==0))
         return;
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
 
-	getNet().doRequest( "GET", cmd->m_url+"?LogSeverity="+cmd->m_body[0]+"&LogComment="+cmd->m_body, String(), 0, 0 );
+	getNet().doRequest( "GET", cmd->m_url+"?LogSeverity="+cmd->m_body[0]+"&LogComment="+net::URI::urlEncode(cmd->m_body), String(), 0, 0 );
 #else
 	getNet().doRequest( "POST", cmd->m_url, cmd->m_body, 0, 0 );
 #endif

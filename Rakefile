@@ -91,7 +91,6 @@ load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
-#load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
@@ -3516,39 +3515,12 @@ end
 #------------------------------------------------------------------------
 
 namespace "build" do
-  task :set_version, :version, :do_not_save_version do |t, args|
+  task :set_version, :version do |t, args|
     version = args[:version]
-    save_version = args[:do_not_save_version] != 'do_not_save_version'
 
     rhodes_dir = File.dirname(__FILE__)
 
-    File.open(File.join(rhodes_dir, 'version'), 'wb') { |f| f.write(version) } if save_version
-
-    ar_ver = []
-    version.split('.').each do |token|
-      digits = /[0-9]+/.match(token)
-      digits = '0' unless digits
-      ar_ver << digits
-    end
-    ar_ver << '0' while ar_ver.length < 5
-
-    File.open(File.join(rhodes_dir, 'version'), 'wb') { |f| f.write(version) } if save_version
-
-    Jake.edit_lines(File.join(rhodes_dir, 'platform/wm/rhodes/Rhodes.rc')) do |line|
-      case line
-      # FILEVERSION 2,0,0,5
-      # PRODUCTVERSION 2,0,0,5
-      when /^(\s*(?:FILEVERSION|PRODUCTVERSION)\s+)\d+,\d+,\d+,\d+\s*$/
-        "#{$1}#{ar_ver[0, 4].join(',')}"
-      # VALUE "FileVersion", "2, 0, 0, 5"
-      # VALUE "ProductVersion", "2, 0, 0, 5"
-      when /^(\s*VALUE\s+"(?:FileVersion|ProductVersion)",\s*)"\d+,\s*\d+,\s*\d+,\s*\d+"\s*$/
-        "#{$1}\"#{ar_ver[0, 4].join(', ')}\""
-      else
-        line
-      end
-    end
-
+    File.open(File.join(rhodes_dir, 'version'), 'wb') { |f| f.write(version) }
   end
 
   namespace "bundle" do
@@ -4056,25 +4028,6 @@ task :get_version do
     end
   end
 
-  # File.open("platform/symbian/build/release.properties","r") do |f|
-  #     file = f.read
-  #     major = ""
-  #     minor = ""
-  #     build = ""
-  #
-  #     if file.match(/release\.major=(\d+)/)
-  #       major =  $1
-  #     end
-  #     if file.match(/release\.minor=(\d+)/)
-  #       minor =  $1
-  #     end
-  #     if file.match(/build\.number=(\d+)/)
-  #       build =  $1
-  #     end
-  #
-  #     symver = major + "." + minor + "." + build
-  #   end
-
   File.open("platform/android/Rhodes/AndroidManifest.xml","r") do |f|
     file = f.read
     if file.match(/versionName="(\d+\.\d+\.*\d*)"/)
@@ -4110,7 +4063,6 @@ task :get_version do
   puts "Versions:"
   #puts "  Generator:        " + genver
   puts "  iPhone:           " + iphonever
-  #puts "  Symbian:          " + symver
   #puts "  WinMo:            " + wmver
   puts "  Android:          " + androidver
   puts "  Gem:              " + gemver
@@ -4140,14 +4092,6 @@ task :set_version, [:version] do |t,args|
   File.open("platform/iphone/Info.plist","w") do |f|
     f.write origfile.gsub(/CFBundleVersion<\/key>(\s+)<string>(\d+\.\d+\.*\d*)<\/string>/, "CFBundleVersion</key>\n\t<string>#{verstring}</string>")
   end
-
-  # File.open("platform/symbian/build/release.properties","r") { |f| origfile = f.read }
-  # File.open("platform/symbian/build/release.properties","w") do |f|
-  #   origfile.gsub!(/release\.major=(\d+)/,"release.major=#{major}")
-  #   origfile.gsub!(/release\.minor=(\d+)/,"release.minor=#{minor}")
-  #   origfile.gsub!(/build\.number=(\d+)/,"build.number=#{build}")
-  #   f.write origfile
-  # end
 
   File.open("platform/android/Rhodes/AndroidManifest.xml","r") { |f| origfile = f.read }
   File.open("platform/android/Rhodes/AndroidManifest.xml","w") do |f|
