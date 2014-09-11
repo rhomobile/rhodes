@@ -347,7 +347,7 @@ def prepare_production_ipa (app_path, app_name)
     end
   end
 
-  cp itunes_artwork, itunes_artwork_dst
+  #cp itunes_artwork, itunes_artwork_dst
 
   currentdir = Dir.pwd()
   chdir tmp_dir
@@ -2895,7 +2895,7 @@ namespace "device" do
         rm_rf File.join(parent_app_bin, "iTunesArtwork")
 
         cp itunes_artwork, itunes_artwork_dst
-        cp itunes_artwork, File.join(parent_app_bin, "iTunesArtwork")
+        #cp itunes_artwork, File.join(parent_app_bin, "iTunesArtwork")
 
 
 

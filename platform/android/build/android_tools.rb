@@ -426,7 +426,7 @@ def kill_adb_logcat(device_flag, log_path = $applog_path)
   match_str = device_opts.join(' ')
 
   #cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+(-(d|e|s\s+\S+))\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
-  cmd_re = /"?#{Regexp.escape($adb)}"?\s+(-(d|e|s\s+\S+))\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
+  cmd_re = /"?#{Regexp.escape($adb)}"?\s+(-(d|e|s\s+\S+))\s+logcat\s+.*?>\s+"?#{Regexp.escape(log_path)}"?/
   processes = Jake.get_process_list
   log_shell_pids = []
 
@@ -489,12 +489,44 @@ def kill_adb_and_emulator
 end
 module_function :kill_adb_and_emulator
 
-def logcat(device_flag = '-e', log_path = $applog_path)
+
+def process_filter(filter)
+  resultF = []
+
+  unless filter.nil? || filter.empty?
+    items = filter.strip.split(/\s+/)
+
+    items.each do |item|
+      if item =~ /(.+?):(.+)/
+        cat = $1
+        level = $2.upcase
+
+        if level =~ /^[VDIWEFS]$/
+          resultF << "#{cat}:#{level}"
+        else
+          BuildOutput.put_log(BuildOutput::WARNING,["Unknown log priority level '#{level}' for '#{cat}' in '#{item}'",'Accepted priority levels are:','V - Verbose (lowest priority)','D - Debug','I - Info','W - Warning','E - Error','F - Fatal','S - Silent (highest priority, on which nothing is ever printed)'],'Logcat filter')
+        end
+      else
+        BuildOutput.put_log(BuildOutput::WARNING,["Invalid logcat filtering format for '#{item}'",'Valid format is \'tag:priority\'','More documentation at http://developer.android.com/tools/debugging/debugging-log.html#filteringOutput'],'Logcat filter')
+      end
+    end
+  end
+
+  unless resultF.empty?
+    resultF << '*:S'
+    BuildOutput.put_log(BuildOutput::NOTE,["Logcat filter is set to #{resultF.join(' ')} all other items will be filtered out"],'Logcat filter')
+  end
+
+  resultF
+end
+module_function :process_filter
+
+def logcat(filter = nil, device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
     device_opts = device_options device_flag
     device_re = device_opts.join('\s+')
 
-    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
+    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+.*?>\s+"?#{Regexp.escape(log_path)}"?/
     pids = Jake.get_process_list
     log_pids = []
 
@@ -505,18 +537,19 @@ def logcat(device_flag = '-e', log_path = $applog_path)
     if log_pids.empty?
       rm_rf log_path if File.exist?(log_path)
       puts 'Starting new logcat'
-      Thread.new { Jake.run($adb, device_opts + ['logcat', '>', log_path], nil, true) }
+      data = process_filter(filter)
+      Thread.new { Jake.run($adb, device_opts + ['logcat'] + data + [ '>', "\"#{log_path}\""], nil, true) }
     end
   end
 end
 module_function :logcat
 
-def logcat_process(device_flag = '-e', log_path = $applog_path)
+def logcat_process(filter = nil, device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
     device_opts = device_options device_flag
     device_re = device_opts.join('\s+')
 
-    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
+    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+.*?>\s+"?#{Regexp.escape(log_path)}"?/
     pids = Jake.get_process_list
     log_pids = []
 
@@ -526,7 +559,8 @@ def logcat_process(device_flag = '-e', log_path = $applog_path)
 
     if log_pids.empty?
       puts 'Starting new logcat process'
-      Thread.new { system("\"#{$adb}\" #{device_opts.join(' ')} logcat > \"#{log_path}\"") }
+      data = process_filter(filter).join(' ')
+      Thread.new { system("\"#{$adb}\" #{device_opts.join(' ')} logcat #{data} > \"#{log_path}\" ") }
     end
   end
 end

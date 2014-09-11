@@ -121,12 +121,6 @@ module Rhogen
       template.source = 'app/index.erb'
       template.destination = "#{name}/app/index.erb"
     end
-=begin
-    template :bb_index do |template|
-      template.source = 'app/index.bb.erb'
-      template.destination = "#{name}/app/index.bb.erb"
-    end
-=end
 
     template :layout do |template|
       template.source = 'app/layout.erb'
@@ -290,27 +284,6 @@ module Rhogen
       template.source = 'show.erb'
       template.destination = "app/#{name.modulize}/show.erb"
     end
-=begin
-    template :bb_index do |template|
-      template.source = 'index.bb.erb'
-      template.destination = "app/#{name.modulize}/index.bb.erb"
-    end
-
-    template :bb_edit do |template|
-      template.source = 'edit.bb.erb'
-      template.destination = "app/#{name.modulize}/edit.bb.erb"
-    end
-
-    template :bb_new do |template|
-      template.source = 'new.bb.erb'
-      template.destination = "app/#{name.modulize}/new.bb.erb"
-    end
-
-    template :bb_show do |template|
-      template.source = 'show.bb.erb'
-      template.destination = "app/#{name.modulize}/show.bb.erb"
-    end
-=end
 
     template :controller do |template|
       underscore_name = name.modulize.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
@@ -893,27 +866,6 @@ module Rhogen
     template :extension_qt_src_impl do |template|
       template.source = 'extensions/montana/ext/platform/qt/src/Montana_impl.cpp'
       template.destination = "extensions/#{name}/ext/platform/qt/src/#{namecamelcase}_impl.cpp"
-    end
-
-
-    template :extension_bb_files do |template|
-      template.source = 'extensions/montana/ext/platform/bb/Montana.files'
-      template.destination = "extensions/#{name}/ext/platform/bb/#{namecamelcase}.files"
-    end
-
-    template :extension_bb_jgp do |template|
-      template.source = 'extensions/montana/ext/platform/bb/montana.jdp'
-      template.destination = "extensions/#{name}/ext/platform/bb/#{namefixed.downcase}.jdp"
-    end
-
-    template :extension_bb_Rakefile do |template|
-      template.source = 'extensions/montana/ext/platform/bb/Rakefile'
-      template.destination = "extensions/#{name}/ext/platform/bb/Rakefile"
-    end
-
-    template :extension_bb_java do |template|
-      template.source = 'extensions/montana/ext/platform/bb/src/com/montana/Montana.java'
-      template.destination = "extensions/#{name}/ext/platform/bb/src/com/#{namefixed}/#{namecamelcase}.java"
     end
 
     template :extension_test_controller do |template|
