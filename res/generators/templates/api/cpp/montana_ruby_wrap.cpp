@@ -5,6 +5,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>"
 
+#include "api_generator/RubyResultConvertor.h"
+
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/StringConverter.h"
 #include "common/AutoPointer.h"
@@ -170,12 +172,21 @@ if param.type == RhogenCore::TYPE_DOUBLE %>
     }
 <% end
 
+convert_args = ["argv[#{first_arg}]","arg#{first_arg}"].join(', ')
+
 if param.type == RhogenCore::TYPE_ARRAY %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_array(argv[<%= first_arg %>]) )
-            getStringArrayFromValue(argv[<%= first_arg %>], arg<%= first_arg %>);
+        {
+            <% if param.api_style == RhogenCore::API_STYLE_LEGACY %>
+            getStringArrayFromValue(<%= convert_args %>);
+            <% else %>
+            rho::String res;
+            <%= CppGen::result_converter(param) %>(<%= convert_args %>, res);
+            <% end %>
+        }
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
@@ -189,7 +200,14 @@ if param.type == RhogenCore::TYPE_HASH %>
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_hash(argv[<%= first_arg %>]) )
-            getStringHashFromValue(argv[<%= first_arg %>], arg<%= first_arg %>);
+        {
+            <% if param.api_style == RhogenCore::API_STYLE_LEGACY %>
+            getStringHashFromValue(<%= convert_args %>);
+            <% else %>
+            rho::String res;
+            <%= CppGen::result_converter(param) %>(<%= convert_args %>, res);
+            <% end %>
+        }
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );

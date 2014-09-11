@@ -7,6 +7,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>"
 
+#include "api_generator/JSONResultConvertor.h"
+
 #include "common/StringConverter.h"
 
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
@@ -140,19 +142,28 @@ end %>
     }
 <% end %>
 
+<% convert_args = ["argv[#{first_arg}]","arg#{first_arg}"].join(', ') %>
+
 <% if param.type == RhogenCore::TYPE_ARRAY %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( argv[<%= first_arg %>].isArray() )
+        CJSONEntry value(argv[<%= first_arg %>]);
+        if ( value.isArray() )
         {
-            CJSONArray arParam(argv[<%= first_arg %>]);
+            <% if param.api_style == RhogenCore::API_STYLE_LEGACY %>
+            CJSONArray arParam(value);
+            arg<%= first_arg %>.reserve(arParam.getSize());
             for( int i = 0; i < arParam.getSize(); i++ )
             {
                 arg<%= first_arg %>.addElement( arParam[i].getStringObject() );
             }
+            <% else %>
+            rho::String res;
+            <%= CppGen::result_converter(param) %>(value, arg<%= first_arg %>, res);
+            <% end %>
         }
-        else if (!argv[<%= first_arg %>].isNull())
+        else if (!value.isNull())
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
             return oRes.toJSON();
@@ -164,16 +175,22 @@ end %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( argv[<%= first_arg %>].isObject() )
+        CJSONEntry value(argv[<%= first_arg %>]);
+        if ( value.isObject() )
         {
-            CJSONStructIterator objIter(argv[<%= first_arg %>]);
+            <% if param.api_style == RhogenCore::API_STYLE_LEGACY %>
+            CJSONStructIterator objIter(value);
 
             for( ; !objIter.isEnd(); objIter.next() )
             {
                 arg<%= first_arg %>[objIter.getCurKey()] = objIter.getCurString();
             }
+            <% else %>
+            rho::String res;
+            <%= CppGen::result_converter(param) %>(value, arg<%= first_arg %>, res);
+            <% end %>
         }
-        else if (!argv[<%= first_arg %>].isNull())
+        else if (!value.isNull())
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
             return oRes.toJSON();

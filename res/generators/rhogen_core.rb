@@ -10,6 +10,11 @@ module RhogenCore
   TYPE_SELF = 'SELF_INSTANCE'
   TYPE_MIXED = 'MIXED' #for hash with several typed fields
 
+
+  API_STYLE_LEGACY = 'LEGACY'
+  API_STYLE_COMPLEX = 'COMPLEX'
+  API_STYLE_VARIANT = 'VARIANT'
+
   # TYPE_AOH = 'ARRAYOFHASHES'
   # TYPE_HOH = 'HASHOFHASHES'
 
@@ -108,10 +113,6 @@ module RhogenCore
     KIND_COMPOSITE = 'COMPOSITE'
     KIND_GENERATED = 'GENERATED'
 
-    API_STYLE_LEGACY = 'LEGACY'
-    API_STYLE_COMPLEX = 'COMPLEX'
-    API_STYLE_VARIANT = 'VARIANT'
-
     class << self
       def ty_string(default_value = '')
         self.new(TYPE_STRING, default_value)
@@ -131,14 +132,26 @@ module RhogenCore
 
       def ty_array(value_type = TYPE_STRING)
         inst = self.new(TYPE_ARRAY)
-        inst.value_type = value_type
-        inst
+        if value_type.kind_of?(GeneratedType)
+          inst.value = value_type
+        else
+          inst.value_type = value_type
+        end
+       inst
       end
 
       def ty_hash(key_type = TYPE_STRING, value_type = TYPE_STRING)
         inst = self.new(TYPE_HASH)
-        inst.key_type = key_type
-        inst.value_type = value_type
+        if key_type.kind_of?(GeneratedType)
+          inst.key = key_type
+        else
+          inst.key_type = key_type
+        end
+        if value_type.kind_of?(GeneratedType)
+          inst.value = value_type
+        else
+          inst.value_type = value_type
+        end
         inst
       end
 
@@ -152,7 +165,7 @@ module RhogenCore
       end
 
       def process_type(type_string)
-        type_string = type_string.gsub(/\s+/, "").gsub('ARRAYOFHASHES','[{:}]').gsub('HASHOFHASHES','{:{}}')
+        type_string = type_string.gsub(/\s+/, "").gsub('ARRAYOFHASHES','[{:}]').gsub('HASHOFHASHES','{:{:}}')
 
         recursive_create(type_parse(type_string))
       end
@@ -173,12 +186,12 @@ module RhogenCore
           pos += 1
           #initial state, should be '[' , '{' or type
           if elem.match(/([a-z_)]+)/i)
-            result = {:type => :ident, :val => $1}
+            result = {:type => :ident, :value => $1}
           else
             case elem
               # closing sequence (upper step)
               when ']', '}', ':'
-                result = {:type => :ident, :val => 'STRING'}
+                result = {:type => :ident, :value => 'STRING'}
                 pos -= 1
               # array
               when '['
@@ -221,8 +234,10 @@ module RhogenCore
             result = self.new(node[:value])
           when :array
             result = ty_array(recursive_create(node[:value]))
+            result.api_style = API_STYLE_COMPLEX
           when :hash
             result = ty_hash(recursive_create(node[:key]), recursive_create(node[:value]))
+            result.api_style = API_STYLE_COMPLEX
         end
 
         result
@@ -327,6 +342,18 @@ module RhogenCore
     def self_type=(val)
       raise 'self type cannod be empty nor nil' if val.nil? || val.empty?
       @self_type = val
+    end
+
+    def simple_type?
+      SIMPLE_TYPES.include?(@type)
+    end
+
+    def simple_key?
+      @key.nil? ? true : SIMPLE_TYPES.include?(@key.type)
+    end
+
+    def simple_value?
+      @value.nil? ? true : SIMPLE_TYPES.include?(@value.type)
     end
 
     attr_writer :value
@@ -1039,6 +1066,8 @@ module RhogenCore
 
     generated_name =  xml_param_item.attribute('name') != nil ? xml_param_item.attribute('name').to_s : predefined_name
 
+    api_style = xml_param_item.attribute('apiStyle') != nil ? xml_param_item.attribute('apiStyle').to_s.upcase : API_STYLE_LEGACY
+
     if ALL_TYPES.include?(param_type.upcase)
       param_type = param_type.upcase
       if SIMPLE_TYPES.include?(param_type)
@@ -1096,19 +1125,29 @@ module RhogenCore
             puts "NO TYPE"
         end
       end
-    end
+    else
+      case api_style
+        when API_STYLE_COMPLEX
+          param = MethodParam.process_type(param_type.upcase)
+          param.name = generated_name
+        else
+          raise "invalid parameter type #{param_type}"
+      end
+   end
 
-    if xml_param_item.attribute('propertyHash') != nil
-      param.is_property_hash = (xml_param_item.attribute('propertyHash').to_s == 'true')
-    end
+    unless param.nil?
+      if xml_param_item.attribute('propertyHash') != nil
+        param.is_property_hash = (xml_param_item.attribute('propertyHash').to_s == 'true')
+      end
 
-    xml_param_item.elements.each('DESC') do |xml_desc|
-      param.desc = xml_desc.text
-    end
+      xml_param_item.elements.each('DESC') do |xml_desc|
+        param.desc = xml_desc.text
+      end
 
-    xml_param_item.elements.each('CAN_BE_NIL') do |canbenil|
-      if canbenil.parent == xml_param_item
-        param.can_be_nil = true
+      xml_param_item.elements.each('CAN_BE_NIL') do |canbenil|
+        if canbenil.parent == xml_param_item
+          param.can_be_nil = true
+        end
       end
     end
 
@@ -1384,7 +1423,7 @@ module RhogenCore
   def process_method(xml_module_method, module_item, self_type)
     module_method = ModuleMethod.new()
 
-    item_attributes = collect_inherited_attributes(xml_module_method, ['deprecated', 'generateAPI', 'generateDoc', 'runInThread', 'hasCallback'])
+    item_attributes = collect_inherited_attributes(xml_module_method, ['deprecated', 'generateAPI', 'generateDoc', 'runInThread', 'hasCallback','legacyApiContainers'])
 
     module_method.name = xml_module_method.attribute('name').to_s
     module_method.native_name = module_method.name.split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")

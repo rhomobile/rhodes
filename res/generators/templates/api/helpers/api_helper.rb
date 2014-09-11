@@ -17,31 +17,83 @@ class CppGen
         when RhogenCore::TYPE_ARRAY
           case gen_type.api_style
             # always and only strings
-            when RhogenCore::GeneratedType::API_STYLE_LEGACY
+            when RhogenCore::API_STYLE_LEGACY
               val_type = "rho::String" #simple_native_type_or_string(gen_type.value)
-            when RhogenCore::GeneratedType::API_STYLE_COMPLEX
+            when RhogenCore::API_STYLE_COMPLEX
               val_type = native_type(gen_type.value)
           end
 
-          res = "rho::Vector<#{val_type}>"
+          res = "rho::Vector<#{val_type}> "
         when RhogenCore::TYPE_HASH
           case gen_type.api_style
             # always and only strings
-            when RhogenCore::GeneratedType::API_STYLE_LEGACY
+            when RhogenCore::API_STYLE_LEGACY
               key_type = "rho::String" #simple_native_type_or_string(gen_type.key)
               val_type = "rho::String" #simple_native_type_or_string(gen_type.value)
-            when RhogenCore::GeneratedType::API_STYLE_COMPLEX
+            when RhogenCore::API_STYLE_COMPLEX
               key_type = native_type(gen_type.key)
               val_type = native_type(gen_type.value)
           end
 
-          res = "rho::Hashtable<#{key_type}, #{val_type}>"
+          res = "rho::Hashtable<#{key_type}, #{val_type}> "
         else
           #Module name, pass ID of object
           res = "rho::String"
         #raise "Unknown parameter type: #{gen_type}"
       end
       res
+    end
+
+    def templatify(fn_name, datum)
+      "#{fn_name}" #"<#{datum.map{|x| native_type(x)}.join(', ')}>"
+    end
+
+    def result_converter(gen_type)
+      result = ''
+      case gen_type.type
+        when RhogenCore::TYPE_ARRAY
+          if gen_type.simple_value?
+            datum = [gen_type.value]
+            result = templatify('rho_value_to_typed_array', datum)
+          elsif gen_type.value.simple_value?
+            if gen_type.value_type == RhogenCore::TYPE_ARRAY
+              datum = [gen_type.value.value]
+              result = templatify('rho_value_to_typed_array_array', datum)
+            elsif gen_type.value_type == RhogenCore::TYPE_HASH
+              datum = [gen_type.value.key, gen_type.value.value]
+              result = templatify('rho_value_to_typed_array_hash', datum)
+            else
+              raise "invalid parameter 1 #{gen_type.name}"
+            end
+
+          else
+            raise "invalid parameter 2 #{gen_type.name}"
+          end
+        when RhogenCore::TYPE_HASH
+          if gen_type.simple_value?
+            datum = [gen_type.key, gen_type.value]
+            result = templatify('rho_value_to_typed_hash', datum)
+          elsif gen_type.value.simple_value?
+            if gen_type.value_type == RhogenCore::TYPE_ARRAY
+              datum = [gen_type.key, gen_type.value.value]
+              result = templatify('rho_value_to_typed_hash_array', datum)
+            elsif gen_type.value_type == RhogenCore::TYPE_HASH
+              datum = [gen_type.key, gen_type.value.key, gen_type.value.value]
+              result = templatify('rho_value_to_typed_hash_hash', datum)
+            else
+              raise "invalid parameter 3 #{gen_type.name}"
+            end
+
+          else
+            raise "invalid parameter 4 #{gen_type.name}"
+          end
+
+        else
+          raise "invalid parameter 5 #{gen_type.name}"
+      end
+
+
+      result
     end
 
     def native_type_arg(gen_type)
