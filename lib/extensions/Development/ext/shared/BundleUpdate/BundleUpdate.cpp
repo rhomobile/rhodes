@@ -256,6 +256,11 @@ void callback_system_update_bundle_callback(void *arg, rho::String const &strQue
 
 
 void Init_UpdateBundle() {
+    
+    DevHTTPServer::getInstance()->getHTTPServer()->register_uri("/development/update_bundle", callback_system_update_bundle);
+    DevHTTPServer::getInstance()->getHTTPServer()->register_uri("/development/update_bundle_callback", callback_system_update_bundle_callback);
+    DevHTTPServer::getInstance()->getHTTPServer()->register_uri("/development/get_info", callback_system_get_info_callback);
+    
     rho::String our_IP = DevHTTPServer::getInstance()->getLocalIPAdress();
     rho::String message = "Connect to Development Extras HTTP server : http://";
     message = message + our_IP + ":" + DevHTTPServer::getInstance()->getPort();

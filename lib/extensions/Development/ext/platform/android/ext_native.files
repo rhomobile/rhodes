@@ -5,6 +5,8 @@ ext/platform/android/jni/Development_impl.cpp
 ext/platform/android/jni/ifaddrs.c
 ext/shared/BundleUpdate/BundleUpdate.cpp
 ext/shared/HTTPServer/HTTPServer.cpp
+ext/shared/Log/LogAccess.cpp
+ext/shared/DevelopmentSetup.cpp
 ext/shared/generated/development_api_init.cpp
 ext/shared/generated/development_js_api.cpp
 ext/shared/generated/development_ruby_api.c

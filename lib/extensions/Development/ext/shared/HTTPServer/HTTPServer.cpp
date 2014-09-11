@@ -54,10 +54,7 @@ void DevHTTPServer::init() {
     
     m_httpServer = new rho::net::CHttpServer(RHO_DEVELOPMENT_SERVER_PORT, szRootPath, szUserPath, szRootPath, true, true);
     
-    m_httpServer->register_uri("/development/update_bundle", callback_system_update_bundle);
-    m_httpServer->register_uri("/development/update_bundle_callback", callback_system_update_bundle_callback);
-    m_httpServer->register_uri("/development/get_info", callback_system_get_info_callback);
-
+    m_httpServer->disableAllLogging();
     
 #ifdef OS_ANDROID
     m_local_IP_adress = get_local_ip_adress();
@@ -102,6 +99,10 @@ void DevHTTPServer::init() {
     RAWTRACE(m_local_IP_adress.c_str());
     RAWTRACE("$$$$$$$$$$$$$$$$$$$$$$$$$$");
     
+}
+
+rho::net::CHttpServer* DevHTTPServer::getHTTPServer() {
+    return m_httpServer;
 }
 
 
