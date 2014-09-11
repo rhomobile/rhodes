@@ -193,7 +193,11 @@ class OneTimeServer
     LiveUpdatingConfig::subscribers.each { |each|
       puts "#{each.platform} will built".primary
       builtPlatforms << each.platform
-      Rake::Task[each.buildTask].invoke
+      #Rake::Task[each.buildTask].invoke
+
+      RhoDevelopment.setup(File.join(LiveUpdatingConfig::applicationRoot, '.development'), each.normalizedPlatformName)
+      RhoDevelopment.make_partial_bundle
+
       from = File.join($targetdir, "upgrade_bundle_partial.zip")
       to = File.join(LiveUpdatingConfig::documentRoot, 'download', each.platform, LiveUpdatingConfig::downloadBundleName)
       FileUtils.mkpath(File.dirname(to))
@@ -257,7 +261,7 @@ class Subscriber
     if ['apple', 'iphone'].include?(@platform.downcase)
       return 'iphone'
     end
-    @platform
+    @platform.downcase
   end
 
   def buildTask
@@ -303,7 +307,7 @@ class DeviceFinder
     1.upto(254) { |each|
       url = URI("http://#{mask}.#{each}:37579/development/get_info")
       request = Typhoeus::Request.new(url)
-      request.options['timeout']= 1
+      request.options['timeout'] = 10
       request.on_complete do |response|
         if response.code == 200
           data = JSON.parse(response.body)
