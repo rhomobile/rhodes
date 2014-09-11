@@ -17,6 +17,7 @@
 extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam);
+extern "C" bool rho_wmimpl_get_textselectionenabled();
 
 IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
 
@@ -88,7 +89,8 @@ LRESULT CEBrowserEngine::CreateEngine()
     
 		// See if text selection is enabled, so we can pass the correct value through the GetHostInfo() interface
 		//configFunction(m_tabID, L"HTMLStyles\\TextSelectionEnabled", tcConfigSetting);
-		m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
+		//m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
+		m_bTextSelectionEnabled = rho_wmimpl_get_textselectionenabled();
 
 		// Create an instance of a web browser object (from Shdocvw.dll).
 		
