@@ -310,7 +310,29 @@ def update_rhodefs_header_file
 end
 
 
-namespace "dev" do
+namespace 'dev' do
+  namespace 'update'do
+
+    task :onetime do
+      LiveUpdatingConfig::applicationRoot = $app_basedir
+      server = OneTimeServer.new
+      server.run
+    end
+
+  end
+
+  task :discovery => ["config:initialize"] do
+    finder = DeviceFinder.new($app_basedir)
+    finder.run
+  end
+
+  task :stopWebServer do
+    WebServerWrapper::shotdown
+  end
+
+
+
+
   task :serve, [:serverUri] => ["config:initialize"] do |t, args|
 
     watcher = RhoWatcher.new
@@ -338,10 +360,7 @@ namespace "dev" do
     watcher.run
   end
 
-  task :discovery => ["config:initialize"] do
-    discovery = Discovery.new($app_basedir)
-    discovery.run
-  end
+
 
 end
 

@@ -7,113 +7,244 @@ require 'typhoeus'
 require_relative 'ExtendedString'
 
 
+class LiveUpdatingConfig
+  @@applicationRoot
+
+  def self.applicationRoot= (aString)
+    @@aplicationRoot = aString
+  end
+
+  def self.applicationRoot
+    @@aplicationRoot
+  end
+
+  def self.ownIPAddress
+    IPSocket.getaddress(Socket.gethostname)
+  end
+
+  def self.isWebServerAliveRequest
+    #TODO Remove hard code
+    URI('http://192.168.1.102:3000/alive')
+  end
+
+  def self.stoppingWebServerRequest
+    #TODO Remove hard code
+    URI('http://192.168.1.102:3000/quit')
+  end
+
+  def self.webServerUri
+    "#{self.ownIPAddress}:#{self.webServerPort}"
+  end
+
+  def self.webServerPort
+    3000
+  end
+
+  def self.documentRoot
+    #TODO Remove hard code
+    '/Users/mva/Temp'
+  end
+
+  def self.configFilename
+    File.join(self.applicationRoot, 'dev-config.yml')
+  end
+
+  def self.subscribers
+    subscribers = []
+    if File.exist?(self.configFilename)
+      config = YAML.load_file(self.configFilename)
+      config['devices'].each { |each|
+        subscriber = Subscriber.new
+        subscriber.uri = "#{each['uri']}"
+        subscriber.platform = each['platform']
+        subscriber.name = each['name']
+        subscriber.application = each['application']
+        subscribers << subscriber
+      }
+    else
+      puts "Devices configuration file #{configFilename} not found".warning
+    end
+    subscribers
+  end
+
+  def self.subscriberPlatforms
+    (self.subscribers.collect { |each| each.normalizedPlatformName }).to_set
+  end
+
+  def self.downloadBundleName
+    'bundle.zip'
+  end
+
+end
+
+class WebServerWrapper
+  @@webServer
+
+  def self.startServer
+    host = LiveUpdatingConfig::ownIPAddress
+    port = LiveUpdatingConfig::webServerPort
+    documentRoot = LiveUpdatingConfig::documentRoot
+    #@@webServer = WEBrick::HTTPServer.new :BindAddress => host, :Port => port, :DocumentRoot => documentRoot
+    @@webServer = WEBrick::HTTPServer.new(
+        :Port => port,
+        :DocumentRoot => documentRoot,
+        #:ServerType => WEBrick::Daemon,
+        :ServerType => WEBrick::SimpleServer,
+        :BindAddress => host
+    )
+    self.configure
+    @@webServer.start
+  end
+
+  def self.configure
+    @@webServer.mount_proc '/quit' do |request, response|
+      response.body = "Server is shot down"
+      response.status = 200
+      response.content_length = response.body.length
+      @@webServer.shutdown
+    end
+
+    @@webServer.mount_proc '/alive' do |request, response|
+      response.body = "Server is alive"
+      response.status = 200
+      response.content_length = response.body.length
+    end
+  end
+
+  def self.isAlive
+    result = true
+    url = LiveUpdatingConfig::isWebServerAliveRequest
+    http = Net::HTTP.new(url.host, url.port)
+    http.open_timeout = 5
+    begin
+      http.start() { |http|
+        http.get(url.path)
+      }
+    rescue Errno::ECONNREFUSED,
+        Net::OpenTimeout => e
+      result = false
+    end
+    result
+  end
+
+  def self.shotdown
+    url = LiveUpdatingConfig::stoppingWebServerRequest
+    http = Net::HTTP.new(url.host, url.port)
+    http.open_timeout = 5
+    http.start() { |http|
+      http.get(url.path)
+      puts 'Web server is shotdown'.primary
+    }
+  end
+
+  def self.ensureRunning
+    if !WebServerWrapper.isAlive
+      puts "Web server is not started".warning
+      WebServerWrapper::startServer
+      puts "Starting web server".primary
+    else
+      puts "Web server already started".primary
+    end
+  end
+
+end
+
 class OneTimeServer
 
 
   def run
-    if !self.webServerWorking?
-      self.startServer
-    end
-
+    WebServerWrapper::ensureRunning
     if self.sourceChanged?
+      puts "Source code is changed".primary
+      self.buildPartialBundles
       self.notifySubscribers
+      puts "Subscribers are notified".primary
+    else
+      puts "Source code changes are not detected".primary
     end
-
-  end
-
-  def webServerWorking?
-    true
   end
 
   def sourceChanged?
-    true
+    result = false
+    devDir = File.join(LiveUpdatingConfig::applicationRoot, '.development')
+    updatedListFilename = File.join(devDir, 'upgrade_package_add_files.txt')
+    removedListFilename = File.join(devDir, 'upgrade_package_remove_files.txt')
+    mkdir_p devDir
+    LiveUpdatingConfig::subscriberPlatforms.each { |each|
+      RhoDevelopment.setup(devDir, each)
+      is_require_full_update = RhoDevelopment.is_require_full_update
+      result = RhoDevelopment.check_changes_from_last_build(updatedListFilename, removedListFilename)
+    }
+    puts "check_changes_from_last_build = #{result}".warning
+    result = true if result.nil?
+    result
+  end
+
+  def buildPartialBundles
+    puts "Building".primary
+
+    builtPlatforms = []
+    LiveUpdatingConfig::subscribers.each { |each|
+      puts "#{each.platform} will built".primary
+      builtPlatforms << each.platform
+      Rake::Task[each.buildTask].invoke
+      from = File.join($targetdir, "upgrade_bundle_partial.zip")
+      to = File.join(LiveUpdatingConfig::documentRoot, 'download', each.platform, LiveUpdatingConfig::downloadBundleName)
+      FileUtils.mkpath(File.dirname(to))
+      FileUtils.cp(from, to)
+      puts "Bundle for platform #{each.platform} was built and put into #{to}".primary
+    }
   end
 
   def notifySubscribers
-    self.subscribers.each { |subscriber|
+    LiveUpdatingConfig::subscribers.each { |subscriber|
       self.notifySubscriber(subscriber)
     }
   end
 
   def notifySubscriber(aSubscriber)
-
-  end
-
-  def subscribers
-    if (defined(@subscribers)).nil?
-      self.loadConfig
-    end
-
-  end
-
-  def loadConfig
-    if File.exist?(self.configFilename)
-      config = YAML.load_file(self.configFilename)
-      config['devices'].each { |each|
-        subscriber = Subscriber.new
-        subscriber.ip = "#{each['ip']}"
-        subscriber.port = "#{each['port']}"
-        subscriber.platform = each['platform']
-        subscriber.name = each['name']
-        subscriber.application = each['application']
-        @subscribers << subscriber
-        puts "#{subscriber} added"
+    url = updateUrlForSubscriber(aSubscriber)
+    puts "Send to #{aSubscriber}  request #{url}".primary
+    begin
+      http = Net::HTTP.new(url.host, url.port)
+      http.open_timeout = 5
+      http.start() { |http|
+        http.get(url.path + '?' + url.query)
       }
-    else
-      puts "Devices configuration file #{configFilename} not found".warning
+    rescue Errno::ECONNREFUSED,
+        Net::OpenTimeout => e
+      puts "#{aSubscriber} is not accessible".warning
     end
   end
 
-  def applicationRoot=(aString)
-    @applicationRoot = aString
+  def updateUrlForSubscriber(aSubscriber)
+    ip = LiveUpdatingConfig::ownIPAddress
+    port = LiveUpdatingConfig::webServerPort
+    uri = LiveUpdatingConfig::webServerUri
+    urlForDownload = "http://#{uri}/download/#{aSubscriber.platform}/#{LiveUpdatingConfig::downloadBundleName}&server_ip=#{ip}&server_port=#{port}"
+    deviceUrl = "http://#{aSubscriber.uri}/development/update_bundle"
+    URI("#{deviceUrl}?package_url=#{urlForDownload}")
   end
 
-  def configFilename
-    File.join(@applicationRoot, 'dev-config.yml')
-  end
 end
 
-
 class Subscriber
+  @uri
+  @platform
+  @name
+  @application
 
-  def ip=(aString)
-    @ip = aString
-  end
+  attr_accessor :uri
+  attr_accessor :platform
+  attr_accessor :name
+  attr_accessor :application
 
   def ip
-    @ip
-  end
-
-  def port=(aString)
-    @port = aString
+    @uri
   end
 
   def port
-    @port
-  end
-
-  def platform=(aString)
-    @platform = aString
-  end
-
-  def platform
-    @platform
-  end
-
-  def name=(aString)
-    @name = aString
-  end
-
-  def name
-    @name
-  end
-
-  def application=(aString)
-    @application = aString
-  end
-
-  def application
-    @application
+    @uri
   end
 
   def normalizedPlatformName
@@ -139,29 +270,27 @@ class Subscriber
 
 end
 
-class Discovery
+class DeviceFinder
   def initialize(appDir)
     @applicationDirectory = appDir
   end
 
   def ownIP
-    IPSocket.getaddress(Socket.gethostname)
+    LiveUpdatingConfig::ownIPAddress
   end
 
   def run
-    subscribers = self.renameMe
+    puts "Start discovering...".primary
+    subscribers = self.discovery
     if subscribers.empty?
-      puts 'No devices found'.warning
+      puts 'No devices found'.primary
     else
       puts subscribers.to_s.info
       self.saveSubscribers(subscribers)
     end
   end
 
-
-#TODO: Rename this method
-  def renameMe
-    puts "Start discovering".primary
+  def discovery
     subscribers = []
     mask = self.ownIP.split('.')[0, 3].join('.')
     hydra = Typhoeus::Hydra.hydra
@@ -196,7 +325,6 @@ class Discovery
     config['devices'] = anArray
     yml = config.to_yaml
     File.open(filename, 'w') { |file| file.write yml }
-
   end
 
 end
