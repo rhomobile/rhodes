@@ -14,9 +14,6 @@
 
 #include "net/HttpServer.h"
 
-#include "../BundleUpdate/BundleUpdate.h"
-
-
 #define RHO_DEVELOPMENT_SERVER_PORT 37579
 
 
@@ -37,6 +34,8 @@ public:
     
     rho::String getLocalIPAdress();
     rho::String getPort();
+    
+    rho::net::CHttpServer* getHTTPServer();
     
 protected:
     virtual void run();

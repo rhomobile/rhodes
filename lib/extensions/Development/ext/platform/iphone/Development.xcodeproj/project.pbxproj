@@ -25,6 +25,9 @@
 		FA3E1F3C1779EFD700F5E33A /* development_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F391779EFD700F5E33A /* development_api_init.cpp */; };
 		FA3E1F3D1779EFD700F5E33A /* development_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3A1779EFD700F5E33A /* development_js_api.cpp */; };
 		FA3E1F3E1779EFD700F5E33A /* development_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3B1779EFD700F5E33A /* development_ruby_api.c */; };
+		FA3F0C6519C23C7D0072A7F4 /* LogAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3F0C6319C23C7D0072A7F4 /* LogAccess.cpp */; };
+		FA3F0C6619C23C7D0072A7F4 /* LogAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3F0C6419C23C7D0072A7F4 /* LogAccess.h */; };
+		FA3F0C6819C2566D0072A7F4 /* DevelopmentSetup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3F0C6719C2566D0072A7F4 /* DevelopmentSetup.cpp */; };
 		FA4E8D1E19A24F190092822F /* BundleUpdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4E8D1D19A24F190092822F /* BundleUpdate.cpp */; };
 		FA98A844199CFC3E00FFF8BD /* HTTPServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA98A843199CFC3E00FFF8BD /* HTTPServer.cpp */; };
 		FAC155E7145855CF0016F3BD /* Development_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Development_Prefix.pch */; };
@@ -52,6 +55,9 @@
 		FA3E1F391779EFD700F5E33A /* development_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = development_api_init.cpp; path = ../../shared/generated/development_api_init.cpp; sourceTree = "<group>"; };
 		FA3E1F3A1779EFD700F5E33A /* development_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = development_js_api.cpp; path = ../../shared/generated/development_js_api.cpp; sourceTree = "<group>"; };
 		FA3E1F3B1779EFD700F5E33A /* development_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = development_ruby_api.c; path = ../../shared/generated/development_ruby_api.c; sourceTree = "<group>"; };
+		FA3F0C6319C23C7D0072A7F4 /* LogAccess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogAccess.cpp; path = ../../shared/Log/LogAccess.cpp; sourceTree = "<group>"; };
+		FA3F0C6419C23C7D0072A7F4 /* LogAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LogAccess.h; path = ../../shared/Log/LogAccess.h; sourceTree = "<group>"; };
+		FA3F0C6719C2566D0072A7F4 /* DevelopmentSetup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DevelopmentSetup.cpp; path = ../../shared/DevelopmentSetup.cpp; sourceTree = "<group>"; };
 		FA4E8D1D19A24F190092822F /* BundleUpdate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BundleUpdate.cpp; path = ../../shared/BundleUpdate/BundleUpdate.cpp; sourceTree = "<group>"; };
 		FA4E8D2019A250180092822F /* BundleUpdate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BundleUpdate.h; path = ../../shared/BundleUpdate/BundleUpdate.h; sourceTree = "<group>"; };
 		FA98A843199CFC3E00FFF8BD /* HTTPServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HTTPServer.cpp; path = ../../shared/HTTPServer/HTTPServer.cpp; sourceTree = "<group>"; };
@@ -105,6 +111,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FA3F0C6719C2566D0072A7F4 /* DevelopmentSetup.cpp */,
+				FA3F0C3C19C23C540072A7F4 /* Log */,
 				FA4E8D1F19A24F1F0092822F /* BundleUpdate */,
 				FA98A842199CFBD800FFF8BD /* HTTPServer */,
 				FA3E1F161779EF7600F5E33A /* impl */,
@@ -185,6 +193,15 @@
 			name = api;
 			sourceTree = "<group>";
 		};
+		FA3F0C3C19C23C540072A7F4 /* Log */ = {
+			isa = PBXGroup;
+			children = (
+				FA3F0C6319C23C7D0072A7F4 /* LogAccess.cpp */,
+				FA3F0C6419C23C7D0072A7F4 /* LogAccess.h */,
+			);
+			name = Log;
+			sourceTree = "<group>";
+		};
 		FA4E8D1F19A24F1F0092822F /* BundleUpdate */ = {
 			isa = PBXGroup;
 			children = (
@@ -215,6 +232,7 @@
 				FA3E1F251779EFAA00F5E33A /* DevelopmentSingleton.h in Headers */,
 				FA3E1F281779EFB100F5E33A /* IDevelopment.h in Headers */,
 				FA3E1F2F1779EFBB00F5E33A /* DevelopmentBase.h in Headers */,
+				FA3F0C6619C23C7D0072A7F4 /* LogAccess.h in Headers */,
 				FA3E1F311779EFBB00F5E33A /* DevelopmentFactoryBase.h in Headers */,
 				FA3E1F331779EFBB00F5E33A /* DevelopmentSingletonBase.h in Headers */,
 			);
@@ -272,6 +290,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA3F0C6519C23C7D0072A7F4 /* LogAccess.cpp in Sources */,
 				FA3E1F221779EFAA00F5E33A /* Development.m in Sources */,
 				FA3E1F231779EFAA00F5E33A /* DevelopmentFactorySingleton.m in Sources */,
 				FA4E8D1E19A24F190092822F /* BundleUpdate.cpp in Sources */,
@@ -280,6 +299,7 @@
 				FA3E1F301779EFBB00F5E33A /* DevelopmentBase.m in Sources */,
 				FA3E1F321779EFBB00F5E33A /* DevelopmentFactoryBase.m in Sources */,
 				FA3E1F341779EFBB00F5E33A /* DevelopmentSingletonBase.m in Sources */,
+				FA3F0C6819C2566D0072A7F4 /* DevelopmentSetup.cpp in Sources */,
 				FA3E1F361779EFC400F5E33A /* development_js_wrap.mm in Sources */,
 				FA3E1F381779EFCB00F5E33A /* development_ruby_wrap.m in Sources */,
 				FA98A844199CFC3E00FFF8BD /* HTTPServer.cpp in Sources */,

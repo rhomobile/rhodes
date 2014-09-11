@@ -120,6 +120,7 @@ public:
     
     int getPort();
     rho::String getIPAdress();
+    void disableAllLogging();
 
     bool call_ruby_method(String const &uri, String const &body, String& strReply);
 private:

@@ -57,21 +57,10 @@ extern "C" void Init_Development(void)
 
 }
 
-extern "C"  void init_Development_HTTP_Server();
-
-extern "C" void Init_UpdateBundle();
-
-static bool already_initialised = false;
-
-
+extern "C" void Development_Init();
 
 extern "C" void Init_Development_extension() {
-    if (!already_initialised) {
-        Init_Development();
-        init_Development_HTTP_Server();
-        Init_UpdateBundle();
-    }
-    already_initialised = true;
+     Development_Init();
 }
 
 
