@@ -44,6 +44,8 @@ class IPhoneBuild
               result << "#{m[1]}clang ... -c #{m[3]} -o #{m[4]}.o"
               data = ""
             end
+          elsif data =~ /error[s]? generated/
+            fail "had errors during compilation"
           end
           if data
             result << data
@@ -70,6 +72,10 @@ class IPhoneBuild
         Jake.run2(cmd,args,{}) do |line|
           puts process_output(line)
           $stdout.flush
+        end
+
+        if $?.exitstatus != 0
+          fail "Command '#{cmd}' with args '#{args.join(' ')}' failed with code #{$?.exitstatus}"
         end
 
         $?
