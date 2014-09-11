@@ -263,8 +263,8 @@ def check_changes_from_last_build(add_file_path, remove_file_path)
   end
 
 
-  cp get_last_state_file_path, '/Users/MOHUS/ReloadBundleDemo/old_state.txt'
-  cp current_state_file, '/Users/MOHUS/ReloadBundleDemo/new_state.txt'
+  #cp get_last_state_file_path, '/Users/MOHUS/ReloadBundleDemo/old_state.txt'
+  #cp current_state_file, '/Users/MOHUS/ReloadBundleDemo/new_state.txt'
 
   rm_rf get_last_state_file_path if File.exist? get_last_state_file_path
   cp current_state_file, get_last_state_file_path
