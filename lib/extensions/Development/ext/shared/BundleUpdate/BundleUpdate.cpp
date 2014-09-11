@@ -68,7 +68,7 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
     }
     
     our_responce_server_url = "http://";
-    our_responce_server_url = our_responce_server_url + qServerIP + ":" + qServerPort + "/responce_from_device";
+    our_responce_server_url = our_responce_server_url + qServerIP + ":" + qServerPort + "/response_from_device";
     
     rho::String fileURL = qURL;
     
