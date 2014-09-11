@@ -331,7 +331,7 @@ bool rho_value_to_typed_array(const CJSONEntry& value, rho::Vector<ArrayVal>& de
         {
             if (valueTo(iter.getCurItem(), elem))
             {
-                dest.push(elem);
+                dest.push_back(elem);
             }
         }
         return true;
@@ -393,7 +393,7 @@ bool rho_value_to_typed_array_array(const CJSONEntry& value, rho::Vector< rho::V
 
             if (rho_value_to_typed_array(iter.getCurItem(), elem))
             {
-                dest.push(elem);
+                dest.push_back(elem);
             }
         }
         return true;

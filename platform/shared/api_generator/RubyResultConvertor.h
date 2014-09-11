@@ -340,7 +340,7 @@ bool rho_value_to_typed_array(VALUE value, rho::Vector<ArrayVal>& dest)
         {
             if (valueTo(RARRAY_PTR(value)[i], elem))
             {
-                dest.push(elem);
+                dest.push_back(elem);
             }
         }
         return true;
