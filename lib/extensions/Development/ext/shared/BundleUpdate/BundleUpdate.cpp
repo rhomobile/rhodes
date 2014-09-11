@@ -68,7 +68,7 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
     }
     
     our_responce_server_url = "http://";
-    our_responce_server_url = our_responce_server_url + qServerIP + ":" + qServerPort + "/request_full_update";
+    our_responce_server_url = our_responce_server_url + qServerIP + ":" + qServerPort + "/responce_from_device";
     
     rho::String fileURL = qURL;
     
@@ -224,15 +224,20 @@ void callback_system_update_bundle_callback(void *arg, rho::String const &strQue
         }
     }
     
+    rho::String query = "";
+    
     rho::String message = "Unrecognizing Situation during update bundle! Restart application and reconnect device to server !";
     if (qStatus.compare("ok") == 0) {
        message = "Update bundle was finished !";
+       query = "&status=ok";
     }
     if (qStatus.compare("error") == 0) {
         message = "Error when update Bundle : " + qMessage + " !";
+        query = "&status=error&message="+message;
     }
     if (qStatus.compare("need_sync") == 0) {
         message = "Your application files too old. Request for full Bundle update was sended to server !";
+        query = "&status=need_full_update";
     }
     
     
@@ -242,13 +247,11 @@ void callback_system_update_bundle_callback(void *arg, rho::String const &strQue
     
     rho_http_sendresponse(arg, "");
     
-    if (qStatus.compare("need_sync") == 0) {
-        // send request for full_update
-        char* norm_url = rho_http_normalizeurl(our_responce_server_url.c_str());
-        rho::String query = make_info_string(false);
-        rho_net_request_with_data(norm_url, query.c_str());
-        rho_http_free(norm_url);
-    }
+    // send responce to server
+    char* norm_url = rho_http_normalizeurl(our_responce_server_url.c_str());
+    query = query + make_info_string(false);
+    rho_net_request_with_data_in_separated_thread(norm_url, query.c_str());
+    rho_http_free(norm_url);
 }
 
 
