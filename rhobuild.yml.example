@@ -27,6 +27,9 @@ android:
   #  certificate: /path/to/developer/certificate
   #  password: "password-for-certificate"
   #  alias: "certificate-alias"
+  # Logcat filter will be used if defined, more information at http://developer.android.com/tools/debugging/debugging-log.html#filteringOutput
+  # This setting will take effect only if not defined in application built.yml  
+  #logcatFilter: APP:I 
   
 excludedirs:
   all:

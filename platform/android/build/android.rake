@@ -28,6 +28,7 @@ require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
+require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
 require 'tempfile'
@@ -2271,7 +2272,7 @@ def run_as_spec(device_flag, uninstall_app)
 
   apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
   AndroidTools.load_app_and_run(device_flag, apkfile, $app_package_name)
-  AndroidTools.logcat(device_flag, log_name)
+  AndroidTools.logcat(BuildConfig.get_key('android/logcatFilter',nil), device_flag, log_name)
 
   Jake.before_run_spec
   start = Time.now
@@ -2398,7 +2399,7 @@ namespace "run" do
       apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
       AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
 
-      AndroidTools.logcat_process('-e')
+      AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),'-e')
 
       sleepRubyProcess
     end
@@ -2411,7 +2412,7 @@ namespace "run" do
       apkfile = File.join $targetdir, $appname + "-debug.apk"
       AndroidTools.load_app_and_run(args.device_id, apkfile, $app_package_name)
 
-      AndroidTools.logcat_process(args.device_id)
+      AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),args.device_id)
 
       sleepRubyProcess
     end
