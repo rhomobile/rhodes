@@ -17,6 +17,7 @@
 extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam);
+extern "C" bool rho_wmimpl_get_textselectionenabled();
 
 IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
 
@@ -47,6 +48,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     , m_dwNavigationTimeout(45000)
     , m_bLoadingComplete(FALSE)
     , m_bNavigationError(FALSE)
+	, m_bInitialised(FALSE)
 {
 	m_hwndParent  = hwndParent;
 	m_hInstance = hInstance;
@@ -85,12 +87,10 @@ LRESULT CEBrowserEngine::CreateEngine()
 	if (!m_pBrowser)
 	{
     
-		CloseHandle (CreateThread(NULL, 0, 
-			&CEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
-		
 		// See if text selection is enabled, so we can pass the correct value through the GetHostInfo() interface
 		//configFunction(m_tabID, L"HTMLStyles\\TextSelectionEnabled", tcConfigSetting);
-		m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
+		//m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
+		m_bTextSelectionEnabled = rho_wmimpl_get_textselectionenabled();
 
 		// Create an instance of a web browser object (from Shdocvw.dll).
 		
@@ -155,6 +155,9 @@ LRESULT CEBrowserEngine::CreateEngine()
 			bDeviceCausesDoubleBackspace = TRUE;
 		}
 	}
+//		CloseHandle (CreateThread(NULL, 0, 
+//			&CEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
+		
 
 
 Cleanup:
@@ -560,6 +563,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 	
 	case DISPID_NAVIGATECOMPLETE2:
         LOG(INFO) + "DISPID_NAVIGATECOMPLETE2";
+		if (!m_bInitialised)
+			RegisterWndProcThread(this);
 
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
@@ -1073,6 +1078,7 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
 {
 	//  We are passed a pointer to the engine we are interested in.
 	CEBrowserEngine* pEngine = reinterpret_cast<CEBrowserEngine*>(lpParameter);
+	pEngine->m_bInitialised = true;
 
 	//  The window tree appears as follows on CE:
 	//  +--m_htmlHWND
@@ -1110,8 +1116,8 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
 
 	//  Invoke directly as this must be done before all meta tag parsing.  On some devices meta tags were 
 	//  being partially processed causing subsequent meta tags to not be read correctly.
-	rho_wm_appmanager_ProcessOnTopMostWnd((LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
-//    SendMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+	//rho_wm_appmanager_ProcessOnTopMostWnd((LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+	SendMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
 
     return 0;
 }

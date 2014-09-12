@@ -15,6 +15,7 @@ extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd( WPARAM wParam, LPARAM lParam );
 extern "C" void rho_wmimpl_create_ieBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
+extern "C" bool rho_wmimpl_get_textselectionenabled();
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -137,8 +138,12 @@ LRESULT CIEBrowserEngine::CreateEngine()
             return S_FALSE;
     }
 
+	DWORD dwTextSelectionStyle = 0;
+    if(!rho_wmimpl_get_textselectionenabled()) 
+		dwTextSelectionStyle = HS_NOSELECTION;
+
     m_hwndTabHTML = CreateWindow(WC_HTML, NULL, 
-        WS_POPUP | WS_VISIBLE | HS_NOSELECTION, 
+        WS_POPUP | WS_VISIBLE | dwTextSelectionStyle, 
         m_rcViewSize.left, m_rcViewSize.top, 
         (m_rcViewSize.right-m_rcViewSize.left), 
         (m_rcViewSize.bottom-m_rcViewSize.top), 
