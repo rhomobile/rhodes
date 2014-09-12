@@ -2878,6 +2878,13 @@ def common_prefix(paths)
   first.slice(0, i).join('/')
 end
 
+def write_orm_modules_js(folder, modules)
+  modules.each { |f|
+    fname = File.basename(f.to_s).gsub(/^(|.*[\\\/])(Rho\.|)([^\\\/]+)\.js$/, '\3').gsub(/\./, '-')
+    cp f.to_s, File.join(folder, 'rhoapi-modules-' + fname + '.js')
+  }
+end
+
 def write_modules_js(folder, filename, modules, do_separate_js_modules)
   f = StringIO.new("", "w+")
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -3215,10 +3222,7 @@ def init_extensions(dest, mode = "")
       if extjsmodulefiles_opt.count > 0
         puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
         #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
-        extjsmodulefiles_opt.each { |f|
-          fname = File.basename(f.to_s).gsub(/^(|.*[\\\/])(Rho\.|)([^\\\/]+)\.js$/, '\3').gsub(/\./, '-')
-          cp f.to_s, File.join(rhoapi_js_folder, 'rhoapi-modules-' + fname + '.js')
-        }
+        write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
       end
     end
   end
@@ -4003,6 +4007,8 @@ task :update_rho_modules_js, [:platform] do |t,args|
 
   if !$shared_rt_js_appliction
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORM.js" ), "js" ) if $minify_types.include?('js')
+    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORMHelper.js" ), "js" ) if $minify_types.include?('js')
+    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-Ruby-RunTime.js" ), "js" ) if $minify_types.include?('js')
   end
 end
 
@@ -4534,7 +4540,8 @@ namespace "run" do
     #
     if extjsmodulefiles_opt.count > 0
       puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
-      write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+      #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+      write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
     end
 
     sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0
