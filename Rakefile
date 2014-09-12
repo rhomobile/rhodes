@@ -3214,7 +3214,11 @@ def init_extensions(dest, mode = "")
     if !$shared_rt_js_appliction
       if extjsmodulefiles_opt.count > 0
         puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-        write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+        #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+        extjsmodulefiles_opt.each { |f|
+          fname = File.basename(f.to_s).gsub(/^(|.*[\\\/])(Rho\.|)([^\\\/]+)\.js$/, '\3').gsub(/\./, '-')
+          cp f.to_s, File.join(rhoapi_js_folder, 'rhoapi-modules-' + fname + '.js')
+        }
       end
     end
   end
