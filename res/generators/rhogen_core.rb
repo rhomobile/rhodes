@@ -6,6 +6,7 @@ module RhogenCore
   TYPE_INT = 'INTEGER'
   TYPE_BOOL = 'BOOLEAN'
   TYPE_DOUBLE = 'FLOAT'
+  TYPE_SYMBOL = 'SYMBOL'
   TYPE_CALLBACK = 'CALLBACK'
   TYPE_SELF = 'SELF_INSTANCE'
   TYPE_MIXED = 'MIXED' #for hash with several typed fields
@@ -18,7 +19,7 @@ module RhogenCore
   # TYPE_AOH = 'ARRAYOFHASHES'
   # TYPE_HOH = 'HASHOFHASHES'
 
-  SIMPLE_TYPES = [TYPE_STRING, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE]
+  SIMPLE_TYPES = [TYPE_STRING, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE, TYPE_SYMBOL]
   NESTED_TYPES = [TYPE_HASH, TYPE_ARRAY]
   BASE_TYPES = SIMPLE_TYPES.dup.concat(NESTED_TYPES)
   GENERATED_TYPES = [TYPE_CALLBACK, TYPE_SELF]
@@ -328,7 +329,7 @@ module RhogenCore
               @value = self.class.ty_string();
             end
           else
-            raise "composite type with different parameters could not be overriden"
+            raise "composite type with different parameters could not be overriden" if api_style != API_STYLE_LEGACY
           end
         end
       end
