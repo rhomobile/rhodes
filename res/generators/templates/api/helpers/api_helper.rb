@@ -23,7 +23,7 @@ class CppGen
               val_type = native_type(gen_type.value)
           end
 
-          res = "rho::Vector<#{val_type}> "
+          res = "rho::Vector<#{val_type}>".gsub('>>','> >')
         when RhogenCore::TYPE_HASH
           case gen_type.api_style
             # always and only strings
@@ -35,7 +35,7 @@ class CppGen
               val_type = native_type(gen_type.value)
           end
 
-          res = "rho::Hashtable<#{key_type}, #{val_type}> "
+          res = "rho::Hashtable<#{key_type}, #{val_type}>".gsub('>>','> >')
         else
           #Module name, pass ID of object
           res = "rho::String"
