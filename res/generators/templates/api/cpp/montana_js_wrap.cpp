@@ -1,12 +1,11 @@
 <% moduleNamespace = CppGen::make_namespace($cur_module.parents) %>
 
-#include "<%= $cur_module.name %>Base.h"
-#include "api_generator/js_helpers.h"
-
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>"
 
+#include "<%= $cur_module.name %>Base.h"
+#include "api_generator/js_helpers.h"
 #include "api_generator/JSONResultConvertor.h"
 
 #include "common/StringConverter.h"
@@ -142,9 +141,9 @@ end %>
     }
 <% end %>
 
-<% convert_args = ["argv[#{first_arg}]","arg#{first_arg}"].join(', ') %>
+<% convert_args = ["argv[#{first_arg}]","arg#{first_arg}"].join(', ')
 
-<% if param.type == RhogenCore::TYPE_ARRAY %>
+if param.type == RhogenCore::TYPE_ARRAY %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
