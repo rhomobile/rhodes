@@ -47,7 +47,7 @@ The ebapi.js file is necessary for all single API inclusions.
         <PROPERTIES access="STATIC">
             <DESC>Properties used to configure Screen Orientation module.</DESC>
             <PROPERTY name="autoRotate" type="BOOLEAN" access="STATIC" generateAccessors="true" default="true">
-                <DESC>Enables or Disables auto-rotation of the screen orientation when the device is rotated. For Windows Mobile/CE devices, support is limited to only Motorola Solutions devices with IST Sensor support.</DESC>
+                <DESC>Enables or Disables auto-rotation of the screen orientation when the device is rotated. For Windows Mobile/CE devices, support is limited to only Zebra Technologies devices with IST Sensor support.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
