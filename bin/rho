@@ -7,6 +7,7 @@ nativelibdir = File.join( libdir, "x86_64-darwin13.0" )
 gemsdir = File.join( rubyroot,'lib','ruby','gems','2.1.0')
 
 rhodesbin = File.join( File.dirname(__FILE__), "rhodes" )
+bootstrap = File.expand_path( File.join( File.dirname(__FILE__), '..', 'lib', 'build', 'app_bootstrap.rake' ) )
 
 args = ''
 ARGV.each { |arg|
@@ -25,10 +26,6 @@ rhodes_commands = [
   'spec'
 ]
 
-executable = (ARGV.length==0 or rhodes_commands.include?(ARGV[0])) ? rhodesbin : 'rake'
-
-cmdline = "#{executable} #{args}"
-
 env =
   {
     "PATH" => "#{bindir}:#{ENV['PATH']}",
@@ -36,5 +33,14 @@ env =
     "GEM_PATH" => gemsdir,
     "GEM_HOME" => gemsdir
   }
+
+if ARGV.length==0 or rhodes_commands.include?(ARGV[0])
+  executable = rhodesbin
+else
+  executable = 'rake'
+  args += " --rakefile \"#{bootstrap}\""
+end
+
+cmdline = "#{executable} #{args}"
 
 exec( env, cmdline )
