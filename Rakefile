@@ -321,14 +321,24 @@ namespace 'dev' do
 
   end
 
+  namespace :webserver do
+
+    task :start do
+      LiveUpdatingConfig::applicationRoot = $app_basedir
+      WebServerWrapper::ensureRunning
+    end
+
+    task :stop do
+      WebServerWrapper::stop
+    end
+
+  end
+
   task :discovery => ["config:initialize"] do
     finder = DeviceFinder.new($app_basedir)
     finder.run
   end
 
-  task :stopWebServer do
-    WebServerWrapper::shotdown
-  end
 
 
 
