@@ -69,6 +69,10 @@ The ebapi.js file is necessary for all single API inclusions.
     Rho.Intent.send(params);    
 
 </DESC>
+            <DESC_EB>Sends an intent. The receiver of the intent can be another application that is listening for this Intent characteristic or, on Android the receiver can be a native Android application setup with an Intent-Filter that will trigger based on the parameters of this method. 
+
+> Note: On Android, the callback should only be used when the intentType is set to START_ACTIVITY. On Android, the only valid way to pass private file from package directly to another application is set 'uri' parameter with content URI.
+            </DESC_EB>
                 <PARAMS>
                     <PARAM name="params" type="HASH">
                         <DESC>A hash-map with intent parameters.</DESC>
