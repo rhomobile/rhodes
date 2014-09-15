@@ -91,25 +91,29 @@ def get_api_level(marketversion)
 end
 module_function :get_api_level
 
-def get_addon_classpath(libnames, apilevel = nil)
+def get_addon_classpath(addon_pattern, apilevel = nil)
+
+#libnames
 
     if USE_TRACES
-      puts "Looking for #{libnames.inspect}"
-      puts "Looking for apilevel #{apilevel}" if apilevel
+      puts "Looking for name pattern: #{addon_pattern}"
+      puts "Looking for API level: #{apilevel}" if apilevel
     end
 
-    libpatterns = []
+    found_name = nil
+    found_libpatterns = nil
     found_classpath = nil
     found_apilevel = nil
-    libnames.each do |name|
-      libpatterns << Regexp.new("^(#{name})=(.+);.*$")
-    end
+    namepattern = Regexp.new("^name=(.+)$")
+    addonnamepattern = Regexp.new(addon_pattern)
+    libspattern = Regexp.new("^libraries=(.+)$")
 
     Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
         next unless File.directory? dir
 
         libs = {}
         cur_apilevel = nil
+        cur_name = nil
         classpath = nil
         props = File.join(dir, 'manifest.ini')
         unless File.file? props
@@ -117,9 +121,18 @@ def get_addon_classpath(libnames, apilevel = nil)
             next
         end
 
-        libs = {}
         File.open(props, 'r') do |f|
           while line = f.gets
+            
+            if namepattern =~ line
+              puts "Parsing add-on: #{$1}" if USE_TRACES
+              cur_name = $1
+              break unless addonnamepattern =~ $1
+              next
+            end
+            
+            next unless cur_name
+            
             if line =~ /^api=([0-9]+)$/
               cur_apilevel = $1.to_i
 
@@ -127,51 +140,74 @@ def get_addon_classpath(libnames, apilevel = nil)
 
               break if apilevel and apilevel != cur_apilevel
               break if found_apilevel and found_apilevel > cur_apilevel
+
+              found_name = cur_name
+              found_apilevel = cur_apilevel
+              found_libpatterns = nil
+              
+              next
             end
-            libpatterns.each do |pat|
+
+            if found_libpatterns.nil? 
+              if libspattern =~ line
+                found_libpatterns = []
+                libnames = $1.split(';')
+                libnames.each do |name|
+
+                  # Work around Motorola SDK Add-on bug ########################################
+                  name = 'com.motorolasolutions.msr' if name == 'com.motorolasolutions.emdk.msr'
+                  ##############################################################################
+                  
+                  found_libpatterns << Regexp.new("^(#{name})=(.+);.*$")
+                end
+                
+                puts "Library patterns: #{found_libpatterns.inspect}" if USE_TRACES
+                
+              end
+              next
+            end
+            
+            found_libpatterns.each do |pat|
               if(pat =~ line)
                 libs[$1] = $2
               end
             end
+
           end
         end
 
-        next if apilevel and apilevel != cur_apilevel
+        next unless cur_apilevel
+        next unless found_apilevel
+        next if apilevel and apilevel != found_apilevel
         next if found_apilevel and cur_apilevel < found_apilevel
 
-        libnames.each do |name|
-          if libs[name]
-            if classpath
-              classpath += $path_separator
-            else
-              classpath = ''
-            end
-            classpath += File.join(dir,'libs',libs[name])
+        libs.each do |name, file|
+          if classpath
+            classpath += $path_separator
           else
-            classpath = nil
-            break
+            classpath = ''
           end
+          classpath += File.join(dir,'libs',file)
         end
 
         next unless classpath
 
-        found_apilevel = cur_apilevel
         found_classpath = classpath
 
-        puts "classpath: #{found_classpath.inspect}, API level: #{found_apilevel}" if USE_TRACES
+        puts "classpath: #{found_classpath}, API level: #{found_apilevel}" if USE_TRACES
 
     end
 
     unless found_classpath
-      msg = "No Android SDK add-on found for libraries: #{libnames.inspect}"
+      msg = "No Android SDK add-on found: #{addon_pattern}"
       msg += "; API level: #{apilevel}" if apilevel
       raise msg
     end
 
     if USE_TRACES
-      puts "Add-on libraries: #{libnames.inspect}"
-      puts "Add-on classpath: #{found_classpath}"
+      puts "Add-on name: #{found_name}"
       puts "Add-on API level: #{found_apilevel}"
+      puts "Add-on classpath: #{found_classpath}"
     end
 
     found_classpath

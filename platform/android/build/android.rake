@@ -296,13 +296,13 @@ namespace "config" do
 
     $android_orientation = $app_config["android"]["orientation"] unless $app_config["android"].nil?
 
-    $use_geomapping = $app_config["android"]["mapping"] unless $app_config["android"].nil?
-    $use_geomapping = $config["android"]["mapping"] if $use_geomapping.nil? and not $config["android"].nil?
-    $use_geomapping = 'false' if $use_geomapping.nil?
-    $use_geomapping = get_boolean($use_geomapping.to_s)
+    use_geomapping = $app_config["android"]["mapping"] unless $app_config["android"].nil?
+    use_geomapping = $config["android"]["mapping"] if use_geomapping.nil? and not $config["android"].nil?
+    use_geomapping = 'false' if use_geomapping.nil?
+    use_geomapping = get_boolean(use_geomapping.to_s)
 
     $use_google_addon_api = false
-    $use_google_addon_api = true if $use_geomapping
+    $use_google_addon_api = true if use_geomapping
 
     #Additionally $use_google_addon_api set to true if PUSH capability is enabled
 
@@ -312,7 +312,7 @@ namespace "config" do
       puts "Custom config.xml path: #{$config_xml}"
     end
 
-    puts "Use Google addon API: #{$use_google_addon_api}" if USE_TRACES
+    puts "Use Google addon API (1): #{$use_google_addon_api}" if USE_TRACES
 
     $uri_scheme = $app_config["android"]["URIScheme"] unless $app_config["android"].nil?
     $uri_scheme = "http" if $uri_scheme.nil?
@@ -438,6 +438,8 @@ namespace "config" do
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
 
+    puts "Use Google addon API (2): #{$use_google_addon_api}" if USE_TRACES
+
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
     $vendor = $app_config["vendor"]
@@ -488,16 +490,17 @@ namespace "config" do
     # Look for Motorola SDK addon
     if $use_motosol_api_classpath
       puts "Looking for Motorola API SDK add-on..." if USE_TRACES
-      motosol_jars = ['com.motorolasolutions.scanner', 'com.motorolasolutions.msr']
-      simulscan_jars = ['com.symbol.emdk.simulscan']
-      $motosol_classpath = AndroidTools::get_addon_classpath(motosol_jars) + $path_separator + AndroidTools::get_addon_classpath(simulscan_jars)
+      #motosol_jars = ['com.motorolasolutions.scanner', 'com.motorolasolutions.msr']
+      #simulscan_jars = ['com.symbol.emdk.simulscan']
+      $motosol_classpath = AndroidTools::get_addon_classpath('Motorola\s?Solutions? Value Add APIs')
+                                                             #'MotorolaSolution Value Add APIs 1.3.3'
     end
 
     # Detect Google API add-on path
     if $use_google_addon_api
       puts "Looking for Google API SDK add-on..." if USE_TRACES
-      google_jars = ['com.google.android.maps']
-      $google_classpath = AndroidTools::get_addon_classpath(google_jars, $found_api_level)
+      #google_jars = ['com.google.android.maps']
+      $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
     end
     
     v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
@@ -625,6 +628,7 @@ namespace "config" do
 
       $ext_android_rhodes_activity_listener = []
       $ext_android_additional_sources = {}
+      $ext_android_extra_classpath = {}
       $ext_android_additional_lib = []
       $ext_android_build_scripts = {}
       $ext_android_manifest_changes = {}
@@ -735,6 +739,19 @@ namespace "config" do
                 end
               else
                 puts "No additional java sources for '#{ext}'"
+              end
+              
+              sdk_addons = extconf_android['sdk_addons'] if extconf_android
+              unless sdk_addons.nil?
+                ext_classpath = nil
+                sdk_addons.each do |addon_pat|
+                  if ext_classpath
+                    ext_classpath += $path_separator + AndroidTools::get_addon_classpath(addon_pat)
+                  else
+                    ext_classpath = AndroidTools::get_addon_classpath(addon_pat)
+                  end
+                end
+                $ext_android_extra_classpath[ext] = ext_classpath
               end
 
               # there is no 'additional_libs' param in android section moreover
@@ -1360,7 +1377,7 @@ namespace "build" do
 
       regenerate = false
       regenerate = true unless File.file? genconfig_h
-      regenerate = $use_geomapping != gapi_already_enabled unless regenerate
+      regenerate = $gapikey.nil? ^ gapi_already_enabled unless regenerate
 
       caps_enabled = {}
       ANDROID_PERMISSIONS.keys.each do |k|
@@ -1884,8 +1901,12 @@ namespace "build" do
       puts 'Compile extensions java code'
 
       classpath = $androidjar
+
+      # Deprecated! Just for backward compatibility #########################
       classpath += $path_separator + $google_classpath if $google_classpath
       classpath += $path_separator + $motosol_classpath if $motosol_classpath
+      #######################################################################
+
       classpath += $path_separator + $v4support_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
@@ -1894,7 +1915,8 @@ namespace "build" do
 
       $ext_android_additional_sources.each do |extpath, list|
         ext = File.basename(extpath)
-
+        ext_classpath = classpath
+        ext_classpath += $path_separator + $ext_android_extra_classpath[ext] if $ext_android_extra_classpath[ext]
         srclist = Tempfile.new "#{ext}SRC_build"
         lines = []
         File.open(list, "r") do |f|
@@ -1907,12 +1929,13 @@ namespace "build" do
         srclist.close
 
         buildpath = File.join($tmpdir, ext)
+        
 
         mkdir_p buildpath unless File.exists? buildpath
 
         extjar = File.join $app_builddir, 'extensions', ext, ext + '.jar'
 
-        java_build(extjar, buildpath, classpath, [srclist.path])
+        java_build(extjar, buildpath, ext_classpath, [srclist.path])
 
         $android_jars << extjar
 
