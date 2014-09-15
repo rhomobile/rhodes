@@ -12,6 +12,8 @@ require File.join(File.dirname(__FILE__), 'rhogen_core.rb')
 
 require File.dirname(__FILE__) + '/../../lib/rhodes'
 
+DEBUG_TEMPLATE_RENDERER = false
+
 # =================================================================
 # helper utilities
 
@@ -937,6 +939,13 @@ module Rhogen
                 action.invoke! unless @options[:pretend]
                 say_status('added', action, :green)
               end
+            end
+            unless $cur_module.nil? || DEBUG_TEMPLATE_RENDERER != true
+              data = File.split(action.relative_destination)
+              puts "Rendering #{$cur_module.name} : #{action.relative_destination}"
+              comosite_name = [$cur_module.name,data[0].gsub(/[\/\.]+/,'_'),data[1]].join('_')
+              fname = File.join('/Users/snowyowl/work/rhomobile/rhodes/rendered/',comosite_name)
+              File.open(fname,'w') { |io| io << action.render.to_lines.join() }
             end
           rescue 
             puts "Error processing: #{action.source.inspect}".bold.red
