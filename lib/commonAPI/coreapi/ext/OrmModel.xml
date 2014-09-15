@@ -75,7 +75,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                         <DESC>An object of selection options</DESC>
                         <PARAMS>
                             <PARAM name="conditions" type="HASH">
-                                <DESC>A name:value object that you want to find. Ex: conditions { name:'Motorola'}.</DESC>
+                                <DESC>A name:value object that you want to find. Ex: conditions { name:'Symbol'}.</DESC>
                                 <PARAMS>
                                     <PARAM name="propertyName" type=""></PARAM>
                                     <PARAM name="propertyValue" type=""></PARAM>

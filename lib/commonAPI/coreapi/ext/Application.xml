@@ -144,7 +144,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="badLinkURI" type="STRING" readOnly="true">
                 <DESC>Bad link URI to navigate in browser. This is defined in config.xml: Navigation\\BadLinkURI.</DESC>
                 <PLATFORM>WM</PLATFORM>
-                <APPLIES>Motorola Solutions' WebKit</APPLIES>
+                <APPLIES>WebKit</APPLIES>
                 <MORE_HELP>
                     <![CDATA[ Navigates to the specified badlink uri when one of the following occurs:
 

@@ -193,7 +193,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
                         <!-- only for DeviceOrientation callback -->
                         <PARAM name="deviceorientation_value" type="STRING">
-                            <DESC>The values of the Orientation sensor. Possible values include Portrait Down, Portrait Up, Landscape Left, Landscape Right, Face Up, Face Down. Applicable only for Motorola Windows Mobile/CE devices with Sensor support.</DESC>
+                            <DESC>The values of the Orientation sensor. Possible values include Portrait Down, Portrait Up, Landscape Left, Landscape Right, Face Up, Face Down. Applicable only for Symbol Windows Mobile/CE devices with Sensor support.</DESC>
                         </PARAM>
 
                         <!-- only for Motion callback -->
