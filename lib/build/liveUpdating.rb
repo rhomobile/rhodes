@@ -29,7 +29,7 @@ class LiveUpdatingConfig
 
   def self.stoppingWebServerRequest
     #TODO Remove hard code
-    URI("#{self.webServerUri}/quit")
+    URI("http://#{self.webServerUri}/quit")
   end
 
   def self.webServerUri
@@ -67,6 +67,15 @@ class LiveUpdatingConfig
     subscribers
   end
 
+  def self.subscriberByIP(aString)
+    self.subscribers.each { |each|
+      if (each.hasIP(aString))
+        return each
+      end
+    }
+    raise "Subscriber with IP #{aString} not found"
+  end
+
   def self.subscriberPlatforms
     (self.subscribers.collect { |each| each.normalizedPlatformName }).to_set
   end
@@ -80,29 +89,27 @@ end
 class WebServerWrapper
   @@webServer
 
-  def self.startServer
+  def self.start
     host = LiveUpdatingConfig::ownIPAddress
     port = LiveUpdatingConfig::webServerPort
     documentRoot = LiveUpdatingConfig::documentRoot
-    #@@webServer = WEBrick::HTTPServer.new :BindAddress => host, :Port => port, :DocumentRoot => documentRoot
     @@webServer = WEBrick::HTTPServer.new(
         :Port => port,
         :DocumentRoot => documentRoot,
-        :ServerType => WEBrick::Daemon,
-        #:ServerType => WEBrick::SimpleServer,
+        #:ServerType => WEBrick::Daemon,
+        :ServerType => WEBrick::SimpleServer,
         :BindAddress => host
     )
     self.configure
     @@webServer.start
-    STDOUT.reopen(1, "w")
   end
 
   def self.configure
     @@webServer.mount_proc '/quit' do |request, response|
-      response.body = "Server is shot down"
+      response.body = "Server is stopped"
       response.status = 200
       response.content_length = response.body.length
-      @@webServer.shutdown
+      @@webServer.stop
     end
 
     @@webServer.mount_proc '/alive' do |request, response|
@@ -112,7 +119,21 @@ class WebServerWrapper
     end
 
     @@webServer.mount_proc '/response_from_device' do |request, response|
-      puts request
+      status = request.query["status"]
+      puts status
+      if status == 'need_full_update'
+        puts "Start full update"
+        subscriber = LiveUpdatingConfig::subscriberByIP(request.query["ip"])
+
+        RhoDevelopment.setup(File.join(LiveUpdatingConfig::applicationRoot, '.development'), subscriber.normalizedPlatformName)
+        RhoDevelopment.make_full_bundle
+
+        from = File.join($targetdir, "upgrade_bundle.zip")
+        to = File.join(LiveUpdatingConfig::documentRoot, 'download', subscriber.platform, LiveUpdatingConfig::downloadBundleName)
+        FileUtils.mkpath(File.dirname(to))
+        FileUtils.cp(from, to)
+        subscriber.notify
+      end
     end
 
   end
@@ -133,7 +154,7 @@ class WebServerWrapper
     result
   end
 
-  def self.shotdown
+  def self.stop
     url = LiveUpdatingConfig::stoppingWebServerRequest
     http = Net::HTTP.new(url.host, url.port)
     http.open_timeout = 5
@@ -145,9 +166,8 @@ class WebServerWrapper
 
   def self.ensureRunning
     if !WebServerWrapper.isAlive
-      puts "Web server is not started".warning
-      WebServerWrapper::startServer
       puts "Starting web server".primary
+      WebServerWrapper::start
     else
       puts "Web server already started".primary
     end
@@ -156,18 +176,14 @@ class WebServerWrapper
 end
 
 class OneTimeServer
-
-
   def run
     WebServerWrapper::ensureRunning
     if self.sourceChanged?
       puts "Source code is changed".primary
-      self.buildPartialBundles
-      self.notifySubscribers
-      puts "Subscribers are notified".primary
     else
       puts "Source code changes are not detected".primary
     end
+    (BuildProcessor.new).buildPartialBundles
   end
 
   def sourceChanged?
@@ -185,7 +201,9 @@ class OneTimeServer
     result = true if result.nil?
     result
   end
+end
 
+class BuildProcessor
   def buildPartialBundles
     puts "Building".primary
 
@@ -193,49 +211,41 @@ class OneTimeServer
     LiveUpdatingConfig::subscribers.each { |each|
       puts "#{each.platform} will built".primary
       builtPlatforms << each.platform
-      #Rake::Task[each.buildTask].invoke
-
-      RhoDevelopment.setup(File.join(LiveUpdatingConfig::applicationRoot, '.development'), each.normalizedPlatformName)
-      RhoDevelopment.make_partial_bundle
-
-      from = File.join($targetdir, "upgrade_bundle_partial.zip")
-      to = File.join(LiveUpdatingConfig::documentRoot, 'download', each.platform, LiveUpdatingConfig::downloadBundleName)
-      FileUtils.mkpath(File.dirname(to))
-      FileUtils.cp(from, to)
-      puts "Bundle for platform #{each.platform} was built and put into #{to}".primary
+      self.buildPartialBundleForSubscriber(each)
+      puts "Update partial bundle for platform #{each.platform} was built".primary
+      self.copyPlatformBundleToWebServerRoot(each.platform, "upgrade_bundle_partial.zip")
     }
+    self.notifySubscribers
+  end
+
+  def buildPartialBundleForSubscriber(each)
+    RhoDevelopment.setup(File.join(LiveUpdatingConfig::applicationRoot, '.development'), each.normalizedPlatformName)
+    RhoDevelopment.make_partial_bundle
+  end
+
+  def copyPlatformBundleToWebServerRoot(platform, sourceFilename)
+    from = File.join($targetdir, sourceFilename)
+    to = File.join(LiveUpdatingConfig::documentRoot, 'download', platform, LiveUpdatingConfig::downloadBundleName)
+    FileUtils.mkpath(File.dirname(to))
+    FileUtils.cp(from, to)
+    puts "Bundle for platform #{platform} copied into #{to}".primary
+  end
+
+  def buildFullBundles
+
+  end
+
+  def buildFullBundleForSubscriber(aSubscriber)
+    RhoDevelopment.setup(File.join(LiveUpdatingConfig::applicationRoot, '.development'), aSubscriber.normalizedPlatformName)
+    RhoDevelopment.make_full_bundle
+    self.copyPlatformBundleToWebServerRoot(each.platform, "upgrade_bundle.zip")
   end
 
   def notifySubscribers
     LiveUpdatingConfig::subscribers.each { |subscriber|
-      self.notifySubscriber(subscriber)
+      subscriber.notify
     }
   end
-
-  def notifySubscriber(aSubscriber)
-    url = updateUrlForSubscriber(aSubscriber)
-    puts "Send to #{aSubscriber}  request #{url}".primary
-    begin
-      http = Net::HTTP.new(url.host, url.port)
-      http.open_timeout = 5
-      http.start() { |http|
-        http.get(url.path + '?' + url.query)
-      }
-    rescue Errno::ECONNREFUSED,
-        Net::OpenTimeout => e
-      puts "#{aSubscriber} is not accessible".warning
-    end
-  end
-
-  def updateUrlForSubscriber(aSubscriber)
-    ip = LiveUpdatingConfig::ownIPAddress
-    port = LiveUpdatingConfig::webServerPort
-    uri = LiveUpdatingConfig::webServerUri
-    urlForDownload = "http://#{uri}/download/#{aSubscriber.platform}/#{LiveUpdatingConfig::downloadBundleName}&server_ip=#{ip}&server_port=#{port}"
-    deviceUrl = "http://#{aSubscriber.uri}/development/update_bundle"
-    URI("#{deviceUrl}?package_url=#{urlForDownload}")
-  end
-
 end
 
 class Subscriber
@@ -250,11 +260,11 @@ class Subscriber
   attr_accessor :application
 
   def ip
-    @uri
+    @uri.split(':')[0]
   end
 
   def port
-    @uri
+    @uri.split(':')[1]
   end
 
   def normalizedPlatformName
@@ -266,6 +276,34 @@ class Subscriber
 
   def buildTask
     "build:#{self.normalizedPlatformName}:upgrade_package_partial"
+  end
+
+  def hasIP(aString)
+    self.ip == aString
+  end
+
+  def notifyUrl
+    ip = LiveUpdatingConfig::ownIPAddress
+    port = LiveUpdatingConfig::webServerPort
+    uri = LiveUpdatingConfig::webServerUri
+    urlForDownload = "http://#{uri}/download/#{@platform}/#{LiveUpdatingConfig::downloadBundleName}&server_ip=#{ip}&server_port=#{port}"
+    deviceUrl = "http://#{@uri}/development/update_bundle"
+    URI("#{deviceUrl}?package_url=#{urlForDownload}")
+  end
+
+  def notify
+    url = self.notifyUrl
+    puts "Send to #{self}  request #{url}".primary
+    begin
+      http = Net::HTTP.new(url.host, url.port)
+      http.open_timeout = 5
+      http.start() { |http|
+        http.get(url.path + '?' + url.query)
+      }
+    rescue Errno::ECONNREFUSED,
+        Net::OpenTimeout => e
+      puts "#{self} is not accessible".warning
+    end
   end
 
   def to_s
