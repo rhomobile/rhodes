@@ -131,7 +131,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
 
             <PROPERTY name="memoryPeriod" type="INTEGER" default="0">
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                 <DESC>Enables the logging of memory usage in the system; specifies the time interval in milliseconds at which memory logs will be generated periodically. Setting it to 0 will disable logging memory information.</DESC>
             </PROPERTY>
 
@@ -226,7 +226,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="showLog">
                 <DESC>Display Log view window.</DESC>
-                <PLATFORM>WM, Win32, iOS, Android</PLATFORM>
+                <PLATFORM>WM, CE, Win32, iOS, Android</PLATFORM>
             </METHOD>
 
             <METHOD name="cleanLogFile">
@@ -250,7 +250,7 @@ The ebapi.js file is necessary for all single API inclusions.
     
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <EXAMPLES >
            <EXAMPLE title="Show log file">
                <SECTIONS>

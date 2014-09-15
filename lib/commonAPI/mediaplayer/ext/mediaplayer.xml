@@ -45,7 +45,7 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
 The ebapi.js file is necessary for all single API inclusions.
 </MORE_HELP_EB>            
 
-        <PLATFORM>WM, Android, iOS</PLATFORM>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
         
         <TEMPLATES>
         </TEMPLATES>
@@ -54,7 +54,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <!-- Following two methods are for MediaPlayer -->
             <METHOD name="start" access="STATIC" hasCallback="none">
                 <DESC>Play the audio file using the supplied filename. On WM/CE devices, the API supports only wav file format.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="filename" type="STRING">
                         <DESC>File name of the audio media to be played - absolute filepath. On iOS when you post URL to remote server (except https), then we open a standard browser (another application) for playing it. On iOS we support: mp3, mp4, wav formats. On other platforms the formats supported depend on what support is built into the platform. Typically on WM/CE this will be wav and on Android mp3.</DESC>
@@ -64,7 +64,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="stop" access="STATIC" hasCallback="none">
                 <DESC>Stop playing the media file. Not applicable on iOS, because on iOS the special UI is opened for playback audio / video - user can stop / close player by UI.</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
             </METHOD>
 
             <!-- The following methods describe playback for video media -->
@@ -79,7 +79,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="stopvideo" access="STATIC" hasCallback="none">
                 <DESC>Stop the playback of a currently playing video file. Not applicable on iOS, because on iOS the special UI is opened for playback audio / video - user can stop / close player by UI.</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
             </METHOD>
 
             <!-- These three methods are for RingtoneManager-->

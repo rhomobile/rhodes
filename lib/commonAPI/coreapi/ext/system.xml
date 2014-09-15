@@ -126,7 +126,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="phoneId" type="STRING" readOnly="true">
                 <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceName" type="STRING" readOnly="true">
                 <DESC>Name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android).</DESC>
@@ -155,12 +155,12 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
                 <DESC>The OEM Information string for the terminal.</DESC>
                 <APPLIES msiOnly="true"></APPLIES>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="uuid" type="STRING" readOnly="true">
                 <DESC>The Unique Unit IDentifier for the terminal.</DESC>
                 <APPLIES msiOnly="true"></APPLIES>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="applicationIconBadge" type="INTEGER">
                 <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.</DESC>
@@ -270,7 +270,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="getStartParams">
                 <DESC>Return the command line parameters. At Android start parameters are returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
                 <CALLBACK type="STRING"/>
-                <PLATFORM>WM, Win32, Android</PLATFORM>
+                <PLATFORM>WM, CE, Win32, Android</PLATFORM>
             </METHOD>
 
             <METHOD name="openUrl">
@@ -651,11 +651,11 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PARAMS>
                     <PARAM name="proxyURI" type="STRING"/>
                 </PARAMS>
-                <PLATFORM>WM, WIN32</PLATFORM>
+                <PLATFORM>WM, CE, WIN32</PLATFORM>
             </METHOD>
             <METHOD name="unset_http_proxy" deprecated="true">
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
-                <PLATFORM>WM, WIN32</PLATFORM>
+                <PLATFORM>WM, CE, WIN32</PLATFORM>
             </METHOD>
             <METHOD name="set_application_icon_badge" deprecated="true">
                 <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>

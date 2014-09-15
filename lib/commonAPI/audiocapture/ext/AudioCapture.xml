@@ -45,7 +45,7 @@ The ebapi.js file is necessary for all single API inclusions.
         </MORE_HELP_EB>
 
         <VER_INTRODUCED>4.2.0</VER_INTRODUCED>
-        <PLATFORM>WM, Android, iOS</PLATFORM>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
 
         <TEMPLATES>
             <DEFAULT_INSTANCE/>
@@ -84,11 +84,11 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <PROPERTY name="maxDuration" type="INTEGER" default="20000">
                 <DESC>Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milliseconds is specified, the interval will be defaulted to 20000 milliseconds. The default value is 20,000 milliseconds.</DESC>
-				<PLATFORM>WM, Android, iOS</PLATFORM>
+				<PLATFORM>WM, CE, Android, iOS</PLATFORM>
 			      </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
                 <DESC>(Required) This parameter is used to specify the file name. The file name should be set at least once before calling 'start' method, otherwise the 'start' method will update the callback 'status' as 'error'.</DESC>
-				        <PLATFORM>WM, Android, iOS</PLATFORM>
+				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </PROPERTY>
         </PROPERTIES>
         <METHODS>
@@ -114,15 +114,15 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAMS>
                 </CALLBACK>    
                 <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'ok' as the status. An unsuccessful recording will set 'cancel' or 'error' as the status in the callback returning parameters. If 'cancel' method is called during recording, 'cancel' status will be set in the callback returning parameters. In order to restart the audio capture, if the audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
-				        <PLATFORM>WM, Android, iOS</PLATFORM>
+				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
             <METHOD name="stop">
                 <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'ok' in the callback returning parameter of 'start' method. The file is saved in user provided location.</DESC>
-				        <PLATFORM>WM, Android, iOS</PLATFORM>
+				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
             <METHOD name="cancel">
                 <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved. In android, it will delete the file if it exists.</DESC>
-				        <PLATFORM>WM, Android, iOS</PLATFORM>
+				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
         </METHODS>
 		<REMARKS>

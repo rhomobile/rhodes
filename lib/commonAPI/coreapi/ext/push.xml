@@ -51,7 +51,7 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
 The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
-        <PLATFORM>WM, Android, iOS</PLATFORM>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
 
         <TEMPLATES>

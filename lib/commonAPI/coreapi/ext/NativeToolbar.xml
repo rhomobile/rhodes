@@ -73,7 +73,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                         <VALUE value ="separator">
                                             <DESC>Add a separator to the toolbar. If only one separator is specified, then elements after separator will be right-aligned. If more then one separator is added: on WM/CE, platform dependent separator will be displayed, on Android/iOS center-aligned groups will be created.</DESC>
                                             <DESC_EB>Add a separator to the toolbar. If only one separator is specified, then elements after separator will be right-aligned. If more then one separator is added: on WM/CE, platform dependent separator will be displayed, on Android center-aligned groups will be created.</DESC_EB>
-                                            <PLATFORM>WM, Win32, iOS, Android</PLATFORM>
+                                            <PLATFORM>WM, CE, Win32, iOS, Android</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="exit">
                                             <DESC>Exit the application.</DESC>
@@ -95,18 +95,18 @@ The ebapi.js file is necessary for all single API inclusions.
                                         </VALUE>
                                         <VALUE value ="log">
                                             <DESC>Display Log View window.</DESC>
-                                            <PLATFORM>WM, Win32, iOS, Android</PLATFORM>
+                                            <PLATFORM>WM, CE, Win32, iOS, Android</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="fullscreen">
                                             <DESC>Expand application window to full screen.</DESC>
-                                            <PLATFORM>WM, Win32, Android, WP8</PLATFORM>
+                                            <PLATFORM>WM, CE, Win32, Android, WP8</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="sync">
                                             <DESC>Run full sync command.</DESC>
                                         </VALUE>
                                         <VALUE value ="minimize">
                                             <DESC>Minimize application window.</DESC>
-                                            <PLATFORM>WM, Win32</PLATFORM>
+                                            <PLATFORM>WM, CE, Win32</PLATFORM>
                                         </VALUE>
                                         <VALUE value ="SIP">
                                             <DESC>Display software keyboard window.Set `Rho.System.keyboardState` to `Rho.System.KEYBOARD_AUTOMATIC` to use this element.</DESC>
@@ -140,11 +140,11 @@ The ebapi.js file is necessary for all single API inclusions.
                             </PARAM>
                             <PARAM name="maskColor" type="INTEGER" default="0xFFFFFF">
                                 <DESC>Image mask color(transparent color).</DESC>
-                                <PLATFORM>WM, Win32</PLATFORM>
+                                <PLATFORM>WM, CE, Win32</PLATFORM>
                             </PARAM>
                             <PARAM name="viewHeight" type="INTEGER">
                                 <DESC>Toolbar height in pixels.</DESC>
-                                <PLATFORM>WM, Win32</PLATFORM>
+                                <PLATFORM>WM, CE, Win32</PLATFORM>
                             </PARAM>
                         </PARAMS>
                     </PARAM>
@@ -162,7 +162,7 @@ The ebapi.js file is necessary for all single API inclusions.
         </METHODS>
         
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <REMARKS>
         </REMARKS>
         <EXAMPLES >

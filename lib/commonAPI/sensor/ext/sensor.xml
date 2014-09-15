@@ -46,7 +46,7 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
 The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
-        <PLATFORM>WM, Android, iOS</PLATFORM>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
  
         <TEMPLATES>
             <SINGLETON_INSTANCES/> <!--   produce enumerate() fabric method, all instances is singletons by ID, add ID property -->
@@ -147,12 +147,12 @@ The ebapi.js file is necessary for all single API inclusions.
                 <RETURN type="SELF_INSTANCE">
                     <DESC>Returns a sensor object for the sensor type passed as parameter. You can use the type field along with the Rho.Sensor Constants to see what type of sensor is returned.</DESC>
                 </RETURN>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
 
             <METHOD name="start" hasCallback="optional">
                 <DESC>This enables the sensor data retrieval. Call start on the instance returned from the makeSensorByType.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
                     <DESC>The callback is triggered with the sensors values according to sensor type when a parameter of the sensor is changed. Each sensor sends to the callback different object types - see sensor prefix of value name. All sensors will contain a status and message parameter in the callback.</DESC>
                     <PARAMS>
@@ -322,12 +322,12 @@ The ebapi.js file is necessary for all single API inclusions.
                 <RETURN type="HASH">
                     <DESC>Current sensor data - format is the same with callback specified for start method.</DESC>
                 </RETURN>>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
 
             <METHOD name="stop">
                 <DESC>Stops listening to the sensor retrieved by using makeSensorType. On Windows Mobile/CE its recommended to call stop on all retrieved sensor objects before exiting a page.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
         </METHODS>
 
