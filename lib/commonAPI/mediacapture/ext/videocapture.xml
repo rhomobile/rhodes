@@ -51,28 +51,28 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
-        <PLATFORM>WM, Android, IOS</PLATFORM>
+        <PLATFORM>WM, CE, Android, IOS</PLATFORM>
 
         <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
             <DESC>These properties are used for configuring video capture.</DESC>
              <PROPERTY name="duration" type="INTEGER" generateAccessors="true" default="5000">
                 <DESC>Specifies the number of milliseconds of video to capture. This is the maximum number of milliseconds of video to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milliseconds is specified, the interval will be defaulted to 5000 milliseconds.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </PROPERTY>
 
             <PROPERTY name="fileName" type="STRING" generateAccessors="true">
                 <DESC>The path and name of the file that the video is saved to locally on the device. When the video capture completes the file is saved in the root directory of the device (In case of Android this is the external storage directory). For example, if the user specifies '/video/file1' then the file gets saved as '/mnt/sdcard/video/file1.mp4' in Android, and as '\video\file1.mov' on Windows. The file extension should not be provided as this is determined by the platform (.mp4 in Android and .mov in Windows). On iOS you'll need to provide the entire path, including the extension, which should be .MOV.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </PROPERTY>
 
             <PROPERTY name="saveToGallery" type="BOOLEAN" generateAccessors="true">
                 <DESC>Specifies whether or not to save the recorded video file into the device gallery.</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
 
             <PROPERTY name="resolution" type="STRING" generateAccessors="true" default="HIGH">
                 <DESC>The resolution of the video file to be captured.</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
                 <VALUES>
                     <VALUE constName="LOW" value="low">
                         <DESC>Low resolution.</DESC>
@@ -87,7 +87,7 @@ The ebapi.js file is necessary for all single API inclusions.
         <METHODS>
             <METHOD name="start" hasCallback="optional" runInThread="ui">
                 <DESC>Starts capturing video until either 'stop' is received, or 'duration' is reached. NOTE: On Android this meta tag wouldn't immediately start recording and presents a preview window with controls (start, stop and cancel) for recording.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                 <RETURN>
                     <DESC>Not providing a callback to be invoked will result in that file is saved only locally and file is not transfered.</DESC>
                 </RETURN>

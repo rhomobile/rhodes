@@ -51,7 +51,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
                 <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the `button` array. Icon is not supported on iOS devices.</DESC>
-                <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">
                         <DESC>The properties associated with the popup.</DESC>
@@ -131,12 +131,12 @@ Example:
             <METHOD name="hidePopup" access="STATIC" hasCallback="none">
                 <DESC>Closes the current popup window. On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</DESC>
                 <DESC_EB>Closes the current popup window. On Windows Mobile/CE only Status window, displayed by showStatus can be hide.</DESC_EB>
-                <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
             </METHOD>
         
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
                 <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button. Note: Android will show a toast message for a short time in addition to a dialog window.</DESC>
-                <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="title" type="STRING">
                         <CAN_BE_NIL/>

@@ -95,7 +95,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                 </PARAM>
                                 <PARAM name="useCurrentViewForTab" type="BOOLEAN" default="false">
                                     <DESC>Gives a smooth transfer to a newly opened tab from the current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
-                                    <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
+                                    <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
                                 </PARAM>
 
                                 <PARAM name="perishable" type="BOOLEAN" default="false">
@@ -218,7 +218,7 @@ The ebapi.js file is necessary for all single API inclusions.
         </METHODS>
         
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <REMARKS>
         </REMARKS>
         <EXAMPLES >

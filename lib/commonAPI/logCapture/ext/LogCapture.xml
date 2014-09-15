@@ -78,6 +78,6 @@ The ebapi.js file is necessary for all single API inclusions.
         </METHODS>
         
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-         <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
     </MODULE>
 </API>

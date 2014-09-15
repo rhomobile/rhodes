@@ -74,7 +74,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="verifyPeerCertificate" type="BOOLEAN" default="true">
                 <DESC>Verify SSL certificates. When set to false it will allow untrusted certificates.</DESC>
-                <PLATFORM>WM, Android, iOS, Win32</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpVerb" type="STRING">
                 <DESC>HTTP verb to be used in the network request.</DESC>
@@ -252,19 +252,19 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="hasNetwork">
                 <DESC>Returns true if the device is connected to a network. Not supported on Windows CE.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasWifiNetwork">
                 <DESC>Returns true if the device is connected to a WiFi network. Not supported on Windows CE.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasCellNetwork">
                 <DESC>Returns true if the device is connected to a cell network. Not supported on Windows CE.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
@@ -379,7 +379,7 @@ The ebapi.js file is necessary for all single API inclusions.
         </METHODS>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-         <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
        <REMARKS>
             <REMARK title="Detecting a connection through proxies">
                 <DESC><![CDATA[
