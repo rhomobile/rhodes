@@ -150,6 +150,7 @@ class CAlert {
 	static void showPopup(CAlertDialog::Params *params);
     static void vibrate(int duration_ms);
     static void playFile(String fileName);
+    static void playFileCE(String fileName);
 };
 
 #endif // __ALERT__H__
