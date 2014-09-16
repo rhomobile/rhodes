@@ -1,30 +1,17 @@
 #!/usr/bin/env ruby
 
+
 rubyroot = File.expand_path( File.join( File.dirname(__FILE__),"../res/build-tools/ruby-standalone/212/usr/local" ) )
 bindir = File.join( rubyroot, "bin" )
 libdir = File.join( rubyroot, "lib/ruby/2.1.0" )
 nativelibdir = File.join( libdir, "x86_64-darwin13.0" )
 gemsdir = File.join( rubyroot,'lib','ruby','gems','2.1.0')
 
-rhodesbin = File.join( File.dirname(__FILE__), "rhodes" )
-bootstrap = File.expand_path( File.join( File.dirname(__FILE__), '..', 'lib', 'build', 'app_bootstrap.rake' ) )
-
 args = ''
 ARGV.each { |arg|
   args += arg + ' '
 }
-args.chomp
-
-rhodes_commands = [
-  'api',
-  'api_test',
-  'app',
-  'extension',
-  'iphone_project',
-  'iphone_project_prebuild',
-  'model',
-  'spec'
-]
+args.strip!
 
 env =
   {
@@ -34,13 +21,4 @@ env =
     "GEM_HOME" => gemsdir
   }
 
-if ARGV.length==0 or rhodes_commands.include?(ARGV[0])
-  executable = rhodesbin
-else
-  executable = 'rake'
-  args += " --rakefile \"#{bootstrap}\""
-end
-
-cmdline = "#{executable} #{args}"
-
-exec( env, cmdline )
+exec(env, File.join( File.dirname(__FILE__), 'rho.rb' ), args )
