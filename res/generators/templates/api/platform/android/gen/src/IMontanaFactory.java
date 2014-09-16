@@ -1,4 +1,4 @@
-package <%= JavaGen::make_package_name($cur_module) %>;
+package <%= api_generator_java_makePackageName($cur_module) %>;
 
 import com.rhomobile.rhodes.api.IRhoApiFactory;
 import com.rhomobile.rhodes.api.IRhoApiSingletonFactory;
