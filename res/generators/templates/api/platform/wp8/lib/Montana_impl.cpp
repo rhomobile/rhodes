@@ -20,7 +20,7 @@ end%>
     call_params = ''
     covert_params = ''
     module_method.params.each do |param|
-        params += "#{CppGen::native_type_arg(param)} #{param.name}, "
+        params += "#{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
         param_name = param.name
         param_conv = api_generator_cli_conversion(param.type, param.name)
         if param_conv.length() > 0

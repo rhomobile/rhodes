@@ -1,4 +1,4 @@
-package <%= JavaGen::make_package_name($cur_module) %>;
+package <%= api_generator_java_makePackageName($cur_module) %>;
 
 <%
   base = "IRhoApiObject"
@@ -23,7 +23,7 @@ public interface I<%= $cur_module.name %> extends IRhoApiObject<% if $cur_module
 
     params = ''
     module_method.params.each do |param|
-        params += "#{JavaGen::native_type(param)} #{param.name}, "
+        params += "#{api_generator_java_makeNativeType(param)} #{param.name}, "
     end
 
     params += 'IMethodResult result'

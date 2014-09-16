@@ -1,10 +1,10 @@
 //
 //  <%= $cur_module.name %>Impl.cpp
+#include "generated/cpp/<%= $cur_module.name %>Base.h"
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
-#include "generated/cpp/<%= $cur_module.name %>Base.h"
 #include "logging/RhoLog.h"
 
 namespace rho {
@@ -26,7 +26,7 @@ namespace rho {
 
         params = ''
         module_method.params.each do |param|
-            params += " #{CppGen::native_type_arg(param)} #{param.name}, "
+            params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
         end
 
         params += 'rho::apiGenerator::CMethodResult& oResult'
@@ -58,7 +58,7 @@ namespace rho {
 
             <% ett.fields.each do |fld|
             %> // <%= fld.type %> <%= "const" if fld.const %> <%= "binding" if fld.binding %>
-            result["<%= fld.name %>"] =  <%= fld.const ? "" : ( fld.type == RhogenCore::TYPE_STRING ? fld.default_value : "#{fld.default_value}" )%>;
+            result["<%= fld.name %>"] =  <%= fld.const ? "" : ( fld.type == MethodParam::TYPE_STRING ? fld.default_value : "#{fld.default_value}" )%>;
             <% end %> 
             oResult.set(result);
             <% end %>
@@ -79,7 +79,7 @@ namespace rho {
         params = ''
         call_params = ''
         module_method.params.each do |param|
-            params += " #{CppGen::native_type_arg(param)} #{param.name}, "
+            params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
 
             call_params += " ," if call_params.length() > 0
             call_params += "#{param.name}"
