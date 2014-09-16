@@ -16,7 +16,7 @@ class TrueClass; def to_i; 1 end end
              (value.name.nil? || value.name.empty?) ||
              (value.is_deprecated) ||
              (value.readonly && value.writeonly) ||
-             (value.type == RhogenCore::TYPE_CALLBACK)
+             (value.type == MethodParam::TYPE_CALLBACK)
         )
     }
 
@@ -64,16 +64,16 @@ class TrueClass; def to_i; 1 end end
     <%= proto_name %>.store<%= f.field_index %> = function(value) { 
         if (null != value && undefined != value) {<% 
             case f.type
-                when RhogenCore::TYPE_STRING
+                when MethodParam::TYPE_STRING
             %>
             value = (("string" == typeof value) ? value : String(value) );<%
-                when RhogenCore::TYPE_INT
+                when MethodParam::TYPE_INT
             %>
             value = (("number" == typeof value) ? value : parseInt(value) ); <%
-                when RhogenCore::TYPE_DOUBLE
+                when MethodParam::TYPE_DOUBLE
             %>
             value = (("number" == typeof value) ? value : parseFloat(value) ); <%
-                when RhogenCore::TYPE_BOOL
+                when MethodParam::TYPE_BOOL
             %>
             value = (("boolean" == typeof value) ? value : (value.toLowerCase() == "true") ); <%
             end %>
@@ -160,7 +160,7 @@ class TrueClass; def to_i; 1 end end
         next if !entity_method.is_generated 
 
         params = entity_method.params.map do |param|
-            "/* #{CppGen::native_type_arg(param)} */ #{param.name}"
+            "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
 
 %>    // function(<%= params %>)
@@ -225,7 +225,7 @@ class TrueClass; def to_i; 1 end end
 <%  
     entity.methods.select{|m| !m.is_generated }.each do |entity_method|
         params = entity_method.params.map do |param|
-            "/* #{CppGen::native_type_arg(param)} */ #{param.name}"
+            "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
 
         call_params = []
@@ -321,7 +321,7 @@ end %>
         next if module_method.is_deprecated
 
         params = module_method.params.map do |param|
-            "/* #{CppGen::native_type_arg(param)} */ #{param.name}"
+            "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
     %>
           // function(<%= params %>)
@@ -364,7 +364,7 @@ end %>
         # next if module_constant.is_deprecated
         next if module_constant.name.nil? || module_constant.name.empty?
 
-        if module_constant.type == RhogenCore::TYPE_STRING %>
+        if module_constant.type == MethodParam::TYPE_STRING %>
             <%= $cur_module.name %>.<%= module_constant.name %> = '<%= module_constant.value %>'; <% 
         else %>
             <%= $cur_module.name %>.<%= module_constant.name %> = <%= module_constant.value %>;<% 
@@ -402,7 +402,7 @@ end %>
         next if module_method.linked_entity
 
         params = module_method.params.map do |param|
-            "/* #{CppGen::native_type_arg(param)} */ #{param.name}"
+            "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
     %>
           // function(<%= params %>)
@@ -445,7 +445,7 @@ end %>
             next if module_method.is_deprecated
 
             params = module_method.params.map do |param|
-                "/* #{CppGen::native_type_arg(param)} */ #{param.name}"
+                "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
             end.push("/* optional function */ oResult").join(', ')
         %>
               // function(<%= params %>)

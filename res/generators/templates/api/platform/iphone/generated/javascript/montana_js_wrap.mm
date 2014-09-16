@@ -178,7 +178,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     <%
      factory_params = "BOOL is_factory_param[] = { "
      module_method.params.each do |method_param|
-        if method_param.type == RhogenCore::TYPE_SELF
+        if method_param.type == MethodParam::TYPE_SELF
             factory_params = factory_params + "YES, "
         else
             factory_params = factory_params + "NO, "
@@ -197,22 +197,22 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
 
     <% for i in 0..(module_method.params.size-1)
           if module_method.params[i].default_value != nil
-             if module_method.params[i].type == RhogenCore::TYPE_STRING
+             if module_method.params[i].type == MethodParam::TYPE_STRING
                 line = 'params['+i.to_s+']= @"'+module_method.params[i].default_value.to_s+'";'
                 %>
                 <%= line %><%
              end
-             if module_method.params[i].type == RhogenCore::TYPE_INT
+             if module_method.params[i].type == MethodParam::TYPE_INT
                 line = 'params['+i.to_s+']= [NSNumber numberWithInt:'+module_method.params[i].default_value.to_s+'];'
                 %>
                 <%= line %><%
              end
-             if module_method.params[i].type == RhogenCore::TYPE_DOUBLE
+             if module_method.params[i].type == MethodParam::TYPE_DOUBLE
                 line = 'params['+i.to_s+']= [NSNumber numberWithFloat:'+module_method.params[i].default_value.to_s+'];'
                 %>
                 <%= line %><%
              end
-             if module_method.params[i].type == RhogenCore::TYPE_BOOL
+             if module_method.params[i].type == MethodParam::TYPE_BOOL
                 line = ''
                 if module_method.params[i].default_value.to_s.downcase != "false"
                      line = 'params['+i.to_s+']= [NSNumber numberWithBool:YES];'
@@ -258,9 +258,9 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     <% end %>
 
     <% if module_method.result != nil
-        if RhogenCore::BASE_TYPES.include?(module_method.result.type)
-            if module_method.result.type == RhogenCore::TYPE_ARRAY
-                if !RhogenCore::BASE_TYPES.include?(module_method.result.item_type)
+        if MethodParam::BASE_TYPES.include?(module_method.result.type)
+            if module_method.result.type == MethodParam::TYPE_ARRAY
+                if !MethodParam::BASE_TYPES.include?(module_method.result.item_type)
             %>[methodResult enableObjectCreationModeWithJSClassPath:@"<%= api_generator_getJSModuleName(module_method.result.item_type) %>"];<%
                 end
             end

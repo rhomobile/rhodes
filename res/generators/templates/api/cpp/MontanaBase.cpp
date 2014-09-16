@@ -22,7 +22,7 @@ rho::common::CAutoPtr< C<%= $cur_module.name %>FactoryBase> C<%= $cur_module.nam
 ///////////////////////////////////////
 //string constants definiton <%
 $cur_module.constants.each do |module_constant|
-    if module_constant.type == RhogenCore::TYPE_STRING && module_constant.name && module_constant.name.length() > 0%>
+    if module_constant.type == MethodParam::TYPE_STRING && module_constant.name && module_constant.name.length() > 0%>
 const char <%= propBaseI %>::<%= module_constant.name %>[] = "<%= module_constant.value %>"; <%
 end; end %>
 
@@ -50,7 +50,7 @@ end; end; end%>
     next if module_method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
     next if module_method.linked_property.use_property_bag_mode != ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
 %>
-    m_mapPropAccessors["<%= module_method.linked_property.name %>"]->addSetter( new rho::apiGenerator::CMethodAccessor< <%= propBaseI %>>::CSetter< <%= CppGen::native_type_arg(module_method.linked_property) %>, <%= CppGen::native_type(module_method.linked_property) %> >(&<%= propBaseI %>::<%= module_method.native_name%>) );<%
+    m_mapPropAccessors["<%= module_method.linked_property.name %>"]->addSetter( new rho::apiGenerator::CMethodAccessor< <%= propBaseI %>>::CSetter< <%= api_generator_cpp_makeNativeTypeArg(module_method.linked_property.type) %>, <%= api_generator_cpp_makeNativeType(module_method.linked_property.type) %> >(&<%= propBaseI %>::<%= module_method.native_name%>) );<%
 end%>
 }
 
