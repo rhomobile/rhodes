@@ -19,7 +19,7 @@ class CppGen
             # always and only strings
             when RhogenCore::API_STYLE_LEGACY
               val_type = "rho::String" #simple_native_type_or_string(gen_type.value)
-            when RhogenCore::API_STYLE_COMPLEX
+            when RhogenCore::API_STYLE_NESTED
               val_type = native_type(gen_type.value)
           end
 
@@ -30,7 +30,7 @@ class CppGen
             when RhogenCore::API_STYLE_LEGACY
               key_type = "rho::String" #simple_native_type_or_string(gen_type.key)
               val_type = "rho::String" #simple_native_type_or_string(gen_type.value)
-            when RhogenCore::API_STYLE_COMPLEX
+            when RhogenCore::API_STYLE_NESTED
               key_type = native_type(gen_type.key)
               val_type = native_type(gen_type.value)
           end
