@@ -394,6 +394,21 @@ void CAlert::vibrate(int duration_ms)
     CVibrate::getCVibrate().toggle(duration_ms);
 }
 
+void CAlert::playFileCE(String fileName)
+{
+    String path = fileName;
+    
+    rho::String::size_type pos = 0;
+    while ( (pos = path.find('/', pos)) != rho::String::npos ) {
+        path.replace( pos, 1, "\\");
+        pos++;
+    }
+
+    StringW strPathW = convertToStringW(path);
+    sndPlaySound(strPathW.c_str(),SND_FILENAME|SND_SYNC);
+
+}
+
 void CAlert::playFile(String fileName)
 {
     //rho::String path = RHODESAPP().getRhoRootPath() + "apps" + fileName;
@@ -577,6 +592,10 @@ extern "C" void alert_play_file(char* file_name, char* media_type) {
 #if _WIN32_WCE > 0x499 //&& !defined( OS_PLATFORM_MOTCE )
 	if(RHO_IS_WMDEVICE)
 		CAlert::playFile(file_name);
+	else if(RHO_IS_CEDEVICE)
+	{
+		CAlert::playFileCE(file_name);
+	}
 #endif
 }
 
