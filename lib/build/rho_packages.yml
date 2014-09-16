@@ -57,6 +57,27 @@ packages:
   rhoelements:
     dependencies: [ native_common ]
 
+  android_containers:
+    dependencies: [ core ]
+    commands:
+    - 'device:android:production_with_prebuild_binary'
+
+  iphone_containers:
+    dependencies: [ core ]
+    commands:
+    - 'simulator:iphone:production_with_prebuild_binary'
+    - 'device:iphone:production_with_prebuild_binary'
+
+  wm_containers:
+    dependencies: [ core ]
+    commands:
+    - 'device:wm:production_with_prebuild_binary'
+
+  win32_containers:
+    dependencies: [ core ]
+    commands:
+    - 'device:win32:production_with_prebuild_binary'
+
   android:
     dependencies: [ native_common ]
     commands:
@@ -66,7 +87,6 @@ packages:
     - 'clean:android'
     - 'device:android:debug'
     - 'device:android:production'
-    - 'device:android:production_with_prebuild_binary'
     - 'run:android'
     - 'run:android:device[device_id]'
     - 'run:android:device:package[package_path,device_id]'
@@ -80,11 +100,9 @@ packages:
     - 'build:iphone:setup_xcode_project'
     - 'clean:iphone'
     - 'device:iphone:production'
-    - 'device:iphone:production_with_prebuild_binary'
     - 'run:iphone'
     - 'run:iphone:simulator:package[package_path]'
     - 'simulator:iphone:production'
-    - 'simulator:iphone:production_with_prebuild_binary'
 
   wm:
     dependencies: [ native_common ]
