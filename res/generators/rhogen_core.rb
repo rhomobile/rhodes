@@ -13,8 +13,9 @@ module RhogenCore
 
 
   API_STYLE_LEGACY = 'LEGACY'
-  API_STYLE_COMPLEX = 'COMPLEX'
-  API_STYLE_VARIANT = 'VARIANT'
+  API_STYLE_NESTED = 'NESTED'
+  # API_STYLE_VARIANT = 'VARIANT'
+  # API_STYLE_STRUCT = 'STRUCT'
 
   # TYPE_AOH = 'ARRAYOFHASHES'
   # TYPE_HOH = 'HASHOFHASHES'
@@ -235,10 +236,10 @@ module RhogenCore
             result = self.new(node[:value])
           when :array
             result = ty_array(recursive_create(node[:value]))
-            result.api_style = API_STYLE_COMPLEX
+            result.api_style = API_STYLE_NESTED
           when :hash
             result = ty_hash(recursive_create(node[:key]), recursive_create(node[:value]))
-            result.api_style = API_STYLE_COMPLEX
+            result.api_style = API_STYLE_NESTED
         end
 
         result
@@ -1128,7 +1129,7 @@ module RhogenCore
       end
     else
       case api_style
-        when API_STYLE_COMPLEX
+        when API_STYLE_NESTED
           param = MethodParam.process_type(param_type.upcase)
           param.name = generated_name
         else
