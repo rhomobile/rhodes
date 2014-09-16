@@ -1,4 +1,4 @@
-package <%= JavaGen::make_package_name($cur_module) %>;
+package <%= api_generator_java_makePackageName($cur_module) %>;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ if $cur_module.is_template_default_instance %>
 
     param_hash = {}
     module_method.params.each do |param|
-        param_hash[param.name] = JavaGen::native_type(param)
+        param_hash[param.name] = api_generator_java_makeNativeType(param)
     end %>
     public static class <%= module_method.native_name %>Task implements Runnable {
         private I<%= $cur_module.name %>Singleton mApiSingleton; <%

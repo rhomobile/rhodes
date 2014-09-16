@@ -7,23 +7,23 @@ end %>
 IMPLEMENT_LOGCLASS(C<%= $cur_module.name %>Base, "<%= $cur_module.name %>JNI");
 
 //<%= $cur_module.name %>FactorySingleton staff
-const char* const C<%= $cur_module.name %>Base::FACTORY_SINGLETON_CLASS = "<%= JavaGen::make_package_name($cur_module) %>.<%= $cur_module.name %>FactorySingleton";
+const char* const C<%= $cur_module.name %>Base::FACTORY_SINGLETON_CLASS = "<%= api_generator_java_makePackageName($cur_module) %>.<%= $cur_module.name %>FactorySingleton";
 jclass C<%= $cur_module.name %>Base::s_clsFactorySingleton = 0;
 jmethodID C<%= $cur_module.name %>Base::s_midFactorySetInstance;
 jmethodID C<%= $cur_module.name %>Base::s_midFactoryGetInstance;
 
 //<%= $cur_module.name %>Factory staff
-const char* const C<%= $cur_module.name %>Base::IFACTORY_CLASS = "<%= JavaGen::make_package_name($cur_module) %>.I<%= $cur_module.name %>Factory";
+const char* const C<%= $cur_module.name %>Base::IFACTORY_CLASS = "<%= api_generator_java_makePackageName($cur_module) %>.I<%= $cur_module.name %>Factory";
 jclass C<%= $cur_module.name %>Base::s_clsIFactory = 0;
 jmethodID C<%= $cur_module.name %>Base::s_midGetApiSingleton;
 jmethodID C<%= $cur_module.name %>Base::s_midGetApiObject;
 
 //<%= $cur_module.name %>SingletonBase staff
-const char* const C<%= $cur_module.name %>Base::SINGLETON_BASE_CLASS = "<%= JavaGen::make_package_name($cur_module) %>.<%= $cur_module.name %>SingletonBase";
+const char* const C<%= $cur_module.name %>Base::SINGLETON_BASE_CLASS = "<%= api_generator_java_makePackageName($cur_module) %>.<%= $cur_module.name %>SingletonBase";
 jclass C<%= $cur_module.name %>Base::s_clsSingletonBase = 0;
 
 //<%= $cur_module.name %>Base staff
-const char* const C<%= $cur_module.name %>Base::OBJECT_BASE_CLASS = "<%= JavaGen::make_package_name($cur_module) %>.<%= $cur_module.name %>Base";
+const char* const C<%= $cur_module.name %>Base::OBJECT_BASE_CLASS = "<%= api_generator_java_makePackageName($cur_module) %>.<%= $cur_module.name %>Base";
 jclass C<%= $cur_module.name %>Base::s_clsObjectBase = 0;
 
 <% if $cur_module.is_template_default_instance %>
@@ -38,9 +38,9 @@ jmethodID C<%= $cur_module.name %>Base::s_midSetDefaultID;
 <% $cur_module.methods.each do |method| %>
 const char* const C<%= $cur_module.name %>Base::<%= method.native_name.upcase %>_TASK_CLASS = <%
 if method.access == ModuleMethod::ACCESS_STATIC %>
-        "<%= JavaGen::make_package_name($cur_module) %>.<%= $cur_module.name %>SingletonBase$<%= method.native_name %>Task";
+        "<%= api_generator_java_makePackageName($cur_module) %>.<%= $cur_module.name %>SingletonBase$<%= method.native_name %>Task";
 <% else %>
-        "<%= JavaGen::make_package_name($cur_module) %>.<%= $cur_module.name %>Base$<%= method.native_name %>Task";
+        "<%= api_generator_java_makePackageName($cur_module) %>.<%= $cur_module.name %>Base$<%= method.native_name %>Task";
 <% end %>
 jclass C<%= $cur_module.name %>Base::s_cls<%= method.native_name %>Task = 0;
 jmethodID C<%= $cur_module.name %>Base::s_mid<%= method.native_name %>Task;
@@ -75,13 +75,13 @@ JNIEnv* C<%= $cur_module.name %>Base::jniInit(JNIEnv* env)
         s_clsFactorySingleton = loadClass(env, FACTORY_SINGLETON_CLASS);
         if (!s_clsFactorySingleton) return 0;
 
-        s_midFactorySetInstance = env->GetStaticMethodID(s_clsFactorySingleton, "setInstance", "(L<%= JavaGen::make_package_path($cur_module) %>/I<%= $cur_module.name %>Factory;)V");
+        s_midFactorySetInstance = env->GetStaticMethodID(s_clsFactorySingleton, "setInstance", "(L<%= api_generator_java_makePackagePath($cur_module) %>/I<%= $cur_module.name %>Factory;)V");
         if(!s_midFactorySetInstance)
         {
             LOG(FATAL) + "Failed to get method 'setInstance' for java class " + FACTORY_SINGLETON_CLASS;
             return NULL;
         }
-        s_midFactoryGetInstance = env->GetStaticMethodID(s_clsFactorySingleton, "getInstance", "()L<%= JavaGen::make_package_path($cur_module) %>/I<%= $cur_module.name %>Factory;");
+        s_midFactoryGetInstance = env->GetStaticMethodID(s_clsFactorySingleton, "getInstance", "()L<%= api_generator_java_makePackagePath($cur_module) %>/I<%= $cur_module.name %>Factory;");
         if(!s_midFactoryGetInstance)
         {
             LOG(FATAL) + "Failed to get method 'getInstance' for java class " + FACTORY_SINGLETON_CLASS;
@@ -91,13 +91,13 @@ JNIEnv* C<%= $cur_module.name %>Base::jniInit(JNIEnv* env)
         //init I<%= $cur_module.name %>Factory JNI
         s_clsIFactory = loadClass(env, IFACTORY_CLASS);
         if (!s_clsIFactory) return 0;
-        s_midGetApiSingleton = env->GetMethodID(s_clsIFactory, "getApiSingleton", "()L<%= JavaGen::make_package_path($cur_module) %>/I<%= $cur_module.name %>Singleton;");
+        s_midGetApiSingleton = env->GetMethodID(s_clsIFactory, "getApiSingleton", "()L<%= api_generator_java_makePackagePath($cur_module) %>/I<%= $cur_module.name %>Singleton;");
         if(!s_midGetApiSingleton)
         {
             LOG(FATAL) + "Failed to get method 'getApiSingleton' for java class " + IFACTORY_CLASS;
             return NULL;
         }
-        s_midGetApiObject = env->GetMethodID(s_clsIFactory, "getApiObject", "(Ljava/lang/String;)L<%= JavaGen::make_package_path($cur_module) %>/I<%= $cur_module.name %>;");
+        s_midGetApiObject = env->GetMethodID(s_clsIFactory, "getApiObject", "(Ljava/lang/String;)L<%= api_generator_java_makePackagePath($cur_module) %>/I<%= $cur_module.name %>;");
         if(!s_midGetApiObject)
         {
             LOG(FATAL) + "Failed to get method 'getApiObject' for java class " + IFACTORY_CLASS;
@@ -113,9 +113,9 @@ JNIEnv* C<%= $cur_module.name %>Base::jniInit(JNIEnv* env)
 <% $cur_module.methods.each do |method|
     java_class = "I#{$cur_module.name}"
     java_class += 'Singleton' if method.access == ModuleMethod::ACCESS_STATIC
-    params_signature = "(L#{JavaGen::make_package_path($cur_module)}/#{java_class};"
+    params_signature = "(L#{api_generator_java_makePackagePath($cur_module)}/#{java_class};"
     method.params.each do |param|
-        params_signature += JavaGen::make_native_type_signature(param.type)
+        params_signature += api_generator_java_makeNativeTypeSignature(param.type)
     end
     params_signature += "Lcom/rhomobile/rhodes/api/IMethodResult;)V"
 %>

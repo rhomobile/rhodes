@@ -1,38 +1,5 @@
 module RhogenCore
 
-  TYPE_STRING = 'STRING'
-  TYPE_ARRAY = 'ARRAY'
-  TYPE_HASH = 'HASH'
-  TYPE_INT = 'INTEGER'
-  TYPE_BOOL = 'BOOLEAN'
-  TYPE_DOUBLE = 'FLOAT'
-  TYPE_SYMBOL = 'SYMBOL'
-  TYPE_CALLBACK = 'CALLBACK'
-  TYPE_SELF = 'SELF_INSTANCE'
-  TYPE_MIXED = 'MIXED' #for hash with several typed fields
-
-
-  API_STYLE_LEGACY = 'LEGACY'
-  API_STYLE_NESTED = 'NESTED'
-  # API_STYLE_VARIANT = 'VARIANT'
-  # API_STYLE_STRUCT = 'STRUCT'
-
-  # TYPE_AOH = 'ARRAYOFHASHES'
-  # TYPE_HOH = 'HASHOFHASHES'
-
-  SIMPLE_TYPES = [TYPE_STRING, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE, TYPE_SYMBOL]
-  NESTED_TYPES = [TYPE_HASH, TYPE_ARRAY]
-  BASE_TYPES = SIMPLE_TYPES.dup.concat(NESTED_TYPES)
-  GENERATED_TYPES = [TYPE_CALLBACK, TYPE_SELF]
-  ALL_TYPES = BASE_TYPES.dup.concat(GENERATED_TYPES)
-
-  TYPE_TRAITS = {
-      TYPE_STRING => {'default' => '""', 'cpp_type' => 'rho::String'},
-      TYPE_INT => {'default' => '0', 'cpp_type' => 'int'},
-      TYPE_BOOL => {'default' => 'false', 'cpp_type' => 'bool'},
-      TYPE_DOUBLE => {'default' => '0.0', 'cpp_type' => 'double'}
-  }
-
   $modules = []
 
   $cur_module = nil
@@ -42,326 +9,65 @@ module RhogenCore
   TEMPLATE_PROPERTY_BAG = 'property_bag'
   TEMPLATE_SINGLETONE_INSTANCES = 'singleton_instances'
 
-  VALID_XML_ATTRIBUTES = {
-      'MODULE' => ['name', 'parent', 'generateUnderscoreRubyNames'],
-      'CONSTANT' => ['name', 'value', 'type'],
-      'PROPERTIES' => ['usePropertyBag', 'readOnly', 'writeOnly', 'generateAccessors', 'limitPropertyBag', 'generateAPI', 'generateDoc', 'access'],
-      'PROPERTY' => ['name', 'type', 'usePropertyBag', 'readOnly', 'writeOnly', 'generateAccessors', 'default', 'generateAPI', 'generateDoc', 'access', 'runInThread', 'deprecated'],
-      'VALUE' => ['constName', 'value', 'type'],
-      'ALIAS' => ['new', 'existing', 'reverseLogic', 'deprecated', 'rubyOnly'],
-      'METHODS' => ['access', 'hasCallback', 'factory', 'runInThread', 'deprecated', 'generateAPI', 'generateDoc'],
-      'METHOD' => ['name', 'access', 'hasCallback', 'factory', 'runInThread', 'nativeName', 'deprecated', 'generateAPI', 'generateDoc', 'constructor', 'destructor', 'generateNativeAPI'],
-      'PARAM' => ['name', 'nativeName', 'type', 'propertyHash', 'default', 'rhoAction'],
-      'RETURN' => ['type'],
-      'CALLBACK' => ['type'],
-      'APPLIES' => ['msiOnly', 'rubyOnly', 'jsOnly'],
-      'ENTITY' => ['name', 'runInThread'],
-      'FIELD' => ['name', 'type', 'binding', 'readOnly'],
-      'INCLUDE' => ['path'],
-  }
+  $possible_attributes = {}
+  $possible_attributes['MODULE'] = ['name', 'parent', 'generateUnderscoreRubyNames']
+  $possible_attributes['CONSTANT'] = ['name', 'value', 'type']
+  $possible_attributes['PROPERTIES'] = ['usePropertyBag', 'readOnly', 'writeOnly', 'generateAccessors', 'limitPropertyBag', 'generateAPI', 'generateDoc', 'access']
+  $possible_attributes['PROPERTY'] = ['name', 'type', 'usePropertyBag', 'readOnly', 'writeOnly', 'generateAccessors', 'default', 'generateAPI', 'generateDoc', 'access', 'runInThread', 'deprecated']
+  $possible_attributes['VALUE'] = ['constName', 'value', 'type']
+  $possible_attributes['ALIAS'] = ['new', 'existing', 'reverseLogic', 'deprecated', 'rubyOnly']
+  $possible_attributes['METHODS'] = ['access', 'hasCallback', 'factory', 'runInThread', 'deprecated', 'generateAPI', 'generateDoc']
+  $possible_attributes['METHOD'] = ['name', 'access', 'hasCallback', 'factory', 'runInThread', 'nativeName', 'deprecated', 'generateAPI', 'generateDoc', 'constructor', 'destructor', 'generateNativeAPI']
+  $possible_attributes['PARAM'] = ['name', 'nativeName', 'type', 'propertyHash', 'default', 'rhoAction']
+  $possible_attributes['RETURN'] = ['type']
+  $possible_attributes['CALLBACK'] = ['type']
+  $possible_attributes['APPLIES'] = ['msiOnly', 'rubyOnly', 'jsOnly']
+  $possible_attributes['ENTITY'] = ['name', 'runInThread']
+  $possible_attributes['FIELD'] = ['name', 'type', 'binding', 'readOnly']
+  $possible_attributes['INCLUDE'] = ['path']
 
-  VALID_XML_CHILDREN = {
-      'API' => ['MODULE'],
-      'MODULE' => ['HELP_OVERVIEW', 'MORE_HELP', 'TEMPLATES', 'CONSTANTS', 'PROPERTIES', 'METHODS', 'ENTITIES', 'USER_OVERVIEW', 'VER_INTRODUCED', 'PLATFORM', 'ALIASES', 'EXAMPLES'],
-      'TEMPLATES' => ['SINGLETON_INSTANCES', 'DEFAULT_INSTANCE', 'PROPERTY_BAG', 'INCLUDE'],
-      'CONSTANTS' => ['CONSTANT'],
-      'CONSTANT' => ['DESC'],
-      'PROPERTIES' => ['DESC', 'PROPERTY', 'ALIASES'],
-      'PROPERTY' => ['DESC', 'VALUES', 'PLATFORM', 'MORE_HELP', 'APPLIES', 'VER_INTRODUCED', 'APPLIES', 'PARAM'],
-      'VALUES' => ['VALUE'],
-      'VALUE' => ['DESC', 'PLATFORM'],
-      'ALIASES' => ['ALIAS'],
-      'ALIAS' => ['DESC'],
-      'METHODS' => ['METHOD', 'ALIASES'],
-      'FIELDS' => ['FIELD'],
-      'METHOD' => ['DESC', 'PARAMS', 'RETURN', 'CALLBACK', 'PLATFORM', 'MORE_HELP', 'APPLIES', 'VER_INTRODUCED', 'BACKWARDS_COMPATIBILITY', 'APPLIES'],
-      'PARAMS' => ['PARAM'],
-      'PARAM' => ['DESC', 'PARAM', 'PARAMS', 'VALUES', 'CAN_BE_NIL', 'APPLIES', 'PLATFORM'],
-      'RETURN' => ['DESC', 'PARAM', 'PARAMS'],
-      'CAN_BE_NIL' => ['DESC'],
-      'CALLBACK' => ['DESC', 'PARAM', 'PARAMS'],
-      'ENTITIES' => ['ENTITY'],
-      'ENTITY' => ['DESC', 'FIELDS', 'METHODS', 'PLATFORM', 'MORE_HELP', 'APPLIES', 'VER_INTRODUCED', 'APPLIES'],
-  }
+  $possible_children = {}
+  $possible_children['API'] = ['MODULE']
+  $possible_children['MODULE'] = ['HELP_OVERVIEW', 'MORE_HELP', 'TEMPLATES', 'CONSTANTS', 'PROPERTIES', 'METHODS', 'ENTITIES', 'USER_OVERVIEW', 'VER_INTRODUCED', 'PLATFORM', 'ALIASES', 'EXAMPLES']
+  $possible_children['TEMPLATES'] = ['SINGLETON_INSTANCES', 'DEFAULT_INSTANCE', 'PROPERTY_BAG', 'INCLUDE']
+  $possible_children['CONSTANTS'] = ['CONSTANT']
+  $possible_children['CONSTANT'] = ['DESC']
+  $possible_children['PROPERTIES'] = ['DESC', 'PROPERTY', 'ALIASES']
+  $possible_children['PROPERTY'] = ['DESC', 'VALUES', 'PLATFORM', 'MORE_HELP', 'APPLIES', 'VER_INTRODUCED', 'APPLIES', 'PARAM']
+  $possible_children['VALUES'] = ['VALUE']
+  $possible_children['VALUE'] = ['DESC', 'PLATFORM']
+  $possible_children['ALIASES'] = ['ALIAS']
+  $possible_children['ALIAS'] = ['DESC']
+  $possible_children['METHODS'] = ['METHOD', 'ALIASES']
+  $possible_children['FIELDS'] = ['FIELD']
+  $possible_children['METHOD'] = ['DESC', 'PARAMS', 'RETURN', 'CALLBACK', 'PLATFORM', 'MORE_HELP', 'APPLIES', 'VER_INTRODUCED', 'BACKWARDS_COMPATIBILITY', 'APPLIES']
+  $possible_children['PARAMS'] = ['PARAM']
+  $possible_children['PARAM'] = ['DESC', 'PARAM', 'PARAMS', 'VALUES', 'CAN_BE_NIL', 'APPLIES', 'PLATFORM']
+  $possible_children['RETURN'] = ['DESC', 'PARAM', 'PARAMS']
+  $possible_children['CAN_BE_NIL'] = ['DESC']
+  $possible_children['CALLBACK'] = ['DESC', 'PARAM', 'PARAMS']
+  $possible_children['ENTITIES'] = ['ENTITY']
+  $possible_children['ENTITY'] = ['DESC', 'FIELDS', 'METHODS', 'PLATFORM', 'MORE_HELP', 'APPLIES', 'VER_INTRODUCED', 'APPLIES']
 
 
-  VALUE_TRUE_FALSE = ['true', 'false']
-
-  POSSIBLE_VALUES = {
-      'generateUnderscoreRubyNames' => VALUE_TRUE_FALSE,
-      'readOnly' => VALUE_TRUE_FALSE,
-      'writeOnly' => VALUE_TRUE_FALSE,
-      'usePropertyBag' => ['none', 'accessorsViaPropertyBag', 'PropertyBagViaAccessors'],
-      'access' => ['STATIC', 'INSTANCE'],
-      'factory' => VALUE_TRUE_FALSE,
-      'runInThread' => ['none', 'ui', 'module', 'separate'],
-      'hasCallback' => ['none', 'mandatory', 'optional'],
-      'deprecated' => VALUE_TRUE_FALSE,
-      'reverseLogic' => VALUE_TRUE_FALSE,
-      'rubyOnly' => VALUE_TRUE_FALSE,
-      'generateAccessors' => VALUE_TRUE_FALSE,
-      'generateAPI' => VALUE_TRUE_FALSE,
-      'generateDoc' => VALUE_TRUE_FALSE,
-      'constructor' => VALUE_TRUE_FALSE,
-      'destructor' => VALUE_TRUE_FALSE,
-      'generateNativeAPI' => VALUE_TRUE_FALSE,
-  }
-
-
-  class GeneratedType
-    KIND_SIMPLE = 'SIMPLE'
-    KIND_HASH = 'HASH'
-    KIND_ARRAY = 'ARRAY'
-    KIND_COMPOSITE = 'COMPOSITE'
-    KIND_GENERATED = 'GENERATED'
-
-    class << self
-      def ty_string(default_value = '')
-        self.new(TYPE_STRING, default_value)
-      end
-
-      def ty_int(default_value = 0)
-        self.new(TYPE_INT, default_value)
-      end
-
-      def ty_bool(default_value = false)
-        self.new(TYPE_BOOL, default_value)
-      end
-
-      def ty_double(defaul_value = 0.0)
-        self.new(TYPE_DOUBLE, defaul_value)
-      end
-
-      def ty_array(value_type = TYPE_STRING)
-        inst = self.new(TYPE_ARRAY)
-        if value_type.kind_of?(GeneratedType)
-          inst.value = value_type
-        else
-          inst.value_type = value_type
-        end
-       inst
-      end
-
-      def ty_hash(key_type = TYPE_STRING, value_type = TYPE_STRING)
-        inst = self.new(TYPE_HASH)
-        if key_type.kind_of?(GeneratedType)
-          inst.key = key_type
-        else
-          inst.key_type = key_type
-        end
-        if value_type.kind_of?(GeneratedType)
-          inst.value = value_type
-        else
-          inst.value_type = value_type
-        end
-        inst
-      end
-
-      def ty_callback
-        self.new(TYPE_CALLBACK)
-      end
-
-      def ty_object(self_type = 'none')
-        self.new(TYPE_SELF)
-        @self_type = self_type
-      end
-
-      def process_type(type_string)
-        type_string = type_string.gsub(/\s+/, "").gsub('ARRAYOFHASHES','[{:}]').gsub('HASHOFHASHES','{:{:}}')
-
-        recursive_create(type_parse(type_string))
-      end
-
-    private
-
-      def check_item(lines, pos, expected)
-        raise "line ended at #{lines.take(pos).join()}" if lines.size < pos
-        raise "error on #{lines.take(pos).join()} need  #{expected} got #{lines[pos]} " if expected != lines[pos]
-      end
-
-      def sub_parse(lines, pos = 0)
-        result = {}
-
-        if pos < lines.size
-          elem = lines[pos]
-          starting = pos
-          pos += 1
-          #initial state, should be '[' , '{' or type
-          if elem.match(/([a-z_)]+)/i)
-            result = {:type => :ident, :value => $1}
-          else
-            case elem
-              # closing sequence (upper step)
-              when ']', '}', ':'
-                result = {:type => :ident, :value => 'STRING'}
-                pos -= 1
-              # array
-              when '['
-                val, consumed = sub_parse(lines, pos)
-                result = {:type => :array, :value => val}
-                pos += consumed
-                check_item(lines, pos, ']')
-                pos += 1
-              when '{'
-                key, consumed = sub_parse(lines, pos)
-                raise "this should be type #{lines.drop(pos).take(consumed).join()} not #{key.type.to_s}" if key[:type] != :ident
-                pos += consumed
-                check_item(lines, pos, ':')
-                pos += 1
-                val, consumed = sub_parse(lines, pos)
-                pos += consumed
-                check_item(lines, pos, '}')
-                pos += 1
-                result = {:type => :hash, :key => key, :value => val}
-              else
-                raise "invalid symbol at #{lines.drop(pos-1).take(1).join()}"
-            end
-          end
-
-        end
-
-        return result, (pos - starting)
-      end
-
-      def type_parse(str)
-        lines = str.split(/([\[\]{}:,])/).reject{|c| c.empty?}
-        data, consumed = sub_parse(lines)
-        data
-      end
-
-      def recursive_create(node)
-        result = nil
-        case node[:type]
-          when :ident
-            result = self.new(node[:value])
-          when :array
-            result = ty_array(recursive_create(node[:value]))
-            result.api_style = API_STYLE_NESTED
-          when :hash
-            result = ty_hash(recursive_create(node[:key]), recursive_create(node[:value]))
-            result.api_style = API_STYLE_NESTED
-        end
-
-        result
-      end
-    end
-
-    def initialize(type = TYPE_STRING, default_value = nil)
-      @key = nil
-      @value = nil
-      @fields = []
-      @field_set = {}
-      @self_type = nil
-      @name = nil
-      @api_style = API_STYLE_LEGACY
-
-      @type = type
-
-      @default_value = default_value
-
-      case type
-        when *SIMPLE_TYPES
-          #@default_value = TYPE_TRAITS[type]['default'] if default_value.nil?
-          @kind = KIND_SIMPLE
-        when *GENERATED_TYPES
-          # Callback, Self
-          @kind = KIND_GENERATED
-        when TYPE_ARRAY
-          @kind = KIND_ARRAY
-          @value = self.class.ty_string()
-        when TYPE_HASH
-          @kind = KIND_HASH
-          @key = self.class.ty_string()
-        else
-          raise "unknown type #{type}"
-      end
-    end
-
-    def key_type=(val)
-      raise 'only hash type support keys' unless @type == TYPE_HASH
-      if val.nil? || val == TYPE_STRING
-        @key = self.class.new(val)
-      else
-        raise 'ONLY STRING KEY TYPE IS SUPPORTED'
-      end
-    end
-
-    def key_type
-      raise 'no key type defined' if @key.nil?
-      @key.type
-    end
-
-    def value_type=(val)
-      raise 'only array and hash types have custom values' unless NESTED_TYPES.include?(@type)
-      @value = val
-      if NESTED_TYPES.include?(val.type)
-        @key = self.class.new(val)
-      else
-        @kind = KIND_COMPOSITE
-      end
-    end
-
-    def value_type
-      raise 'no value type defined' if @value.nil?
-      @value.type
-    end
-
-    def add_field(field_name, field_type = TYPE_STRING, default_value = nil)
-      instance = self.class.new(field_type, default_value)
-      instance.name = field_name
-      include_field(instance)
-    end
-
-    def include_field(generated)
-      raise 'only hash can have named fields' unless @type == TYPE_HASH
-      field_name = generated.name
-      if !@field_set[field_name].nil?
-        field = @fields[@field_set[field_name]]
-        raise "field #{field_name} was already defined with type #{generated.type} but redefined with #{field.type}" if field.type != generated.type
-      else
-        @field_set[field_name] = @fields.length
-        @fields << generated
-
-        if @value.nil?
-          @value = self.class.new(generated.type)
-        elsif @value.type != generated.type
-          if SIMPLE_TYPES.include?(@value.type)
-            if @value.type != TYPE_STRING
-              @value = self.class.ty_string();
-            end
-          else
-            raise "composite type with different parameters could not be overriden" if api_style != API_STYLE_LEGACY
-          end
-        end
-      end
-    end
-
-    def value
-      @value = self.class.ty_string() if @value.nil?
-      @value
-    end
-
-    def self_type=(val)
-      raise 'self type cannod be empty nor nil' if val.nil? || val.empty?
-      @self_type = val
-    end
-
-    def simple_type?
-      SIMPLE_TYPES.include?(@type)
-    end
-
-    def simple_key?
-      @key.nil? ? true : SIMPLE_TYPES.include?(@key.type)
-    end
-
-    def simple_value?
-      @value.nil? ? true : SIMPLE_TYPES.include?(@value.type)
-    end
-
-    attr_writer :value
-    attr_accessor :key, :name, :api_style
-    attr_reader :fields, :field_order, :self_type, :type
-  end
+  $possible_values = {}
+  $possible_values['generateUnderscoreRubyNames'] = ['true', 'false']
+  $possible_values['readOnly'] = ['true', 'false']
+  $possible_values['writeOnly'] = ['true', 'false']
+  $possible_values['usePropertyBag'] = ['none', 'accessorsViaPropertyBag', 'PropertyBagViaAccessors']
+  $possible_values['access'] = ['STATIC', 'INSTANCE']
+  $possible_values['factory'] = ['true', 'false']
+  $possible_values['runInThread'] = ['none', 'ui', 'module', 'separate']
+  $possible_values['hasCallback'] = ['none', 'mandatory', 'optional']
+  $possible_values['deprecated'] = ['true', 'false']
+  $possible_values['reverseLogic'] = ['true', 'false']
+  $possible_values['rubyOnly'] = ['true', 'false']
+  $possible_values['generateAccessors'] = ['true', 'false']
+  $possible_values['generateAPI'] = ['true', 'false']
+  $possible_values['generateDoc'] = ['true', 'false']
+  $possible_values['constructor'] = ['true', 'false']
+  $possible_values['destructor'] = ['true', 'false']
+  $possible_values['generateNativeAPI'] = ['true', 'false']
 
   class ModuleAlias
 
@@ -385,85 +91,50 @@ module RhogenCore
 
   end
 
+  class MethodParam
 
-  class ModuleConstant
+    TYPE_STRING = 'STRING'
+    TYPE_ARRAY = 'ARRAY'
+    TYPE_HASH = 'HASH'
+    TYPE_INT = 'INTEGER'
+    TYPE_BOOL = 'BOOLEAN'
+    TYPE_DOUBLE = 'FLOAT'
+    TYPE_CALLBACK = 'CALLBACK'
+    TYPE_SELF = 'SELF_INSTANCE'
 
-    class << self
-      def from_xml(xml_node, default_type = nil)
-        const = self.new()
-        name_attr = xml_node.attribute('name').nil? ? 'constName' : 'name'
-        const.name = xml_node.attribute(name_attr).to_s
-        const.value = xml_node.attribute('value').to_s
-        if xml_node.attribute('type') != nil
-          const.type = xml_node.attribute('type').to_s.upcase
-        elsif default_type != nil
-          const.type = default_type
-        end
-        xml_node.elements.each('DESC') do |xml_desc|
-          const.desc = xml_desc.text
-        end
+    SIMPLE_TYPES = [TYPE_STRING, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE]
+    BASE_TYPES = [TYPE_STRING, TYPE_ARRAY, TYPE_HASH, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE]
+    ALL_TYPES = [TYPE_STRING, TYPE_ARRAY, TYPE_HASH, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE, TYPE_CALLBACK, TYPE_SELF]
 
-        const
-      end
-    end
+    TYPE_TRAITS = {
+        TYPE_STRING => {'default' => '""', 'cpp_type' => 'rho::String'},
+        TYPE_INT => {'default' => '0', 'cpp_type' => 'int'},
+        TYPE_BOOL => {'default' => 'false', 'cpp_type' => 'bool'},
+        TYPE_DOUBLE => {'default' => '0.0', 'cpp_type' => 'double'}
+    }
 
     def initialize
       @name = ''
       @type = TYPE_STRING
-      @value = ''
-      @desc = ''
-    end
-
-    attr_accessor :name
-    attr_accessor :type
-    attr_accessor :value
-    attr_accessor :desc
-  end
-
-  class ModuleHashKey
-    class << self
-      def from_xml(xml_node, prefix = 'HK')
-        hash_key = nil
-
-        name_attr = xml_node.attribute('name')
-
-        if !(name_attr.nil? || name_attr.to_s.strip.empty?)
-          hash_key = self.new()
-          hash_key.name = name_attr.to_s
-
-          hash_key.deprecated = xml_node.attribute('deprecated').to_s.downcase == 'true'
-
-          # transform hash key name to constant (camelcase to underscore)
-          const_key = prefix + '_' + hash_key.name.underscore + (hash_key.deprecated ? '_DEPRECATED' : '')
-          hash_key.const_tag = const_key.upcase
-        end
-
-        hash_key
-      end
-    end
-
-    def initialize
-      @name = ''
-      @const_tag = ''
-      @deprecated = false
-    end
-
-    attr_accessor :name
-    attr_accessor :const_tag
-    attr_accessor :deprecated
-  end
-
-
-  class MethodParam < GeneratedType
-
-    def initialize(type = TYPE_STRING, default_value = nil)
-      super(type, default_value)
+      @sub_param = nil
+      @sub_params = nil
       @can_be_nil = false
       @desc = ''
+      @default_value = nil
       @is_property_hash = false
       @linked_field = nil
       @is_generated = false
     end
+
+    attr_accessor :name
+    #attr_accessor :type
+    attr_reader :type
+
+    # for ARRAY
+    attr_accessor :sub_param
+
+    #for HASH
+    attr_accessor :sub_params
 
     attr_accessor :can_be_nil
     attr_accessor :desc
@@ -471,13 +142,30 @@ module RhogenCore
     attr_accessor :is_property_hash
     attr_accessor :linked_field
     attr_accessor :is_generated
+
+    def type=(value)
+      up_value = value.upcase
+      BASE_TYPES.each do |t|
+        if up_value == t
+          @type = up_value
+          return
+        end
+      end
+
+      if up_value == TYPE_SELF
+        @type = up_value
+      else
+        @type = value
+      end
+    end
+
   end
 
   class MethodResult
 
     def initialize
-      @type = TYPE_STRING
-      @item_type = TYPE_STRING
+      @type = MethodParam::TYPE_STRING
+      @item_type = MethodParam::TYPE_STRING
 
       # if type=ARRAY
       @sub_param = nil
@@ -495,14 +183,41 @@ module RhogenCore
   end
 
 
+  class ModuleConstant
+    def initialize
+      @name = ''
+      @type = MethodParam::TYPE_STRING
+      @value = ''
+      @desc = ''
+    end
+
+    attr_accessor :name
+    attr_accessor :type
+    attr_accessor :value
+    attr_accessor :desc
+  end
+
+  class ModuleHashKey
+    def initialize
+      @name = ''
+      @const_tag = ''
+      @deprecated = false
+    end
+
+    attr_accessor :name
+    attr_accessor :const_tag
+    attr_accessor :deprecated
+  end
+
   class ModuleProperty
+
     USE_PROPERTY_BAG_MODE_NONE = 'NONE'
     USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS = 'PROPERTY_BAG_VIA_ACCESSORS'
     USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG = 'ACCESSORS_VIA_PROPERTY_BAG'
 
     def initialize
       @name = ''
-      @type = TYPE_STRING
+      @type = MethodParam::TYPE_STRING
       @param = nil
       @native_name = ''
       @readonly = false
@@ -537,6 +252,7 @@ module RhogenCore
     attr_accessor :generateDoc
     attr_accessor :run_in_thread
     attr_accessor :is_deprecated
+
   end
 
   class ModuleMethod
@@ -637,7 +353,7 @@ module RhogenCore
     end
 
     def is_callback_accessor
-      (@linked_property != nil && @linked_property.type == TYPE_CALLBACK)
+      (@linked_property != nil && @linked_property.type == MethodParam::TYPE_CALLBACK )
     end
 
     def is_accessor
@@ -661,8 +377,8 @@ module RhogenCore
 
     def initialize
       @field_index = 0
-      @type = TYPE_STRING
-      @cpptype = TYPE_TRAITS[@type]['cpp_type']
+      @type = MethodParam::TYPE_STRING
+      @cpptype = MethodParam::TYPE_TRAITS[@type]['cpp_type']
       @type_index = 0
       @constructor_param = 0
       @binding = false
@@ -697,13 +413,13 @@ module RhogenCore
 
     def type=(value)
       up_value = value.upcase
-      type_index = RhogenCore::SIMPLE_TYPES.index(up_value)
+      type_index = MethodParam::SIMPLE_TYPES.index(up_value)
 
       if index != nil
         @type = up_value
-        @cpptype = TYPE_TRAITS[@type]['cpp_type']
+        @cpptype = MethodParam::TYPE_TRAITS[@type]['cpp_type']
         @type_index = index
-        @default_value = TYPE_TRAITS[@type]['default']
+        @default_value = MethodParam::TYPE_TRAITS[@type]['default']
         return
       end
     end
@@ -833,7 +549,7 @@ module RhogenCore
 
     # puts cur_path
     # check properties
-    poss_attributes = VALID_XML_ATTRIBUTES[this_name]
+    poss_attributes = $possible_attributes[this_name]
     if (xml_element.attributes.to_a.size > 0)
       if poss_attributes == nil
         all_is_ok = false
@@ -850,8 +566,8 @@ module RhogenCore
             xml_error('unrecognized attribute - "'+attribute_name+'"', cur_path)
           else
             attribute_value = item_attribute.value.to_s
-            if POSSIBLE_VALUES[attribute_name] != nil
-              if !(POSSIBLE_VALUES[attribute_name].include?(attribute_value))
+            if $possible_values[attribute_name] != nil
+              if !($possible_values[attribute_name].include?(attribute_value))
                 all_is_ok = false
                 xml_error('unrecognized value "'+attribute_value+'" for attribute "'+attribute_name+'"', cur_path)
               end
@@ -863,7 +579,7 @@ module RhogenCore
 
 
     # check children
-    poss_children = VALID_XML_CHILDREN[this_name]
+    poss_children = $possible_children[this_name]
     if xml_element.elements.to_a.size > 0
       if poss_children == nil
         all_is_ok = false
@@ -984,39 +700,33 @@ module RhogenCore
   #return string {...}
   def prepare_rho_api_param_structure(param, name_prefix, param_index, lines)
     str = ''
-    if RhogenCore::SIMPLE_TYPES.include?(param.type)
+    if MethodParam::SIMPLE_TYPES.include?(param.type)
       str = '{'
       str = str + 'RHO_API_'+param.type+', '
       str = str + '0, '
       str = str + prepare_rho_api_param_string(param.name)+', '
       str = str + '0, 0 }'
     else
-      if param.type == TYPE_ARRAY
+      if param.type == MethodParam::TYPE_ARRAY
         str = '{'
         str = str + 'RHO_API_ARRAY, '
         str = str + '0, '
         str = str + prepare_rho_api_param_string(param.name)+', '
         str = str + '1, '+name_prefix+'_param'+param_index.to_s
         str = str + ' }'
-
         tmp_ar = []
-        tmp_ar << param.value if param.value
-
+        tmp_ar << param.sub_param if param.sub_param
         prepare_rho_api_params_structure_line(tmp_ar, name_prefix+'_param'+param_index.to_s, lines)
-        #prepare_rho_api_param_structure(param.value, name_prefix+'_param'+param_index.to_s, param_index, lines)
-        # tmp_ar = []
-        # tmp_ar << param.sub_param if param.sub_param
-        # prepare_rho_api_params_structure_line(tmp_ar, name_prefix+'_param'+param_index.to_s, lines)
       else
-        if param.type == TYPE_HASH
+        if param.type == MethodParam::TYPE_HASH
           str = '{'
           str = str + 'RHO_API_HASH, '
           str = str + '0, '
           str = str + prepare_rho_api_param_string(param.name)+', '
-          if param.fields != nil && !param.fields.empty?
-            str = str + param.fields.size.to_s + ', '+name_prefix+'_param'+param_index.to_s
+          if param.sub_params != nil
+            str = str + param.sub_params.size.to_s + ', '+name_prefix+'_param'+param_index.to_s
             str = str + ' }'
-            prepare_rho_api_params_structure_line(param.fields, name_prefix+'_param'+param_index.to_s, lines)
+            prepare_rho_api_params_structure_line(param.sub_params, name_prefix+'_param'+param_index.to_s, lines)
           else
             str = str + '0, 0 }'
           end
@@ -1056,100 +766,64 @@ module RhogenCore
 
   #return MethodParam object
   def process_param(xml_param_item, predefined_name, module_item, method_name, param_index, self_type)
-    attr_type = xml_param_item.attribute('type')
+    param = MethodParam.new()
 
-    raise "ERROR: #{"Parameter in method must have specified type".red} ! Module[#{module_item.name}].method[#{method_name.bold}].param_index[#{param_index.to_s.bold}]" if attr_type.nil?
-
-    param_type = xml_param_item.attribute('type').to_s
-
-    default_val = xml_param_item.attribute('default') != nil ? xml_param_item.attribute('default').to_s : nil
-
-    param = nil
-
-    generated_name =  xml_param_item.attribute('name') != nil ? xml_param_item.attribute('name').to_s : predefined_name
-
-    api_style = xml_param_item.attribute('apiStyle') != nil ? xml_param_item.attribute('apiStyle').to_s.upcase : API_STYLE_LEGACY
-
-    if ALL_TYPES.include?(param_type.upcase)
-      param_type = param_type.upcase
-      if SIMPLE_TYPES.include?(param_type)
-        param = MethodParam.new(param_type, default_val)
-        param.name = generated_name
-      else
-        case param_type
-          when TYPE_SELF
-            param = MethodParam.new(TYPE_SELF)
-            param.name = generated_name
-            param.self_type = self_type
-
-          when TYPE_ARRAY
-            param = MethodParam.new(TYPE_ARRAY)
-            param.name = generated_name
-            sub_param = nil
-
-            # looking for <PARAM> child
-            xml_param_item.elements.each('PARAM') do |xml_method_subparam|
-              if xml_method_subparam.parent == xml_param_item
-                sub_param = process_param(xml_method_subparam, 'array_param', module_item, method_name, param_index, self_type)
-              end
-            end
-            if sub_param == nil
-              sub_param = MethodParam.new(TYPE_STRING)
-              puts "WARNING: <ARRAY> do not have specified item type - set to #{sub_param.type} by default ! in Module[#{module_item.name.bold}].method[#{method_name.bold}].param_index[#{param_index.to_s.bold}]".brown
-            end
-
-            param.value = sub_param
-
-          when TYPE_HASH
-            param = MethodParam.new(TYPE_HASH)
-            param.name = generated_name
-
-            sub_params = []
-
-            # puts "Processing params"
-
-            xml_param_item.elements.each('PARAMS') do |xml_method_subparams|
-              if xml_method_subparams.parent == xml_param_item
-                sub_params.concat(process_params(xml_method_subparams, module_item, method_name+'_'+param.name, self_type))
-              end
-            end
-
-            # puts 'SUB PARAMS ' + sub_params.map{|x| x.name+':'+x.type}.join(', ')
-
-            if sub_params.empty?
-              puts "WARNING: you use HASH type without specified items ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
-            else
-              sub_params.each do |field|
-                param.include_field(field)
-              end
-            end
-          else
-            puts "NO TYPE"
-        end
-      end
+    if xml_param_item.attribute('name') != nil
+      param.name = xml_param_item.attribute('name').to_s
     else
-      case api_style
-        when API_STYLE_NESTED
-          param = MethodParam.process_type(param_type.upcase)
-          param.name = generated_name
-        else
-          raise "invalid parameter type #{param_type}"
-      end
-   end
+      param.name = predefined_name
+    end
+    if xml_param_item.attribute('default') != nil
+      param.default_value = xml_param_item.attribute('default').to_s
+    end
+    if xml_param_item.attribute('propertyHash') != nil
+      param.is_property_hash = (xml_param_item.attribute('propertyHash').to_s == 'true')
+    end
 
-    unless param.nil?
-      if xml_param_item.attribute('propertyHash') != nil
-        param.is_property_hash = (xml_param_item.attribute('propertyHash').to_s == 'true')
-      end
+    xml_param_item.elements.each('DESC') do |xml_desc|
+      param.desc = xml_desc.text
+    end
 
-      xml_param_item.elements.each('DESC') do |xml_desc|
-        param.desc = xml_desc.text
+    if xml_param_item.attribute('type') != nil
+      ttype = xml_param_item.attribute('type').to_s #.upcase
+      if ttype == MethodParam::TYPE_SELF
+        ttype = self_type
       end
+      param.type = ttype
 
-      xml_param_item.elements.each('CAN_BE_NIL') do |canbenil|
-        if canbenil.parent == xml_param_item
-          param.can_be_nil = true
+      if ttype == MethodParam::TYPE_ARRAY
+        # looking for <PARAM> child
+        xml_param_item.elements.each('PARAM') do |xml_method_subparam|
+          if xml_method_subparam.parent == xml_param_item
+            param.sub_param = process_param(xml_method_subparam, 'array_param', module_item, method_name, param_index, self_type)
+          end
         end
+        if param.sub_param == nil
+          param.sub_param = MethodParam.new()
+          puts "WARNING: <ARRAY> do not have specified item type - set to STRING by default ! in Module[#{module_item.name.bold}].method[#{method_name.bold}].param_index[#{param_index.to_s.bold}]".brown
+        end
+      end
+
+      if ttype == MethodParam::TYPE_HASH
+        xml_param_item.elements.each('PARAMS') do |xml_method_subparams|
+          if xml_method_subparams.parent == xml_param_item
+            param.sub_params = process_params(xml_method_subparams, module_item, method_name+'_'+param.name, self_type)
+          end
+        end
+
+        #if param.sub_params == nil
+        #  puts "WARNING: you use HASH type without specified items ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
+        #end
+
+      end
+
+    else
+      raise "ERROR: #{"Parameter in method must have specified type".red} ! Module[#{module_item.name}].method[#{method_name.bold}].param_index[#{param_index.to_s.bold}]"
+    end
+
+    xml_param_item.elements.each('CAN_BE_NIL') do |canbenil|
+      if canbenil.parent == xml_param_item
+        param.can_be_nil = true
       end
     end
 
@@ -1196,7 +870,7 @@ module RhogenCore
       else
         param = MethodParam.new()
         param.name = param_name
-        param.type = TYPE_HASH
+        param.type = MethodParam::TYPE_HASH
         param.sub_params = fields_param_list
       end
     end
@@ -1217,7 +891,7 @@ module RhogenCore
       end
     end
 
-    element_mapping.each do |k, v|
+    element_mapping.each do |k,v|
       if v.size > 1
         unique_values = v.uniq
         if unique_values.size > 1
@@ -1258,7 +932,7 @@ module RhogenCore
 
     has_error = false;
 
-    element_mapping.each do |k, v|
+    element_mapping.each do |k,v|
       if v.size > 1
         unique_values = v.uniq
         if unique_values.size > 1
@@ -1271,7 +945,7 @@ module RhogenCore
     end
 
 
-    value_mapping.each do |k, v|
+    value_mapping.each do |k,v|
       if v.size > 1
         unique_values = v.uniq
         if unique_values.size > 1
@@ -1311,7 +985,7 @@ module RhogenCore
 
     descriptions.each do |k, v|
       if v.size > 1
-        constant_names = v.map { |c| c.parent.attribute('name').to_s.downcase + (c.parent.attribute(TEMPLATE_NAME).nil? ? '' : " (#{c.parent.attribute(TEMPLATE_NAME).to_s})") }
+        constant_names = v.map{|c| c.parent.attribute('name').to_s.downcase + (c.parent.attribute(TEMPLATE_NAME).nil? ? '' : " (#{c.parent.attribute(TEMPLATE_NAME).to_s})")}
         constant_names.uniq!
         if constant_names.size > 1
           puts "Warning: Elements #{element.upcase.bold} with different names: #{constant_names.join(', ').bold} have same description \"#{k.bold}\"".magenta
@@ -1321,11 +995,21 @@ module RhogenCore
   end
 
 
+
   def process_constants(supported_simple_types, xml_module_item)
     constants = []
 
     xml_module_item.elements.each('CONSTANTS/CONSTANT') do |xml_constant|
-      constants << ModuleConstant.from_xml(xml_constant)
+      module_constant = ModuleConstant.new()
+      module_constant.name = xml_constant.attribute('name').to_s
+      module_constant.value = xml_constant.attribute('value').to_s
+      if xml_constant.attribute('type') != nil
+        module_constant.type = xml_constant.attribute('type').to_s.upcase
+      end
+      xml_constant.elements.each('DESC') do |xml_desc|
+        module_constant.desc = xml_desc.text
+      end
+      constants << module_constant
     end
 
     #constants in properties
@@ -1338,19 +1022,39 @@ module RhogenCore
         end
       end
       xml_property.elements.each('VALUES/VALUE') do |xml_property_value|
-        constants << ModuleConstant.from_xml(xml_property_value, default_type)
+        module_constant = ModuleConstant.new()
+        module_constant.name = xml_property_value.attribute('constName').to_s
+        module_constant.value = xml_property_value.attribute('value').to_s
+        if xml_property_value.attribute('type') != nil
+          module_constant.type = xml_property_value.attribute('type').to_s.upcase
+        elsif default_type != nil
+          module_constant.type = default_type
+        end
+        xml_property_value.elements.each('DESC') do |xml_desc|
+          module_constant.desc = xml_desc.text
+        end
+        constants << module_constant
       end
     end
 
     #constants in param
     xml_module_item.elements.each('.//PARAM/VALUES/VALUE') do |xml_param_value|
-      constants << ModuleConstant.from_xml(xml_param_value)
+      module_constant = ModuleConstant.new()
+      module_constant.name = xml_param_value.attribute('constName').to_s
+      module_constant.value = xml_param_value.attribute('value').to_s
+      if xml_param_value.attribute('type') != nil
+        module_constant.type = xml_param_value.attribute('type').to_s.upcase
+      end
+      xml_param_value.elements.each('DESC') do |xml_desc|
+        module_constant.desc = xml_desc.text
+      end
+      constants << module_constant
     end
 
     check_unique_names_and_values("Constant", constants)
 
-    #leave only unique const names
-    return constants.uniq { |x| x.name }.sort { |a, b| a.name <=> b.name }
+    #leave only unique consants
+    return constants.uniq { |x| x.name }.sort{ |a,b|  a.name <=> b.name}
   end
 
   def process_hash_keys(xml_module_item)
@@ -1379,15 +1083,45 @@ module RhogenCore
     hash_objs = []
     hash_elems.each do |xml_param|
       xml_param.elements.each('.//PARAM') do |param_key|
-        key = ModuleHashKey.from_xml(param_key, 'HK')
-        hash_objs << key unless key.nil?
+        name_attr = param_key.attribute('name')
+        next if name_attr.nil?
+        next if name_attr.to_s.strip.empty?
+
+        key = ModuleHashKey.new()
+        key.name = name_attr.to_s
+
+        if (param_key.attribute('deprecated').to_s.downcase == 'true')
+          key.deprecated = true
+        end
+
+        # transform hash key name to constant (camelcase to underscore)
+        const_key = 'HK_' + key.name.dup.underscore + ( key.deprecated ? '_DEPRECATED' : '' )
+        const_key.upcase!
+        key.const_tag = const_key
+
+        hash_objs << key
       end
     end
 
     # process property names
     xml_module_item.elements.each('.//PROPERTY') do |xml_property|
-      key = ModuleHashKey.from_xml(xml_property, 'PROPERTY')
-      hash_objs << key unless key.nil?
+      name_attr = xml_property.attribute('name')
+      next if name_attr.nil?
+      next if name_attr.to_s.strip.empty?
+
+      key = ModuleHashKey.new()
+      key.name = name_attr.to_s
+
+      if (xml_property.attribute('deprecated').to_s.downcase == 'true')
+        key.deprecated = true
+      end
+
+      # transform hash key name to constant (camelcase to underscore)
+      const_key = 'PROPERTY_' + key.name.dup.underscore + ( key.deprecated ? '_DEPRECATED' : '' )
+      const_key.upcase!
+      key.const_tag = const_key
+
+      hash_objs << key
     end
 
     hash_objs.uniq! { |p| p.const_tag }
@@ -1425,7 +1159,7 @@ module RhogenCore
   def process_method(xml_module_method, module_item, self_type)
     module_method = ModuleMethod.new()
 
-    item_attributes = collect_inherited_attributes(xml_module_method, ['deprecated', 'generateAPI', 'generateDoc', 'runInThread', 'hasCallback','legacyApiContainers'])
+    item_attributes = collect_inherited_attributes(xml_module_method, ['deprecated', 'generateAPI','generateDoc','runInThread', 'hasCallback'])
 
     module_method.name = xml_module_method.attribute('name').to_s
     module_method.native_name = module_method.name.split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
@@ -1484,26 +1218,26 @@ module RhogenCore
       result_type = ret_el.attribute('type')
       if result_type == nil
         puts "you use RETURN/CALLBACK without specified type - use default STRING type ! Module[#{module_item.name}].method[#{module_method.name}]"
-        result_type = TYPE_STRING
+        result_type = MethodParam::TYPE_STRING
       else
         result_type = result_type.to_s
       end
       if result_type == ""
         puts "you use RETURN/CALLBACK with invalid type - use default STRING type ! Module[#{module_item.name}].method[#{module_method.name}]"
-        result_type = TYPE_STRING
+        result_type = MethodParam::TYPE_STRING
       end
       #result_item_type = xml_module_method.elements['RETURN'].attribute('itemType').to_s
       ret_el.elements.each('DESC') do |xml_desc|
         method_result.desc = xml_desc.text
       end
       if result_type != nil
-        if result_type == TYPE_SELF
+        if result_type == MethodParam::TYPE_SELF
           result_type = self_type
         end
         method_result.type = result_type
       end
       #if result_item_type != nil
-      #   if result_item_type == TYPE_SELF
+      #   if result_item_type == MethodParam::TYPE_SELF
       #     result_item_type = [module_item.parents.join('.'),module_item.name].join('.')
       #   end
       #   method_result.item_type = result_item_type
@@ -1528,17 +1262,13 @@ module RhogenCore
         method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN', self_type)
       end
 
-      if method_result.item_type == TYPE_SELF
-        method_result.item_type = self_type
-      end
-
-      if (method_result.type == TYPE_ARRAY) && (method_result.item_type == nil)
+      if (method_result.type == MethodParam::TYPE_ARRAY) && (method_result.item_type == nil)
         # set default STRING type and show WARNING
         method_result.sub_param = MethodParam.new()
-        method_result.item_type = TYPE_STRING
+        method_result.item_type = MethodParam::TYPE_STRING
         puts "WARNING: Use of ARRAY type without specified item type - set to STRING by default ! Module[#{module_item.name.bold}].method[#{module_method.name.bold}].RETURN".brown
       end
-      if (method_result.type == TYPE_HASH) && (method_result.sub_params == nil)
+      if (method_result.type == MethodParam::TYPE_HASH) && (method_result.sub_params == nil)
         puts "WARNING: Use of HASH type without specified items ! Module[#{module_item.name.bold}].method[#{module_method.name.bold}].RETURN".brown
       end
 
@@ -1566,7 +1296,7 @@ module RhogenCore
     #
     #   if xml_method_param.attribute('type') != nil
     #      ttype = xml_method_param.attribute('type').to_s #.upcase
-    #      if ttype == TYPE_SELF
+    #      if ttype == MethodParam::TYPE_SELF
     #         ttype = [module_item.parents.join('.'),module_item.name].join('.')
     #      end
     #      method_param.type = ttype
@@ -1669,7 +1399,7 @@ module RhogenCore
       end
 
       # callback is property with wrtieonly logic, it sets result with CALLBACK type
-      if module_property.type != TYPE_CALLBACK
+      if module_property.type != MethodParam::TYPE_CALLBACK
         if property_attributes['readOnly'] != nil
           module_property.readonly = property_attributes['readOnly'].downcase != 'false'
         end
@@ -1726,16 +1456,16 @@ module RhogenCore
       end
       # if default is not set - set it to default for types
       if module_property.default_value == nil
-        if module_property.type == TYPE_BOOL
+        if module_property.type == MethodParam::TYPE_BOOL
           module_property.default_value = 'false'
         end
-        if module_property.type == TYPE_INT
+        if module_property.type == MethodParam::TYPE_INT
           module_property.default_value = '0'
         end
-        if module_property.type == TYPE_DOUBLE
+        if module_property.type == MethodParam::TYPE_DOUBLE
           module_property.default_value = '0'
         end
-        if module_property.type == TYPE_STRING
+        if module_property.type == MethodParam::TYPE_STRING
           module_property.default_value = ''
         end
       end
@@ -1751,7 +1481,7 @@ module RhogenCore
     #prepare getters and setters for property
     properties.each do |module_property|
       if module_property.generate_accessors
-        if module_property.type != TYPE_CALLBACK
+        if module_property.type != MethodParam::TYPE_CALLBACK
           if  !module_property.writeonly
             getter_method = ModuleMethod.new()
 
@@ -1856,7 +1586,7 @@ module RhogenCore
         if xml_entity_field.attribute('type') != nil
           type = xml_entity_field.attribute('type').to_s.upcase
 
-          unless RhogenCore::SIMPLE_TYPES.include?(type)
+          unless MethodParam::SIMPLE_TYPES.include?(type)
             raise "ModuleEntity have invalid type !\n Module[#{module_item.name}].entity[#{module_entity.name}] = #{type}"
           end
           entity_field.type = type
@@ -1911,7 +1641,7 @@ module RhogenCore
         end
         cnt_param = MethodParam.new()
         cnt_param.is_generated = true
-        cnt_param.type = TYPE_HASH
+        cnt_param.type = MethodParam::TYPE_HASH
         cnt_param.sub_params = cnt_hash
 
         # access params
@@ -1950,7 +1680,7 @@ module RhogenCore
         #
         ## constructor result
         #constr_result = MethodResult.new()
-        #constr_result.type = TYPE_HASH
+        #constr_result.type = MethodParam::TYPE_HASH
         #constr_result.sub_params = cnt_hash
         #
         #ntt_constructor.result = constr_result
@@ -2005,7 +1735,7 @@ module RhogenCore
 
       if module_entity.fields.size > 0
         init_result = MethodResult.new()
-        init_result.type = TYPE_HASH
+        init_result.type = MethodParam::TYPE_HASH
         init_result.sub_params = param_list_from_fields(module_entity.fields, true)
         ntt_init.result = init_result
         ntt_init.is_return_value = true
@@ -2044,7 +1774,7 @@ module RhogenCore
 
         if update_fileds != nil
           update_result = MethodResult.new()
-          update_result.type = TYPE_HASH
+          update_result.type = MethodParam::TYPE_HASH
           update_result.sub_params = param_list_from_fields(update_fileds, false)
           ntt_init.result = update_result
           ntt_init.is_return_value = true
@@ -2074,7 +1804,7 @@ module RhogenCore
       #  ntt_load.generateAPI = true
       #  # constructor result
       #  get_result = MethodResult.new()
-      #  get_result.type = TYPE_HASH
+      #  get_result.type = MethodParam::TYPE_HASH
       #  get_result.sub_params = param_list_from_fields(module_entity.fields.select { |f| !f.const }, true)
       #  ntt_load.result = get_result
       #  ntt_load.is_return_value = true
@@ -2118,13 +1848,13 @@ module RhogenCore
         end
 
         # entity_method.name << module_entity.name + 'Entity'
-        entity_method.native_name = (entity_method.name + module_entity.name + (is_static ? "Static" : "")).split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
-        entity_method.binding_name = (entity_method.name + module_entity.name + (is_static ? "Static" : "")).split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
+        entity_method.native_name = (  entity_method.name + module_entity.name + (is_static ? "Static" : "") ).split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
+        entity_method.binding_name = (  entity_method.name + module_entity.name + (is_static ? "Static" : "") ).split(/[^a-zA-Z0-9\_]/).map { |w| w }.join("")
         entity_method.access = ModuleMethod::ACCESS_STATIC
       end
 
       # generated methods first, then static, then sort by name
-      module_entity.methods = module_entity.methods.stable_sort do |a, b|
+      module_entity.methods = module_entity.methods.stable_sort do|a,b|
         if a.is_generated == b.is_generated
           if a.is_static_for_entity == b.is_static_for_entity
             a.name <=> b.name
@@ -2135,105 +1865,6 @@ module RhogenCore
           a.is_generated ? 1 : -1
         end
       end
-    end
-  end
-
-
-  #get compund name for ease of comparation
-  def compound_name(xml_item, default_access)
-    if !xml_item.nil? && !xml_item.attribute('name').nil?
-      name = xml_item.attribute('name').to_s
-
-      if !default_access.nil?
-        access = default_access
-      else
-        if xml_item.name == 'PROPERTY'
-          access = ModuleMethod::ACCESS_INSTANCE
-        else
-          access = ModuleMethod::ACCESS_STATIC
-        end
-      end
-
-      if !xml_item.attribute('access').nil?
-        access = xml_item.attribute('access').to_s
-      end
-
-      "#{name}_#{access}"
-    else
-      'undefined'
-    end
-  end
-
-  #check if element name is defined and not empty
-  def valid_element_name?(current_item)
-    name_attr = current_item.attribute('name')
-
-    is_valid = !name_attr.nil? && !name_attr.to_s.strip.empty?
-    if !is_valid
-      puts "Warning: Element has no name and will be skipped: \n #{current_item.to_s.bold} ".red
-    end
-
-    is_valid
-  end
-
-  #put item from include_module to item_dict if it is not defined in current_module or item_dict
-  def include_module_items(include_module, current_module, item_dict, section, subsection, template)
-    # fill item_dict with items from curren_module in the first run
-    if item_dict.size == 0
-      current_module.elements.each("#{section}/#{subsection}") do |current_item|
-        next if !valid_element_name?(current_item)
-
-        default_access = nil
-        if !current_item.parent.nil?
-          default_access = current_item.parent.attribute('access')
-        end
-
-        item_name = compound_name(current_item, default_access)
-        item_dict[item_name] = {:item => current_item, :index => item_dict.size, :current => true}
-      end
-    end
-
-    include_module.elements.each("#{section}/#{subsection}") do |include_item|
-      next if !valid_element_name?(include_item)
-
-      default_access = nil
-      if !include_item.parent.nil?
-        default_access = include_item.parent.attribute('access')
-      end
-
-      include_item.add_attribute(TEMPLATE_NAME, template)
-      include_item_name = compound_name(include_item, default_access)
-
-      if !item_dict.has_key?(include_item_name)
-        item_dict[include_item_name] = {:item => include_item, :index => item_dict.size, :current => false}
-      end
-    end
-  end
-
-  # add items from item_dict to current_module
-  def update_current_module(current_module, item_dict, section, subsection)
-    xml_module_item_methods = current_module.elements[section]
-    existing_methods = []
-
-    #check if xml_module_item_methods section exists
-    if xml_module_item_methods.nil?
-      xml_module_item_methods = current_module.add_element(section)
-    else
-      existing_methods = current_module.get_elements("#{section}/#{subsection}")
-    end
-
-    # since we want to get base methods be be first, we need to remove existing methods and then insert them back in the last turn
-    existing_methods.each do |method|
-      xml_module_item_methods.delete(method)
-    end
-
-    list_size = item_dict.size
-    # generate key/value pairs
-    item_list = item_dict.sort_by { |k, v| v[:index] + (v[:current] ? list_size : 0) }
-
-    item_list.each do |item|
-      # get sorted value, not the key
-      xml_module_item_methods.add_element item[1][:item]
     end
   end
 
@@ -2260,9 +1891,109 @@ module RhogenCore
       end
     end
 
+
+    #get compund name for ease of comparation
+    def compound_name(xml_item, default_access)
+      if !xml_item.nil? && !xml_item.attribute('name').nil?
+        name = xml_item.attribute('name').to_s
+
+        if !default_access.nil?
+          access = default_access
+        else
+          if xml_item.name == 'PROPERTY'
+            access = ModuleMethod::ACCESS_INSTANCE
+          else
+            access = ModuleMethod::ACCESS_STATIC
+          end
+        end
+
+        if !xml_item.attribute('access').nil?
+          access = xml_item.attribute('access').to_s
+        end
+
+        "#{name}_#{access}"
+      else
+        'undefined'
+      end
+    end
+
+    #check if element name is defined and not empty
+    def valid_element_name?(current_item)
+      name_attr = current_item.attribute('name')
+
+      is_valid = !name_attr.nil? && !name_attr.to_s.strip.empty?
+      if !is_valid
+        puts "Warning: Element has no name and will be skipped: \n #{current_item.to_s.bold} ".red
+      end
+
+      is_valid
+    end
+
+    #put item from include_module to item_dict if it is not defined in current_module or item_dict
+    def include_module_items(include_module, current_module, item_dict, section, subsection, template)
+      # fill item_dict with items from curren_module in the first run
+      if item_dict.size == 0
+        current_module.elements.each("#{section}/#{subsection}") do |current_item|
+          next if !valid_element_name?(current_item)
+
+          default_access = nil
+          if !current_item.parent.nil?
+            default_access = current_item.parent.attribute('access')
+          end
+
+          item_name = compound_name(current_item, default_access)
+          item_dict[item_name] = { :item => current_item, :index => item_dict.size, :current => true }
+        end
+      end
+
+      include_module.elements.each("#{section}/#{subsection}") do |include_item|
+        next if !valid_element_name?(include_item)
+
+        default_access = nil
+        if !include_item.parent.nil?
+          default_access = include_item.parent.attribute('access')
+        end
+
+        include_item.add_attribute( TEMPLATE_NAME, template)
+        include_item_name = compound_name(include_item, default_access)
+
+        if !item_dict.has_key?(include_item_name)
+          item_dict[include_item_name] = { :item => include_item, :index => item_dict.size, :current => false }
+        end
+      end
+    end
+
+    # add items from item_dict to current_module
+    def update_current_module(current_module, item_dict, section, subsection)
+      xml_module_item_methods = current_module.elements[section]
+      existing_methods = []
+
+      #check if xml_module_item_methods section exists
+      if xml_module_item_methods.nil?
+        xml_module_item_methods = current_module.add_element(section)
+      else
+        existing_methods = current_module.get_elements("#{section}/#{subsection}")
+      end
+
+      # since we want to get base methods be be first, we need to remove existing methods and then insert them back in the last turn
+      existing_methods.each do |method|
+        xml_module_item_methods.delete(method)
+      end
+
+      list_size = item_dict.size
+      # generate key/value pairs
+      item_list = item_dict.sort_by { |k, v| v[:index] + (v[:current] ? list_size : 0) }
+
+      item_list.each do |item|
+        # get sorted value, not the key
+        xml_module_item_methods.add_element item[1][:item]
+      end
+    end
+
+
     # ===============================================================
     # those property types could be mapped to corresponding constants
-    supported_simple_types = RhogenCore::SIMPLE_TYPES.map(&:upcase)
+    supported_simple_types = MethodParam::SIMPLE_TYPES.map(&:upcase)
 
     unsupported_names = ['__proto__', 'break', 'case', 'catch', 'class', 'const', 'constructor', 'continue', 'debugger', 'default', 'delete', 'do', 'else', 'enum', 'export', 'extends', 'false', 'finally', 'for', 'function', 'if', 'implements', 'import', 'in', 'instanceof', 'interface', 'let', 'name', 'new', 'null', 'package', 'private', 'protected', 'prototype', 'public', 'return', 'static', 'super', 'switch', 'this', 'throw', 'true', 'try', 'typeof', 'var', 'void', 'while', 'with', 'yield'].map(&:upcase)
 
@@ -2292,7 +2023,7 @@ module RhogenCore
 
         xml_module_item.elements.each('TEMPLATES/INCLUDE') do |include_xml|
           base_path = include_xml.attribute('path').to_s
-          include_file_name = File.expand_path(File.join(File.dirname(xmlpath), base_path))
+          include_file_name = File.expand_path(File.join(File.dirname(xmlpath),base_path))
 
           puts "Including #{base_path}"
 
@@ -2337,9 +2068,9 @@ module RhogenCore
         #apply_templates_to_module(xml_module_item, 'default_instance')
       end
 
-      check_duplicate_descriptions(xml_module_item, 'CONSTANT')
-      check_duplicate_descriptions(xml_module_item, 'PROPERTY')
-      check_duplicate_descriptions(xml_module_item, 'METHOD')
+      check_duplicate_descriptions(xml_module_item,'CONSTANT')
+      check_duplicate_descriptions(xml_module_item,'PROPERTY')
+      check_duplicate_descriptions(xml_module_item,'METHOD')
 
       #constants in module
       module_item.constants = process_constants(supported_simple_types, xml_module_item)
@@ -2351,8 +2082,8 @@ module RhogenCore
       # ===============================================================
       # properties
       properties = process_properties(module_item, unsupported_names, xml_module_item)
-      module_item.properties.concat(properties)
-      module_item.methods.concat(generate_property_methods(properties))
+      module_item.properties.concat( properties )
+      module_item.methods.concat( generate_property_methods(properties) )
 
       # ===============================================================
       # entities
@@ -2362,7 +2093,7 @@ module RhogenCore
       # methods
       process_methods(module_item, xml_module_item)
 
-      all_methods = module_item.methods.map { |m| (m.access == ModuleMethod::ACCESS_STATIC ? "static method " : "") + m.binding_name }
+      all_methods = module_item.methods.map{|m| (m.access == ModuleMethod::ACCESS_STATIC ? "static method " : "") + m.binding_name}
 
       non_unique_methods = all_methods.group_by { |e| e }.select { |k, v| v.size > 1 }.map(&:first)
       if non_unique_methods.size > 0

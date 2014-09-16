@@ -278,4 +278,3 @@ platform/osx/bin/RhoSimulator/tmp/*
 platform/build/*.build/*
 
 .qmake.stash
-rendered

@@ -90,16 +90,12 @@ static NSDictionary* ourPropertyAliases= nil;
 
 
 -(void) getProperty:(NSString*)propertyName methodResult:(id<IMethodResult>)methodResult {
-    NSObject* value = [mProperties objectForKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]];
-    [methodResult setResult:value];
+    [methodResult setResult:[mProperties objectForKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]]];
 }
 
 -(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue methodResult:(id<IMethodResult>)methodResult {
     NSObject* value = propertyValue;
     NSString* strValue = propertyValue;
-    if ([propertyName isEqualToString:@"ID"] && [value isKindOfClass:[NSString class]] && [strValue isEqualToString:@""]) {
-        NSLog(@"Clearing ID!");
-    }
     if ([value isKindOfClass:[NSNumber class]]) {
         NSNumber* numValue = (NSNumber*)value;
         if ([CMethodResult isBoolInsideNumber:numValue]) {
