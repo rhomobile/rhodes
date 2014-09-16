@@ -1861,7 +1861,8 @@ rho::String rho::CNewORMModelImpl::_make_insert_or_update_attr_sql_script(const 
         }
         else
         {
-            retScript = rho::String("UPDATE ") + name() + " SET " + attrKey + "=\"" + attrValue + "\" WHERE object=?";
+            retScript = rho::String("UPDATE ") + name() + " SET " + attrKey + "=? WHERE object=?";
+            quests.push_back(attrValue);
             quests.push_back(objId);
         }
     }
@@ -1879,7 +1880,8 @@ rho::String rho::CNewORMModelImpl::_make_insert_or_update_attr_sql_script(const 
             quests.push_back(attrValue);
         }
         else {
-            retScript = rho::String("UPDATE object_values SET value=\"") + attrValue + "\" WHERE object=? AND source_id=? AND attrib=?";
+            retScript = rho::String("UPDATE object_values SET value=? WHERE object=? AND source_id=? AND attrib=?");
+            quests.push_back(attrValue);
             quests.push_back(objId);
             quests.push_back(srcId);
             quests.push_back(attrKey);
