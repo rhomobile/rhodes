@@ -15,7 +15,7 @@ using namespace rho::apiGenerator;
 
 extern "C"
 {
-void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
+void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 VALUE getRuby_<%= $cur_module.name %>_Module();
 
 <% if $cur_module.is_template_default_instance %>
@@ -275,7 +275,7 @@ end
 
 if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
     <%= functorWar %>
-    rho_wm_impl_performOnUiThread( pFunctor );<%
+    rho_os_impl_performOnUiThread( pFunctor );<%
 elsif (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
     <%= functorWar %>
     <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );<%
