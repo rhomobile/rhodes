@@ -408,17 +408,19 @@ void CAlert::playFile(String fileName)
     }
 
     StringW strPathW = convertToStringW(path);
-    HRESULT hr = lpfn_snd_open( strPathW.c_str(), &hSound);
+    /*HRESULT hr = lpfn_snd_open( strPathW.c_str(), &hSound);
     hr = lpfn_snd_playasync(hSound, 0);
-      
+      */
+
+	HRESULT hr =  sndPlaySound(strPathW.c_str(), SND_FILENAME | SND_ASYNC);
     if (hr != S_OK) {
         LOG(WARNING) + "OnAlertPlayFile: failed to play file"; 
     }
     
     WaitForSingleObject(hSound, INFINITE);
                         
-    hr = lpfn_snd_close(hSound);
-    lpfn_snd_stop(SND_SCOPE_PROCESS, NULL);
+    /*hr = lpfn_snd_close(hSound);
+    lpfn_snd_stop(SND_SCOPE_PROCESS, NULL);*/
 }
 
 #endif //_WIN32_WCE
@@ -575,7 +577,7 @@ extern "C" void alert_vibrate(int duration_ms) {
 
 extern "C" void alert_play_file(char* file_name, char* media_type) {
 #if _WIN32_WCE > 0x499 //&& !defined( OS_PLATFORM_MOTCE )
-	if(RHO_IS_WMDEVICE)
+	//if(RHO_IS_WMDEVICE)
 		CAlert::playFile(file_name);
 #endif
 }
