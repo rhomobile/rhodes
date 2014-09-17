@@ -795,7 +795,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	return _AtlModule.WinMain(nShowCmd);
 }
 
-extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask) 
+extern "C" void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask) 
 {
     CMainWindow* mainWnd = _AtlModule.GetMainWindowObject();
     mainWnd->performOnUiThread(pTask);    

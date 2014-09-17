@@ -760,7 +760,7 @@ void CMainWindow::createCustomMenuSlot(void)
     createCustomMenu();
 }
 
-extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
+extern "C" void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
     CMainWindow::getInstance()->executeRunnable(pTask);
 }
