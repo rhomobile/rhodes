@@ -417,7 +417,7 @@ void CAlert::playFile(String fileName)
         LOG(WARNING) + "OnAlertPlayFile: failed to play file"; 
     }
     
-    WaitForSingleObject(hSound, INFINITE);
+    //WaitForSingleObject(hSound, INFINITE);
                         
     /*hr = lpfn_snd_close(hSound);
     lpfn_snd_stop(SND_SCOPE_PROCESS, NULL);*/
