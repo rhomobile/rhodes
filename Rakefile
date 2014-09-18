@@ -311,36 +311,55 @@ end
 
 
 namespace 'dev' do
-  namespace 'update'do
 
-    task :onetime do
+  namespace 'update' do
+
+    task :onetime => ["config:initialize"] do
       LiveUpdatingConfig::applicationRoot = $app_basedir
-      server = OneTimeServer.new
+      server = OneTimeUpdater.new
       server.run
+    end
+
+    task :buildAndNotify => ["config:initialize"] do
+      LiveUpdatingConfig::applicationRoot = $app_basedir
+
+      (BuildServer.new).buildPartialBundlesForAllSubscribers
+    end
+
+    task :auto => ["config:initialize"] do
+      LiveUpdatingConfig::applicationRoot = $app_basedir
+      updater = AutoUpdater.new
+      updater.addDirectory(File.join($app_basedir, "/public"))
+      updater.addDirectory(File.join($app_basedir, "/app"))
+      updater.run
     end
 
   end
 
   namespace :webserver do
 
-    task :start do
+    task :start => ["config:initialize"] do
       LiveUpdatingConfig::applicationRoot = $app_basedir
-      WebServerWrapper::ensureRunning
+      print 'Looking for working web server... '.primary
+      unless WebServerWrapper::alive?
+        puts 'failed'.warning
+        WebServerWrapper::start
+      else
+        puts 'server is running'.success
+      end
     end
 
-    task :stop do
+    task :stop => ["config:initialize"] do
       WebServerWrapper::stop
     end
 
   end
 
   task :discovery => ["config:initialize"] do
-    finder = DeviceFinder.new($app_basedir)
+    LiveUpdatingConfig::applicationRoot = $app_basedir
+    finder = DeviceFinder.new
     finder.run
   end
-
-
-
 
 
   task :serve, [:serverUri] => ["config:initialize"] do |t, args|
@@ -369,7 +388,6 @@ namespace 'dev' do
 
     watcher.run
   end
-
 
 
 end
