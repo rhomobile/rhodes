@@ -70,11 +70,7 @@ module Rho
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize #{app_manifest_filename}, use_new_orm: #{Rho::RhoConfig.use_new_orm.to_i}"
       @@use_new_orm = (Rho::RhoConfig.use_new_orm.to_i > 0 ? true : false)
-      if(@@use_new_orm)
-        puts "MZV_DEBUG: we are in use_new_orm true #{@@use_new_orm}"
-      else
-        puts "MZV_DEBUG: we are in use_new_orm false #{@@use_new_orm}"
-      end
+      puts "BAB_DEBUG: Option use_new_orm = #{@@use_new_orm}"
 
       # Initialize application and sources
       @@rho_framework = self

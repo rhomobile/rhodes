@@ -57,19 +57,19 @@ module Rhom
             subCond = klass_model.buildComplexWhereCond(itemName.to_s, itemValues, itemOp, itemFunc)
             return [subCond[0], subCond[1..-1]]
           else
-            puts "MZV_DEBUG : _normalize_hash_condition : #{item.inspect} , #{op}"
+            puts "BAB_DEBUG : _normalize_hash_condition : #{item.inspect} , #{op}"
             sqlRes = ""
             condQuests = []
             item.each do |k, v|
               subCond = klass_model.buildComplexWhereCond(k.to_s, [v], "=", '')
-              puts "MZV_DEBUG : _received back : #{subCond.inspect}"
+              puts "BAB_DEBUG : _received back : #{subCond.inspect}"
               if sqlRes.length > 0
                 sqlRes += " " + op + " "
               end
               sqlRes += subCond[0]
               condQuests += subCond[1..-1]
             end
-            puts "MZV_DEBUG : _and in the end we have : #{sqlRes} ,  #{condQuests}"
+            puts "BAB_DEBUG : _and in the end we have : #{sqlRes} ,  #{condQuests}"
             return [sqlRes, condQuests];
           end
         end
@@ -326,7 +326,7 @@ module Rhom
 
         def self.on_sync_delete_error( objects, action )
           objects.each do |obj,val|
-            klass_model.onSyncDeleteError(obj, val['attributes'], action.to_s) 
+            klass_model.onSyncDeleteError(obj, val['attributes'], action.to_s)
           end
         end
 
@@ -337,7 +337,7 @@ module Rhom
             end
           else
             objects.each do |obj,val|
-              klass_model.onSyncUpdateError(obj, val['attributes'], {}, action.to_s) 
+              klass_model.onSyncUpdateError(obj, val['attributes'], {}, action.to_s)
             end
           end
         end
