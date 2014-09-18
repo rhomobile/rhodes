@@ -563,8 +563,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 	
 	case DISPID_NAVIGATECOMPLETE2:
         LOG(INFO) + "DISPID_NAVIGATECOMPLETE2";
-		if (!m_bInitialised)
-			RegisterWndProcThread(this);
+		
 
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
@@ -632,6 +631,9 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 	case DISPID_BEFORENAVIGATE2:
         LOG(INFO) + "DISPID_BEFORENAVIGATE2";
+
+		if (!m_bInitialised)		
+		SendMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)m_hwndTabHTML);
 
 		if (pdparams && pdparams->rgvarg[5].pvarVal[0].vt == VT_BSTR) 
 		{
