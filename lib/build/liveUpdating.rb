@@ -1,21 +1,28 @@
+#Set $LISTEN_GEM_DEBUGGING to 1 or 2 for debugging
+#More information on https://github.com/guard/listen
+#
+#$LISTEN_GEM_DEBUGGING = 2
+
+require 'fileutils'
 require 'socket'
 require 'uri'
 require 'net/http'
 require 'json'
 require 'yaml'
+require 'listen'
 require 'typhoeus'
+require 'childprocess'
 require_relative 'ExtendedString'
 
 
 class LiveUpdatingConfig
+=begin
+  I store settings for collaborated classes
+=end
   @@applicationRoot
 
-  def self.applicationRoot= (aString)
-    @@aplicationRoot = aString
-  end
-
-  def self.applicationRoot
-    @@aplicationRoot
+  class << self
+    attr_accessor :applicationRoot
   end
 
   def self.ownIPAddress
@@ -23,13 +30,11 @@ class LiveUpdatingConfig
   end
 
   def self.isWebServerAliveRequest
-    #TODO Remove hard code
     URI("http://#{self.webServerUri}/alive")
   end
 
   def self.stoppingWebServerRequest
-    #TODO Remove hard code
-    URI("http://#{self.webServerUri}/quit")
+    URI("http://#{self.webServerUri}/shutdown")
   end
 
   def self.webServerUri
@@ -40,31 +45,43 @@ class LiveUpdatingConfig
     3000
   end
 
-  def self.documentRoot
-    #TODO Remove hard code
-    '/Users/mva/Temp'
-  end
-
   def self.configFilename
     File.join(self.applicationRoot, 'dev-config.yml')
   end
 
+  def self.readConfiguration
+    if File.exist?(self.configFilename)
+      return YAML.load_file(self.configFilename)
+    end
+    return {}
+  end
+
   def self.subscribers
     subscribers = []
-    if File.exist?(self.configFilename)
-      config = YAML.load_file(self.configFilename)
+    config = self.readConfiguration
+    unless config['devices'].nil?
       config['devices'].each { |each|
         subscriber = Subscriber.new
-        subscriber.uri = "#{each['uri']}"
+        subscriber.uri = each['uri']
         subscriber.platform = each['platform']
         subscriber.name = each['name']
         subscriber.application = each['application']
         subscribers << subscriber
       }
-    else
-      puts "Devices configuration file #{configFilename} not found".warning
     end
     subscribers
+  end
+
+  def self.hasSubscribers
+    config = self.readConfiguration
+    config['devices'].nil? ? false : true
+  end
+
+  def self.storeSubscribers(anArray)
+    config = self.readConfiguration
+    config['devices'] = anArray
+    yml = config.to_yaml
+    File.open(self.configFilename, 'w') { |file| file.write yml }
   end
 
   def self.subscriberByIP(aString)
@@ -84,61 +101,117 @@ class LiveUpdatingConfig
     'bundle.zip'
   end
 
+  def self.documentRoot
+    config = self.readConfiguration
+    webServerConfig = config['webserver']
+    if (webServerConfig.nil? || webServerConfig['documentRoot'].nil?)
+      documentRoot = nil
+    else
+      documentRoot = webServerConfig['documentRoot']
+    end
+    documentRoot
+  end
+
+  def self.documentRoot=(aString)
+    config = self.readConfiguration
+    puts config
+    config['webserver'] = {'documentRoot' => aString}
+    puts config
+    yml = config.to_yaml
+    File.open(self.configFilename, 'w') { |file| file.write yml }
+  end
+
+
 end
 
+#TODO: create DocumentRoot on start and remove it on stop
 class WebServerWrapper
-  @@webServer
+=begin
+  I'm create web server and configure it for serve requests from subscribers (devices)
+=end
+  @@webserver
 
   def self.start
     host = LiveUpdatingConfig::ownIPAddress
     port = LiveUpdatingConfig::webServerPort
-    documentRoot = LiveUpdatingConfig::documentRoot
-    @@webServer = WEBrick::HTTPServer.new(
+    documentRoot = self.documentRoot
+    puts 'Starting web server... '.primary
+    @@webserver = WEBrick::HTTPServer.new(
         :Port => port,
         :DocumentRoot => documentRoot,
-        #:ServerType => WEBrick::Daemon,
         :ServerType => WEBrick::SimpleServer,
         :BindAddress => host
     )
     self.configure
-    @@webServer.start
+
+    webServerThread = Thread.new do
+      @@webserver.start
+    end
+
+    begin
+      trap 'INT' do
+        @@webserver.shutdown
+      end
+    end
+
+    webServerThread.join
+
+
   end
 
+  def self.documentRoot
+    documentRoot = LiveUpdatingConfig::documentRoot
+
+    if (documentRoot.nil?)
+      documentRoot = Dir.mktmpdir
+      LiveUpdatingConfig::documentRoot = documentRoot
+    else
+      unless File.exist?(documentRoot)
+        puts 'Path specified by setting \'webserver/documentRoot\' doesn\'t exist'.primary
+        FileUtils.mkpath(documentRoot)
+      end
+      print 'Cleaning document root directory... '.primary
+      FileUtils.rm_rf("#{documentRoot}/.", secure: true)
+      puts 'done'.success
+    end
+    puts "Path '#{documentRoot}' will be used as web server document root".primary
+    documentRoot
+  end
+
+
   def self.configure
-    @@webServer.mount_proc '/quit' do |request, response|
-      response.body = "Server is stopped"
+    @@webserver.mount_proc '/shutdown' do |request, response|
+      response.body = 'Server was shutdown'
       response.status = 200
       response.content_length = response.body.length
-      @@webServer.stop
+      @@webserver.shutdown
     end
 
-    @@webServer.mount_proc '/alive' do |request, response|
-      response.body = "Server is alive"
+    @@webserver.mount_proc '/alive' do |request, response|
+      response.body = 'Server is alive'
       response.status = 200
       response.content_length = response.body.length
     end
 
-    @@webServer.mount_proc '/response_from_device' do |request, response|
-      status = request.query["status"]
-      puts status
-      if status == 'need_full_update'
-        puts "Start full update"
+    @@webserver.mount_proc '/response_from_device' do |request, response|
+      if request.query['status'] == 'need_full_update'
         subscriber = LiveUpdatingConfig::subscriberByIP(request.query["ip"])
-
-        RhoDevelopment.setup(File.join(LiveUpdatingConfig::applicationRoot, '.development'), subscriber.normalizedPlatformName)
-        RhoDevelopment.make_full_bundle
-
-        from = File.join($targetdir, "upgrade_bundle.zip")
-        to = File.join(LiveUpdatingConfig::documentRoot, 'download', subscriber.platform, LiveUpdatingConfig::downloadBundleName)
-        FileUtils.mkpath(File.dirname(to))
-        FileUtils.cp(from, to)
-        subscriber.notify
+        puts "#{subscriber} is requesting full update bundle".info
+        (BuildServer.new).buildFullBundleForSubscriber(subscriber)
+      end
+      if request.query['status'] == 'ok'
+        subscriber = LiveUpdatingConfig::subscriberByIP(request.query["ip"])
+        puts "#{subscriber} applied update bundle successfully".info
+      end
+      if request.query['status'] == 'error'
+        subscriber = LiveUpdatingConfig::subscriberByIP(request.query["ip"])
+        puts "#{subscriber} got an error while updating bundle: #{request.query["status"].message}".info
       end
     end
 
   end
 
-  def self.isAlive
+  def self.alive?
     result = true
     url = LiveUpdatingConfig::isWebServerAliveRequest
     http = Net::HTTP.new(url.host, url.port)
@@ -160,95 +233,198 @@ class WebServerWrapper
     http.open_timeout = 5
     http.start() { |http|
       http.get(url.path)
-      puts 'Web server is shotdown'.primary
+      puts 'Web server was shutdown'.primary
     }
   end
 
   def self.ensureRunning
-    if !WebServerWrapper.isAlive
-      puts "Starting web server".primary
-      WebServerWrapper::start
+    print 'Looking for working web server... '.primary
+    unless WebServerWrapper.alive?
+      puts 'failed'.warning
+      process = ChildProcess.build('rake', 'dev:webserver:start')
+      process.io.inherit!
+      process.cwd = LiveUpdatingConfig::applicationRoot
+      process.start
     else
-      puts "Web server already started".primary
+      puts 'server is running'.success
     end
   end
 
 end
 
-class OneTimeServer
+class OneTimeUpdater
+=begin
+ I check source once and if it changed then I should build update bundle and notify subscribers
+=end
+
   def run
-    WebServerWrapper::ensureRunning
-    if self.sourceChanged?
-      puts "Source code is changed".primary
-    else
-      puts "Source code changes are not detected".primary
+    unless LiveUpdatingConfig::hasSubscribers
+      puts 'Subscribers not found'.warning
+      return
     end
-    (BuildProcessor.new).buildPartialBundles
+    WebServerWrapper::ensureRunning
+
+
+    if self.sourceChanged?
+      puts 'Source code is changed'.primary
+      buildServer = BuildServer.new
+      buildServer.buildPartialBundlesForAllSubscribers
+    else
+      puts 'Source code changes are not detected'.primary
+    end
   end
 
   def sourceChanged?
-    result = false
     devDir = File.join(LiveUpdatingConfig::applicationRoot, '.development')
     updatedListFilename = File.join(LiveUpdatingConfig::applicationRoot, 'upgrade_package_add_files.txt')
     removedListFilename = File.join(LiveUpdatingConfig::applicationRoot, 'upgrade_package_remove_files.txt')
     mkdir_p devDir
+    result = false
     LiveUpdatingConfig::subscriberPlatforms.each { |each|
       RhoDevelopment.setup(devDir, each)
-      is_require_full_update = RhoDevelopment.is_require_full_update
-      result = RhoDevelopment.check_changes_from_last_build(updatedListFilename, removedListFilename)
+      #is_require_full_update = RhoDevelopment.is_require_full_update
+      platformResult = RhoDevelopment.check_changes_from_last_build(updatedListFilename, removedListFilename)
+      t = platformResult ? 'was changed' : 'don\'t changed'
+      puts "Source code for platform #{each} #{t}".primary
+      result = result || (platformResult.nil? ? true : platformResult)
     }
-    puts "check_changes_from_last_build = #{result}".warning
-    result = true if result.nil?
     result
   end
 end
 
-class BuildProcessor
-  def buildPartialBundles
-    puts "Building".primary
 
+class AutoUpdater
+=begin
+  I check source continuously and if it changed then I should build update bundle and notify subscribers
+=end
+
+  def initialize
+    @listeners = []
+  end
+
+  def run
+    WebServerWrapper::ensureRunning
+    @listeners.each { |each| each.start }
+
+    begin
+      sleep 1
+    end while self.hasActiveListeners
+  end
+
+  def hasActiveListeners
+    @listeners.any? { |each| each.processing? }
+  end
+
+  def addDirectory(aString)
+    listener = Listen.to(aString, debug: true) do |modified, added, removed|
+      self.onFileChanged(added, modified, removed)
+    end
+    @listeners << listener
+  end
+
+  def onFileChanged(addedFiles, changedFiles, removedFiles)
+    puts 'Files changed...'
+    puts "File added: #{addedFiles}"
+    puts "File changed: #{changedFiles}"
+    puts "File removed: #{removedFiles}"
+    begin
+      self.createDiffFiles(addedFiles, changedFiles, removedFiles)
+      buildServer = BuildServer.new
+      buildServer.buildPartialBundlesForAllSubscribers
+    rescue => e
+      puts 'Exception...'.warning
+      puts e.message.warning
+      puts e.backtrace.inspect
+    end
+  end
+
+  def createDiffFiles(addedFiles, changedFiles, removedFiles)
+    self.writeUpdatedListFile(addedFiles, changedFiles)
+    self.writeRemovedListFile(removedFiles)
+  end
+
+  def writeUpdatedListFile(addedFiles, changedFiles)
+    self.writeArrayToFile('upgrade_package_add_files.txt', addedFiles + changedFiles)
+  end
+
+  def writeRemovedListFile(removedFiles)
+    self.writeArrayToFile('upgrade_package_remove_files.txt', removedFiles)
+  end
+
+  def writeArrayToFile(filename, anArray)
+    path = File.join(LiveUpdatingConfig::applicationRoot, filename)
+    File.open(path, 'w') { |file|
+      anArray.each { |each| file.puts(self.relativePath(each)) }
+    }
+  end
+
+  def relativePath(aString)
+    first = Pathname LiveUpdatingConfig::applicationRoot
+    second = Pathname aString
+    second.relative_path_from first
+  end
+
+end
+
+
+class BuildServer
+=begin
+  I build update bundles, copy them to document root of web server
+  and notify subscribers about ready updates
+=end
+
+  def buildPartialBundlesForAllSubscribers
+    puts "Start building partial bundles for all subscribers".primary
     builtPlatforms = []
     LiveUpdatingConfig::subscribers.each { |each|
-      puts "#{each.platform} will built".primary
       builtPlatforms << each.platform
       self.buildPartialBundleForSubscriber(each)
-      puts "Update partial bundle for platform #{each.platform} was built".primary
       self.copyPlatformBundleToWebServerRoot(each.platform, "upgrade_bundle_partial.zip")
     }
+    puts "Partial bundles for all subscribers were built".primary
     self.notifySubscribers
   end
 
-  def buildPartialBundleForSubscriber(each)
-    RhoDevelopment.setup(File.join(LiveUpdatingConfig::applicationRoot, '.development'), each.normalizedPlatformName)
+  def buildPartialBundleForSubscriber(aSubscriber)
+    puts "Start building partial bundle for #{aSubscriber.platform}".primary
+    RhoDevelopment.setup(File.join(LiveUpdatingConfig::applicationRoot, '.development'), aSubscriber.normalizedPlatformName)
     RhoDevelopment.make_partial_bundle
+    puts "Partial bundle for #{aSubscriber.platform} was built".primary
   end
 
-  def copyPlatformBundleToWebServerRoot(platform, sourceFilename)
-    from = File.join($targetdir, sourceFilename)
-    to = File.join(LiveUpdatingConfig::documentRoot, 'download', platform, LiveUpdatingConfig::downloadBundleName)
-    FileUtils.mkpath(File.dirname(to))
-    FileUtils.cp(from, to)
-    puts "Bundle for platform #{platform} copied into #{to}".primary
-  end
-
-  def buildFullBundles
-
-  end
 
   def buildFullBundleForSubscriber(aSubscriber)
+    puts "Start building full bundle for #{aSubscriber.platform}".primary
     RhoDevelopment.setup(File.join(LiveUpdatingConfig::applicationRoot, '.development'), aSubscriber.normalizedPlatformName)
     RhoDevelopment.make_full_bundle
-    self.copyPlatformBundleToWebServerRoot(each.platform, "upgrade_bundle.zip")
+    self.copyPlatformBundleToWebServerRoot(aSubscriber.platform, "upgrade_bundle.zip")
+    puts "Full bundle for #{aSubscriber.platform} was built".primary
+    aSubscriber.notify
   end
+
 
   def notifySubscribers
     LiveUpdatingConfig::subscribers.each { |subscriber|
       subscriber.notify
     }
+    #TODO: Notify also about failed notifications
   end
+
+  def copyPlatformBundleToWebServerRoot(platform, filename)
+    from = File.join($targetdir, filename)
+    to = File.join(LiveUpdatingConfig::documentRoot, 'download', platform, LiveUpdatingConfig::downloadBundleName)
+    FileUtils.mkpath(File.dirname(to))
+    FileUtils.cp(from, to)
+    puts "Bundle #{filename} for platform #{platform} was copied to web server document root".primary
+  end
+
 end
 
 class Subscriber
+=begin
+  I store information about device and can notify it about ready updates on server
+=end
+
   @uri
   @platform
   @name
@@ -274,10 +450,6 @@ class Subscriber
     @platform.downcase
   end
 
-  def buildTask
-    "build:#{self.normalizedPlatformName}:upgrade_package_partial"
-  end
-
   def hasIP(aString)
     self.ip == aString
   end
@@ -292,17 +464,18 @@ class Subscriber
   end
 
   def notify
+    print "Notifying #{self} ...".primary
     url = self.notifyUrl
-    puts "Send to #{self}  request #{url}".primary
     begin
       http = Net::HTTP.new(url.host, url.port)
       http.open_timeout = 5
       http.start() { |http|
         http.get(url.path + '?' + url.query)
       }
+      puts 'done'.success
     rescue Errno::ECONNREFUSED,
         Net::OpenTimeout => e
-      puts "#{self} is not accessible".warning
+      puts "failed".warning
     end
   end
 
@@ -310,42 +483,35 @@ class Subscriber
     "#{self.class}(uri=#{@uri}, name=#{@name}, platform=#{@platform}, app=#{@application})"
   end
 
-  def to_hash
-    hash = {}
-    instance_variables.each { |var| hash[var.to_s.delete("@")] = instance_variable_get(var) }
-    hash
-  end
-
 end
 
 class DeviceFinder
-  def initialize(appDir)
-    @applicationDirectory = appDir
-  end
-
-  def ownIP
-    LiveUpdatingConfig::ownIPAddress
-  end
-
+=begin
+  I am responsible for searching devices in local network
+  and saving searching result to configuration file
+=end
   def run
-    puts "Start discovering...".primary
+    print "Discovering... ".primary
     subscribers = self.discovery
     if subscribers.empty?
-      puts 'No devices found'.primary
+      puts 'no devices found'.warning
     else
+      puts 'done'.success
       puts subscribers.to_s.info
-      self.saveSubscribers(subscribers)
+      print 'Storing subscribers...'.primary
+      LiveUpdatingConfig::storeSubscribers(subscribers)
+      puts 'done'.success
     end
   end
 
   def discovery
     subscribers = []
-    mask = self.ownIP.split('.')[0, 3].join('.')
+    mask = LiveUpdatingConfig::ownIPAddress.split('.')[0, 3].join('.')
     hydra = Typhoeus::Hydra.hydra
     1.upto(254) { |each|
       url = URI("http://#{mask}.#{each}:37579/development/get_info")
       request = Typhoeus::Request.new(url)
-      request.options['timeout'] = 10
+      request.options['timeout'] = 5
       request.on_complete do |response|
         if response.code == 200
           data = JSON.parse(response.body)
@@ -362,17 +528,4 @@ class DeviceFinder
     hydra.run
     return subscribers
   end
-
-  def saveSubscribers(anArray)
-    filename = File.join(@applicationDirectory, 'dev-config.yml')
-    if File.exist?(filename)
-      config = YAML.load_file(filename)
-    else
-      config = {"devices" => []}
-    end
-    config['devices'] = anArray
-    yml = config.to_yaml
-    File.open(filename, 'w') { |file| file.write yml }
-  end
-
 end
