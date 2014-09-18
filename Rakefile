@@ -323,14 +323,14 @@ namespace 'dev' do
     task :buildAndNotify => ["config:initialize"] do
       LiveUpdatingConfig::applicationRoot = $app_basedir
 
-      (BuildServer.new).buildPartialBundlesForAllSubscribers
+      (BuildServer.new).build_partial_bundles_for_all_subscribers
     end
 
     task :auto => ["config:initialize"] do
       LiveUpdatingConfig::applicationRoot = $app_basedir
       updater = AutoUpdater.new
-      updater.addDirectory(File.join($app_basedir, "/public"))
-      updater.addDirectory(File.join($app_basedir, "/app"))
+      updater.add_directory(File.join($app_basedir, "/public"))
+      updater.add_directory(File.join($app_basedir, "/app"))
       updater.run
     end
 
@@ -367,8 +367,8 @@ namespace 'dev' do
     watcher = RhoWatcher.new
     watcher.serverUri = URI('http://' + args.serverUri)
     watcher.applicationRoot = $app_basedir
-    watcher.addDirectory(File.join($app_basedir, "/public"))
-    watcher.addDirectory(File.join($app_basedir, "/app"))
+    watcher.add_directory(File.join($app_basedir, "/public"))
+    watcher.add_directory(File.join($app_basedir, "/app"))
 
     configFilename = File.join($app_basedir, 'dev-config.yml')
     if File.exist?(configFilename)
