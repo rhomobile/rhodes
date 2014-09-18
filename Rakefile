@@ -4174,6 +4174,7 @@ task :gem do
     next unless File.file? fname
     next if fname =~ /rhoconnect-client/
     next if fname =~ /^spec\/api_generator_spec/
+    next if fname =~ /ruby-standalone/
 
     out << fname + "\n"
   end
