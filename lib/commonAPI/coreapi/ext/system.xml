@@ -688,6 +688,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>iOS, WM, Win32, WP8, Android</PLATFORM>
+        <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
 
         <EXAMPLES>
             <EXAMPLE title="Get device capabilities">
