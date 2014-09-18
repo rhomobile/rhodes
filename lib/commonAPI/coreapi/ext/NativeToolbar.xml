@@ -100,6 +100,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                         <VALUE value ="fullscreen">
                                             <DESC>Expand application window to full screen.</DESC>
                                             <PLATFORM>WM, CE, Win32, Android, WP8</PLATFORM>
+                                            <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
                                         </VALUE>
                                         <VALUE value ="sync">
                                             <DESC>Run full sync command.</DESC>
@@ -163,6 +164,7 @@ The ebapi.js file is necessary for all single API inclusions.
         
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
         <REMARKS>
         </REMARKS>
         <EXAMPLES >
