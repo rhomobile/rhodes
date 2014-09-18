@@ -62,6 +62,8 @@
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 UINT WM_LICENSE_SCREEN = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
 
+UINT WM_INTENTMSG		   = ::RegisterWindowMessage(L"RHODES_WM_INTENTMSG");
+
 #include "DateTimePicker.h"
 
 extern "C" void rho_sysimpl_sethas_network(int nValue);
@@ -2108,6 +2110,21 @@ LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
         return m_oTabBar.OnTimer(uMsg, wParam, lParam);
     }
 
+    return 0;
+}
+
+LRESULT CMainWindow::OnIntentMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
+    if (pcds->dwData == COPYDATA_INTERPROCESSMESSAGE){
+        InterprocessMessage *ipmsg = reinterpret_cast<InterprocessMessage*>(pcds->lpData);
+        LOG(INFO) + "INTERPROCESSMESSAGE : " + rho::String(ipmsg->appName) + rho::String(ipmsg->params);
+        rho::Intent::addApplicationMessage(ipmsg->appName, ipmsg->params);
+		LOG(INFO) + L"INTERPROCESSMESSAGE IS DONE.";
+    }
+    else if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData)){
+        m_oTabBar.SwitchTabByName((LPCSTR)(pcds->lpData), true);
+    }
     return 0;
 }
 
