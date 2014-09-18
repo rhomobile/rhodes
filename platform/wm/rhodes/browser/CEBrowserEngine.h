@@ -135,7 +135,6 @@ private:
 
     unsigned int      m_dwNavigationTimeout;
     BOOL              m_bLoadingComplete;
-    BOOL              m_bNavigationError;
 	bool              m_bInitialised;
 
 
