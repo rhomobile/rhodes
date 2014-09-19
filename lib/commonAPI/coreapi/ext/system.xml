@@ -673,7 +673,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC_EB>The name of the application on the device to run. </DESC_EB>
                     </PARAM>
                     <PARAM name="params" type="STRING">
-                        <DESC>Start parameters string. Executed Application can receive this string by getStartParams method. Parameter could be just value, or key-value pair separated by '&#61;' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by "&#38;", on other platforms by '&#044;' or '&#032;'.</DESC>
+                        <DESC>Start parameters string. Executed Application can receive this string by getStartParams method. Parameter could be just value, or key-value pair separated by '=' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by an amperstand, on other platforms by a comma or a space.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                     <PARAM name="blockingCall" type="BOOLEAN">
