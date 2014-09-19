@@ -24,6 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require_relative 'lib/build/rho_packages.rb'
 require File.join(File.dirname(__FILE__), 'lib/build/required_time.rb')
 
 # RequiredTime.hook()
@@ -316,6 +317,9 @@ end
 #TODO:  call clean from all platforms scripts
 namespace "clean" do
   task :common => "config:common" do
+
+    RhoPackages.require 'ugu', 'aga'
+
     if $config["platform"] == "bb"
       return
     end
@@ -2248,6 +2252,10 @@ def get_ssl_cert_bundle_store(rhodes_home, proxy)
 end
 
 namespace "config" do
+  task :set_rho, [:rho_dir] do |t, args|
+    RhoPackages.set_root(args[:rho_dir])
+  end
+
   task :load do
 
     print_timestamp('First timestamp')
