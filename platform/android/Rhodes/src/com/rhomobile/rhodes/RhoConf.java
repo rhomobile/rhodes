@@ -26,7 +26,10 @@
 
 package com.rhomobile.rhodes;
 
+import com.rhomobile.rhodes.extmanager.IRhoConfig;
+
 public class RhoConf {
+    public static native void setPath(String path);
 
 	public static native String getString(String name);
 	public static native int getInt(String name);
@@ -37,4 +40,33 @@ public class RhoConf {
 	public static native void setBoolean(String name, boolean value);
 	
 	public static native boolean isExist(String name);
+
+    public static class RhoConfig implements IRhoConfig {
+
+        @Override
+        public boolean isExist(String name) {
+            return RhoConf.isExist(name);
+        }
+
+        @Override
+        public String getString(String name) {
+            return RhoConf.getString(name);
+        }
+
+        @Override
+        public boolean getBool(String name, boolean defValue) {
+            return isExist(name) ? RhoConf.getBool(name) : defValue;
+        }
+
+        @Override
+        public int getInt(String name, int defValue) {
+            return isExist(name) ? RhoConf.getInt(name) : defValue;
+        }
+
+        @Override
+        public double getDouble(String name, double defValue) {
+            return isExist(name) ? Double.parseDouble(RhoConf.getString(name)) : defValue;
+        }
+	    
+	}
 }

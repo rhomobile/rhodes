@@ -404,12 +404,12 @@ class ConnectionPageNavEvent extends AbstractRhoExtension
 		try{
 		if(name.equalsIgnoreCase("rhoelementsext"))
 		{
-			 String ip=config.getValue("hosturl");
-		     String to=config.getValue("timeout");
-		     String tc=config.getValue("trackconnection");
-		     String msg=config.getValue("message");
-		     String pi=config.getValue("pollinterval");
-		     String badlinkUrl=config.getValue("badlinkuri");
+			 String ip=config.getString("hosturl");
+		     String to=config.getString("timeout");
+		     String tc=config.getString("trackconnection");
+		     String msg=config.getString("message");
+		     String pi=config.getString("pollinterval");
+		     String badlinkUrl=config.getString("badlinkuri");
 				
 		     System.out.println("onNewConfig...HostURL="+ip+" Timeout"+to+"TrackConnection "+tc+"Message"+msg+"PollInterval"+pi);
 			 boolean shouldRestart=shouldRestartService(ip,to,tc,msg,pi);

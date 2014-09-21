@@ -38,6 +38,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Process;
 import android.util.Log;
@@ -194,8 +195,34 @@ public class RhodesApplication extends Application{
 
         ApplicationInfo appInfo = getApplicationInfo();
         String rootPath;
+        String sharedPath = null;
 
-        rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, null);
+        String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + appInfo.packageName;
+        String configPath = new File(externalSharedPath, "Config.xml").getAbsolutePath();
+
+        File configXmlFile = null;
+        File rhoconfigTxtFile = null;
+        try
+        {
+            configXmlFile = new File(configPath);
+
+            if (configXmlFile != null && configXmlFile.exists()) {
+                rhoconfigTxtFile = new File(configXmlFile.getParent() + "/rhoconfig.txt");
+            }
+             
+            if (rhoconfigTxtFile != null && rhoconfigTxtFile.exists()) {
+                sharedPath = rhoconfigTxtFile.getParent();
+            }
+        
+        } 
+        catch (Throwable e)
+        {
+            Logger.E(TAG, e);
+        }
+        
+        
+        
+        rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, sharedPath);
         Log.d(TAG, "Root path: " + rootPath);
 
         boolean hashChanged = isAppHashChanged(rootPath);
@@ -235,7 +262,7 @@ public class RhodesApplication extends Application{
                     Utils.deleteRecursively(libDir);
                 }
 
-                rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, null);
+                rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, sharedPath);
             } catch (IOException e) {
                 Logger.E(TAG, e.getMessage());
                 stop();

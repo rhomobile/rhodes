@@ -93,12 +93,6 @@ public interface IRhoExtManager {
     void startKeyEventUpdates(IRhoListener listener, boolean makeImportant);
     
     /**
-     * Sets web view config
-     * @param config which will be propagated to IRhoWebView instances
-     */
-    void setWebViewConfig(IRhoWebViewConfig config);
-    
-    /**
      * Accounts and returns next request code which may be used by Activity.startActivityForResult() call
      * @return new request code
      */
