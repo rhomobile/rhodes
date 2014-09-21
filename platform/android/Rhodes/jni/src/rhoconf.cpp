@@ -30,6 +30,12 @@
 
 #include <common/RhoConf.h>
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoConf_setPath
+  (JNIEnv *, jclass, jstring jPath)
+{
+    rho_conf_Init_from_shared_path(rho_cast<std::string>(jPath).c_str());
+}
+
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoConf_getString
   (JNIEnv *, jclass, jstring name)
 {

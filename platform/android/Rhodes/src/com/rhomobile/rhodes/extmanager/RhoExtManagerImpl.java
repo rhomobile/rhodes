@@ -26,6 +26,7 @@ import android.os.Bundle;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
@@ -50,7 +51,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private boolean mLogUser = false;
     private boolean mLogDebug = false;
     private boolean mFirstNavigate = true;
-    private IRhoWebViewConfig mWebViewConfig = null;
     private Integer mLastActivityRequestCode = Integer.valueOf(0);
     private SparseArray<IRhoListener> mActivityResultListeners = new SparseArray<IRhoListener>();
 
@@ -70,6 +70,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         } catch (Throwable e) {
             throw new IllegalArgumentException("Cannot get " + className + "." + idName, e);
         }
+    }
+    
+
+    public RhoExtManagerImpl() {
+        mConfigs.put("rhoconfig", new RhoConf.RhoConfig());
     }
     
     @Override
@@ -305,11 +310,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     public IRhoWebView createWebView(RhodesActivity activity, int tabIndex) {
         IRhoWebView res = null;
+        GoogleWebView googleWebView = null;
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
                 IRhoWebView view = ext.onCreateWebView(this, tabIndex);
                 if (view != null) {
-                    view.setConfig(mWebViewConfig);
                     if (res != null) {
                         Logger.W(TAG, "WebView has already created by another extension, overlapping it");
                     }
@@ -318,16 +323,8 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             }
             if (res == null) {
                 Logger.T(TAG, "Creating Google web view");
-                final GoogleWebView googleWebView = new GoogleWebView(activity);
-                googleWebView.setConfig(mWebViewConfig);
+                googleWebView = new GoogleWebView(activity);
                 res = googleWebView;
-                RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
-                    @Override
-                    public void run()
-                    {
-                        googleWebView.applyWebSettings();
-                    }
-                });
             }
             AbsoluteLayout containerView = new AbsoluteLayout(activity);
             containerView.addView(res.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
@@ -896,18 +893,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     public void onEBLicenseDestroyed() {
         for (IRhoListener listener: mListeners) {
             listener.onEBLicenseDestroyed();
-        }
-    }
-
-    @Override
-    public void setWebViewConfig(IRhoWebViewConfig config) {
-        Logger.T(TAG, "Set WebView config");
-
-        mWebViewConfig = config;
-        MainView mainView = RhodesActivity.safeGetInstance().getMainView();
-        for (int i = 0; i < mainView.getTabsCount(); ++i) {
-            Logger.T(TAG, "Set WebView config: tab " + i);
-            mainView.getWebView(i).setConfig(config);
         }
     }
 

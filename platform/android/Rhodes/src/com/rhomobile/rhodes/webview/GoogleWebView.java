@@ -6,8 +6,8 @@ import java.io.FileOutputStream;
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
-import com.rhomobile.rhodes.extmanager.IRhoWebViewConfig;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
@@ -37,7 +37,7 @@ public class GoogleWebView implements IRhoWebView {
     private android.webkit.WebView mWebView;
     private ViewGroup mContainerView;
     private TextZoom mTextZoom = TextZoom.NORMAL;
-    private IRhoWebViewConfig mConfig;
+    private IRhoConfig mConfig;
 
     public GoogleWebView(Activity activity) {
         mWebView = new android.webkit.WebView(activity);
@@ -74,14 +74,14 @@ public class GoogleWebView implements IRhoWebView {
                 
                 float z=(float) 0.0;
                 try{
-                z=Float.parseFloat(RhoConf.getString("PageZoom"));
+                    z = Float.parseFloat(RhoConf.getString("PageZoom"));
                 }
                 catch(NumberFormatException ex)
                 {
                 	Logger.E(TAG, "NumberFormatException,message="+ex.getMessage());
-                	z=(float) 0.0;
+                	z = (float) 0.0;
                 }
-               mWebView.setInitialScale((int)(z*150));
+                mWebView.setInitialScale((int)(z*150));
                 //mWebView.setInitialScale(0);
                 mWebView.setVerticalScrollBarEnabled(true);
                 mWebView.setHorizontalScrollBarEnabled(true);
@@ -110,12 +110,12 @@ public class GoogleWebView implements IRhoWebView {
     }
     
     @Override
-    public void setConfig(IRhoWebViewConfig config) {
+    public void setConfig(IRhoConfig config) {
         mConfig = config;
         applyWebSettings();
     }
     
-    public IRhoWebViewConfig getConfig() {
+    public IRhoConfig getConfig() {
         return mConfig;
     }
 

@@ -109,6 +109,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderEcla
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderFroyo.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderJellyBean.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderKitKat.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebViewConfig.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoConfig.java
@@ -116,7 +117,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoWebView.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoWebViewConfig.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtManagerImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoJSApi.java
