@@ -25,6 +25,7 @@
 
 #include "../HTTPServer/HTTPServer.h"
 
+
 extern "C" int rho_sys_unzip_file(const char* szZipPath, const char* psw);
 extern "C" void alert_show_popup(rho_param *p);
 extern "C" void alert_show_status(const char* title, const char* message, const char* hideCaption);
@@ -255,16 +256,22 @@ void callback_system_update_bundle_callback(void *arg, rho::String const &strQue
 }
 
 
+void showInitialMessage() {
+    rho::String our_IP = DevHTTPServer::getInstance()->getLocalIPAdress();
+    rho::String message = "Connect to Development Extras HTTP server : http://";
+    message = message + our_IP + ":" + DevHTTPServer::getInstance()->getPort();
+    message = message + "\n 3 fingers tap - force WebView refresh";
+    message = message + "\n 4 fingers tap - show this message again";
+    alert_show_status("Development Extras", message.c_str(), "OK");
+}
+
 void Init_UpdateBundle() {
     
     DevHTTPServer::getInstance()->getHTTPServer()->register_uri("/development/update_bundle", callback_system_update_bundle);
     DevHTTPServer::getInstance()->getHTTPServer()->register_uri("/development/update_bundle_callback", callback_system_update_bundle_callback);
     DevHTTPServer::getInstance()->getHTTPServer()->register_uri("/development/get_info", callback_system_get_info_callback);
     
-    rho::String our_IP = DevHTTPServer::getInstance()->getLocalIPAdress();
-    rho::String message = "Connect to Development Extras HTTP server : http://";
-    message = message + our_IP + ":" + DevHTTPServer::getInstance()->getPort();
-    alert_show_status("Development Extras", message.c_str(), "OK");
+    showInitialMessage();
 }
 
 
@@ -273,5 +280,16 @@ void callback_system_get_info_callback(void *arg, rho::String const &strQuery) {
     rho::String responce = make_info_string(true);
     
     rho_http_sendresponse(arg, responce.c_str());
+
+}
+
+extern "C" void rho_webview_refresh(int index);
+
+void Bundle_update_on_triple_tap() {
+    rho_webview_refresh(-1);
+}
+
+void Bundle_update_on_quadro_tap() {
+    showInitialMessage();
 }
 
