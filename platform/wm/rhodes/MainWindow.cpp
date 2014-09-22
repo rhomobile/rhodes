@@ -1180,7 +1180,10 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
         if (wcurl) 
         {
             if ( m_pBrowserEng )
+            {
+            	LOG(INFO)+"OnExecuteJSCommand";
                 m_pBrowserEng->executeJavascript(wcurl, m_oTabBar.GetTabID(nd->index) );
+            }
         }
         delete nd;
     }
