@@ -414,9 +414,9 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
             mConfig.set(WebViewConfig.PAGE_ZOOM, zoomValue);
         }
         
-        if (config.isExist("enablecache")) {
-            boolean enableCache = config.getBool("enablecache", WebViewConfig.ENABLE_CACHE_DEF);
-            mConfig.set(WebViewConfig.ENABLE_CACHE, enableCache);
+        if (config.isExist("cache")) {
+            int cache = config.getInt("cache", 1);
+            mConfig.set(WebViewConfig.ENABLE_CACHE, cache != 0);
         }
     }
     
