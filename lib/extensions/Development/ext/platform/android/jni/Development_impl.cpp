@@ -2,11 +2,15 @@
 #include "Development.h"
 
 #include "logging/RhoLog.h"
+
+#include "rhodes/JNIRhodes.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Development_impl"
 
 #define DEVELOPMENT_FACTORY_CLASS "com.rho.development.DevelopmentFactory"
 #define RHODES_SERVICE_CLASS "com.rhomobile.rhodes.RhodesService"
+#define DEVELOPMENT_CLASS "com.rho.development.Development"
 
 extern "C" void Init_Development_API(void);
 
@@ -59,10 +63,43 @@ extern "C" void Init_Development(void)
 
 extern "C" void Development_Init();
 
+static int already_inited = 0;
+
 extern "C" void Init_Development_extension() {
      Development_Init();
+
+     JNIEnv *env = jnienv();
+     jclass cls = rho_find_class(env, DEVELOPMENT_CLASS);
+     if (!cls) {
+    	 RAWLOG_ERROR1("Failed to create %s instance", DEVELOPMENT_CLASS);
+    	 return;
+     }
+     jmethodID mid = getJNIClassStaticMethod(env, cls, "initExtension", "()V");
+     if (!mid) {
+    	 RAWLOG_ERROR1("Failed to get initExtension() method from %s class", DEVELOPMENT_CLASS);
+    	 return;
+     }
+     if (already_inited == 0) {
+    	 already_inited = 1;
+    	 env->CallStaticVoidMethod(cls, mid);
+     }
+
 }
 
+extern "C" void Bundle_update_on_triple_tap();
+extern "C" void Bundle_update_on_quadro_tap();
+
+extern "C" void JNICALL Java_com_rho_development_Development_onTripleTapNative
+  (JNIEnv *env, jclass)
+{
+	Bundle_update_on_triple_tap();
+}
+
+extern "C" void JNICALL Java_com_rho_development_Development_onQuadroTapNative
+  (JNIEnv *env, jclass)
+{
+	Bundle_update_on_quadro_tap();
+}
 
 extern "C" rho::String get_local_ip_adress() {
 

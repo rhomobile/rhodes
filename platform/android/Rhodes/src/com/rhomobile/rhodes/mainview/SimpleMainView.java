@@ -26,6 +26,8 @@
 
 package com.rhomobile.rhodes.mainview;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 import java.util.List;
@@ -45,6 +47,7 @@ import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
+import android.app.ActionBar.LayoutParams;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -53,9 +56,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.WebView;
+import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -74,8 +80,96 @@ public class SimpleMainView implements MainView {
 		}
 	};
 	
+	public static class TransparencyViewForCaptureTouchEvents extends View {
+
+		public TransparencyViewForCaptureTouchEvents(Context context) {
+			super(context);
+		}
+		
+	}
+	
 	private void addWebViewToMainView(IRhoWebView webView, int index, LinearLayout.LayoutParams params) {
 		view.addView(webView.getContainerView(), index, params);
+		
+		Utils.platformLog("Development Extra Simple View WV", "$$$$$ setup $$$$$");
+		
+		Context activity = ContextFactory.getUiContext();
+
+		
+		View al = webView.getView();
+			
+		if (al instanceof WebView) {
+			// we have android WebView (not private Motorola)
+			
+			// check for exist developer extension
+			try {
+				Class<?> dev_class = Class.forName("com.rho.development.Development");
+				// we have Development extension !
+				
+				// check for already add transparency view
+				ViewGroup cv = webView.getContainerView();
+				int child_count = cv.getChildCount();
+				int i;
+				boolean hasTransparencyView = false;
+				for (i = 0; i < child_count; i++) {
+					View v = cv.getChildAt(i);
+					if (v instanceof TransparencyViewForCaptureTouchEvents) {
+						hasTransparencyView = true;
+					}
+				}
+				
+				if (!hasTransparencyView) {
+					final View dst = al;
+					View transView = new TransparencyViewForCaptureTouchEvents(activity);
+					transView.setClickable(true);
+					transView.setBackgroundColor(Color.TRANSPARENT);
+					transView.setOnTouchListener(new View.OnTouchListener() {
+			
+						private View mDST = dst;
+						private int mCurrentMax = 0;
+			
+						@Override
+						public boolean onTouch(View v, MotionEvent event) {
+							Utils.platformLog("Development Extra Simple View TV", "$$$$$ TOUCH EVENT TV ["+MotionEvent.actionToString(event.getAction())+", "+String.valueOf(event.getPointerCount())+"] $$$$$");
+							if ((event.getActionMasked() == MotionEvent.ACTION_UP) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)) {
+								Utils.platformLog("Development Extra Simple View", "$$$$$ UP TV ["+String.valueOf(event.getPointerCount())+"] $$$$$");
+								if ((event.getPointerCount() == 3) && (mCurrentMax == 3)) {
+									Utils.platformLog("Development Extra Simple View", "$$$$$ TRIPLE TAP TV $$$$$");
+									RhodesActivity.onTripleTap();
+								}
+								if ((event.getPointerCount() == 4) && (mCurrentMax == 4)) {
+									Utils.platformLog("Development Extra Simple View", "$$$$$ QUADRO TAP TV $$$$$");
+									RhodesActivity.onQuadroTap();
+								}
+								if (event.getPointerCount() == 1) {
+									mCurrentMax = 0;
+								}
+							}
+							else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+								mCurrentMax = 0;
+							}
+							else if ((event.getActionMasked() == MotionEvent.ACTION_DOWN) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN)) {
+								if (event.getPointerCount() > mCurrentMax) {
+									mCurrentMax = event.getPointerCount();
+								}
+							}
+							mDST.dispatchTouchEvent(event);
+							return false;
+							
+						}
+					});	
+					
+					cv.addView(transView, new AbsoluteLayout.LayoutParams(FILL_PARENT, FILL_PARENT, 0, 0));
+					cv.bringChildToFront(transView);
+				}
+			
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		
+		}
+		
+
 	}
 	
 	private void removeWebViewFromMainView() {
@@ -532,7 +626,7 @@ public class SimpleMainView implements MainView {
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
-
+		
 		LinearLayout bottom = new LinearLayout(activity);
 		bottom.setOrientation(LinearLayout.HORIZONTAL);
 		bottom.setBackgroundColor(Color.GRAY);

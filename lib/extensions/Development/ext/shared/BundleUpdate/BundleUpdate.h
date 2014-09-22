@@ -15,3 +15,7 @@ extern "C" void callback_system_get_info_callback(void *arg, rho::String const &
 
 
 extern "C" void Init_UpdateBundle();
+
+
+extern "C" void Bundle_update_on_triple_tap();
+extern "C" void Bundle_update_on_quadro_tap();
