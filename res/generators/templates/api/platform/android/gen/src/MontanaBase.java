@@ -1,4 +1,4 @@
-package <%= api_generator_java_makePackageName($cur_module) %>;
+package <%= JavaGen::make_package_name($cur_module) %>;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import com.rhomobile.rhodes.api.RhoApiPropertyBag; <%
 
 custom_props = {}
 $cur_module.properties.each do |property|
-    custom_props[property.name] = property.type if property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+    custom_props[property.name] = property if property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
 end
 end %>
 
@@ -29,8 +29,8 @@ unless custom_props.empty? %>
     static {
         sCustomAccessNames = new HashMap<String, Class<?> >();
 <%
-custom_props.each do |name, type| %>
-        sCustomAccessNames.put("<%= name %>", <%= api_generator_java_makeSimpleNativeType(type) %>.class);
+custom_props.each do |name, prop| %>
+        sCustomAccessNames.put("<%= name %>", <%= JavaGen::make_simple_native_type(prop) %>.class);
 <%
 end %>
     }<%
@@ -63,7 +63,7 @@ end %>
 
     param_hash = {}
     method.params.each do |param|
-        param_hash[param.name] = api_generator_java_makeNativeType(param)
+        param_hash[param.name] = JavaGen::native_type(param)
     end
 
     if $cur_module.is_template_propertybag or (method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_GETTER and method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_SETTER)
@@ -84,11 +84,11 @@ end %>
     public void <%= method.native_name %>(<% param_hash.each do |name, type| %><%= type %> <%= name %>, <% end %>IMethodResult result) {
                     <%
                     if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
-                        if method.linked_property.type == MethodParam::TYPE_BOOL %>
+                        if method.linked_property.type == RhogenCore::TYPE_BOOL %>
         result.forceBooleanType();<%
-                        elsif method.linked_property.type == MethodParam::TYPE_INT %>
+                        elsif method.linked_property.type == RhogenCore::TYPE_INT %>
         result.forceIntegerType();<%
-                        elsif method.linked_property.type == MethodParam::TYPE_DOUBLE %>
+                        elsif method.linked_property.type == RhogenCore::TYPE_DOUBLE %>
         result.forceDoubleType();<%
                         end %> 
         getProperty("<%= method.linked_property.name %>", result);<%
