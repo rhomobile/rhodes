@@ -50,7 +50,7 @@ module RhoPackages
   end
 
   class NilRepo
-    def require(package_name)
+    def request(package_name)
     end
   end
 
@@ -59,7 +59,7 @@ module RhoPackages
       @root_dir = root_dir
     end
 
-    def require(package_name)
+    def request(package_name)
       install(package_name) unless installed?(package_name)
     end
 
@@ -99,7 +99,7 @@ module RhoPackages
     end
   end
 
-  class HttpRepo
+  class HttpRepo < Repo
     def initialize(root_dir, repo_url)
       super(root_dir)
       @repo_url = repo_url
@@ -152,12 +152,16 @@ module RhoPackages
     @@config = YmlConfig.new(File.join(root_dir, 'config.yml'))
 
     repo_path = @@config.repository
-    @@repo = NilRepo.new if repo_path.nil?
-    @@repo = HttpRepo.new(root_dir, repo_path) if repo_path.start_with?('http://') or repo_path.start_with?('https://')
-    @@repo = FileRepo.new(root_dir, repo_path)
+    if repo_path.nil?
+      @@repo = NilRepo.new
+    elsif repo_path.start_with?('http://') or repo_path.start_with?('https://')
+      @@repo = HttpRepo.new(root_dir, repo_path)
+    else
+      @@repo = FileRepo.new(root_dir, repo_path)
+    end
   end
 
-  def self.require(*package_names)
+  def self.request(*package_names)
     package_names.each do |package_name|
       self.require_(@@config.package_deps(package_name))
     end
@@ -171,7 +175,7 @@ module RhoPackages
 
   def self.require_(package_names)
     package_names.each do |package_name|
-      @@repo.require(package_name)
+      @@repo.request(package_name)
     end
   end
 
