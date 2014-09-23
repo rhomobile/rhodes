@@ -81,6 +81,20 @@
 		C08098B818059C88008FE912 /* RubyResultConvertor.h in Headers */ = {isa = PBXBuildFile; fileRef = C08098B618059C88008FE912 /* RubyResultConvertor.h */; };
 		C084B09117394D4D00C1DCC0 /* StringifyHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C084B08F17394D4800C1DCC0 /* StringifyHelper.cpp */; };
 		C084B09217394D4D00C1DCC0 /* StringifyHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = C084B09017394D4A00C1DCC0 /* StringifyHelper.h */; };
+		C51A570D19D1E2020064CE87 /* gunzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A570C19D1E2020064CE87 /* gunzip.cpp */; };
+		C51A570F19D1EA200064CE87 /* gzlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A570E19D1EA200064CE87 /* gzlib.cpp */; };
+		C51A571119D1F0C10064CE87 /* gzread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A571019D1F0C10064CE87 /* gzread.cpp */; };
+		C51A571319D1F32A0064CE87 /* gzclose.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A571219D1F32A0064CE87 /* gzclose.cpp */; };
+		C51A571519D1F38F0064CE87 /* gzwrite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A571419D1F38F0064CE87 /* gzwrite.cpp */; };
+		C51A571719D1F5570064CE87 /* deflate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A571619D1F5570064CE87 /* deflate.cpp */; };
+		C51A571919D1F9770064CE87 /* inflate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A571819D1F9770064CE87 /* inflate.cpp */; };
+		C51A571B19D1FC480064CE87 /* trees.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A571A19D1FC480064CE87 /* trees.cpp */; };
+		C51A571D19D1FE240064CE87 /* inffast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A571C19D1FE240064CE87 /* inffast.cpp */; };
+		C51A571F19D1FE900064CE87 /* infback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A571E19D1FE900064CE87 /* infback.cpp */; };
+		C51A572119D1FF380064CE87 /* inftrees.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A572019D1FF380064CE87 /* inftrees.cpp */; };
+		C51A572319D1FFBA0064CE87 /* crc32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A572219D1FFBA0064CE87 /* crc32.cpp */; };
+		C51A572519D200F20064CE87 /* adler32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A572419D200F20064CE87 /* adler32.cpp */; };
+		C51A572719D202B90064CE87 /* zutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A572619D202B90064CE87 /* zutil.cpp */; };
 		C56918CE168B9AB800F6013A /* RhodesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C56918CD168B9AB800F6013A /* RhodesApp.cpp */; };
 		C5D47762156A4ED000943A2D /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D47760156A4ED000943A2D /* zip.cpp */; };
 		C5D47763156A4ED000943A2D /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D47761156A4ED000943A2D /* zip.h */; };
@@ -195,6 +209,21 @@
 		C08098B618059C88008FE912 /* RubyResultConvertor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RubyResultConvertor.h; path = ../../shared/api_generator/RubyResultConvertor.h; sourceTree = "<group>"; };
 		C084B08F17394D4800C1DCC0 /* StringifyHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringifyHelper.cpp; path = ../../shared/api_generator/StringifyHelper.cpp; sourceTree = "<group>"; };
 		C084B09017394D4A00C1DCC0 /* StringifyHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringifyHelper.h; path = ../../shared/api_generator/StringifyHelper.h; sourceTree = "<group>"; };
+		C51A570B19D1E13B0064CE87 /* gunzip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gunzip.h; path = ../../shared/unzip/gunzip.h; sourceTree = "<group>"; };
+		C51A570C19D1E2020064CE87 /* gunzip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gunzip.cpp; path = ../../shared/unzip/gunzip.cpp; sourceTree = "<group>"; };
+		C51A570E19D1EA200064CE87 /* gzlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gzlib.cpp; path = ../../shared/unzip/gzlib.cpp; sourceTree = "<group>"; };
+		C51A571019D1F0C10064CE87 /* gzread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gzread.cpp; path = ../../shared/unzip/gzread.cpp; sourceTree = "<group>"; };
+		C51A571219D1F32A0064CE87 /* gzclose.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gzclose.cpp; path = ../../shared/unzip/gzclose.cpp; sourceTree = "<group>"; };
+		C51A571419D1F38F0064CE87 /* gzwrite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gzwrite.cpp; path = ../../shared/unzip/gzwrite.cpp; sourceTree = "<group>"; };
+		C51A571619D1F5570064CE87 /* deflate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = deflate.cpp; path = ../../shared/unzip/deflate.cpp; sourceTree = "<group>"; };
+		C51A571819D1F9770064CE87 /* inflate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = inflate.cpp; path = ../../shared/unzip/inflate.cpp; sourceTree = "<group>"; };
+		C51A571A19D1FC480064CE87 /* trees.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = trees.cpp; path = ../../shared/unzip/trees.cpp; sourceTree = "<group>"; };
+		C51A571C19D1FE240064CE87 /* inffast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = inffast.cpp; path = ../../shared/unzip/inffast.cpp; sourceTree = "<group>"; };
+		C51A571E19D1FE900064CE87 /* infback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = infback.cpp; path = ../../shared/unzip/infback.cpp; sourceTree = "<group>"; };
+		C51A572019D1FF380064CE87 /* inftrees.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = inftrees.cpp; path = ../../shared/unzip/inftrees.cpp; sourceTree = "<group>"; };
+		C51A572219D1FFBA0064CE87 /* crc32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = crc32.cpp; path = ../../shared/unzip/crc32.cpp; sourceTree = "<group>"; };
+		C51A572419D200F20064CE87 /* adler32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = adler32.cpp; path = ../../shared/unzip/adler32.cpp; sourceTree = "<group>"; };
+		C51A572619D202B90064CE87 /* zutil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zutil.cpp; path = ../../shared/unzip/zutil.cpp; sourceTree = "<group>"; };
 		C56918CD168B9AB800F6013A /* RhodesApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhodesApp.cpp; path = ../../shared/common/RhodesApp.cpp; sourceTree = "<group>"; };
 		C5D2784315A1F33A00A7EFC7 /* ZipFiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ZipFiles.cpp; path = ../../shared/rubyext/ZipFiles.cpp; sourceTree = "<group>"; };
 		C5D47760156A4ED000943A2D /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zip.cpp; path = ../../shared/unzip/zip.cpp; sourceTree = "<group>"; };
@@ -286,10 +315,25 @@
 		5C59BF4A115B4BA300E96ADE /* unzip */ = {
 			isa = PBXGroup;
 			children = (
+				C51A572619D202B90064CE87 /* zutil.cpp */,
+				C51A572419D200F20064CE87 /* adler32.cpp */,
+				C51A572219D1FFBA0064CE87 /* crc32.cpp */,
+				C51A572019D1FF380064CE87 /* inftrees.cpp */,
+				C51A571E19D1FE900064CE87 /* infback.cpp */,
+				C51A571C19D1FE240064CE87 /* inffast.cpp */,
+				C51A571A19D1FC480064CE87 /* trees.cpp */,
+				C51A571819D1F9770064CE87 /* inflate.cpp */,
+				C51A571619D1F5570064CE87 /* deflate.cpp */,
+				C51A571419D1F38F0064CE87 /* gzwrite.cpp */,
+				C51A571219D1F32A0064CE87 /* gzclose.cpp */,
+				C51A571019D1F0C10064CE87 /* gzread.cpp */,
+				C51A570E19D1EA200064CE87 /* gzlib.cpp */,
+				C51A570B19D1E13B0064CE87 /* gunzip.h */,
 				C5D47760156A4ED000943A2D /* zip.cpp */,
 				C5D47761156A4ED000943A2D /* zip.h */,
 				5C59BF4B115B4BC300E96ADE /* unzip.cpp */,
 				5C59BF4C115B4BC300E96ADE /* unzip.h */,
+				C51A570C19D1E2020064CE87 /* gunzip.cpp */,
 			);
 			name = unzip;
 			sourceTree = "<group>";
@@ -625,6 +669,7 @@
 				5C7162830F8B7E330096B6AA /* RhoLog.cpp in Sources */,
 				5C7162860F8B7E330096B6AA /* RhoLogConf.cpp in Sources */,
 				5C7162880F8B7E330096B6AA /* RhoLogSink.cpp in Sources */,
+				C51A570D19D1E2020064CE87 /* gunzip.cpp in Sources */,
 				5C71628A0F8B7E330096B6AA /* RhoPlainLog.cpp in Sources */,
 				5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */,
 				5C6B452C0F9468E2003CB43A /* RhoProfiler.cpp in Sources */,
@@ -634,10 +679,16 @@
 				BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */,
 				BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */,
 				BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */,
+				C51A572119D1FF380064CE87 /* inftrees.cpp in Sources */,
 				BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */,
 				5C798934113BD148005F8736 /* GeoLocation.cpp in Sources */,
 				5CECDBB3113FE3620084A75B /* System.cpp in Sources */,
+				C51A571319D1F32A0064CE87 /* gzclose.cpp in Sources */,
+				C51A571D19D1FE240064CE87 /* inffast.cpp in Sources */,
+				C51A571919D1F9770064CE87 /* inflate.cpp in Sources */,
 				BD8DF8881147C8090041A968 /* SplashScreen.cpp in Sources */,
+				C51A570F19D1EA200064CE87 /* gzlib.cpp in Sources */,
+				C51A572319D1FFBA0064CE87 /* crc32.cpp in Sources */,
 				5C59BF4D115B4BC300E96ADE /* unzip.cpp in Sources */,
 				5CCD7EBC116CE2D5005E6CA3 /* AppMenu.cpp in Sources */,
 				5CA2DE9011B01EF000B868D5 /* ThreadQueue.cpp in Sources */,
@@ -648,9 +699,14 @@
 				5CB821AE1312487100778441 /* INetRequest.cpp in Sources */,
 				5C0F94DF132979140093FA1B /* RhoTime.cpp in Sources */,
 				FAC6EE5B143B1FC800B8E352 /* BaseMapEngine.cpp in Sources */,
+				C51A572719D202B90064CE87 /* zutil.cpp in Sources */,
 				FAC6EE5D143B1FC800B8E352 /* ESRIMapEngine.cpp in Sources */,
 				FAC6EE5F143B1FC800B8E352 /* GeocodingMapEngine.cpp in Sources */,
+				C51A572519D200F20064CE87 /* adler32.cpp in Sources */,
+				C51A571F19D1FE900064CE87 /* infback.cpp in Sources */,
 				FAC6EE61143B1FC800B8E352 /* GoogleMapEngine.cpp in Sources */,
+				C51A571719D1F5570064CE87 /* deflate.cpp in Sources */,
+				C51A571B19D1FC480064CE87 /* trees.cpp in Sources */,
 				FAC6EE63143B1FC800B8E352 /* MapEngine.cpp in Sources */,
 				FAC6EE65143B1FC800B8E352 /* OSMMapEngine.cpp in Sources */,
 				FAC6EE69143B20B600B8E352 /* RhoMath.cpp in Sources */,
@@ -663,9 +719,11 @@
 				FAEF1DD116AED9D200E22B05 /* CRubyConverter.m in Sources */,
 				FAEF1DD416AED9D200E22B05 /* RubyCallbackHelper.mm in Sources */,
 				FAEF1DD516AED9D200E22B05 /* js_helpers.cpp in Sources */,
+				C51A571519D1F38F0064CE87 /* gzwrite.cpp in Sources */,
 				FAEF1DD716AED9D200E22B05 /* MethodResult.cpp in Sources */,
 				FA0E908D16B7FE000094CCDE /* CJSConverter.mm in Sources */,
 				C084B09117394D4D00C1DCC0 /* StringifyHelper.cpp in Sources */,
+				C51A571119D1F0C10064CE87 /* gzread.cpp in Sources */,
 				FAD0471F1757A81700000F15 /* CJSEntryPoint.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
