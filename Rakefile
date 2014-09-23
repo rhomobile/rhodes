@@ -79,8 +79,7 @@ require File.join(pwd, 'lib/build/rhohub.rb')
 require File.join(pwd, 'lib/build/BuildOutput.rb')
 require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 require File.join(pwd, 'lib/build/rhoDevelopment.rb')
-require File.join(pwd, 'lib/build/rhowatcher.rb')
-require File.join(pwd, 'lib/build/liveUpdating.rb')
+require File.join(pwd, 'lib/build/development/liveUpdating.rb')
 
 #load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -360,35 +359,6 @@ namespace 'dev' do
     finder = DeviceFinder.new
     finder.run
   end
-
-
-  task :serve, [:serverUri] => ["config:initialize"] do |t, args|
-
-    watcher = RhoWatcher.new
-    watcher.serverUri = URI('http://' + args.serverUri)
-    watcher.applicationRoot = $app_basedir
-    watcher.add_directory(File.join($app_basedir, "/public"))
-    watcher.add_directory(File.join($app_basedir, "/app"))
-
-    configFilename = File.join($app_basedir, 'dev-config.yml')
-    if File.exist?(configFilename)
-      config = YAML.load_file(configFilename)
-      config['devices'].each { |each|
-        subscriber = RhoWatcherSubscriber.new
-        subscriber.uri = "#{each['uri']}"
-        subscriber.platform = each['platform']
-        subscriber.name = each['name']
-        subscriber.application = each['application']
-        watcher.addSubscriber(subscriber)
-        puts "#{subscriber} added"
-      }
-    else
-      puts "Devices configuration file #{configFilename} not found. Use http request for register/unregister devices".warning
-    end
-
-    watcher.run
-  end
-
 
 end
 
