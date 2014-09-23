@@ -66,6 +66,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <PARAMS>
                                 <PARAM name="label" type="STRING">
                                     <DESC>Visible label to display instead of an icon.For predefined actions, icon will be displayed.Android,iOS note: for predefined actions no label will be displayed.</DESC>
+                                    <DESC_EB>Visible label to display instead of an icon.For predefined actions, icon will be displayed. Android note: for predefined actions no label will be displayed.</DESC_EB>
                                 </PARAM>
                                 <PARAM name="action" type="STRING" rhoAction="true">
                                     <DESC>URL to call when button is pressed or special value.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
@@ -74,6 +75,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                             <DESC>Add a separator to the toolbar. If only one separator is specified, then elements after separator will be right-aligned. If more then one separator is added: on WM/CE, platform dependent separator will be displayed, on Android/iOS center-aligned groups will be created.</DESC>
                                             <DESC_EB>Add a separator to the toolbar. If only one separator is specified, then elements after separator will be right-aligned. If more then one separator is added: on WM/CE, platform dependent separator will be displayed, on Android center-aligned groups will be created.</DESC_EB>
                                             <PLATFORM>WM, CE, Win32, iOS, Android</PLATFORM>
+                                            <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
                                         </VALUE>
                                         <VALUE value ="exit">
                                             <DESC>Exit the application.</DESC>
@@ -96,6 +98,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                         <VALUE value ="log">
                                             <DESC>Display Log View window.</DESC>
                                             <PLATFORM>WM, CE, Win32, iOS, Android</PLATFORM>
+                                            <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
                                         </VALUE>
                                         <VALUE value ="fullscreen">
                                             <DESC>Expand application window to full screen.</DESC>
@@ -121,7 +124,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                     <DESC>Relative path to toolbar item icon in your rhodes app (typically located in '/public/images/'). Icon is ignored for predefined actions, icon will be displayed even if no icon specified. iPhone and Android: Icons must be no more than 30x30 pixels and must be in .png format. Windows Mobile: Icons can be any size, but all icons should have same size (default - 48x48). .png and .bmp formats are supported.</DESC>
                                     <DESC_EB>Icon Relative path (from Enteprise browser application to the icon file on the device). Android: Icons must be no more than 30x30 pixels and must be in .png format. Windows Mobile: Icons can be any size, but all icons should have same size (default - 48x48). .png and .bmp formats are supported.</DESC_EB>
                                 </PARAM>
-                                <PARAM name="coloredIcon" type="BOOLEAN" default="false">
+                                <PARAM name="coloredIcon" type="BOOLEAN" default="false" productException='eb'>
                                     <DESC>Use colored icon in toolbar on iPhone instead of standard monochrome white icon (prepared from image alpha).</DESC>
                                     <PLATFORM>iOS</PLATFORM>
                                 </PARAM>
