@@ -142,6 +142,16 @@ module Rhogen
       file.destination = "#{name}/app/loading-568h@2x.png"
     end
 
+    file :loadingpng51 do |file|
+      file.source = 'app/loading-667h@2x.png'
+      file.destination = "#{name}/app/loading-667h@2x.png"
+    end
+
+    file :loadingpng52 do |file|
+      file.source = 'app/loading-736h@3x.png'
+      file.destination = "#{name}/app/loading-736h@3x.png"
+    end
+
     file :loadingpngl do |file|
       file.source = 'app/loading-Landscape.png'
       file.destination = "#{name}/app/loading-Landscape.png"
@@ -165,6 +175,31 @@ module Rhogen
     file :loadingpngpud do |file|
       file.source = 'app/loading-PortraitUpsideDown.png'
       file.destination = "#{name}/app/loading-PortraitUpsideDown.png"
+    end
+
+    file :loadingpngl2 do |file|
+      file.source = 'app/loading-Landscape@2x.png'
+      file.destination = "#{name}/app/loading-Landscape@2x.png"
+    end
+
+    file :loadingpngll2 do |file|
+      file.source = 'app/loading-LandscapeLeft@2x.png'
+      file.destination = "#{name}/app/loading-LandscapeLeft@2x.png"
+    end
+
+    file :loadingpnglr2 do |file|
+      file.source = 'app/loading-LandscapeRight@2x.png'
+      file.destination = "#{name}/app/loading-LandscapeRight@2x.png"
+    end
+
+    file :loadingpngp2 do |file|
+      file.source = 'app/loading-Portrait@2x.png'
+      file.destination = "#{name}/app/loading-Portrait@2x.png"
+    end
+
+    file :loadingpngpud2 do |file|
+      file.source = 'app/loading-PortraitUpsideDown@2x.png'
+      file.destination = "#{name}/app/loading-PortraitUpsideDown@2x.png"
     end
 
     file :loadingpngx do |file|
