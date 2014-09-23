@@ -2,7 +2,6 @@
 
 #include "logging/RhoLog.h"
 #include "ruby/ext/rho/rhoruby.h"
-#include "ruby/include/ruby.h"
 #include "MethodResult.h"
 #include "MethodResultConvertor.h"
 
@@ -241,85 +240,49 @@ public:
 };
 
 namespace {
-    inline bool isNil(VALUE value) {
-        return (NIL_P(value) || value == 0);
-    }
 
-    template <typename ArrayVal>
-    bool valueTo(VALUE value, ArrayVal& dest) {
-        return false;
-    }
+inline bool isNil(VALUE value) {
+    return (rho_ruby_is_NIL(value) || value == 0);
+}
 
-    template <>
-    bool valueTo<int>(VALUE value, int& dest) {
-        dest = 0;
-        if (isNil(value))
-            return false;
-        if (TYPE(value) == RUBY_T_FLOAT ||
-            TYPE(value) == RUBY_T_FIXNUM ||
-            TYPE(value) == RUBY_T_BIGNUM ||
-            TYPE(value) == RUBY_T_RATIONAL) {
-            dest = NUM2INT(value);
-            return true;
+template <typename ArrayVal>
+bool valueTo(VALUE value, ArrayVal& dest) {
+    return false;
+}
+
+template <>
+bool valueTo<int>(VALUE value, int& dest) {
+    return rho_ruby_to_int(value, &dest) != 0;
+}
+
+template <>
+bool valueTo<double>(VALUE value, double& dest) {
+    return rho_ruby_to_double(value, &dest) != 0;
+}
+
+template <>
+bool valueTo<bool>(VALUE value, bool& dest) {
+    int dst = 0;
+    bool res = rho_ruby_to_bool(value, &dst) != 0;
+    dest = dst != 0;
+    return res;
+}
+
+template <>
+bool valueTo<rho::String>(VALUE value, rho::String& dest)
+{
+    dest.clear();
+    const char *cptr = 0;
+    int len = 0;
+    if (rho_ruby_to_str(value, &cptr, &len)){
+        if (cptr!=0 && len != 0) {
+            size_t len = static_cast<size_t>(len);
+            dest.assign(cptr, len);
         }
-        return false;
     }
+    return true;
+}
 
-    template <>
-    bool valueTo<double>(VALUE value, double& dest) {
-        dest = 0;
-        if (isNil(value))
-            return false;
-        if (TYPE(value) == RUBY_T_FLOAT ||
-            TYPE(value) == RUBY_T_FIXNUM ||
-            TYPE(value) == RUBY_T_BIGNUM ||
-            TYPE(value) == RUBY_T_RATIONAL) {
-            dest = NUM2DBL(value);
-            return true;
-        }
-        return false;
-    }
-
-    template <>
-    bool valueTo<bool>(VALUE value, bool& dest) {
-        dest = 0;
-        if (isNil(value))
-            return false;
-        switch (TYPE(value)) {
-            case RUBY_T_TRUE:
-            case RUBY_T_FALSE:
-                dest = TYPE(value) == RUBY_T_TRUE;
-                return true;
-                break;
-            case RUBY_T_FLOAT:
-            case RUBY_T_BIGNUM:
-            case RUBY_T_FIXNUM:
-            case RUBY_T_RATIONAL:
-                dest = NUM2INT(value) != 0;
-                return true;
-                break;
-
-            default:
-                break;
-        }
-
-        return false;
-    }
-
-    template <>
-    bool valueTo<rho::String>(VALUE value, rho::String& dest)
-    {
-        dest.clear();
-        if (isNil(value))
-            return false;
-        if (rb_type(value) != T_STRING)
-        {
-            value = rb_funcall(value, rb_intern("to_s"), 0, NULL);
-        }
-
-        dest = String(getStringFromValue(value), getStringLenFromValue(value));
-        return true;
-    }
 }
 
 template <typename ArrayVal>
@@ -328,184 +291,168 @@ bool rho_value_to_typed_array(VALUE value, rho::Vector<ArrayVal>& dest)
     if (isNil(value))
         return false;
 
-    if (TYPE(value) == T_ARRAY)
+    if (!rho_ruby_is_array(value))
+        return false;
+
+    bool result = true;
+    int len = rho_ruby_array_get_size(value);
+
+    dest.clear();
+    dest.reserve(len);
+
+    ArrayVal elem;
+    for (int i=0; i<len; i++)
     {
-        dest.clear();
-
-        dest.reserve(RARRAY_LEN(value));
-
-        ArrayVal elem;
-
-        for (int i=0; i<RARRAY_LEN(value); i++)
+        dest.push_back(elem);
+        if (valueTo(rho_ruby_array_get(value, i), dest.back()))
         {
-            if (valueTo(RARRAY_PTR(value)[i], elem))
-            {
-                dest.push_back(elem);
-            }
+            result = false;
         }
-        return true;
     }
-    return false;
+    return result;
 }
 
 template <typename KeyType,typename ValueType>
 bool rho_value_to_typed_hash(VALUE value, rho::Hashtable<KeyType, ValueType>& dest)
 {
-    if (isNil(value))
+    if (!isNil(value))
         return false;
 
-    if (TYPE(value) == T_HASH)
-    {
-        VALUE keys = rb_funcall(value, rb_intern("keys"), 0);
-        VALUE akey;
+    if (rho_ruby_is_hash(value))
+        return false;
 
-        KeyType _key;
-        ValueType _value;
+    bool result = false;
 
-        bool result = true;
+    VALUE keys = rho_ruby_hash_keys(value);
+    VALUE akey;
 
-        while ((akey = rb_each(keys))) {
-            VALUE val = rb_hash_aref(value, akey);
-            if (valueTo(akey, _key) && valueTo(val, _value)) {
-                dest[_key] = _value;
-            } else {
-                result = false;
-                break;
-            }
+    KeyType _key;
+    ValueType _value;
+
+    while ((akey = rho_ruby_each_key(keys))) {
+        VALUE val = rho_ruby_hash_get(value, akey);
+        if (!(valueTo(akey, _key) && valueTo(val, dest[_key]))) {
+            result = false;
         }
-        
-        return  result;
     }
-    
-    return  false;
+    return result;
 }
 
 template <typename InnnerArrayValue>
-bool rho_value_to_typed_array_array( VALUE value, rho::Vector< rho::Vector<InnnerArrayValue> >& dest, rho::String& result) {
+bool rho_value_to_typed_array_array( VALUE value, rho::Vector< rho::Vector<InnnerArrayValue> >& dest, rho::String& error)
+{
 
     dest.clear();
 
     if (isNil(value))
         return false;
 
-    if (TYPE(value) == T_ARRAY)
+    if (!rho_ruby_is_array(value))
+        return false;
+
+    bool result = true;
+
+    int len = rho_ruby_array_get_size(value);
+    dest.reserve(len);
+
+    rho::Vector<InnnerArrayValue> buff;
+
+    for (int i=0; i<len; i++)
     {
-        dest.reserve(RARRAY_LEN(value));
-
-        rho::Vector<InnnerArrayValue> buff;
-
-        bool result = true;
-
-        for (int i=0; i<RARRAY_LEN(value); i++)
+        dest.push_back(buff);
+        VALUE inner = rho_ruby_array_get(value, i);
+        if (!rho_value_to_typed_array(inner, dest.back()))
         {
-            dest.push_back(buff);
-            VALUE inner = RARRAY_PTR(value)[i];
-            if (!rho_value_to_typed_array(inner, dest.back()))
-            {
-                result = false;
-                break;
-            }
+            result = false;
         }
-
-        return result;
     }
-    return false;
+
+    return result;
 }
 
 template <typename InnnerHashKey, typename InnnerHashValue>
-bool rho_value_to_typed_array_hash( VALUE value, rho::Vector< rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& result) {
+bool rho_value_to_typed_array_hash( VALUE value, rho::Vector< rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& error)
+{
 
     dest.clear();
 
     if (isNil(value))
         return false;
 
-    if (TYPE(value) == T_ARRAY)
+    if (!rho_ruby_is_array(value))
+        return false;
+
+    bool result = true;
+
+    int len = rho_ruby_array_get_size(value);
+    dest.reserve(len);
+
+    rho::Hashtable<InnnerHashKey, InnnerHashValue> buff;
+    for (int i=0; i<len; i++)
     {
-        dest.reserve(RARRAY_LEN(value));
-
-        rho::Hashtable<InnnerHashKey, InnnerHashValue> buff;
-
-        bool result = true;
-
-        for (int i=0; i<RARRAY_LEN(value); i++)
+        dest.push_back(buff);
+        VALUE inner = rho_ruby_array_get(value, i);
+        if (!rho_value_to_typed_hash(inner, dest.back()))
         {
-            dest.push_back(buff);
-            VALUE inner = RARRAY_PTR(value)[i];
-            if (!rho_value_to_typed_hash(inner, dest.back()))
-            {
-                result = false;
-                break;
-            }
+            result = false;
         }
-
-        return result;
     }
-    return false;
-    
+
+    return result;
 }
 
 template <typename HashKey, typename InnnerArrayValue>
-bool rho_value_to_typed_hash_array( VALUE value, rho::Hashtable< HashKey, rho::Vector<InnnerArrayValue> >& dest, rho::String& result) {
+bool rho_value_to_typed_hash_array( VALUE value, rho::Hashtable< HashKey, rho::Vector<InnnerArrayValue> >& dest, rho::String& error)
+{
     if (isNil(value))
         return false;
 
-    if (TYPE(value) == T_HASH)
-    {
-        VALUE keys = rb_funcall(value, rb_intern("keys"), 0);
-        VALUE akey;
+    if (rho_ruby_is_hash(value))
+        return false;
 
-        HashKey _key;
-        rho::Vector<InnnerArrayValue> _value;
+    bool result = true;
 
-        bool result = true;
+    VALUE keys = rho_ruby_hash_keys(value);
+    VALUE akey;
 
-        while ((akey = rb_each(keys))) {
-            VALUE val = rb_hash_aref(value, akey);
-            if (valueTo(akey, _key) && rho_value_to_typed_array(val, _value)) {
-                dest[_key] = _value;
-            } else {
-                result = false;
-                break;
-            }
+    HashKey _key;
+    rho::Vector<InnnerArrayValue> _value;
+    while ((akey = rho_ruby_each_key(keys))) {
+        VALUE val = rho_ruby_hash_get(value, akey);
+        if (!(valueTo(akey, _key) && rho_value_to_typed_array(val, dest[_key]))) {
+            result = false;
         }
-
-        return  result;
     }
 
-    return  false;
-
+    return  result;
 }
 
 template <typename HashKey, typename InnnerHashKey, typename InnnerHashValue>
-bool rho_value_to_typed_hash_hash( VALUE value, rho::Hashtable< HashKey, rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& result) {
+bool rho_value_to_typed_hash_hash( VALUE value, rho::Hashtable< HashKey, rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& error)
+{
     if (isNil(value))
         return false;
 
-    if (TYPE(value) == T_HASH)
-    {
-        VALUE keys = rb_funcall(value, rb_intern("keys"), 0);
-        VALUE akey;
+    if (rho_ruby_is_hash(value))
+        return false;
 
-        HashKey _key;
-        rho::Hashtable<InnnerHashKey, InnnerHashValue> _value;
+    bool result = true;
 
-        bool result = true;
+    VALUE keys = rho_ruby_hash_keys(value);
+    VALUE akey;
 
-        while ((akey = rb_each(keys))) {
-            VALUE val = rb_hash_aref(value, akey);
-            if (valueTo(akey, _key) && rho_value_to_typed_hash(val, _value)) {
-                dest[_key] = _value;
-            } else {
-                result = false;
-                break;
-            }
+    HashKey _key;
+    rho::Hashtable<InnnerHashKey, InnnerHashValue> _value;
+    while ((akey = rho_ruby_each_key(keys))) {
+        VALUE val = rho_ruby_hash_get(value, akey);
+        if (valueTo(akey, _key) && rho_value_to_typed_hash(val, _value)) {
+            dest[_key] = _value;
+        } else {
+            result = false;
         }
-
-        return  result;
     }
-    
-    return  false;
+
+    return  result;
 }
 
 
