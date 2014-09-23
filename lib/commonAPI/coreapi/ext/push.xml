@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Push" parent="Rho">
+    <MODULE name="Push" parent="Rho" productException='eb'>
         <HELP_OVERVIEW>The Push API provides access to Push messaging functionality. Use this API to give your application the ability to receive server initiated messages.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API

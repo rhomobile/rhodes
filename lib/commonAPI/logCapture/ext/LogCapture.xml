@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="LogCapture" parent="Rho">
+    <MODULE name="LogCapture" parent="Rho" productException='eb'>
         <HELP_OVERVIEW>The LogCapture class is used for capturing logging events.
         </HELP_OVERVIEW>
         <MORE_HELP>
