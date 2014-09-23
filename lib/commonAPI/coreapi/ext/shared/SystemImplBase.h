@@ -32,7 +32,7 @@ public:
     virtual void setKeyboardState( const rho::String &, CMethodResult& oResult);
 
     virtual void getStartParams(rho::apiGenerator::CMethodResult& oResult);
-    virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult);
+    virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, const rho::String& outputFilename, rho::apiGenerator::CMethodResult& oResult);
     virtual void zipFile( const rho::String& localPathToZip,  const rho::String& localPathToFile,  const rho::String& password, CMethodResult& oResult);
     virtual void zipFiles( const rho::String& localPathToZip,  const rho::String& basePath,  const rho::Vector<rho::String>& filePathsToZip,  const rho::String& password, CMethodResult& oResult);
     virtual void setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);

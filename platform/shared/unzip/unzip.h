@@ -244,6 +244,7 @@ bool IsZipHandleU(HZIP hz);
 #endif
 
 
+
 #if defined(__cplusplus)
 }
 #endif

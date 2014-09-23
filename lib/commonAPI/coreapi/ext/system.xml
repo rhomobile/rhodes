@@ -254,7 +254,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="unzipFile">
+            <METHOD name="unzipFile" callbackType="optional">
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
@@ -264,6 +264,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <DESC>Password for the zip.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
+                    
+                    <PARAM name="outputFileName" type="STRING">
+                        <DESC>Output file name. Used when decompressing gzip streams.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+
                 </PARAMS>
             </METHOD>
 
