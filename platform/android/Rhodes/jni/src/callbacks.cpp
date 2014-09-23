@@ -35,6 +35,8 @@
 
 #include "json/JSONIterator.h"
 
+#include "common/IRhoThreadImpl.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Callbacks"
 
@@ -336,6 +338,33 @@ RHO_GLOBAL void rho_sys_get_screen_auto_rotate_mode(rho::apiGenerator::CMethodRe
     result.set(static_cast<bool>(env->CallStaticBooleanMethod(cls, mid)));
 }
 
+static rho::Hashtable<int, rho::common::IRhoRunnable*> cbk_array;
+static int counter = 0;
+
+extern "C" void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
+{
+    if (pTask == NULL) {
+        return;
+    }
+    int curr = ++counter;
+    cbk_array[curr] = pTask;
+    
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "runOnUiThread", "(I)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, curr);
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_onUiThreadCallback(JNIEnv *env, jint idx)
+{
+    int cbk_idx = static_cast<int>(idx);
+    if (cbk_array.count(cbk_idx) > 0) {
+        cbk_array[cbk_idx]->runObject();
+        cbk_array.erase(cbk_idx);
+    }
+}
 
 namespace rho {
 
