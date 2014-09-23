@@ -10,7 +10,6 @@
 #include "zlib.h"
 #include <stdio.h>
 
-
 namespace gunzip
 {
 
@@ -23,13 +22,13 @@ namespace gunzip
     gzFile input;
     FILE* output;
     
-    input = gzopen( inputFilename, "r" );
+    input = gzopen( inputFilename, "rb" );
     if ( 0 == input )
     {
       return -1;
     }
     
-    output = fopen( outputFilename, "w" );
+    output = fopen( outputFilename, "wb" );
     if ( 0 == output )
     {
       gzclose(input);
