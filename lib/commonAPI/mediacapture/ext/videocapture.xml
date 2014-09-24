@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Videocapture" parent="Rho" >
+    <MODULE name="Videocapture" parent="Rho" productException='eb'>
         <ALIASES>
             <ALIAS new="videocapture" deprecated="true"/>
         </ALIASES>
