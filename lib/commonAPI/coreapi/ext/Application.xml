@@ -117,6 +117,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAM>
                 <DESC>Native Menu items.</DESC>
                 <PLATFORM>WM, CE, Android, Win32, WP8</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <DESC>Native Menu items.</DESC>
@@ -124,6 +125,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     <DESC>Same values as nativeMenu.</DESC>
                 </PARAM>
                 <PLATFORM>WM, CE, Android, Win32, WP8</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
                 <DESC>Indicates if the security token check was failed. Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
@@ -291,6 +293,7 @@ The ebapi.js file is necessary for all single API inclusions.
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
         <EXAMPLES>
             <!-- This example commented out because setLocale is not exposed in docs. -->
             <!-- <EXAMPLE title="Set the locale">
