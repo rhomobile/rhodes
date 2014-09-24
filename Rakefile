@@ -318,7 +318,7 @@ end
 namespace "clean" do
   task :common => "config:common" do
 
-    RhoPackages.require 'ugu', 'aga'
+    RhoPackages.request 'ugu', 'aga'
 
     if $config["platform"] == "bb"
       return
