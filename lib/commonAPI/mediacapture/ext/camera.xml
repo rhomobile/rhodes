@@ -185,6 +185,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="captureSound" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android, WM, WP8</PLATFORM>
+                <PLATFORM_EB>Android, WM</PLATFORM_EB>
                 <DESC>Path to a sound file resident on the device which will be played when the image is captured.</DESC>
             </PROPERTY>
             <PROPERTY name="previewLeft" type="INTEGER">

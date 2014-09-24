@@ -62,23 +62,24 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="platform" type="STRING" readOnly="true">
                 <DESC>Platform where application is running.</DESC>
-                <VALUES>         
+                <VALUES>
                     <VALUE constName="PLATFORM_WM_CE" value ="WINDOWS">
                         <DESC></DESC>
                     </VALUE>
                     <VALUE constName="PLATFORM_ANDROID" value ="ANDROID">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="PLATFORM_IOS" value ="APPLE">
+                    <VALUE constName="PLATFORM_IOS" value ="APPLE" productException='eb'>
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="PLATFORM_WP8" value ="WP8">
+                    <VALUE constName="PLATFORM_WP8" value ="WP8" productException='eb'>
                         <DESC></DESC>
                     </VALUE>
                     <VALUE constName="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
                         <DESC></DESC>
                     </VALUE>
                 </VALUES>
+                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if there is a camera available on the device.</DESC>
