@@ -77,7 +77,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                     <DESC>Relative path to tabbar item icon in your application; typically located in /public/images/.</DESC>
                                     <DESC_EB>Icon Relative path (from Enterprise Browser application) to local files on the device. </DESC_EB>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
-                                    <PLATFORM_EB>Win32, Android</PLATFORM_EB>
+                                    <PLATFORM_EB>Android</PLATFORM_EB>
                                 </PARAM>
                                 <PARAM name="reload" type="BOOLEAN" default="false">
                                     <DESC>When tab is activated  - page in tab will be reloaded.</DESC>
@@ -85,22 +85,22 @@ The ebapi.js file is necessary for all single API inclusions.
                                 <PARAM name="selectedColor" type="INTEGER">
                                     <DESC>Change the selected color of this tab. On Android this works only if you setup selectedColor for all tabs and also setup backgroundColor for the whole Tabbar.</DESC>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
-                                    <PLATFORM_EB>Win32, Android</PLATFORM_EB>
+                                    <PLATFORM_EB>Android</PLATFORM_EB>
                                 </PARAM>
                                 <PARAM name="disabled" type="BOOLEAN" default="false">
                                     <DESC>Tab will be displayed as disabled.</DESC>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
-                                    <PLATFORM_EB>Win32, Android</PLATFORM_EB>
+                                    <PLATFORM_EB>Android</PLATFORM_EB>
                                 </PARAM>
                                 <PARAM name="backgroundColor" type="INTEGER">
                                     <DESC> Background color for tab. Use when your application background color is not white for removing blink during switch tabs.</DESC>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
-                                    <PLATFORM_EB>Win32, Android</PLATFORM_EB>
+                                    <PLATFORM_EB>Android</PLATFORM_EB>
                                 </PARAM>
                                 <PARAM name="useCurrentViewForTab" type="BOOLEAN" default="false">
                                     <DESC>Gives a smooth transfer to a newly opened tab from the current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
                                     <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
-                                    <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+                                    <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
                                 </PARAM>
 
                                 <PARAM name="perishable" type="BOOLEAN" default="false">
@@ -126,7 +126,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <PARAM name="backgroundColor" type="INTEGER">
                                 <DESC>Background color of the tabbar.</DESC>
                                 <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
-                                <PLATFORM_EB>Win32, Android</PLATFORM_EB>
+                                <PLATFORM_EB>Android</PLATFORM_EB>
                             </PARAM>
                             <PARAM name="hiddenTabs" type="BOOLEAN" default="true">
                                 <PLATFORM>WM</PLATFORM>
@@ -225,7 +225,7 @@ The ebapi.js file is necessary for all single API inclusions.
         
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
-        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+        <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
         <REMARKS>
         </REMARKS>
         <EXAMPLES >
