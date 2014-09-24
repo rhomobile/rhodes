@@ -163,6 +163,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Turn on local http server traces. Traces contain information about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of remote server app (and / or shared runtime). Default value can be overridden by the setting in rhoconfig.txt (net_trace) </DESC>
                 <DESC_EB>Turn on local http server traces. Traces contain information about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of remote server app (and / or shared runtime). Default value can be overridden by the setting in Config.xml</DESC_EB>
                 <PLATFORM>Android, iOS, WP8</PLATFORM>
+                <PLATFORM_EB>Android</PLATFORM_EB>
             </PROPERTY>
 
             <PROPERTY name="skipPost" type="BOOLEAN" default="false">
@@ -275,6 +276,7 @@ The ebapi.js file is necessary for all single API inclusions.
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
         <EXAMPLES >
            <EXAMPLE title="Show log file">
                <SECTIONS>

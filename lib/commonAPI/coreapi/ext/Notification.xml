@@ -3,7 +3,7 @@
     <MODULE name="Notification" parent="Rho">
         <HELP_OVERVIEW>The Notification API allows you to provide feedback to the user, either auditory, tactile or visual. Use this API to give a visual popup window, sound the device beeper or illuminate the device LEDs (hardware permitting).</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
@@ -44,6 +44,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
         <PLATFORM>iOS, Android, WM</PLATFORM>
+        <PLATFORM_EB>Android, WM</PLATFORM_EB>
         <TEMPLATES>
         </TEMPLATES>
 
@@ -51,7 +52,9 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
                 <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the `button` array. Icon is not supported on iOS devices.</DESC>
+                <DESC_EB>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the `button` array.</DESC_EB>
                 <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">
                         <DESC>The properties associated with the popup.</DESC>
@@ -132,11 +135,13 @@ Example:
                 <DESC>Closes the current popup window. On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</DESC>
                 <DESC_EB>Closes the current popup window. On Windows Mobile/CE only Status window, displayed by showStatus can be hide.</DESC_EB>
                 <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
+                <PLATFORM>WM, CE, Android, Win32</PLATFORM>
             </METHOD>
         
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
                 <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button. Note: Android will show a toast message for a short time in addition to a dialog window.</DESC>
                 <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
+                <PLATFORM>WM, CE, Android, Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="title" type="STRING">
                         <CAN_BE_NIL/>
@@ -149,6 +154,7 @@ Example:
                         <DESC>The label text for the hide button in the popup status window. On Windows Mobile/CE, Windows and RhoSimulators Windows Close icon used to hide the status window.</DESC>
                         <DESC_EB>The label text for the hide button in the popup status window. On Windows Mobile/CE Close icon used to hide the status window.</DESC_EB>
                         <PLATFORM>iOS, Android, WP8</PLATFORM>
+                        <PLATFORM>Android</PLATFORM>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -156,6 +162,7 @@ Example:
             <METHOD name="playFile" access="STATIC" hasCallback="none">
                 <DESC>Play an audio file if that media type is supported by the device.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PLATFORM_EB>Android, WM</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="path" type="STRING">
                         <DESC>The full path to the file, ending in the file name and extension.</DESC>
@@ -164,12 +171,14 @@ Example:
                         <CAN_BE_NIL/>
                         <DESC>Media type can be specified explicitly, or can be recognized from the file extension. The known file extensions are ".mp3" - "audio/mpeg" and ".wav" - "audio/x-wav".</DESC>
                         <PLATFORM>iOS, Android</PLATFORM>
+                        <PLATFORM_EB>Android</PLATFORM_EB>
                     </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="beep" access="STATIC" hasCallback="none">
                 <DESC>If the device is equipped with a beeper then a beep will be emitted. Not supported on iOS devices.</DESC>
+                <DESC_EB>If the device is equipped with a beeper then a beep will be emitted.</DESC_EB>
                 <PLATFORM>Android, WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">
@@ -192,10 +201,12 @@ Example:
             <METHOD name="vibrate" access="STATIC" hasCallback="none">
                 <DESC>Vibrate the device's pager hardware. Need 'vibrate' capability set at build.yml for Android.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PLATFORM_EB>Android, WM</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="duration" type="Integer" default="1000">
                         <CAN_BE_NIL/>
                         <DESC>The duration of the vibration, in milliseconds. Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration. iOS devices have fixed system vibration time. It could not be changed. Android and Windows devices have default vibration time 1000 ms.</DESC>
+                        <DESC_EB>The duration of the vibration, in milliseconds. Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration. Android and Windows devices have default vibration time 1000 ms.</DESC_EB>
                     </PARAM>
                 </PARAMS>
             </METHOD>
