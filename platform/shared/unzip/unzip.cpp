@@ -2529,12 +2529,15 @@ int inflateEnd(z_streamp z)
   return Z_OK;
 }
 
+#define windowBits 15
+//#define ENABLE_ZLIB_GZIP 32
 
 int inflateInit2(z_streamp z)
 { const char *version = ZLIB_VERSION; int stream_size = sizeof(z_stream);
   if (version == Z_NULL || version[0] != ZLIB_VERSION[0] || stream_size != sizeof(z_stream)) return Z_VERSION_ERROR;
 
   int w = -15; // MAX_WBITS: 32K LZ77 window.
+
   // Warning: reducing MAX_WBITS makes minigzip unable to extract .gz files created by gzip.
   // The memory requirements for deflate are (in bytes):
   //            (1 << (windowBits+2)) +  (1 << (memLevel+9))
@@ -4364,5 +4367,4 @@ bool IsZipHandleU(HZIP hz)
   TUnzipHandleData *han = (TUnzipHandleData*)hz;
   return (han->flag==1);
 }
-
 

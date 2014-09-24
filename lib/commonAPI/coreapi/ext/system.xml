@@ -286,7 +286,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="unzipFile">
+            <METHOD name="unzipFile" callbackType="optional">
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
@@ -296,6 +296,12 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>Password for the zip.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
+                    
+                    <PARAM name="outputFileName" type="STRING">
+                        <DESC>Output file name. Used when decompressing gzip streams.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+
                 </PARAMS>
             </METHOD>
 
