@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="LogCapture" parent="Rho">
+    <MODULE name="LogCapture" parent="Rho" productException='eb'>
         <HELP_OVERVIEW>The LogCapture class is used for capturing logging events.
         </HELP_OVERVIEW>
         <MORE_HELP>
@@ -79,5 +79,6 @@ The ebapi.js file is necessary for all single API inclusions.
         
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
          <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
     </MODULE>
 </API>
