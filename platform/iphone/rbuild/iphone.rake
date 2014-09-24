@@ -2926,10 +2926,13 @@ namespace "device" do
       end
       print_timestamp('application bundle was updated')
 
+
+      chdir parent_app_bin
+
       #sign
       if !is_simulator
 
-        chdir parent_app_bin
+
         rm_rf File.join(parent_app_bin, "Payload/prebuild.app/_CodeSignature")
         rm_rf File.join(parent_app_bin, "Payload/prebuild.app/CodeResources")
 
