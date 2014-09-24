@@ -180,7 +180,7 @@ namespace db {
 	
 	/*Implementation of import steps*/
 	
-	extern "C" int rho_sys_unzip_file(const char* szZipPath, const char* psw);
+	extern "C" int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outputFilename);
 	
 	bool CDBImportTransaction::prepareImportData() {
 		LOG(INFO) + "CDBImportTransaction::prepareImportData";
@@ -200,7 +200,7 @@ namespace db {
 		
 		LOG(INFO) + "CDBImportTransaction::prepareImportData - import DB successfully copied to " + _importZipPath;
 		
-		if ( rho_sys_unzip_file(_importZipPath.c_str(), 0)!=0 ) {
+		if ( rho_sys_unzip_file(_importZipPath.c_str(), 0, 0)!=0 ) {
 			LOG(ERROR) + "Can't unzip import data";
 			return false;
 		}
