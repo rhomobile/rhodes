@@ -4,7 +4,9 @@
  */
 
 #include "gzguts.h"
+#if !defined(UNDER_CE)
 #include <unistd.h>
+#endif
 
 namespace zlib
 {

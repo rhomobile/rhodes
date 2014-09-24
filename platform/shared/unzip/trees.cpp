@@ -188,10 +188,7 @@ local void gen_trees_header OF((void));
 #ifdef DEBUG
 local void send_bits      OF((deflate_state *s, int value, int length));
 
-local void send_bits(s, value, length)
-    deflate_state *s;
-    int value;  /* value to send */
-    int length; /* number of bits */
+local void send_bits(deflate_state *s, int value, int length)
 {
     Tracevv((stderr," l %2d v %4x ", length, value));
     Assert(length > 0 && length <= 15, "invalid length");
