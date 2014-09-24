@@ -125,8 +125,7 @@ uLong ZEXPORT zlibCompileFlags()
 #  endif
 int ZLIB_INTERNAL z_verbose = verbose;
 
-void ZLIB_INTERNAL z_error (m)
-    char *m;
+void ZLIB_INTERNAL z_error (char *m)
 {
     fprintf(stderr, "%s\n", m);
     exit(1);

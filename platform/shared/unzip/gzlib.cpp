@@ -4,7 +4,13 @@
  */
 
 #include "gzguts.h"
-#include <unistd.h>
+
+#if !defined(UNDER_CE)
+  #include <unistd.h>
+#else
+  #include "wince.h"
+  extern "C" off_t _lseeki64(int fd, off_t offset, int whence);
+#endif
 
 #if defined(_WIN32) && !defined(__BORLANDC__)
 #  define LSEEK _lseeki64
@@ -34,8 +40,7 @@ local gzFile gz_open OF((const void *, int, const char *));
 
    The gz_strwinerror function does not change the current setting of
    GetLastError. */
-char ZLIB_INTERNAL *gz_strwinerror (error)
-     DWORD error;
+char ZLIB_INTERNAL *gz_strwinerror (DWORD error)
 {
     static char buf[1024];
 
@@ -46,7 +51,7 @@ char ZLIB_INTERNAL *gz_strwinerror (error)
         NULL,
         error,
         0, /* Default language */
-        (LPVOID)&msgbuf,
+        /*(LPVOID)&*/(LPSTR)msgbuf,
         0,
         NULL);
     if (chars != 0) {
@@ -188,7 +193,7 @@ local gzFile gz_open(const void* path, int fd, const char* mode)
     /* save the path name for error messages */
 #ifdef _WIN32
     if (fd == -2) {
-        len = wcstombs(NULL, path, 0);
+        len = wcstombs(NULL, (const wchar_t*)path, 0);
         if (len == (size_t)-1)
             len = 0;
     }
@@ -203,7 +208,7 @@ local gzFile gz_open(const void* path, int fd, const char* mode)
 #ifdef _WIN32
     if (fd == -2)
         if (len)
-            wcstombs(state->path, path, len + 1);
+            wcstombs(state->path, (const wchar_t*)path, len + 1);
         else
             *(state->path) = 0;
     else
@@ -233,7 +238,7 @@ local gzFile gz_open(const void* path, int fd, const char* mode)
 
     /* open the file with the appropriate flags (or just use fd) */
     state->fd = fd > -1 ? fd : (
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(_WIN32_WCE)
         fd == -2 ? _wopen(path, oflag, 0666) :
 #endif
         open((const char*)path, oflag, 0666));
@@ -247,7 +252,8 @@ local gzFile gz_open(const void* path, int fd, const char* mode)
 
     /* save the current position for rewinding (only if reading) */
     if (state->mode == GZ_READ) {
-        state->start = LSEEK(state->fd, 0, SEEK_CUR);
+        // this comment is a hot fix
+        //state->start = LSEEK(state->fd, 0, SEEK_CUR);
         if (state->start == -1) state->start = 0;
     }
 
@@ -286,9 +292,7 @@ gzFile ZEXPORT gzdopen(int fd, const char* mode)
 
 /* -- see zlib.h -- */
 #ifdef _WIN32
-gzFile ZEXPORT gzopen_w(path, mode)
-    const wchar_t *path;
-    const char *mode;
+gzFile ZEXPORT gzopen_w(const wchar_t *path, const char *mode)
 {
     return gz_open(path, -2, mode);
 }

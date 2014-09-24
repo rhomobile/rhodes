@@ -9,7 +9,11 @@
 #include <stdarg.h>
 #endif
 
+#if !defined(UNDER_CE)
 #include <unistd.h>
+#else
+#define NO_vsnprintf
+#endif
 
 namespace zlib
 {
