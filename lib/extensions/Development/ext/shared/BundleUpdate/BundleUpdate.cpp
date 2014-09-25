@@ -73,13 +73,18 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
     
     rho::String fileURL = qURL;
     
-    rho::String fileZipLocalDir = RHODESAPPBASE().getRhoUserPath()+"RhoBundle";
+    rho::String fileZipLocalDir = rho::common::CFilePath::join(RHODESAPPBASE().getRhoUserPath(), "RhoBundle");
     
-    rho::String fileZipLocalPath = fileZipLocalDir+"/upgrade_bundle.zip";
+    rho::String fileZipLocalPath = rho::common::CFilePath::join(fileZipLocalDir, "upgrade_bundle.zip");
     
     const char* flz = fileZipLocalPath.c_str();
     
     rho_http_sendresponse(arg, "");
+    
+    
+    // 0 remove old files
+    rho_file_impl_delete_folder(fileZipLocalDir.c_str());
+    rho::common::CRhoFile::recursiveCreateDir(fileZipLocalDir.c_str(), RHODESAPPBASE().getRhoUserPath().c_str());
     
     // 1 download zip
     
@@ -137,8 +142,6 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
     const char* hu = cb_url.c_str();
     
     rho_sys_replace_current_bundleEx( fileZipLocalDir.c_str(), cb_url.c_str(), do_not_restart_app, not_thread_mode, check_filelist, true );
-    
-    
     
     
 }
@@ -253,6 +256,12 @@ void callback_system_update_bundle_callback(void *arg, rho::String const &strQue
     query = query + make_info_string(false);
     rho_net_request_with_data_in_separated_thread(norm_url, query.c_str());
     rho_http_free(norm_url);
+    
+    // remove temporary files
+    rho::String fileZipLocalDir = rho::common::CFilePath::join(RHODESAPPBASE().getRhoUserPath(), "RhoBundle");
+    rho_file_impl_delete_folder(fileZipLocalDir.c_str());
+    
+
 }
 
 

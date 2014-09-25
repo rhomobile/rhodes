@@ -856,7 +856,16 @@ namespace "build" do
 
     end
 
-    task :upgrade_package => ["build:iphone:rhobundle"] do
+    desc "build upgrade package with full bundle"
+    task :upgrade_package => ["config:iphone"] do
+
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
+        Rake::Task['build:iphone:rhobundle'].invoke
+
         #puts '$$$$$$$$$$$$$$$$$$'
         #puts 'targetdir = '+$targetdir.to_s
         #puts 'bindir = '+$bindir.to_s
@@ -872,12 +881,6 @@ namespace "build" do
 
         end
 
-        $skip_build_rhodes_main = true
-        $skip_build_extensions = true
-        $skip_build_xmls = true
-        $use_prebuild_data = true
-
-
         mkdir_p $targetdir if not File.exists? $targetdir
         zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
         Jake.zip_upgrade_bundle( $bindir, zip_file_path)
@@ -892,6 +895,7 @@ namespace "build" do
       puts '$$$ RhoDevelopment.check_changes_from_last_build() = '+result.class.to_s
     end
 
+    desc "build upgrade package with part of bundle (changes configure by two text files - see documentation)"
     task :upgrade_package_partial => ["config:iphone"] do
 
         print_timestamp('build:iphone:upgrade_package_partial START')

@@ -12,7 +12,7 @@ require 'yaml'
 require 'listen'
 require 'typhoeus'
 require 'childprocess'
-require_relative 'ExtendedString'
+require_relative '../ExtendedString'
 
 
 class LiveUpdatingConfig
