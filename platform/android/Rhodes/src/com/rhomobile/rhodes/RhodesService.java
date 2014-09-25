@@ -1450,6 +1450,17 @@ public class RhodesService extends Service {
         }
     }
 
+
+    public static native void onUiThreadCallback(int idx);
+
+    public static void runOnUiThread(final int idx) {
+        PerformOnUiThread.exec(new Runnable() {
+            public void run() {
+                RhodesService.onUiThreadCallback(idx);
+            }
+        });
+    }
+
     public static String getNativeMenu() {
         List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
         String menuJson = new JSONGenerator(menuItems).toString();
