@@ -12,6 +12,8 @@ require File.join(File.dirname(__FILE__), 'rhogen_core.rb')
 
 require File.dirname(__FILE__) + '/../../lib/rhodes'
 
+DEBUG_TEMPLATE_RENDERER = false
+
 # =================================================================
 # helper utilities
 
@@ -973,6 +975,13 @@ module Rhogen
                 say_status('added', action, :green)
               end
             end
+            unless $cur_module.nil? || DEBUG_TEMPLATE_RENDERER != true
+              data = File.split(action.relative_destination)
+              puts "Rendering #{$cur_module.name} : #{action.relative_destination}"
+              comosite_name = [$cur_module.name,data[0].gsub(/[\/\.]+/,'_'),data[1]].join('_')
+              fname = File.join('/Users/snowyowl/work/rhomobile/rhodes/rendered/',comosite_name)
+              File.open(fname,'w') { |io| io << action.render.to_lines.join() }
+            end
           rescue 
             puts "Error processing: #{action.source.inspect}".bold.red
             raise
@@ -1158,32 +1167,32 @@ module Rhogen
 
     template :android_java_obj_interface do |template|
       template.source = 'platform/android/gen/src/IMontana.java'
-      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/I#{$cur_module.name}.java"
+      template.destination = "platform/android/generated/src/#{JavaGen::make_package_path($cur_module)}/I#{$cur_module.name}.java"
     end
 
     template :android_java_factory_interface do |template|
       template.source = 'platform/android/gen/src/IMontanaFactory.java'
-      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/I#{$cur_module.name}Factory.java"
+      template.destination = "platform/android/generated/src/#{JavaGen::make_package_path($cur_module)}/I#{$cur_module.name}Factory.java"
     end
 
     template :android_java_singleton_interface do |template|
       template.source = 'platform/android/gen/src/IMontanaSingleton.java'
-      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/I#{$cur_module.name}Singleton.java"
+      template.destination = "platform/android/generated/src/#{JavaGen::make_package_path($cur_module)}/I#{$cur_module.name}Singleton.java"
     end
 
     template :android_java_obj_base do |template|
       template.source = 'platform/android/gen/src/MontanaBase.java'
-      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/#{$cur_module.name}Base.java"
+      template.destination = "platform/android/generated/src/#{JavaGen::make_package_path($cur_module)}/#{$cur_module.name}Base.java"
     end
 
     template :android_java_singleton_base do |template|
       template.source = 'platform/android/gen/src/MontanaSingletonBase.java'
-      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/#{$cur_module.name}SingletonBase.java"
+      template.destination = "platform/android/generated/src/#{JavaGen::make_package_path($cur_module)}/#{$cur_module.name}SingletonBase.java"
     end
 
     template :android_java_factory_singleton do |template|
       template.source = 'platform/android/gen/src/MontanaFactorySingleton.java'
-      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/#{$cur_module.name}FactorySingleton.java"
+      template.destination = "platform/android/generated/src/#{JavaGen::make_package_path($cur_module)}/#{$cur_module.name}FactorySingleton.java"
     end
 
     template :android_cpp_api_header do |template|
