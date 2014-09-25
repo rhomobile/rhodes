@@ -6,7 +6,11 @@
 #include "gzguts.h"
 
 #if !defined(UNDER_CE)
+  #if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__MINGW32__)
+  #include <io.h>
+  #else
   #include <unistd.h>
+  #endif
 #else
   #include "wince.h"
   extern "C" off_t _lseeki64(int fd, off_t offset, int whence);
@@ -239,7 +243,7 @@ local gzFile gz_open(const void* path, int fd, const char* mode)
     /* open the file with the appropriate flags (or just use fd) */
     state->fd = fd > -1 ? fd : (
 #if defined(_WIN32) && !defined(_WIN32_WCE)
-        fd == -2 ? _wopen(path, oflag, 0666) :
+        fd == -2 ? _wopen((const wchar_t*)path, oflag, 0666) :
 #endif
         open((const char*)path, oflag, 0666));
     if (state->fd == -1) {
