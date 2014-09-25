@@ -708,6 +708,7 @@ void CReplaceBundleThread::sendRequestFullUpdate()
         String query = "&rho_callback=1&status=need_sync";
         rho_net_request_with_data(norm_url, query.c_str());
         rho_http_free(norm_url);
+        m_finish_callback = "";
     }
 }
     
@@ -724,6 +725,7 @@ void CReplaceBundleThread::showError(int nError, const String& strError )
             query = query + strMsg.c_str();
             rho_net_request_with_data(norm_url, query.c_str());
             rho_http_free(norm_url);
+            m_finish_callback = "";
         }
     }
     else {
@@ -916,6 +918,15 @@ void CReplaceBundleThread::doReplaceBundle()
         }
         
     }
+    if (!is_partial_update) {
+        // check full update main file
+        String new_files_list_path = CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt");
+        if (!CRhoFile::isFileExist(new_files_list_path.c_str())) {
+            showError(nError, "Invalid new bundle content - not contain rhofilelist !" );
+            return;
+        }
+    }
+    
     
     if (is_partial_update) {
         if (CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt").c_str())) {
@@ -971,18 +982,31 @@ void CReplaceBundleThread::doReplaceBundle()
         filelist.saveToFile();
 
     }
-
-    
+    else {
 #ifdef OS_ANDROID
-    if (!is_partial_update) {
-        //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
-        if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat").c_str()))
+        
+            // no CFilePath::join(m_bundle_path, "RhoBundle/rho.dat") in current bundle - we should modify and copy CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt") !!!
+            
+            //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
+            if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat").c_str()))
+            {
+                int err = errno;
+                LOG(ERROR) + "Cannot copy rho.dat, errno: " + LOGFMT("%d") + err;
+            }
+#else
+        // copy new rhofilelist.txt
+        if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), rho_filelist_path.c_str()))
         {
             int err = errno;
-            LOG(ERROR) + "Cannot copy rho.dat, errno: " + LOGFMT("%d") + err;
+            LOG(ERROR) + "Cannot replace rhofilelist.txt, errno: " + LOGFMT("%d") + err;
         }
-    }
 #endif
+    
+    
+    }
+
+    
+
 
 #ifdef OS_ANDROID
     rho_android_file_reload_stat_table();

@@ -313,6 +313,7 @@ namespace 'dev' do
 
   namespace 'update' do
 
+    desc "Check sources for changes from last time and update all linked devices"
     task :onetime => ["config:initialize"] do
       LiveUpdatingConfig::applicationRoot = $app_basedir
       server = OneTimeUpdater.new
@@ -325,6 +326,7 @@ namespace 'dev' do
       (BuildServer.new).build_partial_bundles_for_all_subscribers
     end
 
+    desc "Start application source files change monitoring for live update linked devices"
     task :auto => ["config:initialize"] do
       LiveUpdatingConfig::applicationRoot = $app_basedir
       updater = AutoUpdater.new
@@ -337,6 +339,7 @@ namespace 'dev' do
 
   namespace :webserver do
 
+    desc "Start development web server - used for update application on linked devices"
     task :start => ["config:initialize"] do
       LiveUpdatingConfig::applicationRoot = $app_basedir
       print 'Looking for working web server... '.primary
@@ -348,12 +351,14 @@ namespace 'dev' do
       end
     end
 
+    desc "Stop development web server"
     task :stop => ["config:initialize"] do
       WebServerWrapper::stop
     end
 
   end
 
+  desc "Discover application on devices in local network - application should be executed on devices"
   task :discovery => ["config:initialize"] do
     LiveUpdatingConfig::applicationRoot = $app_basedir
     finder = DeviceFinder.new
