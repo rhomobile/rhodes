@@ -23,7 +23,7 @@ class CppGen
               val_type = native_type(gen_type.value)
           end
 
-          res = "rho::Vector<#{val_type}>".gsub('>>','> >')
+          res = "rho::Vector<#{val_type}>".gsub('>>', '> >')
         when RhogenCore::TYPE_HASH
           case gen_type.api_style
             # always and only strings
@@ -35,7 +35,7 @@ class CppGen
               val_type = native_type(gen_type.value)
           end
 
-          res = "rho::Hashtable<#{key_type}, #{val_type}>".gsub('>>','> >')
+          res = "rho::Hashtable<#{key_type}, #{val_type}>".gsub('>>', '> >')
         else
           #Module name, pass ID of object
           res = "rho::String"
@@ -352,151 +352,155 @@ end
 
 
 def api_generator_cli_conversion(gen_type, var_name)
-    
-    if gen_type == RhogenCore::TYPE_ARRAY
-        res = "Windows::Foundation::Collections::IVectorView<Platform::String^>^ _#{var_name} = rho::common::convertArrayToWP8(#{var_name});\n"
-    elsif gen_type == RhogenCore::TYPE_HASH
-        res = "Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ _#{var_name} = rho::common::convertHashToWP8(#{var_name});\n"
-    elsif gen_type == RhogenCore::TYPE_INT
-        res = ''
-    elsif gen_type == RhogenCore::TYPE_BOOL
-        res = ''
-    elsif gen_type == RhogenCore::TYPE_DOUBLE
-        res = ''
-    else # elif gen_type == RhogenCore::TYPE_STRING
-        res = "Platform::String^ _#{var_name} = rho::common::convertStringToWP8(#{var_name});\n"
-    end
-    
-    res
+
+  if gen_type == RhogenCore::TYPE_ARRAY
+    res = "Windows::Foundation::Collections::IVectorView<Platform::String^>^ _#{var_name} = rho::common::convertArrayToWP8(#{var_name});\n"
+  elsif gen_type == RhogenCore::TYPE_HASH
+    res = "Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ _#{var_name} = rho::common::convertHashToWP8(#{var_name});\n"
+  elsif gen_type == RhogenCore::TYPE_INT
+    res = ''
+  elsif gen_type == RhogenCore::TYPE_BOOL
+    res = ''
+  elsif gen_type == RhogenCore::TYPE_DOUBLE
+    res = ''
+  else # elif gen_type == RhogenCore::TYPE_STRING
+    res = "Platform::String^ _#{var_name} = rho::common::convertStringToWP8(#{var_name});\n"
+  end
+
+  res
 end
 
 def api_generator_cli_makeNativeTypeArg(gen_type)
-    
-    if gen_type == RhogenCore::TYPE_STRING
-        res = "Platform::String^"
-    elsif gen_type == RhogenCore::TYPE_ARRAY
-        res = "Windows::Foundation::Collections::IVectorView<Platform::String^>^"
-    elsif gen_type == RhogenCore::TYPE_HASH
-        res = "Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^"
-    elsif gen_type == RhogenCore::TYPE_INT
-        res = "int"
-    elsif gen_type == RhogenCore::TYPE_BOOL
-        res = "bool"
-    elsif gen_type == RhogenCore::TYPE_DOUBLE
-        res = "double"
-    else
-        res = "Platform::String^"
-    end
-    
-    res
+
+  if gen_type == RhogenCore::TYPE_STRING
+    res = "Platform::String^"
+  elsif gen_type == RhogenCore::TYPE_ARRAY
+    res = "Windows::Foundation::Collections::IVectorView<Platform::String^>^"
+  elsif gen_type == RhogenCore::TYPE_HASH
+    res = "Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^"
+  elsif gen_type == RhogenCore::TYPE_INT
+    res = "int"
+  elsif gen_type == RhogenCore::TYPE_BOOL
+    res = "bool"
+  elsif gen_type == RhogenCore::TYPE_DOUBLE
+    res = "double"
+  else
+    res = "Platform::String^"
+  end
+
+  res
 end
 
 def api_generator_cs_makeNativeTypeArg(gen_type)
-    
-    if gen_type == RhogenCore::TYPE_STRING
-        res = "string"
-    elsif gen_type == RhogenCore::TYPE_ARRAY
-        res = "IReadOnlyList<string>"
-    elsif gen_type == RhogenCore::TYPE_HASH
-        res = "IReadOnlyDictionary<string, string>"
-    elsif gen_type == RhogenCore::TYPE_INT
-        res = "int"
-    elsif gen_type == RhogenCore::TYPE_BOOL
-        res = "bool"
-    elsif gen_type == RhogenCore::TYPE_DOUBLE
-        res = "double"
-    else
-        res = "string"
-    end
-    
-    res
+
+  if gen_type == RhogenCore::TYPE_STRING
+    res = "string"
+  elsif gen_type == RhogenCore::TYPE_ARRAY
+    res = "IReadOnlyList<string>"
+  elsif gen_type == RhogenCore::TYPE_HASH
+    res = "IReadOnlyDictionary<string, string>"
+  elsif gen_type == RhogenCore::TYPE_INT
+    res = "int"
+  elsif gen_type == RhogenCore::TYPE_BOOL
+    res = "bool"
+  elsif gen_type == RhogenCore::TYPE_DOUBLE
+    res = "double"
+  else
+    res = "string"
+  end
+
+  res
 end
 
 def api_generator_isApiObjectParam(param)
-    return false unless param
+  return false unless param
 
-    if param.type == RhogenCore::TYPE_ARRAY
-        if param.sub_param
-            return api_generator_isApiObjectParam(param.sub_param)
-        else
-            return false
-        end
-    elsif param.type == RhogenCore::TYPE_HASH
-        if param.sub_params
-            param.sub_params.each do |name, param|
-                isObject = api_generator_isApiObjectParam(param)
-                return false unless isObject
-            end
-            return true
-        else
-            return false
-        end
+  if param.type == RhogenCore::TYPE_ARRAY
+    array_type = param.kind_of?(RhogenCore::MethodResult) ? param.sub_param : param.value
+
+    if array_type
+      return api_generator_isApiObjectParam(array_type)
     else
-        if param.type != RhogenCore::TYPE_STRING and param.type != RhogenCore::TYPE_INT and param.type != RhogenCore::TYPE_BOOL and param.type != RhogenCore::TYPE_DOUBLE
-            return true
-        else
-            return false
-        end
+      return false
     end
+
+  elsif param.type == RhogenCore::TYPE_HASH
+    hash_fields = param.kind_of?(RhogenCore::MethodResult) ? param.sub_params : param.fields.map{|f| [f.name,f]}
+    if hash_fields
+      hash_fields.each do |name, param|
+        isObject = api_generator_isApiObjectParam(param)
+        return false unless isObject
+      end
+      return true
+    else
+      return false
+    end
+  else
+    if param.type != RhogenCore::TYPE_STRING and param.type != RhogenCore::TYPE_INT and param.type != RhogenCore::TYPE_BOOL and param.type != RhogenCore::TYPE_DOUBLE
+      return true
+    else
+      return false
+    end
+  end
 end
 
 def api_generator_ruby_makeApiObjectTypeName(param, cur_module)
-    if param.nil? || param.type == RhogenCore::TYPE_SELF
-        return api_generator_getRubyModuleFullName(cur_module)
-    elsif param.type == RhogenCore::TYPE_ARRAY
-        return api_generator_ruby_makeApiObjectTypeName(param.sub_param, cur_module)
-    elsif param.type == RhogenCore::TYPE_HASH
-        return api_generator_ruby_makeApiObjectTypeName(param.sub_params.first, cur_module)
-    else
-        return param.type.gsub('.', '::')
-    end
+  if param.nil? || param.type == RhogenCore::TYPE_SELF
+    return api_generator_getRubyModuleFullName(cur_module)
+  elsif param.type == RhogenCore::TYPE_ARRAY
+    return api_generator_ruby_makeApiObjectTypeName(param.sub_param, cur_module)
+  elsif param.type == RhogenCore::TYPE_HASH
+    return api_generator_ruby_makeApiObjectTypeName(param.sub_params.first, cur_module)
+  else
+    return param.type.gsub('.', '::')
+  end
 end
 
 def api_generator_CreateSimpleRubyType(gen_type, value)
 
-    res = ""
-    if gen_type == RhogenCore::TYPE_STRING
-        res = "rb_str_new2(\"#{value}\")"
-    elsif gen_type == RhogenCore::TYPE_INT
-        res = "rb_ll2inum(#{value})"
-    elsif gen_type == RhogenCore::TYPE_BOOL
-        res = "strcmp(\"#{value}\", \"true\") = 0 ? Qtrue : Qfalse"
-    elsif gen_type == RhogenCore::TYPE_DOUBLE
-        res = "rb_float_new(#{value})"
-    else    
-        raise "Type is not simple: #{gen_type}"     
-    end
-    
-    res
+  res = ""
+  if gen_type == RhogenCore::TYPE_STRING
+    res = "rb_str_new2(\"#{value}\")"
+  elsif gen_type == RhogenCore::TYPE_INT
+    res = "rb_ll2inum(#{value})"
+  elsif gen_type == RhogenCore::TYPE_BOOL
+    res = "strcmp(\"#{value}\", \"true\") = 0 ? Qtrue : Qfalse"
+  elsif gen_type == RhogenCore::TYPE_DOUBLE
+    res = "rb_float_new(#{value})"
+  else
+    raise "Type is not simple: #{gen_type}"
+  end
+
+  res
 end
 
-  def api_generator_MakeRubyMethodDecl(module_name, module_method, is_static)
+def api_generator_MakeRubyMethodDecl(module_name, module_method, is_static)
 
-    method_name = 'rb_'
-    method_name += 's_' if is_static
-    method_name += module_name + "_" + module_method.native_name
+  method_name = 'rb_'
+  method_name += 's_' if is_static
+  method_name += module_name + "_" + module_method.native_name
 
-    params = ''
-    if is_static
-      params = 'int argc, VALUE *argv'
-    else
-      params = 'int argc, VALUE *argv, VALUE obj'
-    end
-
-    "VALUE #{method_name}(#{params})"
+  params = ''
+  if is_static
+    params = 'int argc, VALUE *argv'
+  else
+    params = 'int argc, VALUE *argv, VALUE obj'
   end
+
+  "VALUE #{method_name}(#{params})"
+end
 
 
 def api_generator_getRubyModuleFullName(cur_module)
-    module_name = cur_module.parents.join('.')
-    module_name += '.' if module_name && module_name.length() > 0
-    module_name += cur_module.name
+  module_name = cur_module.parents.join('.')
+  module_name += '.' if module_name && module_name.length() > 0
+  module_name += cur_module.name
 
-    module_name.gsub('.', '::')
+  module_name.gsub('.', '::')
 end
 
 def api_generator_getJSModuleName(module_name)
-    module_name.gsub('::', '.')    
+  module_name.gsub('::', '.')
 end
 
 def api_generator_MakeJSMethodDecl(module_name, module_method_name, is_static)
@@ -511,8 +515,8 @@ def api_generator_MakeJSMethodDecl(module_name, module_method_name, is_static)
 end
 
 def api_generator_isSelfModule(cur_module, type)
-    return false unless type
-    return true if type == RhogenCore::TYPE_SELF
-    
-    api_generator_getRubyModuleFullName(cur_module) == type.gsub('.', '::')
+  return false unless type
+  return true if type == RhogenCore::TYPE_SELF
+
+  api_generator_getRubyModuleFullName(cur_module) == type.gsub('.', '::')
 end
