@@ -5,7 +5,11 @@
 
 #include "gzguts.h"
 #if !defined(UNDER_CE)
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__MINGW32__)
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #endif
 
 namespace zlib
