@@ -1,11 +1,12 @@
-<% moduleNamespace = api_generator_cpp_MakeNamespace($cur_module.parents) %>
-
-#include "<%= $cur_module.name %>Base.h"
-#include "api_generator/js_helpers.h"
+<% moduleNamespace = CppGen::make_namespace($cur_module.parents) %>
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>"
+
+#include "<%= $cur_module.name %>Base.h"
+#include "api_generator/js_helpers.h"
+#include "api_generator/JSONResultConvertor.h"
 
 #include "common/StringConverter.h"
 
@@ -43,7 +44,7 @@ using namespace rho::apiGenerator;
     end
 
     result_type = nil
-    if MethodParam::BASE_TYPES.include?(module_method.result.type)
+    if RhogenCore::BASE_TYPES.include?(module_method.result.type)
       result_type = module_method.result.item_type
     else
       result_type = module_method.result.type;
@@ -51,7 +52,7 @@ using namespace rho::apiGenerator;
 
 if api_generator_isSelfModule( $cur_module, result_type) %>
     oRes.setJSObjectClassPath( "<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>" );<%
-elsif result_type && result_type.length()>0 && !MethodParam::BASE_TYPES.include?(result_type) %>
+elsif result_type && result_type.length()>0 && !RhogenCore::BASE_TYPES.include?(result_type) %>
     oRes.setJSObjectClassPath( "<%= api_generator_getJSModuleName(result_type) %>" );<%
     if !module_method.linked_entity.nil?%>
     oRes.setResultAsEntity();
@@ -59,9 +60,9 @@ elsif result_type && result_type.length()>0 && !MethodParam::BASE_TYPES.include?
 end; end 
 
 if module_method.linked_property && module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
-    oRes.setRequestedType(<%= api_generator_cpp_makeMethodResultType(module_method.linked_property.type) %>);<%
+    oRes.setRequestedType(<%= CppGen::native_result_type(module_method.linked_property) %>);<%
 elsif module_method.result && module_method.result.type %>
-    oRes.setRequestedType(<%= api_generator_cpp_makeMethodResultType(module_method.result.type) %>);<%
+    oRes.setRequestedType(<%= CppGen::native_result_type(module_method.result) %>);<%
 end %>
 
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
@@ -80,8 +81,8 @@ end %>
     }
     <% end %>
 
-<% if param.type == MethodParam::TYPE_STRING %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = "<%= param.default_value ? param.default_value : "" %>";
+<% if param.type == RhogenCore::TYPE_STRING %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %> = "<%= param.default_value ? param.default_value : "" %>";
     if ( argc > <%= first_arg %> )
     {
         if ( argv[<%= first_arg %>].isString() )
@@ -96,8 +97,8 @@ end %>
     }
 <% end %>
 
-<% if param.type == MethodParam::TYPE_INT %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
+<% if param.type == RhogenCore::TYPE_INT %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
         if ( argv[<%= first_arg %>].isInteger() )
@@ -110,8 +111,8 @@ end %>
     }
 <% end %>
 
-<% if param.type == MethodParam::TYPE_BOOL %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : false %>;
+<% if param.type == RhogenCore::TYPE_BOOL %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : false %>;
     if ( argc > <%= first_arg %> )
     {
         if ( argv[<%= first_arg %>].isBoolean() )
@@ -124,8 +125,8 @@ end %>
     }
 <% end %>
 
-<% if param.type == MethodParam::TYPE_DOUBLE %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
+<% if param.type == RhogenCore::TYPE_DOUBLE %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
         if ( argv[<%= first_arg %>].isFloat() )
@@ -140,19 +141,28 @@ end %>
     }
 <% end %>
 
-<% if param.type == MethodParam::TYPE_ARRAY %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+<% convert_args = ["argv[#{first_arg}]","arg#{first_arg}"].join(', ')
+
+if param.type == RhogenCore::TYPE_ARRAY %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( argv[<%= first_arg %>].isArray() )
+        CJSONEntry value(argv[<%= first_arg %>]);
+        if ( value.isArray() )
         {
-            CJSONArray arParam(argv[<%= first_arg %>]);
+            <% if param.api_style == RhogenCore::API_STYLE_LEGACY %>
+            CJSONArray arParam(value);
+            arg<%= first_arg %>.reserve(arParam.getSize());
             for( int i = 0; i < arParam.getSize(); i++ )
             {
                 arg<%= first_arg %>.addElement( arParam[i].getStringObject() );
             }
+            <% else %>
+            rho::String res;
+            <%= CppGen::result_converter(param) %>(value, arg<%= first_arg %>, res);
+            <% end %>
         }
-        else if (!argv[<%= first_arg %>].isNull())
+        else if (!value.isNull())
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
             return oRes.toJSON();
@@ -160,20 +170,26 @@ end %>
     }
 <% end %>
 
-<% if param.type == MethodParam::TYPE_HASH %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+<% if param.type == RhogenCore::TYPE_HASH %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( argv[<%= first_arg %>].isObject() )
+        CJSONEntry value(argv[<%= first_arg %>]);
+        if ( value.isObject() )
         {
-            CJSONStructIterator objIter(argv[<%= first_arg %>]);
+            <% if param.api_style == RhogenCore::API_STYLE_LEGACY %>
+            CJSONStructIterator objIter(value);
 
             for( ; !objIter.isEnd(); objIter.next() )
             {
                 arg<%= first_arg %>[objIter.getCurKey()] = objIter.getCurString();
             }
+            <% else %>
+            rho::String res;
+            <%= CppGen::result_converter(param) %>(value, arg<%= first_arg %>, res);
+            <% end %>
         }
-        else if (!argv[<%= first_arg %>].isNull())
+        else if (!value.isNull())
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
             return oRes.toJSON();
@@ -181,8 +197,8 @@ end %>
     }
 <% end %>
 
-<% if !MethodParam::BASE_TYPES.include?(param.type) %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+<% if !RhogenCore::BASE_TYPES.include?(param.type) %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %>;
 <% end %>
 
 <% functor_params += "arg#{first_arg}, " %>
