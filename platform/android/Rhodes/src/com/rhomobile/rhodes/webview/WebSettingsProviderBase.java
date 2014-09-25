@@ -23,7 +23,7 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         Logger.T(TAG, "Enable Zoom: " + (config != null && config.getBool("enableZoom")));
         
         if (config != null && config.getBool("enableCache")) {
-            settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+            settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         } else {
             settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         }
