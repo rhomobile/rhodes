@@ -95,7 +95,8 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
     
     
     // 0 remove old files
-    rho_file_impl_delete_folder(fileZipLocalDir.c_str());
+    rho::common::CRhoFile::deleteFolder(fileZipLocalDir.c_str());
+    //rho_file_impl_delete_folder(fileZipLocalDir.c_str());
     rho::common::CRhoFile::recursiveCreateDir(fileZipLocalDir.c_str(), RHODESAPPBASE().getRhoUserPath().c_str());
     
     // 1 download zip
@@ -276,8 +277,8 @@ void callback_system_update_bundle_callback(void *arg, rho::String const &strQue
     
     // remove temporary files
     rho::String fileZipLocalDir = rho::common::CFilePath::join(RHODESAPPBASE().getRhoUserPath(), "RhoBundle");
-    rho_file_impl_delete_folder(fileZipLocalDir.c_str());
-    
+    //rho_file_impl_delete_folder(fileZipLocalDir.c_str());
+    rho::common::CRhoFile::deleteFolder(fileZipLocalDir.c_str());
 
 }
 
