@@ -1929,13 +1929,15 @@ namespace "build" do
       $android_jars << $v4support_classpath
     end
 
-    task :upgrade_package => :rhobundle do
+    task :upgrade_package => ["config:android"] do
       print_timestamp('build:android:upgrade_package START')
 
       $skip_build_rhodes_main = true
       $skip_build_extensions = true
       $skip_build_xmls = true
       $use_prebuild_data = true
+
+      Rake::Task['build:android:rhobundle'].invoke
 
       #puts '$$$$$$$$$$$$$$$$$$'
       #puts 'targetdir = '+$targetdir.to_s
@@ -1944,7 +1946,26 @@ namespace "build" do
       mkdir_p android_targetdir if not File.exists? android_targetdir
       zip_file_path = File.join(android_targetdir, 'upgrade_bundle.zip')
       Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
-      Jake.zip_upgrade_bundle($bindir, zip_file_path)
+
+      src_folder = $appassets #File.join($appassets, 'RhoBundle')
+      src_folder = File.join(src_folder, 'apps')
+
+      tmp_folder = $appassets + '_tmp_partial'
+      rm_rf tmp_folder if File.exists? tmp_folder
+      mkdir_p tmp_folder
+
+      dst_tmp_folder = File.join(tmp_folder, 'RhoBundle')
+      mkdir_p dst_tmp_folder
+      # copy all
+      cp_r src_folder, dst_tmp_folder
+
+      dst_tmp_folder = File.join(dst_tmp_folder, 'apps')
+      mkdir_p dst_tmp_folder
+
+      Jake.zip_upgrade_bundle(tmp_folder, zip_file_path)
+
+      rm_rf tmp_folder
+
       print_timestamp('build:android:upgrade_package FINISH')
     end
 
