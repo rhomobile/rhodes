@@ -32,7 +32,12 @@ extern "C" void alert_show_status(const char* title, const char* message, const 
 extern "C" void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode, bool check_filelist, bool all_via_callback_only);
 
 
+extern "C" void rho_webview_refresh(int index);
+
+
+
 static rho::String our_responce_server_url = "";
+static bool our_refresh_webview = false;
 
 
 void callback_system_update_bundle(void *arg, rho::String const &strQuery)
@@ -42,6 +47,7 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
     rho::String qURL = "";
     rho::String qServerIP = "";
     rho::String qServerPort = "";
+    bool isRefresh = false;
     
     
     rho::common::CTokenizer oTokenizer(strQuery, "&");
@@ -65,9 +71,15 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
         }else if ( rho::String_startsWith( tok, "server_port=") )
         {
             qServerPort = tok.substr(12);
+        }else if ( rho::String_startsWith( tok, "refresh_after_update=") )
+        {
+            rho::String srefresh = tok.substr(21);
+            if ((srefresh.compare("false") != 0) && (srefresh.compare("0") != 0) && (srefresh.compare("FALSE") != 0)) {
+                isRefresh = true;
+            }
         }
     }
-    
+
     our_responce_server_url = "http://";
     our_responce_server_url = our_responce_server_url + qServerIP + ":" + qServerPort + "/response_from_device";
     
@@ -141,6 +153,7 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
     cb_url = cb_url + DevHTTPServer::getInstance()->getPort() + "/development/update_bundle_callback";
     const char* hu = cb_url.c_str();
     
+    our_refresh_webview = isRefresh;
     rho_sys_replace_current_bundleEx( fileZipLocalDir.c_str(), cb_url.c_str(), do_not_restart_app, not_thread_mode, check_filelist, true );
     
     
@@ -234,6 +247,10 @@ void callback_system_update_bundle_callback(void *arg, rho::String const &strQue
     if (qStatus.compare("ok") == 0) {
        message = "Update bundle was finished !";
        query = "&status=ok";
+        
+        if (our_refresh_webview) {
+            rho_webview_refresh(-1);
+        }
     }
     if (qStatus.compare("error") == 0) {
         message = "Error when update Bundle : " + qMessage + " !";
@@ -291,8 +308,6 @@ void callback_system_get_info_callback(void *arg, rho::String const &strQuery) {
     rho_http_sendresponse(arg, responce.c_str());
 
 }
-
-extern "C" void rho_webview_refresh(int index);
 
 void Bundle_update_on_triple_tap() {
     rho_webview_refresh(-1);
