@@ -276,8 +276,8 @@ bool valueTo<rho::String>(VALUE value, rho::String& dest)
     int len = 0;
     if (rho_ruby_to_str(value, &cptr, &len)){
         if (cptr!=0 && len != 0) {
-            size_t len = static_cast<size_t>(len);
-            dest.assign(cptr, len);
+            size_t str_len = static_cast<size_t>(len);
+            dest.assign(cptr, str_len);
         }
     }
     return true;
