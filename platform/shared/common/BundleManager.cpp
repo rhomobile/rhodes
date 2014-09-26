@@ -312,8 +312,8 @@ public:
     static unsigned int removeFilesByList( const String& strListPath, const String& strSrcFolder, bool skipNotExist );
     static unsigned int moveFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder );
     
-    static unsigned int partialAddFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder, CFileList* filelist);
-    static unsigned int partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist);
+    static unsigned int partialAddFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder, CFileList* filelist, CFileList* filelist_apps);
+    static unsigned int partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist, CFileList* filelist_apps);
     
 };
 IMPLEMENT_LOGCLASS(CReplaceBundleThread,"RhoBundle");
@@ -523,7 +523,7 @@ unsigned int CReplaceBundleThread::moveFilesByList( const String& strListPath, c
 }
 
     
-unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder, CFileList* filelist) {
+unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder, CFileList* filelist, CFileList* filelist_apps) {
 	LOG(TRACE) + "Partial Moving files by list: " + strSrcFolder + " -> " + strDstFolder;
     
 	unsigned int nError = 0;
@@ -565,12 +565,14 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
             if (!CRhoFile::isFileExist(strDstPath.c_str())) {
                 CRhoFile::createFolder(strDstPath.c_str());
                 filelist->addFolder(strLine);
+                filelist_apps->addFolder(strLine);
             }
         }else if ( strType.compare("file") == 0)
         {
             LOG(TRACE) + "Renaming file: " + strSrcPath + " -> " + strDstPath;
 
             bool must_be_exist = filelist->removeFile(strPath);
+            filelist_apps->removeFile(strPath);
 
             if (CRhoFile::isFileExist( strDstPath.c_str()) ) {
                 
@@ -599,6 +601,7 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
             }
             else {
                 filelist->addFile(strLine);
+                filelist_apps->addFile(strLine);
             }
         }
     }
@@ -606,7 +609,7 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
     return nError;
 }
     
-unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist) {
+unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist, CFileList* filelist_apps) {
 	LOG(TRACE) + "Partial Removing items by list: " + strSrcFolder + ", list: " + strListPath;
     
     unsigned int nError = 0;
@@ -660,6 +663,7 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
                 }
                 else {
                     filelist->removeFolder(strPath);
+                    filelist_apps->removeFolder(strPath);
                 }
             }
             else {
@@ -684,6 +688,7 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
                 }
                 else {
                     filelist->removeFile(strPath);
+                    filelist_apps->removeFile(strPath);
                 }
             }
             else {
@@ -883,7 +888,9 @@ void CReplaceBundleThread::doReplaceBundle()
 
     unsigned int nError = 0;
     String rho_filelist_path = "";
+    String rho_filelist_apps_path = "";
     CFileList filelist;
+    CFileList filelist_apps;
     
     bool is_partial_update = CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str()) || CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt").c_str());
 
@@ -891,9 +898,13 @@ void CReplaceBundleThread::doReplaceBundle()
 #ifdef OS_ANDROID
     rho_filelist_path = CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat");
     filelist.loadFromFile(rho_filelist_path, "apps/");
+    rho_filelist_apps_path = CFilePath::join( RHODESAPP().getAppRootPath(), "apps/rhofilelist.txt");
+    filelist_apps.loadFromFile(rho_filelist_apps_path, "");
 #else
     rho_filelist_path = CFilePath::join( RHODESAPP().getAppRootPath(), "rhofilelist.txt");
     filelist.loadFromFile(rho_filelist_path, "");
+    rho_filelist_apps_path = rho_filelist_path;
+    filelist_apps.loadFromFile(rho_filelist_apps_path, "");
 #endif
     
 
@@ -911,7 +922,7 @@ void CReplaceBundleThread::doReplaceBundle()
         CFileList remove_list;
         remove_list.loadFromFile(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt").c_str(), "");
 
-        if (is_need_full_update(&filelist, &newfilelist, &add_list, &remove_list)) {
+        if (is_need_full_update(&filelist_apps, &newfilelist, &add_list, &remove_list)) {
             // stop and send responce
             sendRequestFullUpdate();
             return;
@@ -931,7 +942,7 @@ void CReplaceBundleThread::doReplaceBundle()
     if (is_partial_update) {
         if (CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt").c_str())) {
             //nError = removeFilesByList( CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt"), ::RHODESAPP().getAppRootPath(), true );
-            nError = partialRemoveItemsByList( CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt"), ::RHODESAPP().getAppRootPath(), &filelist);
+            nError = partialRemoveItemsByList( CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt"), ::RHODESAPP().getAppRootPath(), &filelist, &filelist_apps);
             if ( nError != 0 )
             {
                 showError(nError, "Remove original files from partial remove list failed." );
@@ -942,7 +953,11 @@ void CReplaceBundleThread::doReplaceBundle()
     else {
         // full update
         //Remove current files
-        nError = removeFilesByList( rho_filelist_path, ::RHODESAPP().getAppRootPath(), true );
+#ifdef OS_ANDROID
+        nError = removeFilesByList( rho_filelist_apps_path, CFilePath::join( RHODESAPP().getAppRootPath(), "apps"), true );
+#else
+        nError = removeFilesByList( rho_filelist_apps_path, ::RHODESAPP().getAppRootPath(), true );
+#endif
         if ( nError != 0 )
         {
             showError(nError, "Remove files from bundle failed." );
@@ -956,7 +971,7 @@ void CReplaceBundleThread::doReplaceBundle()
     if (is_partial_update) {
         if (CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str())) {
             // partial update
-            nError = partialAddFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() , &filelist);
+            nError = partialAddFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() , &filelist, &filelist_apps);
             if ( nError != 0 )
             {
                 showError(nError, "Copy files to bundle failed." );
@@ -966,7 +981,7 @@ void CReplaceBundleThread::doReplaceBundle()
     }
     else {
         // full update
-        nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() );
+        nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), CFilePath::join( RHODESAPP().getAppRootPath(), "apps") );
         if ( nError != 0 )
         {
             showError(nError, "Copy files to bundle failed." );
@@ -980,7 +995,9 @@ void CReplaceBundleThread::doReplaceBundle()
 
     if (is_partial_update) {
         filelist.saveToFile();
-
+#ifdef OS_ANDROID
+        filelist_apps.saveToFile();
+#endif
     }
     else {
 #ifdef OS_ANDROID
