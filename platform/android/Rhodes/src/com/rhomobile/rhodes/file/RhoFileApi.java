@@ -42,6 +42,7 @@ import java.util.List;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
 import android.content.Context;
@@ -207,12 +208,16 @@ public class RhoFileApi {
 	private static void doForceAllFilesForContext(Context ctx) {
 		
 		// clear cache in WebView
-		View v = RhoExtManager.getInstance().getWebView().getView();
-		if (v instanceof WebView) {
-			WebView wv = (WebView)v;
-			wv.clearCache(true);
-			Log.d(TAG, "%% WebCache was cleaned !!!");
-		}
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				View v = RhoExtManager.getInstance().getWebView().getView();
+				if (v instanceof WebView) {
+					WebView wv = (WebView)v;
+					wv.clearCache(true);
+					Log.d(TAG, "%% WebCache was cleaned !!!");
+				}
+			}
+		});
 
 		if (ourIsForceAllFilesAlreadyDone) {
 			Log.d(TAG, "doForceAllFilesForContext() SKIP %%");
