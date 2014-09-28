@@ -9,6 +9,7 @@ module RhogenCore
   TYPE_SYMBOL = 'SYMBOL'
   TYPE_CALLBACK = 'CALLBACK'
   TYPE_SELF = 'SELF_INSTANCE'
+  TYPE_CLASS = 'CLASS'
   TYPE_MIXED = 'MIXED' #for hash with several typed fields
 
 
@@ -162,7 +163,7 @@ module RhogenCore
       end
 
       def ty_object(self_type = 'none')
-        self.new(TYPE_SELF)
+        self.new(TYPE_CLASS)
         @self_type = self_type
       end
 
@@ -272,6 +273,8 @@ module RhogenCore
         when TYPE_HASH
           @kind = KIND_HASH
           @key = self.class.ty_string()
+        when TYPE_CLASS
+          @type = TYPE_CLASS
         else
           raise "unknown type #{type}"
       end
@@ -346,6 +349,10 @@ module RhogenCore
       @self_type = val
     end
 
+    def self_type()
+      type == TYPE_CLASS ? @self_type : type
+    end
+
     def simple_type?
       SIMPLE_TYPES.include?(@type)
     end
@@ -360,7 +367,7 @@ module RhogenCore
 
     attr_writer :value
     attr_accessor :key, :name, :api_style
-    attr_reader :fields, :field_order, :self_type, :type
+    attr_reader :fields, :field_order, :type
   end
 
   class ModuleAlias
@@ -1078,7 +1085,7 @@ module RhogenCore
       else
         case param_type
           when TYPE_SELF
-            param = MethodParam.new(TYPE_SELF)
+            param = MethodParam.new(TYPE_CLASS)
             param.name = generated_name
             param.self_type = self_type
 
@@ -1133,7 +1140,13 @@ module RhogenCore
           param = MethodParam.process_type(param_type.upcase)
           param.name = generated_name
         else
-          raise "invalid parameter type #{param_type}"
+          puts param_type.dup.gsub(/([a-z_0-9]+\.*)+/,'sdfsdfsf')
+          if param_type =~ /([a-z_0-9]+\.*)+/i
+            param = MethodParam.new(TYPE_CLASS)
+            param.self_type = param_type
+          else
+            raise "invalid parameter type #{param_type}"
+          end
       end
    end
 
@@ -1503,7 +1516,7 @@ module RhogenCore
         method_result.type = result_type
       end
       #if result_item_type != nil
-      #   if result_item_type == TYPE_SELF
+      #   if result_item_type == TYPE_CLASS
       #     result_item_type = [module_item.parents.join('.'),module_item.name].join('.')
       #   end
       #   method_result.item_type = result_item_type
@@ -1512,7 +1525,7 @@ module RhogenCore
       xml_module_method.elements.each('RETURN/PARAM') do |return_param_xml|
         method_result.sub_param = process_param(return_param_xml, 'result', module_item, module_method.name+'_RETURN', 0, self_type)
         if method_result.sub_param != nil
-          method_result.item_type = method_result.sub_param.type
+          method_result.item_type = method_result.sub_param.self_type
         end
       end
       xml_module_method.elements.each('RETURN/PARAMS') do |return_params_xml|
@@ -1521,7 +1534,7 @@ module RhogenCore
       xml_module_method.elements.each('CALLBACK/PARAM') do |return_param_xml|
         method_result.sub_param = process_param(return_param_xml, 'result', module_item, module_method.name+'_RETURN', 0, self_type)
         if method_result.sub_param != nil
-          method_result.item_type = method_result.sub_param.type
+          method_result.item_type = method_result.sub_param.self_type
         end
       end
       xml_module_method.elements.each('CALLBACK/PARAMS') do |return_params_xml|
@@ -1566,7 +1579,7 @@ module RhogenCore
     #
     #   if xml_method_param.attribute('type') != nil
     #      ttype = xml_method_param.attribute('type').to_s #.upcase
-    #      if ttype == TYPE_SELF
+    #      if ttype == TYPE_CLASS
     #         ttype = [module_item.parents.join('.'),module_item.name].join('.')
     #      end
     #      method_param.type = ttype
