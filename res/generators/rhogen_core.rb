@@ -315,6 +315,12 @@ module RhogenCore
       include_field(instance)
     end
 
+    def include_fields(fields)
+      fields.each do |field|
+        include_field(field)
+      end
+    end
+
     def include_field(generated)
       raise 'only hash can have named fields' unless @type == TYPE_HASH
       field_name = generated.name
@@ -1193,10 +1199,8 @@ module RhogenCore
   def param_list_from_fields(fields, can_be_nil)
     field_list = []
     fields.each do |field|
-      param_item = MethodParam.new()
+      param_item = MethodParam.new(field.type, field.default_value)
       param_item.name = field.name
-      param_item.type = field.type
-      param_item.default_value = field.default_value
       param_item.can_be_nil = can_be_nil && !field.binding
       param_item.linked_field = field
       field_list << param_item
@@ -1212,10 +1216,9 @@ module RhogenCore
       if can_be_simplified && fields_param_list.size == 1
         param = fields_param_list.at(0)
       else
-        param = MethodParam.new()
+        param = MethodParam.new(TYPE_HASH)
         param.name = param_name
-        param.type = TYPE_HASH
-        param.sub_params = fields_param_list
+        param.include_fields(fields_param_list)
       end
     end
 
@@ -1918,19 +1921,16 @@ module RhogenCore
       if module_entity.fields.size > 0
         ##############################
         # constructor params with hash
-        cnt_hash = []
+
+        cnt_param = MethodParam.new(TYPE_HASH)
+        cnt_param.is_generated = true
+
         module_entity.fields.each do |field|
-          result_item = MethodParam.new()
+          result_item = MethodParam.new(field.type, field.default_value)
           result_item.name = field.name
           result_item.is_generated = true
-          result_item.type = field.type
-          result_item.default_value = field.default_value
-          cnt_hash << result_item
+          cnt_param.add_field(result_item)
         end
-        cnt_param = MethodParam.new()
-        cnt_param.is_generated = true
-        cnt_param.type = TYPE_HASH
-        cnt_param.sub_params = cnt_hash
 
         # access params
         binding_param = create_param_from_list(module_entity.binding_fields, 'binding', false, true)
