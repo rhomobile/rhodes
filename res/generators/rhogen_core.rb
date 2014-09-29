@@ -1140,12 +1140,17 @@ module RhogenCore
           param = MethodParam.process_type(param_type.upcase)
           param.name = generated_name
         else
-          puts param_type.dup.gsub(/([a-z_0-9]+\.*)+/,'sdfsdfsf')
-          if param_type =~ /([a-z_0-9]+\.*)+/i
-            param = MethodParam.new(TYPE_CLASS)
-            param.self_type = param_type
+          if param_type.empty?
+            puts "NO TYPE for parameter #{param_index} @ #{method_name}"
+            param = MethodParam.new(TYPE_HASH)
+            param.name = generated_name
           else
-            raise "invalid parameter type #{param_type}"
+            if param_type =~ /([a-z_0-9]+\.*)+/i
+              param = MethodParam.new(TYPE_CLASS)
+              param.self_type = param_type
+            else
+              raise "invalid parameter type #{param_type} for #{method_name}"
+            end
           end
       end
    end
