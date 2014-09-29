@@ -239,10 +239,12 @@ The ebapi.js file is necessary for all single API inclusions.
                                     <DESC>Device screen was turned off when power button was pressed or due to idle timeout. Note: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.Not supported on Windows CE.</DESC>
                                     <DESC_EB>Device screen was turned off when power button was pressed or due to idle timeout. On Android the application is not deactivated.Not supported on Windows CE.</DESC_EB>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
+                                    <PLATFORM_EB>Android, WM</PLATFORM_EB>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_ON" value ="ScreenOn">
                                     <DESC>Device screen was turned on and unlocked.Not supported on Windows CE.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
+                                    <PLATFORM_EB>Android, WM</PLATFORM_EB>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged" productException="eb">
                                     <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only.</DESC>

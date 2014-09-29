@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Camera" parent="Rho">
+    <MODULE name="Camera" parent="Rho"  productException="eb">
         <HELP_OVERVIEW>The Camera API provides access to your device's Camera(s). Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application. Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API           
