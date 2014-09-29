@@ -183,6 +183,18 @@ class Database
   end
 
   class << self
+
+      def safe_str_escape(value)
+        str = str.kind_of?(String) ? value.strip : value.to_s
+        # escape string if it not starts and ends with single or double quotes
+        is_esacped = 
+          (str.start_with?('\'') && str.end_with?('\'')) ||
+          (str.start_with?('\"') && str.end_with?('\"')) 
+        str = (is_esacped ? str : "'#{str}'")
+        # replace quotes in the middle of string
+        str.gsub(/(?<!^)'(?!$)/,"''")
+      end
+
       # generates where clause based on hash
       def where_str(condition)
         where_str = ""
@@ -197,7 +209,7 @@ class Database
       def select_str(select_arr)
         select_str = ""
         select_arr.each do |attrib|
-          select_str << "'#{attrib}'" + ","
+          select_str << safe_str_escape(attrib) + ","
         end
         select_str.length > 2 ? select_str[0..select_str.length-2] : select_str
       end
@@ -232,12 +244,10 @@ class Database
         if value.nil? or value == 'NULL'
           "NULL"
         elsif value.is_a?(String)
-          s = value.gsub(/'/,"''")
-          "'#{s}'"
+          safe_str_escape(value)
         else
           if convert_value_to_string
-            s = value.to_s.gsub(/'/,"''")
-            "'#{s}'"
+            safe_str_escape(value)
           else
             "#{value}"
           end
