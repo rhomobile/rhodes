@@ -519,7 +519,6 @@ end
 
 def api_generator_isSelfModule(cur_module, type)
   return false unless type
-  return false if type != RhogenCore::TYPE_CLASS
 
   api_generator_getRubyModuleFullName(cur_module) == type.gsub('.', '::')
 end
