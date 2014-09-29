@@ -103,7 +103,7 @@ if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
 <% end
 
 if api_generator_isApiObjectParam(method.result)
-  if method.result.type == RhogenCore::TYPE_SELF %>
+  if method.result.type == RhogenCore::TYPE_CLASS %>
     result.setObjectClassPath("<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>");
     RAWTRACE("Object class path is set");<%
   else %>

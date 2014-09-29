@@ -211,7 +211,7 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
     <%
      factory_params = "BOOL is_factory_param[] = { "
      module_method.params.each do |method_param|
-        if method_param.type == RhogenCore::TYPE_SELF
+        if method_param.type == RhogenCore::TYPE_CLASS
             factory_params = factory_params + "YES, "
         else
             factory_params = factory_params + "NO, "
@@ -309,7 +309,7 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
                 %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.item_type %>"];<%
                     end
                 end
-            when RhogenCore::TYPE_SELF
+            when RhogenCore::TYPE_CLASS
                 %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.self_type %>"];<%
             else
                 %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.type %>"];<%

@@ -4669,6 +4669,30 @@ namespace :run do
   end
 end
 
+namespace :dev do
+
+  namespace :genenerate do
+    desc "Regenerate all extensions in search paths"
+    task :extensions => ["config:common"] do
+      puts $app_config["extpaths"].join(', ')
+      ($app_config["extpaths"] - [$app_path]).each do |path|
+        puts "Search path #{path}"
+        xmls = Dir.glob(File.join(path,'**','*.xml'))
+        exts = xmls.reject{|f| !File.exists?(File.join(File.split(f)[0],'..','ext.yml'))}
+        exts.each do |ext|
+          puts "Processing #{ext}"
+          result = Jake.run2('"'+File.join($startdir,'bin','rhogen')+'"',['api',"\"#{ext}\""],{:hide_output=>true})
+          if $?.exitstatus != 0
+            puts result.red
+            fail "probem with extension #{ext}"
+          end
+        end
+      end
+    end
+  end
+
+end
+
 $running_time = []
 
 module Rake

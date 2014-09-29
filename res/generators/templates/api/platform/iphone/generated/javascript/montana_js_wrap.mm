@@ -178,7 +178,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     <%
      factory_params = "BOOL is_factory_param[] = { "
      module_method.params.each do |method_param|
-        if method_param.type == RhogenCore::TYPE_SELF
+        if method_param.type == RhogenCore::TYPE_CLASS
             factory_params = factory_params + "YES, "
         else
             factory_params = factory_params + "NO, "

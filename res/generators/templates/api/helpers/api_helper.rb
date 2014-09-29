@@ -445,8 +445,8 @@ def api_generator_isApiObjectParam(param)
 end
 
 def api_generator_ruby_makeApiObjectTypeName(param, cur_module)
-  if param.nil? || param.type == RhogenCore::TYPE_SELF
-    return api_generator_getRubyModuleFullName(cur_module)
+  if param.nil? || param.type == RhogenCore::TYPE_CLASS
+    return api_generator_getRubyModuleFullName2(param.self_type)
   elsif param.type == RhogenCore::TYPE_ARRAY
     return api_generator_ruby_makeApiObjectTypeName(param.sub_param, cur_module)
   elsif param.type == RhogenCore::TYPE_HASH
@@ -490,6 +490,9 @@ def api_generator_MakeRubyMethodDecl(module_name, module_method, is_static)
   "VALUE #{method_name}(#{params})"
 end
 
+def api_generator_getRubyModuleFullName2(src)
+  src.gsub('.', '::')
+end
 
 def api_generator_getRubyModuleFullName(cur_module)
   module_name = cur_module.parents.join('.')
@@ -516,7 +519,7 @@ end
 
 def api_generator_isSelfModule(cur_module, type)
   return false unless type
-  return true if type == RhogenCore::TYPE_SELF
+  return false if type != RhogenCore::TYPE_CLASS
 
   api_generator_getRubyModuleFullName(cur_module) == type.gsub('.', '::')
 end
