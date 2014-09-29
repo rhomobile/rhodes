@@ -1,6 +1,17 @@
 require 'fileutils'
 require 'pathname'
+require 'childprocess'
 require_relative 'ExtendedString'
+
+require_relative 'development/configuration'
+require_relative 'development/device_finder'
+require_relative 'development/subscriber'
+require_relative 'development/build_server'
+require_relative 'development/task'
+require_relative 'development/web_server'
+require_relative 'development/one_time_updater'
+require 'listen'
+require_relative 'development/auto_updater'
 
 module RhoDevelopment
 
