@@ -9,6 +9,7 @@ module RhogenCore
   TYPE_SYMBOL = 'SYMBOL'
   TYPE_CALLBACK = 'CALLBACK'
   TYPE_SELF = 'SELF_INSTANCE'
+  TYPE_CLASS = 'CLASS'
   TYPE_MIXED = 'MIXED' #for hash with several typed fields
 
 
@@ -162,7 +163,7 @@ module RhogenCore
       end
 
       def ty_object(self_type = 'none')
-        self.new(TYPE_SELF)
+        self.new(TYPE_CLASS)
         @self_type = self_type
       end
 
@@ -272,6 +273,8 @@ module RhogenCore
         when TYPE_HASH
           @kind = KIND_HASH
           @key = self.class.ty_string()
+        when TYPE_CLASS
+          @type = TYPE_CLASS
         else
           raise "unknown type #{type}"
       end
@@ -312,6 +315,12 @@ module RhogenCore
       include_field(instance)
     end
 
+    def include_fields(fields)
+      fields.each do |field|
+        include_field(field)
+      end
+    end
+
     def include_field(generated)
       raise 'only hash can have named fields' unless @type == TYPE_HASH
       field_name = generated.name
@@ -346,6 +355,10 @@ module RhogenCore
       @self_type = val
     end
 
+    def self_type()
+      type == TYPE_CLASS ? @self_type : type
+    end
+
     def simple_type?
       SIMPLE_TYPES.include?(@type)
     end
@@ -360,7 +373,7 @@ module RhogenCore
 
     attr_writer :value
     attr_accessor :key, :name, :api_style
-    attr_reader :fields, :field_order, :self_type, :type
+    attr_reader :fields, :field_order, :type
   end
 
   class ModuleAlias
@@ -1078,7 +1091,7 @@ module RhogenCore
       else
         case param_type
           when TYPE_SELF
-            param = MethodParam.new(TYPE_SELF)
+            param = MethodParam.new(TYPE_CLASS)
             param.name = generated_name
             param.self_type = self_type
 
@@ -1133,7 +1146,18 @@ module RhogenCore
           param = MethodParam.process_type(param_type.upcase)
           param.name = generated_name
         else
-          raise "invalid parameter type #{param_type}"
+          if param_type.empty?
+            puts "NO TYPE for parameter #{param_index} @ #{method_name}"
+            param = MethodParam.new(TYPE_HASH)
+            param.name = generated_name
+          else
+            if param_type =~ /([a-z_0-9]+\.*)+/i
+              param = MethodParam.new(TYPE_CLASS)
+              param.self_type = param_type
+            else
+              raise "invalid parameter type #{param_type} for #{method_name}"
+            end
+          end
       end
    end
 
@@ -1175,10 +1199,8 @@ module RhogenCore
   def param_list_from_fields(fields, can_be_nil)
     field_list = []
     fields.each do |field|
-      param_item = MethodParam.new()
+      param_item = MethodParam.new(field.type, field.default_value)
       param_item.name = field.name
-      param_item.type = field.type
-      param_item.default_value = field.default_value
       param_item.can_be_nil = can_be_nil && !field.binding
       param_item.linked_field = field
       field_list << param_item
@@ -1194,10 +1216,9 @@ module RhogenCore
       if can_be_simplified && fields_param_list.size == 1
         param = fields_param_list.at(0)
       else
-        param = MethodParam.new()
+        param = MethodParam.new(TYPE_HASH)
         param.name = param_name
-        param.type = TYPE_HASH
-        param.sub_params = fields_param_list
+        param.include_fields(fields_param_list)
       end
     end
 
@@ -1503,7 +1524,7 @@ module RhogenCore
         method_result.type = result_type
       end
       #if result_item_type != nil
-      #   if result_item_type == TYPE_SELF
+      #   if result_item_type == TYPE_CLASS
       #     result_item_type = [module_item.parents.join('.'),module_item.name].join('.')
       #   end
       #   method_result.item_type = result_item_type
@@ -1512,7 +1533,7 @@ module RhogenCore
       xml_module_method.elements.each('RETURN/PARAM') do |return_param_xml|
         method_result.sub_param = process_param(return_param_xml, 'result', module_item, module_method.name+'_RETURN', 0, self_type)
         if method_result.sub_param != nil
-          method_result.item_type = method_result.sub_param.type
+          method_result.item_type = method_result.sub_param.self_type
         end
       end
       xml_module_method.elements.each('RETURN/PARAMS') do |return_params_xml|
@@ -1521,7 +1542,7 @@ module RhogenCore
       xml_module_method.elements.each('CALLBACK/PARAM') do |return_param_xml|
         method_result.sub_param = process_param(return_param_xml, 'result', module_item, module_method.name+'_RETURN', 0, self_type)
         if method_result.sub_param != nil
-          method_result.item_type = method_result.sub_param.type
+          method_result.item_type = method_result.sub_param.self_type
         end
       end
       xml_module_method.elements.each('CALLBACK/PARAMS') do |return_params_xml|
@@ -1566,7 +1587,7 @@ module RhogenCore
     #
     #   if xml_method_param.attribute('type') != nil
     #      ttype = xml_method_param.attribute('type').to_s #.upcase
-    #      if ttype == TYPE_SELF
+    #      if ttype == TYPE_CLASS
     #         ttype = [module_item.parents.join('.'),module_item.name].join('.')
     #      end
     #      method_param.type = ttype
@@ -1900,19 +1921,16 @@ module RhogenCore
       if module_entity.fields.size > 0
         ##############################
         # constructor params with hash
-        cnt_hash = []
+
+        cnt_param = MethodParam.new(TYPE_HASH)
+        cnt_param.is_generated = true
+
         module_entity.fields.each do |field|
-          result_item = MethodParam.new()
+          result_item = MethodParam.new(field.type, field.default_value)
           result_item.name = field.name
           result_item.is_generated = true
-          result_item.type = field.type
-          result_item.default_value = field.default_value
-          cnt_hash << result_item
+          cnt_param.add_field(result_item)
         end
-        cnt_param = MethodParam.new()
-        cnt_param.is_generated = true
-        cnt_param.type = TYPE_HASH
-        cnt_param.sub_params = cnt_hash
 
         # access params
         binding_param = create_param_from_list(module_entity.binding_fields, 'binding', false, true)
