@@ -62,118 +62,86 @@ public class ImageCaptureCallback implements PictureCallback {
 		dev_rotation =_dev_rotation;
 	}
 
-/*	public void onPictureTaken(byte[] data, Camera camera) {
-		try {
-			Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
+    public void onPictureTaken(byte[] data, Camera camera) {
+        Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
 
-			if (osCommon != null) {
-				osCommon.write(data);
-				osCommon.flush();
-				osCommon.close();
-			}
-			OutputStream osOwn = new FileOutputStream(filePath);
-			osOwn.write(data);
-			osOwn.flush();
-			osOwn.close();
+        try {
+            Bitmap rotatedBitmap = null;
+            Bitmap bm = null;
 
-			com.rhomobile.rhodes.camera.Camera.doCallback(filePath, mImgWidth, mImgHeight, mImgFormat);
-			mOwner.finish();
+            try {
 
-		} catch (Exception e) {
-			Logger.E(TAG, e);
-		}
-	}*/
-	
-	public void onPictureTaken(byte[] data, Camera camera) {
-		try {
-			Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
+                BitmapFactory.Options bounds = new BitmapFactory.Options();
+                bounds.inScaled = false;
+                bounds.inDither = false;
+                bounds.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-			if (osCommon != null) {
-			// This is commented because in gallery the image was storing in landscape mode if taken in portrait mode...
-			//	osCommon.write(data);
-			//	osCommon.flush();
-			//	osCommon.close();
-			}
-			OutputStream osOwn = new FileOutputStream(filePath);
-			osOwn.write(data);
-			osOwn.flush();
-			osOwn.close();
+                bm = BitmapFactory.decodeByteArray(data, 0, data.length, bounds);
+                int rotationAngle = 0;
+                if ((dev_rotation > 45) && (dev_rotation < 135)) {
+                    rotationAngle = 180;
+                }
+                else if ((dev_rotation > 134) && (dev_rotation < 225)) {
+                    rotationAngle = 270;
+                }
+                else if ((dev_rotation > 224) && (dev_rotation < 315)) {
+                    rotationAngle = 0;
+                }
+                else {
+                    rotationAngle = 90;
+                }
 
-			Bitmap rotatedBitmap = null;
-			Bitmap bm = null;
+                Matrix matrix = new Matrix();
+                matrix.postRotate(rotationAngle);
 
-			try {
+                rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
 
-				BitmapFactory.Options bounds = new BitmapFactory.Options();
-				bounds.inScaled = false;
-				bounds.inDither = false;
-				bounds.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                if (rotatedBitmap != null && rotatedBitmap != bm) {
+                    bm.recycle();
+                    bm = null;
+                }
 
-				bm = BitmapFactory.decodeFile(filePath, bounds);
-				int rotationAngle = 0;
-				if ((dev_rotation > 45) && (dev_rotation < 135)) {
-					rotationAngle = 180;
+                try {
+                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100,
+                    osCommon);
+                    osCommon.flush();
+                }
+                finally {
+                    osCommon.close();
+                    osCommon = null;
+                }
 
-				} else if ((dev_rotation > 134) && (dev_rotation < 225)) {
-					rotationAngle = 270;
+                FileOutputStream out = new FileOutputStream(filePath);
+                try {
+                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                    out.flush();
+                } finally {
+                    out.close();
+                }
 
-				} else if ((dev_rotation > 224) && (dev_rotation < 315)) {
-					rotationAngle = 0;
+                mImgWidth = rotatedBitmap.getWidth();
+                mImgHeight = rotatedBitmap.getHeight();
+            }
+            finally {
+                // Do  not recycle original image since it built on runtime data
+                //if (bm != null) {
+                //    bm.recycle();
+                //}
+                if (rotatedBitmap != null && rotatedBitmap != bm) {
+                    rotatedBitmap.recycle();
+                }
+            }
 
-				} else {
-					rotationAngle = 90;
+            com.rhomobile.rhodes.camera.Camera.doCallback(filePath, mImgWidth, mImgHeight, mImgFormat);
 
-				}
-
-				Matrix matrix = new Matrix();
-				matrix.postRotate(rotationAngle);
-
-				rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(),
-						bm.getHeight(), matrix, true);
-
-			} catch (Exception e) {
-				Logger.E(TAG, e.getMessage());
-
-			}
-
-			if (rotatedBitmap != null) {
-				try {
-
-					FileOutputStream out = new FileOutputStream(filePath);
-					rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-					rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, osCommon);
-					
-					out.flush();
-					out.close();
-					
-					osCommon.flush();
-					osCommon.close();
-
-				} catch (Exception e) {
-					Logger.E(TAG, e.getMessage());
-				}
-			}
-
-			mImgWidth = rotatedBitmap.getWidth();
-			mImgHeight = rotatedBitmap.getHeight();
-
-			if (rotatedBitmap != null) {
-				rotatedBitmap.recycle();
-				rotatedBitmap = null;
-			}
-
-			if (bm != null) {
-				bm.recycle();
-				bm = null;
-			}
-
-			com.rhomobile.rhodes.camera.Camera.doCallback(filePath, mImgWidth,
-					mImgHeight, mImgFormat);
-			mOwner.finish();
-
-		} catch (Exception e) {
-			Logger.E(TAG, e);
-		}
-	}
+        }
+        catch (Throwable e) {
+            Logger.E(TAG, e);
+            com.rhomobile.rhodes.camera.Camera.doErrorCallback(e.getMessage());
+        }
+        finally {
+            mOwner.finish();
+        }
+    }
 	
 }
