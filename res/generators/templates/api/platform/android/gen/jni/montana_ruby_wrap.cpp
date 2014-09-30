@@ -21,13 +21,13 @@ VALUE getRuby_<%= $cur_module.name %>_Module();
 <% if $cur_module.is_template_default_instance %>
 VALUE rb_<%= $cur_module.name %>_s_default(VALUE klass)
 {
-    RAWTRACE("rb_barcode1_s_default");
+    RAWTRACE("rb_<%= $cur_module.name %>_s_default");
     return rho_ruby_create_object_with_id(klass, <%= CppGen::make_namespace($cur_module.parents)%>C<%= $cur_module.name %>Base::getDefaultID().c_str());
 }
 
 VALUE rb_<%= $cur_module.name %>_s_setDefault(VALUE klass, VALUE valObj)
 {
-    RAWTRACE("rb_barcode1_s_set_default");
+    RAWTRACE("rb_<%= $cur_module.name %>_s_set_default");
 
     const char* szID = rho_ruby_get_object_id(valObj);
     <%= CppGen::make_namespace($cur_module.parents)%>C<%= $cur_module.name %>Base::setDefaultID(szID);
