@@ -57,13 +57,15 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="filename" type="STRING">
-                        <DESC>File name of the audio media to be played - absolute filepath. On iOS when you post URL to remote server (except https), then we open a standard browser (another application) for playing it. On iOS we support: mp3, mp4, wav formats. On other platforms the formats supported depend on what support is built into the platform. Typically on WM/CE this will be wav and on Android mp3.</DESC>
+                        <DESC>File name of the audio media to be played - absolute filepath. On iOS when you post URL to remote server (except https), then we open a standard browser (another application) for playing it. On iOS we support: mp3, mp4, wav formats. On other platforms the formats supported depends on what support is built into the platform. Typically on WM/CE this will be wav and on Android mp3.</DESC>
+                        <DESC_EB>File name of the audio media to be played - absolute filepath. The formats supported depends on what support is built into the platform. Typically on WM/CE this will be wav and on Android mp3.</DESC_EB>
                     </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="stop" access="STATIC" hasCallback="none">
                 <DESC>Stop playing the media file. Not applicable on iOS, because on iOS the special UI is opened for playback audio / video - user can stop / close player by UI.</DESC>
+                <DESC_EB>Stop playing the media file. </DESC_EB>
                 <PLATFORM>WM, CE, Android</PLATFORM>
             </METHOD>
 
@@ -72,13 +74,15 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Play the media file using the supplied filename. On WM/CE devices, it launches a media player process to play the supplied filename.</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING" runInThread="ui">
-                        <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server  (except https), then we open a standard browser (another application) for playing it. On iOS we support: mov, mp4, 3gp formats. On other platforms the formats supported depend on what support is built into the platform. Typically on WM/CE this will be wmv and on Android mp4.</DESC>
+                        <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server  (except https), then we open a standard browser (another application) for playing it. On iOS we support: mov, mp4, 3gp formats. On other platforms the formats supported depends on what support is built into the platform. Typically on WM/CE this will be wmv and on Android mp4.</DESC>
+                        <DESC_EB>File name of the video media to be played - full filepath. The formats supported depends on what support is built into the platform. Typically on WM/CE this will be wmv and on Android mp4.</DESC_EB>
                     </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="stopvideo" access="STATIC" hasCallback="none">
                 <DESC>Stop the playback of a currently playing video file. Not applicable on iOS, because on iOS the special UI is opened for playback audio / video - user can stop / close player by UI.</DESC>
+                <DESC_EB>Stop the playback of a currently playing video file. </DESC_EB>
                 <PLATFORM>WM, CE, Android</PLATFORM>
             </METHOD>
 

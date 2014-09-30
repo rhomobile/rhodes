@@ -274,7 +274,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <PARAMS>
-                    <PARAM name="pollInterval" type="INTEGER" default="20">
+                    <PARAM name="pollInterval" type="INTEGER" default="20" productException="eb">
                         <DESC>The network status polling period for systems that can not notify network status change immediately. In seconds. Currently applies to iOS only as immediate status notification is not available on this platform.</DESC>
                     </PARAM>
                 </PARAMS>
