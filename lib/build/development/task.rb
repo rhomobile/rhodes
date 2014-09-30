@@ -2,6 +2,18 @@ module RhoDevelopment
 
   class Task
 
+    def self.taskName
+      self.name
+    end
+
+    def self.descendants
+      ObjectSpace.each_object(Class).select { |each| each < self }
+    end
+
+    def self.fromHash(aHash)
+      self.new
+    end
+
     def execute
       puts "Executing #{self.class.name} at #{Time::now}".primary
       begin
@@ -14,46 +26,59 @@ module RhoDevelopment
 
     def dispatchToUrl(anUri)
       uri = URI.join(anUri, 'tasks/new')
-      Net::HTTP.post_form(uri, {'name' => self.class.symbol})
+      Net::HTTP.post_form(uri, {'taskName' => self.class.taskName})
     end
 
   end
 
-  class BuildTask < Task
+  class BuildPartialBundleForAllPlatformsTask < Task
 
-    def copy_platform_bundle_to_webserver_root(platform, source)
-      to = File.join(Configuration::document_root, 'download', platform, Configuration::partial_bundle_name)
-      FileUtils.mkpath(File.dirname(to))
-      FileUtils.cp(source, to)
-      puts "Bundle #{source} for platform #{platform} was copied to #{to}".primary
-    end
-
-  end
-
-  class BuildPartialBundleForAllPlatformsTask < BuildTask
-
-    def self.symbol
+    def self.taskName
       'BuildPartialBundleForAllSubscribers'
     end
 
     def action
-      puts 'Start building partial bundles for all subscribers'.primary
-      Configuration::subscriber_platforms.each { |each|
-        puts "Start building partial bundle for #{each}".primary
-        RhoDevelopment.setup(File.join(Configuration::applicationRoot, '.development'), each)
-        RhoDevelopment.make_partial_bundle
-        puts "Partial bundle for #{each} was built".primary
-        self.copy_platform_bundle_to_webserver_root(each.downcase, File.join($targetdir, 'upgrade_bundle_partial.zip'))
-      }
-      puts 'Partial bundles for all subscribers were built'.primary
+      server = BuildServer.new
+      server.build_partial_bundles_for_all_subscribers
     end
 
   end
 
-  class BuildPlatformPartialUpdateTask < BuildTask
+  class BuildFullBundleUpdateForSubscriberTask < Task
 
-    def self.symbol
+    def self.taskName
+      'BuildFullBundleUpdateForSubscriber'
+    end
+
+    def self.fromHash(aHash)
+      subscriber = Configuration::subscriber_by_ip(aHash['ip'])
+      self.new(subscriber)
+    end
+
+    def initialize(aSubscriber)
+      @subscriber = aSubscriber
+    end
+
+    def action
+      server = BuildServer.new
+      server.build_full_bundle_for_subscriber(@subscriber)
+    end
+
+    def dispatchToUrl(anUri)
+      uri = URI.join(anUri, 'tasks/new')
+      Net::HTTP.post_form(uri, {'taskName' => self.class.taskName, 'ip' => @subscriber.ip})
+    end
+
+  end
+
+  class BuildPlatformPartialUpdateTask < Task
+
+    def self.taskName
       'BuildPlatformPartialUpdate'
+    end
+
+    def self.fromHash(aHash)
+      self.new(aHash['platform'])
     end
 
     def initialize(aPlatform)
@@ -67,13 +92,13 @@ module RhoDevelopment
 
     def dispatchToUrl(anUri)
       uri = URI.join(anUri, 'tasks/new')
-      Net::HTTP.post_form(uri, {'name' => self.class.symbol, 'platform' => @platform})
+      Net::HTTP.post_form(uri, {'taskName' => self.class.taskName, 'platform' => @platform})
     end
   end
 
   class NotifyAllSubscribersTask < Task
 
-    def self.symbol
+    def self.taskName
       'NotifyAllSubscribers'
     end
 
@@ -87,8 +112,13 @@ module RhoDevelopment
 
   class NotifySubscriberAboutPartialUpdateTask < Task
 
-    def self.symbol
+    def self.taskName
       'NotifySubscriberAboutPartialUpdate'
+    end
+
+    def self.fromHash(aHash)
+      subscriber = Configuration::subscriber_by_ip(aHash['ip'])
+      self.new(subscriber)
     end
 
     def initialize(aSubscriber)
@@ -101,7 +131,35 @@ module RhoDevelopment
 
     def dispatchToUrl(anUri)
       uri = URI.join(anUri, 'tasks/new')
-      Net::HTTP.post_form(uri, {'name' => self.class.symbol, 'ip' => @subscriber.ip})
+      Net::HTTP.post_form(uri, {'taskName' => self.class.taskName, 'ip' => @subscriber.ip})
+    end
+
+  end
+
+
+
+  class NotifySubscriberAboutFullBundleUpdateTask < Task
+
+    def self.taskName
+      'NotifySubscriberAboutFullBundleUpdate'
+    end
+
+    def self.fromHash(aHash)
+      subscriber = Configuration::subscriber_by_ip(aHash['ip'])
+      self.new(subscriber)
+    end
+
+    def initialize(aSubscriber)
+      @subscriber = aSubscriber
+    end
+
+    def action
+      @subscriber.notify
+    end
+
+    def dispatchToUrl(anUri)
+      uri = URI.join(anUri, 'tasks/new')
+      Net::HTTP.post_form(uri, {'taskName' => self.class.taskName, 'ip' => @subscriber.ip})
     end
 
   end
