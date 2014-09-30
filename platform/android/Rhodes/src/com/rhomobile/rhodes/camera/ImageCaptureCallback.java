@@ -89,9 +89,10 @@ public class ImageCaptureCallback implements PictureCallback {
 			Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
 
 			if (osCommon != null) {
-				osCommon.write(data);
-				osCommon.flush();
-				osCommon.close();
+			// This is commented because in gallery the image was storing in landscape mode if taken in portrait mode...	
+			//	osCommon.write(data);
+			//	osCommon.flush();
+			//	osCommon.close();
 			}
 			OutputStream osOwn = new FileOutputStream(filePath);
 			osOwn.write(data);
@@ -140,8 +141,14 @@ public class ImageCaptureCallback implements PictureCallback {
 
 					FileOutputStream out = new FileOutputStream(filePath);
 					rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+					rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, osCommon);
+					
+					
 					out.flush();
 					out.close();
+					
+					osCommon.flush();
+					osCommon.close();
 
 				} catch (Exception e) {
 					Logger.E(TAG, e.getMessage());
