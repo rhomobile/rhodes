@@ -163,7 +163,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <APPLIES msiOnly="true"></APPLIES>
                 <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
-            <PROPERTY name="applicationIconBadge" type="INTEGER">
+            <PROPERTY name="applicationIconBadge" type="INTEGER"  productException="eb">
                 <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.</DESC>
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
@@ -645,7 +645,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     <PARAM name="url" type="STRING">
                         <DESC>The url to the user-defined callback method.</DESC>
                     </PARAM>
-                    <PARAM name="poll_interval" type="INTEGER">
+                    <PARAM name="poll_interval" type="INTEGER"  productException="eb">
                         <DESC>IOS. The network status polling period for systems that can not notify network status change immediately. Default value is 20 seconds.</DESC>
                     </PARAM>
                 </PARAMS>
@@ -664,7 +664,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
                 <PLATFORM>WM, CE, WIN32</PLATFORM>
             </METHOD>
-            <METHOD name="set_application_icon_badge" deprecated="true">
+            <METHOD name="set_application_icon_badge" deprecated="true"  productException="eb">
                 <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
                 <PLATFORM>iOS</PLATFORM>
                 <PARAMS>
