@@ -71,5 +71,10 @@
             <PLATFORM usemodule="true"></PLATFORM>
         </METHOD>
 
+        <ALIASES> 
+            <ALIAS new="[]" existing="getProperty" />
+            <ALIAS new="[]=" existing="setProperty" />
+        </ALIASES>
+
       </METHODS>
 </PROPERTY_BAG>
