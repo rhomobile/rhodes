@@ -20,9 +20,9 @@ module RhoDevelopment
         changed = RhoDevelopment.check_changes_from_last_build(updatedListFilename, removedListFilename)
         if changed
           puts "Source code for platform #{each} was changed".primary
-          WebServer.dispatch_task(BuildPlatformPartialUpdateTask.new(each));
+          WebServer.dispatch_task(PlatformPartialUpdateBuildingTask.new(each));
           Configuration::subscribers_by_platform(each).each { |subscriber|
-            WebServer.dispatch_task(NotifySubscriberAboutPartialUpdateTask.new(subscriber));
+            WebServer.dispatch_task(SubscriberPartialUpdateNotifyingTask.new(subscriber));
           }
         else
           puts "Source code for platform #{each} wasn't changed".primary

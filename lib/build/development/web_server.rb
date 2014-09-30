@@ -1,9 +1,3 @@
-require 'webrick'
-require 'net/http'
-require_relative '../ExtendedString'
-require_relative 'configuration'
-require_relative 'task'
-
 module RhoDevelopment
 
 
@@ -137,7 +131,7 @@ module RhoDevelopment
 
     def do_POST request, response
       _task_name = request.query['taskName']
-      _task = Task.descendants.detect { |each| each.taskName == _task_name }
+      _task = LiveUpdateTask.descendants.detect { |each| each.taskName == _task_name }
       if task != nil
         @instance.add_task(_task.fromHash(request.query))
         response.status = 200
@@ -161,8 +155,8 @@ module RhoDevelopment
       subscriber = Configuration::subscriber_by_ip(request.query['ip'])
       if request.query['status'] == 'need_full_update'
         puts "#{subscriber} is requesting full update bundle".info
-        WebServer::dispatch_task(BuildFullBundleUpdateForSubscriberTask.new(subscriber))
-        WebServer::dispatch_task(NotifySubscriberAboutFullBundleUpdateTask.new(subscriber))
+        WebServer::dispatch_task(SubscriberFullBundleUpdateBuildingTask.new(subscriber))
+        WebServer::dispatch_task(SubscriberFullUpdateNotifyingTask.new(subscriber))
       end
       if request.query['status'] == 'ok'
         puts "#{subscriber} applied update bundle successfully".info

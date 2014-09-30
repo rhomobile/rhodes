@@ -314,25 +314,21 @@ namespace 'dev' do
 
   namespace 'update' do
 
-    desc "Check sources for changes from last time and update all linked devices"
+    desc "If source code was changed - builds partial update for all platforms and notifies all subscribers"
     task :onetime => ["config:initialize"] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
       updater = RhoDevelopment::OneTimeUpdater.new
       updater.run
     end
 
+    desc "It builds partial update for all platforms and notifies all subscribers"
     task :buildAndNotify => ["config:initialize"] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
-      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::BuildPartialBundleForAllPlatformsTask.new)
-      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::NotifyAllSubscribersTask.new)
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new)
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersPartialUpdateNotifyingTask.new)
     end
 
-    task :fullBuildAndNotify => ["config:initialize"] do
-      LiveUpdatingConfig::applicationRoot = $app_basedir
-      (BuildServer.new).build_full_bundle_for_all_subscribers
-    end
-
-    desc "Start application source files change monitoring for live update linked devices"
+    desc "It launches watcher for source code and builds partial update and notifies all subscribers on each change"
     task :auto => ["config:initialize"] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
       updater = RhoDevelopment::AutoUpdater.new
@@ -345,7 +341,7 @@ namespace 'dev' do
 
   namespace :webserver do
 
-    desc "Start development web server - used for update application on linked devices"
+    desc "It launches development web server. It is certain object which controls executing scheduling tasks, handles requests etc.."
     task :start => ["config:initialize"] do
       unless RhoDevelopment::WebServer::alive?
         process = ChildProcess.build('rake', 'dev:webserver:privateStart')
@@ -361,8 +357,8 @@ namespace 'dev' do
       server.start
     end
 
-    desc "Stop development web server"
-    task :stop => ["config:initialize"] do
+    desc "It shut down development web server"
+    task :stop do
       RhoDevelopment::WebServer::stop
     end
 

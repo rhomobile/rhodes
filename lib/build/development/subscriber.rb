@@ -32,12 +32,14 @@ module RhoDevelopment
     end
 
     def notify_url
-      ip = Configuration::own_ip_address
-      port = Configuration::webserver_port
-      uri = Configuration::webserver_uri
-      urlForDownload = "http://#{uri}/download/#{self.normalized_platform_name}/#{Configuration::partial_bundle_name}&server_ip=#{ip}&server_port=#{port}"
-      deviceUrl = "http://#{@uri}/development/update_bundle"
-      URI("#{deviceUrl}?package_url=#{urlForDownload}")
+      server_ip = Configuration::own_ip_address
+      server_port = Configuration::webserver_port
+      host = Configuration::webserver_uri
+      platform = self.normalized_platform_name
+      filename = Configuration::partial_bundle_name
+      query = "package_url=#{host}/download/#{platform}/#{filename}&server_ip=#{server_ip}&server_port=#{server_port}"
+      url = "http://#{@uri}/development/update_bundle"
+      URI("#{url}?#{query}")
     end
 
     def notify

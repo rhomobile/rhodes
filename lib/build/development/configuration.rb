@@ -3,9 +3,7 @@ require 'yaml'
 module RhoDevelopment
 
   class Configuration
-=begin
-  I store settings for collaborated classes
-=end
+
     @@applicationRoot
 
     class << self
@@ -49,7 +47,7 @@ module RhoDevelopment
       config = self.read_configuration
       unless config['devices'].nil?
         config['devices'].each { |each|
-          subscriber = Subscriber.new
+          subscriber = RhoDevelopment::Subscriber.new
           subscriber.uri = each['uri']
           subscriber.platform = each['platform']
           subscriber.name = each['name']
@@ -74,7 +72,7 @@ module RhoDevelopment
 
     def self.subscriber_by_ip(aString)
       self.subscribers.each { |each|
-        if (each.has_ip(aString))
+        if each.has_ip(aString)
           return each
         end
       }
@@ -85,29 +83,29 @@ module RhoDevelopment
       (self.subscribers.collect { |each| each.normalized_platform_name }).to_set
     end
 
-    def self.subscribers_by_platform(aString)
-      (self.subscribers.select { |each| (each.normalized_platform_name) == aString || (each.platform == aString) })
+    def self.subscribers_by_platform(platform_string)
+      (self.subscribers.select { |each| (each.normalized_platform_name) == platform_string || (each.platform == platform_string) })
     end
 
     def self.partial_bundle_name
-      'partial_bundle.zip'
+      'upgrade_bundle_partial.zip'
     end
 
     def self.full_bundle_name
-      'full_bundle.zip'
+      'upgrade_bundle.zip'
     end
 
     def self.document_root
       config = self.read_configuration
-      webServerConfig = config['webserver']
-      if (webServerConfig.nil? || webServerConfig['documentRoot'].nil?)
-        documentRoot = Dir.mktmpdir
-        self.documentRoot = documentRoot
+      web_server_config = config['webserver']
+      if web_server_config.nil? || web_server_config['documentRoot'].nil?
+        document_root = Dir.mktmpdir
+        self.documentRoot = document_root
       else
-        documentRoot = webServerConfig['documentRoot']
+        document_root = web_server_config['documentRoot']
       end
-      FileUtils.mkpath(documentRoot) unless File.exist?(documentRoot)
-      return documentRoot
+      FileUtils.mkpath(document_root) unless File.exist?(document_root)
+      return document_root
     end
 
     def self.document_root=(aString)
