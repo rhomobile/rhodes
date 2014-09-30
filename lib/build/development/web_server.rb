@@ -10,7 +10,7 @@ module RhoDevelopment
 #TODO: create DocumentRoot on start and remove it on stop
   class WebServer
 
-    @webserver
+    @web_server
     @tasks
 
 # class instance methods
@@ -30,8 +30,8 @@ module RhoDevelopment
       http = Net::HTTP.new(url.host, url.port)
       http.open_timeout = 5
       begin
-        http.start() { |http|
-          http.get(url.path)
+        http.start { |_http|
+          _http.get(url.path)
         }
       rescue Errno::ECONNREFUSED,
           Net::OpenTimeout => e
@@ -41,16 +41,16 @@ module RhoDevelopment
     end
 
     def self.stop
-      url = Configuration::shut_down_webserver_request
-      http = Net::HTTP.new(url.host, url.port)
-      http.open_timeout = 5
+      _url = Configuration::shut_down_webserver_request
+      _http = Net::HTTP.new(_url.host, _url.port)
+      _http.open_timeout = 5
       begin
-        http.start() { |http|
-          response = http.get(url.path)
-          if response.code == 200
+        _http.start() { |http|
+          _response = http.get(_url.path)
+          if _response.code == 200
             puts 'Web server was shut down'.primary
           else
-            puts "#{response.body}".warning
+            puts "#{_response.body}".warning
           end
         }
       rescue Errno::ECONNREFUSED => e
@@ -66,42 +66,41 @@ module RhoDevelopment
 # instance methods
 
     def initialize
-      super
-      host = Configuration::own_ip_address
-      port = Configuration::webserver_port
-      documentRoot = Configuration::document_root
-      puts "Path '#{documentRoot}' will be used as web server document root".primary
+      _host = Configuration::own_ip_address
+      _port = Configuration::webserver_port
+      _document_root = Configuration::document_root
+      puts "Path '#{_document_root}' will be used as web server document root".primary
       print 'Cleaning document root directory... '.primary
-      FileUtils.rm_rf("#{documentRoot}/.", secure: true)
+      FileUtils.rm_rf("#{_document_root}/.", secure: true)
       puts 'done'.success
       @tasks = Queue.new
-      @webserver = WEBrick::HTTPServer.new(
-          :Port => port,
-          :DocumentRoot => documentRoot,
+      @web_server = WEBrick::HTTPServer.new(
+          :Port => _port,
+          :DocumentRoot => _document_root,
           :ServerType => WEBrick::SimpleServer,
-          :BindAddress => host
+          :BindAddress => _host
       )
       self.configure
     end
 
     def configure
-      @webserver.mount('/alive', Alive)
-      @webserver.mount('/tasks/new', NewTask, self)
-      @webserver.mount('/shutdown', Shutdown)
-      @webserver.mount('/response_from_device', ResponseFromDevice, self)
+      @web_server.mount('/alive', Alive)
+      @web_server.mount('/tasks/new', NewTask, self)
+      @web_server.mount('/shutdown', Shutdown)
+      @web_server.mount('/response_from_device', ResponseFromDevice, self)
     end
 
     def start
-      @runThread = Thread.new do
+      @run_thread = Thread.new do
         loop do
           unless @tasks.empty?
-            task = @tasks.pop
-            task.execute
+            _task = @tasks.pop
+            _task.execute
           end
           sleep 1
         end
       end
-      @webserver.start
+      @web_server.start
     end
 
     def add_task(aTask)
@@ -137,29 +136,18 @@ module RhoDevelopment
     end
 
     def do_POST request, response
-      taskName = request.query['name']
-      case taskName
-        when BuildPartialBundleForAllPlatformsTask.symbol
-          task = BuildPartialBundleForAllPlatformsTask.new
-
-        when NotifyAllSubscribersTask.symbol
-          task = NotifyAllSubscribersTask.new
-
-        when BuildPlatformPartialUpdateTask.symbol
-          task = BuildPlatformPartialUpdateTask.new(request.query['platform'])
-
-        when NotifySubscriberAboutPartialUpdateTask.symbol
-          subscriber = Configuration::subscriber_by_ip(request.query['ip'])
-          task = NotifySubscriberAboutPartialUpdateTask.new(subscriber)
-
-        else
-          puts request.query.to_s.warning
-          raise "Task #{taskName} not found".warning
+      _task_name = request.query['taskName']
+      _task = Task.descendants.detect { |each| each.taskName == _task_name }
+      if task != nil
+        @instance.add_task(_task.fromHash(request.query))
+        response.status = 200
+        response.body = "Task #{_task_name} was added"
+      else
+        puts request.query.to_s.warning
+        raise "Task #{_task_name} not found".warning
       end
-      @instance.add_task(task)
-      response.status = 200
-      response.body = taskName
     end
+
   end
 
   class ResponseFromDevice < WEBrick::HTTPServlet::AbstractServlet
@@ -170,21 +158,19 @@ module RhoDevelopment
 
     def do_POST request, response
       puts request.query.to_s.primary
-=begin
+      subscriber = Configuration::subscriber_by_ip(request.query['ip'])
       if request.query['status'] == 'need_full_update'
-        subscriber = LiveUpdatingConfig::subscriber_by_ip(request.query["ip"])
         puts "#{subscriber} is requesting full update bundle".info
-        (BuildServer.new).build_full_bundle_for_subscriber(subscriber)
+        WebServer::dispatch_task(BuildFullBundleUpdateForSubscriberTask.new(subscriber))
+        WebServer::dispatch_task(NotifySubscriberAboutFullBundleUpdateTask.new(subscriber))
       end
       if request.query['status'] == 'ok'
-        subscriber = LiveUpdatingConfig::subscriber_by_ip(request.query["ip"])
         puts "#{subscriber} applied update bundle successfully".info
       end
       if request.query['status'] == 'error'
-        subscriber = LiveUpdatingConfig::subscriber_by_ip(request.query["ip"])
-        puts "#{subscriber} got an error while updating bundle: #{request.query["status"].message}".info
+        puts "#{subscriber} got an error while updating bundle: #{request.query['message']}".info
       end
-=end
+
       response.status = 200
       response.body = ''
     end

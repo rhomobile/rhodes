@@ -44,7 +44,7 @@ module RhoDevelopment
 
     def copy_platform_bundle_to_webserver_root(platform, filename)
       from = File.join($targetdir, filename)
-      to = File.join(Configuration::document_root, 'download', platform, Configuration::download_bundle_name)
+      to = File.join(Configuration::document_root, 'download', platform, Configuration::partial_bundle_name)
       FileUtils.mkpath(File.dirname(to))
       FileUtils.cp(from, to)
       puts "Bundle #{filename} for platform #{platform} was copied to web server document root".primary
