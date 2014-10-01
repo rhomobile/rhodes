@@ -58,3 +58,33 @@ module Rhom
     end
   end
 end
+
+module Rho
+  class NewORMModel
+    MODEL_FIELDS = ['loaded', 'model_name', 'sync_type', 'sync_priority', 'partition', 'source_id', 'fixed_schema', 'freezed', 'associations']
+    LEGACY_FIELDS = ['name']
+
+    def [](key)
+      result = nil
+      key_s = key.kind_of?(String) ? key : key.to_s
+      if LEGACY_FIELDS.include?(key_s)
+        @legacy_field ||= {}
+        @legacy_field[key_s]
+      else
+        raise "Missing field #{key_s}" unless MODEL_FIELDS.include?(key_s)
+        self.send(key_s.to_sym)
+      end
+    end  
+
+    def []=(key, value)
+      key_s = key.kind_of?(String) ? key : key.to_s
+      if LEGACY_FIELDS.include?(key_s)
+        @legacy_field ||= {}
+        @legacy_field[key_s] = value
+      else
+        raise "Missing field #{key_s}" unless MODEL_FIELDS.include?(key_s)
+        self.send((key_s+'=').to_sym, value)
+      end
+    end
+  end
+end
