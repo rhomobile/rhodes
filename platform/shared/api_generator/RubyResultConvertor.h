@@ -46,9 +46,10 @@ class CRubyResultConvertor<CMethodResult> {
         {
             valObj = getObjectWithId(id.c_str());
             if(rho_ruby_is_NIL(valObj))
-                valObj = rho_ruby_create_string(id.c_str());
+                valObj = rho_ruby_create_string_withlen2(id.c_str(),id.size());
         } else
-            valObj = rho_ruby_create_string(id.c_str());
+            valObj = rho_ruby_create_string_withlen2(id.c_str(),id.size());
+        
         return valObj;
     }
 public:
@@ -88,7 +89,7 @@ public:
         } else
         {
             RAWTRACEC("CRubyResultConvertor", "getString(): create string");
-            res = rho_ruby_create_string(str.c_str());
+            res = rho_ruby_create_string_withlen2(str.c_str(),str.size());
         }
 
         return res;
