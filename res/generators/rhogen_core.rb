@@ -952,16 +952,29 @@ module RhogenCore
 
     methods_item = template_xml.elements['*/METHODS']
 
-    if methods_item != nil
-      methods_item.elements.each('METHOD') do |method|
-        method.add_attribute(TEMPLATE_NAME, template_name)
-
-        if !base_section.nil?
+    if !methods_item.nil?
+      if !base_section.nil? && base_section.size > 0
+        methods_item.elements.each('METHOD') do |method|
+          method.add_attribute(TEMPLATE_NAME, template_name)
           base_section.add_element method
         end
-      end
-      if base_section.nil?
+      else 
         xml_module_item.add_element methods_item
+      end    
+    end
+
+    methods_aliases = template_xml.elements['*/METHODS/ALIASES']
+
+    if !methods_aliases.nil?
+      aliases = xml_module_item.get_elements('METHODS/ALIASES')
+
+      if !aliases.nil? && aliases.size > 0
+        methods_aliases.elements.each('ALIAS') do |method_alias|
+          method_alias.add_attribute(TEMPLATE_NAME, template_name)
+          aliases[0].add_element method_alias
+        end
+      else
+        xml_module_item.add_element methods_aliases
       end
     end
   end
