@@ -160,7 +160,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>To insert/update multiple object/models use database transactions. This is the most performant method to initialize your application with a large set of data.</DESC>
             <CODE>
               <RUBY>
-db = Rho::Database
+                <![CDATA[
+db = Rho::Database.new
 db.startTransaction
 begin
   items.each do |item|
@@ -176,8 +177,10 @@ begin
 rescue
   db.rollbackTransaction
 end
+]]>
               </RUBY>
               <JAVASCRIPT>
+                <![CDATA[
 var db = Rho.Database;
 db.startTransaction();
 try
@@ -198,6 +201,7 @@ catch
 {
  db.rollbackTransaction();
 }
+]]>
               </JAVASCRIPT>
             </CODE>
           </SECTION>
