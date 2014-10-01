@@ -105,7 +105,7 @@ module RhoDevelopment
 
     def action
       Configuration::subscribers.each { |subscriber|
-        subscriber.notify
+        subscriber.partial_notify
       }
     end
 
@@ -127,7 +127,7 @@ module RhoDevelopment
     end
 
     def action
-      @subscriber.notify
+      @subscriber.partial_notify
     end
 
     def dispatchToUrl(anUri)
@@ -152,36 +152,8 @@ module RhoDevelopment
       @subscriber = aSubscriber
     end
 
-    def notify_url
-      server_ip = Configuration::own_ip_address
-      server_port = Configuration::webserver_port
-      host = Configuration::webserver_uri
-      platform = @subscriber.normalized_platform_name
-      filename = Configuration::full_bundle_name
-      query = "package_url=#{host}/download/#{platform}/#{filename}&server_ip=#{server_ip}&server_port=#{server_port}"
-      url = "#{@subscriber.uri}/development/update_bundle"
-      URI("http://#{url}?#{query}")
-    end
-
-    def notify
-      print "Notifying #{self} ...".primary
-      url = self.notify_url
-      begin
-        http = Net::HTTP.new(url.host, url.port)
-        http.open_timeout = 5
-        http.start() { |http|
-          http.get(url.path + '?' + url.query)
-        }
-        puts 'done'.success
-      rescue Errno::ECONNREFUSED,
-          Net::OpenTimeout => e
-        puts 'failed'.warning
-      end
-    end
-
-
     def action
-      self.notify
+      @subscriber.full_notify
     end
 
     def dispatchToUrl(anUri)
