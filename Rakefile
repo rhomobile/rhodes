@@ -4625,6 +4625,8 @@ end
 namespace :run do
   desc "start rholog(webrick) server"
   task :webrickrhologserver, :app_path  do |t, args|
+    require 'webrick'
+    
     puts "Args were: #{args}"
     $app_path = args[:app_path]
 
