@@ -4328,6 +4328,9 @@ namespace "run" do
   end
 
   task :rhosimulator_base => [:set_rhosimulator_flag, "config:common"] do
+
+    RhoPackages.request 'rhosimulator'
+
     puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
     $path = ""
     if $js_application
