@@ -163,17 +163,17 @@ module RhoPackages
 
   def self.request(*package_names)
     package_names.each do |package_name|
-      self.require_(@@config.package_deps(package_name))
+      self.request_(@@config.package_deps(package_name))
     end
   end
 
-  def self.require_by_command(command_name)
-    self.require_(@@config.command_deps(package_name))
+  def self.request_by_command(command_name)
+    self.request_(@@config.command_deps(package_name))
   end
 
   private
 
-  def self.require_(package_names)
+  def self.request_(package_names)
     package_names.each do |package_name|
       @@repo.request(package_name)
     end
