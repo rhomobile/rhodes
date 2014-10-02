@@ -40,7 +40,7 @@ module TarGzip
     entries.each do |entry|
       path = File.join(base_dir, entry)
       if File.directory?(path)
-        Dir.glob(File.join(path, '**'), File::FNM_DOTMATCH) do |f|
+        Dir.glob(File.join(path, '**/*'), File::FNM_DOTMATCH) do |f|
           files << Pathname.new(f).relative_path_from(Pathname.new(base_dir)).to_s if File.file?(f)
         end
       else
