@@ -1947,10 +1947,11 @@ namespace 'cloud' do
   #   build_deploy_run('iphone', 'simulator')
   # end
 
-  desc 'Iphone cloud build and run on the device'
-  task 'iphone:device' => ['build:initialize'] do
-    build_deploy_run('iphone:development', 'device')
-  end
+  # 
+  # desc 'Iphone cloud build and run on the device'
+  # task 'iphone:device' => ['build:initialize'] do
+  #   build_deploy_run('iphone:development', 'device')
+  # end
 
   desc 'Iphone cloud build and download'
   task 'iphone:download' => ['build:initialize'] do
