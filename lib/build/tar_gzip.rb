@@ -4,9 +4,9 @@ require 'rubygems/package'
 
 module TarGzip
 
-  def self.pack(tar_gz_file, base_dir, files)
+  def self.pack(tar_gz_file, base_dir, entries)
     self.write_tar_gz(tar_gz_file) do |tar|
-      files.each do |file|
+      list_files(base_dir, entries).each do |file|
         path = File.join(base_dir, file)
         stat = File.stat(path)
 
@@ -34,6 +34,21 @@ module TarGzip
   end
 
   private
+
+  def self.list_files(base_dir, entries)
+    files = []
+    entries.each do |entry|
+      path = File.join(base_dir, entry)
+      if File.directory?(path)
+        Dir.glob(File.join(path, '**'), File::FNM_DOTMATCH) do |f|
+          files << Pathname.new(f).relative_path_from(Pathname.new(base_dir)).to_s if File.file?(f)
+        end
+      else
+        files << entry
+      end
+    end
+    files
+  end
 
   def self.write_tar_gz(tar_gz_file)
     Zlib::GzipWriter.open(tar_gz_file) do |gz|
