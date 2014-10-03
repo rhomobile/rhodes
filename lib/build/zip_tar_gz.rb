@@ -3,9 +3,18 @@ require 'pathname'
 require 'rubygems/package'
 require 'zlib'
 
-module TarGzip
+module ZipTarGz
 
-  def self.pack(tar_gz_file, base_dir, entries)
+  def self.pack_zip(zip_file, base_dir, entries)
+    require 'zip'
+    Zip::File.open(zip_file, Zip::File::CREATE) do |zip|
+      list_files(base_dir, entries).each do |file|
+        zip.add(file, File.join(base_dir, file))
+      end
+    end
+  end
+
+  def self.pack_tar_gz(tar_gz_file, base_dir, entries)
     self.write_tar_gz(tar_gz_file) do |tar|
       list_files(base_dir, entries).each do |file|
         path = File.join(base_dir, file)
@@ -20,7 +29,7 @@ module TarGzip
     end
   end
 
-  def self.unpack(tar_gz_file, base_dir)
+  def self.unpack_tar_gz(tar_gz_file, base_dir)
     self.read_tar_gz(tar_gz_file) do |entry|
       path = File.join(base_dir, entry.full_name)
 
@@ -67,14 +76,3 @@ module TarGzip
     end
   end
 end
-=begin
-
-base_dir = 'C:/work'
-files = []
-Dir.glob(File.join(base_dir, 'rho/**/*'), File::FNM_DOTMATCH) do |f|
-  files << Pathname.new(f).relative_path_from(Pathname.new(base_dir)).to_s if File.file?(f)
-end
-TarGz.pack('Z:/shared/tmp/ugu.tar.gz', base_dir, files)
-TarGz.unpack('Z:/shared/tmp/ugu.tar.gz', 'Z:/shared/tmp/ugu')
-=end
-
