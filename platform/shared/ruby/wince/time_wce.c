@@ -309,10 +309,12 @@ void tzset(void)
 }
 
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 int clock(void)
 {
 	return 1;
 }
+#endif
 
 //---------------------------------------------------------------
 #ifdef __SCRATCH_TIMEC_DEBUG__
