@@ -79,10 +79,10 @@ module RhoPackages
     private
 
     def install(package_name)
-      require_relative 'tar_gzip.rb'
+      require_relative 'zip_tar_gz.rb'
       require_relative 'jake.rb'
       fetch(package_name) do |tar_gz_file|
-        TarGzip.unpack(tar_gz_file, @root_dir)
+        ZipTarGz.unpack_tar_gz(tar_gz_file, @root_dir)
       end
       Jake.edit_yml(File.join(@root_dir, 'installed.yml')) do |yml|
         yml << package_name
