@@ -51,7 +51,7 @@ module RhoPackages
         next if set.include?(package_name)
 
         file_name = package_name
-        file_name += "-#{@platfrom_suffix}" if @platform_specific_packages.include?(package_name)
+        file_name += ".#{@platfrom_suffix}" if @platform_specific_packages.include?(package_name)
 
         list << file_name
         set << package_name
