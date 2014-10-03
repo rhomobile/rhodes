@@ -1,6 +1,7 @@
 require 'fileutils'
-require 'zlib'
+require 'pathname'
 require 'rubygems/package'
+require 'zlib'
 
 module TarGzip
 
@@ -67,7 +68,6 @@ module TarGzip
   end
 end
 =begin
-require 'pathname'
 
 base_dir = 'C:/work'
 files = []
