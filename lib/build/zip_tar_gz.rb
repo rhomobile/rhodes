@@ -9,20 +9,26 @@ module ZipTarGz
     require 'zip'
     Zip::File.open(zip_file, Zip::File::CREATE) do |zip|
       list_files(base_dir, entries).each do |file|
-        zip.add(file, File.join(base_dir, file))
+        path = File.join(base_dir, file)
+
+        zip.get_output_stream(file) do |zip_file|
+          open(path, 'rb') do |file|
+            copy(file, zip_file)
+          end
+        end
       end
     end
   end
 
   def self.pack_tar_gz(tar_gz_file, base_dir, entries)
-    self.write_tar_gz(tar_gz_file) do |tar|
+    write_tar_gz(tar_gz_file) do |tar|
       list_files(base_dir, entries).each do |file|
         path = File.join(base_dir, file)
         stat = File.stat(path)
 
         tar.add_file_simple(file, stat.mode, stat.size) do |tar_file|
           open(path, 'rb') do |file|
-            tar_file.write(file.read(16384)) until file.eof?
+            copy(file, tar_file)
           end
         end
       end
@@ -30,20 +36,26 @@ module ZipTarGz
   end
 
   def self.unpack_tar_gz(tar_gz_file, base_dir)
-    self.read_tar_gz(tar_gz_file) do |entry|
+    read_tar_gz(tar_gz_file) do |entry|
       path = File.join(base_dir, entry.full_name)
 
       FileUtils.rm_rf(path)
 
       FileUtils.mkdir_p(File.dirname(path))
 
-      open(path, 'wb', entry.header.mode) do |out|
-        out.write(entry.read(16384)) until entry.eof?
+      if entry.file?
+        open(path, 'wb', entry.header.mode) do |out|
+          copy(entry, out)
+        end
       end
     end
   end
 
   private
+
+  def self.copy(src, dst)
+    dst.write(src.read(16384)) until src.eof?
+  end
 
   def self.list_files(base_dir, entries)
     files = []
