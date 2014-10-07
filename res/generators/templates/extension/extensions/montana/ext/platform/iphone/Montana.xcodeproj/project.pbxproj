@@ -20,11 +20,11 @@
 		FA3E1F321779EFBB00F5E33A /* <%= namecamelcase %>FactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2C1779EFBB00F5E33A /* <%= namecamelcase %>FactoryBase.m */; };
 		FA3E1F331779EFBB00F5E33A /* <%= namecamelcase %>SingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F2D1779EFBB00F5E33A /* <%= namecamelcase %>SingletonBase.h */; };
 		FA3E1F341779EFBB00F5E33A /* <%= namecamelcase %>SingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2E1779EFBB00F5E33A /* <%= namecamelcase %>SingletonBase.m */; };
-		FA3E1F361779EFC400F5E33A /* <%= name.downcase %>_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F351779EFC400F5E33A /* <%= name.downcase %>_js_wrap.mm */; };
-		FA3E1F381779EFCB00F5E33A /* <%= name.downcase %>_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F371779EFCB00F5E33A /* <%= name.downcase %>_ruby_wrap.m */; };
-		FA3E1F3C1779EFD700F5E33A /* <%= name.downcase %>_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F391779EFD700F5E33A /* <%= name.downcase %>_api_init.cpp */; };
-		FA3E1F3D1779EFD700F5E33A /* <%= name.downcase %>_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3A1779EFD700F5E33A /* <%= name.downcase %>_js_api.cpp */; };
-		FA3E1F3E1779EFD700F5E33A /* <%= name.downcase %>_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3B1779EFD700F5E33A /* <%= name.downcase %>_ruby_api.c */; };
+		FA3E1F361779EFC400F5E33A /* <%= namefixed %>_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F351779EFC400F5E33A /* <%= namefixed %>_js_wrap.mm */; };
+		FA3E1F381779EFCB00F5E33A /* <%= namefixed %>_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F371779EFCB00F5E33A /* <%= namefixed %>_ruby_wrap.m */; };
+		FA3E1F3C1779EFD700F5E33A /* <%= namefixed %>_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F391779EFD700F5E33A /* <%= namefixed %>_api_init.cpp */; };
+		FA3E1F3D1779EFD700F5E33A /* <%= namefixed %>_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3A1779EFD700F5E33A /* <%= namefixed %>_js_api.cpp */; };
+		FA3E1F3E1779EFD700F5E33A /* <%= namefixed %>_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3B1779EFD700F5E33A /* <%= namefixed %>_ruby_api.c */; };
 		FAC155E7145855CF0016F3BD /* <%= namecamelcase %>_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* <%= namecamelcase %>_Prefix.pch */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
@@ -45,11 +45,11 @@
 		FA3E1F2C1779EFBB00F5E33A /* <%= namecamelcase %>FactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = <%= namecamelcase %>FactoryBase.m; path = generated/base_impl/<%= namecamelcase %>FactoryBase.m; sourceTree = "<group>"; };
 		FA3E1F2D1779EFBB00F5E33A /* <%= namecamelcase %>SingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = <%= namecamelcase %>SingletonBase.h; path = generated/base_impl/<%= namecamelcase %>SingletonBase.h; sourceTree = "<group>"; };
 		FA3E1F2E1779EFBB00F5E33A /* <%= namecamelcase %>SingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = <%= namecamelcase %>SingletonBase.m; path = generated/base_impl/<%= namecamelcase %>SingletonBase.m; sourceTree = "<group>"; };
-		FA3E1F351779EFC400F5E33A /* <%= name.downcase %>_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = <%= name.downcase %>_js_wrap.mm; path = generated/javascript/<%= name.downcase %>_js_wrap.mm; sourceTree = "<group>"; };
-		FA3E1F371779EFCB00F5E33A /* <%= name.downcase %>_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = <%= name.downcase %>_ruby_wrap.m; path = generated/ruby/<%= name.downcase %>_ruby_wrap.m; sourceTree = "<group>"; };
-		FA3E1F391779EFD700F5E33A /* <%= name.downcase %>_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = <%= name.downcase %>_api_init.cpp; path = ../../shared/generated/<%= name.downcase %>_api_init.cpp; sourceTree = "<group>"; };
-		FA3E1F3A1779EFD700F5E33A /* <%= name.downcase %>_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = <%= name.downcase %>_js_api.cpp; path = ../../shared/generated/<%= name.downcase %>_js_api.cpp; sourceTree = "<group>"; };
-		FA3E1F3B1779EFD700F5E33A /* <%= name.downcase %>_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = <%= name.downcase %>_ruby_api.c; path = ../../shared/generated/<%= name.downcase %>_ruby_api.c; sourceTree = "<group>"; };
+		FA3E1F351779EFC400F5E33A /* <%= namefixed %>_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = <%= namefixed %>_js_wrap.mm; path = generated/javascript/<%= namefixed %>_js_wrap.mm; sourceTree = "<group>"; };
+		FA3E1F371779EFCB00F5E33A /* <%= namefixed %>_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = <%= namefixed %>_ruby_wrap.m; path = generated/ruby/<%= namefixed %>_ruby_wrap.m; sourceTree = "<group>"; };
+		FA3E1F391779EFD700F5E33A /* <%= namefixed %>_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = <%= namefixed %>_api_init.cpp; path = ../../shared/generated/<%= namefixed %>_api_init.cpp; sourceTree = "<group>"; };
+		FA3E1F3A1779EFD700F5E33A /* <%= namefixed %>_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = <%= namefixed %>_js_api.cpp; path = ../../shared/generated/<%= namefixed %>_js_api.cpp; sourceTree = "<group>"; };
+		FA3E1F3B1779EFD700F5E33A /* <%= namefixed %>_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = <%= namefixed %>_ruby_api.c; path = ../../shared/generated/<%= namefixed %>_ruby_api.c; sourceTree = "<group>"; };
 		FAC155F3145855CF0016F3BD /* lib<%= namecamelcase %>.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = lib<%= namecamelcase %>.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD45FD51225FED600141873 /* <%= namecamelcase %>_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = <%= namecamelcase %>_Prefix.pch; sourceTree = "<group>"; };
 		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -140,9 +140,9 @@
 		FA3E1F171779EF7D00F5E33A /* shared */ = {
 			isa = PBXGroup;
 			children = (
-				FA3E1F391779EFD700F5E33A /* <%= name.downcase %>_api_init.cpp */,
-				FA3E1F3A1779EFD700F5E33A /* <%= name.downcase %>_js_api.cpp */,
-				FA3E1F3B1779EFD700F5E33A /* <%= name.downcase %>_ruby_api.c */,
+				FA3E1F391779EFD700F5E33A /* <%= namefixed %>_api_init.cpp */,
+				FA3E1F3A1779EFD700F5E33A /* <%= namefixed %>_js_api.cpp */,
+				FA3E1F3B1779EFD700F5E33A /* <%= namefixed %>_ruby_api.c */,
 			);
 			name = shared;
 			sourceTree = "<group>";
@@ -150,8 +150,8 @@
 		FA3E1F181779EF8D00F5E33A /* wrappers */ = {
 			isa = PBXGroup;
 			children = (
-				FA3E1F371779EFCB00F5E33A /* <%= name.downcase %>_ruby_wrap.m */,
-				FA3E1F351779EFC400F5E33A /* <%= name.downcase %>_js_wrap.mm */,
+				FA3E1F371779EFCB00F5E33A /* <%= namefixed %>_ruby_wrap.m */,
+				FA3E1F351779EFC400F5E33A /* <%= namefixed %>_js_wrap.mm */,
 			);
 			name = wrappers;
 			sourceTree = "<group>";
@@ -251,11 +251,11 @@
 				FA3E1F301779EFBB00F5E33A /* <%= namecamelcase %>Base.m in Sources */,
 				FA3E1F321779EFBB00F5E33A /* <%= namecamelcase %>FactoryBase.m in Sources */,
 				FA3E1F341779EFBB00F5E33A /* <%= namecamelcase %>SingletonBase.m in Sources */,
-				FA3E1F361779EFC400F5E33A /* <%= name.downcase %>_js_wrap.mm in Sources */,
-				FA3E1F381779EFCB00F5E33A /* <%= name.downcase %>_ruby_wrap.m in Sources */,
-				FA3E1F3C1779EFD700F5E33A /* <%= name.downcase %>_api_init.cpp in Sources */,
-				FA3E1F3D1779EFD700F5E33A /* <%= name.downcase %>_js_api.cpp in Sources */,
-				FA3E1F3E1779EFD700F5E33A /* <%= name.downcase %>_ruby_api.c in Sources */,
+				FA3E1F361779EFC400F5E33A /* <%= namefixed %>_js_wrap.mm in Sources */,
+				FA3E1F381779EFCB00F5E33A /* <%= namefixed %>_ruby_wrap.m in Sources */,
+				FA3E1F3C1779EFD700F5E33A /* <%= namefixed %>_api_init.cpp in Sources */,
+				FA3E1F3D1779EFD700F5E33A /* <%= namefixed %>_js_api.cpp in Sources */,
+				FA3E1F3E1779EFD700F5E33A /* <%= namefixed %>_ruby_api.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
