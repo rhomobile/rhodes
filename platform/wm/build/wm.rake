@@ -783,11 +783,12 @@ namespace "build" do
             ext_config["wm"]["register"].each do |key|
               ext_add_reg_com_dll(ext, key)
             end
-          end          
+          end        
           
           if ext != 'openssl.so'
-            extensions_lib << " #{ext}.lib"
-            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            name_lib = ext_config["libraries"].at(0)
+            extensions_lib << " #{name_lib}.lib"            
+            pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
           end
 
           if (project_path)
@@ -1127,8 +1128,9 @@ namespace "build" do
           next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
 
           if ext != 'openssl.so'
-            extensions_lib << " #{ext}.lib"
-            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            name_lib = ext_config["libraries"].at(0)
+            extensions_lib << " #{name_lib}.lib"
+            pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
           end
 
           if (project_path)
@@ -1172,7 +1174,7 @@ namespace "build" do
               clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
           end
-      end
+      end 
       generate_extensions_pri(extensions_lib, pre_targetdeps)
     end
 
