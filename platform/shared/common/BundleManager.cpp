@@ -743,7 +743,7 @@ void CReplaceBundleThread::doReplaceBundle()
     if (is_partial_update) {
         filelist.saveToFile();
 #ifdef OS_ANDROID
-        rho_android_file_reload_stat_table();
+        //rho_android_file_reload_stat_table();
 #endif                
     }
     
