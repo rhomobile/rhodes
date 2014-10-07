@@ -1,6 +1,6 @@
 QT -= core
 
-TARGET = <%= name.downcase %>
+TARGET = <%= namecamelcase() %>
 TEMPLATE = lib
 
 CONFIG += staticlib warn_on
@@ -24,7 +24,7 @@ macx {
 }
 win32 {
   DESTDIR = $$RHODES_ROOT/platform/win32/bin/extensions
-  OBJECTS_DIR = $$RHODES_ROOT/platform/win32/bin/extensions/<%= name.downcase %>
+  OBJECTS_DIR = $$RHODES_ROOT/platform/win32/bin/extensions/<%= name.downcase %> 
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
   debug {
     DEFINES += _DEBUG DEBUG
@@ -53,14 +53,14 @@ win32 {
 }
 
 HEADERS += \
-..\..\shared\generated\cpp\I<%= name.camel_case() %>.h\
-..\..\shared\generated\cpp\<%= name.camel_case() %>Base.h
+..\..\shared\generated\cpp\I<%= namecamelcase() %>.h\
+..\..\shared\generated\cpp\<%= namecamelcase() %>Base.h
 
 SOURCES += \
-..\..\shared\generated\cpp\<%= name.camel_case() %>_js_wrap.cpp\
-..\..\shared\generated\cpp\<%= name.camel_case() %>_ruby_wrap.cpp\
-..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp\
-..\..\shared\generated\<%= name.downcase() %>_api_init.cpp\
-..\..\shared\generated\<%= name.downcase() %>_js_api.cpp\
-..\..\shared\generated\<%= name.downcase() %>_ruby_api.c\
-src\<%= name.camel_case() %>_impl.cpp
+..\..\shared\generated\cpp\<%= namecamelcase() %>_js_wrap.cpp\
+..\..\shared\generated\cpp\<%= namecamelcase() %>_ruby_wrap.cpp\
+..\..\shared\generated\cpp\<%= namecamelcase() %>Base.cpp\
+..\..\shared\generated\<%= namecamelcase() %>_api_init.cpp\
+..\..\shared\generated\<%= namecamelcase() %>_js_api.cpp\
+..\..\shared\generated\<%= namecamelcase() %>_ruby_api.c\
+src\<%= namecamelcase() %>_impl.cpp

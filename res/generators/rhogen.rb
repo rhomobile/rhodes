@@ -860,7 +860,8 @@ module Rhogen
 
     template :extension_qt_pro do |template|
       template.source = 'extensions/montana/ext/platform/qt/Montana.pro'
-      template.destination = "extensions/#{name}/ext/platform/qt/#{namecamelcase}.pro"
+      #template.destination = "extensions/#{name}/ext/platform/qt/#{namecamelcase}.pro"
+      template.destination = "extensions/#{name}/ext/platform/qt/#{namecamelcase()}.pro"
     end
 
     template :extension_qt_src_impl do |template|
