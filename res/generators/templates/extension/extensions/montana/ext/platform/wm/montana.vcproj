@@ -646,15 +646,15 @@
 			        </File>
 		        </Filter>
 				<File
-					RelativePath="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp"
+					RelativePath="..\..\shared\generated\<%= namefixed() %>_api_init.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\shared\generated\<%= name.downcase() %>_js_api.cpp"
+					RelativePath="..\..\shared\generated\<%= namefixed() %>_js_api.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c"
+					RelativePath="..\..\shared\generated\<%= namefixed() %>_ruby_api.c"
 					>
 				</File>
 			</Filter>
