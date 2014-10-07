@@ -1,8 +1,8 @@
 
-#import "<%= name.camel_case %>.h"
+#import "<%= namecamelcase %>.h"
 
 
-@implementation <%= name.camel_case %>
+@implementation <%= namecamelcase %>
 
 
 

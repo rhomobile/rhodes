@@ -1,16 +1,16 @@
 
-#import "I<%= name.camel_case %>.h"
-#import "<%= name.camel_case %>FactoryBase.h"
+#import "I<%= namecamelcase %>.h"
+#import "<%= namecamelcase %>FactoryBase.h"
 
-static <%= name.camel_case %>FactoryBase* our<%= name.camel_case %>Factory = nil;
+static <%= namecamelcase %>FactoryBase* our<%= namecamelcase %>Factory = nil;
 
-@implementation <%= name.camel_case %>FactorySingleton
+@implementation <%= namecamelcase %>FactorySingleton
 
-+(id<I<%= name.camel_case %>Factory>) get<%= name.camel_case %>FactoryInstance {
-    if (our<%= name.camel_case %>Factory == nil) {
-        our<%= name.camel_case %>Factory = [[<%= name.camel_case %>FactoryBase alloc] init];
++(id<I<%= namecamelcase %>Factory>) get<%= namecamelcase %>FactoryInstance {
+    if (our<%= namecamelcase %>Factory == nil) {
+        our<%= namecamelcase %>Factory = [[<%= namecamelcase %>FactoryBase alloc] init];
     }
-    return our<%= name.camel_case %>Factory;
+    return our<%= namecamelcase %>Factory;
 }
 
 @end
