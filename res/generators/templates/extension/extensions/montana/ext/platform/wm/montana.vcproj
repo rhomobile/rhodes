@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="<%= name.camel_case() %>"
+	Name="<%= namecamelcase() %>"
 	ProjectGUID="{<%=@productid%>}"
 	Keyword="Win32Proj"
 	>
@@ -28,7 +28,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
+			InheritedPropertySheets=".\<%= namecamelcase() %>.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -73,7 +73,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/<%= name.camel_case() %>.lib"
+				OutputFile="$(OutDir)/<%= namecamelcase() %>.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -104,7 +104,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
+			InheritedPropertySheets=".\<%= namecamelcase() %>.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -147,7 +147,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/<%= name.camel_case() %>.lib"
+				OutputFile="$(OutDir)/<%= namecamelcase() %>.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -170,7 +170,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
+			InheritedPropertySheets=".\<%= namecamelcase() %>.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -214,7 +214,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/<%= name.camel_case() %>.lib"
+				OutputFile="$(OutDir)/<%= namecamelcase() %>.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -245,7 +245,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
+			InheritedPropertySheets=".\<%= namecamelcase() %>.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -287,7 +287,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/<%= name.camel_case() %>.lib"
+				OutputFile="$(OutDir)/<%= namecamelcase() %>.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -310,7 +310,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
+			InheritedPropertySheets=".\<%= namecamelcase() %>.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -356,7 +356,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.00"
-				OutputFile="$(OutDir)/<%= name.camel_case() %>.lib"
+				OutputFile="$(OutDir)/<%= namecamelcase() %>.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -387,7 +387,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
+			InheritedPropertySheets=".\<%= namecamelcase() %>.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -432,7 +432,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.00"
-				OutputFile="$(OutDir)/<%= name.camel_case() %>.lib"
+				OutputFile="$(OutDir)/<%= namecamelcase() %>.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -463,7 +463,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
+			InheritedPropertySheets=".\<%= namecamelcase() %>.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -509,7 +509,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/<%= name.camel_case() %>.lib"
+				OutputFile="$(OutDir)/<%= namecamelcase() %>.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -540,7 +540,7 @@
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
+			InheritedPropertySheets=".\<%= namecamelcase() %>.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -585,7 +585,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/<%= name.camel_case() %>.lib"
+				OutputFile="$(OutDir)/<%= namecamelcase() %>.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -625,23 +625,23 @@
 			        Name="cpp"
 			        >
 			        <File
-				        RelativePath="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h"
+				        RelativePath="..\..\shared\generated\cpp\I<%= namecamelcase() %>.h"
 				        >
 			        </File>
 			        <File
-				        RelativePath="..\..\shared\generated\cpp\<%= name.camel_case() %>_js_wrap.cpp"
+				        RelativePath="..\..\shared\generated\cpp\<%= namecamelcase() %>_js_wrap.cpp"
 				        >
 			        </File>
 			        <File
-				        RelativePath="..\..\shared\generated\cpp\<%= name.camel_case() %>_ruby_wrap.cpp"
+				        RelativePath="..\..\shared\generated\cpp\<%= namecamelcase() %>_ruby_wrap.cpp"
 				        >
 			        </File>
 			        <File
-				        RelativePath="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp"
+				        RelativePath="..\..\shared\generated\cpp\<%= namecamelcase() %>Base.cpp"
 				        >
 			        </File>
 			        <File
-				        RelativePath="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.h"
+				        RelativePath="..\..\shared\generated\cpp\<%= namecamelcase() %>Base.h"
 				        >
 			        </File>
 		        </Filter>
@@ -659,7 +659,7 @@
 				</File>
 			</Filter>
 			<File
-				RelativePath="..\..\<%= name.camel_case() %>.xml"
+				RelativePath="..\..\<%= namecamelcase() %>.xml"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -705,7 +705,7 @@
 		    
 	    </Filter>
 		<File
-			RelativePath=".\src\<%= name.camel_case() %>_impl.cpp"
+			RelativePath=".\src\<%= namecamelcase() %>_impl.cpp"
 			>
 		</File>
 	</Files>
