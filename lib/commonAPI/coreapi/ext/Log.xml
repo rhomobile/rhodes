@@ -160,8 +160,8 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
 
             <PROPERTY name="netTrace" type="BOOLEAN" default="false">
-                <DESC>Turn on local http server traces. Traces contain information about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of remote server app (and / or shared runtime). Default value can be overridden by the setting in rhoconfig.txt (net_trace) </DESC>
-                <DESC_EB>Turn on local http server traces. Traces contain information about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of remote server app (and / or shared runtime). Default value can be overridden by the setting in Config.xml</DESC_EB>
+                <DESC>Turn on remote network traces regardless of log level set (e.g. Network, asyncHttp). Traces contain information about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of local server app (and / or shared runtime). Default value can be overridden by the setting in rhoconfig.txt (net_trace). To get local server trace, use `Rho.Log.LEVEL_TRACE` in JavaScript and `Rho::Log::LEVEL_TRACE` in Ruby.</DESC>
+                <DESC_EB>Turn on remote network traces regardless of log level set (e.g. Network, asyncHttp). Traces contain information about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of local server app. Default value can be overridden by the setting in Config.xml. To get local server trace, use `Rho.Log.LEVEL_TRACE`.</DESC_EB>
                 <PLATFORM>Android, iOS, WP8</PLATFORM>
                 <PLATFORM_EB>Android</PLATFORM_EB>
             </PROPERTY>
