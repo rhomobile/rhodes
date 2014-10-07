@@ -220,71 +220,37 @@ public class RhodesApplication extends Application{
             Logger.E(TAG, e);
         }
         
-        
-        
         rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, sharedPath);
         Log.d(TAG, "Root path: " + rootPath);
 
-        boolean hashChanged = isAppHashChanged(rootPath);
-        if (hashChanged) {
-            Log.i(TAG, "Application hash was changed");
-            
-            File rho_dat = new File(rootPath, "rho.dat");
-            if (rho_dat.exists()) {
-                Log.i(TAG, "Removing rho.dat from file system");
-                rho_dat.delete();
-            }
-            
-            RhoFileApi.initialCopy(this, new String[] {"hash", "apps/rhoconfig.txt"});
-        }
-        
         try {
-            RhoFileApi.init(this);
+            boolean hashChanged = isAppHashChanged(rootPath);
+            RhoFileApi.basicSetup(this, hashChanged);
+
+            // Use paths for config and rholog
+            setupRhodesApp();
+
+            boolean emulateFileTree = !RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS");
+            RhoFileApi.finalSetup(this, hashChanged, emulateFileTree);
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
             stop();
             return;
         }
 
-        setupRhodesApp();
-
-        if (hashChanged) {
-            try {
-                RhoFileApi.removeBundleUpgrade();
-                RhoFileApi.copy("apps/rhoconfig.txt");
-                
-                File libDir = new File(rootPath, "lib");
-                File testLib = new File(libDir.getPath(), "rhoframework.iseq");
-                if(libDir.isDirectory() && testLib.isFile())
-                {
-                    Logger.I(TAG, "Updating from very old rhodes version, clean filesystem.");
-                    Utils.deleteChildrenIgnoreFirstLevel(new File(rootPath, "apps"), "rhoconfig.txt");
-                    Utils.deleteRecursively(libDir);
-                }
-
-                rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, sharedPath);
-            } catch (IOException e) {
-                Logger.E(TAG, e.getMessage());
-                stop();
-                return;
-            }
-        }
-
         Logger.T(TAG, "Root path: " + rootPath);
-
-        RhoFileApi.setFsModeTransparrent(true);
 
         //Signature.registerSignatureCaptureExtension();
         RhoExtManager.getImplementationInstance().createRhoListeners();
 
-	    IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-	    filter.addAction(Intent.ACTION_SCREEN_OFF);
-	    filter.addAction(Intent.ACTION_USER_PRESENT);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
 
-	    mReceiver = new ScreenReceiver();
-	    registerReceiver(mReceiver, filter);
+        mReceiver = new ScreenReceiver();
+        registerReceiver(mReceiver, filter);
 
-      Logger.I(TAG, "Initialized");
+        Logger.I(TAG, "Initialized");
     }
 
     private native static void initClassLoader(ClassLoader c);
