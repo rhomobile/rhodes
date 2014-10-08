@@ -11,12 +11,17 @@ int CNetworkAvailability::hasNetwork()
 {
 	LOG(INFO) + "NetworkAvailability hasNetwork+";
 	JNIEnv *env = jnienv();
+
 	if(!env)
 	{
 		RAWLOG_ERROR1("Failed to get java environment for %s", NETWORK_IMPL_CLASS);
 		return -2;
 	}
-	
+	if (env->PushLocalFrame( 3) < 0) 
+	{
+		RAWLOG_ERROR1("PushLocalFrame fails, out of memory: %s", NETWORK_IMPL_CLASS);
+		return -2;
+    }	
 	jclass cls = rho_find_class(env, NETWORK_IMPL_CLASS);
 	if(!cls)
 	{
@@ -31,6 +36,7 @@ int CNetworkAvailability::hasNetwork()
 		return -2;
 	}
 
+	env->PopLocalFrame(NULL);
 	LOG(INFO) + "NetworkAvailability hasNetwork-";
 	return env->CallStaticIntMethod(cls, midHasNetwork);
 }
