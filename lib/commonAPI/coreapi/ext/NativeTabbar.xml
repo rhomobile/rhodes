@@ -110,7 +110,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                 
                                 <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                     <PLATFORM>WM</PLATFORM>
-                                    <DESC>Create tab immediately when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to.</DESC>
+                                    <DESC>Create tab immediately when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to. Don't use this parameter on the devices with a small amount of RAM.</DESC>
                                 </PARAM>
                             </PARAMS>
                         </PARAM>
@@ -134,7 +134,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             </PARAM>
                             <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                 <PLATFORM>WM</PLATFORM>
-                                <DESC>Create tabs immediately when TabBar is created. Action also will be executed. If false, then each tab will be created when first switch to the tab is executed.</DESC>
+                                <DESC>Create tabs immediately when TabBar is created. Action also will be executed. If false, then each tab will be created when first switch to the tab is executed. Don't use this parameter on the devices with a small amount of RAM.</DESC>
                             </PARAM>
                             <PARAM name="placeTabsBottom" type="BOOLEAN">
                                 <PLATFORM>Android</PLATFORM>
