@@ -1,5 +1,30 @@
 #include "NetworkAvailability.h"
 
+jclass CNetworkAvailability::s_jNetworkClass = 0;
+
+JNIEnv* CNetworkAvailability::init()
+{
+    JNIEnv* env = jnienv();
+
+    if(s_jNetworkClass == 0)
+    {
+        jclass cls = rho_find_class(env, NETWORK_IMPL_CLASS);
+        if(!cls)
+        {
+            RAWLOG_ERROR1("Failed to find java class: %s", NETWORK_IMPL_CLASS);
+            return 0;
+        }
+        s_jNetworkClass = static_cast<jclass>(env->NewGlobalRef(cls));
+        if(!s_jNetworkClass)
+        {
+            RAWLOG_ERROR1("Failed to create global reference to java class: %s", NETWORK_IMPL_CLASS);
+            return 0;
+        }
+    }
+
+    return env;
+}
+
 /**
  * Communicates with the Android layer via JNI to query whether there is any
  * data network.
@@ -10,21 +35,14 @@
 int CNetworkAvailability::hasNetwork()
 {
 	LOG(INFO) + "NetworkAvailability hasNetwork+";
-	JNIEnv *env = jnienv();
-	if(!env)
-	{
-		RAWLOG_ERROR1("Failed to get java environment for %s", NETWORK_IMPL_CLASS);
-		return -2;
-	}
-	
-	jclass cls = rho_find_class(env, NETWORK_IMPL_CLASS);
-	if(!cls)
-	{
-		RAWLOG_ERROR1("Failed to find java class: %s", NETWORK_IMPL_CLASS);
-		return -2;
-	}
+	JNIEnv *env = init();
+    if(!env)
+    {
+        RAWLOG_ERROR1("Failed to get java environment for %s", NETWORK_IMPL_CLASS);
+        return -2;
+    }
 
-	jmethodID midHasNetwork = env->GetStaticMethodID(cls, "hasNetwork", "()I");
+	jmethodID midHasNetwork = env->GetStaticMethodID(s_jNetworkClass, "hasNetwork", "()I");
 	if(!midHasNetwork)
 	{
 		RAWLOG_ERROR1("Failed to find java method in %s", NETWORK_IMPL_CLASS);
@@ -32,7 +50,7 @@ int CNetworkAvailability::hasNetwork()
 	}
 
 	LOG(INFO) + "NetworkAvailability hasNetwork-";
-	return env->CallStaticIntMethod(cls, midHasNetwork);
+	return env->CallStaticIntMethod(s_jNetworkClass, midHasNetwork);
 }
 
 /**
@@ -45,21 +63,14 @@ int CNetworkAvailability::hasNetwork()
 int CNetworkAvailability::hasWifiNetwork()
 {
 	LOG(INFO) + "NetworkAvailability hasWifiNetwork+";
-	JNIEnv *env = jnienv();
-	if(!env)
-	{
-		RAWLOG_ERROR1("Failed to get java environment for %s", NETWORK_IMPL_CLASS);
-		return -2;
-	}
-	
-	jclass cls = rho_find_class(env, NETWORK_IMPL_CLASS);
-	if(!cls)
-	{
-		RAWLOG_ERROR1("Failed to find java class: %s", NETWORK_IMPL_CLASS);
-		return -2;
-	}
+	JNIEnv *env = init();
+    if(!env)
+    {
+        RAWLOG_ERROR1("Failed to get java environment for %s", NETWORK_IMPL_CLASS);
+        return -2;
+    }
 
-	jmethodID midHasWifiNetwork = env->GetStaticMethodID(cls, "hasWifiNetwork", "()I");
+	jmethodID midHasWifiNetwork = env->GetStaticMethodID(s_jNetworkClass, "hasWifiNetwork", "()I");
 	if(!midHasWifiNetwork)
 	{
 		RAWLOG_ERROR1("Failed to find java method in %s", NETWORK_IMPL_CLASS);
@@ -67,7 +78,7 @@ int CNetworkAvailability::hasWifiNetwork()
 	}
 
 	LOG(INFO) + "NetworkAvailability hasCellNetwork-";
-	return env->CallStaticIntMethod(cls, midHasWifiNetwork);
+	return env->CallStaticIntMethod(s_jNetworkClass, midHasWifiNetwork);
 }
 
 /**
@@ -80,21 +91,14 @@ int CNetworkAvailability::hasWifiNetwork()
 int CNetworkAvailability::hasCellNetwork()
 {
 	LOG(INFO) + "NetworkAvailability hasCellNetwork+";
-	JNIEnv *env = jnienv();
+	JNIEnv *env = init();
 	if(!env)
 	{
 		RAWLOG_ERROR1("Failed to get java environment for %s", NETWORK_IMPL_CLASS);
 		return -2;
 	}
-	
-	jclass cls = rho_find_class(env, NETWORK_IMPL_CLASS);
-	if(!cls)
-	{
-		RAWLOG_ERROR1("Failed to find java class: %s", NETWORK_IMPL_CLASS);
-		return -2;
-	}
 
-	jmethodID midHasCellNetwork = env->GetStaticMethodID(cls, "hasCellNetwork", "()I");
+	jmethodID midHasCellNetwork = env->GetStaticMethodID(s_jNetworkClass, "hasCellNetwork", "()I");
 	if(!midHasCellNetwork)
 	{
 		RAWLOG_ERROR1("Failed to find java method in %s", NETWORK_IMPL_CLASS);
@@ -102,5 +106,5 @@ int CNetworkAvailability::hasCellNetwork()
 	}
 
 	LOG(INFO) + "NetworkAvailability hasCellNetwork-";
-	return env->CallStaticIntMethod(cls, midHasCellNetwork);
+	return env->CallStaticIntMethod(s_jNetworkClass, midHasCellNetwork);
 }
