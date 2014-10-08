@@ -7,7 +7,6 @@ module RhoDevelopment
     end
 
     def run
-      WebServer::ensure_running
       @listeners.each { |each| each.start }
 
       begin

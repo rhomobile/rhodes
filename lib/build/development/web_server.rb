@@ -82,6 +82,7 @@ module RhoDevelopment
       @web_server.mount('/tasks/new', NewTask, self)
       @web_server.mount('/shutdown', Shutdown)
       @web_server.mount('/response_from_device', ResponseFromDevice, self)
+      @web_server.mount('/responce_from_device', ResponseFromDevice, self)
     end
 
     def start
@@ -130,15 +131,15 @@ module RhoDevelopment
     end
 
     def do_POST request, response
-      _task_name = request.query['taskName']
-      _task = LiveUpdateTask.descendants.detect { |each| each.taskName == _task_name }
+      task_name = request.query['taskName']
+      task = LiveUpdateTask.descendants.detect { |each| each.taskName == task_name }
       if task != nil
-        @instance.add_task(_task.fromHash(request.query))
+        @instance.add_task(task.fromHash(request.query))
         response.status = 200
-        response.body = "Task #{_task_name} was added"
+        response.body = "Task #{task_name} was added"
       else
         puts request.query.to_s.warning
-        raise "Task #{_task_name} not found".warning
+        raise "Task #{task_name} not found".warning
       end
     end
 
@@ -151,7 +152,6 @@ module RhoDevelopment
     end
 
     def do_POST request, response
-      puts request.query.to_s.primary
       subscriber = Configuration::subscriber_by_ip(request.query['ip'])
       if request.query['status'] == 'need_full_update'
         puts "#{subscriber} is requesting full update bundle".info

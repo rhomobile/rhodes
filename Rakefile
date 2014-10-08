@@ -317,13 +317,26 @@ namespace 'dev' do
     desc "If source code was changed - builds partial update for all platforms and notifies all subscribers"
     task :onetime => ["config:initialize"] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
+      RhoDevelopment::WebServer.ensure_running
+      sleep(1)
       updater = RhoDevelopment::OneTimeUpdater.new
       updater.run
+    end
+
+    desc "Builds full update bundle for all subscribers and notifies them"
+    task :fullUpdate => ["config:initialize"] do
+      RhoDevelopment::Configuration::applicationRoot = $app_basedir
+      RhoDevelopment::WebServer.ensure_running
+      sleep(1)
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new)
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersFullUpdateNotifyingTask.new)
     end
 
     desc "It builds partial update for all platforms and notifies all subscribers"
     task :buildAndNotify => ["config:initialize"] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
+      RhoDevelopment::WebServer.ensure_running
+      sleep(1)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersPartialUpdateNotifyingTask.new)
     end
@@ -331,6 +344,8 @@ namespace 'dev' do
     desc "It launches watcher for source code and builds partial update and notifies all subscribers on each change"
     task :auto => ["config:initialize"] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
+      RhoDevelopment::WebServer.ensure_running
+      sleep(1)
       updater = RhoDevelopment::AutoUpdater.new
       updater.add_directory(File.join($app_basedir, "/public"))
       updater.add_directory(File.join($app_basedir, "/app"))
@@ -343,12 +358,7 @@ namespace 'dev' do
 
     desc "It launches development web server. It is certain object which controls executing scheduling tasks, handles requests etc.."
     task :start => ["config:initialize"] do
-      unless RhoDevelopment::WebServer::alive?
-        process = ChildProcess.build('rake', 'dev:webserver:privateStart')
-        process.io.inherit!
-        process.cwd = $app_basedir
-        process.start
-      end
+      RhoDevelopment::WebServer.ensure_running
     end
 
     task :privateStart => ["config:initialize"] do

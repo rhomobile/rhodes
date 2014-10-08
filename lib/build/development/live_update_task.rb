@@ -19,6 +19,7 @@ module RhoDevelopment
       begin
         self.action
       rescue => e
+        puts "Executing #{self.class.taskName} failed".warning
         puts e.inspect
         puts e.backtrace
       end
@@ -40,6 +41,19 @@ module RhoDevelopment
     def action
       server = BuildServer.new
       server.build_partial_bundles_for_all_subscribers
+    end
+
+  end
+
+  class AllPlatformsFullBundleBuildingTask < LiveUpdateTask
+
+    def self.taskName
+      'BuildFullBundleForAllSubscribers'
+    end
+
+    def action
+      server = BuildServer.new
+      server.build_full_bundles_for_all_subscribers
     end
 
   end
@@ -100,12 +114,26 @@ module RhoDevelopment
   class AllSubscribersPartialUpdateNotifyingTask < LiveUpdateTask
 
     def self.taskName
-      'NotifyAllSubscribers'
+      'NotifyAllSubscribersAboutPartialUpdate'
     end
 
     def action
       Configuration::subscribers.each { |subscriber|
         subscriber.partial_notify
+      }
+    end
+
+  end
+
+  class AllSubscribersFullUpdateNotifyingTask < LiveUpdateTask
+
+    def self.taskName
+      'NotifyAllSubscribersAboutFullUpdate'
+    end
+
+    def action
+      Configuration::subscribers.each { |subscriber|
+        subscriber.full_notify
       }
     end
 
