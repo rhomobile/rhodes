@@ -7,9 +7,6 @@ module RhoDevelopment
         return
       end
 
-      WebServer::ensure_running
-
-
       devDir = File.join(Configuration::applicationRoot, '.development')
       updatedListFilename = File.join(Configuration::applicationRoot, 'upgrade_package_add_files.txt')
       removedListFilename = File.join(Configuration::applicationRoot, 'upgrade_package_remove_files.txt')

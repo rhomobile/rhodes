@@ -24,6 +24,9 @@ module RhoDevelopment
       if ['apple', 'iphone'].include?(@platform.downcase)
         return 'iphone'
       end
+      if ['ANDROID'].include?(@platform.downcase)
+        return 'android'
+      end
       @platform.downcase
     end
 
@@ -41,7 +44,7 @@ module RhoDevelopment
       URI("#{url}?#{query}")
     end
 
-    def notifyUrl(anUrl)
+    def notify(anUrl)
       print "Notifying #{self} ...".primary
       begin
         http = Net::HTTP.new(anUrl.host, anUrl.port)
