@@ -63,16 +63,18 @@ public class LocalFileProvider extends ContentProvider
     
     public static Uri overrideUri(Uri uri)
     {
-        String scheme = uri.getScheme();
-        if (scheme != null && scheme.equals("file")) {
-            String ssp = uri.getSchemeSpecificPart();//.getAbsolutePath();
-
-            String sspPrefix = "//" + getPathPrefix();
-            if(ssp.startsWith(sspPrefix)) {
-                ssp = "//" + ssp.substring(("//"+PATH_PREFIX).length(), ssp.length());
-                Logger.T(TAG, "Overriding URI: " + uri.toString());
-
-                return Uri.fromParts(PROTOCOL_PREFIX, ssp, uri.getFragment());
+        if (!RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS")) {
+            String scheme = uri.getScheme();
+            if (scheme != null && scheme.equals("file")) {
+                String ssp = uri.getSchemeSpecificPart();//.getAbsolutePath();
+    
+                String sspPrefix = "//" + getPathPrefix();
+                if(ssp.startsWith(sspPrefix)) {
+                    ssp = "//" + ssp.substring(("//"+PATH_PREFIX).length(), ssp.length());
+                    Logger.T(TAG, "Overriding URI: " + uri.toString());
+    
+                    return Uri.fromParts(PROTOCOL_PREFIX, ssp, uri.getFragment());
+                }
             }
         }
         return null;
