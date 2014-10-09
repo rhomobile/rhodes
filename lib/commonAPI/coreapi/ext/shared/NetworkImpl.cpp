@@ -489,7 +489,7 @@ extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue)
 
 void CNetworkImpl::hasNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
-	LOG(INFO) + "NetworkC hasNetwork+";
+    RAWTRACE("NetworkC hasNetwork+");
 #if (defined OS_ANDROID)
 	int iResult = CNetworkAvailability::hasNetwork();
 	if(iResult == -2)
@@ -504,7 +504,7 @@ void CNetworkImpl::hasNetwork(rho::apiGenerator::CMethodResult& oResult)
 	{
 		oResult.set(iResult != 0);
 	}
-	LOG(INFO) + "NetworkC hasNetwork-";
+	RAWTRACE("NetworkC hasNetwork-");
 	return;
 #endif
 #if (!defined OS_ANDROID)
@@ -514,7 +514,7 @@ void CNetworkImpl::hasNetwork(rho::apiGenerator::CMethodResult& oResult)
 
 void CNetworkImpl::hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
-	LOG(INFO) + "NetworkC hasWifiNetwork+";
+    RAWTRACE("NetworkC hasWifiNetwork+");
 #if (defined OS_ANDROID)
 	int iResult = CNetworkAvailability::hasWifiNetwork();
 	if(iResult == -2)
@@ -529,7 +529,7 @@ void CNetworkImpl::hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult)
 	{
 		oResult.set(iResult != 0);
 	}
-	LOG(INFO) + "NetworkC hasWifiNetwork-";
+	RAWTRACE("NetworkC hasWifiNetwork-");
 	return;
 #endif
 #if (!defined OS_ANDROID)
@@ -539,7 +539,7 @@ void CNetworkImpl::hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult)
 
 void CNetworkImpl::hasCellNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
-	LOG(INFO) + "NetworkC hasCellNetwork+";
+    RAWTRACE("NetworkC hasCellNetwork+");
 #if (defined OS_ANDROID)
 	int iResult = CNetworkAvailability::hasCellNetwork();
 	if(iResult == -2)
@@ -554,7 +554,7 @@ void CNetworkImpl::hasCellNetwork(rho::apiGenerator::CMethodResult& oResult)
 	{
 		oResult.set(iResult != 0);
 	}
-	LOG(INFO) + "NetworkC hasCellNetwork-";
+	RAWTRACE("NetworkC hasCellNetwork-");
 	return;
 #endif
 #if (!defined OS_ANDROID)
