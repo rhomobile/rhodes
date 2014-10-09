@@ -786,10 +786,15 @@ namespace "build" do
           end        
           
           if ext != 'openssl.so'
-            ext_config["libraries"].each { |name_lib|
-              extensions_lib << " #{name_lib}.lib"            
-              pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
-            }
+            if ext_config.has_key?('libraries')
+              ext_config["libraries"].each { |name_lib|
+                extensions_lib << " #{name_lib}.lib"
+                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
+              }
+            else
+              extensions_lib << " #{ext}.lib"
+              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            end
           end
 
           if (project_path)
@@ -1125,10 +1130,15 @@ namespace "build" do
           next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
 
           if ext != 'openssl.so'
-            ext_config["libraries"].each { |name_lib|
-              extensions_lib << " #{name_lib}.lib"
-              pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
-            }
+            if ext_config.has_key?('libraries')
+              ext_config["libraries"].each { |name_lib|
+                extensions_lib << " #{name_lib}.lib"
+                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
+              }
+            else
+              extensions_lib << " #{ext}.lib"
+              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            end
           end
 
           if (project_path)
