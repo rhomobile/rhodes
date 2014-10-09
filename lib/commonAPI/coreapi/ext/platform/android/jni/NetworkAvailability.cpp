@@ -15,6 +15,7 @@ JNIEnv* CNetworkAvailability::init()
             return 0;
         }
         s_jNetworkClass = static_cast<jclass>(env->NewGlobalRef(cls));
+        env->DeleteLocalRef(cls);
         if(!s_jNetworkClass)
         {
             RAWLOG_ERROR1("Failed to create global reference to java class: %s", NETWORK_IMPL_CLASS);
@@ -34,7 +35,7 @@ JNIEnv* CNetworkAvailability::init()
  */
 int CNetworkAvailability::hasNetwork()
 {
-	LOG(INFO) + "NetworkAvailability hasNetwork+";
+	RAWTRACE("NetworkAvailability hasNetwork+");
 	JNIEnv *env = init();
     if(!env)
     {
@@ -49,7 +50,7 @@ int CNetworkAvailability::hasNetwork()
 		return -2;
 	}
 
-	LOG(INFO) + "NetworkAvailability hasNetwork-";
+	RAWTRACE("NetworkAvailability hasNetwork-");
 	return env->CallStaticIntMethod(s_jNetworkClass, midHasNetwork);
 }
 
@@ -62,7 +63,7 @@ int CNetworkAvailability::hasNetwork()
  */
 int CNetworkAvailability::hasWifiNetwork()
 {
-	LOG(INFO) + "NetworkAvailability hasWifiNetwork+";
+    RAWTRACE("NetworkAvailability hasWifiNetwork+");
 	JNIEnv *env = init();
     if(!env)
     {
@@ -77,7 +78,7 @@ int CNetworkAvailability::hasWifiNetwork()
 		return -2;
 	}
 
-	LOG(INFO) + "NetworkAvailability hasCellNetwork-";
+	RAWTRACE("NetworkAvailability hasCellNetwork-");
 	return env->CallStaticIntMethod(s_jNetworkClass, midHasWifiNetwork);
 }
 
@@ -90,7 +91,7 @@ int CNetworkAvailability::hasWifiNetwork()
  */
 int CNetworkAvailability::hasCellNetwork()
 {
-	LOG(INFO) + "NetworkAvailability hasCellNetwork+";
+    RAWTRACE("NetworkAvailability hasCellNetwork+");
 	JNIEnv *env = init();
 	if(!env)
 	{
@@ -105,6 +106,6 @@ int CNetworkAvailability::hasCellNetwork()
 		return -2;
 	}
 
-	LOG(INFO) + "NetworkAvailability hasCellNetwork-";
+	RAWTRACE("NetworkAvailability hasCellNetwork-");
 	return env->CallStaticIntMethod(s_jNetworkClass, midHasCellNetwork);
 }
