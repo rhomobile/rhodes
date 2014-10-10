@@ -318,8 +318,6 @@ end
 namespace "clean" do
   task :common => "config:common" do
 
-    RhoPackages.request 'ugu', 'aga'
-
     if $config["platform"] == "bb"
       return
     end
@@ -1947,10 +1945,11 @@ namespace 'cloud' do
   #   build_deploy_run('iphone', 'simulator')
   # end
 
-  desc 'Iphone cloud build and run on the device'
-  task 'iphone:device' => ['build:initialize'] do
-    build_deploy_run('iphone:development', 'device')
-  end
+  # 
+  # desc 'Iphone cloud build and run on the device'
+  # task 'iphone:device' => ['build:initialize'] do
+  #   build_deploy_run('iphone:development', 'device')
+  # end
 
   desc 'Iphone cloud build and download'
   task 'iphone:download' => ['build:initialize'] do
@@ -4329,6 +4328,9 @@ namespace "run" do
   end
 
   task :rhosimulator_base => [:set_rhosimulator_flag, "config:common"] do
+
+    RhoPackages.request 'rhosimulator'
+
     puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
     $path = ""
     if $js_application
@@ -4625,6 +4627,8 @@ end
 namespace :run do
   desc "start rholog(webrick) server"
   task :webrickrhologserver, :app_path  do |t, args|
+    require 'webrick'
+    
     puts "Args were: #{args}"
     $app_path = args[:app_path]
 

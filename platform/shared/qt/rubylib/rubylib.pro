@@ -48,7 +48,10 @@ win32 {
 ../../ruby/missing/strlcat.c\
 ../../ruby/win32/miniprelude.c\
 ../../ruby/win32/newline.c\
-../../ruby/win32/win32.c
+../../ruby/win32/win32.c\
+../../ruby/wince/io_wce.c\
+../../ruby/wince/process_wce.c\
+../../ruby/wince/time_wce.c
 }
 
 unix:!macx {

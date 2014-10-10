@@ -28,7 +28,7 @@ namespace "build" do
   end
 
   task :all => :config do
-    build_extension('<%= name.camel_case %>')
+    build_extension('<%= namecamelcase() %>')
   end
 end
 

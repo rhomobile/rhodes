@@ -16,6 +16,16 @@ module RhoPackages
   class YmlConfig
     def initialize(config_yml_file)
       @config = YAML::load_file(config_yml_file)
+      @platform_specific_packages = Set.new(@config['platform_specific_packages'])
+
+      case RUBY_PLATFORM
+      when /(win|w)32$/
+        @platfrom_suffix = 'win'
+      when /darwin/
+        @platfrom_suffix = 'mac'
+      else
+        fail
+      end
     end
 
     def repository
@@ -40,7 +50,10 @@ module RhoPackages
       package_names.each do |package_name|
         next if set.include?(package_name)
 
-        list << package_name
+        file_name = package_name
+        file_name += ".#{@platfrom_suffix}" if @platform_specific_packages.include?(package_name)
+
+        list << file_name
         set << package_name
 
         gather(list, set, fetch('packages', package_name))
@@ -66,10 +79,10 @@ module RhoPackages
     private
 
     def install(package_name)
-      require_relative 'tar_gzip.rb'
+      require_relative 'zip_tar_gz.rb'
       require_relative 'jake.rb'
       fetch(package_name) do |tar_gz_file|
-        TarGzip.unpack(tar_gz_file, @root_dir)
+        ZipTarGz.unpack_tar_gz(tar_gz_file, @root_dir)
       end
       Jake.edit_yml(File.join(@root_dir, 'installed.yml')) do |yml|
         yml << package_name
@@ -163,17 +176,17 @@ module RhoPackages
 
   def self.request(*package_names)
     package_names.each do |package_name|
-      self.require_(@@config.package_deps(package_name))
+      self.request_(@@config.package_deps(package_name))
     end
   end
 
-  def self.require_by_command(command_name)
-    self.require_(@@config.command_deps(package_name))
+  def self.request_by_command(command_name)
+    self.request_(@@config.command_deps(package_name))
   end
 
   private
 
-  def self.require_(package_names)
+  def self.request_(package_names)
     package_names.each do |package_name|
       @@repo.request(package_name)
     end

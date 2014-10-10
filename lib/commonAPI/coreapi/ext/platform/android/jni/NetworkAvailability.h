@@ -11,6 +11,8 @@
 
 class CNetworkAvailability
 {
+    static jclass s_jNetworkClass;
+    static JNIEnv* init();
 public:
 	static int hasNetwork();
 	static int hasCellNetwork();
