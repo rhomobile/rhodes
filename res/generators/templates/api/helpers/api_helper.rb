@@ -45,11 +45,12 @@ class CppGen
     end
 
     def templatify(fn_name, datum)
-      "#{fn_name}" #"<#{datum.map{|x| native_type(x)}.join(', ')}>"
+      "#{fn_name}<#{datum.map{|x| x.kind_of?(String) ? x : native_type(x)}.join(', ')}>"
     end
 
-    def result_converter(gen_type)
+    def nested_result_converter(gen_type)
       result = ''
+
       case gen_type.type
         when RhogenCore::TYPE_ARRAY
           if gen_type.simple_value?
@@ -92,8 +93,36 @@ class CppGen
           raise "invalid parameter 5 #{gen_type.name}"
       end
 
+      result
+    end
+
+    def legacy_result_converter(gen_type)
+      result = ''
+
+      case gen_type.type
+        when RhogenCore::TYPE_ARRAY
+          datum = ["rho::String"]
+          result = templatify('rho_value_to_typed_array', datum)
+        when RhogenCore::TYPE_HASH
+          datum = ["rho::String", "rho::String"]
+          result = templatify('rho_value_to_typed_hash', datum)
+        else
+          raise "invalid parameter 5 #{gen_type.name}"
+      end
 
       result
+    end
+
+    def result_converter(gen_type)
+      case gen_type.api_style
+        when RhogenCore::API_STYLE_LEGACY
+          legacy_result_converter(gen_type)
+        when RhogenCore::API_STYLE_NESTED
+          nested_result_converter(gen_type) 
+        else
+          raise "No result converter for api_style #{gen_type.api_style}"
+          "error"
+      end
     end
 
     def native_type_arg(gen_type)

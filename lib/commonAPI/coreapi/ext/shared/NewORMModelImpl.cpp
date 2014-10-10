@@ -196,7 +196,7 @@ void rho::CNewORMModelImpl::validateFreezedAttribute(const rho::String& attrName
         errStr += attrName;
         errStr += ". For model:  ";
         errStr += name();
-        oResult.setError(errStr);
+        oResult.setArgError(errStr);
         return;
     }
 }
@@ -305,7 +305,7 @@ void rho::CNewORMModelImpl::initSyncSourceProperties(rho::apiGenerator::CMethodR
     int source_id = -1;
     convertFromStringA(oResult.getString().c_str(), source_id);
     if(source_id == -1) {
-        oResult.setError("Invalid SourceID -1");
+        oResult.setArgError("Invalid SourceID -1");
         return;
     }
     Vector<String> sync_options;
@@ -523,7 +523,7 @@ void rho::CNewORMModelImpl::findObjects(const rho::String& what,
                  rho::apiGenerator::CMethodResult& oResult)
 {
     if(what.empty()) {
-        oResult.setError("findObjects: Invalid Empty First Argument passed.");
+        oResult.setArgError("findObjects: Invalid Empty First Argument passed.");
         return;
     }
     findObjectsFixedSchema(what, strOptions, quests, select_attrs, order_attrs, oResult);
@@ -794,7 +794,7 @@ void rho::CNewORMModelImpl::buildComplexWhereCond(const rho::String& key,
                            rho::apiGenerator::CMethodResult& oResult)
 {
     if(!key.size()) {
-        oResult.setError("Invalid empty attribute name passed to WHERE condition");
+        oResult.setArgError("Invalid empty attribute name passed to WHERE condition");
     }
     rho::Vector<rho::String> retVals;
     retVals.push_back(rho::String());
@@ -1521,7 +1521,7 @@ void rho::CNewORMModelImpl::onSyncDeleteError(const rho::String& objId,
         return;
     if(actionStr != "retry")
     {
-        oResult.setError("on_sync_delete_error action should be `retry`");
+        oResult.setArgError("on_sync_delete_error action should be `retry`");
         return;
     }
     getProperty("source_id", oResult);

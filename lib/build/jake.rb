@@ -1003,11 +1003,12 @@ class Jake
   end
 
   def self.run_rho_log_server(app_path)
+    require 'webrick'
 
-	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-	confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
-	confpath_content += "\r\n" + "LogToSocket=1" if !confpath_content.include?("LogToSocket=")
-	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+    confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
+    confpath_content += "\r\n" + "LogToSocket=1" if !confpath_content.include?("LogToSocket=")
+    File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
 
     begin
         require 'net/http'
