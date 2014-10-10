@@ -830,7 +830,7 @@ class Jake
           require 'fileutils'
           include FileUtils
 
-          Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE)do |zipfile|
+          Zip::File.open(zip_file_path, Zip::File::CREATE)do |zipfile|
             Find.find("RhoBundle") do |path|
               Find.prune if File.basename(path)[0] == ?.
               next if path.start_with?("RhoBundle/lib") || path.start_with?("RhoBundle/db") || path == 'RhoBundle/hash' || path == 'RhoBundle/name'
