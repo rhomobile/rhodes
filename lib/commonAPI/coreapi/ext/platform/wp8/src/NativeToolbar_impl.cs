@@ -18,9 +18,22 @@ namespace NativeToolbarImpl
 {
     public class NativeToolbar : INativeToolbarImpl
     {
+        private long _nativeImpl = 0;
+        NativeToolbarRuntimeComponent _runtime;
+
         public NativeToolbar()
         {
-            NativeToolbarRuntimeComponent _runtime = new NativeToolbarRuntimeComponent(this);
+            _runtime = new NativeToolbarRuntimeComponent(this);
+        }
+
+        public long getNativeImpl()
+        {
+            return _nativeImpl;
+        }
+
+        public void setNativeImpl(long native)
+        {
+            _nativeImpl = native;
         }
     }
 
