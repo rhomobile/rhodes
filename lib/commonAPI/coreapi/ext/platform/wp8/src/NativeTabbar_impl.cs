@@ -18,9 +18,22 @@ namespace NativeTabbarImpl
 {
     public class NativeTabbar : INativeTabbarImpl
     {
+        private long _nativeImpl = 0;
+        NativeTabbarRuntimeComponent _runtime;
+
         public NativeTabbar()
         {
-            NativeTabbarRuntimeComponent _runtime = new NativeTabbarRuntimeComponent(this);
+            _runtime = new NativeTabbarRuntimeComponent(this);
+        }
+
+        public long getNativeImpl()
+        {
+            return _nativeImpl;
+        }
+
+        public void setNativeImpl(long native)
+        {
+            _nativeImpl = native;
         }
     }
 
