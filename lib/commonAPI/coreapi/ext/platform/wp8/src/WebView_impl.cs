@@ -19,9 +19,22 @@ namespace WebViewImpl
 {
     public class WebView : IWebViewImpl
     {
+        private long _nativeImpl = 0;
+        WebViewRuntimeComponent _runtime;
+
         public WebView()
         {
-            WebViewRuntimeComponent _runtime = new WebViewRuntimeComponent(this);
+            _runtime = new WebViewRuntimeComponent(this);
+        }
+
+        public long getNativeImpl()
+        {
+            return _nativeImpl;
+        }
+
+        public void setNativeImpl(long native)
+        {
+            _nativeImpl = native;
         }
     }
 
