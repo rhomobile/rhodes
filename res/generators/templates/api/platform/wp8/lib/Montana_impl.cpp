@@ -1,6 +1,5 @@
 #include "common/RhodesApp.h"
 #include "../../wp8/rhoruntime/common/RhoConvertWP8.h"
-//#include "../../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
 #include "<%= $cur_module.name %>Factory.h"
 #include "api_generator/wp8/MethodResultImpl.h"
 
@@ -39,7 +38,9 @@ end%>
     if module_method.access == ModuleMethod::ACCESS_STATIC
       static_methods += method_def
     else
-      dynamic_methods += method_def
+      if /^(getProperty|getProperties|getAllProperties|setProperty|setProperties)$/ !~ module_method.native_name
+        dynamic_methods += method_def
+      end
     end
   end
 %>
@@ -48,7 +49,10 @@ class C<%= $cur_module.name %>Impl: public C<%= $cur_module.name %>Base
 private:
     I<%= $cur_module.name %>Impl^ _runtime;
 public:
-    C<%= $cur_module.name %>Impl(const rho::String& strID, I<%= $cur_module.name %>Impl^ runtime): C<%= $cur_module.name %>Base(), _runtime(runtime) {}
+    C<%= $cur_module.name %>Impl(const rho::String& strID, I<%= $cur_module.name %>Impl^ runtime): C<%= $cur_module.name %>Base(), _runtime(runtime)
+    {
+        _runtime->setNativeImpl((int64)this);
+    }
 <%= dynamic_methods%>};
 
 class C<%= $cur_module.name %>Singleton: public C<%= $cur_module.name %>SingletonBase
