@@ -1,6 +1,8 @@
 // <%= $cur_module.name %>Runtime.cpp
 #include "<%= $cur_module.name %>Runtime.h"
 #include "<%= $cur_module.name %>Factory.h"
+#include "<%= $cur_module.name %>_impl.h"
+#include "../../wp8/rhoruntime/common/RhoConvertWP8.h"
 
 using namespace Platform;
 using namespace rho::apiGenerator;
@@ -31,14 +33,14 @@ int64 <%= $cur_module.name %>RuntimeComponent::getCppImpl()
 {
     // TODO: implement singleton component constructor
 }<% $cur_module.methods.each do |module_method|
-    component_name = module_method.access == ModuleMethod::ACCESS_STATIC ? 'Singleton' : 'Runtime';
     next if ((!module_method.generateNativeAPI || (/^(getProperty|getProperties|getAllProperties|setProperty|setProperties)$/ !~ module_method.native_name)) && (module_method.access != ModuleMethod::ACCESS_STATIC))
+    component_name = module_method.access == ModuleMethod::ACCESS_STATIC ? 'Singleton' : 'Runtime';
+    native_prefix = module_method.access == ModuleMethod::ACCESS_STATIC ? '//' : '';
 %>
 
 void <%= $cur_module.name %><%= component_name%>Component::<%= module_method.native_name%>(<%= module_method.cached_data["cli_params"]%>)
 {
-    //TODO: ((*)getCppImpl())->
-    _impl-><%= module_method.native_name%>(<%= module_method.cached_data["cli_call_params"]%>);
+    <%= native_prefix %>((C<%= $cur_module.name %>Impl*)getCppImpl())-><%= module_method.native_name%>(<%= module_method.cached_data["cli_call_params"]%>);
 }<% end %>
 
 void <%= $cur_module.name %>FactoryComponent::setImpl(I<%= $cur_module.name %>FactoryImpl^ impl)
