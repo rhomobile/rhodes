@@ -13,11 +13,11 @@
     call_params = ''
     module_method.params.each do |param|
         params += "#{api_generator_cli_makeNativeTypeArg(param.type)} #{param.name}, "
-        call_params += "#{param.name}, "
+        call_params += "#{api_generator_cli_call_conversion(param.type, param.name)}, "
     end
 
     params += "IMethodResult^ oResult"
-    call_params += 'oResult'
+    call_params += '*(CMethodResult*)(oResult->getNative())'
     module_method.cached_data["cli_params"] = params
     module_method.cached_data["cli_call_params"] = call_params
 
@@ -28,13 +28,16 @@
       dynamic_methods += method_def
     end
   end
-  dynamic_methods = "    public:\n        int64 getNativeImpl();\n        void setNativeImpl(int64 native);\n\n" + dynamic_methods if dynamic_methods.length() > 0
+  dynamic_methods = "\n\n" + dynamic_methods if dynamic_methods.length() > 0
   static_methods = "    public:\n" + static_methods if static_methods.length() > 0
 %>
 namespace rhoruntime
 {
     public interface class I<%= $cur_module.name %>Impl
     {
+    public:
+        int64 getNativeImpl();
+        void setNativeImpl(int64 native);
 <%= dynamic_methods%>    };
 
     public interface class I<%= $cur_module.name %>SingletonImpl

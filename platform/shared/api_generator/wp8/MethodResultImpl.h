@@ -10,9 +10,9 @@ namespace rhoruntime {
         rho::apiGenerator::CMethodResult* oResult;
     public:
         CMethodResultImpl(int64 native);
-
+        virtual int64 getNative();
         virtual bool hasCallback();
-		virtual void set(bool res);
+        virtual void set(bool res);
         virtual void set(int64 res);
         virtual void set(int res);
         virtual void set(double res);

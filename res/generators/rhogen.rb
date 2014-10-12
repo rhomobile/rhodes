@@ -1243,6 +1243,11 @@ module Rhogen
       template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_impl.cpp"
     end
 
+    template :wp8_lib_montana_impl_h do |template|
+      template.source = 'platform/wp8/lib/Montana_impl.h'
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_impl.h"
+    end
+
 
     template :public_api_module do |template|
       template.source = 'js/Rho.Montana.js'
