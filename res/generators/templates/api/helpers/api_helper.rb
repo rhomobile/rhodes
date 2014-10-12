@@ -399,6 +399,25 @@ def api_generator_cli_conversion(gen_type, var_name)
   res
 end
 
+def api_generator_cli_call_conversion(gen_type, var_name)
+
+  if gen_type == RhogenCore::TYPE_ARRAY
+    res = "rho::common::convertArrayFromWP8(#{var_name})"
+  elsif gen_type == RhogenCore::TYPE_HASH
+    res = "rho::common::convertHashFromWP8(#{var_name})"
+  elsif gen_type == RhogenCore::TYPE_INT
+    res = var_name
+  elsif gen_type == RhogenCore::TYPE_BOOL
+    res = var_name
+  elsif gen_type == RhogenCore::TYPE_DOUBLE
+    res = var_name
+  else # elif gen_type == RhogenCore::TYPE_STRING
+    res = "rho::common::convertStringAFromWP8(#{var_name})"
+  end
+
+  res
+end
+
 def api_generator_cli_makeNativeTypeArg(gen_type)
 
   if gen_type == RhogenCore::TYPE_STRING

@@ -8,9 +8,14 @@ CMethodResultImpl::CMethodResultImpl(int64 native):
 {
 }
 
+int64 CMethodResultImpl::getNative()
+{
+    return (int64)oResult;
+}
+
 bool CMethodResultImpl::hasCallback()
 {
-	return oResult->hasCallback();
+    return oResult->hasCallback();
 }
 
 void CMethodResultImpl::set(bool res)
