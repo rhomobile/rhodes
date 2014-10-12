@@ -20,15 +20,19 @@ end %>
   $cur_module.methods.each do |module_method|
     next if !module_method.generateNativeAPI
 
+    args = ''
     params = ''
     module_method.params.each do |param|
         params += "#{api_generator_cs_makeNativeTypeArg(param.type)} #{param.name}, "
+        args += "#{param.name}, "
     end
 
     params += "IMethodResult oResult"
+    args += "oResult"
     module_method.cached_data["cs_params"] = params
 
-    method_def = "\n        public void #{module_method.native_name}(#{params})\n        {\n            // implement this method in C# here\n        }\n"
+    method_body = (/^(getProperty|getProperties|getAllProperties|setProperty|setProperties)$/ !~ module_method.native_name) ? "// implement this method in C# here" : "_runtime.#{module_method.native_name}(#{args});"
+    method_def = "\n        public void #{module_method.native_name}(#{params})\n        {\n            #{method_body}\n        }\n"
 
     if module_method.access == ModuleMethod::ACCESS_STATIC
       static_methods += method_def
@@ -41,9 +45,22 @@ namespace <%= $cur_module.name %>Impl
 {
     public class <%= $cur_module.name %> : I<%= $cur_module.name %>Impl
     {
+        private long _nativeImpl = 0;
+        <%= $cur_module.name %>RuntimeComponent _runtime;
+
         public <%= $cur_module.name %>()
         {
-            <%= $cur_module.name %>RuntimeComponent _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
+            _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
+        }
+
+        public long getNativeImpl()
+        {
+            return _nativeImpl;
+        }
+
+        public void setNativeImpl(long native)
+        {
+            _nativeImpl = native;
         }
 <%= dynamic_methods%>    }
 
