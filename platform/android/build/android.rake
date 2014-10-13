@@ -52,7 +52,7 @@ JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
 # For complete list of android API levels and its mapping to
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
-ANDROID_SDK_LEVEL = 4
+ANDROID_SDK_LEVEL = 9
 
 ANDROID_PERMISSIONS = {
     'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
@@ -1442,6 +1442,7 @@ namespace "build" do
         args = []
 
         rlibs = []
+        rlibs << "android"
         rlibs << "log"
         rlibs << "dl"
         rlibs << "z"
