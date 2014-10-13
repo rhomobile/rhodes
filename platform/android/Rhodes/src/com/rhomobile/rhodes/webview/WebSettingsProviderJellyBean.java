@@ -5,7 +5,7 @@ import android.webkit.WebSettings;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
 
-public class WebSettingsProviderJellyBean extends WebSettingsProviderFroyo implements IWebSettingsProvider {
+public class WebSettingsProviderJellyBean extends WebSettingsProviderHoneycombMR1 implements IWebSettingsProvider {
     public void fillSettings(WebSettings settings, IRhoConfig config) {
         super.fillSettings(settings, config);
         Logger.I(TAG, "Allow universal access from file URL");
