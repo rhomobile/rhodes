@@ -107,6 +107,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderBase
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderEclair.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderEclairMR1.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderFroyo.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderHoneycombMR1.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderJellyBean.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderKitKat.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebViewConfig.java
