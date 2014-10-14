@@ -124,7 +124,7 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByRubyObject(VA
     rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params* par = [[[rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params alloc] init] autorelease];
     par.params = _params;
     par.item = _item;
-    par.methodResult = _methodResult;
+    par.methodResult = [_methodResult retain];
     return [par retain];
 }
 
@@ -177,6 +177,7 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
     method_line = method_line + "];"
     %>
     <%= method_line %>
+    [caller_params.methodResult release];
     [caller_params release];
 }
 
@@ -350,6 +351,7 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
     if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
+    [methodResult release];
     return resValue;
 }
 
