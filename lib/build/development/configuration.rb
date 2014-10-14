@@ -11,8 +11,9 @@ module RhoDevelopment
     end
 
     def self.own_ip_address
-      IPSocket.getaddress(Socket.gethostname) #- it don't work on virtual machine with a lot of network interfaces
+      #IPSocket.getaddress(Socket.gethostname) #- it don't work on virtual machine with a lot of network interfaces
       # Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq
+	  (Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq).last
     end
 
     def self.webserver_alive_request
@@ -94,13 +95,20 @@ module RhoDevelopment
     def self.full_bundle_name
       'upgrade_bundle.zip'
     end
+	
+    def self.document_root=(aString)
+      config = self.read_configuration
+      config['webserver'] = {'documentRoot' => aString}
+      yml = config.to_yaml
+      File.open(self.config_filename, 'w') { |file| file.write yml }
+    end	
 
     def self.document_root
       config = self.read_configuration
       web_server_config = config['webserver']
       if web_server_config.nil? || web_server_config['documentRoot'].nil?
         document_root = Dir.mktmpdir
-        self.documentRoot = document_root
+        self.documentRoot=document_root
       else
         document_root = web_server_config['documentRoot']
       end
@@ -108,12 +116,7 @@ module RhoDevelopment
       return document_root
     end
 
-    def self.document_root=(aString)
-      config = self.read_configuration
-      config['webserver'] = {'documentRoot' => aString}
-      yml = config.to_yaml
-      File.open(self.config_filename, 'w') { |file| file.write yml }
-    end
+
 
 
   end

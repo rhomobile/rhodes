@@ -1,5 +1,5 @@
-require 'typhoeus'
-require 'thread/pool'
+#require 'typhoeus'
+#require 'thread/pool'
 require_relative 'configuration'
 require_relative 'subscriber'
 
