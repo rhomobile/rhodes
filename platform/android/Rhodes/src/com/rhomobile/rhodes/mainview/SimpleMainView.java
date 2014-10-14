@@ -26,6 +26,9 @@
 
 package com.rhomobile.rhodes.mainview;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Vector;
 import java.util.List;
@@ -51,6 +54,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -609,7 +613,65 @@ public class SimpleMainView implements MainView {
 
     @Override
     public void executeJS(String js, int index) {
-        com.rhomobile.rhodes.WebView.executeJs(js, index);
+    	
+    	//Utils.platformLog("@$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$@", "ExecuteJS("+js+")");
+    	//((android.webkit.WebView)webView.getView()).executeJS();
+    	if (android.os.Build.VERSION.SDK_INT >= 19) {
+    		navigate("javascript:"+js, index);
+    		return;
+    	}
+    	
+    	
+		Method mStringByEvaluatingJavaScriptFromString = null;
+	    Object mWebViewCore;
+	    Object mBrowserFrame = null;
+	    boolean mHasPossibleUseOfReflectionExecuteJS = false;
+	    Object webViewObject = this;
+	    Class webViewClass = android.webkit.WebView.class;
+	    try {
+	        Field mp = webViewClass.getDeclaredField("mProvider");
+	        mp.setAccessible(true);
+	        webViewObject = mp.get((android.webkit.WebView)webView.getView());
+	        webViewClass = webViewObject.getClass();
+	        Field wc = webViewClass.getDeclaredField("mWebViewCore");
+	        wc.setAccessible(true);
+	        mWebViewCore = wc.get(webViewObject);
+	        if (mWebViewCore != null) {
+
+	        	Field bf= mWebViewCore.getClass().getDeclaredField("mBrowserFrame");
+	            
+	        	bf.setAccessible(true);
+	        	mBrowserFrame = bf.get(mWebViewCore);
+	            mStringByEvaluatingJavaScriptFromString = mBrowserFrame.getClass().getDeclaredMethod("stringByEvaluatingJavaScriptFromString", String.class);
+	            mStringByEvaluatingJavaScriptFromString.setAccessible(true);   
+
+	        }
+	        mHasPossibleUseOfReflectionExecuteJS = true;
+	    } catch (Throwable e) {
+	    	mHasPossibleUseOfReflectionExecuteJS = false;
+	        //e.printStackTrace();
+	    }		    		
+
+	    if (mHasPossibleUseOfReflectionExecuteJS && (mStringByEvaluatingJavaScriptFromString != null)) {
+			try {
+				mStringByEvaluatingJavaScriptFromString.invoke(mBrowserFrame, js);
+				//Utils.platformLog("@#########################@", "EvaluateJS("+js+")");
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+	    }
+	    else {
+	        //com.rhomobile.rhodes.WebView.executeJs(js, index);
+	    	navigate("javascript:"+js, index);
+	    	
+	    }
     }
 
 	public void reload(int index) {
