@@ -13,6 +13,8 @@ iphone:
   entitlements: ""
   BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
   BundleURLScheme: <%=@app_name_cleared%>
+  production:
+    ipa_itunesartwork_image: "./production/iTunesArtwork.png"  
 wp8:
   productid: '<%=@productid%>'
 android:
