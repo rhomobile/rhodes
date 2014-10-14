@@ -10,12 +10,14 @@ module RhoDevelopment
 # class instance methods
 #TODO: Use it from rake command
     def self.ensure_running
-      unless self.alive?
-        process = ChildProcess.build('rake', 'dev:webserver:privateStart')
-        process.io.inherit!
-        process.cwd = $app_basedir
-        process.start
-      end
+        unless self.alive?
+          case RbConfig::CONFIG['host_os']
+            when /mswin|mingw32|windows/i
+		      exec "start \"development webserver\" /d \"#{Configuration::applicationRoot}\" rake dev:webserver:privateStart"
+            when /darwin/i
+              puts "MAC OS X"
+          end
+        end
     end
 
     def self.alive?
