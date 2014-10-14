@@ -121,7 +121,7 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByRubyObject(VA
 }
 
 +(<%= "rb_"+$cur_module.name %>_<%= module_method.native_name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<<%= interface_name %>>)_item _methodResult:(CMethodResult*)_methodResult {
-    rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params* par = [[rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params alloc] init];
+    rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params* par = [[[rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params alloc] init] autorelease];
     par.params = _params;
     par.item = _item;
     par.methodResult = _methodResult;
