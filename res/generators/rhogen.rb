@@ -218,6 +218,11 @@ module Rhogen
       directory.destination = "#{name}/icon"
     end
 
+    directory :production do |directory|
+      directory.source = 'production'
+      directory.destination = "#{name}/production"
+    end
+
     template :settings1 do |template|
       template.source = 'app/Settings/controller.rb'
       template.destination = "#{name}/app/Settings/controller.rb"
