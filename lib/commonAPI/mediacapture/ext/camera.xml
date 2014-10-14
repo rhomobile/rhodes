@@ -231,7 +231,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Returns the camera of requested type if that camera exist - else return nil.</DESC>
                 <PARAMS>
                     <PARAM name="cameraType" type="STRING">
-                        <DESC>CameraType: main or front.</DESC>
+                        <DESC>The same value as cameraType property.</DESC>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="SELF_INSTANCE">

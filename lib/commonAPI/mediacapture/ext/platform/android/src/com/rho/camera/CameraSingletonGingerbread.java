@@ -39,7 +39,7 @@ public class CameraSingletonGingerbread extends CameraSingletonEclair implements
         int cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
         if (cameraType.equalsIgnoreCase("front")) {
             cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
-        } else if (cameraType.equalsIgnoreCase("front")) {
+        } else if (cameraType.equalsIgnoreCase("back")) {
             cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
         } else {
             Logger.E(TAG, "Unknown camera type requested: " + cameraType);

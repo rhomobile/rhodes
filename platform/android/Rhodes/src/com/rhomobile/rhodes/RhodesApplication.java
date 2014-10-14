@@ -43,7 +43,6 @@ import android.os.Handler;
 import android.os.Process;
 import android.util.Log;
 
-import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -166,17 +165,6 @@ public class RhodesApplication extends Application{
                     @Override
                     public void run() {
                         RhoExtManager.getImplementationInstance().onAppActivate(false);
-                    }
-                });
-        RhodesApplication.runWhen(
-                AppState.AppActivated,
-                new StateHandler(true) {
-                    @Override public void run() {
-                        PerformOnUiThread.exec(new Runnable() {
-                                @Override public void run() {
-                                    Camera.init_from_UI_Thread();
-                                }
-                        });
                     }
                 });
     }
