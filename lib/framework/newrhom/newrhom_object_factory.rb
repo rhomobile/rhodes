@@ -16,6 +16,10 @@ module Rhom
           @klass_model
         end
 
+        def self.get_source_id
+          @klass_model.source_id
+        end
+
         def self.method_missing(method_sym, *args, &block)
           if klass_model.respond_to?(method_sym)
             # convert all symbols into strings
