@@ -1,3 +1,9 @@
+<%
+# NB: each rb_"+$cur_module.name+"_"+module_method.native_name+"_Obj call
+# creates CMethodResult inside and releases it after call
+# in case if call is sheduled result should be retained
+# so makeParams retains it and releases after a call 
+%>
 #import "I<%= $cur_module.name %>.h"
 //#import "api_generator/common/ruby_helpers.h"
 
