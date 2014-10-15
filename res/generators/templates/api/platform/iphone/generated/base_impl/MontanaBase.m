@@ -135,23 +135,21 @@ static NSDictionary* ourPropertyAliases= nil;
 }
 
 -(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult {
-    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:[arrayofNames count]];
-    NSArray* keys = arrayofNames;
+    NSMutableDictionary* dict = [[NSMutableDictionary dictionaryWithCapacity:[arrayofNames count]] autorelease];
     CMethodResult_SimpleHolder* resultHolder = [CMethodResult_SimpleHolder makeEmptyHolder];
-    int i;
-    for (i = 0; i < [keys count]; i++) {
-        NSString* key = (NSString*)[keys objectAtIndex:i];
-        [resultHolder setResult:nil];
-        [self getProperty:key methodResult:resultHolder];
-        if ([resultHolder getResult] != nil) {
-            NSString* value = (NSString*)[resultHolder getResult];
-            [dict setObject:value forKey:key];
-        } <% 
+    for (NSString* key in arrayofNames) {        
+      [resultHolder setResult:nil];
+      [self getProperty:key methodResult:resultHolder];
+      if ([resultHolder getResult] != nil) {
+          NSString* value = (NSString*)[resultHolder getResult];
+          [dict setObject:value forKey:key];
+      } <% 
 if !$cur_module.is_property_bag_limit_to_only_declared_properties && $cur_module.is_template_propertybag %>
-        else {
-          [dict setObject:@"" forKey:key];
-        }<% end %>
+      else {
+        [dict setObject:@"" forKey:key];
+      }<% end %>
     }
+
     [methodResult setResult:dict];
 }
 
@@ -161,10 +159,7 @@ if !$cur_module.is_property_bag_limit_to_only_declared_properties && $cur_module
 
 
 -(void) setProperties:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
-    NSArray* keys = [propertyMap allKeys];
-    int i;
-    for (i = 0; i < [keys count]; i++) {
-        NSString* key = (NSString*)[keys objectAtIndex:i];
+    for (NSString* key in propertyMap) {    
         NSString* value = (NSString*)[propertyMap objectForKey:key];
         [self setProperty:key propertyValue:value methodResult:methodResult];
     }

@@ -132,6 +132,8 @@
         [[self client] URLProtocol:self didLoadData:data];
     }
     [[self client] URLProtocolDidFinishLoading:self];
+
+    [response release];
 }
 
 @end
