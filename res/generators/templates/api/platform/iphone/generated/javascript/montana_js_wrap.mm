@@ -1,3 +1,9 @@
+<%
+# NB: each rb_"+$cur_module.name+"_"+module_method.native_name+"_Obj call
+# creates CMethodResult inside and releases it after call
+# in case if call is sheduled result should be retained
+# so makeParams retains it and releases after a call 
+%>
 #import "I<%= $cur_module.name %>.h"
 //#import "api_generator/common/ruby_helpers.h"
 
@@ -82,7 +88,7 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByJSObject(rho:
     <%= $cur_module.name %>_<%= module_method.native_name %>_caller_params* par = [[[<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params alloc] init] autorelease];
     par.params = _params;
     par.item = _item;
-    par.methodResult = _methodResult;
+    par.methodResult = [_methodResult retain];
     return [par retain];
 }
 
@@ -135,6 +141,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     method_line = method_line + "];"
     %>
     <%= method_line %>
+    [caller_params.methodResult release];
     [caller_params release];
 }
 
@@ -297,6 +304,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
+    [methodResult release];
     return resValue;
 }
 
