@@ -1,4 +1,8 @@
 module Rhom
+
+  class RecordNotFound < StandardError
+  end
+  
   class RhomObjectFactory
 
     # Initialize new object with dynamic attributes
@@ -200,7 +204,7 @@ module Rhom
         end
 
         def self.find(*args, &block)
-          raise "OrmFindError: invalid arguments" if args[0].nil? or args.length == 0
+          raise RecordNotFound if args[0].nil? or args.length == 0
           args[0] = args[0].to_s
           args[1] = args[1] || {}
           retVal = nil
