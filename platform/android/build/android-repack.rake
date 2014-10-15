@@ -52,6 +52,7 @@ namespace 'device' do
   module AndroidPrebuild
 
     def self.determine_prebuild_path(config)
+      RhoPackages.request 'rhodes-containers'
       require 'rhodes/containers'
       Rhodes::Containers::get_container_path_prefix('android', config)
     end
