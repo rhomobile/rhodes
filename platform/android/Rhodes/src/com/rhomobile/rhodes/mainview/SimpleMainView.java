@@ -616,7 +616,7 @@ public class SimpleMainView implements MainView {
     	
     	//Utils.platformLog("@$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$@", "ExecuteJS("+js+")");
     	//((android.webkit.WebView)webView.getView()).executeJS();
-    	if (android.os.Build.VERSION.SDK_INT >= 19) {
+    	if (android.os.Build.VERSION.SDK_INT >= 0/*19*/) {
     		navigate("javascript:"+js, index);
     		return;
     	}
