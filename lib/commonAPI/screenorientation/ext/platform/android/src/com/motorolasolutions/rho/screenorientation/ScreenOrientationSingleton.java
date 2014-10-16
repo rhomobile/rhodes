@@ -70,6 +70,8 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 	    if (autoRotate)
 	    {
 		RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+		// This is because when used with SignatureCapture, enabling does not take effect after taking signature
+		RhodesActivity.safeGetInstance().setScreenAutoRotateMode(true);
 		isAutoRotate = true;
 		RhoConf.setString("disable_screen_rotation", "0");
 	    }
