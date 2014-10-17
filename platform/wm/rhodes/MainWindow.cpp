@@ -71,6 +71,7 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent);
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 bool m_SuspendedThroughPowerButton = false;
+bool m_ActivateFlag = false;
 
 using namespace rho::common;
 using namespace rho;
@@ -716,9 +717,22 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		m_isMinimized = false;
 		SendMessage( m_hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
 	}
+	WCHAR ClassName[128];
+	WCHAR ClassName1[128]; 
+	ZeroMemory(ClassName,128);
+	ZeroMemory(ClassName1,128);
+	HWND hwnd1=NULL;
+	hwnd1=GetForegroundWindow();
+
+	::GetWindowText(hwnd1,ClassName,128);
+	::GetClassName(hwnd1,ClassName1,128);
+	//SendMessage(hwnd1,WM_GETTEXT,128,(LPARAM)ClassName);
+
 
 #if defined(_WIN32_WCE) 
 	wchar_t szClassName[30];
+	
+
 	if (lParam && GetClassName((HWND)lParam, szClassName, 29))
 	{
 		if (wcsncmp(szClassName, L"PB_INDICATOR", 12) == 0)
@@ -744,8 +758,23 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		}
         
     }
+	if(wcslen(ClassName)==0 & wcslen(ClassName1)==0 & hwnd1!=NULL & !fActive)
+	{
+		LOG(INFO) + "drd m_ActivateFlag=true";
+		m_ActivateFlag=true;
+	}
+	else if(m_ActivateFlag & fActive)
+	{
+		LOG(INFO) + "m_ActivateFlag=false";
+		m_ActivateFlag=false;
+	}
+	else
+	{
+		LOG(INFO) + "drd ProcessActivate called.";
+		ProcessActivate( fActive, wParam, lParam ); 
+	}
+	LOG(INFO) + "drd ProcessActivate before return.";
 
-    ProcessActivate( fActive, wParam, lParam );    
     return 0;
 }
 
