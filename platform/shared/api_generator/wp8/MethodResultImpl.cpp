@@ -3,6 +3,11 @@
 
 namespace rhoruntime {
 
+CMethodResultImpl::CMethodResultImpl():
+    oResult(new rho::apiGenerator::CMethodResult())
+{
+}
+
 CMethodResultImpl::CMethodResultImpl(int64 native):
     oResult((rho::apiGenerator::CMethodResult*)native)
 {
@@ -51,6 +56,16 @@ void CMethodResultImpl::set(Windows::Foundation::Collections::IVectorView<Platfo
 void CMethodResultImpl::set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res)
 {
     oResult->set(rho::common::convertHashFromWP8(res));
+}
+
+void CMethodResultImpl::setRubyCallback(Platform::String^ strCallback)
+{
+	oResult->setRubyCallback(rho::common::convertStringAFromWP8(strCallback));
+}
+
+Platform::String^ CMethodResultImpl::getRubyCallback()
+{
+	return rho::common::convertStringToWP8(oResult->getRubyCallback());
 }
 
 }

@@ -9,7 +9,8 @@ namespace rhoruntime {
     {
         rho::apiGenerator::CMethodResult* oResult;
     public:
-        CMethodResultImpl(int64 native);
+		CMethodResultImpl();
+		CMethodResultImpl(int64 native);
         virtual int64 getNative();
         virtual bool hasCallback();
         virtual void set(bool res);
@@ -19,6 +20,8 @@ namespace rhoruntime {
         virtual void set(Platform::String^ res);
         virtual void set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res);
         virtual void set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res);
-    };
+		virtual void setRubyCallback(Platform::String^ strCallback);
+		virtual Platform::String^ getRubyCallback();
+	};
 
 }

@@ -15,6 +15,8 @@ namespace rhoruntime {
         void set(Platform::String^ res);
         void set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res);
         void set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res);
-    };
+		void setRubyCallback(Platform::String^ strCallback);
+		Platform::String^ getRubyCallback();
+	};
 
 }
