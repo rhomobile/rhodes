@@ -347,6 +347,7 @@ def prepare_production_ipa (app_path, app_name)
     end
   end
 
+  # now iTunesArtwork should be placed into application bundle !
   #cp itunes_artwork, itunes_artwork_dst
 
   currentdir = Dir.pwd()
@@ -440,7 +441,8 @@ def set_app_icon(make_bak)
       if File.exists? appicon
          cp appicon, ipath
       else
-         puts "WARNING: application should have next icon file : "+ name + '.png !!!'
+         #puts "WARNING: application should have next icon file : "+ name + '.png !!!'
+         BuildOutput.warning("Can not found next icon file : "+ name + '.png , Use default image !!!' )
       end
     end
   rescue => e
@@ -1765,30 +1767,49 @@ namespace "build" do
       Rake::Task['build:bundle:prepare_native_generated_files'].invoke
 
       #iTunesArtwork
-        itunes_artwork_in_project = File.join($app_path, "/project/iphone/iTunesArtwork")
-        itunes_artwork = File.join($app_path, "/project/iphone/iTunesArtwork")
+      itunes_artwork_in_project = File.join($app_path, "/project/iphone/iTunesArtwork")
+      itunes_artwork_in_project_2 = File.join($app_path, "/project/iphone/iTunesArtwork@2x")
 
-        if !$app_config["iphone"].nil?
-          if !$app_config["iphone"]["production"].nil?
-            if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
-              art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+      itunes_artwork = File.join($app_path, "/project/iphone/iTunesArtwork")
+
+      if !$app_config["iphone"].nil?
+        if !$app_config["iphone"]["production"].nil?
+          if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
+            art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+            if File.exists? art_test_name
+              itunes_artwork = art_test_name
+            else
+              art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
               if File.exists? art_test_name
                 itunes_artwork = art_test_name
               else
-                art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
-                if File.exists? art_test_name
-                  itunes_artwork = art_test_name
-                else
-                  itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
-                end
+                itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
               end
             end
           end
         end
+      end
+
+      itunes_artwork_2 = itunes_artwork
+      itunes_artwork_2 = itunes_artwork_2.gsub(".png", "@2x.png")
+      if itunes_artwork_2.index('@2x') == nil
+        itunes_artwork_2 = itunes_artwork_2.gsub(".PNG", "@2x.PNG")
+      end
+      if itunes_artwork_2.index('@2x') == nil
+        itunes_artwork_2 = itunes_artwork_2 + '@2x'
+      end
 
       if itunes_artwork != itunes_artwork_in_project
         rm_rf itunes_artwork_in_project
         cp itunes_artwork,itunes_artwork_in_project
+      else
+        BuildOutput.warning("iTunesArtwork (image required for iTunes) not found - use default !!!" )
+      end
+      if (File.exists? itunes_artwork_2) && (itunes_artwork_2 != itunes_artwork_in_project_2)
+        rm_rf itunes_artwork_in_project_2
+        cp itunes_artwork_2,itunes_artwork_in_project_2
+      else
+        BuildOutput.warning("iTunesArtwork@2x (image required for iTunes) not found - use default !!!" )
       end
 
       rm_rf 'project/iphone/toremoved'
@@ -2719,6 +2740,7 @@ namespace "device" do
     end
 
     def determine_prebuild_path_iphone(config)
+      RhoPackages.request 'rhodes-containers'
       require 'rhodes/containers'
       Rhodes::Containers::get_container_path_prefix('iphone', config)
     end
@@ -2867,35 +2889,54 @@ namespace "device" do
       Jake.run('plutil', ['-convert', 'binary1', 'Info.plist'])
 
 
+      #iTunesArtwork
+      itunes_artwork_in_project = File.join(parent_app_bin, "Payload/prebuild.app/iTunesArtwork")
+      itunes_artwork_in_project_2 = File.join(parent_app_bin, "Payload/prebuild.app/iTunesArtwork@2x")
 
-      #itunesArtwork
-        itunes_artwork = File.join($app_path, "/project/iphone/iTunesArtwork")
-        #itunes_artwork = File.join($config["build"]["iphonepath"], "iTunesArtwork.jpg")
-        itunes_artwork_dst = File.join(parent_app_bin, "Payload/prebuild.app/iTunesArtwork")
+      itunes_artwork_default = File.join($app_path, "/project/iphone/iTunesArtwork")
+      itunes_artwork  = itunes_artwork_default
 
-        if !$app_config["iphone"].nil?
-          if !$app_config["iphone"]["production"].nil?
-            if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
-              art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+      if !$app_config["iphone"].nil?
+        if !$app_config["iphone"]["production"].nil?
+          if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
+            art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+            if File.exists? art_test_name
+              itunes_artwork = art_test_name
+            else
+              art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
               if File.exists? art_test_name
                 itunes_artwork = art_test_name
               else
-                art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
-                if File.exists? art_test_name
-                  itunes_artwork = art_test_name
-                else
-                  itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
-                end
+                itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
               end
             end
           end
         end
+      end
 
-        rm_rf itunes_artwork_dst
-        rm_rf File.join(parent_app_bin, "iTunesArtwork")
+      itunes_artwork_2 = itunes_artwork
+      itunes_artwork_2 = itunes_artwork_2.gsub(".png", "@2x.png")
+      if itunes_artwork_2.index('@2x') == nil
+        itunes_artwork_2 = itunes_artwork_2.gsub(".PNG", "@2x.PNG")
+      end
+      if itunes_artwork_2.index('@2x') == nil
+        itunes_artwork_2 = itunes_artwork_2 + '@2x'
+      end
 
-        cp itunes_artwork, itunes_artwork_dst
-        #cp itunes_artwork, File.join(parent_app_bin, "iTunesArtwork")
+      rm_rf itunes_artwork_in_project
+      cp itunes_artwork,itunes_artwork_in_project
+      if itunes_artwork == itunes_artwork_default
+        BuildOutput.warning("iTunesArtwork (image required for iTunes) not found - use from XCode project, can be default !!!" )
+      end
+      rm_rf itunes_artwork_in_project_2
+      cp itunes_artwork_2,itunes_artwork_in_project_2
+      if itunes_artwork == itunes_artwork_default
+        BuildOutput.warning("iTunesArtwork@2x (image required for iTunes) not found - use from XCode project, can be default !!!" )
+      end
+
+      # copy to Payload root
+      rm_rf File.join(parent_app_bin, "iTunesArtwork")
+      #cp itunes_artwork, File.join(parent_app_bin, "iTunesArtwork")
 
 
 
