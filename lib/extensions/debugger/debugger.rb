@@ -1,4 +1,3 @@
-require 'uri'
 require 'timeout'
 
 DEBUGGER_STEP_TYPE = ['STEP','STOVER','STRET','SUSP']
@@ -33,12 +32,38 @@ def debug_read_cmd(io,wait)
   end
 end
 
-def execute_cmd(cmd, advanced)
-  if $is_rhosim
-    cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
-  else
-    cmd = unescape(cmd.gsub(/\+/,' ')) if advanced
+ALPHA = "a-zA-Z"
+ALNUM = "#{ALPHA}\\d"
+HEX     = "a-fA-F\\d"
+ESCAPED = "%[#{HEX}]{2}"
+UNRESERVED = "-_.!~*'()#{ALNUM}"
+RESERVED = ";/?:@&=+$,\\[\\]"
+
+DOMLABEL = "(?:[#{ALNUM}](?:[-#{ALNUM}]*[#{ALNUM}])?)"
+TOPLABEL = "(?:[#{ALPHA}](?:[-#{ALNUM}]*[#{ALNUM}])?)"
+HOSTNAME = "(?:#{DOMLABEL}\\.)*#{TOPLABEL}\\.?"
+
+def escape(str, unsafe = @regexp[:UNSAFE])
+  unless unsafe.kind_of?(Regexp)
+    # perhaps unsafe is String object
+    unsafe = Regexp.new("[#{Regexp.quote(unsafe)}]", false)
   end
+  str.gsub(unsafe) do
+    us = $&
+    tmp = ''
+    us.each_byte do |uc|
+      tmp << sprintf('%%%02X', uc)
+    end
+    tmp
+  end.force_encoding("US-ASCII")#Encoding::US_ASCII)
+end
+
+def unescape(str, escaped = @regexp[:ESCAPED])
+  str.gsub(escaped) { [$&[1, 2].hex].pack('C') }.force_encoding(str.encoding)
+end
+
+def execute_cmd(cmd, advanced)
+  cmd = unescape(cmd.gsub(/\+/,' ')) if advanced
   debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Executing: #{cmd.inspect}")
   result = ""
   error = '0';
@@ -49,7 +74,7 @@ def execute_cmd(cmd, advanced)
     result = "#{$!}".inspect
   end
   
-  cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) if advanced
+  cmd = escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{UNRESERVED}]")) if advanced
   $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
 end
 
