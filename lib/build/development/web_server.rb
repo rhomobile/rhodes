@@ -8,16 +8,20 @@ module RhoDevelopment
     @tasks
 
 # class instance methods
-#TODO: Use it from rake command
+
     def self.ensure_running
-        unless self.alive?
-          case RbConfig::CONFIG['host_os']
-            when /mswin|mingw32|windows/i
-		      exec "start \"development webserver\" /d \"#{Configuration::applicationRoot}\" rake dev:webserver:privateStart"
-            when /darwin/i
-              puts "MAC OS X"
-          end
+      unless self.alive?
+        case RbConfig::CONFIG['host_os']
+          when /mswin|mingw32|windows/i
+            cmd = "start \"development webserver\" /d \"#{Configuration::applicationRoot}\" rake dev:webserver:privateStart"
+          when /darwin/i
+            cmd = "osascript -e 'tell app \"Terminal\" \n do script \" cd #{Configuration::applicationRoot}; rake dev:webserver:privateStart\" \n end tell'"
         end
+        system cmd
+        until self.alive? do
+          sleep(1)
+        end
+      end
     end
 
     def self.alive?
