@@ -318,7 +318,6 @@ namespace 'dev' do
     task :partial_onetime => ['config:initialize'] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
       RhoDevelopment::WebServer.ensure_running
-      sleep(1)
       updater = RhoDevelopment::OneTimeUpdater.new
       updater.run
     end
@@ -327,7 +326,6 @@ namespace 'dev' do
     task :full_onetime => ['config:initialize'] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
       RhoDevelopment::WebServer.ensure_running
-      sleep(1)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersFullUpdateNotifyingTask.new)
     end
@@ -336,7 +334,6 @@ namespace 'dev' do
     task :build_and_notify => ['config:initialize'] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
       RhoDevelopment::WebServer.ensure_running
-      sleep(1)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersPartialUpdateNotifyingTask.new)
     end
@@ -345,7 +342,6 @@ namespace 'dev' do
     task :auto => ['config:initialize'] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
       RhoDevelopment::WebServer.ensure_running
-      sleep(1)
       updater = RhoDevelopment::AutoUpdater.new
       updater.add_directory(File.join($app_basedir, '/public'))
       updater.add_directory(File.join($app_basedir, '/app'))
