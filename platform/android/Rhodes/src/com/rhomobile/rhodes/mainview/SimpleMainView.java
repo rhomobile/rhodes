@@ -55,6 +55,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -601,6 +602,7 @@ public class SimpleMainView implements MainView {
 	}
 
 	public void navigate(String url, int index) {
+		//Utils.platformLog("@&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&@", "navigate("+url+")");
 		String cleared_url = processForNativeView(url);
 		Logger.I(TAG, "Cleared URL: " + url);
 		if (cleared_url.length() > 0) {
@@ -611,19 +613,21 @@ public class SimpleMainView implements MainView {
 		}
 	}
 
-    @Override
+	
+    //@Override
     public void executeJS(String js, int index) {
     	
     	//Utils.platformLog("@$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$@", "ExecuteJS("+js+")");
     	//((android.webkit.WebView)webView.getView()).executeJS();
-    	if (android.os.Build.VERSION.SDK_INT >= 0/*19*/) {
+    	if ((android.os.Build.VERSION.SDK_INT < 14) || (android.os.Build.VERSION.SDK_INT >= 19)) {    // 14 is 4.0, 19 is 4.4
     		navigate("javascript:"+js, index);
     		return;
     	}
     	
     	
 		Method mStringByEvaluatingJavaScriptFromString = null;
-	    Object mWebViewCore;
+		Method mSendMessage = null;
+	    Object mWebViewCore = null;
 	    Object mBrowserFrame = null;
 	    boolean mHasPossibleUseOfReflectionExecuteJS = false;
 	    Object webViewObject = this;
@@ -637,14 +641,18 @@ public class SimpleMainView implements MainView {
 	        wc.setAccessible(true);
 	        mWebViewCore = wc.get(webViewObject);
 	        if (mWebViewCore != null) {
+	        	
+	        	mSendMessage = mWebViewCore.getClass().getDeclaredMethod("sendMessage", Message.class);
+	        	mSendMessage.setAccessible(true);
 
+	        	/*
 	        	Field bf= mWebViewCore.getClass().getDeclaredField("mBrowserFrame");
 	            
 	        	bf.setAccessible(true);
 	        	mBrowserFrame = bf.get(mWebViewCore);
 	            mStringByEvaluatingJavaScriptFromString = mBrowserFrame.getClass().getDeclaredMethod("stringByEvaluatingJavaScriptFromString", String.class);
 	            mStringByEvaluatingJavaScriptFromString.setAccessible(true);   
-
+				*/
 	        }
 	        mHasPossibleUseOfReflectionExecuteJS = true;
 	    } catch (Throwable e) {
@@ -652,22 +660,21 @@ public class SimpleMainView implements MainView {
 	        //e.printStackTrace();
 	    }		    		
 
-	    if (mHasPossibleUseOfReflectionExecuteJS && (mStringByEvaluatingJavaScriptFromString != null)) {
+	    boolean mHasReflectionWasExecutedOK = false;
+	    
+	    if (mHasPossibleUseOfReflectionExecuteJS && (mSendMessage != null)) {
 			try {
-				mStringByEvaluatingJavaScriptFromString.invoke(mBrowserFrame, js);
+				//mStringByEvaluatingJavaScriptFromString.invoke(mBrowserFrame, js);
+				Message execJSCodeMsg = Message.obtain(null, 194, js);
+				mSendMessage.invoke(mWebViewCore, execJSCodeMsg);
+				mHasReflectionWasExecutedOK = true;
 				//Utils.platformLog("@#########################@", "EvaluateJS("+js+")");
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
+			} catch (Throwable e) {
 				//e.printStackTrace();
 			}
 	    }
-	    else {
+	    
+	    if (!mHasReflectionWasExecutedOK) {
 	        //com.rhomobile.rhodes.WebView.executeJs(js, index);
 	    	navigate("javascript:"+js, index);
 	    	
