@@ -21,7 +21,7 @@ module RhoDevelopment
       end
     end
 
-    def parallelDiscovery
+    def typhoeusDiscovery
       subscribers = []
       mask = Configuration::own_ip_address.split('.')[0, 3].join('.')
 
@@ -48,33 +48,34 @@ module RhoDevelopment
     end
 
 
-    def poolDiscovery
-      pool = Thread.pool(100)
+    def parallelDiscovery
       subscribers = []
+      threads = []
       mask = Configuration::own_ip_address.split('.')[0, 3].join('.')
       1.upto(254) { |each|
-        pool.process {
+        threads << Thread.new {
           url = URI("http://#{mask}.#{each}:37579/development/get_info")
           begin
             http = Net::HTTP.new(url.host, url.port)
-            http.open_timeout = 1
-            http.start() { |http|
-              response = http.get(url.path)
-              puts "#{url} answered: #{response.body}".info
-              data = JSON.parse(response.body)
-              subscriber = {}
-              subscriber['uri'] = "#{data['ip']}:#{data['port']}"
-              subscriber['name'] = data['deviceFriendlyName']
-              subscriber['platform'] = data['platform']
-              subscriber['application'] = data['applicationName']
-              subscribers << subscriber
-            }
-          rescue Errno::ECONNREFUSED, Net::OpenTimeout => e
+            http.open_timeout = 5
+            response = http.get(url.path)
+            #puts "#{url} answered: #{response.body}".info
+            data = JSON.parse(response.body)
+            subscriber = {}
+            subscriber['uri'] = "#{data['ip']}:#{data['port']}"
+            subscriber['name'] = data['deviceFriendlyName']
+            subscriber['platform'] = data['platform']
+            subscriber['application'] = data['applicationName']
+            subscribers << subscriber
+          rescue Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net::OpenTimeout => e
+            #rescue  => e
             #TODO may be it is necessary remove subscriber from list?
-            puts "#{url} is not accessible. error: #{e.class}".info
+            #puts "#{url} is not accessible. error: #{e.class}".info
           end
+
         }
       }
+      threads.each { |thread| thread.join }
       return subscribers
     end
 
@@ -83,10 +84,12 @@ module RhoDevelopment
       mask = Configuration::own_ip_address.split('.')[0, 3].join('.')
       1.upto(254) { |each|
         url = URI("http://#{mask}.#{each}:37579/development/get_info")
-        begin
-          http = Net::HTTP.new(url.host, url.port)
-          http.open_timeout = 0.5
-          http.start() { |http|
+
+        http = Net::HTTP.new(url.host, url.port)
+        http.open_timeout = 5
+
+        http.start() { |http|
+          begin
             response = http.get(url.path)
             puts "#{url} answered: #{response.body}".info
             data = JSON.parse(response.body)
@@ -96,11 +99,12 @@ module RhoDevelopment
             subscriber['platform'] = data['platform']
             subscriber['application'] = data['applicationName']
             subscribers << subscriber
-          }
-        rescue Errno::ECONNREFUSED, Net::OpenTimeout => e
-          #TODO may be it is necessary remove subscriber from list?
-          puts "#{url} is not accessible. error: #{e.class}".info
-        end
+          rescue Errno::ECONNREFUSED, Net::OpenTimeout => e
+            #TODO may be it is necessary remove subscriber from list?
+            puts "#{url} is not accessible. error: #{e.class}".info
+          end
+        }
+
       }
       return subscribers
     end
