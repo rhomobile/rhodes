@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{<%=@productid%>}</ProjectGuid>
-    <RootNamespace><%= name.camel_case() %></RootNamespace>
+    <RootNamespace><%= namecamelcase %></RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
   </PropertyGroup>
@@ -52,16 +52,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project=".\<%= name.camel_case() %>.props" />
+    <Import Project=".\<%= namecamelcase %>.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <Import Project=".\<%= name.camel_case() %>.props" />
+    <Import Project=".\<%= namecamelcase %>.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project=".\<%= name.camel_case() %>.props" />
+    <Import Project=".\<%= namecamelcase %>.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <Import Project=".\<%= name.camel_case() %>.props" />
+    <Import Project=".\<%= namecamelcase %>.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -149,15 +149,15 @@
     <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c" />
-    <ClInclude Include="..\..\<%= name.camel_case() %>.xml" />
-    <ClCompile Include="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp" />
+    <ClInclude Include="..\..\<%= namecamelcase %>.xml" />
+    <ClCompile Include="..\..\shared\generated\cpp\<%= namecamelcase %>Base.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp" />
-    <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h" />
-    <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>Base.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\I<%= namecamelcase %>.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\I<%= namecamelcase %>Base.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\<%= name.camel_case() %>_impl.cpp" />
+    <ClCompile Include="src\<%= namecamelcase %>_impl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

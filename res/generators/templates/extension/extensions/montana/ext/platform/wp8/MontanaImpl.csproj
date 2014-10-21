@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="<%= name.camel_case() %>Impl.props"/>
+  <Import Project="<%= namecamelcase %>Impl.props"/>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,8 +10,8 @@
     <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace><%= name.camel_case() %>Impl</RootNamespace>
-    <AssemblyName><%= name.camel_case() %>Impl</AssemblyName>
+    <RootNamespace><%= namecamelcase %>Impl</RootNamespace>
+    <AssemblyName><%= namecamelcase %>Impl</AssemblyName>
     <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
@@ -24,8 +24,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= namecamelcase %>Impl\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= namecamelcase %>Impl\tmp\</IntermediateOutputPath>
     <OutputPath>$(RHO_ROOT)\platform\wp8\bin\anycpu\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
@@ -36,8 +36,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= namecamelcase %>Impl\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= namecamelcase %>Impl\tmp\</IntermediateOutputPath>
     <OutputPath>$(RHO_ROOT)\platform\wp8\bin\anycpu\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
@@ -49,8 +49,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= namecamelcase %>Impl\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= namecamelcase %>Impl\tmp\</IntermediateOutputPath>
     <OutputPath>$(RHO_ROOT)\platform\wp8\bin\win32\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
@@ -61,8 +61,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= namecamelcase %>Impl\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= namecamelcase %>Impl\tmp\</IntermediateOutputPath>
     <OutputPath>$(RHO_ROOT)\platform\wp8\bin\win32\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
@@ -74,8 +74,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= namecamelcase %>Impl\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= namecamelcase %>Impl\tmp\</IntermediateOutputPath>
     <OutputPath>$(RHO_ROOT)\platform\wp8\bin\arm\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
@@ -86,8 +86,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|ARM' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= namecamelcase %>Impl\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= namecamelcase %>Impl\tmp\</IntermediateOutputPath>
     <OutputPath>$(RHO_ROOT)\platform\wp8\bin\arm\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
@@ -96,7 +96,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(<%= name.upcase %>_ROOT)\platform\wp8\src\<%= name.camel_case() %>_impl.cs" />
+    <Compile Include="$(<%= name.upcase %>_ROOT)\platform\wp8\generated\<%= namecamelcase %>Base.cs" />
+    <Compile Include="$(<%= name.upcase %>_ROOT)\platform\wp8\src\<%= namecamelcase %>_impl.cs" />
     <Compile Include="$(<%= name.upcase %>_ROOT)\platform\wp8\src\Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
