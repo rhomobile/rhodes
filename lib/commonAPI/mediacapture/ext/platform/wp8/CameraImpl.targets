@@ -2,8 +2,9 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Compile Include="$(CAMERA_ROOT)\platform\wp8\src\CameraPage.xaml.cs">
-    <DependentUpon>CameraPage.xaml</DependentUpon>
+      <DependentUpon>CameraPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(CAMERA_ROOT)\platform\wp8\generated\CameraBase.cs" />
     <Compile Include="$(CAMERA_ROOT)\platform\wp8\src\Camera_impl.cs" />
   </ItemGroup>
   <ItemGroup>
