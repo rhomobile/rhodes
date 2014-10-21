@@ -31,55 +31,35 @@ end %>
     args += "oResult"
     module_method.cached_data["cs_params"] = params
 
-    method_body = (/^(getProperty|getProperties|getAllProperties|setProperty|setProperties)$/ !~ module_method.native_name) ? "// implement this method in C# here" : "_runtime.#{module_method.native_name}(#{args});"
-    method_def = "\n        public void #{module_method.native_name}(#{params})\n        {\n            #{method_body}\n        }\n"
+    method_def = "\n        public override void #{module_method.native_name}(#{params})\n        {\n            // implement this method in C# here\n        }\n"
 
     if module_method.access == ModuleMethod::ACCESS_STATIC
       static_methods += method_def
     else
-      dynamic_methods += method_def
+      dynamic_methods += method_def if /^(getProperty|getProperties|getAllProperties|setProperty|setProperties)$/ !~ module_method.native_name
     end
   end
 %>
 namespace <%= $cur_module.name %>Impl
 {
-    public class <%= $cur_module.name %> : I<%= $cur_module.name %>Impl
+    public class <%= $cur_module.name %> : <%= $cur_module.name %>Base
     {
-        private long _nativeImpl = 0;
-        <%= $cur_module.name %>RuntimeComponent _runtime;
-
         public <%= $cur_module.name %>()
         {
-            _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
-        }
-
-        public long getNativeImpl()
-        {
-            return _nativeImpl;
-        }
-
-        public void setNativeImpl(long native)
-        {
-            _nativeImpl = native;
+            // initialize class instance in C# here
         }
 <%= dynamic_methods%>    }
 
-    public class <%= $cur_module.name %>Singleton : I<%= $cur_module.name %>SingletonImpl
+    public class <%= $cur_module.name %>Singleton : <%= $cur_module.name %>SingletonBase
     {
         public <%= $cur_module.name %>Singleton()
         {
-            <%= $cur_module.name %>SingletonComponent _runtime = new <%= $cur_module.name %>SingletonComponent(this);
+            // initialize singleton instance in C# here
         }
 <%= static_methods%>    }
 
-    public class <%= $cur_module.name %>Factory : I<%= $cur_module.name %>FactoryImpl
+    public class <%= $cur_module.name %>Factory : <%= $cur_module.name %>FactoryBase
     {
-        public I<%= $cur_module.name %>Impl getImpl() {
-            return new <%= $cur_module.name %>();
-        }
-        public I<%= $cur_module.name %>SingletonImpl getSingletonImpl() {
-            return new <%= $cur_module.name %>Singleton();
-        }
     }
 }
 <% $cur_module.parents.each do |parent| %>
