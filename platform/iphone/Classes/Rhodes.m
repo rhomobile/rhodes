@@ -972,8 +972,33 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 }
 
-
 // UIApplicationDelegate implementation
+
+- (void)registerForRemoteNotification {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+#ifdef APP_BUILD_CAPABILITY_PUSH
+        UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
+#else
+        UIUserNotificationType types = UIUserNotificationTypeBadge;
+#endif
+        UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    } else {
+#ifdef APP_BUILD_CAPABILITY_PUSH
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+#else
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge)];
+#endif
+    }
+}
+
+#ifdef __IPHONE_8_0
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    [application registerForRemoteNotifications];
+}
+#endif
+
+
 
 #ifdef __IPHONE_3_0
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -999,6 +1024,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
     NSLog(@"didFinishLaunchingWithOptions: %@", url);
 	
+    
+    //[self registerForRemoteNotification];
+    
     
 	// store start parameter
 	NSString* start_parameter = [NSString stringWithUTF8String:""];
