@@ -59,7 +59,7 @@ module RhoDevelopment
             http = Net::HTTP.new(url.host, url.port)
             http.open_timeout = 5
             response = http.get(url.path)
-            #puts "#{url} answered: #{response.body}".info
+            puts "#{url} answered: #{response.body}".info
             data = JSON.parse(response.body)
             subscriber = {}
             subscriber['uri'] = "#{data['ip']}:#{data['port']}"
