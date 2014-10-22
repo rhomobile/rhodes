@@ -1088,7 +1088,7 @@ def best_match(target, list, is_lex = false)
       sorted = list.sort{|a, b| String.natcmp(b, a)}
       best = sorted.first
       sorted.each do |item|
-        if String.natcmp(target, item) < 0
+        if String.natcmp(target, item) <= 0
           best = item
         else
           break
