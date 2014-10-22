@@ -975,6 +975,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 // UIApplicationDelegate implementation
 
 - (void)registerForRemoteNotification {
+#ifdef __IPHONE_8_0
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
 #ifdef APP_BUILD_CAPABILITY_PUSH
         UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
@@ -983,7 +984,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 #endif
         UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
         [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
-    } else {
+    } else
+#endif
+    {
 #ifdef APP_BUILD_CAPABILITY_PUSH
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 #else
