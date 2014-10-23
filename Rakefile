@@ -1485,7 +1485,7 @@ def deploy_build(platform)
   unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
 
   unless $cloud_build_temp.empty?
-    FileUtils.rm_rf($cloud_build_temp, secure: true)
+    FileUtils.rm_rf($cloud_build_temp, {:secure => true})
   end
 
   put_message_with_timestamp("Done, application files deployed to #{dest}")
