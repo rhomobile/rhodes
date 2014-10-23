@@ -596,13 +596,14 @@ namespace 'token' do
     server_list = []
 
     if server_url.kind_of?(String)
-      server_list << [server_url]
+      server_list << server_url
     elsif server_url.kind_of?(Array)
       server_list.concat(server_url)
     elsif !server_url.nil?
       raise "Invalid server_url setting! #{server_url.inspect}"
     end
-    $server_list = server_list
+    server_list.select!{|url| url =~ /\A#{URI::regexp(['http', 'https'])}\z/}
+    $server_list = server_list unless server_list.empty?
 
     SiteChecker.site = $server_list.first
     Rhohub.url = $server_list.first
