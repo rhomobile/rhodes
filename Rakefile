@@ -406,11 +406,9 @@ def get_conf(key_path, default = nil)
     end
   end
 
-  if result.nil?
-    result = default
-  end
+  result = nil if result.kind_of?(String) && result.strip.empty?
 
-  result
+  result.nil? ? default : result
 end
 
 #------------------------------------------------------------------------
