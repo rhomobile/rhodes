@@ -852,12 +852,15 @@ namespace "build" do
   namespace "android" do
 
     desc "Build RhoBundle for android"
-    task :rhobundle => ["config:android", :extensions] do
+    task :rhobundle => ["config:android"] do
       print_timestamp('build:android:rhobundle START')
 
-      rm_rf File.join($srcdir)
-
       $srcdir = $appassets
+      rm_rf File.join($srcdir)
+      mkdir $srcdir
+
+      Rake::Task["build:android:extensions"].invoke
+
       Rake::Task["build:bundle:noxruby"].invoke
 
       hash = nil
