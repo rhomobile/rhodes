@@ -406,11 +406,9 @@ def get_conf(key_path, default = nil)
     end
   end
 
-  if result.nil?
-    result = default
-  end
+  result = nil if result.kind_of?(String) && result.strip.empty?
 
-  result
+  result.nil? ? default : result
 end
 
 #------------------------------------------------------------------------
@@ -571,7 +569,7 @@ def read_and_delete_files( file_list )
   result
 end
 
-$server_list = ['https://rms.rhomobile.com/api/v1', 'https://rmsstaging.rhomobile.com/api/v1']
+$server_list = ['https://rms.rhomobile.com/api/v1']
 $selected_server = $server_list.first
 
 def get_server(url, default)
@@ -588,9 +586,22 @@ def get_server(url, default)
 
 end
 
-namespace "token" do
+namespace 'token' do
   task :initialize => "config:load" do
     $user_acc = RhoHubAccount.new()
+
+    server_url = get_conf('cloud/server_url', $server_list)
+    server_list = []
+
+    if server_url.kind_of?(String)
+      server_list << server_url
+    elsif server_url.kind_of?(Array)
+      server_list.concat(server_url)
+    elsif !server_url.nil?
+      raise "Invalid server_url setting! #{server_url.inspect}"
+    end
+    server_list.select!{|url| url =~ /\A#{URI::regexp(['http', 'https'])}\z/}
+    $server_list = server_list unless server_list.empty?
 
     SiteChecker.site = $server_list.first
     Rhohub.url = $server_list.first
@@ -1086,7 +1097,7 @@ def best_match(target, list, is_lex = false)
       sorted = list.sort{|a, b| String.natcmp(b, a)}
       best = sorted.first
       sorted.each do |item|
-        if String.natcmp(target, item) < 0
+        if String.natcmp(target, item) <= 0
           best = item
         else
           break
@@ -1483,7 +1494,7 @@ def deploy_build(platform)
   unpacked_file_list = Dir.glob(File.join(dest,'**','*'))
 
   unless $cloud_build_temp.empty?
-    FileUtils.rm_rf($cloud_build_temp, secure: true)
+    FileUtils.rm_rf($cloud_build_temp, {:secure => true})
   end
 
   put_message_with_timestamp("Done, application files deployed to #{dest}")
