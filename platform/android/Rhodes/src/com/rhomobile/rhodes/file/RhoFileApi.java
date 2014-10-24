@@ -302,10 +302,35 @@ public class RhoFileApi {
         am = ctx.getAssets();
         for(String asset: assets)
         {
-            copy(makeRelativePath(getRootPath() + asset));
+        	copyFileOrFolder(ctx, makeRelativePath(getRootPath() + asset));
         }
     }
 
+    public static void copyFileOrFolder(Context ctx, String path) {
+		// check for file
+        am = ctx.getAssets();
+    	try {
+			String[] l = am.list(path);
+			if (l.length > 0) {
+				// folder !
+				for (int i = 0; i < l.length; ++i) {
+					copyFileOrFolder(ctx, path + "/" + l[i]);
+	            }
+			}
+			else {
+				// file
+				copy(path);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+		
+		
+    	
+    }
+    
 	public static boolean copy(String path)
 	{
 
