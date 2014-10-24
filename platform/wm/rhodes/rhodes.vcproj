@@ -391,8 +391,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;../../../lib/commonAPI"
-				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
+				AdditionalIncludeDirectories="../../shared/ruby/wince;../../shared/curl/include;../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;../../../lib/commonAPI"
+				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;CURL_STATICLIB"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
@@ -803,8 +803,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;../../../lib/commonAPI"
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
+				AdditionalIncludeDirectories="../../shared/ruby/wince;../../shared/curl/include;../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;../../../lib/commonAPI"
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL;CURL_STATICLIB"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
@@ -1326,8 +1326,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;../../../lib/commonAPI"
-				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
+				AdditionalIncludeDirectories="../../shared/ruby/wince;../../shared/curl/include;../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;../../../lib/commonAPI"
+				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;CURL_STATICLIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -1736,8 +1736,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;../../../lib/commonAPI"
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				AdditionalIncludeDirectories="../../shared/ruby/wince;../../shared/curl/include;../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;../../../lib/commonAPI"
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;CURL_STATICLIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -2720,10 +2720,26 @@
 				<File
 					RelativePath=".\rho\net\NetRequestImpl.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|MC3000c50b (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\rho\net\NetRequestImpl.h"
 					>
+					<FileConfiguration
+						Name="Debug|MC3000c50b (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter

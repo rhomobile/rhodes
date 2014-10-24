@@ -377,8 +377,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared/ruby;../../shared;../../../lib/commonAPI"
-				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="../../shared/ruby;../../shared;../../../lib/commonAPI;../../shared/curl/include;../../shared/ruby/wince"
+				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -615,8 +615,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared/ruby;../../shared;../../../lib/commonAPI"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="../../shared/ruby;../../shared;../../../lib/commonAPI;../../shared/curl/include;../../shared/ruby/wince"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -639,6 +639,86 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
+				OutputFile="$(OutDir)/RhoLib.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|WT41N0c70PSDK (ARMv4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../shared/ruby;../../shared;../../../lib/commonAPI"
+				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4018;4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /subsystem:windowsce,5.00"
 				OutputFile="$(OutDir)/RhoLib.lib"
 			/>
 			<Tool
@@ -999,7 +1079,7 @@
 				ExecutionBucket="7"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../shared/ruby;../../shared;../../../lib/commonAPI"
-				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -1233,8 +1313,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared/ruby;../../shared;../../../lib/commonAPI"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="../../shared/ruby;../../shared;../../../lib/commonAPI;../../shared/curl/include;../../shared/ruby/wince"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -1256,86 +1336,6 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/RhoLib.lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debug|WT41N0c70PSDK (ARMv4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="1"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="0"
-				AdditionalIncludeDirectories="../../shared/ruby;../../shared;../../../lib/commonAPI"
-				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4018;4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.00"
 				OutputFile="$(OutDir)/RhoLib.lib"
 			/>
 			<Tool
@@ -1904,6 +1904,14 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\net\CompatWince.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\net\CURLNetRequest_WM.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\net\CURLNetRequest_WM.h"
 				>
 			</File>
 			<File

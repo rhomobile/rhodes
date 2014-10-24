@@ -59,7 +59,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-#if defined(WIN32) && !defined(_WIN32_WCE) && !defined(__GNUC__) && \
+#if defined(WIN32) && /*!defined(_WIN32_WCE) &&*/ !defined(__GNUC__) && \
   !defined(__CYGWIN__) || defined(__MINGW32__)
 #if !(defined(_WINSOCKAPI_) || defined(_WINSOCK_H))
 /* The check above prevents the winsock2 inclusion if winsock.h already was

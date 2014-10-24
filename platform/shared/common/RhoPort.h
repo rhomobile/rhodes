@@ -92,7 +92,9 @@ typedef int socklen_t;
 #ifdef __cplusplus
 extern "C"
 #endif //__cplusplus
+#ifndef BUILDING_LIBCURL
 char *strdup(const char * str);
+#endif
 
 #else //!defined(OS_WINCE)
 #include <sys/stat.h>

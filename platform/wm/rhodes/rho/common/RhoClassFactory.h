@@ -28,6 +28,7 @@
 
 #include "common/IRhoClassFactory.h"
 #include "../net/NetRequestImpl.h"
+#include "net/CURLNetRequest_WM.h"
 #include "RhoThreadImpl.h"
 
 namespace rho {
@@ -39,7 +40,8 @@ public:
     virtual ~CRhoClassFactory(void){}
     virtual net::INetRequestImpl* createNetRequestImpl()
     {
-        return new net::CNetRequestImpl();
+        //return new net::CNetRequestImpl();
+		return new net::CURLNetRequest();
     }
 
     virtual IRhoThreadImpl* createThreadImpl()
