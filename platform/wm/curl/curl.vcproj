@@ -131,7 +131,7 @@
 				AdditionalIncludeDirectories="../../shared/curl/include;../../shared/ruby/wince;../../shared;../../../lib/extensions/openssl.so/ext/win32/include"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;BUILDING_LIBCURL;CURL_STATICLIB;_CE_DCOM;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;USE_SSLEAY;USE_OPENSSL"
 				MinimalRebuild="true"
-				RuntimeLibrary="3"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -292,10 +292,11 @@
 				FavorSizeOrSpeed="2"
 				AdditionalIncludeDirectories="../../shared/curl/include;../../shared/ruby/wince;../../shared;../../../lib/extensions/openssl.so/ext/win32/include"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;BUILDING_LIBCURL;CURL_STATICLIB;_CE_DCOM;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;USE_SSLEAY;USE_OPENSSL"
-				RuntimeLibrary="3"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				EnableFloatingPointEmulation="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -311,7 +312,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.00"
+				AdditionalOptions=" /subsystem:windowsce,5.02"
 				AdditionalDependencies="libopenssl.lib"
 				OutputFile="$(OutDir)/curl.lib"
 				AdditionalLibraryDirectories="../../../lib/extensions/openssl.so/ext/wm/lib"

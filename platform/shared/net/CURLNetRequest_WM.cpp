@@ -631,7 +631,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
 
 	if(RHOCONF().isExist("clientSSLCertificatePassword") && RHOCONF().getString("clientSSLCertificatePassword").length() > 0)
 	{
-		curl_easy_setopt(m_curl, CURLOPT_SSLKEYPASSWD, RHOCONF().getString("clientSSLCertificatePassword"));
+		curl_easy_setopt(m_curl, CURLOPT_SSLKEYPASSWD, RHOCONF().getString("clientSSLCertificatePassword").c_str());
 	}
 
 	/*if(RHOCONF().isExist("serverSSLCertificate") && RHOCONF().getString("serverSSLCertificate").length() > 0)
