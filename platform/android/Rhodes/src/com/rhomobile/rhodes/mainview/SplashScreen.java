@@ -33,6 +33,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.SystemClock;
 import android.view.View;
 import android.webkit.WebView;
@@ -40,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -72,10 +74,14 @@ public class SplashScreen implements MainView{
 	private volatile String mUrlToNavigate = null;
 	private int mNavigateIndex = 0;
 	private Thread mSleepThread;
+    
+    private ImageView.ScaleType mScaleType = ImageView.ScaleType.FIT_CENTER;
+    private int mBackgroundColor = Color.BLACK;
 
     public SplashScreen(Activity activity, MainView mainView, SplashScreenListener listener) {
         mSplashScreenListener = listener;
         mBackendView = mainView;
+        readConfig();
         loadContent(activity);
     }
 
@@ -123,9 +129,10 @@ public class SplashScreen implements MainView{
                 Logger.I(TAG, "Loading image: " + fn[type]);
                 
                 ImageView imageView = new ImageView(activity);
+                imageView.setBackgroundColor(mBackgroundColor);
                 imageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));
                 imageView.setAdjustViewBounds(true);
-                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                imageView.setScaleType(mScaleType);
                 mView = imageView;
             } catch (IOException e) {
                 Logger.E(TAG, e);
@@ -150,6 +157,41 @@ public class SplashScreen implements MainView{
         }
         activity.addContentView(mView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         Logger.I(TAG, "Done");
+    }
+    
+    private void readConfig() {
+        String configString = RhoConf.getString("splash_screen");
+        if (configString != null) {
+            String [] configParams = configString.split(";");
+            
+            for(String param: configParams) {
+                
+                Logger.I(TAG, "Process config: " + param);
+                
+                if (param.equals("zoom")) {
+                    mScaleType = ImageView.ScaleType.FIT_CENTER;
+                    Logger.I(TAG, "Scale type: zoom");
+                } else
+                if (param.equals("stretch")) {
+                    mScaleType = ImageView.ScaleType.FIT_XY;
+                    Logger.I(TAG, "Scale type: stretch");
+                } else
+                if (param.startsWith("bgcolor=#")) {
+                    String colorString = param.substring(9);
+                    boolean hasAlpha = colorString.length() == 8;
+                    if (colorString.length() == 6 || hasAlpha) {
+                        int alpha = hasAlpha ? Integer.parseInt(colorString.substring(0, 2), 16) : 0xff;
+                        int red   = Integer.parseInt(hasAlpha ? colorString.substring(2, 4) : colorString.substring(0, 2), 16);
+                        int green = Integer.parseInt(hasAlpha ? colorString.substring(4, 6) : colorString.substring(2, 4), 16);
+                        int blue  = Integer.parseInt(hasAlpha ? colorString.substring(6) : colorString.substring(4), 16);
+                        
+                        mBackgroundColor = Color.argb(alpha, red, green, blue);
+                        
+                        Logger.I(TAG, "Background color: " + mBackgroundColor);
+                    }
+                }
+            }
+        }
     }
 	
 	public void start() {
