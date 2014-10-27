@@ -174,6 +174,7 @@ def unpack_7z(where, archive)
 end
 
 def determine_prebuild_path_win(platform,config)
+  RhoPackages.request 'rhodes-containers'
   require 'rhodes/containers'
   if platform == 'win32' && !config.nil? && config.is_a?(Hash) && config.has_key?("app_type")
     conf = config.clone

@@ -2740,6 +2740,7 @@ namespace "device" do
     end
 
     def determine_prebuild_path_iphone(config)
+      RhoPackages.request 'rhodes-containers'
       require 'rhodes/containers'
       Rhodes::Containers::get_container_path_prefix('iphone', config)
     end
