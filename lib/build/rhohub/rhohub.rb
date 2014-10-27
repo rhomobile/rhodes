@@ -77,6 +77,9 @@ module Rhohub
       request[:ssl_cert_store] = @@cert_store
     end
 
+    # FIXME: it is a sslv3 issue https://github.com/nahi/httpclient/issues/202
+    request[:ssl_version] = :SSLv23
+
     if need_token
       request[:headers][:AUTHORIZATION] = Rhohub.token
     end

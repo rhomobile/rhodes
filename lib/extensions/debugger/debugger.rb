@@ -34,12 +34,8 @@ def debug_read_cmd(io,wait)
 end
 
 def execute_cmd(cmd, advanced)
-  if $is_rhosim
-    cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
-  else
-    cmd = unescape(cmd.gsub(/\+/,' ')) if advanced
-  end
-  debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Executing: #{cmd.inspect}")
+  debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Executing: #{cmd.inspect}, #{advanced}")
+  cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
   result = ""
   error = '0';
   begin
