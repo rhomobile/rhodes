@@ -365,7 +365,11 @@ module Rhom
         end
 
         # This holds the attributes for an instance of
-        # the rhom object
+        # the rhom object, do not return nil, or empty vars
+        def vars
+          @vars.select{ |_, v| !v.nil? && !v.empty? }
+        end
+        
         attr_accessor :vars
 
         def initialize(obj={})
@@ -375,14 +379,14 @@ module Rhom
             objHash = self.class.klass_model.createInstance(obj)
           end
           objHash.each do |key,value|
-            self.vars[key.to_sym()] = value
+            @vars[key.to_sym()] = value
           end
         end
 
         def update_attributes(attrs)
           objHash = self.class.klass_model.updateObject(self.object, @vars, attrs)
           objHash.each do |key, value|
-            self.vars[key.to_sym()] = value
+            @vars[key.to_sym()] = value
           end
           true
         end
@@ -392,7 +396,7 @@ module Rhom
           #attrs = @vars.collect { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
           objHash = self.class.klass_model.saveObject(self.object, @vars)
           objHash.each do |key, value|
-            self.vars[key.to_sym()] = value
+            @vars[key.to_sym()] = value
           end
           true
         end
