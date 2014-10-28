@@ -12,8 +12,8 @@ module RhoDevelopment
 
     def self.own_ip_address
       #IPSocket.getaddress(Socket.gethostname) #- it don't work on virtual machine with a lot of network interfaces
-      # Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq
-	  (Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq).last
+      return Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq
+	    #(Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq).last
     end
 
     def self.webserver_alive_request
