@@ -38,18 +38,16 @@ module RhoDevelopment
     end
 
     def self.stop
-      _url = Configuration::shut_down_webserver_request
-      _http = Net::HTTP.new(_url.host, _url.port)
-      _http.open_timeout = 5
+      url = Configuration::shut_down_webserver_request
       begin
-        _http.start() { |http|
-          _response = http.get(_url.path)
-          if _response.code == 200
-            puts 'Web server was shut down'.primary
-          else
-            puts "#{_response.body}".warning
-          end
-        }
+        http = Net::HTTP.new(url.host, url.port)
+        http.open_timeout = 5
+        response = http.get(url.path)
+        if response.code == 200
+          puts 'Web server was shut down'.primary
+        else
+          puts "#{response.body}".warning
+        end
       rescue Errno::ECONNREFUSED => e
         puts 'Web server is not answering'.warning
       end
