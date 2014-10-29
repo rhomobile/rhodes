@@ -882,7 +882,7 @@ class Jake
         begin
 
           require 'rubygems'
-          require 'zip/zip'
+          require 'zip'
           require 'find'
           require 'fileutils'
           include FileUtils
