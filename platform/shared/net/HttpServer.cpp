@@ -477,19 +477,21 @@ bool CHttpServer::init()
     return true;
 }
 
-int CHttpServer::getPort() {
+int CHttpServer::getPort() 
+{
     return m_port;
 }
     
-rho::String CHttpServer::getIPAdress() {
-        
+rho::String CHttpServer::getIPAdress() 
+{
+    return m_IP_adress;
 }
     
-void CHttpServer::disableAllLogging() {
+void CHttpServer::disableAllLogging() 
+{
     verbose = false;
 }
-    
-    
+   
 bool CHttpServer::run()
 {
     if (verbose) LOG(INFO) + "Start HTTP server";
