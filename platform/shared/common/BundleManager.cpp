@@ -471,6 +471,9 @@ unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath,
                     nError = 1;
                     break;
                 }
+                else {
+                    LOG(TRACE) + "Cannot remove file (not found): " + CFilePath::join( strSrcFolder,strPath);
+                }
             }
         }
     }
@@ -896,9 +899,11 @@ void CReplaceBundleThread::doReplaceBundle()
 
     
 #ifdef OS_ANDROID
-    rho_filelist_path = CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat");
+    String root = RHODESAPP().getRhoRootPath().c_str();
+    LOG(TRACE) + "Android RhoRootPath = " + root.c_str();
+    rho_filelist_path = CFilePath::join(root, "rho.dat");
     filelist.loadFromFile(rho_filelist_path, "apps/");
-    rho_filelist_apps_path = CFilePath::join( RHODESAPP().getAppRootPath(), "apps/rhofilelist.txt");
+    rho_filelist_apps_path = CFilePath::join( root, "apps/rhofilelist.txt");
     filelist_apps.loadFromFile(rho_filelist_apps_path, "");
 #else
     rho_filelist_path = CFilePath::join( RHODESAPP().getAppRootPath(), "rhofilelist.txt");
@@ -954,7 +959,7 @@ void CReplaceBundleThread::doReplaceBundle()
         // full update
         //Remove current files
 #ifdef OS_ANDROID
-        nError = removeFilesByList( rho_filelist_apps_path, CFilePath::join( RHODESAPP().getAppRootPath(), "apps"), true );
+        nError = removeFilesByList( rho_filelist_apps_path, ::RHODESAPP().getAppRootPath(), true );
 #else
         nError = removeFilesByList( rho_filelist_apps_path, ::RHODESAPP().getAppRootPath(), true );
 #endif
@@ -981,12 +986,21 @@ void CReplaceBundleThread::doReplaceBundle()
     }
     else {
         // full update
+#ifdef OS_ANDROID
+        nError = partialAddFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() , &filelist, &filelist_apps);
+        if ( nError != 0 )
+        {
+            showError(nError, "Copy files to bundle failed." );
+            return;
+        }
+#else
         nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), CFilePath::join( RHODESAPP().getAppRootPath(), "apps") );
         if ( nError != 0 )
         {
             showError(nError, "Copy files to bundle failed." );
             return;
         }
+#endif
     }
     
     
@@ -1003,13 +1017,19 @@ void CReplaceBundleThread::doReplaceBundle()
 #ifdef OS_ANDROID
         
             // no CFilePath::join(m_bundle_path, "RhoBundle/rho.dat") in current bundle - we should modify and copy CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt") !!!
-            
-            //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
-            if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat").c_str()))
+            filelist.saveToFile();
+        
+            if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), rho_filelist_apps_path.c_str()))
             {
                 int err = errno;
-                LOG(ERROR) + "Cannot copy rho.dat, errno: " + LOGFMT("%d") + err;
+                LOG(ERROR) + "Cannot replace rhofilelist.txt, errno: " + LOGFMT("%d") + err;
             }
+            //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
+            //if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat").c_str()))
+            //{
+            //    int err = errno;
+            //    LOG(ERROR) + "Cannot copy rho.dat, errno: " + LOGFMT("%d") + err;
+            //}
 #else
         // copy new rhofilelist.txt
         if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), rho_filelist_path.c_str()))

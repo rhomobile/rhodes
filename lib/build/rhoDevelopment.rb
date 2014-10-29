@@ -1,6 +1,5 @@
 require 'fileutils'
 require 'pathname'
-require 'childprocess'
 require 'listen'
 require 'webrick'
 require 'net/http'

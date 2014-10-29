@@ -864,10 +864,15 @@ namespace "build" do
   namespace "android" do
 
     desc "Build RhoBundle for android"
-    task :rhobundle => ["config:android", :extensions] do
+    task :rhobundle => ["config:android"] do
       print_timestamp('build:android:rhobundle START')
 
       $srcdir = $appassets
+      rm_rf File.join($srcdir)
+      mkdir $srcdir
+
+      Rake::Task["build:android:extensions"].invoke
+
       Rake::Task["build:bundle:noxruby"].invoke
 
       hash = nil
@@ -878,6 +883,10 @@ namespace "build" do
 
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(hash.hexdigest) }
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($appname) }
+
+      rm_rf File.join($srcdir, "apps", "rhofilelist.txt")
+      Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
+
       print_timestamp('build:android:rhobundle FINISH')
     end
 
@@ -1963,7 +1972,7 @@ namespace "build" do
       android_targetdir = $targetdir #File.join($targetdir, 'android')
       mkdir_p android_targetdir if not File.exists? android_targetdir
       zip_file_path = File.join(android_targetdir, 'upgrade_bundle.zip')
-      Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
+      #Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
 
       src_folder = $appassets #File.join($appassets, 'RhoBundle')
       src_folder = File.join(src_folder, 'apps')

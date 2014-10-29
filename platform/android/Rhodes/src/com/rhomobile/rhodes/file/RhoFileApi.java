@@ -60,14 +60,13 @@ public class RhoFileApi {
 	private static final int MAX_SIZE = 2*1024*1024;
 	
 	private static final String STAT_TABLE_FILENAME = "rho.dat";
+	private static final String FORCE_ASSETS_FLAG_FILE = "assets_forced.txt";
 	
 	private static AssetManager am;
 	private static String root;
     private static final String DB_FILES_FOLDER = "db/db-files";
     private static final String TMP_FOLDER = "tmp";
     
-    private static boolean ourIsForceAllFilesAlreadyDone = false;
-
 	private static native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath, String sharedPath);
 	private static native void nativeInitLogPath(String path);
 	private static native void nativeInit();
@@ -130,8 +129,6 @@ public class RhoFileApi {
 			if (is != null)
 				is.close();
 		}
-        ourIsForceAllFilesAlreadyDone = false;
-
 	}
     
     static void reloadStatTable() {
@@ -219,13 +216,25 @@ public class RhoFileApi {
 			}
 		});
 
-		if (ourIsForceAllFilesAlreadyDone) {
-			Log.d(TAG, "doForceAllFilesForContext() SKIP %%");
+		// check for already forced files
+		File assets_forced_file = new File(root, FORCE_ASSETS_FLAG_FILE);
+		if (assets_forced_file.exists()) {
+			Log.d(TAG, "doForceAllFilesForContext() SKIP because founded flag file %%");
 			return;
 		}
-		Log.d(TAG, "doForceAllFilesForContext() %%");
-		ourIsForceAllFilesAlreadyDone = true;
-
+		try {
+			File parent = assets_forced_file.getParentFile();
+			if (parent != null)
+				parent.mkdirs();
+			OutputStream os = new FileOutputStream(assets_forced_file);
+			os.write("assets_forced".getBytes());
+			os.close();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			Log.d(TAG, "doForceAllFilesForContext() ERROR with creation of flag file %%");
+			e1.printStackTrace();
+		}
+		
 		try {
 	       InputStream is = null;
 	        try {
@@ -302,10 +311,35 @@ public class RhoFileApi {
         am = ctx.getAssets();
         for(String asset: assets)
         {
-            copy(makeRelativePath(getRootPath() + asset));
+        	copyFileOrFolder(ctx, makeRelativePath(getRootPath() + asset));
         }
     }
 
+    public static void copyFileOrFolder(Context ctx, String path) {
+		// check for file
+        am = ctx.getAssets();
+    	try {
+			String[] l = am.list(path);
+			if (l.length > 0) {
+				// folder !
+				for (int i = 0; i < l.length; ++i) {
+					copyFileOrFolder(ctx, path + "/" + l[i]);
+	            }
+			}
+			else {
+				// file
+				copy(path);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+		
+		
+    	
+    }
+    
 	public static boolean copy(String path)
 	{
 

@@ -8,45 +8,46 @@ module RhoDevelopment
     @tasks
 
 # class instance methods
-#TODO: Use it from rake command
+
     def self.ensure_running
       unless self.alive?
-        process = ChildProcess.build('rake', 'dev:webserver:privateStart')
-        process.io.inherit!
-        process.cwd = $app_basedir
-        process.start
+        case RbConfig::CONFIG['host_os']
+          when /mswin|mingw32|windows/i
+            cmd = "start \"development webserver\" /d \"#{Configuration::applicationRoot}\" rake dev:webserver:privateStart"
+          when /darwin/i
+            cmd = "osascript -e 'tell app \"Terminal\" \n do script \" cd #{Configuration::applicationRoot}; rake dev:webserver:privateStart\" \n end tell'"
+        end
+        system cmd
+        until self.alive? do
+          sleep(1)
+        end
       end
     end
 
     def self.alive?
-      result = true
-      url = URI("http://#{Configuration::own_ip_address}:#{Configuration::webserver_port}/alive")
-      http = Net::HTTP.new(url.host, url.port)
-      http.open_timeout = 5
+      url = Configuration::webserver_alive_request
       begin
-        http.start { |_http|
-          _http.get(url.path)
-        }
+        http = Net::HTTP.new(url.host, url.port)
+        http.open_timeout = 5
+        response = http.get(url.path)
+        return response.code == '200'
       rescue Errno::ECONNREFUSED,
           Net::OpenTimeout => e
-        result = false
+        return false
       end
-      result
     end
 
     def self.stop
-      _url = Configuration::shut_down_webserver_request
-      _http = Net::HTTP.new(_url.host, _url.port)
-      _http.open_timeout = 5
+      url = Configuration::shut_down_webserver_request
       begin
-        _http.start() { |http|
-          _response = http.get(_url.path)
-          if _response.code == 200
-            puts 'Web server was shut down'.primary
-          else
-            puts "#{_response.body}".warning
-          end
-        }
+        http = Net::HTTP.new(url.host, url.port)
+        http.open_timeout = 5
+        response = http.get(url.path)
+        if response.code == 200
+          puts 'Web server was shut down'.primary
+        else
+          puts "#{response.body}".warning
+        end
       rescue Errno::ECONNREFUSED => e
         puts 'Web server is not answering'.warning
       end
@@ -60,19 +61,17 @@ module RhoDevelopment
 # instance methods
 
     def initialize
-      _host = Configuration::own_ip_address
-      _port = Configuration::webserver_port
-      _document_root = Configuration::document_root
-      puts "Path '#{_document_root}' will be used as web server document root".primary
+      port = Configuration::webserver_port
+      document_root = Configuration::document_root
+      puts "Path '#{document_root}' will be used as web server document root".primary
       print 'Cleaning document root directory... '.primary
-      FileUtils.rm_rf("#{_document_root}/.", secure: true)
+      FileUtils.rm_rf("#{document_root}/.", secure: true)
       puts 'done'.success
       @tasks = Queue.new
       @web_server = WEBrick::HTTPServer.new(
-          :Port => _port,
-          :DocumentRoot => _document_root,
-          :ServerType => WEBrick::SimpleServer,
-          :BindAddress => _host
+          :Port => port,
+          :DocumentRoot => document_root,
+          :ServerType => WEBrick::SimpleServer
       )
       self.configure
     end
