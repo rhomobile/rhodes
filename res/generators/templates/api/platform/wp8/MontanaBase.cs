@@ -14,6 +14,8 @@ using rhoruntime;
 namespace <%= parent.downcase() %> {<%
 end %>
 <%
+  dynamic_constants = ''
+  static_constants = ''
   dynamic_methods = ''
   static_methods = ''
   has_getProperty = false
@@ -21,6 +23,24 @@ end %>
   has_getAllProperties = false
   has_setProperty = false
   has_setProperties = false
+
+  $cur_module.constants.each do |module_constant|
+    if module_constant.name && module_constant.name.length() > 0 
+      if module_constant.type == RhogenCore::TYPE_STRING
+        constant = "\n        public const string #{module_constant.name} = \"#{module_constant.value}\";"
+      else
+        constant = "\n        public const #{api_generator_cs_makeNativeTypeArg(module_constant.type)} #{module_constant.name} = #{module_constant.value};"
+      end
+      if $cur_module.properties_access == ModuleMethod::ACCESS_INSTANCE
+        dynamic_constants += constant
+      else # if $cur_module.properties_access == ModuleMethod::ACCESS_STATIC
+        static_constants += constant
+      end
+    end
+  end
+  dynamic_constants += "\n" if dynamic_constants.length() > 0
+  static_constants += "\n" if static_constants.length() > 0
+
   $cur_module.methods.each do |module_method|
     next if !module_method.generateNativeAPI
 
@@ -52,7 +72,7 @@ namespace <%= $cur_module.name %>Impl
     {
         protected long _nativeImpl = 0;
         protected <%= $cur_module.name %>RuntimeComponent _runtime;
-
+<%= dynamic_constants %>
         public <%= $cur_module.name %>Base()
         {
             _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
@@ -116,7 +136,7 @@ if has_setProperties
     abstract public class <%= $cur_module.name %>SingletonBase : I<%= $cur_module.name %>SingletonImpl
     {
         protected <%= $cur_module.name %>SingletonComponent _runtime;
-
+<%= static_constants %>
         public <%= $cur_module.name %>SingletonBase()
         {
             _runtime = new <%= $cur_module.name %>SingletonComponent(this);
