@@ -10,7 +10,7 @@ module RhoDevelopment
       attr_accessor :applicationRoot
     end
 
-    def self.own_ip_address
+    def self.own_ip_addresses
       #IPSocket.getaddress(Socket.gethostname) #- it don't work on virtual machine with a lot of network interfaces
       return Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq
 	    #(Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq).last
@@ -25,7 +25,7 @@ module RhoDevelopment
     end
 
     def self.webserver_uri
-      URI("http://#{self.own_ip_address}:#{self.webserver_port}")
+      URI("http://#{self.own_ip_addresses.last}:#{self.webserver_port}")
     end
 
     def self.webserver_port
