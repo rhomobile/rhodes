@@ -38,11 +38,9 @@
 
 #include "net/INetRequest.h"
 
-
-// REMOVE IT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
-//#define OS_ANDROID    
-
-
+#if defined(OS_WINCE)
+#include <net/CompatWince.h>
+#endif
 
 using namespace rho;
 using namespace rho::common;
