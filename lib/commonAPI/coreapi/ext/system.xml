@@ -17,17 +17,31 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+There are two methods of enabling the System API: 
 
-* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+* Include all ebapi modules or 
+* Include only the API modules you need 
 
-If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
-ex:
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
 
-* ebapi.js - core APIs needed 
-* eb.system.js - just the System API
-* other individual JavaScript files included with the Enterprise Browser installation
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the System API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.system.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
         <ALIASES>
@@ -48,23 +62,24 @@ ex:
             </PROPERTY>
             <PROPERTY name="platform" type="STRING" readOnly="true">
                 <DESC>Platform where application is running.</DESC>
-                <VALUES>         
+                <VALUES>
                     <VALUE constName="PLATFORM_WM_CE" value ="WINDOWS">
                         <DESC></DESC>
                     </VALUE>
                     <VALUE constName="PLATFORM_ANDROID" value ="ANDROID">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="PLATFORM_IOS" value ="APPLE">
+                    <VALUE constName="PLATFORM_IOS" value ="APPLE" productException='eb'>
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="PLATFORM_WP8" value ="WP8">
+                    <VALUE constName="PLATFORM_WP8" value ="WP8" productException='eb'>
                         <DESC></DESC>
                     </VALUE>
                     <VALUE constName="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
                         <DESC></DESC>
                     </VALUE>
                 </VALUES>
+                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if there is a camera available on the device.</DESC>
@@ -112,7 +127,7 @@ ex:
             </PROPERTY>
             <PROPERTY name="phoneId" type="STRING" readOnly="true">
                 <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.</DESC>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceName" type="STRING" readOnly="true">
                 <DESC>Name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android).</DESC>
@@ -141,19 +156,19 @@ ex:
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
                 <DESC>The OEM Information string for the terminal.</DESC>
                 <APPLIES msiOnly="true"></APPLIES>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="uuid" type="STRING" readOnly="true">
                 <DESC>The Unique Unit IDentifier for the terminal.</DESC>
                 <APPLIES msiOnly="true"></APPLIES>
-                <PLATFORM>WM, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
-            <PROPERTY name="applicationIconBadge" type="INTEGER">
+            <PROPERTY name="applicationIconBadge" type="INTEGER"  productException="eb">
                 <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.</DESC>
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
-                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password). To set proxy for Motorola WebKit for Windows Mobile/CE use config.xml settings.</DESC>
+                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password). To set proxy for WebKit for Windows Mobile/CE use config.xml settings.</DESC>
                 <PLATFORM>Android, iOS, WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
@@ -256,7 +271,7 @@ ex:
             <METHOD name="getStartParams">
                 <DESC>Return the command line parameters. At Android start parameters are returned as URL query string starting with '?', name-value delimiter '=' and name value pairs delimiter '&#038;'.</DESC>
                 <CALLBACK type="STRING"/>
-                <PLATFORM>WM, Win32, Android</PLATFORM>
+                <PLATFORM>WM, CE, Win32, Android</PLATFORM>
             </METHOD>
 
             <METHOD name="openUrl">
@@ -271,7 +286,7 @@ ex:
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="unzipFile">
+            <METHOD name="unzipFile" callbackType="optional">
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
@@ -281,6 +296,12 @@ ex:
                         <DESC>Password for the zip.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
+                    
+                    <PARAM name="outputFileName" type="STRING">
+                        <DESC>Output file name. Used when decompressing gzip streams.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+
                 </PARAMS>
             </METHOD>
 
@@ -624,7 +645,7 @@ ex:
                     <PARAM name="url" type="STRING">
                         <DESC>The url to the user-defined callback method.</DESC>
                     </PARAM>
-                    <PARAM name="poll_interval" type="INTEGER">
+                    <PARAM name="poll_interval" type="INTEGER"  productException="eb">
                         <DESC>IOS. The network status polling period for systems that can not notify network status change immediately. Default value is 20 seconds.</DESC>
                     </PARAM>
                 </PARAMS>
@@ -637,13 +658,13 @@ ex:
                 <PARAMS>
                     <PARAM name="proxyURI" type="STRING"/>
                 </PARAMS>
-                <PLATFORM>WM, WIN32</PLATFORM>
+                <PLATFORM>WM, CE, WIN32</PLATFORM>
             </METHOD>
             <METHOD name="unset_http_proxy" deprecated="true">
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
-                <PLATFORM>WM, WIN32</PLATFORM>
+                <PLATFORM>WM, CE, WIN32</PLATFORM>
             </METHOD>
-            <METHOD name="set_application_icon_badge" deprecated="true">
+            <METHOD name="set_application_icon_badge" deprecated="true"  productException="eb">
                 <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
                 <PLATFORM>iOS</PLATFORM>
                 <PARAMS>
@@ -659,7 +680,7 @@ ex:
                         <DESC_EB>The name of the application on the device to run. </DESC_EB>
                     </PARAM>
                     <PARAM name="params" type="STRING">
-                        <DESC>Start parameters string. Executed Application can receive this string by getStartParams method. Parameter could be just value, or key-value pair separated by '&#61;' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by "&#38;", on other platforms by '&#044;' or '&#032;'.</DESC>
+                        <DESC>Start parameters string. Executed Application can receive this string by getStartParams method. Parameter could be just value, or key-value pair separated by '=' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by an amperstand, on other platforms by a comma or a space.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                     <PARAM name="blockingCall" type="BOOLEAN">
@@ -674,6 +695,7 @@ ex:
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>iOS, WM, Win32, WP8, Android</PLATFORM>
+        <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
 
         <EXAMPLES>
             <EXAMPLE title="Get device capabilities">

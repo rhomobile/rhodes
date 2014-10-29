@@ -15,8 +15,8 @@
       <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
       <% attributes.each do |attribute| %>
           <div data-role="fieldcontain">
-            <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= humanize(attribute) %></label>
-            <input type="text" id="<%= name.downcase %>[<%= attribute %>]" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>" <%%= placeholder( "<%= humanize(attribute) %>" ) %> />
+            <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= attribute.humanize() %></label>
+            <input type="text" id="<%= name.downcase %>[<%= attribute %>]" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>" <%%= placeholder( "<%= attribute.humanize() %>" ) %> />
           </div>
       <% end %>
       <input type="submit" value="Update"/>

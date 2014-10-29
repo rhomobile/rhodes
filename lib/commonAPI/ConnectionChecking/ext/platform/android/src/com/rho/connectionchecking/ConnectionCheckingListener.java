@@ -25,6 +25,15 @@ public class ConnectionCheckingListener extends AbstractRhoListener {
 	}
 	
 	@Override
+	public void onDestroy(RhodesActivity activity) {
+		
+		if(ConnectionCheckingService.getInstance()!=null)
+			ConnectionCheckingService.getInstance().stopThread();
+		
+		super.onDestroy(activity);
+	}
+	
+	@Override
 	public void onEBLicenseDestroyed() {
 		
 		Logger.I(TAG, "onEBLicenseDestroyed Recieved");

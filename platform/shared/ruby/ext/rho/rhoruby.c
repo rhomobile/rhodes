@@ -852,6 +852,11 @@ VALUE rho_ruby_hash_aref(VALUE hash, const char* key)
     return rb_hash_aref( hash, rb_str_new2(key));
 }
 
+VALUE rho_ruby_hash_get(VALUE hash, VALUE key)
+{
+    return rb_hash_aref(hash, key);
+}
+
 VALUE rho_ruby_array_get(VALUE ar, int nIndex)
 {
     return rb_ary_entry( ar, nIndex);
@@ -1213,6 +1218,81 @@ int rho_ruby_is_array(VALUE val)
 int rho_ruby_is_hash(VALUE val)
 {
     return (TYPE(val) == T_HASH) ? 1 : 0;
+}
+
+int isNil(VALUE value) {
+    return (NIL_P(value) || value == 0);
+}
+
+int rho_ruby_to_int(VALUE val, int* dest) {
+    if (isNil(val) && dest == 0)
+        return 0;
+    *dest = 0;
+    if (TYPE(val) == RUBY_T_FLOAT ||
+        TYPE(val) == RUBY_T_FIXNUM ||
+        TYPE(val) == RUBY_T_BIGNUM ||
+        TYPE(val) == RUBY_T_RATIONAL) {
+        *dest = NUM2INT(val);
+        return 1;
+    }
+    return 0;
+
+}
+int rho_ruby_to_double(VALUE val, double* dest) {
+    if (isNil(val) && dest == 0)
+        return 0;
+    *dest = 0.0;
+    if (TYPE(val) == RUBY_T_FLOAT ||
+        TYPE(val) == RUBY_T_FIXNUM ||
+        TYPE(val) == RUBY_T_BIGNUM ||
+        TYPE(val) == RUBY_T_RATIONAL) {
+        *dest = NUM2DBL(val);
+        return 1;
+    }
+    return 0;
+}
+
+int rho_ruby_to_bool(VALUE val, int* dest) {
+    if (isNil(val) && dest == 0)
+        return 0;
+    *dest = 0;
+    switch (TYPE(val)) {
+        case RUBY_T_TRUE:
+        case RUBY_T_FALSE:
+            *dest = TYPE(val) == RUBY_T_TRUE;
+            return 1;
+            break;
+        case RUBY_T_FLOAT:
+        case RUBY_T_BIGNUM:
+        case RUBY_T_FIXNUM:
+        case RUBY_T_RATIONAL:
+            *dest = NUM2INT(val) != 0;
+            return 1;
+            break;
+
+        default:
+            break;
+    }
+
+    return 0;
+}
+
+int rho_ruby_to_str(VALUE val, const char** dest, int* len) {
+    if (rb_type(val) != T_STRING)
+    {
+        val = rb_funcall(val, rb_intern("to_s"), 0, NULL);
+    }
+    *dest = getStringFromValue(val);
+    *len = getStringLenFromValue(val);
+    return 1;
+}
+
+VALUE rho_ruby_hash_keys(VALUE val) {
+    return rb_funcall(val, rb_intern("keys"), 0);
+}
+
+VALUE rho_ruby_each_key(VALUE val) {
+    return rb_each(val);
 }
 
 VALUE rb_require_compiled_safe(VALUE obj, VALUE fname);

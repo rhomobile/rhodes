@@ -11,9 +11,11 @@
 
 IMPLEMENT_LOGCLASS(CIEBrowserEngine,"IEBrowser");
 
+extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd( WPARAM wParam, LPARAM lParam );
 extern "C" void rho_wmimpl_create_ieBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
+extern "C" bool rho_wmimpl_get_textselectionenabled();
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -56,7 +58,7 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
         m_hparentInst(NULL),
         m_bLoadingComplete(FALSE),
         m_hNavigated(NULL),
-        m_dwNavigationTimeout(0)
+        m_dwNavigationTimeout(45000)
 {
     m_parentHWND = hParentWnd;    
     m_hparentInst = hInstance;
@@ -65,7 +67,12 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     GetWindowRect(hParentWnd, &m_rcViewSize);
 
     m_tcNavigatedURL[0] = 0;
-
+	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
+	if(m_dwNavigationTimeout<=0)
+	{
+		LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_dwNavigationTimeout;
+		m_dwNavigationTimeout=45000;
+	}
     CreateEngine();
 }
 
@@ -131,8 +138,12 @@ LRESULT CIEBrowserEngine::CreateEngine()
             return S_FALSE;
     }
 
+	DWORD dwTextSelectionStyle = 0;
+    if(!rho_wmimpl_get_textselectionenabled()) 
+		dwTextSelectionStyle = HS_NOSELECTION;
+
     m_hwndTabHTML = CreateWindow(WC_HTML, NULL, 
-        WS_POPUP | WS_VISIBLE | HS_NOSELECTION, 
+        WS_POPUP | WS_VISIBLE | dwTextSelectionStyle, 
         m_rcViewSize.left, m_rcViewSize.top, 
         (m_rcViewSize.right-m_rcViewSize.left), 
         (m_rcViewSize.bottom-m_rcViewSize.top), 
@@ -153,6 +164,7 @@ BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
     //  navigate to a Javascript function before the page is fully loaded can 
     //  crash PocketBrowser (specifically when using Reload).  This condition
     //  prevents that behaviour.
+    
     if (!m_bLoadingComplete && (wcsnicmp(tcURL, L"JavaScript:", wcslen(L"JavaScript:")) == 0))
     {
         LOG(TRACE) + "Failed to Navigate, Navigation in Progress\n";
@@ -262,8 +274,21 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-		if (msg.message != WM_PAINT && RHODESAPP().getExtManager().onWndMsg(msg) )
+		if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
+
+		IDispatch* pDisp;
+		SendMessage(m_hwndTabHTML, DTM_BROWSERDISPATCH, 0, (LPARAM) &pDisp); // New HTMLVIEW message
+		if (pDisp != NULL) {
+			//  If the Key is back we do not want to translate it causing the browser
+			//  to navigate back.
+			if ( ((msg.message != WM_KEYUP) && (msg.message != WM_KEYDOWN)) || (msg.wParam != VK_BACK) )
+			{
+				IOleInPlaceActiveObject* pInPlaceObject;
+				pDisp->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&pInPlaceObject );
+				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);	
+			}
+		}
 
         if (!mainWnd.TranslateAccelerator(&msg))
         {
@@ -391,10 +416,8 @@ void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEvent
 	{
 		case EEID_BEFORENAVIGATE:
 			m_bLoadingComplete = FALSE;
-			SetEvent(m_hNavigated);
-			CloseHandle(m_hNavigated);
-			m_hNavigated = NULL;
-
+			if(m_hNavigated==NULL)
+				m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 			//  Do not start the Navigation Timeout Timer if the 
 			//  navigation request is a script call.
 			if((!_memicmp(tcURL, L"javascript:", 11 * sizeof(TCHAR)))
@@ -531,6 +554,7 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 					mbstowcs(tcTarget, (LPSTR)pnmHTML->szTarget, MAX_URL);
 				if (tcTarget)
 					mobileTab->InvokeEngineEventLoad(tcTarget, EEID_NAVIGATECOMPLETE);
+
 				break;
 			case NM_PIE_KEYSTATE:
 			case NM_PIE_ALPHAKEYSTATE:
@@ -548,25 +572,53 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
-	CIEBrowserEngine* pIEEng = reinterpret_cast<CIEBrowserEngine*>(lpParameter);
-
+    CIEBrowserEngine* pIEEng = reinterpret_cast<CIEBrowserEngine*>(lpParameter);
+    DWORD dwWaitResult;
     if (pIEEng->m_dwNavigationTimeout != 0)
     {
         LOG(TRACE) + "Mobile NavThread Started\n";
 
-	    if(pIEEng->m_hNavigated==NULL)
-		    pIEEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
-	    if(WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
-	    {
-		    //no point in doing anything as there is no event handler
-		    pIEEng->StopOnTab(0);
-		    CloseHandle(pIEEng->m_hNavigated);
-		    pIEEng->m_hNavigated = NULL;
+		dwWaitResult = WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout);
 
-            SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
-                (WPARAM)pIEEng->m_tabID, (LPARAM)pIEEng->m_tcNavigatedURL);
-	    }
+		switch (dwWaitResult) 
+		{
+			// Event object was signaled
+			case WAIT_OBJECT_0: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:Event object was signaled\n";
+								
+				CloseHandle(pIEEng->m_hNavigated);
+				pIEEng->m_hNavigated = NULL;
+
+				break; 
+			case WAIT_TIMEOUT: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:timeout\n";
+				
+					
+				pIEEng->StopOnTab(0);
+						
+				CloseHandle(pIEEng->m_hNavigated);
+				pIEEng->m_hNavigated = NULL;
+				SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+					(WPARAM)pIEEng->m_tabID, (LPARAM)pIEEng->m_tcNavigatedURL);
+
+				break; 
+
+			// An error occurred
+			default: 
+				LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
+				return 0; 
+		}
+
+
+
+
 
 	    LOG(TRACE) + "NavThread Ended\n";
     }

@@ -29,6 +29,7 @@
 #include "common/RhoFile.h"
 #include "common/RhoConf.h"
 #include "unzip/unzip.h"
+#include "unzip/gunzip.h"
 #include "sync/RhoconnectClientManager.h"
 #include "net/INetRequest.h"
 
@@ -310,9 +311,45 @@ boolean CRhodesAppBase::sendLogInSameThread()
 } //namespace rho
 
 extern "C" {
+
+#define RHO_ZIP_FORMAT_ZIP      1
+#define RHO_ZIP_FORMAT_GZIP     2
+#define RHO_ZIP_FORMAT_INVALID  -1
+
+static int rho_get_zip_format(const char* szZipPath)
+{
+  rho::common::CRhoFile f;
+  f.open(szZipPath, rho::common::CRhoFile::OpenReadOnly);
+  if ( f.isOpened() )
+  {
+    unsigned char buf[4];
+    f.readData(buf, 0, 4);
+    
+    if (buf[0]=='P' && buf[1]=='K' && buf[2]==3 && buf[3]==4) {
+      return RHO_ZIP_FORMAT_ZIP;
+    } else if ( buf[0]==0x1f && buf[1]==0x8b && buf[2]==0x08 ) {
+      return RHO_ZIP_FORMAT_GZIP;
+    }
+  }
+  return RHO_ZIP_FORMAT_INVALID;
+}
+
+static int rho_internal_unzip_zip(const char* szZipPath, const char* psw);
+static int rho_internal_unzip_gzip(const char* szZipPath, const char* outputFilename);
     
 //TODO: use System.unzip_file
-int rho_sys_unzip_file(const char* szZipPath, const char* psw)
+int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outputFilename )
+{
+  switch( rho_get_zip_format(szZipPath) )
+  {
+  case RHO_ZIP_FORMAT_ZIP:  return rho_internal_unzip_zip(szZipPath, psw); break;
+  case RHO_ZIP_FORMAT_GZIP: return rho_internal_unzip_gzip(szZipPath, outputFilename); break;
+  }
+  
+  return -1;
+}
+
+static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
 {
     rho::common::CFilePath oPath(szZipPath);
     rho::String strBaseDir = oPath.getFolderName();
@@ -366,6 +403,12 @@ int rho_sys_unzip_file(const char* szZipPath, const char* psw)
     return res;
 }
 
+static int rho_internal_unzip_gzip(const char* inputFilename, const char* outputFilename)
+{
+    return gunzip::UnzipGzip(inputFilename, outputFilename);
+}
+
+
 //TODO_REMOVE : rho_rhodesapp_getplatform
 #ifdef RHODES_EMULATOR
 
@@ -394,9 +437,6 @@ const char* rho_rhodesapp_getplatform()
     if ( strPlatform.compare("iphone") == 0 )
         return "APPLE";
 
-    if ( strPlatform.compare("symbian") == 0 )
-        return "SYMBIAN";
-
     return "UNKNOWN";
 }    
 #else
@@ -412,8 +452,6 @@ const char* rho_rhodesapp_getplatform()
 #else
 	return "WINDOWS";
 #endif
-#elif defined(OS_SYMBIAN)
-	return "SYMBIAN";
 #elif defined(OS_ANDROID)
     return "ANDROID";
 #elif defined(OS_LINUX)

@@ -17,8 +17,6 @@ iphone:
   BundleURLScheme: apigeneratorspec
 wp:
   productid: 'b6479381-42a8-0130-78de-3caec51bd50e'
-symbian:
-  uid: '0xe1a1ef92'
 android:
   version: 2.1
 

@@ -46,9 +46,10 @@ class CRubyResultConvertor<CMethodResult> {
         {
             valObj = getObjectWithId(id.c_str());
             if(rho_ruby_is_NIL(valObj))
-                valObj = rho_ruby_create_string(id.c_str());
+                valObj = rho_ruby_create_string_withlen2(id.c_str(),id.size());
         } else
-            valObj = rho_ruby_create_string(id.c_str());
+            valObj = rho_ruby_create_string_withlen2(id.c_str(),id.size());
+        
         return valObj;
     }
 public:
@@ -88,7 +89,7 @@ public:
         } else
         {
             RAWTRACEC("CRubyResultConvertor", "getString(): create string");
-            res = rho_ruby_create_string(str.c_str());
+            res = rho_ruby_create_string_withlen2(str.c_str(),str.size());
         }
 
         return res;
@@ -238,5 +239,217 @@ public:
         return rho_ruby_get_NIL();
     }
 };
+
+namespace {
+
+inline bool isNil(VALUE value) {
+    return (rho_ruby_is_NIL(value) || value == 0);
+}
+
+template <typename ArrayVal>
+bool valueTo(VALUE value, ArrayVal& dest) {
+    return false;
+}
+
+template <>
+bool valueTo<int>(VALUE value, int& dest) {
+    return rho_ruby_to_int(value, &dest) != 0;
+}
+
+template <>
+bool valueTo<double>(VALUE value, double& dest) {
+    return rho_ruby_to_double(value, &dest) != 0;
+}
+
+template <>
+bool valueTo<bool>(VALUE value, bool& dest) {
+    int dst = 0;
+    bool res = rho_ruby_to_bool(value, &dst) != 0;
+    dest = dst != 0;
+    return res;
+}
+
+template <>
+bool valueTo<rho::String>(VALUE value, rho::String& dest)
+{
+    dest.clear();
+    const char *cptr = 0;
+    int len = 0;
+    if (rho_ruby_to_str(value, &cptr, &len)){
+        if (cptr!=0 && len != 0) {
+            size_t str_len = static_cast<size_t>(len);
+            dest.assign(cptr, str_len);
+        }
+    }
+    return true;
+}
+
+}
+
+template <typename ArrayVal>
+bool rho_value_to_typed_array(VALUE value, rho::Vector<ArrayVal>& dest, rho::String& error)
+{
+    if (isNil(value))
+        return false;
+
+    if (!rho_ruby_is_array(value))
+        return false;
+
+    bool result = true;
+    int len = rho_ruby_array_get_size(value);
+
+    dest.clear();
+    dest.reserve(len);
+
+    ArrayVal elem;
+    for (int i=0; i<len; i++)
+    {
+        dest.push_back(elem);
+
+        result = valueTo(rho_ruby_array_get(value, i), dest.back()) && result;
+    }
+    return result;
+}
+
+template <typename KeyType,typename ValueType>
+bool rho_value_to_typed_hash(VALUE value, rho::Hashtable<KeyType, ValueType>& dest, rho::String& error)
+{
+    if (isNil(value))
+        return false;
+
+    if (!rho_ruby_is_hash(value))
+        return false;
+
+    bool result = true;
+
+    VALUE keys = rho_ruby_hash_keys(value);
+    VALUE akey;
+
+    KeyType _key;
+    ValueType _value;
+
+    int len = rho_ruby_array_get_size(keys);
+
+    for (int i=0; i<len; i++)
+    {
+        akey = rho_ruby_array_get(keys,  i);
+        VALUE val = rho_ruby_hash_get(value, akey);
+        result = (valueTo(akey, _key) && valueTo(val, dest[_key])) && result;
+    }
+    return result;
+}
+
+template <typename InnnerArrayValue>
+bool rho_value_to_typed_array_array( VALUE value, rho::Vector< rho::Vector<InnnerArrayValue> >& dest, rho::String& error)
+{
+
+    dest.clear();
+
+    if (isNil(value))
+        return false;
+
+    if (!rho_ruby_is_array(value))
+        return false;
+
+    bool result = true;
+
+    int len = rho_ruby_array_get_size(value);
+    dest.reserve(len);
+
+    rho::Vector<InnnerArrayValue> buff;
+
+    for (int i=0; i<len; i++)
+    {
+        dest.push_back(buff);
+        VALUE inner = rho_ruby_array_get(value, i);
+        result = rho_value_to_typed_array(inner, dest.back(), error) && result;
+    }
+
+    return result;
+}
+
+template <typename InnnerHashKey, typename InnnerHashValue>
+bool rho_value_to_typed_array_hash( VALUE value, rho::Vector< rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& error)
+{
+
+    dest.clear();
+
+    if (isNil(value))
+        return false;
+
+    if (!rho_ruby_is_array(value))
+        return false;
+
+    bool result = true;
+
+    int len = rho_ruby_array_get_size(value);
+    dest.reserve(len);
+
+    rho::Hashtable<InnnerHashKey, InnnerHashValue> buff;
+    for (int i=0; i<len; i++)
+    {
+        dest.push_back(buff);
+        VALUE inner = rho_ruby_array_get(value, i);
+        result = rho_value_to_typed_hash(inner, dest.back(), error) && result;
+    }
+
+    return result;
+}
+
+template <typename HashKey, typename InnnerArrayValue>
+bool rho_value_to_typed_hash_array( VALUE value, rho::Hashtable< HashKey, rho::Vector<InnnerArrayValue> >& dest, rho::String& error)
+{
+    if (isNil(value))
+        return false;
+
+    if (!rho_ruby_is_hash(value))
+        return false;
+
+    bool result = true;
+
+    VALUE keys = rho_ruby_hash_keys(value);
+    VALUE akey;
+
+    HashKey _key;
+    int len = rho_ruby_array_get_size(keys);
+
+    for (int i=0; i<len; i++)
+    {
+        akey = rho_ruby_array_get(keys,  i);
+        VALUE val = rho_ruby_hash_get(value, akey);
+
+        result = (valueTo(akey, _key) && rho_value_to_typed_array(val, dest[_key]), error) && result;
+    }
+
+    return  result;
+}
+
+template <typename HashKey, typename InnnerHashKey, typename InnnerHashValue>
+bool rho_value_to_typed_hash_hash( VALUE value, rho::Hashtable< HashKey, rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& error)
+{
+    if (isNil(value))
+        return false;
+
+    if (!rho_ruby_is_hash(value))
+        return false;
+
+    bool result = true;
+
+    VALUE keys = rho_ruby_hash_keys(value);
+    VALUE akey;
+
+    HashKey _key;
+    int len = rho_ruby_array_get_size(keys);
+
+    for (int i=0; i<len; i++)
+    {
+        akey = rho_ruby_array_get(keys,  i);
+        VALUE val = rho_ruby_hash_get(value, akey);
+        result = (valueTo(akey, _key) && rho_value_to_typed_hash(val, dest[_key])) && result;
+    }
+
+    return  result;
+}
+
 
 }}

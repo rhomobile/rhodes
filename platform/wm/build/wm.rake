@@ -101,6 +101,59 @@ module WM
 
     puts "$sdk [#{$sdk}]"
   end
+
+  def self.edit_rhodes_rc
+    rhodes_dir = File.join(File.dirname(__FILE__), '../../..')
+
+    version = File.read(File.join(rhodes_dir, 'version')).chomp
+
+    ar_ver = []
+    version.split('.').each do |token|
+      digits = /[0-9]+/.match(token)
+      digits = '0' unless digits
+      ar_ver << digits
+    end
+    ar_ver << '0' while ar_ver.length < 5
+
+    Jake.edit_lines(File.join(rhodes_dir, 'platform/wm/rhodes/Rhodes.rc')) do |line|
+      case line
+
+      # FILEVERSION 2,0,0,5
+      # PRODUCTVERSION 2,0,0,5
+      when /^(\s*(?:FILEVERSION|PRODUCTVERSION)\s+)\d+,\d+,\d+,\d+\s*$/
+        "#{$1}#{ar_ver[0, 4].join(',')}"
+
+      # VALUE "FileVersion", "2, 0, 0, 5"
+      # VALUE "ProductVersion", "2, 0, 0, 5"
+      when /^(\s*VALUE\s+"(?:FileVersion|ProductVersion)",\s*)"\d+,\s*\d+,\s*\d+,\s*\d+"\s*$/
+        "#{$1}\"#{ar_ver[0, 4].join(', ')}\""
+
+      # VALUE "InternalName", "RhoElements"
+      # VALUE "ProductName", "RhoElements"
+      when /^(\s*VALUE\s+"(?:InternalName|ProductName)",\s*)".*"\s*$/
+        "#{$1}\"#{$appname}\""
+
+      # VALUE "FileDescription", "RhoElements Application"
+      when /^(\s*VALUE\s+"FileDescription",\s*)".*"\s*$/
+        "#{$1}\"#{$appname} application\""
+
+      # VALUE "OriginalFilename", "RhoElements.exe"
+      when /^(\s*VALUE\s+"OriginalFilename",\s*)".*"\s*$/
+        "#{$1}\"#{$appname}.exe\""
+
+      # VALUE "LegalCopyright", "Motorola Solutions Inc., Copyright (C) 2012"
+      when /^(\s*VALUE\s+"LegalCopyright",\s*)".*"\s*$/
+        if $app_config['copyright'].nil?
+          line
+        else
+          "#{$1}\"#{$app_config['copyright']}\""
+        end
+
+      else
+        line
+      end
+    end
+  end
 end
 
 def get_7z_path()
@@ -730,11 +783,18 @@ namespace "build" do
             ext_config["wm"]["register"].each do |key|
               ext_add_reg_com_dll(ext, key)
             end
-          end          
+          end        
           
           if ext != 'openssl.so'
-            extensions_lib << " #{ext}.lib"
-            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            if ext_config.has_key?('libraries')
+              ext_config["libraries"].each { |name_lib|
+                extensions_lib << " #{name_lib}.lib"
+                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
+              }
+            else
+              extensions_lib << " #{ext}.lib"
+              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            end
           end
 
           if (project_path)
@@ -844,6 +904,8 @@ namespace "build" do
       chdir $config["build"]["wmpath"]
 
       cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
+
+      WM.edit_rhodes_rc
 
       if $wm_win32_ignore_vsprops
         Dir.glob(File.join(File.dirname($build_solution), '*.vsprops')) do |file|
@@ -999,7 +1061,11 @@ namespace "build" do
         cp File.join($qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
       else
         # Qt 5
-        if File.exists?(File.join($qtdir, "bin/icudt52.dll"))
+        if File.exists?(File.join($qtdir, "bin/icudt53.dll"))
+          cp File.join($qtdir, "bin/icudt53.dll"), $target_path
+          cp File.join($qtdir, "bin/icuuc53.dll"), $target_path
+          cp File.join($qtdir, "bin/icuin53.dll"), $target_path
+        elsif File.exists?(File.join($qtdir, "bin/icudt52.dll"))
           cp File.join($qtdir, "bin/icudt52.dll"), $target_path
           cp File.join($qtdir, "bin/icuuc52.dll"), $target_path
           cp File.join($qtdir, "bin/icuin52.dll"), $target_path
@@ -1068,8 +1134,15 @@ namespace "build" do
           next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
 
           if ext != 'openssl.so'
-            extensions_lib << " #{ext}.lib"
-            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            if ext_config.has_key?('libraries')
+              ext_config["libraries"].each { |name_lib|
+                extensions_lib << " #{name_lib}.lib"
+                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
+              }
+            else
+              extensions_lib << " #{ext}.lib"
+              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            end
           end
 
           if (project_path)
@@ -1113,7 +1186,7 @@ namespace "build" do
               clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
           end
-      end
+      end 
       generate_extensions_pri(extensions_lib, pre_targetdeps)
     end
 
@@ -1206,16 +1279,6 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), $target_path
 
       Rake::Task["build:win32:deployqt"].invoke
-    end
-
-    desc 'prints toolchain is required by Windows RhoSimulator.'
-    task :rhosim_toolchain do
-      puts 'VS2012'
-    end
-
-    desc 'prints Qt version is required by Windows RhoSimulator.'
-    task :rhosim_qt_version do
-      puts '5.1.1'
     end
   end
 

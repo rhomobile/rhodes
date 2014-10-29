@@ -8,7 +8,6 @@ rakefile.rb
 rhobuild.yml
 rhobuild.*.yml
 lastbuildoptions.yml
-*.filters
 
 #platform/iphone/Info.plist
 lib/commonAPI/*/*/*/generated/
@@ -19,6 +18,7 @@ lib/extensions/*/*/*/generated/
 lib/extensions/*/*/*/*/generated/
 lib/extensions/*/ext/*/platform/iphone/build/
 lib/extensions/*/ext/iphone/build/
+lib/extensions/*/ext/platform/iphone/build/
 lib/extensions/openssl.so/wm/tmp/
 lib/*/*/ext/platform/iphone/*.a
 lib/*/*/ext/*/platform/iphone/*.a
@@ -278,3 +278,4 @@ platform/osx/bin/RhoSimulator/tmp/*
 platform/build/*.build/*
 
 .qmake.stash
+rendered

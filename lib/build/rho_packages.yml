@@ -1,0 +1,146 @@
+packages:
+  core:
+    commands:
+    - 'cloud:android'
+    - 'cloud:android:device'
+    - 'cloud:android:download'
+    - 'cloud:build:android:production'
+    - 'cloud:build:initialize'
+    - 'cloud:build:iphone:development'
+    - 'cloud:build:iphone:distribution'
+    - 'cloud:build:win32:production'
+    - 'cloud:build:wm:production'
+    - 'cloud:cache:clear'
+    - 'cloud:download[build_id]'
+    - 'cloud:find_app'
+    - 'cloud:info'
+    - 'cloud:initialize'
+    - 'cloud:iphone:device'
+    - 'cloud:iphone:download'
+    - 'cloud:list_builds'
+    - 'cloud:login'
+    - 'cloud:run:device[build_id]'
+    - 'cloud:run:simulator[build_id]'
+    - 'cloud:show:build[build_id]'
+    - 'cloud:show:fail_log[build_id]'
+    - 'cloud:show:gems'
+    - 'cloud:win32:download'
+    - 'cloud:wm'
+    - 'cloud:wm:device'
+    - 'cloud:wm:download'
+    - 'token:info'
+    - 'update_rho_modules_js[platform]'
+    - 'run:device:package[package_path]'
+    - 'run:webrickrhologserver[app_path]'
+    - 'app'
+    - 'api'
+    - 'api_test'
+    - 'extension'
+    - 'model'
+    - 'spec'
+
+  rhosimulator:
+    dependencies: [ core ]
+    commands:
+    - 'run:rhosimulator'
+    - 'run:android:rhosimulator'
+    - 'run:iphone:rhosimulator'
+    - 'run:win32:rhosimulator'
+    - 'run:wince:rhosimulator'
+    - 'run:wp8:rhosimulator'
+    - 'run:wm:rhosimulator'
+
+
+  native_common:
+    dependencies: [ core ]
+
+  rhoelements:
+    dependencies: [ native_common ]
+
+  android_containers:
+    dependencies: [ core ]
+    commands:
+    - 'device:android:production_with_prebuild_binary'
+
+  iphone_containers:
+    dependencies: [ core ]
+    commands:
+    - 'simulator:iphone:production_with_prebuild_binary'
+    - 'device:iphone:production_with_prebuild_binary'
+
+  wm_containers:
+    dependencies: [ core ]
+    commands:
+    - 'device:wm:production_with_prebuild_binary'
+
+  win32_containers:
+    dependencies: [ core ]
+    commands:
+    - 'device:win32:production_with_prebuild_binary'
+
+  android:
+    dependencies: [ native_common ]
+    commands:
+    - 'build:android:eclipsebundle'
+    - 'build:android:extensions'
+    - 'build:android:rhobundle'
+    - 'clean:android'
+    - 'device:android:debug'
+    - 'device:android:production'
+    - 'run:android'
+    - 'run:android:device[device_id]'
+    - 'run:android:device:package[package_path,device_id]'
+    - 'run:android:simulator:package[package_file,package_name]'
+    - 'uninstall:android'
+    - 'uninstall:android:device'
+
+  iphone:
+    dependencies: [ native_common ]
+    commands:
+    - 'build:iphone:setup_xcode_project'
+    - 'clean:iphone'
+    - 'device:iphone:production'
+    - 'run:iphone'
+    - 'run:iphone:simulator:package[package_path]'
+    - 'simulator:iphone:production'
+
+  wm:
+    dependencies: [ native_common ]
+    commands:
+    - 'clean:wince'
+    - 'clean:winxpe'
+    - 'clean:wm'
+    - 'device:wince:production'
+    - 'device:winxpe:production'
+    - 'device:wm:apply_container[container_prefix_path]'
+    - 'device:wm:cab'
+    - 'device:wm:make_container[container_prefix_path]'
+    - 'device:wm:production[exclude_dirs]'
+    - 'run:wince:device'
+    - 'run:wince:device:cab'
+    - 'run:wm'
+    - 'run:wm:cab'
+    - 'run:wm:device'
+    - 'run:wm:device:cab'
+    - 'run:wm:device:package[package_path]'
+    - 'run:wm:simulator:package[package_path]'
+
+  win32:
+    dependencies: [ native_common ]
+    commands:
+    - 'clean:win32'
+    - 'device:win32:apply_container[container_prefix_path]'
+    - 'device:win32:make_container[container_prefix_path]'
+    - 'device:win32:production'
+    - 'device:win32:production_with_prebuild_binary'
+    - 'run:win32'
+
+  wp8:
+    dependencies: [ native_common ]
+    commands:
+    - 'build:wp8:rhobundle_noext'
+    - 'clean:wp8'
+    - 'device:wp8:production'
+    - 'emulator:wp8:production'
+    - 'run:wp8'
+    - 'run:wp8:device'

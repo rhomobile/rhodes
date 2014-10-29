@@ -156,6 +156,11 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             String CAPath = config.getValue("CAPath");
             if (CAPath != null && CAPath.length() > 0)
                 RhoConf.setString("CAPath", CAPath);
+
+            String sVerifyPeer = config.getValue("VerifyPeerCertificate");
+            if (sVerifyPeer != null && sVerifyPeer.length() > 0)
+                RhoConf.setBoolean("no_ssl_verify_peer", sVerifyPeer.equals("0"));
+
                 
             String pageZoom=config.getValue("PageZoom");
             if(pageZoom !=null && pageZoom.length()>0)

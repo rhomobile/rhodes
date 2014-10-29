@@ -224,8 +224,8 @@ def set_ui_prerendered_icon(val)
     return ret_value
 end
 
-BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon57.png', 'icon60.png', 'icon72.png', 'icon76.png', 'icon114.png', 'icon120.png', 'icon144.png', 'icon152.png', 'Info.plist', 'Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png']
-CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png']
+BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon57.png', 'icon60.png', 'icon72.png', 'icon76.png', 'icon114.png', 'icon120.png', 'icon144.png', 'icon152.png', 'icon180.png', 'Info.plist', 'Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png']
+CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png']
 
 def make_project_bakup
      BAKUP_FILES.each do |f|
@@ -347,7 +347,7 @@ def prepare_production_ipa (app_path, app_name)
     end
   end
 
-  cp itunes_artwork, itunes_artwork_dst
+  #cp itunes_artwork, itunes_artwork_dst
 
   currentdir = Dir.pwd()
   chdir tmp_dir
@@ -400,7 +400,7 @@ def prepare_production_plist (app_path, app_name)
     fAlx.close()
 end
 
-ICONS = [['icon152','icon152'], ['icon76','icon76'], ['icon60','icon60'], ['icon120','icon120'], ['icon144','icon144'], ['icon57','icon57'], ['icon72','icon72'], ['icon114','icon114']]
+ICONS = [['icon152','icon152'], ['icon76','icon76'], ['icon60','icon60'], ['icon120','icon120'], ['icon144','icon144'], ['icon57','icon57'], ['icon72','icon72'], ['icon114','icon114'], ['icon180', 'icon180']]
 
 def copy_all_icons_to_production_folder
   ICONS.each do |pair|
@@ -448,7 +448,7 @@ def set_app_icon(make_bak)
   end
 end
 
-LOADINGIMAGES = ['loading', 'loading@2x', 'loading-Portrait', 'loading-Portrait@2x', 'loading-PortraitUpsideDown', 'loading-PortraitUpsideDown@2x', 'loading-Landscape', 'loading-Landscape@2x', 'loading-LandscapeLeft', 'loading-LandscapeLeft@2x', 'loading-LandscapeRight', 'loading-LandscapeRight@2x', 'loading-568h@2x']
+LOADINGIMAGES = ['loading', 'loading@2x', 'loading-Portrait', 'loading-Portrait@2x', 'loading-PortraitUpsideDown', 'loading-PortraitUpsideDown@2x', 'loading-Landscape', 'loading-Landscape@2x', 'loading-LandscapeLeft', 'loading-LandscapeLeft@2x', 'loading-LandscapeRight', 'loading-LandscapeRight@2x', 'loading-568h@2x', 'loading-667h@2x', 'loading-736h@3x']
 
 def restore_default_images
   puts "restore_default_images"
@@ -1711,7 +1711,7 @@ namespace "build" do
       end
 
       copy_generated_sources_and_binaries
-      print_timestamp('build:iphone:make_xcode_project FINISH')
+      print_timestamp('build:iphone:setup_xcode_project FINISH')
 
     end
 
@@ -1818,6 +1818,33 @@ namespace "build" do
       copy_entitlements_file_from_app
 
       Rake::Task['build:bundle:prepare_native_generated_files'].invoke
+
+      #iTunesArtwork
+        itunes_artwork_in_project = File.join($app_path, "/project/iphone/iTunesArtwork")
+        itunes_artwork = File.join($app_path, "/project/iphone/iTunesArtwork")
+
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["production"].nil?
+            if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
+              art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+              if File.exists? art_test_name
+                itunes_artwork = art_test_name
+              else
+                art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
+                if File.exists? art_test_name
+                  itunes_artwork = art_test_name
+                else
+                  itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+                end
+              end
+            end
+          end
+        end
+
+      if itunes_artwork != itunes_artwork_in_project
+        rm_rf itunes_artwork_in_project
+        cp itunes_artwork,itunes_artwork_in_project
+      end
 
       rm_rf 'project/iphone/toremoved'
       rm_rf 'project/iphone/toremovef'
@@ -2923,7 +2950,7 @@ namespace "device" do
         rm_rf File.join(parent_app_bin, "iTunesArtwork")
 
         cp itunes_artwork, itunes_artwork_dst
-        cp itunes_artwork, File.join(parent_app_bin, "iTunesArtwork")
+        #cp itunes_artwork, File.join(parent_app_bin, "iTunesArtwork")
 
 
 
@@ -2954,10 +2981,13 @@ namespace "device" do
       end
       print_timestamp('application bundle was updated')
 
+
+      chdir parent_app_bin
+
       #sign
       if !is_simulator
 
-        chdir parent_app_bin
+
         rm_rf File.join(parent_app_bin, "Payload/prebuild.app/_CodeSignature")
         rm_rf File.join(parent_app_bin, "Payload/prebuild.app/CodeResources")
 

@@ -93,10 +93,6 @@ rho::String rho_log_path()
     {
         return s_log_path;
     }
-    else if (!s_shared_path.empty())
-    {
-        return s_shared_path;
-    }
     else
     {
         return s_root_path;
@@ -197,7 +193,11 @@ RHO_GLOBAL void android_setup(JNIEnv *env)
     sqlite3_temp_directory = (char*)s_sqlite_path.c_str();
 
     // Init logconf
-    rho_logconf_Init(rho_log_path().c_str(), rho_native_rhopath(), "");
+    rho_logconf_Init(rho_log_path().c_str(), rho_root_path().c_str(), "");
+    if (rho_root_path().compare(rho_shared_path()) != 0)
+    {
+        rho_conf_Init_from_shared_path(rho_shared_path().c_str());
+    }
 
     // Disable log to stdout as on android all stdout redirects to /dev/null
     RHOCONF().setBool("LogToOutput", false, true);

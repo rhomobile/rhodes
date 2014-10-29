@@ -5158,7 +5158,7 @@ rb_w32_close(int fd)
     key = (st_data_t)sock;
     st_delete(socklist, &key, NULL);
     sock = (SOCKET)key;
-    _close(fd);
+    //_close(fd);
     errno = save_errno;
     if (closesocket(sock) == SOCKET_ERROR) {
 	errno = map_errno(WSAGetLastError());

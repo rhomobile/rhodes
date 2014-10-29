@@ -37,7 +37,11 @@ public:
     CFilePath(const char* path) : m_szPath(path){}
     CFilePath(const String& str) : m_szPath(str.c_str()){}
 
-    const char* getBaseName(){ 
+     const char* getPath(){ 
+        return m_szPath;
+    }
+	
+	const char* getBaseName(){ 
         const char* base = findLastSlash();
         if (base)
             return base+1;

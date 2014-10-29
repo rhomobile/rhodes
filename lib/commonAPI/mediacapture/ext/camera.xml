@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Camera" parent="Rho">
+    <MODULE name="Camera" parent="Rho"  productException="eb">
         <HELP_OVERVIEW>The Camera API provides access to your device's Camera(s). Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application. Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API           
@@ -18,7 +18,31 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-In order to use this API you must TBD INSERT Eb specific instructions here
+There are two methods of enabling the Camera API: 
+
+* Include all ebapi modules or 
+* Include only the API modules you need 
+
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
+
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the Camera API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.camera.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
         <PLATFORM>Android, iOS, WM</PLATFORM>
@@ -161,6 +185,7 @@ In order to use this API you must TBD INSERT Eb specific instructions here
             <PROPERTY name="captureSound" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android, WM, WP8</PLATFORM>
+                <PLATFORM_EB>Android, WM</PLATFORM_EB>
                 <DESC>Path to a sound file resident on the device which will be played when the image is captured.</DESC>
             </PROPERTY>
             <PROPERTY name="previewLeft" type="INTEGER">

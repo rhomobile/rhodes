@@ -76,6 +76,7 @@ end
       @models[model_name] = ::Rho::NewORMModel.new(model_name)
       @models[model_name].setProperty('file_path', model_file)
       _load_model(model_name)
+      Rho::RhoConfig::add_source(model_name,@models[model_name])
    		# create DbTables
     end
 

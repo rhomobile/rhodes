@@ -62,6 +62,8 @@
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 UINT WM_LICENSE_SCREEN = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
 
+UINT WM_INTENTMSG		   = ::RegisterWindowMessage(L"RHODES_WM_INTENTMSG");
+
 #include "DateTimePicker.h"
 
 extern "C" void rho_sysimpl_sethas_network(int nValue);
@@ -530,7 +532,8 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
     LOG(INFO) + "START load png";
     
-    retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
+    if(m_bLoading)
+		retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
     
     //SPR 23830 - Fix - Do loading.html On load png failure
     if (retCode == 0 && m_bLoading)
@@ -674,6 +677,14 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	//SetForegroundWindow(m_hWnd);
 
 	::ShowWindow( m_hWnd, SW_MINIMIZE );
+	HWND hwnd = ::GetForegroundWindow();
+	if(hwnd!=NULL)
+	{
+		wchar_t szBuf[200];
+		::GetWindowText(hwnd,szBuf,199);
+		if(wcscmp(szBuf, L"Motorola RhoElements") == 0)
+			::ShowWindow(hwnd, SW_MINIMIZE);
+	}
 
 	m_isMinimized = true;
 
@@ -767,7 +778,7 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 	if (m_bFullScreen)
     {
 		//RhoSetFullScreen(fActive!=0);
-        showTaskBar(fActive==0);
+		showTaskBar(fActive==0);
     }
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
@@ -1780,6 +1791,20 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     // Find a direct child of this window from the window that has focus.
     // This will be AtlAxWin window for the hosted control.
     CWindow control = ::GetFocus();
+
+	// workaround for backspace key in text fields:
+	if (control.m_hWnd && (pMsg->message == WM_KEYUP) && (pMsg->wParam == VK_BACK))
+	{
+		if(RHO_IS_CEDEVICE)
+		{
+			control.SendMessage(WM_KEYDOWN, VK_BACK, 0);
+			control.SendMessage(WM_KEYUP, VK_BACK, 0);
+		}
+		else
+			control.SendMessage(WM_CHAR, VK_BACK, 1);
+		//return TRUE;
+	}
+
     if (IsChild(control) && m_hWnd != control.GetParent())
     {
         do
@@ -2086,6 +2111,21 @@ LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
         return m_oTabBar.OnTimer(uMsg, wParam, lParam);
     }
 
+    return 0;
+}
+
+LRESULT CMainWindow::OnIntentMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
+    if (pcds->dwData == COPYDATA_INTERPROCESSMESSAGE){
+        InterprocessMessage *ipmsg = reinterpret_cast<InterprocessMessage*>(pcds->lpData);
+        LOG(INFO) + "INTERPROCESSMESSAGE : " + rho::String(ipmsg->appName) + rho::String(ipmsg->params);
+        rho::Intent::addApplicationMessage(ipmsg->appName, ipmsg->params);
+		LOG(INFO) + L"INTERPROCESSMESSAGE IS DONE.";
+    }
+    else if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData)){
+        m_oTabBar.SwitchTabByName((LPCSTR)(pcds->lpData), true);
+    }
     return 0;
 }
 

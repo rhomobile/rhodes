@@ -297,12 +297,12 @@ protected:
 };
 
 #if defined(WINDOWS_PLATFORM)
-extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
+extern "C" void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 
 template <typename FUNCTYPE, typename PARAMTYPE>
 void rho_callInUIThread( FUNCTYPE pFunc, PARAMTYPE param )
 {
-    rho_wm_impl_performOnUiThread( new rho::common::CStaticClassFunctor<FUNCTYPE,PARAMTYPE>(pFunc, param) );
+    rho_os_impl_performOnUiThread( new rho::common::CStaticClassFunctor<FUNCTYPE,PARAMTYPE>(pFunc, param) );
 }
 #endif //WINDOWS_PLATFORM
 
