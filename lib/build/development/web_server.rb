@@ -25,19 +25,16 @@ module RhoDevelopment
     end
 
     def self.alive?
-      result = true
-      url = URI("http://#{Configuration::own_ip_address}:#{Configuration::webserver_port}/alive")
-      http = Net::HTTP.new(url.host, url.port)
-      http.open_timeout = 5
+      url = Configuration::webserver_alive_request
       begin
-        http.start { |_http|
-          _http.get(url.path)
-        }
+        http = Net::HTTP.new(url.host, url.port)
+        http.open_timeout = 5
+        response = http.get(url.path)
+        return response.code == '200'
       rescue Errno::ECONNREFUSED,
           Net::OpenTimeout => e
-        result = false
+        return false
       end
-      result
     end
 
     def self.stop
@@ -66,19 +63,17 @@ module RhoDevelopment
 # instance methods
 
     def initialize
-      _host = Configuration::own_ip_address
-      _port = Configuration::webserver_port
-      _document_root = Configuration::document_root
-      puts "Path '#{_document_root}' will be used as web server document root".primary
+      port = Configuration::webserver_port
+      document_root = Configuration::document_root
+      puts "Path '#{document_root}' will be used as web server document root".primary
       print 'Cleaning document root directory... '.primary
-      FileUtils.rm_rf("#{_document_root}/.", secure: true)
+      FileUtils.rm_rf("#{document_root}/.", secure: true)
       puts 'done'.success
       @tasks = Queue.new
       @web_server = WEBrick::HTTPServer.new(
-          :Port => _port,
-          :DocumentRoot => _document_root,
-          :ServerType => WEBrick::SimpleServer,
-          :BindAddress => _host
+          :Port => port,
+          :DocumentRoot => document_root,
+          :ServerType => WEBrick::SimpleServer
       )
       self.configure
     end

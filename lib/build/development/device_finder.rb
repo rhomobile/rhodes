@@ -5,7 +5,7 @@ module RhoDevelopment
   class DeviceFinder
     def run
 
-      adresses = Configuration::own_ip_address
+      adresses = Configuration::own_ip_addresses
       if adresses.length != 0
         puts
         puts 'There are several network interfaces with following IP addresses: '.primary
