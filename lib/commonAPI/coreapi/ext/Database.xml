@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-  <MODULE name="Database" parent="Rho" generateUnderscoreRubyNames="true">
+  <MODULE name="Database" parent="Rho" generateUnderscoreRubyNames="true" productException='eb'>
     <HELP_OVERVIEW>Database is low-level API to access SQLite local database.</HELP_OVERVIEW>
     <MORE_HELP>This API used internally by RHOM. To use RHOM, just define your models and partition databases will be created automatically.
 ## Enabling the API           
@@ -16,20 +16,6 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
     </MORE_HELP>
         <MORE_HELP_EB>
-## Enabling the API
-In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
-
-* ebapi-modules.js - this file contains all available Enterprise Browser APIs
-
-If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
-
-ex:
-
-* ebapi.js - core APIs needed 
-* eb.database.js - just the Database API
-* eb.database.sqlite3.js - just the Database API
-* other individual JavaScript files included with the Enterprise Browser installation
-
         </MORE_HELP_EB>
 
     <ALIASES>
@@ -165,8 +151,8 @@ ex:
 
     </USER_OVERVIEW>
     <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-         <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
-
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
     <EXAMPLES>
       <EXAMPLE title="Using Transactions">
         <SECTIONS>
@@ -175,23 +161,23 @@ ex:
             <CODE>
               <RUBY>
                 <![CDATA[
-db = Rho::Database
-  db.startTransaction
-  begin
-    items.each do |item|
-      # create hash of attribute/value pairs
-      data = {
-        :field1 => item['value1'], 
-        :field2 => item['value2'] 
-      } 
-      # Creates a new itemModel object and saves it
-      new_item = itemModel.create(data)
-    end
-   db.commitTransaction
-  rescue
-   db.rollbackTransaction
+db = Rho::Database.new
+db.startTransaction
+begin
+  items.each do |item|
+    # create hash of attribute/value pairs
+    data = {
+      :field1 => item['value1'], 
+      :field2 => item['value2'] 
+    } 
+    # Creates a new itemModel object and saves it
+    new_item = itemModel.create(data)
   end
-  ]]>
+  db.commitTransaction
+rescue
+  db.rollbackTransaction
+end
+]]>
               </RUBY>
               <JAVASCRIPT>
                 <![CDATA[

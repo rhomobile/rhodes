@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="NativeTabbar" parent="Rho" generateUnderscoreRubyNames="true">
-        <HELP_OVERVIEW>The NativeTabbar methods let you use multiple instances of the RhoMobile webview in separate tabs. </HELP_OVERVIEW>
+        <HELP_OVERVIEW>The NativeTabbar methods let you use multiple instances of the application's webview in separate tabs. </HELP_OVERVIEW>
         <MORE_HELP>On Android, iOS and WIndows Phone 8 the tabs are true Native Tabbar controls to give your application a native look and feel.No more than 4 tabs can be created in the Windows Phone 8 tabbar. A tabbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time. 
 ## Enabling the API           
 This API is part of the `coreapi` extension that is included automatically.
@@ -17,17 +17,31 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>On Android, the tabs are true Native Tabbar controls to give your application a native look and feel. On Windows Mobile/CE there are no visible tabs, but can be used in conjunction with shortcuts to run multiple 'applications' from a single instance. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time. 
 ## Enabling the API
-In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+There are two methods of enabling the NativeTabbar API: 
 
-* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+* Include all ebapi modules or 
+* Include only the API modules you need 
 
-If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
-ex:
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
 
-* ebapi.js - core APIs needed 
-* eb.nativetabbar.js - just the NativeTabBar API
-* other individual JavaScript files included with the Enterprise Browser installation
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the NativeTabbar API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.nativetabbar.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
 
 
         </MORE_HELP_EB>
@@ -63,6 +77,7 @@ ex:
                                     <DESC>Relative path to tabbar item icon in your application; typically located in /public/images/.</DESC>
                                     <DESC_EB>Icon Relative path (from Enterprise Browser application) to local files on the device. </DESC_EB>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
+                                    <PLATFORM_EB>Android</PLATFORM_EB>
                                 </PARAM>
                                 <PARAM name="reload" type="BOOLEAN" default="false">
                                     <DESC>When tab is activated  - page in tab will be reloaded.</DESC>
@@ -70,18 +85,22 @@ ex:
                                 <PARAM name="selectedColor" type="INTEGER">
                                     <DESC>Change the selected color of this tab. On Android this works only if you setup selectedColor for all tabs and also setup backgroundColor for the whole Tabbar.</DESC>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
+                                    <PLATFORM_EB>Android</PLATFORM_EB>
                                 </PARAM>
                                 <PARAM name="disabled" type="BOOLEAN" default="false">
                                     <DESC>Tab will be displayed as disabled.</DESC>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
+                                    <PLATFORM_EB>Android</PLATFORM_EB>
                                 </PARAM>
                                 <PARAM name="backgroundColor" type="INTEGER">
                                     <DESC> Background color for tab. Use when your application background color is not white for removing blink during switch tabs.</DESC>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
+                                    <PLATFORM_EB>Android</PLATFORM_EB>
                                 </PARAM>
                                 <PARAM name="useCurrentViewForTab" type="BOOLEAN" default="false">
                                     <DESC>Gives a smooth transfer to a newly opened tab from the current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
-                                    <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
+                                    <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
+                                    <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
                                 </PARAM>
 
                                 <PARAM name="perishable" type="BOOLEAN" default="false">
@@ -91,7 +110,7 @@ ex:
                                 
                                 <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                     <PLATFORM>WM</PLATFORM>
-                                    <DESC>Create tab immediately when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to.</DESC>
+                                    <DESC>Create tab immediately when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to. Don't use this parameter on the devices with a small amount of RAM.</DESC>
                                 </PARAM>
                             </PARAMS>
                         </PARAM>
@@ -100,13 +119,14 @@ ex:
                     <PARAM name="tabBarProperties" type="HASH">
                         <DESC>Properties of TabBar.</DESC>
                         <PARAMS>
-                            <PARAM name="verticalOrientation" type="BOOLEAN" default="false">
+                            <PARAM name="verticalOrientation" type="BOOLEAN" default="false" productException='eb'>
                                 <DESC>Creates a vertical tabbar on the iPad.</DESC>
                                 <PLATFORM>iOS</PLATFORM>
                             </PARAM>
                             <PARAM name="backgroundColor" type="INTEGER">
                                 <DESC>Background color of the tabbar.</DESC>
                                 <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
+                                <PLATFORM_EB>Android</PLATFORM_EB>
                             </PARAM>
                             <PARAM name="hiddenTabs" type="BOOLEAN" default="true">
                                 <PLATFORM>WM</PLATFORM>
@@ -114,7 +134,7 @@ ex:
                             </PARAM>
                             <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                 <PLATFORM>WM</PLATFORM>
-                                <DESC>Create tabs immediately when TabBar is created. Action also will be executed. If false, then each tab will be created when first switch to the tab is executed.</DESC>
+                                <DESC>Create tabs immediately when TabBar is created. Action also will be executed. If false, then each tab will be created when first switch to the tab is executed. Don't use this parameter on the devices with a small amount of RAM.</DESC>
                             </PARAM>
                             <PARAM name="placeTabsBottom" type="BOOLEAN">
                                 <PLATFORM>Android</PLATFORM>
@@ -174,7 +194,7 @@ ex:
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="setTabBadge" runInThread="ui" >
+            <METHOD name="setTabBadge" runInThread="ui" productException='eb'>
                 <DESC>Set the iPhone badge to tab.</DESC>
                 <PLATFORM>iOS</PLATFORM>
                 <PARAMS>
@@ -204,7 +224,8 @@ ex:
         </METHODS>
         
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
         <REMARKS>
         </REMARKS>
         <EXAMPLES >

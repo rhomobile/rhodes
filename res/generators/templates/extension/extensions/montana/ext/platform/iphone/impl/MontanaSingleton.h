@@ -1,8 +1,8 @@
 
-#import "I<%= name.camel_case %>.h"
-#import "<%= name.camel_case %>SingletonBase.h"
+#import "I<%= namecamelcase %>.h"
+#import "<%= namecamelcase %>SingletonBase.h"
 
-@interface <%= name.camel_case %>Singleton : <%= name.camel_case %>SingletonBase<I<%= name.camel_case %>Singleton> {
+@interface <%= namecamelcase %>Singleton : <%= namecamelcase %>SingletonBase<I<%= namecamelcase %>Singleton> {
 }
 
 

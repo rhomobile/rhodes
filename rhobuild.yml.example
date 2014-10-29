@@ -1,12 +1,13 @@
 env:
   #app: C:/rhodes-app
   paths:
-    java: C:/Program Files/Java/jdk1.6.0_11/bin
+    java: C:/Program Files/Java/jdk1.7.0_67/bin
     android: C:/android-sdk-windows
-    android-ndk: C:/android-ndk-r4b
+    android-ndk: C:/android-ndk-r10
     cabwiz:  C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz
-    msbuild: C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe
+    msbuild: C:/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe
     vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
+    nsis:    C:/Program Files (x86)/NSIS/makensis.exe
     
 build:
   wmpath: platform/wm
@@ -26,6 +27,9 @@ android:
   #  certificate: /path/to/developer/certificate
   #  password: "password-for-certificate"
   #  alias: "certificate-alias"
+  # Logcat filter will be used if defined, more information at http://developer.android.com/tools/debugging/debugging-log.html#filteringOutput
+  # This setting will take effect only if not defined in application built.yml  
+  #logcatFilter: APP:I dalvikvm:W System.err:W System.out:W StrictMode:I DEBUG:I *:E
   
 excludedirs:
   all:

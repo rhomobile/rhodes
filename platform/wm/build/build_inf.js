@@ -10,6 +10,12 @@ settings['wm653'] = ['Windows Mobile 6.5.3 Professional DTK (ARMV4I)','VersionMi
 settings['ce5'] = ['MC3000c50b (ARMV4I)','VersionMin=5.00','VersionMax=7.99'];
 settings['ce7'] = ['WT41N0c70PSDK (ARMV4I)','VersionMin=5.00','VersionMax=7.99'];
 
+var each_file = function(path, f) {
+    for (var e = new Enumerator(fso.GetFolder(path).files); !e.atEnd(); e.moveNext()) {
+        f(e.item().Name);
+    }
+};
+
 main();
 
 function p(str) {
@@ -326,14 +332,14 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     p("AddReg=RegKeys");
     if (is_persistent)
     {
-        p("CopyFiles=CopyToInstallDir,CopyPersistent,CopySystemFilesPers" +
+        p("CopyFiles=CopyToInstallDir,CopyPersistent,CopySystemFilesPers,CopyBrowserPluginsPers" +
            (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBinPers,CopyNPAPIPers,CopyConfigPers" : "")+
            (!usereruntime && (webkit_mode == 'none') && include_motocaps? ",CopyConfigPers" : "")+
            get_copyfiles_sections(es,is_persistent));
     }
     else
     {
-        p("CopyFiles=CopyToInstallDir"+
+        p("CopyFiles=CopyToInstallDir,CopyBrowserPlugins"+
            (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "") +
            (!usereruntime && (webkit_mode == 'none') && include_motocaps ? ",CopyConfig" : "") +
            (!usereruntime && include_motocaps ? ",CopySystemFiles" : "") +
@@ -365,6 +371,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
             }
         }
+
+        p("6=,\"\",," + rhogempath + "\"\\Plugin\\\"");
     }
     get_source_disks_names(es);
     p("");
@@ -413,6 +421,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("\"RegEx.xml\"=4");
             }
         }
+        each_file(rhogempath + "\\Plugin", function(f) {
+            p("\"" + f +"\"=6");
+        });
     }
     fill_extensions_source_disk_files(exts);
     var f = get_source_disks_files(es);
@@ -436,6 +447,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("CopyToInstallDir=0,\"%InstallDir%\"");    
     }    
     
+    if (is_persistent) {
+        p("CopyBrowserPluginsPers=0,\"Application\\" + name + "\\Plugin\"");
+    } else {
+        p("CopyBrowserPlugins=0,\"%InstallDir%\\Plugin\"");
+    }
+
     if ((!usereruntime) && (webkit_mode != 'none')) 
     {
         if (is_persistent) 
@@ -495,6 +512,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
         
+        p("[" + (is_persistent ? "CopyBrowserPluginsPers" : "CopyBrowserPlugins") + "]");
+        each_file(rhogempath + "\\Plugin", function(f) {
+            p("\"" + f +"\",\"" + f +"\",,0");
+        });
+        p("");
+
         if (webkit_mode != 'none') {
             p("");
             if (!is_persistent)
@@ -506,16 +529,19 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("\"openssl.dll\",\"openssl.dll\",,0");
                 p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
+
                 p("[CopyNPAPI]");
                 p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
                 p("\"bridge.dll\",\"bridge.dll\",,0");
                 p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
                 p("");
+
                 p("[CopyConfig]");
                 p("\"Config.xml\",\"Config.xml\",,0");
                 p("\"Plugin.xml\",\"Plugin.xml\",,0");
                 p("\"RegEx.xml\",\"RegEx.xml\",,0");
                 p("");
+
                 p("[CopySystemFiles]");
                 p("\"prtlib.dll\",\"prtlib.dll\",,0");
             }            
@@ -528,16 +554,19 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("\"openssl.dll\",\"openssl.dll\",,0");
                 p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
+
                 p("[CopyNPAPIPers]");
                 p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
                 p("\"bridge.dll\",\"bridge.dll\",,0");
                 p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
                 p("");
+
                 p("[CopyConfigPers]");
                 p("\"Config.xml\",\"Config.xml\",,0");
                 p("\"Plugin.xml\",\"Plugin.xml\",,0");
                 p("\"RegEx.xml\",\"RegEx.xml\",,0");
                 p("");
+
                 p("[CopySystemFilesPers]");
                 p("\"prtlib.dll\",\"prtlib.dll\",,0");
             }

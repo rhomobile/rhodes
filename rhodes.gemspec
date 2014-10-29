@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.add_dependency('templater', '>= 0.5.0')
   s.add_dependency('rake', '>= 0.9.2')
-  s.add_dependency('activesupport', '~> 2.3.5')
   s.add_dependency('uuid', '>= 2.3.2')
   s.add_dependency('systemu', '>= 2.5.0')
   s.add_dependency('json', '~>1.5.4')

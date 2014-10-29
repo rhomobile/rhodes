@@ -14,9 +14,10 @@
 #include <webvw.h>
 #endif
 //////////////////////////////////////////////////////////////////////////
-
+extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam);
+extern "C" bool rho_wmimpl_get_textselectionenabled();
 
 IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
 
@@ -44,15 +45,22 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     , bRunningOnWM(FALSE)
     , bDeviceCausesDoubleBackspace(FALSE)
     , m_tabID(0)
-    , m_dwNavigationTimeout(30*1000)
+    , m_dwNavigationTimeout(45000)
     , m_bLoadingComplete(FALSE)
+    , m_bNavigationError(FALSE)
+	, m_bInitialised(FALSE)
 {
 	m_hwndParent  = hwndParent;
 	m_hInstance = hInstance;
 
 	memset(m_tcCurrentPageTitle, NULL, sizeof(TCHAR) * MAX_URL);
 	memset(m_tcNavigatedURL, 0, sizeof(TCHAR) * MAX_URL);
-
+	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
+	if(m_dwNavigationTimeout<=0)
+	{
+		LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_dwNavigationTimeout;
+		m_dwNavigationTimeout=45000;
+	}
     CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
 	GetWindowRect(hwndParent, &m_rcViewSize);
@@ -78,9 +86,11 @@ LRESULT CEBrowserEngine::CreateEngine()
 	//we only want to do this once, so check that the m_pBrowser is null
 	if (!m_pBrowser)
 	{
+    
 		// See if text selection is enabled, so we can pass the correct value through the GetHostInfo() interface
 		//configFunction(m_tabID, L"HTMLStyles\\TextSelectionEnabled", tcConfigSetting);
-		m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
+		//m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
+		m_bTextSelectionEnabled = rho_wmimpl_get_textselectionenabled();
 
 		// Create an instance of a web browser object (from Shdocvw.dll).
 		
@@ -145,9 +155,10 @@ LRESULT CEBrowserEngine::CreateEngine()
 			bDeviceCausesDoubleBackspace = TRUE;
 		}
 	}
+//		CloseHandle (CreateThread(NULL, 0, 
+//			&CEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
+		
 
-    CloseHandle (CreateThread(NULL, 0, 
-        &CEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
 
 Cleanup:
 	if (pUnk)
@@ -295,22 +306,57 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
     CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
+	DWORD dwWaitResult;
 
     if (pEng->m_dwNavigationTimeout)
-    {
-        if(pEng->m_hNavigated==NULL)
-            pEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
+    {				
+		dwWaitResult = WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout);
 
-        if(WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
-        {
-            //no point in doing anything as there is no event handler
-            pEng->StopOnTab(pEng->m_tabID);
-            CloseHandle(pEng->m_hNavigated);
-            pEng->m_hNavigated = NULL;
+		switch (dwWaitResult) 
+		{
+			// Event object was signaled
+			case WAIT_OBJECT_0: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:Event object was signaled\n";
+								
+				CloseHandle(pEng->m_hNavigated);
+				pEng->m_hNavigated = NULL;
+				if(pEng->m_bNavigationError)
+				{
+					LOG(INFO) + "NavigationTimeoutThread:m_bNavigationError\n";
+					pEng->StopOnTab(0);
+					Sleep(400);
+					SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, 
+					(WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+					pEng->m_bNavigationError=FALSE;
 
-            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+				}
+				break; 
+			case WAIT_TIMEOUT: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:timeout\n";
+				
+					
+				pEng->StopOnTab(0);
+						
+				CloseHandle(pEng->m_hNavigated);
+				pEng->m_hNavigated = NULL;
+				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, 
                 (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
-        }
+
+				break; 
+
+			// An error occurred
+			default: 
+				LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
+				return 0; 
+		}		
+		
+		
     }
 
     return 0;
@@ -380,6 +426,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			const GUID __RPC_FAR *pguidCmdGroup,
 			DWORD nCmdID)
 {
+	/*
 	if (lpMsg && (lpMsg->message == WM_KEYDOWN))
 	{
 		if (lpMsg->wParam == VK_LEFT ||
@@ -411,7 +458,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			return S_FALSE;
 		}
 	}
-
+*/
 	return S_FALSE;
 }
 
@@ -498,7 +545,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 	{
 	case DISPID_NAVIGATEERROR:
         LOG(INFO) + "DISPID_NAVIGATEERROR";
-
+		m_bNavigationError=TRUE;
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
@@ -507,7 +554,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR)
 			wcsncpy(tcURL, pdparams->rgvarg[3].pvarVal->bstrVal, MAX_URL-1);
 		
-        SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, (WPARAM)m_tabID, (LPARAM)tcURL);
+  //      SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, (WPARAM)m_tabID, (LPARAM)tcURL);
 		
         *(pdparams->rgvarg[0].pboolVal) = VARIANT_TRUE;
 		retVal = S_OK;
@@ -516,6 +563,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 	
 	case DISPID_NAVIGATECOMPLETE2:
         LOG(INFO) + "DISPID_NAVIGATECOMPLETE2";
+		if (!m_bInitialised)
+			RegisterWndProcThread(this);
 
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
@@ -617,8 +666,10 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
             m_pBrowser->GoBack();
             break;
 		}
+        if(m_hNavigated==NULL)
+            m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
-		//CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
+		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
 		wcscpy(m_tcNavigatedURL, tcURL);
 
 #ifdef SCROLL_NOTIFY
@@ -754,17 +805,29 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd) 
 {
-    MSG msg;
+	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-        if (msg.message != WM_PAINT && RHODESAPP().getExtManager().onWndMsg(msg) )
+        if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
+		
+		if (msg.message == WM_KEYDOWN && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
+		{
+			IDispatch* pDisp;
+			m_pBrowser->get_Document(&pDisp);
+			if (pDisp != NULL)
+			{
+				IOleInPlaceActiveObject* pInPlaceObject;
+				pDisp->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&pInPlaceObject);
+				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);
+			}
+		}
 
-        if (!mainWnd.TranslateAccelerator(&msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+		if (!mainWnd.TranslateAccelerator(&msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 
 		if(msg.message == WM_PAINT)
 			RHODESAPP().getExtManager().onHTMLWndMsg(msg);	
@@ -990,7 +1053,7 @@ HRESULT CEBrowserEngine::ParseTags()
 										//  This blocks whilst the callback
 										//  code is handled so metaTag does not
 										//  go out of scope.
-                                        PostMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)metaTag);
+                                        SendMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)metaTag);
 									}
 								}
 								pMetaElem->Release();
@@ -1015,6 +1078,7 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
 {
 	//  We are passed a pointer to the engine we are interested in.
 	CEBrowserEngine* pEngine = reinterpret_cast<CEBrowserEngine*>(lpParameter);
+	pEngine->m_bInitialised = true;
 
 	//  The window tree appears as follows on CE:
 	//  +--m_htmlHWND
@@ -1050,7 +1114,10 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
         Sleep(100);
 	}
 
-    PostMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+	//  Invoke directly as this must be done before all meta tag parsing.  On some devices meta tags were 
+	//  being partially processed causing subsequent meta tags to not be read correctly.
+	//rho_wm_appmanager_ProcessOnTopMostWnd((LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+	SendMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
 
     return 0;
 }

@@ -91,25 +91,29 @@ def get_api_level(marketversion)
 end
 module_function :get_api_level
 
-def get_addon_classpath(libnames, apilevel = nil)
+def get_addon_classpath(addon_pattern, apilevel = nil)
+
+#libnames
 
     if USE_TRACES
-      puts "Looking for #{libnames.inspect}"
-      puts "Looking for apilevel #{apilevel}" if apilevel
+      puts "Looking for name pattern: #{addon_pattern}"
+      puts "Looking for API level: #{apilevel}" if apilevel
     end
 
-    libpatterns = []
+    found_name = nil
+    found_libpatterns = nil
     found_classpath = nil
     found_apilevel = nil
-    libnames.each do |name|
-      libpatterns << Regexp.new("^(#{name})=(.+);.*$")
-    end
+    namepattern = Regexp.new("^name=(.+)$")
+    addonnamepattern = Regexp.new(addon_pattern)
+    libspattern = Regexp.new("^libraries=(.+)$")
 
     Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
         next unless File.directory? dir
 
         libs = {}
         cur_apilevel = nil
+        cur_name = nil
         classpath = nil
         props = File.join(dir, 'manifest.ini')
         unless File.file? props
@@ -117,9 +121,18 @@ def get_addon_classpath(libnames, apilevel = nil)
             next
         end
 
-        libs = {}
         File.open(props, 'r') do |f|
           while line = f.gets
+            
+            if namepattern =~ line
+              puts "Parsing add-on: #{$1}" if USE_TRACES
+              cur_name = $1
+              break unless addonnamepattern =~ $1
+              next
+            end
+            
+            next unless cur_name
+            
             if line =~ /^api=([0-9]+)$/
               cur_apilevel = $1.to_i
 
@@ -127,51 +140,74 @@ def get_addon_classpath(libnames, apilevel = nil)
 
               break if apilevel and apilevel != cur_apilevel
               break if found_apilevel and found_apilevel > cur_apilevel
+
+              found_name = cur_name
+              found_apilevel = cur_apilevel
+              found_libpatterns = nil
+              
+              next
             end
-            libpatterns.each do |pat|
+
+            if found_libpatterns.nil? 
+              if libspattern =~ line
+                found_libpatterns = []
+                libnames = $1.split(';')
+                libnames.each do |name|
+
+                  # Work around Motorola SDK Add-on bug ########################################
+                  name = 'com.motorolasolutions.msr' if name == 'com.motorolasolutions.emdk.msr'
+                  ##############################################################################
+                  
+                  found_libpatterns << Regexp.new("^(#{name})=(.+);.*$")
+                end
+                
+                puts "Library patterns: #{found_libpatterns.inspect}" if USE_TRACES
+                
+              end
+              next
+            end
+            
+            found_libpatterns.each do |pat|
               if(pat =~ line)
                 libs[$1] = $2
               end
             end
+
           end
         end
 
-        next if apilevel and apilevel != cur_apilevel
+        next unless cur_apilevel
+        next unless found_apilevel
+        next if apilevel and apilevel != found_apilevel
         next if found_apilevel and cur_apilevel < found_apilevel
 
-        libnames.each do |name|
-          if libs[name]
-            if classpath
-              classpath += $path_separator
-            else
-              classpath = ''
-            end
-            classpath += File.join(dir,'libs',libs[name])
+        libs.each do |name, file|
+          if classpath
+            classpath += $path_separator
           else
-            classpath = nil
-            break
+            classpath = ''
           end
+          classpath += File.join(dir,'libs',file)
         end
 
         next unless classpath
 
-        found_apilevel = cur_apilevel
         found_classpath = classpath
 
-        puts "classpath: #{found_classpath.inspect}, API level: #{found_apilevel}" if USE_TRACES
+        puts "classpath: #{found_classpath}, API level: #{found_apilevel}" if USE_TRACES
 
     end
 
     unless found_classpath
-      msg = "No Android SDK add-on found for libraries: #{libnames.inspect}"
+      msg = "No Android SDK add-on found: #{addon_pattern}"
       msg += "; API level: #{apilevel}" if apilevel
       raise msg
     end
 
     if USE_TRACES
-      puts "Add-on libraries: #{libnames.inspect}"
-      puts "Add-on classpath: #{found_classpath}"
+      puts "Add-on name: #{found_name}"
       puts "Add-on API level: #{found_apilevel}"
+      puts "Add-on classpath: #{found_classpath}"
     end
 
     found_classpath
@@ -424,9 +460,9 @@ def kill_adb_logcat(device_flag, log_path = $applog_path)
 
   device_opts = device_options device_flag
   match_str = device_opts.join(' ')
-  
+
   #cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+(-(d|e|s\s+\S+))\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
-  cmd_re = /"?#{Regexp.escape($adb)}"?\s+(-(d|e|s\s+\S+))\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
+  cmd_re = /"?#{Regexp.escape($adb)}"?\s+(-(d|e|s\s+\S+))\s+logcat\s+.*?>\s+"?#{Regexp.escape(log_path)}"?/
   processes = Jake.get_process_list
   log_shell_pids = []
 
@@ -483,18 +519,50 @@ def kill_adb_and_emulator
     # Windows
     `taskkill /F /IM adb.exe`
   else
-    `killall -9 adb`
+    `killall -9 adb 2> /dev/null`
   end
   stop_emulator
 end
 module_function :kill_adb_and_emulator
 
-def logcat(device_flag = '-e', log_path = $applog_path)
+
+def process_filter(filter)
+  resultF = []
+
+  unless filter.nil? || filter.empty?
+    items = filter.strip.split(/\s+/)
+
+    items.each do |item|
+      if item =~ /(.+?):(.+)/
+        cat = $1
+        level = $2.upcase
+
+        if level =~ /^[VDIWEFS]$/
+          resultF << "#{cat}:#{level}"
+        else
+          BuildOutput.put_log(BuildOutput::WARNING,["Unknown log priority level '#{level}' for '#{cat}' in '#{item}'",'Accepted priority levels are:','V - Verbose (lowest priority)','D - Debug','I - Info','W - Warning','E - Error','F - Fatal','S - Silent (highest priority, on which nothing is ever printed)'],'Logcat filter')
+        end
+      else
+        BuildOutput.put_log(BuildOutput::WARNING,["Invalid logcat filtering format for '#{item}'",'Valid format is \'tag:priority\'','More documentation at http://developer.android.com/tools/debugging/debugging-log.html#filteringOutput'],'Logcat filter')
+      end
+    end
+  end
+
+  unless resultF.empty?
+    resultF << '*:S'
+    BuildOutput.put_log(BuildOutput::NOTE,["Logcat filter is set to #{resultF.join(' ')} all other items will be filtered out"],'Logcat filter')
+  end
+
+  resultF
+end
+module_function :process_filter
+
+def logcat(filter = nil, device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
     device_opts = device_options device_flag
     device_re = device_opts.join('\s+')
-  
-    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
+
+    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+.*?>\s+"?#{Regexp.escape(log_path)}"?/
     pids = Jake.get_process_list
     log_pids = []
 
@@ -505,18 +573,19 @@ def logcat(device_flag = '-e', log_path = $applog_path)
     if log_pids.empty?
       rm_rf log_path if File.exist?(log_path)
       puts 'Starting new logcat'
-      Thread.new { Jake.run($adb, device_opts + ['logcat', '>', log_path], nil, true) }
+      data = process_filter(filter)
+      Thread.new { Jake.run($adb, device_opts + ['logcat'] + data + [ '>', "\"#{log_path}\""], nil, true) }
     end
   end
 end
 module_function :logcat
 
-def logcat_process(device_flag = '-e', log_path = $applog_path)
+def logcat_process(filter = nil, device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
     device_opts = device_options device_flag
     device_re = device_opts.join('\s+')
-  
-    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+>\s+"?#{Regexp.escape(log_path)}"?/
+
+    cmd_re = /"?#{Regexp.escape($adb)}"?\s+#{device_re}\s+logcat\s+.*?>\s+"?#{Regexp.escape(log_path)}"?/
     pids = Jake.get_process_list
     log_pids = []
 
@@ -526,7 +595,8 @@ def logcat_process(device_flag = '-e', log_path = $applog_path)
 
     if log_pids.empty?
       puts 'Starting new logcat process'
-      Thread.new { system("\"#{$adb}\" #{device_opts.join(' ')} logcat > \"#{log_path}\"") }
+      data = process_filter(filter).join(' ')
+      Thread.new { system("\"#{$adb}\" #{device_opts.join(' ')} logcat #{data} > \"#{log_path}\" ") }
     end
   end
 end
@@ -588,9 +658,9 @@ def stop_emulator
     Jake.run3_dont_fail('taskkill /F /IM emulator-arm.exe')
     Jake.run3_dont_fail('taskkill /F /IM emulator.exe')
   else
-    Jake.run3_dont_fail('killall -9 emulator-arm')
-    Jake.run3_dont_fail('killall -9 emulator64-arm')
-    Jake.run3_dont_fail('killall -9 emulator')
+    Jake.run3_dont_fail('killall -9 emulator-arm 2> /dev/null')
+    Jake.run3_dont_fail('killall -9 emulator64-arm 2> /dev/null')
+    Jake.run3_dont_fail('killall -9 emulator 2> /dev/null')
   end
 end
 

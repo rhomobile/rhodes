@@ -81,8 +81,6 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
         oResult.set( L"ANDROID" );
     else if ( strPlatform.compare("iphone") == 0 )
         oResult.set( L"APPLE" );
-    else if ( strPlatform.compare("symbian") == 0 )
-        oResult.set( L"SYMBIAN" );
     else
         oResult.set( L"UNKNOWN" );
 
@@ -98,8 +96,6 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 #else
 	oResult.set( PLATFORM_WM_CE );
 #endif
-#elif defined(OS_SYMBIAN)
-	oResult.set( L"SYMBIAN" );
 #elif defined(OS_ANDROID)
     oResult.set( PLATFORM_ANDROID );
 #elif defined(OS_LINUX)
@@ -211,10 +207,10 @@ void CSystemImplBase::getStartParams(rho::apiGenerator::CMethodResult& oResult)
 }
 
 //TODO: move rho_sys_unzip_file here
-extern "C" int rho_sys_unzip_file(const char* szZipPath, const char* psw);
-void CSystemImplBase::unzipFile( const rho::String& localPathToZip, const rho::String& password, rho::apiGenerator::CMethodResult& oResult)
+extern "C" int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outputFilename);
+void CSystemImplBase::unzipFile( const rho::String& localPathToZip, const rho::String& password, const rho::String& outputFilename, rho::apiGenerator::CMethodResult& oResult)
 {
-    oResult.set( rho_sys_unzip_file( localPathToZip.c_str(), password.c_str()) );
+    oResult.set( rho_sys_unzip_file( localPathToZip.c_str(), password.c_str(), outputFilename.c_str() ) );
 }
 
 void CSystemImplBase::zipFile( const rho::String& localPathToZip,  const rho::String& localPathToFile,  const rho::String& password, CMethodResult& oResult)

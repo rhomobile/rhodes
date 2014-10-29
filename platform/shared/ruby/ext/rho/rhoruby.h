@@ -76,6 +76,7 @@ VALUE addStrToHash(VALUE hash, const char* key, const char* val);
 VALUE addStrToHashLen(VALUE hash, const char* key, const char* val, int len);
 VALUE addHashToHash(VALUE hash, const char* key, VALUE val);	
 VALUE rho_ruby_hash_aref(VALUE hash, const char* key);
+VALUE rho_ruby_hash_get(VALUE hash, VALUE key);
 VALUE rho_ruby_array_get(VALUE ar, int nIndex);
 int rho_ruby_array_get_size(VALUE ar);
 
@@ -169,6 +170,15 @@ VALUE rho_ruby_getProcBinding(VALUE proc);
 int rho_ruby_is_integer(VALUE val);
 int rho_ruby_is_boolean(VALUE val);
 int rho_ruby_is_double(VALUE val);
+
+int rho_ruby_to_int(VALUE val, int* dest);
+int rho_ruby_to_double(VALUE val, double* dest);
+int rho_ruby_to_bool(VALUE val, int* dest);
+int rho_ruby_to_str(VALUE val, const char** dest, int* len);
+
+VALUE rho_ruby_hash_keys(VALUE val);
+VALUE rho_ruby_each_key(VALUE val);
+
 
 VALUE rho_ruby_safe_require(const char *fname);
 

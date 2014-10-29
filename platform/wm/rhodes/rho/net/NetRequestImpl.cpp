@@ -33,6 +33,10 @@
 #include "common/StringConverter.h"
 #include "net/URI.h"
 #include "common/RhoConf.h"
+#if defined(OS_WINDOWS_DESKTOP) || defined(_WIN32_WCE)
+#pragma comment(lib, "crypt32.lib")
+#include "wincrypt.h"
+#endif
 
 #if defined(_WIN32_WCE)
 #include "connmgr.h"
@@ -144,7 +148,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
         if ( !m_sslVerifyPeer )
             dwFlags |= INTERNET_FLAG_IGNORE_CERT_CN_INVALID|INTERNET_FLAG_IGNORE_CERT_DATE_INVALID;
 
-        m_hRequest = HttpOpenRequest( m_hConnection, CAtlStringW(method), m_strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
+        m_hRequest = HttpOpenRequest(m_hConnection, CAtlStringW(method), m_strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
         if ( !m_hRequest ) 
         {
             m_strErrFunction = L"HttpOpenRequest";
@@ -223,6 +227,44 @@ boolean CNetRequestImpl::checkSslCertError()
 
         return true;
     }
+	else if(dwError == ERROR_INTERNET_CLIENT_AUTH_CERT_NEEDED)
+	{
+#if defined(OS_WINDOWS_DESKTOP) || defined(_WIN32_WCE)
+		if (RHOCONF().isExist("clientSSLCertificate")) {
+			CRYPT_DATA_BLOB data;
+			FILE *fIn = fopen(RHOCONF().getString("clientSSLCertificate").c_str(), "rb");
+			fseek(fIn, 0, SEEK_END);
+			data.cbData = ftell(fIn);
+			fseek(fIn, 0, SEEK_SET);
+			data.pbData = (BYTE *)malloc(data.cbData);
+			fread(data.pbData, 1, data.cbData, fIn);
+			fclose(fIn);
+
+			LPCWSTR pwd = NULL;
+			std::wstring wpwd;
+			if(RHOCONF().isExist("clientSSLCertificatePassword"))
+			{
+				wpwd = rho::common::convertToStringW((RHOCONF().getString("clientSSLCertificatePassword")));
+				pwd = wpwd.c_str();
+			}
+			HCERTSTORE hCertStore = PFXImportCertStore(&data, pwd, 0);
+			PCCERT_CONTEXT hContext = NULL;
+			if(hCertStore)
+				hContext = CertFindCertificateInStore (hCertStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, CERT_FIND_ANY, NULL, NULL);
+
+			if(hContext)
+				InternetSetOption(m_hRequest, INTERNET_OPTION_CLIENT_CERT_CONTEXT, (void*)hContext, sizeof(CERT_CONTEXT));
+
+			if(hContext)
+				CertFreeCertificateContext(hContext);
+			
+			if(hCertStore)
+				CertCloseStore(hCertStore, 0);
+
+			return true;
+		}
+#endif
+	}
 
     return false;
 }
@@ -266,7 +308,7 @@ INetResponse* CNetRequestImpl::doRequest( const char* method, const String& strU
         {
             if (!m_bCancel && checkSslCertError())
             {
-                if ( !HttpSendRequest( m_hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
+				if ( !HttpSendRequest( m_hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
                 {
                     m_strErrFunction = L"HttpSendRequest";
                     break;

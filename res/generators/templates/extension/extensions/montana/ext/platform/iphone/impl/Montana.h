@@ -1,8 +1,8 @@
 
-#import "I<%= name.camel_case %>.h"
-#import "<%= name.camel_case %>Base.h"
+#import "I<%= namecamelcase %>.h"
+#import "<%= namecamelcase %>Base.h"
 
-@interface <%= name.camel_case %> : <%= name.camel_case %>Base<I<%= name.camel_case %>> {
+@interface <%= namecamelcase %> : <%= namecamelcase %>Base<I<%= namecamelcase %>> {
 }
 
 -(void) getPlatformName:(id<IMethodResult>)methodResult;

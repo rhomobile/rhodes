@@ -26,9 +26,7 @@
 #------------------------------------------------------------------------
 
 require 'pathname'
-require 'yaml'
 require 'socket'
-require 'webrick'
 
 
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
@@ -63,6 +61,8 @@ end
 class Jake
 
   def self.config(configfile)
+    require 'yaml'
+
     conf = YAML::load(configfile)
     res = self.config_parse(conf)
     res
@@ -152,6 +152,8 @@ class Jake
   end
 
   def self.run_local_server(port = 0)
+    require 'webrick'
+
     addr = localip                   #:BindAddress => addr,
     server = WEBrick::HTTPServer.new :Port => port
     port = server.config[:Port]
@@ -161,6 +163,8 @@ class Jake
   end
 
   def self.run_local_server_with_logger(port, log_file)
+    require 'webrick'
+
     addr = localip
     log = WEBrick::Log.new log_file
     access_log = [[log_file, WEBrick::AccessLog::COMBINED_LOG_FORMAT]]
@@ -224,6 +228,9 @@ class Jake
     $passed ||= 0
     $failed ||= 0
     $faillog = []
+    @default_file_name = "junit.xml"
+    $junitname = ''
+    $junitlogs = {@default_file_name => []}
     $getdump = false
   end
 
@@ -241,13 +248,34 @@ class Jake
         end
       end
 
-      if line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
-        $failed += $1.to_i
-        return false
-      elsif line =~ /\| \*\*\*Total:\s+(.*)/  # | ***Total:
+      if line =~ /JUNIT\| (.*)/          # JUNIT| XML
+        $junitlogs[@default_file_name] << $1
+      elsif line =~ /JUNITNAME\|\s+(.*)/          # JUNITNAME| name
+        $junitname = File.basename($1.strip,'.xml')
+        $junitlogs[$junitname] = []
+      elsif line =~ /JUNITBLOB\| (.*)/
+        if $junitname && $1
+          $junitlogs[$junitname] << $1
+        end
+      end
+
+      ###
+      # Here we are looking for the following pattern of spec stats:
+      # ...   APP| ***Total:  ...
+      # ...   APP| ***Passed: ...
+      # ...   APP| ***Failed: ...
+      # ...
+      # ...   APP| ***Terminated
+      # Bail out as soon as prev. line is found
+      ###
+      if line =~ /\| \*\*\*Total:\s+(.*)/  # | ***Total:
         $total += $1.to_i
       elsif line =~ /\| \*\*\*Passed:\s+(.*)/ # | ***Passed:
         $passed += $1.to_i
+      elsif line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
+        $failed += $1.to_i
+      elsif line =~ /\| \*\*\*Terminated\s+(.*)/ # | ***Terminated
+        return false
       end
       # Faillog for MSpec
       if line =~ /\| FAIL:/
@@ -271,7 +299,25 @@ class Jake
   def self.process_spec_results(start)
     finish = Time.now
 
+    jpath = File.join($app_path,'junitrep')
+
+    # remove old spec results
+    test_patterns = ['Test*.xml', '*_spec_results.xml']
+    base_path = File.join($app_path,'**')
+    Dir.glob( test_patterns.map{ |pat| File.join(base_path, pat) } ).each { |file_name| File.delete(file_name) }
+      
+    FileUtils.rm_rf jpath
+
+    FileUtils.mkdir_p jpath
+
+    $junitlogs.each do |name, log|
+      if log.length > 0
+        File.open(File.join(jpath,"#{name}.xml"), "w") { |io| io << log.join().gsub('~~',$/) }
+      end
+    end
+
     FileUtils.rm_rf $app_path + "/faillog.txt"
+
     if $failed.to_i > 0
       puts "************************"
       puts "\n\n"
@@ -405,6 +451,8 @@ class Jake
   def self.edit_yml(file, out_file = nil)
     out_file = file if out_file.nil?
 
+    require 'yaml'
+
     yml = YAML::load_file(file)
     yield yml
     File.open(out_file, 'w') {|f| f.write yml.to_yaml}
@@ -416,6 +464,15 @@ class Jake
     doc = REXML::Document.new(File.new(file).read)
     yield doc
     File.open(out_file, 'w') {|f| f << doc}
+  end
+
+  def self.edit_lines(file, out_file = nil)
+    out_file = file if out_file.nil?
+
+    lines = File.readlines(file)
+    File.open(out_file, 'w') do |f|
+      lines.each { |line| f.puts(yield line) }
+    end
   end
 
   def self.clean_vsprops(file)
@@ -660,7 +717,7 @@ class Jake
       require 'zip'
 
       have_zip = true
-    rescue Exception => e   
+    rescue Exception => e
       have_zip = false
     end
 
@@ -720,7 +777,7 @@ class Jake
       require 'zip'
 
       have_zip = true
-    rescue Exception => e   
+    rescue Exception => e
       have_zip = false
     end
 
@@ -749,7 +806,7 @@ class Jake
               FileUtils.mkdir_p(d_path)
               last_path = d_path
             end
-            zip_file.extract(f, f_path) 
+            zip_file.extract(f, f_path)
           }
 
           if block_given?
@@ -776,7 +833,7 @@ class Jake
         else
           m = /\s+(.*?):\s+(.*?)\s+/.match(line)
           if !m.nil?
-            fname = m[2].gsub(dest_folder+'/','') 
+            fname = m[2].gsub(dest_folder+'/','')
             size = files[fname]
             if size != nil
               last = size
@@ -800,7 +857,7 @@ class Jake
 
         true
       end
-       
+
       if total_size != 0
         acc_size += last
         progress = acc_size * 100 / total_size
@@ -946,11 +1003,12 @@ class Jake
   end
 
   def self.run_rho_log_server(app_path)
+    require 'webrick'
 
-	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-	confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
-	confpath_content += "\r\n" + "LogToSocket=1" if !confpath_content.include?("LogToSocket=")
-	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+    confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
+    confpath_content += "\r\n" + "LogToSocket=1" if !confpath_content.include?("LogToSocket=")
+    File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
 
     begin
         require 'net/http'

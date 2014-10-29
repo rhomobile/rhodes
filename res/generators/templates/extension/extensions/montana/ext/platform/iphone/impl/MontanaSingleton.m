@@ -1,8 +1,8 @@
 
-#import "<%= name.camel_case %>Singleton.h"
+#import "<%= namecamelcase %>Singleton.h"
 
 
-@implementation <%= name.camel_case %>Singleton
+@implementation <%= namecamelcase %>Singleton
 
 
 -(NSString*)getInitialDefaultID {

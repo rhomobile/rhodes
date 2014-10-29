@@ -864,21 +864,21 @@ public class RhodesService extends Service {
     
     public static Boolean isMotorolaDevice() {
         Boolean res = false;
-        try
+       /* try
         {
             Class<?> commonClass = Class.forName("com.motorolasolutions.rhoelements.Common");
             Method isEmdkDeviceMethod = commonClass.getDeclaredMethod("isEmdkDevice");
             res = (Boolean)isEmdkDeviceMethod.invoke(null);
         } 
         catch (Throwable e) { }
-        return Boolean.valueOf(Capabilities.MOTOROLA_ENABLED && res);
+        return Boolean.valueOf(Capabilities.MOTOROLA_ENABLED && res);*/
         
-        // There is a loading issue if app_type=rhodes. SR EMBPD00111897
+      //   There is a loading issue if app_type=rhodes. SR EMBPD00111897
         
-//       if(isAppInstalled("com.motorolasolutions.emdk.proxyframework") || isAppInstalled("com.motorolasolutions.emdk.datawedge") )
-//            return true;
-//        else
-//            return false;
+      if(isAppInstalled("com.motorolasolutions.emdk.proxyframework") || isAppInstalled("com.motorolasolutions.emdk.datawedge") )
+           return true;
+        else
+            return false;
     }
 	
 	public static String getTimezoneStr() {
@@ -1455,6 +1455,17 @@ public class RhodesService extends Service {
             Logger.E(TAG, "Minimize failed");
             Logger.E(TAG, ex);
         }
+    }
+
+
+    public static native void onUiThreadCallback(int idx);
+
+    public static void runOnUiThread(final int idx) {
+        PerformOnUiThread.exec(new Runnable() {
+            public void run() {
+                RhodesService.onUiThreadCallback(idx);
+            }
+        });
     }
 
     public static String getNativeMenu() {

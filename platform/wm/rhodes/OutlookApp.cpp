@@ -53,6 +53,7 @@ IMPLEMENT_LOGCLASS(COutlookApp,"OutlookApp");
 }
 
 COutlookApp::COutlookApp(void)
+ : m_outlookApp(0)
 {
     HRESULT hr = CoInitializeEx( NULL, 0);
 

@@ -17,17 +17,31 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-In order to use this API you must include reference to the following JavaScript file that is included with the Enterprise Browser installation:
+There are two methods of enabling the Application API: 
 
-* ebapi-modules.js - this file contains all available Enterprise Browser APIs
+* Include all ebapi modules or 
+* Include only the API modules you need 
 
-If you wish to minimize the amount of JavaScript being included, you can choose to only include the individual API that your application is using:
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
-ex:
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
 
-* ebapi.js - core APIs needed 
-* eb.application.js - just the Application API
-* other individual JavaScript files included with the Enterprise Browser installation
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the Application API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.application.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
 
@@ -76,7 +90,7 @@ ex:
             </PROPERTY>
             <PROPERTY name="title" type="STRING">
                 <DESC>Define Window caption text. If missed - caption from page used. Not supported on Windows CE devices.</DESC>
-                <PLATFORM>WM, Win32</PLATFORM>
+                <PLATFORM>WM, CE, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="appName" type="STRING" readOnly="true">
                 <DESC>Application name.</DESC>
@@ -102,24 +116,26 @@ ex:
                     </PARAMS>
                 </PARAM>
                 <DESC>Native Menu items.</DESC>
-                <PLATFORM>WM, Android, Win32, WP8</PLATFORM>
+                <PLATFORM>WM, CE, Android, Win32, WP8</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <DESC>Native Menu items.</DESC>
                 <PARAM type="HASH">
                     <DESC>Same values as nativeMenu.</DESC>
                 </PARAM>
-                <PLATFORM>WM, Android, Win32, WP8</PLATFORM>
+                <PLATFORM>WM, CE, Android, Win32, WP8</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
                 <DESC>Indicates if the security token check was failed. Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
                 <DESC_EB>Indicates if the security token check was failed. Security token can be passed as command line parameter '-security_token=token_value' to the application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC_EB>
-                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="invalidSecurityTokenStartPath" type="STRING" readOnly="true">
                 <DESC>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
                 <DESC_EB>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path; This file is located in the installation folder of the EnetrpriseBrowser application installed on the device.</DESC_EB>
-                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
             
             <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true" generateDoc="false">
@@ -130,7 +146,7 @@ ex:
             <PROPERTY name="badLinkURI" type="STRING" readOnly="true">
                 <DESC>Bad link URI to navigate in browser. This is defined in config.xml: Navigation\\BadLinkURI.</DESC>
                 <PLATFORM>WM</PLATFORM>
-                <APPLIES>Motorola Solutions' WebKit</APPLIES>
+                <APPLIES>WebKit</APPLIES>
                 <MORE_HELP>
                     <![CDATA[ Navigates to the specified badlink uri when one of the following occurs:
 
@@ -186,21 +202,21 @@ ex:
                 <RETURN type="STRING"/>
             </METHOD>
             <METHOD name="quit">
-                <DESC>Quit the application.</DESC>
+                <DESC>Quit the application. Quitting the application while license screen is shown will be slightly delayed.</DESC>
             </METHOD>
             <METHOD name="minimize">
                 <DESC>Minimize or move the application to background. When running in RhoSimulator this method is supported only for Windows OS.</DESC>
                 <DESC_EB>Minimize or move the application to background. </DESC_EB>
-                <PLATFORM>WM, Win32</PLATFORM>
+                <PLATFORM>WM, CE, Win32</PLATFORM>
             </METHOD>
             <METHOD name="restore">
                 <DESC>Restores the application to be in the foreground. When running in RhoSimulator the method is supported only for Windows OS.</DESC>
                 <DESC_EB>Restores the application to be in the foreground.</DESC_EB>
-                <PLATFORM>WM, Win32</PLATFORM>
+                <PLATFORM>WM, CE, Win32</PLATFORM>
             </METHOD>
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
                 <DESC>This method allows your application to register for application specific events like application activation/deactivation, UI creation/destruction as well as others. Check the Callback section for details.</DESC>
-                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
                 <CALLBACK type="HASH">
                     <DESC>Application events are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start up/shut down activities. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. Note: Event firing behavior depends on platform.</DESC>
                     <PARAMS>
@@ -223,10 +239,12 @@ ex:
                                     <DESC>Device screen was turned off when power button was pressed or due to idle timeout. Note: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.Not supported on Windows CE.</DESC>
                                     <DESC_EB>Device screen was turned off when power button was pressed or due to idle timeout. On Android the application is not deactivated.Not supported on Windows CE.</DESC_EB>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
+                                    <PLATFORM_EB>Android, WM</PLATFORM_EB>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_ON" value ="ScreenOn">
                                     <DESC>Device screen was turned on and unlocked.Not supported on Windows CE.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
+                                    <PLATFORM_EB>Android, WM</PLATFORM_EB>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged" productException="eb">
                                     <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only.</DESC>
@@ -250,7 +268,7 @@ ex:
 
             <METHOD name="processApplicationEvent" generateAPI="false">
                 <DESC>Ruby applications must use this method for processing of the application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
-                <PLATFORM>WM, Win32, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="applicationEvent" type="STRING">
@@ -276,7 +294,8 @@ ex:
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
         <EXAMPLES>
             <!-- This example commented out because setLocale is not exposed in docs. -->
             <!-- <EXAMPLE title="Set the locale">

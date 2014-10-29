@@ -12,7 +12,7 @@ def build_extension()
 
   elsif ENV['RHO_PLATFORM'] == 'wp8'
   
-    args = [$project_path, "/property:Configuration="+$build_config+" /property:Platform="+$sdk + " /property:VisualStudioVersion=11.0", '/t:Build']
+    args = [$project_path, "/property:Configuration="+$build_config+" /property:Platform="+$sdk + " /property:VisualStudioVersion=12.0", '/t:Build']
     
   else
     fail "This rakefile support only Windows platforms(WM, CE, Desktop and WP8)"

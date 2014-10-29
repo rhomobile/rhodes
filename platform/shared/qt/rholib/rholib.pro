@@ -60,8 +60,8 @@ DEFINES += RHODES_QT_PLATFORM
   # QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 win32 {
-  QMAKE_CFLAGS_WARN_ON += /wd4189 /wd4018 /wd4189
-  QMAKE_CXXFLAGS_WARN_ON += /wd4189 /wd4018 /wd4189
+  QMAKE_CFLAGS_WARN_ON += /wd4189 /wd4018 /wd4189 /wd4996
+  QMAKE_CXXFLAGS_WARN_ON += /wd4189 /wd4018 /wd4189 /wd4996
   QMAKE_CFLAGS_RELEASE += /O2
   QMAKE_CXXFLAGS_RELEASE += /O2
 }
@@ -113,7 +113,19 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../api_generator/GeneratorQueue.h\
 ../../api_generator/MethodResult.h\
 ../../api_generator/js_helpers.h\
-../../api_generator/StringifyHelper.h
+../../api_generator/StringifyHelper.h\
+../../unzip/crc32.h\
+../../unzip/deflate.h\
+../../unzip/gunzip.h\
+../../unzip/gzguts.h\
+../../unzip/inffast.h\
+../../unzip/inffixed.h\
+../../unzip/inflate.h\
+../../unzip/inftrees.h\
+../../unzip/trees.h\
+../../unzip/zconf.h\
+../../unzip/zlib.h\
+../../unzip/zutil.h
 
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
@@ -152,4 +164,18 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/push/RhoPushManager.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\
-../../api_generator/StringifyHelper.cpp
+../../api_generator/StringifyHelper.cpp\
+../../unzip/adler32.cpp\
+../../unzip/crc32.cpp\
+../../unzip/deflate.cpp\
+../../unzip/gunzip.cpp\
+../../unzip/gzclose.cpp\
+../../unzip/gzlib.cpp\
+../../unzip/gzread.cpp\
+../../unzip/gzwrite.cpp\
+../../unzip/infback.cpp\
+../../unzip/inffast.cpp\
+../../unzip/inflate.cpp\
+../../unzip/inftrees.cpp\
+../../unzip/trees.cpp\
+../../unzip/zutil.cpp

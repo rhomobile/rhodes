@@ -2,3 +2,6 @@ entry: Init_digest
 libraries: [ "digest" ]
 android:
   exttype: rakefile
+
+project_paths:
+  wp8: ext/wp8/digest.vcxproj
