@@ -1,5 +1,3 @@
-#require 'typhoeus'
-#require 'thread/pool'
 require_relative 'configuration'
 require_relative 'subscriber'
 
@@ -7,17 +5,14 @@ module RhoDevelopment
   class DeviceFinder
     def run
 
-
-
-
       adresses = Configuration::own_ip_address
       if adresses.length != 0
         puts
-        puts 'There are several network interfaces with following IP addresses: '. primary
-        adresses.each { | each | puts "#{adresses.index(each) + 1}. #{each}"}
+        puts 'There are several network interfaces with following IP addresses: '.primary
+        adresses.each { |each| puts "#{adresses.index(each) + 1}. #{each}" }
         puts
         puts 'Please choose one of them: '
-         input = STDIN.gets.strip.to_i
+        input = STDIN.gets.strip.to_i
         choosenAddress = adresses[input - 1]
       else
         choosenAddress = adresses.last
@@ -38,31 +33,6 @@ module RhoDevelopment
         puts 'done'.success
       end
     end
-
-    def typhoeusDiscovery(aString)
-      subscribers = []
-      hydra = Typhoeus::Hydra.hydra
-      1.upto(254) { |each|
-        url = URI("http://#{aString}.#{each}:37579/development/get_info")
-        request = Typhoeus::Request.new(url)
-        request.options['timeout'] = 5
-        request.on_complete do |response|
-          if response.code == 200
-            data = JSON.parse(response.body)
-            subscriber = {}
-            subscriber['uri'] = "#{data['ip']}:#{data['port']}"
-            subscriber['name'] = data['deviceFriendlyName']
-            subscriber['platform'] = data['platform']
-            subscriber['application'] = data['applicationName']
-            subscribers << subscriber
-          end
-        end
-        hydra.queue request
-      }
-      hydra.run
-      return subscribers
-    end
-
 
     def parallelDiscovery(aString)
       subscribers = []
@@ -87,41 +57,12 @@ module RhoDevelopment
             #TODO may be it is necessary remove subscriber from list?
             #puts "#{url} is not accessible. error: #{e.class}".info
           end
-
         }
       }
       threads.each { |thread| thread.join }
       return subscribers
     end
 
-    def serialDiscovery(aString)
-      subscribers = []
-      1.upto(254) { |each|
-        url = URI("http://#{aString}.#{each}:37579/development/get_info")
-
-        http = Net::HTTP.new(url.host, url.port)
-        http.open_timeout = 5
-
-        http.start() { |http|
-          begin
-            response = http.get(url.path)
-            puts "#{url} answered: #{response.body}".info
-            data = JSON.parse(response.body)
-            subscriber = {}
-            subscriber['uri'] = "#{data['ip']}:#{data['port']}"
-            subscriber['name'] = data['deviceFriendlyName']
-            subscriber['platform'] = data['platform']
-            subscriber['application'] = data['applicationName']
-            subscribers << subscriber
-          rescue Errno::ECONNREFUSED, Net::OpenTimeout => e
-            #TODO may be it is necessary remove subscriber from list?
-            puts "#{url} is not accessible. error: #{e.class}".info
-          end
-        }
-
-      }
-      return subscribers
-    end
   end
 
 end
