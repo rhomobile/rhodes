@@ -103,7 +103,9 @@ module Rhom
                 value = value.split(",")
                 value.each do |item|
                   item.strip!
-                  if item.start_with?("\"") && item.end_with?("\"")
+                    
+                  if (item.start_with?('\'') && item.end_with?('\'')) ||
+                    (item.start_with?('\"') && item.end_with?('\"')) 
                     item.slice!(0)
                     item.chop!
                   end
