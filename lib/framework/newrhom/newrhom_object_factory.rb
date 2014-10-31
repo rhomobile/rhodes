@@ -257,7 +257,17 @@ module Rhom
           end
 
           if retVal.is_a?Array
-            return retVal unless retVal.size() > 0
+            # as per description http://apidock.com/rails/v2.3.8/ActiveRecord/Base/find/class
+            if retVal.empty?
+              case args[0]
+                when 'first', 'last'
+                  return nil
+                when 'all'
+                  return retVal
+                else
+                  return nil          
+              end
+            end
 
             # if arg[0] is :first or objId return one object
             return self.new(retVal[0]) if (args[0] != 'all')
