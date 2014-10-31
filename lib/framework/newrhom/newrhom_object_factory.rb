@@ -376,12 +376,15 @@ module Rhom
           klass_model.pushChanges
         end
 
-        # This holds the attributes for an instance of
-        # the rhom object, do not return nil, or empty vars
-        def vars
-          @vars.select{ |_, v| !v.nil? && !v.empty? }
+        def update_var(key, value)
+          key_s = key.to_sym()
+          if value
+            @vars[key_s] = value 
+          else
+            @vars.delete(key_s)
+          end
         end
-        
+
         attr_accessor :vars
 
         def initialize(obj={})
@@ -390,16 +393,12 @@ module Rhom
           unless obj[:object] or obj['object']
             objHash = self.class.klass_model.createInstance(obj)
           end
-          objHash.each do |key,value|
-            @vars[key.to_sym()] = value
-          end
+          objHash.each { |key,value| update_var(key, value)}
         end
 
         def update_attributes(attrs)
           objHash = self.class.klass_model.updateObject(self.object, @vars, attrs)
-          objHash.each do |key, value|
-            @vars[key.to_sym()] = value
-          end
+          objHash.each { |key,value| update_var(key, value)}
           true
         end
 
@@ -407,9 +406,7 @@ module Rhom
           #objId = self.object
           #attrs = @vars.collect { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
           objHash = self.class.klass_model.saveObject(self.object, @vars)
-          objHash.each do |key, value|
-            @vars[key.to_sym()] = value
-          end
+          objHash.each { |key,value| update_var(key, value)}
           true
         end
 
@@ -431,7 +428,7 @@ module Rhom
             if method_sym[-1] == '='
               s_name = method_sym.to_s.chop
               self.class.klass_model.validateFreezedAttribute(s_name)
-              @vars[s_name.to_sym()] = args[0]
+              update_var(s_name.to_sym(), args[0])
             else
               @vars[method_sym]
             end
