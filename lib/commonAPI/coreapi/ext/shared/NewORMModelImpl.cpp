@@ -1098,11 +1098,14 @@ void rho::CNewORMModelImpl::_processDbResult(IDBResult& res,
     rho::String source_id = oResult.getString();
     if(tableResults) {
         Vector<Hashtable<rho::String, rho::String> > retVals;
+        rho::String datum;
         for(; !res.isEnd(); res.next()) {
             int ncols = res.getColCount();
             Hashtable<rho::String, rho::String> obj_hash;
             for(int i = 0; i < ncols; ++i) {
-                obj_hash.put(res.getColName(i), res.getStringByIdx(i));
+                if (res.getStringOrNil(i, datum)) {
+                    obj_hash.put(res.getColName(i), datum);
+                }
             }
             obj_hash["source_id"] = source_id;
             retVals.push_back(obj_hash);
