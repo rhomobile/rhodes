@@ -52,10 +52,10 @@ module RhoDevelopment
             subscriber['platform'] = data['platform']
             subscriber['application'] = data['applicationName']
             subscribers << subscriber
-          rescue Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net::OpenTimeout => e
-            #rescue  => e
+          rescue Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net.const_defined?(:OpenTimeout) ? Net::OpenTimeout : Timeout::Error => e
+           # rescue  => e
             #TODO may be it is necessary remove subscriber from list?
-            #puts "#{url} is not accessible. error: #{e.class}".info
+            puts "#{url} is not accessible. error: #{e.class}".info
           end
         }
       }
