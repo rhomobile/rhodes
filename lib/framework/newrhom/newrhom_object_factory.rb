@@ -103,12 +103,11 @@ module Rhom
                 value = value.split(",")
                 value.each do |item|
                   item.strip!
+
+                  need_unescape = (item.start_with?('\'') && item.end_with?('\'')) ||
+                  (item.start_with?('\"') && item.end_with?('\"')) 
                     
-                  if (item.start_with?('\'') && item.end_with?('\'')) ||
-                    (item.start_with?('\"') && item.end_with?('\"')) 
-                    item.slice!(0)
-                    item.chop!
-                  end
+                  item = need_unescape ? item[1..-1] : item
                 end
               end
 
