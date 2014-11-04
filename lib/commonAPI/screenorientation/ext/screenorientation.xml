@@ -9,11 +9,14 @@ In order to use this API you must include the following extension in your `build
     :::ruby
     extensions: ["screenorientation"]
 
-## JavaScript Usage
+### JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-## Ruby Usage
+### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+
+## Persistence
+With the old PocketBrowser / RhoElements 1 APIs, any events, such as `screenOrientationEvent` were canceled when a full navigate was performed. The original reason for this was a limitation of the IE engine on WM5 devices. When moving to the common API this was changed so that callbacks are not canceled.
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
@@ -43,6 +46,8 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
 
 The ebapi.js file is necessary for all single API inclusions.
 
+## Persistence
+With the old PocketBrowser APIs, any events, such as `screenOrientationEvent` were canceled when a full navigate was performed. The original reason for this was a limitation of the IE engine on WM5 devices. When moving to the common API this was changed so that callbacks are not canceled.
         </MORE_HELP_EB>
         <PROPERTIES access="STATIC">
             <DESC>Properties used to configure Screen Orientation module.</DESC>
@@ -193,5 +198,81 @@ Rho.ScreenOrientation.autoRotate=false;
                 </SECTIONS>
             </EXAMPLE>
         </EXAMPLES>
+
+        <EXAMPLES_EB>
+            <EXAMPLE title="Screen Orientation Manipulation">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This example will show how each of the methods and properties of the ScreenOrientation API work in your EB app. Note: This example assumes that the ebapi-modules.js file is in the same folder as html file invoking it.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+<head>
+    <script type="text/javascript" charset="utf-8" src="ebapi-modules.js"></script>
+
+    <title>ScreenOrientation API Test</title>
+
+    <script>
+        function orientationEventCallback(params){
+            display.innerHTML = "Orientation: " + params;
+        }
+
+        function changeOrientation(direction){
+            switch(direction){
+                case "left":
+                    EB.ScreenOrientation.leftHanded();
+                    break;
+                case "right":
+                    EB.ScreenOrientation.rightHanded();
+                    break;
+                case "normal":
+                    EB.ScreenOrientation.normal();
+                    break;
+                case "upsideDown":
+                    EB.ScreenOrientation.upsideDown();
+                    break;
+                default:
+                    alert('Incorrect Orientation!!');
+            }
+        }
+
+        function toggleAutoRotate(){
+            if(EB.ScreenOrientation.autoRotate){
+                EB.ScreenOrientation.autoRotate = false;
+                autoRotate.innerHTML = 'Auto Rotate: Disabled';
+            }
+            else{
+                EB.ScreenOrientation.autoRotate = true;
+                autoRotate.innerHTML = 'Auto Rotate: Enabled';
+            }
+        }
+
+        EB.ScreenOrientation.setScreenOrientationEvent(orientationEventCallback);
+    </script>
+</head>
+
+<body>
+    <h1>ScreenOrientation API Test</h1>
+    <div id="display">
+        Orientation: 
+    </div>
+    <div id="autoRotate">
+        Auto Rotate: Enabled
+    </div>
+    <div>
+        <button onclick="toggleAutoRotate()">Toggle Auto Rotate</button>
+        </br></br>
+        <button onclick="changeOrientation('normal')">Upright Portrait</button></br>
+        <button onclick="changeOrientation('right')">Counter-Clockwise</button>
+        <button onclick="changeOrientation('left')">Clockwise</button></br>
+        <button onclick="changeOrientation('upsideDown')">Upside-Down</button></br>
+    </div>
+</body>
+                                ]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES_EB>
     </MODULE>
 </API>
