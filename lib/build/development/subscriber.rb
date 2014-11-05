@@ -49,8 +49,7 @@ module RhoDevelopment
           http.get(anUrl.path + '?' + anUrl.query)
         }
         puts 'done'.success
-      rescue Errno::ECONNREFUSED,
-          Net::OpenTimeout => e
+      rescue  Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net.const_defined?(:OpenTimeout) ? Net::OpenTimeout : Timeout::Error => e
         puts 'failed'.warning
       end
     end
