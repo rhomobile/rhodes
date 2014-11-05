@@ -108,7 +108,7 @@ module RhoDevelopment
       web_server_config = config['webserver']
       if web_server_config.nil? || web_server_config['documentRoot'].nil?
         document_root = Dir.mktmpdir
-        self.documentRoot=document_root
+        self.document_root=document_root
       else
         document_root = web_server_config['documentRoot']
       end
