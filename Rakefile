@@ -321,7 +321,7 @@ namespace 'dev' do
   namespace 'update' do
 
     desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'
-    task :partial_onetime => ['config:initialize'] do
+    task :partial => ['config:initialize'] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       updater = RhoDevelopment::OneTimeUpdater.new
@@ -329,7 +329,7 @@ namespace 'dev' do
     end
 
     desc 'Builds full update bundle for all subscribers and notifies them'
-    task :full_onetime => ['config:initialize'] do
+    task :full => ['config:initialize'] do
       RhoDevelopment::Configuration::applicationRoot = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new)
