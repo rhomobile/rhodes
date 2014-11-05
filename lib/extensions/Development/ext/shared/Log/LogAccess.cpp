@@ -4,18 +4,17 @@
 //
 
 #include <stdio.h>
-#include "RhodesApp.h"
-#include "common/RhoMutexLock.h"
-#include "common/IRhoClassFactory.h"
-#include "common/RhoFile.h"
-#include "common/RhoConf.h"
-#include "common/RhoFilePath.h"
-#include "common/Tokenizer.h"
-#import "logging/RhoLogConf.h"
+#include <RhodesApp.h>
+#include <common/RhoMutexLock.h>
+#include <common/IRhoClassFactory.h>
+#include <common/RhoFile.h>
+#include <common/RhoConf.h>
+#include <common/RhoFilePath.h>
+#include <common/Tokenizer.h>
+#include <logging/RhoLogConf.h>
 
-#include "ruby/ext/rho/rhoruby.h"
+#include <ruby/ext/rho/rhoruby.h>
 #include <algorithm>
-
 
 #include "net/INetRequest.h"
 
@@ -34,13 +33,10 @@ void callback_get_log(void *arg, rho::String const &strQuery) {
     //rho::common::CRhoFile::readStringFromFile(logPath.c_str(), logFileContent);
     //LOGCONF().setLogToFile(bOldSaveToFile);
     //logFileContent = "$$$$$$$$$$$$$$$>>>>>>>>>>>>>>>>>\n"+logFileContent+"\n<<<<<<<<<<<<<<<<<<<$$$$$$$$$$$$$$$$$$$$$";
-
     
     //char* logText = rho_logconf_getText();
     //rho_http_sendresponse(arg, logText);
     //rho_logconf_freeString(logText);
-    
-    
     
     bool bOldSaveToFile = LOGCONF().isLogToFile();
     LOGCONF().setLogToFile(false);
@@ -79,9 +75,6 @@ void callback_get_log(void *arg, rho::String const &strQuery) {
     }
     
     LOGCONF().setLogToFile(bOldSaveToFile);
-    
-    
-    
 }
 
 void Init_LogAccess() {

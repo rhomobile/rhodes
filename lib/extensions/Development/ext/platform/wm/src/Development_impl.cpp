@@ -39,10 +39,14 @@ class CDevelopmentFactory: public CDevelopmentFactoryBase
     virtual IDevelopment* createModuleByID(const rho::String& strID);
 };
 
+extern "C" void Development_Init();
+
 extern "C" void Init_Development_extension()
 {
     CDevelopmentFactory::setInstance( new CDevelopmentFactory() );
     Init_Development_API();
+
+    Development_Init();
 }
 
 IDevelopment* CDevelopmentFactory::createModuleByID(const rho::String& strID)
