@@ -76,7 +76,9 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
     m_hConnection = NULL;
     m_hRequest = NULL;
     memset(&m_uri, 0, sizeof(m_uri) );
-
+    int timeout = rho_conf_getInt("net_timeout")*1000;
+        if (timeout == 0 )
+            timeout = 30000;
     m_strUrl = strUrl;
     CAtlStringW strUrlW(strUrl.c_str());
 
@@ -110,9 +112,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
             break;
         }
 
-        int timeout = rho_conf_getInt("net_timeout")*1000;
-        if (timeout == 0 )
-            timeout = 30000;
+        
 
         InternetSetOption( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) ); 
 
