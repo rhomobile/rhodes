@@ -664,7 +664,13 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     hFind = FindFirstFileW(wFolderMask.c_str(), &FindFileData);
 
     if (hFind == INVALID_HANDLE_VALUE) 
-        return GetLastError();
+    {
+        DWORD dwErr = GetLastError();
+        if (dwErr == ERROR_NO_MORE_FILES)
+            return 0;
+
+        return dwErr;
+    }
 
     do{
         if (!wcscmp(FindFileData.cFileName , L".")) continue ;
