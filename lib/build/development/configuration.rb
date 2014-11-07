@@ -4,16 +4,22 @@ module RhoDevelopment
 
   class Configuration
 
-    @@applicationRoot
+    @@application_root
 
     class << self
-      attr_accessor :applicationRoot
+      attr_accessor :application_root
+    end
+
+    def self.handledNetworkExceptions
+      return [Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net.const_defined?(:OpenTimeout) ? Net::OpenTimeout : Timeout::Error]
     end
 
     def self.own_ip_addresses
-      #IPSocket.getaddress(Socket.gethostname) #- it don't work on virtual machine with a lot of network interfaces
       return Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq
-	    #(Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq).last
+    end
+
+    def self.own_ip_address
+      return self.own_ip_addresses.first
     end
 
     def self.webserver_alive_request
@@ -25,15 +31,17 @@ module RhoDevelopment
     end
 
     def self.webserver_uri
-      URI("http://#{self.own_ip_addresses.last}:#{self.webserver_port}")
+      return URI("http://#{self.own_ip_address}:#{self.webserver_port}")
     end
 
     def self.webserver_port
       3000
     end
 
+
+
     def self.config_filename
-      File.join(self.applicationRoot, 'dev-config.yml')
+      File.join(self.application_root, 'dev-config.yml')
     end
 
     def self.read_configuration
