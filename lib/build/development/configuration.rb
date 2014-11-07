@@ -11,15 +11,15 @@ module RhoDevelopment
     end
 
     def self.handledNetworkExceptions
-      return [Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net.const_defined?(:OpenTimeout) ? Net::OpenTimeout : Timeout::Error]
+      [Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net.const_defined?(:OpenTimeout) ? Net::OpenTimeout : Timeout::Error]
     end
 
     def self.own_ip_addresses
-      return Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq
+      Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq
     end
 
     def self.own_ip_address
-      return self.own_ip_addresses.first
+      self.own_ip_addresses.first
     end
 
     def self.webserver_alive_request
@@ -31,13 +31,22 @@ module RhoDevelopment
     end
 
     def self.webserver_uri
-      return URI("http://#{self.own_ip_address}:#{self.webserver_port}")
+      URI("http://#{self.webserver_ip}:#{self.webserver_port}")
+    end
+
+    def self.webserver_ip
+      config = self.read_configuration
+      web_server_config = config['webserver']
+      if web_server_config.nil? || web_server_config['ip'].nil?
+        self.own_ip_address
+      else
+        web_server_config['ip']
+      end
     end
 
     def self.webserver_port
       3000
     end
-
 
 
     def self.config_filename
@@ -46,9 +55,9 @@ module RhoDevelopment
 
     def self.read_configuration
       if File.exist?(self.config_filename)
-        return YAML.load_file(self.config_filename)
+        YAML.load_file(self.config_filename)
       end
-      return {}
+      {}
     end
 
     def self.subscribers
@@ -103,13 +112,13 @@ module RhoDevelopment
     def self.full_bundle_name
       'upgrade_bundle.zip'
     end
-	
+
     def self.document_root=(aString)
       config = self.read_configuration
       config['webserver'] = {'documentRoot' => aString}
       yml = config.to_yaml
       File.open(self.config_filename, 'w') { |file| file.write yml }
-    end	
+    end
 
     def self.document_root
       config = self.read_configuration
@@ -121,10 +130,8 @@ module RhoDevelopment
         document_root = web_server_config['documentRoot']
       end
       FileUtils.mkpath(document_root) unless File.exist?(document_root)
-      return document_root
+      document_root
     end
-
-
 
 
   end

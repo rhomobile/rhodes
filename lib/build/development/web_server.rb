@@ -60,13 +60,15 @@ module RhoDevelopment
 
     def initialize
       document_root = Configuration::document_root
-      puts "Path '#{document_root}' will be used as web server document root".primary
+
+      puts "Webserver URL: #{Configuration::webserver_ip}:#{Configuration::webserver_port}".primary
+      puts "Webserver document root: #{document_root}".primary
       print 'Cleaning document root directory... '.primary
       FileUtils.rm_rf("#{document_root}/.", secure: true)
       puts 'done'.success
       @tasks = Queue.new
       @web_server = WEBrick::HTTPServer.new(
-          :BindAddress => Configuration::own_ip_address,
+          :BindAddress => Configuration::webserver_ip,
           :Port => Configuration::webserver_port,
           :DocumentRoot => document_root,
           :ServerType => WEBrick::SimpleServer
