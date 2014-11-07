@@ -70,6 +70,7 @@ BOOL CNotificationLoader::LoadNotificationDLL()
 				{
 					//  Found the Beeper
 					m_iBeeperIndex = iObCount;
+					continue;
 				}
 				else if (notifyObject.dwObjectType == NOTIFY_TYPE_VIBRATOR)
 				{
