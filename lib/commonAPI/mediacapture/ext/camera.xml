@@ -224,7 +224,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PLATFORM>ANDROID</PLATFORM>
                 <DESC>Uses the system Camera application to take a picture instead of rhodes' camera. The system Camera application does not accept most rhodes' camera settings and can be adjusted by UI.</DESC>
             </PROPERTY>
-			<PROPERTY name="aimMode" type="STRING" access="STATIC">               
+			<PROPERTY name="aimMode" type="STRING">               
                 <PLATFORM>WM, CE</PLATFORM>
                 <DESC>Specifies the aim behaviour when taking a picture. Applicable only for imager module.</DESC>
                 <VALUES>

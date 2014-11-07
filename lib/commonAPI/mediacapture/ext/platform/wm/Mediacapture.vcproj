@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Mediacapture"
 	ProjectGUID="{421EB7D1-64C3-0130-423A-00FFE028F606}"
 	RootNamespace="Mediacapture"
@@ -638,15 +638,23 @@
 		<Filter
 			Name="Camera"
 			>
+			<File
+				RelativePath=".\src\Camera\Camera_Impl.cpp"
+				>
+			</File>
+			<Filter
+				Name="Source Files"
+				>
+			</Filter>
+			<Filter
+				Name="Header Files"
+				>
+			</Filter>
 			<Filter
 				Name="shared"
 				>
 				<File
 					RelativePath="..\..\camera.xml"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Camera_impl.cpp"
 					>
 				</File>
 				<Filter
@@ -694,85 +702,9 @@
 		<Filter
 			Name="Video"
 			>
-			<File
-				RelativePath="..\..\videocapture.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\src\Videocapture_impl.cpp"
-				>
-			</File>
-			<Filter
-				Name="generated"
-				>
-				<File
-					RelativePath="..\..\shared\generated\videocapture_api_init.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\shared\generated\videocapture_js_api.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\shared\generated\videocapture_ruby_api.c"
-					>
-				</File>
-				<Filter
-					Name="cpp"
-					>
-					<File
-						RelativePath="..\..\shared\generated\cpp\IVideocapture.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\generated\cpp\Videocapture_js_wrap.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\generated\cpp\Videocapture_ruby_wrap.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\generated\cpp\VideocaptureBase.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\generated\cpp\VideocaptureBase.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
 		</Filter>
 		<File
-			RelativePath=".\src\DShowCam.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\Imager.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\Imager.h"
-			>
-		</File>
-		<File
 			RelativePath="..\..\shared\MediacaptureInit.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\PropertyBag.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\PropertyBag.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\RCMLoader.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\RCMLoader.h"
 			>
 		</File>
 	</Files>
