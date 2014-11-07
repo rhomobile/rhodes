@@ -13,9 +13,9 @@ module RhoDevelopment
       unless self.alive?
         case RbConfig::CONFIG['host_os']
           when /mswin|mingw32|windows/i
-            cmd = "start \"development webserver\" /d \"#{Configuration::applicationRoot}\" rake dev:webserver:privateStart"
+            cmd = "start \"development webserver\" /d \"#{Configuration::application_root}\" rake dev:webserver:privateStart"
           when /darwin/i
-            cmd = "osascript -e 'tell app \"Terminal\" \n do script \" cd #{Configuration::applicationRoot}; rake dev:webserver:privateStart\" \n end tell'"
+            cmd = "osascript -e 'tell app \"Terminal\" \n do script \" cd #{Configuration::application_root}; rake dev:webserver:privateStart\" \n end tell'"
         end
         system cmd
         until self.alive? do
@@ -31,8 +31,7 @@ module RhoDevelopment
         http.open_timeout = 5
         response = http.get(url.path)
         return response.code == '200'
-      rescue Errno::ECONNREFUSED,
-          Net::OpenTimeout => e
+      rescue *Configuration::handledNetworkExceptions => e
         return false
       end
     end
@@ -48,7 +47,7 @@ module RhoDevelopment
         else
           puts "#{response.body}".warning
         end
-      rescue Errno::ECONNREFUSED => e
+      rescue *Configuration::handledNetworkExceptions => e
         puts 'Web server is not answering'.warning
       end
     end
@@ -57,19 +56,20 @@ module RhoDevelopment
       aTask.dispatchToUrl(Configuration::webserver_uri)
     end
 
-
 # instance methods
 
     def initialize
-      port = Configuration::webserver_port
       document_root = Configuration::document_root
-      puts "Path '#{document_root}' will be used as web server document root".primary
+
+      puts "Webserver URL: #{Configuration::webserver_ip}:#{Configuration::webserver_port}".primary
+      puts "Webserver document root: #{document_root}".primary
       print 'Cleaning document root directory... '.primary
       FileUtils.rm_rf("#{document_root}/.", secure: true)
       puts 'done'.success
       @tasks = Queue.new
       @web_server = WEBrick::HTTPServer.new(
-          :Port => port,
+          :BindAddress => Configuration::webserver_ip,
+          :Port => Configuration::webserver_port,
           :DocumentRoot => document_root,
           :ServerType => WEBrick::SimpleServer
       )

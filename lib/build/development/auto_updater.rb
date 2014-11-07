@@ -56,14 +56,14 @@ module RhoDevelopment
     end
 
     def write_array_to_file(filename, anArray)
-      path = File.join(Configuration::applicationRoot, filename)
+      path = File.join(Configuration::application_root, filename)
       File.open(path, 'w') { |file|
         anArray.each { |each| file.puts(self.relative_path(each)) }
       }
     end
 
     def relative_path(aString)
-      first = Pathname Configuration::applicationRoot
+      first = Pathname Configuration::application_root
       second = Pathname aString
       second.relative_path_from first
     end
