@@ -186,7 +186,7 @@ rho::String make_info_string(bool is_json) {
 #else
     
 #ifdef OS_WINCE
-    rho::String s_Platform = "WINCE";
+    rho::String s_Platform = "WM";
 #else
     rho::String s_Platform = "GENERIC";
 #endif
