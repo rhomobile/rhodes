@@ -7,9 +7,9 @@ module RhoDevelopment
         return
       end
 
-      devDir = File.join(Configuration::applicationRoot, '.development')
-      updatedListFilename = File.join(Configuration::applicationRoot, 'upgrade_package_add_files.txt')
-      removedListFilename = File.join(Configuration::applicationRoot, 'upgrade_package_remove_files.txt')
+      devDir = File.join(Configuration::application_root, '.development')
+      updatedListFilename = File.join(Configuration::application_root, 'upgrade_package_add_files.txt')
+      removedListFilename = File.join(Configuration::application_root, 'upgrade_package_remove_files.txt')
       mkdir_p devDir
       Configuration::subscriber_platforms.each { |each|
         RhoDevelopment.setup(devDir, each)

@@ -322,7 +322,7 @@ namespace 'dev' do
 
     desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'
     task :partial => ['config:initialize'] do
-      RhoDevelopment::Configuration::applicationRoot = $app_basedir
+      RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       updater = RhoDevelopment::OneTimeUpdater.new
       updater.run
@@ -330,7 +330,7 @@ namespace 'dev' do
 
     desc 'Builds full update bundle for all subscribers and notifies them'
     task :full => ['config:initialize'] do
-      RhoDevelopment::Configuration::applicationRoot = $app_basedir
+      RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersFullUpdateNotifyingTask.new)
@@ -338,7 +338,7 @@ namespace 'dev' do
 
     desc 'It builds partial update for all platforms and notifies all subscribers'
     task :build_and_notify => ['config:initialize'] do
-      RhoDevelopment::Configuration::applicationRoot = $app_basedir
+      RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersPartialUpdateNotifyingTask.new)
@@ -346,7 +346,7 @@ namespace 'dev' do
 
     desc 'It launches watcher for source code and builds partial update and notifies all subscribers on each change'
     task :auto => ['config:initialize'] do
-      RhoDevelopment::Configuration::applicationRoot = $app_basedir
+      RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       updater = RhoDevelopment::AutoUpdater.new
       updater.add_directory(File.join($app_basedir, '/public'))
@@ -360,12 +360,12 @@ namespace 'dev' do
 
     desc 'It launches development web server. It is certain object which controls executing scheduling tasks, handles requests etc..'
     task :start => ['config:initialize'] do
-	  RhoDevelopment::Configuration::applicationRoot = $app_basedir
+	  RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
     end
 
     task :privateStart => ['config:initialize'] do
-      RhoDevelopment::Configuration::applicationRoot = $app_basedir
+      RhoDevelopment::Configuration::application_root = $app_basedir
       server = RhoDevelopment::WebServer.new
       server.start
     end
@@ -379,7 +379,7 @@ namespace 'dev' do
 
   desc 'Discover application on devices in local network - application should be executed on devices'
   task :discovery => ['config:initialize'] do
-    RhoDevelopment::Configuration::applicationRoot = $app_basedir
+    RhoDevelopment::Configuration::application_root = $app_basedir
     finder = RhoDevelopment::DeviceFinder.new
     finder.run
   end
