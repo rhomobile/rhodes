@@ -668,6 +668,8 @@ class Jake
   end
 
   def self.build_file_map(dir, file_name, in_memory = false)
+    require 'digest/md5'
+    
     psize    = dir.size + 1
     file_map = Array.new
     file_map_name = File.join(dir, file_name)
@@ -690,10 +692,17 @@ class Jake
 
       if File.basename(f) == file_name
         next
+      end 
+      
+      if type.eql? 'file'
+        content = File.readlines(File.open(f, "r"))
+        md5 = Digest::MD5.hexdigest(content.to_s)
+      else
+        md5 = "" 
       end
-
+      
       size = File.stat(f).size
-      tm   = File.stat(f).mtime.to_i
+      tm   = md5.to_s #File.stat(f).mtime.to_i
 
       if in_memory == true
         map_item = Hash.new
