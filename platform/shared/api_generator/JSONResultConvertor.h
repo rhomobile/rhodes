@@ -315,12 +315,13 @@ namespace {
 template <typename ArrayVal>
 bool rho_value_to_typed_array(const CJSONEntry& value, rho::Vector<ArrayVal>& dest)
 {
+    dest.clear();
+
     if (isNil(value))
         return false;
 
     if (value.isArray())
     {
-        dest.clear();
         CJSONArrayIterator iter(value);
 
         dest.reserve(iter.getSize());
@@ -342,6 +343,9 @@ bool rho_value_to_typed_array(const CJSONEntry& value, rho::Vector<ArrayVal>& de
 template <typename KeyType,typename ValueType>
 bool rho_value_to_typed_hash(const CJSONEntry& value, rho::Hashtable<KeyType, ValueType>& dest)
 {
+    dest.clear();
+    
+
     if (isNil(value))
         return false;
 
@@ -372,8 +376,8 @@ bool rho_value_to_typed_hash(const CJSONEntry& value, rho::Hashtable<KeyType, Va
 }
 
 template <typename InnnerArrayValue>
-bool rho_value_to_typed_array_array(const CJSONEntry& value, rho::Vector< rho::Vector<InnnerArrayValue> >& dest, rho::String& result) {
-
+bool rho_value_to_typed_array_array(const CJSONEntry& value, rho::Vector< rho::Vector<InnnerArrayValue> >& dest, rho::String& result)
+{
     dest.clear();
 
     if (isNil(value))
@@ -381,7 +385,6 @@ bool rho_value_to_typed_array_array(const CJSONEntry& value, rho::Vector< rho::V
 
     if (value.isArray())
     {
-        dest.clear();
         CJSONArrayIterator iter(value);
 
         dest.reserve(iter.getSize());
@@ -402,7 +405,8 @@ bool rho_value_to_typed_array_array(const CJSONEntry& value, rho::Vector< rho::V
 }
 
 template <typename InnnerHashKey, typename InnnerHashValue>
-bool rho_value_to_typed_array_hash(const CJSONEntry& value, rho::Vector< rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& result) {
+bool rho_value_to_typed_array_hash(const CJSONEntry& value, rho::Vector< rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& result)
+{
 
     dest.clear();
 
@@ -436,7 +440,10 @@ bool rho_value_to_typed_array_hash(const CJSONEntry& value, rho::Vector< rho::Ha
 }
 
 template <typename HashKey, typename InnnerArrayValue>
-bool rho_value_to_typed_hash_array(const CJSONEntry& value, rho::Hashtable< HashKey, rho::Vector<InnnerArrayValue> >& dest, rho::String& result) {
+bool rho_value_to_typed_hash_array(const CJSONEntry& value, rho::Hashtable< HashKey, rho::Vector<InnnerArrayValue> >& dest, rho::String& result)
+{
+    dest.clear();
+
     if (isNil(value))
         return false;
 
@@ -467,7 +474,10 @@ bool rho_value_to_typed_hash_array(const CJSONEntry& value, rho::Hashtable< Hash
 }
 
 template <typename HashKey, typename InnnerHashKey, typename InnnerHashValue>
-bool rho_value_to_typed_hash_hash(const CJSONEntry& value, rho::Hashtable< HashKey, rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& result) {
+bool rho_value_to_typed_hash_hash(const CJSONEntry& value, rho::Hashtable< HashKey, rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& result)
+{
+    dest.clear();
+
     if (isNil(value))
         return false;
 
