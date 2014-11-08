@@ -418,7 +418,7 @@ bool rho_value_to_typed_hash_array( VALUE value, rho::Hashtable< HashKey, rho::V
         akey = rho_ruby_array_get(keys,  i);
         VALUE val = rho_ruby_hash_get(value, akey);
 
-        result = (valueTo(akey, _key) && rho_value_to_typed_array(val, dest[_key]), error) && result;
+        result = (valueTo(akey, _key) && rho_value_to_typed_array(val, dest[_key], error)) && result;
     }
 
     return  result;
@@ -445,7 +445,7 @@ bool rho_value_to_typed_hash_hash( VALUE value, rho::Hashtable< HashKey, rho::Ha
     {
         akey = rho_ruby_array_get(keys,  i);
         VALUE val = rho_ruby_hash_get(value, akey);
-        result = (valueTo(akey, _key) && rho_value_to_typed_hash(val, dest[_key])) && result;
+        result = (valueTo(akey, _key) && rho_value_to_typed_hash(val, dest[_key], error)) && result;
     }
 
     return  result;
