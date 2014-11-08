@@ -180,12 +180,8 @@ if param.type == RhogenCore::TYPE_ARRAY %>
     {
         if ( rho_ruby_is_array(argv[<%= first_arg %>]) )
         {
-            <% if param.api_style == RhogenCore::API_STYLE_LEGACY %>
-            getStringArrayFromValue(<%= convert_args %>);
-            <% else %>
             rho::String res;
             <%= CppGen::result_converter(param) %>(<%= convert_args %>, res);
-            <% end %>
         }
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
@@ -201,12 +197,8 @@ if param.type == RhogenCore::TYPE_HASH %>
     {
         if ( rho_ruby_is_hash(argv[<%= first_arg %>]) )
         {
-            <% if param.api_style == RhogenCore::API_STYLE_LEGACY %>
-            getStringHashFromValue(<%= convert_args %>);
-            <% else %>
             rho::String res;
             <%= CppGen::result_converter(param) %>(<%= convert_args %>, res);
-            <% end %>
         }
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
