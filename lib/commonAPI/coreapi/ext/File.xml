@@ -9,10 +9,10 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-## JavaScript Usage
+### JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-## Ruby Usage
+### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
   </MORE_HELP>
         <MORE_HELP_EB>
@@ -368,11 +368,11 @@ folders = []
 files = []
 
 root_path = "/arbitrary/path"
-entries = Rho::File.listDir(root_path)
+entries = Rho::RhoFile.listDir(root_path)
 
 entries.each do |entry|
   unless (entry == "." || entry == "..")
-    (Rho::File.isDir(Rho::File.join(root_path,entry)) ? folders : files) << entry
+    (Rho::RhoFile.isDir(Rho::RhoFile.join(root_path,entry)) ? folders : files) << entry
   end
 end
                    ]]>

@@ -220,6 +220,11 @@ module Rhogen
       directory.destination = "#{name}/icon"
     end
 
+    directory :production do |directory|
+      directory.source = 'production'
+      directory.destination = "#{name}/production"
+    end
+
     template :settings1 do |template|
       template.source = 'app/Settings/controller.rb'
       template.destination = "#{name}/app/Settings/controller.rb"
@@ -692,7 +697,7 @@ module Rhogen
       Dir.chdir("extensions/#{name}/ext")
       args = []
       args << 'api'
-      args << Dir.pwd+"/#{namefixed.downcase}.xml"
+      args << Dir.pwd+"/#{namecamelcase}.xml"
       Jake.run(source_root+'/../../../../bin/rhogen', args)
     end
 
@@ -707,7 +712,7 @@ module Rhogen
 
     template :extension_apigen_xml do |template|
       template.source = 'extensions/montana/ext/montana.xml'
-      template.destination = "extensions/#{name}/ext/#{namefixed}.xml"
+      template.destination = "extensions/#{name}/ext/#{namecamelcase}.xml"
     end
 
     template :build do |template|
@@ -897,7 +902,8 @@ module Rhogen
 
     template :extension_qt_pro do |template|
       template.source = 'extensions/montana/ext/platform/qt/Montana.pro'
-      template.destination = "extensions/#{name}/ext/platform/qt/#{namecamelcase}.pro"
+      #template.destination = "extensions/#{name}/ext/platform/qt/#{namecamelcase}.pro"
+      template.destination = "extensions/#{name}/ext/platform/qt/#{namecamelcase()}.pro"
     end
 
     template :extension_qt_src_impl do |template|

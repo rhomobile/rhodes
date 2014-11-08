@@ -29,7 +29,7 @@ android:
   #  alias: "certificate-alias"
   # Logcat filter will be used if defined, more information at http://developer.android.com/tools/debugging/debugging-log.html#filteringOutput
   # This setting will take effect only if not defined in application built.yml  
-  #logcatFilter: APP:I dalvikvm:W StrictMode:I DEBUG:I *:E
+  #logcatFilter: APP:I dalvikvm:W System.err:W System.out:W StrictMode:I DEBUG:I *:E
   
 excludedirs:
   all:
@@ -37,8 +37,9 @@ excludedirs:
     - "**/.*.swn"
     - "**/.DS_Store"
 
-#rhohub:
-#  url: https://app.rhohub.com/api/v1
+#cloud:
+#  server_url: "https://rms.rhomobile.com/api/v1"
+
 
 # internet proxy configuration for cloud build
 # connection:

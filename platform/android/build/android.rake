@@ -52,7 +52,7 @@ JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
 # For complete list of android API levels and its mapping to
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
-ANDROID_SDK_LEVEL = 4
+ANDROID_SDK_LEVEL = 9
 
 ANDROID_PERMISSIONS = {
     'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
@@ -1442,6 +1442,7 @@ namespace "build" do
         args = []
 
         rlibs = []
+        rlibs << "android"
         rlibs << "log"
         rlibs << "dl"
         rlibs << "z"
@@ -1919,18 +1920,14 @@ namespace "build" do
         ext_classpath = classpath
         ext_classpath += $path_separator + $ext_android_extra_classpath[ext] if $ext_android_extra_classpath[ext]
         srclist = Tempfile.new "#{ext}SRC_build"
-        lines = []
-        File.open(list, "r") do |f|
-          while line = f.gets
+        lines = get_sources(list)
+        lines.each do |line|
             line.chomp!
             srclist.write "\"#{File.join(extpath, line)}\"\n"
-            #srclist.write "#{line}\n"
-          end
         end
         srclist.close
 
         buildpath = File.join($tmpdir, ext)
-        
 
         mkdir_p buildpath unless File.exists? buildpath
 

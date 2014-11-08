@@ -4,15 +4,15 @@
     <MODULE name="Camera" parent="Rho"  productException="eb">
         <HELP_OVERVIEW>The Camera API provides access to your device's Camera(s). Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application. Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 In order to use this API you must include the following extension in your `build.yml`
     :::ruby
     extensions: ["mediacapture"]
 
-## JavaScript Usage
+### JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
 
-## Ruby Usage
+### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
 
         </MORE_HELP>
@@ -239,7 +239,17 @@ The ebapi.js file is necessary for all single API inclusions.
                 </RETURN>
             </METHOD>
             <METHOD name="takePicture" hasCallback="mandatory" runInThread="ui">
-                <DESC>Start the camera application to take a picture. The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use.</DESC>
+                <DESC>Start the camera application to take a picture. The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use.
+> Note: To display an image, it is recommended that you use the full path to the image instead of a relative path. To do this, you can use the [`expandDatabaseBlobFilePath`](Application#mexpandDatabaseBlobFilePath) method of the [Application module](Application) as such:
+
+##### Ruby
+    :::ruby
+    Rho::RhoApplication.expandDatabaseBlobFilePath(x.image_uri)
+
+##### JavaScript
+    :::js
+    Rho.RhoApplication.expandDatabaseBlobFilePath(x.image_uri)
+                </DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Provide a set of properties to configure the camera, for example to specify the flashMode or compressionFormat.</DESC>
@@ -333,7 +343,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Save an image to the device gallery.</DESC>
                 <PARAMS>
                     <PARAM name="pathToImage" type="STRING">
-                        <DESC>The real path to the image that is to be saved in the device gallery. You need to use the RhoApplication method get_blob_path to have the real path, such as Rho::RhoApplication::get_blob_path(img.image_uri).</DESC>
+                        <DESC>The real path to the image that is to be saved in the device gallery. You need to use the RhoApplication method `expandDatabaseBlobFilePath` to have the real path, such as `Rho::RhoApplication::expandDatabaseBlobFilePath(img.image_uri)`.</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>

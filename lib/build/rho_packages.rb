@@ -4,10 +4,6 @@ require 'set'
 module RhoPackages
 
   class NilConfig
-    def command_deps(command_name)
-      []
-    end
-
     def package_deps(package_name)
       []
     end
@@ -16,24 +12,47 @@ module RhoPackages
   class YmlConfig
     def initialize(config_yml_file)
       @config = YAML::load_file(config_yml_file)
+
+      @platfrom_suffix = case RUBY_PLATFORM
+      when /(win|w)32$/
+        'win'
+      when /darwin/
+        'mac'
+      else
+        fail
+      end
     end
 
     def repository
       @config['repository']
     end
 
-    def command_deps(command_name)
-      gather([], Set.new, fetch('commands', command_name)).reverse
-    end
-
     def package_deps(package_name)
       gather([], Set.new, [package_name]).reverse
     end
 
+    def package_file(package_name)
+      file = package_name
+      file += ".#{@platfrom_suffix}" if platform_specific?(package_name)
+      file
+    end
+
+    def package_load_path(package_name)
+      package(package_name).fetch('ruby_load_path', nil)
+    end
+
     private
 
-    def fetch(section, key)
-      (@config['dependencies'][section] || {}).fetch(key, [])
+    def package(package_name)
+      @config['packages'].fetch(package_name, {})
+    end
+
+    def platform_specific?(package_name)
+      package(package_name).fetch('platform_specific', false)
+    end
+
+    def deps(package_name)
+      package(package_name).fetch('depends_on', [])
     end
 
     def gather(list, set, package_names)
@@ -43,14 +62,14 @@ module RhoPackages
         list << package_name
         set << package_name
 
-        gather(list, set, fetch('packages', package_name))
+        gather(list, set, deps(package_name))
       end
       list
     end
   end
 
   class NilRepo
-    def request(package_name)
+    def install(package_name, ruby_load_path)
     end
   end
 
@@ -59,18 +78,25 @@ module RhoPackages
       @root_dir = root_dir
     end
 
-    def request(package_name)
-      install(package_name) unless installed?(package_name)
+    def install(package_name, ruby_load_path)
+      unless ruby_load_path.nil?
+        load_path = File.join(@root_dir, ruby_load_path)
+        $LOAD_PATH.unshift(load_path) unless $LOAD_PATH.include?(load_path)
+      end
+
+      install_(package_name, ruby_load_path) unless installed?(package_name)
     end
 
     private
 
-    def install(package_name)
-      require_relative 'tar_gzip.rb'
+    def install_(package_name, ruby_load_path)
+      require_relative 'zip_tar_gz.rb'
       require_relative 'jake.rb'
+
       fetch(package_name) do |tar_gz_file|
-        TarGzip.unpack(tar_gz_file, @root_dir)
+        ZipTarGz.unpack_tar_gz(tar_gz_file, @root_dir)
       end
+
       Jake.edit_yml(File.join(@root_dir, 'installed.yml')) do |yml|
         yml << package_name
         yml.sort!
@@ -163,19 +189,15 @@ module RhoPackages
 
   def self.request(*package_names)
     package_names.each do |package_name|
-      self.require_(@@config.package_deps(package_name))
+      self.request_(@@config.package_deps(package_name))
     end
-  end
-
-  def self.require_by_command(command_name)
-    self.require_(@@config.command_deps(package_name))
   end
 
   private
 
-  def self.require_(package_names)
+  def self.request_(package_names)
     package_names.each do |package_name|
-      @@repo.request(package_name)
+      @@repo.install(@@config.package_file(package_name), @@config.package_load_path(package_name))
     end
   end
 

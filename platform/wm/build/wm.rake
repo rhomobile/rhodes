@@ -174,6 +174,7 @@ def unpack_7z(where, archive)
 end
 
 def determine_prebuild_path_win(platform,config)
+  RhoPackages.request 'rhodes-containers'
   require 'rhodes/containers'
   if platform == 'win32' && !config.nil? && config.is_a?(Hash) && config.has_key?("app_type")
     conf = config.clone
@@ -783,11 +784,18 @@ namespace "build" do
             ext_config["wm"]["register"].each do |key|
               ext_add_reg_com_dll(ext, key)
             end
-          end          
+          end        
           
           if ext != 'openssl.so'
-            extensions_lib << " #{ext}.lib"
-            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            if ext_config.has_key?('libraries')
+              ext_config["libraries"].each { |name_lib|
+                extensions_lib << " #{name_lib}.lib"
+                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
+              }
+            else
+              extensions_lib << " #{ext}.lib"
+              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            end
           end
 
           if (project_path)
@@ -1127,8 +1135,15 @@ namespace "build" do
           next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
 
           if ext != 'openssl.so'
-            extensions_lib << " #{ext}.lib"
-            pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            if ext_config.has_key?('libraries')
+              ext_config["libraries"].each { |name_lib|
+                extensions_lib << " #{name_lib}.lib"
+                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
+              }
+            else
+              extensions_lib << " #{ext}.lib"
+              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            end
           end
 
           if (project_path)
@@ -1172,7 +1187,7 @@ namespace "build" do
               clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
           end
-      end
+      end 
       generate_extensions_pri(extensions_lib, pre_targetdeps)
     end
 
