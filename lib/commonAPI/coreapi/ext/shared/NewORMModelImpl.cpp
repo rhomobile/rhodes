@@ -1149,11 +1149,14 @@ void rho::CNewORMModelImpl::_processDbResult(IDBResult& res,
     else {
         Vector<Hashtable<rho::String, rho::String> > retVals;
         Hashtable<rho::String, Hashtable<rho::String, rho::String> > obj_hashes;
+        rho::String buffer;
         for(; !res.isEnd(); res.next()) {
             // include only the requested attributes
             if(attrSet.size() && !attrSet.containsKey(res.getStringByIdx(1)))
                 continue;
-            obj_hashes[res.getStringByIdx(0)][res.getStringByIdx(1)] = res.getStringByIdx(2);
+            if (res.getStringOrNil(2,buffer)){
+                obj_hashes[res.getStringByIdx(0)][res.getStringByIdx(1)] = buffer;
+            }
         }
         for(Hashtable<rho::String, Hashtable<rho::String, rho::String> >::iterator cResIt = obj_hashes.begin(); cResIt != obj_hashes.end(); ++cResIt) {
             Hashtable<rho::String, rho::String>& obj_hash = cResIt -> second;
