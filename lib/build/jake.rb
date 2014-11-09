@@ -695,7 +695,7 @@ class Jake
       end 
       
       if type.eql? 'file'
-        content = File.readlines(File.open(f, "r"))
+        content = File.readlines(f)
         md5 = Digest::MD5.hexdigest(content.to_s)
       else
         md5 = "" 
