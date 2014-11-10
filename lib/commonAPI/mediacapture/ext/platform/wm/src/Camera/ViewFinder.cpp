@@ -1,6 +1,12 @@
 #include <windows.h>
 #include "ViewFinder.h"
 
+extern "C" HINSTANCE rho_wmimpl_get_appinstance();
+
+#define CMD_CANCEL	0x6001		///< HMENU id for the cancel button
+#define CMD_CAPTURE	0x6002		///< HMENU id for the capture button
+
+
 CViewFinder::CViewFinder()
 {
 	m_pCallBack = NULL;	
@@ -22,8 +28,12 @@ HWND CViewFinder::CreateViewerWindow(HWND hwndParent,RECT& pos, ViewrWndMode eMo
 	if(NULL != hwndParent)
 	{
 		m_hWndViewerParent = hwndParent;
+		HINSTANCE hInstance = rho_wmimpl_get_appinstance();
 		if(eFullScreen == eMode)
 		{
+			m_iH = GetSystemMetrics(SM_CYSCREEN);
+			int iXCoord = GetSystemMetrics(SM_CXSCREEN);
+			float iRatio;
 			if (iXCoord > m_iH)
 				iRatio = (float)iXCoord / (float)m_iH;
 			else
@@ -56,7 +66,7 @@ HWND CViewFinder::CreateViewerWindow(HWND hwndParent,RECT& pos, ViewrWndMode eMo
 			int iTopPos = (GetSystemMetrics(SM_CYSCREEN)/2) - scaledpx(m_iY/2);
 
 			HWND m_hwnd = CreateWindowEx(WS_EX_NOANIMATION|WS_EX_TOPMOST, L"Dialog", L"", WS_VISIBLE ,
-				iLeftPos, iTopPos, scaledpx(m_iX), scaledpx(m_iY), m_hParentWnd, NULL, m_hInst, NULL);
+				iLeftPos, iTopPos, scaledpx(m_iX), scaledpx(m_iY), hwndParent, NULL, hInstance, NULL);
 
 			if (m_hwnd)
 			{	
@@ -71,10 +81,10 @@ HWND CViewFinder::CreateViewerWindow(HWND hwndParent,RECT& pos, ViewrWndMode eMo
 				//create child controls
 				HWND m_hwndCancel = CreateWindowEx(WS_EX_NOANIMATION,_T("Button"), L"Cancel", 
 					WS_CHILD | BS_PUSHBUTTON | WS_TABSTOP | WS_VISIBLE , 
-					scaledpx(scaleForMargain(180)), scaledpx(scaleForY(240)), scaledpx(55), scaledpx(scaleForY(22)), m_hwnd, (HMENU)CMD_CANCEL, m_hInst, NULL);
+					scaledpx(scaleForMargain(180)), scaledpx(scaleForY(240)), scaledpx(55), scaledpx(scaleForY(22)), m_hwnd, (HMENU)CMD_CANCEL, hInstance, NULL);
 				HWND m_hwndCapture = CreateWindowEx(WS_EX_NOANIMATION,_T("Button"), L"Capture", 
 					WS_CHILD | BS_PUSHBUTTON | WS_TABSTOP | WS_VISIBLE , 
-					scaledpx(scaleForMargain(120)), scaledpx(scaleForY(240)), scaledpx(55), scaledpx(scaleForY(22)), m_hwnd, (HMENU)CMD_CAP, m_hInst, NULL);
+					scaledpx(scaleForMargain(120)), scaledpx(scaleForY(240)), scaledpx(55), scaledpx(scaleForY(22)), m_hwnd, (HMENU)CMD_CAPTURE, hInstance, NULL);
 
 			}
 
@@ -91,7 +101,7 @@ HWND CViewFinder::CreateViewerWindow(HWND hwndParent,RECT& pos, ViewrWndMode eMo
 				pos.top,
 				pos.right,
 				pos.bottom, 
-				pos, NULL, m_hInst, NULL);
+				m_hWndViewerParent, NULL, hInstance, NULL);
 		}
 
 	}
@@ -102,10 +112,10 @@ void CViewFinder::RepositionWindow(const RECT& pos)
 	if (IsWindow(m_hWndViewer))
 	{
 		MoveWindow(m_hWndViewer,
-			m_rcWinPos.left,
-			m_rcWinPos.top,
-			m_rcWinPos.right,
-			m_rcWinPos.bottom, 
+			pos.left,
+			pos.top,
+			pos.right,
+			pos.bottom, 
 			FALSE);
 	}
 }
@@ -132,6 +142,7 @@ void CViewFinder::DestroyViewerWindow()
 }
 LRESULT CALLBACK CViewFinder::FullScreenWndProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
+	return TRUE;
 }
 int CViewFinder::scaledpx( int size)
 {

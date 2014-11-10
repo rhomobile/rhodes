@@ -658,7 +658,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ViewFinder.cpp"
+					RelativePath=".\src\Camera\ViewFinder.cpp"
 					>
 				</File>
 			</Filter>
@@ -678,7 +678,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ViewFinder.h"
+					RelativePath=".\src\Camera\ViewFinder.h"
 					>
 				</File>
 			</Filter>

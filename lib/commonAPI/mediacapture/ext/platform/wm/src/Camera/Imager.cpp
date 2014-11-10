@@ -1,3 +1,4 @@
+#include <windows.h>
 #include "Imager.h"
 
 HINSTANCE CImager::m_hImagerLibHandle = NULL;
@@ -23,9 +24,10 @@ BOOL CImager::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::Str
 		m_hImagerLibHandle = NULL;
 	}
 	m_hImagerLibHandle = LoadLibraryEx(_T("ImgAPI32.dll"), NULL, 0);
-		// Find the Imager
+	// Find the Imager
 	if (NULL != m_hImagerLibHandle)
 	{
+		DWORD dwRes;
 		m_bImagerLoadFailed = false;
 		if (NULL == (Image_FindFirst = (IMAGE_FINDFIRSTPROC) GetProcAddress(m_hImagerLibHandle, _T("IMAGE_FindFirst")))) m_bImagerLoadFailed = true;
 		if (NULL == (Image_FindNext = (IMAGE_FINDNEXTPROC) GetProcAddress(m_hImagerLibHandle, _T("IMAGE_FindNext")))) m_bImagerLoadFailed = true;
@@ -39,10 +41,10 @@ BOOL CImager::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::Str
 		if (NULL == (Image_GetImage = (IMAGE_GETIMAGEPROC) GetProcAddress(m_hImagerLibHandle, _T("IMAGE_GetImage")))) m_bImagerLoadFailed = true; 		
 		if (NULL == (Image_SetCapCurrValue = (IMAGE_SETCAPCURRVALUEPROC) GetProcAddress(m_hImagerLibHandle, _T("IMAGE_SetCapCurrValue")))) m_bImagerLoadFailed = true;
 		if (NULL == (Image_UnLockImager = (IMAGE_UNLOCKIMAGERPROC) GetProcAddress(m_hImagerLibHandle, _T("IMAGE_UnLockImager")))) m_bImagerLoadFailed = true;
-		
+
 		IMAGE_FINDINFO ImageFindInfo;
 		HANDLE FindHandle;
-		
+
 		memset(&ImageFindInfo, 0, sizeof(ImageFindInfo));
 		SI_INIT(&ImageFindInfo);
 		SI_SET_USED(&ImageFindInfo, tszRegistryBasePath);
@@ -51,27 +53,32 @@ BOOL CImager::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::Str
 		if (E_IMG_SUCCESS == (dwRes = Image_FindFirst(&ImageFindInfo, &FindHandle))) 
 		{
 			bRetStatus = TRUE;//found atleast one occurance
+			do
+			{
 
-			//Remove column from end of Device Name	, IMG1: renamed to IMG1			
-			wcscpy(szModifiedDeviceName, ImageFindInfo.tszDeviceName);
-			if (wcslen(szModifiedDeviceName) > 0 &&
-				szModifiedDeviceName[wcslen(szModifiedDeviceName) - 1] == L':')
-				szModifiedDeviceName[wcslen(szModifiedDeviceName) - 1] = L'\0';
-			arIDs.addElement(convertToStringA(szModifiedDeviceName));		
-			do{
+				//Remove column from end of Device Name	, IMG1: renamed to IMG1			
+				wcscpy(szModifiedDeviceName, ImageFindInfo.tszDeviceName);
+				if (wcslen(szModifiedDeviceName) > 0 &&
+					szModifiedDeviceName[wcslen(szModifiedDeviceName) - 1] == L':')
+					szModifiedDeviceName[wcslen(szModifiedDeviceName) - 1] = L'\0';
+				arIDs.addElement(rho::common::convertToStringA(szModifiedDeviceName));	
 
-				if(!_memicmp(g_ListDevName->DeviceFriendlyName, L"Image Capture Driver for Color Camera", wcslen(L"Image Capture Driver for Color Camera")*sizeof(TCHAR)))
+				if(!_memicmp(ImageFindInfo.tszFriendlyName, L"Image Capture Driver for Color Camera", wcslen(L"Image Capture Driver for Color Camera")*sizeof(TCHAR)))
 				{
-					camLookUp.put(convertToStringA(szModifiedDeviceName), eColorCam );
-				}							
+					camLookUp.put(rho::common::convertToStringA(szModifiedDeviceName), eColorCam );
+				}
 				else
 				{
-					camLookUp.put(convertToStringA(szModifiedDeviceName), eImager );
+					camLookUp.put(rho::common::convertToStringA(szModifiedDeviceName), eImager );
 				}
-			}
-			while(	E_IMG_SUCCESS == Image_FindNext( &ImageFindInfo, FindHandle ));
-			Image_FindClose(FindHandle);
+
+
+				
+			}while(	E_IMG_SUCCESS == Image_FindNext( &ImageFindInfo, FindHandle ));
 		}
+
+		Image_FindClose(FindHandle);
+
 	}
 
 	return bRetStatus;
@@ -84,7 +91,7 @@ BOOL CImager::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
 	{
 		if(cmp(szParameterName, L"aimMode"))
 		{
-			wcscpy(szParameterValue,m_FileName);			
+			wcscpy(szParameterValue,m_FileName.c_str());			
 		}
 		else
 		{

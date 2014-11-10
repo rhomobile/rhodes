@@ -9,16 +9,21 @@ enum eCamType
 	eColorCam,
 	eImager
 };
+typedef enum 
+{
+	eCancelEvent=0,
+	eCaptureEvent,
+	eMaxEventCount
+}eEventIndex;
 class ICam
 {
-public:
-	virtual BOOL enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp);
+public:	
 	virtual BOOL getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)=0;
 	virtual BOOL setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)=0;
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames) =0;
 };
 
-class CCamera : public ICam
+class CCamera : public ICam, public IViewFinderCallBack
 {
 protected:
 	CViewFinder m_ViewFinder;
@@ -31,6 +36,7 @@ protected:
 	rho::StringW m_CaptureSound;
 	rho::StringW m_FileName;
 	rho::StringW m_FlashMode;
+	HANDLE m_hEvents[2];
 	//rho::apiGenerator::CMethodResult* m_pImageCaptureCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  
 public:
 	CCamera();
@@ -38,7 +44,9 @@ public:
     virtual BOOL getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue);
     virtual BOOL setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue);
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
-private:
+	virtual void cancel();
+	virtual void capture();
+protected:
 	/**
 	* checks if two strings are equal
 	*/
