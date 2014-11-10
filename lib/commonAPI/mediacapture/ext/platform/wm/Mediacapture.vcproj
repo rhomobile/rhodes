@@ -645,10 +645,42 @@
 			<Filter
 				Name="Source Files"
 				>
+				<File
+					RelativePath=".\src\Camera\Camera.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\DirectShowCam.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\Imager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ViewFinder.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Header Files"
 				>
+				<File
+					RelativePath=".\src\Camera\Camera.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\DirectShowCam.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\Imager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ViewFinder.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="shared"
