@@ -71,14 +71,20 @@ The ebapi.js file is necessary for all single API inclusions.
             </ALIASES>
 
             <PROPERTY name="cameraType" type="STRING" default="main" readOnly="true">
-			    <PLATFORM>Android, iOS</PLATFORM>
-                <DESC>Camera type: back or front.</DESC>
+			    <PLATFORM>Android, iOS, WM, CE</PLATFORM>
+                <DESC>Camera type: back or front. In windows this could be imager or color camera.</DESC>
                 <VALUES>
                     <VALUE constName="CAMERA_TYPE_BACK" value="back">
                         <DESC>Back camera.</DESC>
                     </VALUE>
                     <VALUE constName="CAMERA_TYPE_FRONT" value="front">
                         <DESC>Front camera.</DESC>
+                    </VALUE>
+					 <VALUE constName="CAMERA_TYPE_IMAGER" value="imager">
+                        <DESC>Camera is an imager.</DESC>
+                    </VALUE>
+					 <VALUE constName="CAMERA_TYPE_COLOR" value="color">
+                        <DESC>Camera is color camera.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
@@ -118,8 +124,8 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="compressionFormat" type="STRING" default="jpg">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <APPLIES>JPG is supported on all devices, Android and Windows Mobile does not support PNG images</APPLIES>
-				<PLATFORM>Android, iOS</PLATFORM>
-                <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data.</DESC>
+				<PLATFORM>Android, iOS, WM, CE</PLATFORM>
+                <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data. In windows devices the format will be always jpg type</DESC>
                 <VALUES>
                     <VALUE constName="COMPRESSION_FORMAT_JPG" value="jpg">
                         <DESC>JPG compression.</DESC>
