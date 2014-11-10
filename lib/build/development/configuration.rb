@@ -44,20 +44,28 @@ module RhoDevelopment
       end
     end
 
+    def self.auto_refresh?
+      refresh = false
+      config = self.read_configuration
+      if !config['refresh'].nil?
+        refresh = config['refresh'] != false || config['refresh'] != 0
+      end
+    end
+
     def self.webserver_port
       3000
     end
-
 
     def self.config_filename
       File.join(self.application_root, 'dev-config.yml')
     end
 
     def self.read_configuration
+      config = {}
       if File.exist?(self.config_filename)
-        YAML.load_file(self.config_filename)
+        config = YAML.load_file(self.config_filename)
       end
-      {}
+      config
     end
 
     def self.subscribers
@@ -115,6 +123,7 @@ module RhoDevelopment
 
     def self.document_root=(aString)
       config = self.read_configuration
+      puts config.inspect
       config['webserver'] = {'documentRoot' => aString}
       yml = config.to_yaml
       File.open(self.config_filename, 'w') { |file| file.write yml }
