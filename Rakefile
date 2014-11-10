@@ -3428,8 +3428,10 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
       end
 
       if !map_items.nil? && map_items.size != 0
-        new_time = File.stat(filepath).mtime
-        old_time = Time.at(map_items[0][:time])
+        content = File.readlines(filepath)
+
+        new_time = Digest::MD5.hexdigest(content.to_s)
+        old_time = map_items[0][:time]
 
         next if new_time == old_time
 
