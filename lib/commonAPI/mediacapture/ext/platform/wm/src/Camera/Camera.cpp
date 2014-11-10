@@ -2,6 +2,8 @@
 
 CCamera::CCamera()
 {
+	m_hEvents[eCancelEvent] = CreateEvent(NULL, FALSE, FALSE, NULL);	
+	m_hEvents[eCaptureEvent] = CreateEvent(NULL, TRUE, FALSE, NULL);	
 //	m_pImageCaptureCb = NULL;
 }
 CCamera::~CCamera()
@@ -116,6 +118,14 @@ void CCamera::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 	arrayofNames.push_back("previewTop");
 	arrayofNames.push_back("previewWidth");	
 	arrayofNames.push_back("previewHeight");
+}
+void CCamera::cancel()
+{
+	SetEvent(m_hEvents[eCancelEvent]);
+}
+void CCamera::capture()
+{
+	SetEvent(m_hEvents[eCaptureEvent]);
 }
 BOOL CCamera::cmp(LPCTSTR tc1, LPCTSTR tc2)
 {

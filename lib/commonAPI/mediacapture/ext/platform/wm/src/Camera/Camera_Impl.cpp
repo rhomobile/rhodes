@@ -6,7 +6,8 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
-#include "Camera.h"
+#include "Imager.h"
+#include "DirectShowCam.h"
 
 namespace rho {
     
@@ -39,13 +40,25 @@ namespace rho {
             // RAWLOGC_INFO("saveImageToDeviceGallery","Camera");
             
         } 
+		rho::String getInitialDefaultID();
 
     };
-	void CCardReaderSingleton::enumerate(CMethodResult& oResult)
+	void CCameraSingletonImpl::enumerate(CMethodResult& oResult)
 	{
 		BOOL bEnumerationStatus = FALSE;
 		rho::Vector<rho::String> arIDs;
-		bEnumerationStatus = ((CImager::enumerate(arIDs, m_CamType))|| (CDirectShowCam:: enumerate(arIDs, m_CamType)));
+		if(m_CamType.size() > 0)
+		{
+			//if already enumerated
+			for ( HashtablePtr<String, eCamType>::iterator it = m_CamType.begin(); it != m_CamType.end(); ++it )
+			{
+				arIDs.addElement(it->first);
+			}
+		}
+		else
+		{
+			bEnumerationStatus = ((CImager::enumerate(arIDs, m_CamType))|| (CDirectShowCam:: enumerate(arIDs, m_CamType)));
+		}
 		if(TRUE == bEnumerationStatus)
 		{
 			oResult.set(arIDs);
@@ -54,6 +67,18 @@ namespace rho {
 		{
 			oResult.set("");
 		}
+	}
+	rho::String CCameraSingletonImpl::getInitialDefaultID()
+	{
+		CMethodResult oRes;
+		enumerate(oRes);
+
+		rho::Vector<rho::String>& arIDs = oRes.getStringArray();
+
+		if (arIDs.isEmpty())
+			return "";
+		else        
+			return arIDs[0];
 	}
     
 	//CCameraImpl act as an interface between jav script and the actual implementation
@@ -77,7 +102,7 @@ namespace rho {
 					//TODO: 
 					//bIsCameraRunning logic for full screen has to be relooked, when will set it to false
 					bIsCameraRunning = true;
-					pCamera->takePicture(propertyMap, oResult);
+					//pCamera->takePicture(propertyMap, oResult);
 					bIsCameraRunning = false;
 					
 				}
@@ -90,7 +115,7 @@ namespace rho {
 			{
 				if(false == bIsCameraRunning)
 				{
-					pCamera->showPreview(oResult);
+					//pCamera->showPreview(oResult);
 					bIsCameraRunning = true;
 				}
 			}
@@ -102,7 +127,7 @@ namespace rho {
 			{
 				if(true == bIsCameraRunning)
 				{
-					pCamera->hidePreview(oResult);
+					//pCamera->hidePreview(oResult);
 					bIsCameraRunning = false;
 				}
 			}
@@ -114,7 +139,7 @@ namespace rho {
 			{
 				if(true == bIsCameraRunning)
 				{
-					pCamera->Capture(propertyMap, oResult);
+					//pCamera->Capture(propertyMap, oResult);
 				}
 			}
 
@@ -204,7 +229,7 @@ namespace rho {
 				for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
 				{
 					LOG(INFO) +  L"Setting Property " + iterator->first.c_str() + " to " + iterator->second.c_str();			
-					pCamera->SetProperty(convertToStringW(iterator->first).c_str(), convertToStringW(iterator->second).c_str());
+					pCamera->setProperty(convertToStringW(iterator->first).c_str(), convertToStringW(iterator->second).c_str());
 				}
 				oResult.set(true);
 			}
@@ -222,10 +247,11 @@ namespace rho {
         
         ICameraSingleton* createModuleSingleton()
         { 
-           // return new CCameraSingletonImpl();
+            //return new CCameraSingletonImpl();
+			return NULL;
         }
         
-        virtual ICamera* createModuleByID(const rho::String& strID){ return new CCameraImpl(); };
+		virtual ICamera* createModuleByID(const rho::String& strID){ return NULL;}//new CCameraImpl(); };
         
     };
     

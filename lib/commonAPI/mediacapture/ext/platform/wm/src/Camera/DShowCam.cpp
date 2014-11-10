@@ -30,22 +30,29 @@
 #include "DShowDef.h"
 #include "PropertyBag.h"
 
-extern TCHAR m_tcImagerSound[MAX_PATH];
+//extern TCHAR m_tcImagerSound[MAX_PATH];
 #ifdef LOG_TO_FILE
 FILE *LogFile;
 #endif
-CDShowCam::CDShowCam()
+//CDShowCam::CDShowCam(PBModule* pModule)
+CDShowCam::CDShowCam(void)
 {
-	//m_pModule = pModule;
-	DEBUGIT(LogFile,"CDShowCam constructor \n");
+	// SPS
+	// m_pModule = pModule;
+	//DEBUGIT(LogFile,"CDShowCam constructor \n");
+	LOG(INFO) + __FUNCTION__ + "4100:Calling CDShowCam constructor ...";
+	// SPS
 	//Initialize the COM library
-	HRESULT hr = CoInitialize(NULL);
+	/*HRESULT hr = CoInitialize(NULL);
 	if(FAILED(hr))
 	{
 		m_lErrno = 0x001;
-		DEBUGIT(LogFile,"\n Error Initializing COM !!!\n");
+		// SPS
+		//DEBUGIT(LogFile,"\n Error Initializing COM !!!\n");
+		LOG(ERROR) + __FUNCTION__ + "4410:Error Initializing COM";
+		// SPS
 		exit(1);
-	}
+	}*/
 
 	//Initializing class members
 	m_hCamHdl = NULL;
@@ -74,9 +81,10 @@ CDShowCam::CDShowCam()
 	EnterCriticalSection(&m_DSCamCriticalSection);
 	LeaveCriticalSection(&m_DSCamCriticalSection);
 	m_bCaptureSoundRegKeyExists = FALSE;
-	HKEY hKey = 0;
+	
+	/*HKEY hKey = 0;
 	WCHAR buf[255] = {0};
-	DWORD dwType = 0;
+	DWORD dwType = 0;/
 	DWORD dwBufSize = sizeof(buf);
 	LPCWSTR subkey = L"Drivers\\BuiltIn\\DShowCam";
 
@@ -85,38 +93,41 @@ CDShowCam::CDShowCam()
 		dwType = REG_SZ;
 		if( RegQueryValueEx(hKey,L"ShutterSound",0, &dwType, (BYTE*)buf, &dwBufSize) == ERROR_SUCCESS)
 		{	// if the key exists assume that DirectShow will handle the shutter sound
-			int len;
+			//int len;
 
 			m_bCaptureSoundRegKeyExists = TRUE;
-			if (m_tcImagerSound[0] && (wcslen(m_tcImagerSound) > 0))
-			{
-				// write the shutter click wav to the registry
-				len = wcslen(m_tcImagerSound);
-				if (wcscmp(buf, m_tcImagerSound) != 0)
-				{
-					RegSetValueEx(hKey, L"ShutterSound", 0, dwType, (BYTE*)m_tcImagerSound, len*sizeof(TCHAR));
-				}
-			}
+			//if (m_tcImagerSound[0] && (wcslen(m_tcImagerSound) > 0))
+			//{
+			//	// write the shutter click wav to the registry
+			//	len = wcslen(m_tcImagerSound);
+			//	if (wcscmp(buf, m_tcImagerSound) != 0)
+			//	{
+			//		RegSetValueEx(hKey, L"ShutterSound", 0, dwType, (BYTE*)m_tcImagerSound, len*sizeof(TCHAR));
+			//	}
+			//}
 			RegCloseKey(hKey);
 		}
-	}
-
-	
+	}*/
+	LOG(INFO) + __FUNCTION__ + "4199:CDShowCam constructor called.";
 }
 
 CDShowCam::~CDShowCam(void)
 {
-	DEBUGIT(LogFile,"CDShowCam destructor \n");
+	// SPS
+	//DEBUGIT(LogFile,"CDShowCam destructor \n");
+	LOG(INFO) + __FUNCTION__ + "4200:Calling CDShowCam destructor ...";
+	// SPS
 	
 	EnterCriticalSection(&m_DSCamCriticalSection);
 	DeleteCriticalSection(&m_DSCamCriticalSection);
+	ReleaseGrp();
 	CloseHandle(m_hCamHdl);
 	m_hCamHdl = NULL;
 
 	//Closes the COM library 
-	CoUninitialize();
+	//CoUninitialize();
 
-
+	LOG(INFO) + __FUNCTION__ + "4299:CDShowCam destructor called.";
 }
 
 //------------------------------------------------------------------
@@ -136,6 +147,8 @@ BOOL CDShowCam::FindFirstCam(wstring* pwsCamID)
 	DEVMGR_DEVICE_INFORMATION di;
 	*pwsCamID = L"";
 	
+	LOG(INFO) + "CDShowCam::FindFirstCam-1 calling ...";
+
 	// The driver material doesn't ship as part of the SDK. This GUID is hardcoded
 	// here to be able to enumerate the camera drivers and pass the name of the driver to the video capture filter
 	GUID guidCamera = {0xCB998A05, 0x122C, 0x4166, 0x84, 0x6A, 0x93, 0x3E, 0x4D, 0x7E, 0x3C, 0x86};
@@ -144,7 +157,10 @@ BOOL CDShowCam::FindFirstCam(wstring* pwsCamID)
 	m_hCamHdl = FindFirstDevice(DeviceSearchByGuid, &guidCamera, &di);
 	if((m_hCamHdl == INVALID_HANDLE_VALUE) ||(m_hCamHdl == NULL) || (di.hDevice == NULL))
 	{
-		DEBUGIT(LogFile,"\n!!! No Camera found !!!!\n");
+		// SPS
+		//DEBUGIT(LogFile,"\n!!! No Camera found !!!!\n");
+		LOG(ERROR) + "CDShowCam::FindFirstCam-2 !!! No Camera found !!!!";
+		// SPS
 		m_lErrno = 0x003;
 	}
 	else 
@@ -153,6 +169,7 @@ BOOL CDShowCam::FindFirstCam(wstring* pwsCamID)
 		return TRUE;
 	}
 
+	LOG(INFO) + "CDShowCam::FindFirstCam-3 called.";
 	return FALSE;
 } //end FindFirstCam
 
@@ -172,6 +189,9 @@ BOOL CDShowCam::FindFirstCam(wstring* pwsCamID)
 BOOL CDShowCam::FindNextCam(wstring* pwsCamID)
 {
 	DEVMGR_DEVICE_INFORMATION di;
+
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::FindNextCam-1 Calling ...";
+
 	*pwsCamID = L"";
 	if(m_hCamHdl == INVALID_HANDLE_VALUE)
 	{
@@ -186,6 +206,7 @@ BOOL CDShowCam::FindNextCam(wstring* pwsCamID)
 		}
 			
 	}
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::FindNextCam-2 called.";
 	return FALSE;
 
 } //end FindNextCam
@@ -207,7 +228,7 @@ HRESULT CDShowCam::InitFilterGrp()
 {
 	HRESULT hr = 0;
 	// Create the Filter Graph Manager.
-	DEBUGIT(LogFile,"InitFilterGrp entered  %d \n", &m_pGraphBuilder);
+	LOG(INFO) + "CDShowCam::InitFilterGrp-1 Calling InitFilterGrp ...";
 	
     if (m_pGraphBuilder==NULL)
 	{	
@@ -233,43 +254,57 @@ HRESULT CDShowCam::InitFilterGrp()
 				hr = m_pGraphBuilder->QueryInterface (IID_IMediaControl, (void **)&m_pMediaControl);
 				
 				if(FAILED(hr))
+				{
+					LOG(ERROR) + __FUNCTION__ + "CDShowCam::InitFilterGrp-2 QueryInterface error";
 					return hr;
+				}
 
 				hr = m_pGraphBuilder->QueryInterface (IID_IVideoWindow, (void **)&m_pViewWindow);
 				
 				if(FAILED(hr))
+				{
+					LOG(ERROR) + __FUNCTION__ + "CDShowCam::InitFilterGrp-3 QueryInterface error";
 					return hr;
+				}
 
 				hr = m_pGraphBuilder->QueryInterface (IID_IMediaEventEx, (void **)&m_pMediaEventEx);
 				
 				if(FAILED(hr))
+				{
+					LOG(ERROR) + __FUNCTION__ + "CDShowCam::InitFilterGrp-4 QueryInterface error";
 					return hr;
+				}
 
 				hr = m_pGraphBuilder->QueryInterface (IID_IMediaSeeking, (void **)&m_pMediaSeeking);
 					
 				if(FAILED(hr))
+				{
+					LOG(ERROR) + __FUNCTION__ + "CDShowCam::InitFilterGrp-5 QueryInterface error";
 					return hr;
-			}
-				
+				}
+			}	
 		}
         else
 		{
 			//free resources
-			
+			LOG(ERROR) + __FUNCTION__ + "CDShowCam::InitFilterGrp-6 CoCreateInstance error";
 		    m_pCaptureGraphBuilder->Release();
 			m_pCaptureGraphBuilder = NULL;
 			m_pGraphBuilder->Release();
 			m_pGraphBuilder = NULL;
 		}
-	
     }
 	else
 	{
 		//free resources
-		m_pGraphBuilder->Release();
+		LOG(ERROR) + __FUNCTION__ + "CDShowCam::InitFilterGrp-7 CoCreateInstance error";
+		if (m_pGraphBuilder != NULL) { 
+			m_pGraphBuilder->Release();
+		}
 		m_pGraphBuilder = NULL;
 	}
 		
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::InitFilterGrp-8 InitFilterGrp called.";
 	return hr; 
 } //end InitFilterGrp
 
@@ -315,18 +350,21 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 		hr = CoCreateInstance(CLSID_VideoCapture, NULL, CLSCTX_INPROC_SERVER, IID_IBaseFilter, (void**)&m_pVideoCaptureFilter);
 		if(FAILED(hr))
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-1-VFW_S_NOPREVIEWPIN";
 			return FALSE;
 		}
 		
 		hr = m_pVideoCaptureFilter->QueryInterface(IID_IPersistPropertyBag, (void **)&pVideoPropertyBag);
 		if(FAILED(hr))
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-2-QueryInterface";
 			return FALSE;
 		}
 		
 		varCamName = ptCamcfg->sCamID.c_str();
 		if(( varCamName.vt == VT_BSTR ) == NULL ) 
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-3-Null varCamName";
 			return FALSE;
 		}
 		
@@ -338,6 +376,7 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 		hr = m_pGraphBuilder->AddFilter(m_pVideoCaptureFilter, L"Video Capture Filter");
 		if(FAILED(hr))
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-4-AddFilter";
 			return FALSE;
 		}
 		
@@ -345,18 +384,21 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 		hr = CoCreateInstance(CLSID_DMOWrapperFilter, NULL, CLSCTX_INPROC_SERVER, IID_IBaseFilter, reinterpret_cast<void**>(&m_pVideoEncoder));
 		if(FAILED(hr))
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-5-CLSID_DMOWrapperFilter";
 			return FALSE;
 		}
 
 		hr = m_pVideoEncoder->QueryInterface(IID_IDMOWrapperFilter, reinterpret_cast<void**>(&m_pVideoWrapperFilter));
 		if(FAILED(hr))
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-6-IID_IDMOWrapperFilter";
 			return FALSE;
 		}
 		
 		hr = m_pVideoWrapperFilter->Init(CLSID_CWMV9EncMediaObject, DMOCATEGORY_VIDEO_ENCODER);
 		if(FAILED(hr))
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-7-Init WrapperFilter";
 			return FALSE;
 		}
 		m_pVideoWrapperFilter->Release();
@@ -364,6 +406,7 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 		hr = m_pGraphBuilder->AddFilter(m_pVideoEncoder, L"WMV9 DMO Encoder");
 		if(FAILED(hr))
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-8-AddFilter";
 			return FALSE;
 		}
 		
@@ -371,6 +414,7 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 		hr = m_pCaptureGraphBuilder->SetOutputFileName(&MEDIASUBTYPE_Asf, DFT_VDO_FN, &m_pMux, &m_pSink);
 		if((FAILED(hr)))
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-9-SetOutputFileName";
 			return FALSE;
 		}
 
@@ -380,29 +424,30 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 			switch (hr)
 			{
 			case VFW_S_NOPREVIEWPIN:
-				DEBUGIT(LogFile,"VFW_S_NOPREVIEWPIN");
+				LOG(ERROR) + "CDShowCam::BuildFilterGrp:-10-VFW_S_NOPREVIEWPIN";
+				// SPS
 				break;
 			case E_FAIL:
-				DEBUGIT(LogFile,"E_FAIL");
+				LOG(ERROR) + "CDShowCam::BuildFilterGrp:-11-E_FAIL";
+				DEBUGMSG(TRUE, (L"The last error is %d", GetLastError()));
 				break;
 			case E_INVALIDARG:
-				DEBUGIT(LogFile,"E_INVALIDARG");
+				LOG(ERROR) + "CDShowCam::BuildFilterGrp:-12-E_INVALIDARG";
 				break;
 			case E_POINTER:
-				DEBUGIT(LogFile,"E_POINTER");
+				LOG(ERROR) + "CDShowCam::BuildFilterGrp:-13-E_POINTER";
 				break;
 			case VFW_E_NOT_IN_GRAPH:
-				DEBUGIT(LogFile,"VFW_E_NOT_IN_GRAPH");
+				LOG(ERROR) + "CDShowCam::BuildFilterGrp:-14-VFW_E_NOT_IN_GRAPH";
 				break;
 			default:
 				{
 					WCHAR buf[80];
-					wsprintf(buf, L"Unknown hr: 0x%X", hr);
-					OutputDebugString(buf);
+					wsprintf(buf, L"CDShowCam::BuildFilterGrp:-15-Unknown hr: 0x%X", hr);
+					LOG(ERROR) + buf;
 				}
 				break;
 			}
-
 			return FALSE;
 		}
 		//-----------------------------------------------------------------------------------------------------------
@@ -413,6 +458,7 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 		hr = CoCreateInstance(CLSID_AudioCapture, NULL, CLSCTX_INPROC_SERVER, IID_IBaseFilter, (void**)&m_pAudioCaptureFilter);
 		if(FAILED(hr))
 		{
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-16-CLSID_AudioCapture";
 			return FALSE;
 		}
 	
@@ -432,6 +478,7 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 	    		}
 				else
 				{
+					LOG(ERROR) + "CDShowCam::BuildFilterGrp:-17-RenderStream";
 					return FALSE;
 				}
 					
@@ -445,7 +492,7 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 		hr = SetupStill();
 		if(FAILED(hr))
 		{
-			DEBUGIT(LogFile,"\n##### Still Setup Error ######\n");
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-18-##### Still Setup Error ######";
 			return FALSE;
 		}
 	}
@@ -455,14 +502,14 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 		hr = SetupPreview(ptCamcfg->hwndOwnerWnd, ptCamcfg->rc);
 		if(FAILED(hr))
 		{
-			DEBUGIT(LogFile,"\n##### Preview Error ######\n");
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-19-##### Preview Error ######";
 			return FALSE;
 		}
 	
 		hr = SetupFlip();
 		if(FAILED(hr))
 		{
-			DEBUGIT(LogFile,"\n##### Flip Setup Error ######\n");
+			LOG(ERROR) + "CDShowCam::BuildFilterGrp:-20-##### Flip Setup Error ######";
 			return FALSE;
 		}
 	}
@@ -485,18 +532,15 @@ BOOL CDShowCam::BuildFilterGrp(CamConfig* ptCamcfg)
 BOOL CDShowCam::ReBuildGrp()
 {
 	HRESULT hr;
-	//IBaseFilter* pVideoRenderer = NULL;
 	//Remove Video capture Filter
 	m_pGraphBuilder->RemoveFilter(m_pVideoCaptureFilter);
 	m_pGraphBuilder->RemoveFilter(m_pVideoRenderer);	
-	//m_pGraphBuilder->RemoveFilter(m_pVideoEncoder);
-	//m_pGraphBuilder->RemoveFilter(m_pAudioCaptureFilter);
-	
 	
 	// Add Video Capture filter to the graph.
 	hr = m_pGraphBuilder->AddFilter(m_pVideoCaptureFilter, L"Video Capture Filter");
 	if(FAILED(hr))
 	{
+		LOG(ERROR) + "CDShowCam::ReBuildGrp:-1-AddFilter-Video Capture Filter";
 		return FALSE;
 	}
 	
@@ -504,75 +548,16 @@ BOOL CDShowCam::ReBuildGrp()
 	hr = m_pGraphBuilder->AddFilter(m_pVideoRenderer, L"My Video Renderer");
 	if(FAILED(hr))
 	{
+		LOG(ERROR) + "CDShowCam::ReBuildGrp:-2-AddFilter-My Video Renderer";
 		return FALSE;
 	}
 	hr = m_pCaptureGraphBuilder->RenderStream( &PIN_CATEGORY_PREVIEW, &MEDIATYPE_Video, m_pVideoCaptureFilter, NULL, m_pVideoRenderer);
 	//Remove Filters from the graph
-	//hr = SetupPreview(m_tCamcfg.hwndOwnerWnd, m_tCamcfg.rc);
 	if((FAILED(hr)))
 	{
+		LOG(ERROR) + "CDShowCam::ReBuildGrp:-3-RenderStream";
 		return FALSE;
-	}
-	
-	/*
-	hr = m_pGraphBuilder->AddFilter(m_pVideoEncoder, L"WMV9 DMO Encoder");
-	if(FAILED(hr))
-	{
-		return FALSE;
-	}
-	//hr = m_pGraphBuilder->AddFilter(m_pVideoRenderer, L"My Video Renderer");
-	//if(FAILED(hr))
-	//{
-	//	return FALSE;
-	//}
-	hr = m_pCaptureGraphBuilder->SetOutputFileName(&MEDIASUBTYPE_Asf, DFT_VDO_FN, &m_pMux, &m_pSink);
-	if((FAILED(hr)))
-	{
-		return FALSE;
-	}
-
-	//hr = m_pSink->SetFileName((LPCOLESTR)L"\\My Documents\\My Pictures\\waTemp.wmv", 0);
-			
-#ifdef DEBUG_MODE
-//	if(FAILED(hr))
-//	{
-//		DEBUGIT(LogFile,"!!! Error Video File Name Set !!!\n");
-//	}
-#endif
-		
-	hr = m_pCaptureGraphBuilder->RenderStream(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Video, m_pVideoCaptureFilter, m_pVideoEncoder, m_pMux);
-	if((FAILED(hr)))
-	{
-		return FALSE;
-	}
-	// Add Audio Capture filter to the graph.
-	hr = m_pGraphBuilder->AddFilter(m_pAudioCaptureFilter, L"Audio Capture Filter");
-	if(FAILED(hr))
-	{
-		return FALSE;
-	}
-		
-	hr = m_pCaptureGraphBuilder->RenderStream(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Audio, m_pAudioCaptureFilter, NULL, m_pMux);
-	if((FAILED(hr)))
-	{
-		return FALSE;
-	}
-	
-	// Add Still Sink Filter.
-	//hr = m_pGraphBuilder->AddFilter(m_pStillSink, L"StillSink");
-	//if(FAILED(hr))
-	//{
-	//	return FALSE;
-	//}
-	
-	hr = m_pCaptureGraphBuilder->RenderStream( &PIN_CATEGORY_STILL, &MEDIATYPE_Video, m_pVideoCaptureFilter, NULL, m_pStillSink);
-	if(SUCCEEDED(hr))
-		DEBUGIT(LogFile,"\n!!!! Render STILL PIN OK!!!!\n");
-	else
-		DEBUGIT(LogFile,"\n!!!! Render STILL PIN Fail!!!!\n");
-
-	*/
-	
+	}	
 return TRUE;
 }
 //------------------------------------------------------------------
@@ -591,19 +576,18 @@ return TRUE;
 BOOL CDShowCam::RunGrp()
 {	
 	BOOL result;
-	DEBUGIT(LogFile,"RunGrp() waiting for critical section\n");
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::RunGrp-1 waiting for critical section";
 	
 	EnterCriticalSection(&m_DSCamCriticalSection);
-	DEBUGIT(LogFile,"RunGrp() entered critical section\n");
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::RunGrp-2 entered critical section";
 	
-	//HRESULT hr = m_pCaptureGraphBuilder->ControlStream(&PIN_CATEGORY_CAPTURE, NULL, NULL, 0, 0, 0, 0);
 	HRESULT hr = m_pCaptureGraphBuilder->ControlStream(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Video, m_pVideoCaptureFilter, 0, 0, 0, 0);
 	if (m_tCamcfg.bIsAudioEnb)
 		hr = m_pCaptureGraphBuilder->ControlStream(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Audio, m_pAudioCaptureFilter, 0, 0, 0, 0);
 
 	if(!(SUCCEEDED(hr)))
     {
-		DEBUGIT(LogFile,"CaptureGraphBuilder->ControlStream failed with %d \n", hr); 
+		LOG(ERROR) + __FUNCTION__ + "CDShowCam::RunGrp-3 CaptureGraphBuilder->ControlStream failed";
 			
 		LeaveCriticalSection(&m_DSCamCriticalSection);
         return FALSE;
@@ -614,14 +598,14 @@ BOOL CDShowCam::RunGrp()
 	// do we have to wait for fillters to change state ?
 	if (hr==S_FALSE)
 	{
-		DEBUGIT(LogFile,"waiting form_pMediaControl->Pause() \n"); 
+		LOG(INFO) + __FUNCTION__ + "CDShowCam::RunGrp-4 waiting form_pMediaControl->Pause()";
 		
 		FILTER_STATE fs;
 		int timeout= 10000;
 		hr = m_pMediaControl->GetState(timeout, (OAFilterState*)&fs);
 		if FAILED(hr)
 		{
-			DEBUGIT(LogFile,"CDShowCam::ResetGrp filters stop timeout \n"); 
+			LOG(WARNING) + __FUNCTION__ + "CDShowCam::RunGrp-5 CDShowCam::ResetGrp filters stop timeout";
 		}
 	}
 	// if filters changed state immediately or before timeout.
@@ -629,15 +613,14 @@ BOOL CDShowCam::RunGrp()
 		result = TRUE;
 	else 
 	{	
-		DEBUGIT(LogFile,"m_pMediaControl->Run()failed  with %d \n", hr);
+		LOG(ERROR) + __FUNCTION__ + "CDShowCam::RunGrp-6 m_pMediaControl->Run()failed";
 		
 		LeaveCriticalSection(&m_DSCamCriticalSection);
 		return  FALSE;
 	}
 
 	LeaveCriticalSection(&m_DSCamCriticalSection);
-	DEBUGIT(LogFile,"RunGrp() left section\n");
-	
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::RunGrp-7 left section";
 	
 	return result;
 } //end RunGrp
@@ -658,24 +641,23 @@ BOOL CDShowCam::RunGrp()
 BOOL CDShowCam::PauseGrp()
 {
 	BOOL result ;
-	DEBUGIT(LogFile,"PauseGrp() waiting for critical section\n");
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::PauseGrp-1 waiting for critical section";
 	
 	EnterCriticalSection(&m_DSCamCriticalSection);
-	DEBUGIT(LogFile,"PauseGrp() entered critical section\n");
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::PauseGrp-2 entered for critical section";
 	
 	//Pause the Filter Graph
 	HRESULT hr = m_pMediaControl->Pause();
 	if (hr==S_FALSE)
 		{
-			DEBUGIT(LogFile,"waiting form_pMediaControl->Pause() \n"); 
-			
+			LOG(INFO) + __FUNCTION__ + "CDShowCam::PauseGrp-3 waiting form_pMediaControl->Pause()";
 			
 			FILTER_STATE fs;
 			int timeout= 10000;
 			hr = m_pMediaControl->GetState(timeout, (OAFilterState*)&fs);
 			if FAILED(hr)
 			{
-				DEBUGIT(LogFile,"CDShowCam::ResetGrp filters stop timeout \n"); 
+				LOG(WARNING) + __FUNCTION__ + "CDShowCam::PauseGrp-4 filters stop timeout";
 			}
 	}
 	if(SUCCEEDED(hr))
@@ -685,7 +667,7 @@ BOOL CDShowCam::PauseGrp()
 	else  
 		result =  FALSE;
 	LeaveCriticalSection(&m_DSCamCriticalSection);
-	DEBUGIT(LogFile,"PauseGrp() left critical section\n");
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::PauseGrp-5 left critical section";
 	return result;
 } //end PauseGrp
 
@@ -706,18 +688,18 @@ BOOL CDShowCam::StopGrp()
 {
 	HRESULT hr = -1;
 
-	DEBUGIT(LogFile,"StopGrp() waiting for critical section\n");
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::StopGrp-1 waiting for critical section";
 	
 	EnterCriticalSection(&m_DSCamCriticalSection);
-	DEBUGIT(LogFile,"StopGrp() entered critical section\n");
-	
+	LOG(INFO) + __FUNCTION__ + "CDShowCam::StopGrp-2 entered for critical section";	
+
 	if (m_pMediaControl)
 	{
 		//Stop the Filter Graph
 		hr = m_pMediaControl->Stop();
 		if (hr==S_FALSE)
 		{
-			DEBUGIT(LogFile,"waiting form_pMediaControl->Stop() \n"); 
+			LOG(INFO) + __FUNCTION__ + "CDShowCam::StopGrp-3 waiting form_pMediaControl->Stop()";
 			
 			
 			FILTER_STATE fs;
@@ -725,23 +707,28 @@ BOOL CDShowCam::StopGrp()
 			hr = m_pMediaControl->GetState(timeout, (OAFilterState*)&fs);
 			if FAILED(hr)
 			{
-				DEBUGIT(LogFile," filters stop timeout \n"); 
+				LOG(WARNING) + __FUNCTION__ + "CDShowCam::StopGrp-4 filters stop timeout";
 			}
 		}
 		else
 		{
-			DEBUGIT(LogFile, "m_pMediaControl->Stop() returned %d",hr);
+			LOG(INFO) + __FUNCTION__ + "CDShowCam::StopGrp-5 m_pMediaControl->Stop() returned";
 		}
 	}
 
 
 	LeaveCriticalSection(&m_DSCamCriticalSection);
-	DEBUGIT(LogFile,"exited critical section\n");
 	
 	if(SUCCEEDED(hr))
+	{
+		LOG(INFO) + __FUNCTION__ + "CDShowCam::StopGrp-6 exited critical section";
 		return TRUE;
+	}
 	else
+	{
+		LOG(INFO) + __FUNCTION__ + "CDShowCam::StopGrp-6 exited critical section";
 		return FALSE;
+	}
 	
 } //end StopGrp
 
@@ -841,30 +828,6 @@ BOOL CDShowCam::ReleaseGrp()
 
 	if (m_pVideoCaptureFilter)
 	{
-		//IEnumPins* pPins = NULL;
-		//if (FAILED(m_pVideoCaptureFilter->EnumPins(&pPins))) 
-		//{
-		//	RETAILMSG(1,(TEXT("EnumPins failed!")));
-		//}
-		//	
-		//IPin *pPin[10];
-		//ULONG n;
-		//LONG count=0;
-		//pPins->Reset();
-		//pPins->Next(10, &pPin[0], &n) ;
-
-		//count = n;
-		//while(count >= 1)
-		//{
-		//	HRESULT newRC = pPin[count-1]->Release();
-		//	while(newRC)
-		//		newRC = pPin[count-1]->Release();
-
-		//	count--;
-		//}
-		//
-		//pPins->Release();
-
 		m_pVideoCaptureFilter->Release();
 		m_pVideoCaptureFilter = NULL;
 	}
@@ -873,10 +836,13 @@ BOOL CDShowCam::ReleaseGrp()
 
 	if (m_pGraphBuilder)
 	{
-		IEnumFilters* pFilters;
-		if (FAILED(m_pGraphBuilder->EnumFilters(&pFilters))) 
-		{
-			RETAILMSG(1,(TEXT("EnumFilters failed!")));
+		IEnumFilters* pFilters = NULL;
+		HRESULT hr = m_pGraphBuilder->EnumFilters(&pFilters);
+		if (FAILED(hr)) {
+			LOG(ERROR) + "CDShowCam::ReleaseGrp-1 EnumFilters failed";
+			m_pGraphBuilder->Release();
+			m_pGraphBuilder = NULL;
+			return TRUE;
 		}
 			
 		IBaseFilter *pFilter[10];
@@ -890,7 +856,7 @@ BOOL CDShowCam::ReleaseGrp()
 		{
 			if (FAILED(m_pGraphBuilder->RemoveFilter(pFilter[count-1])))
 			{
-				RETAILMSG(1,(TEXT("RemoveFilter failed!")));
+				LOG(ERROR) + "CDShowCam::ReleaseGrp-2 RemoveFilter failed!";
 			}
 			HRESULT newRC = pFilter[count-1]->Release();
 			while(newRC)
@@ -958,11 +924,11 @@ HRESULT CDShowCam::Get_PropRng(PropType ePType, HANDLE hPropTbl)
 				tbl->hr = hr;
 				if(SUCCEEDED(hr))
 				{
-					DEBUGIT(LogFile,"\n----Property Value Get OK-----\n");
+					LOG(INFO) + "----Property Value Get OK-----";
 				}
 				else
 				{
-					DEBUGIT(LogFile,"\n----Property Value Get FAIL-----\n");
+					LOG(ERROR) + "----Property Value Get FAIL-----";
 				}
 			}
 			
@@ -1318,11 +1284,13 @@ HRESULT CDShowCam::CaptureStill(wstring wsSFName)
 		hr = pStillFileSink->SetFileName((LPCOLESTR)StillFN.c_str(), NULL );
 		if(SUCCEEDED(hr))
 		{
-			DEBUGIT(LogFile,"setfile name succeeded");
+			//DEBUGIT(LogFile,"setfile name succeeded");
+			LOG(INFO) + "CDShowCam::CaptureStill-1 setfile name succeeded";
 		}
 		else
 		{
-			DEBUGIT(LogFile,"set file name failed \n");
+			//DEBUGIT(LogFile,"set file name failed \n");
+			LOG(ERROR) + "CDShowCam::CaptureStill-2 set file name failed";
 
 		}
 		
@@ -1335,27 +1303,34 @@ HRESULT CDShowCam::CaptureStill(wstring wsSFName)
 		// Once you have the still image pin, you query it for the
 		// IAMVideoControl interface which exposes the SetMode function for 
 		// triggering the image capture.
-		DEBUGIT(LogFile,"FindPin succeeded");
+
+		//DEBUGIT(LogFile,"FindPin succeeded");
+		LOG(INFO) + "CDShowCam::CaptureStill-3 FindPin succeeded";
+
 		if(SUCCEEDED(hr = m_pVideoCaptureFilter->QueryInterface( IID_IAMVideoControl, (void **)&pVideoControl )))
 		{
 	    	// Now that trigger the still image capture.
-			DEBUGIT(LogFile,"query interface succeeded");
+			//DEBUGIT(LogFile,"query interface succeeded");
+			LOG(INFO) + "CDShowCam::CaptureStill-4 query interface succeeded";
 		
 			hr = pVideoControl->SetMode( pStillPin, VideoControlFlag_Trigger); 
 		}
 		else
 		{
-			DEBUGIT(LogFile,"query interface failed");
+			//DEBUGIT(LogFile,"query interface failed");
+			LOG(ERROR) + "CDShowCam::CaptureStill-5 query interface failed";
 		}
 	}
 	else
 	{
-		DEBUGIT(LogFile,"FindPin failed");
+		//DEBUGIT(LogFile,"FindPin failed");
+		LOG(ERROR) + "CDShowCam::CaptureStill-6 FindPin failed";
 	}
 
 	if(SUCCEEDED(hr))
 	{
-		DEBUGIT(LogFile,"SetMOde succeeded");
+		//DEBUGIT(LogFile,"SetMOde succeeded");
+		LOG(INFO) + "CDShowCam::CaptureStill-7 SetMOde succeeded";
 		
 		LONG lEventCode = 0, lParam1 = 0, lParam2 = 0;
 		do{
@@ -1363,7 +1338,9 @@ HRESULT CDShowCam::CaptureStill(wstring wsSFName)
 			// we have an error. Adjust this value as you see fit.
 			hr = m_pMediaEventEx->GetEvent( &lEventCode, &lParam1,&lParam2, 5*1000 );
 
-			DEBUGIT(LogFile,"m_pMediaEventEx->GetEvent %ld \n", lEventCode); 
+			//DEBUGIT(LogFile,"m_pMediaEventEx->GetEvent %ld \n", lEventCode);
+			LOG(INFO) + "CDShowCam::CaptureStill-8 m_pMediaEventEx->GetEvent";
+
 			if(SUCCEEDED(hr))
 			{
 				// If we recieve an event, free the event parameters.
@@ -1375,7 +1352,8 @@ HRESULT CDShowCam::CaptureStill(wstring wsSFName)
 					// captured the still image and can quit looking.
 					if(lEventCode == EC_CAP_FILE_COMPLETED)
 					{
-						DEBUGIT(LogFile,"  EC_CAP_FILE_COMPLETED \n");
+						//DEBUGIT(LogFile,"  EC_CAP_FILE_COMPLETED \n");
+						LOG(INFO) + "CDShowCam::CaptureStill-9 EC_CAP_FILE_COMPLETED";
 						DeleteFile(wsSFName.c_str());
 						MoveFile(StillFN.c_str(), wsSFName.c_str());
 						break;
@@ -1385,7 +1363,8 @@ HRESULT CDShowCam::CaptureStill(wstring wsSFName)
 			}
 			else
 			{
-					DEBUGIT(LogFile," timeout waiting for camera event \n");
+					//DEBUGIT(LogFile," timeout waiting for camera event \n");
+					LOG(WARNING) + "CDShowCam::CaptureStill-10 timeout waiting for camera event";
 					
 			}
 		// If the still image isn't captured within 60 seconds
@@ -1396,7 +1375,8 @@ HRESULT CDShowCam::CaptureStill(wstring wsSFName)
 	}
 	else
 	{
-		DEBUGIT(LogFile,"SetMode failed");
+		//DEBUGIT(LogFile,"SetMode failed");
+		LOG(ERROR) + "CDShowCam::CaptureStill-11 SetMode failed";
 	}
 	//clean up
 	if(pVideoControl)
@@ -1429,13 +1409,18 @@ HRESULT CDShowCam::CaptureStill(wstring wsSFName)
 //------------------------------------------------------------------
 HRESULT CDShowCam::Set_VdoFileName(wstring wsVFName)
 {
+	LOG(INFO) + __FUNCTION__ + "wsVFName: " + wsVFName;
+
 	m_wsVFName = wsVFName;
+
+	LOG(INFO) + __FUNCTION__ + "m_wsVFName: " + m_wsVFName;
 	HRESULT hr = m_pSink->SetFileName((LPCOLESTR)wsVFName.c_str(), 0);
 		
 #ifdef DEBUG_MODE
 	if(FAILED(hr))
 	{
 		DEBUGIT(LogFile,"!!! Error Video File Name Set !!!\n");
+		LOG(ERROR) + "!!! Error Video File Name Set !!!";
 	}
 #endif
 	
@@ -1462,12 +1447,11 @@ HRESULT CDShowCam::StartCapture()
 	TCHAR waTemp[TXT_LENGTH];
 	TCHAR waTempFile[TXT_LENGTH];
 
-	//m_iCheck = m_CtrlAudio.GetCheck();
 	OutputDebugString(m_wsVFName.c_str());
 	wcscpy(waTempFile, m_wsVFName.c_str());
 	if(DeleteFile(m_wsVFName.c_str()))
 	{
-		DEBUGIT(LogFile,"\n File is Deleted !!!\n");
+		LOG(INFO) + "CDShowCam::StartCapture-1 File is Deleted !!!";
 	}
 	else
 	{	
@@ -1477,28 +1461,31 @@ HRESULT CDShowCam::StartCapture()
 			wsprintf(waTemp, L"%s%d%s", EXT_VDO_FN, m_nFileAutoCnt, L".wmv");
 			m_nFileAutoCnt++;
 			m_wsVFName=waTemp;
-			DEBUGIT(LogFile,"\nExtra File Name:-");
-			OutputDebugString(m_wsVFName.c_str());
+			LOG(INFO) + __FUNCTION__ + "CDShowCam::StartCapture-2 Extra File Name:-" + m_wsVFName.c_str();
 		}
 	}
 	if(m_pSink==NULL)
 	{
-		DEBUGIT(LogFile,"\n NULL Pointer !!\n");
+		LOG(ERROR) + __FUNCTION__ + "CDShowCam::StartCapture-3 NULL Pointer !!";
 	}
 	hr = m_pSink->SetFileName((LPCOLESTR)m_wsVFName.c_str(), 0);
 	m_wsVFName=waTempFile;			//To restore the original name
 	if(FAILED(hr))
 	{
-		DEBUGIT(LogFile,"\n Error Setting File Name !!\n");
+		LOG(ERROR) + __FUNCTION__ + "CDShowCam::StartCapture-4 Error Setting File Name !!";
 	}
 
 	hr = m_pCaptureGraphBuilder->ControlStream(&PIN_CATEGORY_CAPTURE,
 										  &MEDIATYPE_Video, m_pVideoCaptureFilter,
 										  &rtStart, &rtStop, StartCookie, StopCookie);
+
+	LOG(INFO) + __FUNCTION__ + "1: hr = m_pCaptureGraphBuilder = " + hr + "\n";
 			
 	hr = m_pCaptureGraphBuilder->ControlStream(&PIN_CATEGORY_CAPTURE,
 										  &MEDIATYPE_Audio, m_pAudioCaptureFilter,
 										  &rtStart, &rtStop, StartCookie, StopCookie);
+
+	LOG(INFO) + __FUNCTION__ + "2: hr = m_pCaptureGraphBuilder = " + hr + "\n";
 
 	if(SUCCEEDED(hr))
 	{
@@ -1517,15 +1504,22 @@ HRESULT CDShowCam::StartCapture()
 					if(lEventCode !=0)
 					{
 						TCHAR waTemp[TXT_LENGTH];
+						// SPS
 						wsprintf(waTemp, L"\nStart Event Code :- %ld ; Param2 :- %ld", lEventCode, lParam2);
-						OutputDebugString(waTemp);
+						//OutputDebugString(waTemp);
+						LOG(ERRROR) + waTemp;
+						// SPS
+
 					}
 #endif
+				
+				LOG(INFO) + __FUNCTION__ + "GetEvent: lEventCode = " + lEventCode + " lParam1 = " + lParam1 + " lParam2 = " + lParam2;	
 				// if the event code we recieved was EC_STREAM_CONTROL_STARTED, then
 				// we successfully started the video capture
 				if(lEventCode==EC_STREAM_CONTROL_STARTED && lParam2==StartCookie)
 				{
-					DEBUGIT(LogFile,"\n---> Stream Capture Started --->");
+					//DEBUGIT(LogFile,"\n---> Stream Capture Started --->");
+					LOG(INFO) + "CDShowCam::StartCapture-5 ---> Stream Capture Started --->";
 					break;
 				}
 		        // if we recieve an event, free the event parameters.
@@ -1533,8 +1527,10 @@ HRESULT CDShowCam::StartCapture()
 				if(SUCCEEDED(hr = m_pMediaEventEx->FreeEventParams( lEventCode, lParam1, lParam2 )))
 				{
 #ifdef DEBUG_MODE
-					DEBUGIT(LogFile,"\n<--- Free Event Params --->");	
+					//DEBUGIT(LogFile,"\n<--- Free Event Params --->");
+					LOG(INFO) + "<--- Free Event Params --->";
 #endif
+					LOG(INFO) + __FUNCTION__ + "FreeEventParams: lEventCode = " + lEventCode + " lParam1 = " + lParam1 + " lParam2 = " + lParam2;
 				}
 			}
 		// if we don't recieve the stream control started event within a reasonable amount of time,
@@ -1573,7 +1569,6 @@ HRESULT CDShowCam::StopCapture()
 	// stop cookie we'll wait for.
 	
 	m_pMediaSeeking->GetCurrentPosition(&rtStop);
-	//hr = m_pCaptureGraphBuilder->ControlStream(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Video, m_pVideoCaptureFilter, &rtStart, &rtStop, VideoStartCookie, VideoStopCookie);
 	hr = m_pCaptureGraphBuilder->ControlStream(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Video, m_pVideoCaptureFilter, &rtStart, &rtStop, VideoStartCookie, VideoStopCookie);
 	if(SUCCEEDED(hr))
 	{
@@ -1582,22 +1577,23 @@ HRESULT CDShowCam::StopCapture()
 #endif
 		// Stop the audio portion of the capture passing in the audio
 		// stop cookie we'll wait for.
-		//hr = m_pCaptureGraphBuilder->ControlStream(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Audio, m_pAudioCaptureFilter, &rtStart, &rtStop, AudioStartCookie, AudioStopCookie);
 		if(m_tCamcfg.bIsAudioEnb)
 		{
-			//m_pMediaSeeking->GetCurrentPosition(&rtStop);
 			hr = m_pCaptureGraphBuilder->ControlStream(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Audio, m_pAudioCaptureFilter, &rtStart, &rtStop, AudioStartCookie, AudioStopCookie);
 			if(SUCCEEDED(hr))
 			{
 #ifdef DEBUG_MODE
-				DEBUGIT(LogFile,"\n---> Audio Stream is stopped <---\n");
+				//DEBUGIT(LogFile,"\n---> Audio Stream is stopped <---\n");
+				LOG(INFO) + "---> Audio Stream is stopped <---";
 #endif
 			}
 			else
 			{
 #ifdef DEBUG_MODE
 
-				DEBUGIT(LogFile,"\n---> Audio Stream Failed to Stop --->\n");
+				//DEBUGIT(LogFile,"\n---> Audio Stream Failed to Stop --->\n");
+				LOG(INFO) + "---> Audio Stream Failed to Stop --->";
+
 #endif
 			}
 
@@ -1606,7 +1602,8 @@ HRESULT CDShowCam::StopCapture()
 	else
 	{
 #ifdef DEBUG_MODE
-		DEBUGIT(LogFile,"\n---> Video Stream Falied to Stop ---->\n");
+		//DEBUGIT(LogFile,"\n---> Video Stream Falied to Stop ---->\n");
+		LOG(ERROR) + "---> Video Stream Falied to Stop ---->";
 #endif
 	}
 	
@@ -1662,9 +1659,9 @@ HRESULT CDShowCam::StopCapture()
 	}	
 	
 	//Reset the Graph
-	StopGrp();
-	Sleep(1000);
-	RunGrp();
+	//StopGrp();
+	//Sleep(1000);
+	//RunGrp();
 	
 	return hr;
 } //end StopCapture
@@ -1945,15 +1942,18 @@ HRESULT CDShowCam::Set_Resolution(ImageRes* ptRes, PinType ePType)
 	{
 		case V:
 			pType = PIN_CATEGORY_CAPTURE;
-			DEBUGIT(LogFile,"\n----------CAPTURE PIN-----------\n");
+			//DEBUGIT(LogFile,"\n----------CAPTURE PIN-----------\n");
+			LOG(INFO) + "----------CAPTURE PIN-----------";
 			break;
 		case S:
 			pType = PIN_CATEGORY_STILL;
-			DEBUGIT(LogFile,"\n----------STILL PIN-----------\n");
+			//DEBUGIT(LogFile,"\n----------STILL PIN-----------\n");
+			LOG(INFO) + "----------STILL PIN-----------";
 			break;
 		case P:
 			pType = PIN_CATEGORY_PREVIEW;
-			DEBUGIT(LogFile,"\n----------PREVIEW PIN-----------\n");
+			//DEBUGIT(LogFile,"\n----------PREVIEW PIN-----------\n");
+			LOG(INFO) + "----------PREVIEW PIN-----------";
 			break;
 
 	}
@@ -1997,9 +1997,11 @@ HRESULT CDShowCam::Set_Resolution(ImageRes* ptRes, PinType ePType)
 					//	CDShowCam::ReBuildGrp();
 					RunGrp();
 					WCHAR szLog[512];
+					// SPS
 					wsprintf(szLog, L"Setting image output resolution to %i (width) x %i (height)", 
 						scc.MaxOutputSize.cx, scc.MaxOutputSize.cy);
-					m_pModule->Log(PB_LOG_INFO, szLog, _T(__FUNCTION__), __LINE__);
+					LOG(INFO) + szLog;
+					// SPS
 					break;
 				}
 			}
@@ -2019,10 +2021,12 @@ HRESULT CDShowCam::Set_Resolution(ImageRes* ptRes, PinType ePType)
 				if((FAILED(hr)))
 					return FALSE;
 				RunGrp();
+				// SPS
 				WCHAR szLog[512];
 				wsprintf(szLog, L"User specified image resolution is too high.  Setting image output resolution to %i (width) x %i (height)", 
 					scc.MaxOutputSize.cx, scc.MaxOutputSize.cy);
-				m_pModule->Log(PB_LOG_WARNING, szLog, _T(__FUNCTION__), __LINE__);
+				LOG(WARNING) + szLog;
+				// SPS
 			}
 		}
 	}
@@ -2114,7 +2118,8 @@ HRESULT CDShowCam::Set_ColorFmt(ImageRes* ptRes, wstring* pwsClrFmt, PinType ePT
 	INT nCount = 0, nSize = 0;
 	INT nCounter = 0;
 
-	DEBUGIT(LogFile,"\n---->");
+	//DEBUGIT(LogFile,"\n---->");
+	LOG(INFO) + "---->";
 	OutputDebugString(pwsClrFmt->c_str());
 
 	switch(ePType)
@@ -2188,7 +2193,8 @@ HRESULT CDShowCam::Set_ColorFmt(ImageRes* ptRes, wstring* pwsClrFmt, PinType ePT
 				DeleteMediaType(pmtConfig);
 			}
 			else
-				DEBUGIT(LogFile,"\n-------------NULL---------------");
+				//DEBUGIT(LogFile,"\n-------------NULL---------------");
+				LOG(INFO) + "-------------NULL---------------";
 
 		}
 
@@ -2277,7 +2283,8 @@ HRESULT CDShowCam::Set_FrameRate(LONGLONG qwFrmRate, PinType ePType)
 				// Delete the media type when you are done.
 				DeleteMediaType(pmtConfig);
 			}
-			DEBUGIT(LogFile,"\n-----------Invalide Frame Rate--------------");
+			//DEBUGIT(LogFile,"\n-----------Invalide Frame Rate--------------");
+			LOG(ERROR) + "-----------Invalide Frame Rate--------------";
 		}
 	}
 
@@ -2317,7 +2324,9 @@ if(FAILED(hr))
 }
 
 // Render the preview pin of the video capture filter. 
-	DEBUGIT(LogFile,"\n!!!! Render PREVIEW PIN !!!!\n");
+	//DEBUGIT(LogFile,"\n!!!! Render PREVIEW PIN !!!!\n");
+	LOG(INFO) + "!!!! Render PREVIEW PIN !!!!";
+
 if(SUCCEEDED(hr = m_pCaptureGraphBuilder->RenderStream( &PIN_CATEGORY_PREVIEW, &MEDIATYPE_Video, m_pVideoCaptureFilter, NULL, m_pVideoRenderer )))
 {
 //if(SUCCEEDED(hr = m_pCaptureGraphBuilder->RenderStream( &PIN_CATEGORY_PREVIEW, &MEDIATYPE_Audio, m_pAudioCaptureFilter, NULL, NULL )))
@@ -2433,22 +2442,26 @@ HRESULT CDShowCam::SetupStill()
 	CreateDirectory(DName, NULL);
 
 	//CoCreate and add the still image sink
-	DEBUGIT(LogFile,"\n!!!! Create CLSID_IMGSinkFilter !!!!\n");
+	//DEBUGIT(LogFile,"\n!!!! Create CLSID_IMGSinkFilter !!!!\n");
+	LOG(INFO) + "!!!! Create CLSID_IMGSinkFilter !!!!";
 	if(SUCCEEDED(hr = CoCreateInstance(CLSID_IMGSinkFilter, NULL, CLSCTX_INPROC_SERVER, IID_IBaseFilter, (LPVOID *)&m_pStillSink )))
 	{
 		//LoadString(hInst, STR_STILLSINK, text, MAX_LOADSTRING);
 		if(SUCCEEDED(hr = m_pGraphBuilder->AddFilter(m_pStillSink, L"StillSink")))
 		{
-			DEBUGIT(LogFile,"\n!!!! Add CLSID_IMGSinkFilter !!!!\n");
+			//DEBUGIT(LogFile,"\n!!!! Add CLSID_IMGSinkFilter !!!!\n");
+			LOG(INFO) + "!!!! Add CLSID_IMGSinkFilter !!!!";
 			// Render the still image pin to the still image sink.
 			hr = m_pCaptureGraphBuilder->RenderStream( &PIN_CATEGORY_STILL, &MEDIATYPE_Video, m_pVideoCaptureFilter, NULL, m_pStillSink);
 			if(SUCCEEDED(hr))
 			{
-				DEBUGIT(LogFile,"\n!!!! Render STILL PIN OK!!!!\n");
+				//DEBUGIT(LogFile,"\n!!!! Render STILL PIN OK!!!!\n");
+				LOG(INFO) + "!!!! Render STILL PIN OK!!!!";
 			}
 			else
 			{
-				DEBUGIT(LogFile,"\n!!!! Render STILL PIN Fail!!!!\n");
+				//DEBUGIT(LogFile,"\n!!!! Render STILL PIN Fail!!!!\n");
+				LOG(ERROR) + "!!!! Render STILL PIN Fail!!!!";
 			}
 		}
 	}
@@ -2720,7 +2733,7 @@ HRESULT CDShowCam::Set_CaptureSound(LPWSTR szSoundFile)
 {
 
 	HRESULT result = S_FALSE;
-	if ((m_bCaptureSoundRegKeyExists) && (szSoundFile) && (wcslen(szSoundFile) > 0))
+	if ((szSoundFile) && (wcslen(szSoundFile) > 0))
 	{
 		HKEY hKey = 0;
 		WCHAR buf[255] = {0};
@@ -2728,21 +2741,31 @@ HRESULT CDShowCam::Set_CaptureSound(LPWSTR szSoundFile)
 		DWORD dwBufSize = sizeof(buf);
 		LPCWSTR subkey = L"Drivers\\BuiltIn\\DShowCam";
 
+		LOG(INFO) + "CDShowCam::Set_CaptureSound - 0";
+
 		if( RegOpenKey(HKEY_LOCAL_MACHINE,subkey,&hKey) == ERROR_SUCCESS)
 		{
+			LOG(INFO) + "CDShowCam::Set_CaptureSound - 1";
 			dwType = REG_SZ;
 			if( RegQueryValueEx(hKey,L"ShutterSound",0, &dwType, (BYTE*)buf, &dwBufSize) == ERROR_SUCCESS)
 			{	
+				LOG(INFO) + "CDShowCam::Set_CaptureSound - 2";
 				if (wcscmp(buf, szSoundFile) == 0)
 				{
+					LOG(INFO) + "CDShowCam::Set_CaptureSound - 3";
 					// write the shutter click wav to the registry
 					result = RegSetValueEx(hKey, L"ShutterSound", 0, dwType, (BYTE*)szSoundFile,
 						wcslen(szSoundFile)*sizeof(TCHAR));
+					if (result == S_FALSE)
+						LOG(ERROR) + "CDShowCam::Set_CaptureSound  - Shutter sound NOT set";
+					else 
+						LOG(INFO) + "CDShowCam::Set_CaptureSound  - Shutter sound set to [" + szSoundFile + "]";
 				}
 				RegCloseKey(hKey);
 			}
 		}
 	}
+	LOG(INFO) + "CDShowCam::Set_CaptureSound - 3";
 	return result;
 }
 

@@ -1,6 +1,8 @@
 #ifndef _IMAGER_H
 #define _IMAGER_H
 #include "ImgCAPI.h"
+#include "logging/RhoLog.h"
+#include "common/RhoStd.h"
 #include "Camera.h"
 
  /* Function pointer for Image Capture APIs (Exposed by image capture library ImgAPI32.dll)
@@ -28,25 +30,25 @@ protected:
 	rho::String m_AimMode;
 public:
     CImager();
-    ~CImager();
-	virtual BOOL enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp);
+    ~CImager();	
 	virtual BOOL getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue);
     virtual BOOL setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue);
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
+	static BOOL enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp);
 private:
-	IMAGE_FINDCLOSEPROC Image_FindClose;///<Function pointer to Image Capture API
-	IMAGE_FINDFIRSTPROC Image_FindFirst;///<Function pointer to Image Capture API
-	IMAGE_FINDNEXTPROC Image_FindNext;///<Function pointer to Image Capture API
-	IMAGE_OPENPROC Image_Open;///<Function pointer to Image Capture API
-	IMAGE_CLOSEPROC Image_Close;///<Function pointer to Image Capture API, closes Imae Capture Device 
-	IMAGE_STARTACQUISITIONPROC Image_StartAcquisition;///<Function pointer to Image Capture API, Starts Acquisition
-	IMAGE_STOPACQUISITIONPROC Image_StopAcquisition;///<Function pointer to Image Capture API, stops acquisition
-	IMAGE_SETCAPCURRVALUEPROC Image_SetCapCurrValue;///<Function pointer to Image Capture API, Sets a capability value
-	IMAGE_UNLOCKIMAGERPROC Image_UnLockImager;///<Function pointer to Image Capture API, unlocks imager device
+	static IMAGE_FINDCLOSEPROC Image_FindClose;///<Function pointer to Image Capture API
+	static IMAGE_FINDFIRSTPROC Image_FindFirst;///<Function pointer to Image Capture API
+	static IMAGE_FINDNEXTPROC Image_FindNext;///<Function pointer to Image Capture API
+	static IMAGE_OPENPROC Image_Open;///<Function pointer to Image Capture API
+	static IMAGE_CLOSEPROC Image_Close;///<Function pointer to Image Capture API, closes Imae Capture Device 
+	static IMAGE_STARTACQUISITIONPROC Image_StartAcquisition;///<Function pointer to Image Capture API, Starts Acquisition
+	static IMAGE_STOPACQUISITIONPROC Image_StopAcquisition;///<Function pointer to Image Capture API, stops acquisition
+	static IMAGE_SETCAPCURRVALUEPROC Image_SetCapCurrValue;///<Function pointer to Image Capture API, Sets a capability value
+	static IMAGE_UNLOCKIMAGERPROC Image_UnLockImager;///<Function pointer to Image Capture API, unlocks imager device
 
-	IMAGE_GETIMAGEPROC Image_GetImage;///< Function pointer to Image Capture API, for Getting captured image
-	IMAGE_STARTVIEWFINDERPROC Image_StartViewfinder;///< Function pointer to Image Capture API,to start View Finder
-	IMAGE_STOPVIEWFINDERPROC Image_StopViewfinder;///< Function pointer to Image Capture API,to stop View Finder
+	static IMAGE_GETIMAGEPROC Image_GetImage;///< Function pointer to Image Capture API, for Getting captured image
+	static IMAGE_STARTVIEWFINDERPROC Image_StartViewfinder;///< Function pointer to Image Capture API,to start View Finder
+	static IMAGE_STOPVIEWFINDERPROC Image_StopViewfinder;///< Function pointer to Image Capture API,to stop View Finder
 
 };
 #endif

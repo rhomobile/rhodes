@@ -8,8 +8,8 @@ enum ViewrWndMode
 
 struct IViewFinderCallBack
 {
-	void cancel();
-	void capture();
+	virtual void cancel()=0;
+	virtual void capture()=0;
 };
 class CViewFinder
 {
@@ -20,6 +20,7 @@ private:
 	HWND m_hWndViewerParent;
 	int m_iX;
 	int m_iY;
+	int m_iH;
 	bool m_bIsLandscape;
 	ViewrWndMode eMode;
 

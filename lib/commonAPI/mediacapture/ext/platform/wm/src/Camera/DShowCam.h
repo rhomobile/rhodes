@@ -38,29 +38,36 @@
 #include "wmcodecids.h"
 #include "cs.h"
 #include "csmedia.h"
+// SPS
+#include "logging/RhoLog.h"
+// SPS
 #include "evcode.h"
 #include <iostream>
 #include <atlbase.h>
 
-#include "../../common/public/PBPlugin.h"
+// SPS
+//#include "../../common/public/PBPlugin.h"
+// SPS
 #pragma warning (pop)
 #pragma warning (push, 4)
 
 using namespace std;
 
+// SPS - leave in for now, but want to replace DEBUGIT calls with LOG()
 //define this to get debug logs out of camera plugin
-#ifdef LOG_TO_FILE
-#define DEBUGIT(__file, __str, ...) { \
-	SYSTEMTIME __st;              \
-    GetSystemTime(&__st);	      \
-	fprintf(__file, "%d:%d:%d-%d:%d:%d.%d " ## __FUNCTION__ ## "():%d -- " ## __str ## "\n", \
-			__st.wYear,__st.wMonth,__st.wDay,__st.wHour,__st.wMinute,          \
-			__st.wSecond, __st.wMilliseconds, __LINE__, ##__VA_ARGS__);                         \
-	fflush(__file); \
-}
-#else
-#define DEBUGIT(__file, __str, ...)
-#endif //LOG_TO_FILE
+//#ifdef LOG_TO_FILE
+//#define DEBUGIT(__file, __str, ...) { \
+//	SYSTEMTIME __st;              \
+//    GetSystemTime(&__st);	      \
+//	fprintf(__file, "%d:%d:%d-%d:%d:%d.%d " ## __FUNCTION__ ## "():%d -- " ## __str ## "\n", \
+//			__st.wYear,__st.wMonth,__st.wDay,__st.wHour,__st.wMinute,          \
+//			__st.wSecond, __st.wMilliseconds, __LINE__, ##__VA_ARGS__);                         \
+//	fflush(__file); \
+//}
+//#else
+//#define DEBUGIT(__file, __str, ...)
+//#endif //LOG_TO_FILE
+// SPS
 
 
 const VideoProcAmpProperty IProp[] = {VideoProcAmp_Brightness,			//Index 0
@@ -183,7 +190,10 @@ typedef struct tagCamCapability
 typedef class CDShowCam
 {
 public:
-	CDShowCam();
+	// SPS
+	//CDShowCam(PBModule* pModule);
+	CDShowCam(void);
+	// SPS
 	~CDShowCam(void);
 
 	//-----------------------------
@@ -211,7 +221,7 @@ public:
 	HRESULT Set_Resolution(ImageRes* ptRes, PinType ePType);
 	HRESULT Set_ColorFmt(ImageRes* ptRes, wstring* pwsClrFmt, PinType ePType);
 	HRESULT Set_FrameRate(LONGLONG qwFrmRate, PinType ePType);
-	HRESULT Set_CaptureSound(LPWSTR szSoundFile);
+	static HRESULT Set_CaptureSound(LPWSTR szSoundFile);
 	BOOL HandlesCaptureSound();
 
 	BOOL Get_LastError(LONG* plErrno);
@@ -219,7 +229,7 @@ public:
 	//----------------------------
 
 private:
-	PBModule* m_pModule;
+	//PBModule* m_pModule; SPS
 	HRESULT SetupStill();
 	HRESULT SetupPreview(HWND OwnerWnd, RECT rc);
 	HRESULT Cus_GetRange(CameraCustomProperty eProp, LONG* plMin, LONG* plMax, LONG* plDelta, LONG* plDef);
