@@ -17,7 +17,7 @@ namespace rho {
     class CCameraSingletonImpl: public CCameraSingletonBase
     {
 	private:
-		  rho::Hashtable<String, eCamType> m_CamType;
+		  rho::Hashtable<String, eCamType> m_DeviceNameMap;
     public:
         
         CCameraSingletonImpl(): CCameraSingletonBase(){}
@@ -41,23 +41,27 @@ namespace rho {
             
         } 
 		rho::String getInitialDefaultID();
+		eCamType getCamType(String deviceName)
+		{
+			return m_DeviceNameMap[deviceName];
+		}
 
     };
 	void CCameraSingletonImpl::enumerate(CMethodResult& oResult)
 	{
 		BOOL bEnumerationStatus = FALSE;
 		rho::Vector<rho::String> arIDs;
-		if(m_CamType.size() > 0)
+		if(m_DeviceNameMap.size() > 0)
 		{
 			//if already enumerated
-			for ( HashtablePtr<String, eCamType>::iterator it = m_CamType.begin(); it != m_CamType.end(); ++it )
+			for ( HashtablePtr<String, eCamType>::iterator it = m_DeviceNameMap.begin(); it != m_DeviceNameMap.end(); ++it )
 			{
 				arIDs.addElement(it->first);
 			}
 		}
 		else
 		{
-			bEnumerationStatus = ((CImager::enumerate(arIDs, m_CamType))|| (CDirectShowCam:: enumerate(arIDs, m_CamType)));
+			bEnumerationStatus = ((CImager::enumerate(arIDs, m_DeviceNameMap))|| (CDirectShowCam:: enumerate(arIDs, m_DeviceNameMap)));
 		}
 		if(TRUE == bEnumerationStatus)
 		{
@@ -89,8 +93,26 @@ namespace rho {
 		ICam* pCamera;
 		static bool bIsCameraRunning;
 	public:
-		CCameraImpl();
-		virtual ~CCameraImpl() {}
+		CCameraImpl(const rho::String& strID)
+		{
+			LOG(INFO) + "Initialising interface for Camera " + strID; 
+		    //RHODESAPP().getExtManager().registerExtension(/*convertToStringA*/(strID), this );
+			eCamType camType= ((CCameraSingletonImpl*)(rho::CCameraFactoryBase::getCameraSingletonS()))->getCamType(strID);
+			if(eImager == camType)
+			{
+				pCamera = new CImager();
+			}
+			else
+			{
+				//pCamera = new CDirectShowCam();
+			}
+		}
+		virtual ~CCameraImpl() 
+		{
+			LOG(INFO) + "Shutting down Camera "; 
+			if (pCamera)
+				delete pCamera;
+		}
 
 		//methods
 
@@ -235,7 +257,10 @@ namespace rho {
 			}
 
         } 
-
+		virtual void getSupportedSizeList(rho::apiGenerator::CMethodResult& oResult)
+		{
+			//this API is unsupported
+		}
     };
 	bool CCameraImpl::bIsCameraRunning= false;
     
@@ -247,11 +272,10 @@ namespace rho {
         
         ICameraSingleton* createModuleSingleton()
         { 
-            //return new CCameraSingletonImpl();
-			return NULL;
+            return new CCameraSingletonImpl();		
         }
         
-		virtual ICamera* createModuleByID(const rho::String& strID){ return NULL;}//new CCameraImpl(); };
+		virtual ICamera* createModuleByID(const rho::String& strID){ return new CCameraImpl(strID); };
         
     };
     

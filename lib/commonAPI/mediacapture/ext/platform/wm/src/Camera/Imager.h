@@ -35,6 +35,10 @@ public:
     virtual BOOL setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue);
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
 	static BOOL enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp);
+	virtual void takeFullScreen();
+    virtual void showPreview();
+    virtual void hidePreview();
+	virtual void Capture();
 private:
 	static IMAGE_FINDCLOSEPROC Image_FindClose;///<Function pointer to Image Capture API
 	static IMAGE_FINDFIRSTPROC Image_FindFirst;///<Function pointer to Image Capture API
