@@ -76,12 +76,13 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
     m_hConnection = NULL;
     m_hRequest = NULL;
     memset(&m_uri, 0, sizeof(m_uri) );
+    
+    m_strUrl = strUrl;
+    CAtlStringW strUrlW(strUrl.c_str());
     int timeout = rho_conf_getInt("net_timeout")*1000;
         if (timeout == 0 )
             timeout = 30000;
-    m_strUrl = strUrl;
-    CAtlStringW strUrlW(strUrl.c_str());
-
+     InternetSetOption( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) ); 
     LOG(INFO) + "Method: " + method + ";Url: " + strUrl;
     do 
     {
@@ -114,7 +115,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
 
         
 
-        InternetSetOption( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) ); 
+       
 
         m_strReqUrlW = m_uri.lpszUrlPath;
         m_strReqUrlW += m_uri.lpszExtraInfo;
