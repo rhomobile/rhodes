@@ -12,6 +12,7 @@ module RhoDevelopment
     def build_partial_bundle_for_platform(aPlatform)
       RhoDevelopment.setup(File.join(Configuration::application_root, '.development'), aPlatform)
       RhoDevelopment.make_partial_bundle
+      #system('rake ')
       self.copy_platform_bundle_to_web_server_root(aPlatform, Configuration::partial_bundle_name)
     end
 
@@ -29,7 +30,15 @@ module RhoDevelopment
     end
 
     def copy_platform_bundle_to_web_server_root(platform, filename)
-      from = File.join($targetdir, filename)
+      case platform
+        when 'iphone'
+          tmp = 'iOS'
+        when 'android'
+          tmp = 'android'
+        else
+          tmp = platform
+      end
+      from = File.join(Configuration::application_root,'bin', 'target', tmp, filename)
       to = File.join(Configuration::document_root, 'download', platform, filename)
       FileUtils.mkpath(File.dirname(to))
       FileUtils.cp(from, to)

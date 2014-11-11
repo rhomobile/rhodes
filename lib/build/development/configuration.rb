@@ -45,11 +45,8 @@ module RhoDevelopment
     end
 
     def self.auto_refresh?
-      refresh = false
       config = self.read_configuration
-      if !config['refresh'].nil?
-        refresh = config['refresh'] != false || config['refresh'] != 0
-      end
+      config['refresh'].nil? ? false : config['refresh'] != false && config['refresh'] != 0
     end
 
     def self.webserver_port
