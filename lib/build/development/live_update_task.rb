@@ -20,8 +20,8 @@ module RhoDevelopment
         self.action
       rescue => e
         puts "Executing #{self.class.taskName} failed".warning
-        puts e.inspect
-        puts e.backtrace
+        puts e.inspect.to_s.info
+        puts e.backtrace.to_s.info
       end
     end
 
