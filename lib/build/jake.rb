@@ -702,7 +702,7 @@ class Jake
       end
       
       size = File.stat(f).size
-      tm   = md5.to_s #File.stat(f).mtime.to_i
+      tm   = md5.to_s
 
       if in_memory == true
         map_item = Hash.new
