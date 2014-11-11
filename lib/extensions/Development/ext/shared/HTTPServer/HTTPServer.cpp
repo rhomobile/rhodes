@@ -120,7 +120,7 @@ void DevHTTPServer::init() {
 
             rho::String addrIP = inet_ntoa( *address );
 
-            if (addrIP.find("192.168.") != rho::String::npos) //HOTFIX!!!!
+            //if (addrIP.find("192.168.") != rho::String::npos) //HOTFIX!!!!
             {
                 m_local_IP_adress = addrIP;
                 break;

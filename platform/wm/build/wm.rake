@@ -893,7 +893,8 @@ namespace "build" do
     end
 
     #    desc "Build wm rhobundle"
-    task :rhobundle, [:exclude_dirs] => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
+    task :rhobundle, [:exclude_dirs] => ["config:wm", "build:bundle:noxruby"] do
+      Rake::Task["build:wm:extensions"].execute if !$skip_build_extensions
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
 
@@ -926,14 +927,22 @@ namespace "build" do
 
     task :devrhobundle => ["config:set_wm_platform", "build:wm:rhobundle", "win32:after_bundle"]
     
-    task :upgrade_package => ["build:wm:rhobundle"] do
+    task :upgrade_package => ["config:wm"] do
+      $skip_build_extensions = true
+      
+      Rake::Task["build:wm:rhobundle"].execute
+
       mkdir_p $targetdir if not File.exists? $targetdir
       zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
       Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
     
     # process partial update
-    task :upgrade_package_partial => ["build:wm:rhobundle"] do    
+    task :upgrade_package_partial => ["config:wm"] do    
+        $skip_build_extensions = true
+        
+        Rake::Task["build:wm:rhobundle"].execute
+        
         add_list_full_name = File.join($app_path, 'upgrade_package_add_files.txt')
         remove_list_full_name = File.join($app_path, 'upgrade_package_remove_files.txt')
       
