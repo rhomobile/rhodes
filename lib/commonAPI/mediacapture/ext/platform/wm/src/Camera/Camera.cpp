@@ -4,6 +4,7 @@ CCamera::CCamera()
 {
 	m_hEvents[eCancelEvent] = CreateEvent(NULL, FALSE, FALSE, NULL);	
 	m_hEvents[eCaptureEvent] = CreateEvent(NULL, TRUE, FALSE, NULL);	
+	m_ViewFinder.RegisterCallBack(static_cast<IViewFinderCallBack*>(this));
 //	m_pImageCaptureCb = NULL;
 }
 CCamera::~CCamera()
@@ -123,9 +124,13 @@ void CCamera::cancel()
 {
 	SetEvent(m_hEvents[eCancelEvent]);
 }
-void CCamera::capture()
+void CCamera::captureImage()
 {
 	SetEvent(m_hEvents[eCaptureEvent]);
+}
+void CCamera::SetCallback(rho::apiGenerator::CMethodResult* pCallback)
+{
+	m_pCameraCb = pCallback;
 }
 BOOL CCamera::cmp(LPCTSTR tc1, LPCTSTR tc2)
 {

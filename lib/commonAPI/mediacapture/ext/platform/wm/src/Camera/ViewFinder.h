@@ -9,7 +9,7 @@ enum ViewrWndMode
 struct IViewFinderCallBack
 {
 	virtual void cancel()=0;
-	virtual void capture()=0;
+	virtual void captureImage()=0;
 };
 class CViewFinder
 {

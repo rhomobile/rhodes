@@ -123,3 +123,16 @@ void CImager::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 	arrayofNames.push_back("aimMode");	
 }
 
+
+void CImager::takeFullScreen()
+{
+}
+void CImager::showPreview()
+{
+}
+void CImager::hidePreview()
+{
+}
+void CImager::Capture()
+{
+}
