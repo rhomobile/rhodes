@@ -338,12 +338,14 @@ The ebapi.js file is necessary for all single API inclusions.
 			<METHOD name="showPreview">
 				<DESC>Shows the preview in user configurable viewer window.</DESC>
 				<PLATFORM>WM, CE</PLATFORM>
+        <PARAMS>
 				<PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Provide a set of properties to configure the camera.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
+         </PARAMS>
 			</METHOD> 
 			<METHOD name="hidePreview">
 				<DESC>Hides the preview opened by using showPreview.</DESC>
@@ -351,15 +353,7 @@ The ebapi.js file is necessary for all single API inclusions.
 			</METHOD> 
 			<METHOD name="Capture" hasCallback="mandatory">
 				<DESC>Capture the image and save it to a file.</DESC>
-				<PLATFORM>WM, CE</PLATFORM>	
-                <PARAMS>
-                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
-                        <DESC>Provide a set of properties to configure the camera</DESC>
-                        <CAN_BE_NIL>
-                            <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
-                        </CAN_BE_NIL>
-                    </PARAM>
-                </PARAMS>				
+				<PLATFORM>WM, CE</PLATFORM>	            			
 				<CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">						    

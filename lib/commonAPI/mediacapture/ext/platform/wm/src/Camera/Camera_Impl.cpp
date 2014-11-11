@@ -132,12 +132,23 @@ namespace rho {
 
 		} 
 
-		virtual void showPreview(rho::apiGenerator::CMethodResult& oResult) {
+		virtual void showPreview( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
 			{
 				if(false == bIsCameraRunning)
-				{
-					//pCamera->showPreview(oResult);
+				{					
+					pCamera->SetCallback(NULL);		
+					if (oResult.hasCallback()){
+						DEBUGMSG(true, (L"Callback"));
+						pCamera->SetCallback(&oResult);
+						CMethodResult oRes;
+						setProperties(props, oRes);
+						pCamera->showPreview();
+					}
+					else{
+						LOG(INFO) +  L"Could not start Audio Capture. Callback is Mandatory.";
+						return;
+					}
 					bIsCameraRunning = true;
 				}
 			}
@@ -156,7 +167,7 @@ namespace rho {
 
 		} 
 
-		virtual void Capture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
+		virtual void Capture(rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
 			{
 				if(true == bIsCameraRunning)
