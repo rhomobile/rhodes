@@ -42,10 +42,10 @@ module RhoDevelopment
       params << "server_port=#{Configuration::webserver_uri.port}"
       if Configuration::auto_refresh? then
         params << 'refresh_after_update=true'
-        puts 'Refresh on'.warning
       end
       query = params.join('&')
       url.query = query
+      #puts url.to_s.warning
       return url
     end
 
