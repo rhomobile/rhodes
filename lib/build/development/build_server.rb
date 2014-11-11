@@ -29,7 +29,15 @@ module RhoDevelopment
     end
 
     def copy_platform_bundle_to_web_server_root(platform, filename)
-      from = File.join($targetdir, filename)
+      case platform
+        when 'iphone'
+          tmp = 'iOS'
+        when 'android'
+          tmp = 'android'
+        else
+          tmp = platform
+      end
+      from = File.join(Configuration::application_root,'bin', 'target', tmp, filename)
       to = File.join(Configuration::document_root, 'download', platform, filename)
       FileUtils.mkpath(File.dirname(to))
       FileUtils.cp(from, to)
