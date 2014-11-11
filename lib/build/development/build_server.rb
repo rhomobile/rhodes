@@ -12,6 +12,7 @@ module RhoDevelopment
     def build_partial_bundle_for_platform(aPlatform)
       RhoDevelopment.setup(File.join(Configuration::application_root, '.development'), aPlatform)
       RhoDevelopment.make_partial_bundle
+      #system('rake ')
       self.copy_platform_bundle_to_web_server_root(aPlatform, Configuration::partial_bundle_name)
     end
 
