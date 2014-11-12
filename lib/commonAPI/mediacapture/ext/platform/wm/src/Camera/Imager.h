@@ -25,19 +25,20 @@ class CImager : public CCamera
 {
 private:
 	static HINSTANCE m_hImagerLibHandle;
+	HANDLE m_hImager;///< Handle to image capture device returned by Image_Open API, used to invoke other APIs
 	static bool m_bImagerLoadFailed;
 protected:
-	rho::String m_AimMode;
+	BOOL m_AimMode;
 public:
-    CImager();
+    CImager(LPCTSTR szDeviceName);
     ~CImager();	
 	virtual BOOL getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue);
     virtual BOOL setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue);
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
 	static BOOL enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp);
 	virtual void takeFullScreen();
-    virtual void showPreview();
-    virtual void hidePreview();
+    virtual BOOL showPreview();
+    virtual BOOL hidePreview();
 	virtual void Capture();
 private:
 	static IMAGE_FINDCLOSEPROC Image_FindClose;///<Function pointer to Image Capture API
@@ -54,5 +55,8 @@ private:
 	static IMAGE_STARTVIEWFINDERPROC Image_StartViewfinder;///< Function pointer to Image Capture API,to start View Finder
 	static IMAGE_STOPVIEWFINDERPROC Image_StopViewfinder;///< Function pointer to Image Capture API,to stop View Finder
 
+	DWORD InitImager();
+	DWORD StartViewer();
+	DWORD StopViewer();
 };
 #endif

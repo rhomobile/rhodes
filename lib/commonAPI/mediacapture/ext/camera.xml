@@ -357,7 +357,7 @@ The ebapi.js file is necessary for all single API inclusions.
 				<CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">						    
-                            <DESC>Whether or not the image was successfully captured. The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
+                            <DESC>Whether or not the image was successfully captured. The returned string will be one of 'ok' or 'error'.</DESC>
                         </PARAM>
                         <PARAM name="imageUri" type="STRING">						   
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>

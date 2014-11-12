@@ -49,10 +49,12 @@ namespace rho {
     };
 	void CCameraSingletonImpl::enumerate(CMethodResult& oResult)
 	{
+		LOG(INFO) +  L"inside enumerate method";	
 		BOOL bEnumerationStatus = FALSE;
 		rho::Vector<rho::String> arIDs;
 		if(m_DeviceNameMap.size() > 0)
 		{
+			bEnumerationStatus = TRUE;
 			//if already enumerated
 			for ( HashtablePtr<String, eCamType>::iterator it = m_DeviceNameMap.begin(); it != m_DeviceNameMap.end(); ++it )
 			{
@@ -98,9 +100,10 @@ namespace rho {
 			LOG(INFO) + "Initialising interface for Camera " + strID; 
 		    //RHODESAPP().getExtManager().registerExtension(/*convertToStringA*/(strID), this );
 			eCamType camType= ((CCameraSingletonImpl*)(rho::CCameraFactoryBase::getCameraSingletonS()))->getCamType(strID);
+			rho::StringW id = rho::common::convertToStringW(strID);
 			if(eImager == camType)
 			{
-				pCamera = new CImager();
+				pCamera = new CImager(id.c_str());
 			}
 			else
 			{
@@ -132,24 +135,22 @@ namespace rho {
 
 		} 
 
-		virtual void showPreview( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
+        virtual void showPreview( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
 			{
 				if(false == bIsCameraRunning)
-				{					
-					pCamera->SetCallback(NULL);		
-					if (oResult.hasCallback()){
-						DEBUGMSG(true, (L"Callback"));
-						pCamera->SetCallback(&oResult);
-						CMethodResult oRes;
-						setProperties(props, oRes);
-						pCamera->showPreview();
+				{
+					CMethodResult oRes;
+					setProperties(propertyMap, oResult);
+					if(pCamera->showPreview())
+					{
+						bIsCameraRunning = true;
 					}
-					else{
-						LOG(INFO) +  L"Could not start Audio Capture. Callback is Mandatory.";
-						return;
-					}
-					bIsCameraRunning = true;
+				}
+				else
+				{
+					LOG(INFO) +  L"Camera already running.";
+
 				}
 			}
 
@@ -160,8 +161,10 @@ namespace rho {
 			{
 				if(true == bIsCameraRunning)
 				{
-					//pCamera->hidePreview(oResult);
-					bIsCameraRunning = false;
+					if(pCamera->hidePreview())
+					{
+						bIsCameraRunning = false;
+					}
 				}
 			}
 
@@ -172,7 +175,12 @@ namespace rho {
 			{
 				if(true == bIsCameraRunning)
 				{
-					//pCamera->Capture(propertyMap, oResult);
+					 pCamera->SetCallback(NULL);		
+                    if (oResult.hasCallback()){
+                        DEBUGMSG(true, (L"Callback"));
+                        pCamera->SetCallback(&oResult);                      
+                        pCamera->Capture();
+                    }
 				}
 			}
 

@@ -4,7 +4,7 @@
 class CDirectShowCam : public CCamera
 {
 public:
-	CDirectShowCam();
+	CDirectShowCam(LPCTSTR szDeviceName);
 	~CDirectShowCam();
 	static BOOL enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp);
 	//virtual void takePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)m_hTimeOutProcCancelEvent;

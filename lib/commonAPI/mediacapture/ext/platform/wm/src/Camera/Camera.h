@@ -16,6 +16,11 @@ typedef enum
 	eCaptureEvent,
 	eMaxEventCount
 }eEventIndex;
+typedef enum 
+{
+	eImageUri=0,
+	eDataUri	
+}eImageOutputFormat;
 class ICam
 {
 public:	
@@ -23,15 +28,16 @@ public:
 	virtual BOOL setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)=0;
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames) =0;
 	virtual void takeFullScreen() = 0;
-    virtual void showPreview() = 0;
-    virtual void hidePreview() = 0;
+    virtual BOOL showPreview() = 0;
+    virtual BOOL hidePreview() = 0;
 	virtual void Capture() = 0;
-	virtual void SetCallback(rho::apiGenerator::CMethodResult* pCallback);
+	virtual void SetCallback(rho::apiGenerator::CMethodResult* pCallback)=0;
 };
 
 class CCamera : public ICam, public IViewFinderCallBack
 {
 protected:
+	TCHAR m_szDeviceName[50];
 	CViewFinder m_ViewFinder;
 	int m_DesiredWidth;
 	int m_DesiredHeight;
@@ -41,11 +47,14 @@ protected:
 	int m_PreviewHeight;
 	rho::StringW m_CaptureSound;
 	rho::StringW m_FileName;
-	rho::StringW m_FlashMode;
+	BOOL m_FlashMode;
+	eImageOutputFormat m_eOutputFormat;
+	rho::StringW m_CamType;
 	HANDLE m_hEvents[2];
+	bool m_PreviewOn;
 	rho::apiGenerator::CMethodResult* m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  
 public:
-	CCamera();
+	CCamera(LPCTSTR szDeviceName);
 	virtual ~CCamera();	
     virtual BOOL getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue);
     virtual BOOL setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue);
@@ -58,7 +67,10 @@ protected:
 	* checks if two strings are equal
 	*/
 	BOOL cmp(LPCTSTR tc1, LPCTSTR tc2);
-    
+	void initializePreviewPos();
+	void GetDataURI (BYTE* bData, int iLength, rho::String& data);	
+	void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri);
+
 
 
 };
