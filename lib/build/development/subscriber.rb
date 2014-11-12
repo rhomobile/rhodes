@@ -37,9 +37,9 @@ module RhoDevelopment
     def notify_url(filename)
       url = URI("http://#{@uri}/development/update_bundle")
       params = []
-      params << "package_url=#{Configuration::webserver_ip}:#{Configuration::webserver_port}/download/#{self.normalized_platform_name}/#{filename}"
-      params << "server_ip=#{Configuration::webserver_uri.host}"
-      params << "server_port=#{Configuration::webserver_uri.port}"
+      params << "package_url=http://#{Configuration::webserver_ip}:#{Configuration::webserver_port}/download/#{self.normalized_platform_name}/#{filename}"
+      params << "server_ip=#{Configuration::webserver_ip}"
+      params << "server_port=#{Configuration::webserver_port}"
       if Configuration::auto_refresh? then
         params << 'refresh_after_update=true'
       end
