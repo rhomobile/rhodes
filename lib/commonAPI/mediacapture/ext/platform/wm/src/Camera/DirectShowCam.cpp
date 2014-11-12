@@ -1,8 +1,9 @@
 #include "DirectShowCam.h"
 //#include "DShowCam.h"
 
-CDirectShowCam::CDirectShowCam()
+CDirectShowCam::CDirectShowCam(LPCTSTR szDeviceName):CCamera(szDeviceName)
 {
+	m_CamType = L"color";
 }
 CDirectShowCam::~CDirectShowCam()
 {

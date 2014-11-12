@@ -507,6 +507,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				EnableFloatingPointEmulation="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -658,6 +659,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Camera\PBUtil.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Camera\ViewFinder.cpp"
 					>
 				</File>
@@ -675,6 +680,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Camera\Imager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\PBUtil.h"
 					>
 				</File>
 				<File

@@ -1,15 +1,24 @@
 #include "Camera.h"
+#include "PBUtil.h"
 
-CCamera::CCamera()
+#define DEFAULT_FILENAME L"Img"
+
+CCamera::CCamera(LPCTSTR szDeviceName)
 {
 	m_hEvents[eCancelEvent] = CreateEvent(NULL, FALSE, FALSE, NULL);	
 	m_hEvents[eCaptureEvent] = CreateEvent(NULL, TRUE, FALSE, NULL);	
 	m_ViewFinder.RegisterCallBack(static_cast<IViewFinderCallBack*>(this));
-//	m_pImageCaptureCb = NULL;
+	_tcscpy(m_szDeviceName, szDeviceName);
+	LOG(INFO) + __FUNCTION__ + "Device name set as " + m_szDeviceName; 
+	m_PreviewOn = false;
+	m_FlashMode = FALSE;
+	m_eOutputFormat = eImageUri;
+	m_FileName = DEFAULT_FILENAME;
+	initializePreviewPos();
 }
 CCamera::~CCamera()
 {
-	//m_pImageCaptureCb=NULL //this is just a call back, no need to delete this
+	m_pCameraCb=NULL; //this is just a call back, no need to delete this
 }
 BOOL CCamera::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
 {	
@@ -29,7 +38,15 @@ BOOL CCamera::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
 	}
 	else if(cmp(szParameterName, L"flashMode"))
 	{
-		wcscpy(szParameterValue, m_FlashMode.c_str());		
+		if(m_FlashMode)
+		{
+			wcscpy(szParameterValue, L"on");	
+		}
+		else
+		{
+			wcscpy(szParameterValue, L"off");	
+		}
+
 	}
 	else if(cmp(szParameterName, L"captureSound"))
 	{
@@ -51,11 +68,30 @@ BOOL CCamera::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
 	{
 		wcscpy(szParameterValue,rho::common::convertToStringW(m_PreviewHeight).c_str());	
 	}
+	else if(cmp(szParameterName, L"compressionFormat"))
+	{
+		wcscpy(szParameterValue, L"jpg");
+	}
+	else if(cmp(szParameterName, L"cameraType"))
+	{
+		wcscpy(szParameterValue, m_CamType.c_str());
+	}
+	else if(cmp(szParameterName, L"outputFormat"))
+	{
+		if(m_eOutputFormat == eImageUri)
+		{
+			wcscpy(szParameterValue, L"image");
+		}
+		else
+		{
+			wcscpy(szParameterValue, L"dataUri");
+		}		
+	}
 	else
 	{
 		bRetStatus = FALSE;
 	}
-	
+
 	return bRetStatus;
 }
 BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
@@ -72,13 +108,43 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 	}
 	else if(cmp(szPropertyName, L"fileName"))
 	{
-		//TODO file name validation
-		m_FileName = szPropertyValue;
+		int iLen;
+		//if the name was set to L"", then the default name will be selected
+		if((iLen = wcslen(szPropertyValue))== 0)
+		{
+			m_FileName = L"\\" ;
+			m_FileName = m_FileName + DEFAULT_FILENAME;
+		}
+		else
+		{	
+			if(szPropertyValue[0] == '\\')
+			{
+				m_FileName = szPropertyValue;
+			}
+			else
+			{
+				m_FileName = L"\\" ;
+				m_FileName = m_FileName + szPropertyValue;
+			}			
+			
+		}
+			
+		
 	}
 	else if(cmp(szPropertyName, L"flashMode"))
 	{
-		//TODO mode validation
-		m_FlashMode = szPropertyValue;
+		if((cmp(szPropertyValue, L"on")))
+		{
+			m_FlashMode = TRUE;
+		}
+		else
+		{
+			if((cmp(szPropertyValue, L"off")))
+			{
+				m_FlashMode = FALSE;
+			}
+
+		}
 	}
 	else if(cmp(szPropertyName, L"captureSound"))
 	{
@@ -101,6 +167,29 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 	{
 		m_PreviewHeight = _ttoi(szPropertyValue);
 	}
+	else if(cmp(szPropertyName, L"compressionFormat"))
+	{
+		//always it should be jpg, hence user will not be allowed to mofify
+	}
+	else if(cmp(szPropertyName, L"cameraType"))
+	{
+		//this property should be readonly
+	}
+	else if(cmp(szPropertyName, L"outputFormat"))
+	{
+		if(cmp(szPropertyValue, L"image"))
+		{
+			m_eOutputFormat = eImageUri;
+		}
+		else
+		{
+			if(cmp(szPropertyValue, L"dataUri"))
+			{
+				m_eOutputFormat = eDataUri;
+
+			}
+		}		
+	}
 	else
 	{
 		bRetStatus = FALSE;
@@ -119,6 +208,10 @@ void CCamera::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 	arrayofNames.push_back("previewTop");
 	arrayofNames.push_back("previewWidth");	
 	arrayofNames.push_back("previewHeight");
+	arrayofNames.push_back("compressionFormat");
+	arrayofNames.push_back("cameraType");
+	arrayofNames.push_back("outputFormat");
+
 }
 void CCamera::cancel()
 {
@@ -138,4 +231,68 @@ BOOL CCamera::cmp(LPCTSTR tc1, LPCTSTR tc2)
 		return false;
 	return !_tcsicmp(tc1, tc2);
 
+}
+//below method initializes initial position of the user configurable preview window
+void CCamera::initializePreviewPos()
+{
+	m_PreviewLeft= GetSystemMetrics(SM_CXSCREEN)/2-50;
+	m_PreviewTop = GetSystemMetrics(SM_CYSCREEN)/2-50;
+	m_PreviewWidth = GetSystemMetrics(SM_CXSCREEN)/2+50;	
+	m_PreviewHeight = GetSystemMetrics(SM_CYSCREEN)/2+50;
+}
+void CCamera::GetDataURI (BYTE* bData, int iLength, rho::String& data)
+{
+	//  Convert the Signature to base 64, this representation is about 1/3
+	//  larger than the binary input
+	char* szEncodedString = new char[iLength * 2 + 30];
+	memset(szEncodedString, 0, iLength * 2 + 30);
+
+	// Start with the data header
+	strcpy(szEncodedString, "data:image/bmp;base64,");
+
+	// Now append the encoded data itself
+	EncodeToBase64(bData, iLength, szEncodedString + strlen (szEncodedString));
+
+	// Copy it to the caller
+	data = szEncodedString;
+
+	// Clean up
+	delete[] szEncodedString;
+}
+void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri)
+{
+	if(m_pCameraCb != NULL)
+	{	
+		rho::Hashtable<rho::String, rho::String> statusData;
+		statusData.put( "status", status);	
+		if("ok" == status)
+		{
+			/*statusData.put( "imageHeight","");	
+			statusData.put( "imageWidth","");	*/
+			rho::String outputFormat;
+			if(m_eOutputFormat == eImageUri)
+			{
+				outputFormat = "image";
+				//for image path, set file:// as well so that user can access the link
+				rho::String pathPrefix = "file://";
+				imageUri= pathPrefix + imageUri;
+
+			}
+			else
+			{
+				outputFormat = "dataUri";
+			}		
+			statusData.put( "imageFormat", outputFormat);
+			statusData.put( "imageUri", imageUri);
+			statusData.put( "message", "");
+		}
+		else
+		{
+			//for cancel or error set only message
+			statusData.put( "message", message);
+			statusData.put( "imageFormat", "");
+			statusData.put( "imageUri", "");			
+		}
+		m_pCameraCb->set(statusData);		
+	}	
 }

@@ -16,18 +16,18 @@ class CViewFinder
 private:
 	
 	IViewFinderCallBack* m_pCallBack;	
-	HWND m_hWndViewer;
-	HWND m_hWndViewerParent;
+	HWND m_hwndPreview;
 	int m_iX;
 	int m_iY;
 	int m_iH;
 	bool m_bIsLandscape;
-	ViewrWndMode eMode;
+	HINSTANCE m_appInstance;
+	HWND m_appMainWnd;
 
 public: 
 	CViewFinder();
 	void RegisterCallBack(IViewFinderCallBack* pCallBack);	
-	HWND CreateViewerWindow(HWND hwndParent,RECT& pos, ViewrWndMode eMode);
+	HWND CreateViewerWindow(RECT& pos, ViewrWndMode eMode);
 	void DestroyViewerWindow();
 	void RepositionWindow(const RECT& pos);
 	static LRESULT CALLBACK FullScreenWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -35,4 +35,6 @@ protected:
 	int scaledpx( int size);
 	int scaleForY( int size);
 	int scaleForMargain(int size);
+	HWND createFullScreenWindow(HWND hwndParent);
+	HWND createPreviewWindow(HWND hwndParent, const RECT& pos);
 };
