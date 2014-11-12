@@ -2440,6 +2440,7 @@ namespace "config" do
       BuildOutput.note('To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.', 'You use sdk parameter in build.yml')
     end
 
+    $skip_checking_XCode = false
     $skip_build_rhodes_main = false
     $skip_build_extensions = false
     $skip_build_xmls = false
