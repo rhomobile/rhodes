@@ -66,12 +66,12 @@ public class GoogleWebView implements IRhoWebView {
         mInitialized = true;
     }
     
-    public void applyWebSettings() {
-        Logger.T(TAG, "applyWebSettings");
-        PerformOnUiThread.exec(new Runnable() {
-            @Override
-            public void run() {
-                Logger.T(TAG, "Web settings is applying now");
+    private void applyWebSettings() {
+        Logger.I(TAG, "applyWebSettings");
+//        PerformOnUiThread.exec(new Runnable() {
+//            @Override
+//            public void run() {
+                Logger.I(TAG, "Web settings is applying now  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 
                 float z=(float) 0.0;
                 try{
@@ -94,8 +94,8 @@ public class GoogleWebView implements IRhoWebView {
                 provider.fillSettings(mWebView.getSettings(), mConfig);
                 
                 RhodesActivity.safeGetInstance().notifyUiCreated();
-            }
-        });
+//            }
+//        });
     }
 
     @Override
