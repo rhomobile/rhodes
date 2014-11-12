@@ -63,7 +63,6 @@ module WM
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?)
     $webkit_out_of_process = $app_config['wm']['webkit_outprocess'] == '1'
     $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("motorola").nil?)
-    $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
@@ -73,15 +72,18 @@ module WM
     $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
     $is_webkit_engine = true if $is_webkit_engine.nil?
 
-    begin
-      if $webkit_capability || $motorola_capability
-        require "rhoelements-data"
-        $wk_data_dir = $data_dir[0]
+    if $wk_data_dir.nil?
+      $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
+      begin
+        if $webkit_capability || $motorola_capability
+          require "rhoelements-data"
+          $wk_data_dir = $data_dir[0]
+        end
+      rescue Exception => e
+        puts "rhoelements gem is't found, webkit capability is disabled"
+        $webkit_capability = false
+        $motorola_capability = false
       end
-    rescue Exception => e
-      puts "rhoelements gem is't found, webkit capability is disabled"
-      $webkit_capability = false
-      $motorola_capability = false
     end
 
     unless $build_solution
@@ -586,6 +588,9 @@ namespace "config" do
   end
 
   namespace :wm do
+    task :set_wk_data_dir, :wk_data_dir do |t, args|
+      $wk_data_dir = args[:wk_data_dir]
+    end
     namespace :win32 do
       task :ignore_vsprops do
         $wm_win32_ignore_vsprops = true
