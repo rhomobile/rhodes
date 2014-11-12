@@ -24,12 +24,16 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#include "net/CURLNetRequest.h"
+#include "net/CURLNetRequest_WM.h"
 #include "logging/RhoLog.h"
 #include "common/RhoFile.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "net/URI.h"
+
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+#include <connmgr.h>
+#endif
 
 #include <algorithm>
 
@@ -47,6 +51,8 @@ curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const S
 CURLcode do_curl_perform(CURLM *curlm, CURL *curl);
 	
 IMPLEMENT_LOGCLASS(CURLNetRequest, "Net");
+
+HANDLE    CURLNetRequest::m_hWceConnMgrConnection;
 
 class CURLNetResponseImpl : public INetResponse
 {
@@ -203,7 +209,10 @@ INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl
                                         const String& strBody, IRhoSession *oSession,
                                         Hashtable<String,String>* pHeaders)
 {
-    INetResponse* pResp = doPull(method, strUrl, strBody, null, oSession, pHeaders);
+	StringW tmp;
+	tmp.assign(strUrl.begin(), strUrl.end());
+	SetupInternetConnection(tmp.c_str());
+	INetResponse* pResp = doPull(method, strUrl, strBody, null, oSession, pHeaders);
     return pResp;
 }
 
@@ -863,6 +872,85 @@ CURLcode CURLNetRequest::CURLHolder::perform()
     deactivate();
     RAWTRACE("     Deactivation is DONE");
     return result;
+}
+
+bool CURLNetRequest::SetupInternetConnection(LPCTSTR url)
+{
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+	int iNetwork;
+	HRESULT hResult = E_FAIL;
+	DWORD   dwStatus;
+
+	// cleanup the old connection
+	if(NULL != m_hWceConnMgrConnection)
+	{
+		hResult = ConnMgrConnectionStatus( m_hWceConnMgrConnection, &dwStatus );
+		if( SUCCEEDED(hResult) )
+		{
+			LOG(INFO) + "Internet connection exist, use it";
+			if( dwStatus & CONNMGR_STATUS_CONNECTED )
+				return true;
+		}
+		ConnMgrReleaseConnection(m_hWceConnMgrConnection, FALSE);
+		LOG(INFO) + "Internet connection droped, open new one";
+		m_hWceConnMgrConnection = NULL;
+	}
+
+	// get the right network to connect to
+	iNetwork = 0;
+	//CONNMGR_DESTINATION_INFO DestInfo;
+
+	GUID pguid;
+	if( FAILED( ConnMgrMapURL(url, &pguid, NULL) ) )
+		return false;
+
+	//while( SUCCEEDED(ConnMgrEnumDestinations(iNetwork++, &DestInfo)))
+	{	
+		LOG(INFO) + "Try establish Internet connection";
+		// actually try to establish the connection
+		CONNMGR_CONNECTIONINFO ConnInfo;
+
+		ZeroMemory(&ConnInfo, sizeof(ConnInfo));
+		ConnInfo.cbSize = sizeof(ConnInfo);
+		ConnInfo.dwParams = CONNMGR_PARAM_GUIDDESTNET;
+		ConnInfo.dwPriority = CONNMGR_PRIORITY_HIPRIBKGND;//CONNMGR_PRIORITY_USERBACKGROUND;
+#if ( _WIN32_WCE >= 0x500 )
+		ConnInfo.dwFlags = CONNMGR_FLAG_NO_ERROR_MSGS;
+#endif
+		ConnInfo.guidDestNet = pguid;
+
+		hResult = ConnMgrEstablishConnection(&ConnInfo, &m_hWceConnMgrConnection);
+
+		// check to see if the attempt failed
+		int count = 0;
+		while(SUCCEEDED(hResult) && count++ < 60 )
+		{
+			LOG(INFO) + "Wait for connect (" + count + ")";
+			DWORD dwResult = WaitForSingleObject(m_hWceConnMgrConnection, 1000); 
+			if (dwResult == (WAIT_OBJECT_0))
+			{ 
+				hResult=ConnMgrConnectionStatus(m_hWceConnMgrConnection,&dwStatus);
+				if( SUCCEEDED(hResult) )
+				{
+					if( dwStatus & CONNMGR_STATUS_CONNECTED )
+					{
+						LOG(INFO) + "Connected";
+						return true;
+					}
+					if( dwStatus & CONNMGR_STATUS_WAITINGCONNECTION )
+					{
+						continue;
+					}
+					break;
+				}
+			}
+		}
+	}
+	LOG(ERROR) + "Failed to connect";
+	return false;
+#else
+	return true;
+#endif //_WIN32_WCE
 }
 
 } // namespace net

@@ -51,6 +51,8 @@ class CURLNetRequest : public INetRequestImpl
         String  username;
         String  password;
     };
+
+	static HANDLE    m_hWceConnMgrConnection;
     
     class CURLHolder
     {
@@ -110,6 +112,7 @@ private:
     INetResponse *makeResponse(Vector<char> const &body, int nErrorCode);
     INetResponse *makeResponse(char const *body, size_t bodysize, int nErrorCode);
 	CURLcode doCURLPerform(const String& strUrl);
+	bool SetupInternetConnection(LPCTSTR url);
 
     CURLHolder m_curl;
 };
