@@ -31,7 +31,7 @@ public:
     virtual BOOL showPreview() = 0;
     virtual BOOL hidePreview() = 0;
 	virtual void Capture() = 0;
-	virtual void SetCallback(rho::apiGenerator::CMethodResult* pCallback)=0;
+	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback)=0;
 };
 
 class CCamera : public ICam, public IViewFinderCallBack
@@ -52,7 +52,7 @@ protected:
 	rho::StringW m_CamType;
 	//static HANDLE m_hEvents[2];
 	bool m_PreviewOn;
-	rho::apiGenerator::CMethodResult* m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  
+	rho::apiGenerator::CMethodResult m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  
 public:
 	CCamera(LPCTSTR szDeviceName);
 	virtual ~CCamera();	
@@ -61,7 +61,7 @@ public:
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
 	virtual void cancel();
 	virtual void captureImage();
-	virtual void SetCallback(rho::apiGenerator::CMethodResult* pCallback);
+	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback);
 protected:
 	/**
 	* checks if two strings are equal

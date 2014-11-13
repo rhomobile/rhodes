@@ -126,12 +126,12 @@ namespace rho {
 				{
 					bIsCameraRunning = true;
 					CMethodResult oRes;
-					setProperties(propertyMap, oResult);
-					pCamera->SetCallback(NULL);		
+					setProperties(propertyMap, oRes);
+					//pCamera->SetCallback(NULL);		
                     if (oResult.hasCallback())
 					{
-                        DEBUGMSG(true, (L"Callback"));
-                        pCamera->SetCallback(&oResult);                      
+						DEBUGMSG(true, (L"Callback"));
+                        pCamera->SetCallback(oResult);                      
                         pCamera->takeFullScreen();
                     }
 					bIsCameraRunning = false;
@@ -180,10 +180,10 @@ namespace rho {
 			{
 				if(true == bIsCameraRunning)
 				{
-					 pCamera->SetCallback(NULL);		
+					// pCamera->SetCallback(NULL);		
                     if (oResult.hasCallback()){
                         DEBUGMSG(true, (L"Callback"));
-                        pCamera->SetCallback(&oResult);                      
+                        pCamera->SetCallback(oResult);                      
                         pCamera->Capture();
                     }
 				}

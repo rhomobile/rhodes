@@ -76,7 +76,7 @@ LRESULT CALLBACK CViewFinder::FullScreenWndProc(HWND hWnd, UINT message, WPARAM 
 
             case CMD_CAPTURE:
                 {
-                    pObj->cancel();
+                    pObj->captureImage();
                     break;
                 }
             case CMD_CANCEL:
