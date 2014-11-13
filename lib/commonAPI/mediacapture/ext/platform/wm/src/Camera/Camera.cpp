@@ -226,8 +226,10 @@ void CCamera::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 void CCamera::cancel()
 {
 	/*SetEvent(m_hEvents[eCancelEvent]);*/
+		
 	hidePreview();
-	UpdateCallbackStatus("cancel","User cancelled preview","");
+	UpdateCallbackStatus("cancel","User cancelled preview","");	
+
 }
 void CCamera::captureImage()
 {
@@ -235,7 +237,7 @@ void CCamera::captureImage()
 	Capture();
 	hidePreview();
 }
-void CCamera::SetCallback(rho::apiGenerator::CMethodResult* pCallback)
+void CCamera::SetCallback(rho::apiGenerator::CMethodResult& pCallback)
 {
 	m_pCameraCb = pCallback;
 }
@@ -275,7 +277,7 @@ void CCamera::GetDataURI (BYTE* bData, int iLength, rho::String& data)
 }
 void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri)
 {
-	if(m_pCameraCb != NULL)
+	//if(m_pCameraCb != NULL)
 	{	
 		rho::Hashtable<rho::String, rho::String> statusData;
 		statusData.put( "status", status);	
@@ -307,6 +309,6 @@ void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho:
 			statusData.put( "imageFormat", "");
 			statusData.put( "imageUri", "");			
 		}
-		m_pCameraCb->set(statusData);		
+		m_pCameraCb.set(statusData);		
 	}	
 }
