@@ -2,11 +2,12 @@
 #include "PBUtil.h"
 
 #define DEFAULT_FILENAME L"Img"
+//HANDLE CCamera::m_hEvents[2] ={NULL, NULL};
 
 CCamera::CCamera(LPCTSTR szDeviceName)
 {
-	m_hEvents[eCancelEvent] = CreateEvent(NULL, FALSE, FALSE, NULL);	
-	m_hEvents[eCaptureEvent] = CreateEvent(NULL, TRUE, FALSE, NULL);	
+	//m_hEvents[eCancelEvent] = CreateEvent(NULL, FALSE, FALSE, NULL);	
+	//m_hEvents[eCaptureEvent] = CreateEvent(NULL, TRUE, FALSE, NULL);	
 	m_ViewFinder.RegisterCallBack(static_cast<IViewFinderCallBack*>(this));
 	_tcscpy(m_szDeviceName, szDeviceName);
 	LOG(INFO) + __FUNCTION__ + "Device name set as " + m_szDeviceName; 
@@ -19,6 +20,15 @@ CCamera::CCamera(LPCTSTR szDeviceName)
 CCamera::~CCamera()
 {
 	m_pCameraCb=NULL; //this is just a call back, no need to delete this
+
+	//for(int nIndex = 0; nIndex < eMaxEventCount; nIndex++)
+	//{
+	//	if(m_hEvents[nIndex])
+	//	{
+	//		CloseHandle(m_hEvents[nIndex]);
+	//		m_hEvents[nIndex] = NULL;
+	//	}
+	//}
 }
 BOOL CCamera::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
 {	
@@ -215,11 +225,15 @@ void CCamera::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 }
 void CCamera::cancel()
 {
-	SetEvent(m_hEvents[eCancelEvent]);
+	/*SetEvent(m_hEvents[eCancelEvent]);*/
+	hidePreview();
+	UpdateCallbackStatus("cancel","User cancelled preview","");
 }
 void CCamera::captureImage()
 {
-	SetEvent(m_hEvents[eCaptureEvent]);
+	//SetEvent(m_hEvents[eCaptureEvent]);
+	Capture();
+	hidePreview();
 }
 void CCamera::SetCallback(rho::apiGenerator::CMethodResult* pCallback)
 {

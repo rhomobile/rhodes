@@ -24,6 +24,8 @@ CImager::CImager(LPCTSTR szDeviceName):CCamera(szDeviceName)
 {
     m_AimMode = FALSE;
 	m_CamType = L"imager";
+	m_hImager = INVALID_HANDLE_VALUE;
+	InitImager();
 }
 CImager::~CImager()
 {
@@ -168,38 +170,96 @@ void CImager::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 
 void CImager::takeFullScreen()
 {
+	LOG(INFO) + __FUNCTION__ ; 
+	RECT pos;	
+	if(m_hImager != INVALID_HANDLE_VALUE)
+	{
+		if(startPreview(pos, eFullScreen))
+		{
+			
+			////do not block the UI thread, wait in child thread
+			//CloseHandle(CreateThread (NULL, 0, fullScreenProc, this, 0, NULL));		
+		}
+	}
+	else
+	{
+		LOG(INFO) + __FUNCTION__  + L"Unable to open imager";
+		UpdateCallbackStatus("error","takeFullScreen failed", "");
+	}
 }
+//DWORD CImager::fullScreenProc (LPVOID pparam)
+//{
+//	CImager *pThis = (CImager*) pparam;
+//	//let us wait for the events here
+//	DWORD dwEvent = WaitForMultipleObjects(2, m_hEvents, FALSE, INFINITE);
+//	DWORD dwEventIndex = dwEvent - WAIT_OBJECT_0;                 
+//	switch(dwEventIndex)
+//	{
+//	case eCancelEvent:
+//		{
+//			LOG(INFO)  + "cancel event handler is invoked";
+//			pThis->hidePreview();
+//			LOG(INFO) + __FUNCTION__ + L"User canceled preview";
+//			pThis->UpdateCallbackStatus("cancel", "User cancelled preview", "");
+//			break;
+//		}
+//	case eCaptureEvent:
+//		{
+//			LOG(INFO)  + "capture event handler is invoked";
+//			pThis->Capture();					
+//			break;
+//		}
+//	}
+//	return 0;
+//}
 BOOL CImager::showPreview()
 {
 	BOOL bPreviewStatus = FALSE;
     LOG(INFO) + __FUNCTION__ ; 
-    DWORD dwResult = InitImager();
-    if(dwResult == E_IMG_SUCCESS)
+    if(m_hImager != INVALID_HANDLE_VALUE)
     {
-
-        // Imager is enabled so try to start it
-        if (StartViewer() != E_IMG_SUCCESS)
-        {
-            LOG(WARNING) + __FUNCTION__ + "StartViewer failed, retrying"  ; 
-            // if we're switching between apps with the camera active this can happen
-            // so retry a few times
-            int i=0;
-            do 
-            {
-                if (++i >= 5)
-                {
-                    LOG(WARNING) + __FUNCTION__ + L"StartViewer failed 5 times" ;
-                    break;
-                }
-                Sleep(100);
-            } while (StartViewer() != E_IMG_SUCCESS);
-        }
-		else
-		{
-			bPreviewStatus = TRUE;
-			m_PreviewOn = true;
-		}
+		RECT pos;
+		pos.left = m_PreviewLeft;
+		pos.top = m_PreviewTop;
+		pos.right = m_PreviewWidth;	
+		pos.bottom = m_PreviewHeight;
+		bPreviewStatus = startPreview(pos, eConfigurable);
+      
     }
+	return bPreviewStatus;
+}
+BOOL CImager::startPreview(RECT& pos, eViewrWndMode eMode )
+{
+	BOOL bPreviewStatus = FALSE;
+	DWORD dwRes = E_IMG_SUCCESS;
+	// Imager is enabled so try to start it
+	if ( (dwRes = StartViewer(pos, eMode)) != E_IMG_SUCCESS)
+	{
+		LOG(WARNING) + __FUNCTION__ + "StartViewer failed, retrying"  ; 
+		// if we're switching between apps with the camera active this can happen
+		// so retry a few times
+		int i=0;
+		do 
+		{
+			if (++i >= 5)
+			{
+				LOG(WARNING) + __FUNCTION__ + L"StartViewer failed 5 times" ;				
+				break;
+			}			
+			Sleep(100);
+		} while ((dwRes = StartViewer(pos, eMode)) != E_IMG_SUCCESS);
+
+		
+	}
+	if(E_IMG_SUCCESS != dwRes)
+	{
+		UpdateCallbackStatus("error", "Failed to set the imager properties", ""); 	
+	}
+	else
+	{
+		bPreviewStatus = TRUE;
+		m_PreviewOn = true;
+	}
 	return bPreviewStatus;
 }
 ////////////////////////////////////////////////////////////////////////
@@ -210,17 +270,20 @@ BOOL CImager::showPreview()
 ////////////////////////////////////////////////////////////////////////
 DWORD CImager::InitImager()
 {	
-    DWORD dwRes = E_IMG_INVALIDHANDLE;
-    IMAGE_FINDINFO ImageFindInfo;
-    memset(&ImageFindInfo, 0, sizeof(ImageFindInfo));
-    SI_INIT(&ImageFindInfo);
-    SI_SET_USED(&ImageFindInfo, tszRegistryBasePath);
-    dwRes = Image_Open(m_szDeviceName, &m_hImager);
-    if(dwRes != E_IMG_SUCCESS)
-    {
-        LOG(ERROR) + __FUNCTION__ + "Image open failed for device: " + m_szDeviceName ; 
-    }
-    return dwRes;
+	DWORD dwRes = E_IMG_SUCCESS;
+	if(m_hImager == INVALID_HANDLE_VALUE)
+	{		
+		IMAGE_FINDINFO ImageFindInfo;
+		memset(&ImageFindInfo, 0, sizeof(ImageFindInfo));
+		SI_INIT(&ImageFindInfo);
+		SI_SET_USED(&ImageFindInfo, tszRegistryBasePath);
+		dwRes = Image_Open(m_szDeviceName, &m_hImager);
+		if(dwRes != E_IMG_SUCCESS)
+		{
+			LOG(ERROR) + __FUNCTION__ + "Image open failed for device: " + m_szDeviceName ; 
+		}
+	}
+	return dwRes;
 }
 ////////////////////////////////////////////////////////////////////////
 // Function:	StartViewer
@@ -228,17 +291,12 @@ DWORD CImager::InitImager()
 //              image capture device handle is used to call supported Image capture APIs.
 //				Sets JPEG as default image format. Sets the Light and Aim to default state FALSE
 ////////////////////////////////////////////////////////////////////////
-DWORD CImager::StartViewer()
+DWORD CImager::StartViewer(RECT& pos, eViewrWndMode eMode)
 {
     DWORD dwCapValue;
-    DWORD dwRes = E_IMG_SUCCESS;; 
-    bool bErrorFlag = true;
-    RECT pos;
-    pos.left = m_PreviewLeft;
-    pos.top = m_PreviewTop;
-    pos.right = m_PreviewWidth;	
-    pos.bottom = m_PreviewHeight;
-    HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eConfigurable);
+    DWORD dwRes = E_IMG_SUCCESS; 
+    bool bErrorFlag = true;   
+    HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eMode);
 
     // Set the width of the target window for the video viewfinder
     dwCapValue = pos.right;// - pos.left + 1;
@@ -286,8 +344,8 @@ DWORD CImager::StartViewer()
     {
         TCHAR errorMessage[100];
         wsprintf(errorMessage, L"Imager_SetCapCurrValue error %d", dwRes);
-        LOG(ERROR) + errorMessage;
-        m_ViewFinder.DestroyViewerWindow();
+		LOG(ERROR) + errorMessage;
+        m_ViewFinder.DestroyViewerWindow();		       
     }
 
     /*if (m_hParentWnd)

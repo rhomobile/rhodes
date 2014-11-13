@@ -124,12 +124,17 @@ namespace rho {
 			{
 				if(false == bIsCameraRunning)
 				{
-					//TODO: 
-					//bIsCameraRunning logic for full screen has to be relooked, when will set it to false
 					bIsCameraRunning = true;
-					//pCamera->takePicture(propertyMap, oResult);
+					CMethodResult oRes;
+					setProperties(propertyMap, oResult);
+					pCamera->SetCallback(NULL);		
+                    if (oResult.hasCallback())
+					{
+                        DEBUGMSG(true, (L"Callback"));
+                        pCamera->SetCallback(&oResult);                      
+                        pCamera->takeFullScreen();
+                    }
 					bIsCameraRunning = false;
-					
 				}
 			}
 
