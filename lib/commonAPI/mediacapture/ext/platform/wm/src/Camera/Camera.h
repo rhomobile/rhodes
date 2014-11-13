@@ -10,12 +10,12 @@ enum eCamType
 	eColorCam,
 	eImager
 };
-typedef enum 
-{
-	eCancelEvent=0,
-	eCaptureEvent,
-	eMaxEventCount
-}eEventIndex;
+//typedef enum 
+//{
+//	eCancelEvent=0,
+//	eCaptureEvent,
+//	eMaxEventCount
+//}eEventIndex;
 typedef enum 
 {
 	eImageUri=0,
@@ -50,7 +50,7 @@ protected:
 	BOOL m_FlashMode;
 	eImageOutputFormat m_eOutputFormat;
 	rho::StringW m_CamType;
-	HANDLE m_hEvents[2];
+	//static HANDLE m_hEvents[2];
 	bool m_PreviewOn;
 	rho::apiGenerator::CMethodResult* m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  
 public:
