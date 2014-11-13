@@ -342,5 +342,63 @@ alert(Rho.AudioCapture.fileName);
                     </SECTIONS>
             </EXAMPLE>
 		</EXAMPLES>
+        <EXAMPLES_EB>
+            <EXAMPLE title='Capturing Audio'>
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>In the following example you'll see how to capture and play back audio on your device. This example assumes that the ebapi-modules.js file resides in the same folder as the HTML file invoking it.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+<head>
+    <script type="text/javascript" charset="utf-8" src="ebapi-modules.js"></script>
+
+    <title>Audio Capture API Example</title>
+
+    <script>
+        audioFile = null;
+
+        function captureAudio(){
+            display.innerHTML = 'Capturing...'
+            EB.AudioCapture.start({fileName:   'testCap',
+                                                         maxDuration: 5000}, captureCallback);
+        }
+
+        function captureCallback(params){
+            if (params['status'] == 'ok'){
+                display.innerHTML = 'Captured Audio File: ' + params['fileName'];
+                audioFile = params['fileName'];
+                audioFile = audioFile.substr(7); // Remove 'file://' from the beginning of the fileName
+            }
+            else{
+                display.innerHTML = 'Audio Not Captured';
+            }
+        }
+
+        function playCapturedAudio(){
+            if(audioFile){
+                EB.Mediaplayer.start(audioFile);
+            }
+            else{
+                alert("No audio captured yet.");
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <h1>AudioCapture API Example</h1>
+    <div id="display"></div>
+    </br>
+    </br>
+    <button onclick="captureAudio()">Capture Audio</button>
+    <button onclick="playCapturedAudio()">Play Captured Audio</button>
+</body>
+                                ]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES_EB>
     </MODULE>
 </API>
