@@ -114,18 +114,11 @@ void DevHTTPServer::init() {
 
     if(host_info)
     {
-        for( int i=0 ; host_info->h_addr_list[i] ; ++i )
-        {
-            const in_addr* address = (in_addr*)host_info->h_addr_list[i] ;
+        const in_addr* address = (in_addr*)host_info->h_addr_list[0];
 
-            rho::String addrIP = inet_ntoa( *address );
+        rho::String addrIP = inet_ntoa( *address );
 
-            //if (addrIP.find("192.168.") != rho::String::npos) //HOTFIX!!!!
-            {
-                m_local_IP_adress = addrIP;
-                break;
-            }
-        }
+        m_local_IP_adress = addrIP;
     }
     else 
     {
