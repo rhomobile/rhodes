@@ -1105,6 +1105,10 @@ public class TabbedMainView implements MainView {
         }
 
 		return getTabMainView(tab_index).get_current_url(tab_index);
-	}     
+	}
+
+    @Override
+    public void removeSplashScreen() {
+    }     
 
 }

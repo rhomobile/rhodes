@@ -691,6 +691,10 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAM>
                 </PARAMS>
             </METHOD>
+            <METHOD name="hideSplashScreen">
+                <DESC>Hide Splash Screen if delay is configured as -1 in rhoconfig.txt</DESC>
+                <PLATFORM>Android</PLATFORM>
+            </METHOD>
         </METHODS>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>

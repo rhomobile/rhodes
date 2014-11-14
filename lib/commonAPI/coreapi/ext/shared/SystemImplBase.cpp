@@ -433,6 +433,11 @@ void CSystemImplBase::getMain_window_closed(rho::apiGenerator::CMethodResult& oR
     //windows only
 }
 
+void CSystemImplBase::hideSplashScreen(rho::apiGenerator::CMethodResult& result)
+{
+    //Android only
+}
+
 }
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
