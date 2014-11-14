@@ -555,11 +555,15 @@ hash_each_json(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
     if ( value != 0 && value != Qnil )
     {
         VALUE strVal;
-        if ( TYPE(value) == T_STRING || TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
-             TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
-            strVal = rb_funcall(value, rb_intern("to_s"), 0);
-        else
-            strVal = rb_funcall(value, rb_intern("to_json"), 0);
+        if ( TYPE(value) != T_STRING ) {
+            if (TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
+                TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
+                strVal = rb_funcall(value, rb_intern("to_s"), 0);
+            else
+                strVal = rb_funcall(value, rb_intern("to_json"), 0);
+
+        } else
+            strVal = value;
 
         szValue = RSTRING_PTR(strVal);
         valueLen = RSTRING_LEN(strVal);

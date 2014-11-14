@@ -338,6 +338,9 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
         <% else %>
         [rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller <%= module_method.native_name %>_in_thread:[rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         <% end %>
+
+        // FIXME: callback should not be retained, it must be saved outside of this call
+        [methodResult retain];
     }
     else {
         // we do not have callback
