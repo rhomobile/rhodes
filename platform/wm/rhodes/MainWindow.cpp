@@ -532,8 +532,18 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
     LOG(INFO) + "START load png";
     
-    if(m_bLoading)
+    //SR:EMBPD00150338 - Fixed SIP issue & SR:EMBPD00155397 - IE Coke issue
+    if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
+    { 
+	if(m_bLoading)
+	{
 		retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
+	}
+    }
+    else
+    {
+	retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
+    }
     
     //SPR 23830 - Fix - Do loading.html On load png failure
     if (retCode == 0 && m_bLoading)
