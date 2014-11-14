@@ -60,5 +60,9 @@ private:
 	BOOL startPreview(RECT& pos, eViewrWndMode eMode);
 	DWORD StopViewer();
 	static DWORD fullScreenProc (LPVOID pparam);
+protected:
+	virtual void SetFlashMode();
+	virtual void SetDesiredWidth();
+	virtual void SetDesiredHeight();
 };
 #endif

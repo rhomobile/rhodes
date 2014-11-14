@@ -50,8 +50,8 @@ protected:
 	BOOL m_FlashMode;
 	eImageOutputFormat m_eOutputFormat;
 	rho::StringW m_CamType;
-	//static HANDLE m_hEvents[2];
-	bool m_PreviewOn;
+	bool m_PreviewOn; 
+	static bool m_IsCameraRunning;
 	rho::apiGenerator::CMethodResult m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  
 public:
 	CCamera(LPCTSTR szDeviceName);
@@ -70,8 +70,9 @@ protected:
 	void initializePreviewPos();
 	void GetDataURI (BYTE* bData, int iLength, rho::String& data);	
 	void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri);
-
-
-
+	void RedrawViewerWnd();
+	virtual void SetFlashMode()=0;
+	virtual void SetDesiredWidth()=0;
+	virtual void SetDesiredHeight()=0;
 };
 #endif

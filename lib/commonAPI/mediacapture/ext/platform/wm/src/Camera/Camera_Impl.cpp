@@ -10,43 +10,43 @@
 #include "DirectShowCam.h"
 
 namespace rho {
-    
-    using namespace apiGenerator;
-    using namespace common;
-    
-    class CCameraSingletonImpl: public CCameraSingletonBase
-    {
+
+	using namespace apiGenerator;
+	using namespace common;
+
+	class CCameraSingletonImpl: public CCameraSingletonBase
+	{
 	private:
-		  rho::Hashtable<String, eCamType> m_DeviceNameMap;
-    public:
-        
-        CCameraSingletonImpl(): CCameraSingletonBase(){}
-        
-        //methods
-        // enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
-        virtual void enumerate(rho::apiGenerator::CMethodResult& oResult);
-        // getCameraByType Returns the camera of requested type if that camera exist - else return nil. 
-        virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("getCameraByType","Camera");
-            
-        } 
-        // choosePicture Choose a picture from the album. 
-        virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("choosePicture","Camera");
-            
-        } 
-        // saveImageToDeviceGallery Save an image to the device gallery. 
-        virtual void saveImageToDeviceGallery( const rho::String& pathToImage, rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("saveImageToDeviceGallery","Camera");
-            
-        } 
+		rho::Hashtable<String, eCamType> m_DeviceNameMap;
+	public:
+
+		CCameraSingletonImpl(): CCameraSingletonBase(){}
+
+		//methods
+		// enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
+		virtual void enumerate(rho::apiGenerator::CMethodResult& oResult);
+		// getCameraByType Returns the camera of requested type if that camera exist - else return nil. 
+		virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {
+			// RAWLOGC_INFO("getCameraByType","Camera");
+
+		} 
+		// choosePicture Choose a picture from the album. 
+		virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
+			// RAWLOGC_INFO("choosePicture","Camera");
+
+		} 
+		// saveImageToDeviceGallery Save an image to the device gallery. 
+		virtual void saveImageToDeviceGallery( const rho::String& pathToImage, rho::apiGenerator::CMethodResult& oResult) {
+			// RAWLOGC_INFO("saveImageToDeviceGallery","Camera");
+
+		} 
 		rho::String getInitialDefaultID();
 		eCamType getCamType(String deviceName)
 		{
 			return m_DeviceNameMap[deviceName];
 		}
 
-    };
+	};
 	void CCameraSingletonImpl::enumerate(CMethodResult& oResult)
 	{
 		LOG(INFO) +  L"inside enumerate method";	
@@ -86,19 +86,18 @@ namespace rho {
 		else        
 			return arIDs[0];
 	}
-    
+
 	//CCameraImpl act as an interface between jav script and the actual implementation
 	//or in other words it asct as a proxy and route the call to the actual implementation class
 	class CCameraImpl : public CCameraBase
 	{
 	private:
 		ICam* pCamera;
-		static bool bIsCameraRunning;
 	public:
 		CCameraImpl(const rho::String& strID)
 		{
 			LOG(INFO) + "Initialising interface for Camera " + strID; 
-		    //RHODESAPP().getExtManager().registerExtension(/*convertToStringA*/(strID), this );
+			//RHODESAPP().getExtManager().registerExtension(/*convertToStringA*/(strID), this );
 			eCamType camType= ((CCameraSingletonImpl*)(rho::CCameraFactoryBase::getCameraSingletonS()))->getCamType(strID);
 			rho::StringW id = rho::common::convertToStringW(strID);
 			if(eImager == camType)
@@ -122,41 +121,29 @@ namespace rho {
 		virtual void takePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
 			{
-				if(false == bIsCameraRunning)
+
+				CMethodResult oRes;
+				setProperties(propertyMap, oRes);              	
+				if (oResult.hasCallback())
 				{
-					bIsCameraRunning = true;
-					CMethodResult oRes;
-					setProperties(propertyMap, oRes);
-					//pCamera->SetCallback(NULL);		
-                    if (oResult.hasCallback())
-					{
-						DEBUGMSG(true, (L"Callback"));
-                        pCamera->SetCallback(oResult);                      
-                        pCamera->takeFullScreen();
-                    }
-					bIsCameraRunning = false;
+					DEBUGMSG(true, (L"Callback"));
+					pCamera->SetCallback(oResult);                      
+					pCamera->takeFullScreen();
 				}
+
+
 			}
 
 		} 
 
-        virtual void showPreview( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
+		virtual void showPreview( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
 			{
-				if(false == bIsCameraRunning)
-				{
-					CMethodResult oRes;
-					setProperties(propertyMap, oResult);
-					if(pCamera->showPreview())
-					{
-						bIsCameraRunning = true;
-					}
-				}
-				else
-				{
-					LOG(INFO) +  L"Camera already running.";
 
-				}
+				CMethodResult oRes;
+				setProperties(propertyMap, oResult);
+				pCamera->showPreview();                
+
 			}
 
 		} 
@@ -164,28 +151,19 @@ namespace rho {
 		virtual void hidePreview(rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
 			{
-				if(true == bIsCameraRunning)
-				{
-					if(pCamera->hidePreview())
-					{
-						bIsCameraRunning = false;
-					}
-				}
+				pCamera->hidePreview();               
+
 			}
 
 		} 
 
 		virtual void Capture(rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
-			{
-				if(true == bIsCameraRunning)
-				{
-					// pCamera->SetCallback(NULL);		
-                    if (oResult.hasCallback()){
-                        DEBUGMSG(true, (L"Callback"));
-                        pCamera->SetCallback(oResult);                      
-                        pCamera->Capture();
-                    }
+			{              	
+				if (oResult.hasCallback()){
+					DEBUGMSG(true, (L"Callback"));
+					pCamera->SetCallback(oResult);                      
+					pCamera->Capture();
 				}
 			}
 
@@ -280,34 +258,34 @@ namespace rho {
 				oResult.set(true);
 			}
 
-        } 
+		} 
 		virtual void getSupportedSizeList(rho::apiGenerator::CMethodResult& oResult)
 		{
 			//this API is unsupported
 		}
-    };
-	bool CCameraImpl::bIsCameraRunning= false;
-    
-    ////////////////////////////////////////////////////////////////////////
-    
-    class CCameraFactory: public CCameraFactoryBase    {
-    public:
-        CCameraFactory(){}
-        
-        ICameraSingleton* createModuleSingleton()
-        { 
-            return new CCameraSingletonImpl();		
-        }
-        
+	};
+
+
+	////////////////////////////////////////////////////////////////////////
+
+	class CCameraFactory: public CCameraFactoryBase    {
+	public:
+		CCameraFactory(){}
+
+		ICameraSingleton* createModuleSingleton()
+		{ 
+			return new CCameraSingletonImpl();		
+		}
+
 		virtual ICamera* createModuleByID(const rho::String& strID){ return new CCameraImpl(strID); };
-        
-    };
-    
+
+	};
+
 }
 
 extern "C" void Init_Camera_extension()
 {
-    rho::CCameraFactory::setInstance( new rho::CCameraFactory() );
-    rho::Init_Camera_API();
-    
+	rho::CCameraFactory::setInstance( new rho::CCameraFactory() );
+	rho::Init_Camera_API();
+
 }

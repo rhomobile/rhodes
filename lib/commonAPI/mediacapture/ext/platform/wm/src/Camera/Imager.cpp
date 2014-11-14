@@ -142,14 +142,16 @@ BOOL CImager::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
         if(cmp(szPropertyName, L"aimMode"))
         {
             if((cmp(szPropertyValue, L"on")))
-            {
+            {				
                 m_AimMode = TRUE;
+				Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode);
             }
             else
             {
                 if((cmp(szPropertyValue, L"off")))
                 {
                     m_AimMode = FALSE;
+					Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode);
                 }
 
             }		
@@ -172,60 +174,57 @@ void CImager::takeFullScreen()
 {
 	LOG(INFO) + __FUNCTION__ ; 
 	RECT pos;	
-	if(m_hImager != INVALID_HANDLE_VALUE)
+	if(false == m_IsCameraRunning)
 	{
-		if(startPreview(pos, eFullScreen))
+		if(m_PreviewOn == false)
 		{
-			
-			////do not block the UI thread, wait in child thread
-			//CloseHandle(CreateThread (NULL, 0, fullScreenProc, this, 0, NULL));		
+			if(m_hImager != INVALID_HANDLE_VALUE)
+			{
+				if(startPreview(pos, eFullScreen))
+				{
+
+					m_IsCameraRunning = true;
+					m_PreviewOn = true;
+				}
+			}
+			else
+			{
+				LOG(INFO) + __FUNCTION__  + L"Unable to open imager";
+				UpdateCallbackStatus("error","takeFullScreen failed", "");
+			}
 		}
 	}
-	else
-	{
-		LOG(INFO) + __FUNCTION__  + L"Unable to open imager";
-		UpdateCallbackStatus("error","takeFullScreen failed", "");
-	}
 }
-//DWORD CImager::fullScreenProc (LPVOID pparam)
-//{
-//	CImager *pThis = (CImager*) pparam;
-//	//let us wait for the events here
-//	DWORD dwEvent = WaitForMultipleObjects(2, m_hEvents, FALSE, INFINITE);
-//	DWORD dwEventIndex = dwEvent - WAIT_OBJECT_0;                 
-//	switch(dwEventIndex)
-//	{
-//	case eCancelEvent:
-//		{
-//			LOG(INFO)  + "cancel event handler is invoked";
-//			pThis->hidePreview();
-//			LOG(INFO) + __FUNCTION__ + L"User canceled preview";
-//			pThis->UpdateCallbackStatus("cancel", "User cancelled preview", "");
-//			break;
-//		}
-//	case eCaptureEvent:
-//		{
-//			LOG(INFO)  + "capture event handler is invoked";
-//			pThis->Capture();					
-//			break;
-//		}
-//	}
-//	return 0;
-//}
 BOOL CImager::showPreview()
 {
 	BOOL bPreviewStatus = FALSE;
     LOG(INFO) + __FUNCTION__ ; 
-    if(m_hImager != INVALID_HANDLE_VALUE)
-    {
-		RECT pos;
-		pos.left = m_PreviewLeft;
-		pos.top = m_PreviewTop;
-		pos.right = m_PreviewWidth;	
-		pos.bottom = m_PreviewHeight;
-		bPreviewStatus = startPreview(pos, eConfigurable);
-      
-    }
+	if(m_IsCameraRunning == false)
+	{
+		if(m_PreviewOn == false)
+		{
+			if(m_hImager != INVALID_HANDLE_VALUE)
+			{
+				RECT pos;
+				pos.left = m_PreviewLeft;
+				pos.top = m_PreviewTop;
+				pos.right = m_PreviewWidth;	
+				pos.bottom = m_PreviewHeight;
+				bPreviewStatus = startPreview(pos, eConfigurable);
+				if(TRUE == bPreviewStatus)
+				{
+					m_PreviewOn = true;
+					m_IsCameraRunning = true;
+				}
+				else
+				{
+					m_PreviewOn = false;
+					m_IsCameraRunning = false;
+				}
+
+			}
+		}
+	}
 	return bPreviewStatus;
 }
 BOOL CImager::startPreview(RECT& pos, eViewrWndMode eMode )
@@ -258,7 +257,6 @@ BOOL CImager::startPreview(RECT& pos, eViewrWndMode eMode )
 	else
 	{
 		bPreviewStatus = TRUE;
-		m_PreviewOn = true;
 	}
 	return bPreviewStatus;
 }
@@ -362,9 +360,11 @@ BOOL CImager::hidePreview()
 	{	
 		if(E_IMG_SUCCESS == StopViewer())
 		{
-			m_PreviewOn = FALSE;
+			m_PreviewOn = false;
+		    m_IsCameraRunning = false;
 			bRetStatus = TRUE;
 		}
+
 	}
 	return bRetStatus;
 	
@@ -401,62 +401,78 @@ DWORD CImager::StopViewer()
 
 void CImager::Capture()
 {
-	LOG(INFO) + __FUNCTION__ ;
-	DWORD dwRes;
-	DWORD dwBytesWritten;
-	if (m_hImager != INVALID_HANDLE_VALUE)
-		Image_StopViewfinder(m_hImager);
+    LOG(INFO) + __FUNCTION__ ;
+    DWORD dwRes;
+    DWORD dwBytesWritten;
+    if(m_PreviewOn)
+    {
+        if (m_hImager != INVALID_HANDLE_VALUE)
+            Image_StopViewfinder(m_hImager);
 
-	PlaySound(m_CaptureSound.c_str(),NULL,SND_FILENAME|SND_ASYNC);
+        PlaySound(m_CaptureSound.c_str(),NULL,SND_FILENAME|SND_ASYNC);
 
-	DWORD dwImageBufSize;///< Variable for Buffer size of captured image
-	LPVOID pImageBuffer;///< Buffer to save captured image
+        DWORD dwImageBufSize;///< Variable for Buffer size of captured image
+        LPVOID pImageBuffer;///< Buffer to save captured image
+
+        if ((dwRes = Image_GetImage(m_hImager, &dwImageBufSize, &pImageBuffer)) != E_IMG_SUCCESS) 
+        {
+            TCHAR message[100];
+            wsprintf(message, L"Image_GetImage error %d \n", dwRes);
+            LOG(ERROR) + __FUNCTION__ + message;
+
+            UpdateCallbackStatus("error","Image Capture operation failed.","");
+
+
+        }
+        else
+        {
+			rho::StringW fileName = m_FileName + L".jpg";
+            HANDLE hFile = 
+                CreateFile(fileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+            if(hFile)
+            {
+                if(WriteFile(hFile,pImageBuffer,dwImageBufSize,&dwBytesWritten,NULL))
+                {
+                    rho::String imageUri;
+                    if(m_eOutputFormat == eDataUri)
+                    {
+                        GetDataURI((BYTE*)pImageBuffer, dwBytesWritten, imageUri);
+                    }
+                    else
+                    {
+                        imageUri = rho::common::convertToStringA(fileName).c_str();
+                    }
+                    //update callback
+                    UpdateCallbackStatus("ok","",imageUri);
+                }
+                else
+                {
+                    UpdateCallbackStatus("error","Unable to save image","");
+                }
+                CloseHandle(hFile);
+
+            }
+            else
+            {
+                UpdateCallbackStatus("error","Unable to save image","");
+            }
+
+        }	
+
+
+        if (m_hImager != INVALID_HANDLE_VALUE)
+            Image_StartViewfinder(m_hImager);	
+    }
 	
-	if ((dwRes = Image_GetImage(m_hImager, &dwImageBufSize, &pImageBuffer)) != E_IMG_SUCCESS) 
-	{
-		TCHAR message[100];
-		wsprintf(message, L"Image_GetImage error %d \n", dwRes);
-		LOG(ERROR) + __FUNCTION__ + message;
+}
 
-		UpdateCallbackStatus("error","Image Capture operation failed.","");
-
-		
-	}
-	else
-	{
-		HANDLE hFile = 
-			CreateFile(m_FileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-		if(hFile)
-		{
-			if(WriteFile(hFile,pImageBuffer,dwImageBufSize,&dwBytesWritten,NULL))
-			{
-				rho::String imageUri;
-				if(m_eOutputFormat == eDataUri)
-				{
-					GetDataURI((BYTE*)pImageBuffer, dwBytesWritten, imageUri);
-				}
-				else
-				{
-					imageUri = rho::common::convertToStringA(m_FileName).c_str();
-				}
-				//update callback
-				UpdateCallbackStatus("ok","",imageUri);
-			}
-			else
-			{
-				UpdateCallbackStatus("error","Unable to save image","");
-			}
-			CloseHandle(hFile);
-			
-		}
-		else
-		{
-			UpdateCallbackStatus("error","Unable to save image","");
-		}
-		
-	}	
-	
-				
-	if (m_hImager != INVALID_HANDLE_VALUE)
-				Image_StartViewfinder(m_hImager);	
+void CImager::SetFlashMode()
+{
+  Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_LAMPSTATE, sizeof(BOOL), &m_FlashMode);		
+}
+void CImager::SetDesiredWidth()
+{
+}
+void CImager::SetDesiredHeight()
+{
 }
