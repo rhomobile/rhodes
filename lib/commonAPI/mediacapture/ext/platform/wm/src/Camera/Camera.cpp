@@ -2,12 +2,10 @@
 #include "PBUtil.h"
 
 #define DEFAULT_FILENAME L"Img"
-//HANDLE CCamera::m_hEvents[2] ={NULL, NULL};
+bool CCamera::m_IsCameraRunning = false;
 
 CCamera::CCamera(LPCTSTR szDeviceName)
 {
-	//m_hEvents[eCancelEvent] = CreateEvent(NULL, FALSE, FALSE, NULL);	
-	//m_hEvents[eCaptureEvent] = CreateEvent(NULL, TRUE, FALSE, NULL);	
 	m_ViewFinder.RegisterCallBack(static_cast<IViewFinderCallBack*>(this));
 	_tcscpy(m_szDeviceName, szDeviceName);
 	LOG(INFO) + __FUNCTION__ + "Device name set as " + m_szDeviceName; 
@@ -21,14 +19,6 @@ CCamera::~CCamera()
 {
 	m_pCameraCb=NULL; //this is just a call back, no need to delete this
 
-	//for(int nIndex = 0; nIndex < eMaxEventCount; nIndex++)
-	//{
-	//	if(m_hEvents[nIndex])
-	//	{
-	//		CloseHandle(m_hEvents[nIndex]);
-	//		m_hEvents[nIndex] = NULL;
-	//	}
-	//}
 }
 BOOL CCamera::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
 {	
@@ -145,7 +135,7 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 	{
 		if((cmp(szPropertyValue, L"on")))
 		{
-			m_FlashMode = TRUE;
+			m_FlashMode = TRUE;		
 		}
 		else
 		{
@@ -155,6 +145,8 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 			}
 
 		}
+		SetFlashMode();
+		
 	}
 	else if(cmp(szPropertyName, L"captureSound"))
 	{
@@ -164,18 +156,22 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 	else if(cmp(szPropertyName, L"previewLeft"))
 	{
 		m_PreviewLeft = _ttoi(szPropertyValue);
+		RedrawViewerWnd();
 	}
 	else if(cmp(szPropertyName, L"previewTop"))
 	{
 		m_PreviewTop = _ttoi(szPropertyValue);
+		RedrawViewerWnd();
 	}
 	else if(cmp(szPropertyName, L"previewWidth"))
 	{
 		m_PreviewWidth = _ttoi(szPropertyValue);
+		RedrawViewerWnd();
 	}
 	else if(cmp(szPropertyName, L"previewHeight"))
 	{
 		m_PreviewHeight = _ttoi(szPropertyValue);
+		RedrawViewerWnd();
 	}
 	else if(cmp(szPropertyName, L"compressionFormat"))
 	{
@@ -196,7 +192,6 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 			if(cmp(szPropertyValue, L"dataUri"))
 			{
 				m_eOutputFormat = eDataUri;
-
 			}
 		}		
 	}
@@ -224,16 +219,13 @@ void CCamera::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 
 }
 void CCamera::cancel()
-{
-	/*SetEvent(m_hEvents[eCancelEvent]);*/
-		
+{	
 	hidePreview();
 	UpdateCallbackStatus("cancel","User cancelled preview","");	
 
 }
 void CCamera::captureImage()
 {
-	//SetEvent(m_hEvents[eCaptureEvent]);
 	Capture();
 	hidePreview();
 }
@@ -277,38 +269,59 @@ void CCamera::GetDataURI (BYTE* bData, int iLength, rho::String& data)
 }
 void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri)
 {
-	//if(m_pCameraCb != NULL)
-	{	
-		rho::Hashtable<rho::String, rho::String> statusData;
-		statusData.put( "status", status);	
-		if("ok" == status)
-		{
-			/*statusData.put( "imageHeight","");	
-			statusData.put( "imageWidth","");	*/
-			rho::String outputFormat;
-			if(m_eOutputFormat == eImageUri)
-			{
-				outputFormat = "image";
-				//for image path, set file:// as well so that user can access the link
-				rho::String pathPrefix = "file://";
-				imageUri= pathPrefix + imageUri;
 
-			}
-			else
-			{
-				outputFormat = "dataUri";
-			}		
-			statusData.put( "imageFormat", outputFormat);
-			statusData.put( "imageUri", imageUri);
-			statusData.put( "message", "");
+	rho::Hashtable<rho::String, rho::String> statusData;
+	statusData.put( "status", status);	
+	if("ok" == status)
+	{
+		/*statusData.put( "imageHeight","");	
+		statusData.put( "imageWidth","");	
+		statusData.put( "image_height", imageUri);
+		statusData.put( "image_width", imageUri);
+		*/
+		rho::String outputFormat;
+		if(m_eOutputFormat == eImageUri)
+		{
+			outputFormat = "image";
+			//for image path, set file:// as well so that user can access the link
+			rho::String pathPrefix = "file://";
+			imageUri= pathPrefix + imageUri;
+
 		}
 		else
 		{
-			//for cancel or error set only message
-			statusData.put( "message", message);
-			statusData.put( "imageFormat", "");
-			statusData.put( "imageUri", "");			
-		}
-		m_pCameraCb.set(statusData);		
-	}	
+			outputFormat = "dataUri";
+		}		
+		statusData.put( "imageFormat", outputFormat);
+		statusData.put( "imageUri", imageUri);
+		statusData.put( "image_format", imageUri);
+		statusData.put( "image_uri", outputFormat);
+		statusData.put( "message", "");
+
+	}
+	else
+	{
+		//for cancel or error set only message
+		statusData.put( "message", message);
+		statusData.put( "imageFormat", "");
+		statusData.put( "imageUri", "");	
+		statusData.put( "image_format", "");
+		statusData.put( "image_uri", "");
+	}
+	m_pCameraCb.set(statusData);		
+
 }
+void CCamera::RedrawViewerWnd()
+{
+	if(m_PreviewOn)
+	{
+		RECT pos;
+		pos.left = m_PreviewLeft;
+		pos.top = m_PreviewTop;
+		pos.right = m_PreviewWidth;
+		pos.bottom = m_PreviewHeight;
+		m_ViewFinder.RepositionWindow(pos);
+
+	}
+}
+
