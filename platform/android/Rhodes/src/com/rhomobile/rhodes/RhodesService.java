@@ -1503,4 +1503,8 @@ public class RhodesService extends Service {
         	});
         }
     }
+    
+    public static void removeSplashScreen() {
+        getInstance().getMainView().removeSplashScreen();
+    }
 }

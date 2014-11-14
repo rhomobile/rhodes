@@ -62,7 +62,7 @@ public class SplashScreen implements MainView{
         public boolean onNavigateComplete(IRhoExtManager extManager, String urlOfDocument, IRhoWebView ext, boolean res) {
             
             if (mIsActive) {
-                removeSplashScreen();
+                activateHideTimer();
                 mIsActive = false;
             }
             return res;
@@ -254,15 +254,16 @@ public class SplashScreen implements MainView{
         mBackendView.navigate(url, index);
         
         if (mDocCompleteListener == null) {
-            removeSplashScreen();
+            activateHideTimer();
         }
 	}
 
-    private void removeSplashScreen() {
+    private void activateHideTimer() {
         long delay = howLongWaitMs();
-        if (delay <= 0) {
-            delay = 0;
-        } else {
+        if (delay < 0) {
+            return;
+        }
+        else if (delay > 0){
             delay = mStartTimeMs + delay - SystemClock.uptimeMillis();
             if (delay < 0)
                 delay = 0;
@@ -275,31 +276,37 @@ public class SplashScreen implements MainView{
             @Override
             public void run() {
                 SystemClock.sleep(threadDelay);
-                RhodesApplication.runWhen(
-                    RhodesApplication.AppState.AppActivated,
-                    new RhodesApplication.StateHandler(true) {
-                        @Override public void run() {
-                            PerformOnUiThread.exec(new Runnable() {
-                                public void run() {
-                                    
-                                    Logger.T(TAG, "Do removing Splash Screen");
-                                    try {
-                                        if (mNavigateIndex != 0) {
-                                            throw new IllegalStateException("Non zero tab index(" + mNavigateIndex + ") to navigate from Splash Screen");
-                                        }
-                                        mSplashScreenListener.onSplashScreenGone(SplashScreen.this);
-                                    } catch (Throwable e) {
-                                        Logger.E(TAG, e);
-                                    }
-                                }
-                            });
-                        }
-                    });
+                removeSplashScreen();
             }
+
         });
         mSleepThread.start();
     }
-	
+
+    @Override
+    public void removeSplashScreen() {
+        RhodesApplication.runWhen(
+            RhodesApplication.AppState.AppActivated,
+            new RhodesApplication.StateHandler(true) {
+                @Override public void run() {
+                    PerformOnUiThread.exec(new Runnable() {
+                        public void run() {
+                            
+                            Logger.T(TAG, "Do removing Splash Screen");
+                            try {
+                                if (mNavigateIndex != 0) {
+                                    throw new IllegalStateException("Non zero tab index(" + mNavigateIndex + ") to navigate from Splash Screen");
+                                }
+                                mSplashScreenListener.onSplashScreenGone(SplashScreen.this);
+                            } catch (Throwable e) {
+                                Logger.E(TAG, e);
+                            }
+                        }
+                    });
+                }
+            });
+    }
+
     @Override
     public IRhoWebView detachWebView() {
         return mBackendView.detachWebView();

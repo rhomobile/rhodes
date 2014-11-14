@@ -3,9 +3,12 @@ package com.rhomobile.rhodes.webview;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
 
 public class WebViewConfig implements IRhoConfig {
+
+    private static final String TAG = WebViewConfig.class.getSimpleName();
 
     public static final String ENABLE_PAGE_LOADING_INDICATION = "enablePageLoadingIndication";
     public static final String ENABLE_ZOOM = "enableZoom";
@@ -44,19 +47,29 @@ public class WebViewConfig implements IRhoConfig {
     @Override
     public boolean getBool(String name, boolean defValue) {
         String str = mConfigMap.get(name);
-        return str == null ? defValue : Boolean.parseBoolean(str);
+        return ((str == null) || (str.length() == 0)) ? defValue : Boolean.parseBoolean(str);
     }
 
     @Override
     public int getInt(String name, int defValue) {
         String str = mConfigMap.get(name);
-        return str == null ? defValue : Integer.parseInt(str);
+        try {
+            return ((str == null) || (str.length() == 0)) ? defValue : Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            Logger.W(TAG, e);
+            return defValue;
+        }
     }
 
     @Override
     public double getDouble(String name, double defValue) {
         String str = mConfigMap.get(name);
-        return str == null ? defValue : Double.parseDouble(str);
+        try {
+            return ((str == null) || (str.length() == 0)) ? defValue : Double.parseDouble(str);
+        } catch (NumberFormatException e) {
+            Logger.W(TAG, e);
+            return defValue;
+        }
     }
 
     @Override
