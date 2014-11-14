@@ -1508,6 +1508,11 @@ module RhogenCore
         result_type = TYPE_STRING
       else
         result_type = result_type.to_s
+
+        # upcase return type if needed
+        if ALL_TYPES.include?(result_type.upcase)
+          result_type = result_type.upcase
+        end
       end
       if result_type == ""
         puts "you use RETURN/CALLBACK with invalid type - use default STRING type ! Module[#{module_item.name}].method[#{module_method.name}]"

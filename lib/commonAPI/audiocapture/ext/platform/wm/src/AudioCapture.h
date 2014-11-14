@@ -70,21 +70,21 @@ public:
 	BOOL ApplicationFocusChange(bool bActivated);
 	void ResetToDefaults();
 	/**
-	* Sets a property or a method of the card reader module
+	* Sets a property or a method of the audiocapture module
 	*/
 	BOOL SetPropertyOrMethod(LPCTSTR szPropertyName, LPCTSTR szPropertyValue);
 
 	/**
-	* Retrieves a property of the card reader module
+	* Retrieves a property of the audiocapture module
 	*/
 	BOOL RetrieveProperty(LPCTSTR szParameterName, WCHAR* szParameterValue);
 
 	/**
-	* Retrieves all the properties of the card reader module
+	* Retrieves all the properties of the audiocapture module
 	*/
 	void RetrieveAllProperties(rho::apiGenerator::CMethodResult* pCallback);
 	/**
-	* Sets the callback function for swipe event
+	* Sets the callback function
 	*/
 	void SetCallback(rho::apiGenerator::CMethodResult* pCallback);
 private:

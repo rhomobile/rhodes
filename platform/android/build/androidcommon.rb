@@ -64,7 +64,7 @@ def num_cpus
 end
 
 def get_sources(sourcelist)
-    File.read(sourcelist).split("\n")
+    res = File.read(sourcelist).split(/\r?\n/)
 end
 
 def get_objects(sources, objdir)
