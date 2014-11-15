@@ -128,9 +128,7 @@ Section %SECTION_NAME% appSection
   File /r "rho"
   File %APP_EXECUTABLE%
   File *.dll
-  File /r "imageformats"
-  %QT_VSPEC_FILES%
-  File "icon.ico"
+%QT_VSPEC_FILES%  File "icon.ico"
   File "icon.png"
 
 SectionEnd
