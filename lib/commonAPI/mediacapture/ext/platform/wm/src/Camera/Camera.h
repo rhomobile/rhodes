@@ -70,7 +70,7 @@ protected:
 	void initializePreviewPos();
 	void GetDataURI (BYTE* bData, int iLength, rho::String& data);	
 	void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri);
-	void RedrawViewerWnd();
+	virtual void RedrawViewerWnd();
 	virtual void SetFlashMode()=0;
 	virtual void SetDesiredWidth()=0;
 	virtual void SetDesiredHeight()=0;

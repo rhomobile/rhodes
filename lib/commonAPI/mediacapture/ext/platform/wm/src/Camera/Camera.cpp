@@ -1,5 +1,7 @@
 #include "Camera.h"
 #include "PBUtil.h"
+#include "common/RhodesApp.h"
+#include "common/ExtManager.h"
 
 #define DEFAULT_FILENAME L"Img"
 bool CCamera::m_IsCameraRunning = false;
@@ -243,10 +245,13 @@ BOOL CCamera::cmp(LPCTSTR tc1, LPCTSTR tc2)
 //below method initializes initial position of the user configurable preview window
 void CCamera::initializePreviewPos()
 {
-	m_PreviewLeft= GetSystemMetrics(SM_CXSCREEN)/2-50;
-	m_PreviewTop = GetSystemMetrics(SM_CYSCREEN)/2-50;
-	m_PreviewWidth = GetSystemMetrics(SM_CXSCREEN)/2+50;	
-	m_PreviewHeight = GetSystemMetrics(SM_CYSCREEN)/2+50;
+	RECT pos;
+	rho::common::CRhoExtData rhodes_data = RHODESAPP().getExtManager().makeExtData();  
+    GetClientRect(rhodes_data.m_hBrowserWnd,&pos);
+	m_PreviewLeft= pos.right/2-50;
+	m_PreviewTop = pos.bottom/2-50;
+	m_PreviewWidth = pos.right/2+50;	
+	m_PreviewHeight = pos.bottom/2+50;
 }
 void CCamera::GetDataURI (BYTE* bData, int iLength, rho::String& data)
 {
