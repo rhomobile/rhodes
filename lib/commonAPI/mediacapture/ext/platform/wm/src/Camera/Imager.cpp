@@ -476,3 +476,41 @@ void CImager::SetDesiredWidth()
 void CImager::SetDesiredHeight()
 {
 }
+void CImager::RedrawViewerWnd()
+{
+	TCHAR message[100];
+	DWORD dwRes;
+	if(m_PreviewOn)
+	{
+		CCamera::RedrawViewerWnd();
+		// Set the width of the target window for the video viewfinder
+		DWORD dwCapValue = m_PreviewWidth;// - m_rcWinPos.left + 1;
+		if((dwRes = Image_SetCapCurrValue(m_hImager, IMG_VFCAP_WINWIDTH, sizeof(dwCapValue), &dwCapValue) != E_IMG_SUCCESS))
+		{
+			wsprintf(message, L"Imager_SetCapCurrValue error %d", dwRes);
+			LOG(ERROR) + __FUNCTION__ + message;	
+		}
+		// Set the height of the target window for the video viewfinder
+		dwCapValue = m_PreviewHeight;// - m_rcWinPos.top + 1;
+		if(Image_SetCapCurrValue(m_hImager, IMG_VFCAP_WINHEIGHT, sizeof(dwCapValue), &dwCapValue) != E_IMG_SUCCESS)
+		{
+			wsprintf(message, L"Imager_SetCapCurrValue error %d", dwRes);
+			LOG(ERROR) + __FUNCTION__ + message;	
+		}
+		BOOL bCrop = TRUE;
+		if(Image_SetCapCurrValue(m_hImager, IMG_IMGCAP_MATCHVFCAPCROP, sizeof(BOOL), &bCrop) != E_IMG_SUCCESS)
+		{
+
+			wsprintf(message, L"Imager_SetCapCurrValue error %d", dwRes);
+			LOG(ERROR) + __FUNCTION__ + message;	
+		}
+		// Specifies the window handle to be used to display the viewfinder
+		dwCapValue = (DWORD)m_ViewFinder.getViewerWndHandle();
+		if(Image_SetCapCurrValue(m_hImager, IMG_VFCAP_WINHANDLE, sizeof(dwCapValue), &dwCapValue) != E_IMG_SUCCESS)
+		{
+
+			wsprintf(message, L"Imager_SetCapCurrValue error %d", dwRes);
+			LOG(ERROR) + __FUNCTION__ + message;	
+		}
+	}
+}

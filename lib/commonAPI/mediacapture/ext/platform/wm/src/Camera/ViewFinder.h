@@ -18,10 +18,6 @@ private:
 	
 	IViewFinderCallBack* m_pCallBack;	
 	HWND m_hwndPreview;
-	//int m_iX;
-	//int m_iY;
-	//int m_iH;
-	//bool m_bIsLandscape;
 	HINSTANCE m_appInstance;
 	HWND m_appMainWnd;
 
@@ -32,6 +28,7 @@ public:
 	void DestroyViewerWindow();
 	void RepositionWindow(const RECT& pos);
 	static LRESULT CALLBACK FullScreenWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	HWND getViewerWndHandle();
 protected:
 	int scaledpx( int size);
 	int scaleForY( int size);

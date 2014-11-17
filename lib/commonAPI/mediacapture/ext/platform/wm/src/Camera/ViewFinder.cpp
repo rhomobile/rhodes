@@ -95,95 +95,49 @@ LRESULT CALLBACK CViewFinder::FullScreenWndProc(HWND hWnd, UINT message, WPARAM 
     }
     return TRUE;
 }
-int m_iH = GetSystemMetrics(SM_CYSCREEN);
-int iXCoord = GetSystemMetrics(SM_CXSCREEN);
-float iRatio;
-int m_iX;
-int m_iY;
-bool m_bIsLandscape;
-int CViewFinder::scaledpx( int size)
-{
-    int retSize = (int)(m_iH/((double)m_iY/(double)size));
-    return retSize;
-}
-
-int CViewFinder::scaleForY( int size)
-{
-    if (m_bIsLandscape)
-        return (int)((float)size / 1.4);
-    else
-        return size;
-}
-int CViewFinder::scaleForMargain(int size)
-{
-    if (m_bIsLandscape)
-        return size + 30;
-    else
-        return size;
-}
 HWND CViewFinder::createFullScreenWindow(HWND hwndParent, RECT& pos)
 {	
-    int iXCoord = GetSystemMetrics(SM_CXSCREEN);
-    float iRatio;
-    if (iXCoord > m_iH)
-        iRatio = (float)iXCoord / (float)m_iH;
-    else
-        iRatio = (float)m_iH / (float)iXCoord;
 
-    //  Only currently considered ratios are 1:1.333333 and 1:1.66666
-    int iSmallSide = 240;
-    int iLongSide = 320;
-    if (iRatio < 1.7f && iRatio >1.6f)
-    {
-        //  Screen is 1.666666 ratio
-        iSmallSide = 240;
-        iLongSide = 400;
-    }
+	int screenwidth=GetSystemMetrics(SM_CXSCREEN);
+	int screenheight=GetSystemMetrics(SM_CYSCREEN);
 
-    if (iXCoord > m_iH)
-    {
-        //  The device is in landscape mode
-        m_iX = iLongSide;
-        m_iY = iSmallSide;
-        m_bIsLandscape = true;
-    }
-    else
-    {
-        m_iX = iSmallSide;
-        m_iY = iLongSide;
-    }
+	HWND hwndFullScreen = CreateWindowEx(WS_EX_NOANIMATION|WS_EX_TOPMOST, L"Dialog", L"", WS_POPUP | WS_VISIBLE ,
+		0, 0, screenwidth, screenheight, hwndParent, NULL, m_appInstance, NULL);
+	if(hwndFullScreen)
+	{
+		//get the viewerwnd position
+		GetClientRect (hwndFullScreen, &pos);
+		//calculate the button size
+		HWND hwnd = CreateWindow (L"BUTTON", L"", WS_CHILD, 0, 0, 0, 0, hwndFullScreen, (HMENU) 0, m_appInstance, NULL);
+		HDC hdc = GetDC (hwnd);
+		SIZE size;
+		GetTextExtentPoint32 (hdc, L"Capture", 7, &size);
+		ReleaseDC (hwnd, hdc);
+		DestroyWindow (hwnd);
+		DEBUGMSG (TRUE, (L"Button size %d x %d\r\n", size.cx, size.cy));
 
-    int iLeftPos = (GetSystemMetrics(SM_CXSCREEN)/2) - scaledpx(m_iX/2);
-    int iTopPos = (GetSystemMetrics(SM_CYSCREEN)/2) - scaledpx(m_iY/2);
+		int buttonWidth = (size.cx + 18);
+		int buttonHeight = size.cy+6;
 
-    HWND hwndFullScreen = CreateWindowEx(WS_EX_NOANIMATION|WS_EX_TOPMOST, L"Dialog", L"", WS_POPUP | WS_VISIBLE ,
-        iLeftPos, iTopPos, scaledpx(m_iX), scaledpx(m_iY), hwndParent, NULL, m_appInstance, NULL);
+		int buttonTop = pos.bottom - buttonHeight - 16;
 
-    //ShowWindow(hwndParent, SW_HIDE);
-    if (hwndFullScreen)
-    {		
-        //set viewer window position in case of full screen
-        pos.left = 0;
-        pos.top = 0;
-        pos.right = GetSystemMetrics(SM_CXSCREEN);
-        pos.bottom =  scaledpx(scaleForY(228));
+		int buttonLeft = (int)(screenwidth*0.40);
 
-        //create child controls
-        HWND m_hwndCancel = CreateWindowEx(WS_EX_NOANIMATION,_T("Button"), L"Cancel", 
-            WS_CHILD | BS_PUSHBUTTON | WS_VISIBLE , 
-            scaledpx(scaleForMargain(180)), scaledpx(scaleForY(240)), scaledpx(55), scaledpx(scaleForY(22)), hwndFullScreen, (HMENU)CMD_CANCEL, m_appInstance, NULL);
+		//draw buttons
 
-        HWND m_hwndCapture = CreateWindowEx(WS_EX_NOANIMATION,_T("Button"), L"Capture", 
-            WS_CHILD | BS_PUSHBUTTON | WS_VISIBLE , 
-            scaledpx(scaleForMargain(120)), scaledpx(scaleForY(240)), scaledpx(55), scaledpx(scaleForY(22)), hwndFullScreen, (HMENU)CMD_CAPTURE, m_appInstance, NULL);
+		HWND m_hwndCapture=CreateWindow (L"BUTTON", L"Capture", WS_CHILD | WS_VISIBLE,
+			buttonLeft, buttonTop, buttonWidth, buttonHeight, hwndFullScreen, (HMENU) CMD_CAPTURE, m_appInstance, NULL);
 
-        SetWindowLong(hwndFullScreen, GWL_WNDPROC, (LONG) FullScreenWndProc);
+		buttonLeft = buttonLeft + buttonWidth +5; //move cancel button bit right of capture
+
+		HWND m_hwndCancel=CreateWindow (L"BUTTON", L"Cancel", WS_CHILD | WS_VISIBLE,
+			buttonLeft, buttonTop, buttonWidth, buttonHeight, hwndFullScreen, (HMENU)CMD_CANCEL, m_appInstance, NULL);
+
 		SetWindowLong(hwndFullScreen,GWL_USERDATA,(long) m_pCallBack);
-   
+		SetWindowLong(hwndFullScreen, GWL_WNDPROC, (LONG) FullScreenWndProc);
 
-    }
-
-    return hwndFullScreen;
+	}
+	return hwndFullScreen;
 
 }
 HWND CViewFinder::createPreviewWindow(HWND hwndParent, const RECT& pos)
@@ -200,5 +154,9 @@ HWND CViewFinder::createPreviewWindow(HWND hwndParent, const RECT& pos)
             hwndParent, NULL, m_appInstance, NULL);
     }
     return hwndPreviewWnd;
+}
+HWND CViewFinder::getViewerWndHandle()
+{
+	return m_hwndPreview;
 }
 
