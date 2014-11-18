@@ -64,6 +64,6 @@ protected:
 	virtual void SetFlashMode();
 	virtual void SetDesiredWidth();
 	virtual void SetDesiredHeight();
-	virtual void RedrawViewerWnd();
+	virtual void RedrawViewerWnd(RECT& pos);
 };
 #endif

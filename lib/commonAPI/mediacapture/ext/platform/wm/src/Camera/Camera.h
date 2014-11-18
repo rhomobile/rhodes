@@ -61,6 +61,8 @@ public:
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
 	virtual void cancel();
 	virtual void captureImage();
+	virtual void ResetViewerWndPos(RECT& pos);//viewerwnd callback
+	void ResetViewerWndPos();//called when user update position manually
 	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback);
 protected:
 	/**
@@ -70,7 +72,7 @@ protected:
 	void initializePreviewPos();
 	void GetDataURI (BYTE* bData, int iLength, rho::String& data);	
 	void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri);
-	virtual void RedrawViewerWnd();
+	virtual void RedrawViewerWnd(RECT& pos);
 	virtual void SetFlashMode()=0;
 	virtual void SetDesiredWidth()=0;
 	virtual void SetDesiredHeight()=0;

@@ -7,11 +7,18 @@
 #define CMD_CANCEL	0x6001		///< HMENU id for the cancel button
 #define CMD_CAPTURE	0x6002		///< HMENU id for the capture button
 
+HWND CViewFinder::m_hwndPreview = NULL;
+HWND CViewFinder::m_PreviewWndParent = NULL;
+HWND CViewFinder::m_CancelButton = NULL;
+HWND CViewFinder::m_CaptureButton = NULL;
 
 CViewFinder::CViewFinder()
 {
     m_pCallBack = NULL;	
     m_hwndPreview = NULL;
+	m_PreviewWndParent = NULL;
+	m_CancelButton = NULL;
+	m_CaptureButton = NULL;
     // Get the parent window handle, i.e. the webkit window, and the application instance
     rho::common::CRhoExtData rhodes_data = RHODESAPP().getExtManager().makeExtData();
     m_appInstance = (HINSTANCE) (rhodes_data.m_hInstance);
@@ -28,13 +35,13 @@ HWND CViewFinder::CreateViewerWindow(RECT& pos, eViewrWndMode eMode)
     {		
         DestroyViewerWindow();
     }
-    HWND hwndViewerParent = m_appMainWnd;
+    m_PreviewWndParent = m_appMainWnd;
     if(eFullScreen == eMode)
     {
         //structure pos will be calculated in below call
-        hwndViewerParent = createFullScreenWindow(m_appMainWnd, pos);
+        m_PreviewWndParent = createFullScreenWindow(m_appMainWnd, pos);
     }
-    m_hwndPreview = createPreviewWindow(hwndViewerParent, pos);
+    m_hwndPreview = createPreviewWindow(m_PreviewWndParent, pos);
     return m_hwndPreview;
 }
 void CViewFinder::RepositionWindow(const RECT& pos)
@@ -50,44 +57,57 @@ void CViewFinder::RepositionWindow(const RECT& pos)
     }
 }
 void CViewFinder::DestroyViewerWindow()
-{
-    HWND hwndParent = GetParent(m_hwndPreview);
-    if(hwndParent != m_appMainWnd)
+{   
+    if(m_PreviewWndParent != m_appMainWnd)
     {
         DestroyWindow(m_hwndPreview);
-        m_hwndPreview = NULL;
-        DestroyWindow(hwndParent);
+        DestroyWindow(m_PreviewWndParent);
     }
     else
     {
         DestroyWindow(m_hwndPreview);
-        m_hwndPreview = NULL;
     }
+	m_PreviewWndParent = NULL;
+	m_hwndPreview = NULL;
+	m_CancelButton = NULL;
+	m_CaptureButton = NULL;
 }
 LRESULT CALLBACK CViewFinder::FullScreenWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     IViewFinderCallBack* pObj = (IViewFinderCallBack *)GetWindowLong(hWnd, GWL_USERDATA);
     switch(message)
     {
-    case WM_COMMAND:
-        {
-            switch(LOWORD(wParam))
-            {
+	case WM_COMMAND:
+		{
+			switch(LOWORD(wParam))
+			{
 
-            case CMD_CAPTURE:
-                {
-                    pObj->captureImage();
-                    break;
-                }
-            case CMD_CANCEL:
-                {
-                    pObj->cancel();
-                    break;
-                }
-            }
+			case CMD_CAPTURE:
+				{
+					pObj->captureImage();
+					break;
+				}
+			case CMD_CANCEL:
+				{
+					pObj->cancel();				
+					break;
+				}
+			}
 
-            break;
-        }
+			break;
+		}
+	case WM_SETTINGCHANGE:
+		{
+			// Determine whether wParam's contains 
+			// the value SETTINGCHANGE_RESET.
+			if (wParam == SETTINGCHANGE_RESET)
+			{
+				RECT pos;
+				ReposFullScreen(pos);		
+			    pObj->ResetViewerWndPos(pos);
+			}
+			break;
+		}
     default:
         {
             return DefWindowProc(hWnd, message, wParam, lParam);
@@ -125,12 +145,12 @@ HWND CViewFinder::createFullScreenWindow(HWND hwndParent, RECT& pos)
 
 		//draw buttons
 
-		HWND m_hwndCapture=CreateWindow (L"BUTTON", L"Capture", WS_CHILD | WS_VISIBLE,
+		m_CaptureButton=CreateWindow (L"BUTTON", L"Capture", WS_CHILD | WS_VISIBLE,
 			buttonLeft, buttonTop, buttonWidth, buttonHeight, hwndFullScreen, (HMENU) CMD_CAPTURE, m_appInstance, NULL);
 
 		buttonLeft = buttonLeft + buttonWidth +5; //move cancel button bit right of capture
 
-		HWND m_hwndCancel=CreateWindow (L"BUTTON", L"Cancel", WS_CHILD | WS_VISIBLE,
+		m_CancelButton=CreateWindow (L"BUTTON", L"Cancel", WS_CHILD | WS_VISIBLE,
 			buttonLeft, buttonTop, buttonWidth, buttonHeight, hwndFullScreen, (HMENU)CMD_CANCEL, m_appInstance, NULL);
 
 		SetWindowLong(hwndFullScreen,GWL_USERDATA,(long) m_pCallBack);
@@ -159,4 +179,28 @@ HWND CViewFinder::getViewerWndHandle()
 {
 	return m_hwndPreview;
 }
+void CViewFinder::ReposFullScreen(RECT& pos)
+{
+	int screenwidth=GetSystemMetrics(SM_CXSCREEN);
+	int screenheight=GetSystemMetrics(SM_CYSCREEN);
+
+	//reset full screen wnd pos
+	//MoveWindow(m_PreviewWndParent, 0,0, screenwidth, screenheight, FALSE);
+	SetWindowPos(m_PreviewWndParent, HWND_TOPMOST, 0, 0 , screenwidth, screenheight,SWP_SHOWWINDOW);
+	
+	//get the viewerwnd position	
+	GetClientRect (m_PreviewWndParent, &pos);	
+
+	RECT buttonPos;
+	GetClientRect(m_CancelButton, &buttonPos);
+	int buttonTop = pos.bottom - buttonPos.bottom - 16;
+	int buttonLeft = (int)(screenwidth*0.40);
+	
+	//draw buttons	
+	SetWindowPos(m_CaptureButton, m_PreviewWndParent, buttonLeft, buttonTop , buttonPos.right, buttonPos.bottom,SWP_SHOWWINDOW);
+    buttonLeft = buttonLeft + buttonPos.right +5; //move cancel button bit right of capture
+	SetWindowPos(m_CancelButton, m_PreviewWndParent, buttonLeft, buttonTop , buttonPos.right, buttonPos.bottom,SWP_SHOWWINDOW);	
+	
+}
+
 
