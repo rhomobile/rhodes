@@ -96,6 +96,14 @@ LRESULT CALLBACK CViewFinder::FullScreenWndProc(HWND hWnd, UINT message, WPARAM 
 
 			break;
 		}
+	case WM_KEYDOWN:
+		{
+			if(wParam == VK_RETURN)
+			{
+				pObj->captureImage();
+			}
+			break;
+		}
 	case WM_SETTINGCHANGE:
 		{
 			// Determine whether wParam's contains 
