@@ -476,22 +476,22 @@ void CImager::SetDesiredWidth()
 void CImager::SetDesiredHeight()
 {
 }
-void CImager::RedrawViewerWnd()
+void CImager::RedrawViewerWnd(RECT& pos)
 {
 	TCHAR message[100];
 	DWORD dwRes;
 	if(m_PreviewOn)
 	{
-		CCamera::RedrawViewerWnd();
+		CCamera::RedrawViewerWnd(pos);
 		// Set the width of the target window for the video viewfinder
-		DWORD dwCapValue = m_PreviewWidth;// - m_rcWinPos.left + 1;
+		DWORD dwCapValue = pos.right;// - m_rcWinPos.left + 1;
 		if((dwRes = Image_SetCapCurrValue(m_hImager, IMG_VFCAP_WINWIDTH, sizeof(dwCapValue), &dwCapValue) != E_IMG_SUCCESS))
 		{
 			wsprintf(message, L"Imager_SetCapCurrValue error %d", dwRes);
 			LOG(ERROR) + __FUNCTION__ + message;	
 		}
 		// Set the height of the target window for the video viewfinder
-		dwCapValue = m_PreviewHeight;// - m_rcWinPos.top + 1;
+		dwCapValue = pos.bottom;// - m_rcWinPos.top + 1;
 		if(Image_SetCapCurrValue(m_hImager, IMG_VFCAP_WINHEIGHT, sizeof(dwCapValue), &dwCapValue) != E_IMG_SUCCESS)
 		{
 			wsprintf(message, L"Imager_SetCapCurrValue error %d", dwRes);

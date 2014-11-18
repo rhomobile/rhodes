@@ -158,22 +158,22 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 	else if(cmp(szPropertyName, L"previewLeft"))
 	{
 		m_PreviewLeft = _ttoi(szPropertyValue);
-		RedrawViewerWnd();
+		ResetViewerWndPos();
 	}
 	else if(cmp(szPropertyName, L"previewTop"))
 	{
 		m_PreviewTop = _ttoi(szPropertyValue);
-		RedrawViewerWnd();
+		ResetViewerWndPos();
 	}
 	else if(cmp(szPropertyName, L"previewWidth"))
 	{
 		m_PreviewWidth = _ttoi(szPropertyValue);
-		RedrawViewerWnd();
+		ResetViewerWndPos();
 	}
 	else if(cmp(szPropertyName, L"previewHeight"))
 	{
 		m_PreviewHeight = _ttoi(szPropertyValue);
-		RedrawViewerWnd();
+		ResetViewerWndPos();
 	}
 	else if(cmp(szPropertyName, L"compressionFormat"))
 	{
@@ -316,7 +316,14 @@ void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho:
 	m_pCameraCb.set(statusData);		
 
 }
-void CCamera::RedrawViewerWnd()
+void CCamera::RedrawViewerWnd(RECT& pos)
+{
+	if(m_PreviewOn)
+	{
+		m_ViewFinder.RepositionWindow(pos);
+	}
+}
+void CCamera::ResetViewerWndPos()
 {
 	if(m_PreviewOn)
 	{
@@ -325,8 +332,15 @@ void CCamera::RedrawViewerWnd()
 		pos.top = m_PreviewTop;
 		pos.right = m_PreviewWidth;
 		pos.bottom = m_PreviewHeight;
-		m_ViewFinder.RepositionWindow(pos);
+		RedrawViewerWnd(pos);
 
+	}
+}
+void CCamera::ResetViewerWndPos(RECT& pos)
+{
+	if(m_PreviewOn)
+	{
+		RedrawViewerWnd(pos);
 	}
 }
 
