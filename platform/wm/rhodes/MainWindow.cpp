@@ -518,7 +518,13 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     }
 
     if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()) )
-        m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+    {
+        
+        if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
+        {
+            m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+        }
+     }
 
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, ySize-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
