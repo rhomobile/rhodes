@@ -1751,6 +1751,18 @@ namespace 'cloud' do
       raise Exception.new('Application repository is not hosted on cloud build server')
     end
 
+    result = Jake.run2('git',%w(log --oneline origin/master..HEAD),{:directory=>$app_path,:hide_output=>true})
+
+    if $?.exitstatus != 0
+      BuildOutput.error(["Application repository does not have any commits stored on server","Please create your project, commit files and push changes to server."], 'Cloud build')
+      raise Exception.new('Application repository is not ready for cloud build')
+    else
+      lines = result.lines.count
+      if lines > 0
+        BuildOutput.warning(["Application repository is ahead of remote repository by #{lines} commit(s)","Please check if you are building correct version and push your changes to server if necessary."], 'Cloud build')
+      end
+    end
+
     rhohub_make_request($user_acc.server) do
 
       #get app list
