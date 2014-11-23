@@ -126,6 +126,7 @@ public class SplashScreen implements MainView{
                 imageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));
                 imageView.setAdjustViewBounds(true);
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                imageView.setBackgroundColor(0xFF000000);
                 mView = imageView;
             } catch (IOException e) {
                 Logger.E(TAG, e);
