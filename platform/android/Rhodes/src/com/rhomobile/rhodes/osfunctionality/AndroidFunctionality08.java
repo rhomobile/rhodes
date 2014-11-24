@@ -27,17 +27,12 @@
 package com.rhomobile.rhodes.osfunctionality;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoConf;
-import com.rhomobile.rhodes.event.CalendarIDsProvider;
-import com.rhomobile.rhodes.event.CalendarIDsProviderFroyo;
-import com.rhomobile.rhodes.util.ContextFactory;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
-import android.webkit.WebSettings;
 
 //Android 2.2
 class AndroidFunctionality08 extends AndroidFunctionality07 implements
@@ -69,10 +64,4 @@ class AndroidFunctionality08 extends AndroidFunctionality07 implements
             return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         }
     }
-            
-    @Override
-    public CalendarIDsProvider buildCalendarIDsProvider() {
-        return new CalendarIDsProviderFroyo();
-    }
-
 }

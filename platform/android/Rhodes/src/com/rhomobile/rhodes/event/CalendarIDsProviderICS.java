@@ -1,10 +1,11 @@
 package com.rhomobile.rhodes.event;
 
+import android.net.Uri;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Events;
 
-public class CalendarIDsProviderICS extends CalendarIDsProvider {
-	public String getAuthority()			{ return CalendarContract.AUTHORITY; }
+public class CalendarIDsProviderICS implements ICalendarIDsProvider {
+	public Uri.Builder getUriBuilder()		{ return CalendarContract.CONTENT_URI.buildUpon(); }
 	
 	public String getEventsID()				{ return Events._ID; }
 	public String getEventsEventID()		{ return "event_id"; }
