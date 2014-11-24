@@ -202,7 +202,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PLATFORM>Android, iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="hasTouchscreen" type="BOOLEAN" readOnly="true">
-                <DESC>Returns true if the device has touch screen capabilities.</DESC>
+                <DESC>Returns true if the device has touch screen capabilities.  For Win32 desktop builds this API will return whether mouse support is available.</DESC>
             </PROPERTY>
             <PROPERTY name="webviewFramework" type="STRING" readOnly="true">
                 <DESC>Browser framework identity string.</DESC>
