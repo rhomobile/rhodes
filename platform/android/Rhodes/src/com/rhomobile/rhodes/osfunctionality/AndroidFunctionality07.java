@@ -26,9 +26,6 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-
 //Android 2.1
 class AndroidFunctionality07 extends AndroidFunctionality06 implements AndroidFunctionality {
 }
