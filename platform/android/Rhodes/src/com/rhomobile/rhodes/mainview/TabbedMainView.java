@@ -1031,13 +1031,16 @@ public class TabbedMainView implements MainView {
 	public void switchTab(int index) {
 		if(((index >= 0) && (tabData.size()-1)>=index))
 		{
-			host.setCurrentTab(index);
-			tabIndex = index;
-		
+			if (!tabData.get(index).disabled) {
+				host.setCurrentTab(index);
+				tabIndex = index;
+			}
+			else {
+				Logger.I(TAG, "Not switching to disabled tab... "+"total tabs="+tabData.size()+" index="+index );
+			}
 		}
 		else
 		{
-			
 			Logger.I(TAG, "Not switching to invalid tab... "+"total tabs="+tabData.size()+" index="+index );
 		}
 	}

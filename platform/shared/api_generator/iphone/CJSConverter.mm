@@ -128,7 +128,9 @@
     
 
     if (jsonEntry->isString()) {
-        return [NSString stringWithUTF8String:jsonEntry->getString()];
+        rho::String str = json_entry->getStringObject();
+
+        return [[NSString alloc] initWithBytes:str.c_str() length:str.length() encoding:NSUTF8StringEncoding];
     }
     if (jsonEntry->isInteger()) {
         return [NSNumber numberWithInt:jsonEntry->getInt()];

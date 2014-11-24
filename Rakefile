@@ -1111,49 +1111,7 @@ def best_match(target, list, is_lex = false)
   best
 end
 
-def find_platform_version(platform, platform_list, default_ver, info, is_lex = false)
-  platform_conf = platform_list[platform]
-  if platform_conf.empty?
-    raise Exception.new("Could not find any #{platform} sdk on cloud build server")
-  end
 
-  req_ver = nil
-
-  req_ver = $app_config[platform]["version"] unless $app_config[platform].nil?
-  req_ver = $config[platform]["version"] if req_ver.nil? and !$config[platform].nil?
-
-  req_ver = default_ver if req_ver.nil?
-
-  best = platform_conf.first
-
-  if !(req_ver.nil? || req_ver.empty?)
-    if !is_lex
-      platform_conf.sort{|a, b| String.natcmp(b[:ver],a[:ver])}.each do |ver|
-        if String.natcmp(req_ver, ver[:ver]) < 0
-          best = ver
-        else
-          break
-        end
-      end
-    else
-      best = platform_conf.min_by{ |el| distance(el[:ver],req_ver, true) }
-    end
-
-    if info
-      if best[:ver] != req_ver
-        puts "WARNING! Could not find exact version of #{platform} sdk. Using #{best[:ver]} instead of #{req_ver}"
-      else
-        puts "Using requested #{platform} sdk version #{req_ver}"
-      end
-    end
-  else
-    if info
-      puts "No #{platform} sdk version was specified, using #{best[:ver]}"
-    end
-  end
-
-  best
-end
 
 def check_cloud_build_result(result)
   if !(result["text"].nil?)
@@ -1561,8 +1519,92 @@ def get_build(build_id, show_info = false)
   return result, message, platform
 end
 
+def find_platform_version(platform, platform_conf, req_ver, info, is_lex = false)
+  best = platform_conf.first
+
+  unless req_ver.nil?
+    req_ver_display = req_ver.empty? ? 'default' : req_ver
+  else
+    req_ver_display = 'default'
+  end
+
+  unless req_ver.nil?
+    if !is_lex
+      platform_conf.sort { |a, b| String.natcmp(b[:ver], a[:ver]) }.each do |ver|
+        if String.natcmp(req_ver, ver[:ver]) < 0
+          best = ver
+        else
+          break
+        end
+      end
+    else
+      best = platform_conf.min_by { |el| distance(el[:ver], req_ver, true) }
+    end
+
+    if info
+      if best[:ver] != req_ver
+        puts "WARNING! Could not find exact version of #{platform} sdk. Using #{best[:ver]} instead of #{req_ver_display}"
+      else
+        puts "Using requested #{platform} sdk version #{req_ver_display}"
+      end
+    end
+  else
+    if info
+      if !best[:ver].empty?
+        puts "No #{platform} sdk version was specified, using #{best[:ver]}"
+      else
+        puts "Using requested #{platform} sdk."
+      end
+    end
+  end
+
+  best
+end
+
+def try_get_platform_config(platform, platform_list)
+  platform_conf = platform_list[platform]
+  if platform_conf.empty?
+    raise Exception.new("Could not find any #{platform} sdk on cloud build server")
+  end
+  platform_conf
+end
+
+def platform_ver_from_config(platform, default_ver, use_sdk = false)
+  req_ver = nil
+
+  unless $app_config[platform].nil?
+    req_ver = $app_config[platform]["version"]
+    req_ver = $app_config[platform]["sdk"] if req_ver.nil? && use_sdk
+  end
+
+  unless $config[platform].nil?
+    req_ver = $config[platform]["version"] if req_ver.nil?
+    req_ver = $config[platform]["sdk"] if req_ver.nil? && use_sdk
+  end
+
+  req_ver = default_ver if req_ver.nil?
+  req_ver
+end
+
 def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
-  platform_version = find_platform_version(platform_name, platform_list, config_override, true, is_lexicographic_ver)
+
+  platform_conf = try_get_platform_config(platform_name, platform_list)
+
+  req_ver = platform_ver_from_config(platform_name, config_override, platform_name == 'wm')
+
+  if platform_name == 'wm'
+    digits = nil
+
+    if req_ver.downcase.include?('windows mobile'.downcase)
+      digits = req_ver.match(/(?<![\d\w])(\d+(?:\.\d+(?:\.\d+)*)*)(?![\d\w])/i)
+    elsif req_ver.match(/(?<![a-z])wm(?![a-z])/i)
+      digits = req_ver.match(/(?<=wm)(\d+(?:\.\d+(?:\.\d+)*)*)(?![\d\w])/i)
+    end
+
+    req_ver = digits[0] unless digits.nil?
+  end
+
+  platform_version = find_platform_version(platform_name, platform_conf, req_ver, true, is_lexicographic_ver)
 
   puts "Running cloud build using #{platform_version[:tag]} command"
 
@@ -1745,6 +1787,18 @@ namespace 'cloud' do
     else
       BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Cloud build')
       raise Exception.new('Application repository is not hosted on cloud build server')
+    end
+
+    result = Jake.run2('git',%w(log --oneline origin/master..HEAD),{:directory=>$app_path,:hide_output=>true})
+
+    if $?.exitstatus != 0
+      BuildOutput.error(["Application repository does not have any commits stored on server","Please create your project, commit files and push changes to server."], 'Cloud build')
+      raise Exception.new('Application repository is not ready for cloud build')
+    else
+      lines = result.lines.count
+      if lines > 0
+        BuildOutput.warning(["Application repository is ahead of remote repository by #{lines} commit(s)","Please check if you are building correct version and push your changes to server if necessary."], 'Cloud build')
+      end
     end
 
     rhohub_make_request($user_acc.server) do
@@ -2112,7 +2166,7 @@ namespace 'cloud' do
       task :production => ['build:initialize'] do
         $build_platform = 'wm'
 
-        do_platform_build( $build_platform, $platform_list, false)
+        do_platform_build( $build_platform, $platform_list, false, {}, '6.5')
       end
     end
 
