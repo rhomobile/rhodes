@@ -40,16 +40,7 @@ public class AndroidFunctionalityManager {
 	public static AndroidFunctionality getAndroidFunctionality() {
 		if (ourFunctionality == null) {
 			int sdkVersion = Build.VERSION.SDK_INT;
-			if ( sdkVersion >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ) { // 4.0 - 14
-				ourFunctionality = new AndroidFunctionality14();
-			}
-			else if ( sdkVersion >= Build.VERSION_CODES.HONEYCOMB_MR2) { // 3.2 - 13
-				ourFunctionality = new AndroidFunctionality13();
-			}
-			else if ( sdkVersion >= Build.VERSION_CODES.HONEYCOMB_MR1 ) { // 3.1 - 12
-				ourFunctionality = new AndroidFunctionality12();
-			}
-			else if (sdkVersion >= Build.VERSION_CODES.HONEYCOMB) { // 3.0.x - 11
+			if (sdkVersion >= Build.VERSION_CODES.HONEYCOMB) { // 3.0.x - 11
 				ourFunctionality = new AndroidFunctionality11();
 			}
 			else if (sdkVersion == Build.VERSION_CODES.GINGERBREAD_MR1) { // 2.3.3 and above - 10

@@ -1,8 +1,12 @@
 package com.rhomobile.rhodes.event;
 
-public class CalendarIDsProvider {
-	public String getAuthority()			{ return "calendar"; }
-	
+import android.net.Uri;
+import android.net.Uri.Builder;
+
+public class CalendarIDsProviderBase implements ICalendarIDsProvider{
+    public Builder getUriBuilder() { return new Uri.Builder().scheme("content").authority("calendar");
+    }
+
 	public String getEventsID()				{ return "_id"; }
 	public String getEventsEventID()		{ return "event_id"; }
 	public String getEventsTitle()			{ return "title"; }
