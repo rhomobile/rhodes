@@ -1547,14 +1547,14 @@ int CRhodesApp::determineFreeListeningPort()
         noerrors = 0;
     }
     
-    int disable = 0;
-    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&disable, sizeof(disable)) != 0)
+    int optval = 1;
+    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&optval, sizeof(optval)) != 0)
     {
         LOG(ERROR) + "Unable to set socket option";
         noerrors = 0;
     }
 #if defined(OS_MACOSX)
-    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char *)&disable, sizeof(disable)) != 0)
+    if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char *)&optval, sizeof(optval)) != 0)
     {
         LOG(ERROR) + "Unable to set socket option";
         noerrors = 0;
