@@ -198,7 +198,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="1"
-				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
+				AdditionalIncludeDirectories="&quot;$(RHO_ROOT)\platform\shared\ruby\wince&quot;;&quot;$(RHO_ROOT)\platform\shared\ruby\include&quot;;&quot;$(RHO_ROOT)\platform\shared&quot;;&quot;$(RHO_ROOT)\platform\shared\common&quot;;&quot;$(RHO_ROOT)\lib\commonAPI\mediacapture\ext\platform\wm\src\Include&quot;"
 				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -501,7 +501,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="1"
-				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
+				AdditionalIncludeDirectories="&quot;$(RHO_ROOT)\platform\shared\ruby\wince&quot;;&quot;$(RHO_ROOT)\platform\shared\ruby\include&quot;;&quot;$(RHO_ROOT)\platform\shared&quot;;&quot;$(RHO_ROOT)\platform\shared\common&quot;;&quot;$(RHO_ROOT)\lib\commonAPI\mediacapture\ext\platform\wm\src\Include&quot;"
 				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -655,11 +655,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Camera\DShowCam.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Camera\Imager.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\Camera\PBUtil.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\PropertyBag.cpp"
 					>
 				</File>
 				<File
@@ -679,11 +687,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Camera\DShowCam.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Camera\Imager.h"
 					>
 				</File>
 				<File
 					RelativePath=".\src\Camera\PBUtil.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\PropertyBag.h"
 					>
 				</File>
 				<File

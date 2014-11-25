@@ -91,7 +91,7 @@ BOOL CImager::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::Str
 
                 if(!_memicmp(ImageFindInfo.tszFriendlyName, L"Image Capture Driver for Color Camera", wcslen(L"Image Capture Driver for Color Camera")*sizeof(TCHAR)))
                 {
-                    camLookUp.put(rho::common::convertToStringA(szModifiedDeviceName), eColorCam );
+                    //camLookUp.put(rho::common::convertToStringA(szModifiedDeviceName), eColorCam );
                 }
                 else
                 {
