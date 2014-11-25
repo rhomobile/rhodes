@@ -26,11 +26,6 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-
-import com.rhomobile.rhodes.RhoConf;
-
 //Android 1.5
 class AndroidFunctionality03 extends AndroidFunctionality02 implements AndroidFunctionality {
 
