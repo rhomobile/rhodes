@@ -93,7 +93,7 @@ struct IRhoExtManager
     virtual void navigate(const wchar_t* szUrl) = 0;
     virtual bool existsJavascript(const wchar_t* szJSFunction) = 0;
     virtual void executeJavascript(const wchar_t* szJSFunction) = 0;
-
+    virtual void setNavigationTimeout(DWORD nDWTimeout)=0;
     virtual void rhoLog(ELogExtLevels eLogLevel, const char* szModule, const char* szMsg, const char* szFile, int nLine) = 0;
     virtual StringW getCurrentUrl() = 0;
     virtual void stopNavigate() = 0;
@@ -158,6 +158,7 @@ public:
     virtual unsigned long parseJsonToRubyHash(const char* szJson);
 
     virtual void executeJavascript(const wchar_t* szJSFunction);
+    virtual void setNavigationTimeout(DWORD nDWTimeout);
     virtual bool existsJavascript(const wchar_t* szJSFunction);
     virtual void rhoLog(ELogExtLevels eLogLevel, const char* szModule, const char* szMsg, const char* szFile, int nLine);
     virtual StringW getCurrentUrl();

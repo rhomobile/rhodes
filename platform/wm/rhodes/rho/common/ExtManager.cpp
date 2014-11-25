@@ -244,6 +244,10 @@ void CExtManager::executeJavascript(const wchar_t* szJSFunction)
 #endif
 }
 
+void CExtManager::setNavigationTimeout(DWORD nDWTimeout)
+{
+  ::PostMessage( getMainWnd(), WM_COMMAND, IDM_SETNAVTIMEOUT, (LPARAM)nDWTimeout );
+}
 StringW CExtManager::getCurrentUrl()
 {
     return convertToStringW(RHODESAPP().getCurrentUrl(rho_webview_active_tab()));

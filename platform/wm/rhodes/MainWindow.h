@@ -201,6 +201,7 @@ public:
         COMMAND_ID_HANDLER(IDM_NAVTIMEOUT, OnNavTimeout)
 		COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
         COMMAND_ID_HANDLER(IDM_EXECUTEJS, OnExecuteJSCommand)
+        COMMAND_ID_HANDLER(IDM_SETNAVTIMEOUT, OnSetNavTimeoutCommand)
         COMMAND_ID_HANDLER(IDM_UPDATEMENU, OnUpdateMenuCommand)
         COMMAND_ID_HANDLER(IDM_STOPNAVIGATE, OnStopNavigate)
         COMMAND_ID_HANDLER(IDM_ZOOMPAGE, OnZoomPage)
@@ -272,6 +273,7 @@ private:
     LRESULT OnNavTimeout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnSetNavTimeoutCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStopNavigate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

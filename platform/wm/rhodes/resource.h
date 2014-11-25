@@ -91,7 +91,7 @@
 #define IDM_ZOOMTEXT                    40036
 #define IDM_UPDATEMENU                  40037
 #define ID_TITLECHANGE                  40038
-
+#define IDM_SETNAVTIMEOUT               40040
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
