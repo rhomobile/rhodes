@@ -2568,6 +2568,7 @@ namespace "config" do
       end
 
       if $current_platform == "wm"
+        $app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
         $app_config['extensions'] = $app_config['extensions'] | ['indicators']
         $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
@@ -2585,6 +2586,7 @@ namespace "config" do
       end
 
       if $current_platform == "android"
+        $app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
         $app_config['extensions'] = $app_config['extensions'] | ['signature']
         $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
