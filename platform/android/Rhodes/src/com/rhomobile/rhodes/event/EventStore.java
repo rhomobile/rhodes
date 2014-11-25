@@ -43,68 +43,60 @@ import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.event.Event;
-import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
+import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
 
 public class EventStore {
+    
+    static {
+        OsVersionManager.registerSelector(ICalendarIDsProvider.class, CalendarIDsProviderBase.class.getCanonicalName());
+        OsVersionManager.registerSelector(Build.VERSION_CODES.FROYO, ICalendarIDsProvider.class, CalendarIDsProviderFroyo.class.getCanonicalName());
+        OsVersionManager.registerSelector(Build.VERSION_CODES.ICE_CREAM_SANDWICH, ICalendarIDsProvider.class, CalendarIDsProviderICS.class.getCanonicalName());
+    }
 	
 	private static final String TAG = "EventStore";
 	
-	private static final CalendarIDsProvider mIDsProvider = AndroidFunctionalityManager.getAndroidFunctionality().buildCalendarIDsProvider();
+	private static final ICalendarIDsProvider mIDsProvider = OsVersionManager.getFeature(ICalendarIDsProvider.class);
+	static ICalendarIDsProvider getIDsProvider() { return mIDsProvider; }
 	
-	private static final String AUTHORITY = mIDsProvider.getAuthority();
+    private static final Uri CALENDARS_URI = getIDsProvider().getUriBuilder().path("/calendars").build();
+	private static final Uri EVENTS_URI = getIDsProvider().getUriBuilder().path("/events").build();
 	
-	private static final Uri EVENTS_URI = Uri.parse("content://" + AUTHORITY + "/events");
-	
-	private static final String EVENTS_ID = mIDsProvider.getEventsID();
-    private static final String EVENTS_EVENT_ID = mIDsProvider.getEventsEventID();
-	private static final String EVENTS_TITLE = mIDsProvider.getEventsTitle();
-	private static final String EVENTS_START_DATE = mIDsProvider.getEventsStartDate();
-	private static final String EVENTS_END_DATE = mIDsProvider.getEventsEndDate();
-	private static final String EVENTS_LOCATION = mIDsProvider.getEventsLocation();
-	private static final String EVENTS_NOTES = mIDsProvider.getEventsNotes();
-	private static final String EVENTS_PRIVACY = mIDsProvider.getEventsPrivacy();
-	private static final String EVENTS_DELETED = mIDsProvider.getEventsDeleted();
-	private static final String EVENTS_DURATION = mIDsProvider.getEventsDuration();
-	private static final String EVENTS_BEGIN = mIDsProvider.getEventsBegin();
-	private static final String EVENTS_END = mIDsProvider.getEventsEnd();
-	private static final String EVENTS_RRULE = mIDsProvider.getEventsRrule();
-	
+	private static final String EVENTS_ID = getIDsProvider().getEventsID();
+    private static final String EVENTS_EVENT_ID = getIDsProvider().getEventsEventID();
+	private static final String EVENTS_TITLE = getIDsProvider().getEventsTitle();
+	private static final String EVENTS_START_DATE = getIDsProvider().getEventsStartDate();
+	private static final String EVENTS_END_DATE = getIDsProvider().getEventsEndDate();
+	private static final String EVENTS_LOCATION = getIDsProvider().getEventsLocation();
+	private static final String EVENTS_NOTES = getIDsProvider().getEventsNotes();
+	private static final String EVENTS_PRIVACY = getIDsProvider().getEventsPrivacy();
+	private static final String EVENTS_DELETED = getIDsProvider().getEventsDeleted();
+	private static final String EVENTS_DURATION = getIDsProvider().getEventsDuration();
+	private static final String EVENTS_BEGIN = getIDsProvider().getEventsBegin();
+	private static final String EVENTS_END = getIDsProvider().getEventsEnd();
+	private static final String EVENTS_RRULE = getIDsProvider().getEventsRrule();
+
     private static final String DATE_FORMAT_TRACE = "yyyy-MM-dd HH:mm:ss z";
 
     private static String dateToString(Date date) {
         if (null == date) return "null";
         
         return new SimpleDateFormat(DATE_FORMAT_TRACE).format(date);
-//		return String.format("%04d-%02d-%02d %02d:%02d:%02d",
-//				date.getYear() + 1900, date.getMonth() + 1, date.getDate(),
-//				date.getHours(), date.getMinutes(), date.getSeconds());
-	}
-	
+    }
+
 	private static void checkCapabilities() throws IllegalAccessException {
 		if (!Capabilities.CALENDAR_ENABLED)
 			throw new IllegalAccessException("Capability CALENDAR disabled");
 	}
-	
+
 	public static boolean hasCalendar() {
 		if (!Capabilities.CALENDAR_ENABLED) {
 			Logger.E(TAG, "Calendar capability is not enabled !!!");
 			return false;
 		}
-		final Cursor calendarCursor = getContentResolver().query(
-				Uri.parse("content://" + AUTHORITY + "/calendars"),
-				new String[] {EVENTS_ID},
-				null, null, null);
-		try {
-			if (calendarCursor != null) {
-				if (calendarCursor.moveToFirst())
-					return true;
-			}
-		}
-		finally {
-			if (calendarCursor != null) {
-				calendarCursor.close();
-			}
-		}
+        if( getContentResolver().acquireContentProviderClient(getIDsProvider().getUriBuilder().build()) != null) {
+            Logger.T(TAG, "Found calendar provider for: " + getIDsProvider().getUriBuilder().build());
+            return true;
+        }
 		return false;
 	}
 	
@@ -114,7 +106,7 @@ public class EventStore {
 	
 	private static long getDefaultCalendarId() {
 		final Cursor calendarCursor = getContentResolver().query(
-				Uri.parse("content://" + AUTHORITY + "/calendars"),
+		        CALENDARS_URI,
 				new String[] {EVENTS_ID},
 				null, null, null);
 		try {
@@ -131,12 +123,12 @@ public class EventStore {
 	private static void createCalendar() {
 		ContentValues values = new ContentValues();
 		
-		values.put( mIDsProvider.getCalendarName()			, "Rho Calendar");
+		values.put( getIDsProvider().getCalendarName()			, "Rho Calendar");
 		//values.put( mIDsProvider.getCalendarDisplayName()	, "Rho Calendar");
 		//values.put( mIDsProvider.getCalendarColor()		, "000000");
 		//values.put( mIDsProvider.getCalendarAccessLevel()	, "700");
 		
-		getContentResolver().insert(Uri.parse("content://" + AUTHORITY + "/calendars"), values);
+		getContentResolver().insert(CALENDARS_URI, values);
 		
 	}
 
@@ -202,7 +194,7 @@ public class EventStore {
 			
 			Cursor eventCursor;
 			if (expandRecurrency) {
-				Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
+				Uri.Builder builder = getIDsProvider().getUriBuilder().path("/instances/when");
 				ContentUris.appendId(builder, startDate.getTime());
 				ContentUris.appendId(builder, endDate.getTime());
 				
