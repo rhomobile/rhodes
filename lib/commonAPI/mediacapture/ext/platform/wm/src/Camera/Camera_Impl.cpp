@@ -63,7 +63,7 @@ namespace rho {
 		}
 		else
 		{
-			bEnumerationStatus = ((CImager::enumerate(arIDs, m_DeviceNameMap))|| (CDirectShowCam:: enumerate(arIDs, m_DeviceNameMap)));
+			bEnumerationStatus = ( (CDirectShowCam:: enumerate(arIDs, m_DeviceNameMap)) || (CImager::enumerate(arIDs, m_DeviceNameMap)));
 		}
 		if(TRUE == bEnumerationStatus)
 		{
@@ -106,7 +106,7 @@ namespace rho {
 			}
 			else
 			{
-				//pCamera = new CDirectShowCam();
+				pCamera = new CDirectShowCam(id.c_str());
 			}
 		}
 		virtual ~CCameraImpl() 

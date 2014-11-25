@@ -15,6 +15,8 @@ CCamera::CCamera(LPCTSTR szDeviceName)
 	m_FlashMode = FALSE;
 	m_eOutputFormat = eImageUri;
 	m_FileName = DEFAULT_FILENAME;
+	m_DesiredHeight = -1;
+	m_DesiredWidth =-1;
 	initializePreviewPos();
 }
 CCamera::~CCamera()
