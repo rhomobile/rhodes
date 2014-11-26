@@ -16,19 +16,17 @@ namespace rho {
 
 namespace NativeTabbarImpl
 {
-    public class NativeTabbar : INativeTabbarImpl
+    public class NativeTabbar : NativeTabbarBase
     {
         public NativeTabbar()
         {
-            NativeTabbarRuntimeComponent _runtime = new NativeTabbarRuntimeComponent(this);
         }
     }
 
-    public class NativeTabbarSingleton : INativeTabbarSingletonImpl
+    public class NativeTabbarSingleton : NativeTabbarSingletonBase
     {
         public NativeTabbarSingleton()
         {
-            NativeTabbarSingletonComponent _runtime = new NativeTabbarSingletonComponent(this);
         }
 
         static private MainPage getMainPage()
@@ -60,7 +58,7 @@ namespace NativeTabbarImpl
             }
         }
 
-        public void create(IReadOnlyList<string> tabElements, IReadOnlyDictionary<string, string> tabBarProperties, IMethodResult oResult)
+        public override void create(IReadOnlyList<string> tabElements, IReadOnlyDictionary<string, string> tabBarProperties, IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             if (mp != null)
@@ -119,13 +117,13 @@ namespace NativeTabbarImpl
             }
         }
 
-        public void currentTabIndex(IMethodResult oResult)
+        public override void currentTabIndex(IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             oResult.set(mp != null ? mp.tabbarGetCurrent() : 0);
         }
 
-        public void remove(IMethodResult oResult)
+        public override void remove(IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             if (mp != null)
@@ -136,7 +134,7 @@ namespace NativeTabbarImpl
             }
         }
 
-        public void removeTab(int tabIndex, IMethodResult oResult)
+        public override void removeTab(int tabIndex, IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             if (mp != null)
@@ -146,14 +144,14 @@ namespace NativeTabbarImpl
             }
         }
 
-        public void setTabBadge(int tabIndex, string badge, IMethodResult oResult)
+        public override void setTabBadge(int tabIndex, string badge, IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             if (mp != null)
                 mp.tabbarSetBadge(tabIndex, badge);
         }
 
-        public void switchTab(int tabIndex, IMethodResult oResult)
+        public override void switchTab(int tabIndex, IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             if (mp != null)
@@ -163,21 +161,15 @@ namespace NativeTabbarImpl
             }
         }
 
-        public void isCreated(IMethodResult oResult)
+        public override void isCreated(IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             oResult.set(mp != null ? (mp.tabbarIsStarted() != 0) : false);
         }
     }
 
-    public class NativeTabbarFactory : INativeTabbarFactoryImpl
+    public class NativeTabbarFactory : NativeTabbarFactoryBase
     {
-        public INativeTabbarImpl getImpl() {
-            return new NativeTabbar();
-        }
-        public INativeTabbarSingletonImpl getSingletonImpl() {
-            return new NativeTabbarSingleton();
-        }
     }
 }
 

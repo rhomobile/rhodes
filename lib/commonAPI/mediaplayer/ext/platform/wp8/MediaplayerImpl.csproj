@@ -96,6 +96,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MEDIAPLAYER_ROOT)\platform\wp8\generated\MediaplayerBase.cs" />
     <Compile Include="$(MEDIAPLAYER_ROOT)\platform\wp8\src\Mediaplayer_impl.cs" />
     <Compile Include="$(MEDIAPLAYER_ROOT)\platform\wp8\src\Properties\AssemblyInfo.cs" />
   </ItemGroup>
