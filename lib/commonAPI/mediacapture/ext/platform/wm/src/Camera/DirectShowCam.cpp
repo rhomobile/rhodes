@@ -42,8 +42,7 @@ BOOL CDirectShowCam::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<r
 }
 void CDirectShowCam::takeFullScreen()
 {
-	LOG(INFO) + __FUNCTION__ ; 
-	RECT pos;	
+	LOG(INFO) + __FUNCTION__ ; 	
 	if(false == m_IsCameraRunning)
 	{
 		if(m_PreviewOn == false)
@@ -124,7 +123,9 @@ BOOL CDirectShowCam::showPreview()
 						pos.top = m_PreviewTop;
 						pos.right = m_PreviewWidth;	
 						pos.bottom = m_PreviewHeight;
-						HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eConfigurable);					
+						HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eConfigurable);		
+						pos.left=0;
+						pos.top=0;						
 						if(m_pDSCam->SetupPreview(hWndViewer, pos))
 						{
 							m_PreviewOn = true;
@@ -179,7 +180,6 @@ BOOL CDirectShowCam::hidePreview()
 void CDirectShowCam::Capture()
 {
 	LOG(INFO) + __FUNCTION__ ;
-	DWORD dwRes;
 	HRESULT hr;
 	if(m_PreviewOn)
 	{       
@@ -276,38 +276,26 @@ void CDirectShowCam::Capture()
 }
 void CDirectShowCam::SetFlashMode()
 {
+	if(m_PreviewOn)
+	{
+		HRESULT hr;
+		CamPropTbl propTbl;
+		propTbl.p = CameraControl_Flash;
+		hr = m_pDSCam->Get_PropRng(&propTbl);
+		if (hr != E_PROP_ID_UNSUPPORTED)
+		{		
+			propTbl.plVal = m_FlashMode ? propTbl.plMax : propTbl.plMin;
+			m_pDSCam->Set_PropVal( &propTbl);
+		}
+	}
 }
-void CDirectShowCam::SetDesiredWidth()
-{
-}
-void CDirectShowCam::SetDesiredHeight()
-{
-}
+
 void CDirectShowCam::setCameraProperties()
 {
-	HRESULT hr;
-
-	CamPropTbl propTbl;
-	/*propTbl.p = CameraControl_Flash;
-	hr = m_pDSCam->Get_PropRng(&propTbl);
-	if (hr != E_PROP_ID_UNSUPPORTED)
+	if(m_PreviewOn)
 	{
-		propTbl.plVal = m_FlashMode ? propTbl.plMax : propTbl.plMin;
-		m_pDSCam->Set_PropVal( &propTbl);
-	}*/
-
-	//  Set the resolution of the saved image
-	if (!(m_DesiredHeight == -1 && m_DesiredWidth == -1))
-	{
-		PinType myPIN = S;
-		ImageRes myRes;
-		myRes.nHeight = m_DesiredHeight;
-		myRes.nWidth = m_DesiredWidth;
-		if (!m_pDSCam->Set_Resolution(&myRes, myPIN))
-		{
-			//  Something went wrong setting the desired Image resolution
-			LOG(ERROR) + L"Set Image Resolution failed";
-		}
+		SetFlashMode();
+		SetReolution();
 	}
 	
 }
@@ -319,6 +307,25 @@ void CDirectShowCam::RedrawViewerWnd(RECT& pos)
 		if(m_pDSCam)
 		{
 			m_pDSCam->ResizePreview(pos.right, pos.bottom);
+		}
+	}
+}
+void CDirectShowCam::SetReolution()
+{
+	if(m_PreviewOn)
+	{
+		//  Set the resolution of the saved image
+		if (!(m_DesiredHeight == -1 && m_DesiredWidth == -1))
+		{
+			PinType myPIN = S;
+			ImageRes myRes;
+			myRes.nHeight = m_DesiredHeight;
+			myRes.nWidth = m_DesiredWidth;
+			if (!m_pDSCam->Set_Resolution(&myRes, myPIN))
+			{
+				//  Something went wrong setting the desired Image resolution
+				LOG(ERROR) + L"Set Image Resolution failed";
+			}
 		}
 	}
 }
