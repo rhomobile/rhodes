@@ -3,7 +3,7 @@
 #include "common/RhodesApp.h"
 #include "common/ExtManager.h"
 
-#define DEFAULT_FILENAME L"Img"
+#define DEFAULT_FILENAME L"\\Img"
 bool CCamera::m_IsCameraRunning = false;
 
 CCamera::CCamera(LPCTSTR szDeviceName)

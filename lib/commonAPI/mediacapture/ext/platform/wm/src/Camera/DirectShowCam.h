@@ -17,6 +17,7 @@ protected:
 	void SetDesiredWidth();
 	void SetDesiredHeight();
 	void setCameraProperties();
+	virtual void RedrawViewerWnd(RECT& pos);
 private:
 	CDShowCam* m_pDSCam;
 

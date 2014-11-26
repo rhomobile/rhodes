@@ -3,6 +3,7 @@
 #include "dshowdef.h"
 #include "propertybag.h"
 
+
 #pragma comment(lib, "uuid.lib")
 #pragma comment(lib, "dmoguids.lib")
 #pragma comment(lib, "strmiids.lib") 
@@ -561,3 +562,154 @@ BOOL CDShowCam::RunGrp()
 
 	return result;
 } //end RunGrp
+BOOL CDShowCam::ResizePreview(DWORD dwWidth, DWORD dwHeight)
+{
+	HRESULT hr = S_FALSE;
+    IVideoWindow* pVideoWindow = NULL;
+
+	if (pVideoRender)
+	{
+		if(SUCCEEDED(hr = pVideoRender->QueryInterface( IID_IVideoWindow, (void **)&pVideoWindow)))
+		{
+			if (SUCCEEDED(hr = pVideoWindow->SetWindowPosition(0, 0, dwWidth, dwHeight)))
+			{
+				pVideoWindow->Release();
+				return TRUE;
+			}
+			pVideoWindow->Release();
+		}
+	}
+	return FALSE;
+}
+//------------------------------------------------------------------
+//
+// Prototype:	HRESULT CaptureStill(wstring wsSFName)
+//
+// Description:	This is used to trigger capture of a still image.
+//				Here the still image name is passed as a parameter and it will be
+//				saved in "\My Documnets\My Pictures" folder
+//
+// Parameters:	wsSFName is the name given for the still Image
+//
+// Returns:	S_OK if Still image is captured successfully.
+// 
+// Notes:
+//------------------------------------------------------------------
+HRESULT CDShowCam::CaptureStill(wstring wsSFName)
+{
+	WCHAR DName[TXT_LENGTH];
+	wstring StillFN = L"\\tempimg.jpg";
+
+	IPin* pStillPin = NULL;
+    IAMVideoControl* pVideoControl = NULL;
+	IFileSinkFilter* pStillFileSink = NULL;
+	HRESULT hr = S_OK;
+
+
+	int DNameLen = (wcsrchr(wsSFName.c_str(), L'\\')+1) - wsSFName.c_str();
+	wcsncpy(DName, wsSFName.c_str(), DNameLen);
+	DName[DNameLen] = L'\0';
+
+	CreateDirectory(DName, NULL);
+
+	//Set File Name
+	if(SUCCEEDED(hr = pStillSink->QueryInterface( IID_IFileSinkFilter, (void **)&pStillFileSink )))
+	{
+		hr = pStillFileSink->SetFileName((LPCOLESTR)StillFN.c_str(), NULL );
+		if(SUCCEEDED(hr))
+		{
+			LOG(INFO) + __FUNCTION__ + L"set file name succeeded";
+			
+		}
+		else
+		{
+			LOG(ERROR) + __FUNCTION__ + L"set file name failed";
+
+		}
+		
+	}
+
+	//Find the still image output pin, retrieve the IAMVideoControl interface, and
+	if(SUCCEEDED(hr = pCaptureGraphBuilder->FindPin((IUnknown*)pVideoCap, PINDIR_OUTPUT, &PIN_CATEGORY_STILL, &MEDIATYPE_Video, FALSE, 0, &pStillPin )))
+	{
+		// Once you have the still image pin, you query it for the
+		// IAMVideoControl interface which exposes the SetMode function for 
+		// triggering the image capture.
+		LOG(INFO) + L"FindPin succeeded";
+		if(SUCCEEDED(hr = pVideoCap->QueryInterface( IID_IAMVideoControl, (void **)&pVideoControl )))
+		{
+	    	// Now that trigger the still image capture.
+			LOG(INFO) + L"query interface succeeded";
+		
+			hr = pVideoControl->SetMode( pStillPin, VideoControlFlag_Trigger); 
+		}
+		else
+		{
+			LOG(INFO) + L"query interface failed";
+		}
+	}
+	else
+	{
+		LOG(INFO) + L"FindPin failed";
+	}
+
+	if(SUCCEEDED(hr))
+	{
+		LOG(INFO) + L"SetMOde succeeded";
+		
+		LONG lEventCode = 0, lParam1 = 0, lParam2 = 0;
+		do{
+			// If no events are received within 5 seconds, then we’ll assume 
+			// we have an error. Adjust this value as you see fit.
+			hr = pMediaEvent->GetEvent( &lEventCode, &lParam1,&lParam2, 5*1000 );
+
+			//DEBUGIT(LogFile,"m_pMediaEventEx->GetEvent %ld \n", lEventCode); 
+			if(SUCCEEDED(hr))
+			{
+				// If we recieve an event, free the event parameters.
+				// we can do this immediately because we're not referencing 
+				// lparam1 or lparam2.
+				if(SUCCEEDED(hr = pMediaEvent->FreeEventParams( lEventCode, lParam1, lParam2 )))
+				{
+					// If the event was received, then we successfully 
+					// captured the still image and can quit looking.
+					if(lEventCode == EC_CAP_FILE_COMPLETED)
+					{
+						//DEBUGIT(LogFile,"  EC_CAP_FILE_COMPLETED \n");
+						DeleteFile(wsSFName.c_str());
+						MoveFile(StillFN.c_str(), wsSFName.c_str());
+						break;
+					}
+				}
+				
+			}
+			else
+			{
+					LOG(INFO) + L"timeout waiting for camera event";
+					
+			}
+		// If the still image isn't captured within 60 seconds
+		// of the trigger (or possibly longer if other events come in), 
+		// then we’ll assume it’s an error. Continue processing events 
+		// until we detect the error.
+		}while(SUCCEEDED(hr));
+	}
+	else
+	{
+		LOG(ERROR) + L"SetMode failed";
+	}
+	//clean up
+	if(pVideoControl)
+	{
+		pVideoControl->Release();
+		pVideoControl = NULL;
+	}
+	if(pStillPin)
+	{
+		pStillPin->Release();
+		pStillPin = NULL;
+	}
+	
+
+    return hr;
+} //end CaptureStill()
