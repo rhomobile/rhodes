@@ -1228,6 +1228,11 @@ module Rhogen
       template.destination = "platform/wp8/generated/stub_impl/#{$cur_module.name}_impl.cs"
     end
 
+    template :wp8_montana_base_cs do |template|
+      template.source = 'platform/wp8/MontanaBase.cs'
+      template.destination = "platform/wp8/generated/#{$cur_module.name}Base.cs"
+    end
+
     template :wp8_runtime_montana_runtime_h do |template|
       template.source = 'platform/wp8/lib/MontanaRuntime.h'
       template.destination = "platform/wp8/generated/lib/#{$cur_module.name}Runtime.h"
@@ -1246,6 +1251,11 @@ module Rhogen
     template :wp8_lib_montana_impl do |template|
       template.source = 'platform/wp8/lib/Montana_impl.cpp'
       template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_impl.cpp"
+    end
+
+    template :wp8_lib_montana_impl_h do |template|
+      template.source = 'platform/wp8/lib/Montana_impl.h'
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_impl.h"
     end
 
 
