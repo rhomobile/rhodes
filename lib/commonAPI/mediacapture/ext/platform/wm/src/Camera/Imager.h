@@ -62,8 +62,7 @@ private:
 	static DWORD fullScreenProc (LPVOID pparam);
 protected:
 	virtual void SetFlashMode();
-	virtual void SetDesiredWidth();
-	virtual void SetDesiredHeight();
+	virtual void SetReolution();
 	virtual void RedrawViewerWnd(RECT& pos);
 };
 #endif

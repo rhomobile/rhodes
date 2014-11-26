@@ -74,7 +74,6 @@ protected:
 	void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri);
 	virtual void RedrawViewerWnd(RECT& pos);
 	virtual void SetFlashMode()=0;
-	virtual void SetDesiredWidth()=0;
-	virtual void SetDesiredHeight()=0;
+	virtual void SetReolution()=0;
 };
 #endif

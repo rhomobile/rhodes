@@ -40,7 +40,7 @@ const CameraControlProperty CProp[] = {CameraControl_Pan,		//Index 0
 									CameraControl_Exposure,		//Index 4
 									CameraControl_Iris,			//Index 5
 									CameraControl_Focus,		//Index 6
-									//CameraControl_Flash			//Index 7
+									CameraControl_Flash			//Index 7
 };
 typedef enum tagPinType
 {

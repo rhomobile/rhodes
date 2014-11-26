@@ -14,10 +14,10 @@ public:
 	virtual void Capture();
 protected:
 	void SetFlashMode();
-	void SetDesiredWidth();
-	void SetDesiredHeight();
+	void SetReolution();
 	void setCameraProperties();
 	virtual void RedrawViewerWnd(RECT& pos);
+	void ResetResolution();
 private:
 	CDShowCam* m_pDSCam;
 

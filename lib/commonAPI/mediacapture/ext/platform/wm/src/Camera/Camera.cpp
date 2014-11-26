@@ -104,20 +104,21 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 	if(cmp(szPropertyName, L"desiredWidth"))
 	{
 		m_DesiredWidth = _ttoi(szPropertyValue);
+		SetReolution();
 
 	}
 	else if(cmp(szPropertyName, L"desiredHeight"))
 	{
 		m_DesiredHeight = _ttoi(szPropertyValue);
+		SetReolution();
 	}
 	else if(cmp(szPropertyName, L"fileName"))
 	{
 		int iLen;
 		//if the name was set to L"", then the default name will be selected
 		if((iLen = wcslen(szPropertyValue))== 0)
-		{
-			m_FileName = L"\\" ;
-			m_FileName = m_FileName + DEFAULT_FILENAME;
+		{			
+			m_FileName = DEFAULT_FILENAME;
 		}
 		else
 		{	
