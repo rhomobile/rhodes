@@ -42,6 +42,56 @@ BOOL CDirectShowCam::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<r
 }
 void CDirectShowCam::takeFullScreen()
 {
+	LOG(INFO) + __FUNCTION__ ; 
+	RECT pos;	
+	if(false == m_IsCameraRunning)
+	{
+		if(m_PreviewOn == false)
+		{
+			CamConfig cfg;
+			if (m_pDSCam) 
+			{
+				delete m_pDSCam;
+			}
+			m_pDSCam = new CDShowCam();			
+			if(m_pDSCam)
+			{
+				if(m_pDSCam->initFilterGraph())
+				{
+					cfg.sCamID = m_szDeviceName;					
+					cfg.bIsAudioEnb = FALSE;	// no audio capture
+					cfg.bIsCapEnb = TRUE;		// enable capture
+					cfg.bIsPrvEnb = TRUE;		// enable preview
+					cfg.bIsStillEnb = TRUE;		// enable still capture					
+			
+					if(m_pDSCam->BuildFilterGraph(cfg))
+					{
+						RECT pos;						
+						HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eFullScreen);					
+						if(m_pDSCam->SetupPreview(hWndViewer, pos))
+						{
+							m_PreviewOn = true;
+							m_IsCameraRunning = true;
+							setCameraProperties();
+						}
+						
+
+
+					}
+				}
+			}
+			if(false == m_PreviewOn)
+			{
+				//if preview failed
+				if (m_pDSCam) 
+				{
+					delete m_pDSCam;
+					m_pDSCam = NULL;
+				}
+			}		
+
+		}
+	}
 }
 BOOL CDirectShowCam::showPreview()
 {
