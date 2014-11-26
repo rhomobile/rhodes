@@ -34,8 +34,10 @@ BOOL CDirectShowCam::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<r
 		{
 			arIDs.addElement(rho::common::convertToStringA(di.szLegacyName));
 			camLookUp.put(rho::common::convertToStringA(di.szLegacyName), eColorCam );
+			FindClose(di.hDevice);
 
 		}
+		FindClose(hFirstDevice);
 	} 
 	return bRetStatus;
 	
