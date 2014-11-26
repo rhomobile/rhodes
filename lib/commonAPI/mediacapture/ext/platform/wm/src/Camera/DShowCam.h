@@ -180,7 +180,8 @@ public:
 	HRESULT Set_Resolution(ImageRes* ptRes, PinType ePType);
 	BOOL StopGrp();
 	BOOL RunGrp();
-
+	BOOL ResizePreview(DWORD dwWidth, DWORD dwHeight);
+	HRESULT CaptureStill(wstring wsSFName);
 	
 };
 

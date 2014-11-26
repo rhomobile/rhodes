@@ -79,8 +79,9 @@ BOOL CDirectShowCam::showPreview()
 						{
 							m_PreviewOn = true;
 							m_IsCameraRunning = true;
+							setCameraProperties();
 						}
-						setCameraProperties();
+						
 
 
 					}
@@ -106,19 +107,122 @@ BOOL CDirectShowCam::hidePreview()
 	LOG(INFO) + __FUNCTION__ 	;
 	BOOL bRetStatus = FALSE;
 	if (m_PreviewOn)
-	{	
-		/*if(E_IMG_SUCCESS == StopViewer())
-		{
+	{
+		m_ViewFinder.DestroyViewerWindow();
+		if (m_pDSCam) 
+		{	
+			if(FALSE== m_pDSCam->StopGrp())
+			{
+				LOG(ERROR) + __FUNCTION__ + L" Stop camera failed";				
+			}
+			delete m_pDSCam;
+			m_pDSCam = NULL;
 			m_PreviewOn = false;
 		    m_IsCameraRunning = false;
 			bRetStatus = TRUE;
-		}*/
+
+		}		
 
 	}
 	return bRetStatus;
 }
 void CDirectShowCam::Capture()
 {
+	LOG(INFO) + __FUNCTION__ ;
+	DWORD dwRes;
+	HRESULT hr;
+	if(m_PreviewOn)
+	{       
+
+		PlaySound(m_CaptureSound.c_str(),NULL,SND_FILENAME|SND_ASYNC);
+
+		if(m_pDSCam)
+		{
+			rho::StringW fileName = m_FileName + L".jpg";
+			hr= m_pDSCam->CaptureStill(fileName);
+			if(SUCCEEDED(hr))
+			{
+				//  Rather than get bogged down the Direct Show again we'll just
+				//  read the file back in from disk.
+				HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, 
+					FILE_ATTRIBUTE_NORMAL, NULL);			
+				
+				if(hFile)
+				{
+					DWORD dwFileSize = GetFileSize(hFile, NULL);
+					if (dwFileSize > 0)
+					{						
+
+						rho::String imageUri;
+						if(m_eOutputFormat == eDataUri)
+						{
+
+							bool fileReadSuccess = true;
+							DWORD dwImageBufSize;///< Variable for Buffer size of captured image
+							LPVOID pImageBuffer;///< Buffer to save captured image
+							pImageBuffer = new BYTE[dwFileSize];
+							dwImageBufSize = dwFileSize;
+							DWORD dwBytesRead = 0;
+							do
+							{
+								if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+								{
+									//  Some error has occured reading the file
+									LOG(ERROR) + L"Unable to send image data as URI, could not read data";		
+									UpdateCallbackStatus("error","Unable to send image data as URI, could not read data","");
+									delete[] pImageBuffer;
+									pImageBuffer = NULL;
+									fileReadSuccess = false;
+									break;
+								}
+							}
+							while (dwBytesRead != 0);
+							if(fileReadSuccess)
+							{
+								GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
+								delete[] pImageBuffer;
+								pImageBuffer = NULL;
+								//update callback
+								UpdateCallbackStatus("ok","",imageUri);
+
+							}						
+
+
+						}
+						else
+						{
+							imageUri = rho::common::convertToStringA(fileName).c_str();
+							//update callback
+							UpdateCallbackStatus("ok","",imageUri);
+						}
+						
+
+
+
+					}
+					else
+					{
+						LOG(ERROR) + L"Unable to send image data as URI, size was unexpected";		
+						UpdateCallbackStatus("error","Unable to send image data as URI, size was unexpected","");				
+					}
+
+				}
+				else
+				{
+					LOG(ERROR) + L"Unable to send image data as URI, could not find captured image";		
+					UpdateCallbackStatus("error", "Unable to send image data as URI, could not find captured image","");
+
+				}
+				CloseHandle(hFile);
+
+			}
+			else
+			{
+				UpdateCallbackStatus("error","Image Capture operation failed.","");
+			}
+		}    
+
+	}
 }
 void CDirectShowCam::SetFlashMode()
 {
@@ -156,4 +260,15 @@ void CDirectShowCam::setCameraProperties()
 		}
 	}
 	
+}
+void CDirectShowCam::RedrawViewerWnd(RECT& pos)
+{
+	if(m_PreviewOn)
+	{
+		CCamera::RedrawViewerWnd(pos);
+		if(m_pDSCam)
+		{
+			m_pDSCam->ResizePreview(pos.right, pos.bottom);
+		}
+	}
 }
