@@ -140,7 +140,9 @@ The ebapi.js file is necessary for all single API inclusions.
             </METHOD>
 
             <METHOD name="get" hasCallback="optional">
-                <DESC>Perform a HTTP GET request.</DESC>
+                <DESC>Perform a HTTP GET request.
+
+> Note: This method will perform a POST if you send a body with it. If performing a GET, do not add a body to the call.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
