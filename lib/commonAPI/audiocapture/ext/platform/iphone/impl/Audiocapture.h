@@ -20,6 +20,7 @@
     BOOL isSaveFile;
     int maxDuration;
     BOOL isStarted;
+    BOOL isStopping;
     
     AVAudioRecorder* recorder;
     NSString* recorderFilePath;
