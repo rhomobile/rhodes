@@ -153,6 +153,10 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     if (![self exportAssetAsWaveFormat:recorderFilePath outPath:destination] ) {
         //fire ERROR
         [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"can not save WAV after capturing"];
+        if (isStopping) {
+          isStopping = NO;
+          callback = nil;
+        }
     }
 }
 
