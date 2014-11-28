@@ -377,6 +377,9 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     isStarted = YES;
     isStopping = NO;
   
+    CMethodResult_SimpleHolder* sh = [CMethodResult_SimpleHolder makeEmptyHolder];
+    [super setProperties:props methodResult:sh];
+  
     callback = methodResult;
     destination = [[self getPreparedFileNameWithHash:props] retain];
     if (destination == nil) {
