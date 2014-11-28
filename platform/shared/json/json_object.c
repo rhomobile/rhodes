@@ -274,7 +274,7 @@ void json_object_object_add(struct json_object* this, char *key,
 
 struct json_object* json_object_object_get(struct json_object* this, char *key)
 {
-  return (struct json_object*) lh_table_lookup(this->o.c_object, key);
+  return (struct json_object*) ((this!=0) && (key!=0)? lh_table_lookup(this->o.c_object, key) : 0);
 }
 
 void json_object_object_del(struct json_object* this, char *key)
