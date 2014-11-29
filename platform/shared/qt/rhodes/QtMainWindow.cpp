@@ -384,7 +384,10 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
     if (ok)
         LOG(INFO) + "Page load complete.";
     else
+    {
         LOG(ERROR) + "Page load failed.";
+        ui->webView->setHtml("<html><head><title>Error Loading Page</title></head><body><h1>Error Loading Page.</h1></body></html>");
+    }
 
     PROF_STOP("BROWSER_PAGE");
 
