@@ -663,11 +663,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Camera\PBUtil.cpp"
+					RelativePath=".\src\PropertyBag.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\PropertyBag.cpp"
+					RelativePath="..\..\..\..\..\..\platform\shared\common\RhoUtil.cpp"
 					>
 				</File>
 				<File
@@ -678,6 +678,10 @@
 			<Filter
 				Name="Header Files"
 				>
+				<File
+					RelativePath=".\agyshelldef.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Camera\Camera.h"
 					>
@@ -692,10 +696,6 @@
 				</File>
 				<File
 					RelativePath=".\src\Camera\Imager.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Camera\PBUtil.h"
 					>
 				</File>
 				<File

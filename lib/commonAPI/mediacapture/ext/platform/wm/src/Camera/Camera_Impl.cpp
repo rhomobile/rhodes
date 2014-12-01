@@ -5,19 +5,26 @@
 #include "common/AutoPointer.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
+#include "common/RhoUtil.h"
 #include "logging/RhoLog.h"
 #include "Imager.h"
 #include "DirectShowCam.h"
+#include "agyshelldef.h" //not an sdk file
+#include "aygshell.h"
+#include <atltime.h>
+
+
 
 namespace rho {
 
 	using namespace apiGenerator;
 	using namespace common;
-
+	
 	class CCameraSingletonImpl: public CCameraSingletonBase
 	{
 	private:
 		rho::Hashtable<String, eCamType> m_DeviceNameMap;
+		rho::apiGenerator::CMethodResult m_pCb;
 	public:
 
 		CCameraSingletonImpl(): CCameraSingletonBase(){}
@@ -29,10 +36,45 @@ namespace rho {
 		virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {
 			// RAWLOGC_INFO("getCameraByType","Camera");
 
-		} 
+		} 		
 		// choosePicture Choose a picture from the album. 
 		virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
-			// RAWLOGC_INFO("choosePicture","Camera");
+
+			bool bRunningOnWM = false;
+			OSVERSIONINFO osvi;
+			m_pCb = oResult;
+			memset(&osvi, 0, sizeof(OSVERSIONINFO));
+			osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+			GetVersionEx(&osvi);
+			bRunningOnWM = (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2) ||
+				(osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1);		
+			if(bRunningOnWM)
+			{
+				eImageOutputFormat eFormat = eImageUri;
+				//get output format
+				typedef std::map<rho::String, rho::String>::const_iterator it_type;
+				for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
+				{
+					if(cmp(convertToStringW(iterator->first).c_str(), L"outputFormat"))
+					{
+						if(cmp(convertToStringW(iterator->second).c_str(), L"dataUri"))
+						{
+							eFormat = eDataUri;
+						}
+						break;
+							
+					}
+				}
+
+				choosePicture(eFormat, oResult);
+				
+				
+				
+			}
+			else
+			{
+				UpdateCallbackStatus("error", "ChoosePicture not supported on this device!!","");
+			}
 
 		} 
 		// saveImageToDeviceGallery Save an image to the device gallery. 
@@ -44,6 +86,167 @@ namespace rho {
 		eCamType getCamType(String deviceName)
 		{
 			return m_DeviceNameMap[deviceName];
+		}
+		void choosePicture( eImageOutputFormat eFormat, rho::apiGenerator::CMethodResult& oResult)
+		{
+			TCHAR image_uri[MAX_PATH];
+			OPENFILENAMEEX ofnex = {0};
+			//OPENFILENAME ofn = {0};
+			image_uri[0] = 0;
+			// Get the parent window handle, i.e. the webkit window, and the application instance
+			rho::common::CRhoExtData rhodes_data = RHODESAPP().getExtManager().makeExtData();
+
+			ofnex.lStructSize     = sizeof(ofnex);
+			ofnex.hwndOwner       = rhodes_data.m_hBrowserWnd;
+			ofnex.lpstrFilter     = NULL;
+			ofnex.lpstrFile       = image_uri;
+			ofnex.nMaxFile        = MAX_PATH;
+			ofnex.lpstrInitialDir = NULL;
+			ofnex.lpstrTitle      = _T("Select an image");
+			BOOL bRes = FALSE;
+			ofnex.ExFlags = OFN_EXFLAG_THUMBNAILVIEW|OFN_EXFLAG_NOFILECREATE|OFN_EXFLAG_LOCKDIRECTORY;				
+			bRes = lpfn_GetOpen_FileEx(&ofnex);
+			if (bRes)
+			{
+				//get the file name				
+				StringW strFullName = image_uri;	
+
+				rho::String imageUri;
+				int nWidth;
+				int nHeight;
+
+				if(eDataUri == eFormat)
+				{
+					//  Rather than get bogged down the Direct Show again we'll just
+					//  read the file back in from disk.
+					HANDLE hFile = CreateFile(strFullName.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, 
+						FILE_ATTRIBUTE_NORMAL, NULL);			
+
+					if(hFile)
+					{
+						LPVOID pImageBuffer;///< Buffer store the image						
+						DWORD dwFileSize = GetFileSize(hFile, NULL);
+						if (dwFileSize > 0)
+						{		
+							DWORD dwBytesRead = 0;
+							pImageBuffer = new BYTE[dwFileSize];
+							if(pImageBuffer)
+							{
+								bool bFileReadSuccess = true;
+								do
+								{
+									if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+									{
+										//  Some error has occured reading the file
+										LOG(INFO) + L"Unable to read image";	
+										bFileReadSuccess = false;
+										break;
+									}
+								}while (dwBytesRead != 0);
+
+								if(bFileReadSuccess)
+								{									
+									rho::common::GetDataURI((BYTE*)pImageBuffer, dwFileSize, imageUri);
+									rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwFileSize, nWidth, nHeight);
+								}
+								delete[] pImageBuffer;
+								pImageBuffer = NULL;
+							}
+
+
+						}
+						CloseHandle(hFile);
+					}
+				}
+				else
+				{
+					imageUri = rho::common::convertToStringA(strFullName);
+					rho::common::GetJpegResolution(strFullName.c_str(), nWidth, nHeight);
+				}
+
+				UpdateCallbackStatus("ok","",imageUri, eFormat, nWidth, nHeight);
+
+
+
+			}
+			else
+			{
+				DWORD dwResult = GetLastError();
+				UpdateErrorStatus(dwResult);
+			}
+		}
+		void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri, eImageOutputFormat eFormat =eImageUri, int nImageWidth =0, int nImageHeight =0)
+		{
+			char tempVal[6];
+
+			rho::Hashtable<rho::String, rho::String> statusData;
+			statusData.put( "status", status);	
+
+			tempVal[0] = 0;
+			sprintf(tempVal,"%d",nImageHeight);
+			statusData.put( "imageHeight",tempVal);	
+			statusData.put( "image_height", tempVal);
+			tempVal[0] = 0;
+			sprintf(tempVal,"%d",nImageWidth);
+			statusData.put( "imageWidth", tempVal);		
+			statusData.put( "image_width", tempVal);
+
+			if("ok" == status)
+			{	
+
+				rho::String outputFormat;
+				if(eFormat == eImageUri)
+				{
+					outputFormat = "image";
+					//for image path, set file:// as well so that user can access the link
+					rho::String pathPrefix = "file://";
+					imageUri= pathPrefix + imageUri;
+
+				}
+				else
+				{
+					outputFormat = "dataUri";
+				}		
+				statusData.put( "imageFormat", outputFormat);
+				statusData.put( "imageUri", imageUri);
+				statusData.put( "image_format", imageUri);
+				statusData.put( "image_uri", outputFormat);
+				statusData.put( "message", "");
+
+			}
+			else
+			{
+				//for cancel or error set only message
+				statusData.put( "message", message);
+				statusData.put( "imageFormat", "");
+				statusData.put( "imageUri", "");	
+				statusData.put( "image_format", "");
+				statusData.put( "image_uri", "");		
+
+			}
+			m_pCb.set(statusData);		
+
+		} 
+		void UpdateErrorStatus(DWORD dwResult)
+		{
+			switch(dwResult)
+			{
+			case ERROR_SUCCESS:
+				{
+					UpdateCallbackStatus("cancel", "User cancelled the dialog..", "");
+					break;
+				}
+			case ERROR_OUTOFMEMORY:
+				{
+					UpdateCallbackStatus("error", "Operation ran out of memory..", "");
+					break;
+				}
+			default:
+				{
+					UpdateCallbackStatus("error", "Operation failed..", "");
+					break;
+				}
+			}
 		}
 
 	};

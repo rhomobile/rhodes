@@ -1,5 +1,6 @@
 #include <windows.h>
 #include "Imager.h"
+#include "Common/RhoUtil.h"
 
 
 HINSTANCE CImager::m_hImagerLibHandle = NULL;
@@ -434,16 +435,19 @@ void CImager::Capture()
                 if(WriteFile(hFile,pImageBuffer,dwImageBufSize,&dwBytesWritten,NULL))
                 {
                     rho::String imageUri;
+					int nImageWidth=0;
+					int nImageHeight =0;
                     if(m_eOutputFormat == eDataUri)
                     {
-                        GetDataURI((BYTE*)pImageBuffer, dwBytesWritten, imageUri);
+						rho::common::GetDataURI((BYTE*)pImageBuffer, dwBytesWritten, imageUri);
                     }
                     else
                     {
                         imageUri = rho::common::convertToStringA(fileName).c_str();
                     }
+					rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
                     //update callback
-                    UpdateCallbackStatus("ok","",imageUri);
+                    UpdateCallbackStatus("ok","",imageUri, nImageWidth, nImageHeight);
                 }
                 else
                 {

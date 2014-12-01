@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "PBUtil.h"
+#include "Common/RhoUtil.h"
 #include "common/RhodesApp.h"
 #include "common/ExtManager.h"
 
@@ -256,37 +256,25 @@ void CCamera::initializePreviewPos()
 	m_PreviewWidth = pos.right/2+50;	
 	m_PreviewHeight = pos.bottom/2+50;
 }
-void CCamera::GetDataURI (BYTE* bData, int iLength, rho::String& data)
+void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri,int nImageWidth, int nImageHeight)
 {
-	//  Convert the Signature to base 64, this representation is about 1/3
-	//  larger than the binary input
-	char* szEncodedString = new char[iLength * 2 + 30];
-	memset(szEncodedString, 0, iLength * 2 + 30);
-
-	// Start with the data header
-	strcpy(szEncodedString, "data:image/bmp;base64,");
-
-	// Now append the encoded data itself
-	EncodeToBase64(bData, iLength, szEncodedString + strlen (szEncodedString));
-
-	// Copy it to the caller
-	data = szEncodedString;
-
-	// Clean up
-	delete[] szEncodedString;
-}
-void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri)
-{
+	char tempVal[6];
 
 	rho::Hashtable<rho::String, rho::String> statusData;
 	statusData.put( "status", status);	
+
+	tempVal[0] = 0;
+    sprintf(tempVal,"%d",nImageHeight);
+	statusData.put( "imageHeight",tempVal);	
+	statusData.put( "image_height", tempVal);
+	tempVal[0] = 0;
+	sprintf(tempVal,"%d",nImageWidth);
+	statusData.put( "imageWidth", tempVal);		
+	statusData.put( "image_width", tempVal);
+
 	if("ok" == status)
-	{
-		/*statusData.put( "imageHeight","");	
-		statusData.put( "imageWidth","");	
-		statusData.put( "image_height", imageUri);
-		statusData.put( "image_width", imageUri);
-		*/
+	{	
+		
 		rho::String outputFormat;
 		if(m_eOutputFormat == eImageUri)
 		{
@@ -314,7 +302,8 @@ void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho:
 		statusData.put( "imageFormat", "");
 		statusData.put( "imageUri", "");	
 		statusData.put( "image_format", "");
-		statusData.put( "image_uri", "");
+		statusData.put( "image_uri", "");		
+		
 	}
 	m_pCameraCb.set(statusData);		
 

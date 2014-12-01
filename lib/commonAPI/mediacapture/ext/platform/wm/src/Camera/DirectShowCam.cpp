@@ -1,4 +1,5 @@
 #include "DirectShowCam.h"
+#include "Common/RhoUtil.h"
 
 CDirectShowCam::CDirectShowCam(LPCTSTR szDeviceName):CCamera(szDeviceName)
 {
@@ -125,7 +126,9 @@ BOOL CDirectShowCam::showPreview()
 						pos.top = m_PreviewTop;
 						pos.right = m_PreviewWidth;	
 						pos.bottom = m_PreviewHeight;
-						HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eConfigurable);		
+						HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eConfigurable);	
+						//set pos.left and pos.top to zero
+						//renderer window always wants to fit into viewer wnd client area
 						pos.left=0;
 						pos.top=0;						
 						if(m_pDSCam->SetupPreview(hWndViewer, pos))
@@ -206,6 +209,8 @@ void CDirectShowCam::Capture()
 					{						
 
 						rho::String imageUri;
+						int nImageWidth = 0;
+						int nImageHeight =0;
 						if(m_eOutputFormat == eDataUri)
 						{
 
@@ -230,12 +235,13 @@ void CDirectShowCam::Capture()
 							}
 							while (dwBytesRead != 0);
 							if(fileReadSuccess)
-							{
-								GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
+							{								
+								rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
+								rho::common::GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
 								delete[] pImageBuffer;
 								pImageBuffer = NULL;
 								//update callback
-								UpdateCallbackStatus("ok","",imageUri);
+								UpdateCallbackStatus("ok","",imageUri,nImageWidth, nImageHeight );
 
 							}						
 
@@ -243,9 +249,10 @@ void CDirectShowCam::Capture()
 						}
 						else
 						{
+							rho::common::GetJpegResolution( fileName.c_str(), nImageWidth, nImageHeight);
 							imageUri = rho::common::convertToStringA(fileName).c_str();
 							//update callback
-							UpdateCallbackStatus("ok","",imageUri);
+							UpdateCallbackStatus("ok","",imageUri, nImageWidth, nImageHeight );
 						}
 						
 
@@ -257,6 +264,7 @@ void CDirectShowCam::Capture()
 						LOG(ERROR) + L"Unable to send image data as URI, size was unexpected";		
 						UpdateCallbackStatus("error","Unable to send image data as URI, size was unexpected","");				
 					}
+					CloseHandle(hFile);
 
 				}
 				else
@@ -265,7 +273,7 @@ void CDirectShowCam::Capture()
 					UpdateCallbackStatus("error", "Unable to send image data as URI, could not find captured image","");
 
 				}
-				CloseHandle(hFile);
+				
 
 			}
 			else
