@@ -123,6 +123,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
 	this->ui->webView->setContextMenuPolicy(Qt::NoContextMenu);
 	this->ui->webView->setPage(new QtWebPage());
+    this->ui->webView->setAttribute(Qt::WA_AcceptTouchEvents, false);
     setUpWebPage(this->ui->webView->page());
     this->main_webView = this->ui->webView;
     this->main_webInspector = webInspectorWindow->webInspector();
@@ -573,6 +574,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         wv = new QWebView();
         wv->setMaximumSize(0,0);
         wv->setParent(ui->centralWidget);
+        wv->setAttribute(Qt::WA_AcceptTouchEvents, false);
         ui->verticalLayout->addWidget(wv);
 		wv->setPage(new QtWebPage());
         setUpWebPage(wv->page());
