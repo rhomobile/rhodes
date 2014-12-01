@@ -41,6 +41,10 @@
 #include "DBImportTransaction.h"
 #include "DBRequestHelper.h"
 
+#define SQLITE_BYTES_PER_CHUNKED_GROWTH (256*1024)
+#define SQLITE_DEFAULT_PAGE_SIZE 16384
+#define SQLITE_MAX_CACHE_SIZE (2*1024*1024)
+
 #include <sstream>
 
 namespace rho{
@@ -121,6 +125,61 @@ void SyncBlob_UpdateSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite
     }
 }
 
+void SqliteTraceCallback(void* aDb, const char* aQueryStr) {
+    LOGC(INFO,"DBT") + "SQLite trace: sql=[" + aQueryStr + "]";
+
+}
+
+void SqliteProfileCallback(void* aDb, const char* aQueryStr,
+                                  sqlite3_uint64 aTimeInNs)
+{
+    sqlite3* db = static_cast<sqlite3*>(aDb);
+    //const char* dbName = sqlite3_db_filename(db, "main");
+
+    // Statistics per DB connection.
+    // See: http://www.sqlite.org/c3ref/db_status.html
+    int cacheUsed[2]  = { 0, 0 };
+    int schemaUsed[2] = { 0, 0 };
+    int stmtUsed[2]   = { 0, 0 };
+    int cacheHit[2]   = { 0, 0 };
+    int cacheMiss[2]  = { 0, 0 };
+;
+    sqlite3_db_status(db, SQLITE_DBSTATUS_CACHE_USED,  &cacheUsed[0],
+                      &cacheUsed[1],  0);
+    sqlite3_db_status(db, SQLITE_DBSTATUS_SCHEMA_USED, &schemaUsed[0],
+                      &schemaUsed[1], 0);
+    sqlite3_db_status(db, SQLITE_DBSTATUS_STMT_USED,   &stmtUsed[0],
+                      &stmtUsed[1],   0);
+//    sqlite3_db_status(db, SQLITE_DBSTATUS_CACHE_HIT,   &cacheHit[0],
+//                      &cacheHit[1],   0);
+//    sqlite3_db_status(db, SQLITE_DBSTATUS_CACHE_MISS,  &cacheMiss[0],
+//                      &cacheMiss[1],  0);
+
+    #define BUFFER_SIZE 1000
+    static char s_buff[BUFFER_SIZE];
+
+    //
+
+    int size = snprintf(s_buff,BUFFER_SIZE,"SQLite profile: msec=[%llu] mem/high/lim=[%lld/%lld/%lld] "
+                        "schema=[%d] stmt=[%d] cache=[%d]"
+                        "hit/miss=[%d/%d] sql=[%s]",
+                        aTimeInNs/1000000,             // Time taken by the query in milliseconds.
+
+                        sqlite3_memory_used(),         // Global memory used by SQLite now in bytes.
+                        sqlite3_memory_highwater(0),   // Global high water mark of memory used by SQLite in bytes.
+                        sqlite3_soft_heap_limit64(-1), // Global current heap limit in bytes (a hint only).
+
+                        schemaUsed[0],                 // Memory used by this connection for the schema.
+                        stmtUsed[0],                   // Memory used by this connection for statements.
+                        cacheUsed[0],                  // Memory used by this connection for cache.
+                        
+                        cacheHit[0], cacheMiss[0],     // SQLite cache hit/miss stats.
+                        aQueryStr);
+    s_buff[size] = 0;
+
+    LOGC(INFO,"DBI") + s_buff;
+}
+
 boolean CDBAdapter::checkDbError(int rc)
 {
     if ( rc == SQLITE_OK || rc == SQLITE_ROW || rc == SQLITE_DONE )
@@ -183,6 +242,20 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean c
     if ( !checkDbError(nRes) )
         return;
     //TODO: raise exception if error
+    char* errorMessage;
+
+    // optimize page sizes
+    sqlite3_exec(m_dbHandle, (rho::String("PRAGMA page_size =")+convertToStringA(SQLITE_DEFAULT_PAGE_SIZE)).c_str(), null, null, &errorMessage);
+    // set default cache size
+    sqlite3_exec(m_dbHandle, (rho::String("PRAGMA cache_size =")+convertToStringA(-SQLITE_MAX_CACHE_SIZE)).c_str(), null, null, &errorMessage);
+    // set file size chunks
+    int32_t aChunkSize = SQLITE_BYTES_PER_CHUNKED_GROWTH;
+    sqlite3_file_control(m_dbHandle, NULL, SQLITE_FCNTL_CHUNK_SIZE, &aChunkSize);
+
+    // optimize file system access
+    sqlite3_exec(m_dbHandle, "PRAGMA synchronous=NORMAL", null, null, &errorMessage);
+    sqlite3_exec(m_dbHandle, "PRAGMA journal_mode=WAL", null, null, &errorMessage);
+    sqlite3_exec(m_dbHandle, "PRAGMA wal_autocheckpoint=32", null, null, &errorMessage);
 
     //if (RHOCONF().getBool("encrypt_database"))
     const char* szEncrypt = get_app_build_config_item("encrypt_database");
@@ -209,6 +282,10 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean c
 	    SyncBlob_DeleteSchemaCallback, 0, 0 );
     sqlite3_create_function( m_dbHandle, "rhoOnUpdateSchemaRecord", 2, SQLITE_ANY, 0,
 	    SyncBlob_UpdateSchemaCallback, 0, 0 );
+    
+//    sqlite3_profile( m_dbHandle, SqliteProfileCallback, m_dbHandle);
+//
+//    sqlite3_trace( m_dbHandle, SqliteTraceCallback, m_dbHandle);
 
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
 
