@@ -34,6 +34,7 @@
 #include "RhoSimulator.h"
 #include <sstream>
 #include "QtWebPage.h"
+#include "QtCustomStyle.h"
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -105,6 +106,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     QPixmap icon(":/images/rho.png");
     QApplication::setWindowIcon(icon);
 #endif
+    QApplication::setStyle(new QtCustomStyle());
 
     ui->setupUi(this);
 
