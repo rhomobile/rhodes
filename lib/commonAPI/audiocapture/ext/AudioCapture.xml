@@ -116,11 +116,11 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'ok' as the status. An unsuccessful recording will set 'cancel' or 'error' as the status in the callback returning parameters. If 'cancel' method is called during recording, 'cancel' status will be set in the callback returning parameters. In order to restart the audio capture, if the audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
 				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
-            <METHOD name="stop">
+            <METHOD name="stop" runInThread="separate">
                 <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'ok' in the callback returning parameter of 'start' method. The file is saved in user provided location.</DESC>
 				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
-            <METHOD name="cancel">
+            <METHOD name="cancel" runInThread="separate">
                 <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved. In android, it will delete the file if it exists.</DESC>
 				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
