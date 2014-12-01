@@ -4,6 +4,7 @@
 #include "common/RhoStd.h"
 #include "api_generator/MethodResult.h"
 #include "ViewFinder.h"
+#include "commdlg.h"
 
 enum eCamType
 {
@@ -69,11 +70,11 @@ protected:
 	* checks if two strings are equal
 	*/
 	BOOL cmp(LPCTSTR tc1, LPCTSTR tc2);
-	void initializePreviewPos();
-	void GetDataURI (BYTE* bData, int iLength, rho::String& data);	
-	void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri);
+	void initializePreviewPos();	
+	void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri, int nImageWidth=0, int ImageHeight=0);
 	virtual void RedrawViewerWnd(RECT& pos);
 	virtual void SetFlashMode()=0;
 	virtual void SetReolution()=0;
 };
+
 #endif
