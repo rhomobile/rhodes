@@ -1291,6 +1291,33 @@ int rho_ruby_to_str(VALUE val, const char** dest, int* len) {
     return 1;
 }
 
+static const char* empty_str = "";
+
+int rho_ruby_to_str_ex(VALUE val, const char** dest, int* len) {
+
+    if (dest == 0 || val == 0) {
+        return 0;
+    }
+
+    *dest = empty_str;
+    *len = 0;
+
+    if ( val != 0 && val != Qnil )
+    {
+        VALUE strVal;
+        if ( TYPE(val) == T_STRING || TYPE(val) == T_FIXNUM || TYPE(val) == T_TRUE || TYPE(val) == T_FALSE ||
+            TYPE(val) == T_FLOAT || TYPE(val) == T_BIGNUM || TYPE(val) == T_SYMBOL || TYPE(val) == T_RATIONAL || TYPE(val) == T_COMPLEX )
+            strVal = rb_funcall(val, rb_intern("to_s"), 0);
+        else
+            strVal = rb_funcall(val, rb_intern("to_json"), 0);
+
+        *dest = RSTRING_PTR(strVal);
+        *len = RSTRING_LEN(strVal);
+    }
+
+    return 1;
+}
+
 VALUE rho_ruby_hash_keys(VALUE val) {
     return rb_funcall(val, rb_intern("keys"), 0);
 }
