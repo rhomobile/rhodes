@@ -49,6 +49,7 @@
 #include "impl/AlertImpl.h"
 #include "impl/DateTimePickerImpl.h"
 #include "api_generator/MethodResult.h"
+#include "QtLogView.h"
 
 namespace Ui {
     class QtMainWindow;
@@ -134,6 +135,7 @@ private:
     rho::apiGenerator::CMethodResult m_oTabBarSwitchCallback;
     int toolBarSeparatorWidth;
     QNetworkProxy m_proxy;
+    QtLogView* m_logView;
 
 private slots:
     void on_webView_urlChanged(QUrl );
