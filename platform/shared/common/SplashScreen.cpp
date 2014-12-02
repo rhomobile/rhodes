@@ -43,12 +43,14 @@ void CSplashScreen::start()
 long CSplashScreen::howLongWaitMs()
 {
    if (m_nDelay <= 0) {
-       return 0;
+       return m_nDelay;
    }
    CTimeInterval endTime = CTimeInterval::getCurrentTime();
    long nTimeElapsed = endTime.minus(m_startTime).toULong();
    
-   return m_nDelay * 1000 - nTimeElapsed;
+   long timeToWait = m_nDelay * 1000 - nTimeElapsed;
+
+   return (timeToWait > 0) ? timeToWait : 0;
 }
 
 void CSplashScreen::hide()
