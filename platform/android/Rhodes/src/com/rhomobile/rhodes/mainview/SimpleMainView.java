@@ -791,4 +791,8 @@ public class SimpleMainView implements MainView {
         return webView.getUrl();
     }
 
+    @Override
+    public void removeSplashScreen() {
+    }
+
 }

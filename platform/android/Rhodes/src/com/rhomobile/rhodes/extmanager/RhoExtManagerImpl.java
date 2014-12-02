@@ -2,6 +2,7 @@ package com.rhomobile.rhodes.extmanager;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -311,8 +312,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     public IRhoWebView createWebView(RhodesActivity activity, int tabIndex) {
         IRhoWebView res = null;
         GoogleWebView googleWebView = null;
+        Collection<IRhoExtension> extensions = null;
         synchronized (mExtensions) {
-            for (IRhoExtension ext : mExtensions.values()) {
+            extensions = mExtensions.values();
+        }
+            for (IRhoExtension ext : extensions) {
                 IRhoWebView view = ext.onCreateWebView(this, tabIndex);
                 if (view != null) {
                     if (res != null) {
@@ -322,7 +326,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                 }
             }
             if (res == null) {
-                Logger.T(TAG, "Creating Google web view");
+                Logger.I(TAG, "Creating Google web view !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 googleWebView = new GoogleWebView(activity);
                 res = googleWebView;
             }
@@ -332,9 +336,13 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             res.setWebClient();
             boolean handled = false;
             res.addJSInterface(new RhoJSApi(), "__rhoNativeApi");
-            for (IRhoExtension ext : mExtensions.values()) {
-                handled = ext.onWebViewCreated(this, res, handled);
-            }
+
+        synchronized (mExtensions) {
+            extensions = mExtensions.values();
+        }
+
+        for (IRhoExtension ext : extensions) {
+            handled = ext.onWebViewCreated(this, res, handled);
         }
         return res;
     }
