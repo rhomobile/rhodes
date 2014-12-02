@@ -266,7 +266,8 @@ namespace rho {
 		}
 		else
 		{
-			bEnumerationStatus = ( (CDirectShowCam:: enumerate(arIDs, m_DeviceNameMap)) || (CImager::enumerate(arIDs, m_DeviceNameMap)));
+			bEnumerationStatus = CDirectShowCam:: enumerate(arIDs, m_DeviceNameMap) ;
+			bEnumerationStatus = CImager::enumerate(arIDs, m_DeviceNameMap) || bEnumerationStatus;
 		}
 		if(TRUE == bEnumerationStatus)
 		{
@@ -300,6 +301,7 @@ namespace rho {
 		CCameraImpl(const rho::String& strID)
 		{
 			LOG(INFO) + "Initialising interface for Camera " + strID; 
+			m_hashProps.put( "ID", strID);
 			//RHODESAPP().getExtManager().registerExtension(/*convertToStringA*/(strID), this );
 			eCamType camType= ((CCameraSingletonImpl*)(rho::CCameraFactoryBase::getCameraSingletonS()))->getCamType(strID);
 			rho::StringW id = rho::common::convertToStringW(strID);
