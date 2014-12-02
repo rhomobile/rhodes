@@ -1295,7 +1295,7 @@ static const char* empty_str = "";
 
 int rho_ruby_to_str_ex(VALUE val, const char** dest, int* len) {
 
-    if (dest == 0 || val == 0) {
+    if (0 == dest || 0 == len) {
         return 0;
     }
 
