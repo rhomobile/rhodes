@@ -92,7 +92,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_LogicalDpiY(0),
     firstShow(true), m_bFirstLoad(true),
     toolBarSeparatorWidth(0),
-    m_proxy(QNetworkProxy(QNetworkProxy::DefaultProxy))
+    m_proxy(QNetworkProxy(QNetworkProxy::DefaultProxy)),
+    m_logView(0)
     //TODO: m_SyncStatusDlg
 {
 #if !defined(RHODES_EMULATOR)
@@ -186,6 +187,12 @@ QtMainWindow::~QtMainWindow()
     tabbarRemoveAllTabs(false);
     if (m_alertDialog) delete m_alertDialog;
     //TODO: m_SyncStatusDlg
+    LOGCONF().setLogView(NULL);
+    if (m_logView)
+    {
+        delete m_logView;
+        m_logView = 0;
+    }
     delete webInspectorWindow;
     delete ui;
 }
@@ -248,6 +255,8 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
     if (mainWindowCallback) mainWindowCallback->onWindowClose();
     tabbarRemoveAllTabs(false);
     webInspectorWindow->close();
+    if (m_logView)
+        m_logView->close();
     QMainWindow::closeEvent(ce);
 }
 
@@ -257,6 +266,10 @@ void QtMainWindow::resizeEvent(QResizeEvent *event)
     m_LogicalDpiY = this->logicalDpiY();
     if (mainWindowCallback)
         mainWindowCallback->updateSizeProperties(event->size().width(), event->size().height());
+    if (m_logView == 0) {
+        m_logView = new QtLogView();
+        LOGCONF().setLogView(m_logView);
+    }
 }
 
 void QtMainWindow::adjustWebInspector()
@@ -880,12 +893,8 @@ void QtMainWindow::webviewNavigateBackCommand(int tab_index)
 
 void QtMainWindow::logCommand()
 {
-    //TODO: logCommand
-    //if ( !m_logView.IsWindow() ) {
-    //    LoadLibrary(_T("riched20.dll"));
-    //    m_logView.Create(NULL);
-    //}
-    //m_logView.ShowWindow(SW_SHOWNORMAL);
+    if (m_logView)
+        m_logView->show();
 }
 
 void QtMainWindow::refreshCommand(int tab_index)
