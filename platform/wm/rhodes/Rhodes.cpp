@@ -582,6 +582,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
     m_appWindow.InvalidateRect(NULL, TRUE);
+	m_appWindow.SetActiveWindow();	//  Enterprise Browser was failing to launch maximimized through a shortcut, this line ensures it launches maximised
     m_appWindow.UpdateWindow();
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
 	initialiseRhoElementsExt();
