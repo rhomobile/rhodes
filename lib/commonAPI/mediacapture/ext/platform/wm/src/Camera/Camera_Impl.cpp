@@ -362,7 +362,7 @@ namespace rho {
 
 		} 
 
-		virtual void Capture(rho::apiGenerator::CMethodResult& oResult) {
+		virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
 			{              	
 				if (oResult.hasCallback()){
