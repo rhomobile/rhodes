@@ -203,6 +203,7 @@ BOOL CDShowCam::initCaptureDevice(wstring szDeviceName)
 	CComVariant varCamName;
 	VariantInit(&varCamName);
 	varCamName = szDeviceName.c_str();
+	LOG(INFO) + __FUNCTION__ + L" init filter with device name:" + szDeviceName ;
 	// Initialize the video capture filter
 	hr = pVideoCap.CoCreateInstance( CLSID_VideoCapture );	
 	if(SUCCEEDED(hr))

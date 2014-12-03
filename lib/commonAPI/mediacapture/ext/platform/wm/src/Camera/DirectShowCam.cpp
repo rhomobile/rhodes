@@ -60,6 +60,7 @@ void CDirectShowCam::takeFullScreen()
 			{
 				if(m_pDSCam->initFilterGraph())
 				{
+					LOG(INFO) + "Building graph for cam: " + m_szDeviceName; 
 					cfg.sCamID = m_szDeviceName;					
 					cfg.bIsAudioEnb = FALSE;	// no audio capture
 					cfg.bIsCapEnb = TRUE;		// enable capture
