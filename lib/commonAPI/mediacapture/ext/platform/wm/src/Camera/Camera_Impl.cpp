@@ -171,7 +171,10 @@ namespace rho {
 			}
 			else
 			{
+				WCHAR errorMsg[100];
 				DWORD dwResult = GetLastError();
+				wsprintf(errorMsg, L"choose picture error code: %d", dwResult);
+				LOG(INFO) + errorMsg;
 				UpdateErrorStatus(dwResult);
 			}
 		}
@@ -239,6 +242,13 @@ namespace rho {
 			case ERROR_OUTOFMEMORY:
 				{
 					UpdateCallbackStatus("error", "Operation ran out of memory..", "");
+					break;
+				}
+			case ERROR_INVALID_WINDOW_HANDLE:
+				{
+					//some wm devices gives error code as ERROR_INVALID_WINDOW_HANDLE on closing the dialog
+					//in this case user expects a cancel message
+					UpdateCallbackStatus("cancel", "User cancelled the dialog..", "");
 					break;
 				}
 			default:
