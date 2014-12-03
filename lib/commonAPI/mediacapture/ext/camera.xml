@@ -351,7 +351,7 @@ The ebapi.js file is necessary for all single API inclusions.
 				<DESC>Hides the preview opened by using showPreview.</DESC>
 				<PLATFORM>WM, CE</PLATFORM>
 			</METHOD> 
-			<METHOD name="Capture" hasCallback="mandatory">
+			<METHOD name="capture" hasCallback="mandatory">
 				<DESC>Capture the image and save it to a file.</DESC>
 				<PLATFORM>WM, CE</PLATFORM>	            			
 				<CALLBACK type="HASH">
