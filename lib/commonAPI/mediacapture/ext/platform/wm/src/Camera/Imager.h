@@ -56,6 +56,7 @@ private:
 	static IMAGE_STOPVIEWFINDERPROC Image_StopViewfinder;///< Function pointer to Image Capture API,to stop View Finder
 
 	DWORD InitImager();
+	void DeInitImager();
 	DWORD StartViewer(RECT& pos, eViewrWndMode eMode);
 	BOOL startPreview(RECT& pos, eViewrWndMode eMode);
 	DWORD StopViewer();

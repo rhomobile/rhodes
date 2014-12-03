@@ -26,7 +26,6 @@ CImager::CImager(LPCTSTR szDeviceName):CCamera(szDeviceName)
     m_AimMode = FALSE;
 	m_CamType = L"imager";
 	m_hImager = INVALID_HANDLE_VALUE;
-	InitImager();
 }
 CImager::~CImager()
 {
@@ -35,12 +34,7 @@ CImager::~CImager()
         FreeLibrary(m_hImagerLibHandle);
         m_hImagerLibHandle = NULL;
     }
-	if(m_hImager != INVALID_HANDLE_VALUE)
-	{
-		Image_UnLockImager(m_hImager);
-		Image_Close(m_hImager);
-		m_hImager=INVALID_HANDLE_VALUE;
-	}
+	DeInitImager();
 }
 BOOL CImager::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp)
 {
@@ -96,6 +90,7 @@ BOOL CImager::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::Str
                 }
                 else
                 {
+					arIDs.addElement(rho::common::convertToStringA(szModifiedDeviceName));	
                     camLookUp.put(rho::common::convertToStringA(szModifiedDeviceName), eImager );
                 }
 
@@ -179,6 +174,7 @@ void CImager::takeFullScreen()
 	{
 		if(m_PreviewOn == false)
 		{
+			InitImager();
 			if(m_hImager != INVALID_HANDLE_VALUE)
 			{
 				if(startPreview(pos, eFullScreen))
@@ -193,6 +189,10 @@ void CImager::takeFullScreen()
 				LOG(INFO) + __FUNCTION__  + L"Unable to open imager";
 				UpdateCallbackStatus("error","takeFullScreen failed", "");
 			}
+			if(m_PreviewOn == false)
+			{
+				DeInitImager();
+			}
 		}
 	}
 }
@@ -204,6 +204,7 @@ BOOL CImager::showPreview()
 	{
 		if(m_PreviewOn == false)
 		{
+			InitImager();
 			if(m_hImager != INVALID_HANDLE_VALUE)
 			{
 				RECT pos;
@@ -224,7 +225,12 @@ BOOL CImager::showPreview()
 				}
 
 			}
+			if(m_PreviewOn == false)
+			{
+				DeInitImager();
+			}
 		}
+		
 	}
 	return bPreviewStatus;
 }
@@ -276,13 +282,22 @@ DWORD CImager::InitImager()
 		memset(&ImageFindInfo, 0, sizeof(ImageFindInfo));
 		SI_INIT(&ImageFindInfo);
 		SI_SET_USED(&ImageFindInfo, tszRegistryBasePath);
-		dwRes = Image_Open(m_szDeviceName, &m_hImager);
+		dwRes = Image_Open(m_szDeviceName, &m_hImager);//if opened directshow will not work
 		if(dwRes != E_IMG_SUCCESS)
 		{
 			LOG(ERROR) + __FUNCTION__ + "Image open failed for device: " + m_szDeviceName ; 
 		}
 	}
 	return dwRes;
+}
+void CImager::DeInitImager()
+{
+	if(m_hImager != INVALID_HANDLE_VALUE)
+	{
+		Image_UnLockImager(m_hImager);
+		Image_Close(m_hImager);
+		m_hImager=INVALID_HANDLE_VALUE;
+	}
 }
 ////////////////////////////////////////////////////////////////////////
 // Function:	StartViewer
@@ -360,11 +375,12 @@ BOOL CImager::hidePreview()
 	if (m_PreviewOn)
 	{	
 		if(E_IMG_SUCCESS == StopViewer())
-		{
+		{			
 			m_PreviewOn = false;
 		    m_IsCameraRunning = false;
 			bRetStatus = TRUE;
 		}
+		DeInitImager();
 
 	}
 	return bRetStatus;
