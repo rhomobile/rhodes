@@ -157,6 +157,10 @@ public:
     void getLogTextW(StringW& strTextW);
     int  getLogTextPos();
 
+    unsigned int getLogFileSize();
+
+    void getLogFileText(int linearPos, int maxSize, String& strText, int refCircularPos = -1);
+
 	void setLogView(ILogSink* logView) { 
 		m_pLogViewSink = logView; 
 	}
