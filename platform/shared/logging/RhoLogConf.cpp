@@ -255,7 +255,7 @@ void LogSettings::getLogFileText(int linearPos, int maxSize, String& strText, in
 
         oFile.setPosTo(pos);
 
-        char buffer[maxSize + 1];
+        char *buffer = new char[maxSize + 1];
 
         if(fileSize - pos > maxSize) {
             oFile.readData(buffer, 0, maxSize);
@@ -267,6 +267,7 @@ void LogSettings::getLogFileText(int linearPos, int maxSize, String& strText, in
             oFile.readData(buffer, fileSize - pos, maxSize - (fileSize - pos));
         }
         strText.assign(buffer, maxSize);
+        delete [] buffer;
     }
     setLogToFile(true);
 }
