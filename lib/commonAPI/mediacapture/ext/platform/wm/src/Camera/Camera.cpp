@@ -120,13 +120,13 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 	if(cmp(szPropertyName, L"desiredWidth"))
 	{
 		m_DesiredWidth = _ttoi(szPropertyValue);
-		SetReolution();
+		SetResolution();
 
 	}
 	else if(cmp(szPropertyName, L"desiredHeight"))
 	{
 		m_DesiredHeight = _ttoi(szPropertyValue);
-		SetReolution();
+		SetResolution();
 	}
 	else if(cmp(szPropertyName, L"fileName"))
 	{
