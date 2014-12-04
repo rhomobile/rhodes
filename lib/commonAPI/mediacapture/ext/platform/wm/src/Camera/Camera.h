@@ -5,18 +5,20 @@
 #include "api_generator/MethodResult.h"
 #include "ViewFinder.h"
 #include "commdlg.h"
+#include "RcmLoader.h"
 
 enum eCamType
 {
 	eColorCam,
 	eImager
 };
-//typedef enum 
-//{
-//	eCancelEvent=0,
-//	eCaptureEvent,
-//	eMaxEventCount
-//}eEventIndex;
+enum eTriggerEvents
+{
+	eCancel =0,
+	eTrigger,
+	eTriggerEventMax
+
+};
 typedef enum 
 {
 	eImageUri=0,
@@ -33,6 +35,7 @@ public:
     virtual BOOL hidePreview() = 0;
 	virtual void Capture() = 0;
 	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback)=0;
+	virtual void ApplicationFocusChange(bool bAppHasFocus)=0;
 };
 
 class CCamera : public ICam, public IViewFinderCallBack
@@ -53,6 +56,12 @@ protected:
 	rho::StringW m_CamType;
 	bool m_PreviewOn; 
 	static bool m_IsCameraRunning;
+	static CRcmLoader m_Rcm;		///<  EMDK Rcm DLL loaded dynamically
+	static HANDLE m_hTriggerEvents[eTriggerEventMax];
+	static HANDLE m_hRegisterTrigger;
+	static HANDLE m_hTriggerMonitorThread;
+	static bool m_bRcmLoaded;
+	static bool m_bAppHasFocus;	
 	rho::apiGenerator::CMethodResult m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  
 public:
 	CCamera(LPCTSTR szDeviceName);
@@ -65,6 +74,7 @@ public:
 	virtual void ResetViewerWndPos(RECT& pos);//viewerwnd callback
 	void ResetViewerWndPos();//called when user update position manually
 	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback);
+	virtual void ApplicationFocusChange(bool bAppHasFocus);
 protected:
 	/**
 	* checks if two strings are equal
@@ -75,6 +85,10 @@ protected:
 	virtual void RedrawViewerWnd(RECT& pos);
 	virtual void SetFlashMode()=0;
 	virtual void SetReolution()=0;
+	static void createTriggerMonitorThread(IViewFinderCallBack* pCb);
+	static DWORD TriggerMonitorProc (LPVOID pparam);
+private:
+	static void closeTriggerEvents();
 };
 
 #endif
