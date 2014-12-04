@@ -2593,6 +2593,7 @@ namespace "config" do
         $app_config['extensions'] = $app_config['extensions'] | ['indicators']
         $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
         $app_config['extensions'] = $app_config['extensions'] | ['sensor']
+        $app_config['extensions'] = $app_config['extensions'] | ['mobile_payment']
       end
 
     end
@@ -2628,6 +2629,9 @@ namespace "config" do
     end
     if $app_config['extensions'].index('hardwarekeys')
       $rhoelements_features << "- HardwareKeys extension"
+    end
+    if $app_config['extensions'].index('mobile_payment')
+      $rhoelements_features << "- mobile_payment extension"
     end
     if $app_config['extensions'].index('cardreader')
       $rhoelements_features << "- CardReader extension"
