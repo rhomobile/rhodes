@@ -385,7 +385,7 @@ void CRhoFile::truncate(unsigned int size) {
         return;
 
 #ifdef WINDOWS_PLATFORM
-    _chsize(fileno(m_file), size);
+    //_chsize(fileno(m_file), size);
 #else
     ftruncate(fileno(m_file), size);
 #endif
