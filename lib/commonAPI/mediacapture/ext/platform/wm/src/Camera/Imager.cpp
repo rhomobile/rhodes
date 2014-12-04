@@ -82,7 +82,7 @@ BOOL CImager::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::Str
                 /*if (wcslen(szModifiedDeviceName) > 0 &&
                 szModifiedDeviceName[wcslen(szModifiedDeviceName) - 1] == L':')
                 szModifiedDeviceName[wcslen(szModifiedDeviceName) - 1] = L'\0';*/
-                arIDs.addElement(rho::common::convertToStringA(szModifiedDeviceName));	
+                //arIDs.addElement(rho::common::convertToStringA(szModifiedDeviceName));	
 
                 if(!_memicmp(ImageFindInfo.tszFriendlyName, L"Image Capture Driver for Color Camera", wcslen(L"Image Capture Driver for Color Camera")*sizeof(TCHAR)))
                 {
