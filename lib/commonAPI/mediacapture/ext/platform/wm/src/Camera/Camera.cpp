@@ -355,7 +355,7 @@ void CCamera::ResetViewerWndPos(RECT& pos)
 		RedrawViewerWnd(pos);
 	}
 }
-void CCamera::createTriggerMonitorThread(IViewFinderCallBack* pCb)
+void CCamera::createTriggerMonitorThread(LPVOID pparam)
 {
 	if(m_bRcmLoaded)
 	{
@@ -376,7 +376,7 @@ void CCamera::createTriggerMonitorThread(IViewFinderCallBack* pCb)
 		else
 		{
 			// Create thread
-			m_hTriggerMonitorThread = CreateThread (NULL, 0, TriggerMonitorProc, pCb, 0, NULL);
+			m_hTriggerMonitorThread = CreateThread (NULL, 0, TriggerMonitorProc, pparam, 0, NULL);
 		}
 	}
 	else
@@ -389,7 +389,7 @@ void CCamera::createTriggerMonitorThread(IViewFinderCallBack* pCb)
 DWORD CCamera::TriggerMonitorProc (LPVOID pparam)
 { 
 	bool bContinue = true;
-	IViewFinderCallBack* pcb = (IViewFinderCallBack*)pparam;
+	CCamera* pCam = (CCamera*)pparam;
 	DWORD dwEvent = WAIT_OBJECT_0;
 	while(bContinue)
 	{
@@ -413,7 +413,8 @@ DWORD CCamera::TriggerMonitorProc (LPVOID pparam)
 			}
 		case eTrigger:
 			{
-				pcb->captureImage();
+				pCam->DisableFullScreenButtons();
+				pCam->captureImage();
 				bContinue = false;
 				break;
 
@@ -439,5 +440,9 @@ void CCamera::closeTriggerEvents()
 void CCamera::ApplicationFocusChange(bool bAppHasFocus)
 {
 	m_bAppHasFocus = bAppHasFocus;	
+}
+void CCamera::DisableFullScreenButtons()
+{
+	m_ViewFinder.DisableFullScreenButtons();
 }
 

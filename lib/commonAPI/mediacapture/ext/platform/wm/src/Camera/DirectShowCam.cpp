@@ -81,7 +81,7 @@ void CDirectShowCam::takeFullScreen()
 							m_PreviewOn = true;
 							m_IsCameraRunning = true;
 							setCameraProperties();
-							//createTriggerMonitorThread(static_cast<IViewFinderCallBack*>(this));
+							createTriggerMonitorThread(this);
 						}
 						
 

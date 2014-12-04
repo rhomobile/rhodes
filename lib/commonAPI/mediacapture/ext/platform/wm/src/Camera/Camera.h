@@ -73,6 +73,7 @@ public:
 	virtual void captureImage();
 	virtual void ResetViewerWndPos(RECT& pos);//viewerwnd callback
 	void ResetViewerWndPos();//called when user update position manually
+	void DisableFullScreenButtons();//when trigger is used in full screen, then button should be greyed out
 	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback);
 	virtual void ApplicationFocusChange(bool bAppHasFocus);
 protected:
@@ -85,7 +86,7 @@ protected:
 	virtual void RedrawViewerWnd(RECT& pos);
 	virtual void SetFlashMode()=0;
 	virtual void SetReolution()=0;
-	static void createTriggerMonitorThread(IViewFinderCallBack* pCb);
+	static void createTriggerMonitorThread(LPVOID pparam);
 	static DWORD TriggerMonitorProc (LPVOID pparam);
 private:
 	static void closeTriggerEvents();

@@ -33,6 +33,7 @@ public:
 	void RepositionWindow(const RECT& pos);
 	static LRESULT CALLBACK FullScreenWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	HWND getViewerWndHandle();
+	void DisableFullScreenButtons();
 protected:
 	HWND createFullScreenWindow(HWND hwndParent, RECT& pos);
 	HWND createPreviewWindow(HWND hwndParent, const RECT& pos);

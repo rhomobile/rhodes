@@ -210,5 +210,10 @@ void CViewFinder::ReposFullScreen(RECT& pos)
 	SetWindowPos(m_CancelButton, m_PreviewWndParent, buttonLeft, buttonTop , buttonPos.right, buttonPos.bottom,SWP_SHOWWINDOW);	
 	
 }
-
+//below method is called from camera , when user presses trigger button to capture image in fullscreen
+void CViewFinder::DisableFullScreenButtons()
+{
+	ShowWindow(m_CaptureButton, SW_HIDE);
+	ShowWindow(m_CancelButton, SW_HIDE);
+}
 
