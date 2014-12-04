@@ -305,7 +305,7 @@ void CDirectShowCam::setCameraProperties()
 	if(m_PreviewOn)
 	{
 		SetFlashMode();
-		SetReolution();
+		SetResolution();
 	}
 	
 }
@@ -320,7 +320,7 @@ void CDirectShowCam::RedrawViewerWnd(RECT& pos)
 		}
 	}
 }
-void CDirectShowCam::SetReolution()
+void CDirectShowCam::SetResolution()
 {
 	if(m_PreviewOn)
 	{

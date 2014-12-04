@@ -85,7 +85,7 @@ protected:
 	void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri, int nImageWidth=0, int ImageHeight=0);
 	virtual void RedrawViewerWnd(RECT& pos);
 	virtual void SetFlashMode()=0;
-	virtual void SetReolution()=0;
+	virtual void SetResolution()=0;
 	static void createTriggerMonitorThread(LPVOID pparam);
 	static DWORD TriggerMonitorProc (LPVOID pparam);
 private:

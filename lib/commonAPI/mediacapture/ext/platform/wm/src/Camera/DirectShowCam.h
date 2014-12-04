@@ -14,7 +14,7 @@ public:
 	virtual void Capture();
 protected:
 	void SetFlashMode();
-	void SetReolution();
+	void SetResolution();
 	void setCameraProperties();
 	virtual void RedrawViewerWnd(RECT& pos);
 	void ResetResolution();
