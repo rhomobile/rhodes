@@ -4,7 +4,15 @@
 #include "common/ExtManager.h"
 
 #define DEFAULT_FILENAME L"\\Img"
+#define TRIGGER_EVENT_NAME L"CameraTrigger"
+
 bool CCamera::m_IsCameraRunning = false;
+bool CCamera::m_bRcmLoaded = false;
+bool CCamera::m_bAppHasFocus= true;
+CRcmLoader CCamera::m_Rcm;
+HANDLE CCamera::m_hTriggerEvents[eTriggerEventMax] = {NULL, NULL};
+HANDLE CCamera::m_hRegisterTrigger = NULL;
+HANDLE CCamera::m_hTriggerMonitorThread = NULL;
 
 CCamera::CCamera(LPCTSTR szDeviceName)
 {
@@ -18,10 +26,18 @@ CCamera::CCamera(LPCTSTR szDeviceName)
 	m_DesiredHeight = -1;
 	m_DesiredWidth =-1;
 	initializePreviewPos();
+	if(m_Rcm.LoadRcmDLL())
+	{
+		m_bRcmLoaded = true;
+	}
 }
 CCamera::~CCamera()
 {
 	m_pCameraCb=NULL; //this is just a call back, no need to delete this
+	if(m_bRcmLoaded)
+	{
+		m_Rcm.UnloadRcmDLL();
+	}
 
 }
 BOOL CCamera::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
@@ -226,6 +242,10 @@ void CCamera::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 void CCamera::cancel()
 {	
 	hidePreview();
+	if(m_hTriggerEvents[eCancel])
+	{
+		SetEvent(m_hTriggerEvents[eCancel]);
+	}
 	UpdateCallbackStatus("cancel","User cancelled preview","");	
 
 }
@@ -334,5 +354,90 @@ void CCamera::ResetViewerWndPos(RECT& pos)
 	{
 		RedrawViewerWnd(pos);
 	}
+}
+void CCamera::createTriggerMonitorThread(IViewFinderCallBack* pCb)
+{
+	if(m_bRcmLoaded)
+	{
+		// Create event to signal thread to quit
+		m_hTriggerEvents[0] = CreateEvent (NULL, TRUE, FALSE, NULL);
+		// Create auto-reset event which system will signal when trigger occurs
+		m_hTriggerEvents[1] = CreateEvent (NULL, FALSE, FALSE, TRIGGER_EVENT_NAME);
+		DWORD dwRes;
+		// Register with system for trigger notifications
+		if ((dwRes = m_Rcm.lpfn_RCM_RegisterTriggerEvent (TRIGGER_ALL_MASK, FALSE, TRIGGER_EVENT_NAME , &m_hRegisterTrigger)) != E_RCM_SUCCESS)
+		{
+			WCHAR error[100];
+			wsprintf (error, L"RegisterTriggerEvent failed (%lu)", dwRes);
+			LOG(WARNING) + error;	
+			closeTriggerEvents();
+
+		}
+		else
+		{
+			// Create thread
+			m_hTriggerMonitorThread = CreateThread (NULL, 0, TriggerMonitorProc, pCb, 0, NULL);
+		}
+	}
+	else
+	{
+		LOG(WARNING) + L"This device doesn't support camera capture using trigger button";
+	}
+
+	
+}
+DWORD CCamera::TriggerMonitorProc (LPVOID pparam)
+{ 
+	bool bContinue = true;
+	IViewFinderCallBack* pcb = (IViewFinderCallBack*)pparam;
+	DWORD dwEvent = WAIT_OBJECT_0;
+	while(bContinue)
+	{
+		dwEvent = WaitForMultipleObjects(2, m_hTriggerEvents, FALSE, INFINITE);
+
+		// ignore trigger events if we're in the background
+		if (false == CCamera::m_bAppHasFocus)
+			continue;
+
+		// Unregister for notifications
+		m_Rcm.lpfn_RCM_DeregisterTrigger(m_hRegisterTrigger);
+		closeTriggerEvents();
+		DWORD dwEventIndex = dwEvent - WAIT_OBJECT_0; 
+		switch(dwEventIndex)
+		{
+
+		case eCancel:
+			{					
+				bContinue = false;
+				break;
+			}
+		case eTrigger:
+			{
+				pcb->captureImage();
+				bContinue = false;
+				break;
+
+			}
+		default:
+			break;
+		}
+	}
+	return 0;
+}
+void CCamera::closeTriggerEvents()
+{
+	for(int nIndex = 0; nIndex < eTriggerEventMax; nIndex++)
+	{
+		if(m_hTriggerEvents[nIndex])
+		{
+			CloseHandle(m_hTriggerEvents[nIndex]);
+			m_hTriggerEvents[nIndex] = NULL;
+		}
+	}
+	
+}
+void CCamera::ApplicationFocusChange(bool bAppHasFocus)
+{
+	m_bAppHasFocus = bAppHasFocus;	
 }
 

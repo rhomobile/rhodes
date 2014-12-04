@@ -304,7 +304,7 @@ namespace rho {
 
 	//CCameraImpl act as an interface between jav script and the actual implementation
 	//or in other words it asct as a proxy and route the call to the actual implementation class
-	class CCameraImpl : public CCameraBase
+	class CCameraImpl :public IRhoExtension, public CCameraBase
 	{
 	private:
 		ICam* pCamera;
@@ -313,7 +313,7 @@ namespace rho {
 		{
 			LOG(INFO) + "Initialising interface for Camera " + strID; 
 			m_hashProps.put( "ID", strID);
-			//RHODESAPP().getExtManager().registerExtension(/*convertToStringA*/(strID), this );
+			RHODESAPP().getExtManager().registerExtension(strID, this );//to receive notification from main window, eg:app focus
 			eCamType camType= ((CCameraSingletonImpl*)(rho::CCameraFactoryBase::getCameraSingletonS()))->getCamType(strID);
 			rho::StringW id = rho::common::convertToStringW(strID);
 			if(eImager == camType)
@@ -498,6 +498,19 @@ namespace rho {
 		virtual void getSupportedSizeList(rho::apiGenerator::CMethodResult& oResult)
 		{
 			//this API is unsupported
+		}
+		//IRHoExtension manager overrides
+
+		virtual void OnAppActivate(bool bActivate, const CRhoExtData& oExtData)
+		{
+			if (!pCamera)
+			{
+				return;
+			}
+			else
+			{
+				pCamera->ApplicationFocusChange(bActivate);
+			}
 		}
 	};
 
