@@ -1,6 +1,8 @@
 #include "DirectShowCam.h"
 #include "Common/RhoUtil.h"
 
+#define MINIMUM_DEVICE_NAME_LENGTH 3 //eg CAM1:
+
 CDirectShowCam::CDirectShowCam(LPCTSTR szDeviceName):CCamera(szDeviceName)
 {
 	m_CamType = L"color";
@@ -28,15 +30,18 @@ BOOL CDirectShowCam::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<r
 	if((hFirstDevice != INVALID_HANDLE_VALUE) ||(hFirstDevice != NULL) || (di.hDevice != NULL))
 	{
 		bRetStatus = TRUE;
-		arIDs.addElement(rho::common::convertToStringA(di.szLegacyName));
-		camLookUp.put(rho::common::convertToStringA(di.szLegacyName), eColorCam );
-		//search for next device in a loop	
-		while(FindNextDevice(hFirstDevice, &di))
+		if(wcslen(di.szLegacyName) > MINIMUM_DEVICE_NAME_LENGTH)//in devices with no color cam, we need this check
 		{
 			arIDs.addElement(rho::common::convertToStringA(di.szLegacyName));
 			camLookUp.put(rho::common::convertToStringA(di.szLegacyName), eColorCam );
-			FindClose(di.hDevice);
+			//search for next device in a loop	
+			while(FindNextDevice(hFirstDevice, &di))
+			{
+				arIDs.addElement(rho::common::convertToStringA(di.szLegacyName));
+				camLookUp.put(rho::common::convertToStringA(di.szLegacyName), eColorCam );
+				FindClose(di.hDevice);
 
+			}
 		}
 		FindClose(hFirstDevice);
 	} 
