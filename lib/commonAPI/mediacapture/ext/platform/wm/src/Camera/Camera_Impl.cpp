@@ -300,6 +300,7 @@ namespace rho {
 		else        
 			return arIDs[0];
 	}
+	static rho::Hashtable<rho::String, rho::String> hashAliasProps;
 
 	//CCameraImpl act as an interface between jav script and the actual implementation
 	//or in other words it asct as a proxy and route the call to the actual implementation class
@@ -389,11 +390,21 @@ namespace rho {
 			if(pCamera)
 			{				
 				if (m_hashProps.containsKey(propertyName))
+				{
 					oResult.set(m_hashProps.get(propertyName));
+				}
 				else
 				{			
 					WCHAR szValue[MAX_PATH];
-					BOOL bResult = pCamera->getProperty(convertToStringW(propertyName).c_str(), szValue);
+					BOOL bResult = FALSE;
+					if(hashAliasProps.containsKey(propertyName))
+					{
+						bResult = pCamera->getProperty(convertToStringW(hashAliasProps[propertyName]).c_str(), szValue);
+					}
+					else
+					{
+						bResult = pCamera->getProperty(convertToStringW(propertyName).c_str(), szValue);
+					}
 					LOG(INFO) +  L"Getting Property " + convertToStringW(propertyName).c_str() + " as " + szValue;
 					if (szValue && (bResult == TRUE))
 					{
@@ -452,8 +463,17 @@ namespace rho {
 		{
 			if(pCamera)
 			{				
-				LOG(INFO) +  L"Setting Property " + propertyName.c_str() + " to " + propertyValue.c_str();		
-				BOOL bRet = pCamera->setProperty(convertToStringW(propertyName).c_str(), convertToStringW(propertyValue).c_str());
+				LOG(INFO) +  L"Setting Property " + propertyName.c_str() + " to " + propertyValue.c_str();
+				BOOL bRet = FALSE;
+				if(hashAliasProps.containsKey(propertyName))
+				{
+					//for deprecated property name, get the exisitng name and invoke method
+					bRet = pCamera->setProperty(convertToStringW(hashAliasProps[propertyName]).c_str(), convertToStringW(propertyValue).c_str());
+				}
+				else
+				{
+					bRet = pCamera->setProperty(convertToStringW(propertyName).c_str(), convertToStringW(propertyValue).c_str());
+				}
 				oResult.set(bRet == TRUE);
 			}
 
@@ -463,12 +483,13 @@ namespace rho {
 		{
 			if(pCamera)
 			{	
+				CMethodResult oTempRes;
 				//  Set multiple properties				
 				typedef std::map<rho::String, rho::String>::const_iterator it_type;
 				for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
 				{
 					LOG(INFO) +  L"Setting Property " + iterator->first.c_str() + " to " + iterator->second.c_str();			
-					pCamera->setProperty(convertToStringW(iterator->first).c_str(), convertToStringW(iterator->second).c_str());
+					setProperty(iterator->first, iterator->second, oTempRes);
 				}
 				oResult.set(true);
 			}
@@ -497,10 +518,22 @@ namespace rho {
 	};
 
 }
+//Below method initAliasParams needs to be updated whenever new alias param is introduced
+void initAliasParams()
+{
+	rho::hashAliasProps.put("desired_width", "desiredWidth");
+	rho::hashAliasProps.put("desired_height", "desiredHeight");
+	rho::hashAliasProps.put("camera_type", "cameraType");
+	rho::hashAliasProps.put("flash_mode", "flashMode");
+	rho::hashAliasProps.put("left", "previewLeft");
+	rho::hashAliasProps.put("top", "previewTop");
+	rho::hashAliasProps.put("format", "compressionFormat");
+}
 
 extern "C" void Init_Camera_extension()
 {
 	rho::CCameraFactory::setInstance( new rho::CCameraFactory() );
 	rho::Init_Camera_API();
+	initAliasParams();//prepare a lookup table to support alias parameters for propertybag
 
 }
