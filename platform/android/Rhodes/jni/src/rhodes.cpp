@@ -206,21 +206,21 @@ std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstri
     if(env->IsSameObject(s, NULL) == JNI_TRUE)
     {
         //Avoid crash in case of null java reference
-        RAWTRACE("rho_cast<string, jstring>: \"\"");
+        //RAWTRACE("rho_cast<string, jstring>: \"\"");
         return std::string();
     } else
     {
         const char *ts = env->GetStringUTFChars(s, JNI_FALSE);
         std::string ret(ts);
         env->ReleaseStringUTFChars(s, ts);
-        RAWTRACE1("rho_cast<string, jstring>: %s", ret.c_str());
+        //RAWTRACE1("rho_cast<string, jstring>: %s", ret.c_str());
         return ret;
     }
 }
 
 jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char const *s)
 {
-    RAWTRACE1("rho_cast<jstring, string>: %s", s);
+    //RAWTRACE1("rho_cast<jstring, string>: %s", s);
 
     return s ? env->NewStringUTF(s) : (jstring)0;
 }

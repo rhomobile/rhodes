@@ -42,6 +42,9 @@ public class RhoLogConf {
 	
 	public static native String getLogText();
 	public static native int getLogTextPos();
+
+	public static native String getLogFileText(int linearPos, int maxSize, int refCircularPos);
+	public static native int getLogFileSize();
 	
 	public static native void sendLog();
 	

@@ -200,6 +200,77 @@ int LogSettings::getLogTextPos()
     return m_pFileSink ? m_pFileSink->getCurPos() : -1;
 }
 
+unsigned int LogSettings::getLogFileSize()
+{
+    if(!isLogToFile())
+    {
+        return 0;
+    }
+    return common::CRhoFile::getFileSize(getLogFilePath().c_str());
+}
+
+void LogSettings::getLogFileText(int linearPos, int maxSize, String& strText, int refCircularPos)
+{
+    if(!isLogToFile())
+    {
+        return;
+    }
+
+    setLogToFile(false);
+
+    int curCircularPos = getLogTextPos();
+
+    common::CRhoFile oFile;
+    if(oFile.open(getLogFilePath().c_str(), common::CRhoFile::OpenReadOnly))
+    {
+        unsigned int fileSize = oFile.size();
+
+        int circularDelta = curCircularPos - refCircularPos;
+        if(circularDelta < 0)
+        {
+            circularDelta += fileSize;
+        }
+
+        int pos = linearPos;
+        if(pos < circularDelta)
+        {
+            pos = circularDelta;
+        }
+        if(refCircularPos > 0)
+        {
+            pos += refCircularPos;
+        }
+        if(pos > fileSize)
+        {
+            pos -= fileSize;
+            if(pos >= curCircularPos) {
+                maxSize = 0;
+            }
+        }
+        if(pos < curCircularPos)
+        {
+            int available = curCircularPos - pos;
+            if(available < maxSize) maxSize = available;
+        }
+
+        oFile.setPosTo(pos);
+
+        char buffer[maxSize + 1];
+
+        if(fileSize - pos > maxSize) {
+            oFile.readData(buffer, 0, maxSize);
+        }
+        else
+        {
+            oFile.readData(buffer, 0, fileSize - pos);
+            oFile.movePosToStart();
+            oFile.readData(buffer, fileSize - pos, maxSize - (fileSize - pos));
+        }
+        strText.assign(buffer, maxSize);
+    }
+    setLogToFile(true);
+}
+
 void LogSettings::saveToFile(){
     RHOCONF().setInt("MinSeverity", getMinSeverity(), true );
     RHOCONF().setBool("LogToOutput", isLogToOutput(), true );
