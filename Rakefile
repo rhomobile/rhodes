@@ -3212,7 +3212,7 @@ def init_extensions(dest, mode = "")
                 endJSModules << f
               elsif f.downcase().end_with?("rho.newormhelper.js")
                 endJSModules << f
-              elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+              elsif /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
                 puts "add #{f} to startJSModules_opt.."
                 startJSModules_opt << f
               else
@@ -3221,7 +3221,7 @@ def init_extensions(dest, mode = "")
             end
 
             Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-              if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+              if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
                 puts "add #{f} to extjsmodulefiles_opt.."
                 extjsmodulefiles_opt << f
               else
@@ -4083,6 +4083,7 @@ task :update_rho_modules_js, [:platform] do |t,args|
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORM.js" ), "js" ) if $minify_types.include?('js')
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-ORMHelper.js" ), "js" ) if $minify_types.include?('js')
     minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-Ruby-RunTime.js" ), "js" ) if $minify_types.include?('js')
+    minify_inplace( File.join( $app_path, "public/api/rhoapi-modules-Rhosim-Fix.js" ), "js" ) if $minify_types.include?('js')
   end
 end
 
@@ -4576,7 +4577,7 @@ namespace "run" do
               endJSModules << f
             elsif f.downcase().end_with?("rho.newormhelper.js")
               endJSModules << f #if $current_platform == "android" || $current_platform == "iphone" || $current_platform == "wm"
-            elsif /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+            elsif /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
               puts "add #{f} to startJSModules_opt.."
               startJSModules_opt << f
             else
@@ -4584,7 +4585,7 @@ namespace "run" do
             end
           end
           Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-            if /(rho\.orm)|(rho\.ruby\.runtime)/i.match(f.downcase())
+            if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
               puts "add #{f} to extjsmodulefiles_opt.."
               extjsmodulefiles_opt << f
             else
