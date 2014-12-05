@@ -982,7 +982,7 @@ extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
 extern "C" void Init_fcntl(void)
 {
 }
-
+#include <aygshell.h>
 extern "C" BOOL LoadAYGShell()
 {
 	bool bReturnValue = FALSE;
@@ -995,16 +995,12 @@ extern "C" BOOL LoadAYGShell()
 	}
 	else
 	{
-		lpfn_Registry_CloseNotification = 
-			(LPFN_REGISTRY_CLOSENOTIFICATION_T)GetProcAddress(g_hAygShellDLL, _T("RegistryCloseNotification"));
-		lpfn_Registry_NotifyWindow = 
-			(LPFN_REGISTRY_NOTIFYWINDOW_T)GetProcAddress(g_hAygShellDLL, _T("RegistryNotifyWindow"));
-		lpfn_Registry_GetString = 
-			(LPFN_REGISTRY_GETSTRING_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetString"));
-		lpfn_Registry_GetDWORD = 
-			(LPFN_REGISTRY_GETDWORD_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetDWORD"));
-		lpfn_Camera_Capture = (LPFN_CAMERA_CAPTURE_T)GetProcAddress(g_hAygShellDLL, _T("SHCameraCapture"));
-		lpfn_GetOpen_FileEx = (LPFN_GETOPEN_FILEEX_T)GetProcAddress(g_hAygShellDLL, _T("GetOpenFileNameEx"));
+		lpfn_Registry_CloseNotification = (LPFN_REGISTRY_CLOSENOTIFICATION_T)GetProcAddress(g_hAygShellDLL, _T("RegistryCloseNotification"));
+		lpfn_Registry_NotifyWindow      = (LPFN_REGISTRY_NOTIFYWINDOW_T)GetProcAddress(g_hAygShellDLL, _T("RegistryNotifyWindow"));
+		lpfn_Registry_GetString         = (LPFN_REGISTRY_GETSTRING_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetString"));
+		lpfn_Registry_GetDWORD          = (LPFN_REGISTRY_GETDWORD_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetDWORD"));
+		lpfn_Camera_Capture             = (LPFN_CAMERA_CAPTURE_T)GetProcAddress(g_hAygShellDLL, _T("SHCameraCapture"));
+		lpfn_GetOpen_FileEx             = (LPFN_GETOPEN_FILEEX_T)GetProcAddress(g_hAygShellDLL, _T("GetOpenFileNameEx"));
 
 		if (!lpfn_Registry_CloseNotification)
 		{
