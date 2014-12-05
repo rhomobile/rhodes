@@ -26,7 +26,9 @@
 
 #include "stdafx.h"
 
+#include <windows.h>
 #include <atltime.h>
+
 #include "ext/rho/rhoruby.h"
 #include "../MainWindow.h"
 #include "Camera.h"
@@ -39,6 +41,7 @@
 
 typedef HRESULT (WINAPI* LPFN_CAMERA_CAPTURE_T)(PSHCAMERACAPTURE);
 typedef BOOL (WINAPI* LPFN_GETOPEN_FILEEX_T)(LPOPENFILENAMEEX);
+
 extern "C" LPFN_CAMERA_CAPTURE_T lpfn_Camera_Capture;
 extern "C" LPFN_GETOPEN_FILEEX_T lpfn_GetOpen_FileEx;
 
@@ -52,6 +55,30 @@ Camera::Camera(void) {
 }
 
 Camera::~Camera(void) {
+}
+
+bool Camera::isInstalled()
+{
+    if(RHO_IS_WMDEVICE)
+    {
+        HRESULT hr = S_OK;
+        HANDLE	handle = NULL;
+        DEVMGR_DEVICE_INFORMATION di;
+        GUID guidCamera = { 0xCB998A05, 0x122C, 0x4166, 0x84, 0x6A, 0x93, 0x3E, 0x4D, 0x7E, 0x3C, 0x86 };
+        // Note about the above: The driver material doesn't ship as part of the SDK. This GUID is hardcoded
+        // here to be able to enumerate the camera drivers and pass the name of the driver to the video capture filter
+
+        di.dwSize = sizeof(di);
+
+        handle = FindFirstDevice(DeviceSearchByGuid, &guidCamera, &di);
+
+        if(( handle != INVALID_HANDLE_VALUE ) && ( di.hDevice != NULL ))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) 
