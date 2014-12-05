@@ -68,6 +68,9 @@ extern int rho_extensions_are_loaded();
 extern void rho_sysimpl_sethas_network(int value);
 extern void rho_sysimpl_sethas_cellnetwork(int value);
 
+extern void rho_rhodesapp_callScreenOnCallbackAsync();
+
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
@@ -83,12 +86,13 @@ static BOOL app_created = NO;
 
 @implementation RhoActivateTask
 + (void)run {
+    rho_rhodesapp_callAppActiveCallback(1);
+
     if ([[Rhodes sharedInstance] mScreenStateChanged])
     {
-        rho_rhodesapp_callScreenOnCallback();
+        rho_rhodesapp_callScreenOnCallbackAsync();
         [[Rhodes sharedInstance] setMScreenStateChanged:NO];
     }
-    rho_rhodesapp_callAppActiveCallback(1);
 }
 @end
 
