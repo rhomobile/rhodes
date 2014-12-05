@@ -164,6 +164,8 @@ namespace 'project' do
         File.open(list, "r") do |f|
           while line = f.gets
             line.chomp!
+            next if line.empty?
+            
             src = File.join(extpath, line)
             if src =~ /(.*\/src\/).*/
               src = $1
@@ -1923,6 +1925,8 @@ namespace "build" do
         lines = get_sources(list)
         lines.each do |line|
             line.chomp!
+            next if line.empty?
+
             srclist.write "\"#{File.join(extpath, line)}\"\n"
         end
         srclist.close
