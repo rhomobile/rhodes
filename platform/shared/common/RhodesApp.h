@@ -242,6 +242,8 @@ public:
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
     unsigned long getCallbackObject(int nIndex);
+  
+    void callScreenOnCallbackAsync();
 
     const String& getRhoMessage(int nError, const char* szName);
 
