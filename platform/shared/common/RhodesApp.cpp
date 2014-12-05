@@ -111,6 +111,7 @@ public:
         local_server_restart,
         local_server_started,
         ui_created,
+        screen_on,
         app_activated,
         app_deactivated
     };
@@ -172,6 +173,8 @@ char const *CAppCallbacksQueue::toString(int type)
         return "APP-DEACTIVATED";
     case local_server_restart:
         return "LOCAL-SERVER-RESTART";
+    case screen_on:
+        return "SCREEN-ON";
     default:
         return "UNKNOWN";
     }
@@ -352,6 +355,9 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
                 }
                 m_expected = app_deactivated;
             }
+            break;
+        case screen_on:
+            RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(rho::common::screenOn);
             break;
         }
     }
@@ -2086,6 +2092,11 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
     }
 }
 
+void CRhodesApp::callScreenOnCallbackAsync()
+{
+  m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::screen_on));
+}
+
 void CRhodesApp::loadUrl(String url, int nTabIndex/* = -1*/)
 {
     if ( url.length() == 0 )
@@ -2424,9 +2435,12 @@ void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
         {
             rho::Hashtable<rho::String, rho::String> callbackData;
             const char* state = APP_EVENT_UNINITIALIZED;
+            m_result.setSynchronousCallback(false);
             switch (newState) {
                 case screenOff:
                     state = APP_EVENT_SCREEN_OFF;
+                    //special case: need to call screenOff callback synchronously to make it called before device goes to inactive state.
+                    m_result.setSynchronousCallback(true);
                     break;
                 case screenOn:
                     state = APP_EVENT_SCREEN_ON;
@@ -2436,7 +2450,6 @@ void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
                     break;
             }
             callbackData.put(APP_EVENT, state);
-            m_result.setSynchronousCallback(true);
             m_result.set(callbackData);
             return true;
         }
@@ -2696,6 +2709,12 @@ void rho_rhodesapp_callScreenOnCallback()
     if ( rho::common::CRhodesApp::getInstance() && RHODESAPP().getApplicationEventReceiver() )
         RHODESAPP().getApplicationEventReceiver()->onDeviceScreenEvent(rho::common::screenOn);
 }
+
+void rho_rhodesapp_callScreenOnCallbackAsync()
+{
+    RHODESAPP().callScreenOnCallbackAsync();
+}
+
     
 const char* rho_rhodesapp_getappbackurl()
 {
