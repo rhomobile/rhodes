@@ -580,7 +580,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;$(RHO_ROOT)\platform\wm\rhodes\stubs"
+				AdditionalIncludeDirectories="&quot;$(RHO_ROOT)\platform\shared\ruby\wince&quot;;&quot;$(RHO_ROOT)\platform\shared\ruby\include&quot;;&quot;$(RHO_ROOT)\platform\shared&quot;;&quot;$(RHO_ROOT)\platform\shared\common&quot;;&quot;$(RHO_ROOT)\platform\wm\rhodes\&quot;"
 				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
