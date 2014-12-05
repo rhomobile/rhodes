@@ -574,11 +574,14 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
     CIEBrowserEngine* pIEEng = reinterpret_cast<CIEBrowserEngine*>(lpParameter);
     DWORD dwWaitResult;
+    
+    bool flag=false;
+    
     if (pIEEng->m_dwNavigationTimeout != 0)
     {
         LOG(TRACE) + "Mobile NavThread Started\n";
 
-
+	do{
 		dwWaitResult = WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout);
 
 		switch (dwWaitResult) 
@@ -592,14 +595,33 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 								
 				CloseHandle(pIEEng->m_hNavigated);
 				pIEEng->m_hNavigated = NULL;
-
+				flag=false;
 				break; 
 			case WAIT_TIMEOUT: 
 				//
 				// TODO: Read from the shared buffer
 				//
-				LOG(INFO) + "NavigationTimeoutThread:timeout\n";
+				LOG(INFO) + "NavigationTimeoutThread:WAIT_TIMEOUT\n";
+				HWND currentForeGroundWindowHandle;
+				currentForeGroundWindowHandle = GetForegroundWindow();
+				wchar_t szBuf[200];
+				if(currentForeGroundWindowHandle!=NULL)
+				{
+				GetWindowText(currentForeGroundWindowHandle,szBuf,199);
+				LOG(INFO) + szBuf;
+				}	
 				
+				if(0==wcscmp(szBuf,L"Enter Network Password"))
+				{
+				LOG(INFO) + "NavigationTimeoutThread:Authentication popup\n";
+				flag=true;
+				break;
+				}
+				else
+				{
+				flag=false;
+				LOG(INFO) + "NavigationTimeoutThread:Navigation Timed out\n";
+				}
 					
 				pIEEng->StopOnTab(0);
 						
@@ -613,6 +635,7 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 			// An error occurred
 			default: 
 				LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
+				flag=false;
 				return 0; 
 		}
 
@@ -621,6 +644,7 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 
 
 	    LOG(TRACE) + "NavThread Ended\n";
+	}while(flag);
     }
 
 	return 0;
