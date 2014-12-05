@@ -576,14 +576,7 @@ public class RhodesService extends Service {
 	}
 	
 	public static void showLogView() {
-		PerformOnUiThread.exec(new Runnable() {
-			public void run() {
-				final LogViewDialog logViewDialog = new LogViewDialog(ContextFactory.getUiContext());
-				logViewDialog.setTitle("Log View");
-				logViewDialog.setCancelable(true);
-				logViewDialog.show();
-			}
-		});
+	    getInstance().startActivity(new Intent().setClass(getContext(), LogViewDialog.class));
 	}
 	
 	public static void showLogOptions() {
