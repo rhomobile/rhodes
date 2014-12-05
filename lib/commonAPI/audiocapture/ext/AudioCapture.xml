@@ -96,7 +96,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="start" hasCallback="mandatory">
                 <PARAMS>
                      <PARAM name="props" type="HASH" propertyHash="true">
-                        <DESC>Map of Audio Capture properties to be set. For iOS 22kHz 16bit Mono WAV file will be created.</DESC>
+                        <DESC>Map of Audio Capture properties to be set. For iOS 22kHz 16bit Mono WAV file will be created. In Android, ruby callbacks are taking 20secs to fire.</DESC>
                         <DESC_EB>Map of Audio Capture properties to be set.</DESC_EB>
                      </PARAM>
                 </PARAMS>
