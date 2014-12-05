@@ -81,10 +81,22 @@ namespace rho
 
         public class Camera : CameraResult, ICameraImpl
         {
+            private long _nativeImpl = 0;
+            CameraRuntimeComponent _runtime;
 
             public Camera()
             {
-                CameraRuntimeComponent _runtime = new CameraRuntimeComponent(this);
+                _runtime = new CameraRuntimeComponent(this);
+            }
+
+            public long getNativeImpl()
+            {
+                return _nativeImpl;
+            }
+
+            public void setNativeImpl(long native)
+            {
+                _nativeImpl = native;
             }
 
             public void getCameraType(IMethodResult oResult)
