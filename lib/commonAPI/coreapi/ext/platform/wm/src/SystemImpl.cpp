@@ -11,7 +11,6 @@
 #include "Registry.h"
 #include "Intents.h"
 
-
 #if defined( OS_WINCE )
 #include "camera/Camera.h"
 #include "stubs/cfgmgrapi.h"
@@ -988,7 +987,11 @@ void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
 
 void CSystemImpl::getHasCamera(CMethodResult& oResult)
 {
+#if defined(_WIN32_WCE)
     oResult.set(Camera::isInstalled());
+#else
+    oResult.set(false); 
+#endif
 }
 
 extern "C" bool rho_rhosim_window_closed();
