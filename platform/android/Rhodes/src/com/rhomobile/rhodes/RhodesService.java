@@ -75,6 +75,7 @@ import com.rhomobile.rhodes.util.JSONGenerator;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.PhoneId;
 import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.camera.Camera;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -835,7 +836,19 @@ public class RhodesService extends Service {
                 return fetchUUID();
             }
             else if (name.equalsIgnoreCase("has_camera")) {
-                return Boolean.TRUE;
+            	boolean hasCamera = false;
+            	try {
+            		if (Camera.getCameraService() != null) {
+            			if ((Camera.getCameraService().getMainCamera() != null) || (Camera.getCameraService().getFrontCamera() != null)) {
+            				hasCamera = true;
+            			}
+            		}
+            	}
+            	catch (Throwable e) {
+            		e.printStackTrace();
+            		Logger.E(TAG, "Exception during detect Camera for has_camera");
+            	}
+                return hasCamera;//Boolean.TRUE;
             }
             else {
                 return RhoExtManager.getImplementationInstance().getProperty(name);
