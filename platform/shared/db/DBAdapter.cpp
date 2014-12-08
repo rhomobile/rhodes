@@ -254,8 +254,8 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean c
 
     // optimize file system access
     sqlite3_exec(m_dbHandle, "PRAGMA synchronous=NORMAL", null, null, &errorMessage);
-//    sqlite3_exec(m_dbHandle, "PRAGMA journal_mode=WAL", null, null, &errorMessage);
-//    sqlite3_exec(m_dbHandle, "PRAGMA wal_autocheckpoint=32", null, null, &errorMessage);
+    sqlite3_exec(m_dbHandle, "PRAGMA journal_mode=WAL", null, null, &errorMessage);
+    sqlite3_exec(m_dbHandle, "PRAGMA wal_autocheckpoint=32", null, null, &errorMessage);
 
     //if (RHOCONF().getBool("encrypt_database"))
     const char* szEncrypt = get_app_build_config_item("encrypt_database");
