@@ -87,8 +87,9 @@ void CVibrate::run()
     NLedGetDeviceInfo(NLED_SETTINGS_INFO_ID,  &settings);
 
     if (!m_bToggled && settings.OffOnBlink == 0) {
-        settings.LedNum= 1; 
-        settings.OffOnBlink= 1;
+        settings.LedNum= 1;
+        //SR EMBPD00156575
+        //settings.OffOnBlink= 1;
         NLedSetDevice (NLED_SETTINGS_INFO_ID, &settings);
         m_bToggled = true;        
         wait (m_nDuration_ms/1000);
