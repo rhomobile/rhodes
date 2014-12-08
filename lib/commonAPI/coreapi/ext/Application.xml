@@ -90,7 +90,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="title" type="STRING">
                 <DESC>Define Window caption text. If missed - caption from page used. Not supported on Windows CE devices.</DESC>
-                <PLATFORM>WM, CE, Win32</PLATFORM>
+                <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="appName" type="STRING" readOnly="true">
                 <DESC>Application name.</DESC>
