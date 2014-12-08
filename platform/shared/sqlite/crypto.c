@@ -63,20 +63,37 @@ void sqlite3FreeCodecArg(void *pCodecArg)
     pRhoCtx->m_pPageBuffer = NULL;
 }
 
-int sqlite3_key(sqlite3 *db, const void *pKey, int nKey) 
-{
-    //RAWLOG_INFO("sqlite3_key");
+// sqlite3_key sets the codec key for the main database.
+SQLITE_API int sqlite3_key(sqlite3 *db, const void *pKey, int nKey) {
+    return sqlite3_key_v2(db, 0, pKey, nKey);
+}
 
-    if ( db && pKey && nKey ) 
+// sqlite3_key_v2 sets the codec key for the specified database.
+SQLITE_API int sqlite3_key_v2(sqlite3 *db, const char *zDb, const void *pKey, int nKey) {
+    if ( db && pKey && nKey )
     {
-        sqlite3CodecAttach(db, 0, pKey, nKey);
-        return SQLITE_OK;
+        int iDb = 0;
+        int rc;
+        sqlite3_mutex_enter(db->mutex);
+        if (zDb && zDb[0]) {
+            iDb = sqlite3FindDbName(db, zDb);
+        }
+        if (iDb < 0) {
+            rc = SQLITE_ERROR;
+            //sqlite3Error(db, SQLITE_ERROR, "unknown database: %s", zDb);
+        } else {
+            rc = sqlite3CodecAttach(db, iDb, pKey, nKey);
+        }
+        rc = sqlite3ApiExit(db, rc);
+        sqlite3_mutex_leave(db->mutex);
+        return rc;
     }
 
     return SQLITE_ERROR;
 }
 
-void* sqlite3Codec(void *iCtx, void *data, Pgno pgno, int mode) 
+
+void* sqlite3Codec(void *iCtx, void *data, Pgno pgno, int mode)
 {
     CRhoSqliteCodecCtx *pRhoCtx = (CRhoSqliteCodecCtx *) iCtx;
     int pg_sz = SQLITE_DEFAULT_PAGE_SIZE;
@@ -141,7 +158,7 @@ int sqlite3CodecAttach(sqlite3* db, int nDb, const void *pKey, int nKey)
         Note: before forcing the page size we need to force pageSizeFixed to 0, else  
         sqliteBtreeSetPageSize will block the change 
         */
-        pDb->pBt->pBt->pageSizeFixed = 0; 
+        pDb->pBt->pBt->btsFlags &= ~BTS_PAGESIZE_FIXED;
         sqlite3BtreeSetPageSize( pDb->pBt, SQLITE_DEFAULT_PAGE_SIZE, EVP_MAX_IV_LENGTH, 0 );
 
         /* if fd is null, then this is an in-memory database and
@@ -183,9 +200,14 @@ void sqlite3_activate_see(const char* in)
   /* do nothing, security enhancements are always active */
 }
 
-int sqlite3_rekey(sqlite3 *db, const void *pKey, int nKey) 
+SQLITE_API int sqlite3_rekey(sqlite3 *db, const void *pKey, int nKey)
 {
 	return SQLITE_OK;
+}
+
+SQLITE_API int sqlite3_rekey_v2(sqlite3 *db, const char *zDb, const void *pKey, int nKey)
+{
+    return SQLITE_OK;
 }
 
 #if 0
