@@ -265,7 +265,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) 
     {
-		//btnWidth = (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent;
+		btnWidth = (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent;
 
 		RECT rc = {point.x, point.y, point.x + btnWidth, point.y + btnHeight};
 		itr->Create(m_hWnd, rc, 
