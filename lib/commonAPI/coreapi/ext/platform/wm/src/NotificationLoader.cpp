@@ -10,8 +10,8 @@ CNotificationLoader::CNotificationLoader()
 	lpfn_Notify_GetCycleInfo	= NULL;	
 	lpfn_Notify_SetState		= NULL;		
 	lpfn_Notify_GetState		= NULL;		
-	int m_iBeeperIndex			= -1;
-	int m_iVibrateIndex			= -1;
+	m_iBeeperIndex				= -1;
+	m_iVibrateIndex				= -1;
 }
 
 CNotificationLoader::~CNotificationLoader()
