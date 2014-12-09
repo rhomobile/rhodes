@@ -64,13 +64,19 @@ BOOL CNotificationLoader::LoadNotificationDLL()
 		if(lpfn_Notify_FindFirst(&notifyObject, &hFindHandle) == E_NTFY_SUCCESS)
 		{
 			int iObCount = 0;
+			int m_iBeeperIndexForSoftwareOrHardware = 0;
 			do 
 			{
+
 				if(notifyObject.dwObjectType == NOTIFY_TYPE_BEEPER)
 				{
 					//  Found the Beeper
-					m_iBeeperIndex = iObCount;
-					continue;
+					if(m_iBeeperIndexForSoftwareOrHardware == 0)
+                         m_iBeeperIndexForSoftwareOrHardware = iObCount;
+ 
+                    m_iBeeperIndex = m_iBeeperIndexForSoftwareOrHardware;
+					
+					//continue;
 				}
 				else if (notifyObject.dwObjectType == NOTIFY_TYPE_VIBRATOR)
 				{
@@ -133,6 +139,7 @@ BOOL CNotificationLoader::Vibrate(int iDuration)
 	if(dwResult != E_NTFY_SUCCESS)
 		return FALSE;
 	cycleInfo.ObjectTypeSpecific.VibratorSpecific.dwDuration = iDuration;
+
 	dwResult = lpfn_Notify_SetCycleInfo(m_iVibrateIndex, &cycleInfo);
 	dwResult = lpfn_Notify_SetState(m_iVibrateIndex, NOTIFY_STATE_CYCLE);
 	return dwResult == E_NTFY_SUCCESS;
