@@ -67,15 +67,14 @@ BOOL CNotificationLoader::LoadNotificationDLL()
 			int m_iBeeperIndexForSoftwareOrHardware = 0;
 			do 
 			{
-
 				if(notifyObject.dwObjectType == NOTIFY_TYPE_BEEPER)
 				{
 					//  Found the Beeper
 					if(m_iBeeperIndexForSoftwareOrHardware == 0)
-                         m_iBeeperIndexForSoftwareOrHardware = iObCount;
- 
-                    m_iBeeperIndex = m_iBeeperIndexForSoftwareOrHardware;
-					
+					{
+                         			m_iBeeperIndexForSoftwareOrHardware = iObCount;
+					}
+                    			m_iBeeperIndex = m_iBeeperIndexForSoftwareOrHardware;
 					//continue;
 				}
 				else if (notifyObject.dwObjectType == NOTIFY_TYPE_VIBRATOR)
