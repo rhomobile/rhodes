@@ -10,8 +10,8 @@ CNotificationLoader::CNotificationLoader()
 	lpfn_Notify_GetCycleInfo	= NULL;	
 	lpfn_Notify_SetState		= NULL;		
 	lpfn_Notify_GetState		= NULL;		
-	int m_iBeeperIndex			= -1;
-	int m_iVibrateIndex			= -1;
+	m_iBeeperIndex			= -1;
+	m_iVibrateIndex			= -1;
 }
 
 CNotificationLoader::~CNotificationLoader()
@@ -72,9 +72,9 @@ BOOL CNotificationLoader::LoadNotificationDLL()
 					//  Found the Beeper
 					if(m_iBeeperIndexForSoftwareOrHardware == 0)
 					{
-                         m_iBeeperIndexForSoftwareOrHardware = iObCount;
+                         			m_iBeeperIndexForSoftwareOrHardware = iObCount;
 					}
-                    m_iBeeperIndex = m_iBeeperIndexForSoftwareOrHardware;
+                			 m_iBeeperIndex = m_iBeeperIndexForSoftwareOrHardware;
 					//continue;
 				}
 				else if (notifyObject.dwObjectType == NOTIFY_TYPE_VIBRATOR)
