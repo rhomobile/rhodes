@@ -178,7 +178,12 @@ private:
     CSyncNotify& getNotify();
     net::CNetRequestWrapper getNet();
     ISyncProtocol& getProtocol();
-	
+
+    // process oCmdEntry that should point to "insert" section and create temprorary table for inserted elements
+    int propertyBagInsertAndUpdate(const String& tableName, const String& to, json::CJSONEntry oCmdEntry, boolean bCheckUIRequest, rho::Hashtable<String, bool>& changedObjects);
+
+    // create hashtable with freezed properties
+    void makeFreezedPropsHash(rho::Hashtable<String, bool>& hash);
 };
 
 }

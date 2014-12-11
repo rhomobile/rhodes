@@ -864,43 +864,175 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr, bool 
 	PROF_STOP("Data1");
 }
 
-void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry, boolean bCheckUIRequest)
-{
-    CJSONStructIterator objIter(oCmdEntry);
 
+int CSyncSource::propertyBagInsertAndUpdate(const String& tableName, const String& to, json::CJSONEntry oCmdEntry, boolean bCheckUIRequest, rho::Hashtable<String, bool>& changedObjects)
+{
+    // parse freesed props
+    rho::Hashtable<String, bool> freezedProps;
+    makeFreezedPropsHash(freezedProps);
+
+    bool should_check_props = bCheckUIRequest && (freezedProps.size() > 0);
+
+    // create temp table for inserting new data
+    getDB().executeSQL((String("DROP TABLE IF EXISTS ") + tableName).c_str());
+    getDB().executeSQL((String("CREATE TEMP TABLE ") + tableName + " ( "
+                        "\"source_id\" BIGINT default NULL, "
+                        "\"attrib\" varchar(255) default NULL, "
+                        "\"object\" varchar(255) default NULL, "
+                        "\"value\" varchar default NULL);").c_str());
+
+    // fill data using server JSON reply
+    CJSONStructIterator objIter(oCmdEntry);
+    int inserted = 0;
     for( ; !objIter.isEnd() && getSync().isContinueSync(); objIter.next() )
     {
         String strObject = objIter.getCurKey();
         CJSONStructIterator attrIter( objIter.getCurValue() );
-        if ( m_bSchemaSource )
-            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter,bCheckUIRequest);
-        else
-        {
-            for( ; !attrIter.isEnd(); attrIter.next() )
-            {
-                String strAttrib = attrIter.getCurKey();
-                String strValue = attrIter.getCurString();
 
-                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue,bCheckUIRequest);
+        bool was_changed = false;
+
+        for( ; !attrIter.isEnd(); attrIter.next() )
+        {
+            CAttrValue oAttrValue(attrIter.getCurKey(),attrIter.getCurString());
+
+            if ( should_check_props && !freezedProps.containsKey(oAttrValue.m_strAttrib)) {
+                LOG(INFO) + "Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName();
+                continue;
+            }
+
+            if ( !processBlob("insert",strObject,oAttrValue) )
+                continue;
+
+            getDB().executeSQL((String("INSERT INTO ") + tableName +
+                                "(attrib, source_id, object, value) VALUES(?,?,?,?)").c_str(),
+                               oAttrValue.m_strAttrib, getID(), strObject, oAttrValue.m_strValue );
+
+            ++inserted;
+
+            was_changed = true;
+        }
+
+        if (was_changed)
+        {
+            changedObjects[strObject] = true;
+        }
+    }
+    // index changes
+    getDB().executeSQL((String("CREATE UNIQUE INDEX idx_") + tableName + " ON " + tableName + "(\"object\", \"attrib\", \"source_id\");").c_str());
+
+    // find conflicts when source_id, object and attrib are same but values differ
+    IDBResult conflicts = getDB().executeSQL(
+       (String("SELECT ") +
+        tableName+".value, " + tableName+".object, "+ tableName + ".attrib, " + tableName + ".source_id "
+        " FROM "+tableName+" , " + to +
+        " WHERE " +
+        to+".source_id="+tableName+".source_id AND " +
+        to+".object="+tableName+".object AND " +
+        to+".attrib="+tableName+".attrib AND " +
+        to+".value!="+tableName+".value;").c_str());
+
+    // writeback conflicts
+    while (!conflicts.isEnd())
+    {
+        if ( getSyncType().compare("none") != 0 )
+        {
+            // oo conflicts
+            getDB().executeSQL("UPDATE changed_values SET sent=4 where object=? and attrib=? and source_id=? and update_type=? and sent>1",
+                               conflicts.getStringByIdx(1), conflicts.getStringByIdx(2), conflicts.getIntByIdx(3), "create" );
+            //
+        }
+        conflicts.next();
+    }
+
+    // update destination table
+    IDBResult res = getDB().executeSQL((String("INSERT OR REPLACE INTO ") + to + " SELECT * FROM " + tableName).c_str());
+
+    getDB().executeSQL((String("DROP TABLE ") + tableName).c_str());
+
+    if ( getSyncType().compare("none") != 0 )
+    {
+        for(rho::Hashtable<String, bool>::const_iterator iter = changedObjects.begin(); iter!=changedObjects.end(); ++iter)
+        {
+            getNotify().onObjectChanged(getID(),iter->first, CSyncNotify::enUpdate);
+        }
+    }
+
+    m_nInserted += inserted;
+
+    return inserted;
+}
+
+void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry, boolean bCheckUIRequest)
+{
+    CJSONStructIterator objIter(oCmdEntry);
+
+    if ( m_bSchemaSource ) {
+        for( ; !objIter.isEnd() && getSync().isContinueSync(); objIter.next() )
+        {
+            String strObject = objIter.getCurKey();
+            CJSONStructIterator attrIter( objIter.getCurValue() );
+
+            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter,bCheckUIRequest);
+
+            if ( getSyncType().compare("none") == 0 )
+                continue;
+
+            if ( bCheckUIRequest )
+            {
+                if ( getDB().isUIWaitDB() )
+                {
+                    LOG(INFO) + "Commit transaction because of UI request.";
+                    getDB().endTransaction();
+
+                    checkProgressStepNotify(false);
+
+                    CSyncThread::getInstance()->sleep(1000);
+                    getDB().startTransaction();
+                }else
+                    checkProgressStepNotify(true);
             }
         }
 
-        if ( getSyncType().compare("none") == 0 )
-            continue;
-
-        if ( bCheckUIRequest )
+    } else {
+        if (strCmd == "insert")
         {
-            if ( getDB().isUIWaitDB() )
+            // batch insertions
+            rho::Hashtable<String, bool> changedObjects;
+            propertyBagInsertAndUpdate("temp_insert", "object_values", oCmdEntry, bCheckUIRequest, changedObjects);
+
+        } else {
+            for( ; !objIter.isEnd() && getSync().isContinueSync(); objIter.next() )
             {
-	            LOG(INFO) + "Commit transaction because of UI request.";
-                getDB().endTransaction();
+                String strObject = objIter.getCurKey();
+                CJSONStructIterator attrIter( objIter.getCurValue() );
 
-                checkProgressStepNotify(false);
+                for( ; !attrIter.isEnd(); attrIter.next() )
+                {
+                    String strAttrib = attrIter.getCurKey();
+                    String strValue = attrIter.getCurString();
 
-                CSyncThread::getInstance()->sleep(1000);
-                getDB().startTransaction();
-            }else
-                checkProgressStepNotify(true);
+                    processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue,bCheckUIRequest);
+                }
+
+                if ( getSyncType().compare("none") == 0 )
+                    continue;
+
+                if ( bCheckUIRequest )
+                {
+                    if ( getDB().isUIWaitDB() )
+                    {
+                        LOG(INFO) + "Commit transaction because of UI request.";
+                        getDB().endTransaction();
+
+                        checkProgressStepNotify(false);
+
+                        CSyncThread::getInstance()->sleep(1000);
+                        getDB().startTransaction();
+                    }
+                    else
+                        checkProgressStepNotify(true);
+                }
+            }
         }
     }
 }
@@ -1285,6 +1417,27 @@ boolean CSyncSource::checkFreezedProps(String strProp)
 	}
 	
 	return true;
+}
+
+void CSyncSource::makeFreezedPropsHash(rho::Hashtable<String, bool>& hash)
+{
+    hash.clear();
+
+    String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
+
+    if ( strFreezedProps.length() > 0 )
+    {
+        CTokenizer oTokenizer( strFreezedProps, "," );
+        while (oTokenizer.hasMoreTokens() )
+        {
+            String tok = oTokenizer.nextToken();
+
+            if (tok.length() == 0)
+                continue;
+
+            hash[tok] = true;
+        }
+    }
 }
 
 void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttriba, const String& strValuea, boolean bCheckUIRequest)//throws Exception
