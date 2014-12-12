@@ -98,13 +98,27 @@ def add_motosol_sdk(manifest)
 end
 
 def set_app_icon_android
-  iconappname = File.join($app_path, "icon", "icon.png")
+  iconappbase = File.join $app_path, 'icon', 'icon'
 
-  ['drawable', 'drawable-hdpi', 'drawable-mdpi', 'drawable-ldpi'].each do |dpi|
-    drawable = File.join($appres, dpi)
+  {'drawable' => '',
+   'drawable-ldpi' => '36',
+   'drawable-mdpi' => '48',
+   'drawable-hdpi' => '72',
+   'drawable-xhdpi' => '96',
+   'drawable-xxhdpi' => '144',
+   'drawable-xxxhdpi' => '192'
+   }.each do |folder, size|
+    drawable = File.join $appres, folder
     iconresname = File.join(drawable, "icon.png")
-    rm_f iconresname
-    cp iconappname, iconresname if File.exist? drawable
+    
+    iconapppath = iconappbase + size + '.png'
+    
+    if File.exists?(iconapppath) or File.exists?(iconresname)
+        iconapppath = iconappbase + '.png' unless File.exists? iconapppath
+        rm_f iconresname
+        mkdir_p drawable
+        cp iconapppath, iconresname if File.exist? drawable
+    end
   end
 
 end
