@@ -51,6 +51,9 @@ module_function :get_last_state_file_path
 
 
 def make_full_bundle
+  system("rake build:#{$RhoDevelopmentPlatform}:upgrade_package")
+
+=begin
   s_skip_build_rhodes_main = $skip_build_rhodes_main
   s_skip_build_extensions = $skip_build_extensions
   s_skip_build_xmls = $skip_build_xmls
@@ -73,6 +76,7 @@ def make_full_bundle
   $skip_build_extensions = s_skip_build_extensions
   $skip_build_xmls = s_skip_build_xmls
   $use_prebuild_data = s_use_prebuild_data
+=end
 end
 module_function :make_full_bundle
 
@@ -81,6 +85,8 @@ module_function :make_full_bundle
 
 
 def make_partial_bundle
+  system("rake build:#{$RhoDevelopmentPlatform}:upgrade_package_partial")
+=begin
   s_skip_build_rhodes_main = $skip_build_rhodes_main
   s_skip_build_extensions = $skip_build_extensions
   s_skip_build_xmls = $skip_build_xmls
@@ -100,6 +106,7 @@ def make_partial_bundle
   $skip_build_extensions = s_skip_build_extensions
   $skip_build_xmls = s_skip_build_xmls
   $use_prebuild_data = s_use_prebuild_data
+=end
 end
 module_function :make_partial_bundle
 
