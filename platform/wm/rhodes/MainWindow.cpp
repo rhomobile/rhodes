@@ -1592,9 +1592,24 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
 
 void CMainWindow::ProcessTitleChange(LPCTSTR title)
 {
+	TCHAR szWindowTitle[MAX_PATH];
+	ZeroMemory(szWindowTitle,sizeof(szWindowTitle));
+
     LOG(TRACE) + "OnBrowserTitleChange: " + title;
+	GetWindowText(szWindowTitle,sizeof(szWindowTitle));
     //return;
     String strTitle = RHOCONF().getString("title_text");
+	
+	if(strTitle.length() <=0)
+	{
+		CHAR szWindowTitleA[MAX_PATH*2];
+		ZeroMemory(szWindowTitleA,sizeof(szWindowTitleA));
+		sprintf(szWindowTitleA,"%ls",szWindowTitle);
+		strTitle.clear();
+		strTitle.append(szWindowTitleA);
+	}
+	RHOCONF().setString("title_text", strTitle.c_str(), false);
+
     if ( strTitle.length() > 0 )
         SetWindowText(convertToStringW(strTitle).c_str());
     else
