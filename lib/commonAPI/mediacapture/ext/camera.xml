@@ -119,7 +119,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="fileName" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
 				<PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
-                <DESC>The path without filename extension to store captured image in subsequent calls to takePicture(). The filename extension will be added automatically according to compressionFormat property value.</DESC>
+                <DESC>The path without filename extension to store captured image in subsequent calls to takePicture() or capture(). The filename extension will be added automatically according to compressionFormat property value.</DESC>
             </PROPERTY>
             <PROPERTY name="compressionFormat" type="STRING" default="jpg">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
@@ -144,8 +144,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>The captured image is stored on the device. The callback associated with takePicture will contain the location of the image.</DESC>
                     </VALUE>
                     <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
-                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>
-                        <PLATFORM>Android,WM</PLATFORM>
+                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>                      
                     </VALUE>
                 </VALUES>
             </PROPERTY>
@@ -201,8 +200,8 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="captureSound" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <PLATFORM>Android, WM, WP8</PLATFORM>
-                <PLATFORM_EB>Android, WM</PLATFORM_EB>
+                <PLATFORM>Android, WM, CE, WP8</PLATFORM>
+                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>Path to a sound file resident on the device which will be played when the image is captured.</DESC>
             </PROPERTY>
             <PROPERTY name="previewLeft" type="INTEGER">
@@ -309,7 +308,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>The actual width of the image that was captured, this may differ from the requested width as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
                         <PARAM name="imageFormat" type="STRING">
-						    <PLATFORM>Android</PLATFORM>
+						    <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>The format in which the image was captured, either 'png' or 'jpg'.</DESC>
                         </PARAM>
                         <PARAM name="message" type="STRING">
