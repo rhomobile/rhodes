@@ -70,7 +70,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true" readOnly="true">
                 <DESC>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in rhoconfig.txt to configure this value.</DESC>
-                <DESC_EB>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in Config.xml to configure this value.</DESC_EB>
+                <DESC_EB>This feature is currently not supported in Enterprise Browser,for future use only.</DESC_EB>
                 <PLATFORM>WM, CE, Android</PLATFORM>
                 <APPLIES>WebKit on Windows Mobile/CE</APPLIES> 
             </PROPERTY>
