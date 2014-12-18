@@ -64,7 +64,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             </PARAM>
                             <PARAM name="icon" type="String" default="">
                                 <DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon. On Windows Mobile/CE, Windows and RhoSimulators only predefined icons are supported.</DESC>
-                                <DESC_EB>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon. On Windows Mobile/CE only predefined icons are supported.</DESC_EB>
+                                <DESC_EB>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon. On Windows Mobile/CE only predefined icons are supported.Local file system path is only supported for notification icons.</DESC_EB>
                                 <PLATFORM>Android</PLATFORM>
                             </PARAM>
                             <PARAM name="buttons" type="Array" default="">
