@@ -287,7 +287,7 @@ public class Notification {
             }
         }
 
-        builder.setSmallIcon(R.drawable.icon);
+        builder.setSmallIcon(R.drawable.ic_notification);
         builder.setContentIntent(PendingIntent.getActivity(ctx, id, new Intent(ctx, RhodesActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
         
         if (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG)) {
