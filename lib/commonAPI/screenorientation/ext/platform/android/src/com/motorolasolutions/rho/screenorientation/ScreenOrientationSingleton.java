@@ -169,9 +169,15 @@ class ScreenOrientationSingleton implements IScreenOrientationSingleton
 			if (value != null)
 			{
 				direction = value;
-				Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
-				if (mScreenOrientationCallback != null)
-					mScreenOrientationCallback.set(direction);
+				
+				//EMBPD00154917 fix start-Resolve 2 callbacks being fired when screenorientatation is set
+				//Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
+				
+				//if (mScreenOrientationCallback != null)
+					//mScreenOrientationCallback.set(direction);
+					
+					
+				//EMBPD00154917 fix end-Resolve 2 callbacks being fired when screenorientatation is set	
 			}
 		    }
 		});
