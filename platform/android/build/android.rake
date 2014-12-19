@@ -121,6 +121,26 @@ def set_app_icon_android
     end
   end
 
+  {'drawable' => '',
+   'drawable-ldpi' => '18',
+   'drawable-mdpi' => '24',
+   'drawable-hdpi' => '36',
+   'drawable-xhdpi' => '48',
+   'drawable-xxhdpi' => '72',
+   'drawable-xxxhdpi' => '96'
+   }.each do |folder, size|
+    drawable = File.join $appres, folder
+    iconresname = File.join(drawable, "ic_notification.png")
+    
+    iconapppath = iconappbase + size + '.png'
+    
+    if File.exists?(iconapppath) or File.exists?(iconresname)
+        iconapppath = iconappbase + '.png' unless File.exists? iconapppath
+        rm_f iconresname
+        mkdir_p drawable
+        cp iconapppath, iconresname if File.exist? drawable
+    end
+  end
 end
 
 def set_app_name_android(newname)
