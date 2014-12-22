@@ -59,7 +59,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="framework" type="STRING" readOnly="true">
                 <DESC>Same as System.webViewFramework.</DESC>
             </PROPERTY>
-            <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
+            <PROPERTY name="fullScreen" type="BOOLEAN" default="true">
                 <DESC>Use full screen mode.</DESC>
                 <PLATFORM>WM, CE, Win32, Android</PLATFORM>
             </PROPERTY>
@@ -260,13 +260,13 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="active_tab" deprecated="true">
+            <METHOD name="active_tab" deprecated="true" productException="eb">
                 <DESC>Use NativeTabbar.currentTab property: returns the current tab index.</DESC>
                 <RETURN type="INTEGER">
                 </RETURN>
             </METHOD>
 
-            <METHOD name="full_screen_mode" deprecated="true">
+            <METHOD name="full_screen_mode" deprecated="true" productException="eb">
                 <DESC>Use WebView.fullScreen property: Switch to / from full screen mode.</DESC>
                 <PARAMS>
                     <PARAM name="enable" type="BOOLEAN"/>
@@ -312,7 +312,7 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="set_menu_items" deprecated="true" generateAPI="false">
+            <METHOD name="set_menu_items" deprecated="true" generateAPI="false" productException="eb">
                 <PLATFORM>WM, CE,Android</PLATFORM>
                 <DESC>Use Application.nativeMenu property: set native menu items.</DESC>
                 <PARAMS>
