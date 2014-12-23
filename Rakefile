@@ -3433,13 +3433,13 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
         content = File.readlines(filepath)
 
         new_time = Digest::MD5.hexdigest(content.to_s)
-        old_time = map_items[0][:time]
+        old_time = map_items[0][:hash]
 
         next if new_time == old_time
 
         puts "map_items=" + map_items.to_s if Rake.application.options.trace
-        puts "new_time=" + new_time.to_s if Rake.application.options.trace
-        puts "old_time=" + old_time.to_s if Rake.application.options.trace
+        puts "new_time="  + new_time.to_s  if Rake.application.options.trace
+        puts "old_time="  + old_time.to_s  if Rake.application.options.trace
       end
 
       cp filepath, dst_path, :preserve => true
