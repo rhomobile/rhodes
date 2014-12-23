@@ -40,6 +40,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.view.Window;
+import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
 import android.webkit.URLUtil;
 import android.webkit.WebResourceResponse;
@@ -49,6 +50,54 @@ import android.webkit.CookieSyncManager;
 
 public class RhoWebViewClient extends WebViewClient
 {
+    private class HttpAuthResult implements IRhoExtension.IAuthRequest {
+        private HttpAuthHandler authHandler;
+        private String host;
+        private String realm;
+//        private boolean pending;
+        
+        public HttpAuthResult(HttpAuthHandler handler, String host, String realm) {
+            authHandler = handler;
+            this.host = host;
+            this.realm = realm;
+        }
+
+        @Override
+        public void proceed(String user, String pass) {
+            authHandler.proceed(user, pass);
+        }
+
+        @Override
+        public void cancel() {
+            authHandler.cancel();
+        }
+
+        @Override
+        public String host() {
+            return this.host;
+        }
+
+        @Override
+        public String realm() {
+            return this.realm;
+        }
+
+//        @Override
+//        public void setPending() {
+//            pending = true;
+//        }
+//        
+//        boolean isPending() {
+//            return pending;
+//        }
+
+        @Override
+        public String type() {
+            return "http";
+        }
+        
+    }
+    
     private final String TAG = RhoWebViewClient.class.getSimpleName();
     private GoogleWebView mWebView;
 
@@ -174,4 +223,12 @@ public class RhoWebViewClient extends WebViewClient
             handler.cancel();
         }
     }
+    
+    @Override
+    public void onReceivedHttpAuthRequest (WebView view, HttpAuthHandler handler, String host, String realm) {
+        HttpAuthResult authResult = new HttpAuthResult(handler, host, realm);
+        RhoExtManager.getImplementationInstance().onAuthRequest(view, authResult);
+    }
+    
+    
 }

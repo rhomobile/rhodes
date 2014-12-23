@@ -2,6 +2,7 @@ package com.rhomobile.rhodes.extmanager;
 
 import com.rhomobile.rhodes.extmanager.IRhoExtension.IAlertResult;
 import com.rhomobile.rhodes.extmanager.IRhoExtension.IPromptResult;
+import com.rhomobile.rhodes.extmanager.IRhoExtension.IAuthRequest;
 
 import android.graphics.Rect;
 
@@ -121,7 +122,7 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     }
 
     @Override
-    public boolean onAuthRequired(IRhoExtManager extManager, String type, String url, String realm, IRhoWebView ext, boolean res) {
+    public boolean onAuthRequest(IRhoExtManager extManager, IAuthRequest request, IRhoWebView ext, boolean res) {
         return res;
     }
 

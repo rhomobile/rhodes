@@ -14,6 +14,14 @@ public interface IRhoExtension {
         void confirm(String res);
         void cancel();
     }
+    interface IAuthRequest {
+        //void setPending();
+        void proceed(String user, String pass);
+        void cancel();
+        String type();
+        String host();
+        String realm();
+    }
 
     public enum LoadErrorReason { STOP, INTERNAL_ERROR, BAD_LICENSE }
 
@@ -36,7 +44,7 @@ public interface IRhoExtension {
     boolean onConsole(IRhoExtManager extManager, String message, IRhoWebView ext, boolean res);
     boolean onInputMethod(IRhoExtManager extManager, boolean enabled, String type, Rect area, IRhoWebView ext, boolean res);
     boolean onNavigateError(IRhoExtManager extManager, String url, LoadErrorReason reason, IRhoWebView ext, boolean res);
-    boolean onAuthRequired(IRhoExtManager extManager, String type, String url, String realm, IRhoWebView ext, boolean res); 
+    boolean onAuthRequest(IRhoExtManager extManager, IAuthRequest request, IRhoWebView ext, boolean res); 
 
     void onAppActivate(IRhoExtManager extManager, boolean bActivate);
 
