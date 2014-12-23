@@ -74,7 +74,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PLATFORM>WM, CE, Android</PLATFORM>
                 <APPLIES>WebKit on Windows Mobile/CE</APPLIES> 
             </PROPERTY>
-            <PROPERTY name="enableWebPlugins" type="BOOLEAN" default="true" readOnly="true">
+            <PROPERTY name="enableWebPlugins" type="BOOLEAN" default="true" readOnly="true" productException="eb">
                 <DESC>Enable / disable web plug-ins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC>
                 <DESC_EB>Enable / disable web plug-ins. Use 'enable_web_plugins' parameter in Config.xml to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC_EB>
                 <PLATFORM>Android</PLATFORM>
