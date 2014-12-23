@@ -356,7 +356,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     }
 
     @Override
-    public boolean onAuthRequired(IRhoExtManager extManager, String type, String url, String realm, IRhoWebView ext, boolean res) {
+    public boolean onAuthRequest(IRhoExtManager extManager, IAuthRequest request, IRhoWebView ext, boolean res) {
         return res;
     }
 
