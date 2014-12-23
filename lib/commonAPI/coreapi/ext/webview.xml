@@ -3,6 +3,11 @@
 <API>
     <MODULE name="WebView" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The `Webview` is the core container used for rendering your application code. You can control certain behaviors of the webview by using this API class.</HELP_OVERVIEW>
+        <HELP_OVERVIEW_EB>The `Webview` is the core container used for rendering your application code. You can control certain behaviors of the webview by using this API class.
+
+> Note: There is currently an issue with hyperlinks on CE devices using the IE Engine: if you are attempting to click a link while holding the shift hardware key on the device, the link will not work properly. This is a known issue and is being worked on currently.
+        </HELP_OVERVIEW_EB>
+
         <MORE_HELP>
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
