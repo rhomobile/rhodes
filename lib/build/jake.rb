@@ -701,15 +701,16 @@ class Jake
         md5 = "" 
       end
       
-      size = File.stat(f).size
-      tm   = md5.to_s
+      size    = File.stat(f).size
+      tm      = File.stat(f).mtime.to_i
+      md_hash = md5.to_s
 
       if in_memory == true
         map_item = Hash.new
-        map_item = { :path => relpath, :size => size, :time => tm }
+        map_item = { :path => relpath, :size => size, :time => tm, :hash => md_hash}
         file_map << map_item
       else
-        dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}"
+        dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}|#{md_hash.to_s}"
       end
     end
 
