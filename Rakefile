@@ -84,6 +84,7 @@ require File.join(pwd, 'lib/build/SiteChecker.rb')
 require File.join(pwd, 'lib/build/ExtendedString.rb')
 require File.join(pwd, 'lib/build/rhohub.rb')
 require File.join(pwd, 'lib/build/BuildOutput.rb')
+require File.join(pwd, 'lib/build/BuildConfig.rb')
 require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 
 #load File.join(pwd, 'platform/bb/build/bb.rake')
@@ -2395,6 +2396,7 @@ namespace "config" do
   task :initialize => [:load] do
     $binextensions = []
     $app_extensions_list = {}
+    $app_extension_cfg = {}
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
@@ -3101,6 +3103,8 @@ def init_extensions(dest, mode = "")
 
         if File.file? extyml
           extconf = Jake.config(File.open(extyml))
+
+          $app_extension_cfg[extpath] = extconf
 
           entry           = extconf["entry"]
           nlib            = extconf["nativelibs"]
