@@ -23,6 +23,11 @@ $RhoDevelopmentPlatform = nil
 def setup(settings_folder_path, platform)
   $RhoDevelopmentSettingsFolder = settings_folder_path
   $RhoDevelopmentPlatform = platform
+
+  Rake::Task['config:common'].reenable
+  Rake::Task["config:#{$RhoDevelopmentPlatform}"].reenable
+  Rake::Task["config:#{$RhoDevelopmentPlatform}"].invoke
+
 end
 module_function :setup
 

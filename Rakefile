@@ -322,7 +322,7 @@ namespace 'dev' do
   namespace 'update' do
 
     desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'
-    task :partial => ['config:initialize'] do
+    task :partial => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       updater = RhoDevelopment::OneTimeUpdater.new
@@ -330,7 +330,7 @@ namespace 'dev' do
     end
 
     desc 'Builds full update bundle for all subscribers and notifies them'
-    task :full => ['config:initialize'] do
+    task :full => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new)
@@ -338,7 +338,7 @@ namespace 'dev' do
     end
 
     desc 'It builds partial update for all platforms and notifies all subscribers'
-    task :build_and_notify => ['config:initialize'] do
+    task :build_and_notify => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new)
@@ -346,7 +346,7 @@ namespace 'dev' do
     end
 
     desc 'It launches watcher for source code and builds partial update and notifies all subscribers on each change'
-    task :auto => ['config:initialize'] do
+    task :auto => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
       updater = RhoDevelopment::AutoUpdater.new
@@ -360,7 +360,7 @@ namespace 'dev' do
   namespace :webserver do
 
     desc 'It launches development web server. It is certain object which controls executing scheduling tasks, handles requests etc..'
-    task :start => ['config:initialize'] do
+    task :start => ['config:common'] do
 	  RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
     end
@@ -373,6 +373,7 @@ namespace 'dev' do
 
     desc 'It shut down development web server'
     task :stop do
+      RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer::stop
     end
 
@@ -2439,6 +2440,9 @@ namespace "config" do
     if $app_config && !$app_config["sdk"].nil?
       BuildOutput.note('To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.', 'You use sdk parameter in build.yml')
     end
+
+    $bindir = File.join($app_path, "bin")
+    $tmpdir = File.join($bindir, "tmp")
 
     $skip_checking_XCode = false
     $skip_build_rhodes_main = false
