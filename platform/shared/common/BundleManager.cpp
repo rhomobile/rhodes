@@ -100,7 +100,7 @@ public:
     
     int getItemCount();
     String getItem(int index);
-    int getItemDetails(int index, String* path, String* type, String* size, String* mtime);
+    int getItemDetails(int index, String* path, String* type, String* size, String* mtime, String* crc);
     int findItemByPath(String path);
     
     void loadFromFile(const String& filelist_path, const String& prefix);
@@ -131,7 +131,7 @@ private:
     }
 
     
-    int CFileList::getItemDetails(int index, String* path, String* type, String* size, String* mtime) {
+    int CFileList::getItemDetails(int index, String* path, String* type, String* size, String* mtime, String* crc) {
         String line = mLines.at(index);
         int count = 0;
         CTokenizer oTokenizer( line, "|" );
@@ -159,6 +159,12 @@ private:
             }
             count++;
         }
+        if (oTokenizer.hasMoreTokens()) {
+            if (crc != NULL) {
+                *crc = oTokenizer.nextToken();
+            }
+            count++;
+        }
         return count;
     }
     
@@ -166,7 +172,7 @@ private:
         int i;
         for (i = 0; i < getItemCount(); i++) {
             String ipath = "";
-            getItemDetails(i, &ipath, NULL,NULL,NULL);
+            getItemDetails(i, &ipath, NULL,NULL,NULL,NULL);
             if (path.compare(ipath) == 0) {
                 return i;
             }
@@ -776,12 +782,22 @@ bool CReplaceBundleThread::is_need_full_update(CFileList* old_filelist, CFileLis
     for (i = 0; i < new_filelist->getItemCount(); i++) {
         String new_item = new_filelist->getItem(i);
         String new_item_path;
-        new_filelist->getItemDetails(i, &new_item_path, NULL, NULL, NULL);
+        new_filelist->getItemDetails(i, &new_item_path, NULL, NULL, NULL, NULL);
         int old_index = old_filelist->findItemByPath(new_item_path);
         if (old_index >= 0) {
             // exist in old
             String old_item = old_filelist->getItem(old_index);
-            if (new_item.compare(old_item) == 0) {
+            // extract type and crc
+            String old_type = "";
+            String new_type = "";
+            String old_crc = "";
+            String new_crc = "";
+            String old_size = "";
+            String new_size = "";
+            new_filelist->getItemDetails(i, NULL, &new_type, &new_size, NULL, &new_crc);
+            old_filelist->getItemDetails(old_index, NULL, &old_type, &old_size, NULL, &old_crc);
+            if ((new_type.length() > 0) && (new_size.length() > 0) && (new_crc.length() > 0) && (new_type.compare(old_type) == 0) && (new_size.compare(old_size) == 0) && (new_crc.compare(old_crc) == 0)) {
+            //if (new_item.compare(old_item) == 0) {
                 // equal
                 // good - skip it and go forward
             }
@@ -801,7 +817,7 @@ bool CReplaceBundleThread::is_need_full_update(CFileList* old_filelist, CFileLis
                         (new_item_path.compare("rhoconfig.txt.timestamp") != 0) &&
                         (new_item_path.compare("app_manifest.txt") != 0) &&
                         (!rho::String_startsWith(new_item_path, "public/api/")) ) {
-                        LOG(ERROR) + "SYNC ISSUE FOUNDED ! Item ["+new_item_path+"] is different with current server version !";
+                        LOG(ERROR) + "SYNC ISSUE FOUNDED ! Item ["+new_item_path+"] is different with current server version !  value [new/old] size["+new_size+"/"+old_size+"] crc["+new_crc+"/"+old_crc+"]";
                         return true;
                     }
                 }
@@ -835,7 +851,7 @@ bool CReplaceBundleThread::is_need_full_update(CFileList* old_filelist, CFileLis
     for (i = 0; i < old_filelist->getItemCount(); i++) {
         String old_item = old_filelist->getItem(i);
         String old_item_path;
-        old_filelist->getItemDetails(i, &old_item_path, NULL, NULL, NULL);
+        old_filelist->getItemDetails(i, &old_item_path, NULL, NULL, NULL, NULL);
         int new_index = new_filelist->findItemByPath(old_item_path);
         if (new_index >= 0) {
             // none - already checked when enumerate new items

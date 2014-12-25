@@ -119,7 +119,12 @@ public class RhoFileApi {
 				if (idx == -1)
 					continue;
 				long size = Long.parseLong(line.substring(0, idx));
-				long mtime = Long.parseLong(line.substring(idx + 1));
+                line = line.substring(idx + 1);
+                idx = line.indexOf('|');
+                if (idx == -1)
+                    continue;
+				long mtime = Long.parseLong(line.substring(0, idx));
+                String crc = line.substring(idx + 1);
 				
 				updateStatTable(path, type, size, mtime);
 				
