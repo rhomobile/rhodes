@@ -26,9 +26,11 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
-require 'cfpropertylist'
+
 
 def load_plist(fname)
+  require 'cfpropertylist'
+
   plist = CFPropertyList::List.new(:file => fname)
   data = CFPropertyList.native_types(plist.value)
 
@@ -36,6 +38,8 @@ def load_plist(fname)
 end
 
 def save_plist(fname, hash_data = {})
+  require 'cfpropertylist'
+  
   plist = CFPropertyList::List.new
   plist.value = CFPropertyList.guess(hash_data)
   plist.save(fname, CFPropertyList::List::FORMAT_XML,{:formatted=>true})
