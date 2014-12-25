@@ -37,8 +37,6 @@
 #include "unzip.h"
 //
 
-namespace infozip
-{
 
 typedef unsigned short WORD;
 #define _tcslen strlen
@@ -81,6 +79,10 @@ typedef unsigned short WORD;
 #else
 #define _tsprintf sprintf
 #endif
+
+namespace infozip
+{
+
 
 // THIS FILE is almost entirely based upon code by Jean-loup Gailly
 // and Mark Adler. It has been modified by Lucian Wischik.
