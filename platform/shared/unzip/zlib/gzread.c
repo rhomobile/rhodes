@@ -1,19 +1,9 @@
 /* gzread.c -- zlib functions for reading gzip files
- * Copyright (C) 2004, 2005, 2010, 2011, 2012 Mark Adler
+ * Copyright (C) 2004, 2005, 2010, 2011, 2012, 2013 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 #include "gzguts.h"
-#if !defined(UNDER_CE)
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__MINGW32__)
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
-#endif
-
-namespace zlib
-{
 
 /* Local functions */
 local int gz_load OF((gz_statep, unsigned char *, unsigned, unsigned *));
@@ -27,7 +17,11 @@ local int gz_skip OF((gz_statep, z_off64_t));
    state->fd, and update state->eof, state->err, and state->msg as appropriate.
    This function needs to loop on read(), since read() is not guaranteed to
    read the number of bytes requested, depending on the type of descriptor. */
-local int gz_load(gz_statep state, unsigned char* buf, unsigned len, unsigned* have)
+local int gz_load(state, buf, len, have)
+    gz_statep state;
+    unsigned char *buf;
+    unsigned len;
+    unsigned *have;
 {
     int ret;
 
@@ -54,7 +48,8 @@ local int gz_load(gz_statep state, unsigned char* buf, unsigned len, unsigned* h
    If strm->avail_in != 0, then the current data is moved to the beginning of
    the input buffer, and then the remainder of the buffer is loaded with the
    available data from the input file. */
-local int gz_avail(gz_statep state)
+local int gz_avail(state)
+    gz_statep state;
 {
     unsigned got;
     z_streamp strm = &(state->strm);
@@ -63,7 +58,8 @@ local int gz_avail(gz_statep state)
         return -1;
     if (state->eof == 0) {
         if (strm->avail_in) {       /* copy what's there to the start */
-            unsigned char *p = state->in, *q = strm->next_in;
+            unsigned char *p = state->in;
+            unsigned const char *q = strm->next_in;
             unsigned n = strm->avail_in;
             do {
                 *p++ = *q++;
@@ -87,15 +83,16 @@ local int gz_avail(gz_statep state)
    case, all further file reads will be directly to either the output buffer or
    a user buffer.  If decompressing, the inflate state will be initialized.
    gz_look() will return 0 on success or -1 on failure. */
-local int gz_look(gz_statep state)
+local int gz_look(state)
+    gz_statep state;
 {
     z_streamp strm = &(state->strm);
 
     /* allocate read buffers and inflate memory */
     if (state->size == 0) {
         /* allocate buffers */
-        state->in = (unsigned char*)malloc(state->want);
-        state->out = (unsigned char*)malloc(state->want << 1);
+        state->in = (unsigned char *)malloc(state->want);
+        state->out = (unsigned char *)malloc(state->want << 1);
         if (state->in == NULL || state->out == NULL) {
             if (state->out != NULL)
                 free(state->out);
@@ -172,7 +169,8 @@ local int gz_look(gz_statep state)
    data.  If the gzip stream completes, state->how is reset to LOOK to look for
    the next gzip stream or raw data, once state->x.have is depleted.  Returns 0
    on success, -1 on failure. */
-local int gz_decomp(gz_statep state)
+local int gz_decomp(state)
+    gz_statep state;
 {
     int ret = Z_OK;
     unsigned had;
@@ -225,7 +223,8 @@ local int gz_decomp(gz_statep state)
    looked for to determine whether to copy or decompress.  Returns -1 on error,
    otherwise 0.  gz_fetch() will leave state->how as COPY or GZIP unless the
    end of the input file has been reached and all data has been processed.  */
-local int gz_fetch(gz_statep state)
+local int gz_fetch(state)
+    gz_statep state;
 {
     z_streamp strm = &(state->strm);
 
@@ -254,7 +253,9 @@ local int gz_fetch(gz_statep state)
 }
 
 /* Skip len uncompressed bytes of output.  Return -1 on error, 0 on success. */
-local int gz_skip(gz_statep state, z_off64_t len)
+local int gz_skip(state, len)
+    gz_statep state;
+    z_off64_t len;
 {
     unsigned n;
 
@@ -284,7 +285,10 @@ local int gz_skip(gz_statep state, z_off64_t len)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzread(gzFile file, voidp buf, unsigned len)
+int ZEXPORT gzread(file, buf, len)
+    gzFile file;
+    voidp buf;
+    unsigned len;
 {
     unsigned got, n;
     gz_statep state;
@@ -349,14 +353,14 @@ int ZEXPORT gzread(gzFile file, voidp buf, unsigned len)
 
         /* large len -- read directly into user buffer */
         else if (state->how == COPY) {      /* read directly */
-            if (gz_load(state, (unsigned char*)buf, len, &n) == -1)
+            if (gz_load(state, (unsigned char *)buf, len, &n) == -1)
                 return -1;
         }
 
         /* large len -- decompress directly into user buffer */
         else {  /* state->how == GZIP */
             strm->avail_out = len;
-            strm->next_out = (unsigned char*)buf;
+            strm->next_out = (unsigned char *)buf;
             if (gz_decomp(state) == -1)
                 return -1;
             n = state->x.have;
@@ -375,8 +379,13 @@ int ZEXPORT gzread(gzFile file, voidp buf, unsigned len)
 }
 
 /* -- see zlib.h -- */
-#undef gzgetc
-int ZEXPORT gzgetc(gzFile file)
+#ifdef Z_PREFIX_SET
+#  undef z_gzgetc
+#else
+#  undef gzgetc
+#endif
+int ZEXPORT gzgetc(file)
+    gzFile file;
 {
     int ret;
     unsigned char buf[1];
@@ -404,13 +413,16 @@ int ZEXPORT gzgetc(gzFile file)
     return ret < 1 ? -1 : buf[0];
 }
 
-int ZEXPORT gzgetc_(gzFile file)
+int ZEXPORT gzgetc_(file)
+gzFile file;
 {
     return gzgetc(file);
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzungetc(int c, gzFile file)
+int ZEXPORT gzungetc(c, file)
+    int c;
+    gzFile file;
 {
     gz_statep state;
 
@@ -468,7 +480,10 @@ int ZEXPORT gzungetc(int c, gzFile file)
 }
 
 /* -- see zlib.h -- */
-char * ZEXPORT gzgets(gzFile file, char* buf, int len)
+char * ZEXPORT gzgets(file, buf, len)
+    gzFile file;
+    char *buf;
+    int len;
 {
     unsigned left, n;
     char *str;
@@ -508,7 +523,7 @@ char * ZEXPORT gzgets(gzFile file, char* buf, int len)
 
         /* look for end-of-line in current output buffer */
         n = state->x.have > left ? left : state->x.have;
-        eol = (unsigned char*)memchr(state->x.next, '\n', n);
+        eol = (unsigned char *)memchr(state->x.next, '\n', n);
         if (eol != NULL)
             n = (unsigned)(eol - state->x.next) + 1;
 
@@ -529,7 +544,8 @@ char * ZEXPORT gzgets(gzFile file, char* buf, int len)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzdirect(gzFile file)
+int ZEXPORT gzdirect(file)
+    gzFile file;
 {
     gz_statep state;
 
@@ -548,7 +564,8 @@ int ZEXPORT gzdirect(gzFile file)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzclose_r(gzFile file)
+int ZEXPORT gzclose_r(file)
+    gzFile file;
 {
     int ret, err;
     gz_statep state;
@@ -574,6 +591,4 @@ int ZEXPORT gzclose_r(gzFile file)
     ret = close(state->fd);
     free(state);
     return ret ? Z_ERRNO : err;
-}
-
 }

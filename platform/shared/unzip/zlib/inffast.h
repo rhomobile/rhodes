@@ -8,9 +8,4 @@
    subject to change. Applications should only use zlib.h.
  */
 
-namespace zlib
-{
-
 void ZLIB_INTERNAL inflate_fast OF((z_streamp strm, unsigned start));
-
-}

@@ -16,9 +16,6 @@
 #  define GUNZIP
 #endif
 
-namespace zlib
-{
-
 /* Possible inflate modes between inflate() calls */
 typedef enum {
     HEAD,       /* i: waiting for magic header */
@@ -123,5 +120,3 @@ struct inflate_state {
     int back;                   /* bits back of last unprocessed length/lit */
     unsigned was;               /* initial length of match */
 };
-
-}//namespace zlib

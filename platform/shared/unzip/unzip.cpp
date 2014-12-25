@@ -36,6 +36,10 @@
 /* RHO END */
 #include "unzip.h"
 //
+
+namespace infozip
+{
+
 typedef unsigned short WORD;
 #define _tcslen strlen
 #define _tcsicmp stricmp
@@ -4253,7 +4257,10 @@ ZRESULT TUnzip::Close()
 }
 
 
+}
 
+
+using namespace infozip;
 
 
 ZRESULT lasterrorU=ZR_OK;

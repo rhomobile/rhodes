@@ -6,14 +6,18 @@
 //
 //
 
+
 #include "gunzip.h"
-#include "zlib.h"
+
+#if defined(__APPLE__) || defined (OS_ANDROID)
+#include <zlib.h>
+#else
+#include "zlib/zlib.h"
+#endif
 #include <stdio.h>
 
 namespace gunzip
 {
-
-  using namespace zlib;
 
   int UnzipGzip(const char* inputFilename, const char* outputFilename)
   {

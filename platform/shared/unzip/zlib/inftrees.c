@@ -1,18 +1,15 @@
 /* inftrees.c -- generate Huffman trees for efficient decoding
- * Copyright (C) 1995-2012 Mark Adler
+ * Copyright (C) 1995-2013 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 #include "zutil.h"
 #include "inftrees.h"
 
-namespace zlib
-{
-
 #define MAXBITS 15
 
 const char inflate_copyright[] =
-   " inflate 1.2.7 Copyright 1995-2012 Mark Adler ";
+   " inflate 1.2.8 Copyright 1995-2013 Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -32,7 +29,13 @@ const char inflate_copyright[] =
    table index bits.  It will differ if the request is greater than the
    longest code or if it is less than the shortest code.
  */
-int ZLIB_INTERNAL inflate_table(codetype type, unsigned short FAR *lens, unsigned codes, code FAR * FAR *table, unsigned FAR *bits, unsigned short FAR *work)
+int ZLIB_INTERNAL inflate_table(type, lens, codes, table, bits, work)
+codetype type;
+unsigned short FAR *lens;
+unsigned codes;
+code FAR * FAR *table;
+unsigned FAR *bits;
+unsigned short FAR *work;
 {
     unsigned len;               /* a code's length in bits */
     unsigned sym;               /* index of code symbols */
@@ -59,7 +62,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, unsigned short FAR *lens, unsigne
         35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0};
     static const unsigned short lext[31] = { /* Length codes 257..285 extra */
         16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18,
-        19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 16, 78, 68};
+        19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 16, 72, 78};
     static const unsigned short dbase[32] = { /* Distance codes 0..29 base */
         1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
         257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
@@ -205,8 +208,8 @@ int ZLIB_INTERNAL inflate_table(codetype type, unsigned short FAR *lens, unsigne
     mask = used - 1;            /* mask for comparing low */
 
     /* check available table space */
-    if ((type == LENS && used >= ENOUGH_LENS) ||
-        (type == DISTS && used >= ENOUGH_DISTS))
+    if ((type == LENS && used > ENOUGH_LENS) ||
+        (type == DISTS && used > ENOUGH_DISTS))
         return 1;
 
     /* process all codes and make table entries */
@@ -274,8 +277,8 @@ int ZLIB_INTERNAL inflate_table(codetype type, unsigned short FAR *lens, unsigne
 
             /* check for enough space */
             used += 1U << curr;
-            if ((type == LENS && used >= ENOUGH_LENS) ||
-                (type == DISTS && used >= ENOUGH_DISTS))
+            if ((type == LENS && used > ENOUGH_LENS) ||
+                (type == DISTS && used > ENOUGH_DISTS))
                 return 1;
 
             /* point entry in root table to sub-table */
@@ -300,6 +303,4 @@ int ZLIB_INTERNAL inflate_table(codetype type, unsigned short FAR *lens, unsigne
     *table += used;
     *bits = root;
     return 0;
-}
-
 }

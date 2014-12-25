@@ -62,6 +62,9 @@
 //       binary releases.
 //
 
+namespace infozip
+{
+
 
 typedef unsigned char uch;      // unsigned 8-bit value
 typedef unsigned short ush;     // unsigned 16-bit value
@@ -2854,8 +2857,9 @@ ZRESULT TZip::AddCentral()
 }
 
 
+}
 
-
+using namespace infozip;
 
 ZRESULT lasterrorZ=ZR_OK;
 

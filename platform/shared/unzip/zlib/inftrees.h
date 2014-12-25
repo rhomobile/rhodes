@@ -21,10 +21,6 @@
    of the bit buffer.  val is the actual byte to output in the case
    of a literal, the base length or distance, or the offset from
    the current table to the next table.  Each entry is four bytes. */
-
-namespace zlib
-{
-
 typedef struct {
     unsigned char op;           /* operation, extra bits, table bits */
     unsigned char bits;         /* bits in this part of the code */
@@ -64,5 +60,3 @@ typedef enum {
 int ZLIB_INTERNAL inflate_table OF((codetype type, unsigned short FAR *lens,
                              unsigned codes, code FAR * FAR *table,
                              unsigned FAR *bits, unsigned short FAR *work));
-
-}
