@@ -170,7 +170,6 @@ def set_signing_identity(identity,profile,entitlements)
   File.open(fname,"w") { |f| f.write(buf) }
 end
 
-
 BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon57.png', 'icon60.png', 'icon72.png', 'icon76.png', 'icon114.png', 'icon120.png', 'icon144.png', 'icon152.png', 'icon180.png', 'Info.plist', 'Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png']
 CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png']
 

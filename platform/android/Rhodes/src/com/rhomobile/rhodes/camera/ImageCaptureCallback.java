@@ -102,8 +102,7 @@ public class ImageCaptureCallback implements PictureCallback {
                 }
 
                 try {
-                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100,
-                    osCommon);
+                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, osCommon);
                     osCommon.flush();
                 }
                 finally {
@@ -142,6 +141,5 @@ public class ImageCaptureCallback implements PictureCallback {
         finally {
             mOwner.finish();
         }
-    }
-	
+    }	
 }
