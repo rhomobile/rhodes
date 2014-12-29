@@ -1817,6 +1817,10 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
         return FALSE;
     }
 
+	// workaround for escape key in text fields on CE:
+	if (RHO_IS_CEDEVICE && (pMsg->message == WM_KEYDOWN) && (pMsg->wParam == VK_ESCAPE))
+		return TRUE;
+
     // Find a direct child of this window from the window that has focus.
     // This will be AtlAxWin window for the hosted control.
     CWindow control = ::GetFocus();
