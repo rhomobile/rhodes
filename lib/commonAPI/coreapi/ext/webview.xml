@@ -73,7 +73,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC_EB>Enable WebView zoom. Use 'enable_screen_zoom' parameter in Config.xml to configure this value.</DESC_EB>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
-            <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true" readOnly="true">
+            <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true" readOnly="true" productException="eb">
                 <DESC>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in rhoconfig.txt to configure this value.</DESC>
                 <DESC_EB>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in Config.xml to configure this value.</DESC_EB>
                 <PLATFORM>WM, CE, Android</PLATFORM>
