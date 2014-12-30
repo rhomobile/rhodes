@@ -1592,11 +1592,11 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
 
 void CMainWindow::ProcessTitleChange(LPCTSTR title)
 {
-     TCHAR szWindowTitle[MAX_PATH];
-     ZeroMemory(szWindowTitle,sizeof(szWindowTitle));
+     TCHAR *szWindowTitle = new TCHAR[MAX_PATH];
+     ZeroMemory(szWindowTitle, MAX_PATH);
 
     LOG(TRACE) + "OnBrowserTitleChange: " + title;
-    GetWindowText(szWindowTitle,sizeof(szWindowTitle));
+    GetWindowText(szWindowTitle, MAX_PATH);
     //return;
     String strTitle = RHOCONF().getString("title_text");
     if(strTitle.length() <=0)
@@ -1616,9 +1616,14 @@ void CMainWindow::ProcessTitleChange(LPCTSTR title)
         LPCTSTR szTitle = title;
         if ( szTitle && 
             (_tcsncmp(szTitle, _T("http:"), 5) == 0 || _tcscmp(szTitle, _T("about:blank"))==0 ))
+        {
+            delete [] szWindowTitle;
             return;
+        }
 
         SetWindowText(szTitle);
+
+        delete [] szWindowTitle;
     }
 }
 
