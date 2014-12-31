@@ -100,6 +100,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                 <PARAM name="useCurrentViewForTab" type="BOOLEAN" default="false">
                                     <DESC>Gives a smooth transfer to a newly opened tab from the current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
                                     <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
+                                    <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
                                 </PARAM>
 
                                 <PARAM name="perishable" type="BOOLEAN" default="false">
@@ -118,7 +119,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     <PARAM name="tabBarProperties" type="HASH">
                         <DESC>Properties of TabBar.</DESC>
                         <PARAMS>
-                            <PARAM name="verticalOrientation" type="BOOLEAN" default="false">
+                            <PARAM name="verticalOrientation" type="BOOLEAN" default="false" productException="eb">
                                 <DESC>Creates a vertical tabbar on the iPad.</DESC>
                                 <PLATFORM>iOS</PLATFORM>
                             </PARAM>
@@ -193,7 +194,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="setTabBadge" runInThread="ui" >
+            <METHOD name="setTabBadge" runInThread="ui" productException="eb">
                 <DESC>Set the iPhone badge to tab.</DESC>
                 <PLATFORM>iOS</PLATFORM>
                 <PARAMS>
