@@ -1,6 +1,5 @@
 #ifndef _IMAGER_H
 #define _IMAGER_H
-#include "ImgCAPI.h"
 #include "logging/RhoLog.h"
 #include "common/RhoStd.h"
 #include "Camera.h"

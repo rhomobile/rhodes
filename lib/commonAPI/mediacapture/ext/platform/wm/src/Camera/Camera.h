@@ -5,7 +5,7 @@
 #include "api_generator/MethodResult.h"
 #include "ViewFinder.h"
 #include "commdlg.h"
-#include "RcmLoader.h"
+#include "TriggerMonitor.h"
 
 enum eCamType
 {
