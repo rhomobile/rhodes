@@ -671,6 +671,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Camera\TriggerMonitor.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Camera\ViewFinder.cpp"
 					>
 				</File>
@@ -692,6 +696,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Camera\Imager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\TriggerMonitor.h"
 					>
 				</File>
 				<File
