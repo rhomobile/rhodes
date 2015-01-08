@@ -1,7 +1,8 @@
 #include "DirectShowCam.h"
 #include "Common/RhoUtil.h"
 
-#define MINIMUM_DEVICE_NAME_LENGTH 3 //eg CAM1:
+#define COLOR_CAM_ID L"CAM" //eg CAM1:
+#define COLOR_CAM_ID_LENGTH 3
 
 CDirectShowCam::CDirectShowCam(LPCTSTR szDeviceName):CCamera(szDeviceName)
 {
@@ -30,7 +31,7 @@ BOOL CDirectShowCam::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<r
 	if((hFirstDevice != INVALID_HANDLE_VALUE) ||(hFirstDevice != NULL) || (di.hDevice != NULL))
 	{
 		bRetStatus = TRUE;
-		if(wcslen(di.szLegacyName) > MINIMUM_DEVICE_NAME_LENGTH)//in devices with no color cam, we need this check
+		if(0 == wcsncmp(di.szLegacyName, COLOR_CAM_ID, COLOR_CAM_ID_LENGTH ))//in devices with no color cam, we need this check whther ID is proper
 		{
 			arIDs.addElement(rho::common::convertToStringA(di.szLegacyName));
 			camLookUp.put(rho::common::convertToStringA(di.szLegacyName), eColorCam );
