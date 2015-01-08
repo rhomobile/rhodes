@@ -26,9 +26,12 @@ CCamera::CCamera(LPCTSTR szDeviceName)
 	m_DesiredHeight = -1;
 	m_DesiredWidth =-1;
 	initializePreviewPos();
-	if(m_Rcm.LoadRcmDLL())
+	if(false == m_bRcmLoaded)
 	{
-		m_bRcmLoaded = true;
+		if(m_Rcm.LoadRcmDLL())
+		{
+			m_bRcmLoaded = true;
+		}
 	}
 }
 CCamera::~CCamera()
