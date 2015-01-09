@@ -391,7 +391,7 @@ private:
     // Used to manage SIP state. Also used to adjust window for SIP.
     SHACTIVATEINFO m_sai;
 #endif
-
+	bool m_bLicenseScreenShownFirsttime;
 	bool m_bLoading;
     CNativeToolbar m_toolbar;
     CNativeTabbar  m_oTabBar;
