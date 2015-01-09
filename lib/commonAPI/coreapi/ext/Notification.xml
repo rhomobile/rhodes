@@ -51,8 +51,8 @@ The ebapi.js file is necessary for all single API inclusions.
         <METHODS access="STATIC">
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
-                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the 'button' array. Icon is not supported on iOS devices.</DESC>
-                <DESC_EB>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the 'button' array.</DESC_EB>
+                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the 'button' array. All custom icons' paths must be absolute paths to the icon file. Icon is not supported on iOS devices.</DESC>
+                <DESC_EB>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the 'button' array. All custom icons' paths must be absolute paths to the icon file.</DESC_EB>
                 <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
                 <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
                 <PARAMS>
@@ -165,7 +165,7 @@ Example:
                 <PLATFORM_EB>Android, WM</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="path" type="STRING">
-                        <DESC>The full path to the file, ending in the file name and extension.</DESC>
+                        <DESC>The full absolute path to the file, ending in the file name and extension.</DESC>
                     </PARAM>
                     <PARAM name="media_type" type="STRING" default="">
                         <CAN_BE_NIL/>
