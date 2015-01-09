@@ -150,7 +150,7 @@ From RhoElements 2.1 onwards the default value was changed to work out of the bo
                 <APPLIES>WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="zoomPage" type="FLOAT">
-                <DESC>Sets the zoom factor of the page. Factor 1.0 is no zoom, values less than 1.0 are zoomed out and values greater than 1.0 are zoomed in.</DESC>
+                <DESC>Sets the zoom factor of the page. Factor 1.0 is no zoom, values less than 1.0 are zoomed out and values greater than 1.0 are zoomed in. In Windows, it is recommended to not to use the zoom value less than 1.0 because the page doesn't look in readable format.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>WebKit</APPLIES>
             </PROPERTY>
