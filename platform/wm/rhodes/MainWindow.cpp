@@ -1208,7 +1208,7 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
         LPTSTR wcurl = (LPTSTR)(nd->url);
         if (wcurl)
 	{
-	LOG(INFO) + "Mainwindow OnNavigateCommand";
+	LOG(INFO) + "Mainwindow OnNavigateCommand-before Navigate2";
 	Navigate2(wcurl, nd->index);
 	}
 
