@@ -652,7 +652,7 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 LRESULT CMainWindow::OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     PROF_STOP("BROWSER_PAGE");
-    LOG(INFO) + "MainWindow OnNavigateTimeout\n";
+    LOG(INFO) + "Calling OnNavigateTimeout";
     LRESULT lRes =  RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
 
     free((void*)lParam);
@@ -1208,7 +1208,7 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
         LPTSTR wcurl = (LPTSTR)(nd->url);
         if (wcurl)
 	{
-	LOG(INFO) + "Mainwindow OnNavigateCommand-before Navigate2";
+	LOG(INFO) + "Call of Navigate2 function";
 	Navigate2(wcurl, nd->index);
 	}
 
