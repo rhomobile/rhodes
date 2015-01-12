@@ -1592,6 +1592,25 @@ namespace "build" do
           puts "Info.plist: Setting key #{k} = #{v} from #{File.basename(ext_name[k])}"
           hash[k] = v
         end
+
+        #setup GPS access
+        gps_request_text = nil
+        if $app_config["capabilities"].index("gps") != nil
+          gps_request_text = 'application tracks your position'
+        end
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["capabilities"].nil?
+            if $app_config["iphone"]["capabilities"].index("gps") != nil
+              gps_request_text = 'application tracks your position'
+            end
+          end
+        end
+        if gps_request_text != nil
+          if hash['NSLocationWhenInUseUsageDescription'] == nil
+            puts "Info.plist: added key [NSLocationWhenInUseUsageDescription]"
+            hash['NSLocationWhenInUseUsageDescription'] = gps_request_text
+          end
+        end
       end
 
       set_app_icon(false)
@@ -1652,6 +1671,25 @@ namespace "build" do
         changed_value.each do |k, v|
           puts "Info.plist: Setting key #{k} = #{v} from #{File.basename(ext_name[k])}"
           hash[k] = v
+        end
+
+        #setup GPS access
+        gps_request_text = nil
+        if $app_config["capabilities"].index("gps") != nil
+          gps_request_text = 'application tracks your position'
+        end
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["capabilities"].nil?
+            if $app_config["iphone"]["capabilities"].index("gps") != nil
+              gps_request_text = 'application tracks your position'
+            end
+          end
+        end
+        if gps_request_text != nil
+          if hash['NSLocationWhenInUseUsageDescription'] == nil
+            puts "Info.plist: added key [NSLocationWhenInUseUsageDescription]"
+            hash['NSLocationWhenInUseUsageDescription'] = gps_request_text
+          end
         end
       end
 
@@ -1714,6 +1752,8 @@ namespace "build" do
       else
         BuildOutput.warning("iTunesArtwork@2x (image required for iTunes) not found - use default !!!" )
       end
+
+      copy_generated_sources_and_binaries
 
       rm_rf 'project/iphone/toremoved'
       rm_rf 'project/iphone/toremovef'
