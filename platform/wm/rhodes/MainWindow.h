@@ -392,6 +392,7 @@ private:
     SHACTIVATEINFO m_sai;
 #endif
 
+	bool m_bLicenseScreenShownFirsttime;
 	bool m_bLoading;
     CNativeToolbar m_toolbar;
     CNativeTabbar  m_oTabBar;
