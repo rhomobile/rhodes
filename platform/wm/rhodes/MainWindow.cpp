@@ -91,6 +91,7 @@ extern "C" int rho_wm_impl_CheckLicense();
 
 CMainWindow::CMainWindow()
 {
+    m_bLicenseScreenShownFirsttime=true;
     mIsBrowserViewHided = false;
     mNativeView = NULL;
     mNativeViewFactory = NULL;
@@ -636,8 +637,12 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     Rhodes_WM_ProcessBeforeNavigate((LPCTSTR)lParam);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    if ( m_bLoading )
-        rho_wm_impl_CheckLicense();
+    if (( m_bLoading ==true)&&(m_bLicenseScreenShownFirsttime==true))
+	{
+        	LOG(INFO) + "Showing License screen";
+		m_bLicenseScreenShownFirsttime = false;
+		rho_wm_impl_CheckLicense();
+	}
 #endif
 
     free((void*)lParam);
@@ -647,7 +652,7 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 LRESULT CMainWindow::OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     PROF_STOP("BROWSER_PAGE");
-    LOG(INFO) + "OnNavigateTimeout" ;
+    LOG(INFO) + "Calling OnNavigateTimeout";
     LRESULT lRes =  RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
 
     free((void*)lParam);
@@ -1203,7 +1208,7 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
         LPTSTR wcurl = (LPTSTR)(nd->url);
         if (wcurl)
           {
-            LOG(INFO) + "Logs for OnNavigateCommand";
+            LOG(INFO) + "Call of Navigate2 function";
             Navigate2(wcurl, nd->index);
           }
 
