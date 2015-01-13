@@ -453,7 +453,7 @@ void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEvent
 			SetEvent(m_hNavigated);
 			CloseHandle(m_hNavigated);
 			m_hNavigated = NULL;
-            SendMessage(m_parentHWND, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);			
+            SendMessage(m_parentHWND, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)_tcsdup(tcURL));			
 			break;
 	}
 }
@@ -612,7 +612,7 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 				CloseHandle(pIEEng->m_hNavigated);
 				pIEEng->m_hNavigated = NULL;
 				SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
-					(WPARAM)pIEEng->m_tabID, (LPARAM)pIEEng->m_tcNavigatedURL);
+					(WPARAM)pIEEng->m_tabID, (LPARAM)_tcsdup(pIEEng->m_tcNavigatedURL));
 
 				break; 
 
