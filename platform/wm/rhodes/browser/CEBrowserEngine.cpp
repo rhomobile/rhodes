@@ -9,6 +9,8 @@
 #include "common/RhoConf.h"
 #include "MainWindow.h"
 #include "EngineDefines.h"
+// EMBPD00158491
+#include "..\..\..\..\..\Motorola-Extensions\neon\Helium\HeliumForWindows\Implementation\Common\Private\sip.h"
 
 #if defined(_WIN32_WCE)
 #include <webvw.h>
@@ -18,9 +20,14 @@ extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam);
 extern "C" bool rho_wmimpl_get_textselectionenabled();
+// EMBPD00158491
+LRESULT CALLBACK NetworkWndProc(HWND hWnd,LPARAM lParam);
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+void ShowSIPWnd(BOOL bShow);
 
 IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
-
+// EMBPD00158491
+static WNDPROC g_wpEditWndProc;
 //////////////////////////////////////////////////////////////////////////
 
 UINT WM_BROWSER_ONDOCUMENTCOMPLETE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONDOCUMENTCOMPLETE");
@@ -670,6 +677,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
             m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
 		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
+		// EMBPD00158491
+		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NetworkWindowThread, (LPVOID)this, 0, NULL));
 		wcscpy(m_tcNavigatedURL, tcURL);
 
 #ifdef SCROLL_NOTIFY
@@ -1156,5 +1165,148 @@ BOOL CEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
 	return S_OK;
 }
 
+// EMBPD00158491 - [SAP-ITS][CE5/MK4000]-Sip is not shown while trying to enter text in fields of Authentication screen
+// SIP not appearing on authentication window on IE engine has been fixed
+LRESULT CALLBACK NetworkWndProc(HWND hWnd,LPARAM lParam)
+{
+#ifdef _DEBUG
+	LOG(INFO) + "CEBrowserEngine::NetworkWndProc" ;
+#endif
+	if(hWnd)
+	{
 
+		TCHAR szChildWndText[MAX_PATH];
+		TCHAR szChildWndClass[MAX_PATH];
+
+		ZeroMemory(szChildWndText,MAX_PATH);
+		ZeroMemory(szChildWndClass,MAX_PATH);
+
+		GetWindowText(hWnd,szChildWndText,MAX_PATH);
+		GetClassName(hWnd,szChildWndClass,MAX_PATH);
+#ifdef _DEBUG
+		LOG(INFO) + "CEBrowserEngine::NetworkWndProc Window text";
+		LOG(INFO) + szChildWndText;
+
+		LOG(INFO) + "CEBrowserEngine::NetworkWndProc Window class";
+		LOG(INFO) + szChildWndClass;
+
+
+		LOG(INFO) + "CEBrowserEngine::NetworkWndProc Window class";
+		LONG lIndex = GetWindowLong(hWnd,GWL_ID);
+		LOG(INFO) + lIndex;
+#endif
+		if(_tcsicmp(szChildWndClass,TEXT("Edit")) ==0)
+		{
+			g_wpEditWndProc= (WNDPROC)SetWindowLong(hWnd,GWL_WNDPROC,(LONG)EditWndProc);
+			if(g_wpEditWndProc== NULL)
+			{
+				LOG(ERROR) + "[NetworkWndProc]Setwindowlong returns null";
+				LOG(ERROR) + GetLastError();
+			}
+			else
+			{
+				LOG(INFO) + "[NetworkWndProc]Setwindowlong returns";
+				LOG(INFO) + GetLastError();
+			}
+		}
+		return TRUE;
+	}
+	else
+		return FALSE;
+	
+}
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+
+			switch(message)
+			{
+			case WM_SETFOCUS:
+				{
+					ShowSIPWnd(TRUE);
+				}
+				break;
+			case WM_KILLFOCUS:
+				{
+					ShowSIPWnd(FALSE);
+				}
+				break;
+			}
+			
+			return CallWindowProc(g_wpEditWndProc, hwnd, message, wParam, lParam); 
+}
+
+
+void ShowSIPWnd(BOOL bShow)
+{
+	CSIP* m_pSip = NULL;
+		if (!m_pSip)
+			m_pSip = new CSIP();
+
+	if(!bShow)
+	{
+		HWND sipHWND = FindWindow(L"SipWndClass", NULL);
+		if (sipHWND && IsWindowVisible(sipHWND))
+		{
+			m_pSip->ToggleSIP();
+		}
+	}
+	if(bShow)
+	{
+		bool bSIPVisible = false;
+		HWND sipHWND = FindWindow(L"SipWndClass", NULL);
+		if (sipHWND && IsWindowVisible(sipHWND))
+			bSIPVisible = true;
+		if(!bSIPVisible)
+		{
+			m_pSip->ToggleSIP();
+			
+		}
+	}
+	
+
+}
+DWORD WINAPI CEBrowserEngine::NetworkWindowThread( LPVOID lpParameter )
+{
+
+	LOG(INFO) + "CEBrowserEngine::NetworkWindowThread Started";
+	CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
+
+	TCHAR szWindowText[MAX_PATH];
+	TCHAR szWindowClass[MAX_PATH];
+	HWND hCurrentWindow = NULL;
+
+	ZeroMemory(szWindowText,MAX_PATH);
+	ZeroMemory(szWindowClass,MAX_PATH);
+
+
+	while(!pEng->m_bLoadingComplete)
+	{
+		HWND hCurrentWindow=FindWindow(TEXT("Dialog"),TEXT("Enter Network Password"));
+		if(hCurrentWindow != NULL)
+		{
+
+#ifdef _DEBUG
+			GetWindowText(hCurrentWindow,szWindowText,MAX_PATH);
+			LOG(INFO) + "CEBrowserEngine::NetworkWindowThread FindWindow  Title";
+			LOG(INFO) + szWindowText;
+			ZeroMemory(szWindowClass,MAX_PATH);
+			GetClassName(hCurrentWindow,szWindowClass,MAX_PATH);
+			LOG(INFO) + "CEBrowserEngine::NetworkWindowThread FindWindow  class";
+			LOG(INFO) + szWindowClass;
+			LONG lIndex = GetWindowLong(hCurrentWindow,GWL_ID);
+			LOG(INFO) + "CEBrowserEngine::NetworkWindowThread FindWindow  id";
+			LOG(INFO) + lIndex;
+#endif
+			::EnumChildWindows(hCurrentWindow,(WNDENUMPROC)NetworkWndProc,0);
+			LOG(INFO) + "CEBrowserEngine::NetworkWindowThread Ended (0)";
+			return 0;	
+		}
+		
+	}
+
+	LOG(INFO) + "CEBrowserEngine::NetworkWindowThread Ended";
+			
+	return 0;
+}
 #endif //!defined( OS_WINCE )
