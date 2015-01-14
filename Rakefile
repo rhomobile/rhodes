@@ -2297,15 +2297,19 @@ def get_ssl_cert_bundle_store(rhodes_home, proxy)
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
 
-    http.start do |http|
-      resp = http.get(url.path)
-      if resp.code == "200"
-        open(crt_file, "wb") do |file|
-          file.write(resp.body)
+    begin
+      http.start do |http|
+        resp = http.get(url.path)
+        if resp.code == "200"
+          open(crt_file, "wb") do |file|
+            file.write(resp.body)
+          end
+        else
+          abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
         end
-      else
-        abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
       end
+    rescue
+      abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
     end
   end
 
