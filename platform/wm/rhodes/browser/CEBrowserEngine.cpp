@@ -345,7 +345,7 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 						
 				CloseHandle(pEng->m_hNavigated);
 				pEng->m_hNavigated = NULL;
-				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, 
+				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
                 (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
 
 				break; 
