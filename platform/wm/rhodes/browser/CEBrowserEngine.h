@@ -41,6 +41,8 @@ private:
     static DWORD WINAPI RegisterWndProcThread(LPVOID lpParameter);
     static DWORD WINAPI NavigationTimeoutThread( LPVOID lpParameter );
     static DWORD WINAPI DocumentTimeoutThread( LPVOID lpParameter );
+	// EMBPD00158491
+	static DWORD WINAPI NetworkWindowThread( LPVOID lpParameter );
 
 private:
     HRESULT ParseTags();
@@ -137,6 +139,7 @@ private:
     BOOL              m_bLoadingComplete;
     BOOL              m_bNavigationError;
 	bool              m_bInitialised;
+	bool			  m_bNavigationComplete;
 
 
 
