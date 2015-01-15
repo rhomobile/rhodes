@@ -2463,7 +2463,7 @@ namespace "config" do
       #extpaths << $config["env"]["paths"]["extensions"]
       env_path_exts = $config["env"]["paths"]["extensions"]
       if env_path_exts.is_a? String
-        extpaths << p
+        extpaths << env_path_exts
       elsif env_path_exts.is_a? Array
         env_path_exts.each do |p|
           extpaths << p
