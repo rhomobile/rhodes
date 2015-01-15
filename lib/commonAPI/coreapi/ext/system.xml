@@ -150,7 +150,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="hasCalendar" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if calendar support is available.</DESC>
             </PROPERTY>
-            <PROPERTY name="isMotorolaDevice" type="BOOLEAN" readOnly="true">
+            <PROPERTY name="isSymbolDevice" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if the device supports Motorola device capabilities. APIs will indicate if the property or method is available on MSI devices only. You can use this property to help your application decide when to take advantage of advanced MSI capabilities.</DESC>
             </PROPERTY>
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
