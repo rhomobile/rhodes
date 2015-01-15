@@ -42,6 +42,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_extmanager_RhoExtManagerImpl_n
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_extmanager_RhoExtManagerImpl_nativeJSCallEntryPoint
   (JNIEnv * env, jclass, jstring jQuery)
 {
+    initjnienv(env);
     std::string strQuery = rho_cast<std::string>(env, jQuery);
     std::string strRes = rho::apiGenerator::js_entry_point(strQuery.c_str());
     jhstring jhRes = rho_cast<jstring>(env, strRes);
