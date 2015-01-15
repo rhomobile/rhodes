@@ -3175,10 +3175,12 @@ def init_extensions(dest, mode = "")
               ext_xmls_paths <<  xml_path
               if mode != "get_ext_xml_paths"
                 #api generator
-                if gen_checker.check(xml_path)
-                  puts 'start running rhogen with api key'
-                  if !$skip_build_extensions
-                    Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                if File.exist? xml_path
+                  if gen_checker.check(xml_path)
+                    puts 'start running rhogen with api key'
+                    if !$skip_build_extensions
+                      Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                    end
                   end
                 end
               end
