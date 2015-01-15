@@ -2442,33 +2442,18 @@ namespace "config" do
     $skip_build_xmls = false
     extpaths = []
 
+    add_ext_path = lambda {|p| extpaths << File.absolute_path(p, $app_path)}
+
+    add_ext_paths = Proc.new do |paths|
+      add_ext_path.call(paths) if paths.is_a? String
+      paths.each {|p| add_ext_path.call(p)} if paths.is_a? Array
+    end
+
     if $app_config["paths"] and $app_config["paths"]["extensions"]
-      if $app_config["paths"]["extensions"].is_a? String
-        p = $app_config["paths"]["extensions"]
-        unless Pathname.new(p).absolute?
-          p = File.expand_path(File.join($app_path,p))
-        end
-        extpaths << p
-      elsif $app_config["paths"]["extensions"].is_a? Array
-        $app_config["paths"]["extensions"].each do |p|
-          unless Pathname.new(p).absolute?
-            p = File.expand_path(File.join($app_path,p))
-          end
-          extpaths << p
-        end
-        #extpaths += $app_config["paths"]["extensions"]
-      end
+      add_ext_paths.call($app_config["paths"]["extensions"])
     end
     if $config["env"]["paths"]["extensions"]
-      #extpaths << $config["env"]["paths"]["extensions"]
-      env_path_exts = $config["env"]["paths"]["extensions"]
-      if env_path_exts.is_a? String
-        extpaths << env_path_exts
-      elsif env_path_exts.is_a? Array
-        env_path_exts.each do |p|
-          extpaths << p
-        end
-      end
+      add_ext_paths.call($config["env"]["paths"]["extensions"])
     end
     extpaths << File.join($app_path, "extensions")
     extpaths << File.join($startdir, "lib","commonAPI")
