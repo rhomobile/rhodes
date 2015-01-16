@@ -1167,7 +1167,6 @@ BOOL CEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
 DWORD WINAPI CEBrowserEngine::NetworkWindowThread( LPVOID lpParameter )
 {
 
-	LOG(INFO) + "CEBrowserEngine::NetworkWindowThread Started";
 	CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
 
 	TCHAR szWindowText[MAX_PATH];
@@ -1177,38 +1176,21 @@ DWORD WINAPI CEBrowserEngine::NetworkWindowThread( LPVOID lpParameter )
 	ZeroMemory(szWindowText,MAX_PATH);
 	ZeroMemory(szWindowClass,MAX_PATH);
 
-
-	LOG(INFO) + "CEBrowserEngine::NetworkWindowThread";
-	LOG(INFO) + pEng->m_bNavigationComplete;
-	
 	while(!pEng->m_bNavigationComplete)
 	{
 		HWND hCurrentWindow=FindWindow(TEXT("Dialog"),TEXT("Enter Network Password"));
 		if(hCurrentWindow != NULL)
 		{
-
-#ifdef _DEBUG
 			GetWindowText(hCurrentWindow,szWindowText,MAX_PATH);
-			LOG(INFO) + "CEBrowserEngine::NetworkWindowThread FindWindow  Title";
-			LOG(INFO) + szWindowText;
 			ZeroMemory(szWindowClass,MAX_PATH);
 			GetClassName(hCurrentWindow,szWindowClass,MAX_PATH);
-			LOG(INFO) + "CEBrowserEngine::NetworkWindowThread FindWindow  class";
-			LOG(INFO) + szWindowClass;
 			LONG lIndex = GetWindowLong(hCurrentWindow,GWL_ID);
-			LOG(INFO) + "CEBrowserEngine::NetworkWindowThread FindWindow  id";
-			LOG(INFO) + lIndex;
-#endif
+			
 			::EnumChildWindows(hCurrentWindow,(WNDENUMPROC)NetworkWndProc,0);
-			LOG(INFO) + "CEBrowserEngine::NetworkWindowThread Ended (0)";
 			pEng->m_bNavigationComplete = TRUE;
 			return 0;	
 		}
-		
 	}
-
-	LOG(INFO) + "CEBrowserEngine::NetworkWindowThread Ended";
-	pEng->m_bNavigationComplete = TRUE;
 	return 0;
 }
 
@@ -1216,9 +1198,6 @@ DWORD WINAPI CEBrowserEngine::NetworkWindowThread( LPVOID lpParameter )
 // SIP not appearing on authentication window on IE engine has been fixed
 LRESULT CALLBACK NetworkWndProc(HWND hWnd,LPARAM lParam)
 {
-#ifdef _DEBUG
-	LOG(INFO) + "NetworkWndProc" ;
-#endif
 	if(hWnd)
 	{
 
@@ -1230,18 +1209,7 @@ LRESULT CALLBACK NetworkWndProc(HWND hWnd,LPARAM lParam)
 
 		GetWindowText(hWnd,szChildWndText,MAX_PATH);
 		GetClassName(hWnd,szChildWndClass,MAX_PATH);
-#ifdef _DEBUG
-		LOG(INFO) + "NetworkWndProc Window text";
-		LOG(INFO) + szChildWndText;
-
-		LOG(INFO) + "NetworkWndProc Window class";
-		LOG(INFO) + szChildWndClass;
-
-
-		LOG(INFO) + "NetworkWndProc Window class";
-		LONG lIndex = GetWindowLong(hWnd,GWL_ID);
-		LOG(INFO) + lIndex;
-#endif
+		
 		if(_tcsicmp(szChildWndClass,TEXT("Edit")) ==0)
 		{
 			g_wpEditWndProc= (WNDPROC)SetWindowLong(hWnd,GWL_WNDPROC,(LONG)EditWndProc);
@@ -1249,11 +1217,6 @@ LRESULT CALLBACK NetworkWndProc(HWND hWnd,LPARAM lParam)
 			{
 				LOG(ERROR) + "[NetworkWndProc] Setwindowlong returns null";
 				LOG(ERROR) + GetLastError();
-			}
-			else
-			{
-				LOG(INFO) + "[NetworkWndProc] Setwindowlong returns";
-				LOG(INFO) + GetLastError();
 			}
 		}
 		return TRUE;
@@ -1272,24 +1235,15 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			{
 			case WM_SETFOCUS:
 				{
-#ifdef _DEBUG
-					LOG(INFO) + "[EditWndProc] Setting Focus to edit box";
-#endif
 					ShowSIPWnd(TRUE);
 				}
 				break;
 			case WM_KILLFOCUS:
 				{
 					ShowSIPWnd(FALSE);
-#ifdef _DEBUG
-					LOG(INFO) + "[EditWndProc] Losing Focus to edit box";
-#endif
 				}
 				break;
 			}
-#ifdef _DEBUG			
-			LOG(INFO) + ((g_wpEditWndProc!=NULL)?TEXT("Valid wnd proc handle"):TEXT("Invalid window proc handle"));
-#endif
 			return CallWindowProc(g_wpEditWndProc, hwnd, message, wParam, lParam); 
 }
 #endif //!defined( OS_WINCE )
