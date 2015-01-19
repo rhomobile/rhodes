@@ -46,7 +46,7 @@ BEGIN
             VALUE "FileDescription", "RhoElements Application"
             VALUE "FileVersion", "2, 0, 0, 5"
             VALUE "InternalName", "RhoElements"
-            VALUE "LegalCopyright", "Motorola Solutions Inc., Copyright (C) 2012"
+            VALUE "LegalCopyright", "Symbol Technologies, Inc., Copyright (C) 2012"
             VALUE "OriginalFilename", "RhoElements.exe"
             VALUE "ProductName", "RhoElements"
             VALUE "ProductVersion", "2, 0, 0, 5"
