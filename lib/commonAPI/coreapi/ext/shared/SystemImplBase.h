@@ -15,7 +15,6 @@ public:
     virtual void getPhoneNumber(CMethodResult& oResult);
     virtual void getDevicePushId(CMethodResult& oResult);
     virtual void getOsVersion(CMethodResult& oResult);
-    virtual void getIsMotorolaDevice(CMethodResult& oResult);
     virtual void getLocalServerPort(CMethodResult& oResult);
     virtual void setLocalServerPort( int value, CMethodResult& oResult);
     virtual void getFreeServerPort(rho::apiGenerator::CMethodResult& oResult);
@@ -25,6 +24,7 @@ public:
     virtual void getRealScreenHeight(CMethodResult& oResult);
     virtual void getDeviceOwnerEmail(CMethodResult& oResult);
     virtual void getDeviceOwnerName(CMethodResult& oResult);
+	virtual void getIsMotorolaDevice(CMethodResult& oResult);
     virtual void getApplicationIconBadge(CMethodResult& oResult);
     virtual void setApplicationIconBadge( int value, CMethodResult& oResult);
     virtual void getIsRhoSimulator(rho::apiGenerator::CMethodResult& oResult);
