@@ -1790,9 +1790,9 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 			return TRUE;
 		}
 
-		if (m_bFullScreen && pMsg->message == WM_KEYUP && 
+		/*if (m_bFullScreen && pMsg->message == WM_KEYUP && 
 			(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
-			RhoSetFullScreen(false);
+			RhoSetFullScreen(false);*/
 	}
 
     // Accelerators are only keyboard or mouse messages
