@@ -254,25 +254,25 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="hasNetwork">
                 <DESC>Returns true if the device is connected to a network. Not supported on Windows CE.</DESC>
-                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasWifiNetwork">
                 <DESC>Returns true if the device is connected to a WiFi network. Not supported on Windows CE.</DESC>
-                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasCellNetwork">
                 <DESC>Returns true if the device is connected to a cell network. Not supported on Windows CE.</DESC>
-                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="startStatusNotify" hasCallback="mandatory" runInThread="none">
-                <DESC>Start network status notifications. Notifications are sent when WiFi or Cell network appear/disappear. To check real Internet connectivity use detectConnection method. Not supported on Windows CE.</DESC>
+                <DESC>Start network status notifications. Notifications are sent when WiFi or Cell network appear / disappear. To check real Internet connectivity use detectConnection method. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <PARAMS>
