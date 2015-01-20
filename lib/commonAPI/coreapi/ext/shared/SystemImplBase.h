@@ -24,7 +24,7 @@ public:
     virtual void getRealScreenHeight(CMethodResult& oResult);
     virtual void getDeviceOwnerEmail(CMethodResult& oResult);
     virtual void getDeviceOwnerName(CMethodResult& oResult);
-	virtual void getIsMotorolaDevice(CMethodResult& oResult);
+	virtual void getIsSymbolDevice(CMethodResult& oResult);
     virtual void getApplicationIconBadge(CMethodResult& oResult);
     virtual void setApplicationIconBadge( int value, CMethodResult& oResult);
     virtual void getIsRhoSimulator(rho::apiGenerator::CMethodResult& oResult);
