@@ -142,13 +142,6 @@ VALUE rho_sys_get_property(char* szPropName)
         return rho_ruby_create_boolean(passed);
     }
 
-	if (strcasecmp("is_motorola_device",szPropName) == 0)
-#ifdef APP_BUILD_CAPABILITY_MOTOROLA
-        return rho_ruby_create_boolean(1);
-#else
-        return rho_ruby_create_boolean(0);
-#endif
-
 	if (strcasecmp("has_cell_network",szPropName) == 0) 
         return rho_sys_has_network();
 
