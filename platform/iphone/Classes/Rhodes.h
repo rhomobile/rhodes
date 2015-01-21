@@ -138,5 +138,6 @@
 - (EKEventStore*) getEventStore;
 #endif
 
+- (void)registerForRemoteNotification;
 
 @end

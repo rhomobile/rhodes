@@ -114,16 +114,18 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../api_generator/MethodResult.h\
 ../../api_generator/js_helpers.h\
 ../../api_generator/StringifyHelper.h\
+../../unzip/gunzip.h\
 ../../unzip/crc32.h\
 ../../unzip/deflate.h\
-../../unzip/gunzip.h\
-../../unzip/gzguts.h\
 ../../unzip/inffast.h\
 ../../unzip/inffixed.h\
 ../../unzip/inflate.h\
+../../unzip/gzguts.h\
 ../../unzip/inftrees.h\
 ../../unzip/trees.h\
+../../unzip/unzip.h\
 ../../unzip/zconf.h\
+../../unzip/zip.h\
 ../../unzip/zlib.h\
 ../../unzip/zutil.h
 
@@ -160,7 +162,6 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/map/GoogleMapEngine.cpp\
 ../../common/map/MapEngine.cpp\
 ../../common/BundleManager.cpp\
-../../unzip/zip.cpp\
 ../../common/push/RhoPushManager.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\
@@ -178,4 +179,6 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../unzip/inflate.cpp\
 ../../unzip/inftrees.cpp\
 ../../unzip/trees.cpp\
+../../unzip/unzip.cpp\
+../../unzip/zip.cpp\
 ../../unzip/zutil.cpp

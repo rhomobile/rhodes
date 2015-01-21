@@ -263,7 +263,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     @Override
     public boolean onWebViewCreated(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
-        Logger.E(TAG, "Set config initially: " + (mConfig != null));
+        Logger.I(TAG, "Set config initially: " + (mConfig != null));
         ext.setConfig(mConfig);
         return res;
     }
@@ -285,6 +285,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     @Override
     public boolean onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        Logger.I(TAG, "onBeforeNavigate ------------------------------------------------------------");
         return res;
     }
 
@@ -300,6 +301,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     @Override
     public boolean onNavigateComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        Logger.I(TAG, "onNavigateComplete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         return res;
     }
 
@@ -354,7 +356,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     }
 
     @Override
-    public boolean onAuthRequired(IRhoExtManager extManager, String type, String url, String realm, IRhoWebView ext, boolean res) {
+    public boolean onAuthRequest(IRhoExtManager extManager, IAuthRequest request, IRhoWebView ext, boolean res) {
         return res;
     }
 

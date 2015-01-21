@@ -11,7 +11,7 @@ public class WebSettingsProviderEclair extends WebSettingsProviderBase implement
         super.fillSettings(settings, config);
         settings.setDatabaseEnabled(true);
 
-        String databasePath = ContextFactory.getContext().getDir("database", Context.MODE_PRIVATE).getPath();
+        String databasePath = ContextFactory.getAppContext().getDir("database", Context.MODE_PRIVATE).getPath();
         settings.setDatabasePath(databasePath);
     }
 }

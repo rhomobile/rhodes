@@ -10,7 +10,7 @@ public class WebSettingsProviderEclairMR1 extends WebSettingsProviderEclair impl
     public void fillSettings(WebSettings settings, IRhoConfig config) {
         super.fillSettings(settings, config);
         settings.setAppCacheMaxSize(5 * 1048576);
-        String pathToCache = ContextFactory.getContext().getDir("database", Context.MODE_PRIVATE).getPath();
+        String pathToCache = ContextFactory.getAppContext().getDir("database", Context.MODE_PRIVATE).getPath();
         settings.setAppCachePath(pathToCache);
         settings.setAppCacheEnabled(true);
 

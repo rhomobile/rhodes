@@ -1017,7 +1017,6 @@ void CReplaceBundleThread::doReplaceBundle()
 #endif
     }
     
-    
     LOG(INFO) + "STOP";
     oFT.commit();
 

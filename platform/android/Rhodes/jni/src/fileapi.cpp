@@ -30,8 +30,11 @@
 #include <dirent.h>
 #include <dlfcn.h>
 #include <android/log.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 #include <cstring>
+#include <algorithm>
 
 #if __cplusplus == 201103L
 #include <unordered_map>
@@ -61,6 +64,11 @@
 #else // OS_ANDROID
 #define RHO_LOG(...)
 #endif // OS_ANDROID
+
+#define RHO_ERROR_LOG(fmt, ...) \
+  __android_log_print(ANDROID_LOG_ERROR, "RHO_LOG", "%s:%d: thread %08lx: " fmt, __FILE__, __LINE__, \
+      (unsigned long)pthread_self(), ##__VA_ARGS__)
+
 
 #define RHO_TRACE_POINT RHO_LOG("trace point")
 
@@ -130,6 +138,9 @@ static jmethodID midSeek;
 static jmethodID midGetChildren;
 static jmethodID midReloadStatTable;
 static jmethodID midForceAllFiles;
+
+static jobject jAssetManager;
+static AAssetManager* pAssetManager = 0;
 
 typedef FILE *(*func_sfp_t)();
 typedef int (*func_sflags_t)(const char *mode, int *optr);
@@ -273,6 +284,19 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTabl
     //}
 }
 
+void updateStatTable(const std::string& path, rho_fileapi_type_t type, size_t size, unsigned long time)
+{
+    RHO_LOG("Update stat table: %s, %d, %u, %u", path.c_str(), (int)type, (unsigned long)size, (unsigned long)time);
+
+    rho_stat_t st;
+    st.type = type;
+    st.size = size;
+    st.ino = rho_ino--;
+    st.mtime = time;
+
+    rho_stat_map.insert(std::make_pair(path, st));
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitPath
   (JNIEnv *env, jclass, jstring root_path, jstring sqlite_journals_path, jstring apk_path, jstring shared_path)
 {
@@ -286,6 +310,217 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitLogP
     android_set_log_path(rho_cast<std::string>(env, path));
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitAssetManager
+  (JNIEnv *env, jclass, jobject jLocalAssetMgr)
+{
+    jAssetManager = env->NewGlobalRef(jLocalAssetMgr);
+    pAssetManager = AAssetManager_fromJava(env, jAssetManager);
+
+}
+
+static std::string make_full_path(const char *path);
+static std::string make_full_path(std::string const &path);
+
+void copyFileFromAsset(const std::string& relPath)
+{
+    RHO_LOG("Copy asset: %s", relPath.c_str());
+    std::string fullPath = make_full_path(relPath);
+
+    AAsset* asset = AAssetManager_open(pAssetManager, relPath.c_str(), AASSET_MODE_STREAMING);
+    if(asset == 0)
+    {
+        //TODO: error
+        RHO_ERROR_LOG("Cannot open asset: %s", relPath.c_str());
+        return;
+    }
+
+
+    FILE* dst;
+    if (!(dst = fopen(fullPath.c_str(), "wbc")))
+    {
+        RHO_ERROR_LOG("Cannot open file: %s", fullPath.c_str());
+        return;
+    }
+
+    unsigned int toCopy = AAsset_getLength(asset);
+    unsigned int bufSize = 1 << 16;
+
+    if(bufSize > toCopy) bufSize = toCopy;
+
+    unsigned char* buf = new unsigned char[bufSize];
+
+    while (toCopy > 0) {
+        unsigned int portionSize = bufSize;
+        if (toCopy < portionSize) {
+            portionSize = toCopy;
+        }
+        portionSize = AAsset_read(asset, buf, portionSize);
+        fwrite(buf, 1, portionSize, dst);
+
+        toCopy -= portionSize;
+    }
+
+    AAsset_close(asset);
+
+    fflush(dst);
+    fclose(dst);
+
+    delete[] buf;
+
+    RHO_LOG("File has written: %s", fullPath.c_str());
+}
+
+void processStatTable(const char* statTablePath, RhoFsSetupMode setupMode, bool switchEmulationOn)
+{
+    struct stat st;
+    memset(&st,0, sizeof(st));
+    const char* buffer = 0;
+    off_t size = 0;
+    AAsset* asset = 0;
+    if (stat(statTablePath, &st) == 0)
+    {
+        std::string fullStatTablePath = make_full_path(statTablePath);
+        RHO_LOG("Opening stat table from file system: %s", fullStatTablePath.c_str());
+        FILE* file = fopen(fullStatTablePath.c_str(), "rb");
+        size = st.st_size;
+        buffer = new char[size];
+        size_t readSize = fread(const_cast<void*>(static_cast<const void*>(buffer)), 1, size, file);
+        if(readSize < size)
+        {
+            RHO_ERROR_LOG("Cannot read stat table: %s", fullStatTablePath.c_str());
+            fclose(file);
+            return;
+        }
+        fclose(file);
+    }
+    else
+    {
+        RHO_LOG("Opening stat table from package: %s", statTablePath);
+        asset = AAssetManager_open(pAssetManager, statTablePath, AASSET_MODE_BUFFER);
+        if(asset == 0)
+        {
+            RHO_ERROR_LOG("Cannot open stat table: %s", statTablePath);
+            return;
+        }
+        size = AAsset_getLength(asset);
+        buffer = static_cast<const char*>(AAsset_getBuffer(asset));
+        if(buffer == 0)
+        {
+            RHO_ERROR_LOG("Cannot read stat table: %s", statTablePath);
+            AAsset_close(asset);
+            return;
+        }
+    }
+
+    std::string strPath;
+    std::string strType;
+    std::string strSize;
+    std::string strTime;
+
+    const char* pos;
+    for(const char* ptr = buffer; ptr-buffer < size; ++ptr)
+    {
+        for (pos = ptr; *ptr != '|'; ++ptr);
+        strPath.assign(pos, ptr-pos);
+
+        for (pos = ++ptr; *ptr != '|'; ++ptr);
+        strType.assign(pos, ptr-pos);
+
+        for (pos = ++ptr; *ptr != '|'; ++ptr);
+        strSize.assign(pos, ptr-pos);
+
+        for (pos = ++ptr; *ptr != '\n'; ++ptr);
+        strTime.assign(pos, ptr-pos);
+
+        int type;
+        unsigned long filesize;
+        unsigned long mtime;
+
+        if(strType.compare("file") == 0)
+        {
+            type = rho_type_file;
+            if(setupMode == RHO_FS_SETUP_FORCE_FILES)
+            {
+                copyFileFromAsset(strPath);
+            }
+        }
+        else if(strType.compare("dir") == 0)
+        {
+            type = rho_type_dir;
+            if(setupMode == RHO_FS_SETUP_FORCE_DIRECTORIES || setupMode == RHO_FS_SETUP_FORCE_FILES)
+            {
+                mkdir(strPath.c_str(), S_IRWXU);
+            }
+        }
+        else
+        {
+            RHO_ERROR_LOG("Wrong file type at stat table: %s; %s", strType.c_str(), strPath.c_str());
+            return;
+        }
+
+        sscanf(strSize.c_str(), "%u", &filesize);
+        sscanf(strTime.c_str(), "%u", &mtime);
+
+        updateStatTable(strPath, static_cast<rho_fileapi_type_t>(type), filesize, mtime);
+
+    }
+
+    if(asset != 0)
+    {
+        AAsset_close(asset);
+    }
+    else
+    {
+        delete [] buffer;
+    }
+
+    if(switchEmulationOn)
+    {
+        rho_file_set_fs_mode(RHO_FS_TRANSPARRENT);
+    }
+}
+
+RHO_GLOBAL void rho_file_android_process_stat_table(int setupMode)
+{
+    processStatTable("rho.dat", static_cast<RhoFsSetupMode>(setupMode), false);
+}
+
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_processStatTable
+  (JNIEnv *env, jclass, jboolean jEmulate, jboolean jForceReset)
+{
+    processStatTable("rho.dat", static_cast<bool>(jForceReset)?RHO_FS_SETUP_FORCE_FILES:RHO_FS_SETUP_NONE, static_cast<bool>(jEmulate));
+}
+
+void forceStatMapElement(const rho_stat_map_t::value_type& element)
+{
+    static bool pendingError = false;
+    if(pendingError) return;
+
+    const std::string& path = element.first;
+    const rho_stat_t& st = element.second;
+
+    switch(st.type)
+    {
+    case rho_type_file:
+        copyFileFromAsset(path);
+        break;
+    case rho_type_dir:
+        RHO_LOG("Create folder: %s", make_full_path(path).c_str());
+        mkdir(make_full_path(path).c_str(), S_IRWXU);
+        break;
+    default:
+//        {
+//            pendingError = true;
+//            jclass clsRE = getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION);
+//            if (!clsRE) return;
+//            env->ThrowNew(clsRE, "Unknown type of file");
+//        }
+        RHO_ERROR_LOG("Wrong file type: %s", path.c_str());
+        return;
+    }
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
   (JNIEnv *env, jclass)
 {
@@ -294,7 +529,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     midCopy = getJNIClassStaticMethod(env, clsFileApi, "copy", "(Ljava/lang/String;)Z");
     if (!midCopy) return;
     midOpen = getJNIClassStaticMethod(env, clsFileApi, "openInPackage", "(Ljava/lang/String;)Ljava/io/InputStream;");
-    //midOpen = getJNIClassStaticMethod(env, clsFileApi, "open", "(Ljava/lang/String;)Ljava/io/InputStream;");
     if (!midOpen) return;
     midForceAllFiles = getJNIClassStaticMethod(env, clsFileApi, "doForceAllFiles", "()V");
     if (!midForceAllFiles) return;

@@ -7,12 +7,14 @@ build: debug
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator8.0
+  sdk: iphonesimulator8.1
   provisionprofile:
   codesignidentity: iPhone Developer
   entitlements: ""
   BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
   BundleURLScheme: <%=@app_name_cleared%>
+  production:
+    ipa_itunesartwork_image: "./production/iTunesArtwork.png"  
 wp8:
   productid: '<%=@productid%>'
 android:
@@ -24,5 +26,9 @@ android:
 wm:
   #sdk: "MC3000c50b (ARMV4I)"
   #sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+
+win32:
+  deployqt: 1
+  deploymsvc: 1
 
 extensions: [<%=@rhoconnectclient_ext%>]

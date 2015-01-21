@@ -67,6 +67,7 @@ public:
     virtual void getDeviceOwnerEmail(rho::apiGenerator::CMethodResult& result);
     virtual void getOsVersion(rho::apiGenerator::CMethodResult& result);
     virtual void getIsMotorolaDevice(rho::apiGenerator::CMethodResult& result);
+    virtual void hideSplashScreen(rho::apiGenerator::CMethodResult& oResult);
 
 };
 //----------------------------------------------------------------------------------------------------------------------
@@ -335,6 +336,17 @@ void CSystemImpl::getIsMotorolaDevice(rho::apiGenerator::CMethodResult& result)
     rho_sysimpl_get_property("is_motorola_device", result);
 }
 //----------------------------------------------------------------------------------------------------------------------
+void CSystemImpl::hideSplashScreen(rho::apiGenerator::CMethodResult& result)
+{
+    JNIEnv *env = jnienv();
+    jclass clsRhodesService = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    jmethodID mid = getJNIClassStaticMethod(env, clsRhodesService, "removeSplashScreen", "()V");
+    JNI_EXCEPTION_CHECK(env, result);
+
+    env->CallStaticVoidMethod(clsRhodesService, mid);
+
+    JNI_EXCEPTION_CHECK(env, result);
+}
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 

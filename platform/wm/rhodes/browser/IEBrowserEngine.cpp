@@ -346,6 +346,12 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
 
     switch (uMsg) 
     {
+    case PB_WINDOW_RESTORE:
+	{
+	    short m_PB_WINRESTORED = 6;
+            RHODESAPP().getExtManager().OnWindowChanged((LPVOID) m_PB_WINRESTORED);
+	}
+	break;    
     case PB_ONMETA:
         {
             EngineMETATag* metaTag2 = (EngineMETATag*)lParam;

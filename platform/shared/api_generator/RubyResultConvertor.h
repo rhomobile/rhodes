@@ -275,7 +275,8 @@ bool valueTo<rho::String>(VALUE value, rho::String& dest)
     dest.clear();
     const char *cptr = 0;
     int len = 0;
-    if (rho_ruby_to_str(value, &cptr, &len)){
+    
+    if (rho_ruby_to_str_ex(value, &cptr, &len)){
         if (cptr!=0 && len != 0) {
             size_t str_len = static_cast<size_t>(len);
             dest.assign(cptr, str_len);
@@ -289,6 +290,8 @@ bool valueTo<rho::String>(VALUE value, rho::String& dest)
 template <typename ArrayVal>
 bool rho_value_to_typed_array(VALUE value, rho::Vector<ArrayVal>& dest, rho::String& error)
 {
+    dest.clear();
+
     if (isNil(value))
         return false;
 
@@ -298,7 +301,6 @@ bool rho_value_to_typed_array(VALUE value, rho::Vector<ArrayVal>& dest, rho::Str
     bool result = true;
     int len = rho_ruby_array_get_size(value);
 
-    dest.clear();
     dest.reserve(len);
 
     ArrayVal elem;
@@ -314,6 +316,8 @@ bool rho_value_to_typed_array(VALUE value, rho::Vector<ArrayVal>& dest, rho::Str
 template <typename KeyType,typename ValueType>
 bool rho_value_to_typed_hash(VALUE value, rho::Hashtable<KeyType, ValueType>& dest, rho::String& error)
 {
+    dest.clear();
+
     if (isNil(value))
         return false;
 
@@ -342,7 +346,6 @@ bool rho_value_to_typed_hash(VALUE value, rho::Hashtable<KeyType, ValueType>& de
 template <typename InnnerArrayValue>
 bool rho_value_to_typed_array_array( VALUE value, rho::Vector< rho::Vector<InnnerArrayValue> >& dest, rho::String& error)
 {
-
     dest.clear();
 
     if (isNil(value))
@@ -371,7 +374,6 @@ bool rho_value_to_typed_array_array( VALUE value, rho::Vector< rho::Vector<Innne
 template <typename InnnerHashKey, typename InnnerHashValue>
 bool rho_value_to_typed_array_hash( VALUE value, rho::Vector< rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& error)
 {
-
     dest.clear();
 
     if (isNil(value))
@@ -399,6 +401,8 @@ bool rho_value_to_typed_array_hash( VALUE value, rho::Vector< rho::Hashtable<Inn
 template <typename HashKey, typename InnnerArrayValue>
 bool rho_value_to_typed_hash_array( VALUE value, rho::Hashtable< HashKey, rho::Vector<InnnerArrayValue> >& dest, rho::String& error)
 {
+    dest.clear();
+
     if (isNil(value))
         return false;
 
@@ -418,7 +422,7 @@ bool rho_value_to_typed_hash_array( VALUE value, rho::Hashtable< HashKey, rho::V
         akey = rho_ruby_array_get(keys,  i);
         VALUE val = rho_ruby_hash_get(value, akey);
 
-        result = (valueTo(akey, _key) && rho_value_to_typed_array(val, dest[_key]), error) && result;
+        result = (valueTo(akey, _key) && rho_value_to_typed_array(val, dest[_key], error)) && result;
     }
 
     return  result;
@@ -427,6 +431,8 @@ bool rho_value_to_typed_hash_array( VALUE value, rho::Hashtable< HashKey, rho::V
 template <typename HashKey, typename InnnerHashKey, typename InnnerHashValue>
 bool rho_value_to_typed_hash_hash( VALUE value, rho::Hashtable< HashKey, rho::Hashtable<InnnerHashKey, InnnerHashValue> >& dest, rho::String& error)
 {
+    dest.clear();
+
     if (isNil(value))
         return false;
 
@@ -445,7 +451,7 @@ bool rho_value_to_typed_hash_hash( VALUE value, rho::Hashtable< HashKey, rho::Ha
     {
         akey = rho_ruby_array_get(keys,  i);
         VALUE val = rho_ruby_hash_get(value, akey);
-        result = (valueTo(akey, _key) && rho_value_to_typed_hash(val, dest[_key])) && result;
+        result = (valueTo(akey, _key) && rho_value_to_typed_hash(val, dest[_key], error)) && result;
     }
 
     return  result;

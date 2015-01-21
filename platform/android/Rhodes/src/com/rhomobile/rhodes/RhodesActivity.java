@@ -438,9 +438,13 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         View splashView = splashScreen.getSplashView();
         if (splashView != null) {
             ViewGroup parent = (ViewGroup)splashView.getParent();
-            parent.removeView(splashScreen.getSplashView());
+            if (parent != null) {
+                parent.removeView(splashView);
+            }
         }
-        mMainView = splashScreen.getBackendView();
+        if ((mMainView instanceof SplashScreen) && (mMainView == splashScreen)) {
+        	mMainView = splashScreen.getBackendView();
+        }
     }
 
     @Override

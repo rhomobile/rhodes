@@ -52,6 +52,7 @@ namespace 'device' do
   module AndroidPrebuild
 
     def self.determine_prebuild_path(config)
+      RhoPackages.request 'rhodes-containers'
       require 'rhodes/containers'
       Rhodes::Containers::get_container_path_prefix('android', config)
     end
@@ -321,7 +322,7 @@ namespace 'device' do
       Dir.glob(File.join(bundle_path, "**/*")).each do |f|
         next unless File.basename(f) =~ /^_/
         relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
-        undersrores << relpath
+        underscores << relpath
       end
 
       return underscores

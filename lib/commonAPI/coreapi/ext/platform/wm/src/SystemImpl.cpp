@@ -12,8 +12,9 @@
 #include "Intents.h"
 
 #if defined( OS_WINCE )
-#include "cfgmgrapi.h"
-#include "getdeviceuniqueid.h"
+#include "camera/Camera.h"
+#include "stubs/cfgmgrapi.h"
+#include "stubs/getdeviceuniqueid.h"
 
 typedef HRESULT (WINAPI* LPFN_GETDEVICE_UNIQID_T)  (LPBYTE, DWORD, DWORD, LPBYTE, DWORD*);
 typedef HRESULT (WINAPI* LPFN_DMPROCESS_CONFIGXML_T)  (LPCWSTR, DWORD, LPWSTR*);
@@ -986,10 +987,11 @@ void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
 
 void CSystemImpl::getHasCamera(CMethodResult& oResult)
 {
-	if(winversion != 1)
-		oResult.set(false);
-	else
-		oResult.set(true);
+#if defined(_WIN32_WCE)
+    oResult.set(Camera::isInstalled());
+#else
+    oResult.set(false); 
+#endif
 }
 
 extern "C" bool rho_rhosim_window_closed();

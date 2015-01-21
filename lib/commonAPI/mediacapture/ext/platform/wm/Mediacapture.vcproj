@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Mediacapture"
 	ProjectGUID="{421EB7D1-64C3-0130-423A-00FFE028F606}"
 	RootNamespace="Mediacapture"
@@ -198,7 +198,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="1"
-				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
+				AdditionalIncludeDirectories="&quot;$(RHO_ROOT)\platform\shared\ruby\wince&quot;;&quot;$(RHO_ROOT)\platform\shared\ruby\include&quot;;&quot;$(RHO_ROOT)\platform\shared&quot;;&quot;$(RHO_ROOT)\platform\shared\common&quot;;&quot;$(RHO_ROOT)\lib\commonAPI\mediacapture\ext\platform\wm\src\Include&quot;"
 				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -501,12 +501,13 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="1"
-				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common"
+				AdditionalIncludeDirectories="&quot;$(RHO_ROOT)\platform\shared\ruby\wince&quot;;&quot;$(RHO_ROOT)\platform\shared\ruby\include&quot;;&quot;$(RHO_ROOT)\platform\shared&quot;;&quot;$(RHO_ROOT)\platform\shared\common&quot;;&quot;$(RHO_ROOT)\lib\commonAPI\mediacapture\ext\platform\wm\src\Include&quot;"
 				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				EnableFloatingPointEmulation="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -638,15 +639,79 @@
 		<Filter
 			Name="Camera"
 			>
+			<File
+				RelativePath=".\src\Camera\Camera_Impl.cpp"
+				>
+			</File>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\Camera\Camera.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\DirectShowCam.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\DShowCam.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\Imager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\PropertyBag.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\..\platform\shared\common\RhoUtil.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\TriggerMonitor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\ViewFinder.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\src\Camera\Camera.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\DirectShowCam.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\DShowCam.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\Imager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\TriggerMonitor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Camera\ViewFinder.h"
+					>
+				</File>
+			</Filter>
 			<Filter
 				Name="shared"
 				>
 				<File
 					RelativePath="..\..\camera.xml"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Camera_impl.cpp"
 					>
 				</File>
 				<Filter
@@ -694,85 +759,9 @@
 		<Filter
 			Name="Video"
 			>
-			<File
-				RelativePath="..\..\videocapture.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\src\Videocapture_impl.cpp"
-				>
-			</File>
-			<Filter
-				Name="generated"
-				>
-				<File
-					RelativePath="..\..\shared\generated\videocapture_api_init.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\shared\generated\videocapture_js_api.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\shared\generated\videocapture_ruby_api.c"
-					>
-				</File>
-				<Filter
-					Name="cpp"
-					>
-					<File
-						RelativePath="..\..\shared\generated\cpp\IVideocapture.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\generated\cpp\Videocapture_js_wrap.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\generated\cpp\Videocapture_ruby_wrap.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\generated\cpp\VideocaptureBase.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\generated\cpp\VideocaptureBase.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
 		</Filter>
 		<File
-			RelativePath=".\src\DShowCam.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\Imager.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\Imager.h"
-			>
-		</File>
-		<File
 			RelativePath="..\..\shared\MediacaptureInit.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\PropertyBag.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\PropertyBag.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\RCMLoader.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\RCMLoader.h"
 			>
 		</File>
 	</Files>

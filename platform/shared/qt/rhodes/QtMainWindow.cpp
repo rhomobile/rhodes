@@ -34,6 +34,7 @@
 #include "RhoSimulator.h"
 #include <sstream>
 #include "QtWebPage.h"
+#include "QtCustomStyle.h"
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -91,7 +92,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_LogicalDpiY(0),
     firstShow(true), m_bFirstLoad(true),
     toolBarSeparatorWidth(0),
-    m_proxy(QNetworkProxy(QNetworkProxy::DefaultProxy))
+    m_proxy(QNetworkProxy(QNetworkProxy::DefaultProxy)),
+    m_logView(0)
     //TODO: m_SyncStatusDlg
 {
 #if !defined(RHODES_EMULATOR)
@@ -105,6 +107,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     QPixmap icon(":/images/rho.png");
     QApplication::setWindowIcon(icon);
 #endif
+    QApplication::setStyle(new QtCustomStyle());
 
     ui->setupUi(this);
 
@@ -123,6 +126,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
 	this->ui->webView->setContextMenuPolicy(Qt::NoContextMenu);
 	this->ui->webView->setPage(new QtWebPage());
+    this->ui->webView->setAttribute(Qt::WA_AcceptTouchEvents, false);
     setUpWebPage(this->ui->webView->page());
     this->main_webView = this->ui->webView;
     this->main_webInspector = webInspectorWindow->webInspector();
@@ -183,6 +187,12 @@ QtMainWindow::~QtMainWindow()
     tabbarRemoveAllTabs(false);
     if (m_alertDialog) delete m_alertDialog;
     //TODO: m_SyncStatusDlg
+    LOGCONF().setLogView(NULL);
+    if (m_logView)
+    {
+        delete m_logView;
+        m_logView = 0;
+    }
     delete webInspectorWindow;
     delete ui;
 }
@@ -245,6 +255,8 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
     if (mainWindowCallback) mainWindowCallback->onWindowClose();
     tabbarRemoveAllTabs(false);
     webInspectorWindow->close();
+    if (m_logView)
+        m_logView->close();
     QMainWindow::closeEvent(ce);
 }
 
@@ -254,6 +266,10 @@ void QtMainWindow::resizeEvent(QResizeEvent *event)
     m_LogicalDpiY = this->logicalDpiY();
     if (mainWindowCallback)
         mainWindowCallback->updateSizeProperties(event->size().width(), event->size().height());
+    if (m_logView == 0) {
+        m_logView = new QtLogView();
+        LOGCONF().setLogView(m_logView);
+    }
 }
 
 void QtMainWindow::adjustWebInspector()
@@ -384,7 +400,10 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
     if (ok)
         LOG(INFO) + "Page load complete.";
     else
+    {
         LOG(ERROR) + "Page load failed.";
+        ui->webView->setHtml("<html><head><title>Error Loading Page</title></head><body><h1>Error Loading Page.</h1></body></html>");
+    }
 
     PROF_STOP("BROWSER_PAGE");
 
@@ -570,6 +589,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         wv = new QWebView();
         wv->setMaximumSize(0,0);
         wv->setParent(ui->centralWidget);
+        wv->setAttribute(Qt::WA_AcceptTouchEvents, false);
         ui->verticalLayout->addWidget(wv);
 		wv->setPage(new QtWebPage());
         setUpWebPage(wv->page());
@@ -873,12 +893,8 @@ void QtMainWindow::webviewNavigateBackCommand(int tab_index)
 
 void QtMainWindow::logCommand()
 {
-    //TODO: logCommand
-    //if ( !m_logView.IsWindow() ) {
-    //    LoadLibrary(_T("riched20.dll"));
-    //    m_logView.Create(NULL);
-    //}
-    //m_logView.ShowWindow(SW_SHOWNORMAL);
+    if (m_logView)
+        m_logView->show();
 }
 
 void QtMainWindow::refreshCommand(int tab_index)

@@ -3,7 +3,9 @@
 <API>
     <MODULE name="NewORMModel" parent="Rho" productException="eb">
         <HELP_OVERVIEW>NewORMModel CoreAPI module</HELP_OVERVIEW>
-        <MORE_HELP>New implementation of the RHOM Model.</MORE_HELP>
+        <MORE_HELP>New implementation of the RHOM Model.
+NOTE: BETA VERSION - This API has not been officially released. It should not be used in a production environment.
+</MORE_HELP>
 
         <TEMPLATES>
             <PROPERTY_BAG/>

@@ -68,6 +68,7 @@ void CLogFileSink::writeLogMessage( String& strMsg ){
         if ( ( m_nCirclePos >= 0 && m_nCirclePos + len > getLogConf().getMaxLogFileSize() ) || 
              ( m_nCirclePos < 0 && m_nFileLogSize + len > getLogConf().getMaxLogFileSize() ) )
         {
+            m_pFile->truncate(m_pFile->getPos());
             m_pFile->movePosToStart();
             m_nFileLogSize = 0;
             m_nCirclePos = 0;

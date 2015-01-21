@@ -96,6 +96,21 @@ RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
     return LOGCONF().getLogTextPos();
 }
 
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogFileText
+  (JNIEnv * env, jclass , jint linearPos, jint maxSize, jint referenceCircularPos)
+{
+    rho::String strRes;
+    LOGCONF().getLogFileText(rho_cast<int>(env, linearPos), rho_cast<int>(env, maxSize), strRes, rho_cast<int>(env, referenceCircularPos));
+
+    return rho_cast<jstring>(env, strRes);
+}
+
+RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogFileSize
+  (JNIEnv *, jclass)
+{
+    return LOGCONF().getLogFileSize();
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
   (JNIEnv *, jclass)
 {

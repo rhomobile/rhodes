@@ -433,6 +433,11 @@ void CSystemImplBase::getMain_window_closed(rho::apiGenerator::CMethodResult& oR
     //windows only
 }
 
+void CSystemImplBase::hideSplashScreen(rho::apiGenerator::CMethodResult& result)
+{
+    //Android only
+}
+
 }
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
@@ -440,8 +445,12 @@ extern "C" void rho_qt_unset_window_proxy();
 extern "C" void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password);
 #endif
 
+rho::String g_strHttpProxy;
+
+
 extern "C" void rho_sys_unset_http_proxy()
 {
+    g_strHttpProxy = "";
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
 	rho_qt_unset_window_proxy();
 #endif
@@ -583,7 +592,6 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 	}
 }
 
-rho::String g_strHttpProxy;
 extern "C" void rho_sys_set_http_proxy_url(const char* url)
 {
 	g_strHttpProxy = url;

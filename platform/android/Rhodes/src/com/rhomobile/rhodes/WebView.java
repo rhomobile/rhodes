@@ -66,6 +66,28 @@ public class WebView {
 		}
 	};
 	
+	///*** ExecuteJSTask ***
+	///
+	private static class ExecuteJSTask implements Runnable {
+		private String url;
+		private int index;
+		
+		public ExecuteJSTask(String u, int i) {
+			url = u;
+			index = i;
+		}
+
+        public void run() {
+            try {
+                MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+                mainView.executeJS(url, index);
+            } catch (Throwable ex) {
+                Logger.E(TAG, ex);
+            }
+		}
+	};	
+	
+	
 	///*** NavigateBackTask ***
 	///
 	private static class NavigateBackTask implements Runnable {
@@ -254,7 +276,8 @@ public class WebView {
 
 	public static void executeJs(String js, int index) {
 		try {
-			PerformOnUiThread.exec(new NavigateTask("javascript:" + js, index));
+			//PerformOnUiThread.exec(new NavigateTask("javascript:" + js, index));
+			PerformOnUiThread.exec(new ExecuteJSTask(js, index));
 		}
 		catch (Exception e) {
             Logger.E(TAG, e);

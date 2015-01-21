@@ -40,12 +40,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.os.ParcelFileDescriptor;
@@ -64,12 +66,14 @@ public class RhoFileApi {
 	
 	private static AssetManager am;
 	private static String root;
+    private static String sharedPath;
     private static final String DB_FILES_FOLDER = "db/db-files";
     private static final String TMP_FOLDER = "tmp";
-    
+
 	private static native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath, String sharedPath);
 	private static native void nativeInitLogPath(String path);
 	private static native void nativeInit();
+        private static native void nativeInitAssetManager(AssetManager assetMgr);
 	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
 	/**
@@ -85,6 +89,8 @@ public class RhoFileApi {
 	
     public static native void setFsModeTransparrent(boolean transparrent);
 	public static native void removeBundleUpgrade();
+
+    private static native void processStatTable(boolean emulateFileTree, boolean resetFileTree) throws IOException;
 
     private static void fillStatTable() throws IOException {
         InputStream is = null;
@@ -135,11 +141,10 @@ public class RhoFileApi {
 				is.close();
 		}
 	}
-    
     static void reloadStatTable() {
         Log.i(TAG, "reloadStatTable()");
         try {
-            fillStatTable();
+            processStatTable(true, true );
         }
         catch (Throwable e) {
             Log.e(TAG, "Exception during update Stat Table !!!");
@@ -149,7 +154,6 @@ public class RhoFileApi {
     static void patchStatTable(String path) {
         //TODO: Implement rho.dat patching from bundle filelist.txt
     }
-
 	private static void copyAssets(String assets[])
 	{
 		for(String asset: assets)
@@ -176,14 +180,16 @@ public class RhoFileApi {
 		String apkPath = sourceDir;
 		
 		if (sharedDir == null || sharedDir.length() == 0) {
-		    sharedDir = root;
+		    sharedPath = root;
+		} else {
+		    sharedPath = sharedDir;
 		}
 		
         Log.d(TAG, "App root path: " + root);
         Log.d(TAG, "Sqlite journals path: " + sqliteJournals);
         Log.d(TAG, "Shared path: " + sharedDir);
 
-        nativeInitPath(root, sqliteJournals, apkPath, sharedDir);
+        nativeInitPath(root, sqliteJournals, apkPath, sharedPath);
         return root;
     }
 
@@ -196,17 +202,51 @@ public class RhoFileApi {
     public static String getDbFilesPath() { return new File(getRootPath(), DB_FILES_FOLDER).getAbsolutePath(); }
     public static String getTempPath() { return new File(getRootPath(), TMP_FOLDER).getAbsolutePath(); }
 
-	public static void init(Context ctx) throws IOException
-	{
-		nativeInit();
-	
-		am = ctx.getAssets();
+    public static void basicSetup(Context ctx, boolean resetFileTree)
+    {
+        am = ctx.getAssets();
+        nativeInitAssetManager(am);
+        nativeInit();
 
-		fillStatTable();
-		
-	}
-	
-	
+        if (resetFileTree) {
+            Log.i(TAG, "Application hash was changed");
+            
+            File rho_dat = new File(getRootPath(), "rho.dat");
+            if (rho_dat.exists()) {
+                Log.i(TAG, "Removing rho.dat from file system");
+                rho_dat.delete();
+            }
+            
+            RhoFileApi.initialCopy(ctx, new String[] {"hash", "apps/rhoconfig.txt"});
+        }
+    }
+    
+    public static void finalSetup(Context ctx, boolean resetFileTree, boolean emulateFileTree) throws IOException
+    {
+
+        if (resetFileTree) {
+            Logger.T(TAG, "Removing bundle upgrade");
+            
+            removeBundleUpgrade();
+            copy("apps/rhoconfig.txt");
+
+            File libDir = new File(getRootPath(), "lib");
+            File testLib = new File(libDir.getPath(), "rhoframework.iseq");
+            if (libDir.isDirectory() && testLib.isFile())
+            {
+                Logger.W(TAG, "Updating from very old rhodes version, clean filesystem.");
+                Utils.deleteChildrenIgnoreFirstLevel(new File(getRootPath(), "apps"), "rhoconfig.txt");
+                Utils.deleteRecursively(libDir);
+            }
+
+            ApplicationInfo appInfo = ctx.getApplicationInfo();
+            Logger.T(TAG, "Reinitializing root path");
+            initRootPath(appInfo.dataDir, appInfo.sourceDir, sharedPath);
+        }
+
+        processStatTable(emulateFileTree, resetFileTree && !emulateFileTree);
+    }
+
 	private static void doForceAllFilesForContext(Context ctx) {
 		
 		// clear cache in WebView
@@ -310,13 +350,14 @@ public class RhoFileApi {
 		Context ctx = RhodesService.getContext();
 		doForceAllFilesForContext(ctx);
 	}
-	
+
     public static void initialCopy(Context ctx, String assets[])
     {
         am = ctx.getAssets();
         for(String asset: assets)
         {
-        	copyFileOrFolder(ctx, makeRelativePath(getRootPath() + asset));
+            //copy(makeRelativePath(getRootPath() + asset));
+		copyFileOrFolder(ctx, makeRelativePath(getRootPath() + asset));
         }
     }
 
@@ -390,15 +431,15 @@ public class RhoFileApi {
 	
 	public static InputStream open(String path)
 	{
-		Log.d(TAG, "open: " + path);
+		//Log.d(TAG, "open: " + path);
 		if (needEmulate(path)) {
 			String relPath = makeRelativePath(path);
-			Log.d(TAG, "open: (needEmulate): " + relPath);
+			//Log.d(TAG, "open: (1): " + relPath);
 			return openInPackage(relPath);
 		}
 		
 		try {
-			Log.d(TAG, "open (SimpleFile): " + path);
+			//Log.d(TAG, "open (2): " + path);
 			return new FileInputStream(path);
 		} catch (FileNotFoundException e) {
 			return null;
