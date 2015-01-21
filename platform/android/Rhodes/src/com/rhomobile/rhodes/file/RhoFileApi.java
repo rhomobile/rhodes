@@ -74,7 +74,6 @@ public class RhoFileApi {
 	private static native void nativeInitLogPath(String path);
 	private static native void nativeInit();
         private static native void nativeInitAssetManager(AssetManager assetMgr);
-	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
 	/**
 	 * Replaces '\' (back slashes) with '/' slashes. Useful for changing Windows paths to more URI friendly strings   
@@ -92,68 +91,19 @@ public class RhoFileApi {
 
     private static native void processStatTable(boolean emulateFileTree, boolean resetFileTree) throws IOException;
 
-    private static void fillStatTable() throws IOException {
-        InputStream is = null;
-        try {
-
-            File statFile = new File(getRootPath(), STAT_TABLE_FILENAME);
-            if (statFile.exists() && statFile.isFile()) {
-                Log.i(TAG, "Opening stat table from FS: " + statFile.getCanonicalPath());
-                is = new FileInputStream(statFile);
-            } else {
-                Log.i(TAG, "Opening stat table from package assets");
-                is = am.open("rho.dat");
-            }
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-			for (;;) {
-				String line = in.readLine();
-				if (line == null)
-					break;
-				
-				int idx = line.indexOf('|');
-				if (idx == -1)
-					continue;
-				String path = line.substring(0, idx);
-				line = line.substring(idx + 1);
-				idx = line.indexOf('|');
-				if (idx == -1)
-					continue;
-				String type = line.substring(0, idx);
-				line = line.substring(idx + 1);
-				idx = line.indexOf('|');
-				if (idx == -1)
-					continue;
-				long size = Long.parseLong(line.substring(0, idx));
-                line = line.substring(idx + 1);
-                idx = line.indexOf('|');
-                if (idx == -1)
-                    continue;
-				long mtime = Long.parseLong(line.substring(0, idx));
-                String crc = line.substring(idx + 1);
-				
-				updateStatTable(path, type, size, mtime);
-				
-			}
-		}
-		finally {
-			if (is != null)
-				is.close();
-		}
-	}
+    
     static void reloadStatTable() {
         Log.i(TAG, "reloadStatTable()");
         try {
-            processStatTable(true, true );
+        	setFsModeTransparrent(false);
+        	processStatTable( !RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS"), false);
         }
         catch (Throwable e) {
+        	e.printStackTrace();
             Log.e(TAG, "Exception during update Stat Table !!!");
         }
     }
 
-    static void patchStatTable(String path) {
-        //TODO: Implement rho.dat patching from bundle filelist.txt
-    }
 	private static void copyAssets(String assets[])
 	{
 		for(String asset: assets)
@@ -280,6 +230,16 @@ public class RhoFileApi {
 			e1.printStackTrace();
 		}
 		
+        try {
+        	setFsModeTransparrent(false);
+        	processStatTable( !RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS"), true);
+        }
+        catch (Throwable e) {
+        	e.printStackTrace();
+            Log.e(TAG, "Exception during update Stat Table with copy files from bundle to filesystem !!!");
+        }
+		
+		/*
 		try {
 	       InputStream is = null;
 	        try {
@@ -342,7 +302,7 @@ public class RhoFileApi {
 			Log.e(TAG, "%% Can not force all files !!!");
 			e.printStackTrace();
 		}
-		
+		*/
 	}
 	
 	public static void doForceAllFiles() 

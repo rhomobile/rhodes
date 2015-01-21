@@ -252,38 +252,6 @@ static bool has_pending_exception()
     return false;
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTable
-  (JNIEnv *env, jclass, jstring pathObj, jstring type, jlong size, jlong mtime)
-{
-    std::string path = rho_cast<std::string>(env, pathObj);
-    rho_stat_t st;
-    std::string t = rho_cast<std::string>(env, type);
-    if (t == "dir")
-        st.type = rho_type_dir;
-    else if (t == "file")
-        st.type = rho_type_file;
-    else
-    {
-        jclass clsRE = getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION);
-        if (!clsRE) return;
-        env->ThrowNew(clsRE, "Unknown type of file");
-        return;
-    }
-    st.size = (size_t)size;
-    st.ino = rho_ino--;
-    st.mtime = (unsigned long)mtime;
-
-    rho_stat_map.insert(std::make_pair(path, st));
-
-//This was commented for reduce loading time
-    //if (st.type == rho_type_dir)
-    //{
-    //    std::string fpath = rho_root_path() + "/" + path;
-    //    RHO_LOG("updateStatTable: create dir: %s", fpath.c_str());
-    //    mkdir(fpath.c_str(), S_IRWXU);
-    //}
-}
-
 void updateStatTable(const std::string& path, rho_fileapi_type_t type, size_t size, unsigned long time)
 {
     RHO_LOG("Update stat table: %s, %d, %u, %u", path.c_str(), (int)type, (unsigned long)size, (unsigned long)time);
@@ -1975,17 +1943,6 @@ RHO_GLOBAL void rho_file_set_fs_mode(int mode)
         LOG(ERROR) + "Wrong FS mode: " + mode;
     }
 }
-
-RHO_GLOBAL void rho_file_patch_stat_table(const rho::String& path)
-{
-    JNIEnv* env = jnienv();
-    static jmethodID mid = getJNIClassStaticMethod(env, clsFileApi, "patchStatTable", "(Ljava/lang/String;)Z");
-
-    jhstring jhPath = rho_cast<jstring>(env, path);
-
-    env->CallStaticVoidMethod(clsFileApi, mid, jhPath.get());
-}
-
 
 
 RHO_GLOBAL void rho_android_file_reload_stat_table() {
