@@ -68,34 +68,11 @@ ANDROID_PERMISSIONS = {
     'sdcard' => 'WRITE_EXTERNAL_STORAGE',
     'read_sdcard' => 'READ_EXTERNAL_STORAGE',
     'push' => nil,
-    'motorola' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest|
-      add_motosol_sdk(manifest)
-    end],
-    'motoroladev' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest|
-      add_motosol_sdk(manifest)
-    end],
-    'webkit_browser' => nil,
     'shared_runtime' => nil,
-    'motorola_browser' => nil,
     'hardware_acceleration' => nil
 }
 
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
-
-def add_motosol_sdk(manifest)
-  uses_scanner = REXML::Element.new 'uses-library'
-  uses_scanner.add_attribute 'android:name', 'com.motorolasolutions.scanner'
-  uses_scanner.add_attribute 'android:required', 'false'
-
-  uses_msr = REXML::Element.new 'uses-library'
-  uses_msr.add_attribute 'android:name', 'com.motorolasolutions.emdk.msr'
-  uses_msr.add_attribute 'android:required', 'false'
-
-  manifest.elements.each('application') do |app|
-    app.add uses_scanner
-    app.add uses_msr
-  end
-end
 
 def set_app_icon_android
   iconappbase = File.join $app_path, 'icon', 'icon'
@@ -480,13 +457,7 @@ namespace "config" do
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
     $vendor = $app_config["vendor"]
-    if $vendor.nil?
-      if $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
-        $vendor = 'rhomobile'
-      else
-        $vendor = 'motorolasolutions'
-      end
-    end
+    $vendor = 'rhomobile' unless $vendor
     $vendor = $vendor.gsub(/^[^A-Za-z]/, '_').gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_').downcase
     $app_package_name = $app_config["android"] ? $app_config["android"]["package_name"] : nil
     $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '') unless $app_package_name
@@ -496,17 +467,8 @@ namespace "config" do
     puts "$app_package_name = #{$app_package_name}"
 
     if $uri_host.nil?
-      if $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
-        $uri_host = 'rhomobile.com'
-      else
-        $uri_host = 'motorolasolutions.com'
-      end
+      $uri_host = 'rhomobile.com'
       $uri_path_prefix = "/#{$app_package_name}"
-    end
-
-    unless $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
-      $use_motosol_api = true
-      $use_motosol_api_classpath = true unless $app_config['capabilities'].index('motoroladev').nil?
     end
 
     $no_compression = ['html','htm','js','css']
@@ -522,15 +484,6 @@ namespace "config" do
 
     if $min_sdk_level > $found_api_level
       raise "Latest installed Android platform '#{$androidplatform}' does not meet minSdk '#{$min_sdk_level}' requirement"
-    end
-
-    # Look for Motorola SDK addon
-    if $use_motosol_api_classpath
-      puts "Looking for Motorola API SDK add-on..." if USE_TRACES
-      #motosol_jars = ['com.motorolasolutions.scanner', 'com.motorolasolutions.msr']
-      #simulscan_jars = ['com.symbol.emdk.simulscan']
-      $motosol_classpath = AndroidTools::get_addon_classpath('Motorola\s?Solutions? Value Add APIs')
-                                                             #'MotorolaSolution Value Add APIs 1.3.3'
     end
 
     # Detect Google API add-on path
@@ -593,17 +546,10 @@ namespace "config" do
             apilevel = $1.to_i
             $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
           end
-        else
-          if $use_motosol_api
-            if line =~ /MotorolaSolutions\s+Inc\.:MotorolaSolution\s+Value\s+Add\s+APIs.*:([0-9]+)/
-              apilevel = $1.to_i
-              $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
-            end
-          end
         end
       end
 
-      unless $use_google_addon_api and $use_motosol_api
+      unless $use_google_addon_api
         if line =~ /^\s+API\s+level:\s+([0-9]+)$/
           apilevel = $1.to_i
           $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
@@ -645,15 +591,8 @@ namespace "config" do
         $app_config['extensions'] << 'gcm-push' unless $app_config['extensions'].index('gcm-push')
       end
 
-      if $app_config['capabilities'].index('native_browser')
-        $app_config['extensions'].delete('rhoelements')
-      end
-
       if !$app_config['android'].nil? && !$app_config['android']['abis'].nil? && ($app_config['android']['abis'].index('x86') || $app_config['android']['abis'].index('mips'))
-        $app_config['extensions'].delete('rhoelements')
-          
-        $app_config['capabilities'].delete('motorola_browser')
-        $app_config['capabilities'].delete('webkit_browser')
+        $app_config['extensions'].delete('rhoelements')          
       end
 
       $file_map_name = "rho.dat"
@@ -1915,7 +1854,6 @@ namespace "build" do
 
       classpath = $androidjar
       classpath += $path_separator + $google_classpath if $google_classpath
-      classpath += $path_separator + $motosol_classpath if $motosol_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       classpath += $path_separator + $v4support_classpath
 
@@ -1942,7 +1880,6 @@ namespace "build" do
 
       # Deprecated! Just for backward compatibility #########################
       classpath += $path_separator + $google_classpath if $google_classpath
-      classpath += $path_separator + $motosol_classpath if $motosol_classpath
       #######################################################################
 
       classpath += $path_separator + $v4support_classpath
