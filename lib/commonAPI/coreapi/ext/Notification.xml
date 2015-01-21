@@ -67,7 +67,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             </PARAM>
                             <PARAM name="icon" type="String" default="">
                                 <DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon. On Windows Mobile/CE, Windows and RhoSimulators only predefined icons are supported.</DESC>
-                                <DESC_EB>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon. On Windows Mobile/CE only predefined icons are supported.Local file system path is only supported for notification icons.</DESC_EB>
+                                <DESC_EB>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon. On Windows Mobile/CE only predefined icons are supported. The file that you are playing must be located on the device or the icon may not display properly.</DESC_EB>
                                 <PLATFORM>Android</PLATFORM>
                             </PARAM>
                             <PARAM name="buttons" type="Array" default="">
@@ -166,6 +166,7 @@ Example:
                 <PARAMS>
                     <PARAM name="path" type="STRING">
                         <DESC>The full absolute path to the file, ending in the file name and extension.</DESC>
+                        <DESC_EB>The full absolute path to the file, ending in the file name and extension. The file that you are playing must be located on the device or the file may not play correctly.</DESC_EB>
                     </PARAM>
                     <PARAM name="media_type" type="STRING" default="">
                         <CAN_BE_NIL/>
