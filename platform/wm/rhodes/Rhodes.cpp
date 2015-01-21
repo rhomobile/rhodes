@@ -862,10 +862,7 @@ extern "C" void rho_wm_impl_CheckLicense()
         if(pCheckLicense)
         {
             StringW strLicenseW;
-            common::convertToStringW( get_app_build_config_item("motorola_license"), strLicenseW );
-
             StringW strCompanyW;
-            common::convertToStringW( get_app_build_config_item("motorola_license_company"), strCompanyW );
 
         #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
             LPCTSTR szLicense = rho_wmimpl_sharedconfig_getvalue( L"LicenseKey" );
