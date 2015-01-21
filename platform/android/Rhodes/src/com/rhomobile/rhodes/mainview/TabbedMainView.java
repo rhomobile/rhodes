@@ -26,6 +26,7 @@
 
 package com.rhomobile.rhodes.mainview;
 
+import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
@@ -715,11 +716,23 @@ public class TabbedMainView implements MainView {
         Bitmap bitmap = null;
 
         if (iconObj != null) {
-            String iconPath = RhoFileApi.normalizePath("apps/" + (String)iconObj);
-
+            
+        	
+			InputStream is = null;
+			String iconPath = (String)iconObj;
+			is = RhoFileApi.open(iconPath);
+			if (is == null) {
+				iconPath = RhoFileApi.normalizePath(iconPath);
+				is = RhoFileApi.open(iconPath);
+			}
+			if (is == null) {
+				iconPath = "apps/" + (String)iconObj;
+				iconPath = RhoFileApi.normalizePath(iconPath);
+				is = RhoFileApi.open(iconPath);
+			}
             Logger.T(TAG, "Bitmap file path: " + iconPath);
 
-            bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
+            bitmap = BitmapFactory.decodeStream(is);
 
             if (bitmap != null) {
                 boolean disabled = false;
@@ -1031,13 +1044,16 @@ public class TabbedMainView implements MainView {
 	public void switchTab(int index) {
 		if(((index >= 0) && (tabData.size()-1)>=index))
 		{
-			host.setCurrentTab(index);
-			tabIndex = index;
-		
+			if (!tabData.get(index).disabled) {
+				host.setCurrentTab(index);
+				tabIndex = index;
+			}
+			else {
+				Logger.I(TAG, "Not switching to disabled tab... "+"total tabs="+tabData.size()+" index="+index );
+			}
 		}
 		else
 		{
-			
 			Logger.I(TAG, "Not switching to invalid tab... "+"total tabs="+tabData.size()+" index="+index );
 		}
 	}
@@ -1105,6 +1121,10 @@ public class TabbedMainView implements MainView {
         }
 
 		return getTabMainView(tab_index).get_current_url(tab_index);
-	}     
+	}
+
+    @Override
+    public void removeSplashScreen() {
+    }     
 
 }

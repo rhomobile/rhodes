@@ -43,6 +43,8 @@ public interface MainView {
 	public IRhoWebView getWebView(Object nativeWebView);
 	public int getWebViewTab(Object nativeWebView);
 	
+	public void removeSplashScreen();
+	
 	public IRhoWebView detachWebView();
 	public void destroy();
 	

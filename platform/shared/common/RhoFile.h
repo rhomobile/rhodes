@@ -44,7 +44,7 @@ public:
     CRhoFile() : m_file(0), m_pInputStream(0){}
     ~CRhoFile(){close();}
 
-    bool isOpened();
+    bool isOpened() const;
     bool open( const char* szFilePath, EOpenModes eMode );
     unsigned int write( const void* data, unsigned int len );
     void flush();
@@ -52,7 +52,10 @@ public:
     void movePosToStart();
     void movePosToEnd();
     void setPosTo(int nPos);
-    unsigned int size();
+    int getPos() const;
+    bool isEnd() const;
+    unsigned int size() const;
+    void truncate(unsigned int);
 
     void readString(String& strData);
     void readStringW(StringW& strTextW);

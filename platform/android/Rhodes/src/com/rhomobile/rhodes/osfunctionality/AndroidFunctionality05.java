@@ -29,8 +29,6 @@ package com.rhomobile.rhodes.osfunctionality;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.util.Patterns;
 
 

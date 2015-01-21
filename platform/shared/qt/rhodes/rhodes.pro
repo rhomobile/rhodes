@@ -118,6 +118,8 @@ QtMainWindow.h\
 QtNativeTabBar.h\
 QtWebInspector.h\
 QtWebPage.h\
+QtLogView.h\
+QtCustomStyle.h\
 impl/RhoClassFactoryImpl.h\
 impl/MainWindowImpl.h\
 impl/NativeToolbarImpl.h\

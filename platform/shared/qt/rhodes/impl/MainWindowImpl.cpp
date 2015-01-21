@@ -60,7 +60,6 @@ CMainWindow::CMainWindow():
     QObject(),
     m_started(true),
     qtMainWindow(NULL)
-    //TODO: m_logView
 {
     int argc = 0;
     QCoreApplication::setOrganizationName("Rhomobile");
@@ -74,9 +73,6 @@ CMainWindow::CMainWindow():
 
 CMainWindow::~CMainWindow()
 {
-    //TODO: m_logView
-    LOGCONF().setLogView(NULL);
-
     if (qtMainWindow) delete (QtMainWindow*)qtMainWindow;
     if (qtApplication) delete (QApplication*)qtApplication;
 }
@@ -93,7 +89,6 @@ void CMainWindow::updateSizeProperties(int width, int height)
 {
     m_screenWidth = width;
     m_screenHeight = height;
-    //TODO: LOGCONF().setLogView(&m_logView);
 }
 
 void CMainWindow::logEvent(const ::std::string& message)

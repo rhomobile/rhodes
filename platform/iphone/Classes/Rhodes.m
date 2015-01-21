@@ -68,6 +68,9 @@ extern int rho_extensions_are_loaded();
 extern void rho_sysimpl_sethas_network(int value);
 extern void rho_sysimpl_sethas_cellnetwork(int value);
 
+extern void rho_rhodesapp_callScreenOnCallbackAsync();
+
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
@@ -83,12 +86,13 @@ static BOOL app_created = NO;
 
 @implementation RhoActivateTask
 + (void)run {
+    rho_rhodesapp_callAppActiveCallback(1);
+
     if ([[Rhodes sharedInstance] mScreenStateChanged])
     {
-        rho_rhodesapp_callScreenOnCallback();
+        rho_rhodesapp_callScreenOnCallbackAsync();
         [[Rhodes sharedInstance] setMScreenStateChanged:NO];
     }
-    rho_rhodesapp_callAppActiveCallback(1);
 }
 @end
 
@@ -972,8 +976,36 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 }
 
-
 // UIApplicationDelegate implementation
+
+- (void)registerForRemoteNotification {
+#ifdef __IPHONE_8_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+#ifdef APP_BUILD_CAPABILITY_PUSH
+        UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
+#else
+        UIUserNotificationType types = UIUserNotificationTypeBadge;
+#endif
+        UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    } else
+#endif
+    {
+#ifdef APP_BUILD_CAPABILITY_PUSH
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+#else
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge)];
+#endif
+    }
+}
+
+#ifdef __IPHONE_8_0
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    [application registerForRemoteNotifications];
+}
+#endif
+
+
 
 #ifdef __IPHONE_3_0
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -999,6 +1031,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
     NSLog(@"didFinishLaunchingWithOptions: %@", url);
 	
+    
+    //[self registerForRemoteNotification];
+    
     
 	// store start parameter
 	NSString* start_parameter = [NSString stringWithUTF8String:""];

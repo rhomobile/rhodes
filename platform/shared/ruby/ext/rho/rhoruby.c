@@ -555,11 +555,15 @@ hash_each_json(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
     if ( value != 0 && value != Qnil )
     {
         VALUE strVal;
-        if ( TYPE(value) == T_STRING || TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
-             TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
-            strVal = rb_funcall(value, rb_intern("to_s"), 0);
-        else
-            strVal = rb_funcall(value, rb_intern("to_json"), 0);
+        if ( TYPE(value) != T_STRING ) {
+            if (TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
+                TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
+                strVal = rb_funcall(value, rb_intern("to_s"), 0);
+            else
+                strVal = rb_funcall(value, rb_intern("to_json"), 0);
+
+        } else
+            strVal = value;
 
         szValue = RSTRING_PTR(strVal);
         valueLen = RSTRING_LEN(strVal);
@@ -1284,6 +1288,33 @@ int rho_ruby_to_str(VALUE val, const char** dest, int* len) {
     }
     *dest = getStringFromValue(val);
     *len = getStringLenFromValue(val);
+    return 1;
+}
+
+static const char* empty_str = "";
+
+int rho_ruby_to_str_ex(VALUE val, const char** dest, int* len) {
+
+    if (0 == dest || 0 == len) {
+        return 0;
+    }
+
+    *dest = empty_str;
+    *len = 0;
+
+    if ( val != 0 && val != Qnil )
+    {
+        VALUE strVal;
+        if ( TYPE(val) == T_STRING || TYPE(val) == T_FIXNUM || TYPE(val) == T_TRUE || TYPE(val) == T_FALSE ||
+            TYPE(val) == T_FLOAT || TYPE(val) == T_BIGNUM || TYPE(val) == T_SYMBOL || TYPE(val) == T_RATIONAL || TYPE(val) == T_COMPLEX )
+            strVal = rb_funcall(val, rb_intern("to_s"), 0);
+        else
+            strVal = rb_funcall(val, rb_intern("to_json"), 0);
+
+        *dest = RSTRING_PTR(strVal);
+        *len = RSTRING_LEN(strVal);
+    }
+
     return 1;
 }
 

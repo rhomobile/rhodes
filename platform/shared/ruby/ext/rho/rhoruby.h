@@ -175,6 +175,8 @@ int rho_ruby_to_int(VALUE val, int* dest);
 int rho_ruby_to_double(VALUE val, double* dest);
 int rho_ruby_to_bool(VALUE val, int* dest);
 int rho_ruby_to_str(VALUE val, const char** dest, int* len);
+// convert primitive types to string, otherwise to json
+int rho_ruby_to_str_ex(VALUE val, const char** dest, int* len);
 
 VALUE rho_ruby_hash_keys(VALUE val);
 VALUE rho_ruby_each_key(VALUE val);

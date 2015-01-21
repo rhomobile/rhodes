@@ -52,7 +52,7 @@ JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
 # For complete list of android API levels and its mapping to
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
-ANDROID_SDK_LEVEL = 4
+ANDROID_SDK_LEVEL = 9
 
 ANDROID_PERMISSIONS = {
     'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
@@ -98,15 +98,49 @@ def add_motosol_sdk(manifest)
 end
 
 def set_app_icon_android
-  iconappname = File.join($app_path, "icon", "icon.png")
+  iconappbase = File.join $app_path, 'icon', 'icon'
 
-  ['drawable', 'drawable-hdpi', 'drawable-mdpi', 'drawable-ldpi'].each do |dpi|
-    drawable = File.join($appres, dpi)
+  {'drawable' => '',
+   'drawable-ldpi' => '36',
+   'drawable-mdpi' => '48',
+   'drawable-hdpi' => '72',
+   'drawable-xhdpi' => '96',
+   'drawable-xxhdpi' => '144',
+   'drawable-xxxhdpi' => '192'
+   }.each do |folder, size|
+    drawable = File.join $appres, folder
     iconresname = File.join(drawable, "icon.png")
-    rm_f iconresname
-    cp iconappname, iconresname if File.exist? drawable
+    
+    iconapppath = iconappbase + size + '.png'
+    
+    if File.exists?(iconapppath) or File.exists?(iconresname)
+        iconapppath = iconappbase + '.png' unless File.exists? iconapppath
+        rm_f iconresname
+        mkdir_p drawable
+        cp iconapppath, iconresname if File.exist? drawable
+    end
   end
 
+  {'drawable' => '',
+   'drawable-ldpi' => '18',
+   'drawable-mdpi' => '24',
+   'drawable-hdpi' => '36',
+   'drawable-xhdpi' => '48',
+   'drawable-xxhdpi' => '72',
+   'drawable-xxxhdpi' => '96'
+   }.each do |folder, size|
+    drawable = File.join $appres, folder
+    iconresname = File.join(drawable, "ic_notification.png")
+    
+    iconapppath = iconappbase + size + '.png'
+    
+    if File.exists?(iconapppath) or File.exists?(iconresname)
+        iconapppath = iconappbase + '.png' unless File.exists? iconapppath
+        rm_f iconresname
+        mkdir_p drawable
+        cp iconapppath, iconresname if File.exist? drawable
+    end
+  end
 end
 
 def set_app_name_android(newname)
@@ -164,6 +198,8 @@ namespace 'project' do
         File.open(list, "r") do |f|
           while line = f.gets
             line.chomp!
+            next if line.empty?
+            
             src = File.join(extpath, line)
             if src =~ /(.*\/src\/).*/
               src = $1
@@ -1451,6 +1487,7 @@ namespace "build" do
         args = []
 
         rlibs = []
+        rlibs << "android"
         rlibs << "log"
         rlibs << "dl"
         rlibs << "z"
@@ -1928,18 +1965,16 @@ namespace "build" do
         ext_classpath = classpath
         ext_classpath += $path_separator + $ext_android_extra_classpath[ext] if $ext_android_extra_classpath[ext]
         srclist = Tempfile.new "#{ext}SRC_build"
-        lines = []
-        File.open(list, "r") do |f|
-          while line = f.gets
+        lines = get_sources(list)
+        lines.each do |line|
             line.chomp!
+            next if line.empty?
+
             srclist.write "\"#{File.join(extpath, line)}\"\n"
-            #srclist.write "#{line}\n"
-          end
         end
         srclist.close
 
         buildpath = File.join($tmpdir, ext)
-        
 
         mkdir_p buildpath unless File.exists? buildpath
 

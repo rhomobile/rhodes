@@ -94,7 +94,9 @@ namespace rho {
     void SystemImplIphone::getApplicationIconBadge(CMethodResult& oResult)
     {
         //oResult.setError("supported only set IconBadge !");
-        oResult.set((int)([UIApplication sharedApplication].applicationIconBadgeNumber));
+        int r = (int)([UIApplication sharedApplication].applicationIconBadgeNumber);
+        //NSLog(@"badge number is %d", r);
+        oResult.set(r);
     }
     
     void SystemImplIphone::setApplicationIconBadge( int value, CMethodResult& oResult)

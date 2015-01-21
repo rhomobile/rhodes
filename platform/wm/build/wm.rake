@@ -63,7 +63,6 @@ module WM
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?)
     $webkit_out_of_process = $app_config['wm']['webkit_outprocess'] == '1'
     $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("motorola").nil?)
-    $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
@@ -73,15 +72,18 @@ module WM
     $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
     $is_webkit_engine = true if $is_webkit_engine.nil?
 
-    begin
-      if $webkit_capability || $motorola_capability
-        require "rhoelements-data"
-        $wk_data_dir = $data_dir[0]
+    if $wk_data_dir.nil?
+      $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
+      begin
+        if $webkit_capability || $motorola_capability
+          require "rhoelements-data"
+          $wk_data_dir = $data_dir[0]
+        end
+      rescue Exception => e
+        puts "rhoelements gem is't found, webkit capability is disabled"
+        $webkit_capability = false
+        $motorola_capability = false
       end
-    rescue Exception => e
-      puts "rhoelements gem is't found, webkit capability is disabled"
-      $webkit_capability = false
-      $motorola_capability = false
     end
 
     unless $build_solution
@@ -174,6 +176,7 @@ def unpack_7z(where, archive)
 end
 
 def determine_prebuild_path_win(platform,config)
+  RhoPackages.request 'rhodes-containers'
   require 'rhodes/containers'
   if platform == 'win32' && !config.nil? && config.is_a?(Hash) && config.has_key?("app_type")
     conf = config.clone
@@ -586,6 +589,9 @@ namespace "config" do
   end
 
   namespace :wm do
+    task :set_wk_data_dir, :wk_data_dir do |t, args|
+      $wk_data_dir = args[:wk_data_dir]
+    end
     namespace :win32 do
       task :ignore_vsprops do
         $wm_win32_ignore_vsprops = true
@@ -1017,32 +1023,58 @@ namespace "build" do
   end #wm
   
   namespace "win32" do
-    
     task :deployqt => "config:win32:qt" do
+
+      FileUtils.rm_rf(Dir.glob(File.join($target_path, 'msvc*0.dll')), {:secure => true})
+      FileUtils.rm_rf(Dir.glob(File.join($target_path, 'vcomp*0.dll')), {:secure => true})
+      FileUtils.rm_rf(Dir.glob(File.join($target_path, 'vccorlib*0.dll')), {:secure => true})
+      FileUtils.rm_rf(Dir.glob(File.join($target_path, 'D3Dcompiler*.dll')), {:secure => true})
+      FileUtils.rm_rf(Dir.glob(File.join($target_path, 'Microsoft.VC*.manifest')), {:secure => true})
+
+      deploymsvc = Jake.getBuildBoolProp('deploymsvc', $app_config, true)
+
       if $vs_version == 2008
         # Visual Studio 2008
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.CRT")
-        cp File.join(vsredistdir, "msvcm90.dll"), $target_path
-        cp File.join(vsredistdir, "msvcp90.dll"), $target_path
-        cp File.join(vsredistdir, "msvcr90.dll"), $target_path
-        cp File.join(vsredistdir, "Microsoft.VC90.CRT.manifest"), $target_path
-        vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
-        cp File.join(vsredistdir, "vcomp90.dll"), $target_path
-        cp File.join(vsredistdir, "Microsoft.VC90.OpenMP.manifest"), $target_path
+        vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
+        if deploymsvc
+          cp File.join(vsredistdir, "msvcm90.dll"), $target_path
+          cp File.join(vsredistdir, "msvcp90.dll"), $target_path
+          cp File.join(vsredistdir, "msvcr90.dll"), $target_path
+          cp File.join(vsredistdir, "Microsoft.VC90.CRT.manifest"), $target_path
+          cp File.join(vsredistdir2, "vcomp90.dll"), $target_path
+          cp File.join(vsredistdir2, "Microsoft.VC90.OpenMP.manifest"), $target_path
+        end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/ssleay32.dll"), $target_path
       else
         # Visual Studio 2012
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.CRT")
-        cp File.join(vsredistdir, "msvcp110.dll"), $target_path
-        cp File.join(vsredistdir, "msvcr110.dll"), $target_path
-        cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
-        vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
-        cp File.join(vsredistdir, "vcomp110.dll"), $target_path
-        cp File.join($vscommontools, "../../VC/bin/D3Dcompiler_46.dll"), $target_path
+        vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
+        if deploymsvc
+          cp File.join(vsredistdir, "msvcp110.dll"), $target_path
+          cp File.join(vsredistdir, "msvcr110.dll"), $target_path
+          cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
+          cp File.join(vsredistdir2, "vcomp110.dll"), $target_path
+          cp File.join($vscommontools, "../../VC/bin/D3Dcompiler_46.dll"), $target_path
+        end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
       end
+
+      FileUtils.rm_rf(File.join($target_path, 'phonon4.dll'), {:secure => true})
+      FileUtils.rm_rf(File.join($target_path, 'libEGL.dll'), {:secure => true})
+      FileUtils.rm_rf(File.join($target_path, 'libGLESv2.dll'), {:secure => true})
+      FileUtils.rm_rf(Dir.glob(File.join($target_path, 'icu*5*.dll')), {:secure => true})
+      FileUtils.rm_rf(Dir.glob(File.join($target_path, 'Qt*4.dll')), {:secure => true})
+      FileUtils.rm_rf(Dir.glob(File.join($target_path, 'Qt5*.dll')), {:secure => true})
+      target_if_path = File.join($target_path, 'imageformats/')
+      FileUtils.rm_rf(target_if_path, {:secure => true})
+      target_platforms_path = File.join($target_path, 'platforms/')
+      FileUtils.rm_rf(target_platforms_path, {:secure => true})
+
+      deployqt = Jake.getBuildBoolProp('deployqt', $app_config, true)
+      next unless deployqt
 
       if $qt_version == 4
         # Qt 4
@@ -1051,7 +1083,6 @@ namespace "build" do
         cp File.join($qtdir, "bin/QtGui4.dll"), $target_path
         cp File.join($qtdir, "bin/QtNetwork4.dll"), $target_path
         cp File.join($qtdir, "bin/QtWebKit4.dll"), $target_path
-        target_if_path = File.join($target_path, 'imageformats/')
         if not File.directory?(target_if_path)
           Dir.mkdir(target_if_path)
         end
@@ -1093,12 +1124,10 @@ namespace "build" do
         cp File.join($qtdir, "bin/Qt5Sql.dll"), $target_path
         cp File.join($qtdir, "bin/Qt5Sensors.dll"), $target_path
         cp File.join($qtdir, "bin/Qt5V8.dll"), $target_path
-        target_platforms_path = File.join($target_path, 'platforms/')
         if not File.directory?(target_platforms_path)
           Dir.mkdir(target_platforms_path)
         end
         cp File.join($qtdir, "plugins/platforms/qwindows.dll"), target_platforms_path
-        target_if_path = File.join($target_path, 'imageformats/')
         if not File.directory?(target_if_path)
           Dir.mkdir(target_if_path)
         end
@@ -1442,6 +1471,14 @@ namespace "device" do
     end
 
     if !skip_nsis
+      vspec_files = ''
+      if Jake.getBuildBoolProp('deployqt', $app_config, true)
+        vspec_files += "  File /r \"imageformats\"\n" + ($qt_version > 4 ? "  File /r \"platforms\"\n" : '')
+      end
+      if Jake.getBuildBoolProp('deploymsvc', $app_config, true) && ($vs_version == 2008)
+        vspec_files += "  File *.manifest\n"
+      end
+
       # custumize install script for application
       install_script = File.read(script_name)
       install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
@@ -1458,7 +1495,7 @@ namespace "device" do
       install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
       install_script = install_script.gsub(/%README_FILE%/, readme_line)
       install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
-      install_script = install_script.gsub(/%QT_VSPEC_FILES%/, ($qt_version == 4 ? 'File *.manifest' : 'File /r "platforms"'))
+      install_script = install_script.gsub(/%QT_VSPEC_FILES%/, vspec_files)
       install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
       File.open(app_script_name, "w") { |file| file.puts install_script }
     end

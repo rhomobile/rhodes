@@ -9,10 +9,10 @@ In order to use this API you must include the following extension in your `build
     :::ruby
     extensions: ["audiocapture"]
 
-## JavaScript Usage
+### JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-## Ruby Usage
+### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <MORE_HELP_EB>
@@ -96,7 +96,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="start" hasCallback="mandatory">
                 <PARAMS>
                      <PARAM name="props" type="HASH" propertyHash="true">
-                        <DESC>Map of Audio Capture properties to be set. For iOS 22kHz 16bit Mono WAV file will be created.</DESC>
+                        <DESC>Map of Audio Capture properties to be set. For iOS 22kHz 16bit Mono WAV file will be created. In Android, ruby callbacks are taking 20secs to fire.</DESC>
                         <DESC_EB>Map of Audio Capture properties to be set.</DESC_EB>
                      </PARAM>
                 </PARAMS>
@@ -116,11 +116,11 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'ok' as the status. An unsuccessful recording will set 'cancel' or 'error' as the status in the callback returning parameters. If 'cancel' method is called during recording, 'cancel' status will be set in the callback returning parameters. In order to restart the audio capture, if the audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
 				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
-            <METHOD name="stop">
+            <METHOD name="stop" runInThread="separate">
                 <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'ok' in the callback returning parameter of 'start' method. The file is saved in user provided location.</DESC>
 				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
-            <METHOD name="cancel">
+            <METHOD name="cancel" runInThread="separate">
                 <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved. In android, it will delete the file if it exists.</DESC>
 				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
@@ -341,6 +341,65 @@ alert(Rho.AudioCapture.fileName);
                         </SECTION>
                     </SECTIONS>
             </EXAMPLE>
-		</EXAMPLES>
+        </EXAMPLES>
+        <EXAMPLES_EB>
+            <EXAMPLE title="Capturing and Playing Audio">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This example will show how to capture audio from your device to a file and then play that audio file. Note that this example assumes that your ebapi-modules.js file is located in the same folder as the HTML that is evoking it.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+<head>
+    <script src="http://192.168.1.28:8080/target/target-script-min.js#anonymous"></script>
+    <script type="text/javascript" charset="utf-8" src="../apis/EnterpriseBrowser/ebapi-modules.js"></script>
+
+    <title>Audio Capture API Example</title>
+
+    <script>
+        audioFile = null;
+
+        function captureAudio(){
+            display.innerHTML = 'Capturing...'
+            EB.AudioCapture.start({fileName:   'testCap',
+                                                         maxDuration: 5000}, captureCallback);
+        }
+
+        function captureCallback(params){
+            if (params['status'] == 'ok'){
+                display.innerHTML = 'Captured Audio File: ' + params['fileName'];
+                audioFile = params['fileName'];
+                audioFile = audioFile.substr(7); // Remove 'file://' from the beginning of the fileName
+            }
+            else{
+                display.innerHTML = 'Audio Not Captured';
+            }
+        }
+
+        function playCapturedAudio(){
+            if(audioFile){
+                EB.Mediaplayer.start(audioFile);
+            }
+            else{
+                alert("No audio captured yet.");
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <h1>AudioCapture API Example</h1>
+    <div id="display"></div>
+    </br>
+    </br>
+    <button onclick="captureAudio()">Capture Audio</button>
+    <button onclick="playCapturedAudio()">Play Captured Audio</button>
+</body>
+                                ]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES_EB>
     </MODULE>
 </API>
