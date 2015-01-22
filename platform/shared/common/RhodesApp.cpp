@@ -51,11 +51,6 @@
 
 #include <algorithm>
 
-// licence lib
-#ifdef OS_MACOSX
-#include "../../../res/libs/motorolalicence/iphone/MotorolaLicence.h" 
-#endif
-
 
 #ifdef OS_WINCE
 #include <winsock.h>
@@ -2854,48 +2849,6 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
     return result; 
 }
     
-#ifndef OS_ANDROID
-
-int rho_is_motorola_licence_checked(const char* szMotorolaLicence, const char* szMotorolaLicenceCompany, const char* szAppName)
-{
-
-    int res_check = 1;
-#if defined( OS_ANDROID ) || defined( OS_MACOSX )
-    //res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
-    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence, szAppName);
-#endif
-    
-    return res_check;
-}
-    
-int rho_is_rho_elements_extension_can_be_used(const char* szMotorolaLicence)
-{
-    int res_check = 1;
-#if defined( OS_MACOSX ) || defined( OS_ANDROID )
-    if (szMotorolaLicence == NULL)
-    {
-        res_check = 0;
-    }
-#endif
-
-    return res_check;
-}
-    
-int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, const char* szMotorolaLicenceCompany, const char* szAppName)
-{
-    if (szMotorolaLicence == NULL)
-    {
-        return 1;
-    }
-        
-    int res_check = 1;
-#if defined( OS_MACOSX ) || defined( OS_ANDROID )
-        res_check = rho_is_motorola_licence_checked(szMotorolaLicence, szMotorolaLicenceCompany, szAppName);
-#endif        
-    return res_check;
-}
-
-#endif
 
     //TODO: remove it
     void rho_sys_set_network_status_notify(const char* /*url*/, int /*poll_interval*/)
