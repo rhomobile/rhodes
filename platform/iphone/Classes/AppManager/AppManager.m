@@ -1241,6 +1241,11 @@ void rho_title_change(const int tabIndex, const char* strTitle) {
 }
 
 
+
+void rho_ios_log_console_output(const char* message) {
+    NSLog(@"%@", [NSString stringWithUTF8String:message]);
+}
+
 /*
 #define MAX_ACTIONS 4
 const static struct {
