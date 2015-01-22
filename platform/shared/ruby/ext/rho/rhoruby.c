@@ -331,9 +331,6 @@ void RhoRubyStart()
         rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_DEBUG"), Qfalse);
     }
 
-//#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-//    rb_require("rhomotoapi");
-//#endif //APP_BUILD_CAPABILITY_MOTOROLA
 
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
