@@ -36,6 +36,14 @@
 #include <e32debug.h>
 #endif
 
+
+#if defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
+
+extern "C" void rho_ios_log_console_output(const char* message);
+
+#endif
+
+
 namespace rho {
 
 CLogFileSink::CLogFileSink(const LogSettings& oSettings)
@@ -165,9 +173,11 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
         TPtrC8 des((const TUint8*)szMsg);
       	RDebug::RawPrint(des);
         return;
+#elif defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
+        rho_ios_log_console_output(szMsg);
 #endif
 
-#if !defined( OS_PLATFORM_MOTCE )
+#if !defined( OS_PLATFORM_MOTCE ) && !(defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
     for( int n = 0; n < (int)strMsg.length(); n+= 100 )
         fwrite(szMsg+n, 1, min(100,strMsg.length()-n) , stdout );
 
