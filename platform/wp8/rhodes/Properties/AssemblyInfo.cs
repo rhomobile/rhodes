@@ -9,7 +9,7 @@ using System.Resources;
 [assembly: AssemblyTitle("rhodes")]
 [assembly: AssemblyDescription("Rhodes")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Motorola Solutions, Inc.")]
+[assembly: AssemblyCompany("Symbol Technologies, Inc.")]
 [assembly: AssemblyProduct("rhodes")]
 [assembly: AssemblyCopyright("Copyright © 2013")]
 [assembly: AssemblyTrademark("")]
