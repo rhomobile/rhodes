@@ -42,7 +42,6 @@ public:
     virtual void getPhoneId(CMethodResult& oResult);
     virtual void getDeviceName(CMethodResult& oResult);
     virtual void getOsVersion(CMethodResult& oResult);
-    virtual void getIsMotorolaDevice(CMethodResult& oResult);
     virtual void getLocale(CMethodResult& oResult);
     virtual void getCountry(CMethodResult& oResult);
     virtual void getIsEmulator(CMethodResult& oResult);
@@ -182,11 +181,6 @@ void CSystemImpl::getCountry(CMethodResult& oResult)
 void CSystemImpl::getHasCalendar(CMethodResult& oResult)
 {
 	oResult.set(true);
-}
-
-void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
-{
-	oResult.set(false);
 }
 
 void CSystemImpl::getOemInfo(CMethodResult& oResult)

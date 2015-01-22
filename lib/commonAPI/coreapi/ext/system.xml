@@ -56,6 +56,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <ALIASES>
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
                 <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
+                <ALIAS new="isMotorolaDevice" existing="isSymbolDevice" deprecated="true"/>
             </ALIASES>
             <PROPERTY name="main_window_closed" type="BOOLEAN" readOnly="true" generateDoc="false">
                 <DESC>It is internal property for using in debugger (signal for main window close).</DESC>
@@ -151,7 +152,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Returns true if calendar support is available.</DESC>
             </PROPERTY>
             <PROPERTY name="isSymbolDevice" type="BOOLEAN" readOnly="true">
-                <DESC>Returns true if the device supports Motorola device capabilities. APIs will indicate if the property or method is available on MSI devices only. You can use this property to help your application decide when to take advantage of advanced MSI capabilities.</DESC>
+                <DESC>Returns true if the device supports Symbol device capabilities. APIs will indicate if the property or method is available on Symbol devices only. You can use this property to help your application decide when to take advantage of advanced Symbol capabilities.</DESC>
             </PROPERTY>
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
                 <DESC>The OEM Information string for the terminal.</DESC>
@@ -708,8 +709,8 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>You can find out whether the device has access to several system-dependent features such as calendar, camera, touchscreen, etc.</DESC>
                         <CODE>
                             <RUBY><![CDATA[
-# Returns true if device supports Motorola device capabilities, such as barcode scanner, etc.
-is_motorola_device = Rho::System.isMotorolaDevice
+# Returns true if device supports Symbol device capabilities, such as barcode scanner, etc.
+is_symbol_device = Rho::System.isSymbolDevice
     
 has_calendar = Rho::System.hasCalendar
 has_camera = Rho::System.hasCamera
@@ -720,7 +721,7 @@ has_sqlite = Rho::System.hasSqlite
 has_touchscreen = Rho::System.hasTouchscreen
 
 message = "
-Motorola device: #{is_motorola_device}
+Symbol device: #{is_symbol_device}
 Calendar: #{has_calendar}
 Camera: #{has_camera}
 Cell network: #{has_cell_network}
@@ -733,8 +734,8 @@ Alert.show_popup(message)
 ]]>
                             </RUBY>
                             <JAVASCRIPT><![CDATA[
-// Returns true if device supports Motorola device capabilities, such as Scanner, etc.
-var is_motorola_device = Rho.System.isMotorolaDevice;
+// Returns true if device supports Symbol device capabilities, such as Scanner, etc.
+var is_symbol_device = Rho.System.isSymbolDevice;
 
 var has_calendar = Rho.System.hasCalendar;
 var has_camera = Rho.System.hasCamera;
@@ -744,7 +745,7 @@ var has_network = Rho.System.hasNetwork;
 var has_sqlite = Rho.System.hasSqlite;
 var has_touchscreen = Rho.System.hasTouchscreen;
 
-message = "Motorola device: "+is_motorola_device+"\n"+
+message = "Symbol device: "+is_symbol_device+"\n"+
   "Calendar: "+has_calendar+"\n"+ 
   "Camera: "+has_camera+"\n"+
   "Cell network: "+has_cell_network+"\n"+
