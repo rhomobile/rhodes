@@ -3,6 +3,7 @@
 #include "logging/RhoLog.h"
 #include "common/RhoStd.h"
 #include "Camera.h"
+#include"EmdkDefines.h"
 
  /* Function pointer for Image Capture APIs (Exposed by image capture library ImgAPI32.dll)
  */
