@@ -697,7 +697,7 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	{
 		wchar_t szBuf[200];
 		::GetWindowText(hwnd,szBuf,199);
-		if(wcscmp(szBuf, L"Motorola RhoElements") == 0)
+		if(wcscmp(szBuf, L"RhoElements") == 0)
 			::ShowWindow(hwnd, SW_MINIMIZE);
 	}
 
