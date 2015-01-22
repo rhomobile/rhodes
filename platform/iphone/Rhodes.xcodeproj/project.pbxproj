@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		FA2A0E9D183C415A00C11E7F /* RhodesBaseDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */; };
-		FAAFCD76183C40030068F3D3 /* libMotorolaLicence.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAAFCD75183C40030068F3D3 /* libMotorolaLicence.a */; };
 		FAED7868183C3A8100BC7028 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED7867183C3A8100BC7028 /* Foundation.framework */; };
 		FAED78C6183C3C5800BC7028 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78AA183C3B2100BC7028 /* libcurl.a */; };
 		FAED78C7183C3C5800BC7028 /* librhoappbaselib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78AD183C3B2100BC7028 /* librhoappbaselib.a */; };
@@ -120,7 +119,6 @@
 /* Begin PBXFileReference section */
 		FA2A0E9B183C415A00C11E7F /* RhodesBaseDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhodesBaseDelegate.h; sourceTree = SOURCE_ROOT; };
 		FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhodesBaseDelegate.m; sourceTree = SOURCE_ROOT; };
-		FAAFCD75183C40030068F3D3 /* libMotorolaLicence.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMotorolaLicence.a; path = ../../res/libs/motorolalicence/iphone/libMotorolaLicence.a; sourceTree = SOURCE_ROOT; };
 		FAED7864183C3A8100BC7028 /* libRhodes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRhodes.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAED7867183C3A8100BC7028 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FAED7878183C3A8100BC7028 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -139,7 +137,6 @@
 			files = (
 				FAED78C6183C3C5800BC7028 /* libcurl.a in Frameworks */,
 				FAED78C7183C3C5800BC7028 /* librhoappbaselib.a in Frameworks */,
-				FAAFCD76183C40030068F3D3 /* libMotorolaLicence.a in Frameworks */,
 				FAED78C8183C3C5800BC7028 /* librhoextlib.a in Frameworks */,
 				FAED78C9183C3C5800BC7028 /* librholib.a in Frameworks */,
 				FAED78CA183C3C5800BC7028 /* librhorubylib.a in Frameworks */,
@@ -154,7 +151,6 @@
 		FAED785B183C3A8100BC7028 = {
 			isa = PBXGroup;
 			children = (
-				FAAFCD75183C40030068F3D3 /* libMotorolaLicence.a */,
 				FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */,
 				FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */,
 				FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */,
@@ -488,7 +484,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					../../res/libs/motorolalicence/iphone,
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
@@ -508,7 +503,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					../../res/libs/motorolalicence/iphone,
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
