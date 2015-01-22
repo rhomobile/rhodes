@@ -2528,22 +2528,18 @@ namespace "config" do
         end
 
         if !$app_config["capabilities"].index('native_browser') && $current_platform != "android"
-          $app_config["capabilities"] += ["motorola_browser"] unless $app_config["capabilities"].index('motorola_browser')
+          $app_config['extensions'] += ['webkit-browser'] unless $app_config['extensions'].index('webkit-browser')
         end
       end
 
       application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
-
-      if $app_config["capabilities"].index("motorola_browser")
-        $app_config['extensions'] += ['webkit-browser'] unless $app_config['extensions'].index('webkit-browser')
-      end
 
       if $app_config["extensions"].index("webkit-browser")
         $app_config["capabilities"] += ["webkit_browser"]
         $app_config["extensions"].delete("webkit-browser")
       end
 
-      if  $app_config["capabilities"].index("webkit_browser") || ($app_config["capabilities"].index("motorola") && $current_platform != "android")
+      if  $app_config["capabilities"].index("webkit_browser") || ($app_config["capabilities"].index("symbol") && $current_platform != "android")
         #contains wm and android libs for webkit browser
         $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
       end
@@ -3164,10 +3160,12 @@ def init_extensions(dest, mode = "")
               ext_xmls_paths <<  xml_path
               if mode != "get_ext_xml_paths"
                 #api generator
-                if gen_checker.check(xml_path)
-                  puts 'start running rhogen with api key'
-                  if !$skip_build_extensions
-                    Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                if File.exist? xml_path
+                  if gen_checker.check(xml_path)
+                    puts 'start running rhogen with api key'
+                    if !$skip_build_extensions
+                      Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                    end
                   end
                 end
               end
