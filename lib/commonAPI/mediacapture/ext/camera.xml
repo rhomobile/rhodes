@@ -266,7 +266,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAM>
                 </PARAMS>
                 <RETURN type="SELF_INSTANCE">
-                    <DESC>Camera with requested type or nil if not requested type does not exist.</DESC>
+                    <DESC>Camera with requested type or nil if not requested type does not exist. In wm/ce devices, it always returns an array of requested type. Refer example section for more details.</DESC>
                 </RETURN>
             </METHOD>
             <METHOD name="takePicture" hasCallback="mandatory" runInThread="ui">
@@ -753,6 +753,29 @@ function picture_taken_callback(params) {
                </SECTION>
                </SECTIONS>
            </EXAMPLE>
+          <EXAMPLE title="Getting a camera instance by cameraType">
+            <SECTIONS>
+              <SECTION>
+                <DESC>Camera API also lets you access camera instance by cameraType.</DESC>
+                <CODE>                 
+                  <JAVASCRIPT>
+                    <![CDATA[
+//on wm/ce it return array of instances
+function get_color_camera_instance() {
+  var camInst = Rho.Camera.getCameraByType('color');
+  camInst[0].takePicture({'outputFormat':'image'}, my_callback);
+}
+//on other platforms method always returns single instance
+function get_color_camera_instance() {
+  var camInst = Rho.Camera.getCameraByType('color');
+  camInst.takePicture({'outputFormat':'image'}, my_callback);
+}
+                   ]]>
+                  </JAVASCRIPT>
+                </CODE>
+              </SECTION>
+            </SECTIONS>
+          </EXAMPLE>
        </EXAMPLES>
     </MODULE>
 </API>

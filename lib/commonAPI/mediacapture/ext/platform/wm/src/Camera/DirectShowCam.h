@@ -12,14 +12,19 @@ public:
 	virtual BOOL showPreview();
 	virtual BOOL hidePreview();
 	virtual void Capture();
+	BOOL getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue);
+	virtual void getSupportedSizeList(rho::Vector<rho::String>& supportedSizeList);
+	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
 protected:
 	void SetFlashMode();
 	void SetResolution();
 	void setCameraProperties();
 	virtual void RedrawViewerWnd(RECT& pos);
 	void ResetResolution();
+	rho::Vector<ImageRes> supportedResln;
 private:
 	CDShowCam* m_pDSCam;
+	void getCameraHWDetails();
 
 };
 #endif
