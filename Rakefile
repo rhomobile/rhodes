@@ -2489,9 +2489,10 @@ namespace "config" do
 
     capabilities = []
     capabilities += $app_config["capabilities"] if $app_config["capabilities"] and
-    $app_config["capabilities"].is_a? Array
+                    $app_config["capabilities"].is_a? Array
     capabilities += $app_config[$config["platform"]]["capabilities"] if $app_config[$config["platform"]] and
-    $app_config[$config["platform"]]["capabilities"] and $app_config[$config["platform"]]["capabilities"].is_a? Array
+                    $app_config[$config["platform"]]["capabilities"] and
+                    $app_config[$config["platform"]]["capabilities"].is_a? Array
     $app_config["capabilities"] = capabilities
 
     application_build_configs = {}
