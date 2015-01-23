@@ -15,6 +15,7 @@ public:
     virtual void getPhoneNumber(CMethodResult& oResult);
     virtual void getDevicePushId(CMethodResult& oResult);
     virtual void getOsVersion(CMethodResult& oResult);
+    virtual void getIsSymbolDevice(CMethodResult& oResult);
     virtual void getLocalServerPort(CMethodResult& oResult);
     virtual void setLocalServerPort( int value, CMethodResult& oResult);
     virtual void getFreeServerPort(rho::apiGenerator::CMethodResult& oResult);
