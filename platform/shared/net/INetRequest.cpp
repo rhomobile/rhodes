@@ -44,6 +44,7 @@ void CNetRequestHolder::setRequest(INetRequestImpl* pReq)
         {
             m_bCancel = false;
             m_pReq->setSslVerifyPeer(m_sslVerifyPeer);
+            m_pReq->setFollowRedirects(m_followRedirects);
         }
     }
 }

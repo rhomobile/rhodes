@@ -53,8 +53,9 @@ static int getIndex(NSValue *value)
     // Navigation MUST be done through 'redirect_to' - otherwise WebView does not
     // perform actual url loading from time to time
 	//[[Rhodes sharedInstance] hideSplash];
-    int index = getIndex(value);
+      int index = getIndex(value);
     [[[Rhodes sharedInstance] mainView] navigateRedirect:url tab:index];
+    //    [[[Rhodes sharedInstance] mainView] navigate:url tab:index];
 }
 @end
 
