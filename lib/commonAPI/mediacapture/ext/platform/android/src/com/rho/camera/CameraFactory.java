@@ -41,7 +41,7 @@ public class CameraFactory implements ICameraFactory {
     }
     
     ICameraObject getCameraObject(String id) {
-        int idx = Integer.valueOf(id).intValue();
+        int idx = CameraSingletonObject.getCameraIndex(id);
 
         if (idx >= mCameraList.length) {
             Logger.E(TAG, "Unknown camera id: " + id);
