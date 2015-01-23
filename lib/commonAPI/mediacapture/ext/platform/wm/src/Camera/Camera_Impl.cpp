@@ -33,43 +33,43 @@ namespace rho {
 		// enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
 		virtual void enumerate(rho::apiGenerator::CMethodResult& oResult);
 		// getCameraByType Returns the camera of requested type if that camera exist - else return nil. 
-        virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {
-            rho::Vector<rho::String> arIDs;
-            bool bCamFound = false;
+		virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {
+
+			bool bCamFound = false;
+			rho::String  camId;
 
 			if(m_DeviceNameMap.size() == 0)
 			{
 				CMethodResult oRes;
 				enumerate(oRes);
+			}			
+			//get first occurance of the camera name from the m_DeviceNameMap
+			if(m_DeviceNameMap.size() > 0)
+			{	
+				eCamType camType = getCamTypeEnum(cameraType);
+				if(eUnknownCamType != camType)
+				{
+					for ( HashtablePtr<String, eCamType>::iterator it = m_DeviceNameMap.begin(); it != m_DeviceNameMap.end(); ++it )
+					{
+						if (it->second == camType)
+						{
+							camId = it->first;
+							bCamFound = true;
+							break;
+						}
+					}
+				}
 			}
-            //get first occurance of the camera name from the m_DeviceNameMap
-            if(m_DeviceNameMap.size() > 0)
-            {	
-                eCamType camType = getCamTypeEnum(cameraType);
-                if(eUnknownCamType != camType)
-                {
-                    for ( HashtablePtr<String, eCamType>::iterator it = m_DeviceNameMap.begin(); it != m_DeviceNameMap.end(); ++it )
-                    {
-                        if (it->second == camType)
-                        {
-                            arIDs.addElement(it->first);
-                            bCamFound = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            if(bCamFound)
-            {
-                oResult.set(arIDs);
-            }
-            else
-            {
-                oResult.set("");
-            }
+			if(bCamFound)
+			{
+				oResult.set(camId);
+			}
+			else
+			{
+				oResult.set("");
+			}
 
-
-        } 		
+		} 		
 		// choosePicture Choose a picture from the album. 
 		virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
 
@@ -549,16 +549,11 @@ namespace rho {
 		{
 			if(pCamera)
 			{
-				rho::Vector<rho::String> arIDs;	
-				pCamera->getSupportedSizeList(arIDs);
-				if(arIDs.size() >0)
-				{
-					oResult.set(arIDs);
-				}
-				else
-				{
-					oResult.set("");
-				}
+				StringifyVector supportesSizeList;				
+				pCamera->getSupportedSizeList(supportesSizeList);
+				rho::String buffer;
+				supportesSizeList.toString(buffer);
+				oResult.setJSON(buffer);				
 
 			}
 		}
