@@ -165,12 +165,12 @@ private:
 
 
 private:
-
-	BOOL initCaptureDevice(wstring szDeviceName);
+	
 	BOOL SetupStill();
 
 
 public:
+	BOOL initCaptureDevice(wstring szDeviceName);
 	BOOL initFilterGraph();
 	BOOL BuildFilterGraph(CamConfig& ptCamcfg);
 	BOOL SetupPreview(HWND hViewerWnd, RECT& pos);
@@ -178,6 +178,7 @@ public:
 	HRESULT Get_PropVal(HANDLE hPropTbl);
 	HRESULT Set_PropVal(HANDLE hPropTbl);
 	HRESULT Set_Resolution(ImageRes* ptRes, PinType ePType);
+	void Get_Resolution(rho::Vector<ImageRes>& supportedRes, PinType ePType);
 	BOOL StopGrp();
 	BOOL RunGrp();
 	BOOL ResizePreview(DWORD dwWidth, DWORD dwHeight);

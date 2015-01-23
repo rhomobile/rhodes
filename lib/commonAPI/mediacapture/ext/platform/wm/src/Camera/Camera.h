@@ -10,7 +10,8 @@
 enum eCamType
 {
 	eColorCam,
-	eImager
+	eImager,
+	eUnknownCamType
 };
 enum eTriggerEvents
 {
@@ -33,6 +34,7 @@ public:
 	virtual void takeFullScreen() = 0;
     virtual BOOL showPreview() = 0;
     virtual BOOL hidePreview() = 0;
+	virtual void getSupportedSizeList(rho::Vector<rho::String>& supportedSizeList)=0;
 	virtual void Capture() = 0;
 	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback)=0;
 	virtual void ApplicationFocusChange(bool bAppHasFocus)=0;
@@ -62,7 +64,7 @@ protected:
 	static HANDLE m_hTriggerMonitorThread;
 	static bool m_bRcmLoaded;
 	static bool m_bAppHasFocus;	
-	rho::apiGenerator::CMethodResult m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  
+	rho::apiGenerator::CMethodResult m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  	
 public:
 	CCamera(LPCTSTR szDeviceName);
 	virtual ~CCamera();	
@@ -88,8 +90,10 @@ protected:
 	virtual void SetResolution()=0;
 	static void createTriggerMonitorThread(LPVOID pparam);
 	static DWORD TriggerMonitorProc (LPVOID pparam);
+	rho::StringW getFileName();
 private:
 	static void closeTriggerEvents();
+    rho::StringW generate_filename(LPCTSTR szExt) ;
 };
 
 #endif

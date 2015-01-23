@@ -7,7 +7,8 @@
 CDirectShowCam::CDirectShowCam(LPCTSTR szDeviceName):CCamera(szDeviceName)
 {
 	m_CamType = L"color";
-	m_pDSCam = NULL;
+	m_pDSCam = NULL;	
+	getCameraHWDetails();
 }
 CDirectShowCam::~CDirectShowCam()
 {
@@ -49,6 +50,37 @@ BOOL CDirectShowCam::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<r
 	return bRetStatus;
 	
 }
+BOOL CDirectShowCam::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
+{
+    BOOL bRetStatus = TRUE;
+    bRetStatus = CCamera::getProperty(szParameterName, szParameterValue);
+    if(FALSE == bRetStatus)
+    {
+		bRetStatus = TRUE;//set again to true as we couldn't find the variable in base class impl,
+        if(cmp(szParameterName, L"maxWidth"))
+        {		
+			if(supportedResln.size() > 0)
+			{
+				ImageRes res = supportedResln[supportedResln.size() -1];
+				wcscpy(szParameterValue,rho::common::convertToStringW(res.nWidth).c_str());
+			}		
+            
+        }
+		else if(cmp(szParameterName, L"maxHeight"))
+		{			
+			if(supportedResln.size() > 0)
+			{				
+				ImageRes res = supportedResln[supportedResln.size() -1];
+				wcscpy(szParameterValue,rho::common::convertToStringW(res.nHeight).c_str());
+			}		
+		}		
+        else
+        {
+            bRetStatus = FALSE;
+        }
+    }
+    return bRetStatus;
+}
 void CDirectShowCam::takeFullScreen()
 {
 	LOG(INFO) + __FUNCTION__ ; 	
@@ -60,6 +92,7 @@ void CDirectShowCam::takeFullScreen()
 			if (m_pDSCam) 
 			{
 				delete m_pDSCam;
+				m_pDSCam= NULL;
 			}
 			m_pDSCam = new CDShowCam();			
 			if(m_pDSCam)
@@ -115,6 +148,7 @@ BOOL CDirectShowCam::showPreview()
 			if (m_pDSCam) 
 			{
 				delete m_pDSCam;
+				m_pDSCam = NULL;
 			}
 			m_pDSCam = new CDShowCam();			
 			if(m_pDSCam)
@@ -201,7 +235,7 @@ void CDirectShowCam::Capture()
 
 		if(m_pDSCam)
 		{
-			rho::StringW fileName = m_FileName + L".jpg";
+			rho::StringW fileName = getFileName();
 			hr= m_pDSCam->CaptureStill(fileName);
 			if(SUCCEEDED(hr))
 			{
@@ -285,6 +319,32 @@ void CDirectShowCam::Capture()
 
 	}
 }
+void CDirectShowCam::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
+{
+	CCamera::getSupportedPropertyList(arrayofNames);
+	arrayofNames.push_back("maxWidth");
+	arrayofNames.push_back("maxHeight");
+	arrayofNames.push_back("supportedSizeList");
+}
+void CDirectShowCam::getSupportedSizeList(rho::Vector<rho::String>& supportedSizeList)
+{
+	
+	if(supportedResln.size() > 0)
+	{
+		
+		char buff[100];
+		ImageRes res;
+		for(int index=0; index < supportedResln.size(); index++)
+		{
+			res = supportedResln[index];
+			sprintf(buff, "%d X %d", res.nWidth, res.nHeight);
+			supportedSizeList.addElement(rho::String(buff));
+
+		}
+
+		
+	}
+}
 void CDirectShowCam::SetFlashMode()
 {
 	if(m_PreviewOn)
@@ -339,4 +399,27 @@ void CDirectShowCam::SetResolution()
 			}
 		}
 	}
+}
+void CDirectShowCam::getCameraHWDetails()
+{
+   
+    if (m_pDSCam) 
+    {
+        delete m_pDSCam;
+		m_pDSCam = NULL;
+    }
+    m_pDSCam = new CDShowCam();			
+    if(m_pDSCam)
+    {
+        if(m_pDSCam->initFilterGraph())
+        {            			
+
+            if(m_pDSCam->initCaptureDevice(m_szDeviceName))
+            {				
+				m_pDSCam->Get_Resolution(supportedResln, S);
+            }
+        }
+    }
+	delete m_pDSCam;
+	m_pDSCam = NULL;
 }
