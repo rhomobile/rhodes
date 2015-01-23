@@ -300,7 +300,7 @@ void CSystemImpl::getHasCalendar(CMethodResult& oResult)
 
 void CSystemImpl::getIsSymbolDevice(CMethodResult& oResult)
 {
-#if defined( APP_BUILD_CAPABILITY_MOTOROLA ) && defined( OS_WINCE )
+#if defined( APP_BUILD_CAPABILITY_SYMBOL ) && defined( OS_WINCE )
     //get the system OEM string
     TCHAR szPlatform[MAX_PATH+1];
     memset(szPlatform, 0, MAX_PATH*sizeof(TCHAR));
