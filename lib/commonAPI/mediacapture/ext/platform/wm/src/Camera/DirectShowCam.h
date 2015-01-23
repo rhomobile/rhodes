@@ -13,7 +13,7 @@ public:
 	virtual BOOL hidePreview();
 	virtual void Capture();
 	BOOL getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue);
-	virtual void getSupportedSizeList(rho::Vector<rho::String>& supportedSizeList);
+	virtual void getSupportedSizeList(StringifyVector& supportedSizeList);
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
 protected:
 	void SetFlashMode();

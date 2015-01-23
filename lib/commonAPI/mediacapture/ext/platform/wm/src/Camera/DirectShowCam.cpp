@@ -326,23 +326,24 @@ void CDirectShowCam::getSupportedPropertyList(rho::Vector<rho::String>& arrayofN
 	arrayofNames.push_back("maxHeight");
 	arrayofNames.push_back("supportedSizeList");
 }
-void CDirectShowCam::getSupportedSizeList(rho::Vector<rho::String>& supportedSizeList)
+void CDirectShowCam::getSupportedSizeList(StringifyVector& supportedSizeList)
 {
 	
 	if(supportedResln.size() > 0)
 	{
 		
-		char buff[100];
 		ImageRes res;
 		for(int index=0; index < supportedResln.size(); index++)
 		{
-			res = supportedResln[index];
-			sprintf(buff, "%d X %d", res.nWidth, res.nHeight);
-			supportedSizeList.addElement(rho::String(buff));
+			res = supportedResln[index];			
+			StringifyHash resl;
+			resl.set("width",res.nWidth);
+			resl.set("height",res.nHeight);
+			supportedSizeList.push_back(resl);			
 
 		}
 
-		
+
 	}
 }
 void CDirectShowCam::SetFlashMode()
