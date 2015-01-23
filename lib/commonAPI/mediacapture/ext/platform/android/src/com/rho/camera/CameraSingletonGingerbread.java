@@ -1,16 +1,7 @@
 package com.rho.camera;
 
-import java.util.Map;
-
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.MediaStore;
-
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
-import com.rhomobile.rhodes.ui.FileList;
-import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class CameraSingletonGingerbread extends CameraSingletonEclair implements ICameraSingleton {
     private static final String TAG = CameraSingletonGingerbread.class.getSimpleName();
@@ -27,7 +18,7 @@ public class CameraSingletonGingerbread extends CameraSingletonEclair implements
             android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
             android.hardware.Camera.getCameraInfo(i, info);
             if (info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK) {
-                setDefaultID(i);
+                setDefaultIndex(i);
                 return;
             }
         }
@@ -38,8 +29,10 @@ public class CameraSingletonGingerbread extends CameraSingletonEclair implements
     public void getCameraByType(String cameraType, IMethodResult result) {
         int cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
         if (cameraType.equalsIgnoreCase("front")) {
+            Logger.T(TAG, "Requesting front camera.");
             cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
-        } else if (cameraType.equalsIgnoreCase("front")) {
+        } else if (cameraType.equalsIgnoreCase("back")) {
+            Logger.T(TAG, "Requesting back camera.");
             cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
         } else {
             Logger.E(TAG, "Unknown camera type requested: " + cameraType);
@@ -53,7 +46,7 @@ public class CameraSingletonGingerbread extends CameraSingletonEclair implements
             android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
             android.hardware.Camera.getCameraInfo(i, info);
             if (info.facing == cameraTypeId) {
-                result.set(String.valueOf(i));
+                result.set(getCameraId(i));
                 return;
             }
         }

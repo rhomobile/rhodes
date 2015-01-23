@@ -22,6 +22,7 @@ import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.ContextFactory;
 
 public class CameraObject extends CameraBase implements ICameraObject {
@@ -34,6 +35,10 @@ public class CameraObject extends CameraBase implements ICameraObject {
     
     private Camera mCamera;
     private int mCameraUsers;
+    
+    int getCameraIndex() {
+        return CameraSingletonObject.getCameraIndex(getId());
+    }
     
     static class CameraSize implements ICameraObject.ISize {
         private Camera.Size mSize;
@@ -331,7 +336,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 intent = new Intent(ContextFactory.getUiContext(), CameraActivity.class);
                 intent.putExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID", getId());
             }
-            RhodesActivity.safeGetInstance().startActivityForResult(intent, Integer.valueOf(getId()).intValue());
+            RhodesActivity.safeGetInstance().startActivityForResult(intent, RhoExtManager.getInstance().getActivityResultNextRequestCode(CameraRhoListener.getInstance()));
         } catch (RuntimeException e) {
             Logger.E(TAG, e);
             result.setError(e.getMessage());

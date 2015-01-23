@@ -1,24 +1,13 @@
 package com.rho.camera;
 
-import java.util.List;
+import android.content.Context;
+import android.graphics.Rect;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.widget.FrameLayout;
 
 import com.rho.camera.ICameraObject.ISize;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.R;
-
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.hardware.Camera;
-import android.hardware.Camera.Size;
-import android.view.Gravity;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 public class CameraPreview implements SurfaceHolder.Callback {
     private static final String TAG = CameraPreview.class.getSimpleName();

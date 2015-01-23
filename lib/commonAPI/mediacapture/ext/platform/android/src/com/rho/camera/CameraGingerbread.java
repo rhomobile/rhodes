@@ -21,7 +21,7 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
         getPropertiesMap().put("outputFormat", "image");
 
         android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-        android.hardware.Camera.getCameraInfo(Integer.valueOf(getId()).intValue(), info);
+        android.hardware.Camera.getCameraInfo(getCameraIndex(), info);
         switch (info.facing) {
         case android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK:
             getPropertiesMap().put("cameraType", "back");
@@ -55,7 +55,7 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
     @Override synchronized
     protected void openCamera() { 
         if (mCameraUsers == 0) {
-            setCamera(Camera.open(Integer.valueOf(getId()).intValue())); 
+            setCamera(Camera.open(getCameraIndex())); 
         }
         mCameraUsers++;
     }
@@ -88,7 +88,7 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
     public void doTakePicture(final Activity previewActivity, int rotation) {
         Logger.T(TAG, "doTakePicture: rotation: " + rotation);
         android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-        android.hardware.Camera.getCameraInfo(Integer.valueOf(getId()).intValue(), info);
+        android.hardware.Camera.getCameraInfo(getCameraIndex(), info);
         openCamera();
         ISize pictureSize = getDesiredSize();
         Camera.Parameters params = getCamera().getParameters();
