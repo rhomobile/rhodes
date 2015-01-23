@@ -95,7 +95,7 @@ LRESULT CEBrowserEngine::CreateEngine()
 	ZeroMemory(szSIPValue,100);
 
 
-		if((_tcsstr(szPlatform,TEXT("MK4000")) != NULL) || (_tcsstr(szPlatform,TEXT("BigBoardMPA3")) != NULL) || (_tcsstr(szPlatform,TEXT("MC18")) != NULL))
+		if((_tcsstr(szPlatform,TEXT("MK4000")) != NULL) || (_tcsstr(szPlatform,TEXT("MK3100")) != NULL) || (_tcsstr(szPlatform,TEXT("MC18")) != NULL)|| (_tcsstr(szPlatform,TEXT("MK3000")) != NULL))
 		{
 			HKEY hRegKey= NULL;
 			DWORD Type;
