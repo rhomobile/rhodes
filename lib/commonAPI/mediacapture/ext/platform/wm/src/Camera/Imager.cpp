@@ -107,10 +107,11 @@ BOOL CImager::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::Str
 }
 BOOL CImager::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
 {
-    BOOL bRetStatus = TRUE;
+    BOOL bRetStatus = TRUE;	
     bRetStatus = CCamera::getProperty(szParameterName, szParameterValue);
     if(FALSE == bRetStatus)
     {
+		bRetStatus = TRUE;//set again to true as we couldn't find the variable in base class impl,
         if(cmp(szParameterName, L"aimMode"))
         {
             if(m_AimMode)
@@ -444,7 +445,7 @@ void CImager::Capture()
         }
         else
         {
-			rho::StringW fileName = m_FileName + L".jpg";
+			rho::StringW fileName = getFileName();
             HANDLE hFile = 
                 CreateFile(fileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
             if(hFile)

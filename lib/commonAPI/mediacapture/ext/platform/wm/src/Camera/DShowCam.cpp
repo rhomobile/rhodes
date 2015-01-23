@@ -31,7 +31,7 @@ BOOL CDShowCam::initFilterGraph()
 {
 	BOOL retStatus = FALSE;
 	HRESULT hr = E_FAIL;
-	// Create the graph builder and the filtergraph
+	// Create the graph builder and the filtergraph	
 	hr = pCaptureGraphBuilder.CoCreateInstance( CLSID_CaptureGraphBuilder );
 	if(SUCCEEDED(hr))
 	{
@@ -214,7 +214,7 @@ BOOL CDShowCam::initCaptureDevice(wstring szDeviceName)
 			CPropertyBag  PropBag;
 			hr = PropBag.Write( L"VCapName", &varCamName );   
 			if(SUCCEEDED(hr))
-			{
+			{				
 				hr = pPropertyBag->Load( &PropBag, NULL );
 				if(SUCCEEDED(hr))
 				{
@@ -477,6 +477,57 @@ HRESULT CDShowCam::Set_Resolution(ImageRes* ptRes, PinType ePType)
 
 	return SUCCEEDED(hr);
 } //end Set_Resolution(ImageRes *ptRes, PinType ePType)
+void CDShowCam::Get_Resolution(rho::Vector<ImageRes>& supportedRes, PinType ePType)
+{
+	GUID pType;
+	HRESULT hr;
+	switch(ePType)
+	{
+	case V:
+		pType = PIN_CATEGORY_CAPTURE;			
+		break;
+	case S:
+		pType = PIN_CATEGORY_STILL;			
+		break;
+	case P:
+		pType = PIN_CATEGORY_PREVIEW;			
+		break;
+
+	}
+	hr = pCaptureGraphBuilder->FindInterface(&pType, 0, pVideoCap, IID_IAMStreamConfig, (void**)&m_pStrConf);
+
+
+	if(SUCCEEDED(hr))
+	{
+		VIDEO_STREAM_CONFIG_CAPS scc;
+		AM_MEDIA_TYPE *pmtConfig;
+		INT iResIdx=0;
+
+		INT nCount = 0, nSize = 0;
+
+		hr = m_pStrConf->GetNumberOfCapabilities(&nCount, &nSize);
+		if(SUCCEEDED(hr))
+		{
+
+
+			for(int i=iResIdx; i<nCount;i++)
+			{
+				hr = m_pStrConf->GetStreamCaps(i, &pmtConfig, (BYTE*)&scc);
+
+				if (SUCCEEDED(hr))
+				{
+					ImageRes res;
+					res.nHeight = scc.MaxOutputSize.cy;
+					res.nWidth = scc.MaxOutputSize.cx;
+					supportedRes.addElement(res);				
+
+				}
+
+			}
+		}
+
+	}
+}
 //------------------------------------------------------------------
 //
 // Prototype:	BOOL StopGrp()
