@@ -22,6 +22,8 @@ static VALUE vm_exec(rb_thread_t *th);
 static void vm_set_eval_stack(rb_thread_t * th, VALUE iseqval, const NODE *cref);
 static int vm_collect_local_variables_in_heap(rb_thread_t *th, VALUE *dfp, VALUE ary);
 
+int rho_ruby_is_enabled_eval();
+
 typedef enum call_type {
     CALL_PUBLIC,
     CALL_FCALL,

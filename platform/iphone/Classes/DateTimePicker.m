@@ -28,7 +28,7 @@
 #import "Rhodes.h"
 #import "DateTimePickerDelegate.h"
 
-
+int rho_rhodesapp_check_mode();
 
 void choose_datetime_with_range(char* callback, char* title, long initial_time, int format, char* data, long min_time, long max_time) {
     if (!rho_rhodesapp_check_mode())
