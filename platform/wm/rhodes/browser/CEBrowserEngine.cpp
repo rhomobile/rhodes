@@ -825,6 +825,17 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
     {
         if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
+
+		if (msg.message == WM_MOUSEFIRST)
+		{
+			bool m_bFullScreen = RHOCONF().getBool("full_screen");
+
+			if (m_bFullScreen)
+			{
+				HWND taskbarWnd = FindWindow(L"HHTaskBar", NULL);
+				ShowWindow(taskbarWnd, SW_HIDE);
+			}
+		}
 		
 		if (msg.message == WM_KEYDOWN && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
 		{

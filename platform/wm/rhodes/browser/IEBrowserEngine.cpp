@@ -410,12 +410,8 @@ void CIEBrowserEngine::InvokeEngineEventMetaTag(LPTSTR tcHttpEquiv, LPTSTR tcCon
     metaTag2->tcContents = _tcsdup(metaTag.tcContents);
     lRet = PostMessage(rho_wmimpl_get_mainwnd(),PB_ONMETA,(WPARAM)m_tabID, (LPARAM)metaTag2);
 
-    delete []metaTag.tcHTTPEquiv;
-    delete []metaTag.tcContents;
-
-    //delete [] pMeta->tcHTTPEquiv;
-    //delete [] pMeta->tcContents;
-    //delete pMeta;
+    delete [] metaTag.tcHTTPEquiv;
+    delete [] metaTag.tcContents;
 }
 
 void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEventID)
@@ -487,8 +483,19 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 {
 	LRESULT lResult = S_OK;
 
+	bool m_bFullScreen = RHOCONF().getBool("full_screen");
+
     switch (uMsg) 
 	{
+		case WM_KILLFOCUS:
+		{
+			if (m_bFullScreen)
+			{
+				HWND taskbarWnd = FindWindow(L"HHTaskBar", NULL);
+				ShowWindow(taskbarWnd, SW_HIDE);
+				return FALSE;
+			}
+		}
 		case WM_NOTIFY:
 		{
 			//  Received a message from the Pocket Internet Explorer component
