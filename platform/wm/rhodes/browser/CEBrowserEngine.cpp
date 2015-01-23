@@ -87,6 +87,40 @@ LRESULT CEBrowserEngine::CreateEngine()
 	DWORD			dwFlags;			/// shdocvw client flags
 	IClassFactory	*ppv;				/// pointer variable to hold WebBrowser interface pointer
 
+
+	TCHAR szPlatform[128];
+	memset(szPlatform, 0, 127 * sizeof(TCHAR));
+	SystemParametersInfo(SPI_GETOEMINFO, 127, szPlatform, 0);
+	TCHAR szSIPValue[100];
+	ZeroMemory(szSIPValue,100);
+
+
+		if((_tcsstr(szPlatform,TEXT("MK4000")) != NULL) || (_tcsstr(szPlatform,TEXT("BigBoardMPA3")) != NULL) || (_tcsstr(szPlatform,TEXT("MC18")) != NULL))
+		{
+			HKEY hRegKey= NULL;
+			DWORD Type;
+			DWORD RetSize = 999;
+			DWORD dwManSIP = 0;
+			if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\Main"), 0, 0, &hRegKey)) 
+			{
+
+				RetSize = 999;
+				ZeroMemory(szSIPValue,100);
+
+				RegQueryValueEx(hRegKey, _T("Disable Auto SIP"), NULL, &Type, (BYTE *) &dwManSIP, &RetSize);
+				if(dwManSIP==1)
+				{
+					DWORD dwAutoSIP =0;
+					LONG lResult = RegSetValueEx(hRegKey,_T("Disable Auto SIP"),0,Type,(BYTE *)&dwAutoSIP,sizeof(DWORD));
+					ZeroMemory(szSIPValue,100);
+					_stprintf(szSIPValue,TEXT("lResult:  %d"),lResult);
+				}
+
+				RegCloseKey(hRegKey);
+			}
+		}
+
+	/////////////
 	//we only want to do this once, so check that the m_pBrowser is null
 	if (!m_pBrowser)
 	{
