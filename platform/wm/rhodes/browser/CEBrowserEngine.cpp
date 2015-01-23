@@ -91,8 +91,6 @@ LRESULT CEBrowserEngine::CreateEngine()
 	TCHAR szPlatform[128];
 	memset(szPlatform, 0, 127 * sizeof(TCHAR));
 	SystemParametersInfo(SPI_GETOEMINFO, 127, szPlatform, 0);
-	TCHAR szSIPValue[100];
-	ZeroMemory(szSIPValue,100);
 
 
 		if((_tcsstr(szPlatform,TEXT("MK4000")) != NULL) || (_tcsstr(szPlatform,TEXT("MK3100")) != NULL) || (_tcsstr(szPlatform,TEXT("MC18")) != NULL)|| (_tcsstr(szPlatform,TEXT("MK3000")) != NULL))
@@ -105,15 +103,11 @@ LRESULT CEBrowserEngine::CreateEngine()
 			{
 
 				RetSize = 999;
-				ZeroMemory(szSIPValue,100);
-
 				RegQueryValueEx(hRegKey, _T("Disable Auto SIP"), NULL, &Type, (BYTE *) &dwManSIP, &RetSize);
 				if(dwManSIP==1)
 				{
 					DWORD dwAutoSIP =0;
 					LONG lResult = RegSetValueEx(hRegKey,_T("Disable Auto SIP"),0,Type,(BYTE *)&dwAutoSIP,sizeof(DWORD));
-					ZeroMemory(szSIPValue,100);
-					_stprintf(szSIPValue,TEXT("lResult:  %d"),lResult);
 				}
 
 				RegCloseKey(hRegKey);
