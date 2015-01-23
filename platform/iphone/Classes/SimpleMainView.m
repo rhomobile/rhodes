@@ -53,6 +53,9 @@
 int rho_sys_get_screen_width();
 int rho_sys_get_screen_height();
 
+int rho_net_pull_data( const char* url, char** data, int follow_redirects );
+void rho_net_free_data( const char* data );
+
 @interface RhoToolbarButtonItemAction : NSObject
 {
     NSString *url;
@@ -880,7 +883,17 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)loadRequestToWebView:(NSURLRequest*)request {
     [webView stopLoading];
+  
     [webView loadRequest:request];
+  /*
+    char* data = 0;
+  
+    if (rho_net_pull_data([[[request URL] absoluteString] UTF8String], &data, 1)!=0) {
+        [webView loadHTMLString:[[NSString alloc] initWithUTF8String:data] baseURL:[request URL]];
+    }
+  
+    rho_net_free_data(data);
+  */
     //[request release];
 }
 
@@ -1104,6 +1117,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
     NSURL *url = [request URL];
     if (!url)
         return NO;
+  
+    //return YES;
     
     const char* curl = [[url absoluteString] UTF8String];
     RAWLOG_INFO1("WebView shouldStartLoadWithRequest( %s )", curl);

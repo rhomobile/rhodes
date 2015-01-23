@@ -68,6 +68,9 @@ class CURLNetRequest : public INetRequestImpl
         
         boolean sslVerifyPeer() {return m_sslVerifyPeer;}
         void sslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
+      
+        boolean followRedirects() const { return m_followRedirects; }
+        void setFollowRedirects(boolean follow) { m_followRedirects = follow; }
         
     private:
         void activate();
@@ -83,6 +86,7 @@ class CURLNetRequest : public INetRequestImpl
         boolean m_bTraceCalls;
         long timeout;
         boolean m_sslVerifyPeer;
+        boolean m_followRedirects;
         
         String mStrMethod;
         String mStrUrl;
@@ -111,6 +115,9 @@ public:
 
     virtual boolean getSslVerifyPeer() {return m_curl.sslVerifyPeer();}
     virtual void setSslVerifyPeer(boolean mode){m_curl.sslVerifyPeer(mode);}
+  
+    virtual boolean getFollowRedirects() { return m_curl.followRedirects(); }
+    virtual void setFollowRedirects(boolean follow) { m_curl.setFollowRedirects(follow); }
 
     virtual INetResponse* createEmptyNetResponse();
     

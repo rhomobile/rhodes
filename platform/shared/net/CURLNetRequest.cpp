@@ -43,7 +43,7 @@ namespace rho
 namespace net
 {
 curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl, const String& strBody,
-                             IRhoSession* pSession, Hashtable<String,String>* pHeaders, bool sslVerifyPeer);
+                             IRhoSession* pSession, Hashtable<String,String>* pHeaders, bool sslVerifyPeer, bool followRedirects);
 CURLcode do_curl_perform(CURLM *curlm, CURL *curl);
 	
 IMPLEMENT_LOGCLASS(CURLNetRequest, "Net");
@@ -667,6 +667,8 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     curl_easy_setopt(m_curl, CURLOPT_TCP_NODELAY, 0); //enable Nagle algorithm
     
     curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, (long)m_sslVerifyPeer);
+  
+    curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, (long)m_followRedirects);
     
     // Set very large timeout in case of local requests
     // It is required because otherwise requests (especially requests to writing!)
@@ -760,6 +762,7 @@ CURLNetRequest::CURLHolder::CURLHolder()
     if (timeout == 0)
         timeout = 30; // 30 seconds by default
     m_sslVerifyPeer = true;
+    m_followRedirects = false;
     
     m_curl = curl_easy_init();
     m_curlm = curl_multi_init();

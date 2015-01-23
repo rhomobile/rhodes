@@ -78,6 +78,9 @@ typedef unsigned __int16 uint16_t;
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
 
+//#include <sys/types.h>
+//#include <ifaddrs.h>
+
 //extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 
 namespace rho
@@ -400,6 +403,41 @@ extern "C" void rb_gc(void);
 
 bool CHttpServer::init()
 {
+
+
+/*
+
+
+
+        ifaddrs * ifAddrStruct=NULL;
+        ifaddrs * ifa=NULL;
+        void * tmpAddrPtr=NULL;
+        
+        getifaddrs(&ifAddrStruct);
+        
+        for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next)
+        {
+            if (ifa ->ifa_addr->sa_family == AF_INET) { // check it is IP4
+                // is a valid IP4 Address
+                tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+                char addressBuffer[256];
+                unsigned char *n = (unsigned char*)(tmpAddrPtr);
+                
+                inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, 256);
+                if ((ifa->ifa_name[0] == 'e') && (ifa->ifa_name[1] == 'n')) {
+                  RAWLOG_INFO2("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
+                }
+            }
+      }
+
+        if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
+
+*/
+
+
+
+
+
 	RAWTRACE("Open listening socket...");
     close_listener();
     m_listener = socket(AF_INET, SOCK_STREAM, 0);

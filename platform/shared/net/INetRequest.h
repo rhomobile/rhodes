@@ -83,6 +83,9 @@ struct INetRequestImpl
 
     virtual boolean getSslVerifyPeer() = 0;
     virtual void setSslVerifyPeer(boolean mode) = 0;
+  
+    virtual boolean getFollowRedirects() = 0;
+    virtual void setFollowRedirects(boolean follow) = 0;
 
     virtual INetResponse* createEmptyNetResponse() = 0;
     
@@ -132,10 +135,11 @@ class CNetRequestHolder
     INetRequestImpl*   m_pReq;
     boolean        m_bCancel;
     boolean        m_sslVerifyPeer;
+    boolean         m_followRedirects;
 
 public:
 
-    CNetRequestHolder() : m_pReq(0), m_bCancel(false), m_sslVerifyPeer(true){}
+    CNetRequestHolder() : m_pReq(0), m_bCancel(false), m_sslVerifyPeer(true), m_followRedirects(false){}
 
     void setRequest(INetRequestImpl* pReq);
     void cancel();
@@ -144,6 +148,9 @@ public:
 
     boolean getSslVerifyPeer() {return m_sslVerifyPeer;}
     void setSslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
+  
+    boolean getFollowRedirects() const { return m_followRedirects; }
+    void setFollowRedirects(boolean follow) { m_followRedirects = follow; }
     
     bool isInsideRequest() const;
 };

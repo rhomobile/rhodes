@@ -565,6 +565,34 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 		rho::String strCallbackUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
 		getNetRequest().pushData(strCallbackUrl.c_str(), str_body, null);
 	}
+  
+  int rho_net_pull_data( const char* url, char** data, int follow_redirects )
+  {
+    NetRequest req;
+    
+    req.setFollowRedirects(true);
+    
+    NetResponse res = getNetRequest(&req).pullData( url, 0 );
+    
+    unsigned int dataSize = res.getDataSize();
+    
+    if ( (data != 0) && (dataSize > 0) )
+    {
+      *data = new char[dataSize+1];
+      memcpy(*data,res.getCharData(),res.getDataSize());
+      (*data)[dataSize] = '\0';
+    }
+    
+    return res.isOK()?1:0;
+  }
+  
+  void rho_net_free_data( const char* data )
+  {
+    if ( data != 0 )
+    {
+      delete[] data;
+    }
+  }
     
     
     const char* rho_app_canonicalize_rho_url(const char* url) {
