@@ -3,9 +3,11 @@
 #include "logging/RhoLog.h"
 #include "common/RhoStd.h"
 #include "api_generator/MethodResult.h"
+#include "api_generator/StringifyHelper.h"
 #include "ViewFinder.h"
 #include "commdlg.h"
 #include "TriggerMonitor.h"
+using namespace rho::apiGenerator;
 
 enum eCamType
 {
@@ -34,7 +36,7 @@ public:
 	virtual void takeFullScreen() = 0;
     virtual BOOL showPreview() = 0;
     virtual BOOL hidePreview() = 0;
-	virtual void getSupportedSizeList(rho::Vector<rho::String>& supportedSizeList)=0;
+	virtual void getSupportedSizeList(StringifyVector& supportedSizeList)=0;
 	virtual void Capture() = 0;
 	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback)=0;
 	virtual void ApplicationFocusChange(bool bAppHasFocus)=0;

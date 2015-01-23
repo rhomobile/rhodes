@@ -105,7 +105,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAMS>
                 </PARAM>
                 <PLATFORM>Android, iOS, WP8, WM, CE</PLATFORM>
-                <DESC>List of resolutions (width and height in pixels) supported by the camera. On WM/CE devices this feature is supported only by calor camera and it is not supported by imager.</DESC>
+                <DESC>List of resolutions (width and height in pixels) supported by the camera. On WM/CE devices this feature is supported only by calor camera and it is not supported by imager. Refer example section for more details.</DESC>
             </PROPERTY>
             <PROPERTY name="desiredWidth" type="INTEGER">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -266,7 +266,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAM>
                 </PARAMS>
                 <RETURN type="SELF_INSTANCE">
-                    <DESC>Camera with requested type or nil if not requested type does not exist. In wm/ce devices, it always returns an array of requested type. Refer example section for more details.</DESC>
+                    <DESC>Camera with requested type or nil if not requested type does not exist. Refer example section for more details.</DESC>
                 </RETURN>
             </METHOD>
             <METHOD name="takePicture" hasCallback="mandatory" runInThread="ui">
@@ -760,15 +760,33 @@ function picture_taken_callback(params) {
                 <CODE>                 
                   <JAVASCRIPT>
                     <![CDATA[
-//on wm/ce it return array of instances
-function get_color_camera_instance() {
-  var camInst = Rho.Camera.getCameraByType('color');
-  camInst[0].takePicture({'outputFormat':'image'}, my_callback);
-}
-//on other platforms method always returns single instance
+//get the instance by cameraType and takePicture using that instance
 function get_color_camera_instance() {
   var camInst = Rho.Camera.getCameraByType('color');
   camInst.takePicture({'outputFormat':'image'}, my_callback);
+}
+
+                   ]]>
+                  </JAVASCRIPT>
+                </CODE>
+              </SECTION>
+            </SECTIONS>
+          </EXAMPLE>
+          <EXAMPLE title="Getting the list of resolutions supported by the camera">
+            <SECTIONS>
+              <SECTION>
+                <DESC>Camera resolution is hardware specific. Camera API supports getting the supported resolutions of a camera instance.</DESC>
+                <CODE>
+                  <JAVASCRIPT>
+                    <![CDATA[
+function getsupporteSizeList()
+{
+var instArray = Rho.Camera.enumerate();
+var reslnArray = instArray[0].supportedSizeList;
+alert(reslnArray[0].width);
+alert(reslnArray[0].height);
+alert(reslnArray[1].width);
+alert(reslnArray[1].height);
 }
                    ]]>
                   </JAVASCRIPT>
