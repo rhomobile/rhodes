@@ -69,7 +69,7 @@ class IPhoneBuild
 
         require File.join($rootdir, 'lib','build','jake')
 
-        Jake.run2(cmd,args,{}) do |line|
+        Jake.run2(cmd,args,options) do |line|
           puts process_output(line)
           $stdout.flush
         end

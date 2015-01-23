@@ -58,14 +58,14 @@ namespace "build" do
 
     args = ['build', '-target', '<%= namecamelcase %>', '-configuration', $configuration, '-sdk', $sdk]
 
+    additional_string = ''
     if simulator
-        args << '-arch'
-        args << 'i386'
+        additional_string = ' ARCHS="i386 x86_64"' 
     end
 
     require File.join(ENV['RHO_ROOT'], 'platform','iphone','rbuild','iphonecommon')
 
-    ret = IPhoneBuild.run_and_trace($xcodebuild,args)
+    ret = IPhoneBuild.run_and_trace($xcodebuild,args, {:string_for_add_to_command_line => additional_string})
 
     # copy result to $targetdir
     cp result_lib,target_lib
