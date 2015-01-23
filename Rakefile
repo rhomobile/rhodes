@@ -356,7 +356,7 @@ namespace "clean" do
         end
       end
 
-      if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
+      if (extpath.nil?) && (extname != 'motoapi')
         raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
       end
 
@@ -2494,19 +2494,13 @@ namespace "config" do
     $app_config[$config["platform"]]["capabilities"] and $app_config[$config["platform"]]["capabilities"].is_a? Array
     $app_config["capabilities"] = capabilities
 
-    # Add license related keys in case of shared runtime build
-    if $app_config['capabilities'].index('shared_runtime')
-      $application_build_configs_keys << 'motorola_license'
-      $application_build_configs_keys << 'motorola_license_company'
-    end
     application_build_configs = {}
 
     #Process rhoelements settings
     if $current_platform == "wm" || $current_platform == "android"
       if $app_config["app_type"] == 'rhoelements'
 
-        if !$app_config["capabilities"].index('non_motorola_device')
-          $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
+          $app_config["capabilities"] += ["symbol"] unless $app_config["capabilities"].index("symbol")
           $app_config["extensions"] += ["rhoelementsext"]
           $app_config["extensions"] += ["motoapi"] #extension with plug-ins
 
@@ -2525,7 +2519,6 @@ namespace "config" do
 
           application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
 
-        end
 
         if !$app_config["capabilities"].index('native_browser') && $current_platform != "android"
           $app_config['extensions'] += ['webkit-browser'] unless $app_config['extensions'].index('webkit-browser')
@@ -2641,25 +2634,16 @@ namespace "config" do
       $rhoelements_features << "- Database encryption"
     end
 
-    if $app_config["capabilities"].index("motorola")
-      $rhoelements_features << "- Motorola device capabilities"
+    if $app_config["capabilities"].index("symbol")
+      $rhoelements_features << "- Symbol device capabilities"
     end
 
     if $app_config['extensions'].index('webkit-browser') || $app_config['capabilities'].index('webkit_browser')
-      $rhoelements_features << "- Motorola WebKit Browser"
+      $rhoelements_features << "- Symbol WebKit Browser"
     end
 
     if $app_config['extensions'].index('rho-javascript')
       $rhoelements_features << "- Javascript API for device capabilities"
-    end
-
-    if $app_config["capabilities"].index("shared_runtime") && File.exist?(File.join($app_path, "license.yml"))
-      license_config = Jake.config(File.open(File.join($app_path, "license.yml")))
-
-      if ( license_config )
-        $application_build_configs["motorola_license"] = license_config["motorola_license"] if license_config["motorola_license"]
-        $application_build_configs["motorola_license_company"] = license_config["motorola_license_company"] if license_config["motorola_license_company"]
-      end
     end
 
     if $re_app || $rhoelements_features.length() > 0
@@ -2677,7 +2661,7 @@ namespace "config" do
           if $rhoelements_features.length() > 0
             msg.concat(['The following features are only available in RhoElements v2 and above:',
                         $rhoelements_features,
-                        'For more information go to http://www.motorolasolutions.com/rhoelements '])
+                        'For more information go to http://www.rhomobile.com '])
           end
           msg.concat(
             ["In order to upgrade your account please log in to #{$selected_server}",
@@ -2708,7 +2692,7 @@ namespace "config" do
       BuildOutput.warning([
                             'The following features are only available in RhoElements v2 and above:',
                             $rhoelements_features,
-      'For more information go to http://www.motorolasolutions.com/rhoelements '])
+      'For more information go to http://www.rhomobile.com '])
     end
 
     if $current_platform == "win32" && $winxpe_build
@@ -3069,7 +3053,7 @@ def init_extensions(dest, mode = "")
       end
     end
 
-    if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
+    if (extpath.nil?) && (extname != 'motoapi')
       raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
     end
 
