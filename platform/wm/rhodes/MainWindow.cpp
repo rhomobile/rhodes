@@ -522,8 +522,25 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     {
         //if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
         //{
-        m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+        //m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
         //}
+        
+
+		if(rho::BrowserFactory::getCurrentBrowserType() != eIE)//webkit
+		{
+		 LOG(INFO)+"ResizeOnTab..";
+		 m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+		}
+		else//IE
+		{
+
+			if(RHO_IS_CEDEVICE)//CE IE Engine
+			{
+			 LOG(INFO)+"ResizeOnTab.";
+			 m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+			}
+
+		}
      }
 
     if ( m_toolbar.m_hWnd )
