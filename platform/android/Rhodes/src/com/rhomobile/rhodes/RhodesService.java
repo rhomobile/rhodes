@@ -95,6 +95,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.hardware.Camera;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -850,6 +851,8 @@ public class RhodesService extends Service {
             		Logger.E(TAG, "Exception during detect Camera for has_camera");
             	}
 				*/
+            	int noofCameras=Camera.getNumberOfCameras();
+            	hasCamera=noofCameras==0?false:true;
                 return hasCamera;//Boolean.TRUE;
             }
             else {
