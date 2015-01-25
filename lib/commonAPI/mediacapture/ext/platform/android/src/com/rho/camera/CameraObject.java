@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.util.Log;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -66,6 +67,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
         }
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+			Log.d(TAG,"onPictureTaken");
             Intent intent = new Intent();
             OutputStream stream = null;
             try {
@@ -293,6 +295,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
         Logger.T(TAG, "takePicture");
+		Log.d(TAG,"takePicture");
         try {
             Map<String, String> actualPropertyMap = new HashMap<String, String>();
             actualPropertyMap.putAll(getPropertiesMap());
