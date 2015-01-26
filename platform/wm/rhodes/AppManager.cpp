@@ -222,7 +222,7 @@ int CAppManager::removeOldRhoBundle (void)
 		return RRB_REMOVEOLD_ERR;
 	}
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
 	const char *rhopath = rho_native_rhopath();
 	const char *runtimepath = rho_native_reruntimepath();
 	int rhopath_len = strlen(rhopath);
@@ -233,7 +233,7 @@ int CAppManager::removeOldRhoBundle (void)
 			LOG(ERROR) + "Failed to remove" + "\"" + (root + "lib	") + "\"";
 			return RRB_REMOVEOLD_ERR;
 		}
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
 	}
 #endif
 	

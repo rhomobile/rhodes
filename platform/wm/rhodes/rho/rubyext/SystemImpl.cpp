@@ -916,7 +916,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 #if defined( OS_WINCE )
 	if (strcasecmp("is_motorola_device",szPropName) == 0)
     {
-#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+#ifdef APP_BUILD_CAPABILITY_SYMBOL
    	    //get the system OEM string
 	    TCHAR szPlatform[MAX_PATH+1];
 	    memset(szPlatform, 0, MAX_PATH*sizeof(TCHAR));

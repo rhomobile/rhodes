@@ -142,7 +142,7 @@ void CSystemImplBase::getOsVersion(CMethodResult& oResult)
 #endif
 }
 
-void CSystemImplBase::getIsMotorolaDevice(CMethodResult& oResult)
+void CSystemImplBase::getIsSymbolDevice(CMethodResult& oResult)
 {
     oResult.set(false);
 }

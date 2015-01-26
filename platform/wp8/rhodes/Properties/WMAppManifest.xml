@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Deployment AppPlatformVersion="8.0" xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment">
   <DefaultLanguage code="en-US" xmlns="" />
-  <App Author="Rhomobile" Description="Rhodes" Genre="apps.normal" ProductID="{b6479381-42a8-0130-78de-3caec51bd50e}" Publisher="Motorola Solutions" PublisherID="{ebb6c370-14cc-415e-8d6a-1e948ef4d58d}" RuntimeType="Silverlight" Title="rhodes" Version="1.0.0.0" xmlns="">
+  <App Author="Rhomobile" Description="Rhodes" Genre="apps.normal" ProductID="{b6479381-42a8-0130-78de-3caec51bd50e}" Publisher="Symbol Technologies, Inc." PublisherID="{ebb6c370-14cc-415e-8d6a-1e948ef4d58d}" RuntimeType="Silverlight" Title="rhodes" Version="1.0.0.0" xmlns="">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
