@@ -826,8 +826,9 @@ public class RhodesService extends Service {
             else if (name.equalsIgnoreCase("webview_framework")) {
                 return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
             }
-            else if (name.equalsIgnoreCase("is_motorola_device")) {
-                return isMotorolaDevice();
+            else if (name.equalsIgnoreCase("is_symbol_device") ||
+                    name.equalsIgnoreCase("is_motorola_device")) {
+                return isSymbolDevice();
             }
             else if (name.equalsIgnoreCase("oem_info")) {
                 return Build.PRODUCT;
@@ -861,7 +862,7 @@ public class RhodesService extends Service {
 		return null;
 	}
     
-    public static Boolean isMotorolaDevice() {
+    public static Boolean isSymbolDevice() {
         Boolean res = false;
        /* try
         {
@@ -874,10 +875,10 @@ public class RhodesService extends Service {
         
       //   There is a loading issue if app_type=rhodes. SR EMBPD00111897
         
-      if(isAppInstalled("com.motorolasolutions.emdk.proxyframework") || isAppInstalled("com.motorolasolutions.emdk.datawedge") )
-           return true;
-        else
-            return false;
+      return isAppInstalled("com.symbol.emdk.proxyframework") ||
+             isAppInstalled("com.symbol.emdk.datawedge") ||
+             isAppInstalled("com.motorolasolutions.emdk.proxyframework") ||
+             isAppInstalled("com.motorolasolutions.emdk.datawedge");
     }
 	
 	public static String getTimezoneStr() {
@@ -1327,7 +1328,7 @@ public class RhodesService extends Service {
 		// Get serial number from UUID file built into image
 		try
 		{
-		    if (isMotorolaDevice())
+		    if (isSymbolDevice())
 		    {
 				BufferedReader reader = new BufferedReader(new FileReader("/sys/hardware_id/uuid"));
 				uuid = reader.readLine();
@@ -1347,7 +1348,7 @@ public class RhodesService extends Service {
 	}
 	
 	/**
-	 * This method is used only for non-Motorola devices as the UUID needs to be computed by other parameters.
+	 * This method is used only for non-Symbol devices as the UUID needs to be computed by other parameters.
 	 * @return 32-byte long UUID
 	 */
 	private static String computeUUID()

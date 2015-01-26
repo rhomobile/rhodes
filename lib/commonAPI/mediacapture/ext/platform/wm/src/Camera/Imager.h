@@ -3,6 +3,7 @@
 #include "logging/RhoLog.h"
 #include "common/RhoStd.h"
 #include "Camera.h"
+#include"EmdkDefines.h"
 
  /* Function pointer for Image Capture APIs (Exposed by image capture library ImgAPI32.dll)
  */
@@ -39,6 +40,7 @@ public:
     virtual BOOL showPreview();
     virtual BOOL hidePreview();
 	virtual void Capture();
+	virtual void getSupportedSizeList(StringifyVector& supportedSizeList){};
 private:
 	static IMAGE_FINDCLOSEPROC Image_FindClose;///<Function pointer to Image Capture API
 	static IMAGE_FINDFIRSTPROC Image_FindFirst;///<Function pointer to Image Capture API

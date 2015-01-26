@@ -143,7 +143,7 @@ module WM
       when /^(\s*VALUE\s+"OriginalFilename",\s*)".*"\s*$/
         "#{$1}\"#{$appname}.exe\""
 
-      # VALUE "LegalCopyright", "Motorola Solutions Inc., Copyright (C) 2012"
+      # VALUE "LegalCopyright", "Symbol Technologies, Inc., Copyright (C) 2012"
       when /^(\s*VALUE\s+"LegalCopyright",\s*)".*"\s*$/
         if $app_config['copyright'].nil?
           line

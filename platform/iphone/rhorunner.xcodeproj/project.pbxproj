@@ -105,7 +105,6 @@
 		FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = FACC20C9123A60F40088A447 /* Bluetooth.m */; };
 		FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC20FF123A759A0088A447 /* GameKit.framework */; };
 		FAD047181757A23F00000F15 /* CRhoURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = FAD04713175697F000000F15 /* CRhoURLProtocol.m */; };
-		FAD42C58152CE61A000F906A /* libMotorolaLicence.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD42C57152CE61A000F906A /* libMotorolaLicence.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -342,7 +341,6 @@
 		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		FAD04712175697F000000F15 /* CRhoURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRhoURLProtocol.h; path = URLProtocol/CRhoURLProtocol.h; sourceTree = "<group>"; };
 		FAD04713175697F000000F15 /* CRhoURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRhoURLProtocol.m; path = URLProtocol/CRhoURLProtocol.m; sourceTree = "<group>"; };
-		FAD42C57152CE61A000F906A /* libMotorolaLicence.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMotorolaLicence.a; path = ../../res/libs/motorolalicence/iphone/libMotorolaLicence.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -378,7 +376,6 @@
 				5C59AB4212DDA22E00ED4A1E /* Security.framework in Frameworks */,
 				FA522FE112E49D6F00AB55CC /* QuartzCore.framework in Frameworks */,
 				FA52309412E55CA700AB55CC /* EventKit.framework in Frameworks */,
-				FAD42C58152CE61A000F906A /* libMotorolaLicence.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,7 +453,6 @@
 				BD72CCE4112D629F003B7D27 /* Info.plist */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				FAD42C57152CE61A000F906A /* libMotorolaLicence.a */,
 				C0539BFD1767169700D53DF7 /* MediaPlayer.framework */,
 				46AD7DB21117AFB9009A974A /* MapKit.framework */,
 				46AD7DB61117AFBF009A974A /* CFNetwork.framework */,
@@ -1168,7 +1164,6 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 					"$(SRCROOT)/build/Debug-iphonesimulator",
-					"\"$(SRCROOT)/../../res/libs/motorolalicence/iphone\"",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
@@ -1205,7 +1200,6 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 					"$(SRCROOT)/build/Release-iphoneos",
-					"\"$(SRCROOT)/../../res/libs/motorolalicence/iphone\"",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
@@ -1283,7 +1277,6 @@
 					"$(SRCROOT)",
 					"$(SRCROOT)/build/Debug-iphonesimulator",
 					"$(SRCROOT)/openssl/build",
-					"\"$(SRCROOT)/../../res/libs/motorolalicence/iphone\"",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
