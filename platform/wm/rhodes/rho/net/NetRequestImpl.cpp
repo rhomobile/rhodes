@@ -136,8 +136,8 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
         InternetSetOption( m_hInternet, INTERNET_OPTION_CONNECT_TIMEOUT, &timeout, sizeof(timeout) );
         InternetSetOption( m_hInternet, INTERNET_OPTION_DISCONNECTED_TIMEOUT, &timeout, sizeof(timeout) );
 
-        DWORD timeout_size;
-        InternetQueryOptionW( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, &timeout_size );
+        //DWORD timeout_size;
+        //InternetQueryOptionW( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, &timeout_size );
 
         m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), 
 										 NULL, INTERNET_SERVICE_HTTP, 0, 0 );
