@@ -121,6 +121,20 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
 			break;
 		}
 
+        DWORD timeout = ((DWORD)rho_conf_getInt("net_timeout"))*1000;
+        if (timeout == 0 )
+            timeout = 30000;
+
+        InternetSetOption( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_SEND_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_DATA_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_DATA_SEND_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_CONNECT_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_DISCONNECTED_TIMEOUT, &timeout, sizeof(timeout) );
+
+        DWORD timeout_size;
+        InternetQueryOptionW( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, &timeout_size );
+
         m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), 
 										 NULL, INTERNET_SERVICE_HTTP, 0, 0 );
         if ( !m_hConnection ) 
@@ -128,12 +142,6 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
             m_strErrFunction = L"InternetConnect";
             break;
         }
-
-        int timeout = rho_conf_getInt("net_timeout")*1000;
-        if (timeout == 0 )
-            timeout = 30000;
-
-        InternetSetOption( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) ); 
 
         m_strReqUrlW = m_uri.lpszUrlPath;
         m_strReqUrlW += m_uri.lpszExtraInfo;
