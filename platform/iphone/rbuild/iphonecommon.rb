@@ -81,7 +81,7 @@ class IPhoneBuild
           }
 
           printer = XCPretty::Printer.new(printer_opts)
-        rescue
+        rescue Exception => e
           require File.join(File.dirname(__FILE__),'/../../../lib/build/BuildOutput')
           BuildOutput.note('Please install xcpretty gem in order to have better formatted xcode output','Build hint')
         end
