@@ -664,7 +664,11 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		if (wcsicmp(tcURL, L"history:back") == 0)
 		{
             m_pBrowser->GoBack();
+            m_pBrowser->GoBack();
+            *(pdparams->rgvarg[0].pboolVal) = VARIANT_TRUE;
+            retVal = S_OK;
             break;
+            //SPR 27000 fix
 		}
         if(m_hNavigated==NULL)
             m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
