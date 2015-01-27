@@ -87,15 +87,16 @@ class IPhoneBuild
         end
 
         if printer.nil?
-          Jake.run2(cmd,args,{}) do |line|
+          Jake.run2(cmd,args,options) do |line|
             puts process_output(line)
             $stdout.flush
           end
         else
-          Jake.run2(cmd,args,{}) do |line|
+          Jake.run2(cmd,args,options) do |line|
             printer.pretty_print(line)
             $stdout.flush
           end
+
         end
 
         if $?.exitstatus != 0
