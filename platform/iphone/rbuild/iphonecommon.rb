@@ -69,9 +69,34 @@ class IPhoneBuild
 
         require File.join($rootdir, 'lib','build','jake')
 
-        Jake.run2(cmd,args,options) do |line|
-          puts process_output(line)
-          $stdout.flush
+        printer = nil
+
+        begin
+          require 'xcpretty'
+
+          printer_opts = {
+              :unicode => true,
+              :colorize => STDIN.tty? && STDOUT.tty?,
+              :formatter => XCPretty::Simple
+          }
+
+          printer = XCPretty::Printer.new(printer_opts)
+        rescue Exception => e
+          require File.join(File.dirname(__FILE__),'/../../../lib/build/BuildOutput')
+          BuildOutput.note('Please install xcpretty gem in order to have better formatted xcode output','Build hint')
+        end
+
+        if printer.nil?
+          Jake.run2(cmd,args,options) do |line|
+            puts process_output(line)
+            $stdout.flush
+          end
+        else
+          Jake.run2(cmd,args,options) do |line|
+            printer.pretty_print(line)
+            $stdout.flush
+          end
+
         end
 
         if $?.exitstatus != 0
