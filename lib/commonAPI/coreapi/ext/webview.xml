@@ -22,10 +22,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Webview API: 
+There are two methods of enabling the Webview API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -70,14 +70,14 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="enableZoom" type="BOOLEAN" default="true" readOnly="true">
                 <DESC>Enable WebView zoom. Use 'enable_screen_zoom' parameter in rhoconfig.txt to configure this value.</DESC>
-                <DESC_EB>Enable WebView zoom. Use 'enable_screen_zoom' parameter in Config.xml to configure this value.</DESC_EB>
+                <DESC_EB>Enable WebView zoom. Use 'EnableZoom' parameter in Config.xml to configure this value.</DESC_EB>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true" readOnly="true" productException="eb">
                 <DESC>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in rhoconfig.txt to configure this value.</DESC>
                 <DESC_EB>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in Config.xml to configure this value.</DESC_EB>
                 <PLATFORM>WM, CE, Android</PLATFORM>
-                <APPLIES>WebKit on Windows Mobile/CE</APPLIES> 
+                <APPLIES>WebKit on Windows Mobile/CE</APPLIES>
             </PROPERTY>
             <PROPERTY name="enableWebPlugins" type="BOOLEAN" default="true" readOnly="true" productException="eb">
                 <DESC>Enable / disable web plug-ins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC>
@@ -216,7 +216,7 @@ From RhoElements 2.1 onwards the default value was changed to work out of the bo
 
 If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</DESC>
                 <APPLIES rubyOnly="true"/>
-                
+
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.Tab should be loaded once to return current url.</DESC>
@@ -250,7 +250,7 @@ If you open your page in WebView, and after it makes a few jumps by linking (for
 
 For most mobile platforms, WebView.execute_js has been implemented via redirection to URL with 'javascript:' schema. If WebView.execute_js used in an AJAX call handler method in the controller, it may lead to the situation where the success javascript handler will never be executed. This may happen because, at the moment of success handler should be executed, a URL of the page already has been changed. This means no handlers from the previous page are valid.</DESC>
                 <APPLIES rubyOnly="true"/>
-                
+
                 <PARAMS>
                     <PARAM name="javascriptText" type="STRING">
                         <DESC>The call to the JavaScript method on the current page, such as "test();".</DESC>
@@ -364,14 +364,14 @@ Rho::WebView.executeJavascript("$.mobile.changePage('#my_page');")
                         <CODE>
                             <JAVASCRIPT><![CDATA[
 function greet(name) {
-    alert("Hello, "+name);  
+    alert("Hello, "+name);
 }
 ]]>
                             </JAVASCRIPT>
                         </CODE>
                     </SECTION>
                     <SECTION>
-                        <DESC>From the Ruby controller we can execute the JavaScript function that may be in the view.</DESC> 
+                        <DESC>From the Ruby controller we can execute the JavaScript function that may be in the view.</DESC>
                         <CODE>
                             <RUBY><![CDATA[
 #call a custom JavaScript function from Ruby
@@ -390,7 +390,7 @@ Rho::WebView.executeJavascript("greet('John Doe');")
                         <CODE>
                             <RUBY><![CDATA[
 # Toggle fullScreen on / off
-Rho::WebView.fullScreen = !Rho::WebView.fullScreen 
+Rho::WebView.fullScreen = !Rho::WebView.fullScreen
 ]]>
                             </RUBY>
                         </CODE>
@@ -477,7 +477,7 @@ Rho.WebView.navigateBack();
                         <CODE>
                             <RUBY><![CDATA[
 # Update database or variables here
-# ...     
+# ...
 # Refresh the current page to show new information
 Rho::WebView.refresh
 ]]>
