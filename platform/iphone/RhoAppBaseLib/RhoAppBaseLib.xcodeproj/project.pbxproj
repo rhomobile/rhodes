@@ -830,7 +830,6 @@
 				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -868,7 +867,6 @@
 				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
@@ -944,7 +942,6 @@
 				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
-				VALID_ARCHS = armv7;
 			};
 			name = Distribution;
 		};
