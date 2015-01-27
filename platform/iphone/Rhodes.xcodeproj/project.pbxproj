@@ -413,7 +413,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -451,7 +450,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -495,7 +493,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "../../platform/shared/ruby/iphone ../../platform/shared/ruby/include ../../platform/shared/curl/include ../../platform/shared/ ../../platform/shared/syncengine ../../platform/shared/logging ../../platform/shared/common ../../platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -515,7 +512,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "../../platform/shared/ruby/iphone ../../platform/shared/ruby/include ../../platform/shared/curl/include ../../platform/shared/ ../../platform/shared/syncengine ../../platform/shared/logging ../../platform/shared/common ../../platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
