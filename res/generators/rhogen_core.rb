@@ -1384,6 +1384,12 @@ module RhogenCore
       end
     end
 
+    xml_module_item.elements.each('.//PROPERTY/PARAM') do |xml_param|
+      if xml_param.attribute('type').to_s.upcase == 'HASH'
+        hash_elems << xml_param
+      end
+    end
+
     xml_module_item.elements.each('.//RETURN') do |xml_param|
       if xml_param.attribute('type').to_s.upcase == 'HASH'
         hash_elems << xml_param
