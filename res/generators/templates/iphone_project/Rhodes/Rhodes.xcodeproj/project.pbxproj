@@ -522,7 +522,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "<%= rhodes_root_path %>/platform/shared/ruby/iphone <%= rhodes_root_path %>/platform/shared/ruby/include <%= rhodes_root_path %>/platform/shared/curl/include <%= rhodes_root_path %>/platform/shared/ <%= rhodes_root_path %>/platform/shared/syncengine <%= rhodes_root_path %>/platform/shared/logging <%= rhodes_root_path %>/platform/shared/common <%= rhodes_root_path %>/platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -542,7 +541,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "<%= rhodes_root_path %>/platform/shared/ruby/iphone <%= rhodes_root_path %>/platform/shared/ruby/include <%= rhodes_root_path %>/platform/shared/curl/include <%= rhodes_root_path %>/platform/shared/ <%= rhodes_root_path %>/platform/shared/syncengine <%= rhodes_root_path %>/platform/shared/logging <%= rhodes_root_path %>/platform/shared/common <%= rhodes_root_path %>/platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
