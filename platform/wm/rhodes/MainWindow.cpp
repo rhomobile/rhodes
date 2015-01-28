@@ -821,6 +821,7 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 	LOG(INFO)+"Hide taskbar";	
 	showTaskBar(false);
 	}
+    }
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
 
