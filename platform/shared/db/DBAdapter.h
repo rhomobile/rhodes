@@ -144,7 +144,7 @@ public:
     }
     void bind(sqlite3_stmt* st, int nPos, const String& val)
     {
-        sqlite3_bind_text(st, nPos, val.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(st, nPos, val.c_str(), val.length(), SQLITE_TRANSIENT);
     }
     void bind(sqlite3_stmt* st, int nPos, const char* val)
     {
