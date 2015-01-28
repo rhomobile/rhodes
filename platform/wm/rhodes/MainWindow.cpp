@@ -713,7 +713,8 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     ProcessActivate( FALSE, MAKEWPARAM(0,1), 0 );
 
 	//SetForegroundWindow(m_hWnd);
-
+	LOG(INFO)+"Window getting minimized-Show taskbar..";	
+	showTaskBar(true);
 	::ShowWindow( m_hWnd, SW_MINIMIZE );
 	HWND hwnd = ::GetForegroundWindow();
 	if(hwnd!=NULL)
@@ -725,8 +726,7 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	}
 
 	m_isMinimized = true;
-	LOG(INFO)+"Window getting minimized-Show taskbar";	
-	showTaskBar(true);
+
     return 0;
 }
 
