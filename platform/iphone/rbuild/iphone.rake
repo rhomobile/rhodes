@@ -1821,8 +1821,6 @@ namespace "build" do
         itunes_artwork_in_project_2 = File.join($app_path, "project","iphone","iTunesArtwork@2x")
         itunes_artwork = File.join($app_path, "project","iphone","iTunesArtwork")
 
-      itunes_artwork = File.join($app_path, "/project/iphone/iTunesArtwork")
-
       if !$app_config["iphone"].nil?
         if !$app_config["iphone"]["production"].nil?
           if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
