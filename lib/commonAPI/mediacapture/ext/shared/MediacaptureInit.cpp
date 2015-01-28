@@ -15,7 +15,7 @@ extern "C" void Init_Mediacapture_extension()
     RHODESAPP().getExtManager().requireRubyFile("RhoCameraApi");
 #endif
     LOG(INFO) + __FUNCTION__ + " Loading Videocapture extension";
-    //Init_Videocapture(); //uncomment when all platform support this or whichever support should put under specfic ifdef
+    Init_Videocapture(); //uncomment when all platform support this or whichever support should put under specfic ifdef
 #else
     Init_Camera_extension();
 #endif
