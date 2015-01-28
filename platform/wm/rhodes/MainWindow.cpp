@@ -725,7 +725,8 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	}
 
 	m_isMinimized = true;
-
+	LOG(INFO)+"Window getting minimized-Show taskbar";	
+	showTaskBar(true);
     return 0;
 }
 
@@ -815,9 +816,11 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 #if defined(_WIN32_WCE) 
 	if (m_bFullScreen)
     {
-		//RhoSetFullScreen(fActive!=0);
-		showTaskBar(fActive==0);
-    }
+	if(fActive!=0)//if activated Hide taskbar
+	{
+	LOG(INFO)+"Hide taskbar";	
+	showTaskBar(false);
+	}
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
 
