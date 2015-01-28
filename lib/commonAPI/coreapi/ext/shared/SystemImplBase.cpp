@@ -261,7 +261,7 @@ void CSystemImplBase::zipFiles( const rho::String& localPathToZip,  const rho::S
 }
 
 struct rho_param;
-extern "C" void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode );
+extern "C" void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode, bool check_filelist, bool all_via_callback_only);
 void CSystemImplBase::replaceCurrentBundle( const rho::String& pathToBundle,  const rho::Hashtable<rho::String, rho::String>& params, rho::apiGenerator::CMethodResult& oResult)
 {
     bool do_not_restart_app = false, not_thread_mode = false;
@@ -270,7 +270,7 @@ void CSystemImplBase::replaceCurrentBundle( const rho::String& pathToBundle,  co
     if( params.containsKey("not_thread_mode") )
         convertFromStringA( params.get("not_thread_mode").c_str(), not_thread_mode );
 
-    rho_sys_replace_current_bundleEx( pathToBundle.c_str(), params.containsKey("callback") ? params.get("callback").c_str():0, do_not_restart_app, not_thread_mode );
+    rho_sys_replace_current_bundleEx( pathToBundle.c_str(), params.containsKey("callback") ? params.get("callback").c_str():0, do_not_restart_app, not_thread_mode, false, false );
 }
 
 void CSystemImplBase::deleteFolder( const rho::String& pathToFolder, rho::apiGenerator::CMethodResult& oResult)
