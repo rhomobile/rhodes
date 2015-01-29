@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Camera" parent="Rho"  productException="eb">
+    <MODULE name="Camera" parent="Rho"  productException="eb" generateDoc="false">
         <HELP_OVERVIEW>The Camera API provides access to your device's Camera(s). Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application. Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API
@@ -18,10 +18,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Camera API: 
+There are two methods of enabling the Camera API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -46,7 +46,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
         <PLATFORM>Android, iOS, WM</PLATFORM>
-    
+
         <ALIASES>
             <ALIAS new="Camera" deprecated="true"/>
         </ALIASES>
@@ -144,7 +144,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>The captured image is stored on the device. The callback associated with takePicture will contain the location of the image.</DESC>
                     </VALUE>
                     <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
-                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>                      
+                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
@@ -191,7 +191,7 @@ The ebapi.js file is necessary for all single API inclusions.
 					    <PLATFORM>Android</PLATFORM>
                         <DESC>The flash is turned on in torch mode.</DESC>
                     </VALUE>
-                </VALUES>   
+                </VALUES>
             </PROPERTY>
             <PROPERTY name="saveToDeviceGallery" type="BOOLEAN" default="false">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -229,7 +229,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PLATFORM>ANDROID</PLATFORM>
                 <DESC>Uses the system Camera application to take a picture instead of rhodes' camera. The system Camera application does not accept most rhodes' camera settings and can be adjusted by UI.</DESC>
             </PROPERTY>
-			<PROPERTY name="aimMode" type="STRING">               
+			<PROPERTY name="aimMode" type="STRING">
                 <PLATFORM>WM, CE</PLATFORM>
                 <DESC>Specifies the aim behaviour when taking a picture. Applicable only for imager module.</DESC>
                 <VALUES>
@@ -238,8 +238,8 @@ The ebapi.js file is necessary for all single API inclusions.
                     </VALUE>
                     <VALUE constName="AIM_OFF" value="off">
                         <DESC>switches the imager's aim OFF </DESC>
-                    </VALUE>                   
-                </VALUES>   
+                    </VALUE>
+                </VALUES>
             </PROPERTY>
         </PROPERTIES>
 
@@ -345,37 +345,37 @@ The ebapi.js file is necessary for all single API inclusions.
                         </CAN_BE_NIL>
                     </PARAM>
          </PARAMS>
-			</METHOD> 
+			</METHOD>
 			<METHOD name="hidePreview">
 				<DESC>Hides the preview opened by using showPreview.</DESC>
 				<PLATFORM>WM, CE</PLATFORM>
-			</METHOD> 
+			</METHOD>
 			<METHOD name="capture" hasCallback="mandatory">
 				<DESC>Capture the image and save it to a file.</DESC>
-				<PLATFORM>WM, CE</PLATFORM>	            			
+				<PLATFORM>WM, CE</PLATFORM>
 				<CALLBACK type="HASH">
                     <PARAMS>
-                        <PARAM name="status" type="STRING">						    
+                        <PARAM name="status" type="STRING">
                             <DESC>Whether or not the image was successfully captured. The returned string will be one of 'ok' or 'error'.</DESC>
                         </PARAM>
-                        <PARAM name="imageUri" type="STRING">						   
+                        <PARAM name="imageUri" type="STRING">
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>
                         </PARAM>
-                        <PARAM name="imageHeight" type="INTEGER">						    
+                        <PARAM name="imageHeight" type="INTEGER">
                             <DESC>The actual height of the image that was captured, this may differ from the requested height as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
-                        <PARAM name="imageWidth" type="INTEGER">						     
+                        <PARAM name="imageWidth" type="INTEGER">
                             <DESC>The actual width of the image that was captured, this may differ from the requested width as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
-                        <PARAM name="imageFormat" type="STRING">						    
+                        <PARAM name="imageFormat" type="STRING">
                             <DESC>The format in which the image was captured, either 'png' or 'jpg'.</DESC>
                         </PARAM>
-                        <PARAM name="message" type="STRING">						    
+                        <PARAM name="message" type="STRING">
                             <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
-                        </PARAM>	
+                        </PARAM>
                     </PARAMS>
                 </CALLBACK>
-			</METHOD>  
+			</METHOD>
             <METHOD name="choosePicture" runInThread="module" hasCallback="mandatory" access="static">
                 <DESC>Choose a picture from the album.</DESC>
                 <PARAMS>
@@ -386,7 +386,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
-                </PARAMS>               
+                </PARAMS>
                 <CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">
@@ -453,7 +453,7 @@ def take_picture_with_default_camera
   # Capture an image from the default camera on the device, using the default image settings
   Rho::Camera.takePicture({}, :picture_taken_callback)
 end
-  
+
 def picture_taken_callback
   # Did we really take a picture?
   if (@params["status"]=="ok")
@@ -508,7 +508,7 @@ end
 # choose_camera.erb
 <ul data-role="listview">
   <% $cameras.each_with_index do |camera, index| %>
-    <li><a href="<%= url_for(:action => :take_picture_using_chosen_camera, :query => {:camera_index => index}) %>"><%= camera.cameraType %></li> 
+    <li><a href="<%= url_for(:action => :take_picture_using_chosen_camera, :query => {:camera_index => index}) %>"><%= camera.cameraType %></li>
   <% end %>
 </ul>
                    ]]>
@@ -527,15 +527,15 @@ function choose_camera() {
 
   // build an HTML list
   var cameraList = "<ul>";
-       
+
   for (var cameraIndex=0; cameraIndex<cameras.length; cameraIndex++) {
     var camera = cameras[cameraIndex];
     // Create a link for each camera with an onclick handler
     cameraList = cameraList +'<li><a href="#" class="take_picture_with_selected_camera" onclick="take_picture_with_camera('+cameraIndex+')">'+camera.cameraType+'</a></li>';
   }
-  
+
   cameraList = cameraList+"</ul>";
-  
+
   // make camera list visible to the user
   $("#camera_list").html(cameraList);
 }
@@ -558,9 +558,9 @@ function take_picture_with_camera(cameraIndex) {
                 <RUBY>
            <![CDATA[
 def take_picture_and_save_it_to_gallery
-  Rho::Camera.choosePicture({}, url_for(:action => :picture_taken_callback_save_to_gallery))    
+  Rho::Camera.choosePicture({}, url_for(:action => :picture_taken_callback_save_to_gallery))
 end
-  
+
 def picture_taken_callback_save_to_gallery
   # Did we really take a picture?
   if (@params["status"]=="ok")
@@ -570,7 +570,7 @@ def picture_taken_callback_save_to_gallery
 
   Rho::WebView.navigate(url_for(:action => :index))
 
-end  
+end
                    ]]>
                  </RUBY>
                 <JAVASCRIPT>
@@ -582,7 +582,7 @@ function take_picture_and_save_it_to_gallery() {
 function picture_taken_callback_save_to_gallery(params) {
   if (params["status"]=="ok") {
     Rho.Camera.saveImageToDeviceGallery(Rho.Application.expandDatabaseBlobFilePath(params["imageUri"]));
-      
+
     alert("Image saved to gallery");
   }
 }
@@ -601,19 +601,19 @@ function picture_taken_callback_save_to_gallery(params) {
            <![CDATA[
 def control_image_properties
   # Instead of accepting the defaults, let's set some properties to our liking
-    
+
   # We will ask for a PNG file...
   Rho::Camera.compressionFormat = "png"
-    
+
   # ...a particular image size...
   Rho::Camera.desiredWidth = 1024
   Rho::Camera.desiredHeight = 768
-    
+
   # ...and force the flash to be used
   Rho::Camera.flashMode = "on"
-    
+
   # Now, take the picture
-  Rho::Camera.takePicture({}, :picture_taken_callback)    
+  Rho::Camera.takePicture({}, :picture_taken_callback)
 end
 
 def picture_taken_callback
@@ -632,19 +632,19 @@ end
            <![CDATA[
 function control_image_properties() {
   // Instead of accepting the defaults, let's set some properties to our liking
-  
+
   // We will ask for a PNG file...
   Rho.Camera.compressionFormat = "png";
-  
+
   // ...a particular image size...
   Rho.Camera.desiredWidth = 1024;
   Rho.Camera.desiredHeight = 768;
-  
+
   // ...and force the flash to be used
   Rho.Camera.flashMode = "on";
-  
+
   // Now, take the picture
-  Rho.Camera.takePicture({}, picture_taken_callback);      
+  Rho.Camera.takePicture({}, picture_taken_callback);
 }
 
 function picture_taken_callback(params) {
@@ -678,7 +678,7 @@ end
 
 # determine_camera_capabilities.erb
     <ul data-role="listview">
-    
+
     <% @properties.each_pair do |name,value| %>
       <li><%= name %> : <%= value %></li>
     <% end %>
@@ -689,7 +689,7 @@ end
                 <JAVASCRIPT>
            <![CDATA[
 function determine_camera_capabilities() {
-  var capabilitiesList = "<ul>"; 
+  var capabilitiesList = "<ul>";
 
   // Get all capabilities of the camera...
   var capabilities = Rho.Camera.getAllProperties();
@@ -700,7 +700,7 @@ function determine_camera_capabilities() {
   }
 
   capabilitiesList += "</ul>";
-  
+
   // ... and show it
   $("#camera_capabilities").html(capabilitiesList);
 }
@@ -717,7 +717,7 @@ function determine_camera_capabilities() {
                <CODE>
                 <RUBY>
            <![CDATA[
-def select_picture_from_gallery 
+def select_picture_from_gallery
   Rho::Camera.choosePicture({}, url_for(:action => :picture_taken_callback))
 end
 
