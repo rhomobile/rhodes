@@ -6,8 +6,8 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.util.Log;
 
+import android.util.Log;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -381,5 +381,19 @@ public class CameraObject extends CameraBase implements ICameraObject {
         if (getCamera() != null) {
             getCamera().release();
         }
+    }
+    @Override
+    public void showPreview(Map<String, String> propertyMap, IMethodResult result) {
+        throw new UnsupportedOperationException("Rho.Camera.showPreview is not implemented for Android");
+    }
+    @Override
+    public void hidePreview(IMethodResult result) {
+        throw new UnsupportedOperationException("Rho.Camera.hidePreview is not implemented for Android");
+        
+    }
+    @Override
+    public void capture(IMethodResult result) {
+        throw new UnsupportedOperationException("Rho.Camera.capture is not implemented for Android");
+        
     }
 }

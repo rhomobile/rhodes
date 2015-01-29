@@ -83,15 +83,14 @@ public class CameraSingletonObject implements ICameraSingletonObject {
     }
 
     @Override
-    public void saveImageToDeviceGallery(String pathToImage, IMethodResult result) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public ICameraObject createCameraObject(String id) {
         Logger.T(TAG, "createCameraObject: " + id);
         return new CameraObject(id);
+    }
+    @Override
+    public void copyImageToDeviceGallery(String pathToImage, IMethodResult result) {
+        // TODO Auto-generated method stub
+        
     }
 
 }
