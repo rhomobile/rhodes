@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.util.Log;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.ContextFactory;
 
 public class CameraObject extends CameraBase implements ICameraObject {
@@ -34,6 +36,10 @@ public class CameraObject extends CameraBase implements ICameraObject {
     
     private Camera mCamera;
     private int mCameraUsers;
+    
+    int getCameraIndex() {
+        return CameraSingletonObject.getCameraIndex(getId());
+    }
     
     static class CameraSize implements ICameraObject.ISize {
         private Camera.Size mSize;
@@ -61,6 +67,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
         }
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+			Log.d(TAG,"onPictureTaken");
             Intent intent = new Intent();
             OutputStream stream = null;
             try {
@@ -288,6 +295,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
         Logger.T(TAG, "takePicture");
+		Log.d(TAG,"takePicture");
         try {
             Map<String, String> actualPropertyMap = new HashMap<String, String>();
             actualPropertyMap.putAll(getPropertiesMap());
@@ -331,7 +339,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 intent = new Intent(ContextFactory.getUiContext(), CameraActivity.class);
                 intent.putExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID", getId());
             }
-            RhodesActivity.safeGetInstance().startActivityForResult(intent, Integer.valueOf(getId()).intValue());
+            RhodesActivity.safeGetInstance().startActivityForResult(intent, RhoExtManager.getInstance().getActivityResultNextRequestCode(CameraRhoListener.getInstance()));
         } catch (RuntimeException e) {
             Logger.E(TAG, e);
             result.setError(e.getMessage());
@@ -373,5 +381,19 @@ public class CameraObject extends CameraBase implements ICameraObject {
         if (getCamera() != null) {
             getCamera().release();
         }
+    }
+    @Override
+    public void showPreview(Map<String, String> propertyMap, IMethodResult result) {
+        throw new UnsupportedOperationException("Rho.Camera.showPreview is not implemented for Android");
+    }
+    @Override
+    public void hidePreview(IMethodResult result) {
+        throw new UnsupportedOperationException("Rho.Camera.hidePreview is not implemented for Android");
+        
+    }
+    @Override
+    public void capture(IMethodResult result) {
+        throw new UnsupportedOperationException("Rho.Camera.capture is not implemented for Android");
+        
     }
 }
