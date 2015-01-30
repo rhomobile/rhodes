@@ -3286,6 +3286,7 @@ def init_extensions(dest, mode = "")
   if $config["platform"] != "bb"
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+    f.puts "int rho_ruby_is_started();"
 
     if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
       # Add libraries through pragma
