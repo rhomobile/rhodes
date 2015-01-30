@@ -3,7 +3,6 @@ platform/android/Rhodes/jni/src/JNIRhoRuby.cpp
 platform/android/Rhodes/jni/src/JNIRhoJS.cpp
 platform/android/Rhodes/jni/src/bluetooth.cpp
 platform/android/Rhodes/jni/src/callbacks.cpp
-platform/android/Rhodes/jni/src/camera.cpp
 platform/android/Rhodes/jni/src/datetimepicker.cpp
 platform/android/Rhodes/jni/src/event.cpp
 platform/android/Rhodes/jni/src/fileapi.cpp

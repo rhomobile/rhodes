@@ -14,6 +14,7 @@ import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.Utils;
 
 public class CameraRhoListener extends AbstractRhoListener implements IRhoListener{
@@ -22,15 +23,21 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 
     private IMethodResult mMethodResult;
     private Map<String, String> mActualPropertyMap;
+    private static CameraRhoListener sInstance;
+    static CameraRhoListener getInstance() {
+        return sInstance;
+    }
 
     @Override
     public void onCreateApplication(IRhoExtManager extManager) {
+        sInstance = this;
         CameraFactorySingleton.setInstance(new CameraFactory(this));
         extManager.addRhoListener(this);
         extManager.registerExtension("RhoCameraApi", new CameraExtension());
     }
     @Override
     public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
+        RhoExtManager.getInstance().dropActivityResultRequestCode(requestCode);
         if (mMethodResult == null) {
             return;
         }

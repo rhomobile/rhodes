@@ -16,6 +16,13 @@ public class CameraSingletonObject implements ICameraSingletonObject {
     private static final String TAG = CameraSingletonObject.class.getSimpleName();
 
     private int mId;
+    
+    static int getCameraIndex(String id) {
+        return Integer.valueOf(id.substring(7)).intValue();
+    }
+    static String getCameraId(int idx) {
+        return "camera#" + String.valueOf(idx);
+    }
 
     @Override
     public int getCameraCount() {
@@ -29,15 +36,15 @@ public class CameraSingletonObject implements ICameraSingletonObject {
     
     @Override
     public String getDefaultID() {
-        return String.valueOf(mId);
+        return getCameraId(mId);
     }
 
     @Override
     public void setDefaultID(String id) {
-        mId = Integer.valueOf(id).intValue();
+        mId = getCameraIndex(id);
     }
 
-    public void setDefaultID(int id) {
+    public void setDefaultIndex(int id) {
         mId = id;
     }
 
@@ -47,7 +54,7 @@ public class CameraSingletonObject implements ICameraSingletonObject {
         int cameraCount = getCameraCount();
         Logger.T(TAG, "Number of cameras: " + cameraCount);
         for (int i = 0 ; i < cameraCount; i++) {
-            result.collect(String.valueOf(i));
+            result.collect(getCameraId(i));
         }
         result.set();
     }
@@ -76,15 +83,14 @@ public class CameraSingletonObject implements ICameraSingletonObject {
     }
 
     @Override
-    public void saveImageToDeviceGallery(String pathToImage, IMethodResult result) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public ICameraObject createCameraObject(String id) {
         Logger.T(TAG, "createCameraObject: " + id);
         return new CameraObject(id);
+    }
+    @Override
+    public void copyImageToDeviceGallery(String pathToImage, IMethodResult result) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

@@ -37,14 +37,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerNe
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothSession.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/UUIDHelper.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/camera/Camera.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/camera/CameraService.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/camera/CameraOldService.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/camera/CameraSemiService.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/camera/CameraNewService.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/camera/CameraSettings.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCapture.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCaptureCallback.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePicker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePickerScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/event/Event.java
