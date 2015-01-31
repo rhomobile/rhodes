@@ -608,3 +608,6 @@ extern "C" void Init_Camera_extension()
 	initAliasParams();//prepare a lookup table to support alias parameters for propertybag
 
 }
+extern "C" void Init_Videocapture()
+{
+}
