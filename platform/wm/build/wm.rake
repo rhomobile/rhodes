@@ -899,7 +899,9 @@ namespace "build" do
     end
 
     #    desc "Build wm rhobundle"
-    task :rhobundle, [:exclude_dirs] => ["config:wm", "build:bundle:noxruby"] do
+    task :rhobundle, [:exclude_dirs] do
+      Rake::Task["config:wm"].execute
+      Rake::Task["build:bundle:noxruby"].execute
       Rake::Task["build:wm:extensions"].execute if !$skip_build_extensions
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
