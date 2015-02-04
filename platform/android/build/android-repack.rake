@@ -321,7 +321,7 @@ namespace 'device' do
       Dir.glob(File.join(bundle_path, "**/*")).each do |f|
         next unless File.basename(f) =~ /^_/
         relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
-        underscores << relpath
+        undersrores << relpath
       end
 
       return underscores

@@ -44,8 +44,3 @@ const QString RhoNativeApiCall::apiCall(const QString& msg)
     return QString(res.c_str());
     // how to return JS-object instance: (QVariant) return m_frame->evaluateJavascript("__rhoNativeApi;");
 }
-
-const QString RhoNativeApiCall::toLowerCase(const QString& msg)
-{
-    return msg.toLower();
-}

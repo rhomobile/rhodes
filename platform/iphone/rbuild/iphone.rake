@@ -1051,16 +1051,14 @@ namespace "build" do
 
            args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
-           additional_string = ''
            if simulator
-               #args << '-arch'
-               #args << 'i386'
-               additional_string = ' ARCHS="i386 x86_64"'
+               args << '-arch'
+               args << 'i386'
            end
 
            require   rootdir + '/lib/build/jake.rb'
 
-           ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
+           ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir})
       else
 
         puts "ssskip rebuild because previous builded library is still actual !"
@@ -1106,7 +1104,7 @@ namespace "build" do
       ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "armv7 armv7s arm64"
+      ENV["ARCHS"] ||= simulator ? "i386" : "armv7"
       ENV["RHO_ROOT"] = $startdir
 
       # added by dmitrys
@@ -1320,14 +1318,14 @@ namespace "build" do
                  libbinpath = File.join($app_builddir, "extensions", ext, "lib", "lib"+libname+".a")
 
                  ENV["TARGET_TEMP_DIR"] = prebuiltpath
-                 ENV["ARCHS"] = "i386 x86_64"
+                 ENV["ARCHS"] = "i386"
                  ENV["SDK_NAME"] = simsdk
 
                  build_extension_lib(extpath, simsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libsimpath
                  rm_f libpath
 
-                 ENV["ARCHS"] = nil
+                 ENV["ARCHS"] = "armv7"
                  ENV["SDK_NAME"] = devsdk
                  build_extension_lib(extpath, devsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libdevpath
@@ -1426,16 +1424,14 @@ namespace "build" do
 
            args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
-           additional_string = ''
            if simulator
-           #    args << '-arch'
-           #    args << 'i386 x86_64'
-               additional_string = ' ARCHS="i386 x86_64"'
+               args << '-arch'
+               args << 'i386'
            end
 
            require   $startdir + '/lib/build/jake.rb'
 
-           ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir, :string_for_add_to_command_line => additional_string})
+           ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
       #else
       #
       #  puts "ssskip rebuild because previous builded library is still actual !"
@@ -1816,8 +1812,6 @@ namespace "build" do
         BuildOutput.warning("iTunesArtwork@2x (image required for iTunes) not found - use default !!!" )
       end
 
-      copy_generated_sources_and_binaries
-
       rm_rf 'project/iphone/toremoved'
       rm_rf 'project/iphone/toremovef'
       print_timestamp('build:iphone:make_xcode_project FINISH')
@@ -1893,17 +1887,15 @@ namespace "build" do
 
       args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project]
 
-      additional_string = ''
       if $sdk =~ /iphonesimulator/
-      #   args << '-arch'
-      #   args << 'i386'
-        additional_string = ' ARCHS="i386 x86_64"'
+         args << '-arch'
+         args << 'i386'
       end
 
       ret = 0
 
       if !$skip_build_rhodes_main
-        ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir, :string_for_add_to_command_line => additional_string})
+        ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
       end
 
 
@@ -2553,16 +2545,14 @@ namespace "clean" do
 
       args = ['clean', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
-      additional_string = ''
       if simulator
-      #    args << '-arch'
-      #    args << 'i386'
-        additional_string = ' ARCHS="i386 x86_64"'
+          args << '-arch'
+          args << 'i386'
       end
 
       require   rootdir + '/lib/build/jake.rb'
 
-      ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
+      ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir})
 
       Dir.chdir currentdir
 
@@ -2591,7 +2581,7 @@ namespace "clean" do
       #ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "armv7 armv7s arm64"
+      ENV["ARCHS"] ||= simulator ? "i386" : "armv7"
       ENV["RHO_ROOT"] = $startdir
 
       # added by dmitrys
@@ -2976,13 +2966,10 @@ namespace "device" do
       end
       print_timestamp('application bundle was updated')
 
-
-      chdir parent_app_bin
-
       #sign
       if !is_simulator
 
-
+        chdir parent_app_bin
         rm_rf File.join(parent_app_bin, "Payload/prebuild.app/_CodeSignature")
         rm_rf File.join(parent_app_bin, "Payload/prebuild.app/CodeResources")
 

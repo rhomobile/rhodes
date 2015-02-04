@@ -354,7 +354,7 @@ void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/, bool bByNam
 
         if(m_nCurrentTab != -1)
 		{
-			RHOCONF().setString("title_text", ((m_arTabs[index].m_strTitle.length() > 0)?m_arTabs[index].m_strTitle.c_str():RHOCONF().getString("title_text").c_str()), false);
+			RHOCONF().setString("title_text", m_arTabs[index].m_strTitle.c_str(), false);
 			PostMessage(getAppWindow().m_hWnd, WM_COMMAND, ID_TITLECHANGE, 0);
 		}
 

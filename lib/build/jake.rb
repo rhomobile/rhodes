@@ -352,10 +352,6 @@ class Jake
 
     cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
 
-    if options[:string_for_add_to_command_line] != nil
-      cmdstr = cmdstr + options[:string_for_add_to_command_line]
-    end
-
     $stdout.flush
     unless options[:hide_output]
       puts "PWD: " + Dir.pwd()

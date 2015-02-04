@@ -32,8 +32,6 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebView"
 
-int rho_rhodesapp_check_mode();
-
 static int getIndex(NSValue *value)
 {
     int index;

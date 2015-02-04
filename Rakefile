@@ -2300,19 +2300,15 @@ def get_ssl_cert_bundle_store(rhodes_home, proxy)
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
 
-    begin
-      http.start do |http|
-        resp = http.get(url.path)
-        if resp.code == "200"
-          open(crt_file, "wb") do |file|
-            file.write(resp.body)
-          end
-        else
-          abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
+    http.start do |http|
+      resp = http.get(url.path)
+      if resp.code == "200"
+        open(crt_file, "wb") do |file|
+          file.write(resp.body)
         end
+      else
+        abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
       end
-    rescue
-      abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
     end
   end
 
@@ -3088,7 +3084,7 @@ def init_extensions(dest, mode = "")
       end
     end
 
-    if ((extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')) && ($skip_build_extensions == false)
+    if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
       raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
     end
 
@@ -3316,7 +3312,6 @@ def init_extensions(dest, mode = "")
   if $config["platform"] != "bb"
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-    f.puts "int rho_ruby_is_started();"
 
     if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
       # Add libraries through pragma

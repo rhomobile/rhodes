@@ -312,6 +312,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/JavascriptVM.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -326,6 +327,7 @@
 				OTHER_CFLAGS = "-DRHO_NO_JS_API";
 				PRODUCT_NAME = JavascriptVM;
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv7";
 			};
 			name = Debug;
 		};
@@ -333,6 +335,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /tmp/JavascriptVM.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -343,6 +346,7 @@
 				OTHER_CFLAGS = "-DRHO_NO_JS_API";
 				PRODUCT_NAME = JavascriptVM;
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386  armv7";
 			};
 			name = Release;
 		};

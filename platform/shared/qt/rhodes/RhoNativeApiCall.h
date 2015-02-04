@@ -37,7 +37,6 @@ class RhoNativeApiCall: public QObject
 public:
     RhoNativeApiCall(QWebFrame* frame, QObject* parent = 0): m_frame(frame) {}
     Q_INVOKABLE const QString apiCall(const QString& msg);
-    Q_INVOKABLE const QString toLowerCase(const QString& msg);
 
 public slots:
     void populateJavaScriptWindowObject();

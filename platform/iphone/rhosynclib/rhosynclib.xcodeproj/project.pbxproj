@@ -303,6 +303,7 @@
 				PRODUCT_NAME = rhosynclib;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -324,6 +325,7 @@
 				PRODUCT_NAME = rhosynclib;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
@@ -388,6 +390,7 @@
 				PRODUCT_NAME = rhosynclib;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = armv7;
 			};
 			name = Distribution;
 		};

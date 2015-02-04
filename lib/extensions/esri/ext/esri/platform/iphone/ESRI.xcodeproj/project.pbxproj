@@ -196,6 +196,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_MODULES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
@@ -220,6 +221,7 @@
 				PRODUCT_NAME = ESRI;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 				USER_HEADER_SEARCH_PATHS = "";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -227,6 +229,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_MODULES = YES;
 				DEAD_CODE_STRIPPING = NO;
 				DSTROOT = /tmp/ESRI.dst;
@@ -247,6 +250,7 @@
 				PRODUCT_NAME = ESRI;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 				USER_HEADER_SEARCH_PATHS = "";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};

@@ -35,8 +35,6 @@
 
 #import "MapViewManager.h"
 
-int rho_rhodesapp_check_mode();
-
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MapViewCore"

@@ -45,9 +45,6 @@
 
 #include "sync/RhoconnectClientManager.h"
 
-
-int rho_is_remote_debug();
-
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 extern void Init_strscan();

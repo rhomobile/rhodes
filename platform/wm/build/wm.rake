@@ -1066,11 +1066,7 @@ namespace "build" do
         cp File.join($qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
       else
         # Qt 5
-        if File.exists?(File.join($qtdir, "bin/icudt53.dll"))
-          cp File.join($qtdir, "bin/icudt53.dll"), $target_path
-          cp File.join($qtdir, "bin/icuuc53.dll"), $target_path
-          cp File.join($qtdir, "bin/icuin53.dll"), $target_path
-        elsif File.exists?(File.join($qtdir, "bin/icudt52.dll"))
+        if File.exists?(File.join($qtdir, "bin/icudt52.dll"))
           cp File.join($qtdir, "bin/icudt52.dll"), $target_path
           cp File.join($qtdir, "bin/icuuc52.dll"), $target_path
           cp File.join($qtdir, "bin/icuin52.dll"), $target_path

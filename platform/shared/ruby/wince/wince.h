@@ -4,9 +4,6 @@
 
 #include <tchar.h>
 
-#if defined(APP_BUILD_CAPABILITY_WINXPE)
-#include <stdio.h>
-#endif
 #if defined(_WIN32_WCE) && !defined(APP_BUILD_CAPABILITY_WINXPE)
 #include <winsock2.h>
 //#include "tcmalloc/rhomem.h"

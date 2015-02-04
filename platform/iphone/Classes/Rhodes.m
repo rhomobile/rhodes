@@ -44,9 +44,6 @@
 
 #import "CRhoURLProtocol.h"
 
-int rho_rhodesapp_check_mode();
-void rho_splash_screen_start();
-
 
 /*
 use this non-public code for see level of memory warning 

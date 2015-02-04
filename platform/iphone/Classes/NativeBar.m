@@ -42,7 +42,6 @@ static int started = 0;
 static int toolbar_started = 0;
 static int tabbar_started = 0;
 
-int rho_rhodesapp_check_mode();
 
 
 @interface RhoNativeBarCreateTask : NSObject {}

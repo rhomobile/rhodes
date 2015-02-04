@@ -8,7 +8,7 @@ vendor: rhomobile
 sdkversion: 1.4
 #wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
 iphone: 
-  sdk: iphonesimulator8.1
+  sdk: iphonesimulator7.1
   entitlements: ""
   codesignidentity: ""
   configuration: Release
