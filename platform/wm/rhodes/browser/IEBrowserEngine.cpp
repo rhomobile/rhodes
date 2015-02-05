@@ -58,7 +58,9 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
         m_hparentInst(NULL),
         m_bLoadingComplete(FALSE),
         m_hNavigated(NULL),
-        m_dwNavigationTimeout(45000)
+        m_dwNavigationTimeout(45000),
+        m_urlList(NULL),
+	m_currentPage(NULL)
 {
     m_parentHWND = hParentWnd;    
     m_hparentInst = hInstance;
@@ -81,7 +83,7 @@ CIEBrowserEngine::~CIEBrowserEngine()
     //  Destroy the Browser Object
     DestroyWindow(m_hwndTabHTML);
     m_hwndTabHTML = NULL;
-
+    DeleteCascade(m_urlList);
     //  Destroy the Browser Object's parent if it exists
     if (g_hwndTabHTMLContainer)
     {
@@ -175,9 +177,13 @@ BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 
     if (wcsicmp(tcURL, L"history:back") == 0)
     {
+	TCHAR tcPreviousURL[MAX_URL];
+	LOG(INFO) + "\nDRD history:back tcURL="+tcURL;
+	GetPreviousUrl(tcPreviousURL);
+	Navigate(tcPreviousURL, iTabID);
+	return S_OK;
     }
-    else
-    {
+
         //  Engine component does not accept Navigate(page.html), it needs
         //  the absolute URL of the page, add that here (if the user puts a .\ before)
         TCHAR tcDereferencedURL[MAX_URL];
@@ -212,7 +218,6 @@ BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
         }
         else
             retVal = SendMessage(m_hwndTabHTML, DTM_NAVIGATE, 0, (LPARAM) (LPCTSTR)tcDereferencedURL);
-    }
 
     return retVal;
 }
@@ -447,7 +452,9 @@ void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEvent
 			SetEvent(m_hNavigated);
 			CloseHandle(m_hNavigated);
 			m_hNavigated = NULL;
-            SendMessage(m_parentHWND, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);			
+                        SendMessage(m_parentHWND, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)_tcsdup(tcURL));
+        		AddNewUrl(tcURL);
+			
 			break;
 	}
 }
@@ -606,7 +613,7 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 				CloseHandle(pIEEng->m_hNavigated);
 				pIEEng->m_hNavigated = NULL;
 				SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
-					(WPARAM)pIEEng->m_tabID, (LPARAM)pIEEng->m_tcNavigatedURL);
+					(WPARAM)pIEEng->m_tabID, (LPARAM)_tcsdup(pIEEng->m_tcNavigatedURL));
 
 				break; 
 
@@ -624,6 +631,113 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
     }
 
 	return 0;
+}
+BOOL CIEBrowserEngine::AddNewUrl(LPCTSTR urlNew)
+{
+
+	CHistoryElement* newElement = new CHistoryElement();
+	newElement->pNext = NULL;
+	newElement->pPrev = NULL;
+	newElement->tcURL = new TCHAR[wcslen(urlNew)+1];
+	wcscpy(newElement->tcURL, urlNew);
+
+	//  Base Case, there is no current URL History
+	if (m_urlList == NULL)
+	{
+		//  Start the History List
+		m_urlList = newElement;
+		m_currentPage = newElement;
+	}
+	else
+	{
+		//  There is already at least one item in the history
+		//  Check we're not trying to add the same item to the history
+		//  twice (Reload)
+		if(!wcscmp(m_currentPage->tcURL, urlNew))
+		{
+			LOG(INFO) + "\nDRD Check we're not trying to add the same item to the history twice";
+			delete[] newElement->tcURL;
+			delete newElement;
+			return FALSE;
+		}
+
+		//  Check the History hasn't grown too large
+		//  Assume the Maximum history size is sensible, suggest a value of 50
+		if (BackListSize() >= MAX_HISTORY && MAX_HISTORY > 2)
+		{
+			//  History will be too large after the next element is added
+			//  Remove the first element in the history list and free the memory
+			CHistoryElement* firstElement = m_urlList;
+			m_urlList = m_urlList->pNext;
+			m_urlList->pPrev = NULL;
+			delete[] firstElement->tcURL;
+			delete firstElement;
+		}
+
+		//  Delete all history items FORWARD of the currentPage
+		DeleteCascade(m_currentPage->pNext);
+
+		//  Add the new history item to the List
+		m_currentPage->pNext = newElement;
+		newElement->pPrev = m_currentPage;
+		m_currentPage = newElement;
+	}
+	return TRUE;
+}
+
+
+void CIEBrowserEngine::DeleteCascade(CHistoryElement* fromThisElementOn)
+{
+	CHistoryElement* deletingElement = fromThisElementOn;
+	while (deletingElement != NULL)
+	{
+		delete[] deletingElement->tcURL;
+		deletingElement->tcURL = NULL;
+		CHistoryElement* nextElement = deletingElement->pNext;
+		delete deletingElement;
+		deletingElement = nextElement;
+	}
+}
+
+
+LRESULT  CIEBrowserEngine::GetPreviousUrl(LPTSTR tcURL)
+{
+
+
+	//  Check to see we can go back this many pages
+	CHistoryElement* tempHistoryElement = m_currentPage;
+	if(tempHistoryElement != NULL && tempHistoryElement->pPrev != NULL)
+	{
+		//  We can go to the previous page
+		//  Go back another item in the history
+		tempHistoryElement = tempHistoryElement->pPrev;
+
+
+			m_currentPage = tempHistoryElement;
+			_tcscpy(tcURL,m_currentPage->tcURL);
+			return S_OK;
+
+
+	}
+
+	//  If we exit the While loop we were not able to go back the 
+	//  specified number of places
+	return S_FALSE;
+}
+
+
+
+UINT CIEBrowserEngine::BackListSize()
+{
+	UINT iHistoryCounter = 1;
+	CHistoryElement* tempHistoryElement = m_currentPage;
+	while (tempHistoryElement != NULL && tempHistoryElement->pPrev != NULL)
+	{
+		//  We can go back
+		iHistoryCounter++;
+		tempHistoryElement = tempHistoryElement->pPrev;
+	}
+	return iHistoryCounter;
 }
 
 BOOL CIEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
