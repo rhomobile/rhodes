@@ -6,7 +6,6 @@ module RhoDevelopment
 
   class DeviceFinder
     def run
-
       addresses = Network::available_addresses
       if addresses.length != 1
         puts
@@ -20,10 +19,13 @@ module RhoDevelopment
         selected_address = addresses.last
       end
       mask = selected_address.split('.')[0, 3].join('.')
+      self.discovery(mask)
+    end
 
-      puts "Network mask #{mask}.* will be used".primary
-      print "Discovering..."
-      subscribers = self.parallelDiscovery(mask)
+    def discovery(aString)
+      puts "Network mask #{aString}.* will be used".primary
+      print 'Discovering...'
+      subscribers = self.parallelDiscovery(aString)
       if subscribers.empty?
         puts 'no devices found'.warning
       else
@@ -56,7 +58,7 @@ module RhoDevelopment
             subscriber['application'] = data['applicationName']
             subscribers << subscriber
           rescue *Configuration::handledNetworkExceptions => e
-           # rescue  => e
+            # rescue  => e
             #TODO may be it is necessary remove subscriber from list?
             #puts "#{url} is not accessible. error: #{e.class}".info
           end
