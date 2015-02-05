@@ -26,12 +26,23 @@
 
 package com.rho.camera;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.InvalidParameterException;
+import java.util.Map;
+
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.R;
 
+import android.content.Context;
 import android.graphics.PixelFormat;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.SurfaceView;
 import android.view.View;
@@ -45,21 +56,16 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private CameraPreview mPreview;
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
-
+    
     @Override
     protected void onCreate(Bundle extras) {
         super.onCreate(extras);
         Logger.T(TAG, "onCreate");
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         setContentView(R.layout.camera);
-
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().setFormat(PixelFormat.TRANSLUCENT);
-        
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);        
         findViewById(R.id.cameraButton).setOnClickListener(this);
-
         mPreview = new CameraPreview((SurfaceView)findViewById(R.id.previewSurface));
         mOrientationListener = new OrientationEventListener(this) {
             @Override public void onOrientationChanged(int rotation) {
@@ -67,20 +73,18 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
                 mRotation = rotation;
             }
         };
+        
 
     }
     
     @Override
     protected void onResume() {
         super.onResume();
-        Logger.T(TAG, "onResume");
-        
+        Logger.T(TAG, "onResume");        
         if (mOrientationListener.canDetectOrientation()) {
             mOrientationListener.enable();
         }
-
-        String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
-        
+        String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");        
         ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
         mPreview.startPreview(camera, this);
     }
@@ -88,10 +92,8 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     @Override
     protected void onPause() {
         Logger.T(TAG, "onPause");
-
         mPreview.stopPreview();
-        mOrientationListener.disable();
-        
+        mOrientationListener.disable();        
         super.onPause();
     }
     
@@ -99,13 +101,10 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     public void onClick(View view) {
         Logger.T(TAG, "onClick");
         if (view.getId() == R.id.cameraButton) {
-            Logger.T(TAG, "cameraButton");
+            Logger.T(TAG, "cameraButton");            
             String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
-            
             ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
             camera.doTakePicture(this, (mRotation + 45)/90 * 90);
         }
     }
-
-
 }

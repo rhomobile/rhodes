@@ -1,5 +1,6 @@
 package com.rho.camera;
 
+import android.hardware.Camera;
 import android.os.Build;
 
 import com.rhomobile.rhodes.Logger;
