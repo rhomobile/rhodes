@@ -28,11 +28,11 @@ module RhoDevelopment
       subscribers = self.parallelDiscovery(aString)
       if subscribers.empty?
         puts 'no devices found'.warning
+        exit 1
       else
         puts 'done'.success
         subscribers.each { |each|
           puts each.to_s.info }
-
         print 'Storing subscribers...'.primary
         Configuration::store_subscribers(subscribers)
         puts 'done'.success
