@@ -14,12 +14,8 @@ module RhoDevelopment
       [Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net.const_defined?(:OpenTimeout) ? Net::OpenTimeout : Timeout::Error]
     end
 
-    def self.own_ip_addresses
-      Socket.ip_address_list.select { |each| each.ipv4? and !each.ipv4_loopback? and !each.ipv4_multicast? }.map { |each| each.ip_address }.uniq
-    end
-
     def self.own_ip_address
-      self.own_ip_addresses.first
+      Network::available_addresses.first
     end
 
     def self.webserver_alive_request

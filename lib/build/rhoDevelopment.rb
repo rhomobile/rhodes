@@ -6,6 +6,7 @@ require 'net/http'
 require_relative 'ExtendedString'
 
 require_relative 'development/configuration'
+require_relative 'development/network'
 require_relative 'development/device_finder'
 require_relative 'development/subscriber'
 require_relative 'development/build_server'

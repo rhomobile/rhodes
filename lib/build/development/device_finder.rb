@@ -1,23 +1,25 @@
 require_relative 'configuration'
+require_relative 'network'
 require_relative 'subscriber'
 
 module RhoDevelopment
+
   class DeviceFinder
     def run
 
-      adresses = Configuration::own_ip_addresses.collect { |each| each.split('.')[0, 3].join('.') }
-      if adresses.length != 1
+      addresses = Network::available_addresses
+      if addresses.length != 1
         puts
         puts 'There are several network interfaces with following masks: '.primary
-        adresses.each { |each| puts "#{adresses.index(each) + 1}. #{each}.*" }
+        addresses.each { |each| puts "#{addresses.index(each) + 1}. #{each}.*" }
         puts
         puts 'Please choose one of them: '
         input = STDIN.gets.strip.to_i
-        choosenAddress = adresses[input - 1]
+        selected_address = addresses[input - 1]
       else
-        choosenAddress = adresses.last
+        selected_address = addresses.last
       end
-      mask = choosenAddress.split('.')[0, 3].join('.')
+      mask = selected_address.split('.')[0, 3].join('.')
 
       puts "Network mask #{mask}.* will be used".primary
       print "Discovering..."
