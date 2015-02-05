@@ -380,11 +380,25 @@ namespace 'dev' do
 
   end
 
-  desc 'Discover application on devices in local network - application should be executed on devices'
-  task :discovery => ['config:initialize'] do
-    RhoDevelopment::Configuration::application_root = $app_basedir
-    finder = RhoDevelopment::DeviceFinder.new
-    finder.run
+  namespace :network do
+
+    desc 'Discover application on devices in local network - application should be executed on devices'
+    task :discovery => ['config:initialize'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      finder = RhoDevelopment::DeviceFinder.new
+      finder.run
+    end
+
+    desc 'Return string with available networks masks separated by semicolon. It needs for RhoStudio'
+    task :list do
+      addresses = RhoDevelopment::Network::available_addresses
+      addresses.each {
+          |each|
+        print "#{each}.*"
+        print ';' if addresses.last != each
+      }
+    end
+
   end
 
 end
