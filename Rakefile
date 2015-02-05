@@ -362,7 +362,7 @@ namespace 'dev' do
 
     desc 'It launches development web server. It is certain object which controls executing scheduling tasks, handles requests etc..'
     task :start => ['config:common'] do
-	  RhoDevelopment::Configuration::application_root = $app_basedir
+      RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
     end
 
@@ -384,19 +384,16 @@ namespace 'dev' do
 
     desc 'Discover application on devices in local network - application should be executed on devices'
     task :discovery, [:mask] => ['config:initialize'] do |t, args|
-    if  args[:mask] == nil
+
       RhoDevelopment::Configuration::application_root = $app_basedir
       finder = RhoDevelopment::DeviceFinder.new
-      finder.run
 
-    else
-        RhoDevelopment::Configuration::application_root = $app_basedir
-        finder = RhoDevelopment::DeviceFinder.new
-        finder.discovery(args[:mask])
+      if args[:mask] == nil
+        finder.run
+      else
+        finder.discovery((args[:mask]).split('.')[0, 3].join('.'))
+      end
     end
-    end
-
-
 
     desc 'Return string with available networks masks separated by semicolon. It needs for RhoStudio'
     task :list do
@@ -407,9 +404,6 @@ namespace 'dev' do
         print ';' if addresses.last != each
       }
     end
-
-
-
   end
 
 end
