@@ -57,6 +57,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private CameraPreview mPreview;
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
+    MediaPlayer _shootMP = null;
     
     @Override
     protected void onCreate(Bundle extras) {
@@ -94,7 +95,8 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     protected void onPause() {
         Logger.T(TAG, "onPause");
         mPreview.stopPreview();
-        mOrientationListener.disable();        
+        mOrientationListener.disable();      
+        _shootMP.release();
         super.onPause();
     }
     
@@ -111,8 +113,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     
     public void playMusic(String musicPath)
     {
-    	MediaPlayer _shootMP = null;
-        AudioManager meng = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+    	AudioManager meng = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
         int volume = meng.getStreamVolume( AudioManager.STREAM_NOTIFICATION);
 
         if (volume != 0)
