@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.InvalidParameterException;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.rhomobile.rhodes.Logger;
@@ -56,6 +57,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private CameraPreview mPreview;
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
+    MediaPlayer _shootMP = null;
     
     @Override
     protected void onCreate(Bundle extras) {
@@ -93,7 +95,8 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     protected void onPause() {
         Logger.T(TAG, "onPause");
         mPreview.stopPreview();
-        mOrientationListener.disable();        
+        mOrientationListener.disable();      
+        _shootMP.release();
         super.onPause();
     }
     
@@ -105,6 +108,22 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
             String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
             ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
             camera.doTakePicture(this, (mRotation + 45)/90 * 90);
+        }
+    }
+    
+    public void playMusic(String musicPath)
+    {
+    	AudioManager meng = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+        int volume = meng.getStreamVolume( AudioManager.STREAM_NOTIFICATION);
+
+        if (volume != 0)
+        {
+        	
+			if (_shootMP == null)
+            //    _shootMP = MediaPlayer.create(getBaseContext(), Uri.parse("file:///sdcard/malaya/sleep_away.3gpp"));
+				_shootMP = MediaPlayer.create(getBaseContext(), Uri.parse(musicPath));
+            if (_shootMP != null)
+                _shootMP.start();
         }
     }
 }
