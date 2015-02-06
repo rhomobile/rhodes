@@ -697,7 +697,7 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	{
 		wchar_t szBuf[200];
 		::GetWindowText(hwnd,szBuf,199);
-		if(wcscmp(szBuf, L"Motorola RhoElements") == 0)
+		if(wcscmp(szBuf, L"RhoElements") == 0)
 			::ShowWindow(hwnd, SW_MINIMIZE);
 	}
 
@@ -1459,7 +1459,7 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 
 LRESULT CMainWindow::OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    ::MessageBoxW( m_hWnd, L"Please provide RhoElements license key.", L"Motorola License", MB_ICONERROR | MB_OK);
+    ::MessageBoxW( m_hWnd, L"Please provide RhoElements license key.", L"Symbol License", MB_ICONERROR | MB_OK);
 
     return 0;
 }

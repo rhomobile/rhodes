@@ -2,7 +2,7 @@
 #include "Common/RhoUtil.h"
 #include "common/RhodesApp.h"
 #include "common/ExtManager.h"
-
+#include <atltime.h>
 #define DEFAULT_FILENAME L"\\Img"
 #define TRIGGER_EVENT_NAME L"CameraTrigger"
 
@@ -299,17 +299,13 @@ void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho:
 	{	
 		
 		rho::String outputFormat;
+		outputFormat = "jpg";//note, there is a confusion here, outputFormat we use here is to say in what format image saved
 		if(m_eOutputFormat == eImageUri)
-		{
-			outputFormat = "image";
+		{			
 			//for image path, set file:// as well so that user can access the link
 			rho::String pathPrefix = "file://";
 			imageUri= pathPrefix + imageUri;
 
-		}
-		else
-		{
-			outputFormat = "dataUri";
 		}		
 		statusData.put( "imageFormat", outputFormat);
 		statusData.put( "imageUri", imageUri);
@@ -448,4 +444,31 @@ void CCamera::DisableFullScreenButtons()
 {
 	m_ViewFinder.DisableFullScreenButtons();
 }
+rho::StringW CCamera::getFileName()
+{
+	rho::StringW szExtn = L".jpg";
+	if(cmp(m_FileName.c_str(), DEFAULT_FILENAME))
+	{
+		//get time stamp along with extension for default file names
+		szExtn = generate_filename(szExtn.c_str());
+	}
+	return m_FileName + szExtn;
 
+}
+
+rho::StringW CCamera::generate_filename(LPCTSTR szExt) 
+{
+    TCHAR filename[256];
+
+	CTime time(CTime::GetCurrentTime());
+	tm tl, tg;
+	time.GetLocalTm(&tl);
+	time.GetGmtTm(&tg);
+	int tz = tl.tm_hour-tg.tm_hour; //TBD: fix tz
+
+    wsprintf(filename, L"_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i%s", 
+		tg.tm_mon, tg.tm_mday, 1900+tg.tm_year, tg.tm_hour, tg.tm_min, tg.tm_sec,  
+        tz>0?'_':'-',abs(tz),(szExt?szExt:L""));
+
+	return filename;
+}

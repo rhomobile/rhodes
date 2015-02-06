@@ -384,9 +384,6 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators);
 const char* rho_rhodesapp_getStartParametersOriginal();
 void rho_rhodesapp_setStartParametersOriginal(const char* szParams);
     
-// return 1 only if "motorola_licence" and "motorola_licence" property is exist and correct !
-int rho_is_motorola_licence_checked(const char* szLicence, const char* szCompany, const char* szAppName);
-    
 int rho_can_app_started_with_current_licence(const char* szLicence, const char* szCompany, const char* szAppName);
 int rho_is_rho_elements_extension_can_be_used(const char* szLicence);
 

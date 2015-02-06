@@ -1,4 +1,8 @@
 module Rhom
+
+  class RecordNotFound < StandardError
+  end
+  
   class RhomObjectFactory
 
     # Initialize new object with dynamic attributes
@@ -10,6 +14,10 @@ module Rhom
         @klass_model = klass_model_obj
         def self.klass_model
           @klass_model
+        end
+
+        def self.get_source_id
+          @klass_model.source_id
         end
 
         def self.method_missing(method_sym, *args, &block)
@@ -95,10 +103,11 @@ module Rhom
                 value = value.split(",")
                 value.each do |item|
                   item.strip!
-                  if item.start_with?("\"") && item.end_with?("\"")
-                    item.slice!(0)
-                    item.chop!
-                  end
+
+                  need_unescape = (item.start_with?('\'') && item.end_with?('\'')) ||
+                  (item.start_with?('\"') && item.end_with?('\"')) 
+                    
+                  item = need_unescape ? item[1..-1] : item
                 end
               end
 
@@ -200,7 +209,7 @@ module Rhom
         end
 
         def self.find(*args, &block)
-          raise "OrmFindError: invalid arguments" if args[0].nil? or args.length == 0
+          raise RecordNotFound if args[0].nil? or args.length == 0
           args[0] = args[0].to_s
           args[1] = args[1] || {}
           retVal = nil
@@ -247,7 +256,17 @@ module Rhom
           end
 
           if retVal.is_a?Array
-            return retVal unless retVal.size() > 0
+            # as per description http://apidock.com/rails/v2.3.8/ActiveRecord/Base/find/class
+            if retVal.empty?
+              case args[0]
+                when 'first', 'last'
+                  return nil
+                when 'all'
+                  return retVal
+                else
+                  return nil          
+              end
+            end
 
             # if arg[0] is :first or objId return one object
             return self.new(retVal[0]) if (args[0] != 'all')
@@ -356,8 +375,15 @@ module Rhom
           klass_model.pushChanges
         end
 
-        # This holds the attributes for an instance of
-        # the rhom object
+        def update_var(key, value)
+          key_s = key.to_sym()
+          if value
+            @vars[key_s] = value 
+          else
+            @vars.delete(key_s)
+          end
+        end
+
         attr_accessor :vars
 
         def initialize(obj={})
@@ -366,16 +392,12 @@ module Rhom
           unless obj[:object] or obj['object']
             objHash = self.class.klass_model.createInstance(obj)
           end
-          objHash.each do |key,value|
-            self.vars[key.to_sym()] = value
-          end
+          objHash.each { |key,value| update_var(key, value)}
         end
 
         def update_attributes(attrs)
           objHash = self.class.klass_model.updateObject(self.object, @vars, attrs)
-          objHash.each do |key, value|
-            self.vars[key.to_sym()] = value
-          end
+          objHash.each { |key,value| update_var(key, value)}
           true
         end
 
@@ -383,9 +405,7 @@ module Rhom
           #objId = self.object
           #attrs = @vars.collect { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
           objHash = self.class.klass_model.saveObject(self.object, @vars)
-          objHash.each do |key, value|
-            self.vars[key.to_sym()] = value
-          end
+          objHash.each { |key,value| update_var(key, value)}
           true
         end
 
@@ -407,7 +427,7 @@ module Rhom
             if method_sym[-1] == '='
               s_name = method_sym.to_s.chop
               self.class.klass_model.validateFreezedAttribute(s_name)
-              @vars[s_name.to_sym()] = args[0]
+              update_var(s_name.to_sym(), args[0])
             else
               @vars[method_sym]
             end

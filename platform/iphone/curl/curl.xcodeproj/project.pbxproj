@@ -769,7 +769,6 @@
 				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -792,7 +791,6 @@
 				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
@@ -807,7 +805,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = armv7;
 			};
 			name = Debug;
 		};
@@ -821,7 +818,6 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = armv7;
 			};
 			name = Release;
 		};
@@ -835,7 +831,6 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = armv7;
 			};
 			name = Distribution;
 		};
@@ -858,7 +853,6 @@
 				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = armv7;
 			};
 			name = Distribution;
 		};

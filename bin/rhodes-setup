@@ -9,15 +9,15 @@ def prompt_for(question, suggestion, required, validation = "")
   if required
     while  not File.exists? newanswer + validation
       print "JDK path (required) (#{suggestion}): "
-      newanswer = gets.chomp!
+      newanswer = STDIN.gets.chomp!
       newanswer = suggestion if newanswer == ""
-      puts "Invalid JDK path" unless File.exists? newanswer  + validation
+      STDOUT.puts "Invalid JDK path" unless File.exists? newanswer  + validation
     end
   else
     while newanswer != "" and not File.exists? newanswer + validation
       print "#{question} (blank to skip) (#{suggestion}): "
-      newanswer = gets.chomp!
-      puts "Invalid #{question}" if newanswer != "" and not File.exists? newanswer + validation
+      newanswer = STDIN.gets.chomp!
+      STDOUT.puts "Invalid #{question}" if newanswer != "" and not File.exists? newanswer + validation
     end
   end
 
@@ -27,7 +27,7 @@ def prompt_for(question, suggestion, required, validation = "")
 end
 
 rhobuildyml = File.expand_path(File.dirname(__FILE__) + "/../") + "/rhobuild.yml"
-puts "We will ask you a few questions below about your dev environment.\n\n"
+STDOUT.puts "We will ask you a few questions below about your dev environment.\n\n"
 
 #first try and find java
 java = ""
@@ -98,7 +98,7 @@ jde42mds = File.expand_path("C:/Program Files/Research In Motion/BlackBerry Emai
 
 jde42mds = prompt_for("BlackBerry JDE 4.2 MDS", jde42mds, false)
 
-puts "\nIf you want to build with other BlackBerry SDK versions edit: #{rhobuildyml}\n\n"
+STDOUT.puts "\nIf you want to build with other BlackBerry SDK versions edit: #{rhobuildyml}\n\n"
 
 
 if File.exists? rhobuildyml

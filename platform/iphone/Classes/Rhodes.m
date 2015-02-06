@@ -44,6 +44,9 @@
 
 #import "CRhoURLProtocol.h"
 
+int rho_rhodesapp_check_mode();
+void rho_splash_screen_start();
+
 
 /*
 use this non-public code for see level of memory warning 
@@ -411,8 +414,22 @@ static Rhodes *instance = NULL;
         else 
 #endif
         {
-            if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_FRONT) {
-                picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+            if (type == UIImagePickerControllerSourceTypeCamera) {
+                if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_FRONT) {
+                    picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+                }
+                if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_MAIN) {
+                    picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+                }
+                if (delegateObject.settings.flash_mode == CAMERA_SETTINGS_FLASH_AUTO) {
+                    picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeAuto;
+                }
+                if (delegateObject.settings.flash_mode == CAMERA_SETTINGS_FLASH_OFF) {
+                    picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+                }
+                if (delegateObject.settings.flash_mode == CAMERA_SETTINGS_FLASH_ON) {
+                    picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOn;
+                }
             }
             
             //[window addSubview:picker.view];
@@ -430,7 +447,7 @@ static Rhodes *instance = NULL;
     if (!rho_rhodesapp_check_mode())
         return;
 #ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
-    [pickImageDelegate setPostUrl:settings.callback_url];
+    //[pickImageDelegate setPostUrl:settings.callback_url];
 #endif
     pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
@@ -499,7 +516,7 @@ static Rhodes *instance = NULL;
     if (!rho_rhodesapp_check_mode())
         return;
 #ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
-    [pickImageDelegate setPostUrl:settings.callback_url];
+    //[pickImageDelegate setPostUrl:settings.callback_url];
 #endif
     pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
@@ -1080,28 +1097,6 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
         */
         //exit(EXIT_SUCCESS);
     }
-    /*  REMOVED LICENSE
-    if (!rho_can_app_started_with_current_licence(
-               get_app_build_config_item("motorola_license"),
-               get_app_build_config_item("motorola_license_company"),
-               get_app_build_config_item("name")))
-    {
-		NSLog(@"############################");
-		NSLog(@" ");
-		NSLog(@"ERROR: motorola_license is INVALID !");
-		NSLog(@" ");
-		NSLog(@"############################");
-        //exit(EXIT_SUCCESS);
-        //[self exit_with_errormessage:@"Motorola Licence" message:@"Your licence key is invalid !"];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Motorola License" 
-                                                            message:@"Please provide RhoElements license key."
-                                                           delegate:nil 
-                                                  cancelButtonTitle:@"OK" 
-                                                  otherButtonTitles: nil];
-            [alert show];
-            [alert release];
-    }
-    */
 	
 	return NO;
 }

@@ -1050,14 +1050,16 @@ namespace "build" do
 
            args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
+           additional_string = ''
            if simulator
-               args << '-arch'
-               args << 'i386'
+               #args << '-arch'
+               #args << 'i386'
+               additional_string = ' ARCHS="i386 x86_64"'
            end
 
            require   rootdir + '/lib/build/jake.rb'
 
-           ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir})
+           ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
       else
 
         puts "ssskip rebuild because previous builded library is still actual !"
@@ -1103,7 +1105,7 @@ namespace "build" do
       ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386" : "armv7"
+      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "armv7 armv7s arm64"
       ENV["RHO_ROOT"] = $startdir
 
       # added by dmitrys
@@ -1317,14 +1319,14 @@ namespace "build" do
                  libbinpath = File.join($app_builddir, "extensions", ext, "lib", "lib"+libname+".a")
 
                  ENV["TARGET_TEMP_DIR"] = prebuiltpath
-                 ENV["ARCHS"] = "i386"
+                 ENV["ARCHS"] = "i386 x86_64"
                  ENV["SDK_NAME"] = simsdk
 
                  build_extension_lib(extpath, simsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libsimpath
                  rm_f libpath
 
-                 ENV["ARCHS"] = "armv7"
+                 ENV["ARCHS"] = nil
                  ENV["SDK_NAME"] = devsdk
                  build_extension_lib(extpath, devsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libdevpath
@@ -1423,14 +1425,16 @@ namespace "build" do
 
            args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
+           additional_string = ''
            if simulator
-               args << '-arch'
-               args << 'i386'
+           #    args << '-arch'
+           #    args << 'i386 x86_64'
+               additional_string = ' ARCHS="i386 x86_64"'
            end
 
            require   $startdir + '/lib/build/jake.rb'
 
-           ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
+           ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir, :string_for_add_to_command_line => additional_string})
       #else
       #
       #  puts "ssskip rebuild because previous builded library is still actual !"
@@ -1945,15 +1949,17 @@ namespace "build" do
 
       args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project]
 
+      additional_string = ''
       if $sdk =~ /iphonesimulator/
-         args << '-arch'
-         args << 'i386'
+      #   args << '-arch'
+      #   args << 'i386'
+        additional_string = ' ARCHS="i386 x86_64"'
       end
 
       ret = 0
 
       if !$skip_build_rhodes_main
-        ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
+        ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir, :string_for_add_to_command_line => additional_string})
       end
 
 
@@ -2603,14 +2609,16 @@ namespace "clean" do
 
       args = ['clean', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
+      additional_string = ''
       if simulator
-          args << '-arch'
-          args << 'i386'
+      #    args << '-arch'
+      #    args << 'i386'
+        additional_string = ' ARCHS="i386 x86_64"'
       end
 
       require   rootdir + '/lib/build/jake.rb'
 
-      ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir})
+      ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
 
       Dir.chdir currentdir
 
@@ -2639,7 +2647,7 @@ namespace "clean" do
       #ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386" : "armv7"
+      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "armv7 armv7s arm64"
       ENV["RHO_ROOT"] = $startdir
 
       # added by dmitrys
