@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.InvalidParameterException;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.rhomobile.rhodes.Logger;
@@ -105,6 +106,23 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
             String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
             ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
             camera.doTakePicture(this, (mRotation + 45)/90 * 90);
+        }
+    }
+    
+    public void playMusic(String musicPath)
+    {
+    	MediaPlayer _shootMP = null;
+        AudioManager meng = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+        int volume = meng.getStreamVolume( AudioManager.STREAM_NOTIFICATION);
+
+        if (volume != 0)
+        {
+        	
+			if (_shootMP == null)
+            //    _shootMP = MediaPlayer.create(getBaseContext(), Uri.parse("file:///sdcard/malaya/sleep_away.3gpp"));
+				_shootMP = MediaPlayer.create(getBaseContext(), Uri.parse(musicPath));
+            if (_shootMP != null)
+                _shootMP.start();
         }
     }
 }

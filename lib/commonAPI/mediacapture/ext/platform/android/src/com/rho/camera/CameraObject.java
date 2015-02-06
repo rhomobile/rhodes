@@ -10,6 +10,7 @@ import java.util.Map;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -64,8 +65,10 @@ public class CameraObject extends CameraBase implements ICameraObject {
 
     protected class TakePictureCallback implements Camera.PictureCallback {
         private Activity mPreviewActivity;
+        private CameraActivity mcameraActivity;
         TakePictureCallback(Activity previewActivity) {
             mPreviewActivity = previewActivity;
+            mcameraActivity = (CameraActivity) previewActivity;
         }
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {        	
@@ -78,8 +81,13 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 if (propertyMap == null) {
                     throw new RuntimeException("Camera property map is undefined");
                 }
-                
+             
                 String outputFormat = propertyMap.get("outputFormat");
+             
+                if(propertyMap.containsKey("captureSound")){
+                	mcameraActivity.playMusic(propertyMap.get("captureSound"));
+                }
+                
                 String filePath = null;
                 Uri resultUri = null;
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
@@ -139,8 +147,8 @@ public class CameraObject extends CameraBase implements ICameraObject {
             }
             bitmap.recycle();
             mPreviewActivity.finish();
-            
-        } 
+            mcameraActivity.finish();
+        }		
     }
 
     protected Camera getCamera() { return mCamera; }
@@ -206,20 +214,18 @@ public class CameraObject extends CameraBase implements ICameraObject {
     public ISize setPreviewSize(int width, int height) {
     	Camera camera = getCamera();
         Camera.Parameters parameters = camera.getParameters();       
-        Intent intent = new Intent();
         List<android.hardware.Camera.Size> sizes = camera.getParameters().getSupportedPictureSizes();        
         android.hardware.Camera.Size maxSize=sizes.get(0);       
         if(getActualPropertyMap().containsKey("desiredWidth") || getActualPropertyMap().containsKey("desiredHeight")){
         	int desired_width = Integer.parseInt(getActualPropertyMap().get("desiredWidth"));
-            int desired_height = Integer.parseInt(getActualPropertyMap().get("desiredHeight"));            
+            int desired_height = Integer.parseInt(getActualPropertyMap().get("desiredHeight"));               
         	if(desired_width > 0 && desired_width <= maxSize.width && desired_height > 0 && desired_height <= maxSize.height){        	
         	 Camera.Size previewSize = getOptimalPreviewSize(parameters.getSupportedPictureSizes(), desired_width, desired_height);
         	 Logger.T(TAG, "Selected size: " + previewSize.width + "x" + previewSize.height);             
              parameters.setPreviewSize(previewSize.width, previewSize.height);
         	}
-        	else{
-        		//Handle error message
-        		intent.putExtra("error", "Please enter a valid desired value");        		
+        	else{ 
+        		parameters.setPreviewSize(320, 240);
         	}
         }
         else{
