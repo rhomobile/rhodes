@@ -18,21 +18,21 @@ module RhoDevelopment
       @listeners.any? { |each| each.processing? }
     end
 
-    def add_directory(aString)
-      listener = Listen.to(aString, debug: true) do |modified, added, removed|
+    def add_directory(string)
+      listener = Listen.to(string, debug: true) do |modified, added, removed|
         self.on_file_changed(added, modified, removed)
       end
 
       @listeners << listener
     end
 
-    def on_file_changed(addedFiles, changedFiles, removedFiles)
+    def on_file_changed(added_files, changed_files, removed_files)
       puts 'Files changed...'
-      puts "File added: #{addedFiles}"
-      puts "File changed: #{changedFiles}"
-      puts "File removed: #{removedFiles}"
+      puts "File added: #{added_files}"
+      puts "File changed: #{changed_files}"
+      puts "File removed: #{removed_files}"
       begin
-        self.create_diff_files(addedFiles, changedFiles, removedFiles)
+        self.create_diff_files(added_files, changed_files, removed_files)
         WebServer::dispatch_task(AllPlatformsPartialBundleBuildingTask.new)
         WebServer::dispatch_task(AllSubscribersPartialUpdateNotifyingTask.new)
       rescue => e
@@ -42,29 +42,29 @@ module RhoDevelopment
       end
     end
 
-    def create_diff_files(addedFiles, changedFiles, removedFiles)
-      self.write_list_of_updated_files(addedFiles, changedFiles)
-      self.write_lis_of_removed_files(removedFiles)
+    def create_diff_files(added_files, changed_files, removed_files)
+      self.write_list_of_updated_files(added_files, changed_files)
+      self.write_lis_of_removed_files(removed_files)
     end
 
-    def write_list_of_updated_files(addedFiles, changedFiles)
-      self.write_array_to_file('upgrade_package_add_files.txt', addedFiles + changedFiles)
+    def write_list_of_updated_files(added_files, changed_files)
+      self.write_array_to_file('upgrade_package_add_files.txt', added_files + changed_files)
     end
 
-    def write_lis_of_removed_files(removedFiles)
-      self.write_array_to_file('upgrade_package_remove_files.txt', removedFiles)
+    def write_lis_of_removed_files(removed_files)
+      self.write_array_to_file('upgrade_package_remove_files.txt', removed_files)
     end
 
-    def write_array_to_file(filename, anArray)
+    def write_array_to_file(filename, array)
       path = File.join(Configuration::application_root, filename)
       File.open(path, 'w') { |file|
-        anArray.each { |each| file.puts(self.relative_path(each)) }
+        array.each { |each| file.puts(self.relative_path(each)) }
       }
     end
 
-    def relative_path(aString)
+    def relative_path(string)
       first = Pathname Configuration::application_root
-      second = Pathname aString
+      second = Pathname string
       second.relative_path_from first
     end
 
