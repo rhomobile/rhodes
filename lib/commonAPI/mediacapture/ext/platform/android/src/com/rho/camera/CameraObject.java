@@ -147,7 +147,6 @@ public class CameraObject extends CameraBase implements ICameraObject {
             }
             bitmap.recycle();
             mPreviewActivity.finish();
-            mcameraActivity.finish();
         }		
     }
 
