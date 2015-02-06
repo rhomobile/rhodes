@@ -356,6 +356,16 @@ namespace 'dev' do
       updater.run
     end
 
+    desc 'It stop auto update process'
+    task :auto_stop => ['config:common'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      url = RhoDevelopment::Configuration::auto_update_pid_request
+      http = Net::HTTP.new(url.host, url.port)
+      http.open_timeout = 5
+      response = http.get(url.path)
+      Process.kill('SIGTERM', response.body.to_i)
+    end
+
   end
 
   namespace :webserver do

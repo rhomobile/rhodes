@@ -26,6 +26,10 @@ module RhoDevelopment
       URI.join(self.webserver_uri, 'shutdown')
     end
 
+    def self.auto_update_pid_request
+      URI.join(self.webserver_uri, 'auto_update_pid')
+    end
+
     def self.webserver_uri
       URI("http://#{self.webserver_ip}:#{self.webserver_port}")
     end
