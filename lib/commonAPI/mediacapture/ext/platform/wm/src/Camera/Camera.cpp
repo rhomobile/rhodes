@@ -299,17 +299,13 @@ void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho:
 	{	
 		
 		rho::String outputFormat;
+		outputFormat = "jpg";//note, there is a confusion here, outputFormat we use here is to say in what format image saved
 		if(m_eOutputFormat == eImageUri)
-		{
-			outputFormat = "image";
+		{			
 			//for image path, set file:// as well so that user can access the link
 			rho::String pathPrefix = "file://";
 			imageUri= pathPrefix + imageUri;
 
-		}
-		else
-		{
-			outputFormat = "dataUri";
 		}		
 		statusData.put( "imageFormat", outputFormat);
 		statusData.put( "imageUri", imageUri);

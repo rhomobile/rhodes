@@ -249,17 +249,12 @@ namespace rho {
 
 				rho::String outputFormat;
 				if(eFormat == eImageUri)
-				{
-					outputFormat = "image";
+				{					
 					//for image path, set file:// as well so that user can access the link
 					rho::String pathPrefix = "file://";
 					imageUri= pathPrefix + imageUri;
-
 				}
-				else
-				{
-					outputFormat = "dataUri";
-				}		
+				outputFormat = "jpg";		
 				statusData.put( "imageFormat", outputFormat);
 				statusData.put( "imageUri", imageUri);
 				statusData.put( "image_format", imageUri);
