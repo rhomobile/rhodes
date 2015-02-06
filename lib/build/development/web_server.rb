@@ -6,6 +6,8 @@ module RhoDevelopment
 
     @web_server
     @tasks
+    @auto_update_pid
+    attr_accessor :auto_update_pid
 
 # class instance methods
 
@@ -36,7 +38,7 @@ module RhoDevelopment
       end
     end
 
-    def self.stop
+     def self.stop
       url = Configuration::shut_down_webserver_request
       begin
         http = Net::HTTP.new(url.host, url.port)
@@ -81,7 +83,7 @@ module RhoDevelopment
       @web_server.mount('/tasks/new', NewTask, self)
       @web_server.mount('/shutdown', Shutdown)
       @web_server.mount('/response_from_device', ResponseFromDevice, self)
-      @web_server.mount('/responce_from_device', ResponseFromDevice, self)
+      @web_server.mount('/auto_update_pid', AutoUpdatePID, self)
     end
 
     def start
@@ -131,7 +133,8 @@ module RhoDevelopment
 
     def do_POST request, response
       task_name = request.query['taskName']
-      task = LiveUpdateTask.descendants.detect { |each| each.taskName == task_name }
+      task = LiveUpdateTask.descendants.detect { |each| puts each.taskName
+      each.taskName == task_name }
       if task != nil
         @instance.add_task(task.fromHash(request.query))
         response.status = 200
@@ -166,6 +169,27 @@ module RhoDevelopment
 
       response.status = 200
       response.body = ''
+    end
+  end
+
+  class AutoUpdatePID < WEBrick::HTTPServlet::AbstractServlet
+    @auto_process_pid
+    def initialize server, server_instance
+      super server
+      @instance = server_instance
+    end
+
+    def do_GET request, response
+      response.status = 200
+      response.body = (@instance.auto_update_pid || -1).to_s
+    end
+
+    def do_POST request, response
+
+      puts request.query.to_s
+      @instance.auto_update_pid = request.query['pid'].to_i
+      response.status = 200
+      response.body = "auto_update_pid set to #{@instance.auto_update_pid}"
     end
   end
 
