@@ -89,6 +89,21 @@ public:
         return res ? res : String();
     }
 
+    // returns true if string is set
+    virtual bool getStringOrNil(int nCol, String& result)
+    {
+        char* res = (char *)sqlite3_column_text(m_dbStatement, nCol);
+        if (res != NULL)
+        {
+            int len = sqlite3_column_bytes(m_dbStatement, nCol);
+            result.assign(res, len);
+        } else {
+            result.clear();
+        }
+
+        return res != NULL;
+    }
+
     int getIntByIdx(int nCol)
     {
         return sqlite3_column_int(m_dbStatement, nCol);
@@ -138,6 +153,7 @@ public:
     bool isOneEnd(){ return m_dbRes->isOneEnd(); }
     void next(){ m_dbRes->next(); }
     String getStringByIdx(int nCol){ return m_dbRes->getStringByIdx(nCol); }
+    bool getStringOrNil(int nCol, String& result) { return m_dbRes->getStringOrNil(nCol, result); }
     int getIntByIdx(int nCol){ return m_dbRes->getIntByIdx(nCol); }
     uint64 getUInt64ByIdx(int nCol){ return m_dbRes->getUInt64ByIdx(nCol); }
     int getColCount(){ return m_dbRes->getColCount(); }

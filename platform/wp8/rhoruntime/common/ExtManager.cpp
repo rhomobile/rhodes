@@ -252,7 +252,7 @@ int CExtManager::getTextZoom() //Enum (0 to 4)
 
 StringW CExtManager::getConfigPath()
 {
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
     return L"";//rho_wmimpl_get_configfilepath();
 #else
     return L"";

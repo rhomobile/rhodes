@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,12 +18,15 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.util.Size;
 import android.view.SurfaceHolder;
 
 import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.ContextFactory;
 
 public class CameraObject extends CameraBase implements ICameraObject {
@@ -34,6 +39,10 @@ public class CameraObject extends CameraBase implements ICameraObject {
     
     private Camera mCamera;
     private int mCameraUsers;
+    
+    int getCameraIndex() {
+        return CameraSingletonObject.getCameraIndex(getId());
+    }
     
     static class CameraSize implements ICameraObject.ISize {
         private Camera.Size mSize;
@@ -56,65 +65,76 @@ public class CameraObject extends CameraBase implements ICameraObject {
 
     protected class TakePictureCallback implements Camera.PictureCallback {
         private Activity mPreviewActivity;
+        private CameraActivity mcameraActivity;
         TakePictureCallback(Activity previewActivity) {
             mPreviewActivity = previewActivity;
+            mcameraActivity = (CameraActivity) previewActivity;
         }
         @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
+        public void onPictureTaken(byte[] data, Camera camera) {        	
             Intent intent = new Intent();
             OutputStream stream = null;
+            Bitmap bitmap = null;
             try {
-            
+            	
                 Map<String, String> propertyMap = getActualPropertyMap();
                 if (propertyMap == null) {
                     throw new RuntimeException("Camera property map is undefined");
                 }
-            
+             
                 String outputFormat = propertyMap.get("outputFormat");
+             
+                if(propertyMap.containsKey("captureSound")){
+                	mcameraActivity.playMusic(propertyMap.get("captureSound"));
+                }
+                
                 String filePath = null;
                 Uri resultUri = null;
-                if (outputFormat.equalsIgnoreCase("dataUri")) {
-                    Logger.T(TAG, "outputFormat: " + outputFormat);
+                 if (outputFormat.equalsIgnoreCase("dataUri")) {
+                    Logger.T(TAG, "outputFormat: " + outputFormat);                    
                     StringBuilder dataBuilder = new StringBuilder();
                     dataBuilder.append("data:image/jpeg;base64,");
                     dataBuilder.append(Base64.encodeToString(data, false));
                     propertyMap.put("captureUri", dataBuilder.toString());
                     Logger.T(TAG, dataBuilder.toString());
+                    bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);                     
+                    intent.putExtra("IMAGE_WIDTH", bitmap.getWidth());                    
+                    intent.putExtra("IMAGE_HEIGHT", bitmap.getHeight());                  
+                    mPreviewActivity.setResult(Activity.RESULT_OK, intent);                    
                 } else
                 if (outputFormat.equalsIgnoreCase("image")) {
                     filePath = propertyMap.get("fileName") + ".jpg";
-                    Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);
-
-                    if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) {
-                        
+                    Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);                    
+                    if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
+                    {                        
                         ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
-                        String name = new File(propertyMap.get("fileName")).getName();
-    
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                        
-                        Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());
-                        
-                        String strUri = MediaStore.Images.Media.insertImage(contentResolver,
-                                                            bitmap,
-                                                            name, "Camera");
+                        String name = new File(propertyMap.get("fileName")).getName();                        
+                        Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());                        
+                        String strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, name, "Camera");                       
                         if (strUri != null) {
-                            resultUri = Uri.parse(strUri);
+                            resultUri = Uri.parse(strUri);                           
                         } else {
                             throw new RuntimeException("Failed to save camera image to Gallery");
-                        }
-                    } else {
-                        stream = new FileOutputStream(filePath);
-                        resultUri = Uri.fromFile(new File(filePath));
-                        stream.write(data);
-                        stream.flush();
-                        stream.close();
+                        }                  
+                    } 
+                    else
+                    {                    	
+                        stream = new FileOutputStream(filePath);                        
+                        resultUri = Uri.fromFile(new File(filePath));                        
+                        stream.write(data);                       
+                        stream.flush();                        
+                        stream.close();                       
                     }
+            
+                    bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);            
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
-                }
-                mPreviewActivity.setResult(Activity.RESULT_OK, intent);
+                    intent.putExtra("IMAGE_WIDTH", bitmap.getWidth());                    
+                    intent.putExtra("IMAGE_HEIGHT", bitmap.getHeight());                   
+                    mPreviewActivity.setResult(Activity.RESULT_OK, intent);        
+                }              
+             
             } catch (Throwable e) {
-                Logger.E(TAG, e);
-                
+                Logger.E(TAG, e);                
                 if (stream != null) {
                     try {
                         stream.close();
@@ -122,12 +142,12 @@ public class CameraObject extends CameraBase implements ICameraObject {
                         //Do nothing
                     }
                 }
-                intent.putExtra("error", e.getMessage());
-                mPreviewActivity.setResult(Activity.RESULT_CANCELED, intent);
+                intent.putExtra("error", e.getMessage());              
+                mPreviewActivity.setResult(Activity.RESULT_CANCELED, intent);                
             }
-            
+            bitmap.recycle();
             mPreviewActivity.finish();
-        }
+        }		
     }
 
     protected Camera getCamera() { return mCamera; }
@@ -185,21 +205,33 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 Logger.E(TAG, e);
                 return;
             }
-        }
+        } 
     }
 
-    @Override
+    @SuppressLint("NewApi")
+	@Override
     public ISize setPreviewSize(int width, int height) {
-
-        Camera camera = getCamera();
-        Camera.Parameters parameters = camera.getParameters();
-
+    	Camera camera = getCamera();
+        Camera.Parameters parameters = camera.getParameters();       
+        List<android.hardware.Camera.Size> sizes = camera.getParameters().getSupportedPictureSizes();        
+        android.hardware.Camera.Size maxSize=sizes.get(0);       
+        if(getActualPropertyMap().containsKey("desiredWidth") || getActualPropertyMap().containsKey("desiredHeight")){
+        	int desired_width = Integer.parseInt(getActualPropertyMap().get("desiredWidth"));
+            int desired_height = Integer.parseInt(getActualPropertyMap().get("desiredHeight"));               
+        	if(desired_width > 0 && desired_width <= maxSize.width && desired_height > 0 && desired_height <= maxSize.height){        	
+        	 Camera.Size previewSize = getOptimalPreviewSize(parameters.getSupportedPictureSizes(), desired_width, desired_height);
+        	 Logger.T(TAG, "Selected size: " + previewSize.width + "x" + previewSize.height);             
+             parameters.setPreviewSize(previewSize.width, previewSize.height);
+        	}
+        	else{ 
+        		parameters.setPreviewSize(320, 240);
+        	}
+        }
+        else{
         Camera.Size previewSize = getOptimalPreviewSize(parameters.getSupportedPictureSizes(), width, height);
-
-        Logger.T(TAG, "Selected size: " + previewSize.width + "x" + previewSize.height);
-
+        Logger.T(TAG, "Selected size: " + previewSize.width + "x" + previewSize.height);        
         parameters.setPreviewSize(previewSize.width, previewSize.height);
-
+       }
         camera.stopPreview();
         camera.setParameters(parameters);
         camera.startPreview();
@@ -297,12 +329,11 @@ public class CameraObject extends CameraBase implements ICameraObject {
             String outputFormat = actualPropertyMap.get("outputFormat");
             String filePath = null;
             if (outputFormat.equalsIgnoreCase("image")) {
-                filePath = actualPropertyMap.get("fileName") + ".jpg";
-                Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);
+            	filePath = actualPropertyMap.get("fileName") + ".jpg";
+                Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);               
             } else
             if (outputFormat.equalsIgnoreCase("dataUri")) {
-                Logger.T(TAG, "outputFormat: " + outputFormat);
-                
+                Logger.T(TAG, "outputFormat: " + outputFormat);                
             } else {
                 throw new RuntimeException("Unknown 'outputFormat' value: " + outputFormat);
             }
@@ -313,8 +344,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
             boolean useSystemViewfinder = Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder"));
             Intent intent = null;
             if (useSystemViewfinder) {
-                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);    
                 if (outputFormat.equalsIgnoreCase("image")) {
                     String tmpPath = getTemporaryPath(filePath);
                     if (tmpPath == null) {
@@ -331,7 +361,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 intent = new Intent(ContextFactory.getUiContext(), CameraActivity.class);
                 intent.putExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID", getId());
             }
-            RhodesActivity.safeGetInstance().startActivityForResult(intent, Integer.valueOf(getId()).intValue());
+            RhodesActivity.safeGetInstance().startActivityForResult(intent, RhoExtManager.getInstance().getActivityResultNextRequestCode(CameraRhoListener.getInstance()));
         } catch (RuntimeException e) {
             Logger.E(TAG, e);
             result.setError(e.getMessage());
@@ -358,7 +388,8 @@ public class CameraObject extends CameraBase implements ICameraObject {
     public void getSupportedSizeList(IMethodResult result) {
     }
 
-    @Override
+    @SuppressLint("NewApi")
+	@Override
     public void doTakePicture(Activity previewActivity, int rotation) {
         Logger.T(TAG, "doTakePicture: rotation: " + rotation);
         openCamera();
@@ -374,4 +405,20 @@ public class CameraObject extends CameraBase implements ICameraObject {
             getCamera().release();
         }
     }
+	@Override
+	public void showPreview(Map<String, String> propertyMap,
+			IMethodResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void hidePreview(IMethodResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void capture(IMethodResult result) {
+		// TODO Auto-generated method stub
+		
+	}
 }

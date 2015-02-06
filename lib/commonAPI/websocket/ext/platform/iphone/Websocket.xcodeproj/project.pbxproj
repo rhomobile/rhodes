@@ -323,7 +323,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Websocket;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "i386 armv7";
 			};
 			name = Debug;
 		};
@@ -341,7 +340,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Websocket;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "i386  armv7";
 			};
 			name = Release;
 		};

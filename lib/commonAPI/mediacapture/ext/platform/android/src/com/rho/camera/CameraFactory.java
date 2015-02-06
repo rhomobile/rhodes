@@ -1,5 +1,6 @@
 package com.rho.camera;
 
+import android.hardware.Camera;
 import android.os.Build;
 
 import com.rhomobile.rhodes.Logger;
@@ -41,7 +42,7 @@ public class CameraFactory implements ICameraFactory {
     }
     
     ICameraObject getCameraObject(String id) {
-        int idx = Integer.valueOf(id).intValue();
+        int idx = CameraSingletonObject.getCameraIndex(id);
 
         if (idx >= mCameraList.length) {
             Logger.E(TAG, "Unknown camera id: " + id);

@@ -34,7 +34,40 @@ namespace rho {
 		virtual void enumerate(rho::apiGenerator::CMethodResult& oResult);
 		// getCameraByType Returns the camera of requested type if that camera exist - else return nil. 
 		virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {
-			// RAWLOGC_INFO("getCameraByType","Camera");
+
+			bool bCamFound = false;
+			rho::String  camId;
+
+			if(m_DeviceNameMap.size() == 0)
+			{
+				CMethodResult oRes;
+				enumerate(oRes);
+			}			
+			//get first occurance of the camera name from the m_DeviceNameMap
+			if(m_DeviceNameMap.size() > 0)
+			{	
+				eCamType camType = getCamTypeEnum(cameraType);
+				if(eUnknownCamType != camType)
+				{
+					for ( HashtablePtr<String, eCamType>::iterator it = m_DeviceNameMap.begin(); it != m_DeviceNameMap.end(); ++it )
+					{
+						if (it->second == camType)
+						{
+							camId = it->first;
+							bCamFound = true;
+							break;
+						}
+					}
+				}
+			}
+			if(bCamFound)
+			{
+				oResult.set(camId);
+			}
+			else
+			{
+				oResult.set("");
+			}
 
 		} 		
 		// choosePicture Choose a picture from the album. 
@@ -78,15 +111,32 @@ namespace rho {
 
 		} 
 		// saveImageToDeviceGallery Save an image to the device gallery. 
-		virtual void saveImageToDeviceGallery( const rho::String& pathToImage, rho::apiGenerator::CMethodResult& oResult) {
+		virtual void copyImageToDeviceGallery( const rho::String& pathToImage, rho::apiGenerator::CMethodResult& oResult) {
 			// RAWLOGC_INFO("saveImageToDeviceGallery","Camera");
 
 		} 
 		rho::String getInitialDefaultID();
-		eCamType getCamType(String deviceName)
+		eCamType getCamType(const String& deviceName)
 		{
 			return m_DeviceNameMap[deviceName];
 		}
+        eCamType getCamTypeEnum(const String& cameraType)
+        {
+            eCamType camType = eUnknownCamType;
+            if( 0 == strcmp(cameraType.c_str(), "color"))
+            {
+                camType = eColorCam;
+            }
+            else
+            {
+                if( 0 == strcmp(cameraType.c_str(), "imager"))
+                {
+                    camType = eImager;
+                }
+            }
+            return camType;
+        }
+
 		void choosePicture( eImageOutputFormat eFormat, rho::apiGenerator::CMethodResult& oResult)
 		{
 			TCHAR image_uri[MAX_PATH];
@@ -199,17 +249,12 @@ namespace rho {
 
 				rho::String outputFormat;
 				if(eFormat == eImageUri)
-				{
-					outputFormat = "image";
+				{					
 					//for image path, set file:// as well so that user can access the link
 					rho::String pathPrefix = "file://";
 					imageUri= pathPrefix + imageUri;
-
 				}
-				else
-				{
-					outputFormat = "dataUri";
-				}		
+				outputFormat = "jpg";		
 				statusData.put( "imageFormat", outputFormat);
 				statusData.put( "imageUri", imageUri);
 				statusData.put( "image_format", imageUri);
@@ -497,7 +542,15 @@ namespace rho {
 		} 
 		virtual void getSupportedSizeList(rho::apiGenerator::CMethodResult& oResult)
 		{
-			//this API is unsupported
+			if(pCamera)
+			{
+				StringifyVector supportesSizeList;				
+				pCamera->getSupportedSizeList(supportesSizeList);
+				rho::String buffer;
+				supportesSizeList.toString(buffer);
+				oResult.setJSON(buffer);				
+
+			}
 		}
 		//IRHoExtension manager overrides
 
@@ -549,4 +602,7 @@ extern "C" void Init_Camera_extension()
 	rho::Init_Camera_API();
 	initAliasParams();//prepare a lookup table to support alias parameters for propertybag
 
+}
+extern "C" void Init_Videocapture()
+{
 }

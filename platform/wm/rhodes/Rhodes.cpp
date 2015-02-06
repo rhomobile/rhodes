@@ -71,7 +71,7 @@ class CEng;
 //extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 
-#if !defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if !defined(APP_BUILD_CAPABILITY_SYMBOL)
 extern "C" LRESULT	rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam){ return 0;}
 #else
 extern "C" void initialiseRhoElementsExt();
@@ -96,7 +96,7 @@ extern "C" {
 	void rho_wmimpl_set_is_version2(const char* path);
 	bool rho_wmimpl_get_is_version2();
     const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
-#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && !defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && !defined(APP_BUILD_CAPABILITY_SYMBOL)
     bool rho_wmimpl_get_is_version2(){ return 1;}
     void rho_wmimpl_set_is_version2(const char* path){}
     void rho_wmimpl_set_configfilepath(const char* path){}
@@ -119,7 +119,7 @@ extern "C" {
 };
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-#if !defined( APP_BUILD_CAPABILITY_MOTOROLA ) && !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+#if !defined( APP_BUILD_CAPABILITY_SYMBOL ) && !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 extern "C" bool rho_wmimpl_get_resize_on_sip()
 {
     return true;
@@ -175,7 +175,7 @@ extern "C" BOOL LoadSoundDll();
 #endif
 
 //This is hack. MC4900 device failed to enable barcode after webkit initialization. So we enable it before.
-#if defined(APP_BUILD_CAPABILITY_BARCODE) && defined(APP_BUILD_CAPABILITY_MOTOROLA) && defined (OS_PLATFORM_MOTCE)
+#if defined(APP_BUILD_CAPABILITY_BARCODE) && defined(APP_BUILD_CAPABILITY_SYMBOL) && defined (OS_PLATFORM_MOTCE)
 extern "C" void rho_scanner_before_webkit();
 extern "C" void rho_scanner_after_webkit();
 struct CBarcodeInit
@@ -584,7 +584,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     m_appWindow.InvalidateRect(NULL, TRUE);
 	m_appWindow.SetActiveWindow();	//  Enterprise Browser was failing to launch maximimized through a shortcut, this line ensures it launches maximised
     m_appWindow.UpdateWindow();
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
 	initialiseRhoElementsExt();
 #endif
     m_appWindow.initBrowserWindow();
@@ -595,7 +595,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 /*
     if (bRE1App)
     {
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
         registerRhoExtension();
 #endif
 
@@ -862,10 +862,7 @@ extern "C" void rho_wm_impl_CheckLicense()
         if(pCheckLicense)
         {
             StringW strLicenseW;
-            common::convertToStringW( get_app_build_config_item("motorola_license"), strLicenseW );
-
             StringW strCompanyW;
-            common::convertToStringW( get_app_build_config_item("motorola_license_company"), strCompanyW );
 
         #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
             LPCTSTR szLicense = rho_wmimpl_sharedconfig_getvalue( L"LicenseKey" );
@@ -888,7 +885,7 @@ extern "C" void rho_wm_impl_CheckLicense()
         nRes = pIsOK ? pIsOK() : 0;
     }
 
-#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+#ifdef APP_BUILD_CAPABILITY_SYMBOL
     if ( nRes == 0 )
     {
         rho::BrowserFactory::getInstance()->checkLicense(getMainWnd(), hLicenseInstance);

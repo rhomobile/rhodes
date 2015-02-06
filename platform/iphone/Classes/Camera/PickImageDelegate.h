@@ -26,13 +26,14 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import "RhoDelegate.h"
-#import "api_generator/iphone/IMethodResult.h"
+#import "../RhoDelegate.h"
+#import "../../../shared/api_generator/iphone/IMethodResult.h"
 
 
 //#import "ruby/rho/rhoruby.h"
 
 
+#define CAMERA_SETTINGS_TYPE_UNKNOWN 0
 #define CAMERA_SETTINGS_TYPE_MAIN 1
 #define CAMERA_SETTINGS_TYPE_FRONT 2
 #define CAMERA_SETTINGS_TYPE_CHOOSE_IMAGE 3
@@ -48,6 +49,10 @@
 #define CAMERA_SETTINGS_EDITING_ENABLE 1
 #define CAMERA_SETTINGS_EDITING_DISABLE 2
 
+#define CAMERA_SETTINGS_FLASH_AUTO 1
+#define CAMERA_SETTINGS_FLASH_OFF 2
+#define CAMERA_SETTINGS_FLASH_ON 3
+
 
 @interface RhoCameraSettings : NSObject {
 @public
@@ -60,6 +65,9 @@
     int enable_editing;
     int enable_editing_setted;
     bool save_to_shared_gallery;
+    bool is_data_uri;
+    NSString* fileName;
+    int flash_mode;
 }
 
 @property (retain) id<IMethodResult> callback;
@@ -71,6 +79,9 @@
 @property (assign) int enable_editing;
 @property (assign) int enable_editing_setted;
 @property (assign) bool save_to_shared_gallery;
+@property (assign) bool is_data_uri;
+@property (retain) NSString* fileName;
+@property (assign) int flash_mode;
 
 - (id)init:(NSDictionary*)data callback_api:(id<IMethodResult>)callback_api;
 
