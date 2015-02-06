@@ -10,7 +10,9 @@ module RhoDevelopment
       if addresses.length != 1
         puts
         puts 'There are several network interfaces with following masks: '.primary
-        addresses.each { |each| puts "#{addresses.index(each) + 1}. #{each}.*" }
+        addresses.each { |each|
+          _mask = each.split('.')[0, 3].join('.')
+          puts "#{addresses.index(each) + 1}. #{_mask}.*" }
         puts
         puts 'Please choose one of them: '
         input = STDIN.gets.strip.to_i

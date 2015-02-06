@@ -400,7 +400,8 @@ namespace 'dev' do
       addresses = RhoDevelopment::Network::available_addresses
       addresses.each {
           |each|
-        print "#{each}.*"
+        _mask = each.split('.')[0, 3].join('.')
+        print "#{_mask}.*"
         print ';' if addresses.last != each
       }
     end
