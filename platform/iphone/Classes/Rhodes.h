@@ -36,7 +36,8 @@
 #import "LogOptionsController.h"
 #import "LogViewController.h"
 #import "DateTimePickerDelegate.h"
-#import "Camera.old/PickImageDelegate.h"
+//#import "Camera.old/PickImageDelegate.h"
+#import "Camera/PickImageDelegate.h"
 
 //#import "Signature.old/SignatureDelegate.h"
 #import "Signature/SignatureDelegate.h"

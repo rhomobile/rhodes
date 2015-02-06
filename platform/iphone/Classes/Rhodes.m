@@ -414,8 +414,22 @@ static Rhodes *instance = NULL;
         else 
 #endif
         {
-            if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_FRONT) {
-                picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+            if (type == UIImagePickerControllerSourceTypeCamera) {
+                if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_FRONT) {
+                    picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+                }
+                if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_MAIN) {
+                    picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+                }
+                if (delegateObject.settings.flash_mode == CAMERA_SETTINGS_FLASH_AUTO) {
+                    picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeAuto;
+                }
+                if (delegateObject.settings.flash_mode == CAMERA_SETTINGS_FLASH_OFF) {
+                    picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+                }
+                if (delegateObject.settings.flash_mode == CAMERA_SETTINGS_FLASH_ON) {
+                    picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOn;
+                }
             }
             
             //[window addSubview:picker.view];
@@ -433,7 +447,7 @@ static Rhodes *instance = NULL;
     if (!rho_rhodesapp_check_mode())
         return;
 #ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
-    [pickImageDelegate setPostUrl:settings.callback_url];
+    //[pickImageDelegate setPostUrl:settings.callback_url];
 #endif
     pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
@@ -502,7 +516,7 @@ static Rhodes *instance = NULL;
     if (!rho_rhodesapp_check_mode())
         return;
 #ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
-    [pickImageDelegate setPostUrl:settings.callback_url];
+    //[pickImageDelegate setPostUrl:settings.callback_url];
 #endif
     pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 

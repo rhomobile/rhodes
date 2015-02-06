@@ -145,7 +145,6 @@
 		FA5AC04E14681D5900B147A2 /* encdb.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04B14681D5900B147A2 /* encdb.c */; };
 		FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04C14681D5900B147A2 /* iso_8859_9.c */; };
 		FA5AC05014681D5900B147A2 /* iso_8859_1.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04D14681D5900B147A2 /* iso_8859_1.c */; };
-		FA5F2DB61796FA0C007FFE5A /* camera_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FACE0F44E92700C9AF85 /* camera_wrap.c */; };
 		FACC2099123A5F300088A447 /* bluetooth_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FACC2098123A5F300088A447 /* bluetooth_wrap.c */; };
 /* End PBXBuildFile section */
 
@@ -952,7 +951,6 @@
 				FA5AC04E14681D5900B147A2 /* encdb.c in Sources */,
 				FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */,
 				FA5AC05014681D5900B147A2 /* iso_8859_1.c in Sources */,
-				FA5F2DB61796FA0C007FFE5A /* camera_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

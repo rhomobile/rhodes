@@ -38,11 +38,11 @@
 
 @implementation RhoCameraSettings
 
-@synthesize callback, camera_type, color_model, format, width, height, enable_editing, enable_editing_setted, save_to_shared_gallery;
+@synthesize callback, camera_type, color_model, format, width, height, enable_editing, enable_editing_setted, save_to_shared_gallery, is_data_uri, fileName, flash_mode;
 
 - (id)init:(NSDictionary*)data callback_api:(id<IMethodResult>)callback_api {
     self.callback = callback_api;
-    self.camera_type = CAMERA_SETTINGS_TYPE_MAIN;
+    self.camera_type = CAMERA_SETTINGS_TYPE_UNKNOWN;
     self.color_model = CAMERA_SETTINGS_COLOR_MODEL_RGB;
     self.format = CAMERA_SETTINGS_FORMAT_NOT_SETTED;
     self.width = 0;
@@ -50,16 +50,37 @@
     self.enable_editing = 1;
     self.enable_editing_setted = 0;
     self.save_to_shared_gallery = false;
+    self.is_data_uri = false;
+    self.fileName = nil;
+    self.flash_mode = CAMERA_SETTINGS_FLASH_AUTO;
+    
+    if ([data objectForKey:@"fileName"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"fileName"];
+        if ([value length] > 0) {
+            self.fileName = value;
+        }
+    }
+    if ([data objectForKey:@"outputFormat"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"outputFormat"];
+        if(strcasecmp([value UTF8String], "image") == 0 ) {
+        }
+        if(strcasecmp([value UTF8String], "dataUri") == 0 ) {
+            self.is_data_uri = true;
+        }
+    }
     
     if ([data objectForKey:@"cameraType"] != nil) {
         NSString* value = (NSString*)[data objectForKey:@"cameraType"];
         if(strcasecmp([value UTF8String], "front") == 0 ) {
             self.camera_type = CAMERA_SETTINGS_TYPE_FRONT;
         }
+        if((strcasecmp([value UTF8String], "back") == 0) || (strcasecmp([value UTF8String], "main") == 0 ) ) {
+            self.camera_type = CAMERA_SETTINGS_TYPE_MAIN;
+        }
     }
     if ([data objectForKey:@"colorModel"] != nil) {
         NSString* value = (NSString*)[data objectForKey:@"colorModel"];
-        if(strcasecmp([value UTF8String], "Grayscale") == 0 ) {
+        if((strcasecmp([value UTF8String], "Grayscale") == 0) || (strcasecmp([value UTF8String], "grayscale") == 0 ) ) {
             self.color_model = CAMERA_SETTINGS_COLOR_MODEL_GRAY;
         }
     }
@@ -96,6 +117,20 @@
             self.enable_editing = 0;
         }
     }
+    
+    if ([data objectForKey:@"flashMode"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"flashMode"];
+        if(strcasecmp([value UTF8String], "auto") == 0 ) {
+            self.flash_mode = CAMERA_SETTINGS_FLASH_AUTO;
+        }
+        if(strcasecmp([value UTF8String], "on") == 0 ) {
+            self.flash_mode = CAMERA_SETTINGS_FLASH_ON;
+        }
+        if(strcasecmp([value UTF8String], "off") == 0 ) {
+            self.flash_mode = CAMERA_SETTINGS_FLASH_OFF;
+        }
+    }
+    
     return self;
 }
 
@@ -123,7 +158,8 @@
 }
 
 
-- (void)useImage:(UIImage*)theImage { 
+
+- (void)useImage:(UIImage*)theImage {
     NSString *folder = [[AppManager getDbPath] stringByAppendingPathComponent:@"/db-files"];
 
     
@@ -280,16 +316,29 @@
         UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil);
     }    
     
-    
-    NSString *filename = nil; 	
-    if (settings.format == CAMERA_SETTINGS_FORMAT_JPG) {
-        filename = [NSString stringWithFormat:@"Image_%@.jpg", now];
+    NSString *mimeType = nil;
+    NSString *filename = nil;
+    NSString *fullname = nil;
+    if (settings.fileName != nil) {
+        filename = settings.fileName;
     }
     else {
-        filename = [NSString stringWithFormat:@"Image_%@.png", now];
+        filename = [NSString stringWithFormat:@"IMG_%@", now];
     }
-    NSString *fullname = [folder stringByAppendingPathComponent:filename];
-
+    if (settings.format == CAMERA_SETTINGS_FORMAT_JPG) {
+        filename = [filename stringByAppendingString:@".jpg"];
+        mimeType = @"image/jpeg";
+    }
+    else {
+        filename = [filename stringByAppendingString:@".png"];
+        mimeType = @"image/png";
+    }
+    if (settings.fileName != nil) {
+        fullname = filename;
+    }
+    else {
+        fullname = [folder stringByAppendingPathComponent:filename];
+    }
     
     NSData *image = nil;
     if (settings.format == CAMERA_SETTINGS_FORMAT_JPG) {
@@ -299,13 +348,33 @@
         image = UIImagePNGRepresentation(img);
     }
     
-    int isError = ![image writeToFile:fullname atomically:YES];
+    int isError = 0;
+    NSString* str_result = @"";
+    NSString* str_result_old = @"";
+
+    
+    // check data uri
+    if (settings.is_data_uri) {
+        str_result = [NSString stringWithFormat:@"data:%@;base64,%@", mimeType, [image base64EncodedStringWithOptions:0]];
+        
+    }
+    else {
+        isError = ![image writeToFile:fullname atomically:YES];
+        if (settings.fileName != nil) {
+            str_result_old = fullname;
+            str_result = fullname;
+        }
+        else {
+            str_result_old = [str_result stringByAppendingString:@"db%2Fdb-files%2F"];
+            str_result_old = [str_result stringByAppendingString:filename];
+            str_result = fullname;
+        }
+    }
 
     if (img != theImage) {
         //[img release];
     }
     
-	NSString* strBody = @"&rho_callback=1";
     if (isError) {
         NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:10];
         [dict setObject:@"error" forKey:@"status"];
@@ -315,19 +384,25 @@
     else {
         NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:10];
         [dict setObject:@"ok" forKey:@"status"];
-        NSString* str = @"";
-        str = [str stringByAppendingString:@"db%2Fdb-files%2F"];
-        str = [str stringByAppendingString:filename];
-        [dict setObject:str forKey:@"image_uri"];
+        
+
+        [dict setObject:str_result forKey:@"image_uri"];
+        [dict setObject:str_result forKey:@"imageUri"];
+        
 
         [dict setObject:[NSString stringWithFormat:@"%d", imageWidth] forKey:@"image_width"];
-        [dict setObject:[NSString stringWithFormat:@"%d", imageHeight] forKey:@"image_height"];
+        [dict setObject:[NSString stringWithFormat:@"%d", imageHeight] forKey:@"imageHeight"];
+
+        [dict setObject:[NSString stringWithFormat:@"%d", imageWidth] forKey:@"image_width"];
+        [dict setObject:[NSString stringWithFormat:@"%d", imageHeight] forKey:@"imageWidth"];
         
         if (settings.format == CAMERA_SETTINGS_FORMAT_JPG) {
             [dict setObject:@"jpg" forKey:@"image_format"];
+            [dict setObject:@"jpg" forKey:@"imageFormat"];
         }
         else {
             [dict setObject:@"png" forKey:@"image_format"];
+            [dict setObject:@"jpg" forKey:@"imageFormat"];
         }
         
         [ self.settings.callback setResult:dict];
@@ -473,6 +548,13 @@ void camera_take_picture(NSDictionary* options, id<IMethodResult> callback_api) 
     if (settings.format == CAMERA_SETTINGS_FORMAT_NOT_SETTED) {
         settings.format = CAMERA_SETTINGS_FORMAT_JPG;
     }
+    if (settings.camera_type == CAMERA_SETTINGS_TYPE_UNKNOWN) {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:10];
+        [dict setObject:@"error" forKey:@"status"];
+        [dict setObject:@"unknown camera type !" forKey:@"message"];
+        [settings.callback setResult:dict];
+        return;
+    }
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takePicture:)
                                               withObject:settings waitUntilDone:NO];
     
@@ -491,13 +573,17 @@ void camera_choose_picture(NSDictionary* options, id<IMethodResult> callback_api
 
 
 //void save_image_to_device_gallery(const char* image_path, rho_param* options_hash) {
-void save_image_to_device_gallery(const char* image_path) {
+int save_image_to_device_gallery(const char* image_path) {
 	NSString* path = [NSString stringWithUTF8String:image_path];
 	UIImage* img = [UIImage imageWithContentsOfFile:path];
 	
 	if ( img != nil ) {
 		UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil);
-	}
+    }
+    else {
+        return 0;
+    }
+    return 1;
 }
 
 
@@ -508,6 +594,14 @@ void get_camera_info(const char* camera_type, int* res_w, int* res_h) {
     int w = 0;
     int h = 0;
     BOOL isFront = strcmp(camera_type, "front") == 0;
+    BOOL isBack = strcmp(camera_type, "back") == 0;
+    
+    if ((!isFront) && (!isBack)) {
+        // unknown camera type
+        *res_w = w;
+        *res_h = h;
+        return;
+    }
     
 	size_t size;
     sysctlbyname("hw.machine", NULL, &size, NULL, 0);
