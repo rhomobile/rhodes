@@ -287,7 +287,7 @@ void RhoRubyStart()
         
 #if defined(OS_MACOSX)
 #ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
-        Init_Camera();
+        //Init_Camera();
 //        Init_SignatureCapture();
 #endif
 #endif

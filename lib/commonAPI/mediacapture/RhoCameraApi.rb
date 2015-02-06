@@ -38,9 +38,11 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
                  cam_type =  options['camera_type']
             end
             cam_type = 'back' if cam_type == 'main'
+if Rho::System.platform != 'APPLE' 
             unless options['fileName']
                 options['fileName'] = File.join(Rho::RhoApplication.get_blob_folder(), Rho::RhoConfig.generate_id.to_s)
             end
+end
             cams = Camera.enumerate
             if cams != nil
                 if cams.size > 0
@@ -57,9 +59,11 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
 
        def self.choose_picture(callback_url, options = nil)
             options = {} unless options
+if Rho::System.platform != 'APPLE' 
             unless options['fileName']
                 options['fileName'] = File.join(Rho::RhoApplication.get_blob_folder(), Rho::RhoConfig.generate_id.to_s)
             end
+end
             Camera.choosePicture(options, callback_url)
        end
 

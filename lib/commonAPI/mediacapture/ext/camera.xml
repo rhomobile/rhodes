@@ -104,7 +104,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <PARAM name="height" type="INTEGER"/>
                     </PARAMS>
                 </PARAM>
-                <PLATFORM>Android, iOS, WP8, WM, CE</PLATFORM>
+                <PLATFORM>Android, WP8, WM, CE</PLATFORM>
                 <DESC>List of resolutions (width and height in pixels) supported by the camera. On WM/CE devices this feature is supported only by calor camera and it is not supported by imager. Refer example section for more details.</DESC>
             </PROPERTY>
             <PROPERTY name="desiredWidth" type="INTEGER">
@@ -165,7 +165,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="enableEditing" type="BOOLEAN" default="true">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>iOS</PLATFORM>
-                <DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size).</DESC>
+                <DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size of camera sensor).</DESC>
             </PROPERTY>
             <PROPERTY name="flashMode" type="STRING">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -181,7 +181,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>Flash will not be used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_AUTO" value="auto">
-					    <PLATFORM>Android</PLATFORM>
+					    <PLATFORM>Android, iOS</PLATFORM>
                         <DESC>Flash will be used if lighting conditions deem it necessary.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_RED_EYE" value="redEye">
@@ -250,7 +250,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </ALIASES>
 
             <METHOD name="enumerate" access="STATIC" hasCallback="optional">
-			    <PLATFORM>Android, WM, CE</PLATFORM>
+			    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                 <DESC>Returns the cameras present on your device, allowing you to access your device's front or back camera.</DESC>
                 <RETURN type="ARRAY">
                     <DESC>Array of objects.</DESC>
@@ -270,7 +270,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </RETURN>
             </METHOD>
             <METHOD name="takePicture" hasCallback="mandatory" runInThread="ui">
-			    <PLATFORM>Android, WM, CE</PLATFORM>
+			    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                 <DESC>Start the camera application to take a picture. The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use. In Windows, this method always shows the preview in full screen and user can use the native button to capture the image.
 > Note: To display an image, it is recommended that you use the full path to the image instead of a relative path. To do this, you can use the [`expandDatabaseBlobFilePath`](Application#mexpandDatabaseBlobFilePath) method of the [Application module](Application) as such:
 
@@ -293,43 +293,43 @@ The ebapi.js file is necessary for all single API inclusions.
                 <CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">
-						     <PLATFORM>Android, WM, CE</PLATFORM>
+						     <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>Whether or not the image was successfully captured. The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
                         </PARAM>
                         <PARAM name="imageUri" type="STRING">
-						    <PLATFORM>Android, WM, CE</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
-						    <PLATFORM>Android, WM, CE</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>The actual height of the image that was captured, this may differ from the requested height as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
                         <PARAM name="imageWidth" type="INTEGER">
-						     <PLATFORM>Android, WM, CE</PLATFORM>
+						     <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>The actual width of the image that was captured, this may differ from the requested width as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
                         <PARAM name="imageFormat" type="STRING">
-						    <PLATFORM>Android, WM, CE</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>The format in which the image was captured, either 'png' or 'jpg'.</DESC>
                         </PARAM>
                         <PARAM name="message" type="STRING">
-						    <PLATFORM>Android, WM, CE</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
                         </PARAM>
                         <PARAM name="image_uri" type="STRING" deprecated="true">
-						    <PLATFORM>Android, WM, CE</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>It is recommended to use imageUri in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_height" type="INTEGER" deprecated="true">
-						    <PLATFORM>Android, WM, CE</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>It is recommended to use imageHeight in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_width" type="INTEGER" deprecated="true">
-						    <PLATFORM>Android, WM, CE</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>It is recommended to use imageWidth in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_format" type="STRING" deprecated="true">
-						    <PLATFORM>Android, WM, CE</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
                             <DESC>It is recommended to use imageFormat in preference to this parameter.</DESC>
                         </PARAM>
                     </PARAMS>

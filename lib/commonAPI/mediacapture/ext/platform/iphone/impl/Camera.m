@@ -60,7 +60,23 @@ void camera_take_picture(NSDictionary* options, id<IMethodResult> callback_api);
 }
 
 -(void) getSupportedSizeList:(id<IMethodResult>)methodResult {
+    // unsupported on iOS
+}
 
+
+/* Shows the preview in user configurable viewer window. */
+-(void) showPreview:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
+    // unsupported on iOS
+}
+
+/* Hides the preview opened by using showPreview. */
+-(void) hidePreview:(id<IMethodResult>)methodResult {
+    // unsupported on iOS
+}
+
+/* Capture the image and save it to a file. */
+-(void) capture:(id<IMethodResult>)methodResult {
+    // unsupported on iOS
 }
 
 
