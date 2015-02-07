@@ -26,6 +26,23 @@ module RhoDevelopment
       end
     end
 
+    def self.get_auto_update_pid
+      url = Configuration::auto_update_pid_request
+      begin
+        http = Net::HTTP.new(url.host, url.port)
+        http.open_timeout = 5
+        response = http.get(url.path)
+        pid = response.body.to_i
+        return pid != 0 ? pid : nil
+      rescue *Configuration::handledNetworkExceptions => e
+        return nil
+      end
+    end
+
+    def self.set_auto_update_pid(pid)
+      Net::HTTP.post_form(Configuration::auto_update_pid_request, {'pid' => pid})
+    end
+
     def self.alive?
       url = Configuration::webserver_alive_request
       begin
@@ -38,7 +55,7 @@ module RhoDevelopment
       end
     end
 
-     def self.stop
+    def self.stop
       url = Configuration::shut_down_webserver_request
       begin
         http = Net::HTTP.new(url.host, url.port)
@@ -174,6 +191,7 @@ module RhoDevelopment
 
   class AutoUpdatePID < WEBrick::HTTPServlet::AbstractServlet
     @auto_process_pid
+
     def initialize server, server_instance
       super server
       @instance = server_instance
@@ -181,7 +199,7 @@ module RhoDevelopment
 
     def do_GET request, response
       response.status = 200
-      response.body = (@instance.auto_update_pid || -1).to_s
+      response.body = (@instance.auto_update_pid || 0).to_s
     end
 
     def do_POST request, response

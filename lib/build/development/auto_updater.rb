@@ -6,26 +6,10 @@ module RhoDevelopment
       @listeners = []
     end
 
-
-    def auto_process_already_launched?
-      url = Configuration::auto_update_pid_request
-      begin
-        http = Net::HTTP.new(url.host, url.port)
-        http.open_timeout = 5
-        response = http.get(url.path)
-        return response.code == '200'
-      rescue Configuration::handledNetworkExceptions => e
-        return false
-      end
-    end
-
-
-
     def run
-      Net::HTTP.post_form(Configuration::auto_update_pid_request, {'pid'=>Process.pid})
-
       @listeners.each { |each|
       each.start }
+      WebServer::set_auto_update_pid(Process.pid)
       begin
         sleep 1
       end while self.has_active_listeners
