@@ -14,6 +14,7 @@ require_relative 'development/live_update_task'
 require_relative 'development/web_server'
 require_relative 'development/one_time_updater'
 require_relative 'development/auto_updater'
+require_relative 'development/platform'
 
 module RhoDevelopment
 

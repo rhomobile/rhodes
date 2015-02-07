@@ -363,7 +363,12 @@ namespace 'dev' do
       http = Net::HTTP.new(url.host, url.port)
       http.open_timeout = 5
       response = http.get(url.path)
-      Process.kill('SIGTERM', response.body.to_i)
+      pid = response.body.to_i
+      if RhoDevelopment::Platform::windows?
+        system "taskkill /PID #{pid}"
+      elsif RhoDevelopment::Platform::osx?
+        Process.kill('SIGTERM', pid)
+      end
     end
 
   end
