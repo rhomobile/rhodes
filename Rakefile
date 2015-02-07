@@ -350,6 +350,11 @@ namespace 'dev' do
     task :auto => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
+      pid = RhoDevelopment::WebServer::get_auto_update_pid
+      if pid
+        puts 'Another auto updating is already launched'.warning
+        exit 1
+      end
       updater = RhoDevelopment::AutoUpdater.new
       updater.add_directory(File.join($app_basedir, '/public'))
       updater.add_directory(File.join($app_basedir, '/app'))
@@ -360,12 +365,14 @@ namespace 'dev' do
       desc 'It stop auto update process'
       task :stop => ['config:common'] do
         RhoDevelopment::Configuration::application_root = $app_basedir
-        url = RhoDevelopment::Configuration::auto_update_pid_request
-        http = Net::HTTP.new(url.host, url.port)
-        http.open_timeout = 5
-        response = http.get(url.path)
-        pid = response.body.to_i
-        RhoDevelopment::Platform::terminate_process(pid)
+        pid = RhoDevelopment::WebServer::get_auto_update_pid
+        if pid
+          RhoDevelopment::Platform::terminate_process(pid)
+          RhoDevelopment::WebServer::set_auto_update_pid(0)
+        else
+          puts 'Auto updating is not launched'.warning
+        end
+
       end
 
     end
