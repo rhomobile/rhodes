@@ -371,6 +371,7 @@ namespace 'dev' do
           RhoDevelopment::WebServer::set_auto_update_pid(0)
         else
           puts 'Auto updating is not launched'.warning
+          exit 1
         end
 
       end
