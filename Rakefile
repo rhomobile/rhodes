@@ -37,6 +37,7 @@ require 'erb'
 #require 'rdoc/task'
 require 'base64'
 require 'digest/sha2'
+require 'digest/md5'
 require 'io/console'
 require 'json'
 require 'net/https'
@@ -86,6 +87,9 @@ require File.join(pwd, 'lib/build/rhohub.rb')
 require File.join(pwd, 'lib/build/BuildOutput.rb')
 require File.join(pwd, 'lib/build/BuildConfig.rb')
 require File.join(pwd, 'lib/build/RhoHubAccount.rb')
+
+require File.join(pwd, 'lib/build/rhoDevelopment.rb')
+
 
 #load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
@@ -311,6 +315,120 @@ def update_rhodefs_header_file
     puts "RhoDefs.h has been modified: RhoProfiler is " + (use_profiler ? "enabled!" : "disabled!")
     File.open( File.join( $startdir, "platform/shared/common/RhoDefs.h" ), 'wb' ){ |f| f.write(content) }
   end
+end
+
+
+namespace 'dev' do
+
+  namespace 'update' do
+
+    desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'
+    task :partial => ['config:common'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      RhoDevelopment::WebServer.ensure_running
+      updater = RhoDevelopment::OneTimeUpdater.new
+      updater.run
+    end
+
+    desc 'Builds full update bundle for all subscribers and notifies them'
+    task :full => ['config:common'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      RhoDevelopment::WebServer.ensure_running
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new)
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersFullUpdateNotifyingTask.new)
+    end
+
+    desc 'It builds partial update for all platforms and notifies all subscribers'
+    task :build_and_notify => ['config:common'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      RhoDevelopment::WebServer.ensure_running
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new)
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersPartialUpdateNotifyingTask.new)
+    end
+
+    desc 'It launches watcher for source code and builds partial update and notifies all subscribers on each change'
+    task :auto => ['config:common'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      RhoDevelopment::WebServer.ensure_running
+      pid = RhoDevelopment::WebServer::get_auto_update_pid
+      if pid
+        puts 'Another auto updating is already launched'.warning
+        exit 1
+      end
+      updater = RhoDevelopment::AutoUpdater.new
+      updater.add_directory(File.join($app_basedir, '/public'))
+      updater.add_directory(File.join($app_basedir, '/app'))
+      updater.run
+    end
+
+    namespace 'auto' do
+      desc 'It stop auto update process'
+      task :stop => ['config:common'] do
+        RhoDevelopment::Configuration::application_root = $app_basedir
+        pid = RhoDevelopment::WebServer::get_auto_update_pid
+        if pid
+          RhoDevelopment::Platform::terminate_process(pid)
+          RhoDevelopment::WebServer::set_auto_update_pid(0)
+        else
+          puts 'Auto updating is not launched'.warning
+          exit 1
+        end
+
+      end
+
+    end
+
+  end
+
+  namespace :webserver do
+
+    desc 'It launches development web server. It is certain object which controls executing scheduling tasks, handles requests etc..'
+    task :start => ['config:common'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      RhoDevelopment::WebServer.ensure_running
+    end
+
+    task :privateStart => ['config:initialize'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      server = RhoDevelopment::WebServer.new
+      server.start
+    end
+
+    desc 'It shut down development web server'
+    task :stop do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      RhoDevelopment::WebServer::stop
+    end
+
+  end
+
+  namespace :network do
+
+    desc 'Discover application on devices in local network - application should be executed on devices'
+    task :discovery, [:mask] => ['config:initialize'] do |t, args|
+
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      finder = RhoDevelopment::DeviceFinder.new
+
+      if args[:mask] == nil
+        finder.run
+      else
+        finder.discovery((args[:mask]).split('.')[0, 3].join('.'))
+      end
+    end
+
+    desc 'Return string with available networks masks separated by semicolon. It needs for RhoStudio'
+    task :list do
+      addresses = RhoDevelopment::Network::available_addresses
+      addresses.each {
+          |each|
+        _mask = each.split('.')[0, 3].join('.')
+        print "#{_mask}.*"
+        print ';' if addresses.last != each
+      }
+    end
+  end
+
 end
 
 #------------------------------------------------------------------------
@@ -1112,6 +1230,47 @@ def best_match(target, list, is_lex = false)
   best
 end
 
+def find_platform_version(platform, platform_list, default_ver, info, is_lex = false)
+  platform_conf = platform_list[platform]
+  if platform_conf.empty?
+    raise Exception.new("Could not find any #{platform} sdk on cloud build server")
+  end
+
+  req_ver = nil
+
+  req_ver = $app_config[platform]["version"] unless $app_config[platform].nil?
+  req_ver = $config[platform]["version"] if req_ver.nil? and !$config[platform].nil?
+
+  req_ver = default_ver if req_ver.nil?
+
+  best = platform_conf.first
+
+  if !(req_ver.nil? || req_ver.empty?)
+    if !is_lex
+      platform_conf.sort { |a, b| String.natcmp(b[:ver], a[:ver]) }.each do |ver|
+        if String.natcmp(req_ver, ver[:ver]) < 0
+          best = ver
+        else
+          break
+        end
+      end
+    else
+      best = platform_conf.min_by { |el| distance(el[:ver], req_ver, true) }
+    end
+
+    if info
+      if best[:ver] != req_ver
+        puts "WARNING! Could not find exact version of #{platform} sdk. Using #{best[:ver]} instead of #{req_ver}"
+      else
+        puts "Using requested #{platform} sdk version #{req_ver}"
+      end
+    end
+  else
+    if info
+      puts "No #{platform} sdk version was specified, using #{best[:ver]}"
+    end
+  end
+end
 
 
 def check_cloud_build_result(result)
@@ -2437,6 +2596,10 @@ namespace "config" do
       BuildOutput.note('To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.','You use sdk parameter in build.yml')
     end
 
+    $bindir = File.join($app_path, "bin")
+    $tmpdir = File.join($bindir, "tmp")
+
+    $skip_checking_XCode = false
     $skip_build_rhodes_main = false
     $skip_build_extensions = false
     $skip_build_xmls = false
@@ -2655,7 +2818,7 @@ namespace "config" do
       if $user_acc.subscription_level < 1
         if !$user_acc.is_valid_subscription?
           BuildOutput.error([
-                            'Your subscription information is outdated or not downloaded. Please verify your internet connection and run build command again.'],
+                                'Your subscription information is outdated or not downloaded. Please verify your internet connection and run build command again.'],
                             'Could not build licensed features.')
         else
           msg = ["You have free subscription on #{$selected_server}. RhoElements features are available only for paid accounts."]
@@ -2665,8 +2828,8 @@ namespace "config" do
                         'For more information go to http://www.rhomobile.com '])
           end
           msg.concat(
-            ["In order to upgrade your account please log in to #{$selected_server}",
-             'Select "change plan" menu item in your profile settings.'])
+              ["In order to upgrade your account please log in to #{$selected_server}",
+               'Select "change plan" menu item in your profile settings.'])
           BuildOutput.error(msg, 'Could not build licensed features.')
         end
         raise Exception.new("Could not build licensed features")
@@ -3399,8 +3562,10 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
       end
 
       if !map_items.nil? && map_items.size != 0
-        new_time = File.stat(filepath).mtime
-        old_time = Time.at(map_items[0][:time])
+        content = File.readlines(filepath)
+
+        new_time = Digest::MD5.hexdigest(content.to_s)
+        old_time = map_items[0][:hash]
 
         next if new_time == old_time
 
@@ -3961,7 +4126,7 @@ namespace "build" do
         begin
 
           require 'rubygems'
-          require 'zip/zip'
+          require 'zip'
           require 'find'
           require 'fileutils'
           include FileUtils

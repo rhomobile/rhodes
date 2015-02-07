@@ -43,6 +43,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
+
+
 namespace rho {
 namespace common {
 	
