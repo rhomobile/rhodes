@@ -57,7 +57,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private CameraPreview mPreview;
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
-    MediaPlayer _shootMP = null;
+    MediaPlayer _shootMP;
     
     @Override
     protected void onCreate(Bundle extras) {
@@ -95,11 +95,20 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     protected void onPause() {
         Logger.T(TAG, "onPause");
         mPreview.stopPreview();
-        mOrientationListener.disable();      
-        _shootMP.release();
+        mOrientationListener.disable();
         super.onPause();
     }
     
+    @Override
+    protected void onStop() {
+	// TODO Auto-generated method stub
+    	if(_shootMP != null){
+	    _shootMP.release();
+	    _shootMP = null;
+    	}
+	super.onStop();
+    }
+	
     @Override
     public void onClick(View view) {
         Logger.T(TAG, "onClick");
@@ -118,12 +127,10 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
 
         if (volume != 0)
         {
-        	
-			if (_shootMP == null)
-            //    _shootMP = MediaPlayer.create(getBaseContext(), Uri.parse("file:///sdcard/malaya/sleep_away.3gpp"));
-				_shootMP = MediaPlayer.create(getBaseContext(), Uri.parse(musicPath));
-            if (_shootMP != null)
-                _shootMP.start();
+          if (_shootMP == null)
+            _shootMP = MediaPlayer.create(getBaseContext(), Uri.parse(musicPath));
+          if (_shootMP != null)
+            _shootMP.start();
         }
     }
 }
