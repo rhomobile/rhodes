@@ -365,7 +365,7 @@ namespace 'dev' do
       response = http.get(url.path)
       pid = response.body.to_i
       if RhoDevelopment::Platform::windows?
-        system "taskkill /PID #{pid}"
+        system "taskkill /F /PID #{pid}"
       elsif RhoDevelopment::Platform::osx?
         Process.kill('SIGTERM', pid)
       end
