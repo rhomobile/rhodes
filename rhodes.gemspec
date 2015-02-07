@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency('json', '~>1.5.4')
   s.add_dependency('rest-client', '~>1.6.6')
   s.add_dependency('CFPropertyList', '>= 2.2.0')
+  s.add_dependency('listen', '>= 2.8.5')  
   #s.add_dependency('rdoc', '~> 3.6.1')
   s.executables << 'rhogen'
   s.executables << 'rhodes'
