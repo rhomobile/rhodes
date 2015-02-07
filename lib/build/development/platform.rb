@@ -10,7 +10,7 @@ module RhoDevelopment
 
     def self.terminate_process(pid)
       if self.windows?
-        system "taskkill /PID #{pid}"
+        system "taskkill /F /PID #{pid}"
       elsif self.osx?
         Process.kill('SIGTERM', pid)
       else
