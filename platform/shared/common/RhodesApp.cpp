@@ -209,7 +209,7 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
 #else
         if ( String_startsWith( strUrl, "http://127.0.0.1:" ) )
         {
-            RHODESAPP().setBaseUrl("http://localhost:");
+            RHODESAPP().setBaseUrl("");
             bTryAgain = true;
         }
 #endif
