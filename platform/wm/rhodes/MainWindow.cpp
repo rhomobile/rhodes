@@ -91,6 +91,7 @@ extern "C" int rho_wm_impl_CheckLicense();
 
 CMainWindow::CMainWindow()
 {
+    m_bLicenseScreenShownFirsttime=true;
     mIsBrowserViewHided = false;
     mNativeView = NULL;
     mNativeViewFactory = NULL;
@@ -518,12 +519,29 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     }
 
     if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()) )
-    {        
-        if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
-        {
-            m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
-        }
-    }
+    {
+        //if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
+        //{
+        //m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+        //}
+        
+
+		if(rho::BrowserFactory::getCurrentBrowserType() != eIE)//webkit
+		{
+		 LOG(INFO)+"ResizeOnTab..";
+		 m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+		}
+		else//IE
+		{
+
+			if(RHO_IS_CEDEVICE)//CE IE Engine
+			{
+			 LOG(INFO)+"ResizeOnTab.";
+			 m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+			}
+
+		}
+     }
 
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, ySize-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
@@ -635,8 +653,12 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     Rhodes_WM_ProcessBeforeNavigate((LPCTSTR)lParam);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    if ( m_bLoading )
-        rho_wm_impl_CheckLicense();
+    if (( m_bLoading ==true)&&(m_bLicenseScreenShownFirsttime==true))
+	{
+        	LOG(INFO) + "Showing screen during first navigation...";
+		m_bLicenseScreenShownFirsttime = false;
+		rho_wm_impl_CheckLicense();
+	}
 #endif
 
     free((void*)lParam);
@@ -646,6 +668,7 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 LRESULT CMainWindow::OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     PROF_STOP("BROWSER_PAGE");
+    LOG(INFO) + "Calling OnNavigateTimeout";
     LRESULT lRes =  RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
 
     free((void*)lParam);
@@ -690,7 +713,8 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     ProcessActivate( FALSE, MAKEWPARAM(0,1), 0 );
 
 	//SetForegroundWindow(m_hWnd);
-
+	LOG(INFO)+"Window getting minimized-Show taskbar..";	
+	showTaskBar(true);
 	::ShowWindow( m_hWnd, SW_MINIMIZE );
 	HWND hwnd = ::GetForegroundWindow();
 	if(hwnd!=NULL)
@@ -792,8 +816,11 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 #if defined(_WIN32_WCE) 
 	if (m_bFullScreen)
     {
-		//RhoSetFullScreen(fActive!=0);
-		showTaskBar(fActive==0);
+	if(fActive!=0)//if activated Hide taskbar
+	{
+	LOG(INFO)+"Hide taskbar";	
+	showTaskBar(false);
+	}
     }
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
@@ -1200,7 +1227,10 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     if (nd) {
         LPTSTR wcurl = (LPTSTR)(nd->url);
         if (wcurl)
+          {
+            LOG(INFO) + "Call of Navigate2 function";
             Navigate2(wcurl, nd->index);
+          }
 
         delete nd;
     }
@@ -1786,9 +1816,8 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 			return TRUE;
 		}
 
-		if (m_bFullScreen && pMsg->message == WM_KEYUP && 
-			(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
-			RhoSetFullScreen(false);
+		//if (m_bFullScreen && pMsg->message == WM_KEYUP && (pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
+		//	RhoSetFullScreen(false);
 	}
 
     // Accelerators are only keyboard or mouse messages
@@ -1821,6 +1850,10 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     {
         return FALSE;
     }
+
+	// workaround for escape key in text fields on CE:
+	if (RHO_IS_CEDEVICE && (pMsg->message == WM_KEYDOWN) && (pMsg->wParam == VK_ESCAPE))
+		return TRUE;
 
     // Find a direct child of this window from the window that has focus.
     // This will be AtlAxWin window for the hosted control.
