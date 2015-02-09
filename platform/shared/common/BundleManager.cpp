@@ -990,7 +990,9 @@ void CReplaceBundleThread::doReplaceBundle()
     if (is_partial_update) {
         if (CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str())) {
             // partial update
-            nError = partialAddFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() , &filelist, &filelist_apps);
+            nError = partialAddFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str(), 
+				CFilePath::join(m_bundle_path, "RhoBundle/apps"), 
+				::RHODESAPP().getAppRootPath().c_str() , &filelist, &filelist_apps);
             if ( nError != 0 )
             {
                 showError(nError, "Copy files to bundle failed." );
@@ -1008,7 +1010,9 @@ void CReplaceBundleThread::doReplaceBundle()
             return;
         }
 #else
-        nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), CFilePath::join( RHODESAPP().getAppRootPath(), "apps") );
+        nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), 
+			CFilePath::join(m_bundle_path, "RhoBundle/apps"), 
+			RHODESAPP().getAppRootPath());
         if ( nError != 0 )
         {
             showError(nError, "Copy files to bundle failed." );
