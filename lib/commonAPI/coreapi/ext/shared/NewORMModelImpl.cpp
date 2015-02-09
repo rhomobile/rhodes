@@ -11,6 +11,28 @@
 #include "db/DBAdapter.h"
 #include "sync/RhoconnectClientManager.h"
 
+
+const rho::String& normalizeString(const rho::String& _in, rho::String& buffer)
+{
+    if (_in.size() > 1)
+    {
+        char begin = *(_in.begin());
+        char end = *(_in.rbegin());
+        if ((begin == end) && (begin == '\'' || begin == '"'))
+        {
+            buffer = _in.substr(1, _in.length() - 2);
+            LOG(WARNING) + "ESCAPING " + _in + " TO " + buffer;
+            return buffer;
+        }
+        else
+        {
+            return _in;
+        }
+    }
+
+    return _in;
+}
+
 rho::CNewORMModelImpl::CNewORMModelImpl(const rho::String& strID)
     : id_(strID),
         name_(),
@@ -667,11 +689,13 @@ rho::String rho::CNewORMModelImpl::_make_select_attrs_str(const rho::Vector<rho:
         return rho::String("*");
 
     rho::String attrs_str;
+    rho::String buffer;
     for(size_t i = 0; i < select_attrs.size(); ++i) {
         if(attrs_str.size())
             attrs_str += ",";
-        attrs_str += select_attrs[i];
-        attrsSet[select_attrs[i]] = "";
+        const rho::String& attr = normalizeString(select_attrs[i], buffer);
+        attrs_str += attr;
+        attrsSet[attr] = "";
     }
     // object must be included always
     if(!attrsSet.containsKey("object")) {
@@ -686,13 +710,15 @@ rho::String rho::CNewORMModelImpl::_make_order_str(const Vector<rho::String>& or
 {
     rho::String order_str;
     rho::String order_attr_sql;
+    rho::String buffer;
     if(order_attrs.empty())
         return order_str;
     for(size_t i = 0; i < order_attrs.size();)
     {
         if(order_attr_sql.size())
             order_attr_sql += ",";
-        order_attr_sql += rho::String("\"") + order_attrs[i] + "\" " + order_attrs[i + 1];
+        const rho::String& attr = normalizeString(order_attrs[i], buffer);
+        order_attr_sql += rho::String("\"") + attr + "\" " + order_attrs[i + 1];
         i += 2;
     }
     if(order_attr_sql.size())
@@ -756,9 +782,10 @@ void rho::CNewORMModelImpl::buildFindOrder(const Vector<rho::String>& orderAttrs
     for(size_t i = 0; i < pad_number; ++i)
         orderDirections.push_back("ASC");
     rho::Vector<rho::String> retVals;
+    rho::String buffer;
     for(size_t i = 0; i < orderAttrs.size(); ++i)
     {
-        retVals.push_back(orderAttrs[i]);
+        retVals.push_back(normalizeString(orderAttrs[i], buffer));
         retVals.push_back(orderDirections[i]);
     }
     oResult.set(retVals);
@@ -821,6 +848,7 @@ rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
                                 Vector<rho::String>& quests)
 {
     rho::String strSQL;
+    rho::String buffer;
     if(fixed_schema()) {
         if(!key.size())
             return strSQL;
@@ -834,7 +862,7 @@ rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
         if(key != "object")
         {
             strSQL += " attrib=?";
-            quests.push_back(key);
+            quests.push_back(normalizeString(key, buffer));
             strSQL += " AND ";
             strSQL += (val_func.size() ? val_func + "(value)" : "value");
             strSQL += " ";
@@ -853,7 +881,7 @@ rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
             if(valsStr.size())
                 valsStr += ",";
             valsStr += "?";
-            quests.push_back(values[i]);
+            quests.push_back(normalizeString(values[i], buffer));
         }
         strSQL += valsStr + ")";
     }
@@ -870,7 +898,7 @@ rho::String rho::CNewORMModelImpl::_make_cond_where_ex(const rho::String& key,
             }
             else {
                 strSQL += val_op + "?";
-                quests.push_back(values[0]);
+                quests.push_back(normalizeString(values[0], buffer));
             }
         }
     }
@@ -895,7 +923,12 @@ void rho::CNewORMModelImpl::findObjectsFixedSchema(const rho::String& what,
     Hashtable<rho::String, rho::String>::const_iterator cIt = strOptions.find("conditions");
     if(cIt != strOptions.end())
         where_str = cIt -> second;
-    rho::Vector<rho::String> questParams(quests);
+    rho::Vector<rho::String> questParams;
+    rho::String buffer;
+    questParams.reserve(quests.size());
+    for(rho::Vector<rho::String>::const_iterator cIt = quests.begin(); cIt != quests.end(); ++cIt) {
+        questParams.push_back(normalizeString(*cIt, buffer));
+    }
     // build the SQL
     rho::String strSQL("SELECT ");
     if(what == "count") {
@@ -1098,11 +1131,14 @@ void rho::CNewORMModelImpl::_processDbResult(IDBResult& res,
     rho::String source_id = oResult.getString();
     if(tableResults) {
         Vector<Hashtable<rho::String, rho::String> > retVals;
+        rho::String datum;
         for(; !res.isEnd(); res.next()) {
             int ncols = res.getColCount();
             Hashtable<rho::String, rho::String> obj_hash;
             for(int i = 0; i < ncols; ++i) {
-                obj_hash.put(res.getColName(i), res.getStringByIdx(i));
+                if (res.getStringOrNil(i, datum)) {
+                    obj_hash.put(res.getColName(i), datum);
+                }
             }
             obj_hash["source_id"] = source_id;
             retVals.push_back(obj_hash);
@@ -1113,11 +1149,14 @@ void rho::CNewORMModelImpl::_processDbResult(IDBResult& res,
     else {
         Vector<Hashtable<rho::String, rho::String> > retVals;
         Hashtable<rho::String, Hashtable<rho::String, rho::String> > obj_hashes;
+        rho::String buffer;
         for(; !res.isEnd(); res.next()) {
             // include only the requested attributes
             if(attrSet.size() && !attrSet.containsKey(res.getStringByIdx(1)))
                 continue;
-            obj_hashes[res.getStringByIdx(0)][res.getStringByIdx(1)] = res.getStringByIdx(2);
+            if (res.getStringOrNil(2,buffer)){
+                obj_hashes[res.getStringByIdx(0)][res.getStringByIdx(1)] = buffer;
+            }
         }
         for(Hashtable<rho::String, Hashtable<rho::String, rho::String> >::iterator cResIt = obj_hashes.begin(); cResIt != obj_hashes.end(); ++cResIt) {
             Hashtable<rho::String, rho::String>& obj_hash = cResIt -> second;

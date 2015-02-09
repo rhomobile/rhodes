@@ -56,6 +56,7 @@
 
 //#define RHO_ENABLE_LOG
 #if defined(OS_ANDROID) && defined(RHO_ENABLE_LOG)
+#include <android/log.h>
 #define RHO_LOG(fmt, ...) \
   __android_log_print(ANDROID_LOG_INFO, "RHO_LOG", "%s:%d: thread %08lx: " fmt, __FILE__, __LINE__, \
       (unsigned long)pthread_self(), ##__VA_ARGS__)
@@ -135,7 +136,8 @@ static jmethodID midClose;
 static jmethodID midRead;
 static jmethodID midSeek;
 static jmethodID midGetChildren;
-//static jmethodID midReloadStatTable;
+static jmethodID midReloadStatTable;
+static jmethodID midForceAllFiles;
 
 static jobject jAssetManager;
 static AAssetManager* pAssetManager = 0;
@@ -496,6 +498,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     if (!midCopy) return;
     midOpen = getJNIClassStaticMethod(env, clsFileApi, "openInPackage", "(Ljava/lang/String;)Ljava/io/InputStream;");
     if (!midOpen) return;
+    midForceAllFiles = getJNIClassStaticMethod(env, clsFileApi, "doForceAllFiles", "()V");
+    if (!midForceAllFiles) return;
     midClose = getJNIClassStaticMethod(env, clsFileApi, "close", "(Ljava/io/InputStream;)V");
     if (!midClose) return;
     midRead = getJNIClassStaticMethod(env, clsFileApi, "read", "(Ljava/io/InputStream;[B)I");
@@ -504,6 +508,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     if (!midSeek) return;
     midGetChildren = getJNIClassStaticMethod(env, clsFileApi, "getChildren", "(Ljava/lang/String;)[Ljava/lang/String;");
     if (!midGetChildren) return;
+    midReloadStatTable = getJNIClassStaticMethod(env, clsFileApi, "reloadStatTable", "()V");
+    if (!midReloadStatTable) return;
 
     const char *libc = "/system/lib/libc.so";
     void *pc = dlopen(libc, RTLD_LAZY);
@@ -1937,4 +1943,30 @@ RHO_GLOBAL void rho_file_set_fs_mode(int mode)
         LOG(ERROR) + "Wrong FS mode: " + mode;
     }
 }
+
+
+RHO_GLOBAL void rho_android_file_reload_stat_table() {
+    
+    RHO_LOG("rho_android_file_reload_stat_table() START");
+    
+    rho_stat_map.clear();
+    
+    JNIEnv *env = jnienv();
+    env->CallStaticVoidMethod(clsFileApi, midReloadStatTable);
+    
+    RHO_LOG("rho_android_file_reload_stat_table() FINISH");
+}
+
+RHO_GLOBAL void rho_android_force_all_files() {
+    
+    RHO_LOG("rho_android_force_all_files() START");
+    
+    JNIEnv *env = jnienv();
+
+    env->CallStaticVoidMethod(clsFileApi, midForceAllFiles);
+    
+    RHO_LOG("rho_android_force_all_files() FINISH");
+}
+
+
 

@@ -172,7 +172,6 @@
 				SKIP_INSTALL = YES;
 				STRIPFLAGS = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -194,7 +193,6 @@
 				SKIP_INSTALL = YES;
 				STRIPFLAGS = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
@@ -213,7 +211,6 @@
 				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/ ../../shared/syncengine ../../shared/logging ../../shared/common ../../shared/ruby ../../shared/ruby/include ../../shared/ruby/iphone";
-				VALID_ARCHS = armv7;
 			};
 			name = Debug;
 		};
@@ -230,7 +227,6 @@
 				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/ ../../shared/syncengine ../../shared/logging ../../shared/common ../../shared/ruby ../../shared/ruby/include ../../shared/ruby/iphone";
-				VALID_ARCHS = armv7;
 			};
 			name = Release;
 		};
@@ -247,7 +243,6 @@
 				SDKROOT = iphoneos;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/ ../../shared/syncengine ../../shared/logging ../../shared/common ../../shared/ruby ../../shared/ruby/include ../../shared/ruby/iphone";
-				VALID_ARCHS = armv7;
 			};
 			name = Distribution;
 		};
@@ -269,7 +264,6 @@
 				SKIP_INSTALL = YES;
 				STRIPFLAGS = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = armv7;
 			};
 			name = Distribution;
 		};

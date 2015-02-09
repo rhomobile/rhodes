@@ -839,10 +839,15 @@ namespace "build" do
   namespace "android" do
 
     desc "Build RhoBundle for android"
-    task :rhobundle => ["config:android", :extensions] do
+    task :rhobundle => ["config:android"] do
       print_timestamp('build:android:rhobundle START')
 
       $srcdir = $appassets
+      rm_rf File.join($srcdir)
+      mkdir $srcdir
+
+      Rake::Task["build:android:extensions"].invoke
+
       Rake::Task["build:bundle:noxruby"].invoke
 
       hash = nil
@@ -853,6 +858,10 @@ namespace "build" do
 
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(hash.hexdigest) }
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($appname) }
+
+      rm_rf File.join($srcdir, "apps", "rhofilelist.txt")
+      Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
+
       print_timestamp('build:android:rhobundle FINISH')
     end
 
@@ -1919,33 +1928,73 @@ namespace "build" do
       $android_jars << $v4support_classpath
     end
 
-    task :upgrade_package => :rhobundle do
+    task :upgrade_package => ["config:android"] do
       print_timestamp('build:android:upgrade_package START')
+
+      $skip_build_rhodes_main = true
+      $skip_build_extensions = true
+      $skip_build_xmls = true
+      $use_prebuild_data = true
+
+      Rake::Task['build:android:rhobundle'].invoke
+
       #puts '$$$$$$$$$$$$$$$$$$'
       #puts 'targetdir = '+$targetdir.to_s
       #puts 'bindir = '+$bindir.to_s
       android_targetdir = $targetdir #File.join($targetdir, 'android')
       mkdir_p android_targetdir if not File.exists? android_targetdir
       zip_file_path = File.join(android_targetdir, 'upgrade_bundle.zip')
-      Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
-      Jake.zip_upgrade_bundle($bindir, zip_file_path)
+      #Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
+
+      src_folder = $appassets #File.join($appassets, 'RhoBundle')
+      src_folder = File.join(src_folder, 'apps')
+
+      tmp_folder = $appassets + '_tmp_partial'
+      rm_rf tmp_folder if File.exists? tmp_folder
+      mkdir_p tmp_folder
+
+      dst_tmp_folder = File.join(tmp_folder, 'RhoBundle')
+      mkdir_p dst_tmp_folder
+      # copy all
+      cp_r src_folder, dst_tmp_folder
+
+      dst_tmp_folder = File.join(dst_tmp_folder, 'apps')
+      mkdir_p dst_tmp_folder
+
+      Jake.zip_upgrade_bundle(tmp_folder, zip_file_path)
+
+      rm_rf tmp_folder
+
       print_timestamp('build:android:upgrade_package FINISH')
     end
 
-    task :upgrade_package_partial => ["build:android:rhobundle"] do
+    task :upgrade_package_partial => ["config:android"] do
+
+      print_timestamp('build:android:upgrade_package_partial START')
       #puts '$$$$$$$$$$$$$$$$$$'
       #puts 'targetdir = '+$targetdir.to_s
       #puts 'bindir = '+$bindir.to_s
 
       # process partial update
 
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
+        Rake::Task['build:android:rhobundle'].invoke
+
+
+
+
+
       add_list_full_name = File.join($app_path, 'upgrade_package_add_files.txt')
       remove_list_full_name = File.join($app_path, 'upgrade_package_remove_files.txt')
 
-      src_folder = File.join($bindir, 'RhoBundle')
+      src_folder = $appassets #File.join($appassets, 'RhoBundle')
       src_folder = File.join(src_folder, 'apps')
 
-      tmp_folder = $bindir + '_tmp_partial'
+      tmp_folder = $appassets + '_tmp_partial'
       rm_rf tmp_folder if File.exists? tmp_folder
       mkdir_p tmp_folder
 
@@ -1985,7 +2034,7 @@ namespace "build" do
 
         if File.file?(f)
           #puts '$$$ ['+relpath+']'
-          if not add_files.include?(relpath)
+          if (not add_files.include?(relpath)) && (relpath != 'rhofilelist.txt')
             rm_rf f
           end
         end
@@ -2014,6 +2063,9 @@ namespace "build" do
       zip_file_path = File.join($targetdir, "upgrade_bundle_partial.zip")
       Jake.zip_upgrade_bundle(tmp_folder, zip_file_path)
       rm_rf tmp_folder
+
+      print_timestamp('build:android:upgrade_package_partial FINISH')
+
     end
 
 

@@ -14,7 +14,7 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" const char* rho_wmimpl_get_webengine();
 extern "C" const char* get_app_build_config_item(const char* key);
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
 extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent, HINSTANCE hLicenseInstance);
 extern "C" void rho_wm_impl_CheckLicenseWithBarcodeWoWebkit(HWND hParent, HINSTANCE hLicenseInstance);
 #endif
@@ -81,7 +81,7 @@ EBrowserEngineType BrowserFactory::convertBrowserType(rho::String browserType)
 
 void BrowserFactory::checkLicense(HWND hParent, HINSTANCE hLicenseInstance)
 {
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
     if(!m_bLicenseChecked)
     {
         switch(m_selBrowserType)

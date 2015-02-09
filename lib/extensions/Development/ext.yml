@@ -1,0 +1,15 @@
+entry: Init_Development_extension
+javaentry: com.development.Development
+libraries: ["Development"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+wp8:
+  csharp_impl: yes
+  root_namespace: rho
+
+project_paths:
+  wp8: ext/platform/wp8/DevelopmentLib.vcxproj
+  wm: ext/platform/wm/Development.vcproj
+  
+xml_api_paths: ext/Development.xml

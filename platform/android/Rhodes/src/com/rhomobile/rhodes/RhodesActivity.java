@@ -26,6 +26,8 @@
 
 package com.rhomobile.rhodes;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Set;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +42,7 @@ import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.Config;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -81,6 +84,22 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
 	private long uiThreadId = 0;
 	
+	public static interface GestureListener {
+		void onTripleTap();
+		void onQuadroTap();
+	};
+	
+	public static class GestureListenerAdapter implements GestureListener {
+		public void onTripleTap() {
+			
+		}
+		
+		public void onQuadroTap() {
+			
+		}
+	};
+	
+	private static ArrayList<GestureListener> ourGestureListeners = new ArrayList<GestureListener>();
 
 	
 	public long getUiThreadId() {
@@ -265,7 +284,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.T(TAG, "onActivityResult");
 
         RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
-        com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
+       // com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
         
         RhoExtManager.getImplementationInstance().onActivityResult(this, requestCode, resultCode, data);
     }
@@ -592,4 +611,27 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			throw new IllegalStateException("No rhodes activity instance at this moment");
 		return ra;
 	}
+
+	public static void addGestureListener(GestureListener listener) {
+		ourGestureListeners.add(listener);
+		Utils.platformLog(TAG, "$$$ addGestureListener()");
+	}
+
+	public static void onTripleTap() {
+		Utils.platformLog(TAG, "$$$ onTripleTap()");
+		Iterator<GestureListener> i = ourGestureListeners.iterator();
+		while (i.hasNext()) {
+			i.next().onTripleTap();
+		}
+	}
+
+	public static void onQuadroTap() {
+		Utils.platformLog(TAG, "$$$ onQuadroTap()");
+		Iterator<GestureListener> i = ourGestureListeners.iterator();
+		while (i.hasNext()) {
+			i.next().onQuadroTap();
+		}
+	}
+
+
 }
