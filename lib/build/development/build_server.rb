@@ -35,6 +35,8 @@ module RhoDevelopment
           tmp = 'iOS'
         when 'android'
           tmp = 'android'
+        when 'wm'
+          tmp = 'MC3000c50b (ARMV4I)'
         else
           tmp = platform
       end
