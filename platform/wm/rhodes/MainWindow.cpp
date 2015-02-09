@@ -655,7 +655,7 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     if (( m_bLoading ==true)&&(m_bLicenseScreenShownFirsttime==true))
 	{
-        	LOG(INFO) + "Showing screen during first navigation...";
+        	LOG(INFO) + "Showing License screen";
 		m_bLicenseScreenShownFirsttime = false;
 		rho_wm_impl_CheckLicense();
 	}
