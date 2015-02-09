@@ -29,7 +29,7 @@ class ScreenOrientationSingleton implements IScreenOrientationSingleton
 	private static boolean isAutoRotate;
 	private static String direction;
 	private static String lastDirection = "";
-
+	public static boolean m_Paused=false;
 	/**
 	 * Monitors the Orientation sensor to determine which way up the device is also takes care of
 	 * upside down which is not handled by the default Sensors using the Magnetic Field Sensor as
@@ -171,9 +171,15 @@ class ScreenOrientationSingleton implements IScreenOrientationSingleton
 			if (value != null)
 			{
 				direction = value;
-				Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
-				if (mScreenOrientationCallback != null)
-					mScreenOrientationCallback.set(direction);
+				
+				//EMBPD00154917 fix start-Resolve 2 callbacks being fired when screenorientatation is set
+				//Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
+				
+				//if (mScreenOrientationCallback != null)
+					//mScreenOrientationCallback.set(direction);
+					
+					
+				//EMBPD00154917 fix end-Resolve 2 callbacks being fired when screenorientatation is set	
 			}
 		    }
 		});
@@ -213,9 +219,17 @@ class ScreenOrientationSingleton implements IScreenOrientationSingleton
 			if (lastDirection.compareToIgnoreCase(direction) != 0)
 			{
 				lastDirection = direction;
+				if(m_Paused==false)//
+				{
 				Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
 				if (mScreenOrientationCallback != null)
 					mScreenOrientationCallback.set(direction);
+				}
+				else
+				{
+				Logger.I(TAG, "Activiy is paused.Do not fire screenorientation event");	
+				}
+					
 			}
 		}
 		catch (NullPointerException e)
