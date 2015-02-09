@@ -1010,9 +1010,13 @@ void CReplaceBundleThread::doReplaceBundle()
             return;
         }
 #else
-        nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), 
-			CFilePath::join(m_bundle_path, "RhoBundle/apps"), 
-			RHODESAPP().getAppRootPath());
+#if defined(OS_WINCE)
+	nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), RHODESAPP().getAppRootPath());
+#else
+	nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), CFilePath::join( RHODESAPP().getAppRootPath(), "apps") );
+#endif
+
+	if ( nError != 0 )
         if ( nError != 0 )
         {
             showError(nError, "Copy files to bundle failed." );
