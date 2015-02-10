@@ -81,6 +81,8 @@ namespace rho
 
         public class Camera : CameraBase
         {
+            private CameraResult _cameraResult = new CameraResult();
+
             public override void getCameraType(IMethodResult oResult)
             {
                 oResult.set("back");
@@ -264,11 +266,10 @@ namespace rho
 
             public override void takePicture(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
             {
-                CameraResult result = new CameraResult();
-                result._oResult = oResult;
+                _cameraResult._oResult = oResult;
                 CameraCaptureTask cameraCaptureTask;
                 cameraCaptureTask = new CameraCaptureTask();
-                cameraCaptureTask.Completed += new EventHandler<PhotoResult>(result.cameraTask_Completed);
+                cameraCaptureTask.Completed += new EventHandler<PhotoResult>(_cameraResult.cameraTask_Completed);
                 cameraCaptureTask.Show();
                 //CameraPage page = new CameraPage();
             }
@@ -291,6 +292,8 @@ namespace rho
 
         public class CameraSingleton : CameraSingletonBase
         {
+            private CameraResult _cameraResult = new CameraResult();
+
             public override void enumerate(IMethodResult oResult)
             {
                 rho.common.Vector<String> arIDs = new rho.common.Vector<String>();
@@ -306,11 +309,10 @@ namespace rho
 
             public override void choosePicture(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
             {
-                CameraResult result = new CameraResult();
-                result._oResult = oResult;
+                _cameraResult._oResult = oResult;
                 PhotoChooserTask photoChooserTask;
                 photoChooserTask = new PhotoChooserTask();
-                photoChooserTask.Completed += new EventHandler<PhotoResult>(result.cameraTask_Completed);
+                photoChooserTask.Completed += new EventHandler<PhotoResult>(_cameraResult.cameraTask_Completed);
                 photoChooserTask.Show();
             }
 
