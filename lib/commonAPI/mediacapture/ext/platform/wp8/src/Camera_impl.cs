@@ -21,9 +21,9 @@ namespace rho
     {
         public class CameraResult
         {
-            protected IMethodResult _oResult = null;
+            public IMethodResult _oResult = null;
 
-            protected void cameraTask_Completed(object sender, PhotoResult e)
+            public void cameraTask_Completed(object sender, PhotoResult e)
             {
                 rho.common.Hashtable<String, String> mapRes = new rho.common.Hashtable<String, String>();
 
@@ -79,246 +79,219 @@ namespace rho
             }
         };
 
-        public class Camera : CameraResult, ICameraImpl
+        public class Camera : CameraBase
         {
-            private long _nativeImpl = 0;
-            CameraRuntimeComponent _runtime;
-
-            public Camera()
-            {
-                _runtime = new CameraRuntimeComponent(this);
-            }
-
-            public long getNativeImpl()
-            {
-                return _nativeImpl;
-            }
-
-            public void setNativeImpl(long native)
-            {
-                _nativeImpl = native;
-            }
-
-            public void getCameraType(IMethodResult oResult)
+            public override void getCameraType(IMethodResult oResult)
             {
                 oResult.set("back");
                 // implement this method in C# here
             }
 
-            public void getMaxWidth(IMethodResult oResult)
+            public override void getMaxWidth(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getMaxHeight(IMethodResult oResult)
+            public override void getMaxHeight(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getSupportedSizeList(IMethodResult oResult)
+            public override void getSupportedSizeList(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getDesiredWidth(IMethodResult oResult)
+            public override void getDesiredWidth(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setDesiredWidth(int desiredWidth, IMethodResult oResult)
+            public override void setDesiredWidth(int desiredWidth, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getDesiredHeight(IMethodResult oResult)
+            public override void getDesiredHeight(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setDesiredHeight(int desiredHeight, IMethodResult oResult)
+            public override void setDesiredHeight(int desiredHeight, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getFileName(IMethodResult oResult)
+            public override void getFileName(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setFileName(string fileName, IMethodResult oResult)
+            public override void setFileName(string fileName, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getCompressionFormat(IMethodResult oResult)
+            public override void getCompressionFormat(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setCompressionFormat(string compressionFormat, IMethodResult oResult)
+            public override void setCompressionFormat(string compressionFormat, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getOutputFormat(IMethodResult oResult)
+            public override void getOutputFormat(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setOutputFormat(string outputFormat, IMethodResult oResult)
+            public override void setOutputFormat(string outputFormat, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getColorModel(IMethodResult oResult)
+            public override void getColorModel(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setColorModel(string colorModel, IMethodResult oResult)
+            public override void setColorModel(string colorModel, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getEnableEditing(IMethodResult oResult)
+            public override void getEnableEditing(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setEnableEditing(bool enableEditing, IMethodResult oResult)
+            public override void setEnableEditing(bool enableEditing, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getFlashMode(IMethodResult oResult)
+            public override void getFlashMode(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setFlashMode(string flashMode, IMethodResult oResult)
+            public override void setFlashMode(string flashMode, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getSaveToDeviceGallery(IMethodResult oResult)
+            public override void getSaveToDeviceGallery(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setSaveToDeviceGallery(bool saveToDeviceGallery, IMethodResult oResult)
+            public override void setSaveToDeviceGallery(bool saveToDeviceGallery, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getCaptureSound(IMethodResult oResult)
+            public override void getCaptureSound(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setCaptureSound(string captureSound, IMethodResult oResult)
+            public override void setCaptureSound(string captureSound, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getPreviewLeft(IMethodResult oResult)
+            public override void getPreviewLeft(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setPreviewLeft(int previewLeft, IMethodResult oResult)
+            public override void setPreviewLeft(int previewLeft, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getPreviewTop(IMethodResult oResult)
+            public override void getPreviewTop(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setPreviewTop(int previewTop, IMethodResult oResult)
+            public override void setPreviewTop(int previewTop, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getPreviewWidth(IMethodResult oResult)
+            public override void getPreviewWidth(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setPreviewWidth(int previewWidth, IMethodResult oResult)
+            public override void setPreviewWidth(int previewWidth, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getPreviewHeight(IMethodResult oResult)
+            public override void getPreviewHeight(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setPreviewHeight(int previewHeight, IMethodResult oResult)
+            public override void setPreviewHeight(int previewHeight, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getUseSystemViewfinder(IMethodResult oResult)
+            public override void getUseSystemViewfinder(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void setUseSystemViewfinder(bool useSystemViewfinder, IMethodResult oResult)
+            public override void setUseSystemViewfinder(bool useSystemViewfinder, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void takePicture(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
+            public override void getAimMode(IMethodResult oResult)
             {
-                _oResult = oResult;
+                // implement this method in C# here
+            }
+
+            public override void setAimMode(string aimMode, IMethodResult oResult)
+            {
+                // implement this method in C# here
+            }
+
+            public override void takePicture(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
+            {
+                CameraResult result = new CameraResult();
+                result._oResult = oResult;
                 CameraCaptureTask cameraCaptureTask;
                 cameraCaptureTask = new CameraCaptureTask();
-                cameraCaptureTask.Completed += new EventHandler<PhotoResult>(cameraTask_Completed);
+                cameraCaptureTask.Completed += new EventHandler<PhotoResult>(result.cameraTask_Completed);
                 cameraCaptureTask.Show();
                 //CameraPage page = new CameraPage();
             }
 
-            public void getProperty(string propertyName, IMethodResult oResult)
+            public override void showPreview(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getProperties(IReadOnlyList<string> arrayofNames, IMethodResult oResult)
+            public override void hidePreview(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void getAllProperties(IMethodResult oResult)
-            {
-                // implement this method in C# here
-            }
-
-            public void setProperty(string propertyName, string propertyValue, IMethodResult oResult)
-            {
-                // implement this method in C# here
-            }
-
-            public void setProperties(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
-            {
-                // implement this method in C# here
-            }
-
-            public void clearAllProperties(IMethodResult oResult)
+            public override void capture(IMethodResult oResult)
             {
                 // implement this method in C# here
             }
         }
 
-        public class CameraSingleton : CameraResult, ICameraSingletonImpl
+        public class CameraSingleton : CameraSingletonBase
         {
-            public CameraSingleton()
-            {
-                CameraSingletonComponent _runtime = new CameraSingletonComponent(this);
-            }
-
-            public void enumerate(IMethodResult oResult)
+            public override void enumerate(IMethodResult oResult)
             {
                 rho.common.Vector<String> arIDs = new rho.common.Vector<String>();
                 arIDs.addElement("back");
@@ -326,36 +299,29 @@ namespace rho
                 oResult.set(arIDs);
             }
 
-            public void getCameraByType(string cameraType, IMethodResult oResult)
+            public override void getCameraByType(string cameraType, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
 
-            public void choosePicture(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
+            public override void choosePicture(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
             {
-                _oResult = oResult;
+                CameraResult result = new CameraResult();
+                result._oResult = oResult;
                 PhotoChooserTask photoChooserTask;
                 photoChooserTask = new PhotoChooserTask();
-                photoChooserTask.Completed += new EventHandler<PhotoResult>(cameraTask_Completed);
+                photoChooserTask.Completed += new EventHandler<PhotoResult>(result.cameraTask_Completed);
                 photoChooserTask.Show();
             }
 
-            public void saveImageToDeviceGallery(string pathToImage, IMethodResult oResult)
+            public override void copyImageToDeviceGallery(string pathToImage, IMethodResult oResult)
             {
                 // implement this method in C# here
             }
         }
 
-        public class CameraFactory : ICameraFactoryImpl
+        public class CameraFactory : CameraFactoryBase
         {
-            public ICameraImpl getImpl()
-            {
-                return new Camera();
-            }
-            public ICameraSingletonImpl getSingletonImpl()
-            {
-                return new CameraSingleton();
-            }
         }
     }
 
