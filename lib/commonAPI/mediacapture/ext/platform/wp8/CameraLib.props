@@ -3,8 +3,8 @@
   <ImportGroup Label="PropertySheets">
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <_RHO_ROOT>c:/rhomobile/rhodes</_RHO_ROOT>
-    <_TEMP_FILES_DIR>$(RHO_ROOT)\platform\wp8\bin\$(Platform)\extensions\$(ProjectName)</_TEMP_FILES_DIR>
+    <RHO_ROOT>../../../../../..</RHO_ROOT>
+    <TEMP_FILES_DIR>$(RHO_ROOT)\platform\wp8\bin\$(Platform)\extensions\$(ProjectName)</TEMP_FILES_DIR>
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup>

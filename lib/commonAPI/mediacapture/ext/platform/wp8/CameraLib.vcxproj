@@ -53,16 +53,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="MediacaptureLib.props" />
+    <Import Project="CameraLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <Import Project="MediacaptureLib.props" />
+    <Import Project="CameraLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="MediacaptureLib.props" />
+    <Import Project="CameraLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <Import Project="MediacaptureLib.props" />
+    <Import Project="CameraLib.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -156,23 +156,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\generated\mediacapture_api_init.cpp" />
-    <ClCompile Include="..\..\shared\generated\mediacapture_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\mediacapture_ruby_api.c">
+    <ClCompile Include="..\..\shared\generated\camera_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\camera_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\camera_ruby_api.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="generated\lib\Mediacapture_impl.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\MediacaptureBase.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\mediacapture_js_wrap.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\mediacapture_ruby_wrap.cpp" />
-    <ClCompile Include="generated\lib\MediacaptureRuntime.cpp" />
+    <ClCompile Include="generated\lib\Camera_impl.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\CameraBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\camera_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\camera_ruby_wrap.cpp" />
+    <ClCompile Include="generated\lib\CameraRuntime.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\shared\generated\cpp\IMediacapture.h" />
-    <ClInclude Include="generated\lib\MediacaptureRuntime.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\ICamera.h" />
+    <ClInclude Include="generated\lib\CameraRuntime.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\IVideocapture.h" />
+    <ClInclude Include="generated\lib\VideocaptureRuntime.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\camera.xml">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <SubType>Designer</SubType>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

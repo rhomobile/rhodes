@@ -156,34 +156,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\generated\camera_api_init.cpp" />
-    <ClCompile Include="..\..\shared\generated\camera_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\camera_ruby_api.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\generated\cpp\CameraBase.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\Camera_js_wrap.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\Camera_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\MediacaptureInit.cpp" />
-    <ClCompile Include="generated\lib\CameraRuntime.cpp" />
-    <ClCompile Include="generated\lib\Camera_impl.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\shared\generated\cpp\CameraBase.h" />
-    <ClInclude Include="..\..\shared\generated\cpp\ICamera.h" />
-    <ClInclude Include="generated\lib\CameraFactory.h" />
-    <ClInclude Include="generated\lib\CameraRuntime.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\..\camera.xml">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <SubType>Designer</SubType>
-    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

@@ -22,37 +22,37 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\generated\mediacapture_api_init.cpp">
+    <ClCompile Include="..\..\shared\generated\camera_api_init.cpp">
       <Filter>shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\mediacapture_js_api.cpp">
+    <ClCompile Include="..\..\shared\generated\camera_js_api.cpp">
       <Filter>shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\mediacapture_ruby_api.c">
+    <ClCompile Include="..\..\shared\generated\camera_ruby_api.c">
       <Filter>shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\cpp\MediacaptureBase.cpp">
+    <ClCompile Include="..\..\shared\generated\cpp\CameraBase.cpp">
       <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\cpp\mediacapture_js_wrap.cpp">
+    <ClCompile Include="..\..\shared\generated\cpp\camera_js_wrap.cpp">
       <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\cpp\mediacapture_ruby_wrap.cpp">
+    <ClCompile Include="..\..\shared\generated\cpp\camera_ruby_wrap.cpp">
       <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="generated\lib\Mediacapture_impl.cpp">
+    <ClCompile Include="generated\lib\Camera_impl.cpp">
       <Filter>wp8\lib</Filter>
     </ClCompile>
-    <ClCompile Include="generated\lib\MediacaptureRuntime.cpp">
+    <ClCompile Include="generated\lib\CameraRuntime.cpp">
       <Filter>wp8\lib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\shared\generated\cpp\IMediacapture.h">
+    <ClInclude Include="..\..\shared\generated\cpp\ICamera.h">
       <Filter>shared\generated\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="generated\lib\MediacaptureRuntime.h">
+    <ClInclude Include="generated\lib\CameraRuntime.h">
       <Filter>wp8\lib</Filter>
-    </ClCompile>
+    </ClInclude>
   </ItemGroup>
 </Project>

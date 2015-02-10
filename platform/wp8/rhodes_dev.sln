@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rhodes", "rhodes\rhodes.csproj", "{B3A01AFB-4608-4598-9C5F-43A9D7F42589}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhoruntime", "rhoruntime\rhoruntime.vcxproj", "{19B2CB23-B0FC-44C0-BD59-3DA4F3113585}"
 	ProjectSection(ProjectDependencies) = postProject
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C} = {55F32F00-8B33-0132-380A-00FFE07A4F0C}
 		{FBF89600-A620-0130-C886-64CE8F468BC3} = {FBF89600-A620-0130-C886-64CE8F468BC3}
 		{5A481810-9A29-0130-C882-64CE8F468BC3} = {5A481810-9A29-0130-C882-64CE8F468BC3}
 		{51A2A712-4D2E-47CC-8AA4-44170232D128} = {51A2A712-4D2E-47CC-8AA4-44170232D128}
@@ -20,6 +21,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhoruntime", "rhoruntime\rh
 		{12F7458F-04CD-445E-9232-C93A506E9B50} = {12F7458F-04CD-445E-9232-C93A506E9B50}
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588} = {87EE9DA4-DE1E-4448-8324-183C98DCA588}
 		{861C01D8-54E0-476C-B0C1-02647F844482} = {861C01D8-54E0-476C-B0C1-02647F844482}
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199} = {0A785FEF-1B00-4CD9-B261-A83C6FFE7199}
 		{20C78CF1-3404-0132-C892-64CE8F468BC3} = {20C78CF1-3404-0132-C892-64CE8F468BC3}
 	EndProjectSection
 EndProject
@@ -60,6 +62,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BarcodeLib", "..\..\..\Motorola-Extensions\lib\commonAPI\barcode\ext\platform\wp8\BarcodeLib.vcxproj", "{20C78CF1-3404-0132-C892-64CE8F468BC3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rhoconnect-client", "..\..\..\rhoconnect-client\ext\rhoconnect-client\ext\platform\wp8\Rhoconnect-client.vcxproj", "{12F7458F-04CD-445E-9232-C93A506E9B50}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraLib", "..\..\lib\commonAPI\mediacapture\ext\platform\wp8\CameraLib.vcxproj", "{55F32F00-8B33-0132-380A-00FFE07A4F0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mediacapture", "..\..\lib\commonAPI\mediacapture\ext\platform\wp8\Mediacapture.vcxproj", "{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -425,6 +431,46 @@ Global
 		{12F7458F-04CD-445E-9232-C93A506E9B50}.Release|x64.ActiveCfg = Release|Win32
 		{12F7458F-04CD-445E-9232-C93A506E9B50}.Release|x86.ActiveCfg = Release|Win32
 		{12F7458F-04CD-445E-9232-C93A506E9B50}.Release|x86.Build.0 = Release|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|ARM.ActiveCfg = Debug|ARM
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|ARM.Build.0 = Debug|ARM
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|Win32.Build.0 = Debug|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|x64.ActiveCfg = Debug|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|x86.ActiveCfg = Debug|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Debug|x86.Build.0 = Debug|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|Any CPU.ActiveCfg = Release|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|ARM.ActiveCfg = Release|ARM
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|ARM.Build.0 = Release|ARM
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|Win32.ActiveCfg = Release|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|Win32.Build.0 = Release|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|x64.ActiveCfg = Release|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|x86.ActiveCfg = Release|Win32
+		{55F32F00-8B33-0132-380A-00FFE07A4F0C}.Release|x86.Build.0 = Release|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|ARM.ActiveCfg = Debug|ARM
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|ARM.Build.0 = Debug|ARM
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|Win32.Build.0 = Debug|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|x64.ActiveCfg = Debug|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|x86.ActiveCfg = Debug|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Debug|x86.Build.0 = Debug|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|Any CPU.ActiveCfg = Release|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|ARM.ActiveCfg = Release|ARM
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|ARM.Build.0 = Release|ARM
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|Win32.ActiveCfg = Release|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|Win32.Build.0 = Release|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|x64.ActiveCfg = Release|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|x86.ActiveCfg = Release|Win32
+		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
