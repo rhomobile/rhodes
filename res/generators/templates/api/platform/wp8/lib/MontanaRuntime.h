@@ -37,7 +37,7 @@ namespace rhoruntime
     {
     public:
         int64 getNativeImpl();
-        void setNativeImpl(int64 native);
+        void setNativeImpl(Platform::String^ strID, int64 native);
 <%= dynamic_methods%>    };
 
     public interface class I<%= $cur_module.name %>SingletonImpl
