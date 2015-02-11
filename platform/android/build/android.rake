@@ -846,7 +846,9 @@ namespace "build" do
       rm_rf File.join($srcdir)
       mkdir $srcdir
 
-      Rake::Task["build:android:extensions"].invoke
+      if !$skip_build_extensions
+        Rake::Task["build:android:extensions"].invoke
+      end
 
       Rake::Task["build:bundle:noxruby"].invoke
 
