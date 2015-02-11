@@ -23,13 +23,20 @@ $RhoDevelopmentPlatform = nil
 
 
 def setup(settings_folder_path, platform)
+
+  puts 'RhoDevelopment.setup('+platform.to_s+')'
+
   $RhoDevelopmentSettingsFolder = settings_folder_path
   $RhoDevelopmentPlatform = platform
+
+  $current_platform = platform
+
+  Rake::Task['config:common'].reenable
+  Rake::Task['config:common'].invoke
 
   #disable checking XCode in config:iphone - it required for working on Win platfrom or on MAc OS without XCode
   $skip_checking_XCode = true
 
-  Rake::Task['config:common'].reenable
   Rake::Task["config:#{$RhoDevelopmentPlatform}"].reenable
   Rake::Task["config:#{$RhoDevelopmentPlatform}"].invoke
 
