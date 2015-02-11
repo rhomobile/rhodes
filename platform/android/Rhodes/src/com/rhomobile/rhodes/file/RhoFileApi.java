@@ -231,15 +231,15 @@ public class RhoFileApi {
 		}
 		
         try {
-        	setFsModeTransparrent(false);
-        	processStatTable( !RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS"), true);
+        	//setFsModeTransparrent(false);
+        	//processStatTable( !RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS"), true);
         }
         catch (Throwable e) {
         	e.printStackTrace();
             Log.e(TAG, "Exception during update Stat Table with copy files from bundle to filesystem !!!");
         }
 		
-		/*
+		///*
 		try {
 	       InputStream is = null;
 	        try {
@@ -302,7 +302,7 @@ public class RhoFileApi {
 			Log.e(TAG, "%% Can not force all files !!!");
 			e.printStackTrace();
 		}
-		*/
+		//*/
 	}
 	
 	public static void doForceAllFiles() 
