@@ -411,6 +411,10 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     }
     
     private void readRhoelementsConfig(IRhoConfig config) {
+        if (config.isExist("enablezoom")) {
+           // mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enable_screen_zoom", WebViewConfig.ENABLE_ZOOM_DEF));
+            mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enablezoom", WebViewConfig.ENABLE_ZOOM_DEF));
+        }
         if (config.isExist("pagezoom")) {
             double zoomValue = config.getDouble("pagezoom", WebViewConfig.PAGE_ZOOM_DEF);
             mConfig.set(WebViewConfig.PAGE_ZOOM, zoomValue);
