@@ -40,9 +40,90 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using rho.common;
+using Windows.Storage;
+using System.IO.IsolatedStorage;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace rhodes
 {
+    class AssociationUriMapper : UriMapperBase
+    {
+        private string tempUri;
+
+        public override Uri MapUri(Uri uri)
+        {
+            tempUri = System.Net.HttpUtility.UrlDecode(uri.ToString());
+
+            // URI association launch for contoso.
+            if (tempUri.Contains("symats:LaunchTestApplication"))
+            {
+                Debug.WriteLine("Launching with URI: " + tempUri);
+                // Get the RhoConfig.Txt file.
+                int rhoConfigTxtIndex = tempUri.IndexOf("RhoConfigTxt=") + 13;
+                string rhoConfigUrl = tempUri.Substring(rhoConfigTxtIndex);
+
+                //  Replace the start_path in the default config with our start path
+                var success = Task.Run(() => ModifyConfiguration(rhoConfigUrl)).GetAwaiter().GetResult();
+
+                // Map the show products request to ShowProducts.xaml
+                return new Uri("/MainPage.xaml", UriKind.Relative);
+            }
+
+            // Otherwise perform normal launch.
+            return uri;
+        }
+
+
+        public async Task<bool> ModifyConfiguration(string rhoConfigUrl)
+        {
+            bool bSuccess = false;
+            StorageFolder local = Windows.Storage.ApplicationData.Current.LocalFolder;
+            if (local != null)
+            {
+                var dataFolder = await local.GetFolderAsync("rho");
+                var rhoFolder = await dataFolder.GetFolderAsync("apps");
+                var file = await rhoFolder.OpenStreamForReadAsync("rhoconfig.txt");
+                string configFileAsString = null;
+                using (StreamReader streamReader = new StreamReader(file))
+                {
+                    configFileAsString = streamReader.ReadToEnd();
+                }
+                file.Close();
+
+                if (configFileAsString != null)
+                {
+
+                    //  Modify the config here
+                    int startPageIndex = configFileAsString.IndexOf("start_path");
+                    if (startPageIndex > -1)
+                    {
+                        int startPageIndexEnd = (configFileAsString.Substring(startPageIndex).IndexOf("\r\n"));
+                        if (startPageIndexEnd > -1)
+                        {
+                            startPageIndexEnd += startPageIndex;
+                            string newStartPath = "start_path = '" + rhoConfigUrl + "'";
+                            string beforeStartPath = configFileAsString.Substring(0, startPageIndex);
+                            string afterStartPath = configFileAsString.Substring(startPageIndexEnd, (configFileAsString.Length - startPageIndexEnd));
+                            string newConfigFile = beforeStartPath + newStartPath + afterStartPath;
+                            //Debug.WriteLine("New Config: " + newConfigFile);
+                            byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(newConfigFile);
+                            var writeFile = await rhoFolder.CreateFileAsync("rhoconfig.txt", CreationCollisionOption.ReplaceExisting);
+                            using (var s = await writeFile.OpenStreamForWriteAsync())
+                            {
+                                s.Write(fileBytes, 0, fileBytes.Length);
+                            }
+                            bSuccess = true;
+                        }
+                    }
+                }
+            }
+            return bSuccess;
+        }
+    }
+
+	
     public partial class App : Application
     {
         // exception to exit application
@@ -171,6 +252,8 @@ namespace rhodes
             // screen to remain active until the application is ready to render.
             RootFrame = new PhoneApplicationFrame();
             RootFrame.Navigated += CompleteInitializePhoneApplication;
+			
+			RootFrame.UriMapper = new AssociationUriMapper();
 
             // Handle navigation failures
             RootFrame.NavigationFailed += RootFrame_NavigationFailed;
