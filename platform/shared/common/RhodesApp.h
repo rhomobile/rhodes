@@ -278,6 +278,8 @@ public:
 
     void registerLocalServerUrl(const String& strUrl, rho::net::CHttpServer::callback_t const &callback);
     bool isLocalServerRunning() { return ( (m_httpServer) && (m_httpServer->started()) ); }
+  
+    unsigned int getLocalServerPort() { return isLocalServerRunning()?(m_httpServer->getPort()):0; }
 
     void callCallbackProcWithData(unsigned long oRubyCallbackProc, String strBody, const String& strCallbackData, bool bWaitForResponse);
 
@@ -347,9 +349,13 @@ void rho_rhodesapp_navigate_back();
 char* rho_http_normalizeurl(const char* szUrl);
 void rho_http_free(void* data);
 
+int rho_http_started();
+int rho_http_get_port();
+//int rho_http_direct_request( rho::net::INetRequestImpl* req, NetResponse* resp );
+
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
         const char* strError, int bCancel );
-void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath, 
+void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath,
   const char* strError, int bCancel );
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 void rho_rhodesapp_callBluetoothCallback(const char* strCallbackUrl, const char* body);

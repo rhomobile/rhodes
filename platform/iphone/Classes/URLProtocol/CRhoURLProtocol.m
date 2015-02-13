@@ -2,6 +2,9 @@
 #import "CRhoURLProtocol.h"
 #import "api_generator/iphone/CJSEntryPoint.h"
 
+extern int rho_http_started();
+extern int rho_http_get_port();
+
 
 @interface CRhoURLResponse : NSHTTPURLResponse {
     
@@ -39,6 +42,11 @@
         return YES;
     }
 #endif
+
+    if ( [CRhoURLProtocol isLocalURL:theUrl] ) {
+      return NO;//YES;
+    }
+
     return NO;
 }
 
@@ -100,6 +108,11 @@
         }
     }
 #endif
+
+    if ( [CRhoURLProtocol isLocalURL:theUrl] )
+    {
+      NSLog(@"Will make local request to %@", [theUrl absoluteString]);
+    }
     
     //NSLog(@"$$$ responce ERROR: [%@]", [theUrl absoluteString]);
     NSString* body = @"error";
@@ -132,6 +145,18 @@
         [[self client] URLProtocol:self didLoadData:data];
     }
     [[self client] URLProtocolDidFinishLoading:self];
+}
+
++ (BOOL) isLocalURL:(NSURL*)url
+{
+    const char* host = [[url host] UTF8String];
+    int port = [[url port] intValue];
+
+    return (
+      (rho_http_started()!=0) &&
+      (port == rho_http_get_port()) &&
+      ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
+    );
 }
 
 @end

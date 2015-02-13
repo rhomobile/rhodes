@@ -839,7 +839,7 @@ bool CHttpServer::process(SOCKET sock)
     return decide(method, uri, query, headers, body);
 }
 
-bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body)
+bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body, IRequestReceiver& reqReceiver )
 {
     method.clear();
     uri.clear();
@@ -853,6 +853,7 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
     size_t content_length = 0;
 
     for (;;) {
+    // TODO: - change receive_request;
         if (!receive_request(request))
             return false;
 
@@ -1342,7 +1343,7 @@ void CHttpServer::call_ruby_proc( rho::String const &query, String const &body )
 }
 
 bool CHttpServer::decide(String const &method, String const &arg_uri, String const &query,
-                         HeaderList const &headers, String const &body)
+                         HeaderList const &headers, String const &body, IResponseSender& respSender )
 {
     RAWTRACE1("Decide what to do with uri %s", arg_uri.c_str());
     callback_t callback = registered(arg_uri);
