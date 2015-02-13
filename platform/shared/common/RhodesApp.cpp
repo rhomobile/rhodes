@@ -2558,6 +2558,17 @@ int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...)
 		
 	return (n);
 }
+
+int rho_http_started()
+{
+  return RHODESAPP().isLocalServerRunning()?1:0;
+}
+
+int rho_http_get_port()
+{
+  return RHODESAPP().getLocalServerPort();
+}
+
 	
 void rho_rhodesapp_create(const char* szRootPath)
 {
