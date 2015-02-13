@@ -2213,7 +2213,7 @@ namespace "run" do
 
         puts '$$$ founded app folder is ['+app_file+']'
 
-        log_name  =   File.join(tmp_dir, 'logout')
+        log_name  =   File.join($app_path, 'rholog.txt')
         File.delete(log_name) if File.exist?(log_name)
 
         commandis = $iphonesim + ' launch "' + app_file + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
@@ -2393,8 +2393,8 @@ namespace "run" do
 
         rm_f apprholog
         rm_f apppublic
-        `ln -f -s "#{simpublic}" "#{apppublic}"`
-        `ln -f -s "#{rholog}" "#{apprholog}"`
+        #`ln -f -s "#{simpublic}" "#{apppublic}"`
+        #`ln -f -s "#{rholog}" "#{apprholog}"`
         `echo > "#{rholog}"`
         f = File.new("#{simapp}/#{$guid}.sb","w")
         f << "(version 1)\n(debug deny)\n(allow default)\n"
@@ -2411,7 +2411,7 @@ namespace "run" do
     print_timestamp('run:iphone START')
 
     mkdir_p $tmpdir
-    log_name  =   File.join($tmpdir, 'logout')
+    log_name  =   File.join($app_path, 'rholog.txt')
     File.delete(log_name) if File.exist?(log_name)
 
     rhorunner = File.join(File.join($app_path, "/project/iphone"),"build/#{$configuration}-iphonesimulator/rhorunner.app")
