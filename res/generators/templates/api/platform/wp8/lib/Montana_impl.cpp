@@ -1,5 +1,4 @@
 #include "<%= $cur_module.name %>_impl.h"
-#include "../../wp8/rhoruntime/common/RhoConvertWP8.h"
 #include "<%= $cur_module.name %>Factory.h"
 #include "api_generator/wp8/MethodResultImpl.h"
 

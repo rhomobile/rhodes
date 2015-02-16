@@ -9,7 +9,14 @@
 #include <pvdispid.h>
 #include <piedocvw.h>
 #endif
-
+#define MAX_HISTORY 30
+class CHistoryElement
+{
+public:
+	LPTSTR tcURL;			///< URL of page in the history, this will never be a JavaScript function.
+	CHistoryElement* pPrev;	///< Pointer to previous element in the list of history elements.
+	CHistoryElement* pNext;	///< Pointer to next element in the list of history elements.
+};
 class CIEBrowserEngine :  public rho::IBrowserEngine
 {
     DEFINE_LOGCLASS;
@@ -30,7 +37,9 @@ private:
     TCHAR           m_tcNavigatedURL[MAX_URL];		 ///< The current URL loaded or being navigated to
     HANDLE          m_hNavigated;					 ///< Event handle set on document complete or on navigation error, used to stop the navigation timeout thread.
     int             m_dwNavigationTimeout;
-
+	CHistoryElement* m_urlList;				///< List of all URLs visited by the browser
+	CHistoryElement* m_currentPage;			///< Pointer to current position in the History List
+	
 private:
     //
     LRESULT CreateEngine();
@@ -40,7 +49,38 @@ private:
     void InvokeEngineEventTitleChange(LPTSTR tcTitle);
     void InvokeEngineEventMetaTag(LPTSTR tcHttpEquiv, LPTSTR tcContent);
     void InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEventID);
+	/**
+	*  Add a URL to the history list.  The URL will be added to the end 
+	*  of the history list, if there are entries after the current pointer 
+	*  (because the user has navigated back) all entries after the current 
+	*  pointer are deleted.
+	*  \param urlNew URL to add to the History List.
+	*  \return Whether or not the URL was successfully added to the History
+	*/
+	BOOL AddNewUrl(LPCTSTR urlNew);
 
+	/**
+	*  Instruct the engine to navigate back to a previously visited page.
+	*  This function will have no effect if the tab can not be navigated back 
+	*  the specified number of pages.
+	*  \return Whether or not the tab was able to navigate back
+	*/
+	LRESULT GetPreviousUrl(LPTSTR tcURL);
+
+	/**
+	*  Calculate the number of times the user can navigate back before they 
+	*  run out of history.
+	*  \return Number of pages in this back history.
+	*/
+	UINT BackListSize();
+
+	/**
+	*  Given a pointer to an element in the history list this function deletes
+	*  all list entries forward of this position.
+	*  \param fromThisElementOn Element in this history list after which all 
+	*  elements should be deleted.
+	*/
+	void DeleteCascade(CHistoryElement* fromThisElementOn);
     static DWORD WINAPI NavigationTimeoutThread( LPVOID lpParameter );
     static DWORD WINAPI CIEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter);
     static LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
