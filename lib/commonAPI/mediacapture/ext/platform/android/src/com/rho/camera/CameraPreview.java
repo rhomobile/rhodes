@@ -2,6 +2,7 @@ package com.rho.camera;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.FrameLayout;
@@ -54,8 +55,14 @@ public class CameraPreview implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         Rect surfaceRect = holder.getSurfaceFrame();
         Logger.T(TAG, "surfaceCreated: " + surfaceRect.right + "x" + surfaceRect.bottom);
-        
-        mCamera.startPreview(holder);
+        try{
+        if (mCamera != null) {
+           mCamera.startPreview(holder);
+         }
+        }
+        catch(RuntimeException e){
+        	
+        }
         ISize size = mCamera.setPreviewSize(surfaceRect.right, surfaceRect.bottom);
         
         double previewRatio = (double) size.getWidth() / size.getHeight();
