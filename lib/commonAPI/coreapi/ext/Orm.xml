@@ -320,5 +320,12 @@ Rho.ORM.databaseFullResetEx({'models' : ['Product', 'Customer'], 'reset_client_i
                 </SECTIONS>
             </EXAMPLE>
         </EXAMPLES>
+        <REMARKS>
+            <REMARK title='Performance Findings Using Property Bag Vs Fixed Schema'>
+                <DESC><![CDATA[
+In our testing, we have found that, overall, the Fixed Schema database model has much better performance that the same tests run using Property Bag, concerning complex data sets. We strongly recommend that enterprise-grade apps use the Fixed Schema model for their app databases as we have seen test results upwards of 10 times faster using the Fixed Schema model. The only current drawback to Fixed Schema is that it is more complex to initially setup. If your dataset is fairly simple in construction, Property Bag should prove sufficient.
+                    ]]></DESC>
+            </REMARK>
+        </REMARKS>
     </MODULE>
 </API>

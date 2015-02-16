@@ -70,6 +70,7 @@ namespace <%= $cur_module.name %>Impl
 {
     abstract public class <%= $cur_module.name %>Base : I<%= $cur_module.name %>Impl
     {
+        protected string _strID = "1";
         protected long _nativeImpl = 0;
         protected <%= $cur_module.name %>RuntimeComponent _runtime;
 <%= dynamic_constants %>
@@ -83,8 +84,9 @@ namespace <%= $cur_module.name %>Impl
             return _nativeImpl;
         }
 
-        public void setNativeImpl(long native)
+        public void setNativeImpl(string strID, long native)
         {
+            _strID = strID;
             _nativeImpl = native;
         }
 
