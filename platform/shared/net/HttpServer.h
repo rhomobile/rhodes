@@ -29,6 +29,7 @@
 
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
+#include "INetRequest.h"
 
 #if !defined(WINDOWS_PLATFORM)
 typedef int SOCKET;
@@ -91,6 +92,18 @@ class CHttpServer
         String id;
         String action;
     };
+  
+    class ResponseWriter
+    {
+      String m_response;
+      
+    public:
+      void writeResponse( const String& data ) {
+        m_response += data;
+      }
+      
+      const String& getResponse() const { return m_response; }
+    };
     
 public:
     typedef void (*callback_t)(void *arg, String const &query);
@@ -123,6 +136,9 @@ public:
     void disableAllLogging();
 
     bool call_ruby_method(String const &uri, String const &body, String& strReply);
+  
+    String directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body );
+  
 private:
     bool init();
     void close_listener();
@@ -157,6 +173,9 @@ private:
     bool verbose;
     bool m_enable_external_access;
     bool m_started_as_separated_simple_server;
+  
+    common::CMutex m_mxSyncRequest;
+    ResponseWriter* m_localResponseWriter;
 };
 
 void rho_http_ruby_proc_callback(void *arg, rho::String const &query );
