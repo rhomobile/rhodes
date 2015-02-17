@@ -5,6 +5,22 @@
         <HELP_OVERVIEW>Rho.Config module</HELP_OVERVIEW>
         <MORE_HELP>Implementation of the config api.</MORE_HELP>
 
+        <PROPERTIES access="STATIC" generateAccessors="true">
+
+            <PROPERTY name="confFilePath" type="STRING" default="">
+                <DESC></DESC>
+            </PROPERTY>
+                               
+            <PROPERTY name="appConfFilePath" type="STRING" default="">
+                <DESC></DESC>
+            </PROPERTY>
+
+            <PROPERTY name="appConfUserFilePath" type="STRING" default="">
+                <DESC></DESC>
+            </PROPERTY>
+
+        </PROPERTIES>
+
         <METHODS>
             <METHOD name="getString" access="STATIC">
                 <PARAMS>
@@ -67,49 +83,7 @@
                 </PARAMS>
                 <DESC>Remove existing property and save to file.</DESC>
             </METHOD>
-                              
-            <METHOD name="getConfFilePath" access="STATIC">
-                <RETURN type="STRING"/>
-                <DESC>Get path to default config.</DESC>
-            </METHOD>
-
-            <METHOD name="setConfFilePath" access="STATIC">
-                <PARAMS>
-                    <PARAM name="configPath" type="STRING">
-                        <DESC>path to config path</DESC>
-                    </PARAM>
-                </PARAMS>
-                <DESC>Set path to default config.</DESC>
-            </METHOD>
-
-            <METHOD name="getAppConfFilePath" access="STATIC">
-                <RETURN type="STRING"/>
-                <DESC></DESC>
-            </METHOD>
-
-            <METHOD name="setAppConfFilePath" access="STATIC">
-                <PARAMS>
-                    <PARAM name="configPath" type="STRING">
-                        <DESC></DESC>
-                    </PARAM>
-                </PARAMS>
-                <DESC></DESC>
-            </METHOD>
-
-            <METHOD name="getAppConfUserFilePath" access="STATIC">
-                <RETURN type="STRING"/>
-                <DESC></DESC>
-            </METHOD>
-
-            <METHOD name="setAppConfUserFilePath" access="STATIC">
-                <PARAMS>
-                    <PARAM name="userPath" type="STRING">
-                        <DESC></DESC>
-                    </PARAM>
-                </PARAMS>
-                <DESC></DESC>
-            </METHOD>
-
+                                     
             <METHOD name="loadFromFile" access="STATIC">
                 <DESC>Load config from default file.</DESC>
             </METHOD>             
