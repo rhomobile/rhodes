@@ -870,7 +870,7 @@ bool CHttpServer::process(SOCKET sock)
     return decide(method, uri, query, headers, body);
 }
 
-bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body/*, IRequestReceiver& reqReceiver*/ )
+bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body )
 {
     method.clear();
     uri.clear();
@@ -884,7 +884,6 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
     size_t content_length = 0;
 
     for (;;) {
-    // TODO: - change receive_request;
         if (!receive_request(request))
             return false;
 

@@ -29,7 +29,6 @@
 
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
-#include "INetRequest.h"
 
 #if !defined(WINDOWS_PLATFORM)
 typedef int SOCKET;
