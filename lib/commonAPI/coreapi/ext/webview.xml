@@ -232,6 +232,7 @@ If you open your page in WebView, and after it makes a few jumps by linking (for
             <METHOD name="currentURL">
                 <DESC>Returns the actual URL in WebView. This works the same as the JavaScript window.location.href.</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
+                <PLATFORM_EB>Android</PLATFORM_EB>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
@@ -282,6 +283,7 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
                 <DESC>When WebView loads the specified url (either by selecting link or from calling WebView.navigate), it will add this cookie to the HTTP request.Not implemented for WebKit.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <PLATFORM>Android, Win32, iOS</PLATFORM>
+                <PLATFORM_EB>Android, Win32</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>Set a cookie to be used by WebView for this url.</DESC>
@@ -335,6 +337,7 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
 
         <EXAMPLES>
             <EXAMPLE title="Execute javascript">

@@ -17,10 +17,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the ScreenOrientation API: 
+There are two methods of enabling the ScreenOrientation API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -49,6 +49,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="autoRotate" type="BOOLEAN" access="STATIC" generateAccessors="true" default="true">
                 <DESC>Enables or Disables auto-rotation of the screen orientation when the device is rotated. For Windows Mobile/CE devices, support is limited to only Zebra Technologies devices with IST Sensor support.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
             </PROPERTY>
         </PROPERTIES>
 
@@ -76,6 +77,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="setScreenOrientationEvent" hasCallback="mandatory" runInThread="module">
                 <DESC>Sets the callback to be called when a screen orientation event occurs.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <CALLBACK type="STRING">
                     <DESC>Current orientation of the screen. The orientation is reported as normal, leftHanded, rightHanded or upsideDown. If auto rotation is disabled - real rotating of device do not produce an event. The event occurs only for real changing of screen orientation.</DESC>
                 </CALLBACK>
@@ -89,7 +91,8 @@ The ebapi.js file is necessary for all single API inclusions.
 
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
-        
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+
         <EXAMPLES>
             <EXAMPLE title="Detect screen orientation changes">
                 <SECTIONS>
@@ -100,7 +103,7 @@ The ebapi.js file is necessary for all single API inclusions.
 def start_detecting_orientation_changes
   Rho::ScreenOrientation.setScreenOrientationEvent(url_for(:action => :orientation_callback))
 end
- 
+
 def orientation_callback
   Alert.show_popup("The screen changed orientation")
 end
@@ -110,9 +113,9 @@ end
 function start_detecting_orientation_changes(){
   ScreenOrientation.setScreenOrientationEvent(orientation_callback)
 }
- 
+
 function orientation_callback(){
-    
+
   Alert.show_popup("The screen changed orientation")
 }
                    ]]>
@@ -121,7 +124,7 @@ function orientation_callback(){
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
-            
+
             <EXAMPLE title="Change screen orientation">
                 <SECTIONS>
                     <SECTION>
@@ -132,7 +135,7 @@ def capture_signature_with_attention_to_details
     # Set screen orientation to upside down
     Rho::ScreenOrientation.upsideDown
     # At this point, offer the device to the user. You just saved the user the hassle of rotating the tablet
-    # and there's less potential for the device to be dropped along the way  
+    # and there's less potential for the device to be dropped along the way
     Rho::Signature.takeFullScreen({}, url_for(:action => :signature_callback))
 end
 
@@ -150,9 +153,9 @@ function capture_signature_with_attention_to_details() {
     Rho.ScreenOrientation.upsideDown();
 
     // At this point, offer the device to the user. You just saved the user the hassle of rotating the tablet
-    // and there's less potential for the device to be dropped along the way  
+    // and there's less potential for the device to be dropped along the way
     Rho.Signature.takeFullScreen({}, signature_callback);
-}           
+}
 
 function signature_callback(params) {
     // do whatever we need to do with the signature
@@ -247,7 +250,7 @@ Rho.ScreenOrientation.autoRotate=false;
 <body>
     <h1>ScreenOrientation API Test</h1>
     <div id="display">
-        Orientation: 
+        Orientation:
     </div>
     <div id="autoRotate">
         Auto Rotate: Enabled

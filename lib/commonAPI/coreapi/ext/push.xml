@@ -24,10 +24,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Push API: 
+There are two methods of enabling the Push API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -52,6 +52,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
         <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+        <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
 
         <TEMPLATES>
@@ -147,7 +148,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
             <![CDATA[]]>
         </USER_OVERVIEW>
-            
+
         <EXAMPLES >
             <EXAMPLE title="Handle push message">
                 <SECTIONS>

@@ -4,7 +4,7 @@
     <MODULE name="Application" parent="Rho">
         <HELP_OVERVIEW>The Application class is used for accessing or setting application level configuration settings.</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
@@ -17,10 +17,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Application API: 
+There are two methods of enabling the Application API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -70,11 +70,11 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="databaseBlobFolder" type="STRING" readOnly="true">
                 <DESC>Path to folder where the database blob files are stored. Blobs are usually images or binary files. In the ORM Model you would specify that the attribute is of type blob Ex. When capturing an image, the actual file is saved in the databaseBlobFolder.</DESC>
-            </PROPERTY>             
+            </PROPERTY>
             <PROPERTY name="publicFolder" type="STRING" readOnly="true">
                 <DESC>Path to the application's public folder.</DESC>
             </PROPERTY>
-            
+
             <PROPERTY name="startURI" type="STRING">
                 <DESC>Startup page for your application.</DESC>
             </PROPERTY>
@@ -129,13 +129,15 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Indicates if the security token check was failed. Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
                 <DESC_EB>Indicates if the security token check was failed. Security token can be passed as command line parameter '-security_token=token_value' to the application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC_EB>
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="invalidSecurityTokenStartPath" type="STRING" readOnly="true">
                 <DESC>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
                 <DESC_EB>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path; This file is located in the installation folder of the EnetrpriseBrowser application installed on the device.</DESC_EB>
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </PROPERTY>
-            
+
             <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true" generateDoc="false">
                 <DESC>The version of RhoMobile platform, which was used to build the application.</DESC>
                 <DESC_EB>The version of Enteprise Browser platform, which was used to build the application.</DESC_EB>
@@ -215,6 +217,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
                 <DESC>This method allows your application to register for application specific events like application activation/deactivation, UI creation/destruction as well as others. Check the Callback section for details.</DESC>
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
                 <CALLBACK type="HASH">
                     <DESC>Application events are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start up/shut down activities. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. Note: Event firing behavior depends on platform.</DESC>
                     <PARAMS>
@@ -237,10 +240,12 @@ The ebapi.js file is necessary for all single API inclusions.
                                     <DESC>Device screen was turned off when power button was pressed or due to idle timeout. Note: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.Not supported on Windows CE.</DESC>
                                     <DESC_EB>Device screen was turned off when power button was pressed or due to idle timeout. On Android the application is not deactivated.Not supported on Windows CE.</DESC_EB>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
+                                    <PLATFORM_EB>WM, Android</PLATFORM_EB>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_ON" value ="ScreenOn">
                                     <DESC>Device screen was turned on and unlocked.Not supported on Windows CE.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
+                                    <PLATFORM_EB>WM, Android</PLATFORM_EB>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged" productException="eb">
                                     <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only.</DESC>
@@ -265,6 +270,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="processApplicationEvent" generateAPI="false">
                 <DESC>Ruby applications must use this method for processing of the application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="applicationEvent" type="STRING">
@@ -291,6 +297,7 @@ The ebapi.js file is necessary for all single API inclusions.
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
         <EXAMPLES>
             <!-- This example commented out because setLocale is not exposed in docs. -->
             <!-- <EXAMPLE title="Set the locale">
@@ -331,11 +338,11 @@ publicFolder = Rho::Application.publicFolder
 userFolder = Rho::Application.userFolder
 
 message = "App bundle folder: "+appFolder+"\n"+
-"Apps bundle folder: "+appsBundleFolder+"\n"+ 
-"Database blob folder: "+databaseBlobFolder+"\n"+ 
-"Public folder: "+publicFolder+"\n"+ 
+"Apps bundle folder: "+appsBundleFolder+"\n"+
+"Database blob folder: "+databaseBlobFolder+"\n"+
+"Public folder: "+publicFolder+"\n"+
 "User folder: "+userFolder
-    
+
 Alert.show_popup(message)
                    ]]>
                  </RUBY>
@@ -347,13 +354,13 @@ Alert.show_popup(message)
      var databaseBlobFolder = Rho.Application.databaseBlobFolder;
      var publicFolder = Rho.Application.publicFolder;
      var userFolder = Rho.Application.userFolder;
-     
+
      var message = "App bundle folder: "+appFolder+"\n"+
-     "Apps bundle folder: "+appsBundleFolder+"\n"+ 
-     "Database blob folder: "+databaseBlobFolder+"\n"+ 
-     "Public folder: "+publicFolder+"\n"+ 
+     "Apps bundle folder: "+appsBundleFolder+"\n"+
+     "Database blob folder: "+databaseBlobFolder+"\n"+
+     "Public folder: "+publicFolder+"\n"+
      "User folder: "+userFolder;
-     
+
      alert(message);
                    ]]>
                  </JAVASCRIPT>
