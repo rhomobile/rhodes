@@ -23,7 +23,7 @@
                     </PARAM>
                 </PARAMS>
                 <RETURN type="STRING"/>
-                <DESC>Get path property from config</DESC>
+                <DESC>Get path (as string) property from config</DESC>
             </METHOD>
 
             <METHOD name="getInt" access="STATIC">
@@ -33,7 +33,7 @@
                     </PARAM>
                 </PARAMS>
                 <RETURN type="INT"/>
-                <DESC>Get string property from config</DESC>
+                <DESC>Get int property from config</DESC>
             </METHOD>   
 
             <METHOD name="getBool" access="STATIC">
@@ -53,7 +53,7 @@
                     </PARAM>
                 </PARAMS>
                 <RETURN type="BOOLEAN"/>
-                <DESC>exists file or not</DESC>
+                <DESC>Is exists property in load config file</DESC>
             </METHOD>
 
             <METHOD name="removeProperty" access="STATIC">
@@ -65,7 +65,7 @@
                         <DESC></DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>remove existing property and save to file.</DESC>
+                <DESC>Remove existing property and save to file.</DESC>
             </METHOD>
                               
             <METHOD name="getConfFilePath" access="STATIC">
