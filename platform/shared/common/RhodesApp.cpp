@@ -2573,6 +2573,70 @@ int rho_http_get_port()
   return RHODESAPP().getLocalServerPort();
 }
 
+const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body )
+{
+
+  String sMethod;
+  String sUri;
+  String sQuery;
+  String sBody;
+  rho::net::HttpHeaderList oHeaders;
+  
+  if ( method != 0 ) {
+    sMethod = method;
+  }
+  
+  if ( uri != 0 ) {
+    sUri = uri;
+  }
+  
+  if  ( query != 0 ) {
+    sQuery = query;
+  }
+  
+  if ( body != 0 ) {
+    sBody = body;
+  }
+  
+  if ( headers != 0 ) {
+    oHeaders = *(rho::net::HttpHeaderList*)headers;
+  }
+
+  String response = RHODESAPP().directHttpRequest( sMethod, sUri, sQuery, oHeaders, sBody );
+  
+  char* ret = 0;
+  
+  if ( response.length() != 0 ) {
+    ret = new char[response.length() + 1];
+    strncpy(ret, response.c_str(), response.length());
+  }
+  
+  return ret;
+}
+
+void rho_http_free_response( const char* data )
+{
+  delete[] data;
+}
+
+void* rho_http_init_headers_list()
+{
+  return new rho::net::HttpHeaderList();
+}
+
+void rho_http_add_header( void* list, const char* name, const char* value )
+{
+  if ( ( name != 0 ) && ( value != 0 ) ) {
+    ((rho::net::HttpHeaderList*)list)->addElement( rho::net::HttpHeader(name,value));
+  }
+}
+
+void rho_http_free_headers_list( void* list )
+{
+  delete (rho::net::HttpHeaderList*)list;
+}
+
+
 	
 void rho_rhodesapp_create(const char* szRootPath)
 {

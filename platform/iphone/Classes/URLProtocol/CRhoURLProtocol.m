@@ -2,8 +2,28 @@
 #import "CRhoURLProtocol.h"
 #import "api_generator/iphone/CJSEntryPoint.h"
 
+#import "net/http_parser.h"
+
 extern int rho_http_started();
 extern int rho_http_get_port();
+
+const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body );
+void rho_http_free_response( const char* data );
+
+void* rho_http_init_headers_list();
+void rho_http_add_header( void* list, const char* name, const char* value );
+void rho_http_free_headers_list( void* list );
+
+
+
+int on_http_header(http_parser* parser, const char *at, size_t length);
+int on_http_header_value(http_parser* parser, const char *at, size_t length);
+int on_http_body(http_parser* parser, const char *at, size_t length);
+int on_http_status(http_parser* parser, const char *at, size_t length);
+
+
+int on_http_data_cb(http_parser* parser, const char *at, size_t length) { return 0; }
+int on_http_cb(http_parser* parser) { return 0; }
 
 
 @interface CRhoURLResponse : NSHTTPURLResponse {
@@ -44,7 +64,7 @@ extern int rho_http_get_port();
 #endif
 
     if ( [CRhoURLProtocol isLocalURL:theUrl] ) {
-      return NO;//YES;
+      return YES;
     }
 
     return NO;
@@ -112,6 +132,89 @@ extern int rho_http_get_port();
     if ( [CRhoURLProtocol isLocalURL:theUrl] )
     {
       NSLog(@"Will make local request to %@", [theUrl absoluteString]);
+      
+      const char* uri = [[theUrl path] UTF8String];
+      const char* method = [[[self request] HTTPMethod] UTF8String];
+      const char* body = [[[self request] HTTPBody] bytes];
+      const char* query = [[theUrl query] UTF8String];
+      
+      NSDictionary* headers = [[self request] allHTTPHeaderFields];
+      
+      void* cHeaders = rho_http_init_headers_list();
+      
+      for (NSString* key in headers) {
+        NSString* value = [headers objectForKey:key];
+        
+        rho_http_add_header(cHeaders, [key UTF8String], [value UTF8String]);
+        
+      }
+      
+      const char* response = rho_http_direct_request(method, uri, query, cHeaders, body);
+      
+      rho_http_free_headers_list(cHeaders);
+      
+      if ( response != 0 ) {
+      
+        self.httpStatusCode = 0;
+        self.httpBody = nil;
+        self.httpHeaderName = nil;
+        self.httpHeaders = nil;
+      
+        http_parser_settings settings;
+        settings.on_header_field = on_http_header;
+        settings.on_header_value = on_http_header_value;
+        settings.on_body = on_http_body;
+        settings.on_status = on_http_status;
+        
+        settings.on_headers_complete = on_http_cb;
+        settings.on_message_begin = on_http_cb;
+        settings.on_message_complete = on_http_cb;
+        settings.on_url = on_http_data_cb;
+      
+        http_parser *parser = malloc(sizeof(http_parser));
+        parser->data = self;
+        http_parser_init(parser, HTTP_RESPONSE);
+        http_parser_execute(parser, &settings, response, strlen(response));
+        
+        NSString* strHttpVer = [NSString stringWithFormat:@"%d.%d",parser->http_major,parser->http_minor];
+        
+        self.httpStatusCode = parser->status_code;
+        
+        free(parser);
+        
+        rho_http_free_response(response);
+        
+        CRhoURLResponse* resp =
+          [[CRhoURLResponse alloc] initWithURL:
+            [[self request] URL]
+            statusCode:self.httpStatusCode
+            HTTPVersion:strHttpVer
+            headerFields:self.httpHeaders
+          ];
+        
+        resp.statusCode = self.httpStatusCode;
+                
+        if ( ((self.httpStatusCode==301)||(self.httpStatusCode==302)) && ( [self.httpHeaders objectForKey:@"location"] != nil ) ) {
+          NSString* loc = [self.httpHeaders objectForKey:@"location"];
+          NSURLRequest* redirReq = [NSURLRequest requestWithURL:[NSURL URLWithString:loc]];
+          [[self client] URLProtocol:self wasRedirectedToRequest:redirReq redirectResponse:resp];
+          
+        } else {
+        
+          [[self client] URLProtocol:self didReceiveResponse:resp cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+          
+          if (self.httpBody != nil) {
+            [[self client] URLProtocol:self didLoadData:self.httpBody];
+          }
+        
+          [[self client] URLProtocolDidFinishLoading:self];
+        }
+        
+        [resp release];
+
+        return;
+        
+      }
     }
     
     //NSLog(@"$$$ responce ERROR: [%@]", [theUrl absoluteString]);
@@ -150,14 +253,26 @@ extern int rho_http_get_port();
 + (BOOL) isLocalURL:(NSURL*)url
 {
     const char* host = [[url host] UTF8String];
+    const char* scheme = [[url scheme] UTF8String];
     int port = [[url port] intValue];
+    if ( 0 == port ) {
+      port = 80;
+    }
 
     return (
+      (strcmp(scheme, "http") ==0 ) &&
       (rho_http_started()!=0) &&
       (port == rho_http_get_port()) &&
       ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
     );
 }
+
+
+@synthesize httpStatusCode;
+@synthesize httpHeaderName;
+@synthesize httpHeaders;
+@synthesize httpBody;
+
 
 @end
 
@@ -170,3 +285,49 @@ extern int rho_http_get_port();
 }
 
 @end
+
+
+int on_http_header(http_parser* parser, const char *at, size_t length)
+{
+  CRhoURLProtocol* urlProtocol = (CRhoURLProtocol*)parser->data;
+  NSData* data = [NSData dataWithBytes:at length:length];
+  urlProtocol.httpHeaderName = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] lowercaseString];
+  
+  return 0;
+}
+
+int on_http_header_value(http_parser* parser, const char *at, size_t length)
+{
+  CRhoURLProtocol* urlProtocol = (CRhoURLProtocol*)parser->data;
+  if ( urlProtocol.httpHeaders == nil ) {
+    urlProtocol.httpHeaders = [[NSMutableDictionary alloc]init];
+  }
+  
+  NSData* data = [NSData dataWithBytes:at length:length];
+  NSString* val = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  NSString* key = urlProtocol.httpHeaderName;
+  
+  NSMutableDictionary* headers = urlProtocol.httpHeaders;
+
+  [headers setValue:val forKey:key];
+  
+  return 0;
+}
+
+int on_http_body(http_parser* parser, const char *at, size_t length)
+{
+  CRhoURLProtocol* urlProtocol = (CRhoURLProtocol*)parser->data;
+  urlProtocol.httpBody = [NSData dataWithBytes:at length:length];
+  
+  return 0;
+}
+
+int on_http_status(http_parser* parser, const char *at, size_t length)
+{
+  CRhoURLProtocol* urlProtocol = (CRhoURLProtocol*)parser->data;
+  NSData* data = [NSData dataWithBytes:at length:length];
+  NSString* str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  urlProtocol.httpStatusCode = [str integerValue];
+  
+  return 0;
+}

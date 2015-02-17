@@ -78,9 +78,6 @@ typedef unsigned __int16 uint16_t;
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
 
-//#include <sys/types.h>
-//#include <ifaddrs.h>
-
 //extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 
 namespace rho
@@ -286,8 +283,9 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 #endif
 
+
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
-    :m_active(false), m_port(port), verbose(true)
+    :m_active(false), m_port(port), verbose(true), m_localResponseWriter(0)
 {
     m_root = CFilePath::normalizePath(root);
 #ifdef RHODES_EMULATOR
@@ -309,7 +307,7 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 }
     
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_active(false), m_port(port), verbose(true)
+    :m_active(false), m_port(port), verbose(true), m_localResponseWriter(0)
 {
     
 	m_root = CFilePath::normalizePath(root);
@@ -404,40 +402,6 @@ extern "C" void rb_gc(void);
 bool CHttpServer::init()
 {
 
-
-/*
-
-
-
-        ifaddrs * ifAddrStruct=NULL;
-        ifaddrs * ifa=NULL;
-        void * tmpAddrPtr=NULL;
-        
-        getifaddrs(&ifAddrStruct);
-        
-        for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next)
-        {
-            if (ifa ->ifa_addr->sa_family == AF_INET) { // check it is IP4
-                // is a valid IP4 Address
-                tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
-                char addressBuffer[256];
-                unsigned char *n = (unsigned char*)(tmpAddrPtr);
-                
-                inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, 256);
-                if ((ifa->ifa_name[0] == 'e') && (ifa->ifa_name[1] == 'n')) {
-                  RAWLOG_INFO2("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
-                }
-            }
-      }
-
-        if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
-
-*/
-
-
-
-
-
 	RAWTRACE("Open listening socket...");
     close_listener();
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
@@ -472,6 +436,11 @@ bool CHttpServer::init()
     
     RAWLOG_INFO1("Listen for connections on port %d", m_port);
     return true;
+}
+
+int CHttpServer::getPort() 
+{
+    return m_port;
 }
 
 bool CHttpServer::run()
@@ -686,6 +655,12 @@ bool CHttpServer::receive_request(ByteVector &request)
 
 bool CHttpServer::send_response_impl(String const &data, bool continuation)
 {
+
+    if ( m_localResponseWriter != 0 ) {
+      m_localResponseWriter->writeResponse( data );
+      return true;
+    }
+
     if (verbose) {
         if (continuation)
             RAWTRACE("Send continuation data...");
@@ -839,7 +814,7 @@ bool CHttpServer::process(SOCKET sock)
     return decide(method, uri, query, headers, body);
 }
 
-bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body, IRequestReceiver& reqReceiver )
+bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body/*, IRequestReceiver& reqReceiver*/ )
 {
     method.clear();
     uri.clear();
@@ -1343,7 +1318,7 @@ void CHttpServer::call_ruby_proc( rho::String const &query, String const &body )
 }
 
 bool CHttpServer::decide(String const &method, String const &arg_uri, String const &query,
-                         HeaderList const &headers, String const &body, IResponseSender& respSender )
+                         HeaderList const &headers, String const &body/*, IResponseSender& respSender*/ )
 {
     RAWTRACE1("Decide what to do with uri %s", arg_uri.c_str());
     callback_t callback = registered(arg_uri);
@@ -1359,17 +1334,6 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
     }
 
     String uri = arg_uri;
-
-//#ifdef OS_ANDROID
-//    //Work around malformed Android WebView URLs
-//    if (!String_startsWith(uri, "/app") &&
-//        !String_startsWith(uri, "/public") &&
-//        !String_startsWith(uri, "/data")) 
-//    {
-//        RAWTRACE1("Malformed URL: '%s', adding '/app' prefix.", uri.c_str());
-//        uri = CFilePath::join("/app", uri);
-//    }
-//#endif
 
     String fullPath = CFilePath::join(m_root, uri);
 #ifndef RHO_NO_RUBY_API    
@@ -1404,7 +1368,6 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             return true;
         }
         
-    //#ifndef OS_ANDROID
         if (isdir(fullPath)) {
             RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
             String q = query.empty() ? "" : "?" + query;
@@ -1415,14 +1378,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             send_response(create_response("301 Moved Permanently", headers), true);
             return false;
         }
-    //#else
-    //    //Work around this Android redirect bug:
-    //    //http://code.google.com/p/android/issues/detail?can=2&q=11583&id=11583
-    //    if (isdir(fullPath)) {
-    //        RAWTRACE1("Uri %s is directory, override with index", uri.c_str());
-    //        return decide(method, CFilePath::join( uri, "index"RHO_ERB_EXT), query, headers, body);
-    //    }
-    //#endif
+
         if (isindex(uri)) {
             if (!isfile(fullPath)) {
                 RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
@@ -1459,6 +1415,22 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
     return bRes;
 }
+
+String CHttpServer::directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body )
+{
+  CMutexLock lock(m_mxSyncRequest);
+  
+  ResponseWriter respWriter;
+  
+  m_localResponseWriter = &respWriter;
+  
+  decide( method, uri, query, headers, body );
+  
+  m_localResponseWriter = 0;
+  
+  return respWriter.getResponse();
+}
+
 
 } // namespace net
 } // namespace rho
