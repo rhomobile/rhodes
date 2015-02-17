@@ -152,13 +152,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\ApplicationImpl.cpp" />
+    <ClCompile Include="..\..\shared\ConfigImpl.cpp" />
     <ClCompile Include="..\..\shared\FileImpl.cpp" />
     <ClCompile Include="..\..\shared\generated\application_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\application_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\application_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\config_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\config_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\config_ruby_api.c" />
     <ClCompile Include="..\..\shared\generated\cpp\ApplicationBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Application_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Application_ruby_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\ConfigBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Config_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Config_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\LogBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Log_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Log_ruby_wrap.cpp" />
@@ -315,7 +322,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ApplicationBase.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\ConfigBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\IApplication.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\IConfig.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ILog.h" />
     <ClInclude Include="..\..\shared\generated\cpp\INetwork.h" />
     <ClInclude Include="..\..\shared\generated\cpp\IRhoFile.h" />
