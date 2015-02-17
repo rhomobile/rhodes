@@ -69,35 +69,40 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     @Override
     public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
-        String fileName = propertyMap.get("fileName");
-        if (fileName != null && fileName.length() > 0) {
         Intent intent = null;
         String outputFormat = propertyMap.get("outputFormat");
         CameraFactory factory = (CameraFactory)CameraFactorySingleton.getInstance();
         factory.getRhoListener().setMethodResult(result);
         factory.getRhoListener().setActualPropertyMap(propertyMap);
         RhodesActivity ra = RhodesActivity.safeGetInstance();
-         intent = new Intent(ra, FileList.class);
-        if (outputFormat.equalsIgnoreCase("image")) {        	
-           String tmpPath = getTemporaryLoc(fileName);
-            if (tmpPath == null) {
-                throw new RuntimeException("Failed to access shared temporary folder");
-            }
-            Uri captureUri = Uri.fromFile(new File(tmpPath));
-            propertyMap.put("captureUri", captureUri.toString());
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, captureUri);
-        }
-        else 
-        if(outputFormat.equalsIgnoreCase("dataUri"))
-        {        	
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(fileName + ".jpg")));
-        }        
-        ra.startActivityForResult(intent, 0);
+        intent = new Intent(ra, FileList.class);
+        String fileName = null;
+	if(!propertyMap.containsKey("fileName")){
+	   fileName = "/sdcard/DCIM/Camera/";
+	}
+	else{
+	   fileName = propertyMap.get("fileName");
+	}
+	if (fileName != null && fileName.length() > 0) {
+	        if (outputFormat.equalsIgnoreCase("image")) {        	
+	           String tmpPath = getTemporaryLoc(fileName);
+	            if (tmpPath == null) {
+	                throw new RuntimeException("Failed to access shared temporary folder");
+	            }
+	            Uri captureUri = Uri.fromFile(new File(tmpPath));
+	            propertyMap.put("captureUri", captureUri.toString());
+	            intent.putExtra(MediaStore.EXTRA_OUTPUT, captureUri);
+	        }
+	        else 
+	        if(outputFormat.equalsIgnoreCase("dataUri"))
+	        {        	
+	            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(fileName + ".jpg")));
+	        }        
+	        ra.startActivityForResult(intent, 0);
         }
          else {        	
             result.setArgError("'fileName' parameter is missed");
         }
-       
     }
 
     private String getTemporaryLoc(String targetPath) {
