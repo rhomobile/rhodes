@@ -29,7 +29,6 @@
 
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
-#include "INetRequest.h"
 
 #if !defined(WINDOWS_PLATFORM)
 typedef int SOCKET;
@@ -168,9 +167,6 @@ private:
     std::map<String, callback_t> m_registered;
     bool verbose;
 
-    bool m_enable_external_access;
-    bool m_started_as_separated_simple_server;
-  
     common::CMutex m_mxSyncRequest;
     ResponseWriter* m_localResponseWriter;
 };
