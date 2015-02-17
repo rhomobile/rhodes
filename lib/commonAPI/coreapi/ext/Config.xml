@@ -1,0 +1,135 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Config" parent="Rho" productException="eb">
+        <HELP_OVERVIEW>Rho.Config module</HELP_OVERVIEW>
+        <MORE_HELP>Implementation of the config api.</MORE_HELP>
+
+        <METHODS>
+            <METHOD name="getString" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of property</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING"/>
+                <DESC>Get string property from config</DESC>
+            </METHOD>
+
+            <METHOD name="getPath" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of property</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING"/>
+                <DESC>Get path property from config</DESC>
+            </METHOD>
+
+            <METHOD name="getInt" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of property</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="INT"/>
+                <DESC>Get string property from config</DESC>
+            </METHOD>   
+
+            <METHOD name="getBool" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of property</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+                <DESC>Get boolean property from config</DESC>
+            </METHOD>
+
+            <METHOD name="isExist" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of property</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+                <DESC>exists file or not</DESC>
+            </METHOD>
+
+            <METHOD name="removeProperty" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of parameter</DESC>
+                    </PARAM>
+                    <PARAM name="saveToFile" type="BOOLEAN">
+                        <DESC></DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>remove existing property and save to file.</DESC>
+            </METHOD>
+                              
+            <METHOD name="getConfFilePath" access="STATIC">
+                <RETURN type="STRING"/>
+                <DESC>Get path to default config.</DESC>
+            </METHOD>
+
+            <METHOD name="setConfFilePath" access="STATIC">
+                <PARAMS>
+                    <PARAM name="configPath" type="STRING">
+                        <DESC>path to config path</DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>Set path to default config.</DESC>
+            </METHOD>
+
+            <METHOD name="getAppConfFilePath" access="STATIC">
+                <RETURN type="STRING"/>
+                <DESC></DESC>
+            </METHOD>
+
+            <METHOD name="setAppConfFilePath" access="STATIC">
+                <PARAMS>
+                    <PARAM name="configPath" type="STRING">
+                        <DESC></DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC></DESC>
+            </METHOD>
+
+            <METHOD name="getAppConfUserFilePath" access="STATIC">
+                <RETURN type="STRING"/>
+                <DESC></DESC>
+            </METHOD>
+
+            <METHOD name="setAppConfUserFilePath" access="STATIC">
+                <PARAMS>
+                    <PARAM name="userPath" type="STRING">
+                        <DESC></DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC></DESC>
+            </METHOD>
+
+            <METHOD name="loadFromFile" access="STATIC">
+                <DESC>Load config from default file.</DESC>
+            </METHOD>             
+
+            <METHOD name="getConflicts" access="STATIC">
+                <RETURN type="HASH"/>
+                <DESC>Get hash of confilict lines</DESC>
+            </METHOD>
+
+            <METHOD name="conflictsResolved" access="STATIC">
+                <DESC>Resolve conflict automatically</DESC>
+            </METHOD>
+
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>
