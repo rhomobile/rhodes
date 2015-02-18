@@ -61,7 +61,7 @@ public:
     bool isString() { return m_oResult.getType() == CMethodResult::eString || m_oResult.getType() == CMethodResult::eStringW; }
     bool isJSON() { return m_oResult.getType() == CMethodResult::eJSON; }
     bool isArray() { return m_oResult.getType() == CMethodResult::eStringArray || m_oResult.getType() == CMethodResult::eArrayHash; }
-    bool isHash() { return m_oResult.getType() == CMethodResult::eStringHash || m_oResult.getType() == CMethodResult::eStringHashVector; }
+    bool isHash() { return m_oResult.getType() == CMethodResult::eStringHash || m_oResult.getType() == CMethodResult::eStringHashVector || m_oResult.getType() == CMethodResult::eStringHashHash; }
     bool isError() { return m_oResult.isError(); }
     bool isNil() { return m_oResult.getType() == CMethodResult::eNone; }
 
