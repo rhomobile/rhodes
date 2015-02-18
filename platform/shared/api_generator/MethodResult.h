@@ -14,7 +14,7 @@ class CMethodResult
     DEFINE_LOGCLASS
 
 public:
-    enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eStringHashVector, eArrayHash, eJSON, eBool, eInt, eDouble, eError, eArgError};
+	enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eStringHashVector, eArrayHash, eStringHashHash, eJSON, eBool, eInt, eDouble, eError, eArgError };
     enum ECallbackType { ctNone = 0, ctRubyStr, ctRubyProc, ctJavaScript };
     enum EResultClassType { rctPlain = 0, rctClass, rctEntity };
 private:
@@ -83,6 +83,7 @@ public:
     void set(const rho::Vector<rho::Hashtable<rho::String, rho::String> >& res ) { m_arHashRes = res; setType(eArrayHash); }
     
     void set(const rho::Hashtable<rho::String, rho::Vector<rho::String> >& res ) { m_hashStrVecRes = res; setType(eStringHashVector); }
+	void set(const rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >& res) { m_hashStrL2Res = res; setType(eStringHashHash); }
 
 #ifndef OS_ANDROID
     void set(const rho::StringW& res){ m_strResW = res;  setType(eStringW); }
