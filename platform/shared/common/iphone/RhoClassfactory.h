@@ -35,6 +35,8 @@
 #include "RhoCryptImpl.h"
 #include <common/RhoMutexLock.h>
 #include <common/AutoPointer.h>
+#include "../iphone/Classes/rho/net/IPhoneNetRequest.h"
+#include "common/RhoConf.h"
 
 namespace rho {
 namespace common {
@@ -44,7 +46,12 @@ class CRhoClassFactory : public common::IRhoClassFactory
 public:
     net::INetRequestImpl* createNetRequestImpl()
     {
-        return new net::CURLNetRequest();
+        bool useCurl = RHOCONF().getBool("ios_net_curl");
+        if ( useCurl ) {
+          return new net::CURLNetRequest();
+        } else {
+          return new net::CIPhoneNetRequest();
+        }
     }
     common::IRhoThreadImpl* createThreadImpl()
     {

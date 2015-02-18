@@ -13,10 +13,13 @@
 namespace rho {
 namespace net {
 
-class NetRequestImpl : public INetRequestImpl {
+class CIphoneNetRequestHolder;
+
+class CIPhoneNetRequest : public INetRequestImpl {
 
 public:
-  virtual ~NetRequestImpl(void){;}
+  CIPhoneNetRequest();
+  virtual ~CIPhoneNetRequest(void);
 
   virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
   virtual INetResponse* pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
@@ -33,6 +36,11 @@ public:
   virtual INetResponse* createEmptyNetResponse();
     
   virtual void setCallback(INetRequestCallback*);
+  
+
+private:
+  common::CAutoPtr<CIphoneNetRequestHolder> m_pHolder;
+  INetRequestCallback* m_pCallback;
 };
 
 
