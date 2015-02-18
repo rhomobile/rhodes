@@ -38,23 +38,23 @@
               </PARAMS>
               <DESC></DESC>
             </METHOD>
-
+          
             <METHOD name="getPropertyInt" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
                         <DESC>Name of property</DESC>
                     </PARAM>
                 </PARAMS>
-                <RETURN type="INT"/>
+                <RETURN type="INTEGER"/>
                 <DESC>Get int property from config</DESC>
             </METHOD>
-
+          
             <METHOD name="setPropertyInt" access="STATIC">
               <PARAMS>
                 <PARAM name="name" type="STRING">
                   <DESC>Name of parameter</DESC>
                 </PARAM>
-                <PARAM name="value" type="INT">
+                <PARAM name="value" type="INTEGER">
                   <DESC>Name of parameter</DESC>
                 </PARAM>
                 <PARAM name="saveToFile" type="BOOLEAN">
