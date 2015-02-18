@@ -39,6 +39,7 @@ import com.rhomobile.rhodes.R;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -58,6 +59,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
     MediaPlayer _shootMP;
+    private Camera mCamera;
     
     @Override
     protected void onCreate(Bundle extras) {
@@ -88,25 +90,34 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
         }
         String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");        
         ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
-        mPreview.startPreview(camera, this);
+        try{
+          mPreview.startPreview(camera, this);
+        }
+        catch(RuntimeException e){
+        	
+        }
     }
     
     @Override
     protected void onPause() {
+    	super.onPause();
         Logger.T(TAG, "onPause");
-        mPreview.stopPreview();
+        if(mCamera != null){
+          mCamera.stopPreview();
+          mCamera.release();
+          mCamera = null;
+        }
         mOrientationListener.disable();
-        super.onPause();
     }
     
     @Override
     protected void onStop() {
 	// TODO Auto-generated method stub
+	super.onStop();
     	if(_shootMP != null){
 	    _shootMP.release();
 	    _shootMP = null;
     	}
-	super.onStop();
     }
 	
     @Override
