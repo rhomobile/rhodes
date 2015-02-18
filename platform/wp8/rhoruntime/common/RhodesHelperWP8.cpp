@@ -26,6 +26,8 @@
 
 #include "RhodesHelperWP8.h"
 
+#include "../../shared/common/RhoPort.h"
+
 SOCKET Rho_WSASocket(
 	_In_ int af,
 	_In_ int type,
@@ -36,4 +38,24 @@ SOCKET Rho_WSASocket(
 	)
 {
 	return WSASocketA(af, type, protocol, lpProtocolInfo, g, dwFlags);
+}
+
+HANDLE Rho_CreateFileW(
+	_In_ LPCWSTR lpFileName,
+	_In_ DWORD dwDesiredAccess,
+	_In_ DWORD dwShareMode,
+	_In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+	_In_ DWORD dwCreationDisposition,
+	_In_ DWORD dwFlagsAndAttributes,
+	_In_opt_ HANDLE hTemplateFile
+	)
+{
+	CREATEFILE2_EXTENDED_PARAMETERS extendedParameters;
+	extendedParameters.dwSize = sizeof(CREATEFILE2_EXTENDED_PARAMETERS);
+	extendedParameters.dwFileAttributes = dwFlagsAndAttributes & 0x0003FFF7;
+	extendedParameters.dwFileFlags = dwFlagsAndAttributes & 0xFF3C0000;
+	extendedParameters.dwSecurityQosFlags = SECURITY_ANONYMOUS;
+	extendedParameters.lpSecurityAttributes = lpSecurityAttributes;
+	extendedParameters.hTemplateFile = hTemplateFile;
+	return CreateFile2(lpFileName, dwDesiredAccess, dwShareMode, dwCreationDisposition, &extendedParameters);
 }
