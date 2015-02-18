@@ -4004,6 +4004,10 @@ rb_file_truncate(VALUE obj, VALUE len)
 extern unsigned long __attribute__((stdcall)) GetLastError(void);
 #endif
 
+#ifdef _WP8_LIB
+#include "../rhoruntime/common/RhodesHelperWP8.h"
+#endif
+
 static VALUE
 rb_thread_flock(void *data)
 {

@@ -26,21 +26,31 @@
 
 #pragma once
 
-#include <SDKDDKVer.h>
 #include <windows.h>
 #include <winsock2.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus
-SOCKET Rho_WSASocket(
-_In_ int af,
-_In_ int type,
-_In_ int protocol,
-_In_opt_ LPWSAPROTOCOL_INFOA lpProtocolInfo,
-_In_ GROUP g,
-_In_ DWORD dwFlags
-);
+
+	SOCKET Rho_WSASocket(
+		_In_ int af,
+		_In_ int type,
+		_In_ int protocol,
+		_In_opt_ LPWSAPROTOCOL_INFOA lpProtocolInfo,
+		_In_ GROUP g,
+		_In_ DWORD dwFlags
+	);
+
+	HANDLE Rho_CreateFileW(
+		_In_ LPCWSTR lpFileName,
+		_In_ DWORD dwDesiredAccess,
+		_In_ DWORD dwShareMode,
+		_In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+		_In_ DWORD dwCreationDisposition,
+		_In_ DWORD dwFlagsAndAttributes,
+		_In_opt_ HANDLE hTemplateFile
+	);
 
 #ifdef __cplusplus
 }
@@ -48,4 +58,7 @@ _In_ DWORD dwFlags
 
 #if defined(_WP8_LIB) && !defined(_WINRT_DLL)
 #define WSASocket Rho_WSASocket
+#define CreateFileW Rho_CreateFileW
+#define CreateFileA Rho_CreateFileW
+#define CreateFile Rho_CreateFileW
 #endif
