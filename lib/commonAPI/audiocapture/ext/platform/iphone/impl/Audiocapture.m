@@ -155,7 +155,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"can not save WAV after capturing"];
         if (isStopping) {
           isStopping = NO;
-          callback = nil;
+          self.callback = nil;
         }
     }
 }
@@ -173,14 +173,14 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         else {
             //fire CANCEL
             [self fireCallback:CALLBACK_STATUS_CANCEL param_name:nil param_value:nil];
-            callback = nil;
+            self.callback = nil;
             isStopping = NO;
         }
     }
     else {
         //fire ERROR
         [self fireCallback:CALLBACK_STATUS_ERROR param_name:nil param_value:nil];
-        callback = nil;
+        self.callback = nil;
         isStopping = NO;
     }
 }
@@ -356,7 +356,7 @@ extern const char* rho_rhodesapp_getblobsdirpath();
       
         if (isStopping) {
           isStopping = NO;
-          callback = nil;
+          self.callback = nil;
         }
     }];
     
@@ -380,7 +380,8 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     CMethodResult_SimpleHolder* sh = [CMethodResult_SimpleHolder makeEmptyHolder];
     [super setProperties:props methodResult:sh];
   
-    callback = methodResult;
+    self.callback = methodResult;
+    
     destination = [[self getPreparedFileNameWithHash:props] retain];
     if (destination == nil) {
         isStarted = NO;
