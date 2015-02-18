@@ -53,7 +53,7 @@ void CMethodResultImpl::set(WFC::IVectorView<Platform::String^>^ res)
     oResult->set(rho::common::convertArrayFromWP8(res));
 }
 
-void CMethodResultImpl::set(WFC::IVectorView<WFC::IMapView<Platform::String^, Platform::String^>^>^ res);
+void CMethodResultImpl::set(WFC::IVectorView<WFC::IMapView<Platform::String^, Platform::String^>^>^ res)
 {
     oResult->set(rho::common::convertArrayOfHashesFromWP8(res));
 }
@@ -63,12 +63,12 @@ void CMethodResultImpl::set(WFC::IMapView<Platform::String^, Platform::String^>^
     oResult->set(rho::common::convertHashFromWP8(res));
 }
 
-void CMethodResultImpl::set(WFC::IMapView<Platform::String^, WFC::IVectorView<Platform::String^>^>^ res);
+void CMethodResultImpl::set(WFC::IMapView<Platform::String^, WFC::IVectorView<Platform::String^>^>^ res)
 {
     oResult->set(rho::common::convertHashOfArraysFromWP8(res));
 }
 
-void set(WFC::IMapView<Platform::String^, WFC::IMapView<Platform::String^, Platform::String^>^>^ res);
+void CMethodResultImpl::set(WFC::IMapView<Platform::String^, WFC::IMapView<Platform::String^, Platform::String^>^>^ res)
 {
     oResult->set(rho::common::convertHashOfHashesFromWP8(res));
 }
