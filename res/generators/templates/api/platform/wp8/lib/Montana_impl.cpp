@@ -56,8 +56,8 @@ public:
     virtual rho::String getDefaultID(){return "1";} // TODO: implement getDefaultID
     virtual rho::String getInitialDefaultID(){return "1";} // TODO: implement getInitialDefaultID
     virtual void setDefaultID(const rho::String& strID){} // TODO: implement setDefaultID
-<% end %>    virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor){} // TODO: implement addCommandToQueue
-    virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor){} // TODO: implement callCommandInThread
+<% end %>    
+    
 };
 
 I<%= $cur_module.name %>FactoryImpl^ C<%= $cur_module.name %>Factory::_impl;
