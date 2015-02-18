@@ -7,18 +7,10 @@
 
         <PROPERTIES access="STATIC" generateAccessors="true">
 
-            <PROPERTY name="confFilePath" type="STRING" default="">
+            <PROPERTY name="configPath" type="STRING" default="">
                 <DESC></DESC>
             </PROPERTY>
-                               
-            <PROPERTY name="appConfFilePath" type="STRING" default="">
-                <DESC></DESC>
-            </PROPERTY>
-
-            <PROPERTY name="appConfUserFilePath" type="STRING" default="">
-                <DESC></DESC>
-            </PROPERTY>
-
+                            
         </PROPERTIES>
 
         <METHODS>
