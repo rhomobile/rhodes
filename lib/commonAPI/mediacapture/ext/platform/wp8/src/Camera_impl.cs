@@ -79,9 +79,15 @@ namespace CameraImpl
 
         public Camera()
         {
+          
+        }
+       
+         public override void setNativeImpl(string strID, long native)
+        {
+
+            base.setNativeImpl(strID, native);
             setCameraType(_strID);
         }
-
         public void setCameraType(string strId)
         {
             // initialize class instance in C# here
@@ -700,7 +706,7 @@ namespace CameraImpl
                         foreach (KeyValuePair<string, string> format in OutPutFormat)
                         {
 
-                            returnablevalue = strbase64;
+                            returnablevalue ="data:image/jpeg;base64,"+ strbase64;
                         }
                     }
                     catch (Exception ex)
