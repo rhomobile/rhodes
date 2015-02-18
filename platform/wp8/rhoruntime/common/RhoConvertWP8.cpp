@@ -57,8 +57,6 @@ namespace common
 IVectorView<Platform::String^>^ convertArrayToWP8(const Vector<String>& arr)
 {
 	IVector<Platform::String^>^ res = ref new Platform::Collections::Vector<Platform::String^>();
-	res->reserve(arr.size());
-
 	for (Vector<String>::const_iterator i = arr.begin(); i != arr.end(); ++i)
 		res->Append(convertStringToWP8(*i));
 	return res->GetView();
@@ -85,7 +83,7 @@ StringW convertStringWFromWP8(::Platform::String^ str)
 Vector<rho::String> convertArrayFromWP8(IVectorView<Platform::String^>^ arr)
 {
 	Vector<rho::String> vec;
-	vec.reserve(arr->size());
+	vec.reserve(arr->Size);
 
 	for (IIterator<Platform::String^>^ i = arr->First(); i->HasCurrent; i->MoveNext())
 		vec.addElement(convertStringAFromWP8(i->Current));
@@ -101,10 +99,10 @@ Hashtable<rho::String, rho::String> convertHashFromWP8(IMapView<Platform::String
 	return ht;
 }
 
-Vector<rho::Hashtable<rho::String, rho::String> > convertArrayOfHashesFromWP8(IVectorView<IMapView<Platform::String^, Platform::String^>^>^ arr);
+Vector<rho::Hashtable<rho::String, rho::String> > convertArrayOfHashesFromWP8(IVectorView<IMapView<Platform::String^, Platform::String^>^>^ arr)
 {
 	Vector<rho::Hashtable<rho::String, rho::String> > vec;
-	vec.reserve(aoh->size())
+	vec.reserve(arr->Size);
 
 	for (IIterator<IMapView<Platform::String^, Platform::String^>^>^ i = arr->First(); i->HasCurrent; i->MoveNext())
 		vec.addElement(convertHashFromWP8(i->Current));
@@ -112,20 +110,20 @@ Vector<rho::Hashtable<rho::String, rho::String> > convertArrayOfHashesFromWP8(IV
 	return vec;
 }
 
-Hashtable<rho::String, rho::Vector<rho::String> > convertHashOfArraysFromWP8(IMapView<Platform::String^, IVectorView<Platform::String^>^>^ hash);
+Hashtable<rho::String, rho::Vector<rho::String> > convertHashOfArraysFromWP8(IMapView<Platform::String^, IVectorView<Platform::String^>^>^ hash)
 {
 	Hashtable<rho::String, rho::Vector<rho::String> > ht;
 
-	for (IIterator<IKeyValuePair<Platform::String^, IVectorView<Platform::String^>^>^ i = hash->First(); i->HasCurrent; i->MoveNext())
+	for (IIterator<IKeyValuePair<Platform::String^, IVectorView<Platform::String^>^>^>^ i = hash->First(); i->HasCurrent; i->MoveNext())
 		ht.emplace(convertStringAFromWP8(i->Current->Key), convertArrayFromWP8(i->Current->Value));
 	return ht;
 }
 
-Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > convertHashOfHashesFromWP8(IMapView<Platform::String^, IMapView<Platform::String^, Platform::String^>^>^ hash);
+Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > convertHashOfHashesFromWP8(IMapView<Platform::String^, IMapView<Platform::String^, Platform::String^>^>^ hash)
 {
-	Hashtable<rho::String, rho::Vector<rho::String> > > ht;
+	Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > ht;
 
-	for (IIterator<IKeyValuePair<Platform::String^, IMapView<Platform::String^, Platform::String^>^>^ i = hash->First(); i->HasCurrent; i->MoveNext())
+	for (IIterator<IKeyValuePair<Platform::String^, IMapView<Platform::String^, Platform::String^>^>^>^ i = hash->First(); i->HasCurrent; i->MoveNext())
 		ht.emplace(convertStringAFromWP8(i->Current->Key), convertHashFromWP8(i->Current->Value));
 	return ht;
 }
