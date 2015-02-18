@@ -14,7 +14,7 @@
         </PROPERTIES>
 
         <METHODS>
-            <METHOD name="getString" access="STATIC">
+            <METHOD name="getPropertyString" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
                         <DESC>Name of property</DESC>
@@ -24,17 +24,19 @@
                 <DESC>Get string property from config</DESC>
             </METHOD>
 
-            <METHOD name="getPath" access="STATIC">
-                <PARAMS>
-                    <PARAM name="name" type="STRING">
-                        <DESC>Name of property</DESC>
-                    </PARAM>
-                </PARAMS>
-                <RETURN type="STRING"/>
-                <DESC>Get path (as string) property from config</DESC>
+            <METHOD name="setPropertyString" access="STATIC">
+              <PARAMS>
+                <PARAM name="name" type="STRING">
+                  <DESC>Name of parameter</DESC>
+                </PARAM>
+                <PARAM name="saveToFile" type="BOOLEAN">
+                  <DESC></DESC>
+                </PARAM>
+              </PARAMS>
+              <DESC></DESC>
             </METHOD>
 
-            <METHOD name="getInt" access="STATIC">
+            <METHOD name="getPropertyInt" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
                         <DESC>Name of property</DESC>
@@ -42,9 +44,21 @@
                 </PARAMS>
                 <RETURN type="INT"/>
                 <DESC>Get int property from config</DESC>
-            </METHOD>   
+            </METHOD>
 
-            <METHOD name="getBool" access="STATIC">
+            <METHOD name="setPropertyInt" access="STATIC">
+              <PARAMS>
+                <PARAM name="name" type="STRING">
+                  <DESC>Name of parameter</DESC>
+                </PARAM>
+                <PARAM name="saveToFile" type="BOOLEAN">
+                  <DESC></DESC>
+                </PARAM>
+              </PARAMS>
+              <DESC></DESC>
+            </METHOD>
+          
+            <METHOD name="getPropertyBool" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
                         <DESC>Name of property</DESC>
@@ -54,7 +68,19 @@
                 <DESC>Get boolean property from config</DESC>
             </METHOD>
 
-            <METHOD name="isExist" access="STATIC">
+            <METHOD name="setPropertyBool" access="STATIC">
+              <PARAMS>
+                <PARAM name="name" type="STRING">
+                  <DESC>Name of parameter</DESC>
+                </PARAM>
+                <PARAM name="saveToFile" type="BOOLEAN">
+                  <DESC></DESC>
+                </PARAM>
+              </PARAMS>
+              <DESC></DESC>
+            </METHOD>
+          
+            <METHOD name="isPropertyExists" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
                         <DESC>Name of property</DESC>
@@ -83,10 +109,6 @@
             <METHOD name="getConflicts" access="STATIC">
                 <RETURN type="HASH"/>
                 <DESC>Get hash of confilict lines</DESC>
-            </METHOD>
-
-            <METHOD name="conflictsResolved" access="STATIC">
-                <DESC>Resolve conflict automatically</DESC>
             </METHOD>
 
         </METHODS>
