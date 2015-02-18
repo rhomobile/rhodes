@@ -15,60 +15,50 @@ namespace rho {
     class CConfigSingletonImpl: public CConfigSingletonBase
     {
     public:
-        
-        CConfigSingletonImpl(): CConfigSingletonBase(){}
-        
-		virtual void getConfFilePath(rho::apiGenerator::CMethodResult& oResult)
-        {
-			oResult.set(RHOCONF().getConfFilePath().c_str());
-		}
 
-		virtual void setConfFilePath(const rho::String& confFilePath, rho::apiGenerator::CMethodResult& oResult) 
-		{
-			RHOCONF().setConfFilePath(confFilePath.c_str());
-		}
-		
-		virtual void getAppConfFilePath(rho::apiGenerator::CMethodResult& oResult) 
+		CConfigSingletonImpl() : CConfigSingletonBase(){}
+
+		virtual void getConfigPath(rho::apiGenerator::CMethodResult& oResult) 
 		{
 			oResult.set(RHOCONF().getAppConfFilePath());
 		}
 
-		virtual void setAppConfFilePath(const rho::String& appConfFilePath, rho::apiGenerator::CMethodResult& oResult)
+		virtual void setConfigPath(const rho::String& configPath, rho::apiGenerator::CMethodResult& oResult) 
 		{
-			RHOCONF().setAppConfFilePath(appConfFilePath.c_str());
+			RHOCONF().setAppConfFilePath(configPath.c_str());
 		}
 
-		virtual void getAppConfUserFilePath(rho::apiGenerator::CMethodResult& oResult) 
-		{
-			oResult.set(RHOCONF().getAppConfUserFilePath());
-		}
-		
-		virtual void setAppConfUserFilePath(const rho::String& appConfUserFilePath, rho::apiGenerator::CMethodResult& oResult) 
-		{
-			RHOCONF().setAppConfUserFilePath(appConfUserFilePath.c_str());
-		}
-	
-	    virtual void getString( const rho::String& name, rho::apiGenerator::CMethodResult& oResult)
+		virtual void getPropertyString(const rho::String& name, rho::apiGenerator::CMethodResult& oResult) 
 		{
 			oResult.set(RHOCONF().getString(name.c_str()));
-        } 
+		}
 
-		virtual void getPath( const rho::String& name, rho::apiGenerator::CMethodResult& oResult)
+		virtual void setPropertyString(const rho::String& name, const rho::String& value, bool saveToFile, rho::apiGenerator::CMethodResult& oResult) 
 		{
-			oResult.set(RHOCONF().getPath(name.c_str()));
-        } 
+			RHOCONF().setString(name.c_str(), value, saveToFile);
+		}
 
-		virtual void getInt( const rho::String& name, rho::apiGenerator::CMethodResult& oResult) 
+		virtual void getPropertyInt(const rho::String& name, rho::apiGenerator::CMethodResult& oResult) 
 		{
 			oResult.set(RHOCONF().getInt(name.c_str()));
-        } 
+		}
 
-		virtual void getBool( const rho::String& name, rho::apiGenerator::CMethodResult& oResult)
+		virtual void setPropertyInt(const rho::String& name, int value, bool saveToFile, rho::apiGenerator::CMethodResult& oResult) 
+		{
+			RHOCONF().setInt(name.c_str(), value, saveToFile);
+		}
+
+		virtual void getPropertyBool(const rho::String& name, rho::apiGenerator::CMethodResult& oResult) 
 		{
 			oResult.set(RHOCONF().getBool(name.c_str()));
-        } 
+		}
 
-		virtual void isExist( const rho::String& name, rho::apiGenerator::CMethodResult& oResult)
+		virtual void setPropertyBool(const rho::String& name, bool value, bool saveToFile, rho::apiGenerator::CMethodResult& oResult)
+		{
+			RHOCONF().setBool(name.c_str(), value, saveToFile);
+		}
+
+		virtual void isPropertyExists(const rho::String& name, rho::apiGenerator::CMethodResult& oResult)
 		{
 			oResult.set(RHOCONF().isExist(name.c_str()));
         } 
@@ -85,11 +75,7 @@ namespace rho {
 
         virtual void getConflicts(rho::apiGenerator::CMethodResult& oResult) 
 		{
-        } 
-
-        virtual void conflictsResolved(rho::apiGenerator::CMethodResult& oResult) 
-		{
-			RHOCONF().conflictsResolved();
+			oResult.set(RHOCONF().getConflicts());
         } 
     };
     
