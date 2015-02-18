@@ -160,7 +160,11 @@ namespace rhodes
         static public MainPage getInstance()
         {  
             return _instance;
-        } 
+        }
+        static public Grid LayoutGrid()
+        {
+            return _instance.LayoutRoot;
+        }
 
         public bool isEmulator() 
         {    
