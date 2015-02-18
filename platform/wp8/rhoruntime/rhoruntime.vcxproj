@@ -224,6 +224,7 @@
     <ClInclude Include="common\RhoClassFactory.h" />
     <ClInclude Include="common\RhoConvertWP8.h" />
     <ClInclude Include="common\RhoCryptImpl.h" />
+    <ClInclude Include="common\RhodesHelperWP8.h" />
     <ClInclude Include="common\SSLImpl.h" />
     <ClInclude Include="rhoruntime.h" />
     <ClInclude Include=".\pch_rhoruntime.h" />
@@ -237,6 +238,7 @@
     <ClCompile Include="common\RhoClassFactory.cpp" />
     <ClCompile Include="common\RhoConvertWP8.cpp" />
     <ClCompile Include="common\RhoCryptImpl.cpp" />
+    <ClCompile Include="common\RhodesHelperWP8.cpp" />
     <ClCompile Include="common\SSLImpl.cpp" />
     <ClCompile Include="CSharpExtensions.cpp" />
     <ClCompile Include="common\ThreadEmulation.cpp" />
