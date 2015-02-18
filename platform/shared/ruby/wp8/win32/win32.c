@@ -30,6 +30,7 @@
 #include <processthreadsapi.h>
 #include <wtypesbase.h>
 //#include "missing_wp8.h"
+#include "../../../../wp8/rhoruntime/common/RhodesHelperWP8.h"
 
 #define rb_w32_wopen _wopen
 

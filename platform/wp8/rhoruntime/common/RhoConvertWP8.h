@@ -44,7 +44,10 @@ extern "C" {
 rho::String convertStringAFromWP8(::Platform::String^ str);
 rho::StringW convertStringWFromWP8(::Platform::String^ str);
 rho::Vector<rho::String> convertArrayFromWP8(::Windows::Foundation::Collections::IVectorView<Platform::String^>^ arr);
+rho::Vector<rho::Hashtable<rho::String, rho::String> > convertArrayOfHashesFromWP8(::Windows::Foundation::Collections::IVectorView<::Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^>^ arr);
 rho::Hashtable<rho::String, rho::String> convertHashFromWP8(::Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ hash);
 
+rho::Hashtable<rho::String, rho::Vector<rho::String> > convertHashOfArraysFromWP8(::Windows::Foundation::Collections::IMapView<Platform::String^, ::Windows::Foundation::Collections::IVectorView<Platform::String^>^>^ hash);
+rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > convertHashOfHashesFromWP8(::Windows::Foundation::Collections::IMapView<Platform::String^, ::Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^>^ hash);
 }
 }
