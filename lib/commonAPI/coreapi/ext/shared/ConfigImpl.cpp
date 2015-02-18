@@ -75,7 +75,7 @@ namespace rho {
 
         virtual void getConflicts(rho::apiGenerator::CMethodResult& oResult) 
 		{
-			oResult.set(RHOCONF().getConflicts());
+			//oResult.set(RHOCONF().getConflicts());
         } 
     };
     
