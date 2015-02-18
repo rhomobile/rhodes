@@ -382,6 +382,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\Config.xml">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+    </Xml>
     <Xml Include="..\..\push.xml">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </Xml>
