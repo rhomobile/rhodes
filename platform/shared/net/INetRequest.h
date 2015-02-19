@@ -198,7 +198,6 @@ class INetRequestCallback
     virtual ~INetRequestCallback() {}
 
     virtual void didReceiveResponse(NetResponse&, const Hashtable<String,String>* headers) = 0;
-//    virtual void didReceiveHeader(int code, const String& header, const String& value, const Hashtable<String,String>* headers) = 0;
     virtual void didReceiveData(const char*, int) = 0;
     virtual void didFinishLoading() = 0;
     virtual void didFail(NetResponse&) = 0;
