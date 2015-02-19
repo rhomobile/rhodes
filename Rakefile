@@ -2762,6 +2762,7 @@ namespace "config" do
 
       if $current_platform == "android"
         $app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
+        $app_config['extensions'] = $app_config['extensions'] | ['emdk3-manager']
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
         $app_config['extensions'] = $app_config['extensions'] | ['signature']
         $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
