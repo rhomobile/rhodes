@@ -44,12 +44,12 @@ static NSDictionary* ourPropertyAliases= nil;
 <% if $cur_module.property_aliases.size > 0
 %>
     if (ourPropertyAliases == nil) {
-        ourPropertyAliases = [NSDictionary dictionaryWithObjectsAndKeys:<%
+        ourPropertyAliases = [[NSDictionary dictionaryWithObjectsAndKeys:<%
                                $cur_module.property_aliases.each do |palias|
                                   line = '@"'+palias.existing_name+'", @"'+palias.new_name+'",' %>
                               <%= line %><%
                                end %>
-                              nil];
+                              nil] retain];
     }
     NSObject* resNameObj = [ourPropertyAliases objectForKey:prop_name];
     if (resNameObj != nil) {
