@@ -18,7 +18,7 @@ extern "C" void Init_Mediacapture_extension()
     Init_Videocapture(); 
 #endif
 
-#if defined(OS_WINCE) || defined(OS_WP8)
+#if defined(OS_WINCE) || defined(OS_WP8)   
     Init_Camera_extension();
 #endif
 }
