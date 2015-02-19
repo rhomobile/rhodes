@@ -105,7 +105,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAMS>
                 </PARAM>
                 <PLATFORM>Android, WP8, WM, CE</PLATFORM>
-                <DESC>List of resolutions (width and height in pixels) supported by the camera. On WM/CE devices this feature is supported only by calor camera and it is not supported by imager. Refer example section for more details.</DESC>
+                <DESC>List of resolutions (width and height in pixels) supported by the camera. On WM/CE devices this feature is supported only by color camera and it is not supported by imager. Refer example section for more details.</DESC>
             </PROPERTY>
             <PROPERTY name="desiredWidth" type="INTEGER">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -120,13 +120,14 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="fileName" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
 				<PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
-                <DESC>The image file path without file extension to store captured image in subsequent calls to takePicture() or capture(). Default filename will be IMG_timestamp and will be saved under root directory. The filename extension will be added automatically according to compressionFormat property value.</DESC>
+                <DESC>The image file path without file extension to store captured image in subsequent calls to takePicture() or capture(). Default filename will be IMG_timestamp and will be saved under root directory. The filename extension will be added automatically according to compressionFormat property value.
+				In Wp8 only filename can be changed, by default the path shall be under picture=>CameraRoll</DESC>
             </PROPERTY>
             <PROPERTY name="compressionFormat" type="STRING" default="jpg">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <APPLIES>JPG is supported on all devices, Android and Windows Mobile does not support PNG images</APPLIES>
-				<PLATFORM>Android, iOS, WM, CE</PLATFORM>
-                <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data. In windows devices the format will be always jpg type</DESC>
+                <APPLIES>JPG is supported on all devices, Android,WP8 and Windows Mobile does not support PNG images</APPLIES>
+				<PLATFORM>Android, iOS, WM, CE,WP8</PLATFORM>
+                <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data. In windows and WP8 devices the format will be always jpg type</DESC>
                 <VALUES>
                     <VALUE constName="COMPRESSION_FORMAT_JPG" value="jpg">
                         <DESC>JPG compression.</DESC>
@@ -181,11 +182,11 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>Flash will not be used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_AUTO" value="auto">
-					    <PLATFORM>Android, iOS</PLATFORM>
+					    <PLATFORM>Android, iOS, WP8</PLATFORM>
                         <DESC>Flash will be used if lighting conditions deem it necessary.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_RED_EYE" value="redEye">
-					    <PLATFORM>Android</PLATFORM>
+					    <PLATFORM>Android, WP8</PLATFORM>
                         <DESC>Flash with red eye reduction is used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_TORCH" value="torch">
@@ -201,7 +202,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="captureSound" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <PLATFORM>Android, WM, CE, WP8</PLATFORM>
+                <PLATFORM>Android, WM, CE</PLATFORM>
                 <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>Path to a sound file resident on the device which will be played when the image is captured.</DESC>
             </PROPERTY>
@@ -270,7 +271,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </RETURN>
             </METHOD>
             <METHOD name="takePicture" hasCallback="mandatory" runInThread="ui">
-			    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+			    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                 <DESC>Start the camera application to take a picture. The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use. In Windows, this method always shows the preview in full screen and user can use the native button to capture the image.
 > Note: To display an image, it is recommended that you use the full path to the image instead of a relative path. To do this, you can use the [`expandDatabaseBlobFilePath`](Application#mexpandDatabaseBlobFilePath) method of the [Application module](Application) as such:
 
@@ -293,19 +294,19 @@ The ebapi.js file is necessary for all single API inclusions.
                 <CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">
-						     <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						     <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>Whether or not the image was successfully captured. The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
                         </PARAM>
                         <PARAM name="imageUri" type="STRING">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>The actual height of the image that was captured, this may differ from the requested height as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
                         <PARAM name="imageWidth" type="INTEGER">
-						     <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						     <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>The actual width of the image that was captured, this may differ from the requested width as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
                         <PARAM name="imageFormat" type="STRING">
@@ -313,19 +314,19 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>The format in which the image was captured, either 'png' or 'jpg'.</DESC>
                         </PARAM>
                         <PARAM name="message" type="STRING">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
                         </PARAM>
                         <PARAM name="image_uri" type="STRING" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>It is recommended to use imageUri in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_height" type="INTEGER" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>It is recommended to use imageHeight in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_width" type="INTEGER" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>It is recommended to use imageWidth in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_format" type="STRING" deprecated="true">
@@ -382,7 +383,8 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
 					     <PLATFORM>Android, WM, WP8, iOS</PLATFORM>
-                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing. </DESC>
+                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
+							In	Android and WP8 only imageUri and image_uri are supported</DESC>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
                         </CAN_BE_NIL>
@@ -394,6 +396,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>Whether or not the image was successfully chosen from the gallery. The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
                         </PARAM>
                         <PARAM name="imageUri" type="STRING">
+						<PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>The URI to the chosen image.</DESC>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
@@ -409,6 +412,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
                         </PARAM>
                         <PARAM name="image_uri" type="STRING" deprecated="true">
+						<PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>It is recommended to use imageUri in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_height" type="INTEGER" deprecated="true">
