@@ -6,7 +6,7 @@
 <% $iphone_types = {}
 $iphone_types["BOOLEAN"] = 'BOOL'
 $iphone_types["INTEGER"] = 'int'
-$iphone_types["FLOAT"] = 'float'
+$iphone_types["FLOAT"] = 'double'
 $iphone_types["STRING"] = 'NSString*'
 $iphone_types["ARRAY"] = 'NSArray*'
 $iphone_types["HASH"] = 'NSDictionary*'

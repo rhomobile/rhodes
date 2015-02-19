@@ -18,7 +18,7 @@ extern VALUE getRuby_<%= $cur_module.name %>_Module();
 $iphone_types = {}
 $iphone_types["BOOLEAN"] = 'BOOL'
 $iphone_types["INTEGER"] = 'int'
-$iphone_types["FLOAT"] = 'float'
+$iphone_types["FLOAT"] = 'double'
 $iphone_types["STRING"] = 'NSString*'
 $iphone_types["ARRAY"] = 'NSArray*'
 $iphone_types["HASH"] = 'NSDictionary*'
@@ -36,7 +36,7 @@ $iphone_extract_param_prefix["SELF_INSTANCE"] = ''
 $iphone_extract_param_suffix = {}
 $iphone_extract_param_suffix["BOOLEAN"] = ') boolValue]'
 $iphone_extract_param_suffix["INTEGER"] = ') intValue]'
-$iphone_extract_param_suffix["FLOAT"] = ') floatValue]'
+$iphone_extract_param_suffix["FLOAT"] = ') doubleValue]'
 $iphone_extract_param_suffix["STRING"] = ''
 $iphone_extract_param_suffix["ARRAY"] = ''
 $iphone_extract_param_suffix["HASH"] = ''
@@ -215,7 +215,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
                 <%= line %><%
              end
              if module_method.params[i].type == RhogenCore::TYPE_DOUBLE
-                line = 'params['+i.to_s+']= [NSNumber numberWithFloat:'+module_method.params[i].default_value.to_s+'];'
+                line = 'params['+i.to_s+']= [NSNumber numberWithDouble:'+module_method.params[i].default_value.to_s+'];'
                 %>
                 <%= line %><%
              end

@@ -181,13 +181,13 @@ if !$cur_module.is_property_bag_limit_to_only_declared_properties && $cur_module
 $iphone_pb_getter_conversion = {}
 $iphone_pb_getter_conversion["BOOLEAN"] = 'NSNumber* typedResult = [NSNumber numberWithBool:(([@"true" caseInsensitiveCompare:strResult] == NSOrderedSame)?YES:NO)];'
 $iphone_pb_getter_conversion["INTEGER"] = 'NSNumber* typedResult = [NSNumber numberWithInt:[strResult intValue]];'
-$iphone_pb_getter_conversion["FLOAT"] = 'NSNumber* typedResult = [NSNumber numberWithFloat:[strResult floatValue]];'
+$iphone_pb_getter_conversion["FLOAT"] = 'NSNumber* typedResult = [NSNumber numberWithDouble:[strResult doubleValue]];'
 $iphone_pb_getter_conversion["STRING"] = 'NSString* typedResult = strResult;'
 
 $iphone_pb_setter_conversion_pre = {}
 $iphone_pb_setter_conversion_pre["BOOLEAN"] = 'NSString* strValue = '
 $iphone_pb_setter_conversion_pre["INTEGER"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithInt:'
-$iphone_pb_setter_conversion_pre["FLOAT"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithFloat:'
+$iphone_pb_setter_conversion_pre["FLOAT"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithDouble:'
 $iphone_pb_setter_conversion_pre["STRING"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", '
 
 $iphone_pb_setter_conversion_post = {}
