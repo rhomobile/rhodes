@@ -143,6 +143,7 @@ namespace rhodes
             get { return _uiThreadID == System.Threading.Thread.CurrentThread.ManagedThreadId; }
         }                         
                                     
+        
         private void raiseTabEvent( string eventName, int nOldTab, int nNewTab )
         {
             if ( _oTabResult != null)
@@ -165,7 +166,10 @@ namespace rhodes
         {
             return _instance.LayoutRoot;
         }
-
+        public UIElement RootVisual()
+        {
+            return App.Current.RootVisual;
+        }
         public bool isEmulator() 
         {    
             return DeviceStatus.DeviceName.Contains("Emulator") == true ? true : false;
@@ -959,7 +963,7 @@ namespace rhodes
             // TODO: implement
         }
          
-
+        
         // *** MISC ***
         // this method is used as a callback for calling the C# API methods from C++
         public void DoWait(int timeout)
