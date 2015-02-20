@@ -36,7 +36,7 @@ MoveFileW(
 }
 
 /* --------------- EnvironmentVariable functions. ----------------- */
-LPCH WINAPI GetEnvironmentStrings(VOID)
+LPCH WINAPI GetEnvironmentStringsW(VOID)
 {
 	return NULL;
 }
@@ -134,6 +134,7 @@ BOOL WINAPI TerminateProcess(
 	return FALSE;
 }
 
+/*
 DWORD
 WINAPI
 GetFileAttributesA(
@@ -166,7 +167,7 @@ LoadLibraryA(
 {
 	return NULL;
 }
-
+*/
 HMODULE
 WINAPI
 LoadLibraryW(
@@ -347,7 +348,7 @@ int wsprintfW( LPWSTR p1,  LPCWSTR p2,  ...)
 	int nRes = 0;
     va_list ap;
     va_start(ap, p2);
-    nRes = vswprintf(p1, p2, ap);
+    nRes = _vswprintf(p1, p2, ap);
     va_end(ap);
 
 	return nRes;
