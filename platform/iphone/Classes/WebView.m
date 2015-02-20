@@ -152,7 +152,8 @@ const char* rho_webview_execute_js(const char* js, int index) {
     if (!rho_rhodesapp_check_mode())
         return "";
     id runnable = [RhoWebViewExecuteJsTask class];
-    id arg1 = [NSString stringWithUTF8String:js];
+    //id arg1 = [NSString stringWithUTF8String:js];
+    id arg1 = [[NSString alloc] initWithCString:js encoding:NSASCIIStringEncoding];
     id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg1 arg:arg2 wait:NO];
     return "";
