@@ -414,5 +414,8 @@
     <Xml Include="..\..\push.xml">
       <Filter>Push</Filter>
     </Xml>
+    <Xml Include="..\..\Config.xml">
+      <Filter>Config</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
