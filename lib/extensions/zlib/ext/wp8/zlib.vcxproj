@@ -56,7 +56,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\lib\extensions\digest\ext;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;OS_WP8;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;OS_WP8;WIN32;_WINDOWS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader />
@@ -64,7 +64,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
@@ -76,14 +76,14 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\lib\extensions\digest\ext;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_NDEBUG;NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_NDEBUG;NDEBUG;WIN32;_WINDOWS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
