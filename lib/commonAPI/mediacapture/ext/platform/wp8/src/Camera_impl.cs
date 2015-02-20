@@ -1128,27 +1128,34 @@ namespace rho
 
             void SetCameraRotation(PageOrientation OrientationStyle)
             {
-                CRhoRuntime.getInstance().logEvent("Camera class-->SetCameraRotation");
-                double rotation = Rho_StillCamera.Orientation;
-
-               
-               
-               // double strvalue = CameraRotation[OrientationStyle]["rotation"];
-                rotation =Rho_StillCamera.Orientation + CameraRotation[OrientationStyle]["rotation"];
-                Rho_PhotoCameraCanvas.Height = CameraRotation[OrientationStyle]["Height"];
-                Rho_PhotoCameraCanvas.Width = CameraRotation[OrientationStyle]["Width"];
                 try
                 {
-                    rotation =Rho_StillCamera.Orientation + CameraRotation[OrientationStyle][_strID];
+                    CRhoRuntime.getInstance().logEvent("Camera class-->SetCameraRotation");
+                    double rotation = Rho_StillCamera.Orientation;
+
+
+
+                    // double strvalue = CameraRotation[OrientationStyle]["rotation"];
+                    rotation = Rho_StillCamera.Orientation + CameraRotation[OrientationStyle]["rotation"];
+                    Rho_PhotoCameraCanvas.Height = CameraRotation[OrientationStyle]["Height"];
+                    Rho_PhotoCameraCanvas.Width = CameraRotation[OrientationStyle]["Width"];
+                    try
+                    {
+                        rotation = Rho_StillCamera.Orientation + CameraRotation[OrientationStyle][_strID];
+                    }
+                    catch (Exception ex)
+                    {
+                        CRhoRuntime.getInstance().logEvent("Camera class-->SetCameraRotation-->LandScapeMode" + ex.ToString());
+                    }
+
+
+
+                    Rho_Camera_Rotation.Rotation = rotation;
                 }
                 catch (Exception ex)
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class-->SetCameraRotation-->LandScapeMode" + ex.ToString());
+                    CRhoRuntime.getInstance().logEvent("Camera class-->SetCameraRotation-->Exception" + ex.ToString());
                 }
-
-
-             
-                Rho_Camera_Rotation.Rotation = rotation;
             }
             # region Set the camera layout
             /// <summary>
