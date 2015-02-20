@@ -52,6 +52,15 @@ extern "C" {
 		_In_opt_ HANDLE hTemplateFile
 	);
 
+	BOOL Rho_GetVersionExW(
+		_Inout_ LPOSVERSIONINFOW lpVersionInformation
+	);
+
+	DWORD Rho_GetFileSize(
+		_In_ HANDLE hFile,
+		_Out_opt_ LPDWORD lpFileSizeHigh
+	);
+
 #ifdef __cplusplus
 }
 #endif //__cplusplus
@@ -61,4 +70,7 @@ extern "C" {
 #define CreateFileW Rho_CreateFileW
 #define CreateFileA Rho_CreateFileW
 #define CreateFile Rho_CreateFileW
+#define GetVersionEx Rho_GetVersionExW
+#define GetVersionExW Rho_GetVersionExW
+#define GetFileSize Rho_GetFileSize
 #endif
