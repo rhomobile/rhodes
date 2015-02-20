@@ -4,6 +4,8 @@
 
 #import "net/http_parser.h"
 
+#import "common/RhoConf.h"
+
 extern int rho_http_started();
 extern int rho_http_get_port();
 
@@ -30,7 +32,7 @@ int on_http_cb(http_parser* parser) { return 0; }
     
 }
 
-@property (nonatomic) NSInteger statusCode;
+@property NSInteger statusCode;
 
 @end
 
@@ -63,7 +65,14 @@ int on_http_cb(http_parser* parser) { return 0; }
     }
 #endif
 
-    if ( [CRhoURLProtocol isLocalURL:theUrl] ) {
+    bool canHandle = true;
+  
+    if ( (rho_conf_is_property_exists("ios_direct_local_requests")!=0) && (rho_conf_getBool("ios_direct_local_requests")==0))
+    {
+      canHandle = false;
+    }
+  
+    if ( canHandle && [CRhoURLProtocol isLocalURL:theUrl] ) {
       return YES;
     }
 
@@ -262,7 +271,7 @@ int on_http_cb(http_parser* parser) { return 0; }
     }
 
     return (
-      (strcmp(scheme, "http") ==0 ) &&
+      ( (0==scheme) || (strcmp(scheme, "http") ==0 )) &&
       (rho_http_started()!=0) &&
       (port == rho_http_get_port()) &&
       ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
