@@ -148,7 +148,7 @@ namespace rho
 
                         Rho_OutputType.Add("image", "outputformat");
                         Rho_OutputType.Add("datauri", "outputformat");
-                        Rho_OutPutFormat.Add("outputFormat", "image");
+                        Rho_OutPutFormat.Add("outputformat", "image");
 
 
                         //CameraResolutionhsize  what is hsize meaning in this //Simha
@@ -414,7 +414,7 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getOutputFormat(IMethodResult oResult)
             {
-                oResult.set(Rho_OutPutFormat["outputFormat"]);
+                oResult.set(Rho_OutPutFormat["outputformat"]);
             }
             /// <summary>
             /// get either dataURI or image.
@@ -428,7 +428,7 @@ namespace rho
                 try
                 {
                     string storevalue = Rho_OutPutFormat[outputFormat.ToLower().Trim()];
-                    Rho_OutPutFormat.Add("outputFormat", outputFormat.ToLower().Trim());
+                    Rho_OutPutFormat.Add("outputformat", outputFormat.ToLower().Trim());
 
                 }
 
@@ -436,7 +436,7 @@ namespace rho
                 {
                     CRhoRuntime.getInstance().logEvent("Camera class->invalid setOutputFormat " + outputFormat +" Exception "+ ex.ToString());
                     Rho_OutPutFormat.Clear();
-                    Rho_OutPutFormat.Add("outputFormat", "image");
+                    Rho_OutPutFormat.Add("outputformat", "image");
 
                 }
 
