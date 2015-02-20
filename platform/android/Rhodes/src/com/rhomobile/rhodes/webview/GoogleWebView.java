@@ -73,7 +73,7 @@ public class GoogleWebView implements IRhoWebView {
 //            public void run() {
                 Logger.I(TAG, "Web settings is applying now  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 
-                double z = getConfig().getDouble(WebViewConfig.PAGE_ZOOM, WebViewConfig.PAGE_ZOOM_DEF);
+                double z = getConfig().getDouble(WebViewConfig.PAGE_ZOOM);
                 mWebView.setInitialScale((int)(z * 100));
                 mWebView.setVerticalScrollBarEnabled(true);
                 mWebView.setHorizontalScrollBarEnabled(true);

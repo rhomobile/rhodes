@@ -129,7 +129,7 @@ public class RhoWebChromeClient extends WebChromeClient {
 //    }
 
     public void onProgressChanged(WebView view, int newProgress) {
-        if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION, WebViewConfig.ENABLE_PAGE_LOADING_INDICATION_DEF)) {
+        if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION)) {
             newProgress *= 100;
             if (newProgress < 0)
                 newProgress = 0;
