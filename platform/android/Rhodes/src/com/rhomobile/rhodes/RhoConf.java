@@ -54,18 +54,27 @@ public class RhoConf {
         }
 
         @Override
-        public boolean getBool(String name, boolean defValue) {
-            return isExist(name) ? RhoConf.getBool(name) : defValue;
+        public boolean getBool(String name) {
+            if (!isExist(name)) {
+                throw new ValueNotFoundException(name);
+            }
+            return RhoConf.getBool(name);
         }
 
         @Override
-        public int getInt(String name, int defValue) {
-            return isExist(name) ? RhoConf.getInt(name) : defValue;
+        public int getInt(String name) {
+            if (!isExist(name)) {
+                throw new ValueNotFoundException(name);
+            }
+            return RhoConf.getInt(name);
         }
 
         @Override
-        public double getDouble(String name, double defValue) {
-            return isExist(name) ? Double.parseDouble(RhoConf.getString(name)) : defValue;
+        public double getDouble(String name) {
+            if (!isExist(name)) {
+                throw new ValueNotFoundException(name);
+            }
+            return Double.parseDouble(RhoConf.getString(name));
         }
 	    
 	}

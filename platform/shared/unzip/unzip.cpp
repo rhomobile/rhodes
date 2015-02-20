@@ -73,6 +73,8 @@ typedef unsigned short WORD;
 
 #if defined(WIN32) || defined(_WIN32_WCE)
 #define _tsprintf wsprintf
+#elif defined(_WP8_LIB)
+#define _tsprintf _scprintf
 #endif
 #else
 #define _tsprintf sprintf
@@ -3988,7 +3990,7 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
   ze->index=uf->num_file;
   TCHAR tfn[MAX_PATH];
 #ifdef UNICODE
-#if defined(__SYMBIAN32__) && !defined(WIN32)
+#if (defined(__SYMBIAN32__) && !defined(WIN32)) || defined(_WP8_LIB)
   strcpy(tfn,fn);
 #else  
   MultiByteToWideChar(CP_UTF8,0,fn,-1,tfn,MAX_PATH);
@@ -4096,7 +4098,7 @@ ZRESULT TUnzip::Find(const TCHAR *tname,bool ic,int *index,ZIPENTRY *ze)
 { char name[MAX_PATH];
 #ifdef UNICODE
 
-#if defined(__SYMBIAN32__) && !defined(WIN32)
+#if (defined(__SYMBIAN32__) && !defined(WIN32)) || defined(_WP8_LIB)
   strcpy(name,tname);
 #else
   WideCharToMultiByte(CP_UTF8,0,tname,-1,name,MAX_PATH,0,0);

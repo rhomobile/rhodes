@@ -168,7 +168,7 @@ namespace rhodes
         }
         public UIElement RootVisual()
         {
-            return App.Current.RootVisual;
+            return App.Current.RootVisual; 
         }
         public bool isEmulator() 
         {    
