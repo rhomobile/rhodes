@@ -211,8 +211,10 @@ void PrintSupportedDevices() {
       [simDeviceSetClass setForSetPath:[simDeviceSetClass defaultSetPath]];
   for (id simDevice in [deviceSet availableDevices]) {
     NSString* deviceInfo =
-        [NSString stringWithFormat:@"  -d '%@' -s '%@'\n",
-            [simDevice name], [[simDevice runtime] versionString]];
+        //[NSString stringWithFormat:@"  -d '%@' -s '%@'\n",
+        //    [simDevice name], [[simDevice runtime] versionString]];
+      [NSString stringWithFormat:@" %@ : %@\n",
+       [simDevice name], [[simDevice runtime] versionString]];
     printf("%s", [deviceInfo UTF8String]);
   }
 #else
@@ -823,7 +825,7 @@ extern "C" int iossim_main(int argc, char* const argv[]) {
     NSString* simHomePath = nil;
     NSMutableArray* appArgs = [NSMutableArray array];
     NSMutableDictionary* appEnv = [NSMutableDictionary dictionary];
-    NSTimeInterval sessionStartTimeout = kDefaultSessionStartTimeoutSeconds;
+    NSTimeInterval sessionStartTimeout = kDefaultSessionStartTimeoutSeconds*4;
     
     NSString* developerDir = FindDeveloperDir();
     if (!developerDir) {
