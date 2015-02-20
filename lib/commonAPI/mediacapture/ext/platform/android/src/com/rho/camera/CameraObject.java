@@ -20,8 +20,6 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.util.Size;
 import android.view.SurfaceHolder;
 
 import com.rhomobile.rhodes.Base64;

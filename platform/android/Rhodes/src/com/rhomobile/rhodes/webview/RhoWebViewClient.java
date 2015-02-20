@@ -159,7 +159,7 @@ public class RhoWebViewClient extends WebViewClient
         
         RhoExtManager.getImplementationInstance().onNavigateStarted(view, url);
 
-        if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION, WebViewConfig.ENABLE_PAGE_LOADING_INDICATION_DEF))
+        if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION))
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
     }
     
@@ -171,7 +171,7 @@ public class RhoWebViewClient extends WebViewClient
         // Set title
         String title = view.getTitle();
         RhodesActivity.safeGetInstance().setTitle(title);
-        if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION, WebViewConfig.ENABLE_PAGE_LOADING_INDICATION_DEF))
+        if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION))
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
 
         RhoExtManager.getImplementationInstance().onNavigateComplete(view, url);
