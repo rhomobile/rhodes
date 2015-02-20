@@ -11,6 +11,7 @@
 #import "common/RhoFile.h"
 #import "common/RhoFilePath.h"
 #import "common/StringConverter.h"
+#import "common/RhoConf.h"
 
 class IURLRequestDelegate
 {
@@ -274,10 +275,18 @@ public:
   
   bool init( const char* method, const String& url, const String& body, Hashtable<String,String>* pHeaders, IRhoSession* pSession )
   {
+    int timeout = RHOCONF().getInt("net_timeout");
+    if (timeout == 0)
+    {
+      timeout = 30; // 30 seconds by default
+    }
+
     [m_pReq initWithURL:
       [NSURL URLWithString:
         [NSString stringWithUTF8String:url.c_str()]
       ]
+      cachePolicy:NSURLRequestUseProtocolCachePolicy
+      timeoutInterval:timeout
     ];
     
     if ( method != 0 )
