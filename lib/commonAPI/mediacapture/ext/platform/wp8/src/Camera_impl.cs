@@ -1113,8 +1113,8 @@ namespace rho
 
             void Rho_MainPage_OrientationChanged(object sender, OrientationChangedEventArgs e)
             {
-                
-               
+
+                CRhoRuntime.getInstance().logEvent("Camera class-->Rho_MainPage_OrientationChange");
                     Rho_PhotoCameraCanvas.Dispatcher.BeginInvoke(() =>
                     {
                         SetCameraRotation(e.Orientation);
@@ -1128,6 +1128,7 @@ namespace rho
 
             void SetCameraRotation(PageOrientation OrientationStyle)
             {
+                CRhoRuntime.getInstance().logEvent("Camera class-->SetCameraRotation");
                 double rotation = Rho_StillCamera.Orientation;
 
                
