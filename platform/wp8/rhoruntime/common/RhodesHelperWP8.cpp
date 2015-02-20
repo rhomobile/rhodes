@@ -59,3 +59,23 @@ HANDLE Rho_CreateFileW(
 	extendedParameters.hTemplateFile = hTemplateFile;
 	return CreateFile2(lpFileName, dwDesiredAccess, dwShareMode, dwCreationDisposition, &extendedParameters);
 }
+
+BOOL Rho_GetVersionExW(
+	_Inout_ LPOSVERSIONINFOW lpVersionInformation
+	)
+{
+	// TODO: use System.Environment.OSVersion.Version from C#
+	lpVersionInformation->dwMajorVersion = 8;
+	lpVersionInformation->dwMinorVersion = 0;
+	lpVersionInformation->dwBuildNumber = 0;
+	return TRUE;
+}
+
+DWORD Rho_GetFileSize(
+	_In_ HANDLE hFile,
+	_Out_opt_ LPDWORD lpFileSizeHigh
+	)
+{
+	FILE_STANDARD_INFO info;
+	return GetFileInformationByHandleEx(hFile, FileStandardInfo, &info, sizeof(info)) ? info.EndOfFile.QuadPart : 0;
+}
