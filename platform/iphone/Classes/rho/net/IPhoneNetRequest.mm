@@ -112,7 +112,13 @@ public:
 
   - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
   {
-    return m_pCppDelegate->allowRedirects()?request:nil;
+    if ( m_pCppDelegate->allowRedirects() )
+    {
+      return request;
+    }
+    
+    m_pCppDelegate->onDone();
+    return nil;
   }
 
 /*
