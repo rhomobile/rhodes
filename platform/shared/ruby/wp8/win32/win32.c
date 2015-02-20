@@ -2437,11 +2437,11 @@ is_not_socket(SOCKET sock)
 static int
 is_pipe(SOCKET sock) /* DONT call this for SOCKET! it clains it is PIPE. */
 {
-    int ret;
+    int ret = 0;
 
-    RUBY_CRITICAL({
-	ret = (GetFileType((HANDLE)sock) == FILE_TYPE_PIPE);
-    });
+    //RUBY_CRITICAL({
+    //    ret = (GetFileType((HANDLE)sock) == FILE_TYPE_PIPE);
+    //});
 
     return ret;
 }
