@@ -9,10 +9,10 @@
   <ItemDefinitionGroup />
   <ItemGroup>
     <BuildMacro Include="RHO_ROOT">
-      <Value>$(_RHO_ROOT)</Value>
+      <Value>$(RHO_ROOT)</Value>
     </BuildMacro>
     <BuildMacro Include="TEMP_FILES_DIR">
-      <Value>$(_TEMP_FILES_DIR)</Value>
+      <Value>$(TEMP_FILES_DIR)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>
