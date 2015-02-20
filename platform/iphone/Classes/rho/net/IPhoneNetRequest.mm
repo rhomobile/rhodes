@@ -18,15 +18,17 @@ class IURLRequestDelegate
 public:
   virtual ~IURLRequestDelegate() {}
   
-  virtual void start() = 0;
   virtual void onDone() = 0;
   virtual bool verifySSLPeers() = 0;
   virtual void onResponse(NSHTTPURLResponse* r) = 0;
   virtual void onData(NSData* d) = 0;
   virtual bool allowRedirects() = 0;
+  virtual bool shouldSaveData() = 0;
+  virtual void start() = 0;
+  virtual NSURLRequest* getRequest() = 0;
 };
 
-@interface ConnDelegate : NSObject<NSURLConnectionDataDelegate/*,NSURLConnectionDownloadDelegate*/>
+@interface ConnDelegate : NSObject<NSURLConnectionDelegate,NSURLConnectionDataDelegate>
 
 {
 @public
@@ -34,7 +36,7 @@ public:
   
   NSHTTPURLResponse* response;
   NSError* error;
-  NSData* data;
+  NSMutableData* data;
 }
 
 - (id) init:(IURLRequestDelegate*)delegate;
@@ -49,15 +51,9 @@ public:
 
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response;
 
-/*
-- (void)connectionDidFinishDownloading:(NSURLConnection *)connection destinationURL:(NSURL *) destinationURL;
-
-- (void)connection:(NSURLConnection *)connection didWriteData:(long long)bytesWritten totalBytesWritten:(long long)totalBytesWritten expectedTotalBytes:(long long) expectedTotalBytes;
-*/
-
 @property (retain)NSHTTPURLResponse* response;
 @property (retain)NSError* error;
-@property (retain)NSData* data;
+@property (retain)NSMutableData* data;
 
 @end
 
@@ -65,41 +61,66 @@ public:
 
   - (id) init:(IURLRequestDelegate*)delegate
   {
+    NSLog(@">>>>>>>>> Starting net request: %@", self );
+  
     self = [super init];
     m_pCppDelegate = delegate;
+    self.data = [NSMutableData dataWithCapacity:0];
     return self;
+  }
+
+  - (void)dealloc
+  {
+    NSLog(@">>>>>>>>> Killing net request: %@", self );
+  
+  
+    [response release];
+    [error release];
+    [data release];
+    
+    m_pCppDelegate = 0;
+    
+    [super dealloc];
   }
 
   - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)err
   {
+    NSLog(@">>>>>>>>> %@ didFailWithError: %@", self, err );
+  
     self.error = err;
     m_pCppDelegate->onDone();
   }
 
   - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)resp
   {
+    NSLog(@">>>>>>>>> %@ didReceiveResponse: %@", self, resp );
+  
     self.response = (NSHTTPURLResponse*)resp;
     m_pCppDelegate->onResponse((NSHTTPURLResponse*)resp);
   }
 
-  - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)d
+  - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
   {
-    self.data = d;
-    m_pCppDelegate->onData(d);
+    NSLog(@">>>>>>>>> %@ didReceiveData: %@", self, data );
+  
+    if ( m_pCppDelegate->shouldSaveData() )
+    {
+      [self.data appendData:data];
+    }
+    m_pCppDelegate->onData(data);
   }
 
   - (void)connectionDidFinishLoading:(NSURLConnection *)connection
   {
+    NSLog(@">>>>>>>>> %@ connectionDidFinishLoading: %@", self, connection );
+  
     m_pCppDelegate->onDone();
-  }
-
-  - (void)startAsyncConnection
-  {
-    m_pCppDelegate->start();
   }
 
   - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
   {
+  
+    NSLog(@">>>>>>>>> %@ willSendRequestForAuthenticationChallenge: %@", self, challenge );
     
     if ( (!m_pCppDelegate->verifySSLPeers()) && [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust] )
     {
@@ -111,26 +132,33 @@ public:
     }
   }
 
+/*
   - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
   {
-    if ( m_pCppDelegate->allowRedirects() )
+    if ( nil == response )
     {
       return request;
+    }
+    
+    if ( m_pCppDelegate->allowRedirects() )
+    {
+      NSURL *newURL = [request URL];
+      NSMutableURLRequest *newRequest = [m_pCppDelegate->getRequest() mutableCopy];
+      [newRequest setURL: newURL];
+      return newRequest;
     }
     
     m_pCppDelegate->onDone();
     return nil;
   }
-
-/*
-  - (void)connectionDidFinishDownloading:(NSURLConnection *)connection destinationURL:(NSURL *) destinationURL
-  {
-  }
-
-  - (void)connection:(NSURLConnection *)connection didWriteData:(long long)bytesWritten totalBytesWritten:(long long)totalBytesWritten expectedTotalBytes:(long long) expectedTotalBytes
-  {
-  }
 */
+
+  -(void) startAsyncRequest
+  {
+    NSLog(@">>>>>>>>> willSendRequestForAuthenticationChallenge: %@", self );
+  
+    m_pCppDelegate->start();
+  }
 
   @synthesize error;
   @synthesize response;
@@ -333,7 +361,7 @@ public:
 
     processMultipartItems(arItems);
     
-    [m_pReq setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%s",m_sMultipartBoundary] forKey:@"Content-Type"];
+    [m_pReq setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%s",m_sMultipartBoundary] forHTTPHeaderField:@"content-type"];
 
     
     m_multipartTempPath = getMultipartTempFile();
@@ -374,7 +402,7 @@ public:
         if ( !oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly) )
         {
           [out close];
-          [out release];
+          //[out release];
           return false;
         }
         common::InputStream* bodyStream = oFile.getInputStream();
@@ -383,7 +411,7 @@ public:
         if ( [out write:(const uint8_t*)oItem.m_strDataPrefix.c_str() maxLength:len] != len )
         {
           [out close];
-          [out release];
+          //[out release];
           return false;
         }
         
@@ -401,7 +429,7 @@ public:
               if ( [out write:(const uint8_t*)&buf[0] maxLength:nReaded] != nReaded )
               {
                 [out close];
-                [out release];
+                //[out release];
                 return false;
               }
             }
@@ -415,7 +443,7 @@ public:
         if ( [out write:(const uint8_t*)oItem.m_strDataPrefix.c_str() maxLength:len] != len )
         {
           [out close];
-          [out release];
+          //[out release];
           return false;
         }
         
@@ -423,7 +451,7 @@ public:
         if ( [out write:(const uint8_t*)oItem.m_strBody.c_str() maxLength:len] != len )
         {
           [out close];
-          [out release];
+          //[out release];
           return false;
         }
       }
@@ -433,12 +461,12 @@ public:
     if ( [out write:(const uint8_t*)m_sMultipartPostfix maxLength:len] != len )
     {
       [out close];
-      [out release];
+      //[out release];
       return false;
     }
       
     [out close];
-    [out release];
+    //[out release];
 
     return true;
   }
@@ -531,12 +559,22 @@ public:
   
   INetResponse* perform( Hashtable<String,String>* pHeaders, IRhoSession* pSession )
   {
+  
     [m_pPerformCond lock];
 
-    [m_pConnDelegate performSelectorOnMainThread:@selector(startAsyncConnection) withObject:nil waitUntilDone:NO];
-    
+    //start();
+    [m_pConnDelegate performSelectorOnMainThread:@selector(startAsyncRequest) withObject:nil waitUntilDone:NO];
+
     [m_pPerformCond wait];
     [m_pPerformCond unlock];
+  
+    NSHTTPURLResponse* resp = nil;
+    NSError* err = nil;
+    NSData* data = nil;
+    
+    resp = m_pConnDelegate.response;
+    err = m_pConnDelegate.error;
+    data = m_pConnDelegate.data;
     
     if ( m_multipartTempPath != nil )
     {
@@ -547,7 +585,7 @@ public:
     
     INetResponse* ret = 0;
     
-    if ( m_pConnDelegate.error != nil )
+    if ( err != nil )
     {
       ret = new CIPhoneNetResponseImpl(-1);
       
@@ -559,19 +597,19 @@ public:
       
     } else {
     
-      NSData* d = m_pConnDelegate.data;
-      if ( d != nil )
+      NSData* d = data;
+      if ( (d!=nil) && (d.length>0) )
       {
-        ret = new CIPhoneNetResponseImpl( (const char*)[d bytes], [d length], (int)[m_pConnDelegate.response statusCode]  );
+        ret = new CIPhoneNetResponseImpl( (const char*)[d bytes], [d length], (int)[resp statusCode]  );
       } else {
-        ret = new CIPhoneNetResponseImpl( (int)[m_pConnDelegate.response statusCode]  );
+        ret = new CIPhoneNetResponseImpl( (int)[resp statusCode]  );
       }
       
       if ( pHeaders != 0 )
       {
         pHeaders->clear();
         
-        NSDictionary* respHeadrs = [m_pConnDelegate.response allHeaderFields];
+        NSDictionary* respHeadrs = [resp allHeaderFields];
         
         for (NSString* key in respHeadrs)
         {
@@ -580,7 +618,7 @@ public:
         }
       }
       
-      if ( (pSession!=0) && ( [m_pConnDelegate.response statusCode] == 401 ) )
+      if ( (pSession!=0) && ( [resp statusCode] == 401 ) )
       {
         pSession->logout();
       }
@@ -597,11 +635,16 @@ public:
   
   virtual void start()
   {
-    [m_pConn initWithRequest:m_pReq delegate:m_pConnDelegate];
+    [m_pConn initWithRequest:m_pReq delegate:m_pConnDelegate startImmediately:NO];
+//    [m_pConn setDelegateQueue:[NSOperationQueue mainQueue]];
+//    [m_pConn scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    [m_pConn start];
   }
   
   void cancel()
   {
+    [m_pConn cancel];
+    
     [m_pPerformCond lock];
     [m_pPerformCond signal];
     [m_pPerformCond unlock];
@@ -674,7 +717,16 @@ public:
   {
     m_pFile = file;
   }
-
+  
+  virtual bool shouldSaveData()
+  {
+    return 0==m_pFile;
+  }
+  
+  virtual NSURLRequest* getRequest()
+  {
+    return m_pReq;
+  }
 
 private:
 
@@ -729,6 +781,8 @@ INetResponse* CIPhoneNetRequest::pullFile(const String& strUrl, common::CRhoFile
 
 INetResponse* CIPhoneNetRequest::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
+  return createEmptyNetResponse();
+
   if ( !m_pHolder->init("POST", strUrl, arItems, pHeaders, oSession) )
   {
     return createEmptyNetResponse();
