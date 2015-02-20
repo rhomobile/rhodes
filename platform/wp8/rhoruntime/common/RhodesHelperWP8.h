@@ -33,15 +33,6 @@
 extern "C" {
 #endif //__cplusplus
 
-	SOCKET Rho_WSASocket(
-		_In_ int af,
-		_In_ int type,
-		_In_ int protocol,
-		_In_opt_ LPWSAPROTOCOL_INFOA lpProtocolInfo,
-		_In_ GROUP g,
-		_In_ DWORD dwFlags
-	);
-
 	HANDLE Rho_CreateFileW(
 		_In_ LPCWSTR lpFileName,
 		_In_ DWORD dwDesiredAccess,
@@ -61,16 +52,67 @@ extern "C" {
 		_Out_opt_ LPDWORD lpFileSizeHigh
 	);
 
+	DWORD Rho_GetFileAttributesA(
+		_In_ LPCSTR lpFileName
+	);
+
+	DWORD Rho_GetFileAttributesW(
+		_In_ LPCWSTR lpFileName
+	);
+
+	DWORD Rho_GetModuleFileNameW(
+		_In_opt_ HMODULE hModule,
+		_Out_writes_to_(nSize, ((return < nSize) ? (return +1) : nSize)) LPWSTR lpFilename,
+		_In_ DWORD nSize
+	);
+
+	DWORD Rho_SetFilePointer(
+		_In_ HANDLE hFile,
+		_In_ LONG lDistanceToMove,
+		_Inout_opt_ PLONG lpDistanceToMoveHigh,
+		_In_ DWORD dwMoveMethod
+	);
+
+	BOOL Rho_UnlockFile(
+		_In_ HANDLE hFile,
+		_In_ DWORD dwFileOffsetLow,
+		_In_ DWORD dwFileOffsetHigh,
+		_In_ DWORD nNumberOfBytesToUnlockLow,
+		_In_ DWORD nNumberOfBytesToUnlockHigh
+	);
+
+	BOOL Rho_LocalFileTimeToFileTime(
+		_In_ CONST FILETIME * lpLocalFileTime,
+		_Out_ LPFILETIME lpFileTime
+	);
+
+	HANDLE Rho_OpenProcess(
+		_In_ DWORD dwDesiredAccess,
+		_In_ BOOL bInheritHandle,
+		_In_ DWORD dwProcessId
+	);
+
+	HMODULE Rho_GetModuleHandleW(
+		_In_opt_ LPCWSTR lpModuleName
+	);
+
 #ifdef __cplusplus
 }
 #endif //__cplusplus
 
 #if defined(_WP8_LIB) && !defined(_WINRT_DLL)
-#define WSASocket Rho_WSASocket
 #define CreateFileW Rho_CreateFileW
 #define CreateFileA Rho_CreateFileW
 #define CreateFile Rho_CreateFileW
 #define GetVersionEx Rho_GetVersionExW
 #define GetVersionExW Rho_GetVersionExW
 #define GetFileSize Rho_GetFileSize
+#define GetFileAttributesA Rho_GetFileAttributesA
+#define GetFileAttributesW Rho_GetFileAttributesW
+#define GetModuleFileNameW Rho_GetModuleFileNameW
+#define SetFilePointer Rho_SetFilePointer
+#define UnlockFile Rho_UnlockFile
+#define LocalFileTimeToFileTime Rho_LocalFileTimeToFileTime
+#define OpenProcess Rho_OpenProcess
+#define GetModuleHandleW Rho_GetModuleHandleW
 #endif
