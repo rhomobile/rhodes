@@ -36,14 +36,14 @@ namespace rhodes
         private IBarcodeReader  _barcodeReader;
         private DispatcherTimer _scanTimer;
         private WriteableBitmap _previewBuffer;
-
+        static EventWaitHandle  _waitSendResultHandle = new AutoResetEvent(false);
+         
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             // Initialize the camera object
             _phoneCamera = new PhotoCamera();
             _phoneCamera.Initialized += Camera_Initialized;
-            CameraButtons.ShutterKeyHalfPressed += CameraButtons_ShutterKeyHalfPressed;
-
+            
             //Display the camera feed in the UI
             viewfinderBrush.SetSource(_phoneCamera);
             
@@ -51,6 +51,8 @@ namespace rhodes
             _scanTimer          = new DispatcherTimer();
             _scanTimer.Interval = TimeSpan.FromMilliseconds(250);
             _scanTimer.Tick += (o, arg) => ScanForBarcode();
+
+            CameraButtons.ShutterKeyHalfPressed += CameraButtons_ShutterKeyHalfPressed;
 
             base.OnNavigatedTo(e);
         }
@@ -115,16 +117,26 @@ namespace rhodes
 
         void BarcodeReader_ResultFound(Result obj)
         {
+            System.Diagnostics.Debug.WriteLine("BarcodeReader_ResultFound");
+
             ProcessResult processResult = new ProcessResult();
             processResult.Data   = obj.RawBytes;
             processResult.Format = obj.BarcodeFormat.ToString();
             processResult.Text   = obj.Text;
 
             OpticalReaderTask.CompleteTask(processResult, null);
+
+            //_waitSendResultHandle.Set();
         }
 
         private void ScanForBarcode()
         {
+            //_waitSendResultHandle.WaitOne();
+
+            _phoneCamera.Focus();
+
+            Thread.Sleep(50);
+
             //grab a camera snapshot
             _phoneCamera.GetPreviewBufferArgb32(_previewBuffer.Pixels);
             _previewBuffer.Invalidate();
