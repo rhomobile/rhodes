@@ -84,7 +84,7 @@ namespace <%= $cur_module.name %>Impl
             return _nativeImpl;
         }
 
-        public void setNativeImpl(string strID, long native)
+        public virtual void setNativeImpl(string strID, long native)
         {
             _strID = strID;
             _nativeImpl = native;

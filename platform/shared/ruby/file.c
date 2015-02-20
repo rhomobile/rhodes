@@ -120,6 +120,10 @@ be_fchown(int fd, uid_t owner, gid_t group)
 #define fchown be_fchown
 #endif /* __BEOS__ || __HAIKU__ */
 
+#ifdef _WP8_LIB
+#include "../../wp8/rhoruntime/common/RhodesHelperWP8.h"
+#endif
+
 VALUE rb_cFile;
 VALUE rb_mFileTest;
 VALUE rb_cStat;

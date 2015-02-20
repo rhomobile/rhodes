@@ -18,8 +18,11 @@ namespace rhoruntime {
         virtual void set(int res);
         virtual void set(double res);
         virtual void set(Platform::String^ res);
-        virtual void set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res);
-        virtual void set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res);
+        virtual void set(WFC::IVectorView<Platform::String^>^ res);
+        virtual void set(WFC::IVectorView<WFC::IMapView<Platform::String^, Platform::String^>^>^ res);
+        virtual void set(WFC::IMapView<Platform::String^, Platform::String^>^ res);
+        virtual void set(WFC::IMapView<Platform::String^, WFC::IVectorView<Platform::String^>^>^ res);
+        virtual void set(WFC::IMapView<Platform::String^, WFC::IMapView<Platform::String^, Platform::String^>^>^ res);
 		virtual void setRubyCallback(Platform::String^ strCallback);
 		virtual Platform::String^ getRubyCallback();
 	};

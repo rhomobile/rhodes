@@ -3,6 +3,10 @@ using rhoruntime;
 namespace rhodes {
     public static class CSharpExtensions {
         public static void InitializeExtensions() {
+            WebViewFactoryComponent.setImpl(new rho.WebViewImpl.WebViewFactory());
+            NativeToolbarFactoryComponent.setImpl(new rho.NativeToolbarImpl.NativeToolbarFactory());
+            NativeTabbarFactoryComponent.setImpl(new rho.NativeTabbarImpl.NativeTabbarFactory());
+            AudioCaptureFactoryComponent.setImpl(new rho.AudioCaptureImpl.AudioCaptureFactory());
         }
     }
 }

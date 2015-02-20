@@ -186,7 +186,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	dc.GetTextMetrics(&tm);
 
 	int msgWidth  =  (int)(m_message.length() * (tm.tmAveCharWidth * 1.3) + (2 * INDENT));
-	int msgHeight =  tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading + 4;
+	int msgHeight =  ((tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading) * 3);
 
 	int desiredDlgWidth = iconRect.right + msgWidth + (INDENT * 2);
 
@@ -204,7 +204,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		if (desiredDlgWidth >= (int)maxWidth) {
 			msgWidth = maxWidth - (iconRect.right + INDENT*2 + xBorderWidth*2);
 			msgHeight = (((m_message.length() * tm.tmAveCharWidth) / msgWidth) + 1) 
-						* (tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading);
+						* ((tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading)*3);
 			desiredDlgWidth = maxWidth;
 		}
 		
