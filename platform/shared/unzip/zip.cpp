@@ -2702,7 +2702,7 @@ ZRESULT TZip::Add(const TCHAR *odstzn, void *src,unsigned int len, DWORD flags)
   // Initialize the local header
   TZipFileInfo zfi; zfi.nxt=NULL;
   strcpy(zfi.name,"");
-#ifdef UNICODE
+#if defined(UNICODE) && !defined(_WP8_LIB)
   WideCharToMultiByte(CP_UTF8,0,dstzn,-1,zfi.iname,MAX_PATH,0,0);
 #else
   strncpy(zfi.iname,dstzn,MAX_PATH); zfi.iname[MAX_PATH-1]=0;

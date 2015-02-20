@@ -546,6 +546,7 @@ end
 def kill_iphone_simulator
   puts 'kill "iPhone Simulator"'
   `killall -9 "iPhone Simulator"`
+  `killall -9 "iOS Simulator"`
   `killall -9 iphonesim`
   `killall -9 iphonesim_43`
   `killall -9 iphonesim_51`
