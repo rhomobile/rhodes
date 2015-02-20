@@ -110,6 +110,7 @@ extern "C" {
 #define GetFileAttributesA Rho_GetFileAttributesA
 #define GetFileAttributesW Rho_GetFileAttributesW
 #define GetModuleFileNameW Rho_GetModuleFileNameW
+#define GetModuleFileName Rho_GetModuleFileNameW
 #define SetFilePointer Rho_SetFilePointer
 #define UnlockFile Rho_UnlockFile
 #define LocalFileTimeToFileTime Rho_LocalFileTimeToFileTime

@@ -27,6 +27,8 @@
 #include "RhodesHelperWP8.h"
 
 #include "../../shared/common/RhoPort.h"
+#include "../../shared/common/RhoStd.h"
+#include "../../shared/common/StringConverter.h"
 
 HANDLE Rho_CreateFileW(
 	_In_ LPCWSTR lpFileName,
@@ -73,7 +75,7 @@ DWORD Rho_GetFileAttributesA(
 	)
 {
 	WIN32_FILE_ATTRIBUTE_DATA fileInformation;
-	if (GetFileAttributesExA(lpFileName, GetFileExInfoStandard, &fileInformation))
+	if (GetFileAttributesExW(rho::common::convertToStringW(lpFileName).c_str(), GetFileExInfoStandard, &fileInformation))
 		return fileInformation.dwFileAttributes;
 	else
 		return INVALID_FILE_ATTRIBUTES;
