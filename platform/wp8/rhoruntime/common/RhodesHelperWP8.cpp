@@ -27,18 +27,8 @@
 #include "RhodesHelperWP8.h"
 
 #include "../../shared/common/RhoPort.h"
-
-SOCKET Rho_WSASocket(
-	_In_ int af,
-	_In_ int type,
-	_In_ int protocol,
-	_In_opt_ LPWSAPROTOCOL_INFOA lpProtocolInfo,
-	_In_ GROUP g,
-	_In_ DWORD dwFlags
-	)
-{
-	return WSASocketA(af, type, protocol, lpProtocolInfo, g, dwFlags);
-}
+#include "../../shared/common/RhoStd.h"
+#include "../../shared/common/StringConverter.h"
 
 HANDLE Rho_CreateFileW(
 	_In_ LPCWSTR lpFileName,
@@ -78,4 +68,88 @@ DWORD Rho_GetFileSize(
 {
 	FILE_STANDARD_INFO info;
 	return GetFileInformationByHandleEx(hFile, FileStandardInfo, &info, sizeof(info)) ? info.EndOfFile.QuadPart : 0;
+}
+
+DWORD Rho_GetFileAttributesA(
+	_In_ LPCSTR lpFileName
+	)
+{
+	WIN32_FILE_ATTRIBUTE_DATA fileInformation;
+	if (GetFileAttributesExW(rho::common::convertToStringW(lpFileName).c_str(), GetFileExInfoStandard, &fileInformation))
+		return fileInformation.dwFileAttributes;
+	else
+		return INVALID_FILE_ATTRIBUTES;
+}
+
+DWORD Rho_GetFileAttributesW(
+	_In_ LPCWSTR lpFileName
+	)
+{
+	WIN32_FILE_ATTRIBUTE_DATA fileInformation;
+	if (GetFileAttributesExW(lpFileName, GetFileExInfoStandard, &fileInformation))
+		return fileInformation.dwFileAttributes;
+	else
+		return INVALID_FILE_ATTRIBUTES;
+}
+
+DWORD Rho_GetModuleFileNameW(
+	_In_opt_ HMODULE hModule,
+	_Out_writes_to_(nSize, ((return < nSize) ? (return +1) : nSize)) LPWSTR lpFilename,
+	_In_ DWORD nSize
+	)
+{
+	return 0;
+}
+
+DWORD Rho_SetFilePointer(
+	_In_ HANDLE hFile,
+	_In_ LONG lDistanceToMove,
+	_Inout_opt_ PLONG lpDistanceToMoveHigh,
+	_In_ DWORD dwMoveMethod
+	)
+{
+	LARGE_INTEGER x;
+	LARGE_INTEGER res;
+	x.QuadPart = lDistanceToMove;
+	return SetFilePointerEx(hFile, x, &res, dwMoveMethod) ? res.QuadPart : 0;
+}
+
+BOOL Rho_LocalFileTimeToFileTime(
+	_In_ CONST FILETIME * lpLocalFileTime,
+	_Out_ LPFILETIME lpFileTime
+	)
+{
+	*lpFileTime = *lpLocalFileTime;
+	return TRUE;
+}
+
+BOOL Rho_UnlockFile(
+	_In_ HANDLE hFile,
+	_In_ DWORD dwFileOffsetLow,
+	_In_ DWORD dwFileOffsetHigh,
+	_In_ DWORD nNumberOfBytesToUnlockLow,
+	_In_ DWORD nNumberOfBytesToUnlockHigh
+	)
+{
+	OVERLAPPED ovlp;
+	memset(&ovlp, 0, sizeof(OVERLAPPED));
+	ovlp.Offset = dwFileOffsetLow;
+	ovlp.OffsetHigh = dwFileOffsetHigh;
+	return UnlockFileEx(hFile, 0, nNumberOfBytesToUnlockLow, nNumberOfBytesToUnlockHigh, &ovlp);
+}
+
+HANDLE Rho_OpenProcess(
+	_In_ DWORD dwDesiredAccess,
+	_In_ BOOL bInheritHandle,
+	_In_ DWORD dwProcessId
+	)
+{
+	return INVALID_HANDLE_VALUE;
+}
+
+HMODULE Rho_GetModuleHandleW(
+	_In_opt_ LPCWSTR lpModuleName
+	)
+{
+	return 0;
 }
