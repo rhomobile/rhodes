@@ -9,6 +9,7 @@
 #include "common/RhoConf.h"
 #include "MainWindow.h"
 #include "EngineDefines.h"
+#include "EditSip.h"
 
 #if defined(_WIN32_WCE)
 #include <webvw.h>
@@ -18,6 +19,8 @@ extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam);
 extern "C" bool rho_wmimpl_get_textselectionenabled();
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
 
@@ -49,6 +52,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     , m_bLoadingComplete(FALSE)
     , m_bNavigationError(FALSE)
 	, m_bInitialised(FALSE)
+	,m_bNavigationComplete(FALSE)
 {
 	m_hwndParent  = hwndParent;
 	m_hInstance = hInstance;
@@ -83,6 +87,34 @@ LRESULT CEBrowserEngine::CreateEngine()
 	DWORD			dwFlags;			/// shdocvw client flags
 	IClassFactory	*ppv;				/// pointer variable to hold WebBrowser interface pointer
 
+
+	TCHAR szPlatform[128];
+	memset(szPlatform, 0, 127 * sizeof(TCHAR));
+	SystemParametersInfo(SPI_GETOEMINFO, 127, szPlatform, 0);
+
+
+		if((_tcsstr(szPlatform,TEXT("MK4000")) != NULL) || (_tcsstr(szPlatform,TEXT("MK3100")) != NULL) || (_tcsstr(szPlatform,TEXT("MC18")) != NULL)|| (_tcsstr(szPlatform,TEXT("MK3000")) != NULL))
+		{
+			HKEY hRegKey= NULL;
+			DWORD Type;
+			DWORD RetSize = 999;
+			DWORD dwManSIP = 0;
+			if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\Main"), 0, 0, &hRegKey)) 
+			{
+
+				RetSize = 999;
+				RegQueryValueEx(hRegKey, _T("Disable Auto SIP"), NULL, &Type, (BYTE *) &dwManSIP, &RetSize);
+				if(dwManSIP==1)
+				{
+					DWORD dwAutoSIP =0;
+					LONG lResult = RegSetValueEx(hRegKey,_T("Disable Auto SIP"),0,Type,(BYTE *)&dwAutoSIP,sizeof(DWORD));
+				}
+
+				RegCloseKey(hRegKey);
+			}
+		}
+
+	/////////////
 	//we only want to do this once, so check that the m_pBrowser is null
 	if (!m_pBrowser)
 	{
@@ -345,7 +377,7 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 						
 				CloseHandle(pEng->m_hNavigated);
 				pEng->m_hNavigated = NULL;
-				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, 
+				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
                 (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
 
 				break; 
@@ -627,7 +659,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
         ParseTags();
 
 		retVal = S_OK;
-        
+        m_bNavigationComplete = TRUE;
 		break;
 
 	case DISPID_BEFORENAVIGATE2:
@@ -663,13 +695,18 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		//  Test if the user has attempted to navigate back in the history
 		if (wcsicmp(tcURL, L"history:back") == 0)
 		{
-            m_pBrowser->GoBack();
-            break;
+            		m_pBrowser->GoBack();
+        		 *(pdparams->rgvarg[0].pboolVal) = VARIANT_TRUE;
+			retVal = S_OK;
+            		break;
 		}
         if(m_hNavigated==NULL)
             m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
 		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
+		// EMBPD00158491
+		m_bNavigationComplete = FALSE;
+		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NetworkWindowThread, (LPVOID)this, 0, NULL));
 		wcscpy(m_tcNavigatedURL, tcURL);
 
 #ifdef SCROLL_NOTIFY
@@ -778,12 +815,12 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     switch (uMsg) 
     {
-    case PB_WINDOW_RESTORE:
-	{
-	    short m_PB_WINRESTORED = 6;
-            RHODESAPP().getExtManager().OnWindowChanged((LPVOID) m_PB_WINRESTORED);
-	}
-	break;   
+	case PB_WINDOW_RESTORE:
+		{
+			short m_PB_WINRESTORED = 6;
+            RHODESAPP().getExtManager().OnWindowChanged((LPVOID) m_PB_WINRESTORED);   
+		}
+		break;
     case PB_ONMETA:
         {
             EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
@@ -1168,4 +1205,88 @@ BOOL CEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
 }
 
 
+DWORD WINAPI CEBrowserEngine::NetworkWindowThread( LPVOID lpParameter )
+{
+
+	CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
+
+	TCHAR szWindowText[MAX_PATH];
+	TCHAR szWindowClass[MAX_PATH];
+	HWND hCurrentWindow = NULL;
+
+	ZeroMemory(szWindowText,MAX_PATH);
+	ZeroMemory(szWindowClass,MAX_PATH);
+
+	while(!pEng->m_bNavigationComplete)
+	{
+		HWND hCurrentWindow=FindWindow(TEXT("Dialog"),TEXT("Enter Network Password"));
+		if(hCurrentWindow != NULL)
+		{
+			GetWindowText(hCurrentWindow,szWindowText,MAX_PATH);
+			ZeroMemory(szWindowClass,MAX_PATH);
+			GetClassName(hCurrentWindow,szWindowClass,MAX_PATH);
+			LONG lIndex = GetWindowLong(hCurrentWindow,GWL_ID);
+			
+			::EnumChildWindows(hCurrentWindow,(WNDENUMPROC)NetworkWndProc,0);
+			pEng->m_bNavigationComplete = TRUE;
+			return 0;	
+		}
+	}
+	return 0;
+}
+
+// EMBPD00158491 - [SAP-ITS][CE5/MK4000]-Sip is not shown while trying to enter text in fields of Authentication screen
+// SIP not appearing on authentication window on IE engine has been fixed
+LRESULT CALLBACK NetworkWndProc(HWND hWnd,LPARAM lParam)
+{
+	if(hWnd)
+	{
+
+		TCHAR szChildWndText[MAX_PATH];
+		TCHAR szChildWndClass[MAX_PATH];
+
+		ZeroMemory(szChildWndText,MAX_PATH);
+		ZeroMemory(szChildWndClass,MAX_PATH);
+
+		GetWindowText(hWnd,szChildWndText,MAX_PATH);
+		GetClassName(hWnd,szChildWndClass,MAX_PATH);
+		
+		if(_tcsicmp(szChildWndClass,TEXT("Edit")) ==0)
+		{
+			g_wpEditWndProc= (WNDPROC)SetWindowLong(hWnd,GWL_WNDPROC,(LONG)EditWndProc);
+			if(g_wpEditWndProc== NULL)
+			{
+				LOG(ERROR) + "[NetworkWndProc] Setwindowlong returns null";
+				LOG(ERROR) + GetLastError();
+			}
+		}
+		return TRUE;
+	}
+	else
+		return FALSE;
+	
+}
+
+
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+
+			switch(message)
+			{
+			case WM_SETFOCUS:
+				{
+					ShowSIPWnd(TRUE);
+				}
+				break;
+			case WM_KILLFOCUS:
+				{
+					ShowSIPWnd(FALSE);
+				}
+				break;
+			}
+			return CallWindowProc(g_wpEditWndProc, hwnd, message, wParam, lParam); 
+}
 #endif //!defined( OS_WINCE )
+
+

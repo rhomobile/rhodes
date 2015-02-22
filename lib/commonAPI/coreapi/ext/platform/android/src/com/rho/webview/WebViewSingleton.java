@@ -51,7 +51,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     @Override
     public void getEnableZoom(IMethodResult result) {
-        result.set(mConfig.getBool(WebViewConfig.ENABLE_ZOOM, WebViewConfig.ENABLE_ZOOM_DEF));
+        result.set(mConfig.getBool(WebViewConfig.ENABLE_ZOOM));
     }
 
 //    @Override
@@ -62,7 +62,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     @Override
     public void getEnablePageLoadingIndication(IMethodResult result) {
-        result.set(mConfig.getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION, WebViewConfig.ENABLE_PAGE_LOADING_INDICATION_DEF));
+        result.set(mConfig.getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION));
     }
 
 //    @Override
@@ -73,7 +73,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     @Override
     public void getEnableWebPlugins(IMethodResult result) {
-        result.set(mConfig.getBool(WebViewConfig.ENABLE_WEB_PLUGINS, WebViewConfig.ENABLE_WEB_PLUGINS_DEF));
+        result.set(mConfig.getBool(WebViewConfig.ENABLE_WEB_PLUGINS));
     }
 
 //    @Override
@@ -131,7 +131,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     @Override
     public void getEnableCache(IMethodResult result) {
-        result.set(mConfig.getBool(WebViewConfig.ENABLE_CACHE, WebViewConfig.ENABLE_CACHE_DEF));
+        result.set(mConfig.getBool(WebViewConfig.ENABLE_CACHE));
     }
 
 //    @Override
@@ -411,13 +411,17 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     }
     
     private void readRhoelementsConfig(IRhoConfig config) {
+        if (config.isExist("enablezoom")) {
+           // mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enable_screen_zoom", WebViewConfig.ENABLE_ZOOM_DEF));
+            mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enablezoom"));
+        }
         if (config.isExist("pagezoom")) {
-            double zoomValue = config.getDouble("pagezoom", WebViewConfig.PAGE_ZOOM_DEF);
+            double zoomValue = config.getDouble("pagezoom");
             mConfig.set(WebViewConfig.PAGE_ZOOM, zoomValue);
         }
         
         if (config.isExist("cache")) {
-            int cache = config.getInt("cache", 1);
+            int cache = config.getInt("cache");
             mConfig.set(WebViewConfig.ENABLE_CACHE, cache != 0);
         }
     }

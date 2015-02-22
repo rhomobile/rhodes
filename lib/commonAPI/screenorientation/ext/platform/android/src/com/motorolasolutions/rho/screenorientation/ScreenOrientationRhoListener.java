@@ -25,6 +25,27 @@ public class ScreenOrientationRhoListener extends AbstractRhoListener {
         }
     }
 
+
+
+	@Override
+    public void onPause(RhodesActivity activity) {
+        Iterator<ScreenOrientationSingleton> iterator = mScreenOrientationInstances.iterator();
+        while (iterator.hasNext()) {
+            ScreenOrientationSingleton screenOrientationInstance = iterator.next();
+            screenOrientationInstance.m_Paused =true;
+        }
+    }
+	
+		@Override
+    public void onResume(RhodesActivity activity) {
+        Iterator<ScreenOrientationSingleton> iterator = mScreenOrientationInstances.iterator();
+        while (iterator.hasNext()) {
+            ScreenOrientationSingleton screenOrientationInstance = iterator.next();
+            screenOrientationInstance.m_Paused =false;
+        }
+    }
+
+
     @Override
     public void onStop(RhodesActivity activity) {
         Iterator<ScreenOrientationSingleton> iterator = mScreenOrientationInstances.iterator();

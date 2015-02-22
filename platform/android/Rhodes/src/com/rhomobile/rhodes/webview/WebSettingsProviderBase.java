@@ -14,8 +14,8 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
     @SuppressLint("SetJavaScriptEnabled")
     public void fillSettings(WebSettings settings, IRhoConfig config) {
         
-        boolean enableZoom = config == null || config.getBool(WebViewConfig.ENABLE_ZOOM, WebViewConfig.ENABLE_ZOOM_DEF);
-        boolean enableCache = config == null || config.getBool(WebViewConfig.ENABLE_CACHE, WebViewConfig.ENABLE_CACHE_DEF);
+        boolean enableZoom = config == null || config.getBool(WebViewConfig.ENABLE_ZOOM);
+        boolean enableCache = config == null || config.getBool(WebViewConfig.ENABLE_CACHE);
         
         settings.setSavePassword(false);
         settings.setSaveFormData(false);
@@ -43,7 +43,7 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         try {
             Class<WebSettings> clazz = WebSettings.class;
             Method methodSetPlugins = clazz.getMethod("setPluginsEnabled", boolean.class);
-            methodSetPlugins.invoke(settings, config != null && config.getBool(WebViewConfig.ENABLE_WEB_PLUGINS, WebViewConfig.ENABLE_WEB_PLUGINS_DEF));
+            methodSetPlugins.invoke(settings, config != null && config.getBool(WebViewConfig.ENABLE_WEB_PLUGINS));
         } catch (Throwable e) {
             Logger.W(TAG, "WebSettings.setPluginsEnabled(bool) is removed from API by Google.");
         }

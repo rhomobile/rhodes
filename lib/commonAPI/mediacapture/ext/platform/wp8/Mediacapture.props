@@ -3,12 +3,8 @@
   <ImportGroup Label="PropertySheets">
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <RHO_ROOT_>C:\work\win8\commonapi\rhodes</RHO_ROOT_>
+    <RHO_ROOT_>../../../../../..</RHO_ROOT_>
     <TEMP_FILES_DIR_>$(RHO_ROOT)\platform\wp8\bin\$(Platform)\extensions\$(ProjectName)</TEMP_FILES_DIR_>
-  </PropertyGroup>
-  <PropertyGroup>
-    <_ProjectFileVersion>11.0.51106.1</_ProjectFileVersion>
-    <_PropertySheetDisplayName>emmlapi</_PropertySheetDisplayName>
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup>

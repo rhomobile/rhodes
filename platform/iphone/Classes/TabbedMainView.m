@@ -299,7 +299,7 @@
     CGContextSetFillColorWithColor(c, cgColor);
     contextRect.size.height = -contextRect.size.height;
 	
-	float* colorComponents = CGColorGetComponents(cgColor);
+	CGFloat* colorComponents = CGColorGetComponents(cgColor);
 	float color0R = colorComponents[0];
 	float color0G = colorComponents[1];
 	float color0B = colorComponents[2];

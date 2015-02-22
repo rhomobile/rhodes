@@ -3,6 +3,8 @@ package com.rho.camera;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +20,6 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.util.Size;
 import android.view.SurfaceHolder;
 
 import com.rhomobile.rhodes.Base64;
@@ -89,6 +89,13 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 }
                 
                 String filePath = null;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");                
+                if(!propertyMap.containsKey("fileName")){
+                   filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
+         	}
+         	else{
+                   filePath = propertyMap.get("fileName");
+         	}
                 Uri resultUri = null;
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);                    
@@ -103,7 +110,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                     mPreviewActivity.setResult(Activity.RESULT_OK, intent);                    
                 } else
                 if (outputFormat.equalsIgnoreCase("image")) {
-                    filePath = propertyMap.get("fileName") + ".jpg";
+                    filePath = getTemporaryPath(filePath)+ ".jpg";
                     Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);                    
                     if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
                     {                        
@@ -208,6 +215,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
         } 
     }
 
+    @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
 	@Override
     public ISize setPreviewSize(int width, int height) {
@@ -221,7 +229,10 @@ public class CameraObject extends CameraBase implements ICameraObject {
         	if(desired_width > 0 && desired_width <= maxSize.width && desired_height > 0 && desired_height <= maxSize.height){        	
         	 Camera.Size previewSize = getOptimalPreviewSize(parameters.getSupportedPictureSizes(), desired_width, desired_height);
         	 Logger.T(TAG, "Selected size: " + previewSize.width + "x" + previewSize.height);             
-             parameters.setPreviewSize(previewSize.width, previewSize.height);
+                 parameters.setPreviewSize(previewSize.width, previewSize.height);
+        	}
+        	else if(desired_width > maxSize.width || desired_height > maxSize.height){        		
+        		parameters.setPreviewSize(maxSize.width , maxSize.height);       
         	}
         	else{ 
         		parameters.setPreviewSize(320, 240);
@@ -233,7 +244,12 @@ public class CameraObject extends CameraBase implements ICameraObject {
         parameters.setPreviewSize(previewSize.width, previewSize.height);
        }
         camera.stopPreview();
-        camera.setParameters(parameters);
+        try{
+           camera.setParameters(parameters);
+        }
+        catch(RuntimeException e){        	
+        	e.printStackTrace();
+        }
         camera.startPreview();
         
         return new CameraSize(camera.getParameters().getPreviewSize());
@@ -328,6 +344,12 @@ public class CameraObject extends CameraBase implements ICameraObject {
             
             String outputFormat = actualPropertyMap.get("outputFormat");
             String filePath = null;
+            if(!actualPropertyMap.containsKey("fileName")){
+            	filePath = "/sdcard/DCIM/Camera/";
+     	   }
+     	   else{
+     		filePath = actualPropertyMap.get("fileName");
+     	   }
             if (outputFormat.equalsIgnoreCase("image")) {
             	filePath = actualPropertyMap.get("fileName") + ".jpg";
                 Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);               

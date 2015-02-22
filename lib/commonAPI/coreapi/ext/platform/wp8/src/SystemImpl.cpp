@@ -8,6 +8,7 @@
 
 #include <windows.h>
 #include "rhoruntime/rhoruntime.h"
+#include "rhoruntime/common/RhodesHelperWP8.h"
 
 using namespace Windows::Graphics::Display;
 using namespace Windows::Devices::Input;

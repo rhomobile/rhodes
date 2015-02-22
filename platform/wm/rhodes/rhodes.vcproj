@@ -2050,6 +2050,10 @@
 				RelativePath=".\DateTimePicker.cpp"
 				>
 			</File>
+				<File
+				RelativePath=".\EditSIP.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\LicenseStub.cpp"
 				>
@@ -2294,6 +2298,10 @@
 			</File>
 			<File
 				RelativePath=".\DateTimePicker.h"
+				>
+			</File>
+				<File
+				RelativePath=".\EditSIP.h"
 				>
 			</File>
 			<File

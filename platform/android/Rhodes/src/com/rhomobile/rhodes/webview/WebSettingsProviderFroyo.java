@@ -8,7 +8,7 @@ import com.rhomobile.rhodes.extmanager.IRhoConfig;
 public class WebSettingsProviderFroyo extends WebSettingsProviderEclairMR1 implements IWebSettingsProvider {
     @Override
     protected void setWebPlugins(WebSettings settings, IRhoConfig config) {
-        if(config != null && config.getBool(WebViewConfig.ENABLE_WEB_PLUGINS, WebViewConfig.ENABLE_WEB_PLUGINS_DEF)) {
+        if(config != null && config.getBool(WebViewConfig.ENABLE_WEB_PLUGINS)) {
             settings.setPluginState(WebSettings.PluginState.ON);
             Logger.I(TAG, "Set web plugins state 'ON'");
         }

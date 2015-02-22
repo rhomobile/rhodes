@@ -98,6 +98,18 @@
     <Filter Include="NewORM\shared\generated">
       <UniqueIdentifier>{d538c375-ba68-4e45-b718-5254f33c8877}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{2d584fc0-26c2-4726-b00e-0eaa6abb5a5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config\shared">
+      <UniqueIdentifier>{825d611a-8532-443f-b504-af5a21158fdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config\shared\generated">
+      <UniqueIdentifier>{39572473-db03-4de7-a50d-c26b831ceb0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config\shared\generated\cpp">
+      <UniqueIdentifier>{95c252f8-1007-4508-b4eb-fc1152aad30c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp">
@@ -300,6 +312,27 @@
     <ClCompile Include="..\..\shared\generated\cpp\NewORMModelBase.cpp">
       <Filter>NewORM\shared\generated</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\generated\config_api_init.cpp">
+      <Filter>Config\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\config_js_api.cpp">
+      <Filter>Config\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\config_ruby_api.c">
+      <Filter>Config\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Config_js_wrap.cpp">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Config_ruby_wrap.cpp">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\ConfigBase.cpp">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ConfigImpl.cpp">
+      <Filter>Config\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
@@ -350,6 +383,12 @@
     <ClInclude Include="..\..\shared\generated\cpp\NewORMModelBase.h">
       <Filter>NewORM\shared\generated</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\ConfigBase.h">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\IConfig.h">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\Network.xml">
@@ -374,6 +413,9 @@
   <ItemGroup>
     <Xml Include="..\..\push.xml">
       <Filter>Push</Filter>
+    </Xml>
+    <Xml Include="..\..\Config.xml">
+      <Filter>Config</Filter>
     </Xml>
   </ItemGroup>
 </Project>

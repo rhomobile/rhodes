@@ -200,10 +200,10 @@ Rho.ScreenOrientation.autoRotate=false;
         </EXAMPLES>
 
         <EXAMPLES_EB>
-            <EXAMPLE title="Screen Orientation Manipulation">
+            <EXAMPLE title='Manipulating the Screen Orientation'>
                 <SECTIONS>
                     <SECTION>
-                        <DESC>This example will show how each of the methods and properties of the ScreenOrientation API work in your EB app. Note: This example assumes that the ebapi-modules.js file is in the same folder as html file invoking it.</DESC>
+                        <DESC>In this example you'll see how to manipulate the screen orientation and how to receive events when the orientation changes. This example assumes that the ebapi-modules.js file resides in the same folder as the HTML file invoking it.</DESC>
                         <CODE>
                             <JAVASCRIPT><![CDATA[
 <head>

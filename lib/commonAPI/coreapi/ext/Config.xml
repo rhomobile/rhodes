@@ -1,0 +1,132 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Config" parent="Rho" productException="eb">
+        <HELP_OVERVIEW>Rho.Config module</HELP_OVERVIEW>
+        <MORE_HELP>Implementation of the config api.</MORE_HELP>
+
+        <PROPERTIES access="STATIC" generateAccessors="true">
+
+            <PROPERTY name="configPath" type="STRING" default="">
+                <DESC></DESC>
+            </PROPERTY>
+                            
+        </PROPERTIES>
+
+        <METHODS>
+            <METHOD name="getPropertyString" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of property</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING"/>
+                <DESC>Get string property from config</DESC>
+            </METHOD>
+
+            <METHOD name="setPropertyString" access="STATIC">
+              <PARAMS>
+                <PARAM name="name" type="STRING">
+                  <DESC>Name of parameter</DESC>
+                </PARAM>
+                <PARAM name="value" type="STRING">
+                  <DESC>Name of parameter</DESC>
+                </PARAM>
+                <PARAM name="saveToFile" type="BOOLEAN">
+                  <DESC></DESC>
+                </PARAM>
+              </PARAMS>
+              <DESC></DESC>
+            </METHOD>
+          
+            <METHOD name="getPropertyInt" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of property</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="INTEGER"/>
+                <DESC>Get int property from config</DESC>
+            </METHOD>
+          
+            <METHOD name="setPropertyInt" access="STATIC">
+              <PARAMS>
+                <PARAM name="name" type="STRING">
+                  <DESC>Name of parameter</DESC>
+                </PARAM>
+                <PARAM name="value" type="INTEGER">
+                  <DESC>Name of parameter</DESC>
+                </PARAM>
+                <PARAM name="saveToFile" type="BOOLEAN">
+                  <DESC></DESC>
+                </PARAM>
+              </PARAMS>
+              <DESC></DESC>
+            </METHOD>
+          
+            <METHOD name="getPropertyBool" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of property</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+                <DESC>Get boolean property from config</DESC>
+            </METHOD>
+
+            <METHOD name="setPropertyBool" access="STATIC">
+              <PARAMS>
+                <PARAM name="name" type="STRING">
+                  <DESC>Name of parameter</DESC>
+                </PARAM>
+                <PARAM name="value" type="BOOLEAN">
+                  <DESC>Name of parameter</DESC>
+                </PARAM>
+                <PARAM name="saveToFile" type="BOOLEAN">
+                  <DESC></DESC>
+                </PARAM>
+              </PARAMS>
+              <DESC></DESC>
+            </METHOD>
+          
+            <METHOD name="isPropertyExists" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of property</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+                <DESC>Is exists property in load config file</DESC>
+            </METHOD>
+
+            <METHOD name="removeProperty" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of parameter</DESC>
+                    </PARAM>
+                    <PARAM name="saveToFile" type="BOOLEAN">
+                        <DESC></DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>Remove existing property and save to file.</DESC>
+            </METHOD>
+                                     
+            <METHOD name="loadFromFile" access="STATIC">
+                <DESC>Load config from default file.</DESC>
+            </METHOD>             
+
+            <METHOD name="getConflicts" access="STATIC">
+                <RETURN type="HASH"/>
+                <DESC>Get hash of confilict lines</DESC>
+            </METHOD>
+
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>
