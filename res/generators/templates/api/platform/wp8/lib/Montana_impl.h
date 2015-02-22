@@ -2,6 +2,7 @@
 #include "api_generator/wp8/MethodResultImpl.h"
 #include "../../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
 #include "<%= $cur_module.name %>Runtime.h"
+#include "../../wp8/rhoruntime/common/RhoConvertWP8.h"
 
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
@@ -37,7 +38,7 @@ private:
 public:
     C<%= $cur_module.name %>Impl(const rho::String& strID, rhoruntime::I<%= $cur_module.name %>Impl^ runtime): C<%= $cur_module.name %>Base(), _runtime(runtime)
     {
-        _runtime->setNativeImpl((int64)this);
+        _runtime->setNativeImpl(rho::common::convertStringToWP8(strID), (int64)this);
     }
 <%= dynamic_methods%>
 };

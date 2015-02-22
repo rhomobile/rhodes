@@ -37,7 +37,7 @@ namespace RhoAppRunner
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             DatastoreManager dsmgrObj = new DatastoreManager(1033);
             Platform WP8SDK = dsmgrObj.GetPlatforms().Single(p => p.Name == "Windows Phone 8");
@@ -48,8 +48,12 @@ namespace RhoAppRunner
             if (args.Length < 5)
             {
                 Console.WriteLine("Invalid parameters");
-                return;
+                return 1;
             }
+
+            args[2] = args[2].Replace('/', '\\');
+            args[3] = args[3].Replace('/', '\\');
+            args[5] = args[5].Replace('/', '\\');
 
             if (args[4] == "dev")
                 useEmulator = false;
@@ -74,10 +78,18 @@ namespace RhoAppRunner
 
                 if (args.Length == 6)
                 {
-                    var remoteIso = app.GetIsolatedStore();
+                    var remoteIso = app.GetIsolatedStore("Local");
                     string targetDesktopFilePath = @args[5];
-                    remoteIso.ReceiveFile("rho/rholog.txt", targetDesktopFilePath, true);
-                    return;
+                    try
+                    {
+                        remoteIso.ReceiveFile(Path.DirectorySeparatorChar + "rho" + Path.DirectorySeparatorChar + "rholog.txt", targetDesktopFilePath, true);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Can't receive rholog.txt from the " + (useEmulator ? "emulator" : "device") + ": " + e.Message);
+                        return 2;
+                    }
+                    return 0;
                 }
 
                 app.Uninstall();
@@ -112,6 +124,7 @@ namespace RhoAppRunner
             Console.WriteLine("Launching sample app on Windows Phone 8 Emulator...");
             app.Launch();
             Console.WriteLine("Launched sample app on Windows Phone 8 Emulator...");
+            return 0;
         }
     }
 }

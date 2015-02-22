@@ -62,7 +62,7 @@ module WM
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?)
     $webkit_out_of_process = $app_config['wm']['webkit_outprocess'] == '1'
-    $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("motorola").nil?)
+    $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("symbol").nil?)
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"

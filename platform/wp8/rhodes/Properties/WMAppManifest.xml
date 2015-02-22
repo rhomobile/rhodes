@@ -1,31 +1,33 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<Deployment AppPlatformVersion="8.0" xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment">
-  <DefaultLanguage code="en-US" xmlns="" />
-  <App Author="Rhomobile" Description="Rhodes" Genre="apps.normal" ProductID="{b6479381-42a8-0130-78de-3caec51bd50e}" Publisher="Symbol Technologies, Inc." PublisherID="{ebb6c370-14cc-415e-8d6a-1e948ef4d58d}" RuntimeType="Silverlight" Title="rhodes" Version="1.0.0.0" xmlns="">
-    <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
+<?xml version='1.0' encoding='UTF-8'?>
+<Deployment AppPlatformVersion='8.0' xmlns='http://schemas.microsoft.com/windowsphone/2012/deployment'>
+  <DefaultLanguage code='en-US' xmlns=''/>
+  <App Author='rhomobile' Description='RhodesTestApp' Genre='apps.normal' ProductID='{db3f2549-5ba6-4ac0-b5c7-7fcec86fffd6}' Publisher='rhomobile' PublisherID='{ebb6c370-14cc-415e-8d6a-1e948ef4d58d}' RuntimeType='Silverlight' Title='RhodesTestApp' Version='1.0.0.0' xmlns=''>
+    <IconPath IsRelative='true' IsResource='false'>Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
-      <Capability Name="ID_CAP_NETWORKING" />
-      <Capability Name="ID_CAP_MEDIALIB_AUDIO" />
-      <Capability Name="ID_CAP_SENSORS" />
-      <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
-      <Capability Name="ID_CAP_IDENTITY_DEVICE" />
-      <Capability Name="ID_CAP_CONTACTS" />
-      <Capability Name="ID_CAP_IDENTITY_USER" />
-      <Capability Name="ID_CAP_LOCATION" />
-      <Capability Name="ID_CAP_MAP" />
-      <Capability Name="ID_CAP_PROXIMITY" />
-      <Capability Name="ID_CAP_ISV_CAMERA" />
-      <Capability Name="ID_CAP_APPOINTMENTS" />
+      <Capability Name='ID_CAP_NETWORKING'/>
+      <Capability Name='ID_CAP_MEDIALIB_AUDIO'/>
+      <Capability Name='ID_CAP_SENSORS'/>
+      <Capability Name='ID_CAP_WEBBROWSERCOMPONENT'/>
+      <Capability Name='ID_CAP_IDENTITY_DEVICE'/>
+      <Capability Name='ID_CAP_CONTACTS'/>
+      <Capability Name='ID_CAP_IDENTITY_USER'/>
+      <Capability Name='ID_CAP_LOCATION'/>
+      <Capability Name='ID_CAP_MAP'/>
+      <Capability Name='ID_CAP_PROXIMITY'/>
+      <Capability Name='ID_CAP_ISV_CAMERA'/>
+      <Capability Name='ID_CAP_APPOINTMENTS'/>
+      <Capability Name='ID_CAP_MEDIALIB_PHOTO'/>
+      <Capability Name='ID_CAP_MEDIALIB_PLAYBACK'/>
     </Capabilities>
     <Tasks>
-      <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
+      <DefaultTask Name='_default' NavigationPage='MainPage.xaml'/>
     </Tasks>
     <Tokens>
-      <PrimaryToken TaskName="_default" TokenID="rhodesToken">
+      <PrimaryToken TaskName='_default' TokenID='rhodesToken'>
         <TemplateFlip>
-          <SmallImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileSmall.png</SmallImageURI>
+          <SmallImageURI IsRelative='true' IsResource='false'>Assets\Tiles\FlipCycleTileSmall.png</SmallImageURI>
           <Count>0</Count>
-          <BackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileMedium.png</BackgroundImageURI>
+          <BackgroundImageURI IsRelative='true' IsResource='false'>Assets\Tiles\FlipCycleTileMedium.png</BackgroundImageURI>
           <Title>rhodes</Title>
           <BackContent>
           </BackContent>
@@ -47,9 +49,9 @@
       </PrimaryToken>
     </Tokens>
     <ScreenResolutions>
-      <ScreenResolution Name="ID_RESOLUTION_WVGA" />
-      <ScreenResolution Name="ID_RESOLUTION_WXGA" />
-      <ScreenResolution Name="ID_RESOLUTION_HD720P" />
+      <ScreenResolution Name='ID_RESOLUTION_WVGA'/>
+      <ScreenResolution Name='ID_RESOLUTION_WXGA'/>
+      <ScreenResolution Name='ID_RESOLUTION_HD720P'/>
     </ScreenResolutions>
   </App>
 </Deployment>

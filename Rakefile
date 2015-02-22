@@ -978,8 +978,28 @@ def to_boolean(s)
 end
 
 def cloud_url_git_match(str)
-  res = /git@(git.*?\.rhohub\.com):(.*?)\/(.*?).git/i.match(str)
-  res.nil? ? {} : { :str => "#{res[1]}:#{res[2]}/#{res[3]}", :server => res[1],  :user => res[2], :app => res[3] }
+  server = nil
+  user = ''
+  app = nil
+  
+  res = /git@(git.*?\.(?:rhomobile|rhohub)\.com):(.*?)\/(.*?).git/i.match(str)
+  unless res.nil?
+  #   res = /(git@|http\:\/\/|https\:\/\/)(.*?)\/(.*?).git/i.match(str)
+  #   unless res.nil?
+  #     server = res[2]
+  #     proj_path = res[3]
+  #     purl = proj_path.split('\\').compact
+  #     if purl.length == 2
+  #       user, app = purl[0], purl[1]
+  #     else
+  #       user, app = '', proj_path
+  #     end
+  #   end
+  # else
+    server = res[1]; user = res[2]; app = res[3]
+  end
+ 
+  (server.nil? || app.nil?) ? {} : { :str => "#{server}:#{user}/#{app}", :server => server,  :user => user, :app => app }
 end
 
 def split_number_in_groups(number)
@@ -1874,6 +1894,10 @@ def build_deploy_run(target, run_target = nil)
 end
 
 
+def includes(a, b)
+  a.include?(b) || b.include?(a)
+end
+
 namespace 'cloud' do
   task :set_paths => ['config:initialize'] do
     if $app_path.empty?
@@ -1933,20 +1957,11 @@ namespace 'cloud' do
   task :find_app => [:initialize] do
 
     #check current folder
-    result = Jake.run2('git',%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
+    remote_origin_url = Jake.run2('git',%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
 
-    if result.nil? || result.empty?
+    if remote_origin_url.nil? || remote_origin_url.empty?
       BuildOutput.error("Current project folder #{$app_path} is not versioned by git", 'Cloud server build')
       raise Exception.new('Not versioned by git')
-    end
-
-    user_proj = cloud_url_git_match(result)
-
-    if !user_proj.empty?
-      puts "Cloud build server user: #{user_proj[:user]}, application: #{user_proj[:app]}"
-    else
-      BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Cloud build')
-      raise Exception.new('Application repository is not hosted on cloud build server')
     end
 
     result = Jake.run2('git',%w(log --oneline origin/master..HEAD),{:directory=>$app_path,:hide_output=>true})
@@ -1979,25 +1994,41 @@ namespace 'cloud' do
       raise Exception.new('Empty project list')
     end
 
-    $apps.each do |item|
-      item[:user_proj] = cloud_url_git_match(item['git_repo_url'])
-      item[:dist]=distance(user_proj[:str], item[:user_proj][:str])
-    end
+    matching_extenral = $apps.select{|x| x['use_external_git_url'] == true && includes(x['external_url'], remote_origin_url) }
+    
+    if (matching_extenral.empty?)
+      user_proj = cloud_url_git_match(remote_origin_url)
 
-    $cloud_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
-
-    if $cloud_app[:dist] > 0
-      if $cloud_app[:user_proj][:server] != user_proj[:server]
-        BuildOutput.error("Current user account is on #{$cloud_app[:user_proj][:server].bold} but project in working directory is on #{user_proj[:server].bold}", 'Cloud build')
-      elsif $cloud_app[:user] != user_proj[:user]
-        BuildOutput.error("Current user account is #{$cloud_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", 'Cloud build')
+      if !user_proj.empty?
+        puts "Cloud build server user: #{user_proj[:user]}, application: #{user_proj[:app]}"
       else
-        project_names = $apps.map{ |e| " - #{e[:user_proj][:app].to_s}" }.join($/)
-        BuildOutput.error("Could not find #{user_proj[:app].bold} in current user application list: \n#{project_names}", 'Cloud build')
+        BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Cloud build')
+        raise Exception.new('Application repository is not hosted on cloud build server')
       end
-      raise Exception.new('User or application list mismatch')
+
+      $apps.each do |item|
+        item[:user_proj] = cloud_url_git_match(item['git_repo_url'])
+        item[:dist]=distance(user_proj[:str], item[:user_proj][:str])
+      end
+
+      $cloud_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
+
+      if $cloud_app[:dist] > 0
+        if $cloud_app[:user_proj][:server] != user_proj[:server]
+          BuildOutput.error("Current user account is on #{$cloud_app[:user_proj][:server].bold} but project in working directory is on #{user_proj[:server].bold}", 'Cloud build')
+        elsif $cloud_app[:user] != user_proj[:user]
+          BuildOutput.error("Current user account is #{$cloud_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", 'Cloud build')
+        else
+          project_names = $apps.map{ |e| " - #{e[:user_proj][:app].to_s}" }.join($/)
+          BuildOutput.error("Could not find #{user_proj[:app].bold} in current user application list: \n#{project_names}", 'Cloud build')
+        end
+        raise Exception.new('User or application list mismatch')
+      end
+      $app_cloud_id = $cloud_app['id']
+    else
+      $cloud_app = matching_extenral.first
+      $app_cloud_id = $cloud_app['id']
     end
-    $app_cloud_id = $cloud_app['id']
   end
 
   namespace :show do
@@ -2731,6 +2762,7 @@ namespace "config" do
 
       if $current_platform == "android"
         $app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
+        $app_config['extensions'] = $app_config['extensions'] | ['emdk3-manager']
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
         $app_config['extensions'] = $app_config['extensions'] | ['signature']
         $app_config['extensions'] = $app_config['extensions'] | ['cardreader']

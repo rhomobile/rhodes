@@ -249,14 +249,14 @@ GetEnvironmentStrings(
     VOID
     );
 
-
+#if !defined(_WP8_LIB)
 _NullNull_terminated_
 LPWCH
 WINAPI
 GetEnvironmentStringsW(
     VOID
     );
-
+#endif
 
 #ifdef UNICODE
 #define GetEnvironmentStrings  GetEnvironmentStringsW
