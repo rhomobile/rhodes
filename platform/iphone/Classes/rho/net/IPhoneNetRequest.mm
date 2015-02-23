@@ -47,9 +47,9 @@ public:
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
 
-- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge;
+//- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge;
 
-- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response;
+//- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response;
 
 @property (retain)NSHTTPURLResponse* response;
 @property (retain)NSError* error;
@@ -117,6 +117,7 @@ public:
     m_pCppDelegate->onDone();
   }
 
+/*
   - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
   {
   
@@ -131,7 +132,7 @@ public:
       [challenge.sender performDefaultHandlingForAuthenticationChallenge:challenge];
     }
   }
-
+*/
 /*
   - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
   {
