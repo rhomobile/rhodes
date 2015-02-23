@@ -70,7 +70,14 @@ public class CameraSingletonObject implements ICameraSingletonObject {
     @Override
     public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
         Intent intent = null;
-        String outputFormat = propertyMap.get("outputFormat");
+        String outputFormat = null;
+	if(propertyMap.get("outputFormat") == null){
+	    propertyMap.put("outputFormat", "image");
+	    outputFormat = propertyMap.get("outputFormat");	        	
+	}
+	else{
+	     outputFormat = propertyMap.get("outputFormat");	         
+	}
         CameraFactory factory = (CameraFactory)CameraFactorySingleton.getInstance();
         factory.getRhoListener().setMethodResult(result);
         factory.getRhoListener().setActualPropertyMap(propertyMap);
