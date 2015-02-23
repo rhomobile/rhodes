@@ -53,7 +53,8 @@ namespace RhoAppRunner
 
             args[2] = args[2].Replace('/', '\\');
             args[3] = args[3].Replace('/', '\\');
-            args[5] = args[5].Replace('/', '\\');
+            if (args.Length > 5)
+                args[5] = args[5].Replace('/', '\\');
 
             if (args[4] == "dev")
                 useEmulator = false;
