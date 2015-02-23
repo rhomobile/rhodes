@@ -207,7 +207,7 @@ Rho::AudioCapture.start({},mycallback);
 #Starting Audio Capture with settings. Callback is mandatory.
 #On successful recording the hash property  for fileName' in callback will return the complete file path with the filename.
 #In Windows, for the below settings, it will return "file://\AudioCapture.wav".
-Rho::AudioCapture.start({'fileName':"AudioCapture",'maxDuration':'15000'},mycallback);
+Rho::AudioCapture.start({'fileName'=>"AudioCapture",'maxDuration'=>'15000'},mycallback);
 
 #Stopping Audio Capture
 Rho::AudioCapture.stop();
