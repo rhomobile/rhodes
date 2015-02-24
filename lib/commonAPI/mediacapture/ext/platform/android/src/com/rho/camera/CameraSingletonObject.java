@@ -143,7 +143,15 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 	public void copyImageToDeviceGallery(String pathToImage,
 			IMethodResult result) {
 		// TODO Auto-generated method stub
-		
+		ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
+		String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
+		String strUri = null;
+		try {
+			strUri = MediaStore.Images.Media.insertImage(contentResolver, pathToImage, imageName, "Saving Image to Device Gallery through Camera");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 
 }
