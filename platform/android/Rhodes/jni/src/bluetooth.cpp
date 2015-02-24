@@ -277,13 +277,16 @@ RHO_GLOBAL void rho_bluetooth_session_write_data(const char* connected_device_na
     if (!mid) return;
     jhstring objStr1 = rho_cast<jstring>(env, connected_device_name);
 
-    jholder<jbyteArray> buf_j = jholder<jbyteArray>(env->NewByteArray(size));
-    jbyte* buf_p = env->GetByteArrayElements(buf_j.get(), 0);
+    jbyteArray buf_j = env->NewByteArray(size);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
 
     size = rho_ruby_unpack_byte_array(data, (unsigned char*)buf_p, size);
 
-    env->CallStaticVoidMethod(cls, mid, objStr1.get(), buf_j.get(), size);
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0);
 
-    env->ReleaseByteArrayElements(buf_j.get(), buf_p, 0); 
+    env->CallStaticVoidMethod(cls, mid, objStr1.get(), buf_j, size);
+
+    env->DeleteLocalRef(buf_j);
+
 }
 
