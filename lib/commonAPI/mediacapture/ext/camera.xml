@@ -251,7 +251,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </ALIASES>
 
             <METHOD name="enumerate" access="STATIC" hasCallback="optional">
-			    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+			    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                 <DESC>Returns the cameras present on your device, allowing you to access your device's front or back camera.</DESC>
                 <RETURN type="ARRAY">
                     <DESC>Array of objects.</DESC>

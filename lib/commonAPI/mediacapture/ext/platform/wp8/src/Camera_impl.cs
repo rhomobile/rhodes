@@ -762,29 +762,15 @@ namespace rho
                 try
                 {
                     Store_TakePicture_Arguments = propertyMap;
-
                     SetCameraConfiguration(propertyMap);
                     Initialize_TakePictureCallBack();
-                    Store_PreviousGridElements = LayoutGrid;
-                    Rho_StillCamera = new Microsoft.Devices.PhotoCamera((CameraType)Rho_Camera_selected);
-                    Rho_MainPage.BackKeyPress += Rho_MainPage_BackKeyPress;
+                    Store_PreviousGridElements = LayoutGrid;       
+                    Rho_Create_Camera_Layout();                                
 
-
-                    rootFrame = Rho_MainPage.RootVisual() as PhoneApplicationFrame;
-                    rootFrame.Unobscured += rootFrame_Unobscured;
-
-                    Rho_Create_Camera_Layout();
-                    // Rho_MainPage.SupportedOrientations = SupportedPageOrientation.Landscape;
-                    //Rho_MainPage.Orientation = PageOrientation.LandscapeLeft;
-
-                    Rho_MainPage.OrientationChanged += Rho_MainPage_OrientationChanged;
-                    Rho_StillCamera.Initialized += new EventHandler<Microsoft.Devices.CameraOperationCompletedEventArgs>(cam_Initialized);
-
-                    // Event is fired when the capture sequence is complete and an image is available.
-                    Rho_StillCamera.CaptureImageAvailable += new EventHandler<Microsoft.Devices.ContentReadyEventArgs>(cam_CaptureImageAvailable);
+                    InitializeEventsRelatedtoCamera();
 
                     m_StoreTakePictureResult = oResult;
-                    Rho_PhotoCameraBrush.SetSource(Rho_StillCamera);
+                  
 
                 }
                 catch (Exception ex)
@@ -817,6 +803,23 @@ namespace rho
                 UninitializeRegisteredEvents();
                 takePicture(Store_TakePicture_Arguments, m_StoreTakePictureResult);
             }
+            /// <summary>
+            /// Initialize Camera Related Events
+            /// </summary>
+            private void InitializeEventsRelatedtoCamera()
+            {
+                rootFrame.Unobscured += rootFrame_Unobscured;
+
+                //On Clicking the Camera Canvas Lets consider it as a camera click.
+                Rho_PhotoCameraCanvas.Tap += Rho_PhotoCameraCanvas_Tap;
+                CameraButtons.ShutterKeyPressed += CameraButtons_ShutterKeyPressed;
+                Rho_MainPage.OrientationChanged += Rho_MainPage_OrientationChanged;
+                Rho_StillCamera.Initialized += new EventHandler<Microsoft.Devices.CameraOperationCompletedEventArgs>(cam_Initialized);
+
+                // Event is fired when the capture sequence is complete and an image is available.
+                Rho_StillCamera.CaptureImageAvailable += new EventHandler<Microsoft.Devices.ContentReadyEventArgs>(cam_CaptureImageAvailable);
+                Rho_MainPage.BackKeyPress += Rho_MainPage_BackKeyPress;
+            }
 
             /// <summary>
             /// Uninitialize all events which are registered in TakePicture
@@ -848,11 +851,13 @@ namespace rho
                     LayoutGrid = Store_PreviousGridElements;
 
                     Rho_PhotoCameraCanvas = null;
-                    Rho_PhotoCameraBrush = null;
+                   Rho_PhotoCameraBrush = null;
+                   GC.Collect();
+
 
                     Rho_MainPage.SupportedOrientations = SupportedPageOrientation.PortraitOrLandscape;
                     Rho_MainPage.Orientation = PageOrientation.Portrait;
-
+                    
 
                 }
                 catch (AccessViolationException et)
@@ -926,9 +931,15 @@ namespace rho
                         // Write message.
                         txtDebug.Text = "Camera initialized.";
                         Rho_StillCamera.FlashMode = Rho_FlashMode;
-                        KeyValuePair<double, Size> CameraResolution = Rho_Supported_Resolutions.Aggregate((x, y) => Math.Abs(x.Value.Height - Rho_Paramenters["desired_height"]) < Math.Abs(y.Value.Height - Rho_Paramenters["desired_height"]) ? x : y);
-
-                        Rho_StillCamera.Resolution = CameraResolution.Value;
+                        try
+                        {
+                            KeyValuePair<double, Size> CameraResolution = Rho_Supported_Resolutions.Aggregate((x, y) => Math.Abs(x.Value.Height - Rho_Paramenters["desired_height"]) < Math.Abs(y.Value.Height - Rho_Paramenters["desired_height"]) ? x : y);
+                            Rho_StillCamera.Resolution = CameraResolution.Value;
+                        }
+                        catch (Exception ex)
+                        {
+                            CRhoRuntime.getInstance().logEvent("Camera class-->cam_Initialized-->Exception"+ex.ToString());
+                        }                     
 
 
 
@@ -1167,49 +1178,45 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class-->Rho_Create_Camera_Layout");
                 try
                 {
+                    rootFrame = Rho_MainPage.RootVisual() as PhoneApplicationFrame;  
 
-                    //Create a Video Brush for painting in Canvas.    
-
+                      //Create a desired Camera Object.
+                    Rho_StillCamera = new Microsoft.Devices.PhotoCamera((CameraType)Rho_Camera_selected);
+                    //Create a Video Brush for painting in Canvas.  
                     Rho_PhotoCameraBrush = new VideoBrush();
+                    //Create a Camera Rotaion Object.
                     Rho_Camera_Rotation = new CompositeTransform();
-
+                    //Initialize CenterX and CenterY for Rho Camera Roation
                     Rho_Camera_Rotation.CenterX = 0.5;
                     Rho_Camera_Rotation.CenterY = 0.5;
-
+                    //Add the Screen rotation to Composite Transformation object as this object takes care of rotating the camera.
                     Rho_Camera_Rotation.Rotation = Rho_StillCamera.Orientation;
 
-
                     Rho_PhotoCameraBrush.Stretch = Stretch.Fill;
-
+                    //Set Composite transform object to PhotoBrush.
                     Rho_PhotoCameraBrush.RelativeTransform = Rho_Camera_Rotation;
-
                     // Create a Canvas for painting the image.
                     Rho_PhotoCameraCanvas = new Canvas();
                     //Create Canvas for the whole screen.
 
                     ColumnDefinition Rho_Camera_Columncollection = new ColumnDefinition();
 
-
+                    //check if the set orienation is required, if it is front camera then we may have to do some extra calculation. else it appears upside down.
                     SetCameraRotation(Rho_MainPage.Orientation);
+                    //Set Desired camera as a child for CAmera Brush.
+                    Rho_PhotoCameraBrush.SetSource(Rho_StillCamera);
                     //Add Camera Brush as background to the Canvas.            
                     Rho_PhotoCameraCanvas.Background = Rho_PhotoCameraBrush;
-
-                    //On Clicking the Camera Canvas Lets consider it as a camera click.
-                    Rho_PhotoCameraCanvas.Tap += Rho_PhotoCameraCanvas_Tap;
+                                       
 
                     //Set the Width of the Parent Frame to the Complete Device.
 
 
                     GridLength Rho_Camera_Gridlength = new GridLength(Application.Current.Host.Content.ActualWidth);
                     Rho_Camera_Columncollection.Width = Rho_Camera_Gridlength;
-
-
-                    // CRhoRuntime obj = CRhoRuntime.getInstance();
-
-
-                    // LayoutGrid.ColumnDefinitions.Add(Rho_Camera_Columncollection);
-                    LayoutGrid.Children.Add(Rho_PhotoCameraCanvas);
-                    CameraButtons.ShutterKeyPressed += CameraButtons_ShutterKeyPressed;
+                    //Add canvas to the Main screen object.
+                   LayoutGrid.Children.Add(Rho_PhotoCameraCanvas);                   
+                   
 
 
                 }
