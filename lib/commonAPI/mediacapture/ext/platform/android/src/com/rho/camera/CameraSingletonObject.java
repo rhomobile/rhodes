@@ -16,7 +16,7 @@ import com.rhomobile.rhodes.ui.FileList;
 
 public class CameraSingletonObject implements ICameraSingletonObject {
     private static final String TAG = CameraSingletonObject.class.getSimpleName();
-
+    public static boolean deprecated_choose_pic;
     private int mId;
     
     static int getCameraIndex(String id) {
@@ -69,6 +69,12 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     @Override
     public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
+    	if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){   
+    		propertyMap.put("deprecated", "false");
+    		deprecated_choose_pic = false;    	
+    	}
+    	else
+    		deprecated_choose_pic = true;
         Intent intent = null;
         String outputFormat = null;
 	if(propertyMap.get("outputFormat") == null){
