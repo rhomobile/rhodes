@@ -161,7 +161,7 @@ public :
 
     static void deinitConnection();
   
-    virtual boolean getFollowRedirects() { return false };
+    virtual boolean getFollowRedirects() { return false; }
     virtual void setFollowRedirects(boolean follow) {}
 
 
