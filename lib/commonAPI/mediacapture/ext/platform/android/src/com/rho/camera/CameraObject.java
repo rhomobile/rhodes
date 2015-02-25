@@ -31,7 +31,7 @@ import com.rhomobile.rhodes.util.ContextFactory;
 
 public class CameraObject extends CameraBase implements ICameraObject {
     private static final String TAG = CameraObject.class.getSimpleName();
-    
+    public static boolean deprecated_take_pic;
     private Map<String, String> mActualPropertyMap;
     void setActualPropertyMap(Map<String, String> props) { mActualPropertyMap = props; }
     Map<String, String> getActualPropertyMap() { return mActualPropertyMap; }
@@ -336,6 +336,12 @@ public class CameraObject extends CameraBase implements ICameraObject {
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
         Logger.T(TAG, "takePicture");
+        if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){   
+    		propertyMap.put("deprecated", "false");
+    		deprecated_take_pic = false;    	
+    	}
+    	else
+    		deprecated_take_pic = true;
         try {
             Map<String, String> actualPropertyMap = new HashMap<String, String>();
             actualPropertyMap.putAll(getPropertiesMap());
