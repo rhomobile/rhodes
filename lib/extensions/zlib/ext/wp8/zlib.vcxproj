@@ -45,10 +45,12 @@
     <_ProjectFileVersion>11.0.51106.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>$(TEMP_FILES_DIR)\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>$(TEMP_FILES_DIR)\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\$(Configuration)\</IntDir>
   </PropertyGroup>
