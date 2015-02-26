@@ -402,7 +402,7 @@
         }
         else {
             [dict setObject:@"png" forKey:@"image_format"];
-            [dict setObject:@"jpg" forKey:@"imageFormat"];
+            [dict setObject:@"png" forKey:@"imageFormat"];
         }
         
         [ self.settings.callback setResult:dict];
