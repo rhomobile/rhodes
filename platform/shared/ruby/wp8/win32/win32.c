@@ -3973,7 +3973,7 @@ rb_w32_getenv(const char *name)
 
     if (len == 0) return NULL;
     if (envarea) FreeEnvironmentStrings(envarea);
-    envarea = GetEnvironmentStrings();
+	envarea = NULL; //GetEnvironmentStrings();
     if (!envarea) {
 	map_errno(GetLastError());
 	return NULL;
@@ -4742,7 +4742,7 @@ rb_w32_get_environ(void)
      * values.
      * (U.N. 2001-11-15)
      */
-    envtop = GetEnvironmentStrings();
+	envtop = NULL; // GetEnvironmentStrings();
     for (env = envtop, num = 0; *env; env += strlen(env) + 1)
 	if (*env != '=') num++;
 

@@ -36,7 +36,7 @@ MoveFileW(
 }
 
 /* --------------- EnvironmentVariable functions. ----------------- */
-LPCH WINAPI GetEnvironmentStringsW(VOID)
+_NullNull_terminated_ LPWCH WINAPI GetEnvironmentStringsW(VOID)
 {
 	return NULL;
 }
