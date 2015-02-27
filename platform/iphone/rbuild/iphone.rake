@@ -2025,7 +2025,8 @@ namespace "run" do
           kill_iphone_simulator
 
           mkdir_p $tmpdir
-          log_name  =   File.join($tmpdir, 'logout')
+          #log_name  =   File.join($tmpdir, 'logout')
+          log_name = File.join($app_path, 'rholog.txt')
           File.delete(log_name) if File.exist?(log_name)
 
           $iphone_end_spec = false
@@ -2181,7 +2182,8 @@ namespace "run" do
       #
       #
       # rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
-      # puts "log_file=" + rholog
+      log_name  =   File.join($app_path, 'rholog.txt')
+      puts "log_file=" + log_name
     end
 
     #run:iphone:simulator
