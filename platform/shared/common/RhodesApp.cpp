@@ -243,8 +243,6 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     if (!cmd)
         return;
 
-    synchronized(getCommandLock());
-
     LOG(INFO) + toString(cmd->type) + " is received ++++++++++++++++++++++++++++";
 
     if (cmd->type == ui_created)
@@ -276,37 +274,48 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
         m_expected = local_server_started;
     }
+  
+    Vector<int> commandsLocalCopy;
+  
+    { //Command queue lock scope
+      synchronized(getCommandLock());
 
-    if (cmd->type > m_expected)
-    {
-        if ( hasCommand(cmd->type) )
-        {
-            LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
-            return;
-        }else
-        {
-            // Don't do that now
-            LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
 
-            if (cmd->type == app_deactivated && m_expected != local_server_started)
-            {
-                m_commands.clear();
-                m_commands.push_back(cmd->type);
-            }
-            else
-            {
-                m_commands.push_back(cmd->type);
-                std::sort(m_commands.begin(), m_commands.end());
-                return;
-            }
-        }
+      if (cmd->type > m_expected)
+      {
+          if ( hasCommand(cmd->type) )
+          {
+              LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
+              return;
+          }else
+          {
+              // Don't do that now
+              LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
+
+              if (cmd->type == app_deactivated && m_expected != local_server_started)
+              {
+                  m_commands.clear();
+                  m_commands.push_back(cmd->type);
+              }
+              else
+              {
+                  m_commands.push_back(cmd->type);
+                  std::sort(m_commands.begin(), m_commands.end());
+                  return;
+              }
+          }
+      }
+      else
+      {
+          m_commands.insert(m_commands.begin(), cmd->type);
+      }
+      
+      m_commands.swap( commandsLocalCopy );
+      
+    //Command queue lock scope
     }
-    else
-    {
-        m_commands.insert(m_commands.begin(), cmd->type);
-    }
 
-    for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
+    for (Vector<int>::const_iterator it = commandsLocalCopy.begin(), lim = commandsLocalCopy.end(); it != lim; ++it)
     {
         int type = *it;
         LOG(INFO) + "process command: " + toString(type) + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
@@ -356,7 +365,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         }
     }
-    m_commands.clear();
+    //m_commands.clear();
 }
 
 void CAppCallbacksQueue::processUiCreated()
