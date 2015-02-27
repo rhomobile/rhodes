@@ -78,6 +78,8 @@ namespace rho
             IReadOnlyDictionary<string, string> Store_TakePicture_Arguments;
             CompositeTransform Rho_Camera_Rotation;
             Dictionary<PageOrientation, Dictionary<string, double>> CameraRotation;
+            bool ApplicationBarPresentStatus=true;
+            Dictionary<bool, bool> ApplciationBarPresentStatus;
 
             string Rho_FilePath = "C:\\Data\\Users\\Public\\Pictures\\Camera Roll\\";
             #endregion
@@ -112,6 +114,9 @@ namespace rho
                 try
                 {
                     // initialize class instance in C# here
+                    ApplciationBarPresentStatus = new Dictionary<bool, bool>();
+                    ApplciationBarPresentStatus.Add(true, true);
+                    ApplciationBarPresentStatus.Add(false, false);
 
                     try
                     {
@@ -761,6 +766,18 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class--> takePicture");
                 try
                 {
+                    //Rho_MainPage.toolbarHide();
+                    
+                    try
+                    {
+                        ApplicationBarPresentStatus = ApplciationBarPresentStatus[Rho_MainPage.ApplicationBarStatus()];
+                    }
+                    catch (Exception ex)
+                    {
+                        ApplicationBarPresentStatus = true;
+                        
+                    }
+                    Rho_MainPage.ApplicationBarEnable(false);
                     Store_TakePicture_Arguments = propertyMap;
                     SetCameraConfiguration(propertyMap);
                     Initialize_TakePictureCallBack();
@@ -779,6 +796,7 @@ namespace rho
                     m_Take_Picture_Output["status"] = "error";
                     m_Take_Picture_Output["message"] = ex.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                     oResult.set(m_Take_Picture_Output);
                 }
                 CRhoRuntime.getInstance().logEvent("Camera class--> End takePicture");
@@ -845,8 +863,8 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class--> Return_To_Previous_Screen");
                 try
                 {
+                    Rho_MainPage.ApplicationBarEnable(ApplicationBarPresentStatus);
                     UninitializeRegisteredEvents();
-
                     LayoutGrid.Children.Remove(Rho_PhotoCameraCanvas);
                     LayoutGrid = Store_PreviousGridElements;
 
@@ -901,6 +919,7 @@ namespace rho
                     Return_To_Previous_Screen();
                     e.Cancel = true;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                 }
                 catch (Exception ex)
                 {
@@ -908,6 +927,7 @@ namespace rho
                     m_Take_Picture_Output["status"] = "error";
                     m_Take_Picture_Output["message"] = ex.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                 }
                 m_StoreTakePictureResult.set(m_Take_Picture_Output);
             }
@@ -951,6 +971,7 @@ namespace rho
                     m_Take_Picture_Output["status"] = "error";
                     m_Take_Picture_Output["message"] = e.Exception.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                     m_StoreTakePictureResult.set(m_Take_Picture_Output);
                 }
             }
@@ -1058,6 +1079,7 @@ namespace rho
                         m_Take_Picture_Output["status"] = "error";
                         m_Take_Picture_Output["message"] = ex.Message;
                         m_Take_Picture_Output["image_format"] = string.Empty;
+                        m_Take_Picture_Output["imageFormat"] = string.Empty;
                     }
                     finally
                     {
