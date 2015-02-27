@@ -2156,32 +2156,32 @@ namespace "run" do
     end
 
     task :get_log => ["config:iphone"] do
-      puts $simapppath
-       $sdkver = $emulator_version.to_s unless $emulator_version.nil?
-
-       simapp = File.join($simdir, $sdkver, "Applications")
-
-       Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
-           need_rm = true if File.directory? simapppath
-           if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
-             name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
-             puts "found app name: #{name}"
-             guid = File.basename(simapppath)
-             puts "found guid: #{guid}"
-             if name == $app_config['name']
-                 $guid = guid
-                 need_rm = false
-             end
-         end
-         rm_rf simapppath if need_rm
-         rm_rf simapppath + ".sb" if need_rm
-       end
-
-       simapp = File.join($simdir, $emulator_version, "Applications")
-
-
-       rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
-       puts "log_file=" + rholog
+      #puts $simapppath
+      # $sdkver = $emulator_version.to_s unless $emulator_version.nil?
+      #
+      # simapp = File.join($simdir, $sdkver, "Applications")
+      #
+      # Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
+      #     need_rm = true if File.directory? simapppath
+      #     if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
+      #       name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
+      #       puts "found app name: #{name}"
+      #       guid = File.basename(simapppath)
+      #       puts "found guid: #{guid}"
+      #       if name == $app_config['name']
+      #           $guid = guid
+      #           need_rm = false
+      #       end
+      #   end
+      #   rm_rf simapppath if need_rm
+      #   rm_rf simapppath + ".sb" if need_rm
+      # end
+      #
+      # simapp = File.join($simdir, $emulator_version, "Applications")
+      #
+      #
+      # rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
+      # puts "log_file=" + rholog
     end
 
     #run:iphone:simulator
@@ -2280,7 +2280,7 @@ namespace "run" do
      # Example: iPhone SDK 4.0.1. In this case sdk is still iphonesimulator4.0 but version of simulator is 4.0.1
      $sdkver = $emulator_version.to_s unless $emulator_version.nil?
 
-
+=begin
 
      #if use_old_scheme
 
@@ -2401,6 +2401,10 @@ namespace "run" do
         f << "(version 1)\n(debug deny)\n(allow default)\n"
         f.close
      #end
+
+=end
+
+
     print_timestamp('run:buildsim FINISH')
   end
 
@@ -2533,8 +2537,11 @@ namespace "clean" do
 
       end
 
+
+=begin
       # check hash for remove only current application
       found = true
+
 
       while found do
         found = false
@@ -2566,6 +2573,7 @@ namespace "clean" do
          end
         end
       end
+=end
     end
 
 #    desc "Clean rhobundle"
@@ -2574,7 +2582,6 @@ namespace "clean" do
         rm_rf $bindir
       end
     end
-
 
 
     def run_clean_for_extension(extpath, xcodeproject, xcodetarget)
