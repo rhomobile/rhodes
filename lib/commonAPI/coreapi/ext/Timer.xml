@@ -9,15 +9,13 @@
         </PROPERTIES>
 
         <METHODS>
-            <METHOD name="new" access="STATIC" >
+            <METHOD name="new" access="STATIC">
                 <PARAMS>
                     <PARAM name="interval" type="INTEGER">
                         <DESC>timer interval in ms</DESC>
-                    </PARAM>
-                    <PARAM name="callbackData" type="STRING">
-                        <DESC>timer interval in ms</DESC>
-                    </PARAM>
+                    </PARAM>                               
                 </PARAMS>
+                <RETURN type="SELF_INSTANCE" />
                 <DESC>Create a timers objects.</DESC>
             </METHOD>
 
