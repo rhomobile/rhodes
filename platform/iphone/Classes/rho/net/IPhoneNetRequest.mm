@@ -49,7 +49,7 @@ public:
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection;
 
-//- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge;
+- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge;
 
 //- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response;
 
@@ -106,22 +106,20 @@ public:
     m_pCppDelegate->onDone();
   }
 
-/*
   - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
   {
-  
-    NSLog(@">>>>>>>>> %@ willSendRequestForAuthenticationChallenge: %@", self, challenge );
-    
     if ( (!m_pCppDelegate->verifySSLPeers()) && [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust] )
     {
-      [challenge.sender cancelAuthenticationChallenge:challenge];
+      SecTrustRef trust = challenge.protectionSpace.serverTrust;
+      NSURLCredential *cred = [NSURLCredential credentialForTrust:trust];
+      [challenge.sender useCredential:cred forAuthenticationChallenge:challenge];
     }
     else
     {
       [challenge.sender performDefaultHandlingForAuthenticationChallenge:challenge];
     }
   }
-*/
+
 /*
   - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
   {
@@ -394,6 +392,8 @@ public:
       return false;
     }
     
+    [out open];
+    
     size_t len = 0;
 
     //write all items
@@ -412,7 +412,8 @@ public:
         common::InputStream* bodyStream = oFile.getInputStream();
         
         len = oItem.m_strDataPrefix.length();
-        if ( [out write:(const uint8_t*)oItem.m_strDataPrefix.c_str() maxLength:len] != len )
+        int written = (int)[out write:(const uint8_t*)oItem.m_strDataPrefix.c_str() maxLength:len];
+        if ( written != len )
         {
           [out close];
           return false;
@@ -581,7 +582,7 @@ public:
       m_multipartTempPath = nil;
     }
     
-    INetResponse* ret = 0;
+    CIPhoneNetResponseImpl* ret = 0;
     
     if ( err != nil )
     {
