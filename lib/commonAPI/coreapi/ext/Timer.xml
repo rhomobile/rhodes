@@ -1,0 +1,50 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Timer" parent="Rho" productException="eb">
+        <HELP_OVERVIEW>Rho.Timer module</HELP_OVERVIEW>
+        <MORE_HELP>Implementation of the timer api.</MORE_HELP>
+
+        <PROPERTIES access="STATIC" generateAccessors="true">                           
+        </PROPERTIES>
+
+        <METHODS>
+            <METHOD name="new" access="STATIC" >
+                <PARAMS>
+                    <PARAM name="interval" type="INTEGER">
+                        <DESC>timer interval in ms</DESC>
+                    </PARAM>
+                    <PARAM name="callbackData" type="STRING">
+                        <DESC>timer interval in ms</DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>Create a timers objects.</DESC>
+            </METHOD>
+
+            <METHOD name="start" access="INSTANCE" hasCallback="mandatory">
+              <CALLBACK type="STRING">
+              </CALLBACK>
+              <DESC>Start timer with preset interval. </DESC>
+            </METHOD>
+
+            <METHOD name="stop" access="INSTANCE">
+              <DESC></DESC>
+            </METHOD>
+
+            <METHOD name="isAlive" access="INSTANCE">
+              <DESC></DESC>
+              <RETURN type="BOOLEAN">
+                <DESC></DESC>
+              </RETURN>
+            </METHOD>
+
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>
