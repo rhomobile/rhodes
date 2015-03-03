@@ -286,6 +286,12 @@ public:
   {
     [m_pPerformCond init];
     [m_pConnDelegate init:this];
+    
+    m_multipartBoundary = [[[NSUUID UUID] UUIDString] UTF8String];
+    
+    m_multipartPostfix = "\r\n";
+    m_multipartPostfix += m_multipartBoundary;
+    m_multipartPostfix += "--\r\n";
   }
   
   virtual ~CIphoneNetRequestHolder()
@@ -364,7 +370,7 @@ public:
 
     processMultipartItems(arItems);
     
-    [m_pReq setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%s",m_sMultipartBoundary] forHTTPHeaderField:@"content-type"];
+    [m_pReq setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%s",m_multipartBoundary.c_str()] forHTTPHeaderField:@"content-type"];
 
     
     m_multipartTempPath = getMultipartTempFile();
@@ -379,11 +385,16 @@ public:
     }
     
     [m_pReq setHTTPBodyStream:[NSInputStream inputStreamWithFileAtPath:m_multipartTempPath]];
+    
+    NSDictionary *fileDictionary = [[NSFileManager defaultManager] fileAttributesAtPath:m_multipartTempPath traverseLink:YES];
+    unsigned long fileSize = [fileDictionary fileSize];
+    
+    [m_pReq setValue:[NSString stringWithFormat:@"%lu",fileSize] forHTTPHeaderField:@"content-length"];
  
     return true;
   }
   
-  static bool writeMultipartDataToFile(VectorPtr<CMultipartItem*>& arItems, NSString* path)
+  bool writeMultipartDataToFile(VectorPtr<CMultipartItem*>& arItems, NSString* path)
   {
     NSOutputStream* out = [NSOutputStream outputStreamToFileAtPath:path append:NO];
     
@@ -458,8 +469,8 @@ public:
       }
     }
     
-    len = strlen(m_sMultipartPostfix);
-    if ( [out write:(const uint8_t*)m_sMultipartPostfix maxLength:len] != len )
+    len = m_multipartPostfix.length();
+    if ( [out write:(const uint8_t*)m_multipartPostfix.c_str() maxLength:len] != len )
     {
       [out close];
       return false;
@@ -490,15 +501,21 @@ public:
       }
       
       oItem.m_strDataPrefix = i > 0 ? "\r\n" : "";
-      oItem.m_strDataPrefix += m_sMultipartBoundary;
+      oItem.m_strDataPrefix += "--";
+      oItem.m_strDataPrefix += m_multipartBoundary;
       oItem.m_strDataPrefix += "\r\n";
       oItem.m_strDataPrefix += "Content-Disposition: form-data; name=\"";
       oItem.m_strDataPrefix += oItem.m_strName + "\"";
       if (oItem.m_strFileName.length()>0)
-      oItem.m_strDataPrefix += "; filename=\"" + oItem.m_strFileName + "\"";
+      {
+        oItem.m_strDataPrefix += "; filename=\"" + oItem.m_strFileName + "\"";
+      }
+      
       oItem.m_strDataPrefix += "\r\n";
       if ( oItem.m_strContentType.length() > 0 )
-      oItem.m_strDataPrefix += "Content-Type: " + oItem.m_strContentType + "\r\n";
+      {
+        oItem.m_strDataPrefix += "Content-Type: " + oItem.m_strContentType + "\r\n";
+      }
       
       int nContentSize = 0;
       if ( oItem.m_strFilePath.length() > 0 )
@@ -512,8 +529,10 @@ public:
         nContentSize = (int)oItem.m_strBody.length();
       }
       
-      if ( oItem.m_strContentType.length() > 0 )
-      oItem.m_strDataPrefix += "Content-Length: " + common::convertToStringA(nContentSize) + "\r\n";
+      //if ( oItem.m_strContentType.length() > 0 )
+      {
+        oItem.m_strDataPrefix += "Content-Length: " + common::convertToStringA(nContentSize) + "\r\n";
+      }
       
       oItem.m_strDataPrefix += "\r\n";
       
@@ -521,7 +540,7 @@ public:
       
     }
     
-    nSize += strlen(m_sMultipartPostfix);
+    nSize += m_multipartPostfix.length();
     
     return nSize;
   }
@@ -739,13 +758,9 @@ private:
     common::CRhoFile* m_pFile;
     NSString* m_multipartTempPath;
   
-    static const char* m_sMultipartBoundary;
-    static const char* m_sMultipartPostfix;
+    String m_multipartBoundary;
+    String m_multipartPostfix;
 };
-
-const char* CIphoneNetRequestHolder::m_sMultipartBoundary = "----------A6174410D6AD474183FDE48F5662FCC5";
-const char* CIphoneNetRequestHolder::m_sMultipartPostfix = "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
-
 
 CIPhoneNetRequest::CIPhoneNetRequest() :
    m_pCallback(0), m_pHolder( new CIphoneNetRequestHolder() )
