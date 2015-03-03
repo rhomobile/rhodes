@@ -56,7 +56,7 @@
             <METHOD name="isAlive" access="INSTANCE">
               <DESC></DESC>
               <RETURN type="BOOLEAN">
-                <DESC>Return alive state of a timer. If callback doesnt fired return true, otherwise return жfalse</DESC>
+                <DESC>Return alive state of a timer. If callback doesnt fired return true, otherwise return false</DESC>
               </RETURN>
             </METHOD>
 
