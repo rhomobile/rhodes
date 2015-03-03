@@ -5,21 +5,26 @@
         <HELP_OVERVIEW>Rho.Timer module</HELP_OVERVIEW>
         <MORE_HELP>Implementation of the timer api.</MORE_HELP>
 
+
+        <TEMPLATES>
+            <SINGLETON_INSTANCES/>
+        </TEMPLATES>
+
         <PROPERTIES access="STATIC" generateAccessors="true">                           
         </PROPERTIES>
-
+        
         <METHODS>
-            <METHOD name="new" access="STATIC">
-                <PARAMS>
-                    <PARAM name="interval" type="INTEGER">
-                        <DESC>timer interval in ms</DESC>
-                    </PARAM>                               
-                </PARAMS>
+            <METHOD name="create" access="STATIC">
                 <RETURN type="SELF_INSTANCE" />
                 <DESC>Create a timers objects.</DESC>
             </METHOD>
 
             <METHOD name="start" access="INSTANCE" hasCallback="mandatory">
+              <PARAMS>
+              	<PARAM name="interval" type="INTEGER">
+                  <DESC>timer interval in ms</DESC>
+                </PARAM>                               
+              </PARAMS>
               <CALLBACK type="STRING">
               </CALLBACK>
               <DESC>Start timer with preset interval. </DESC>
