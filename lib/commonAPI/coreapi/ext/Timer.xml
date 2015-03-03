@@ -3,9 +3,28 @@
 <API>
     <MODULE name="Timer" parent="Rho" productException="eb">
         <HELP_OVERVIEW>Rho.Timer module</HELP_OVERVIEW>
-        <MORE_HELP>Implementation of the timer api.</MORE_HELP>
+        <MORE_HELP>Implementation of the timer api.
+           Create a timer and catch callback after interval:
+           
+            var timerCallback = function() {
+                alert("callback called");
+            }                                              
 
+            var timer = Rho.Timer.create();
+            timer.start(5000, timerCallback);
+            
+            Create a timer, start and stop:
+            var timerCallback = function() {
+                alert("callback called");
+            }                                              
 
+            var timer = Rho.Timer.create();
+            timer.start(5000, timerCallback);
+            setTimeout(function() {
+                    timer.stop();
+                },3000);
+        </MORE_HELP>
+        
         <TEMPLATES>
             <SINGLETON_INSTANCES/>
         </TEMPLATES>
@@ -27,17 +46,17 @@
               </PARAMS>
               <CALLBACK type="STRING">
               </CALLBACK>
-              <DESC>Start timer with preset interval. </DESC>
+              <DESC>Start timer with preset interval. Callback fired only one time.</DESC>
             </METHOD>
 
             <METHOD name="stop" access="INSTANCE">
-              <DESC></DESC>
+              <DESC>Stop started timer</DESC>
             </METHOD>
 
             <METHOD name="isAlive" access="INSTANCE">
               <DESC></DESC>
               <RETURN type="BOOLEAN">
-                <DESC></DESC>
+                <DESC>Return alive state of a timer. If callback doesnt fired return true, otherwise return жfalse</DESC>
               </RETURN>
             </METHOD>
 
