@@ -80,7 +80,7 @@ namespace rho
             Dictionary<PageOrientation, Dictionary<string, double>> CameraRotation;
             bool ApplicationBarPresentStatus=true;
             Dictionary<bool, bool> ApplciationBarPresentStatus;
-
+            BitmapImage bitmap = new BitmapImage();
             string Rho_FilePath = "C:\\Data\\Users\\Public\\Pictures\\Camera Roll\\";
             #endregion
 
@@ -430,24 +430,18 @@ namespace rho
             public override void setOutputFormat(string outputFormat, IMethodResult oResult)
             {
                 CRhoRuntime.getInstance().logEvent("Camera class->setOutputFormat type");
-                Rho_OutPutFormat.Clear();
+
                 try
                 {
-                    string storevalue = Rho_OutPutFormat[outputFormat.ToLower().Trim()];
+                    string DataURI = Rho_OutputType[outputFormat.ToLower().Trim()];
+                    Rho_OutPutFormat.Clear();
                     Rho_OutPutFormat.Add("outputformat", outputFormat.ToLower().Trim());
-
                 }
-
                 catch (Exception ex)
                 {
+
                     CRhoRuntime.getInstance().logEvent("Camera class->invalid setOutputFormat " + outputFormat + " Exception " + ex.ToString());
-                    Rho_OutPutFormat.Clear();
-                    Rho_OutPutFormat.Add("outputformat", "image");
-
                 }
-
-
-
 
             }
             /// <summary>
@@ -1014,6 +1008,68 @@ namespace rho
                 }
             }
 
+            //For Rotating the captured Image
+            public MemoryStream RotateStream(MemoryStream stream, int angle)
+            {
+                Dictionary<int, int> Angle0 = new Dictionary<int, int>();
+                Angle0.Add(0, 0);
+                Dictionary<int, int> Angle90 = new Dictionary<int, int>();
+                Angle90.Add(90, 90);
+                Dictionary<int, int> Angle180 = new Dictionary<int, int>();
+                Angle180.Add(180, 180);
+                Dictionary<int, int> Angle270 = new Dictionary<int, int>();
+                Angle90.Add(270, 270);
+
+                stream.Position = 0;
+                try
+                {
+                    int result = Angle0[angle % 360];
+                    return stream;
+                }
+                catch (Exception ex)
+                {
+                }
+
+
+                // bitmap.DecodePixelWidth = 480;
+                bitmap.SetSource(stream);
+                var wbSource = new WriteableBitmap(bitmap);
+                WriteableBitmap wbTarget = null;
+                try
+                {
+                    int result = Angle0[angle % 180];
+                    wbTarget = new WriteableBitmap(wbSource.PixelWidth, wbSource.PixelHeight);
+                }
+                catch (Exception ex)
+                {
+                    wbTarget = new WriteableBitmap(wbSource.PixelHeight, wbSource.PixelWidth);
+                }
+
+
+                for (int xIndex = 0; xIndex < wbSource.PixelWidth; xIndex++)
+                {
+                    for (int yIndex = 0; yIndex < wbSource.PixelHeight; yIndex++)
+                    {
+
+                        switch (angle % 360)
+                        {
+                            case 90:
+                                wbTarget.Pixels[(wbSource.PixelHeight - yIndex - 1) + xIndex * wbTarget.PixelWidth] = wbSource.Pixels[xIndex + yIndex * wbSource.PixelWidth];
+                                break;
+                            case 180:
+                                wbTarget.Pixels[(wbSource.PixelWidth - xIndex - 1) + (wbSource.PixelHeight - yIndex - 1) * wbSource.PixelWidth] = wbSource.Pixels[xIndex + yIndex * wbSource.PixelWidth];
+                                break;
+                            case 270:
+                                wbTarget.Pixels[yIndex + (wbSource.PixelWidth - xIndex - 1) * wbTarget.PixelWidth] = wbSource.Pixels[xIndex + yIndex * wbSource.PixelWidth];
+                                break;
+                        }
+                    }
+                }
+                var targetStream = new MemoryStream();
+                wbTarget.SaveJpeg(targetStream, wbTarget.PixelWidth, wbTarget.PixelHeight, 0, 100);
+                return targetStream;
+
+            }
             /// <summary>
             /// After clicking image this event is fired.
             /// </summary>
@@ -1031,39 +1087,28 @@ namespace rho
                     {   // Write message to the UI thread.
 
 
-                       BitmapImage bmp = new BitmapImage();
-                        bmp.SetSource(e.ImageStream);
-                    
+                       
+
                         MemoryStream ms = new MemoryStream();
-                        WriteableBitmap wb = new WriteableBitmap(bmp);
-                        wb.SaveJpeg(ms, bmp.PixelWidth, bmp.PixelHeight, 0, 100);
-                        byte[] imagebytes = ms.ToArray();
-                       // e.ImageStream.CopyTo(ms);
-                       // byte[] result = imagebytes.ToArray();
+                      
+                        e.ImageStream.CopyTo(ms);
+                        
+                        MemoryStream oms = RotateStream(ms, (int)Rho_Camera_Rotation.Rotation);
+                        byte[] imagebytes = oms.ToArray();
                         strbase64 = System.Convert.ToBase64String(imagebytes);
+                       ;
 
 
 
                         e.ImageStream.Seek(0, SeekOrigin.Begin);
 
                         // Save photo to the media library camera roll.
-                        Picture PictDetails = Rho_Store_Picturelibrary.SavePictureToCameraRoll(fileName, e.ImageStream);                     
-                        
-                        // Write message to the UI thread.
-
-
-                        // Set the position of the stream back to start
-                          e.ImageStream.Seek(0, SeekOrigin.Begin);
-                        
-                       
+                        Picture PictDetails = Rho_Store_Picturelibrary.SavePictureToCameraRoll(fileName, imagebytes);
 
                         // Write message to the UI thread.
-                        Deployment.Current.Dispatcher.BeginInvoke(delegate()
-                        {
-                            txtDebug.Text = "Photo has been saved to the local folder.";
-                            Return_To_Previous_Screen();
+                        Return_To_Previous_Screen();
 
-                        });
+
                         string returnablevalue = "";
                         try
                         {
@@ -1103,7 +1148,7 @@ namespace rho
                         m_Take_Picture_Output["image_height"] = PictDetails.Height.ToString();
                         m_Take_Picture_Output["image_width"] = PictDetails.Width.ToString();
 
-
+                        GC.Collect();
 
 
                     }
