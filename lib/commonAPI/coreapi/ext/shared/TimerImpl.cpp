@@ -52,6 +52,12 @@ namespace rho
         //methods
         virtual void start( int interval, rho::apiGenerator::CMethodResult& oResult) 
 		{
+			if (interval <= 0)
+			{
+				oResult.setError("invalid interval");
+				return;
+			}
+
 			m_oResult = oResult;
 			common::CRhoTimer& timerManager = RHODESAPP().getTimer();
 			timerManager.addNativeTimer(interval, this);
