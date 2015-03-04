@@ -13,6 +13,68 @@
 #import "common/StringConverter.h"
 #import "common/RhoConf.h"
 
+@interface NetRequestDelegateContext : NSObject
+{
+    NSCondition* netDelegateThreadStartCond;
+@public
+    NSThread* netRequestDelegateThread;
+}
+
+@property (nonatomic, retain) NSThread* netRequestDelegateThread;
+@property (nonatomic, retain) NSCondition* netDelegateThreadStartCond;
+
++ (id) sharedInstance;
+
+@end
+
+@implementation NetRequestDelegateContext
+
+@synthesize netRequestDelegateThread, netDelegateThreadStartCond;
+
++ (instancetype)sharedInstance
+{
+    static NetRequestDelegateContext *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[NetRequestDelegateContext alloc] init];
+    });
+    return sharedInstance;
+}
+
+- (id) init
+{
+  self = [super init];
+  
+  netDelegateThreadStartCond= [[NSCondition alloc]init];
+  
+  [netDelegateThreadStartCond lock];
+  
+  [NSThread detachNewThreadSelector:@selector(netRequestDelegateThreadProc) toTarget:self withObject:nil];
+  
+  [netDelegateThreadStartCond wait];
+  [netDelegateThreadStartCond unlock];
+
+  return self;
+}
+
+- (void) netRequestDelegateThreadProc
+{
+  netRequestDelegateThread = [NSThread currentThread];
+  
+  [netDelegateThreadStartCond lock];
+  [netDelegateThreadStartCond signal];
+  [netDelegateThreadStartCond unlock];
+  
+  NSRunLoop* loop = [NSRunLoop currentRunLoop];
+  
+  [loop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode]; // adding some input source, that is required for runLoop to runing
+  
+  while ([loop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]]); // starting infinite loop which can be stopped by changing the shouldKeepRunning's value
+}
+
+
+@end
+
 class IURLRequestDelegate
 {
 public:
@@ -144,23 +206,6 @@ public:
   -(void) startAsyncRequest
   {
     m_pCppDelegate->start();
-/*
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-
-    // Add your sources or timers to the run loop and do any other setup.                                                                                                                                                                                                     
-    NSRunLoop *runloop = [NSRunLoop currentRunLoop];
-    [runloop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-
-    do
-    {
-        // Start the run loop but return after each source is handled.                                                                                                                                                                                                        
-        SInt32    result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 10, YES);
-
-    }
-    while (true);
-
-    [pool release];
-*/    
   }
 
   @synthesize error;
@@ -581,8 +626,8 @@ public:
     [m_pPerformCond lock];
 
     //start();
-    [m_pConnDelegate performSelectorOnMainThread:@selector(startAsyncRequest) withObject:nil waitUntilDone:NO];
-    //[NSThread detachNewThreadSelector:@selector(startAsyncRequest) toTarget:m_pConnDelegate withObject:nil];
+    
+    [m_pConnDelegate performSelector:@selector(startAsyncRequest) onThread:[[NetRequestDelegateContext sharedInstance] netRequestDelegateThread] withObject:nil waitUntilDone:NO];
 
     [m_pPerformCond wait];
     [m_pPerformCond unlock];
