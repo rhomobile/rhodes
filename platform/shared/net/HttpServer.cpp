@@ -1476,10 +1476,37 @@ String CHttpServer::directRequest( const String& method, const String& uri, cons
   CMutexLock lock(m_mxSyncRequest);
   
   ResponseWriter respWriter;
-  
   m_localResponseWriter = &respWriter;
   
-  decide( method, uri, query, headers, body );
+#ifndef RHO_NO_RUBY_API
+  VALUE val;
+  if (rho_ruby_is_started())
+  {
+    if ( !RHOCONF().getBool("enable_gc_while_request") )
+    {
+      val = rho_ruby_disable_gc();
+    }
+  }
+#endif
+
+  bool bProcessed = decide( method, uri, query, headers, body );
+  
+#ifndef RHO_NO_RUBY_API
+  if (rho_ruby_is_started())
+  {
+    if ( !RHOCONF().getBool("enable_gc_while_request") )
+    {
+      rho_ruby_enable_gc(val);
+    }
+
+    if ( bProcessed )
+    {
+      LOG(INFO) + "GC Start.";
+      rb_gc();
+      LOG(INFO) + "GC End.";
+    }
+  }
+#endif
   
   m_localResponseWriter = 0;
   
