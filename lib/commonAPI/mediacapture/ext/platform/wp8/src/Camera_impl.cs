@@ -983,7 +983,7 @@ namespace rho
                         try
                         {
                             KeyValuePair<double, Size> CameraResolution = Rho_Supported_Resolutions.Aggregate((x, y) => Math.Abs(x.Value.Height - Rho_Paramenters["desired_height"]) < Math.Abs(y.Value.Height - Rho_Paramenters["desired_height"]) ? x : y);
-                            Size objsize = new Size(CameraResolution.Value.Height, CameraResolution.Value.Width + 550);
+                            Size objsize = new Size(CameraResolution.Value.Height, CameraResolution.Value.Width);
                            
                             Rho_StillCamera.Resolution = objsize;
                             
