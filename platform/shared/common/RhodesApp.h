@@ -279,7 +279,7 @@ public:
     void registerLocalServerUrl(const String& strUrl, rho::net::CHttpServer::callback_t const &callback);
     bool isLocalServerRunning() { return ( (m_httpServer) && (m_httpServer->started()) ); }
   
-    unsigned int getLocalServerPort() { return isLocalServerRunning()?(m_httpServer->getPort()):0; }
+    unsigned int getLocalServerPort() { return (m_httpServer!=0)?(m_httpServer->getPort()):0; }
   
     String directHttpRequest( const String& method, const String& uri, const String& query, const rho::net::HttpHeaderList& headers, const String& body ) {  return m_httpServer->directRequest(method, uri, query, headers, body ); }
 
