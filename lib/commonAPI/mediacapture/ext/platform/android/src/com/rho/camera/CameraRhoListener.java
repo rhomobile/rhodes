@@ -167,15 +167,14 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				}	
 			} 
 			else if (resultCode == Activity.RESULT_CANCELED) 
-			{
+			{	HashMap<String,Object> resultMap=new HashMap<String,Object>();
 				if (intent != null && intent.hasExtra("error")) {
-					mMethodResult.setError(intent.getStringExtra("error"));
+					resultMap.put("message", ""+intent.getStringExtra("error"));
+					resultMap.put("status", "error");
+				//	mMethodResult.setError(intent.getStringExtra("error"));
 				} else {
-	
-				}			
-				mMethodResult.collect("status", "cancel");
-				HashMap<String,Object> resultMap=new HashMap<String,Object>();
-				resultMap.put("status", "cancel");
+					resultMap.put("status", "cancel");
+				}
 				mMethodResult.set(resultMap);
 			} else {
 				mMethodResult.setError("Unknown error");
