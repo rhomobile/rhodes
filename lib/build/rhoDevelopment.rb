@@ -222,7 +222,7 @@ def extract_state_file_from_bundle_zip(zip_path, path_for_save_state_file)
 
   chdir tmp_folder
 
-  Jake.run('unzip', [zip_path, '-d', tmp_folder])
+  Jake.unzip(zip_path, tmp_folder)
 
   state_path = File.join(tmp_folder, 'RhoBundle','apps', 'rhofilelist.txt')
 

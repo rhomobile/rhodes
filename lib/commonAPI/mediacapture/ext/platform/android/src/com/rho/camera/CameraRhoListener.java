@@ -122,8 +122,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						}
 						if (!curPath.equals(targetPath)) 
 						{
-							Utils.copy(curPath, targetPath);
-							curFile.delete();
+						//	Utils.copy(curPath, targetPath);
+						//	curFile.delete();
 							Logger.T(TAG, "File copied to " + targetPath);							
 							curUri = Uri.fromFile(new File(targetPath));
 						}
