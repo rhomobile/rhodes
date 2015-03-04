@@ -61,9 +61,12 @@ def set_app_plist_options(fname, appname, bundle_identifier, version, url_scheme
   update_plist_block(fname) do |hash|
     hash['CFBundleDisplayName'] = appname
     hash['CFBundleIdentifier'] = bundle_identifier
-    hash['CFBundleURLTypes'] ||= []
 
-    hash['CFBundleURLTypes'].first do |elem|
+    if hash['CFBundleURLTypes'].empty?
+      hash['CFBundleURLTypes'] = {'CFBundleURLName' => bundle_identifier, 'CFBundleURLSchemes' => [url_scheme] }
+    else
+      elem = hash['CFBundleURLTypes'].first
+
       elem['CFBundleURLName'] = bundle_identifier
       elem['CFBundleURLSchemes'] = [url_scheme] unless url_scheme.nil?
     end
