@@ -272,7 +272,7 @@ int on_http_cb(http_parser* parser) { return 0; }
 
     return (
       ( (0==scheme) || (strcmp(scheme, "http") ==0 )) &&
-      (rho_http_started()!=0) &&
+      /*(rho_http_started()!=0) &&*/
       (port == rho_http_get_port()) &&
       ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
     );
