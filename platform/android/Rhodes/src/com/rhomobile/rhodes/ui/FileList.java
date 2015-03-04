@@ -144,7 +144,7 @@ public class FileList extends BaseActivity implements OnClickListener{
                 //intent.putExtra(MediaStore.EXTRA_OUTPUT, dstUrl);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(filename)));
             } else {
-                intent.putExtra("error", "No input file name");
+                intent.putExtra("cancel", "No input file name");
             }
 //        } catch (IOException e) {
 //            Logger.E(TAG, e);
