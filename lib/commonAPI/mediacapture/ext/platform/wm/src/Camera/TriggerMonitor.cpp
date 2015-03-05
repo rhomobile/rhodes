@@ -1,6 +1,6 @@
 #include "TriggerMonitor.h"
 
-CRcmLoader::CRcmLoader()
+CTriggerMonitor::CTriggerMonitor()
 {
 	m_hRcmDLL						= NULL;			
 	lpfn_RCM_Open					= NULL;		
@@ -8,13 +8,13 @@ CRcmLoader::CRcmLoader()
 	lpfn_RCM_DeregisterTrigger		= NULL;
 }
 
-CRcmLoader::~CRcmLoader()
+CTriggerMonitor::~CTriggerMonitor()
 {
 	UnloadRcmDLL();
 }
 
 //  Loading RCM DLL dynamically
-BOOL CRcmLoader::LoadRcmDLL()
+BOOL CTriggerMonitor::LoadRcmDLL()
 {
 	m_hRcmDLL = LoadLibrary(RCM_DLL);
 	if (!m_hRcmDLL)
@@ -41,7 +41,7 @@ BOOL CRcmLoader::LoadRcmDLL()
 		return TRUE;
 }
 
-BOOL CRcmLoader::UnloadRcmDLL()
+BOOL CTriggerMonitor::UnloadRcmDLL()
 {
 	if (m_hRcmDLL)
 	{
