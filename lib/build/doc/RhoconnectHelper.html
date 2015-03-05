@@ -1,0 +1,2085 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: RhoconnectHelper
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!RhoconnectHelper.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (R)</a> &raquo;
+    
+    
+    <span class="title">RhoconnectHelper</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: RhoconnectHelper
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">rhoconnect_helper.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="enable_redis-classvariable" class="">@@enable_redis =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>true</span></pre></dd>
+      
+        <dt id="enable_resque-classvariable" class="">@@enable_resque =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>true</span></pre></dd>
+      
+        <dt id="enable_push-classvariable" class="">@@enable_push =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>true</span></pre></dd>
+      
+        <dt id="rhoconnect_bin-classvariable" class="">@@rhoconnect_bin =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="host-classvariable" class="">@@host =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="port-classvariable" class="">@@port =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="server_pid-classvariable" class="">@@server_pid =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="resque_pid-classvariable" class="">@@resque_pid =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="rhoconnect_push_pid-classvariable" class="">@@rhoconnect_push_pid =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="redis_pid-classvariable" class="">@@redis_pid =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="rc_out-classvariable" class="">@@rc_out =
+          
+        </dt>
+        <dd><pre class="code"><span class='gvar'>$stdout</span></pre></dd>
+      
+        <dt id="resque_out-classvariable" class="">@@resque_out =
+          
+        </dt>
+        <dd><pre class="code"><span class='gvar'>$stdout</span></pre></dd>
+      
+        <dt id="redis_out-classvariable" class="">@@redis_out =
+          
+        </dt>
+        <dd><pre class="code"><span class='gvar'>$stdout</span></pre></dd>
+      
+        <dt id="rc_push_out-classvariable" class="">@@rc_push_out =
+          
+        </dt>
+        <dd><pre class="code"><span class='gvar'>$stdout</span></pre></dd>
+      
+        <dt id="push_host-classvariable" class="">@@push_host =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="push_port-classvariable" class="">@@push_port =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="server_path-classvariable" class="">@@server_path =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#api_get-class_method" title="api_get (class method)">+ (Object) <strong>api_get</strong>(request, params, api_token = nil) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#api_post-class_method" title="api_post (class method)">+ (Object) <strong>api_post</strong>(request, params, api_token = nil) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#execute_rhoconnect-class_method" title="execute_rhoconnect (class method)">+ (Object) <strong>execute_rhoconnect</strong>(workdir, *args) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#generate_app-class_method" title="generate_app (class method)">+ (Object) <strong>generate_app</strong>(dir, name, run_bundler = true) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#host-class_method" title="host (class method)">+ (Object) <strong>host</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#port-class_method" title="port (class method)">+ (Object) <strong>port</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#push_host-class_method" title="push_host (class method)">+ (Object) <strong>push_host</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#push_port-class_method" title="push_port (class method)">+ (Object) <strong>push_port</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reset_server-class_method" title="reset_server (class method)">+ (Object) <strong>reset_server</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#rhoconnect_bin-class_method" title="rhoconnect_bin (class method)">+ (Object) <strong>rhoconnect_bin</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_enable_push-class_method" title="set_enable_push (class method)">+ (Object) <strong>set_enable_push</strong>(b) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_enable_rails-class_method" title="set_enable_rails (class method)">+ (Object) <strong>set_enable_rails</strong>(b) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_enable_redis-class_method" title="set_enable_redis (class method)">+ (Object) <strong>set_enable_redis</strong>(b) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>@@enable_rails = true.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_enable_resque-class_method" title="set_enable_resque (class method)">+ (Object) <strong>set_enable_resque</strong>(b) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_rc_out-class_method" title="set_rc_out (class method)">+ (Object) <strong>set_rc_out</strong>(rc_out) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_rc_push_out-class_method" title="set_rc_push_out (class method)">+ (Object) <strong>set_rc_push_out</strong>(rc_push_out) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_redis_out-class_method" title="set_redis_out (class method)">+ (Object) <strong>set_redis_out</strong>(redis_out) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_resque_out-class_method" title="set_resque_out (class method)">+ (Object) <strong>set_resque_out</strong>(resque_out) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_rhoconnect_bin-class_method" title="set_rhoconnect_bin (class method)">+ (Object) <strong>set_rhoconnect_bin</strong>(path) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start_rails-class_method" title="start_rails (class method)">+ (Object) <strong>start_rails</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start_redis-class_method" title="start_redis (class method)">+ (Object) <strong>start_redis</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start_resque-class_method" title="start_resque (class method)">+ (Object) <strong>start_resque</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start_rhoconnect_push-class_method" title="start_rhoconnect_push (class method)">+ (Object) <strong>start_rhoconnect_push</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start_rhoconnect_stack-class_method" title="start_rhoconnect_stack (class method)">+ (Object) <strong>start_rhoconnect_stack</strong>(dir, reset = false) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start_server-class_method" title="start_server (class method)">+ (Object) <strong>start_server</strong>(dir) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stop_rails-class_method" title="stop_rails (class method)">+ (Object) <strong>stop_rails</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stop_redis-class_method" title="stop_redis (class method)">+ (Object) <strong>stop_redis</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stop_resque-class_method" title="stop_resque (class method)">+ (Object) <strong>stop_resque</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stop_rhoconnect_push-class_method" title="stop_rhoconnect_push (class method)">+ (Object) <strong>stop_rhoconnect_push</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stop_rhoconnect_stack-class_method" title="stop_rhoconnect_stack (class method)">+ (Object) <strong>stop_rhoconnect_stack</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stop_server-class_method" title="stop_server (class method)">+ (Object) <strong>stop_server</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="api_get-class_method">
+  
+    + (<tt>Object</tt>) <strong>api_get</strong>(request, params, api_token = nil) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+138
+139
+140
+141
+142
+143
+144</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 138</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_api_get'>api_get</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='comma'>,</span><span class='id identifier rubyid_params'>params</span><span class='comma'>,</span><span class='id identifier rubyid_api_token'>api_token</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_headers'>headers</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+	<span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='symbol'>:content_type</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='symbol'>:json</span>
+	<span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>X-RhoConnect-API-TOKEN</span><span class='tstring_end'>'</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_api_token'>api_token</span> <span class='kw'>if</span> <span class='id identifier rubyid_api_token'>api_token</span>
+	<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>GET request to Rhoconnect: params: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_params'>params</span><span class='rbrace'>}</span><span class='tstring_content'>, headers: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_headers'>headers</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+	<span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='cvar'>@@host</span><span class='rbrace'>}</span><span class='tstring_content'>:</span><span class='embexpr_beg'>#{</span><span class='cvar'>@@port</span><span class='rbrace'>}</span><span class='tstring_content'>/rc/v1/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_request'>request</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='id identifier rubyid_headers'>headers</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="api_post-class_method">
+  
+    + (<tt>Object</tt>) <strong>api_post</strong>(request, params, api_token = nil) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+130
+131
+132
+133
+134
+135
+136</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 130</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_api_post'>api_post</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='comma'>,</span><span class='id identifier rubyid_params'>params</span><span class='comma'>,</span><span class='id identifier rubyid_api_token'>api_token</span><span class='op'>=</span><span class='kw'>nil</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_headers'>headers</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+	<span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='symbol'>:content_type</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='symbol'>:json</span>
+	<span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>X-RhoConnect-API-TOKEN</span><span class='tstring_end'>'</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_api_token'>api_token</span> <span class='kw'>if</span> <span class='id identifier rubyid_api_token'>api_token</span>
+	<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>POST request to Rhoconnect: params: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_params'>params</span><span class='rbrace'>}</span><span class='tstring_content'>, headers: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_headers'>headers</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+	<span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='cvar'>@@host</span><span class='rbrace'>}</span><span class='tstring_content'>:</span><span class='embexpr_beg'>#{</span><span class='cvar'>@@port</span><span class='rbrace'>}</span><span class='tstring_content'>/rc/v1/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_request'>request</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='id identifier rubyid_headers'>headers</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="execute_rhoconnect-class_method">
+  
+    + (<tt>Object</tt>) <strong>execute_rhoconnect</strong>(workdir, *args) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 257</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_execute_rhoconnect'>execute_rhoconnect</span><span class='lparen'>(</span><span class='id identifier rubyid_workdir'>workdir</span><span class='comma'>,</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_cmd'>cmd</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+
+	<span class='kw'>if</span> <span class='const'>RUBY_PLATFORM</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>(win|w)32$</span><span class='regexp_end'>/</span></span>
+		<span class='id identifier rubyid_cmd'>cmd</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ruby </span><span class='embexpr_beg'>#{</span><span class='cvar'>@@rhoconnect_bin</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+	<span class='kw'>else</span>
+		<span class='id identifier rubyid_cmd'>cmd</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='cvar'>@@rhoconnect_bin</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+	<span class='kw'>end</span>
+
+	<span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_arg'>arg</span><span class='op'>|</span>
+		<span class='id identifier rubyid_cmd'>cmd</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_cmd'>cmd</span><span class='rbrace'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_arg'>arg</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+	<span class='kw'>end</span>
+	<span class='id identifier rubyid_cmd'>cmd</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bundle exec </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_cmd'>cmd</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_cmd'>cmd</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'> start</span><span class='regexp_end'>/</span></span>
+	<span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_cmd'>cmd</span>
+
+	<span class='kw'>if</span> <span class='id identifier rubyid_workdir'>workdir</span>
+		<span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_system'>system</span><span class='lparen'>(</span><span class='id identifier rubyid_cmd'>cmd</span><span class='comma'>,</span><span class='symbol'>:chdir</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_workdir'>workdir</span><span class='comma'>,</span> <span class='symbol'>:out</span> <span class='op'>=&gt;</span> <span class='cvar'>@@rc_out</span><span class='rparen'>)</span>
+	<span class='kw'>else</span>
+		<span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_system'>system</span><span class='lparen'>(</span><span class='id identifier rubyid_cmd'>cmd</span><span class='comma'>,</span> <span class='symbol'>:out</span> <span class='op'>=&gt;</span> <span class='cvar'>@@rc_out</span><span class='rparen'>)</span>
+	<span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="generate_app-class_method">
+  
+    + (<tt>Object</tt>) <strong>generate_app</strong>(dir, name, run_bundler = true) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 221</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_generate_app'>generate_app</span><span class='lparen'>(</span><span class='id identifier rubyid_dir'>dir</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_run_bundler'>run_bundler</span> <span class='op'>=</span> <span class='kw'>true</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Generating rhoconnect app: binary: </span><span class='embexpr_beg'>#{</span><span class='cvar'>@@rhoconnect_bin</span><span class='rbrace'>}</span><span class='tstring_content'>, app name: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='rbrace'>}</span><span class='tstring_content'>, dir: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dir'>dir</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+	<span class='id identifier rubyid_execute_rhoconnect'>execute_rhoconnect</span><span class='lparen'>(</span><span class='id identifier rubyid_dir'>dir</span><span class='comma'>,</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>app</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+
+	<span class='comment'># Patch Gemfile: replace gem version by path to source
+</span>	<span class='id identifier rubyid_gem_path'>gem_path</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>gem 'rhoconnect', :path =&gt; '</span><span class='embexpr_beg'>#{</span><span class='cvar'>@@rhoconnect_path</span><span class='rbrace'>}</span><span class='tstring_content'>'</span><span class='tstring_end'>&quot;</span></span>
+	<span class='id identifier rubyid_path_gemfile'>path_gemfile</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_dir'>dir</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Gemfile</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_path_gemfile'>path_gemfile</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_gsub!'>gsub!</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>(gem 'rhoconnect'.*)</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='id identifier rubyid_gem_path'>gem_path</span><span class='rparen'>)</span>
+	<span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='id identifier rubyid_path_gemfile'>path_gemfile</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>w</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span> <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span> <span class='id identifier rubyid_lines'>lines</span> <span class='rbrace'>}</span>
+
+	<span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_system'>system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>bundle install</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='symbol'>:chdir</span> <span class='op'>=&gt;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_dir'>dir</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_run_bundler'>run_bundler</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="host-class_method">
+  
+    + (<tt>Object</tt>) <strong>host</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+43
+44
+45</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 43</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span>
+	<span class='cvar'>@@host</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="port-class_method">
+  
+    + (<tt>Object</tt>) <strong>port</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+48
+49
+50</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 48</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span>
+	<span class='cvar'>@@port</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="push_host-class_method">
+  
+    + (<tt>Object</tt>) <strong>push_host</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+78
+79
+80</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 78</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_push_host'>push_host</span>
+	<span class='cvar'>@@push_host</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="push_port-class_method">
+  
+    + (<tt>Object</tt>) <strong>push_port</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+83
+84
+85</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 83</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_push_port'>push_port</span>
+	<span class='cvar'>@@push_port</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reset_server-class_method">
+  
+    + (<tt>Object</tt>) <strong>reset_server</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 146</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_reset_server'>reset_server</span>
+	<span class='kw'>begin</span>
+		<span class='id identifier rubyid_platform'>platform</span> <span class='op'>=</span> <span class='id identifier rubyid_platform'>platform</span>
+		<span class='id identifier rubyid_exact_url'>exact_url</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://</span><span class='embexpr_beg'>#{</span><span class='cvar'>@@host</span><span class='rbrace'>}</span><span class='tstring_content'>:</span><span class='embexpr_beg'>#{</span><span class='cvar'>@@port</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>going to reset server: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_exact_url'>exact_url</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+		<span class='comment'># login to the server
+</span>		<span class='id identifier rubyid_api_token'>api_token</span> <span class='op'>=</span> <span class='id identifier rubyid_api_post'>api_post</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>system/login</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='lbrace'>{</span> <span class='symbol'>:login</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>rhoadmin</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='symbol'>:password</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_end'>'</span></span> <span class='rbrace'>}</span><span class='rparen'>)</span>
+		<span class='id identifier rubyid_api_post'>api_post</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>system/reset</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='symbol'>:api_token</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_api_token'>api_token</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reset OK</span><span class='tstring_end'>&quot;</span></span>
+		<span class='kw'>rescue</span> <span class='const'>Exception</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reset_spec_server failed: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+	<span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="rhoconnect_bin-class_method">
+  
+    + (<tt>Object</tt>) <strong>rhoconnect_bin</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+38
+39
+40</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 38</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_rhoconnect_bin'>rhoconnect_bin</span>
+	<span class='cvar'>@@rhoconnect_bin</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_enable_push-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_enable_push</strong>(b) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+23
+24
+25</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 23</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_enable_push'>set_enable_push</span><span class='lparen'>(</span><span class='id identifier rubyid_b'>b</span><span class='rparen'>)</span>
+	<span class='cvar'>@@enable_push</span> <span class='op'>=</span> <span class='id identifier rubyid_b'>b</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_enable_rails-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_enable_rails</strong>(b) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+27
+28
+29</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 27</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_enable_rails'>set_enable_rails</span><span class='lparen'>(</span><span class='id identifier rubyid_b'>b</span><span class='rparen'>)</span>
+<span class='comment'>#		@@enable_rails = b
+</span><span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_enable_redis-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_enable_redis</strong>(b) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>@@enable_rails = true</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+15
+16
+17</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 15</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_enable_redis'>set_enable_redis</span><span class='lparen'>(</span><span class='id identifier rubyid_b'>b</span><span class='rparen'>)</span>
+	<span class='cvar'>@@enable_redis</span> <span class='op'>=</span> <span class='id identifier rubyid_b'>b</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_enable_resque-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_enable_resque</strong>(b) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+19
+20
+21</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 19</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_enable_resque'>set_enable_resque</span><span class='lparen'>(</span><span class='id identifier rubyid_b'>b</span><span class='rparen'>)</span>
+	<span class='cvar'>@@enable_resque</span> <span class='op'>=</span> <span class='id identifier rubyid_b'>b</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_rc_out-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_rc_out</strong>(rc_out) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+58
+59
+60</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 58</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_rc_out'>set_rc_out</span><span class='lparen'>(</span><span class='id identifier rubyid_rc_out'>rc_out</span><span class='rparen'>)</span>
+	<span class='cvar'>@@rc_out</span> <span class='op'>=</span> <span class='id identifier rubyid_rc_out'>rc_out</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_rc_push_out-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_rc_push_out</strong>(rc_push_out) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+73
+74
+75</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 73</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_rc_push_out'>set_rc_push_out</span><span class='lparen'>(</span><span class='id identifier rubyid_rc_push_out'>rc_push_out</span><span class='rparen'>)</span>
+	<span class='cvar'>@@rc_push_out</span> <span class='op'>=</span> <span class='id identifier rubyid_rc_push_out'>rc_push_out</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_redis_out-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_redis_out</strong>(redis_out) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+68
+69
+70</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 68</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_redis_out'>set_redis_out</span><span class='lparen'>(</span><span class='id identifier rubyid_redis_out'>redis_out</span><span class='rparen'>)</span>
+	<span class='cvar'>@@redis_out</span> <span class='op'>=</span> <span class='id identifier rubyid_redis_out'>redis_out</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_resque_out-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_resque_out</strong>(resque_out) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+63
+64
+65</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 63</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_resque_out'>set_resque_out</span><span class='lparen'>(</span><span class='id identifier rubyid_resque_out'>resque_out</span><span class='rparen'>)</span>
+	<span class='cvar'>@@resque_out</span> <span class='op'>=</span> <span class='id identifier rubyid_resque_out'>resque_out</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_rhoconnect_bin-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_rhoconnect_bin</strong>(path) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+33
+34
+35
+36</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 33</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_rhoconnect_bin'>set_rhoconnect_bin</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+	<span class='cvar'>@@rhoconnect_path</span> <span class='op'>=</span> <span class='id identifier rubyid_path'>path</span>
+	<span class='cvar'>@@rhoconnect_bin</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>bin</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>rhoconnect</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_rails-class_method">
+  
+    + (<tt>Object</tt>) <strong>start_rails</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+249
+250
+251</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 249</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_start_rails'>start_rails</span>
+	<span class='comment'>#TODO
+</span><span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_redis-class_method">
+  
+    + (<tt>Object</tt>) <strong>start_redis</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+112
+113
+114</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 112</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_start_redis'>start_redis</span>
+       <span class='cvar'>@@redis_pid</span> <span class='op'>=</span> <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_spawn'>spawn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>redis-server</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:out</span> <span class='op'>=&gt;</span> <span class='cvar'>@@redis_out</span> <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_resque-class_method">
+  
+    + (<tt>Object</tt>) <strong>start_resque</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+121
+122
+123</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 121</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_start_resque'>start_resque</span>
+	<span class='cvar'>@@resque_pid</span> <span class='op'>=</span> <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_spawn'>spawn</span><span class='lparen'>(</span><span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>QUEUE</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rake</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>resque:work</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='symbol'>:chdir</span> <span class='op'>=&gt;</span> <span class='cvar'>@@server_path</span><span class='comma'>,</span> <span class='symbol'>:out</span> <span class='op'>=&gt;</span> <span class='cvar'>@@resque_out</span> <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_rhoconnect_push-class_method">
+  
+    + (<tt>Object</tt>) <strong>start_rhoconnect_push</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+235
+236
+237
+238
+239
+240</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 235</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_start_rhoconnect_push'>start_rhoconnect_push</span>
+	<span class='cvar'>@@rhoconnect_push_pid</span> <span class='op'>=</span> <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_spawn'>spawn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rhoconnect-push start -d 3</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:out</span> <span class='op'>=&gt;</span> <span class='cvar'>@@rc_push_out</span><span class='rparen'>)</span>
+	<span class='cvar'>@@push_host</span> <span class='op'>=</span> <span class='const'>Jake</span><span class='period'>.</span><span class='id identifier rubyid_localip'>localip</span>
+	<span class='cvar'>@@push_port</span> <span class='op'>=</span> <span class='int'>8675</span>
+
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_rhoconnect_stack-class_method">
+  
+    + (<tt>Object</tt>) <strong>start_rhoconnect_stack</strong>(dir, reset = false) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 160</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_start_rhoconnect_stack'>start_rhoconnect_stack</span><span class='lparen'>(</span><span class='id identifier rubyid_dir'>dir</span><span class='comma'>,</span><span class='id identifier rubyid_reset'>reset</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
+
+	<span class='kw'>if</span> <span class='cvar'>@@enable_redis</span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>run redis</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_start_redis'>start_redis</span>
+		<span class='id identifier rubyid_sleep'>sleep</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span>
+	<span class='kw'>end</span>
+
+	<span class='kw'>if</span> <span class='cvar'>@@enable_push</span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>run rhoconnect push</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_start_rhoconnect_push'>start_rhoconnect_push</span>
+		<span class='id identifier rubyid_sleep'>sleep</span> <span class='int'>10</span>
+	<span class='kw'>end</span>
+
+	<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>run rhoconnect</span><span class='tstring_end'>&quot;</span></span>
+	<span class='id identifier rubyid_start_server'>start_server</span><span class='lparen'>(</span><span class='id identifier rubyid_dir'>dir</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_sleep'>sleep</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span>
+<span class='embdoc_beg'>=begin
+</span><span class='embdoc'>	if @@enable_rails
+</span><span class='embdoc'>		puts &quot;run rails&quot;
+</span><span class='embdoc'>		start_rails
+</span><span class='embdoc'>		sleep 10
+</span><span class='embdoc'>	end
+</span><span class='embdoc_end'>=end
+</span>	<span class='kw'>if</span> <span class='id identifier rubyid_reset'>reset</span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reset rhoconnect</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_reset_server'>reset_server</span>
+	<span class='kw'>end</span>
+
+	<span class='kw'>if</span> <span class='cvar'>@@enable_resque</span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>run resque</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_start_resque'>start_resque</span>
+		<span class='id identifier rubyid_sleep'>sleep</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span>
+	<span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_server-class_method">
+  
+    + (<tt>Object</tt>) <strong>start_server</strong>(dir) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 89</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_start_server'>start_server</span><span class='lparen'>(</span><span class='id identifier rubyid_dir'>dir</span><span class='rparen'>)</span>
+	<span class='cvar'>@@server_path</span> <span class='op'>=</span> <span class='id identifier rubyid_dir'>dir</span>
+
+	<span class='kw'>if</span> <span class='const'>RUBY_PLATFORM</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>(win|w)32$</span><span class='regexp_end'>/</span></span>
+		<span class='cvar'>@@server_pid</span> <span class='op'>=</span> <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_spawn'>spawn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ruby</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='cvar'>@@rhoconnect_bin</span><span class='comma'>,</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>start</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='symbol'>:chdir</span><span class='op'>=&gt;</span><span class='cvar'>@@server_path</span><span class='comma'>,</span><span class='symbol'>:out</span> <span class='op'>=&gt;</span><span class='cvar'>@@rc_out</span><span class='rparen'>)</span>
+	<span class='kw'>else</span>
+		<span class='cvar'>@@server_pid</span> <span class='op'>=</span> <span class='id identifier rubyid_execute_rhoconnect'>execute_rhoconnect</span><span class='lparen'>(</span><span class='cvar'>@@server_path</span><span class='comma'>,</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>startbg</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+	<span class='kw'>end</span>
+
+	<span class='cvar'>@@host</span> <span class='op'>=</span> <span class='const'>Jake</span><span class='period'>.</span><span class='id identifier rubyid_localip'>localip</span>
+	<span class='cvar'>@@port</span> <span class='op'>=</span> <span class='int'>9292</span>
+
+	<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>started rhoconnect server, app path: </span><span class='embexpr_beg'>#{</span><span class='cvar'>@@server_path</span><span class='rbrace'>}</span><span class='tstring_content'>, server_pid: </span><span class='embexpr_beg'>#{</span><span class='cvar'>@@server_pid</span><span class='rbrace'>}</span><span class='tstring_content'>, host: </span><span class='embexpr_beg'>#{</span><span class='cvar'>@@host</span><span class='rbrace'>}</span><span class='tstring_content'>, port: </span><span class='embexpr_beg'>#{</span><span class='cvar'>@@port</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="stop_rails-class_method">
+  
+    + (<tt>Object</tt>) <strong>stop_rails</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+253
+254
+255</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 253</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_stop_rails'>stop_rails</span>
+	<span class='comment'>#TODO
+</span><span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="stop_redis-class_method">
+  
+    + (<tt>Object</tt>) <strong>stop_redis</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+116
+117
+118
+119</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 116</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_stop_redis'>stop_redis</span>
+       <span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_kill'>kill</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>INT</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='cvar'>@@redis_pid</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='cvar'>@@redis_pid</span>
+       <span class='cvar'>@@redis_pid</span> <span class='op'>=</span> <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="stop_resque-class_method">
+  
+    + (<tt>Object</tt>) <strong>stop_resque</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+125
+126
+127
+128</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 125</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_stop_resque'>stop_resque</span>
+	<span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_kill'>kill</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>INT</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='cvar'>@@resque_pid</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='cvar'>@@resque_pid</span>
+	<span class='cvar'>@@resque_pid</span> <span class='op'>=</span> <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="stop_rhoconnect_push-class_method">
+  
+    + (<tt>Object</tt>) <strong>stop_rhoconnect_push</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+242
+243
+244
+245
+246
+247</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 242</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_stop_rhoconnect_push'>stop_rhoconnect_push</span>
+	<span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_kill'>kill</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>INT</span><span class='tstring_end'>'</span></span><span class='comma'>,</span> <span class='cvar'>@@rhoconnect_push_pid</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='cvar'>@@rhoconnect_push_pid</span>
+	<span class='cvar'>@@rhoconnect_push_pid</span> <span class='op'>=</span> <span class='kw'>nil</span>
+	<span class='cvar'>@@push_host</span> <span class='op'>=</span> <span class='kw'>nil</span>
+	<span class='cvar'>@@push_port</span> <span class='op'>=</span> <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="stop_rhoconnect_stack-class_method">
+  
+    + (<tt>Object</tt>) <strong>stop_rhoconnect_stack</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 196</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_stop_rhoconnect_stack'>stop_rhoconnect_stack</span>
+	<span class='kw'>if</span> <span class='cvar'>@@enable_resque</span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>stop resque</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_stop_resque'>stop_resque</span>
+	<span class='kw'>end</span>
+
+	<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>stop rhoconnect</span><span class='tstring_end'>&quot;</span></span>
+	<span class='id identifier rubyid_stop_server'>stop_server</span>
+<span class='embdoc_beg'>=begin
+</span><span class='embdoc'>	if @@enable_rails
+</span><span class='embdoc'>		puts &quot;stop rails&quot;
+</span><span class='embdoc'>		stop_rails
+</span><span class='embdoc'>	end
+</span><span class='embdoc_end'>=end
+</span>	<span class='kw'>if</span> <span class='cvar'>@@enable_push</span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>stop rhoconnect push</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_stop_rhoconnect_push'>stop_rhoconnect_push</span>
+	<span class='kw'>end</span>
+
+	<span class='kw'>if</span> <span class='cvar'>@@enable_redis</span>
+		<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>stop redis</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_stop_redis'>stop_redis</span>
+	<span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="stop_server-class_method">
+  
+    + (<tt>Object</tt>) <strong>stop_server</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+104
+105
+106
+107
+108
+109
+110</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rhoconnect_helper.rb', line 104</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_stop_server'>stop_server</span>
+	<span class='id identifier rubyid_execute_rhoconnect'>execute_rhoconnect</span><span class='lparen'>(</span><span class='cvar'>@@server_path</span><span class='comma'>,</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>stop</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+	<span class='cvar'>@@server_pid</span> <span class='op'>=</span> <span class='kw'>nil</span>
+	<span class='cvar'>@@server_path</span> <span class='op'>=</span> <span class='kw'>nil</span>
+	<span class='cvar'>@@host</span> <span class='op'>=</span> <span class='kw'>nil</span>
+	<span class='cvar'>@@port</span> <span class='op'>=</span> <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Fri Mar  6 02:12:46 2015 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>
