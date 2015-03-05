@@ -458,4 +458,11 @@ public class CameraObject extends CameraBase implements ICameraObject {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public void setDisplayOrientation(int rotate) {
+		Camera camera = getCamera();
+	    camera.setDisplayOrientation(rotate);
+	}
 }

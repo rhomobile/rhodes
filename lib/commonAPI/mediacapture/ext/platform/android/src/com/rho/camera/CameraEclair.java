@@ -202,4 +202,9 @@ public class CameraEclair extends CameraObject implements ICameraObject {
         }
         result.set(res);
     }
+	 
+	@Override
+    public void setDisplayOrientation(int rotate) {
+    	// TODO Auto-generated method stub
+    }
 }

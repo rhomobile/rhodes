@@ -1,7 +1,9 @@
 package com.rho.camera;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
+import android.view.Surface;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,6 +18,7 @@ public class CameraPreview implements SurfaceHolder.Callback {
     private SurfaceView mSurfaceView;
     private SurfaceHolder mHolder;
     private ICameraObject mCamera;
+	private Context mContext;
 
     public CameraPreview(SurfaceView surfaceView) {
         Logger.T(TAG, "CameraPreview");
@@ -30,7 +33,7 @@ public class CameraPreview implements SurfaceHolder.Callback {
             Logger.E(TAG, "Camera is null");
             return;
         }
-
+		mContext = context;
         mCamera = camera;
 
         // Install a SurfaceHolder.Callback so we get notified when the
@@ -63,6 +66,26 @@ public class CameraPreview implements SurfaceHolder.Callback {
         catch(RuntimeException e){
         	
         }
+		
+		int rotation = ((Activity)mContext).getWindowManager().getDefaultDisplay().getRotation();
+    	int degrees = 0;
+		switch (rotation) {
+		case Surface.ROTATION_0:
+			degrees = 90;
+			break;
+		case Surface.ROTATION_90:
+			degrees = 0;
+			break;
+		case Surface.ROTATION_180:
+			degrees = 270;
+			break;
+		case Surface.ROTATION_270:
+			degrees = 180;
+			break;
+		}
+		
+		mCamera.setDisplayOrientation(degrees);
+		
         ISize size = mCamera.setPreviewSize(surfaceRect.right, surfaceRect.bottom);
         
         double previewRatio = (double) size.getWidth() / size.getHeight();
@@ -77,10 +100,10 @@ public class CameraPreview implements SurfaceHolder.Callback {
         
 
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)mSurfaceView.getLayoutParams();
-        layoutParams.leftMargin = marginX;
-        layoutParams.rightMargin = marginX;
-        layoutParams.topMargin = marginY;
-        layoutParams.bottomMargin = marginY;
+        layoutParams.leftMargin = layoutParams.FILL_PARENT;
+        layoutParams.rightMargin = layoutParams.FILL_PARENT;
+        layoutParams.topMargin = layoutParams.FILL_PARENT;
+        layoutParams.bottomMargin = layoutParams.FILL_PARENT;
         mSurfaceView.setLayoutParams(layoutParams);
         mSurfaceView.requestLayout();
     }

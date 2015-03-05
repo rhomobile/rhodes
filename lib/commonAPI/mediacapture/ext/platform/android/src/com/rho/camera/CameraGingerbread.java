@@ -115,4 +115,9 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
         }
         closeCamera();
     }
+	
+	 @Override
+    public void setDisplayOrientation(int rotate) {
+    	// TODO Auto-generated method stub
+    }
 }
