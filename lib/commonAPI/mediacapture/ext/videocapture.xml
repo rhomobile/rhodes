@@ -12,11 +12,11 @@ In order to use this API you must include the following extension in your `build
     :::ruby
     extensions: ["mediacapture"]
 
-### JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
@@ -93,7 +93,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="start" hasCallback="optional" runInThread="ui">
                 <DESC>Starts capturing video until either 'stop' is received, or 'duration' is reached. NOTE: On Android this meta tag wouldn't immediately start recording and presents a preview window with controls (start, stop and cancel) for recording.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
                 <RETURN>
                     <DESC>Not providing a callback to be invoked will result in that file is saved only locally and file is not transfered.</DESC>
                 </RETURN>

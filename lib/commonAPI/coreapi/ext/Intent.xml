@@ -9,10 +9,10 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-## JavaScript Usage
+### JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-## Ruby Usage
+### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
     </MORE_HELP>
          <MORE_HELP_EB>
@@ -201,7 +201,6 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
         </METHODS>
         <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
         <PLATFORM>iOS, WM, Android</PLATFORM>
-        <PLATFORM_EB>WM, Android</PLATFORM_EB>
         <EXAMPLES>
             <EXAMPLE title="Plot a location on a map">
                 <SECTIONS>

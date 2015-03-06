@@ -9,10 +9,10 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-## JavaScript Usage
+### JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
 
-## Ruby Usage
+### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
 </MORE_HELP>
         <MORE_HELP_EB>
@@ -117,6 +117,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAM>
                 <DESC>Native Menu items.</DESC>
                 <PLATFORM>WM, CE, Android, Win32, WP8</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <DESC>Native Menu items.</DESC>
@@ -124,18 +125,17 @@ The ebapi.js file is necessary for all single API inclusions.
                     <DESC>Same values as nativeMenu.</DESC>
                 </PARAM>
                 <PLATFORM>WM, CE, Android, Win32, WP8</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
                 <DESC>Indicates if the security token check was failed. Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
                 <DESC_EB>Indicates if the security token check was failed. Security token can be passed as command line parameter '-security_token=token_value' to the application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC_EB>
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="invalidSecurityTokenStartPath" type="STRING" readOnly="true">
                 <DESC>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
                 <DESC_EB>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path; This file is located in the installation folder of the EnetrpriseBrowser application installed on the device.</DESC_EB>
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </PROPERTY>
 
             <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true" generateDoc="false">
@@ -217,7 +217,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
                 <DESC>This method allows your application to register for application specific events like application activation/deactivation, UI creation/destruction as well as others. Check the Callback section for details.</DESC>
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
                 <CALLBACK type="HASH">
                     <DESC>Application events are fired to inform about application state changes. Most of the events are handled only if application is in the foreground mode (activated). You should monitor APP_EVENT_ACTIVATED and APP_EVENT_DEACTIVATED to save application state and start up/shut down activities. Events APP_EVENT_SCREEN_ON and APP_EVENT_SCREEN_OFF should be used to put app into suspend mode without deactivation. Note: Event firing behavior depends on platform.</DESC>
                     <PARAMS>
@@ -240,12 +239,12 @@ The ebapi.js file is necessary for all single API inclusions.
                                     <DESC>Device screen was turned off when power button was pressed or due to idle timeout. Note: On iOS application is also deactivated (APP_EVENT_DEACTIVATED is fired). On Android the application is not deactivated.Not supported on Windows CE.</DESC>
                                     <DESC_EB>Device screen was turned off when power button was pressed or due to idle timeout. On Android the application is not deactivated.Not supported on Windows CE.</DESC_EB>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
-                                    <PLATFORM_EB>WM, Android</PLATFORM_EB>
+                                    <PLATFORM_EB>Android, WM</PLATFORM_EB>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SCREEN_ON" value ="ScreenOn">
                                     <DESC>Device screen was turned on and unlocked.Not supported on Windows CE.</DESC>
                                     <PLATFORM>Android, iOS, WM</PLATFORM>
-                                    <PLATFORM_EB>WM, Android</PLATFORM_EB>
+                                    <PLATFORM_EB>Android, WM</PLATFORM_EB>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_SYNCUSERCHANGED" value ="SyncUserChanged" productException="eb">
                                     <DESC>Event when the current RhoConnect user has changed. This is available under Ruby Only.</DESC>
@@ -270,7 +269,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="processApplicationEvent" generateAPI="false">
                 <DESC>Ruby applications must use this method for processing of the application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="applicationEvent" type="STRING">

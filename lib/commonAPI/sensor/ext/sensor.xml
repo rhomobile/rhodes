@@ -10,10 +10,10 @@ In order to use this API you must include the following extension in your `build
     :::ruby
     extensions: ["sensor"]
 
-## JavaScript Usage
+### JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-## Ruby Usage
+### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
 
         </MORE_HELP>
@@ -47,7 +47,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
         <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-        <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
 
         <TEMPLATES>
             <SINGLETON_INSTANCES/> <!--   produce enumerate() fabric method, all instances is singletons by ID, add ID property -->
@@ -149,13 +148,11 @@ The ebapi.js file is necessary for all single API inclusions.
                     <DESC>Returns a sensor object for the sensor type passed as parameter. You can use the type field along with the Rho.Sensor Constants to see what type of sensor is returned.</DESC>
                 </RETURN>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </METHOD>
 
             <METHOD name="start" hasCallback="optional">
                 <DESC>This enables the sensor data retrieval. Call start on the instance returned from the makeSensorByType.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
                 <CALLBACK type="HASH">
                     <DESC>The callback is triggered with the sensors values according to sensor type when a parameter of the sensor is changed. Each sensor sends to the callback different object types - see sensor prefix of value name. All sensors will contain a status and message parameter in the callback.</DESC>
                     <PARAMS>
@@ -326,19 +323,16 @@ The ebapi.js file is necessary for all single API inclusions.
                     <DESC>Current sensor data - format is the same with callback specified for start method.</DESC>
                 </RETURN>>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </METHOD>
 
             <METHOD name="stop">
                 <DESC>Stops listening to the sensor retrieved by using makeSensorType. On Windows Mobile/CE its recommended to call stop on all retrieved sensor objects before exiting a page.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </METHOD>
         </METHODS>
 
         <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
         <PLATFORM>Android, WM, iOS</PLATFORM>
-        <PLATFORM_EB>WM, Android</PLATFORM_EB>
 
         <REMARKS>
             <REMARK title="General">
