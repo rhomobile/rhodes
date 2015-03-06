@@ -46,7 +46,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
         <PLATFORM>Android, iOS, WM</PLATFORM>
-        <PLATFORM_EB>Android, WM</PLATFORM_EB>
 
         <ALIASES>
             <ALIAS new="Camera" deprecated="true"/>
@@ -73,7 +72,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <PROPERTY name="cameraType" type="STRING" default="main" readOnly="true">
                 <PLATFORM>Android, iOS, WM, CE</PLATFORM>
-                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>Camera type: back or front. In windows this could be imager or color camera.</DESC>
                 <VALUES>
                     <VALUE constName="CAMERA_TYPE_BACK" value="back">
@@ -92,12 +90,10 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
                 <PLATFORM>Android, iOS</PLATFORM>
-                <PLATFORM_EB>Android</PLATFORM_EB>
                 <DESC>The maximum width of images which can be captured.</DESC>
             </PROPERTY>
             <PROPERTY name="maxHeight" type="INTEGER" generateAccessors="true" readOnly="true">
                 <PLATFORM>Android, iOS</PLATFORM>
-                <PLATFORM_EB>Android</PLATFORM_EB>
                 <DESC>The maximum height of images which can be captured.</DESC>
             </PROPERTY>
             <PROPERTY name="supportedSizeList" type="ARRAY" readOnly="true" usePropertyBag="none" >
@@ -113,28 +109,23 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="desiredWidth" type="INTEGER">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
-                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc. Specifying a desiredWidth will request to take the photo with the specified width but if it is not supported by the hardware then the closest match will be selected. The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
             </PROPERTY>
             <PROPERTY name="desiredHeight" type="INTEGER">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
-                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc. Specifying a desiredHeight will request to take the photo with the specified height but if it is not supported by the hardware then the closest match will be selected. The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
             </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
-                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>The path without filename extension to store captured image in subsequent calls to takePicture() or capture(). The filename extension will be added automatically according to compressionFormat property value.</DESC>
             </PROPERTY>
             <PROPERTY name="compressionFormat" type="STRING" default="jpg">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <APPLIES>JPG is supported on all devices, Android and Windows Mobile does not support PNG images</APPLIES>
                 <PLATFORM>Android, iOS, WM, CE</PLATFORM>
-                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data. In windows devices the format will be always jpg type</DESC>
-                <DESC_EB>The format of the captured image in subsequent calls to takePicture(). On windows devices the format will be always .jpg.</DESC_EB>
                 <VALUES>
                     <VALUE constName="COMPRESSION_FORMAT_JPG" value="jpg">
                         <DESC>JPG compression.</DESC>
@@ -147,7 +138,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="outputFormat" type="STRING" default="image">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
-                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>Specifies the way to return the captured image to the application.</DESC>
                 <VALUES>
                     <VALUE constName="OUTPUT_FORMAT_IMAGE" value="image">
@@ -160,8 +150,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="colorModel" type="STRING" default="rgb">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-                <PLATFORM>Android, iOS</PLATFORM>
-                <PLATFORM_EB>Android</PLATFORM_EB>
+                <PLATFORM>Android,iOS</PLATFORM>
                 <DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.</DESC>
                 <VALUES>
                     <VALUE constName="COLOR_MODEL_RGB" value="rgb">
@@ -172,7 +161,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     </VALUE>
                 </VALUES>
             </PROPERTY>
-            <PROPERTY name="enableEditing" type="BOOLEAN" default="true" productException="eb">
+            <PROPERTY name="enableEditing" type="BOOLEAN" default="true">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>iOS</PLATFORM>
                 <DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size).</DESC>
@@ -180,17 +169,14 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="flashMode" type="STRING">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
-                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>Specifies the flash behavior when taking a picture.</DESC>
                 <VALUES>
                     <VALUE constName="FLASH_ON" value="on">
                         <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
-                        <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                         <DESC>Flash will be used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_OFF" value="off">
                         <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
-                        <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                         <DESC>Flash will not be used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_AUTO" value="auto">
@@ -209,8 +195,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="saveToDeviceGallery" type="BOOLEAN" default="false">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-                <PLATFORM>iOS, Android</PLATFORM>
-                <PLATFORM_EB>Android</PLATFORM_EB>
+                <PLATFORM>iOS,Android</PLATFORM>
                 <DESC>If true, the picture you take will be added to the device photo gallery. At Android default value is true.</DESC>
             </PROPERTY>
             <PROPERTY name="captureSound" type="STRING">
@@ -396,7 +381,6 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                          <PLATFORM>Android, WM, WP8, iOS</PLATFORM>
-                         <PLATFORM_EB>Android, WM</PLATFORM_EB>
                         <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
@@ -440,7 +424,6 @@ The ebapi.js file is necessary for all single API inclusions.
             </METHOD>
             <METHOD name="saveImageToDeviceGallery" access="static">
                 <PLATFORM>iOS, Android</PLATFORM>
-                <PLATFORM_EB>Android</PLATFORM_EB>
                 <DESC>Save an image to the device gallery.</DESC>
                 <PARAMS>
                     <PARAM name="pathToImage" type="STRING">
