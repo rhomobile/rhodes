@@ -9,14 +9,11 @@ In order to use this API you must include the following extension in your `build
     :::ruby
     extensions: ["screenorientation"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
+## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
-
-## Persistence
-With the old PocketBrowser / RhoElements 1 APIs, any events, such as `screenOrientationEvent` were canceled when a full navigate was performed. The original reason for this was a limitation of the IE engine on WM5 devices. When moving to the common API this was changed so that callbacks are not canceled.
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
@@ -46,14 +43,13 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
 
 The ebapi.js file is necessary for all single API inclusions.
 
-## Persistence
-With the old PocketBrowser APIs, any events, such as `screenOrientationEvent` were canceled when a full navigate was performed. The original reason for this was a limitation of the IE engine on WM5 devices. When moving to the common API this was changed so that callbacks are not canceled.
         </MORE_HELP_EB>
         <PROPERTIES access="STATIC">
             <DESC>Properties used to configure Screen Orientation module.</DESC>
             <PROPERTY name="autoRotate" type="BOOLEAN" access="STATIC" generateAccessors="true" default="true">
-                <DESC>Enables or Disables auto-rotation of the screen orientation when the device is rotated. For Windows Mobile/CE devices, support is limited to only Symbol Technologies devices with IST Sensor support.</DESC>
+                <DESC>Enables or Disables auto-rotation of the screen orientation when the device is rotated. For Windows Mobile/CE devices, support is limited to only Zebra Technologies devices with IST Sensor support.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
             </PROPERTY>
         </PROPERTIES>
 
@@ -81,6 +77,7 @@ With the old PocketBrowser APIs, any events, such as `screenOrientationEvent` we
             <METHOD name="setScreenOrientationEvent" hasCallback="mandatory" runInThread="module">
                 <DESC>Sets the callback to be called when a screen orientation event occurs.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <CALLBACK type="STRING">
                     <DESC>Current orientation of the screen. The orientation is reported as normal, leftHanded, rightHanded or upsideDown. If auto rotation is disabled - real rotating of device do not produce an event. The event occurs only for real changing of screen orientation.</DESC>
                 </CALLBACK>
@@ -95,6 +92,7 @@ With the old PocketBrowser APIs, any events, such as `screenOrientationEvent` we
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+
         <EXAMPLES>
             <EXAMPLE title="Detect screen orientation changes">
                 <SECTIONS>
@@ -198,7 +196,6 @@ Rho.ScreenOrientation.autoRotate=false;
                 </SECTIONS>
             </EXAMPLE>
         </EXAMPLES>
-
         <EXAMPLES_EB>
             <EXAMPLE title='Manipulating the Screen Orientation'>
                 <SECTIONS>

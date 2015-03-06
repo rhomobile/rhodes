@@ -14,10 +14,10 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
+## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <MORE_HELP_EB>
@@ -64,7 +64,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="framework" type="STRING" readOnly="true">
                 <DESC>Same as System.webViewFramework.</DESC>
             </PROPERTY>
-            <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
+            <PROPERTY name="fullScreen" type="BOOLEAN" default="true">
                 <DESC>Use full screen mode.</DESC>
                 <PLATFORM>WM, CE, Win32, Android</PLATFORM>
             </PROPERTY>
@@ -232,6 +232,7 @@ If you open your page in WebView, and after it makes a few jumps by linking (for
             <METHOD name="currentURL">
                 <DESC>Returns the actual URL in WebView. This works the same as the JavaScript window.location.href.</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
+                <PLATFORM_EB>Android</PLATFORM_EB>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
@@ -282,6 +283,7 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
                 <DESC>When WebView loads the specified url (either by selecting link or from calling WebView.navigate), it will add this cookie to the HTTP request.Not implemented for WebKit.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <PLATFORM>Android, Win32, iOS</PLATFORM>
+                <PLATFORM_EB>Android, Win32</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>Set a cookie to be used by WebView for this url.</DESC>
@@ -336,6 +338,7 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+
         <EXAMPLES>
             <EXAMPLE title="Execute javascript">
                 <SECTIONS>
