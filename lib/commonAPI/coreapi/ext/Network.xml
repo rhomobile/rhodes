@@ -9,10 +9,10 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
+## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <MORE_HELP_EB>
@@ -75,6 +75,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="verifyPeerCertificate" type="BOOLEAN" default="true">
                 <DESC>Verify SSL certificates. When set to false it will allow untrusted certificates.</DESC>
                 <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
+                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="httpVerb" type="STRING">
                 <DESC>HTTP verb to be used in the network request.</DESC>
@@ -255,25 +256,29 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="hasNetwork">
                 <DESC>Returns true if the device is connected to a network. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasWifiNetwork">
                 <DESC>Returns true if the device is connected to a WiFi network. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasCellNetwork">
                 <DESC>Returns true if the device is connected to a cell network. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="startStatusNotify" hasCallback="mandatory" runInThread="none">
-                <DESC>Start network status notifications. Notifications are sent when WiFi or Cell network appear/disappear. To check real Internet connectivity use detectConnection method. Not supported on Windows CE.</DESC>
+                <DESC>Start network status notifications. Notifications are sent when WiFi or Cell network appear / disappear. To check real Internet connectivity use detectConnection method. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
                 <PARAMS>
                     <PARAM name="pollInterval" type="INTEGER" default="20" productException="eb">
@@ -296,6 +301,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="stopStatusNotify">
                 <DESC>Stop network status notifications. Not supported on Windows CE.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <MORE_HELP>Not supported on Windows CE</MORE_HELP>
             </METHOD>
 

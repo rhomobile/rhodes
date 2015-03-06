@@ -9,10 +9,10 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
+## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <MORE_HELP_EB>On Android, the tabs are true Native Tabbar controls to give your application a native look and feel. On Windows Mobile/CE there are no visible tabs, but can be used in conjunction with shortcuts to run multiple 'applications' from a single instance. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time.
@@ -110,7 +110,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
                                 <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                     <PLATFORM>WM</PLATFORM>
-                                    <DESC>Create tab immediately when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to. Don't use this parameter on the devices with a small amount of RAM.</DESC>
+                                    <DESC>Create tab immediately when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to.</DESC>
                                 </PARAM>
                             </PARAMS>
                         </PARAM>
@@ -134,7 +134,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             </PARAM>
                             <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                 <PLATFORM>WM</PLATFORM>
-                                <DESC>Create tabs immediately when TabBar is created. Action also will be executed. If false, then each tab will be created when first switch to the tab is executed. Don't use this parameter on the devices with a small amount of RAM.</DESC>
+                                <DESC>Create tabs immediately when TabBar is created. Action also will be executed. If false, then each tab will be created when first switch to the tab is executed.</DESC>
                             </PARAM>
                             <PARAM name="placeTabsBottom" type="BOOLEAN">
                                 <PLATFORM>Android</PLATFORM>

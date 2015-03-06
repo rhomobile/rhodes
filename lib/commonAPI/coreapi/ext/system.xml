@@ -9,10 +9,10 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
+## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <MORE_HELP_EB>
@@ -56,7 +56,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <ALIASES>
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
                 <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
-                <ALIAS new="isMotorolaDevice" existing="isSymbolDevice" deprecated="true"/>
             </ALIASES>
             <PROPERTY name="main_window_closed" type="BOOLEAN" readOnly="true" generateDoc="false">
                 <DESC>It is internal property for using in debugger (signal for main window close).</DESC>
@@ -70,17 +69,16 @@ The ebapi.js file is necessary for all single API inclusions.
                     <VALUE constName="PLATFORM_ANDROID" value ="ANDROID">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="PLATFORM_IOS" value ="APPLE" productException='eb'>
+                    <VALUE constName="PLATFORM_IOS" value ="APPLE">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="PLATFORM_WP8" value ="WP8" productException='eb'>
+                    <VALUE constName="PLATFORM_WP8" value ="WP8">
                         <DESC></DESC>
                     </VALUE>
                     <VALUE constName="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
                         <DESC></DESC>
                     </VALUE>
                 </VALUES>
-                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if there is a camera available on the device.</DESC>
@@ -151,8 +149,8 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="hasCalendar" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if calendar support is available.</DESC>
             </PROPERTY>
-            <PROPERTY name="isSymbolDevice" type="BOOLEAN" readOnly="true">
-                <DESC>Returns true if the device supports Symbol device capabilities. APIs will indicate if the property or method is available on Symbol devices only. You can use this property to help your application decide when to take advantage of advanced Symbol capabilities.</DESC>
+            <PROPERTY name="isMotorolaDevice" type="BOOLEAN" readOnly="true">
+                <DESC>Returns true if the device supports Motorola device capabilities. APIs will indicate if the property or method is available on MSI devices only. You can use this property to help your application decide when to take advantage of advanced MSI capabilities.</DESC>
             </PROPERTY>
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
                 <DESC>The OEM Information string for the terminal.</DESC>
@@ -164,13 +162,14 @@ The ebapi.js file is necessary for all single API inclusions.
                 <APPLIES msiOnly="true"></APPLIES>
                 <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
-            <PROPERTY name="applicationIconBadge" type="INTEGER"  productException="eb">
+            <PROPERTY name="applicationIconBadge" type="INTEGER" productException="eb">
                 <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.</DESC>
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
                 <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password). To set proxy for WebKit for Windows Mobile/CE use config.xml settings.</DESC>
                 <PLATFORM>Android, iOS, WM, Win32</PLATFORM>
+                <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
                 <DESC>Lock / unlock the window size change by the user. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
@@ -201,9 +200,10 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="screenAutoRotate" type="BOOLEAN" default="true">
                 <DESC>Screen auto rotate.</DESC>
                 <PLATFORM>Android, iOS</PLATFORM>
+                <PLATFORM_EB>Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasTouchscreen" type="BOOLEAN" readOnly="true">
-                <DESC>Returns true if the device has touch screen capabilities.  For Win32 desktop builds this API will return whether mouse support is available.</DESC>
+                <DESC>Returns true if the device has touch screen capabilities.</DESC>
             </PROPERTY>
             <PROPERTY name="webviewFramework" type="STRING" readOnly="true">
                 <DESC>Browser framework identity string.</DESC>
@@ -211,6 +211,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="screenSleeping" type="BOOLEAN">
                 <DESC>If true, then screen will go to sleep by system inactivity timeout. If false then screen never go to sleep while application is in foreground.</DESC>
                 <PLATFORM>Android, iOS</PLATFORM>
+                <PLATFORM_EB>Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
                 <DESC>Use Network.hasNetwork to tell if the device is connected to the network.</DESC>
@@ -241,6 +242,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="applicationInstall">
                 <DESC>Install an application.</DESC>
               <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
+              <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="applicationUrl" type="STRING">
                         <DESC>The url of an application to install on the device.</DESC>
@@ -251,6 +253,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="isApplicationInstalled">
                 <DESC>Checks if the specified applicationName is installed on the device.</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
+                <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
                         <DESC>The name of the application.</DESC>
@@ -287,7 +290,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="unzipFile" callbackType="optional">
+            <METHOD name="unzipFile">
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
@@ -297,12 +300,6 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>Password for the zip.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
-
-                    <PARAM name="outputFileName" type="STRING">
-                        <DESC>Output file name. Used when decompressing gzip streams.</DESC>
-                        <CAN_BE_NIL/>
-                    </PARAM>
-
                 </PARAMS>
             </METHOD>
 
@@ -532,7 +529,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="setDoNotBackupAttribute">
+            <METHOD name="setDoNotBackupAttribute" platformException="eb">
                 <DESC>Set do not backup attribute for file.</DESC>
                 <PLATFORM>iOS</PLATFORM>
                 <PARAMS>
@@ -598,6 +595,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="setScreenRotationNotification" deprecated="true">
                 <DESC>Use ScreenOrientation.setScreenOrientationEvent: Notify (call a callback method) when the screen rotates.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>URL of the callback method. If empty, unregisters notification callback.</DESC>
@@ -618,7 +616,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAMS>
             </METHOD>
             <METHOD name="startTimer" deprecated="true">
-                <DESC>Start timer. (It's works only with Ruby)</DESC>
+                <DESC>Use Timer.start: start timer.</DESC>
                 <PARAMS>
                     <PARAM name="interval" type="INTEGER">
                         <DESC>Timer interval.</DESC>
@@ -633,7 +631,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAMS>
             </METHOD>
             <METHOD name="stopTimer" deprecated="true">
-                <DESC>Stop timer.</DESC>
+                <DESC>Use Timer.stop: stop timer.</DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>URL of the callback method which identify the timer to stop.</DESC>
@@ -646,7 +644,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     <PARAM name="url" type="STRING">
                         <DESC>The url to the user-defined callback method.</DESC>
                     </PARAM>
-                    <PARAM name="poll_interval" type="INTEGER"  productException="eb">
+                    <PARAM name="poll_interval" type="INTEGER">
                         <DESC>IOS. The network status polling period for systems that can not notify network status change immediately. Default value is 20 seconds.</DESC>
                     </PARAM>
                 </PARAMS>
@@ -665,7 +663,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
                 <PLATFORM>WM, CE, WIN32</PLATFORM>
             </METHOD>
-            <METHOD name="set_application_icon_badge" deprecated="true"  productException="eb">
+            <METHOD name="set_application_icon_badge" deprecated="true" platformException="eb">
                 <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
                 <PLATFORM>iOS</PLATFORM>
                 <PARAMS>
@@ -675,6 +673,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="runApplication">
                 <DESC>Run an application.</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
+                <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="appName" type="STRING">
                         <DESC>The name of the application on the device to run. It depends from platform. On iOS it is BundleURLScheme of executed application.</DESC>
@@ -692,10 +691,6 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAM>
                 </PARAMS>
             </METHOD>
-            <METHOD name="hideSplashScreen">
-                <DESC>Hide Splash Screen if delay is configured as -1 in rhoconfig.txt</DESC>
-                <PLATFORM>Android</PLATFORM>
-            </METHOD>
         </METHODS>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
@@ -709,8 +704,8 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>You can find out whether the device has access to several system-dependent features such as calendar, camera, touchscreen, etc.</DESC>
                         <CODE>
                             <RUBY><![CDATA[
-# Returns true if device supports Symbol device capabilities, such as barcode scanner, etc.
-is_symbol_device = Rho::System.isSymbolDevice
+# Returns true if device supports Motorola device capabilities, such as barcode scanner, etc.
+is_motorola_device = Rho::System.isMotorolaDevice
 
 has_calendar = Rho::System.hasCalendar
 has_camera = Rho::System.hasCamera
@@ -721,7 +716,7 @@ has_sqlite = Rho::System.hasSqlite
 has_touchscreen = Rho::System.hasTouchscreen
 
 message = "
-Symbol device: #{is_symbol_device}
+Motorola device: #{is_motorola_device}
 Calendar: #{has_calendar}
 Camera: #{has_camera}
 Cell network: #{has_cell_network}
@@ -734,8 +729,8 @@ Alert.show_popup(message)
 ]]>
                             </RUBY>
                             <JAVASCRIPT><![CDATA[
-// Returns true if device supports Symbol device capabilities, such as Scanner, etc.
-var is_symbol_device = Rho.System.isSymbolDevice;
+// Returns true if device supports Motorola device capabilities, such as Scanner, etc.
+var is_motorola_device = Rho.System.isMotorolaDevice;
 
 var has_calendar = Rho.System.hasCalendar;
 var has_camera = Rho.System.hasCamera;
@@ -745,7 +740,7 @@ var has_network = Rho.System.hasNetwork;
 var has_sqlite = Rho.System.hasSqlite;
 var has_touchscreen = Rho.System.hasTouchscreen;
 
-message = "Symbol device: "+is_symbol_device+"\n"+
+message = "Motorola device: "+is_motorola_device+"\n"+
   "Calendar: "+has_calendar+"\n"+
   "Camera: "+has_camera+"\n"+
   "Cell network: "+has_cell_network+"\n"+

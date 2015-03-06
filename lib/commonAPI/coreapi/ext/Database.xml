@@ -9,10 +9,10 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
+## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
     </MORE_HELP>
         <MORE_HELP_EB>
@@ -151,8 +151,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
     </USER_OVERVIEW>
     <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
-        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+    <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+    <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+
     <EXAMPLES>
       <EXAMPLE title="Using Transactions">
         <SECTIONS>
@@ -160,8 +161,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DESC>To insert/update multiple object/models use database transactions. This is the most performant method to initialize your application with a large set of data.</DESC>
             <CODE>
               <RUBY>
-                <![CDATA[
-db = Rho::Database.new
+db = Rho::Database
 db.startTransaction
 begin
   items.each do |item|
@@ -177,10 +177,8 @@ begin
 rescue
   db.rollbackTransaction
 end
-]]>
               </RUBY>
               <JAVASCRIPT>
-                <![CDATA[
 var db = Rho.Database;
 db.startTransaction();
 try
@@ -201,7 +199,6 @@ catch
 {
  db.rollbackTransaction();
 }
-]]>
               </JAVASCRIPT>
             </CODE>
           </SECTION>
