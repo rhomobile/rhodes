@@ -13,16 +13,17 @@ In order to use this API you must include the following extension in your `build
     extensions: ["mediacapture"]
 
 ## JavaScript Usage
-Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
 ## Ruby Usage
-Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the VideoCapture API: 
+There are two methods of enabling the VideoCapture API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -44,7 +45,6 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
     &lt;script type="text/javascript" charset="utf-8" src="eb.videocapture.js"&gt;&lt;/script&gt;
 
 The ebapi.js file is necessary for all single API inclusions.
-
         </MORE_HELP_EB>
         <TEMPLATES>
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
@@ -92,6 +92,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="start" hasCallback="optional" runInThread="ui">
                 <DESC>Starts capturing video until either 'stop' is received, or 'duration' is reached. NOTE: On Android this meta tag wouldn't immediately start recording and presents a preview window with controls (start, stop and cancel) for recording.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <RETURN>
                     <DESC>Not providing a callback to be invoked will result in that file is saved only locally and file is not transfered.</DESC>
                 </RETURN>

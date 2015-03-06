@@ -9,18 +9,18 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
+## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the System API: 
+There are two methods of enabling the System API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -42,7 +42,6 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
     &lt;script type="text/javascript" charset="utf-8" src="eb.system.js"&gt;&lt;/script&gt;
 
 The ebapi.js file is necessary for all single API inclusions.
-
         </MORE_HELP_EB>
         <ALIASES>
             <ALIAS new="System" deprecated="true"/>
@@ -114,7 +113,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="ppiY" type="INTEGER" readOnly="true">
                 <DESC>Vertical PPI (Pixels Per Inch).</DESC>
             </PROPERTY>
-            
+
             <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
                 <DESC>Primary email of phone owner. To access this property 'pim' capability must be enabled in your build.yml.</DESC>
                 <PLATFORM>Android</PLATFORM>
@@ -171,6 +170,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="httpProxyURI" type="STRING">
                 <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password). To set proxy for WebKit for Windows Mobile/CE use config.xml settings.</DESC>
                 <PLATFORM>Android, iOS, WM, Win32</PLATFORM>
+                <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
                 <DESC>Lock / unlock the window size change by the user. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
@@ -178,7 +178,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="keyboardState" type="STRING" default="See Description">
                 <DESC>For Windows Mobile and Windows CE the keyboard can be manually shown or hidden as required. All other platforms only support 'automatic'. The default state for Windows Mobile and Windows CE is manual, for all other platforms it is automatic.</DESC>
-                <PLATFORM>WM</PLATFORM>               
+                <PLATFORM>WM</PLATFORM>
                 <APPLIES msiOnly="true"></APPLIES>
                 <VALUES>
                     <VALUE constName="KEYBOARD_SHOWN" value ="shown">
@@ -201,6 +201,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="screenAutoRotate" type="BOOLEAN" default="true">
                 <DESC>Screen auto rotate.</DESC>
                 <PLATFORM>Android, iOS</PLATFORM>
+                <PLATFORM_EB>Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasTouchscreen" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if the device has touch screen capabilities.  For Win32 desktop builds this API will return whether mouse support is available.</DESC>
@@ -211,6 +212,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="screenSleeping" type="BOOLEAN">
                 <DESC>If true, then screen will go to sleep by system inactivity timeout. If false then screen never go to sleep while application is in foreground.</DESC>
                 <PLATFORM>Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
                 <DESC>Use Network.hasNetwork to tell if the device is connected to the network.</DESC>
@@ -236,11 +238,12 @@ The ebapi.js file is necessary for all single API inclusions.
                 <ALIAS new="app_installed?" existing="isApplicationInstalled" deprecated="true"/>
                 <ALIAS new="app_uninstall" existing="applicationUninstall" deprecated="true"/>
                 <ALIAS new="set_do_not_bakup_attribute" existing="setDoNotBackupAttribute" deprecated="true"/>
-                
+
             </ALIASES>
             <METHOD name="applicationInstall">
                 <DESC>Install an application.</DESC>
               <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
+              <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="applicationUrl" type="STRING">
                         <DESC>The url of an application to install on the device.</DESC>
@@ -251,6 +254,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="isApplicationInstalled">
                 <DESC>Checks if the specified applicationName is installed on the device.</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
+                <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
                         <DESC>The name of the application.</DESC>
@@ -297,7 +301,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>Password for the zip.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
-                    
+
                     <PARAM name="outputFileName" type="STRING">
                         <DESC>Output file name. Used when decompressing gzip streams.</DESC>
                         <CAN_BE_NIL/>
@@ -427,7 +431,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     <DESC>Registry value of the key.</DESC>
                 </RETURN>
             </METHOD>
-            
+
             <METHOD name="deleteRegistrySetting">
                 <DESC>Deletes the specified value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <DESC_EB>Deletes the specified value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. </DESC_EB>
@@ -532,7 +536,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="setDoNotBackupAttribute">
+            <METHOD name="setDoNotBackupAttribute" productException="eb">
                 <DESC>Set do not backup attribute for file.</DESC>
                 <PLATFORM>iOS</PLATFORM>
                 <PARAMS>
@@ -590,7 +594,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>Name of a push service client. Current values can be 'rhoconnect_push' or 'gcm' or 'legacy' or empty.</DESC>
                         <CAN_BE_NIL>
                             <DESC>The call will be applied to every push client.</DESC>
-                        </CAN_BE_NIL>    
+                        </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -598,6 +602,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="setScreenRotationNotification" deprecated="true">
                 <DESC>Use ScreenOrientation.setScreenOrientationEvent: Notify (call a callback method) when the screen rotates.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>URL of the callback method. If empty, unregisters notification callback.</DESC>
@@ -675,6 +680,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="runApplication">
                 <DESC>Run an application.</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
+                <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="appName" type="STRING">
                         <DESC>The name of the application on the device to run. It depends from platform. On iOS it is BundleURLScheme of executed application.</DESC>
@@ -711,7 +717,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <RUBY><![CDATA[
 # Returns true if device supports Symbol device capabilities, such as barcode scanner, etc.
 is_symbol_device = Rho::System.isSymbolDevice
-    
+
 has_calendar = Rho::System.hasCalendar
 has_camera = Rho::System.hasCamera
 has_cell_network = Rho::System.hasCellNetwork
@@ -746,7 +752,7 @@ var has_sqlite = Rho.System.hasSqlite;
 var has_touchscreen = Rho.System.hasTouchscreen;
 
 message = "Symbol device: "+is_symbol_device+"\n"+
-  "Calendar: "+has_calendar+"\n"+ 
+  "Calendar: "+has_calendar+"\n"+
   "Camera: "+has_camera+"\n"+
   "Cell network: "+has_cell_network+"\n"+
   "WiFi: "+has_wifi_network+"\n"+
@@ -798,7 +804,7 @@ Rho::System.applicationUninstall("rhodes-app")
                                 <JAVASCRIPT><![CDATA[
 // install an application from given url
 Rho.System.applicationInstall("/bin/target/android/rhodes-app-debug.apk");
-  
+
 // uninstall the application
 Rho.System.applicationUninstall("rhodes-app");
 ]]>
@@ -836,7 +842,7 @@ alert(local_port);
                             <DESC>If you ever need to build or extract zip archives, RhoMobile includes easy-to-use APIs for this task.</DESC>
                             <CODE>
                                 <RUBY><![CDATA[
-# unzip a file 
+# unzip a file
 Rho::System.unzipFile("/app/public/sample.zip")
 
 # zip a file
@@ -844,9 +850,9 @@ Rho::System.zipFile("/app/public", "/app/public/sample.txt")
 ]]>
                                 </RUBY>
                                 <JAVASCRIPT><![CDATA[
-// unzip file 
+// unzip file
 Rho.System.unzipFile("/app/public/sample.zip");
-  
+
 // zip file
 Rho.System.zipFile("/app/public/zipfile.zip", "/app/public/sample.txt");
 ]]>
@@ -870,12 +876,12 @@ def get_registry_sync
     puts "Registry Setting retrieved: #{theRegSetting}"
 end
 
-#  Set a value in the registry which will persist across a clean boot of the device  
+#  Set a value in the registry which will persist across a clean boot of the device
 def set_registry_sync
     theRegSetting = Rho::System.setRegistrySetting({hive:'HKLM', type:'String', key:'Software', setting:'RhoElementsTest', value:'MVC ftw', persistent:true})
     puts "Registry Setting Success?: #{theRegSetting}"
 end
-      
+
 #  Delete a value from the registry
 def delete_registry_sync
     theRegSetting = Rho::System.deleteRegistrySetting({hive:'HKLM', key:'Software', setting:'RhoElementsTest', persistent:true})
