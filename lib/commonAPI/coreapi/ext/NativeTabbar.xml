@@ -3,8 +3,8 @@
 <API>
     <MODULE name="NativeTabbar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NativeTabbar methods let you use multiple instances of the RhoMobile webview in separate tabs. </HELP_OVERVIEW>
-        <MORE_HELP>On Android, iOS and WIndows Phone 8 the tabs are true Native Tabbar controls to give your application a native look and feel.No more than 4 tabs can be created in the Windows Phone 8 tabbar. A tabbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time. 
-## Enabling the API           
+        <MORE_HELP>On Android, iOS and WIndows Phone 8 the tabs are true Native Tabbar controls to give your application a native look and feel.No more than 4 tabs can be created in the Windows Phone 8 tabbar. A tabbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time.
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
@@ -15,12 +15,12 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
-        <MORE_HELP_EB>On Android, the tabs are true Native Tabbar controls to give your application a native look and feel. On Windows Mobile/CE there are no visible tabs, but can be used in conjunction with shortcuts to run multiple 'applications' from a single instance. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time. 
+        <MORE_HELP_EB>On Android, the tabs are true Native Tabbar controls to give your application a native look and feel. On Windows Mobile/CE there are no visible tabs, but can be used in conjunction with shortcuts to run multiple 'applications' from a single instance. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time.
 ## Enabling the API
-There are two methods of enabling the NativeTabbar API: 
+There are two methods of enabling the NativeTabbar API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -45,7 +45,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
 
         </MORE_HELP_EB>
-        
+
         <TEMPLATES>
         </TEMPLATES>
 
@@ -65,7 +65,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
                         <PARAM name="tabElement" type="HASH">
                             <DESC>Properties of Tab elements.</DESC>
-                            <PARAMS> 
+                            <PARAMS>
                                 <PARAM name="label" type="STRING">
                                     <DESC>Visible label to display on the tabbar.</DESC>
                                 </PARAM>
@@ -107,7 +107,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                     <DESC>Sets whether this tab is allowed to be destroyed when a memory limit is reached (Windows Mobile)</DESC>
                                     <PLATFORM>WM</PLATFORM>
                                 </PARAM>
-                                
+
                                 <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                     <PLATFORM>WM</PLATFORM>
                                     <DESC>Create tab immediately when TabBar is created. Action also will be executed. If false, the tab will be created when it is switched to. Don't use this parameter on the devices with a small amount of RAM.</DESC>
@@ -115,7 +115,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             </PARAMS>
                         </PARAM>
                     </PARAM>
-                    
+
                     <PARAM name="tabBarProperties" type="HASH">
                         <DESC>Properties of TabBar.</DESC>
                         <PARAMS>
@@ -222,7 +222,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </METHOD>
 
         </METHODS>
-        
+
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
@@ -236,7 +236,7 @@ The ebapi.js file is necessary for all single API inclusions.
                <CODE>
                 <RUBY>
            <![CDATA[
-def create_tabbar           
+def create_tabbar
     Rho::NativeTabbar.create([{
       :label => "Home",
       :action => url_for(Rho::Application.startURI)

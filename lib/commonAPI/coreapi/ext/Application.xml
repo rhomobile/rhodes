@@ -4,7 +4,7 @@
     <MODULE name="Application" parent="Rho">
         <HELP_OVERVIEW>The Application class is used for accessing or setting application level configuration settings.</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
@@ -17,10 +17,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Application API: 
+There are two methods of enabling the Application API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -70,11 +70,11 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="databaseBlobFolder" type="STRING" readOnly="true">
                 <DESC>Path to folder where the database blob files are stored. Blobs are usually images or binary files. In the ORM Model you would specify that the attribute is of type blob Ex. When capturing an image, the actual file is saved in the databaseBlobFolder.</DESC>
-            </PROPERTY>             
+            </PROPERTY>
             <PROPERTY name="publicFolder" type="STRING" readOnly="true">
                 <DESC>Path to the application's public folder.</DESC>
             </PROPERTY>
-            
+
             <PROPERTY name="startURI" type="STRING">
                 <DESC>Startup page for your application.</DESC>
             </PROPERTY>
@@ -137,7 +137,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC_EB>Page to navigate to in case of check of SecurityToken failed. Can be set in rhoconfig.txt: invalid_security_token_start_path; This file is located in the installation folder of the EnetrpriseBrowser application installed on the device.</DESC_EB>
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
-            
+
             <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true" generateDoc="false">
                 <DESC>The version of RhoMobile platform, which was used to build the application.</DESC>
                 <DESC_EB>The version of Enteprise Browser platform, which was used to build the application.</DESC_EB>
@@ -336,11 +336,11 @@ publicFolder = Rho::Application.publicFolder
 userFolder = Rho::Application.userFolder
 
 message = "App bundle folder: "+appFolder+"\n"+
-"Apps bundle folder: "+appsBundleFolder+"\n"+ 
-"Database blob folder: "+databaseBlobFolder+"\n"+ 
-"Public folder: "+publicFolder+"\n"+ 
+"Apps bundle folder: "+appsBundleFolder+"\n"+
+"Database blob folder: "+databaseBlobFolder+"\n"+
+"Public folder: "+publicFolder+"\n"+
 "User folder: "+userFolder
-    
+
 Alert.show_popup(message)
                    ]]>
                  </RUBY>
@@ -352,13 +352,13 @@ Alert.show_popup(message)
      var databaseBlobFolder = Rho.Application.databaseBlobFolder;
      var publicFolder = Rho.Application.publicFolder;
      var userFolder = Rho.Application.userFolder;
-     
+
      var message = "App bundle folder: "+appFolder+"\n"+
-     "Apps bundle folder: "+appsBundleFolder+"\n"+ 
-     "Database blob folder: "+databaseBlobFolder+"\n"+ 
-     "Public folder: "+publicFolder+"\n"+ 
+     "Apps bundle folder: "+appsBundleFolder+"\n"+
+     "Database blob folder: "+databaseBlobFolder+"\n"+
+     "Public folder: "+publicFolder+"\n"+
      "User folder: "+userFolder;
-     
+
      alert(message);
                    ]]>
                  </JAVASCRIPT>

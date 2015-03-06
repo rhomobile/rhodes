@@ -10,7 +10,7 @@
             <PROPERTY name="configPath" type="STRING" default="">
                 <DESC></DESC>
             </PROPERTY>
-                            
+
         </PROPERTIES>
 
         <METHODS>
@@ -38,7 +38,7 @@
               </PARAMS>
               <DESC></DESC>
             </METHOD>
-          
+
             <METHOD name="getPropertyInt" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
@@ -48,7 +48,7 @@
                 <RETURN type="INTEGER"/>
                 <DESC>Get int property from config</DESC>
             </METHOD>
-          
+
             <METHOD name="setPropertyInt" access="STATIC">
               <PARAMS>
                 <PARAM name="name" type="STRING">
@@ -63,7 +63,7 @@
               </PARAMS>
               <DESC></DESC>
             </METHOD>
-          
+
             <METHOD name="getPropertyBool" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
@@ -88,7 +88,7 @@
               </PARAMS>
               <DESC></DESC>
             </METHOD>
-          
+
             <METHOD name="isPropertyExists" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
@@ -110,10 +110,10 @@
                 </PARAMS>
                 <DESC>Remove existing property and save to file.</DESC>
             </METHOD>
-                                     
+
             <METHOD name="loadFromFile" access="STATIC">
                 <DESC>Load config from default file.</DESC>
-            </METHOD>             
+            </METHOD>
 
             <METHOD name="getConflicts" access="STATIC">
                 <RETURN type="HASH"/>

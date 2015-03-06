@@ -4,10 +4,10 @@
     <MODULE name="ConnectionChecking" parent="Rho" generateDoc="false">
         <HELP_OVERVIEW>Example extension api</HELP_OVERVIEW>
         <MORE_HELP>This is example of API. Implementation contain in extension.</MORE_HELP>
-    
+
         <TEMPLATES>
-           
-            
+
+
         </TEMPLATES>
 
          <PROPERTIES access="static" generateDoc="false">
@@ -29,8 +29,8 @@
             </PROPERTY>
         </PROPERTIES>
 
-       
-        
+
+
         <USER_OVERVIEW>
         </USER_OVERVIEW>
 
@@ -38,4 +38,4 @@
         <PLATFORM>
          </PLATFORM>
     </MODULE>
-</API>    
+</API>

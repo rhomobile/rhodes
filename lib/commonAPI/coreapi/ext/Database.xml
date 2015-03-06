@@ -4,7 +4,7 @@
   <MODULE name="Database" parent="Rho" generateUnderscoreRubyNames="true" productException='eb'>
     <HELP_OVERVIEW>Database is low-level API to access SQLite local database.</HELP_OVERVIEW>
     <MORE_HELP>This API used internally by RHOM. To use RHOM, just define your models and partition databases will be created automatically.
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
@@ -20,7 +20,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
     <ALIASES>
     </ALIASES>
-    
+
     <TEMPLATES>
     </TEMPLATES>
 
@@ -167,9 +167,9 @@ begin
   items.each do |item|
     # create hash of attribute/value pairs
     data = {
-      :field1 => item['value1'], 
-      :field2 => item['value2'] 
-    } 
+      :field1 => item['value1'],
+      :field2 => item['value2']
+    }
     # Creates a new itemModel object and saves it
     new_item = itemModel.create(data)
   end
@@ -188,13 +188,13 @@ try
   for (var index in items) {
     // create hash of attribute/value pairs
     data = {
-      field1 : item[index].value1, 
+      field1 : item[index].value1,
       field2 : item[index].value2
-    }; 
+    };
     // Creates a new itemModel object and saves it
     new_item = itemModel.create(data);
   }
-  
+
  db.commitTransaction();
 }
 catch
