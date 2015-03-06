@@ -76,7 +76,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 
             <METHOD name="generateId" access="STATIC">
                 <DESC>Returns newly generated unique object Id.</DESC>
-                <RETURN type="INTEGER"/>    
+                <RETURN type="INTEGER"/>
             </METHOD>
 
         </METHODS>

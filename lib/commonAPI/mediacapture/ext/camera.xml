@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Camera" parent="Rho"  productException="eb">
+    <MODULE name="Camera" parent="Rho"  productException="eb" generateDoc="false">
         <HELP_OVERVIEW>The Camera API provides access to your device's Camera(s). Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application. Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API
@@ -18,10 +18,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Camera API: 
+There are two methods of enabling the Camera API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -46,7 +46,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
         <PLATFORM>Android, iOS, WM</PLATFORM>
-    
+
         <ALIASES>
             <ALIAS new="Camera" deprecated="true"/>
         </ALIASES>
@@ -70,10 +70,9 @@ The ebapi.js file is necessary for all single API inclusions.
                 <ALIAS new="camera_type" existing="cameraType" deprecated="true"/>
             </ALIASES>
 
-            <PROPERTY name="cameraType" type="STRING" readOnly="true">
-			    <PLATFORM>Android, iOS, WP8, WM, CE</PLATFORM>
-                <DESC>This property is device specific. The value for this property can be either 'back' or 'front' in the case of Android/iOS/WP8 devices.In the case of windows it could be either 'imager' or 'color'. WM/CE devices will use 'color'as default and if color camera not avialble the default value will be 'imager'. Android/iOS/WP8 devices will use 'back'as default and if back camera not avialble the default value will be 'front'.
-				</DESC>
+            <PROPERTY name="cameraType" type="STRING" default="main" readOnly="true">
+                <PLATFORM>Android, iOS, WM, CE</PLATFORM>
+                <DESC>Camera type: back or front. In windows this could be imager or color camera.</DESC>
                 <VALUES>
                     <VALUE constName="CAMERA_TYPE_BACK" value="back">
                         <DESC>Back camera.</DESC>
@@ -81,53 +80,52 @@ The ebapi.js file is necessary for all single API inclusions.
                     <VALUE constName="CAMERA_TYPE_FRONT" value="front">
                         <DESC>Front camera.</DESC>
                     </VALUE>
-					 <VALUE constName="CAMERA_TYPE_IMAGER" value="imager">
+                     <VALUE constName="CAMERA_TYPE_IMAGER" value="imager">
                         <DESC>Camera is an imager.</DESC>
                     </VALUE>
-					 <VALUE constName="CAMERA_TYPE_COLOR" value="color">
+                     <VALUE constName="CAMERA_TYPE_COLOR" value="color">
                         <DESC>Camera is color camera.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
-                <PLATFORM>Android, iOS, WP8, WM, CE</PLATFORM>
-                <DESC>The maximum width of images which can be captured. This is measured in pixels. On WM/CE devices this is applicable only for color camera. Imager does not support this property.</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <DESC>The maximum width of images which can be captured.</DESC>
             </PROPERTY>
             <PROPERTY name="maxHeight" type="INTEGER" generateAccessors="true" readOnly="true">
-                <PLATFORM>Android, iOS, WP8, WM, CE</PLATFORM>
-                <DESC>The maximum height of images which can be captured. This is measured in pixels. On WM/CE devices this is applicable only for color camera. Imager does not support this property.</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <DESC>The maximum height of images which can be captured.</DESC>
             </PROPERTY>
-            <PROPERTY name="supportedSizeList" type="ARRAY" readOnly="true" usePropertyBag="none" >		            
+            <PROPERTY name="supportedSizeList" type="ARRAY" readOnly="true" usePropertyBag="none" >
                 <PARAM type="HASH">
                     <PARAMS>
                         <PARAM name="width" type="INTEGER"/>
                         <PARAM name="height" type="INTEGER"/>
                     </PARAMS>
                 </PARAM>
-                <PLATFORM>Android, WP8, WM, CE</PLATFORM>
-                <DESC>List of resolutions (width and height in pixels) supported by the camera. On WM/CE devices this feature is supported only by color camera and it is not supported by imager. Refer example section for more details.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <DESC>List of resolutions supported by camera.</DESC>
             </PROPERTY>
             <PROPERTY name="desiredWidth" type="INTEGER">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
+                <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
                 <DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc. Specifying a desiredWidth will request to take the photo with the specified width but if it is not supported by the hardware then the closest match will be selected. The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
             </PROPERTY>
             <PROPERTY name="desiredHeight" type="INTEGER">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
+                <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
                 <DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc. Specifying a desiredHeight will request to take the photo with the specified height but if it is not supported by the hardware then the closest match will be selected. The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
             </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
-                <DESC>The image file path without file extension to store captured image in subsequent calls to takePicture() or capture(). Default filename will be IMG_timestamp and will be saved under root directory. The filename extension will be added automatically according to compressionFormat property value.
-				In Wp8 only filename can be changed, by default the path shall be under picture=>CameraRoll</DESC>
+                <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
+                <DESC>The path without filename extension to store captured image in subsequent calls to takePicture() or capture(). The filename extension will be added automatically according to compressionFormat property value.</DESC>
             </PROPERTY>
             <PROPERTY name="compressionFormat" type="STRING" default="jpg">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <APPLIES>JPG is supported on all devices, Android,WP8 and Windows Mobile does not support PNG images</APPLIES>
-				<PLATFORM>Android, iOS, WM, CE,WP8</PLATFORM>
-                <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data. In windows and WP8 devices the format will be always jpg type</DESC>
+                <APPLIES>JPG is supported on all devices, Android and Windows Mobile does not support PNG images</APPLIES>
+                <PLATFORM>Android, iOS, WM, CE</PLATFORM>
+                <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data. In windows devices the format will be always jpg type</DESC>
                 <VALUES>
                     <VALUE constName="COMPRESSION_FORMAT_JPG" value="jpg">
                         <DESC>JPG compression.</DESC>
@@ -139,14 +137,14 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="outputFormat" type="STRING" default="image">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
+                <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
                 <DESC>Specifies the way to return the captured image to the application.</DESC>
                 <VALUES>
                     <VALUE constName="OUTPUT_FORMAT_IMAGE" value="image">
                         <DESC>The captured image is stored on the device. The callback associated with takePicture will contain the location of the image.</DESC>
                     </VALUE>
                     <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
-                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>                      
+                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
@@ -166,7 +164,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="enableEditing" type="BOOLEAN" default="true">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>iOS</PLATFORM>
-                <DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size of camera sensor).</DESC>
+                <DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size).</DESC>
             </PROPERTY>
             <PROPERTY name="flashMode" type="STRING">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -174,26 +172,26 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Specifies the flash behavior when taking a picture.</DESC>
                 <VALUES>
                     <VALUE constName="FLASH_ON" value="on">
-					    <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
+                        <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
                         <DESC>Flash will be used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_OFF" value="off">
-					    <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
+                        <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
                         <DESC>Flash will not be used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_AUTO" value="auto">
-					    <PLATFORM>Android, iOS, WP8</PLATFORM>
+                        <PLATFORM>Android</PLATFORM>
                         <DESC>Flash will be used if lighting conditions deem it necessary.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_RED_EYE" value="redEye">
-					    <PLATFORM>Android, WP8</PLATFORM>
+                        <PLATFORM>Android</PLATFORM>
                         <DESC>Flash with red eye reduction is used.</DESC>
                     </VALUE>
                     <VALUE constName="FLASH_TORCH" value="torch">
-					    <PLATFORM>Android</PLATFORM>
+                        <PLATFORM>Android</PLATFORM>
                         <DESC>The flash is turned on in torch mode.</DESC>
                     </VALUE>
-                </VALUES>   
+                </VALUES>
             </PROPERTY>
             <PROPERTY name="saveToDeviceGallery" type="BOOLEAN" default="false">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -202,7 +200,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="captureSound" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <PLATFORM>Android, WM, CE</PLATFORM>
+                <PLATFORM>Android, WM, CE, WP8</PLATFORM>
                 <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>Path to a sound file resident on the device which will be played when the image is captured.</DESC>
             </PROPERTY>
@@ -231,7 +229,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PLATFORM>ANDROID</PLATFORM>
                 <DESC>Uses the system Camera application to take a picture instead of rhodes' camera. The system Camera application does not accept most rhodes' camera settings and can be adjusted by UI.</DESC>
             </PROPERTY>
-			<PROPERTY name="aimMode" type="STRING">               
+            <PROPERTY name="aimMode" type="STRING">
                 <PLATFORM>WM, CE</PLATFORM>
                 <DESC>Specifies the aim behaviour when taking a picture. Applicable only for imager module.</DESC>
                 <VALUES>
@@ -240,18 +238,18 @@ The ebapi.js file is necessary for all single API inclusions.
                     </VALUE>
                     <VALUE constName="AIM_OFF" value="off">
                         <DESC>switches the imager's aim OFF </DESC>
-                    </VALUE>                   
-                </VALUES>   
+                    </VALUE>
+                </VALUES>
             </PROPERTY>
         </PROPERTIES>
 
         <METHODS>
             <ALIASES>
-                <ALIAS new="save_image_to_device_gallery" existing="copyImageToDeviceGallery" deprecated="true"/>
+                <ALIAS new="save_image_to_device_gallery" existing="saveImageToDeviceGallery" deprecated="true"/>
             </ALIASES>
 
             <METHOD name="enumerate" access="STATIC" hasCallback="optional">
-			    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
+                <PLATFORM>Android, WM, CE</PLATFORM>
                 <DESC>Returns the cameras present on your device, allowing you to access your device's front or back camera.</DESC>
                 <RETURN type="ARRAY">
                     <DESC>Array of objects.</DESC>
@@ -259,19 +257,19 @@ The ebapi.js file is necessary for all single API inclusions.
                 </RETURN>
             </METHOD>
             <METHOD name="getCameraByType" access="STATIC" hasCallback="optional">
-			    <PLATFORM>Android, iOS, WP8, WM, CE</PLATFORM>
+                <PLATFORM>Android</PLATFORM>
                 <DESC>Returns the camera of requested type if that camera exist - else return nil.</DESC>
                 <PARAMS>
                     <PARAM name="cameraType" type="STRING">
-                        <DESC>CameraType: 'back' or 'front' in the case of Android, iOS and WP8 and 'color' or 'imager' in the case of WM, CE devices</DESC>
+                        <DESC>CameraType: main or front.</DESC>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="SELF_INSTANCE">
-                    <DESC>Camera with requested type or nil if not requested type does not exist. Refer example section for more details.</DESC>
+                    <DESC>Camera with requested type or nil if not requested type does not exist.</DESC>
                 </RETURN>
             </METHOD>
             <METHOD name="takePicture" hasCallback="mandatory" runInThread="ui">
-			    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
+                <PLATFORM>Android, WM, CE</PLATFORM>
                 <DESC>Start the camera application to take a picture. The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use. In Windows, this method always shows the preview in full screen and user can use the native button to capture the image.
 > Note: To display an image, it is recommended that you use the full path to the image instead of a relative path. To do this, you can use the [`expandDatabaseBlobFilePath`](Application#mexpandDatabaseBlobFilePath) method of the [Application module](Application) as such:
 
@@ -294,109 +292,107 @@ The ebapi.js file is necessary for all single API inclusions.
                 <CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">
-						     <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
+                             <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>Whether or not the image was successfully captured. The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
                         </PARAM>
                         <PARAM name="imageUri" type="STRING">
-						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
+                            <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
-						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
+                            <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>The actual height of the image that was captured, this may differ from the requested height as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
                         <PARAM name="imageWidth" type="INTEGER">
-						     <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
+                             <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>The actual width of the image that was captured, this may differ from the requested width as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
                         <PARAM name="imageFormat" type="STRING">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+                            <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>The format in which the image was captured, either 'png' or 'jpg'.</DESC>
                         </PARAM>
                         <PARAM name="message" type="STRING">
-						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
+                            <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
                         </PARAM>
                         <PARAM name="image_uri" type="STRING" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
+                            <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>It is recommended to use imageUri in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_height" type="INTEGER" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
+                            <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>It is recommended to use imageHeight in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_width" type="INTEGER" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
+                            <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>It is recommended to use imageWidth in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_format" type="STRING" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+                            <PLATFORM>Android, WM, CE</PLATFORM>
                             <DESC>It is recommended to use imageFormat in preference to this parameter.</DESC>
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
-			<METHOD name="showPreview">
-				<DESC>Shows the preview in user configurable viewer window.</DESC>
-				<PLATFORM>WM, CE</PLATFORM>
+            <METHOD name="showPreview">
+                <DESC>Shows the preview in user configurable viewer window.</DESC>
+                <PLATFORM>WM, CE</PLATFORM>
         <PARAMS>
-				<PARAM name="propertyMap" type="HASH" propertyHash="true">
+                <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Provide a set of properties to configure the camera.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
          </PARAMS>
-			</METHOD> 
-			<METHOD name="hidePreview">
-				<DESC>Hides the preview opened by using showPreview.</DESC>
-				<PLATFORM>WM, CE</PLATFORM>
-			</METHOD> 
-			<METHOD name="capture" hasCallback="mandatory">
-				<DESC>Capture the image and save it to a file.</DESC>
-				<PLATFORM>WM, CE</PLATFORM>	            			
-				<CALLBACK type="HASH">
+            </METHOD>
+            <METHOD name="hidePreview">
+                <DESC>Hides the preview opened by using showPreview.</DESC>
+                <PLATFORM>WM, CE</PLATFORM>
+            </METHOD>
+            <METHOD name="capture" hasCallback="mandatory">
+                <DESC>Capture the image and save it to a file.</DESC>
+                <PLATFORM>WM, CE</PLATFORM>
+                <CALLBACK type="HASH">
                     <PARAMS>
-                        <PARAM name="status" type="STRING">						    
+                        <PARAM name="status" type="STRING">
                             <DESC>Whether or not the image was successfully captured. The returned string will be one of 'ok' or 'error'.</DESC>
                         </PARAM>
-                        <PARAM name="imageUri" type="STRING">						   
+                        <PARAM name="imageUri" type="STRING">
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>
                         </PARAM>
-                        <PARAM name="imageHeight" type="INTEGER">						    
+                        <PARAM name="imageHeight" type="INTEGER">
                             <DESC>The actual height of the image that was captured, this may differ from the requested height as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
-                        <PARAM name="imageWidth" type="INTEGER">						     
+                        <PARAM name="imageWidth" type="INTEGER">
                             <DESC>The actual width of the image that was captured, this may differ from the requested width as the Camera will only support a finite resolutions.</DESC>
                         </PARAM>
-                        <PARAM name="imageFormat" type="STRING">						    
+                        <PARAM name="imageFormat" type="STRING">
                             <DESC>The format in which the image was captured, either 'png' or 'jpg'.</DESC>
                         </PARAM>
-                        <PARAM name="message" type="STRING">						    
+                        <PARAM name="message" type="STRING">
                             <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
-                        </PARAM>	
+                        </PARAM>
                     </PARAMS>
                 </CALLBACK>
-			</METHOD>  
+            </METHOD>
             <METHOD name="choosePicture" runInThread="module" hasCallback="mandatory" access="static">
                 <DESC>Choose a picture from the album.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-					     <PLATFORM>Android, WM, WP8, iOS</PLATFORM>
-                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
-							In	Android and WP8 only imageUri and image_uri are supported</DESC>
+                         <PLATFORM>Android, WM, WP8, iOS</PLATFORM>
+                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
-                </PARAMS>               
+                </PARAMS>
                 <CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">
                             <DESC>Whether or not the image was successfully chosen from the gallery. The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
                         </PARAM>
                         <PARAM name="imageUri" type="STRING">
-						<PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>The URI to the chosen image.</DESC>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
@@ -412,7 +408,6 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
                         </PARAM>
                         <PARAM name="image_uri" type="STRING" deprecated="true">
-						<PLATFORM>Android, WM, CE, iOS,WP8</PLATFORM>
                             <DESC>It is recommended to use imageUri in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_height" type="INTEGER" deprecated="true">
@@ -427,7 +422,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
-            <METHOD name="copyImageToDeviceGallery" access="static">
+            <METHOD name="saveImageToDeviceGallery" access="static">
                 <PLATFORM>iOS, Android</PLATFORM>
                 <DESC>Save an image to the device gallery.</DESC>
                 <PARAMS>
@@ -458,7 +453,7 @@ def take_picture_with_default_camera
   # Capture an image from the default camera on the device, using the default image settings
   Rho::Camera.takePicture({}, :picture_taken_callback)
 end
-  
+
 def picture_taken_callback
   # Did we really take a picture?
   if (@params["status"]=="ok")
@@ -513,7 +508,7 @@ end
 # choose_camera.erb
 <ul data-role="listview">
   <% $cameras.each_with_index do |camera, index| %>
-    <li><a href="<%= url_for(:action => :take_picture_using_chosen_camera, :query => {:camera_index => index}) %>"><%= camera.cameraType %></li> 
+    <li><a href="<%= url_for(:action => :take_picture_using_chosen_camera, :query => {:camera_index => index}) %>"><%= camera.cameraType %></li>
   <% end %>
 </ul>
                    ]]>
@@ -532,15 +527,15 @@ function choose_camera() {
 
   // build an HTML list
   var cameraList = "<ul>";
-       
+
   for (var cameraIndex=0; cameraIndex<cameras.length; cameraIndex++) {
     var camera = cameras[cameraIndex];
     // Create a link for each camera with an onclick handler
     cameraList = cameraList +'<li><a href="#" class="take_picture_with_selected_camera" onclick="take_picture_with_camera('+cameraIndex+')">'+camera.cameraType+'</a></li>';
   }
-  
+
   cameraList = cameraList+"</ul>";
-  
+
   // make camera list visible to the user
   $("#camera_list").html(cameraList);
 }
@@ -563,19 +558,19 @@ function take_picture_with_camera(cameraIndex) {
                 <RUBY>
            <![CDATA[
 def take_picture_and_save_it_to_gallery
-  Rho::Camera.choosePicture({}, url_for(:action => :picture_taken_callback_save_to_gallery))    
+  Rho::Camera.choosePicture({}, url_for(:action => :picture_taken_callback_save_to_gallery))
 end
-  
+
 def picture_taken_callback_save_to_gallery
   # Did we really take a picture?
   if (@params["status"]=="ok")
     # If so, save it to the gallery
-    Rho::Camera.copyImageToDeviceGallery(Rho::Application.expandDatabaseBlobFilePath(@params["imageUri"]))
+    Rho::Camera.saveImageToDeviceGallery(Rho::Application.expandDatabaseBlobFilePath(@params["imageUri"]))
   end
 
   Rho::WebView.navigate(url_for(:action => :index))
 
-end  
+end
                    ]]>
                  </RUBY>
                 <JAVASCRIPT>
@@ -586,8 +581,8 @@ function take_picture_and_save_it_to_gallery() {
 
 function picture_taken_callback_save_to_gallery(params) {
   if (params["status"]=="ok") {
-    Rho.Camera.copyImageToDeviceGallery(Rho.Application.expandDatabaseBlobFilePath(params["imageUri"]));
-      
+    Rho.Camera.saveImageToDeviceGallery(Rho.Application.expandDatabaseBlobFilePath(params["imageUri"]));
+
     alert("Image saved to gallery");
   }
 }
@@ -606,19 +601,19 @@ function picture_taken_callback_save_to_gallery(params) {
            <![CDATA[
 def control_image_properties
   # Instead of accepting the defaults, let's set some properties to our liking
-    
+
   # We will ask for a PNG file...
   Rho::Camera.compressionFormat = "png"
-    
+
   # ...a particular image size...
   Rho::Camera.desiredWidth = 1024
   Rho::Camera.desiredHeight = 768
-    
+
   # ...and force the flash to be used
   Rho::Camera.flashMode = "on"
-    
+
   # Now, take the picture
-  Rho::Camera.takePicture({}, :picture_taken_callback)    
+  Rho::Camera.takePicture({}, :picture_taken_callback)
 end
 
 def picture_taken_callback
@@ -637,19 +632,19 @@ end
            <![CDATA[
 function control_image_properties() {
   // Instead of accepting the defaults, let's set some properties to our liking
-  
+
   // We will ask for a PNG file...
   Rho.Camera.compressionFormat = "png";
-  
+
   // ...a particular image size...
   Rho.Camera.desiredWidth = 1024;
   Rho.Camera.desiredHeight = 768;
-  
+
   // ...and force the flash to be used
   Rho.Camera.flashMode = "on";
-  
+
   // Now, take the picture
-  Rho.Camera.takePicture({}, picture_taken_callback);      
+  Rho.Camera.takePicture({}, picture_taken_callback);
 }
 
 function picture_taken_callback(params) {
@@ -683,7 +678,7 @@ end
 
 # determine_camera_capabilities.erb
     <ul data-role="listview">
-    
+
     <% @properties.each_pair do |name,value| %>
       <li><%= name %> : <%= value %></li>
     <% end %>
@@ -694,7 +689,7 @@ end
                 <JAVASCRIPT>
            <![CDATA[
 function determine_camera_capabilities() {
-  var capabilitiesList = "<ul>"; 
+  var capabilitiesList = "<ul>";
 
   // Get all capabilities of the camera...
   var capabilities = Rho.Camera.getAllProperties();
@@ -705,7 +700,7 @@ function determine_camera_capabilities() {
   }
 
   capabilitiesList += "</ul>";
-  
+
   // ... and show it
   $("#camera_capabilities").html(capabilitiesList);
 }
@@ -722,7 +717,7 @@ function determine_camera_capabilities() {
                <CODE>
                 <RUBY>
            <![CDATA[
-def select_picture_from_gallery 
+def select_picture_from_gallery
   Rho::Camera.choosePicture({}, url_for(:action => :picture_taken_callback))
 end
 
@@ -757,47 +752,6 @@ function picture_taken_callback(params) {
                </SECTION>
                </SECTIONS>
            </EXAMPLE>
-          <EXAMPLE title="Getting a camera instance by cameraType">
-            <SECTIONS>
-              <SECTION>
-                <DESC>Camera API also lets you access camera instance by cameraType.</DESC>
-                <CODE>                 
-                  <JAVASCRIPT>
-                    <![CDATA[
-//get the instance by cameraType and takePicture using that instance
-function get_color_camera_instance() {
-  var camInst = Rho.Camera.getCameraByType('color');
-  camInst.takePicture({'outputFormat':'image'}, my_callback);
-}
-
-                   ]]>
-                  </JAVASCRIPT>
-                </CODE>
-              </SECTION>
-            </SECTIONS>
-          </EXAMPLE>
-          <EXAMPLE title="Getting the list of resolutions supported by the camera">
-            <SECTIONS>
-              <SECTION>
-                <DESC>Camera resolution is hardware specific. Camera API supports getting the supported resolutions of a camera instance.</DESC>
-                <CODE>
-                  <JAVASCRIPT>
-                    <![CDATA[
-function getsupporteSizeList()
-{
-var instArray = Rho.Camera.enumerate();
-var reslnArray = instArray[0].supportedSizeList;
-alert(reslnArray[0].width);
-alert(reslnArray[0].height);
-alert(reslnArray[1].width);
-alert(reslnArray[1].height);
-}
-                   ]]>
-                  </JAVASCRIPT>
-                </CODE>
-              </SECTION>
-            </SECTIONS>
-          </EXAMPLE>
        </EXAMPLES>
     </MODULE>
 </API>

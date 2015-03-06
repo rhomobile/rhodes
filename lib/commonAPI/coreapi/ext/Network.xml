@@ -17,10 +17,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Network API: 
+There are two methods of enabling the Network API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -44,7 +44,7 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
 The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
-        
+
         <TEMPLATES>
         </TEMPLATES>
 
@@ -82,7 +82,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="headers" type="HASH">
                 <DESC>List of HTTP headers to be used in the network  request.</DESC>
             </PROPERTY>
-            
+
             <PROPERTY name="responseTimeout" type="INTEGER" default="30" generateAccessors="true">
                 <DESC>Timeout of network requests in seconds. This property has module scope. Do not pass it as hash parameter to methods, use property accessors instead.</DESC>
             </PROPERTY>
@@ -230,7 +230,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                         </PARAM>
                                     </PARAMS>
                                 </PARAM>
-                            </PARAM>    
+                            </PARAM>
                         </PARAMS>
                     </PARAM>
                 </PARAMS>
@@ -347,7 +347,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PARAMS>
                     <PARAM name="connectionDestination" type="STRING">
                         <DESC>The connection in the Windows Connection manager to use, specify 'Internet' to use the default internet connection.</DESC>
-                    </PARAM>                     
+                    </PARAM>
                 </PARAMS>
                 <CALLBACK  type="HASH">
                     <DESC>Notifies the user whenever any parameter associated with data connectivity changes.  This callback is called when the connectWan method is first called (for the initial state) and again whenever any of the associated parameters change.</DESC>
@@ -368,9 +368,9 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>This is the last received status from the Connection Manager. Do NOT use this parameter to determine if you are able to physically send / receive data to a remote host, it only provides an indication of whether the Connection Manager believes the connection is available. To determine if you are connected to a remote host use the detectConnection method.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>    
+                </CALLBACK>
             </METHOD>
-            
+
             <METHOD name="disconnectWan" hasCallback="none" runInThread="separate">
                 <VER_INTRODUCED>1.0.3</VER_INTRODUCED>
                 <DESC>Disconnects the current WAN connection. DisconnectWan will only affect connections established by RhoElements so if you have not previously called connectWan this function will have no effect.</DESC>
@@ -439,12 +439,12 @@ Receiving phone calls or texts whilst running RhoElements will cause the start b
     function status_notify_callback(params) {
       alert("Network status changed from "+params["prev_status"]+" to "+params["current_status"]);
     }
-  
+
     function start_status_notify() {
       # Request the system to check every 3 seconds and call us back if there is a change in network connectivity
       Rho.Network.startStatusNotify(3000, status_notify_callback);
     }
-    
+
     function stop_status_notify() {
       // Stop network status notifications
       Rho.Network.stopStatusNotify();
@@ -455,11 +455,11 @@ Receiving phone calls or texts whilst running RhoElements will cause the start b
                </CODE>
                </SECTION>
            </SECTIONS>
-               
+
            </EXAMPLE>
             <EXAMPLE title="Check whether the network is available">
               <SECTIONS>
-               
+
               <SECTION>
                <DESC>You can check whether the mobile, WiFi or other network is available. This can be useful for example if you only want to perform large data transfers on WiFi and avoid doing them while on the cell network.</DESC>
                <CODE>
@@ -484,7 +484,7 @@ Receiving phone calls or texts whilst running RhoElements will cause the start b
       var wifi_network = Rho.Network.hasWifiNetwork()
       // Any network
       var network = Rho.Network.hasNetwork()
-      
+
       alert("Cell network: "+cell_network+"\nWi-Fi network: "+wifi_network+"\nNetwork: "+network);
     }
                    ]]>
@@ -508,7 +508,7 @@ Receiving phone calls or texts whilst running RhoElements will cause the start b
       downloadfileProps["overwriteFile"] = true
       Rho::Network.downloadFile(downloadfileProps, url_for(:action => :download_file_callback))
   end
-  
+
   def download_file_callback
     if @params["status"] == "ok"
         Alert.show_popup "Download Success,path is /public/images/sample.png "

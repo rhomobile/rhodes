@@ -28,8 +28,8 @@ All methods here are accessed from the model instance object that you have creat
     product.get('name'); // iPhone5
 
         </HELP_OVERVIEW>
-        <LINK><a href='./Orm'>Orm</a></LINK> 
-        <MORE_HELP> 
+        <LINK><a href='./Orm'>Orm</a></LINK>
+        <MORE_HELP>
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby

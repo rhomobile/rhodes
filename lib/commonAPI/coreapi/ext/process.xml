@@ -5,7 +5,7 @@
         <HELP_OVERVIEW>This API is used to either navigate to a URL or call a javascript function when an attached card reader decodes data. Only the foreground application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader. When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</HELP_OVERVIEW>
         <MORE_HELP>
 
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
@@ -18,10 +18,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Process API: 
+There are two methods of enabling the Process API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 

@@ -3,9 +3,9 @@
 <API>
     <MODULE name="Mediaplayer" parent="Rho">
         <HELP_OVERVIEW>The MediaPlayer extension is used to playback different types of audio files. It also allows the playback of Ringtones for the respective platform.
-        </HELP_OVERVIEW>    
+        </HELP_OVERVIEW>
 <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 In order to use this API you must include the following extension in your `build.yml`
     :::ruby
     extensions: ["mediaplayer"]
@@ -18,10 +18,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the MediaPlayer API: 
+There are two methods of enabling the MediaPlayer API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -43,10 +43,10 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
     &lt;script type="text/javascript" charset="utf-8" src="eb.mediaplayer.js"&gt;&lt;/script&gt;
 
 The ebapi.js file is necessary for all single API inclusions.
-</MORE_HELP_EB>            
+</MORE_HELP_EB>
 
         <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-        
+
         <TEMPLATES>
         </TEMPLATES>
 
@@ -88,7 +88,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <!-- These three methods are for RingtoneManager-->
             <METHOD name="getAllRingtones" access="STATIC" hasCallback="mandatory">
-                <DESC>Getting all ringtones on the device - result is array of hashes , each HASH contains name, fullname pairs of info about ringtone.</DESC>    
+                <DESC>Getting all ringtones on the device - result is array of hashes , each HASH contains name, fullname pairs of info about ringtone.</DESC>
                 <PLATFORM>Android</PLATFORM>
                 <CALLBACK type="ARRAY">
                     <PARAM type="HASH">
@@ -119,7 +119,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PLATFORM>Android</PLATFORM>
             </METHOD>
         </METHODS>
-        
+
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
             <![CDATA[]]>
