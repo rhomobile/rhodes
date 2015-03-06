@@ -5,7 +5,7 @@
         <HELP_OVERVIEW>The LogCapture class is used for capturing logging events.
         </HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API
+## Enabling the API           
 In order to use this API you must include the following extension in your `build.yml`
     :::ruby
     extensions: ["logCapture"]
@@ -19,10 +19,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the LogCapture API:
+There are two methods of enabling the LogCapture API: 
 
-* Include all ebapi modules or
-* Include only the API modules you need
+* Include all ebapi modules or 
+* Include only the API modules you need 
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -46,7 +46,7 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
 The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
-
+        
         <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="excludeCategories" type="STRING" default="">
                 <DESC>Comma-separated list of excluded log categories.</DESC>
@@ -56,7 +56,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Maximum number of captured lines.</DESC>
             </PROPERTY>
         </PROPERTIES>
-
+        
         <METHODS access="STATIC">
             <METHOD name="start">
                 <DESC>Start capture log events.</DESC>
@@ -76,7 +76,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <RETURN type="STRING"/>
             </METHOD>
         </METHODS>
-
+        
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
          <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
          <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>

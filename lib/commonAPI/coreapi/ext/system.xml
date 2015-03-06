@@ -17,10 +17,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the System API:
+There are two methods of enabling the System API: 
 
-* Include all ebapi modules or
-* Include only the API modules you need
+* Include all ebapi modules or 
+* Include only the API modules you need 
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -114,7 +114,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="ppiY" type="INTEGER" readOnly="true">
                 <DESC>Vertical PPI (Pixels Per Inch).</DESC>
             </PROPERTY>
-
+            
             <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
                 <DESC>Primary email of phone owner. To access this property 'pim' capability must be enabled in your build.yml.</DESC>
                 <PLATFORM>Android</PLATFORM>
@@ -178,7 +178,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="keyboardState" type="STRING" default="See Description">
                 <DESC>For Windows Mobile and Windows CE the keyboard can be manually shown or hidden as required. All other platforms only support 'automatic'. The default state for Windows Mobile and Windows CE is manual, for all other platforms it is automatic.</DESC>
-                <PLATFORM>WM</PLATFORM>
+                <PLATFORM>WM</PLATFORM>               
                 <APPLIES msiOnly="true"></APPLIES>
                 <VALUES>
                     <VALUE constName="KEYBOARD_SHOWN" value ="shown">
@@ -236,7 +236,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <ALIAS new="app_installed?" existing="isApplicationInstalled" deprecated="true"/>
                 <ALIAS new="app_uninstall" existing="applicationUninstall" deprecated="true"/>
                 <ALIAS new="set_do_not_bakup_attribute" existing="setDoNotBackupAttribute" deprecated="true"/>
-
+                
             </ALIASES>
             <METHOD name="applicationInstall">
                 <DESC>Install an application.</DESC>
@@ -297,7 +297,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>Password for the zip.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
-
+                    
                     <PARAM name="outputFileName" type="STRING">
                         <DESC>Output file name. Used when decompressing gzip streams.</DESC>
                         <CAN_BE_NIL/>
@@ -427,7 +427,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     <DESC>Registry value of the key.</DESC>
                 </RETURN>
             </METHOD>
-
+            
             <METHOD name="deleteRegistrySetting">
                 <DESC>Deletes the specified value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
                 <DESC_EB>Deletes the specified value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. </DESC_EB>
@@ -590,7 +590,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>Name of a push service client. Current values can be 'rhoconnect_push' or 'gcm' or 'legacy' or empty.</DESC>
                         <CAN_BE_NIL>
                             <DESC>The call will be applied to every push client.</DESC>
-                        </CAN_BE_NIL>
+                        </CAN_BE_NIL>    
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -711,7 +711,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <RUBY><![CDATA[
 # Returns true if device supports Symbol device capabilities, such as barcode scanner, etc.
 is_symbol_device = Rho::System.isSymbolDevice
-
+    
 has_calendar = Rho::System.hasCalendar
 has_camera = Rho::System.hasCamera
 has_cell_network = Rho::System.hasCellNetwork
@@ -746,7 +746,7 @@ var has_sqlite = Rho.System.hasSqlite;
 var has_touchscreen = Rho.System.hasTouchscreen;
 
 message = "Symbol device: "+is_symbol_device+"\n"+
-  "Calendar: "+has_calendar+"\n"+
+  "Calendar: "+has_calendar+"\n"+ 
   "Camera: "+has_camera+"\n"+
   "Cell network: "+has_cell_network+"\n"+
   "WiFi: "+has_wifi_network+"\n"+
@@ -798,7 +798,7 @@ Rho::System.applicationUninstall("rhodes-app")
                                 <JAVASCRIPT><![CDATA[
 // install an application from given url
 Rho.System.applicationInstall("/bin/target/android/rhodes-app-debug.apk");
-
+  
 // uninstall the application
 Rho.System.applicationUninstall("rhodes-app");
 ]]>
@@ -836,7 +836,7 @@ alert(local_port);
                             <DESC>If you ever need to build or extract zip archives, RhoMobile includes easy-to-use APIs for this task.</DESC>
                             <CODE>
                                 <RUBY><![CDATA[
-# unzip a file
+# unzip a file 
 Rho::System.unzipFile("/app/public/sample.zip")
 
 # zip a file
@@ -844,9 +844,9 @@ Rho::System.zipFile("/app/public", "/app/public/sample.txt")
 ]]>
                                 </RUBY>
                                 <JAVASCRIPT><![CDATA[
-// unzip file
+// unzip file 
 Rho.System.unzipFile("/app/public/sample.zip");
-
+  
 // zip file
 Rho.System.zipFile("/app/public/zipfile.zip", "/app/public/sample.txt");
 ]]>
@@ -870,12 +870,12 @@ def get_registry_sync
     puts "Registry Setting retrieved: #{theRegSetting}"
 end
 
-#  Set a value in the registry which will persist across a clean boot of the device
+#  Set a value in the registry which will persist across a clean boot of the device  
 def set_registry_sync
     theRegSetting = Rho::System.setRegistrySetting({hive:'HKLM', type:'String', key:'Software', setting:'RhoElementsTest', value:'MVC ftw', persistent:true})
     puts "Registry Setting Success?: #{theRegSetting}"
 end
-
+      
 #  Delete a value from the registry
 def delete_registry_sync
     theRegSetting = Rho::System.deleteRegistrySetting({hive:'HKLM', key:'Software', setting:'RhoElementsTest', persistent:true})
