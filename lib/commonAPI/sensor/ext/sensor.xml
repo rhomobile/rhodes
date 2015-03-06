@@ -19,10 +19,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Sensor API:
+There are two methods of enabling the Sensor API: 
 
-* Include all ebapi modules or
-* Include only the API modules you need
+* Include all ebapi modules or 
+* Include only the API modules you need 
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -47,12 +47,12 @@ The ebapi.js file is necessary for all single API inclusions.
 
         </MORE_HELP_EB>
         <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-
+ 
         <TEMPLATES>
             <SINGLETON_INSTANCES/> <!--   produce enumerate() fabric method, all instances is singletons by ID, add ID property -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
-
+ 
         <CONSTANTS>
             <CONSTANT name="SENSOR_TYPE_ACCELEROMETER" value="Accelerometer">
                 <DESC>Accelerometer sensor type.</DESC>
@@ -143,7 +143,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     <PARAM name="type" type="STRING">
                         <DESC>Sensor type. Use the appropriate constants to get the sensor type. In the case of accelerometer use SENSOR_TYPE_ACCELEROMETER.</DESC>
                     </PARAM>
-                </PARAMS>
+                </PARAMS>                   
                 <RETURN type="SELF_INSTANCE">
                     <DESC>Returns a sensor object for the sensor type passed as parameter. You can use the type field along with the Rho.Sensor Constants to see what type of sensor is returned.</DESC>
                 </RETURN>
@@ -217,7 +217,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
                         <PARAM name="magnetometer_z" type="FLOAT">
                             <DESC>Z value of the magnetometer sensor in micro-Tesla (uT) units.</DESC>
-                        </PARAM>
+                        </PARAM>                                                        
 
                         <!-- only for Gyroscope callback -->
                         <PARAM name="gyroscope_x" type="FLOAT">
@@ -314,7 +314,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>Z co-ordinate value of the orientation sensor in degrees units.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </CALLBACK> 
             </METHOD>
 
             <METHOD name="readData">
@@ -358,21 +358,21 @@ def index
         @accelerometer_sensor.start(url_for(:action => :myevent))
     else
        puts "Warning: This device has not Accelerometer sensor !"
-    end
+    end    
 end
 
 def stop_listening_accelerator
     if @accelerometer_sensor != nil
         @accelerometer_sensor.stop
-    end
+    end    
 end
 
-def myevent
+def myevent       
     puts "Accelerometer params: #{@params}"
     puts "X is #{@params['accelerometer_x']}"
-    puts "Y is #{@params['accelerometer_y']}"
-    puts "Z is #{@params['accelerometer_z']}"
-end
+    puts "Y is #{@params['accelerometer_y']}"  
+    puts "Z is #{@params['accelerometer_z']}"      
+end 
                     ]]>
                             </RUBY>
                         </CODE>

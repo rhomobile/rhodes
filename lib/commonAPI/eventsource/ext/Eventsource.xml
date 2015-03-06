@@ -4,13 +4,13 @@
     <MODULE name="EventSource" parent="Rho" productException='eb'>
         <HELP_OVERVIEW>Example extension api</HELP_OVERVIEW>
         <MORE_HELP>This is example of API. Implementation contain in extension.</MORE_HELP>
-
+        
          <CONSTANTS>
-
+        
             <CONSTANT name="CONNECTING" value="0" type="INTEGER">
                 <DESC>The connection has not yet been established.</DESC>
             </CONSTANT>
-
+            
             <CONSTANT name="OPEN" value="1" type="INTEGER">
                 <DESC>The WebSocket connection is established and communication is possible.</DESC>
             </CONSTANT>
@@ -18,36 +18,36 @@
             <CONSTANT name="CLOSED" value="2" type="INTEGER">
                 <DESC>The connection has been closed or could not be opened.</DESC>
             </CONSTANT>
-
+            
         </CONSTANTS>
-
+        
         <PROPERTIES>
 
             <PROPERTY name="onopen" type="CALLBACK" runInThread="none">
                 <DESC></DESC>
                 <CALLBACK type="HASH"/>
             </PROPERTY>
-
+            
             <PROPERTY name="onmessage" type="CALLBACK" runInThread="none">
                 <DESC></DESC>
                 <CALLBACK type="HASH"/>
             </PROPERTY>
-
+            
             <PROPERTY name="onerror" type="CALLBACK" runInThread="none">
                 <DESC></DESC>
-                <CALLBACK type="HASH"/>
+                <CALLBACK type="HASH"/>              
             </PROPERTY>
-
-
-
+            
+            
+            
             <PROPERTY name="url" type="STRING" readOnly="true">
                 <DESC>URL passed to EventSource constructor.</DESC>
             </PROPERTY>
-
+            
             <PROPERTY name="readyState" type="INTEGER" readOnly="true">
                 <DESC>Represents the state of the connection.</DESC>
             </PROPERTY>
-
+            
             <PROPERTY name="withCredentials" type="BOOLEAN" readOnly="true">
                 <DESC>Currently will return empty string.</DESC>
             </PROPERTY>
@@ -70,8 +70,8 @@
                 </PARAMS>
                 <RETURN type="SELF_INSTANCE"/>
             </METHOD>
-
-
+            
+            
             <METHOD name="close" hasCallback="none" destructor="true" runInThread="none">
 
             </METHOD>
@@ -81,12 +81,12 @@
                 <PARAM name="event" type="STRING">
                   <DESC></DESC>
                 </PARAM>
-              </PARAMS>
+              </PARAMS>        
               <CALLBACK type="HASH"/>
             </METHOD>
-
+            
         </METHODS>
-
+        
         <USER_OVERVIEW>
         </USER_OVERVIEW>
 
@@ -94,4 +94,4 @@
         <PLATFORM>
          </PLATFORM>
     </MODULE>
-</API>
+</API>    

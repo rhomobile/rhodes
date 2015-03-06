@@ -17,10 +17,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Nativetoolbar API:
+There are two methods of enabling the Nativetoolbar API: 
 
-* Include all ebapi modules or
-* Include only the API modules you need
+* Include all ebapi modules or 
+* Include only the API modules you need 
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -115,7 +115,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                         <VALUE value ="SIP">
                                             <DESC>Display software keyboard window.Set `Rho.System.keyboardState` to `Rho.System.KEYBOARD_AUTOMATIC` to use this element.</DESC>
                                             <DESC_EB>Display software keyboard window.Set `EB.System.keyboardState` to `EB.System.KEYBOARD_AUTOMATIC` to use this element.</DESC_EB>
-
+                                            
                                             <PLATFORM>WM</PLATFORM>
                                         </VALUE>
                                     </VALUES>
@@ -135,7 +135,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             </PARAMS>
                         </PARAM>
                     </PARAM>
-
+                    
                     <PARAM name="toolBarProperties" type="HASH">
                         <DESC>Properties of TabBar.</DESC>
                         <PARAMS>
@@ -164,7 +164,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <RETURN type="BOOLEAN"/>
             </METHOD>
         </METHODS>
-
+        
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>

@@ -20,10 +20,10 @@ With the old PocketBrowser / RhoElements 1 APIs, any events, such as `screenOrie
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the ScreenOrientation API:
+There are two methods of enabling the ScreenOrientation API: 
 
-* Include all ebapi modules or
-* Include only the API modules you need
+* Include all ebapi modules or 
+* Include only the API modules you need 
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -105,7 +105,7 @@ With the old PocketBrowser APIs, any events, such as `screenOrientationEvent` we
 def start_detecting_orientation_changes
   Rho::ScreenOrientation.setScreenOrientationEvent(url_for(:action => :orientation_callback))
 end
-
+ 
 def orientation_callback
   Alert.show_popup("The screen changed orientation")
 end
@@ -115,9 +115,9 @@ end
 function start_detecting_orientation_changes(){
   ScreenOrientation.setScreenOrientationEvent(orientation_callback)
 }
-
+ 
 function orientation_callback(){
-
+    
   Alert.show_popup("The screen changed orientation")
 }
                    ]]>
@@ -126,7 +126,7 @@ function orientation_callback(){
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
-
+            
             <EXAMPLE title="Change screen orientation">
                 <SECTIONS>
                     <SECTION>
@@ -137,7 +137,7 @@ def capture_signature_with_attention_to_details
     # Set screen orientation to upside down
     Rho::ScreenOrientation.upsideDown
     # At this point, offer the device to the user. You just saved the user the hassle of rotating the tablet
-    # and there's less potential for the device to be dropped along the way
+    # and there's less potential for the device to be dropped along the way  
     Rho::Signature.takeFullScreen({}, url_for(:action => :signature_callback))
 end
 
@@ -155,9 +155,9 @@ function capture_signature_with_attention_to_details() {
     Rho.ScreenOrientation.upsideDown();
 
     // At this point, offer the device to the user. You just saved the user the hassle of rotating the tablet
-    // and there's less potential for the device to be dropped along the way
+    // and there's less potential for the device to be dropped along the way  
     Rho.Signature.takeFullScreen({}, signature_callback);
-}
+}           
 
 function signature_callback(params) {
     // do whatever we need to do with the signature
@@ -253,7 +253,7 @@ Rho.ScreenOrientation.autoRotate=false;
 <body>
     <h1>ScreenOrientation API Test</h1>
     <div id="display">
-        Orientation:
+        Orientation: 
     </div>
     <div id="autoRotate">
         Auto Rotate: Enabled

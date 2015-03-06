@@ -17,10 +17,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the AudioCapture API:
+There are two methods of enabling the AudioCapture API: 
 
-* Include all ebapi modules or
-* Include only the API modules you need
+* Include all ebapi modules or 
+* Include only the API modules you need 
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -61,18 +61,18 @@ The ebapi.js file is necessary for all single API inclusions.
                     <VALUE constName="MIC" value="mic">
                         <DESC>Embedded microphone. This is the default value.</DESC>
                     </VALUE>
-
+                    
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="encoder" type="STRING">
                 <DESC>Encoder to compress recorded audio. In Android devices, the supported encoder type is dependent upon device hardware and vendor.</DESC>
 				        <PLATFORM>Android</PLATFORM>
                 <VALUES>
-
+                    
                     <VALUE constName="ENCODER_AAC" value="AAC">
                         <DESC>AAC low complexity. This is the default value. If wrong or no value is specified this value will be accounted.</DESC>
                     </VALUE>
-
+                   
                     <VALUE constName="ENCODER_AMR_NB" value="AMR_NB">
                         <DESC>AMR narrow-band.</DESC>
                     </VALUE>
@@ -92,7 +92,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
         </PROPERTIES>
         <METHODS>
-
+             
             <METHOD name="start" hasCallback="mandatory">
                 <PARAMS>
                      <PARAM name="props" type="HASH" propertyHash="true">
@@ -112,7 +112,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>If 'status' == 'ok', then contain full file path with the file name of recorded audiofile. In all other cases, it will remain empty.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </CALLBACK>    
                 <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'ok' as the status. An unsuccessful recording will set 'cancel' or 'error' as the status in the callback returning parameters. If 'cancel' method is called during recording, 'cancel' status will be set in the callback returning parameters. In order to restart the audio capture, if the audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
 				        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </METHOD>
@@ -130,7 +130,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>
                     <![CDATA[
 In Windows, to store the file in a particular location, specify the path with the file name. Mentioning the extension name with the file name is optional. Only *.wav files are supported. If the path is not specified with the file name, the captured file is stored in the root directory of the device. In Windows and Android, if the folder is not present, it should be created manually for storing the file in that location. In Android, the file extension depends on encoder value. If it is AAC, the extension should be '.mp4'. In all other cases, it is of '.3gpp'. If only filename is specified, it will be saved in the root directory of external storage.
-                    ]]>
+                    ]]> 
                 </DESC>
             </REMARK>
 			<REMARK title="Audio Capture">
@@ -170,7 +170,7 @@ Upon page navigation, the audio recording should be canceled.In iOS, the state w
 Upon page navigation, the audio recording should be canceled.
                     ]]>
                 </DESC_EB>
-            </REMARK>
+            </REMARK>			
 			<REMARK title="Duration And File Name Settings">
                 <DESC>
                     <![CDATA[
@@ -220,7 +220,7 @@ Rho::AudioCapture.cancel();
 // Starting Audio Capture without settings. Callback is mandatory. Setting the file name at least once is also mandatory before invoking 'start' method.
 Rho.AudioCapture.start({},mycallback);
 
-// Starting Audio Capture with settings. Callback is mandatory.
+// Starting Audio Capture with settings. Callback is mandatory. 
 // On successful recording the hash property  for fileName' in callback will return the complete file path with the filename.
 // In Windows, for the below settings, it will return "file://\AudioCapture.wav".
 Rho.AudioCapture.start({'fileName':"AudioCapture",'maxDuration':'15000'},mycallback);
