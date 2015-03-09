@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: RhoPackages
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!RhoPackages.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (R)</a> &raquo;
+    
+    
+    <span class="title">RhoPackages</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: RhoPackages
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">rho_packages.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="RhoPackages/FileRepo.html" title="RhoPackages::FileRepo (class)">FileRepo</a></span>, <span class='object_link'><a href="RhoPackages/HttpRepo.html" title="RhoPackages::HttpRepo (class)">HttpRepo</a></span>, <span class='object_link'><a href="RhoPackages/NilConfig.html" title="RhoPackages::NilConfig (class)">NilConfig</a></span>, <span class='object_link'><a href="RhoPackages/NilRepo.html" title="RhoPackages::NilRepo (class)">NilRepo</a></span>, <span class='object_link'><a href="RhoPackages/Repo.html" title="RhoPackages::Repo (class)">Repo</a></span>, <span class='object_link'><a href="RhoPackages/YmlConfig.html" title="RhoPackages::YmlConfig (class)">YmlConfig</a></span>
+    
+  
+</p>
+
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="config-classvariable" class="">@@config =
+          
+        </dt>
+        <dd><pre class="code"><span class='const'>NilConfig</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span></pre></dd>
+      
+        <dt id="repo-classvariable" class="">@@repo =
+          
+        </dt>
+        <dd><pre class="code"><span class='const'>NilRepo</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#request-class_method" title="request (class method)">+ (Object) <strong>request</strong>(*package_names) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_root-class_method" title="set_root (class method)">+ (Object) <strong>set_root</strong>(root_dir) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="request-class_method">
+  
+    + (<tt>Object</tt>) <strong>request</strong>(*package_names) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+190
+191
+192
+193
+194</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rho_packages.rb', line 190</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_request'>request</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_package_names'>package_names</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_package_names'>package_names</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_package_name'>package_name</span><span class='op'>|</span>
+    <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_request_'>request_</span><span class='lparen'>(</span><span class='cvar'>@@config</span><span class='period'>.</span><span class='id identifier rubyid_package_deps'>package_deps</span><span class='lparen'>(</span><span class='id identifier rubyid_package_name'>package_name</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_root-class_method">
+  
+    + (<tt>Object</tt>) <strong>set_root</strong>(root_dir) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'rho_packages.rb', line 177</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_root'>set_root</span><span class='lparen'>(</span><span class='id identifier rubyid_root_dir'>root_dir</span><span class='rparen'>)</span>
+  <span class='cvar'>@@config</span> <span class='op'>=</span> <span class='const'>YmlConfig</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root_dir'>root_dir</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>config.yml</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_repo_path'>repo_path</span> <span class='op'>=</span> <span class='cvar'>@@config</span><span class='period'>.</span><span class='id identifier rubyid_repository'>repository</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_repo_path'>repo_path</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='cvar'>@@repo</span> <span class='op'>=</span> <span class='const'>NilRepo</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_repo_path'>repo_path</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>http://</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span> <span class='kw'>or</span> <span class='id identifier rubyid_repo_path'>repo_path</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>https://</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
+    <span class='cvar'>@@repo</span> <span class='op'>=</span> <span class='const'>HttpRepo</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_root_dir'>root_dir</span><span class='comma'>,</span> <span class='id identifier rubyid_repo_path'>repo_path</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='cvar'>@@repo</span> <span class='op'>=</span> <span class='const'>FileRepo</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_root_dir'>root_dir</span><span class='comma'>,</span> <span class='id identifier rubyid_repo_path'>repo_path</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Fri Mar  6 02:12:46 2015 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>

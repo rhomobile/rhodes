@@ -9,7 +9,7 @@
 bool CCamera::m_IsCameraRunning = false;
 bool CCamera::m_bRcmLoaded = false;
 bool CCamera::m_bAppHasFocus= true;
-CRcmLoader CCamera::m_Rcm;
+CTriggerMonitor CCamera::m_Rcm;
 HANDLE CCamera::m_hTriggerEvents[eTriggerEventMax] = {NULL, NULL};
 HANDLE CCamera::m_hRegisterTrigger = NULL;
 HANDLE CCamera::m_hTriggerMonitorThread = NULL;
