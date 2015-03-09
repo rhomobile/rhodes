@@ -1,11 +1,13 @@
 package com.rho.camera;
 
 import android.content.Context;
+import android.app.Activity;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.FrameLayout;
+import android.view.Surface;
 
 import com.rho.camera.ICameraObject.ISize;
 import com.rhomobile.rhodes.Logger;
@@ -16,7 +18,8 @@ public class CameraPreview implements SurfaceHolder.Callback {
     private SurfaceView mSurfaceView;
     private SurfaceHolder mHolder;
     private ICameraObject mCamera;
-
+    private Context mContext;
+    
     public CameraPreview(SurfaceView surfaceView) {
         Logger.T(TAG, "CameraPreview");
         
@@ -25,7 +28,7 @@ public class CameraPreview implements SurfaceHolder.Callback {
 
     public void startPreview(ICameraObject camera, Context context) {
         Logger.T(TAG, "startPreview");
-
+        mContext = context;
         if (camera == null) {
             Logger.E(TAG, "Camera is null");
             return;
@@ -63,6 +66,29 @@ public class CameraPreview implements SurfaceHolder.Callback {
         catch(RuntimeException e){
         	
         }
+        
+        int rotation = ((Activity)mContext).getWindowManager().getDefaultDisplay().getRotation();
+    	int degrees = 0;
+		switch (rotation) {
+		case Surface.ROTATION_0:
+			degrees = 90;
+			Log.d(TAG, "Camerapreview orientation 0: " + degrees);
+			break;
+		case Surface.ROTATION_90:
+			degrees = 0;
+			Log.d(TAG, "Camerapreview orientation 90: " + degrees);
+			break;
+		case Surface.ROTATION_180:
+			degrees = 270;
+			Log.d(TAG, "Camerapreview orientation 180: " + degrees);
+			break;
+		case Surface.ROTATION_270:
+			degrees = 180;
+			Log.d(TAG, "Camerapreview orientation 270: " + degrees);
+			break;
+		}
+       mCamera.setDisplayOrientation(degrees);
+       
         ISize size = mCamera.setPreviewSize(surfaceRect.right, surfaceRect.bottom);
         
         double previewRatio = (double) size.getWidth() / size.getHeight();
@@ -77,10 +103,10 @@ public class CameraPreview implements SurfaceHolder.Callback {
         
 
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)mSurfaceView.getLayoutParams();
-        layoutParams.leftMargin = marginX;
-        layoutParams.rightMargin = marginX;
-        layoutParams.topMargin = marginY;
-        layoutParams.bottomMargin = marginY;
+        layoutParams.leftMargin = layoutParams.FILL_PARENT;
+        layoutParams.rightMargin = layoutParams.FILL_PARENT;
+        layoutParams.topMargin = layoutParams.FILL_PARENT;
+        layoutParams.bottomMargin = layoutParams.FILL_PARENT;
         mSurfaceView.setLayoutParams(layoutParams);
         mSurfaceView.requestLayout();
     }
