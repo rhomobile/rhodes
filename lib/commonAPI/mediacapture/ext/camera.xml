@@ -162,7 +162,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="colorModel" type="STRING" default="rgb">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-                <PLATFORM>Android,iOS</PLATFORM>
+                <PLATFORM>Android, iOS</PLATFORM>
                 <PLATFORM_EB>Android</PLATFORM_EB>
                 <DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.</DESC>
                 <VALUES>
@@ -415,8 +415,8 @@ The ebapi.js file is necessary for all single API inclusions.
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
 					     <PLATFORM>Android, WM, WP8, iOS</PLATFORM>
                          <PLATFORM_EB>Android, WM</PLATFORM_EB>
-                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
-							In	Android and WP8 only imageUri and image_uri are supported</DESC>
+                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel, enableEditing. On Android and WP8 only imageUri and image_uri are supported.</DESC>
+                        <DESC_EB>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. On Android, only imageUri and image_uri are supported.</DESC_EB>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
                         </CAN_BE_NIL>
