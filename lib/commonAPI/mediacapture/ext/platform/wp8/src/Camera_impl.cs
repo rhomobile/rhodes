@@ -44,7 +44,7 @@ namespace rho
             VideoBrush Rho_PhotoCameraBrush;
             Canvas Rho_PhotoCameraCanvas;
             TextBox txtDebug = new TextBox();
-            Grid Store_PreviousGridElements;
+            Grid Store_PreviousGridElements=new Grid();
             // Holds current flash mode.
 
             PhotoChooserTask Rho_photoChooserTask;
@@ -78,7 +78,9 @@ namespace rho
             IReadOnlyDictionary<string, string> Store_TakePicture_Arguments;
             CompositeTransform Rho_Camera_Rotation;
             Dictionary<PageOrientation, Dictionary<string, double>> CameraRotation;
-
+            bool ApplicationBarPresentStatus=true;
+            Dictionary<bool, bool> ApplciationBarPresentStatus;
+            BitmapImage bitmap = new BitmapImage();
             string Rho_FilePath = "C:\\Data\\Users\\Public\\Pictures\\Camera Roll\\";
             #endregion
 
@@ -112,6 +114,9 @@ namespace rho
                 try
                 {
                     // initialize class instance in C# here
+                    ApplciationBarPresentStatus = new Dictionary<bool, bool>();
+                    ApplciationBarPresentStatus.Add(true, true);
+                    ApplciationBarPresentStatus.Add(false, false);
 
                     try
                     {
@@ -425,24 +430,18 @@ namespace rho
             public override void setOutputFormat(string outputFormat, IMethodResult oResult)
             {
                 CRhoRuntime.getInstance().logEvent("Camera class->setOutputFormat type");
-                Rho_OutPutFormat.Clear();
+
                 try
                 {
-                    string storevalue = Rho_OutPutFormat[outputFormat.ToLower().Trim()];
+                    string DataURI = Rho_OutputType[outputFormat.ToLower().Trim()];
+                    Rho_OutPutFormat.Clear();
                     Rho_OutPutFormat.Add("outputformat", outputFormat.ToLower().Trim());
-
                 }
-
                 catch (Exception ex)
                 {
+
                     CRhoRuntime.getInstance().logEvent("Camera class->invalid setOutputFormat " + outputFormat + " Exception " + ex.ToString());
-                    Rho_OutPutFormat.Clear();
-                    Rho_OutPutFormat.Add("outputformat", "image");
-
                 }
-
-
-
 
             }
             /// <summary>
@@ -761,10 +760,24 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class--> takePicture");
                 try
                 {
+                    //Rho_MainPage.toolbarHide();
+                    
+                    try
+                    {
+                        ApplicationBarPresentStatus = ApplciationBarPresentStatus[Rho_MainPage.ApplicationBarStatus()];
+                    }
+                    catch (Exception ex)
+                    {
+                        ApplicationBarPresentStatus = true;
+                        
+                    }
+                    Rho_MainPage.ApplicationBarEnable(false);
                     Store_TakePicture_Arguments = propertyMap;
                     SetCameraConfiguration(propertyMap);
                     Initialize_TakePictureCallBack();
-                    Store_PreviousGridElements = LayoutGrid;       
+                   
+                    
+                    RemovePreviousControls();
                     Rho_Create_Camera_Layout();                                
 
                     InitializeEventsRelatedtoCamera();
@@ -779,12 +792,45 @@ namespace rho
                     m_Take_Picture_Output["status"] = "error";
                     m_Take_Picture_Output["message"] = ex.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                     oResult.set(m_Take_Picture_Output);
                 }
                 CRhoRuntime.getInstance().logEvent("Camera class--> End takePicture");
             }
 
 
+            void RemovePreviousControls()
+
+            {
+
+                UIElement[] UiElementCollection=new UIElement[LayoutGrid.Children.Count] ;
+                LayoutGrid.Children.CopyTo(UiElementCollection,0);
+                LayoutGrid.Children.Clear();
+                foreach (UIElement UIElement in UiElementCollection)
+                {
+                   
+                    Store_PreviousGridElements.Children.Add(UIElement);
+
+                }
+                   
+                
+            }
+
+            void AddPreviousControls()
+            {
+
+                UIElement[] UiElementCollection = new UIElement[Store_PreviousGridElements.Children.Count];
+                Store_PreviousGridElements.Children.CopyTo(UiElementCollection, 0);
+                Store_PreviousGridElements.Children.Clear();
+                foreach (UIElement UIElement in UiElementCollection)
+                {
+
+                    LayoutGrid.Children.Add(UIElement);
+
+                }
+
+
+            }
 
 
 
@@ -845,11 +891,12 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class--> Return_To_Previous_Screen");
                 try
                 {
+                    Rho_MainPage.ApplicationBarEnable(ApplicationBarPresentStatus);
                     UninitializeRegisteredEvents();
-
                     LayoutGrid.Children.Remove(Rho_PhotoCameraCanvas);
-                    LayoutGrid = Store_PreviousGridElements;
-
+                    AddPreviousControls();
+                    Rho_StillCamera.Dispose();
+                    Rho_StillCamera = null;
                     Rho_PhotoCameraCanvas = null;
                    Rho_PhotoCameraBrush = null;
                    GC.Collect();
@@ -901,6 +948,7 @@ namespace rho
                     Return_To_Previous_Screen();
                     e.Cancel = true;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                 }
                 catch (Exception ex)
                 {
@@ -908,6 +956,7 @@ namespace rho
                     m_Take_Picture_Output["status"] = "error";
                     m_Take_Picture_Output["message"] = ex.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                 }
                 m_StoreTakePictureResult.set(m_Take_Picture_Output);
             }
@@ -934,7 +983,9 @@ namespace rho
                         try
                         {
                             KeyValuePair<double, Size> CameraResolution = Rho_Supported_Resolutions.Aggregate((x, y) => Math.Abs(x.Value.Height - Rho_Paramenters["desired_height"]) < Math.Abs(y.Value.Height - Rho_Paramenters["desired_height"]) ? x : y);
+                        
                             Rho_StillCamera.Resolution = CameraResolution.Value;
+                            
                         }
                         catch (Exception ex)
                         {
@@ -951,10 +1002,73 @@ namespace rho
                     m_Take_Picture_Output["status"] = "error";
                     m_Take_Picture_Output["message"] = e.Exception.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                     m_StoreTakePictureResult.set(m_Take_Picture_Output);
                 }
             }
 
+            //For Rotating the captured Image
+            public MemoryStream RotateStream(MemoryStream stream, int angle)
+            {
+                Dictionary<int, int> Angle0 = new Dictionary<int, int>();
+                Angle0.Add(0, 0);
+                Dictionary<int, int> Angle90 = new Dictionary<int, int>();
+                Angle90.Add(90, 90);
+                Dictionary<int, int> Angle180 = new Dictionary<int, int>();
+                Angle180.Add(180, 180);
+                Dictionary<int, int> Angle270 = new Dictionary<int, int>();
+                Angle90.Add(270, 270);
+
+                stream.Position = 0;
+                try
+                {
+                    int result = Angle0[angle % 360];
+                    return stream;
+                }
+                catch (Exception ex)
+                {
+                }
+
+
+                // bitmap.DecodePixelWidth = 480;
+                bitmap.SetSource(stream);
+                var wbSource = new WriteableBitmap(bitmap);
+                WriteableBitmap wbTarget = null;
+                try
+                {
+                    int result = Angle0[angle % 180];
+                    wbTarget = new WriteableBitmap(wbSource.PixelWidth, wbSource.PixelHeight);
+                }
+                catch (Exception ex)
+                {
+                    wbTarget = new WriteableBitmap(wbSource.PixelHeight, wbSource.PixelWidth);
+                }
+
+
+                for (int xIndex = 0; xIndex < wbSource.PixelWidth; xIndex++)
+                {
+                    for (int yIndex = 0; yIndex < wbSource.PixelHeight; yIndex++)
+                    {
+
+                        switch (angle % 360)
+                        {
+                            case 90:
+                                wbTarget.Pixels[(wbSource.PixelHeight - yIndex - 1) + xIndex * wbTarget.PixelWidth] = wbSource.Pixels[xIndex + yIndex * wbSource.PixelWidth];
+                                break;
+                            case 180:
+                                wbTarget.Pixels[(wbSource.PixelWidth - xIndex - 1) + (wbSource.PixelHeight - yIndex - 1) * wbSource.PixelWidth] = wbSource.Pixels[xIndex + yIndex * wbSource.PixelWidth];
+                                break;
+                            case 270:
+                                wbTarget.Pixels[yIndex + (wbSource.PixelWidth - xIndex - 1) * wbTarget.PixelWidth] = wbSource.Pixels[xIndex + yIndex * wbSource.PixelWidth];
+                                break;
+                        }
+                    }
+                }
+                var targetStream = new MemoryStream();
+                wbTarget.SaveJpeg(targetStream, wbTarget.PixelWidth, wbTarget.PixelHeight, 0, 100);
+                return targetStream;
+
+            }
             /// <summary>
             /// After clicking image this event is fired.
             /// </summary>
@@ -972,41 +1086,27 @@ namespace rho
                     {   // Write message to the UI thread.
 
 
-                        BitmapImage bmp = new BitmapImage();
-                        bmp.SetSource(e.ImageStream);
+                       
 
                         MemoryStream ms = new MemoryStream();
-                        WriteableBitmap wb = new WriteableBitmap(bmp);
-                        wb.SaveJpeg(ms, bmp.PixelWidth, bmp.PixelHeight, 0, 100);
-                        byte[] imagebytes = ms.ToArray();
+                      
                         e.ImageStream.CopyTo(ms);
-                        byte[] result = ms.ToArray();
-                        strbase64 = System.Convert.ToBase64String(result);
+                        
+                        MemoryStream oms = RotateStream(ms, (int)Rho_Camera_Rotation.Rotation);
+                        byte[] imagebytes = oms.ToArray();
+                        strbase64 = System.Convert.ToBase64String(imagebytes);
+                       ;
 
 
 
                         e.ImageStream.Seek(0, SeekOrigin.Begin);
 
                         // Save photo to the media library camera roll.
-                        Picture PictDetails = Rho_Store_Picturelibrary.SavePictureToCameraRoll(fileName, e.ImageStream);
-
-
-                        // Write message to the UI thread.
-
-
-                        // Set the position of the stream back to start
-                        e.ImageStream.Seek(0, SeekOrigin.Begin);
-
-                        // Save photo as JPEG to the local folder.
-
+                        Picture PictDetails = Rho_Store_Picturelibrary.SavePictureToCameraRoll(fileName, imagebytes);
 
                         // Write message to the UI thread.
-                        Deployment.Current.Dispatcher.BeginInvoke(delegate()
-                        {
-                            txtDebug.Text = "Photo has been saved to the local folder.";
-                            Return_To_Previous_Screen();
+                        Return_To_Previous_Screen();
 
-                        });
 
                         string returnablevalue = "";
                         try
@@ -1025,7 +1125,6 @@ namespace rho
 
                             CRhoRuntime.getInstance().logEvent("Camera class-->cam_CaptureImageAvailable-->Dispatcher-->exception" + ex.ToString());
                         }
-
                         try
                         {
                             IEnumerable<KeyValuePair<string, string>> OutPutFormat = Rho_OutPutFormat.Select(x => x).Where(k => k.Value == "datauri").ToList();
@@ -1048,7 +1147,7 @@ namespace rho
                         m_Take_Picture_Output["image_height"] = PictDetails.Height.ToString();
                         m_Take_Picture_Output["image_width"] = PictDetails.Width.ToString();
 
-
+                        GC.Collect();
 
 
                     }
@@ -1058,6 +1157,7 @@ namespace rho
                         m_Take_Picture_Output["status"] = "error";
                         m_Take_Picture_Output["message"] = ex.Message;
                         m_Take_Picture_Output["image_format"] = string.Empty;
+                        m_Take_Picture_Output["imageFormat"] = string.Empty;
                     }
                     finally
                     {
@@ -1203,17 +1303,16 @@ namespace rho
 
                     //check if the set orienation is required, if it is front camera then we may have to do some extra calculation. else it appears upside down.
                     SetCameraRotation(Rho_MainPage.Orientation);
-                    //Set Desired camera as a child for CAmera Brush.
+                    //Set Desired camera as a child for Camera Brush.
                     Rho_PhotoCameraBrush.SetSource(Rho_StillCamera);
                     //Add Camera Brush as background to the Canvas.            
                     Rho_PhotoCameraCanvas.Background = Rho_PhotoCameraBrush;
                                        
 
-                    //Set the Width of the Parent Frame to the Complete Device.
+                    
 
 
-                    GridLength Rho_Camera_Gridlength = new GridLength(Application.Current.Host.Content.ActualWidth);
-                    Rho_Camera_Columncollection.Width = Rho_Camera_Gridlength;
+                  
                     //Add canvas to the Main screen object.
                    LayoutGrid.Children.Add(Rho_PhotoCameraCanvas);                   
                    
@@ -1398,7 +1497,7 @@ namespace rho
                         try
                         {
                             string Data = Data_Uri[Store_CaptureImage_outputformat];
-
+                            
                             MemoryStream ms = new MemoryStream();
                             WriteableBitmap wb = new WriteableBitmap(bmp);
                             wb.SaveJpeg(ms, bmp.PixelWidth, bmp.PixelHeight, 0, 100);

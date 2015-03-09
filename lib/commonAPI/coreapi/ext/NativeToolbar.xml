@@ -9,18 +9,18 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
+## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
-</MORE_HELP>
+        </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Nativetoolbar API: 
+There are two methods of enabling the Nativetoolbar API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
 
@@ -42,8 +42,6 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
     &lt;script type="text/javascript" charset="utf-8" src="eb.nativetoolbar.js"&gt;&lt;/script&gt;
 
 The ebapi.js file is necessary for all single API inclusions.
-
-
         </MORE_HELP_EB>
 
         <TEMPLATES>
@@ -115,7 +113,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                         <VALUE value ="SIP">
                                             <DESC>Display software keyboard window.Set `Rho.System.keyboardState` to `Rho.System.KEYBOARD_AUTOMATIC` to use this element.</DESC>
                                             <DESC_EB>Display software keyboard window.Set `EB.System.keyboardState` to `EB.System.KEYBOARD_AUTOMATIC` to use this element.</DESC_EB>
-                                            
+
                                             <PLATFORM>WM</PLATFORM>
                                         </VALUE>
                                     </VALUES>
@@ -135,7 +133,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             </PARAMS>
                         </PARAM>
                     </PARAM>
-                    
+
                     <PARAM name="toolBarProperties" type="HASH">
                         <DESC>Properties of TabBar.</DESC>
                         <PARAMS>
@@ -164,7 +162,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <RETURN type="BOOLEAN"/>
             </METHOD>
         </METHODS>
-        
+
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>

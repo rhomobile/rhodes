@@ -3,23 +3,23 @@
     <MODULE name="Notification" parent="Rho">
         <HELP_OVERVIEW>The Notification API allows you to provide feedback to the user, either auditory, tactile or visual. Use this API to give a visual popup window, sound the device beeper or illuminate the device LEDs (hardware permitting).</HELP_OVERVIEW>
         <MORE_HELP>
-## Enabling the API           
+## Enabling the API
 This API is part of the 'coreapi' extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-### Ruby Usage
+## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
         <MORE_HELP_EB>
 ## Enabling the API
-There are two methods of enabling the Notification API: 
+There are two methods of enabling the Notification API:
 
-* Include all ebapi modules or 
-* Include only the API modules you need 
+* Include all ebapi modules or
+* Include only the API modules you need
 
 For either of these methods, you'll need to include files from the '/Enterprise Browser/JavaScript Files/Enterprise Browser' directory on the computer that you installed the Enterprise Browser.
 
@@ -41,7 +41,6 @@ To include single APIs, you must first include the 'ebapi.js' in your HTML as we
     &lt;script type="text/javascript" charset="utf-8" src="eb.notification.js"&gt;&lt;/script&gt;
 
 The ebapi.js file is necessary for all single API inclusions.
-
         </MORE_HELP_EB>
         <PLATFORM>iOS, Android, WM</PLATFORM>
         <PLATFORM_EB>Android, WM</PLATFORM_EB>
@@ -72,7 +71,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             </PARAM>
                             <PARAM name="buttons" type="Array" default="">
                                 <DESC>Array of buttons. Specify each button either by hash with :id and :title keys or string.When using strings, the 'id' and 'title' will have the same value.
-For example: 
+For example:
 
     :::javascript
     buttonHash = [{id:'yes',title:'Ok to Delete'},{id:'no',title:'No'}];
@@ -93,23 +92,23 @@ Example:
 
     :::javascript
     typeToast = [EB.Notification.TYPE_DIALOG, Rho.Notification.TYPE_TOAST];
-</DESC>    
+</DESC>
                                 <PLATFORMS>Android</PLATFORMS>
                                 <VALUES>
                                   <VALUE constName="TYPE_DIALOG" value="dialog">
                                     <DESC>Show common dialog window with buttons visible if application is active.</DESC>
-                                  </VALUE>  
+                                  </VALUE>
                                   <VALUE constName="TYPE_NOTIFICATION" value="notification">
                                     <DESC>Show message in Android notification bar if application is at background. Touch the message opens the application.</DESC>
-                                  </VALUE>  
+                                  </VALUE>
                                   <VALUE constName="TYPE_NOTIFICATION_DIALOG" value="notificationDialog">
-                                    <DESC>This is the same as 'TYPE_DIALOG' + 'TYPE_NOTIFICATION'. 
+                                    <DESC>This is the same as 'TYPE_DIALOG' + 'TYPE_NOTIFICATION'.
 
 >NOTE: In Android 4.1 and above, buttons are also added to the notification message so the user can interact with the application without application activation (dialog window is not shown if user pressed button in notification). Buttons are not always displayed in the notification area - this depends on screen size and layout and system decides whether to show buttons. You need to drag notification to make buttons appear.</DESC>
-                                  </VALUE>  
+                                  </VALUE>
                                   <VALUE constName="TYPE_TOAST" value="toast">
                                     <DESC>Show toast window with message at foreground for a short time. The toast is visible nevertheless the application is at background or foreground but is not shown same time with any foreground pop-up.</DESC>
-                                  </VALUE>  
+                                  </VALUE>
                                 </VALUES>
                             </PARAM>
                         </PARAMS>
@@ -128,16 +127,16 @@ Example:
                             <DESC>The index in the 'buttons' array.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>    
+                </CALLBACK>
             </METHOD>
-        
+
             <METHOD name="hidePopup" access="STATIC" hasCallback="none">
                 <DESC>Closes the current popup window. On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</DESC>
                 <DESC_EB>Closes the current popup window. On Windows Mobile/CE only Status window, displayed by showStatus can be hide.</DESC_EB>
                 <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
                 <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
             </METHOD>
-        
+
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
                 <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button. Note: Android will show a toast message for a short time in addition to a dialog window.</DESC>
                 <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
@@ -154,11 +153,11 @@ Example:
                         <DESC>The label text for the hide button in the popup status window. On Windows Mobile/CE, Windows and RhoSimulators Windows Close icon used to hide the status window.</DESC>
                         <DESC_EB>The label text for the hide button in the popup status window. On Windows Mobile/CE Close icon used to hide the status window.</DESC_EB>
                         <PLATFORM>iOS, Android, WP8</PLATFORM>
-                        <PLATFORM_EB>Android, WP8</PLATFORM_EB>
+                        <PLATFORM_EB>Android</PLATFORM_EB>
                     </PARAM>
                 </PARAMS>
             </METHOD>
-        
+
             <METHOD name="playFile" access="STATIC" hasCallback="none">
                 <DESC>Play an audio file if that media type is supported by the device.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
@@ -232,11 +231,11 @@ If RhoElements is exited after applying notifications, the settings to LEDs will
                 <RUBY>
            <![CDATA[
 # ---------------
-# controller.rb  
+# controller.rb
 # ---------------
-         
+
 def sound_beeper
-  # Obtain list of available leds on the device. 
+  # Obtain list of available leds on the device.
   beeperProps = Hash.new
   beeperProps['frequency'] = 3000;
   beeperProps['volume'] = 2;

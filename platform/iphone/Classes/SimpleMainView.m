@@ -462,6 +462,13 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		[self setWebBackgroundColor:c];
 
 		assert([webView retainCount] == 1);
+        
+        
+        UIView* bkg_v = [[UIView alloc] initWithFrame:wFrame];
+        bkg_v.backgroundColor = web_bkg_color;
+        [root addSubview:bkg_v];
+        
+        
 	}
 	else {
 		[root addSubview:webView];
@@ -717,7 +724,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	UIColor* bc = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
 	
 	self.webView.backgroundColor = bc;
-	self.view.backgroundColor = bc;
+	//self.view.backgroundColor = bc;
 	
 	//NSString* datas = [NSString stringWithFormat:@"<body bgcolor=\"#%6X\"></body>", bkg_color];
 	NSString* datas = [NSString stringWithFormat:@"<body><script type=\"text/javascript\">document.body.style.backgroundColor = \"#%6X\";</script></body>", bkg_color];

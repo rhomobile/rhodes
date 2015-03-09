@@ -60,7 +60,7 @@ protected:
 	rho::StringW m_CamType;
 	bool m_PreviewOn; 
 	static bool m_IsCameraRunning;
-	static CRcmLoader m_Rcm;		///<  EMDK Rcm DLL loaded dynamically
+	static CTriggerMonitor m_Rcm;		///<  EMDK Rcm DLL loaded dynamically
 	static HANDLE m_hTriggerEvents[eTriggerEventMax];
 	static HANDLE m_hRegisterTrigger;
 	static HANDLE m_hTriggerMonitorThread;

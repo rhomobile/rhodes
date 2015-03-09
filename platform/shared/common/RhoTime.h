@@ -278,6 +278,7 @@ public:
 
     void addTimer(int nInterval, const char* szCallback, const char* szCallbackData);
     void addNativeTimer(int nInterval, CRhoTimer::ICallback* callback);
+	bool isNativeTimerExist(CRhoTimer::ICallback* callback);
 
     unsigned long getNextTimeout();
     boolean checkTimers();

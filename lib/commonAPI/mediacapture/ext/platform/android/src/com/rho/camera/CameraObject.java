@@ -83,7 +83,12 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 }
              
                 String outputFormat = propertyMap.get("outputFormat");
-             
+                if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){   
+    		  propertyMap.put("deprecated", "false");
+    		  deprecated_take_pic = false;    	
+    	        }
+    	        else
+    		   deprecated_take_pic = true;
                 if(propertyMap.containsKey("captureSound")){
                 	mcameraActivity.playMusic(propertyMap.get("captureSound"));
                 }
@@ -97,6 +102,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                    filePath = propertyMap.get("fileName");
          	}
                 Uri resultUri = null;
+                bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);                    
                     StringBuilder dataBuilder = new StringBuilder();
@@ -104,21 +110,30 @@ public class CameraObject extends CameraBase implements ICameraObject {
                     dataBuilder.append(Base64.encodeToString(data, false));
                     propertyMap.put("captureUri", dataBuilder.toString());
                     Logger.T(TAG, dataBuilder.toString());
-                    bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);                     
                     intent.putExtra("IMAGE_WIDTH", bitmap.getWidth());                    
                     intent.putExtra("IMAGE_HEIGHT", bitmap.getHeight());                  
                     mPreviewActivity.setResult(Activity.RESULT_OK, intent);                    
                 } else
                 if (outputFormat.equalsIgnoreCase("image")) {
                     filePath = getTemporaryPath(filePath)+ ".jpg";
+                    boolean save_to_device_gallery;
+		    if(propertyMap.get("saveToDeviceGallery") == null || propertyMap.get("saveToDeviceGallery").equalsIgnoreCase("false")){   
+			 propertyMap.put("saveToDeviceGallery", "false");
+			 save_to_device_gallery = false;    	
+		    }
+	            else
+			 save_to_device_gallery = true;
                     Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);                    
-                    if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
+                    if (save_to_device_gallery) 
                     {                        
                         ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
-                        String name = new File(propertyMap.get("fileName")).getName();                        
                         Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());                        
-                        String strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, name, "Camera");                       
-                        if (strUri != null) {
+                        String strUri = null;
+			if (!propertyMap.containsKey("fileName")) 
+				strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
+			else
+				strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, new File(propertyMap.get("fileName")).getName(), "Camera");
+			if (strUri != null) {
                             resultUri = Uri.parse(strUri);                           
                         } else {
                             throw new RuntimeException("Failed to save camera image to Gallery");
@@ -132,8 +147,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                         stream.flush();                        
                         stream.close();                       
                     }
-            
-                    bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);            
+                       
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
                     intent.putExtra("IMAGE_WIDTH", bitmap.getWidth());                    
                     intent.putExtra("IMAGE_HEIGHT", bitmap.getHeight());                   
@@ -336,12 +350,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
         Logger.T(TAG, "takePicture");
-        if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){   
-    		propertyMap.put("deprecated", "false");
-    		deprecated_take_pic = false;    	
-    	}
-    	else
-    		deprecated_take_pic = true;
+        
         try {
             Map<String, String> actualPropertyMap = new HashMap<String, String>();
             actualPropertyMap.putAll(getPropertiesMap());
