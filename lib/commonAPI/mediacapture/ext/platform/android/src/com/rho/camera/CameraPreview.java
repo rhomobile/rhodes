@@ -72,19 +72,15 @@ public class CameraPreview implements SurfaceHolder.Callback {
 		switch (rotation) {
 		case Surface.ROTATION_0:
 			degrees = 90;
-			Log.d(TAG, "Camerapreview orientation 0: " + degrees);
 			break;
 		case Surface.ROTATION_90:
 			degrees = 0;
-			Log.d(TAG, "Camerapreview orientation 90: " + degrees);
 			break;
 		case Surface.ROTATION_180:
 			degrees = 270;
-			Log.d(TAG, "Camerapreview orientation 180: " + degrees);
 			break;
 		case Surface.ROTATION_270:
 			degrees = 180;
-			Log.d(TAG, "Camerapreview orientation 270: " + degrees);
 			break;
 		}
        mCamera.setDisplayOrientation(degrees);
