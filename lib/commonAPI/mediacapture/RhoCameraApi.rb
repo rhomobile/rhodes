@@ -52,7 +52,6 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
                 if cams.size > 0
                     selected_cam = cams[0]
                     cams.each do |cam|
-                      puts "BHAKTA #{cam.cameraType}"
                        if cam.cameraType == cam_type
                            selected_cam = cam
                        end 
@@ -75,7 +74,6 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
        end
 
        def self.get_camera_info(cam_type='main')
-        Alert.show_popup "Wraper get_camera_info"
             cam_type = 'back' if cam_type == 'main'
             cams = Camera.enumerate
             if cams != nil
@@ -89,6 +87,7 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
             return nil	
        end
    end
+
    private
    def process_hash_params(options = {})
       options[:deprecated] = true
@@ -118,7 +117,7 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
       elsif options[:format] != nil
         options[:format]
       end
-      puts "BHAKTA FORMAT #{imageFormat}"
+
       options[:imageFormat] = imageFormat
       
       #if flash_mode is there then handle it in new way
