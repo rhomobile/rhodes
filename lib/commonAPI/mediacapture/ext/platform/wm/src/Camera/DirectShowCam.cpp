@@ -226,98 +226,119 @@ BOOL CDirectShowCam::hidePreview()
 }
 void CDirectShowCam::Capture()
 {
-	LOG(INFO) + __FUNCTION__ ;
-	HRESULT hr;
-	if(m_PreviewOn)
-	{       
+    LOG(INFO) + __FUNCTION__ ;
+    HRESULT hr;
+    if(m_PreviewOn)
+    {   
+        eImageFilePathErrorType filePathStatus; 
+        filePathStatus = isImageFilePathValid();
+        if( eFilePathValid == filePathStatus)
+        {
 
-		PlaySound(m_CaptureSound.c_str(),NULL,SND_FILENAME|SND_ASYNC);
+            PlaySound(m_CaptureSound.c_str(),NULL,SND_FILENAME|SND_ASYNC);
 
-		if(m_pDSCam)
-		{
-			rho::StringW fileName = getFileName();
-			hr= m_pDSCam->CaptureStill(fileName);
-			if(SUCCEEDED(hr))
-			{
-				rho::String imageUri;
-				int nImageWidth = 0;
-				int nImageHeight =0;
-				if(m_eOutputFormat == eDataUri)
-				{
-					//  Rather than get bogged down the Direct Show again we'll just
-					//  read the file back in from disk.
-					HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, 
-						FILE_ATTRIBUTE_NORMAL, NULL);			
+            if(m_pDSCam)
+            {
+                rho::StringW fileName = getFileName();
+                hr= m_pDSCam->CaptureStill(fileName);
+                if(SUCCEEDED(hr))
+                {
+                    rho::String imageUri;
+                    int nImageWidth = 0;
+                    int nImageHeight =0;
+                    if(m_eOutputFormat == eDataUri)
+                    {
+                        //  Rather than get bogged down the Direct Show again we'll just
+                        //  read the file back in from disk.
+                        HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, 
+                            FILE_ATTRIBUTE_NORMAL, NULL);			
 
-					if(hFile)
-					{
-						DWORD dwFileSize = GetFileSize(hFile, NULL);
-						if (dwFileSize > 0)
-						{
+                        if(hFile)
+                        {
+                            DWORD dwFileSize = GetFileSize(hFile, NULL);
+                            if (dwFileSize > 0)
+                            {
 
-							bool fileReadSuccess = true;
-							DWORD dwImageBufSize;///< Variable for Buffer size of captured image
-							LPVOID pImageBuffer;///< Buffer to save captured image
-							pImageBuffer = new BYTE[dwFileSize];
-							dwImageBufSize = dwFileSize;
-							DWORD dwBytesRead = 0;
-							do
-							{
-								if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
-								{
-									//  Some error has occured reading the file
-									LOG(ERROR) + L"Unable to send image data as URI, could not read data";		
-									UpdateCallbackStatus("error","Unable to send image data as URI, could not read data","");
-									delete[] pImageBuffer;
-									pImageBuffer = NULL;
-									fileReadSuccess = false;
-									break;
-								}
-							}
-							while (dwBytesRead != 0);
-							if(fileReadSuccess)
-							{								
-								rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
-								rho::common::GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
-								delete[] pImageBuffer;
-								pImageBuffer = NULL;
-								//update callback
-								UpdateCallbackStatus("ok","",imageUri,nImageWidth, nImageHeight );
+                                bool fileReadSuccess = true;
+                                DWORD dwImageBufSize;///< Variable for Buffer size of captured image
+                                LPVOID pImageBuffer;///< Buffer to save captured image
+                                pImageBuffer = new BYTE[dwFileSize];
+                                dwImageBufSize = dwFileSize;
+                                DWORD dwBytesRead = 0;
+                                do
+                                {
+                                    if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+                                    {
+                                        //  Some error has occured reading the file
+                                        LOG(ERROR) + L"Unable to send image data as URI, could not read data";		
+                                        UpdateCallbackStatus("error","Unable to send image data as URI, could not read data","");
+                                        delete[] pImageBuffer;
+                                        pImageBuffer = NULL;
+                                        fileReadSuccess = false;
+                                        break;
+                                    }
+                                }
+                                while (dwBytesRead != 0);
+                                if(fileReadSuccess)
+                                {								
+                                    rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
+                                    rho::common::GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
+                                    delete[] pImageBuffer;
+                                    pImageBuffer = NULL;
+                                    //update callback
+                                    UpdateCallbackStatus("ok","",imageUri,nImageWidth, nImageHeight );
 
-							}
+                                }
 
 
-						}
-						else
-						{
-							LOG(ERROR) + L"Unable to send image data as URI, size was unexpected";		
-							UpdateCallbackStatus("error","Unable to send image data as URI, size was unexpected","");				
-						}
-						CloseHandle(hFile);
+                            }
+                            else
+                            {
+                                LOG(ERROR) + L"Unable to send image data as URI, size was unexpected";		
+                                UpdateCallbackStatus("error","Unable to send image data as URI, size was unexpected","");				
+                            }
+                            CloseHandle(hFile);
 
-					}
-					else
-					{
-						LOG(ERROR) + L"Unable to send image data as URI, could not find captured image";		
-						UpdateCallbackStatus("error", "Unable to send image data as URI, could not find captured image","");
+                        }
+                        else
+                        {
+                            LOG(ERROR) + L"Unable to send image data as URI, could not find captured image";		
+                            UpdateCallbackStatus("error", "Unable to send image data as URI, could not find captured image","");
 
-					}
-				}
-				else
-				{
-					rho::common::GetJpegResolution( fileName.c_str(), nImageWidth, nImageHeight);
-					imageUri = rho::common::convertToStringA(fileName).c_str();
-					//update callback
-					UpdateCallbackStatus("ok","",imageUri, nImageWidth, nImageHeight );
-				}
-			}
-			else
-			{
-				UpdateCallbackStatus("error","Image Capture operation failed.","");
-			}
-		}    
+                        }
+                    }
+                    else
+                    {
+                        rho::common::GetJpegResolution( fileName.c_str(), nImageWidth, nImageHeight);
+                        imageUri = rho::common::convertToStringA(fileName).c_str();
+                        //update callback
+                        UpdateCallbackStatus("ok","",imageUri, nImageWidth, nImageHeight );
+                    }
+                }
+                else
+                {
+                    UpdateCallbackStatus("error","Image Capture operation failed.","");
+                }
+            }
+        }
+        else
+        {
+            switch(filePathStatus)
+            {
+            case eFileNotExist:
+                {
+                    UpdateCallbackStatus("error","File path is invalid.","");
+                    break;
+                }
+            case eFileReadOnly:
+                {
+                    UpdateCallbackStatus("error","File path is readonly.","");
+                    break;
+                }
+            }
+        }
 
-	}
+    }
 }
 void CDirectShowCam::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 {

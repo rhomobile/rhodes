@@ -472,3 +472,39 @@ rho::StringW CCamera::generate_filename(LPCTSTR szExt)
 
 	return filename;
 }
+eImageFilePathErrorType CCamera::isImageFilePathValid()
+{	
+	eImageFilePathErrorType retVal = eUnknownFilePathErrorType;
+	rho::StringW filePath;
+	unsigned int index = m_FileName.find_last_of(L"\\");
+	if(index > 0)
+	{
+		filePath= m_FileName.substr(0,index);
+		DWORD dwResult = GetFileAttributes(filePath.c_str());
+		switch(dwResult)
+		{
+		case 0xFFFFFFFF:
+			{
+				retVal = eFileNotExist;
+				break;
+			}
+		case FILE_ATTRIBUTE_READONLY:
+			{
+				retVal = eFileReadOnly;
+				break;
+			}
+		default:
+			{
+				retVal = eFilePathValid;
+				break;
+			}
+		}
+	}
+	else
+	{
+		retVal = eFilePathValid;		
+	}
+	
+	return retVal;
+
+}
