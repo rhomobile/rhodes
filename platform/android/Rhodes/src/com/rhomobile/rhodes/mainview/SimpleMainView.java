@@ -111,7 +111,8 @@ public class SimpleMainView implements MainView {
 	
 	private class ActionHome implements View.OnClickListener {
 		public void onClick(View v) {
-			navigate(RhodesAppOptions.getStartUrl(), 0);
+		//	navigate(RhodesAppOptions.getStartUrl(), 0);
+		navigate(RhodesActivity.safeGetInstance().getStartPage(),0);
 		}
 	};
 	
