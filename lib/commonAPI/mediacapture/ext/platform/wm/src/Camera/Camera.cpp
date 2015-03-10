@@ -249,7 +249,7 @@ void CCamera::cancel()
 	{
 		SetEvent(m_hTriggerEvents[eCancel]);
 	}
-	UpdateCallbackStatus("cancel","User cancelled preview","");	
+	UpdateCallbackStatus("cancel","User canceled operation.","");	
 
 }
 void CCamera::captureImage()
