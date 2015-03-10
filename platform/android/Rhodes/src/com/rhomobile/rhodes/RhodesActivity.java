@@ -166,7 +166,52 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             }
         }
     }
+    public String getStartPage() {
+        String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + getAppInfo().packageName;
+        String configPath = new File(externalSharedPath, "Config.xml").getAbsolutePath();
+		InputStream configIs = null;
+		String startPage = "";
+        Config config = new Config();
+        ApplicationInfo appInfo = getAppInfo();
+        try {
+             externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + appInfo.packageName;
+            Logger.I(TAG, "Config path: " + configPath);
+            File configXmlFile = new File(configPath);
+            if (configXmlFile.exists()) {
+                Logger.I(TAG, "Loading Config.xml from " + configXmlFile.getAbsolutePath());
+                configIs = new FileInputStream(configXmlFile);
+                config.load(configIs, configXmlFile.getParent());
+            }
+            else {
+                Logger.I(TAG, "Loading Config.xml from resources");
+                configIs = getResources().openRawResource(RhoExtManager.getResourceId("raw", "config"));
+                config.load(configIs, externalSharedPath);
+            }
 
+           
+
+             
+            startPage=config.getValue("StartPage");
+        
+            	
+            	
+            
+            
+           
+        } catch (Throwable e) {
+            Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
+            //Logger.W(TAG, e);
+        } finally {
+            if (configIs != null) {
+                try {
+                    configIs.close();
+                } catch (IOException e) {
+                    // just nothing to do
+                }
+            }
+        }
+		return startPage;
+    }
     private void readRhoElementsConfig() {
         String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + getAppInfo().packageName;
         String configPath = new File(externalSharedPath, "Config.xml").getAbsolutePath();
