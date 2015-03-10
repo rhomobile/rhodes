@@ -78,22 +78,22 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>

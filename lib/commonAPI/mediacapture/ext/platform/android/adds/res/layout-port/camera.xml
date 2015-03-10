@@ -16,8 +16,8 @@
     android:id="@+id/cameraButton"
     android:layout_width="75dp"
     android:layout_height="75dp"
-    android:layout_gravity="right|center_vertical"
-    android:layout_marginRight="25dp"
+    android:layout_gravity="bottom|center_horizontal"
+    android:layout_marginBottom="25dp"
     android:background="@drawable/camera_btn"
     android:clickable="true" />
 

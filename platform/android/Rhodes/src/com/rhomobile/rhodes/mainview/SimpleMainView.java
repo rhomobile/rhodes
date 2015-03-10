@@ -136,15 +136,15 @@ public class SimpleMainView implements MainView {
 			
 						@Override
 						public boolean onTouch(View v, MotionEvent event) {
-							Utils.platformLog("Development Extra Simple View TV", "$$$$$ TOUCH EVENT TV ["+MotionEvent.actionToString(event.getAction())+", "+String.valueOf(event.getPointerCount())+"] $$$$$");
+							//Utils.platformLog("Development Extra Simple View TV", "$$$$$ TOUCH EVENT TV ["+MotionEvent.actionToString(event.getAction())+", "+String.valueOf(event.getPointerCount())+"] $$$$$");
 							if ((event.getActionMasked() == MotionEvent.ACTION_UP) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)) {
-								Utils.platformLog("Development Extra Simple View", "$$$$$ UP TV ["+String.valueOf(event.getPointerCount())+"] $$$$$");
+								//Utils.platformLog("Development Extra Simple View", "$$$$$ UP TV ["+String.valueOf(event.getPointerCount())+"] $$$$$");
 								if ((event.getPointerCount() == 3) && (mCurrentMax == 3)) {
-									Utils.platformLog("Development Extra Simple View", "$$$$$ TRIPLE TAP TV $$$$$");
+									//Utils.platformLog("Development Extra Simple View", "$$$$$ TRIPLE TAP TV $$$$$");
 									RhodesActivity.onTripleTap();
 								}
 								if ((event.getPointerCount() == 4) && (mCurrentMax == 4)) {
-									Utils.platformLog("Development Extra Simple View", "$$$$$ QUADRO TAP TV $$$$$");
+									//Utils.platformLog("Development Extra Simple View", "$$$$$ QUADRO TAP TV $$$$$");
 									RhodesActivity.onQuadroTap();
 								}
 								if (event.getPointerCount() == 1) {
@@ -170,7 +170,7 @@ public class SimpleMainView implements MainView {
 				}
 			
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		
 		}

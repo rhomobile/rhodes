@@ -122,24 +122,42 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						}
 						if (!curPath.equals(targetPath)) 
 						{
-							Utils.copy(curPath, targetPath);
-							curFile.delete();
+						//	Utils.copy(curPath, targetPath);
+						//	curFile.delete();
 							Logger.T(TAG, "File copied to " + targetPath);							
 							curUri = Uri.fromFile(new File(targetPath));
 						}
 				}
 				try{
 					HashMap<String,Object> resultMap=new HashMap<String,Object>();
-					resultMap.put("status","OK");
-					resultMap.put("imageUri",  curUri.toString());
-					resultMap.put("imageFormat",   ".jpg");
-					if(picChoosen_imagewidth > 0){
-						resultMap.put("imageWidth",  " " + picChoosen_imagewidth);
-						resultMap.put("imageHeight",  " " + picChoosen_imageheight);				
+					resultMap.put("status","ok");
+					if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
+						resultMap.put("image_uri",  curUri.toString());
+						resultMap.put("image_format",   "jpg");						
 					}
 					else{
-						resultMap.put("imageWidth",  " " + intent.getExtras().get("IMAGE_WIDTH"));
-						resultMap.put("imageHeight",  " " + intent.getExtras().get("IMAGE_HEIGHT"));				
+					   resultMap.put("imageUri",  curUri.toString());
+					   resultMap.put("imageFormat",   "jpg");					 
+					}
+					if(picChoosen_imagewidth > 0){
+						if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
+							resultMap.put("image_width",  "" + picChoosen_imagewidth);
+							resultMap.put("image_height",  "" + picChoosen_imageheight);							
+						}
+						else{
+						   resultMap.put("imageWidth",  "" + picChoosen_imagewidth);
+						   resultMap.put("imageHeight",  "" + picChoosen_imageheight);							
+						}
+					}
+					else{
+						if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
+							resultMap.put("image_width",  "" + picChoosen_imagewidth);
+							resultMap.put("image_height",  "" + picChoosen_imageheight);							
+						}
+						else{
+						resultMap.put("imageWidth",  "" + intent.getExtras().get("IMAGE_WIDTH"));
+						resultMap.put("imageHeight",  "" + intent.getExtras().get("IMAGE_HEIGHT"));							
+						}
 					}
 			    	mMethodResult.set(resultMap);					
 				}
@@ -149,15 +167,15 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				}	
 			} 
 			else if (resultCode == Activity.RESULT_CANCELED) 
-			{
+			{	HashMap<String,Object> resultMap=new HashMap<String,Object>();
+				resultMap.put("message", "User canceled operation.");
 				if (intent != null && intent.hasExtra("error")) {
-					mMethodResult.setError(intent.getStringExtra("error"));
+					resultMap.put("message", ""+intent.getStringExtra("error"));
+					resultMap.put("status", "error");
+				//	mMethodResult.setError(intent.getStringExtra("error"));
 				} else {
-	
-				}			
-				mMethodResult.collect("status", "cancel");
-				HashMap<String,Object> resultMap=new HashMap<String,Object>();
-				resultMap.put("status", "cancel");
+					resultMap.put("status", "cancel");
+				}
 				mMethodResult.set(resultMap);
 			} else {
 				mMethodResult.setError("Unknown error");
