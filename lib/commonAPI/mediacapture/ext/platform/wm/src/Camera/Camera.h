@@ -27,6 +27,13 @@ typedef enum
 	eImageUri=0,
 	eDataUri	
 }eImageOutputFormat;
+enum eImageFilePathErrorType
+{
+	eFileNotExist,
+	eFileReadOnly,
+	eFilePathValid,
+	eUnknownFilePathErrorType
+};
 class ICam
 {
 public:	
@@ -93,6 +100,7 @@ protected:
 	static void createTriggerMonitorThread(LPVOID pparam);
 	static DWORD TriggerMonitorProc (LPVOID pparam);
 	rho::StringW getFileName();
+	eImageFilePathErrorType isImageFilePathValid();
 private:
 	static void closeTriggerEvents();
     rho::StringW generate_filename(LPCTSTR szExt) ;
