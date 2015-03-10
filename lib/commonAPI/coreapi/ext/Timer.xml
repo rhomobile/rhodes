@@ -1,0 +1,72 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Timer" parent="Rho" productException="eb">
+        <HELP_OVERVIEW>Rho.Timer module</HELP_OVERVIEW>
+        <MORE_HELP>Implementation of the timer api.
+           Create a timer and catch callback after interval:
+           
+            var timerCallback = function() {
+                alert("callback called");
+            }                                              
+
+            var timer = Rho.Timer.create();
+            timer.start(5000, timerCallback);
+            
+            Create a timer, start and stop:
+            var timerCallback = function() {
+                alert("callback called");
+            }                                              
+
+            var timer = Rho.Timer.create();
+            timer.start(5000, timerCallback);
+            setTimeout(function() {
+                    timer.stop();
+                },3000);
+        </MORE_HELP>
+        
+        <TEMPLATES>
+            <SINGLETON_INSTANCES/>
+        </TEMPLATES>
+
+        <PROPERTIES access="STATIC" generateAccessors="true">                           
+        </PROPERTIES>
+        
+        <METHODS>
+            <METHOD name="create" access="STATIC">
+                <RETURN type="SELF_INSTANCE" />
+                <DESC>Create a timers objects.</DESC>
+            </METHOD>
+
+            <METHOD name="start" access="INSTANCE" hasCallback="mandatory">
+              <PARAMS>
+              	<PARAM name="interval" type="INTEGER">
+                  <DESC>timer interval in ms</DESC>
+                </PARAM>                               
+              </PARAMS>
+              <CALLBACK type="STRING">
+              </CALLBACK>
+              <DESC>Start timer with preset interval. Callback fired only one time.</DESC>
+            </METHOD>
+
+            <METHOD name="stop" access="INSTANCE">
+              <DESC>Stop started timer</DESC>
+            </METHOD>
+
+            <METHOD name="isAlive" access="INSTANCE">
+              <DESC></DESC>
+              <RETURN type="BOOLEAN">
+                <DESC>Return alive state of a timer. If callback doesnt fired return true, otherwise return false</DESC>
+              </RETURN>
+            </METHOD>
+
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>

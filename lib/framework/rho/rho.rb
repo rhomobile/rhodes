@@ -1187,7 +1187,7 @@ end
     end
   end # RhoConfig
 
-    module Timer
+    module RhoTimer
         def self.start( interval_ms, callback, callback_data )
             System.start_timer(interval_ms, callback, callback_data)
         end

@@ -78,26 +78,32 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>

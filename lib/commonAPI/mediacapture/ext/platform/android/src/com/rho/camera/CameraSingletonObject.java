@@ -2,7 +2,9 @@ package com.rho.camera;
 
 import java.io.File;
 import java.util.Map;
-
+import java.io.FileNotFoundException;
+import android.content.ContentResolver;
+import com.rhomobile.rhodes.util.ContextFactory;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
@@ -16,7 +18,7 @@ import com.rhomobile.rhodes.ui.FileList;
 
 public class CameraSingletonObject implements ICameraSingletonObject {
     private static final String TAG = CameraSingletonObject.class.getSimpleName();
-
+    public static boolean deprecated_choose_pic;
     private int mId;
     
     static int getCameraIndex(String id) {
@@ -69,8 +71,21 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     @Override
     public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
+    	if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){   
+    		propertyMap.put("deprecated", "false");
+    		deprecated_choose_pic = false;    	
+    	}
+    	else
+    		deprecated_choose_pic = true;
         Intent intent = null;
-        String outputFormat = propertyMap.get("outputFormat");
+        String outputFormat = null;
+	if(propertyMap.get("outputFormat") == null){
+	    propertyMap.put("outputFormat", "image");
+	    outputFormat = propertyMap.get("outputFormat");	        	
+	}
+	else{
+	     outputFormat = propertyMap.get("outputFormat");	         
+	}
         CameraFactory factory = (CameraFactory)CameraFactorySingleton.getInstance();
         factory.getRhoListener().setMethodResult(result);
         factory.getRhoListener().setActualPropertyMap(propertyMap);
@@ -136,7 +151,15 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 	public void copyImageToDeviceGallery(String pathToImage,
 			IMethodResult result) {
 		// TODO Auto-generated method stub
-		
+		ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
+		String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
+		String strUri = null;
+		try {
+			strUri = MediaStore.Images.Media.insertImage(contentResolver, pathToImage, imageName, "Saving Image to Device Gallery through Camera");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 
 }

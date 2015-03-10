@@ -174,6 +174,14 @@ namespace rhodes
         {    
             return DeviceStatus.DeviceName.Contains("Emulator") == true ? true : false;
         }
+        public void ApplicationBarEnable(bool Visible)
+        {
+            ApplicationBar.IsVisible = Visible;
+        }
+        public bool ApplicationBarStatus()
+        {
+            return ApplicationBar.IsVisible;
+        }
           
         public MainPage()
         {

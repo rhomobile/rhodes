@@ -1,0 +1,590 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: GeneratorTimeChecker
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!GeneratorTimeChecker.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (G)</a> &raquo;
+    
+    
+    <span class="title">GeneratorTimeChecker</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: GeneratorTimeChecker
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">GeneratorTimeChecker</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">GeneratorTimeChecker.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>TODO check generate api</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="latest_update_time-classvariable" class="">@@latest_update_time =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="app_path-classvariable" class="">@@app_path =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="is_run_always-classvariable" class="">@@is_run_always =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>false</span></pre></dd>
+      
+        <dt id="cached_time-classvariable" class="">@@cached_time =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>nil</span></pre></dd>
+      
+        <dt id="do_cache-classvariable" class="">@@do_cache =
+          
+        </dt>
+        <dd><pre class="code"><span class='kw'>false</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#check-instance_method" title="#check (instance method)">- (Object) <strong>check</strong>(xmlpath) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#find_latest_modified_date-instance_method" title="#find_latest_modified_date (instance method)">- (Object) <strong>find_latest_modified_date</strong>(path) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#init-instance_method" title="#init (instance method)">- (Object) <strong>init</strong>(startdir, app_path) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#update-instance_method" title="#update (instance method)">- (Object) <strong>update</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="check-instance_method">
+  
+    - (<tt>Object</tt>) <strong>check</strong>(xmlpath) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'GeneratorTimeChecker.rb', line 84</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_check'>check</span><span class='lparen'>(</span><span class='id identifier rubyid_xmlpath'>xmlpath</span><span class='rparen'>)</span>
+  <span class='comment'>#@@do_cache = false
+</span>  <span class='id identifier rubyid_generate_xml'>generate_xml</span> <span class='op'>=</span> <span class='kw'>false</span>
+  
+  <span class='id identifier rubyid_extpath'>extpath</span>  <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_dirname'>dirname</span><span class='lparen'>(</span><span class='id identifier rubyid_xmlpath'>xmlpath</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_xml_time'>xml_time</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_mtime'>mtime</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_xmlpath'>xmlpath</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  
+  <span class='comment'>#puts &quot;xmlpath: #{xmlpath}; xml_time : #{xml_time}&quot;
+</span>  <span class='comment'># for generate in first time
+</span>  <span class='kw'>if</span> <span class='cvar'>@@is_run_always</span>
+    <span class='cvar'>@@do_cache</span> <span class='op'>=</span> <span class='kw'>true</span>
+    <span class='id identifier rubyid_generate_xml'>generate_xml</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='kw'>elsif</span> <span class='op'>!</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_extpath'>extpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>shared</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>generated</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>              <span class='op'>||</span>
+     <span class='op'>!</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_extpath'>extpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>platform</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>android</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>generated</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>||</span>
+     <span class='op'>!</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_extpath'>extpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>platform</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>iphone</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>generated</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>  <span class='op'>||</span>
+<span class='comment'>#       !(File.exist? File.join(extpath, &quot;platform&quot;, &quot;osx&quot;, &quot;generated&quot;))     ||
+</span><span class='comment'>#       !(File.exist? File.join(extpath, &quot;platform&quot;, &quot;wm&quot;, &quot;generated&quot;))      ||
+</span><span class='comment'>#       !(File.exist? File.join(extpath, &quot;platform&quot;, &quot;wp8&quot;, &quot;generated&quot;))     ||
+</span>     <span class='op'>!</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_extpath'>extpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>..</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>public</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>generated</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='cvar'>@@do_cache</span> <span class='op'>=</span> <span class='kw'>true</span>
+    <span class='id identifier rubyid_generate_xml'>generate_xml</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='kw'>elsif</span> <span class='cvar'>@@cached_time</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_xml_time'>xml_time</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>!!!</span><span class='tstring_end'>&quot;</span></span>
+    <span class='cvar'>@@do_cache</span> <span class='op'>=</span> <span class='kw'>true</span>
+    <span class='id identifier rubyid_generate_xml'>generate_xml</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='kw'>end</span> 
+  
+  <span class='id identifier rubyid_generate_xml'>generate_xml</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="find_latest_modified_date-instance_method">
+  
+    - (<tt>Object</tt>) <strong>find_latest_modified_date</strong>(path) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'GeneratorTimeChecker.rb', line 13</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_find_latest_modified_date'>find_latest_modified_date</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  <span class='comment'>#puts 'find_latest_modified_date.path=' + path.to_s
+</span>  
+  <span class='id identifier rubyid_latest_mod_time'>latest_mod_time</span> <span class='op'>=</span> <span class='kw'>nil</span>      
+  <span class='id identifier rubyid_templates_dir'>templates_dir</span>   <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  
+  <span class='id identifier rubyid_templates_dir'>templates_dir</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_item'>item</span><span class='op'>|</span>       
+    <span class='kw'>if</span> <span class='id identifier rubyid_item'>item</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>.</span><span class='tstring_end'>'</span></span> <span class='op'>||</span> <span class='id identifier rubyid_item'>item</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>..</span><span class='tstring_end'>'</span></span>
+      <span class='kw'>next</span>        
+    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_full_path'>full_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_item'>item</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_mod_time'>mod_time</span>  <span class='op'>=</span> <span class='kw'>nil</span>
+    
+    <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_directory?'>directory?</span><span class='lparen'>(</span><span class='id identifier rubyid_full_path'>full_path</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_mod_time'>mod_time</span> <span class='op'>=</span> <span class='id identifier rubyid_find_latest_modified_date'>find_latest_modified_date</span><span class='lparen'>(</span><span class='id identifier rubyid_full_path'>full_path</span><span class='rparen'>)</span>
+      
+      <span class='kw'>if</span> <span class='id identifier rubyid_mod_time'>mod_time</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+        <span class='kw'>next</span>
+      <span class='kw'>end</span>            
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_mod_time'>mod_time</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_mtime'>mtime</span><span class='lparen'>(</span><span class='id identifier rubyid_full_path'>full_path</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+    
+    <span class='kw'>if</span> <span class='id identifier rubyid_latest_mod_time'>latest_mod_time</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+      <span class='id identifier rubyid_latest_mod_time'>latest_mod_time</span> <span class='op'>=</span> <span class='id identifier rubyid_mod_time'>mod_time</span>
+    <span class='kw'>else</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_latest_mod_time'>latest_mod_time</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_mod_time'>mod_time</span>
+        <span class='id identifier rubyid_latest_mod_time'>latest_mod_time</span> <span class='op'>=</span> <span class='id identifier rubyid_mod_time'>mod_time</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='rbrace'>}</span>
+  
+  <span class='kw'>return</span> <span class='id identifier rubyid_latest_mod_time'>latest_mod_time</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="init-instance_method">
+  
+    - (<tt>Object</tt>) <strong>init</strong>(startdir, app_path) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'GeneratorTimeChecker.rb', line 49</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_init'>init</span><span class='lparen'>(</span><span class='id identifier rubyid_startdir'>startdir</span><span class='comma'>,</span> <span class='id identifier rubyid_app_path'>app_path</span><span class='rparen'>)</span>
+  <span class='cvar'>@@app_path</span>       <span class='op'>=</span> <span class='id identifier rubyid_app_path'>app_path</span>
+  <span class='id identifier rubyid_templates_path'>templates_path</span>   <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_startdir'>startdir</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>res</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>generators</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>templates</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>api</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_rhogen_path'>rhogen_path</span>      <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_startdir'>startdir</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>res</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>generators</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rhogen.rb</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  
+  <span class='id identifier rubyid_api_time'>api_time</span>         <span class='op'>=</span> <span class='id identifier rubyid_find_latest_modified_date'>find_latest_modified_date</span><span class='lparen'>(</span><span class='id identifier rubyid_templates_path'>templates_path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_rhogen_time'>rhogen_time</span>      <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_mtime'>mtime</span><span class='lparen'>(</span><span class='id identifier rubyid_rhogen_path'>rhogen_path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_last_update_time'>last_update_time</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  
+  <span class='id identifier rubyid_last_change_data'>last_change_data</span> <span class='op'>=</span> <span class='id identifier rubyid_find_latest_modified_date'>find_latest_modified_date</span><span class='lparen'>(</span><span class='id identifier rubyid_templates_path'>templates_path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_time_cache_path'>time_cache_path</span>  <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='cvar'>@@app_path</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tmp</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rhogen.time</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+   
+  <span class='kw'>if</span> <span class='id identifier rubyid_last_change_data'>last_change_data</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='cvar'>@@is_run_always</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='kw'>end</span>
+  
+  <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span> <span class='id identifier rubyid_time_cache_path'>time_cache_path</span>
+    <span class='id identifier rubyid_time_cache_file'>time_cache_file</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_time_cache_path'>time_cache_path</span><span class='rparen'>)</span>
+    <span class='cvar'>@@cached_time</span>   <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_time_cache_file'>time_cache_file</span><span class='period'>.</span><span class='id identifier rubyid_gets'>gets</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_time_cache_file'>time_cache_file</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span>
+    
+    <span class='cvar'>@@latest_update_time</span> <span class='op'>=</span> <span class='id identifier rubyid_rhogen_time'>rhogen_time</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_api_time'>api_time</span> <span class='op'>?</span> <span class='id identifier rubyid_rhogen_time'>rhogen_time</span> <span class='op'>:</span> <span class='id identifier rubyid_api_time'>api_time</span>    
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>latest_update_time=</span><span class='tstring_end'>'</span></span> <span class='op'>+</span> <span class='cvar'>@@latest_update_time</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>cached_time : </span><span class='embexpr_beg'>#{</span><span class='cvar'>@@cached_time</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
+          
+    <span class='kw'>if</span> <span class='cvar'>@@cached_time</span> <span class='op'>&lt;</span> <span class='cvar'>@@latest_update_time</span>
+      <span class='cvar'>@@is_run_always</span> <span class='op'>=</span> <span class='kw'>true</span>
+    <span class='kw'>end</span>       
+  <span class='kw'>else</span>
+    <span class='cvar'>@@is_run_always</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='kw'>end</span>
+  
+  <span class='cvar'>@@do_cache</span> <span class='op'>=</span> <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="update-instance_method">
+  
+    - (<tt>Object</tt>) <strong>update</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'GeneratorTimeChecker.rb', line 114</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_update'>update</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='cvar'>@@do_cache</span> <span class='op'>==</span> <span class='kw'>false</span>
+    <span class='comment'>#puts &quot;@@do_cache is FALSE&quot;
+</span>    <span class='kw'>return</span>
+  <span class='kw'>end</span>
+  
+  <span class='id identifier rubyid_time_cache_path'>time_cache_path</span>  <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='cvar'>@@app_path</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tmp</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rhogen.time</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='const'>FileUtils</span><span class='period'>.</span><span class='id identifier rubyid_mkdir'>mkdir</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='cvar'>@@app_path</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rparen'>)</span> <span class='kw'>unless</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='cvar'>@@app_path</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='const'>FileUtils</span><span class='period'>.</span><span class='id identifier rubyid_mkdir'>mkdir</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='cvar'>@@app_path</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tmp</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rparen'>)</span> <span class='kw'>unless</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='cvar'>@@app_path</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tmp</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  
+  <span class='id identifier rubyid_time_cache_file'>time_cache_file</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_time_cache_path'>time_cache_path</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>w+</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_time_cache_file'>time_cache_file</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='id identifier rubyid_time_cache_file'>time_cache_file</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span><span class='lparen'>(</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Fri Mar  6 02:12:46 2015 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>

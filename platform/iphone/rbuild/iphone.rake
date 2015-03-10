@@ -61,9 +61,12 @@ def set_app_plist_options(fname, appname, bundle_identifier, version, url_scheme
   update_plist_block(fname) do |hash|
     hash['CFBundleDisplayName'] = appname
     hash['CFBundleIdentifier'] = bundle_identifier
-    hash['CFBundleURLTypes'] ||= []
 
-    hash['CFBundleURLTypes'].first do |elem|
+    if hash['CFBundleURLTypes'].empty?
+      hash['CFBundleURLTypes'] = {'CFBundleURLName' => bundle_identifier, 'CFBundleURLSchemes' => [url_scheme] }
+    else
+      elem = hash['CFBundleURLTypes'].first
+
       elem['CFBundleURLName'] = bundle_identifier
       elem['CFBundleURLSchemes'] = [url_scheme] unless url_scheme.nil?
     end
@@ -375,6 +378,18 @@ end
 
 LOADINGIMAGES = ['loading', 'loading@2x', 'loading-Portrait', 'loading-Portrait@2x', 'loading-PortraitUpsideDown', 'loading-PortraitUpsideDown@2x', 'loading-Landscape', 'loading-Landscape@2x', 'loading-LandscapeLeft', 'loading-LandscapeLeft@2x', 'loading-LandscapeRight', 'loading-LandscapeRight@2x', 'loading-568h@2x', 'loading-667h@2x', 'loading-736h@3x']
 
+LOADINGIMAGES_PLIST = {
+    'Default.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default', 'UILaunchImageSize' => '{320,480}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '7.0'}},
+    'Default-568h@2x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-568h', 'UILaunchImageSize' => '{320, 568}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '8.0'}},
+    'Default-667h@2x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-667h', 'UILaunchImageSize' => '{375, 667}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '8.0'}},
+    'Default-736h@3x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-736h', 'UILaunchImageSize' => '{414, 736}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '8.0'}},
+    'Default-Portrait.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-Portrait', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '7.0'}},
+    'Default-Landscape.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-Landscape', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'Landscape', 'UILaunchImageMinimumOSVersion' => '7.0'}},
+    'Default-PortraitUpsideDown.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-PortraitUpsideDown', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'PortraitUpsideDown', 'UILaunchImageMinimumOSVersion' => '7.0'}},
+    'Default-LandscapeLeft.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-LandscapeLeft', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'LandscapeLeft', 'UILaunchImageMinimumOSVersion' => '7.0'}},
+    'Default-LandscapeRight.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-LandscapeRight', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'LandscapeRight', 'UILaunchImageMinimumOSVersion' => '7.0'}},
+}
+
 def restore_default_images
   puts "restore_default_images"
   #ipath = $config["build"]["iphonepath"]
@@ -391,7 +406,7 @@ def restore_default_images
   end
 end
 
-def set_default_images(make_bak)
+def set_default_images(make_bak, plist_hash)
   puts "set_default_images"
   #ipath = $config["build"]["iphonepath"]
   ipath = $app_path + "/project/iphone"
@@ -433,6 +448,18 @@ def set_default_images(make_bak)
         images_to_remove << (name.sub('loading', 'Default') + '.png')
      end
   end
+
+  plist_hash['UILaunchImages'] = []
+  plist_hash['UILaunchImages~ipad'] = []
+
+
+  existing_loading_images.each do |img|
+     plist_item = LOADINGIMAGES_PLIST[img]
+     if plist_item != nil
+        plist_hash[plist_item['plist_root']] << plist_item['plist_item']
+     end
+  end
+
 
   appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
   appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize) }.join("")
@@ -1724,10 +1751,12 @@ namespace "build" do
             hash['NSLocationWhenInUseUsageDescription'] = gps_request_text
           end
         end
+
+
+         set_app_icon(false)
+         set_default_images(false, hash)
       end
 
-      set_app_icon(false)
-      set_default_images(false)
 
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) #if $signidentity.to_s != ""
     end
@@ -1805,10 +1834,11 @@ namespace "build" do
             hash['NSLocationWhenInUseUsageDescription'] = gps_request_text
           end
         end
+
+        set_app_icon(false)
+        set_default_images(false, hash)
       end
 
-      set_app_icon(false)
-      set_default_images(false)
 
       if $entitlements == ""
           if $configuration == "Distribution"
@@ -2025,7 +2055,8 @@ namespace "run" do
           kill_iphone_simulator
 
           mkdir_p $tmpdir
-          log_name  =   File.join($tmpdir, 'logout')
+          #log_name  =   File.join($tmpdir, 'logout')
+          log_name = File.join($app_path, 'rholog.txt')
           File.delete(log_name) if File.exist?(log_name)
 
           $iphone_end_spec = false
@@ -2156,32 +2187,33 @@ namespace "run" do
     end
 
     task :get_log => ["config:iphone"] do
-      puts $simapppath
-       $sdkver = $emulator_version.to_s unless $emulator_version.nil?
-
-       simapp = File.join($simdir, $sdkver, "Applications")
-
-       Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
-           need_rm = true if File.directory? simapppath
-           if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
-             name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
-             puts "found app name: #{name}"
-             guid = File.basename(simapppath)
-             puts "found guid: #{guid}"
-             if name == $app_config['name']
-                 $guid = guid
-                 need_rm = false
-             end
-         end
-         rm_rf simapppath if need_rm
-         rm_rf simapppath + ".sb" if need_rm
-       end
-
-       simapp = File.join($simdir, $emulator_version, "Applications")
-
-
-       rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
-       puts "log_file=" + rholog
+      #puts $simapppath
+      # $sdkver = $emulator_version.to_s unless $emulator_version.nil?
+      #
+      # simapp = File.join($simdir, $sdkver, "Applications")
+      #
+      # Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
+      #     need_rm = true if File.directory? simapppath
+      #     if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
+      #       name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
+      #       puts "found app name: #{name}"
+      #       guid = File.basename(simapppath)
+      #       puts "found guid: #{guid}"
+      #       if name == $app_config['name']
+      #           $guid = guid
+      #           need_rm = false
+      #       end
+      #   end
+      #   rm_rf simapppath if need_rm
+      #   rm_rf simapppath + ".sb" if need_rm
+      # end
+      #
+      # simapp = File.join($simdir, $emulator_version, "Applications")
+      #
+      #
+      # rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
+      log_name  =   File.join($app_path, 'rholog.txt')
+      puts "log_file=" + log_name
     end
 
     #run:iphone:simulator
@@ -2280,7 +2312,7 @@ namespace "run" do
      # Example: iPhone SDK 4.0.1. In this case sdk is still iphonesimulator4.0 but version of simulator is 4.0.1
      $sdkver = $emulator_version.to_s unless $emulator_version.nil?
 
-
+=begin
 
      #if use_old_scheme
 
@@ -2401,6 +2433,10 @@ namespace "run" do
         f << "(version 1)\n(debug deny)\n(allow default)\n"
         f.close
      #end
+
+=end
+
+
     print_timestamp('run:buildsim FINISH')
   end
 
@@ -2533,8 +2569,11 @@ namespace "clean" do
 
       end
 
+
+=begin
       # check hash for remove only current application
       found = true
+
 
       while found do
         found = false
@@ -2566,6 +2605,7 @@ namespace "clean" do
          end
         end
       end
+=end
     end
 
 #    desc "Clean rhobundle"
@@ -2574,7 +2614,6 @@ namespace "clean" do
         rm_rf $bindir
       end
     end
-
 
 
     def run_clean_for_extension(extpath, xcodeproject, xcodetarget)

@@ -9,15 +9,15 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-### JavaScript Usage
+## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 If you are going to be using the JS ORM API, you'll also need to include these lines in any files that will be using it:
 
     :::html
-    <![CDATA[<script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORM.js"></script>]]>
-    <![CDATA[<script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORMHelper.js"></script>]]>
-    <![CDATA[<script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-Ruby-RunTime.js"></script>]]>
+    &lt;script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORM.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORMHelper.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-Ruby-RunTime.js"&gt;&lt;/script&gt;
 
 ## Ruby Usage
 For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/rhom-api).
@@ -27,7 +27,6 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
         </TEMPLATES>
 
         <PROPERTIES>
-          
         </PROPERTIES>
 
         <METHODS access="STATIC">
@@ -168,7 +167,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <PARAM name="type" type="STRING">
                                         <DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default.</DESC>
                                     </PARAM>
-                                </PARAMS> 
+                                </PARAMS>
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
                             </PARAM>
@@ -181,7 +180,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <PARAM name="colArray" type="ARRAY">
                                         <DESC>Array of model column names to use in index, Ex: ['name','qty']</DESC>
                                     </PARAM>
-                                </PARAMS> 
+                                </PARAMS>
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
                             </PARAM>
@@ -194,7 +193,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <PARAM name="colArray" type="ARRAY">
                                         <DESC>Array of model column names to use in index, Ex: ['name','qty']</DESC>
                                     </PARAM>
-                                </PARAMS> 
+                                </PARAMS>
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
                             </PARAM>
@@ -248,8 +247,8 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
 
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-            <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
-            <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
         <EXAMPLES>
             <EXAMPLE title="Add ORM model, create ORM object">
             <SECTIONS>
@@ -290,10 +289,10 @@ product.get('name'); // iPhone5
                 <CODE>
                     <JAVASCRIPT>
    <![CDATA[
-// The model 'Product' must have been defined in JavaScript execution earlier 
-// in order for 'getModel' to work properly. 
+// The model 'Product' must have been defined in JavaScript execution earlier
+// in order for 'getModel' to work properly.
 
-// The models generated in RhoStudio, are not accessible in JavaScript unless 
+// The models generated in RhoStudio, are not accessible in JavaScript unless
 // the classes are defined via the  Rho.ORM.addModel api
 
 

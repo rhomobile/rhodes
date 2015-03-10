@@ -1,32 +1,33 @@
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
-using Microsoft.Devices;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.IsolatedStorage;
-using Microsoft.Xna.Framework.Media;
-using System.Windows.Media;
-using System.Threading;
-using System.Windows.Input;
-using Windows.Storage.Pickers;
-using Microsoft.Phone.Tasks;
-using Microsoft.Phone.Info;
-using Windows.Graphics.Display;
-using rhoruntime;
-using System.Collections.Generic;
-using System;
-using System.Windows.Threading;
-using rhodes;
 using System.Linq;
-using Windows.Phone.Media.Capture;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Collections.ObjectModel;
+using System.Windows.Navigation;
+using System.Windows.Threading;
+using Microsoft.Devices;
 using Microsoft.Phone.BackgroundAudio;
-using Microsoft.Xna.Framework.Audio;
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Info;
+using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
+using rhodes;
+using rhoruntime;
+using Windows.Graphics.Display;
+using Windows.Phone.Media.Capture;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
+using Windows.Storage.Pickers;
 
 
 namespace rho
@@ -44,7 +45,7 @@ namespace rho
             VideoBrush Rho_PhotoCameraBrush;
             Canvas Rho_PhotoCameraCanvas;
             TextBox txtDebug = new TextBox();
-            Grid Store_PreviousGridElements;
+            Grid Store_PreviousGridElements=new Grid();
             // Holds current flash mode.
 
             PhotoChooserTask Rho_photoChooserTask;
@@ -58,7 +59,7 @@ namespace rho
             MainPage Rho_MainPage;
             Grid LayoutGrid;
             FlashMode Rho_FlashMode;
-            UIElementCollection Rho_Control;
+            
             Dictionary<double, Size> Rho_Supported_Resolutions = new Dictionary<double, Size>();
             List<double> Rho_Screen_Resolution_Width = new List<double>();
             List<double> Rho_Screen_Resolution_Height = new List<double>();
@@ -71,17 +72,24 @@ namespace rho
 
             Dictionary<string, string> Rho_OutputType = new Dictionary<string, string>();
             Dictionary<string, string> Rho_OutPutFormat = new Dictionary<string, string>();
+            
             IMethodResult m_StoreTakePictureResult;
             Dictionary<string, string> m_Take_Picture_Output = new Dictionary<string, string>();
+           
             Dictionary<string, int> m_CameraTypes = new Dictionary<string, int>();
             string strbase64;
-            IReadOnlyDictionary<string,string> Store_TakePicture_Arguments;
+            IReadOnlyDictionary<string, string> Store_TakePicture_Arguments;
             CompositeTransform Rho_Camera_Rotation;
             Dictionary<PageOrientation, Dictionary<string, double>> CameraRotation;
-
+            bool ApplicationBarPresentStatus=true;
+            Dictionary<bool, bool> ApplciationBarPresentStatus;
+            BitmapImage Rho_ToReduceResolution = new BitmapImage();
+            Dictionary<CameraType, string> m_CameratypeMapping = new Dictionary<CameraType, string>();
             string Rho_FilePath = "C:\\Data\\Users\\Public\\Pictures\\Camera Roll\\";
             #endregion
-
+            /// <summary>
+            /// Constructor
+            /// </summary>
 
             public Camera()
             {
@@ -100,7 +108,7 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent(" Camera class--> setNativeImpl" + strID);
                 base.setNativeImpl(strID, native);
                 InitializeCameraProperties(_strID);
-                
+
             }
             /// <summary>
             /// Set Basic Camera style like type of camera.
@@ -112,12 +120,18 @@ namespace rho
                 try
                 {
                     // initialize class instance in C# here
+                    ApplciationBarPresentStatus = new Dictionary<bool, bool>();
+                    ApplciationBarPresentStatus.Add(true, true);
+                    ApplciationBarPresentStatus.Add(false, false);
 
                     try
                     {
                         m_CameraTypes.Clear();
-                        m_CameraTypes.Add(CameraType.FrontFacing.ToString(), Convert.ToInt32(CameraType.FrontFacing));
-                        m_CameraTypes.Add(CameraType.Primary.ToString(), Convert.ToInt32(CameraType.Primary));
+                        m_CameraTypes.Add("back", 0);
+                        m_CameraTypes.Add("front", 1);
+                        m_CameratypeMapping.Clear();
+                        m_CameratypeMapping.Add(CameraType.Primary, "back");
+                        m_CameratypeMapping.Add(CameraType.FrontFacing, "front");
 
                         // if strid is blank select the primary //Simha
                         Rho_Camera_selected = m_CameraTypes[strId];
@@ -125,7 +139,7 @@ namespace rho
                     catch (Exception ex)
                     {
                         CRhoRuntime.getInstance().logEvent("Camera class->Invalid Camera type Specified, So setting to default camera(back)");
-                        Rho_Camera_selected = m_CameraTypes["Primary"];
+                        Rho_Camera_selected = m_CameraTypes["back"]; 
                     }
                     using (PhotoCamera Temp_camera = new PhotoCamera((CameraType)Rho_Camera_selected))
                     {
@@ -133,24 +147,24 @@ namespace rho
                         Rho_Paramenters.Add("desired_width", Temp_camera.Resolution.Width);
 
 
-                        Rho_AliasParametersName.Add("desiredHeight", "desired_height");
-                        Rho_AliasParametersName.Add("desiredWidth", "desired_width");
-                        Rho_AliasParametersName.Add("flashMode", "flash_mode");
+                        Rho_AliasParametersName.Add("desiredheight", "desired_height");
+                        Rho_AliasParametersName.Add("desiredwidth", "desired_width");
+                        Rho_AliasParametersName.Add("flashmode", "flash_mode");
 
 
 
                         Rho_Paramenters.Add("camera_type", (int)Temp_camera.CameraType);
 
-                        Rho_StringParameters.Add("imagename", "Img");
+                        Rho_StringParameters.Add("filename", "Img");
                         Rho_StringParameters.Add("imageformat", "jpg");
                         Rho_StringParameters.Add("captureSound", string.Empty);
 
 
-                        Rho_OutputType.Add("image", "outputformat");
-                        Rho_OutputType.Add("datauri", "outputformat");
+                        Rho_OutputType.Add("image", OUTPUT_FORMAT_IMAGE);
+                        Rho_OutputType.Add("datauri", OUTPUT_FORMAT_DATAURI);
                         Rho_OutPutFormat.Add("outputformat", "image");
-
-
+                       
+                       
                         //CameraResolutionhsize  what is hsize meaning in this //Simha
                         IEnumerable<Size> CameraResolutionsize = Temp_camera.AvailableResolutions;
                         // change the variable name x,y to meaning ful name
@@ -166,7 +180,15 @@ namespace rho
                         }
 
 
+                        try
+                        {
+                            ApplicationBarPresentStatus = ApplciationBarPresentStatus[Rho_MainPage.ApplicationBarStatus()];
+                        }
+                        catch (Exception ex)
+                        {
+                            ApplicationBarPresentStatus = true;
 
+                        }
                         Rho_Flash_Types.Add(FLASH_ON, 1);
                         Rho_Flash_Types.Add(FLASH_OFF, 2);
                         Rho_Flash_Types.Add(FLASH_AUTO, 3);
@@ -183,7 +205,7 @@ namespace rho
                     CRhoRuntime.getInstance().logEvent("Camera class-> InitializeCameraProperties, Setting up Camera Related Variables-->Exception" + ex.Message);
 
                 }
-               CameraRotation = new Dictionary<PageOrientation, Dictionary<string, double>>();
+                CameraRotation = new Dictionary<PageOrientation, Dictionary<string, double>>();
 
                 Dictionary<string, double> LandscapeLeft = new Dictionary<string, double>();
 
@@ -209,7 +231,7 @@ namespace rho
                 PortraitDown.Add("rotation", 0);
                 PortraitDown.Add("Height", Application.Current.Host.Content.ActualHeight);
                 PortraitDown.Add("Width", Application.Current.Host.Content.ActualWidth);
-                PortraitDown.Add("FrontFacing", -180);
+                PortraitDown.Add("front", -180);
 
                 CameraRotation.Add(PageOrientation.PortraitDown, PortraitDown);
 
@@ -217,7 +239,7 @@ namespace rho
                 PortraitUp.Add("rotation", 0);
                 PortraitUp.Add("Height", Application.Current.Host.Content.ActualHeight);
                 PortraitUp.Add("Width", Application.Current.Host.Content.ActualWidth);
-                PortraitUp.Add("FrontFacing", 180);
+                PortraitUp.Add("front", 180);
 
                 CameraRotation.Add(PageOrientation.PortraitUp, PortraitUp);
                 CRhoRuntime.getInstance().logEvent("Camera class-->End InitializeCameraProperties");
@@ -236,7 +258,7 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class-> getCameraType");
                 using (PhotoCamera TempCamera = new PhotoCamera((CameraType)Rho_Paramenters["camera_type"]))
                 {
-                    oResult.set(TempCamera.CameraType.ToString());
+                    oResult.set(m_CameratypeMapping[TempCamera.CameraType]);
                 }
             }
 
@@ -250,7 +272,7 @@ namespace rho
                 try
                 {
                     oResult.set(Rho_Paramenters["getmaxwidth"]);
-                    return;
+                   
                 }
                 catch (Exception ex)
                 {
@@ -270,7 +292,7 @@ namespace rho
                 try
                 {
                     oResult.set(Rho_Paramenters["getmaxheight"]);
-                    return;
+                   
                 }
                 catch (Exception ex)
                 {
@@ -289,21 +311,21 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class--> Entered getSupportedSizeList");
                 using (PhotoCamera TempCamera = new PhotoCamera((CameraType)Rho_Paramenters["camera_type"]))
                 {
-                  
+
                     List<Dictionary<string, string>> RTypes = new List<Dictionary<string, string>>();
 
                     try
                     {
-                      //Simha //Unused then remove it
+                       
 
                         IEnumerable<Size> objsize = TempCamera.AvailableResolutions;
                         foreach (Size size in objsize)
                         {
-                             Dictionary<string, string> Store_Resolution = new Dictionary<string, string>();
+                            Dictionary<string, string> Store_Resolution = new Dictionary<string, string>();
                             Store_Resolution.Add("width", size.Width.ToString());
                             Store_Resolution.Add("height", size.Height.ToString());
                             RTypes.Add(Store_Resolution);
-                           
+
                         }
                     }
                     catch (Exception ex)
@@ -379,8 +401,8 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getFileName(IMethodResult oResult)
             {
-                CRhoRuntime.getInstance().logEvent("Camera class--> getFileName" + Rho_StringParameters["imagename"]);
-                oResult.set(Rho_StringParameters["imagename"]);
+                CRhoRuntime.getInstance().logEvent("Camera class--> getFileName" + Rho_StringParameters["filename"]);
+                oResult.set(Rho_StringParameters["filename"]);
             }
 
             /// <summary>
@@ -391,7 +413,7 @@ namespace rho
             public override void setFileName(string fileName, IMethodResult oResult)
             {
                 CRhoRuntime.getInstance().logEvent("Camera class--> setFileName " + fileName);
-                Rho_StringParameters["imagename"] = fileName;
+                Rho_StringParameters["filename"] = fileName;
             }
 
             /// <summary>
@@ -403,6 +425,11 @@ namespace rho
                 oResult.set(Rho_StringParameters["imageformat"]);
             }
 
+           /// <summary>
+           ///     Not Supported in WP8
+           /// </summary>
+           /// <param name="compressionFormat"></param>
+           /// <param name="oResult"></param>
             public override void setCompressionFormat(string compressionFormat, IMethodResult oResult)
             {
                 //AS WP8 does not support any other format apart from jpeg, need to check in 8.1 
@@ -414,7 +441,8 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getOutputFormat(IMethodResult oResult)
             {
-                oResult.set(Rho_OutPutFormat["outputformat"]);
+
+                oResult.set(Rho_OutputType[Rho_OutPutFormat["outputformat"]]);
             }
             /// <summary>
             /// get either dataURI or image.
@@ -423,25 +451,20 @@ namespace rho
             /// <param name="oResult"></param>
             public override void setOutputFormat(string outputFormat, IMethodResult oResult)
             {
-                CRhoRuntime.getInstance().logEvent("Camera class->setOutputFormat type" );
-                Rho_OutPutFormat.Clear();
+                CRhoRuntime.getInstance().logEvent("Camera class->setOutputFormat type");
+
                 try
                 {
-                    string storevalue = Rho_OutPutFormat[outputFormat.ToLower().Trim()];
+                   
+                    string DataURI = Rho_OutputType[outputFormat.ToLower().Trim()];
+                    Rho_OutPutFormat.Clear();
                     Rho_OutPutFormat.Add("outputformat", outputFormat.ToLower().Trim());
-
                 }
-
                 catch (Exception ex)
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class->invalid setOutputFormat " + outputFormat +" Exception "+ ex.ToString());
-                    Rho_OutPutFormat.Clear();
-                    Rho_OutPutFormat.Add("outputformat", "image");
 
+                    CRhoRuntime.getInstance().logEvent("Camera class->invalid setOutputFormat " + outputFormat + " Exception " + ex.ToString());
                 }
-
-
-
 
             }
             /// <summary>
@@ -486,12 +509,12 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getFlashMode(IMethodResult oResult)
             {
-                string FlashModeType=FlashMode.Auto.ToString();
+                string FlashModeType = FlashMode.Auto.ToString();
                 try
                 {
                     CRhoRuntime.getInstance().logEvent("Camera class--> getFlashMode");
                     IEnumerable<KeyValuePair<string, int>> Flashmode = Rho_Flash_Types.Select(x => x).Where(k => k.Value == (int)Rho_FlashMode).ToList();
-                     FlashModeType = string.Empty; //give proper varible name for returnablevalue //Simha
+                    FlashModeType = string.Empty; //give proper varible name for returnablevalue //Simha
                     foreach (KeyValuePair<string, int> obj in Flashmode)
                     {
                         FlashModeType = obj.Key;
@@ -519,7 +542,7 @@ namespace rho
 
                 }
                 catch (Exception ex)
-                {                    
+                {
                     Rho_FlashMode = (FlashMode)(Rho_Flash_Types[FLASH_AUTO]);
                     CRhoRuntime.getInstance().logEvent("Camera class->invalid setFlashMode " + ex.ToString());
                 }
@@ -665,11 +688,11 @@ namespace rho
                 // implement this method in C# here
             }
 
-           /// <summary>
+            /// <summary>
             /// Not supported in WP8.
-           /// </summary>
-           /// <param name="propertyMap"></param>
-           /// <param name="oResult"></param>
+            /// </summary>
+            /// <param name="propertyMap"></param>
+            /// <param name="oResult"></param>
             public override void showPreview(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
             {
                 // implement this method in C# here
@@ -720,9 +743,9 @@ namespace rho
                     }
                     try
                     {
-
-                        Rho_FlashMode = (FlashMode)(Rho_Flash_Types[Rho_Flashmodes[ParametersKeyName]]);
                         Rho_Flashmodes[ParametersKeyName] = Parameters.Value.ToString().Trim();
+                        Rho_FlashMode = (FlashMode)(Rho_Flash_Types[Rho_Flashmodes[ParametersKeyName]]);
+                        
                     }
                     catch (Exception ex)
                     {
@@ -760,61 +783,106 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class--> takePicture");
                 try
                 {
+                    //Rho_MainPage.toolbarHide();
+                    
+                   
+                    Rho_MainPage.ApplicationBarEnable(false);
                     Store_TakePicture_Arguments = propertyMap;
-
                     SetCameraConfiguration(propertyMap);
                     Initialize_TakePictureCallBack();
-                    Store_PreviousGridElements = LayoutGrid;
-                    Rho_StillCamera = new Microsoft.Devices.PhotoCamera((CameraType)Rho_Camera_selected);
-                    Rho_MainPage.BackKeyPress += Rho_MainPage_BackKeyPress;
                    
-
-                    rootFrame = Rho_MainPage.RootVisual() as PhoneApplicationFrame;
-                    rootFrame.Unobscured += rootFrame_Unobscured;
-
-                    Rho_Create_Camera_Layout();
-                   // Rho_MainPage.SupportedOrientations = SupportedPageOrientation.Landscape;
-                    //Rho_MainPage.Orientation = PageOrientation.LandscapeLeft;
                     
-                    Rho_MainPage.OrientationChanged += Rho_MainPage_OrientationChanged;
-                    Rho_StillCamera.Initialized += new EventHandler<Microsoft.Devices.CameraOperationCompletedEventArgs>(cam_Initialized);
+                    RemovePreviousControls();
+                    Rho_Create_Camera_Layout();                                
 
-                    // Event is fired when the capture sequence is complete and an image is available.
-                    Rho_StillCamera.CaptureImageAvailable += new EventHandler<Microsoft.Devices.ContentReadyEventArgs>(cam_CaptureImageAvailable);
+                    InitializeEventsRelatedtoCamera();
 
                     m_StoreTakePictureResult = oResult;
-                    Rho_PhotoCameraBrush.SetSource(Rho_StillCamera);
-                   
+                  
+
                 }
                 catch (Exception ex)
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class--> takePicture exception"+ex.ToString());
+                    CRhoRuntime.getInstance().logEvent("Camera class--> takePicture exception" + ex.ToString());
                     m_Take_Picture_Output["status"] = "error";
                     m_Take_Picture_Output["message"] = ex.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                     oResult.set(m_Take_Picture_Output);
                 }
                 CRhoRuntime.getInstance().logEvent("Camera class--> End takePicture");
             }
+            /// <summary>
+            /// Remove Previous Controls before adding/Loading Camera Controls
+            /// </summary>
 
-           
+            void RemovePreviousControls()
 
-           
+            {
+
+                UIElement[] UiElementCollection=new UIElement[LayoutGrid.Children.Count] ;
+                LayoutGrid.Children.CopyTo(UiElementCollection,0);
+                LayoutGrid.Children.Clear();
+                foreach (UIElement UIElement in UiElementCollection)
+                {
+                   
+                    Store_PreviousGridElements.Children.Add(UIElement);
+
+                }
+                   
+                
+            }
+            /// <summary>
+            /// Add Previous Control as user has finished his action.
+            /// </summary>
+            void AddPreviousControls()
+            {
+
+                UIElement[] UiElementCollection = new UIElement[Store_PreviousGridElements.Children.Count];
+                Store_PreviousGridElements.Children.CopyTo(UiElementCollection, 0);
+                Store_PreviousGridElements.Children.Clear();
+                foreach (UIElement UIElement in UiElementCollection)
+                {
+
+                    LayoutGrid.Children.Add(UIElement);
+
+                }
+
+            }
+
+
 
             #endregion
 
             # region takeImage call the below methods.
 
-           /// <summary>
-           /// On Unlock of Phone this event is fired.
-           /// </summary>
-           /// <param name="sender"></param>
-           /// <param name="e"></param>
+            /// <summary>
+            /// On Unlock of Phone this event is fired.
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
             void rootFrame_Unobscured(object sender, EventArgs e)
             {
                 CRhoRuntime.getInstance().logEvent("Camera class--> rootFrame_Unobscured");
                 UninitializeRegisteredEvents();
                 takePicture(Store_TakePicture_Arguments, m_StoreTakePictureResult);
+            }
+            /// <summary>
+            /// Initialize Camera Related Events
+            /// </summary>
+            private void InitializeEventsRelatedtoCamera()
+            {
+                rootFrame.Unobscured += rootFrame_Unobscured;
+
+                //On Clicking the Camera Canvas Lets consider it as a camera click.
+                Rho_PhotoCameraCanvas.Tap += Rho_PhotoCameraCanvas_Tap;
+                CameraButtons.ShutterKeyPressed += CameraButtons_ShutterKeyPressed;
+                Rho_MainPage.OrientationChanged += Rho_MainPage_OrientationChanged;
+                Rho_StillCamera.Initialized += new EventHandler<Microsoft.Devices.CameraOperationCompletedEventArgs>(cam_Initialized);
+
+                // Event is fired when the capture sequence is complete and an image is available.
+                Rho_StillCamera.CaptureImageAvailable += new EventHandler<Microsoft.Devices.ContentReadyEventArgs>(cam_CaptureImageAvailable);
+                Rho_MainPage.BackKeyPress += Rho_MainPage_BackKeyPress;
             }
 
             /// <summary>
@@ -827,7 +895,7 @@ namespace rho
                 rootFrame.Unobscured -= rootFrame_Unobscured;
                 Rho_MainPage.BackKeyPress -= Rho_MainPage_BackKeyPress;
                 Rho_StillCamera.CaptureImageAvailable -= new EventHandler<Microsoft.Devices.ContentReadyEventArgs>(cam_CaptureImageAvailable);
-               
+
                 Rho_StillCamera.Initialized -= new EventHandler<Microsoft.Devices.CameraOperationCompletedEventArgs>(cam_Initialized);
 
                 Rho_StillCamera.CaptureImageAvailable -= new EventHandler<Microsoft.Devices.ContentReadyEventArgs>(cam_CaptureImageAvailable);
@@ -841,17 +909,20 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class--> Return_To_Previous_Screen");
                 try
                 {
+                    Rho_MainPage.ApplicationBarEnable(ApplicationBarPresentStatus);
                     UninitializeRegisteredEvents();
-
                     LayoutGrid.Children.Remove(Rho_PhotoCameraCanvas);
-                    LayoutGrid = Store_PreviousGridElements;
-
+                    AddPreviousControls();
+                    Rho_StillCamera.Dispose();
+                    Rho_StillCamera = null;
                     Rho_PhotoCameraCanvas = null;
-                    Rho_PhotoCameraBrush = null;
+                   Rho_PhotoCameraBrush = null;
+                   GC.Collect();
+
 
                     Rho_MainPage.SupportedOrientations = SupportedPageOrientation.PortraitOrLandscape;
                     Rho_MainPage.Orientation = PageOrientation.Portrait;
-
+                    
 
                 }
                 catch (AccessViolationException et)
@@ -895,13 +966,15 @@ namespace rho
                     Return_To_Previous_Screen();
                     e.Cancel = true;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                 }
                 catch (Exception ex)
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class-->Rho_MainPage_BackKeyPress -->Error"+ex.ToString());
+                    CRhoRuntime.getInstance().logEvent("Camera class-->Rho_MainPage_BackKeyPress -->Error" + ex.ToString());
                     m_Take_Picture_Output["status"] = "error";
                     m_Take_Picture_Output["message"] = ex.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                 }
                 m_StoreTakePictureResult.set(m_Take_Picture_Output);
             }
@@ -925,9 +998,17 @@ namespace rho
                         // Write message.
                         txtDebug.Text = "Camera initialized.";
                         Rho_StillCamera.FlashMode = Rho_FlashMode;
-                        KeyValuePair<double, Size> CameraResolution = Rho_Supported_Resolutions.Aggregate((x, y) => Math.Abs(x.Value.Height - Rho_Paramenters["desired_height"]) < Math.Abs(y.Value.Height - Rho_Paramenters["desired_height"]) ? x : y);
-
-                        Rho_StillCamera.Resolution = CameraResolution.Value;
+                        try
+                        {
+                            KeyValuePair<double, Size> CameraResolution = Rho_Supported_Resolutions.Aggregate((x, y) => Math.Abs(x.Value.Height - Rho_Paramenters["desired_height"]) < Math.Abs(y.Value.Height - Rho_Paramenters["desired_height"]) ? x : y);
+                        
+                            Rho_StillCamera.Resolution = CameraResolution.Value;
+                            
+                        }
+                        catch (Exception ex)
+                        {
+                            CRhoRuntime.getInstance().logEvent("Camera class-->cam_Initialized-->Exception"+ex.ToString());
+                        }                     
 
 
 
@@ -935,14 +1016,87 @@ namespace rho
                 }
                 else
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class-->cam_Initialized-->Exception"+e.Exception.ToString());
+                    CRhoRuntime.getInstance().logEvent("Camera class-->cam_Initialized-->Exception" + e.Exception.ToString());
                     m_Take_Picture_Output["status"] = "error";
                     m_Take_Picture_Output["message"] = e.Exception.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
+                    m_Take_Picture_Output["imageFormat"] = string.Empty;
                     m_StoreTakePictureResult.set(m_Take_Picture_Output);
                 }
             }
 
+            /// <summary>
+            /// For Rotating the captured Image
+            /// </summary>
+            /// <param name="stream">Input Stream For Rotation</param>
+            /// <param name="angle">Rotation angle, to which the 'stream' has to be rotated</param>
+            /// <param name="FixedLength">IF flase maintain the Resolution, if true, reduce the resolution</param>
+            /// <returns></returns>
+            public MemoryStream RotateStream(MemoryStream stream, int angle)
+            {
+                Dictionary<int, int> Angle0 = new Dictionary<int, int>();
+                Angle0.Add(0, 0);
+                
+                stream.Position = 0;
+               
+
+                Rho_ToReduceResolution.SetSource(stream);
+              
+             
+                    try
+                    {
+
+                        int result = Angle0[angle % 360];
+                       return stream;
+                        
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                
+
+
+
+                var wbSource = new WriteableBitmap(Rho_ToReduceResolution);
+               
+                WriteableBitmap wbTarget;
+                
+                try
+                {
+                    int result = Angle0[angle % 180];
+                    wbTarget = new WriteableBitmap(wbSource.PixelWidth, wbSource.PixelHeight);
+                }
+                catch (Exception ex)
+                {
+                    wbTarget = new WriteableBitmap(wbSource.PixelHeight, wbSource.PixelWidth);
+                }
+
+
+                for (int xIndex = 0; xIndex < wbSource.PixelWidth; xIndex++)
+                {
+                    for (int yIndex = 0; yIndex < wbSource.PixelHeight; yIndex++)
+                    {
+                        //Maintaining This switch because, if i replace this with Dictionary Mapping, was getting an Performance issue.
+                        switch (angle % 360)
+                        {
+                            case 90:
+                                wbTarget.Pixels[(wbSource.PixelHeight - yIndex - 1) + xIndex * wbTarget.PixelWidth] = wbSource.Pixels[xIndex + yIndex * wbSource.PixelWidth];
+                                break;
+                            case 180:
+                                wbTarget.Pixels[(wbSource.PixelWidth - xIndex - 1) + (wbSource.PixelHeight - yIndex - 1) * wbSource.PixelWidth] = wbSource.Pixels[xIndex + yIndex * wbSource.PixelWidth];
+                                break;
+                            case 270:
+                                wbTarget.Pixels[yIndex + (wbSource.PixelWidth - xIndex - 1) * wbTarget.PixelWidth] = wbSource.Pixels[xIndex + yIndex * wbSource.PixelWidth];
+                                break;
+                        }
+                    }
+                }
+                var targetStream = new MemoryStream();
+                wbTarget.SaveJpeg(targetStream,(int)(Math.Abs( wbTarget.PixelWidth)),(int)(Math.Abs( wbTarget.PixelHeight)),0, 100);
+                return targetStream;
+
+            }
             /// <summary>
             /// After clicking image this event is fired.
             /// </summary>
@@ -951,7 +1105,7 @@ namespace rho
             void cam_CaptureImageAvailable(object sender, Microsoft.Devices.ContentReadyEventArgs e)
             {
                 CRhoRuntime.getInstance().logEvent("Camera class-->cam_CaptureImageAvailable");
-                string fileName = Rho_StringParameters["imagename"] + "_" + DateTime.Now.ToLongDateString() + "_" + DateTime.Now.ToLongTimeString().Replace(':', '_');
+                string fileName = Rho_StringParameters["filename"] + "_" + DateTime.Now.ToLongDateString() + "_" + DateTime.Now.ToLongTimeString().Replace(':', '_');
 
 
                 Deployment.Current.Dispatcher.BeginInvoke(delegate()
@@ -960,41 +1114,27 @@ namespace rho
                     {   // Write message to the UI thread.
 
 
-                        BitmapImage bmp = new BitmapImage();
-                        bmp.SetSource(e.ImageStream);
 
+                        LayoutGrid.Children.Remove(Rho_PhotoCameraCanvas);
                         MemoryStream ms = new MemoryStream();
-                        WriteableBitmap wb = new WriteableBitmap(bmp);
-                        wb.SaveJpeg(ms, bmp.PixelWidth, bmp.PixelHeight, 0, 100);
-                        byte[] imagebytes = ms.ToArray();
+                      
                         e.ImageStream.CopyTo(ms);
-                        byte[] result = ms.ToArray();
-                        strbase64 = System.Convert.ToBase64String(result);
-
-
-
+                        
+                        MemoryStream oms = RotateStream(ms, (int)Rho_Camera_Rotation.Rotation);
+                        byte[] imagebytes = oms.ToArray();
+                      
                         e.ImageStream.Seek(0, SeekOrigin.Begin);
+                      
 
                         // Save photo to the media library camera roll.
-                        Picture PictDetails = Rho_Store_Picturelibrary.SavePictureToCameraRoll(fileName, e.ImageStream);
-
-
-                        // Write message to the UI thread.
-
-
-                        // Set the position of the stream back to start
-                        e.ImageStream.Seek(0, SeekOrigin.Begin);
-
-                        // Save photo as JPEG to the local folder.
-
+                        Picture PictDetails = Rho_Store_Picturelibrary.SavePictureToCameraRoll(fileName, imagebytes);
+                        MemoryStream ms1 = new MemoryStream();
+                        PictDetails.GetThumbnail().CopyTo(ms1);
+                        strbase64 = System.Convert.ToBase64String(ms1.ToArray());
 
                         // Write message to the UI thread.
-                        Deployment.Current.Dispatcher.BeginInvoke(delegate()
-                        {
-                            txtDebug.Text = "Photo has been saved to the local folder.";
-                            Return_To_Previous_Screen();
+                        Return_To_Previous_Screen();
 
-                        });
 
                         string returnablevalue = "";
                         try
@@ -1004,16 +1144,15 @@ namespace rho
                             foreach (KeyValuePair<string, string> format in OutPutFormat)
                             {
                                 returnablevalue = Rho_FilePath + fileName + ".jpg";
-                                // Check filename contains .jpg if exists don't add the extension otherwise add it // Simha
+                                
                             }
 
                         }
                         catch (Exception ex)
                         {
 
-                            CRhoRuntime.getInstance().logEvent("Camera class-->cam_CaptureImageAvailable-->Dispatcher-->exception"+ex.ToString());
+                            CRhoRuntime.getInstance().logEvent("Camera class-->cam_CaptureImageAvailable-->Dispatcher-->exception" + ex.ToString());
                         }
-
                         try
                         {
                             IEnumerable<KeyValuePair<string, string>> OutPutFormat = Rho_OutPutFormat.Select(x => x).Where(k => k.Value == "datauri").ToList();
@@ -1036,7 +1175,7 @@ namespace rho
                         m_Take_Picture_Output["image_height"] = PictDetails.Height.ToString();
                         m_Take_Picture_Output["image_width"] = PictDetails.Width.ToString();
 
-
+                        GC.Collect();
 
 
                     }
@@ -1046,6 +1185,7 @@ namespace rho
                         m_Take_Picture_Output["status"] = "error";
                         m_Take_Picture_Output["message"] = ex.Message;
                         m_Take_Picture_Output["image_format"] = string.Empty;
+                        m_Take_Picture_Output["imageFormat"] = string.Empty;
                     }
                     finally
                     {
@@ -1102,7 +1242,7 @@ namespace rho
                 }
             }
 
-           
+
 
             #endregion
             /// <summary>
@@ -1115,11 +1255,11 @@ namespace rho
             {
 
                 CRhoRuntime.getInstance().logEvent("Camera class-->Rho_MainPage_OrientationChange");
-                    Rho_PhotoCameraCanvas.Dispatcher.BeginInvoke(() =>
-                    {
-                        SetCameraRotation(e.Orientation);
-                    });
-                
+                Rho_PhotoCameraCanvas.Dispatcher.BeginInvoke(() =>
+                {
+                    SetCameraRotation(e.Orientation);
+                });
+
             }
             /// <summary>
             /// Initialize/Set the camera as per the Screen Rotation
@@ -1166,55 +1306,45 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class-->Rho_Create_Camera_Layout");
                 try
                 {
+                    rootFrame = Rho_MainPage.RootVisual() as PhoneApplicationFrame;  
 
-                    //Create a Video Brush for painting in Canvas.    
-
+                      //Create a desired Camera Object.
+                    Rho_StillCamera = new Microsoft.Devices.PhotoCamera((CameraType)Rho_Camera_selected);
+                    //Create a Video Brush for painting in Canvas.  
                     Rho_PhotoCameraBrush = new VideoBrush();
+                    //Create a Camera Rotaion Object.
                     Rho_Camera_Rotation = new CompositeTransform();
-
+                    //Initialize CenterX and CenterY for Rho Camera Roation
                     Rho_Camera_Rotation.CenterX = 0.5;
                     Rho_Camera_Rotation.CenterY = 0.5;
-
+                    //Add the Screen rotation to Composite Transformation object as this object takes care of rotating the camera.
                     Rho_Camera_Rotation.Rotation = Rho_StillCamera.Orientation;
 
-
                     Rho_PhotoCameraBrush.Stretch = Stretch.Fill;
-
+                    //Set Composite transform object to PhotoBrush.
                     Rho_PhotoCameraBrush.RelativeTransform = Rho_Camera_Rotation;
-
                     // Create a Canvas for painting the image.
                     Rho_PhotoCameraCanvas = new Canvas();
                     //Create Canvas for the whole screen.
 
                     ColumnDefinition Rho_Camera_Columncollection = new ColumnDefinition();
 
-
+                    //check if the set orienation is required, if it is front camera then we may have to do some extra calculation. else it appears upside down.
                     SetCameraRotation(Rho_MainPage.Orientation);
+                    //Set Desired camera as a child for Camera Brush.
+                    Rho_PhotoCameraBrush.SetSource(Rho_StillCamera);
                     //Add Camera Brush as background to the Canvas.            
                     Rho_PhotoCameraCanvas.Background = Rho_PhotoCameraBrush;
-
-                    //On Clicking the Camera Canvas Lets consider it as a camera click.
-                    Rho_PhotoCameraCanvas.Tap += Rho_PhotoCameraCanvas_Tap;
-
-                    //Set the Width of the Parent Frame to the Complete Device.
-
-
-                    GridLength Rho_Camera_Gridlength = new GridLength(Application.Current.Host.Content.ActualWidth);
-                    Rho_Camera_Columncollection.Width = Rho_Camera_Gridlength;
-
-
-                    // CRhoRuntime obj = CRhoRuntime.getInstance();
-
-
-                    // LayoutGrid.ColumnDefinitions.Add(Rho_Camera_Columncollection);
-                    LayoutGrid.Children.Add(Rho_PhotoCameraCanvas);
-                    CameraButtons.ShutterKeyPressed += CameraButtons_ShutterKeyPressed;
+                                       
+                    //Add canvas to the Main screen object.
+                   LayoutGrid.Children.Add(Rho_PhotoCameraCanvas);                   
+                   
 
 
                 }
                 catch (Exception ex)
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class-->Rho_Create_Camera_Layout-->Exception "+ex.ToString());
+                    CRhoRuntime.getInstance().logEvent("Camera class-->Rho_Create_Camera_Layout-->Exception " + ex.ToString());
                 }
 
 
@@ -1222,7 +1352,7 @@ namespace rho
             }
 
             #endregion
-          
+
 
         }
         #region Singleton class
@@ -1238,7 +1368,7 @@ namespace rho
             Dictionary<string, string> m_choosePicture_output = new Dictionary<string, string>();
             string Store_CaptureImage_outputformat = "image";
             Dictionary<string, string> Data_Uri = new Dictionary<string, string>();
-            Dictionary<string, string> Image = new Dictionary<string, string>();
+            Dictionary<string, string> Imageoutputformat = new Dictionary<string, string>();
 
             /// <summary>
             /// Initialize DataURI and Image types.
@@ -1247,7 +1377,7 @@ namespace rho
             {
                 CRhoRuntime.getInstance().logEvent("Camera class-->CameraSingleton");
                 Data_Uri.Add("datauri", "outputformat");
-                Image.Add("image", "outputformat");
+                Imageoutputformat.Add("image", "outputformat");
 
                 // initialize singleton instance in C# here
             }
@@ -1264,7 +1394,7 @@ namespace rho
                 try
                 {
                     PhotoCamera Primary = new PhotoCamera(CameraType.Primary);
-                    AvailabeCameras.Add(CameraType.Primary.ToString());
+                    AvailabeCameras.Add("back");
                 }
                 catch (Exception ex)
                 {
@@ -1272,7 +1402,7 @@ namespace rho
                 try
                 {
                     PhotoCamera FrontCamera = new PhotoCamera(CameraType.FrontFacing);
-                    AvailabeCameras.Add(CameraType.FrontFacing.ToString());
+                    AvailabeCameras.Add("front");
 
                 }
                 catch (Exception ex)
@@ -1291,24 +1421,27 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getCameraByType(string cameraType, IMethodResult oResult)
             {
-                CRhoRuntime.getInstance().logEvent("Camera class-->enumerate");
+                string CameraByTypeReturnType = null;
+                CRhoRuntime.getInstance().logEvent("Camera class-->getCameraByType");
+                try
+                {
+                
                 Rho_CameraTypes.Clear();
 
                 Rho_CameraTypes.Add("back", 0);
                 Rho_CameraTypes.Add("front", 1);
-                string CameraByTypeReturnType = null;
+                
                 List<string> AvailabeCameras = new List<string>();
 
 
 
-                try
-                {
+               
                     PhotoCamera CameraCheck = new PhotoCamera((CameraType)Rho_CameraTypes[cameraType.Trim().ToLower()]);
                     CameraByTypeReturnType = cameraType;
                 }
                 catch (Exception ex)
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class-->enumerate-->Exception"+ex.ToString());
+                    CRhoRuntime.getInstance().logEvent("Camera class-->getCameraByType-->Exception" + ex.ToString());
                 }
 
                 oResult.set(CameraByTypeReturnType);
@@ -1340,7 +1473,7 @@ namespace rho
                 }
                 catch (Exception ex)
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class-->choosePicture-->Exception"+ex.ToString());
+                    CRhoRuntime.getInstance().logEvent("Camera class-->choosePicture-->Exception" + ex.ToString());
                     m_choosePicture_output["status"] = "error";
                     m_choosePicture_output["message"] = ex.Message;
                     m_choosePicture_output["image_format"] = string.Empty;
@@ -1376,6 +1509,7 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class-->photoChooserTask_Completed");
                 try
                 {
+
                     if (e.TaskResult == TaskResult.OK)
                     {
                         string ReturnValue = e.OriginalFileName;
@@ -1386,18 +1520,38 @@ namespace rho
                         m_choosePicture_output["image_height"] = bmp.PixelHeight.ToString();
                         m_choosePicture_output["image_width"] = bmp.PixelWidth.ToString();
                         m_choosePicture_output["status"] = "ok";
-
+                        
                         try
                         {
                             string Data = Data_Uri[Store_CaptureImage_outputformat];
 
+                            double TargetScreenDivisor = 1;
+                            Dictionary<bool, bool> ReducedResolutionforbase64 = new Dictionary<bool, bool>();
+                            ReducedResolutionforbase64.Add(true, true);
+                            for (int Divider = 70; Divider > 0; Divider -=2)
+                            {
+                                try
+                                {
+                                    int val = (int)Math.Abs(bmp.PixelHeight / Divider);
+                                    bool FirstCondition = ReducedResolutionforbase64[val > (int)Math.Abs(Application.Current.Host.Content.ActualHeight / 6) && val < (int)Math.Abs(Application.Current.Host.Content.ActualHeight / 5)];
+                                    // implement non hardcoded logic for scaled down images/thumbnail.
+
+                                    TargetScreenDivisor = Divider;
+
+                                }
+                                catch (Exception ex)
+                                {
+                                }
+                            }
+
                             MemoryStream ms = new MemoryStream();
                             WriteableBitmap wb = new WriteableBitmap(bmp);
-                            wb.SaveJpeg(ms, bmp.PixelWidth, bmp.PixelHeight, 0, 100);
+                            int imageWidth = (int)Math.Abs(bmp.PixelWidth / TargetScreenDivisor);
+                            int imageHeight = (int)Math.Abs(bmp.PixelHeight / TargetScreenDivisor);
+                            wb.SaveJpeg(ms, imageWidth, imageHeight, 0, 100);
                             byte[] imagebytes = ms.ToArray();
-                            e.ChosenPhoto.CopyTo(ms);
-                            byte[] result = ms.ToArray();
-                            ReturnValue = "data:image/jpeg;base64," + System.Convert.ToBase64String(result);
+                          
+                            ReturnValue = "data:image/jpeg;base64," + System.Convert.ToBase64String(imagebytes);
                         }
                         catch (Exception ex)
                         {
@@ -1415,7 +1569,7 @@ namespace rho
                 }
                 catch (Exception ex)
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class-->photoChooserTask_Completed--> Exception"+ex.ToString());
+                    CRhoRuntime.getInstance().logEvent("Camera class-->photoChooserTask_Completed--> Exception" + ex.ToString());
                     m_choosePicture_output["status"] = "error";
                     m_choosePicture_output["message"] = ex.Message;
                     m_choosePicture_output["image_format"] = string.Empty;
@@ -1442,7 +1596,7 @@ namespace rho
         public class CameraFactory : CameraFactoryBase
         {
         }
-#endregion
+        #endregion
     }
 
 }
