@@ -44,6 +44,7 @@ import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
+import java.io.InputStream;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -369,9 +370,22 @@ public class SimpleMainView implements MainView {
 		if (iconObj != null) {
 			if (!(iconObj instanceof String))
 				throw new IllegalArgumentException("'icon' should be String");
-			String iconPath = "apps/" + (String)iconObj;
-			iconPath = RhoFileApi.normalizePath(iconPath);
-			Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
+			InputStream is = null;
+                String iconPath = (String)iconObj;
+                is = RhoFileApi.open(iconPath);
+                if (is == null) {
+                iconPath = RhoFileApi.normalizePath(iconPath);
+                is = RhoFileApi.open(iconPath);
+                }
+                if (is == null) {
+                iconPath = "apps/" + (String)iconObj;
+                iconPath = RhoFileApi.normalizePath(iconPath);
+                is = RhoFileApi.open(iconPath);
+                }
+                if (is == null) {
+                throw new IllegalArgumentException("Can't find icon file: " + iconPath);
+                }
+                Bitmap bitmap = BitmapFactory.decodeStream(is);
 			if (bitmap == null)
 				throw new IllegalArgumentException("Can't find icon: " + iconPath);
 			bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);
