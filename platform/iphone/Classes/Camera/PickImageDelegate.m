@@ -359,7 +359,14 @@
         
     }
     else {
-        isError = ![image writeToFile:fullname atomically:YES];
+        @try {
+            NSError* error = nil;
+            isError = ![image writeToFile:fullname options:NSDataWritingAtomic error:&error];
+        }
+        @catch (NSException *exception) {
+            isError = 1;
+        }
+        
         if (settings.fileName != nil) {
             str_result_old = fullname;
             str_result = fullname;
