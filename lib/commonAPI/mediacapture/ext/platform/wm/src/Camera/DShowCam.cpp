@@ -432,8 +432,14 @@ HRESULT CDShowCam::Set_Resolution(ImageRes* ptRes, PinType ePType)
 	
 			if (SUCCEEDED(hr))
 			{
-				if((scc.MaxOutputSize.cx >= ptRes->nWidth) && 
-					(scc.MaxOutputSize.cy >= ptRes->nHeight))
+				ImageRes res;
+				//EMBPD00164210
+				//some camera hardware provides resolution as -ve values
+				//correct it before stting it
+				res.nHeight = scc.MaxOutputSize.cy >0 ? scc.MaxOutputSize.cy : -(scc.MaxOutputSize.cy);
+				res.nWidth = scc.MaxOutputSize.cx >0 ? scc.MaxOutputSize.cx : -(scc.MaxOutputSize.cx) ;
+				if((res.nWidth >= ptRes->nWidth) && 
+					(res.nHeight >= ptRes->nHeight))
 				{
 					bUserResolutionFound = true;
 					StopGrp();
@@ -445,7 +451,7 @@ HRESULT CDShowCam::Set_Resolution(ImageRes* ptRes, PinType ePType)
 					RunGrp();
 					WCHAR szLog[512];
 					wsprintf(szLog, L"Setting image output resolution to %i (width) x %i (height)", 
-						scc.MaxOutputSize.cx, scc.MaxOutputSize.cy);
+						res.nWidth, res.nHeight);
 					LOG(INFO) + szLog;
 					break;
 				}
@@ -517,8 +523,11 @@ void CDShowCam::Get_Resolution(rho::Vector<ImageRes>& supportedRes, PinType ePTy
 				if (SUCCEEDED(hr))
 				{
 					ImageRes res;
-					res.nHeight = scc.MaxOutputSize.cy;
-					res.nWidth = scc.MaxOutputSize.cx;
+					//EMBPD00164210
+					//some camera hardware provides resolution as -ve values
+					//correct it before sending it to user
+					res.nHeight = scc.MaxOutputSize.cy >0 ? scc.MaxOutputSize.cy : -(scc.MaxOutputSize.cy);
+					res.nWidth = scc.MaxOutputSize.cx >0 ? scc.MaxOutputSize.cx : -(scc.MaxOutputSize.cx) ;
 					supportedRes.addElement(res);				
 
 				}
