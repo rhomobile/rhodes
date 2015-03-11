@@ -81,7 +81,8 @@ The ebapi.js file is necessary for all single API inclusions.
                                     <DESC>When tab is activated  - page in tab will be reloaded.</DESC>
                                 </PARAM>
                                 <PARAM name="selectedColor" type="INTEGER">
-                                    <DESC>Change the selected color of this tab. On Android this works only if you setup selectedColor for all tabs and also setup backgroundColor for the whole Tabbar.</DESC>
+                                    <DESC>Change the selected color of this tab. On Android this works only if you setup selectedColor for all tabs and also setup backgroundColor for the whole Tabbar. This property change background color on Android and _icon's_ color on iOS according to the platform's UI-style specifications.</DESC>
+                                    <DESC_EB>Change the selected color of this tab. On Android this works only if you setup selectedColor for all tabs and also setup backgroundColor for the whole Tabbar. This property change background color on Android according to the platform's UI-style specifications.</DESC_EB>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                                     <PLATFORM_EB>Win32, Android</PLATFORM_EB>
                                 </PARAM>
