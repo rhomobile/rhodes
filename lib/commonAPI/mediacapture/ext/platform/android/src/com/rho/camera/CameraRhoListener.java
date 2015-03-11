@@ -171,6 +171,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				resultMap.put("message", "User canceled operation.");
 				if (intent != null && intent.hasExtra("error")) {
 					resultMap.put("message", ""+intent.getStringExtra("error"));
+					if(intent.getStringExtra("error").contains("\\"))
+					   resultMap.put("message", "File path is invalid.");
 					resultMap.put("status", "error");
 				//	mMethodResult.setError(intent.getStringExtra("error"));
 				} else {
