@@ -215,7 +215,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>iOS,Android</PLATFORM>
                 <PLATFORM_EB>Android</PLATFORM_EB>
-                <DESC>If true, the picture you take will be added to the device photo gallery. At Android default value is true.</DESC>
+                <DESC>If true, the picture you take will be added to the device photo gallery.</DESC>
             </PROPERTY>
             <PROPERTY name="captureSound" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
