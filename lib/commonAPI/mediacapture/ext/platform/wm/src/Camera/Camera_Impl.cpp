@@ -281,7 +281,7 @@ namespace rho {
 			{
 			case ERROR_SUCCESS:
 				{
-					UpdateCallbackStatus("cancel", "User cancelled the dialog..", "");
+					UpdateCallbackStatus("cancel", "User canceled operation.", "");
 					break;
 				}
 			case ERROR_OUTOFMEMORY:
@@ -293,7 +293,7 @@ namespace rho {
 				{
 					//some wm devices gives error code as ERROR_INVALID_WINDOW_HANDLE on closing the dialog
 					//in this case user expects a cancel message
-					UpdateCallbackStatus("cancel", "User cancelled the dialog..", "");
+					UpdateCallbackStatus("cancel", "User canceled operation.", "");
 					break;
 				}
 			default:

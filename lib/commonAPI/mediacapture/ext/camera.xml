@@ -44,7 +44,7 @@ To include single APIs, you must first include the `ebapi.js` in your HTML as we
 
 The ebapi.js file is necessary for all single API inclusions.
         </MORE_HELP_EB>
-        <PLATFORM>Android, iOS, WM</PLATFORM>
+        <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
         <PLATFORM_EB>WM, Android</PLATFORM_EB>
 
         <ALIASES>
@@ -342,7 +342,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <PARAM name="message" type="STRING">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                             <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
-                            <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
+                            <DESC>If the returned status is 'error' then this field will contain more information on the error. To maintain backward compatibility WM and Android platforms provides message for cancel status as well.</DESC>
                         </PARAM>
                         <PARAM name="image_uri" type="STRING" deprecated="true">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
@@ -442,7 +442,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>The format of the image, either 'png' or 'jpg'.</DESC>
                         </PARAM>
                         <PARAM name="message" type="STRING">
-                            <DESC>If the returned status is 'error' then this field will contain more information on the error.</DESC>
+                            <DESC>If the returned status is 'error' then this field will contain more information on the error. To maintain backward compatibility WM and Android platforms provides message for cancel status as well.</DESC>
                         </PARAM>
                         <PARAM name="image_uri" type="STRING" deprecated="true">
 						<PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>

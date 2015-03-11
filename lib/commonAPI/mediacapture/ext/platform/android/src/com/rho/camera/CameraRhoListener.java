@@ -168,6 +168,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			} 
 			else if (resultCode == Activity.RESULT_CANCELED) 
 			{	HashMap<String,Object> resultMap=new HashMap<String,Object>();
+				resultMap.put("message", "User canceled operation.");
 				if (intent != null && intent.hasExtra("error")) {
 					resultMap.put("message", ""+intent.getStringExtra("error"));
 					resultMap.put("status", "error");
