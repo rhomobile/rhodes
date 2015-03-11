@@ -102,7 +102,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
                    filePath = propertyMap.get("fileName");
          	}
                 Uri resultUri = null;
-                bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                BitmapFactory.Options options=new BitmapFactory.Options();
+		options.inPurgeable = true;
+                bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);                    
                     StringBuilder dataBuilder = new StringBuilder();
@@ -166,7 +168,11 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 intent.putExtra("error", e.getMessage());              
                 mPreviewActivity.setResult(Activity.RESULT_CANCELED, intent);                
             }
+        if(bitmap != null){
             bitmap.recycle();
+            bitmap = null;
+	    System.gc();
+	}
             mPreviewActivity.finish();
         }		
     }
