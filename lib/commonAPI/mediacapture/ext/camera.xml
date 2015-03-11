@@ -215,7 +215,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>iOS,Android</PLATFORM>
                 <PLATFORM_EB>Android</PLATFORM_EB>
-                <DESC>If true, the picture you take will be added to the device photo gallery. At Android default value is true.</DESC>
+                <DESC>If true, the picture you take will be added to the device photo gallery.</DESC>
             </PROPERTY>
             <PROPERTY name="captureSound" type="STRING">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
@@ -322,7 +322,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <PARAM name="imageUri" type="STRING">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                             <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
-                            <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>
+                            <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri </DESC>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
@@ -415,7 +415,8 @@ The ebapi.js file is necessary for all single API inclusions.
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
 					     <PLATFORM>Android, WM, WP8, iOS</PLATFORM>
                          <PLATFORM_EB>Android, WM</PLATFORM_EB>
-                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel, enableEditing. On Android and WP8 only imageUri and image_uri are supported.</DESC>
+                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
+							In	Android and WP8 only imageUri and image_uri are supported, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri</DESC>
                         <DESC_EB>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. On Android, only imageUri and image_uri are supported.</DESC_EB>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>

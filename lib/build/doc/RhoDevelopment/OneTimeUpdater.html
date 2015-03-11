@@ -6,7 +6,7 @@
 <title>
   Class: RhoDevelopment::OneTimeUpdater
   
-    &mdash; Documentation by YARD 0.8.7.6
+    &mdash; My Title
   
 </title>
 
@@ -183,8 +183,7 @@
 24
 25
 26
-27
-28</pre>
+27</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'development/one_time_updater.rb', line 4</span>
@@ -195,14 +194,13 @@
     <span class='kw'>return</span>
   <span class='kw'>end</span>
 
-  <span class='id identifier rubyid_devDir'>devDir</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>Configuration</span><span class='op'>::</span><span class='id identifier rubyid_application_root'>application_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>.development</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_updatedListFilename'>updatedListFilename</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>Configuration</span><span class='op'>::</span><span class='id identifier rubyid_application_root'>application_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>upgrade_package_add_files.txt</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_removedListFilename'>removedListFilename</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>Configuration</span><span class='op'>::</span><span class='id identifier rubyid_application_root'>application_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>upgrade_package_remove_files.txt</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_mkdir_p'>mkdir_p</span> <span class='id identifier rubyid_devDir'>devDir</span>
+  <span class='id identifier rubyid_development_directory'>development_directory</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>Configuration</span><span class='op'>::</span><span class='id identifier rubyid_application_root'>application_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>.development</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_updated_list_filename'>updated_list_filename</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>Configuration</span><span class='op'>::</span><span class='id identifier rubyid_application_root'>application_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>upgrade_package_add_files.txt</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_removed_list_filename'>removed_list_filename</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>Configuration</span><span class='op'>::</span><span class='id identifier rubyid_application_root'>application_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>upgrade_package_remove_files.txt</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_mkdir_p'>mkdir_p</span> <span class='id identifier rubyid_development_directory'>development_directory</span>
   <span class='const'>Configuration</span><span class='op'>::</span><span class='id identifier rubyid_subscriber_platforms'>subscriber_platforms</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_each'>each</span><span class='op'>|</span>
-    <span class='const'>RhoDevelopment</span><span class='period'>.</span><span class='id identifier rubyid_setup'>setup</span><span class='lparen'>(</span><span class='id identifier rubyid_devDir'>devDir</span><span class='comma'>,</span> <span class='id identifier rubyid_each'>each</span><span class='rparen'>)</span>
-    <span class='comment'>#is_require_full_update = RhoDevelopment.is_require_full_update
-</span>    <span class='id identifier rubyid_changed'>changed</span> <span class='op'>=</span> <span class='const'>RhoDevelopment</span><span class='period'>.</span><span class='id identifier rubyid_check_changes_from_last_build'>check_changes_from_last_build</span><span class='lparen'>(</span><span class='id identifier rubyid_updatedListFilename'>updatedListFilename</span><span class='comma'>,</span> <span class='id identifier rubyid_removedListFilename'>removedListFilename</span><span class='rparen'>)</span>
+    <span class='const'>RhoDevelopment</span><span class='period'>.</span><span class='id identifier rubyid_setup'>setup</span><span class='lparen'>(</span><span class='id identifier rubyid_development_directory'>development_directory</span><span class='comma'>,</span> <span class='id identifier rubyid_each'>each</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_changed'>changed</span> <span class='op'>=</span> <span class='const'>RhoDevelopment</span><span class='period'>.</span><span class='id identifier rubyid_check_changes_from_last_build'>check_changes_from_last_build</span><span class='lparen'>(</span><span class='id identifier rubyid_updated_list_filename'>updated_list_filename</span><span class='comma'>,</span> <span class='id identifier rubyid_removed_list_filename'>removed_list_filename</span><span class='rparen'>)</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_changed'>changed</span>
       <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Source code for platform </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_each'>each</span><span class='rbrace'>}</span><span class='tstring_content'> was changed</span><span class='tstring_end'>&quot;</span></span><span class='period'>.</span><span class='id identifier rubyid_primary'>primary</span>
       <span class='const'>WebServer</span><span class='period'>.</span><span class='id identifier rubyid_dispatch_task'>dispatch_task</span><span class='lparen'>(</span><span class='const'>PlatformPartialUpdateBuildingTask</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_each'>each</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='semicolon'>;</span>
@@ -224,7 +222,7 @@
 </div>
 
     <div id="footer">
-  Generated on Fri Mar  6 02:12:47 2015 by
+  Generated on Wed Mar 11 12:21:19 2015 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-1.9.3).
 </div>

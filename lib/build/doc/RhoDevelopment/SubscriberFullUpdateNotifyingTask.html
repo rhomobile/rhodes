@@ -6,7 +6,7 @@
 <title>
   Class: RhoDevelopment::SubscriberFullUpdateNotifyingTask
   
-    &mdash; Documentation by YARD 0.8.7.6
+    &mdash; My Title
   
 </title>
 
@@ -282,12 +282,12 @@
       <pre class="lines">
 
 
-179
-180
-181</pre>
+211
+212
+213</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 179</span>
+      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 211</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_aSubscriber'>aSubscriber</span><span class='rparen'>)</span>
   <span class='ivar'>@subscriber</span> <span class='op'>=</span> <span class='id identifier rubyid_aSubscriber'>aSubscriber</span>
@@ -319,13 +319,13 @@
       <pre class="lines">
 
 
-174
-175
-176
-177</pre>
+206
+207
+208
+209</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 174</span>
+      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 206</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_fromHash'>fromHash</span><span class='lparen'>(</span><span class='id identifier rubyid_aHash'>aHash</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_subscriber'>subscriber</span> <span class='op'>=</span> <span class='const'>Configuration</span><span class='op'>::</span><span class='id identifier rubyid_subscriber_by_ip'>subscriber_by_ip</span><span class='lparen'>(</span><span class='id identifier rubyid_aHash'>aHash</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>ip</span><span class='tstring_end'>'</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -351,12 +351,12 @@
       <pre class="lines">
 
 
-170
-171
-172</pre>
+202
+203
+204</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 170</span>
+      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 202</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_taskName'>taskName</span>
   <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>NotifySubscriberAboutFullBundleUpdate</span><span class='tstring_end'>'</span></span>
@@ -387,12 +387,12 @@
       <pre class="lines">
 
 
-183
-184
-185</pre>
+215
+216
+217</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 183</span>
+      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 215</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_action'>action</span>
   <span class='ivar'>@subscriber</span><span class='period'>.</span><span class='id identifier rubyid_full_notify'>full_notify</span>
@@ -417,13 +417,13 @@
       <pre class="lines">
 
 
-187
-188
-189
-190</pre>
+219
+220
+221
+222</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 187</span>
+      <pre class="code"><span class="info file"># File 'development/live_update_task.rb', line 219</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_dispatchToUrl'>dispatchToUrl</span><span class='lparen'>(</span><span class='id identifier rubyid_anUri'>anUri</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_uri'>uri</span> <span class='op'>=</span> <span class='const'>URI</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_anUri'>anUri</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>tasks/new</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span>
@@ -439,7 +439,7 @@
 </div>
 
     <div id="footer">
-  Generated on Fri Mar  6 02:12:47 2015 by
+  Generated on Wed Mar 11 12:21:19 2015 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-1.9.3).
 </div>
