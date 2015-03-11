@@ -3,7 +3,7 @@
 <API>
     <MODULE name="NativeTabbar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NativeTabbar methods let you use multiple instances of the RhoMobile webview in separate tabs. </HELP_OVERVIEW>
-        <MORE_HELP>On Android, iOS and WIndows Phone 8 the tabs are true Native Tabbar controls to give your application a native look and feel.No more than 4 tabs can be created in the Windows Phone 8 tabbar. A tabbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time.
+        <MORE_HELP>On Android, iOS and WIndows Phone 8 the tabs are true Native Tabbar controls to give your application a native look and feel.No more than 4 tabs can be created in the Windows Phone 8 tabbar. A tabbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs. Either Tabbar or Toolbar should be used in an application - Tabbar and Toolbar shouldnot be used simultaneously.
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
@@ -15,7 +15,7 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
-        <MORE_HELP_EB>On Android, the tabs are true Native Tabbar controls to give your application a native look and feel. On Windows Mobile/CE there are no visible tabs, but can be used in conjunction with shortcuts to run multiple 'applications' from a single instance. At one time only Toolbar or Tabbar can present in application - Toolbar and Tabbar can not be used both in one time.
+        <MORE_HELP_EB>On Android, the tabs are true Native Tabbar controls to give your application a native look and feel. On Windows Mobile/CE there are no visible tabs, but can be used in conjunction with shortcuts to run multiple 'applications' from a single instance. Either Tabbar or Toolbar should be used in an application - Tabbar and Toolbar shouldnot be used simultaneously.
 ## Enabling the API
 There are two methods of enabling the NativeTabbar API:
 
@@ -56,7 +56,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </ALIASES>
 
             <METHOD name="create" hasCallback="optional" runInThread="ui">
-                <DESC>Removes the current tabbar / toolbar and replaces it with this one. Callback will be called when tab is switched.  Whilst the actual number of tabs you can create will depend on the memory available on your device there is an absolute upper limit of 30 tabs in any one application.</DESC>
+                <DESC>Removes the current tabbar and replaces it with this one. Callback will be called when tab is switched.  Whilst the actual number of tabs you can create will depend on the memory available on your device there is an absolute upper limit of 30 tabs in any one application.</DESC>
                 <PARAMS>
                     <PARAM name="tabElements" type="ARRAY">
                         <DESC>Array of Tab elements.</DESC>
