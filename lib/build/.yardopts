@@ -1,0 +1,4 @@
+--no-private
+--title "My Title"
+*.rb
+*/*.rb -
