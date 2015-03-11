@@ -425,67 +425,88 @@ void CImager::Capture()
     DWORD dwBytesWritten;
     if(m_PreviewOn)
     {
-        if (m_hImager != INVALID_HANDLE_VALUE)
-            Image_StopViewfinder(m_hImager);
-
-        PlaySound(m_CaptureSound.c_str(),NULL,SND_FILENAME|SND_ASYNC);
-
-        DWORD dwImageBufSize;///< Variable for Buffer size of captured image
-        LPVOID pImageBuffer;///< Buffer to save captured image
-
-        if ((dwRes = Image_GetImage(m_hImager, &dwImageBufSize, &pImageBuffer)) != E_IMG_SUCCESS) 
+        eImageFilePathErrorType filePathStatus; 
+        filePathStatus = isImageFilePathValid();
+        if( eFilePathValid == filePathStatus)
         {
-            TCHAR message[100];
-            wsprintf(message, L"Image_GetImage error %d \n", dwRes);
-            LOG(ERROR) + __FUNCTION__ + message;
+            if (m_hImager != INVALID_HANDLE_VALUE)
+                Image_StopViewfinder(m_hImager);
 
-            UpdateCallbackStatus("error","Image Capture operation failed.","");
+            PlaySound(m_CaptureSound.c_str(),NULL,SND_FILENAME|SND_ASYNC);
 
+            DWORD dwImageBufSize;///< Variable for Buffer size of captured image
+            LPVOID pImageBuffer;///< Buffer to save captured image
 
-        }
-        else
-        {
-			rho::StringW fileName = getFileName();
-            HANDLE hFile = 
-                CreateFile(fileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-            if(hFile)
+            if ((dwRes = Image_GetImage(m_hImager, &dwImageBufSize, &pImageBuffer)) != E_IMG_SUCCESS) 
             {
-                if(WriteFile(hFile,pImageBuffer,dwImageBufSize,&dwBytesWritten,NULL))
+                TCHAR message[100];
+                wsprintf(message, L"Image_GetImage error %d \n", dwRes);
+                LOG(ERROR) + __FUNCTION__ + message;
+
+                UpdateCallbackStatus("error","Image Capture operation failed.","");
+
+
+            }
+            else
+            {
+                rho::StringW fileName = getFileName();
+                HANDLE hFile = 
+                    CreateFile(fileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                if(hFile)
                 {
-                    rho::String imageUri;
-					int nImageWidth=0;
-					int nImageHeight =0;
-                    if(m_eOutputFormat == eDataUri)
+                    if(WriteFile(hFile,pImageBuffer,dwImageBufSize,&dwBytesWritten,NULL))
                     {
-						rho::common::GetDataURI((BYTE*)pImageBuffer, dwBytesWritten, imageUri);
+                        rho::String imageUri;
+                        int nImageWidth=0;
+                        int nImageHeight =0;
+                        if(m_eOutputFormat == eDataUri)
+                        {
+                            rho::common::GetDataURI((BYTE*)pImageBuffer, dwBytesWritten, imageUri);
+                        }
+                        else
+                        {
+                            imageUri = rho::common::convertToStringA(fileName).c_str();
+                        }
+                        rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
+                        //update callback
+                        UpdateCallbackStatus("ok","",imageUri, nImageWidth, nImageHeight);
                     }
                     else
                     {
-                        imageUri = rho::common::convertToStringA(fileName).c_str();
+                        UpdateCallbackStatus("error","Unable to save image","");
                     }
-					rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
-                    //update callback
-                    UpdateCallbackStatus("ok","",imageUri, nImageWidth, nImageHeight);
+                    CloseHandle(hFile);
+
                 }
                 else
                 {
                     UpdateCallbackStatus("error","Unable to save image","");
                 }
-                CloseHandle(hFile);
 
-            }
-            else
+            }	
+
+
+            if (m_hImager != INVALID_HANDLE_VALUE)
+                Image_StartViewfinder(m_hImager);	
+        }
+        else
+        {
+            switch(filePathStatus)
             {
-                UpdateCallbackStatus("error","Unable to save image","");
+            case eFileNotExist:
+                {
+                    UpdateCallbackStatus("error","File path is invalid.","");
+                    break;
+                }
+            case eFileReadOnly:
+                {
+                    UpdateCallbackStatus("error","File path is readonly.","");
+                    break;
+                }
             }
-
-        }	
-
-
-        if (m_hImager != INVALID_HANDLE_VALUE)
-            Image_StartViewfinder(m_hImager);	
+        }
     }
-	
+
 }
 
 void CImager::SetFlashMode()
