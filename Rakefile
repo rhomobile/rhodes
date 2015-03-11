@@ -326,8 +326,11 @@ namespace 'dev' do
     task :partial => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
-      updater = RhoDevelopment::OneTimeUpdater.new
-      updater.run
+      unless RhoDevelopment::Configuration::has_subscribers?
+        puts 'Subscribers not found'.warning
+        return
+      end
+      RhoDevelopment::WebServer.dispatch_task( RhoDevelopment::PartialUpdateTask.new());
     end
 
     desc 'Builds full update bundle for all subscribers and notifies them'

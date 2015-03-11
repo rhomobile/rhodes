@@ -150,8 +150,8 @@ module RhoDevelopment
 
     def do_POST request, response
       task_name = request.query['taskName']
-      task = LiveUpdateTask.descendants.detect { |each| puts each.taskName
-      each.taskName == task_name }
+      task = LiveUpdateTask.descendants.detect { |each|
+        each.taskName == task_name }
       if task != nil
         @instance.add_task(task.fromHash(request.query))
         response.status = 200
