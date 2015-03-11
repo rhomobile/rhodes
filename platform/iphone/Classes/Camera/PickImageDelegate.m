@@ -334,7 +334,19 @@
         mimeType = @"image/png";
     }
     if (settings.fileName != nil) {
+        
         fullname = filename;
+        
+        NSRange range = [fullname rangeOfString:@"/"];
+        if (range.location != NSNotFound ) {
+            //full path
+            //nothing - use as is
+        }
+        else {
+            // only name
+            fullname = [folder stringByAppendingPathComponent:filename];
+        }
+
     }
     else {
         fullname = [folder stringByAppendingPathComponent:filename];
