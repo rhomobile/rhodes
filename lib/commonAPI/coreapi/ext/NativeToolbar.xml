@@ -3,7 +3,7 @@
 <API>
     <MODULE name="NativeToolbar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NativeToolbar method let you create and remove a toolbar at runtime.</HELP_OVERVIEW>
-        <MORE_HELP> Only a Toolbar or a Tabbar can present in application - both can not be used at the same time.
+        <MORE_HELP> Either Toolbar or Tabbar should be used in an application - Toolbar and Tabbar shouldnot be used simultaneously.
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
@@ -55,7 +55,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </ALIASES>
 
             <METHOD name="create" runInThread="UI">
-                <DESC>Creates a new toolbar and Removes the current toolbar / tabbar and replaces it with this one. Any images used for UI elements should be specified by either an absolute path. i.e. '/sdcard/nmt/blabla.com.bla./data/public/img/button.png'</DESC>
+                <DESC>Creates a new toolbar and removes the current toolbar and replaces it with this one. Any images used for UI elements should be specified by either an absolute path. i.e. '/sdcard/nmt/blabla.com.bla./data/public/img/button.png'</DESC>
                 <PARAMS>
                     <PARAM name="toolbarElements" type="ARRAY">
                         <DESC>Array of Toolbar elements. Do not create more than five elements for maximum portability.Toolbar elements are not scrollable, so if some buttons will not fit into the screen dimensions, they will be invisible.</DESC>

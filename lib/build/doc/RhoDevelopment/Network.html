@@ -6,7 +6,7 @@
 <title>
   Class: RhoDevelopment::Network
   
-    &mdash; Documentation by YARD 0.8.7.6
+    &mdash; My Title
   
 </title>
 
@@ -203,13 +203,13 @@ loopback and multicast interfaces are excepted.</p>
       <pre class="lines">
 
 
+9
 10
 11
-12
-13</pre>
+12</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'development/network.rb', line 10</span>
+      <pre class="code"><span class="info file"># File 'development/network.rb', line 9</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_available_addresses'>available_addresses</span>
   <span class='id identifier rubyid_addresses'>addresses</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='const'>Socket</span><span class='period'>.</span><span class='id identifier rubyid_ip_address_list'>ip_address_list</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_each'>each</span><span class='op'>|</span> <span class='id identifier rubyid_each'>each</span><span class='period'>.</span><span class='id identifier rubyid_ipv4?'>ipv4?</span> <span class='kw'>and</span> <span class='op'>!</span><span class='id identifier rubyid_each'>each</span><span class='period'>.</span><span class='id identifier rubyid_ipv4_loopback?'>ipv4_loopback?</span> <span class='kw'>and</span> <span class='op'>!</span><span class='id identifier rubyid_each'>each</span><span class='period'>.</span><span class='id identifier rubyid_ipv4_multicast?'>ipv4_multicast?</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_each'>each</span><span class='op'>|</span> <span class='id identifier rubyid_each'>each</span><span class='period'>.</span><span class='id identifier rubyid_ip_address'>ip_address</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_uniq'>uniq</span><span class='rparen'>)</span>
@@ -225,7 +225,7 @@ loopback and multicast interfaces are excepted.</p>
 </div>
 
     <div id="footer">
-  Generated on Fri Mar  6 02:12:47 2015 by
+  Generated on Wed Mar 11 12:21:18 2015 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-1.9.3).
 </div>
