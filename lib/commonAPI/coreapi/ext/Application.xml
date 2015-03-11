@@ -230,7 +230,8 @@ The ebapi.js file is necessary for all single API inclusions.
                                     <DESC>The application has been activated.</DESC>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_DEACTIVATED" value ="Deactivated">
-                                    <DESC>The application has been deactivated.</DESC>
+                                    <DESC>The application has been deactivated. Not supported on iOS.</DESC>
+                                    <DESC_EB>The application has been deactivated.</DESC_EB>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_UICREATED" value ="UICreated" productException="eb">
                                     <DESC>Generated before the start page is loaded. There are no means to set callback and catch event in JavaScript. Ruby Application class descendant can set callback and process this event.</DESC>
