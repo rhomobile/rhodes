@@ -334,7 +334,19 @@
         mimeType = @"image/png";
     }
     if (settings.fileName != nil) {
+        
         fullname = filename;
+        
+        NSRange range = [fullname rangeOfString:@"/"];
+        if (range.location != NSNotFound ) {
+            //full path
+            //nothing - use as is
+        }
+        else {
+            // only name
+            fullname = [folder stringByAppendingPathComponent:filename];
+        }
+
     }
     else {
         fullname = [folder stringByAppendingPathComponent:filename];
@@ -359,7 +371,14 @@
         
     }
     else {
-        isError = ![image writeToFile:fullname atomically:YES];
+        @try {
+            NSError* error = nil;
+            isError = ![image writeToFile:fullname options:NSDataWritingAtomic error:&error];
+        }
+        @catch (NSException *exception) {
+            isError = 1;
+        }
+        
         if (settings.fileName != nil) {
             str_result_old = fullname;
             str_result = fullname;
