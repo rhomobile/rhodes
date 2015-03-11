@@ -479,6 +479,7 @@ eImageFilePathErrorType CCamera::isImageFilePathValid()
 	unsigned int index = m_FileName.find_last_of(L"\\");
 	if(index > 0)
 	{
+		//we reach here if user given path contains any folder eg: \\folderName\\img or \\Application\\img
 		filePath= m_FileName.substr(0,index);
 		DWORD dwResult = GetFileAttributes(filePath.c_str());
 		switch(dwResult)
@@ -502,6 +503,7 @@ eImageFilePathErrorType CCamera::isImageFilePathValid()
 	}
 	else
 	{
+		//we reach here if user given path is root directory (eg: \\img or img)
 		retVal = eFilePathValid;		
 	}
 	
