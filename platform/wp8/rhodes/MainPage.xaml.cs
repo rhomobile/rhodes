@@ -581,6 +581,7 @@ namespace rhodes
 		public void toolbarShow()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarShow(); }); return; }
+            tabbarHide();
             updateAppBarModeAndVisibility();
         }
 
@@ -735,6 +736,7 @@ namespace rhodes
 		public void tabbarShow()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarShow(); }); return; }
+            toolbarHide();
             LayoutRoot.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
             LayoutRoot.RowDefinitions[1].Height = new GridLength(0, GridUnitType.Pixel);
             // not needed: TabbarPanel.Visibility = System.Windows.Visibility.Visible;
