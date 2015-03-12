@@ -2773,7 +2773,11 @@ namespace "config" do
         $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
         $app_config['extensions'] = $app_config['extensions'] | ['sensor']
       end
-
+      
+      if $current_platform == "wp8"
+        $app_config['extensions'] = $app_config['extensions'] | ['barcode']
+      end
+      
     end
 
     #if $app_config['extensions'].index('rhoelementsext')
