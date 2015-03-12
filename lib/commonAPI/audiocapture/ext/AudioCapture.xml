@@ -202,6 +202,11 @@ On Quitting of the Application, Android will save the data in the file and grace
                 <DESC>Extensions which came from RhoElements (i.e. AudioCapture) that could possibly write files to external storage will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
             </REMARK>
 		</REMARKS>
+        <REMARKS_EB>
+            <REMARK title="SDCard Access">
+                <DESC>Extensions that could possibly write files to external storage (i.e. AudioCapture) will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
+            </REMARK>
+        </REMARKS_EB>
         <USER_OVERVIEW></USER_OVERVIEW>
 		<EXAMPLES>
 			<EXAMPLE title="Starting, Stopping And Canceling Audio Capture">
