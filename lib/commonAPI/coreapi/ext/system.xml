@@ -638,7 +638,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </PARAMS>
             </METHOD>
             <METHOD name="stopTimer" deprecated="true">
-                <DESC>Stop timer.</DESC>
+                <DESC>Stop timer. (It's works only with Ruby)</DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>URL of the callback method which identify the timer to stop.</DESC>
