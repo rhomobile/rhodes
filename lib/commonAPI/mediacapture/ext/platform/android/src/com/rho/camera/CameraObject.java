@@ -33,6 +33,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     private static final String TAG = CameraObject.class.getSimpleName();
     public static boolean deprecated_take_pic;
     private Map<String, String> mActualPropertyMap;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
     void setActualPropertyMap(Map<String, String> props) { mActualPropertyMap = props; }
     Map<String, String> getActualPropertyMap() { return mActualPropertyMap; }
     
@@ -366,7 +367,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
             String outputFormat = actualPropertyMap.get("outputFormat");
             String filePath = null;
             if(!actualPropertyMap.containsKey("fileName")){
-            	filePath = "/sdcard/DCIM/Camera/";
+            	filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())) + ".jpg";
      	   }
      	   else{
      		filePath = actualPropertyMap.get("fileName");
@@ -395,7 +396,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                     }
                     Uri captureUri = Uri.fromFile(new File(tmpPath));
                     actualPropertyMap.put("captureUri", captureUri.toString());
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, captureUri);
+                    intent.putExtra("intent_default_camera", captureUri);
                 } else
                 if (outputFormat.equalsIgnoreCase("dataUri")) {
                     

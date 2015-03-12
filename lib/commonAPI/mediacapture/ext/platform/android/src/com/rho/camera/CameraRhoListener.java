@@ -64,10 +64,15 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					captureUri = Uri.parse(getActualPropertyMap().get("captureUri"));		
 				}		
 			
-				if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT))
+				if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT) || intent.hasExtra("intent_default_camera"))
 				{
-					Logger.T(TAG, "Intent extras: "+ intent.getExtras().keySet());					
-					curUri = (Uri) intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+					if(intent.hasExtra(MediaStore.EXTRA_OUTPUT)){
+						Logger.T(TAG, "Intent extras: "+ intent.getExtras().keySet());	
+						curUri = (Uri) intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+					}else if(intent.hasExtra("intent_default_camera")){
+						Logger.T(TAG, "Intent extras: "+ intent.getExtras().keySet());
+						curUri = (Uri) intent.getParcelableExtra("intent_default_camera");
+					}
 					if (curUri == null)
 					{
 						curUri = intent.getData();
