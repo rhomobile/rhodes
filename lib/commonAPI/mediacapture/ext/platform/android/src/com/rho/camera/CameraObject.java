@@ -119,15 +119,8 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 } else
                 if (outputFormat.equalsIgnoreCase("image")) {
                     filePath = getTemporaryPath(filePath)+ ".jpg";
-                    boolean save_to_device_gallery;
-		    if(propertyMap.get("saveToDeviceGallery") == null || propertyMap.get("saveToDeviceGallery").equalsIgnoreCase("false")){   
-			 propertyMap.put("saveToDeviceGallery", "false");
-			 save_to_device_gallery = false;    	
-		    }
-	            else
-			 save_to_device_gallery = true;
                     Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);                    
-                    if (save_to_device_gallery) 
+                    if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
                     {                        
                         ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
                         Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());                        
@@ -200,7 +193,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
         getPropertiesMap().put("cameraType", "back");
         getPropertiesMap().put("compressionFormat", "jpg");
         getPropertiesMap().put("outputFormat", "image");
-        
+        getPropertiesMap().put("colorModel", "rgb");
+	getPropertiesMap().put("useSystemViewfinder", "false");
+	getPropertiesMap().put("saveToDeviceGallery", "false");
         openCamera();
         Camera.Parameters params = getCamera().getParameters();
         closeCamera();
@@ -385,10 +380,10 @@ public class CameraObject extends CameraBase implements ICameraObject {
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(actualPropertyMap);
 
-            boolean useSystemViewfinder = Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder"));
             Intent intent = null;
-            if (useSystemViewfinder) {
-                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);    
+            if (Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder")) {
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
+                intent.putExtra("android.intent.extras.CAMERA_FACING", Integer.valueOf(getId().substring(7)).intValue());
                 if (outputFormat.equalsIgnoreCase("image")) {
                     String tmpPath = getTemporaryPath(filePath);
                     if (tmpPath == null) {
