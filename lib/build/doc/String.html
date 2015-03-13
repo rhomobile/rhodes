@@ -477,7 +477,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>By default, <code>camelize</code> converts strings to UpperCamelCase.</p>
+<p>By default, <tt>camelize</tt> converts strings to UpperCamelCase.</p>
 </div></span>
   
 </li>
@@ -548,7 +548,7 @@ names to models.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p><code>constantize</code> tries to find a declared constant with the name
+<p><tt>constantize</tt> tries to find a declared constant with the name
 specified in the string.</p>
 </div></span>
   
@@ -735,7 +735,7 @@ specified in the string.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>def titleize   <a href="a-z">underscore.humanize.gsub(/b('?</a>)/) {
+<p>def titleize   <a href="http://a-z">underscore.humanize.gsub(/b('?</a>)/) {
 $1.capitalize } end.</p>
 </div></span>
   
@@ -991,8 +991,8 @@ trailing '_id' if present.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p><code>safe_constantize</code> tries to find a declared constant with the
-name specified in the string.</p>
+<p><tt>safe_constantize</tt> tries to find a declared constant with the name
+specified in the string.</p>
 </div></span>
   
 </li>
@@ -1016,8 +1016,8 @@ name specified in the string.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>The reverse of <code>pluralize</code>, returns the singular form of a word
-in a string.</p>
+<p>The reverse of <tt>pluralize</tt>, returns the singular form of a word in a
+string.</p>
 </div></span>
   
 </li>
@@ -1136,7 +1136,7 @@ create a nicer looking title.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>The reverse of <code>camelize</code>.</p>
+<p>The reverse of <tt>camelize</tt>.</p>
 </div></span>
   
 </li>
@@ -1687,9 +1687,9 @@ given. This allows other methods to be used first, such as #uppercase and
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>By default, <code>camelize</code> converts strings to UpperCamelCase. If
-the argument to camelize is set to <code>:lower</code> then camelize
-produces lowerCamelCase.</p>
+<p>By default, <tt>camelize</tt> converts strings to UpperCamelCase. If the
+argument to camelize is set to <tt>:lower</tt> then camelize produces
+lowerCamelCase.</p>
 
 
   </div>
@@ -1774,8 +1774,8 @@ produces lowerCamelCase.</p>
     
 <p>Create a class name from a plural table name like Rails does for table
 names to models. Note that this returns a string and not a class. (To
-convert to an actual class follow <code>classify</code> with
-<code>constantize</code>.)</p>
+convert to an actual class follow <tt>classify</tt> with
+<tt>constantize</tt>.)</p>
 
 
   </div>
@@ -1816,7 +1816,7 @@ convert to an actual class follow <code>classify</code> with
 </h3><div class="docstring">
   <div class="discussion">
     
-<p><code>constantize</code> tries to find a declared constant with the name
+<p><tt>constantize</tt> tries to find a declared constant with the name
 specified in the string. It raises a NameError when the name is not in
 CamelCase or is not initialized.</p>
 
@@ -1927,7 +1927,7 @@ CamelCase or is not initialized.</p>
   <div class="discussion">
     
 <p>Removes the rightmost segment from the constant expression in the string.
-See also <code>demodulize</code>.</p>
+See also <tt>demodulize</tt>.</p>
 
 
   </div>
@@ -2010,8 +2010,8 @@ See also <code>demodulize</code>.</p>
   <div class="discussion">
     
 <p>Creates a foreign key name from a class name.
-<code>separate_class_name_and_id_with_underscore</code> sets whether the
-method should put '_' between the name and 'id'.</p>
+<tt>separate_class_name_and_id_with_underscore</tt> sets whether the method
+should put '_' between the name and 'id'.</p>
 
 
   </div>
@@ -2106,8 +2106,7 @@ method should put '_' between the name and 'id'.</p>
     
 <p>def titleize</p>
 
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_underscore'>underscore</span><span class='period'>.</span><span class='id identifier rubyid_humanize'>humanize</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\b('?[a-z])</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='backref'>$1</span><span class='period'>.</span><span class='id identifier rubyid_capitalize'>capitalize</span> <span class='rbrace'>}</span>
-</code></pre>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_underscore'>underscore</span><span class='period'>.</span><span class='id identifier rubyid_humanize'>humanize</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\b('?[a-z])</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='backref'>$1</span><span class='period'>.</span><span class='id identifier rubyid_capitalize'>capitalize</span> <span class='rbrace'>}</span></code></pre>
 
 <p>end</p>
 
@@ -2151,12 +2150,12 @@ method should put '_' between the name and 'id'.</p>
   <div class="discussion">
     
 <p>Capitalizes the first word, turns underscores into spaces, and strips a
-trailing '_id' if present. Like <code>titleize</code>, this is meant for
+trailing '_id' if present. Like <tt>titleize</tt>, this is meant for
 creating pretty output.</p>
 
 <p>The capitalization of the first word can be turned off by setting the
-optional parameter <code>capitalize</code> to false. By default, this
-parameter is true.</p>
+optional parameter <tt>capitalize</tt> to false. By default, this parameter
+is true.</p>
 
 
   </div>
@@ -2415,9 +2414,9 @@ useful for converting paths to namespaces.</p>
     
 <p>Returns the plural form of the word in the string.</p>
 
-<p>If the optional parameter <code>count</code> is specified, the singular
-form will be returned if <code>count == 1</code>. For any other value of
-<code>count</code> the plural will be returned.</p>
+<p>If the optional parameter <tt>count</tt> is specified, the singular form
+will be returned if <tt>count == 1</tt>. For any other value of
+<tt>count</tt> the plural will be returned.</p>
 
 
   </div>
@@ -2550,9 +2549,9 @@ form will be returned if <code>count == 1</code>. For any other value of
 </h3><div class="docstring">
   <div class="discussion">
     
-<p><code>safe_constantize</code> tries to find a declared constant with the
-name specified in the string. It returns nil when the name is not in
-CamelCase or is not initialized.</p>
+<p><tt>safe_constantize</tt> tries to find a declared constant with the name
+specified in the string. It returns nil when the name is not in CamelCase
+or is not initialized.</p>
 
 
   </div>
@@ -2593,13 +2592,13 @@ CamelCase or is not initialized.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>The reverse of <code>pluralize</code>, returns the singular form of a word
-in a string.</p>
+<p>The reverse of <tt>pluralize</tt>, returns the singular form of a word in a
+string.</p>
 
-<p>If the optional parameter <code>locale</code> is specified, the word will
-be singularized as a word of that language. By default, this parameter is
-set to <code>:en</code>. You must define your own inflection rules for
-languages other than English.</p>
+<p>If the optional parameter <tt>locale</tt> is specified, the word will be
+singularized as a word of that language. By default, this parameter is set
+to <tt>:en</tt>. You must define your own inflection rules for languages
+other than English.</p>
 
 
   </div>
@@ -2671,8 +2670,7 @@ languages other than English.</p>
   <div class="discussion">
     
 <p>Creates the name of a table like Rails does for models to table names. This
-method uses the <code>pluralize</code> method on the last word in the
-string.</p>
+method uses the <tt>pluralize</tt> method on the last word in the string.</p>
 
 
   </div>
@@ -2718,7 +2716,7 @@ string.</p>
   <div class="discussion">
     
 <p>Capitalizes all the words and replaces some characters in the string to
-create a nicer looking title. <code>titleize</code> is meant for creating
+create a nicer looking title. <tt>titleize</tt> is meant for creating
 pretty output.</p>
 
 
@@ -2786,11 +2784,11 @@ pretty output.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>The reverse of <code>camelize</code>. Makes an underscored, lowercase form
-from the expression in the string.</p>
+<p>The reverse of <tt>camelize</tt>. Makes an underscored, lowercase form from
+the expression in the string.</p>
 
-<p><code>underscore</code> will also change '::' to '/' to convert namespaces
-to paths.</p>
+<p><tt>underscore</tt> will also change '::' to '/' to convert namespaces to
+paths.</p>
 
 
   </div>
@@ -2854,7 +2852,7 @@ to paths.</p>
 </div>
 
     <div id="footer">
-  Generated on Wed Mar 11 12:21:18 2015 by
+  Generated on Fri Mar 13 14:32:27 2015 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-1.9.3).
 </div>
