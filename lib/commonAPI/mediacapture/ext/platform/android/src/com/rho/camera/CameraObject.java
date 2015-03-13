@@ -381,7 +381,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(actualPropertyMap);
 
             Intent intent = null;
-            if (Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder")) {
+            if (Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder"))) {
                 intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
                 intent.putExtra("android.intent.extras.CAMERA_FACING", Integer.valueOf(getId().substring(7)).intValue());
                 if (outputFormat.equalsIgnoreCase("image")) {
