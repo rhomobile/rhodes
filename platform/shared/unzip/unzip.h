@@ -21,15 +21,19 @@ extern "C" {
 #include <time.h>
 #include <stdio.h>
 #define DECLARE_HANDLE(name) struct name##__ { int unused; }; typedef struct name##__ *name
-#ifndef MAX_PATH
-#define MAX_PATH 1024
-#endif
+
 typedef unsigned long DWORD;
 
 typedef char TCHAR;
 
 typedef FILE* HANDLE;
 typedef time_t FILETIME;
+#endif
+
+#ifdef MAX_PATH
+#define UNZIP_MAX_PATH (MAX_PATH > 1024 ? MAX_PATH : 1024)
+#else
+#define UNZIP_MAX_PATH (1024)
 #endif
 
 // UNZIPPING functions -- for unzipping.
@@ -50,7 +54,7 @@ typedef DWORD ZRESULT;
 
 typedef struct
 { int index;                 // index of this file within the zip
-  TCHAR name[MAX_PATH];      // filename within the zip
+  TCHAR name[UNZIP_MAX_PATH];// filename within the zip
   DWORD attr;                // attributes, as in GetFileAttributes.
   FILETIME atime,ctime,mtime;// access, create, modify filetimes
   long comp_size;            // sizes of item, compressed and uncompressed. These
