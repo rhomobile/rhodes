@@ -138,7 +138,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					HashMap<String,Object> resultMap=new HashMap<String,Object>();
 					resultMap.put("status","ok");
 					if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
-						resultMap.put("image_uri",  curUri.toString());
+						resultMap.put("image_uri",  curUri.getPath());
 						resultMap.put("image_format",   "jpg");						
 					}
 					else{
