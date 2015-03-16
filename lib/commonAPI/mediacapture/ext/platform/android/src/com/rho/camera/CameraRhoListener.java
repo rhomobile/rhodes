@@ -54,6 +54,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		Uri captureUri = null;
 		String targetPath = " ";
 		Uri curUri = null;
+		ByteArrayOutputStream stream = null;
 		try {
 			if (resultCode == Activity.RESULT_OK)
 			{
@@ -81,7 +82,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					picChoosen_imagewidth = bmp.getWidth();
 					picChoosen_imageheight = bmp.getHeight();
 					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){				
-						ByteArrayOutputStream stream = new ByteArrayOutputStream();
+						stream = new ByteArrayOutputStream();
 						bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 						byte[] byteArray = stream.toByteArray();
 						StringBuilder dataBuilder = new StringBuilder();
@@ -189,6 +190,14 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			}
 		} catch (Throwable err) {
 			Logger.E(TAG, err);	
+			if (stream != null) {
+				try {
+					stream.reset();
+					stream.close();
+				} catch (Throwable e1) {
+					// Do nothing
+				}
+			}
 			mMethodResult.setError(err.getMessage());
 		}
 		
