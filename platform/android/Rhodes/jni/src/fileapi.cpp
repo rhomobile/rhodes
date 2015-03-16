@@ -692,7 +692,7 @@ static rho_stat_t *rho_stat(std::string const &path)
 #if 0
 static rho_stat_t *rho_stat(int fd)
 {
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return NULL;
 
     scoped_lock_t guard(rho_file_mtx);
@@ -882,7 +882,7 @@ RHO_GLOBAL int creat(const char* path, mode_t mode)
 RHO_GLOBAL int fcntl(int fd, int command, ...)
 {
     RHO_LOG("fcntl: fd %d, command: %d", fd, command);
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
     {
         va_list vl;
         va_start(vl, command);
@@ -932,7 +932,7 @@ RHO_GLOBAL int fcntl(int fd, int command, ...)
 RHO_GLOBAL int close(int fd)
 {
     RHO_LOG("close: fd %d", fd);
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_close(fd);
 
     if (has_pending_exception())
@@ -970,7 +970,7 @@ RHO_GLOBAL int close(int fd)
 RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
 {
     RHO_LOG("read: fd %d", fd);
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
     {
         ssize_t ret = real_read(fd, buf, count);
         RHO_LOG("read: fd %d: return %ld bytes (native)", fd, (long)ret);
@@ -1031,7 +1031,7 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
 
 RHO_GLOBAL ssize_t write(int fd, const void *buf, size_t count)
 {
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_write(fd, buf, count);
 
     errno = EBADF;
@@ -1057,7 +1057,7 @@ RHO_GLOBAL int access(const char *path, int mode)
 
 RHO_GLOBAL int fchdir(int fd)
 {
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fchdir(fd);
 
     RHO_NOT_IMPLEMENTED;
@@ -1108,7 +1108,7 @@ RHO_GLOBAL int chown(const char *path, uid_t uid, gid_t gid)
 RHO_GLOBAL int fchown(int fd, uid_t uid, gid_t gid)
 {
     RHO_LOG("fchown: fd=%d, uid=%d, gid=%d", fd, (int)uid, (int)gid);
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fchown(fd, uid, gid);
 
     std::string fpath;
@@ -1206,7 +1206,7 @@ RHO_GLOBAL int readlink(const char *path, char *buf, size_t bufsize)
 RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
 {
     RHO_LOG("lseek64: fd %d, offset %lld, whence %d", fd, (long long)offset, whence);
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
     {
         loff_t ret = real_lseek64(fd, offset, whence);
         RHO_LOG("lseek64: fd %d: return %llu (native)", fd, (unsigned long long)ret);
@@ -1299,7 +1299,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
 RHO_GLOBAL off_t lseek(int fd, off_t offset, int whence)
 {
     //RHO_LOG("lseek: fd %d", fd);
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_lseek(fd, offset, whence);
 
     return lseek64(fd, offset, whence);
@@ -1307,7 +1307,7 @@ RHO_GLOBAL off_t lseek(int fd, off_t offset, int whence)
 
 RHO_GLOBAL int dup(int fd)
 {
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_dup(fd);
 
     RHO_NOT_IMPLEMENTED;
@@ -1315,7 +1315,7 @@ RHO_GLOBAL int dup(int fd)
 
 RHO_GLOBAL int dup2(int fd, int fd2)
 {
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_dup2(fd, fd2);
 
     RHO_NOT_IMPLEMENTED;
@@ -1323,7 +1323,7 @@ RHO_GLOBAL int dup2(int fd, int fd2)
 
 RHO_GLOBAL int flock(int fd, int operation)
 {
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_flock(fd, operation);
 
     RHO_NOT_IMPLEMENTED;
@@ -1336,7 +1336,7 @@ RHO_GLOBAL int ioctl(int, int, ...)
 
 RHO_GLOBAL int fsync(int fd)
 {
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fsync(fd);
 
     RHO_LOG("fsync: fd %d", fd);
@@ -1346,7 +1346,7 @@ RHO_GLOBAL int fsync(int fd)
 
 RHO_GLOBAL int fdatasync(int fd)
 {
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fdatasync(fd);
 
     RHO_NOT_IMPLEMENTED;
@@ -1361,7 +1361,7 @@ RHO_GLOBAL int ftruncate(int fd, off_t offset)
         return -1;
     }
 
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_ftruncate(fd, offset);
 
     errno = EINVAL;
@@ -1435,7 +1435,7 @@ RHO_GLOBAL int stat(const char *path, struct stat *buf)
 RHO_GLOBAL int fstat(int fd, struct stat *buf)
 {
     RHO_LOG("fstat: fd %d", fd);
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fstat(fd, buf);
 
     std::string fpath;
@@ -1577,27 +1577,30 @@ RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct t
 {
     RHO_LOG("select: maxfd: %d", maxfd);
     int count = 0;
-    if (rfd)
+    if (rho_fs_mode == RHO_FS_TRANSPARRENT)
     {
-        fd_set fds;
-        FD_ZERO(&fds);
-        for (int i = RHO_FD_BASE; i < maxfd; ++i)
+        if (rfd)
         {
-            if (FD_ISSET(i, rfd))
+            fd_set fds;
+            FD_ZERO(&fds);
+            for (int i = RHO_FD_BASE; i < maxfd; ++i)
             {
-                FD_SET(i, &fds);
-                ++count;
+                if (FD_ISSET(i, rfd))
+                {
+                    FD_SET(i, &fds);
+                    ++count;
+                }
             }
-        }
-        if (count > 0)
-        {
-            RHO_LOG("select: return %d (rho)", count);
-            memmove(rfd, &fds, sizeof(fds));
-            if (wfd)
-                FD_ZERO(wfd);
-            if (efd)
-                FD_ZERO(efd);
-            return count;
+            if (count > 0)
+            {
+                RHO_LOG("select: return %d (rho)", count);
+                memmove(rfd, &fds, sizeof(fds));
+                if (wfd)
+                    FD_ZERO(wfd);
+                if (efd)
+                    FD_ZERO(efd);
+                return count;
+            }
         }
     }
 
@@ -1736,7 +1739,7 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
 RHO_GLOBAL DIR *fdopendir(int fd)
 {
     RHO_LOG("fdopendir: fd=%d", fd);
-    if (fd < RHO_FD_BASE)
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fdopendir(fd);
 
     scoped_lock_t guard(rho_file_mtx);
