@@ -39,6 +39,15 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 @implementation CRhoURLProtocol
 
+- (void)dealloc
+{
+  [httpBody release];
+  [httpHeaderName release];
+  [httpHeaders release];
+  
+  [super dealloc];
+}
+
 + (void)registerPGHttpURLProtocol {}
 
 + (void)registerURLProtocol {}
@@ -65,12 +74,7 @@ int on_http_cb(http_parser* parser) { return 0; }
     }
 #endif
 
-    bool canHandle = true;
-  
-    if ( (rho_conf_is_property_exists("ios_direct_local_requests")!=0) && (rho_conf_getBool("ios_direct_local_requests")==0))
-    {
-      canHandle = false;
-    }
+    bool canHandle = (rho_conf_is_property_exists("ios_direct_local_requests")!=0) && (rho_conf_getBool("ios_direct_local_requests")!=0);
   
     if ( canHandle && [CRhoURLProtocol isLocalURL:theUrl] ) {
       return YES;

@@ -46,7 +46,8 @@ class CRhoClassFactory : public common::IRhoClassFactory
 public:
     net::INetRequestImpl* createNetRequestImpl()
     {
-        bool useCurl = RHOCONF().getBool("ios_net_curl");
+        bool useCurl = (!RHOCONF().isExist("ios_net_curl")) || RHOCONF().getBool("ios_net_curl");
+      
         if ( useCurl ) {
           return new net::CURLNetRequest();
         } else {
