@@ -51,6 +51,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class CameraActivity extends BaseActivity implements OnClickListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
@@ -123,11 +124,18 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     @Override
     public void onClick(View view) {
         Logger.T(TAG, "onClick");
+        try{
         if (view.getId() == R.id.cameraButton) {
             Logger.T(TAG, "cameraButton");            
             String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
             ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
             camera.doTakePicture(this, (mRotation + 45)/90 * 90);
+            Button button=(Button)view.findViewById(R.id.cameraButton);
+            button.setEnabled(false);
+          }
+        }
+        catch(Exception e){
+        	e.printStackTrace();
         }
     }
     
