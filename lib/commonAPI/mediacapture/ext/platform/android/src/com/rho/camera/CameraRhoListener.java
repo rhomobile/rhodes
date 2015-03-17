@@ -87,7 +87,19 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						byte[] byteArray = stream.toByteArray();
 						StringBuilder dataBuilder = new StringBuilder();
 						dataBuilder.append("data:image/jpeg;base64,");
-						dataBuilder.append(Base64.encodeToString(byteArray, false));
+						try {
+							System.gc();
+							dataBuilder.append(Base64.encodeToString(byteArray, false));
+						} catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
+						}
+						catch(OutOfMemoryError e){
+							stream = new ByteArrayOutputStream();
+							bmp.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+							byteArray = stream.toByteArray();
+							dataBuilder.append(Base64.encodeToString(byteArray, false));
+						}
 						getActualPropertyMap().put("curUri", dataBuilder.toString());						
 						curUri=Uri.parse(dataBuilder.toString());
 					}
