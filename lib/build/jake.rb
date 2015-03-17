@@ -785,7 +785,7 @@ class Jake
     return files, total_files, total_size
   end
 
-  def self.unzip(source_zip, dest_folder)
+  def self.unzip_obsolete(source_zip, dest_folder)
     have_zip = false
     begin
       require 'zip'
@@ -881,6 +881,16 @@ class Jake
 
       if block_given?
         yield(progress, 100, "Unpacking files: #{progress}%")
+      end
+    end
+  end
+
+  def self.unzip(src_zip, dest_dir)
+    require 'zip'
+    Zip::File.open(src_zip) do |zip_file|
+      zip_file.each do |entry|
+        puts "Extracting #{entry.name}"
+        entry.extract(File.join(dest_dir, entry.name))
       end
     end
   end
