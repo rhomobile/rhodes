@@ -725,7 +725,7 @@ class Jake
     return file_map
   end
 
-  def self.list_zip_files(source_zip)
+  def self.list_zip_files_obsolete(source_zip)
     have_zip = false
     begin
       require 'zip'
@@ -887,10 +887,25 @@ class Jake
 
   def self.unzip(src_zip, dest_dir)
     require 'zip'
+
+    unless File.exist?(dest_dir)
+      FileUtils.mkdir_p(dest_dir)
+    end
     Zip::File.open(src_zip) do |zip_file|
       zip_file.each do |entry|
-        puts "Extracting #{entry.name}"
         entry.extract(File.join(dest_dir, entry.name))
+      end
+    end
+  end
+
+  def self.zip(where, what, dest)
+    require 'zip'
+    Zip::File.open(dest, Zip::File::CREATE) do |zipfile|
+      what.each do |filename|
+        # Two arguments:
+        # - The name of the file as it will appear in the archive
+        # - The original file, including the path to find it
+        zipfile.add(filename, File.join(where, filename))
       end
     end
   end
