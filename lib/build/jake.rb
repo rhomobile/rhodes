@@ -900,6 +900,10 @@ class Jake
 
   def self.zip(where, what, dest)
     require 'zip'
+
+    if File.exist?(dest)
+      FileUtils.rm(dest);
+    end
     Zip::File.open(dest, Zip::File::CREATE) do |zipfile|
       what.each do |filename|
         # Two arguments:
