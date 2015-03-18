@@ -525,10 +525,31 @@ void CRhodesApp::run()
     PROF_CREATE_COUNTER("LOW_FILE");
 	if(m_isJSFSApp)
 		RHODESAPP().notifyLocalServerStarted();
+  
+  bool shouldRunDirectQueue = false;
+  net::CDirectHttpRequestQueue directQueue(*m_httpServer, *this );
+  
+#ifdef OS_MACOSX
+  if ( RHOCONF().getBool("ios_direct_local_requests") )
+  {
+    shouldRunDirectQueue = true;
+  }
+#endif
+
 
 	while (!m_bExit) {
 		if(!m_isJSFSApp)
-			m_httpServer->run();
+    {
+      if ( shouldRunDirectQueue )
+      {
+        directQueue.run();
+      }
+      else
+      {
+        m_httpServer->run();
+      }
+      
+    }
 		else
 		{
 			LOG(INFO) + "RhodesApp thread wait.";
@@ -1568,6 +1589,7 @@ int CRhodesApp::determineFreeListeningPort()
         LOG(ERROR) + "Unable to set socket option";
         noerrors = 0;
     }
+  
 #if defined(OS_MACOSX)
     if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char *)&optval, sizeof(optval)) != 0)
     {
@@ -1575,7 +1597,7 @@ int CRhodesApp::determineFreeListeningPort()
         noerrors = 0;
     }
 #endif
-    
+
     if (noerrors)
     {
         int listenPort = rho_conf_getInt("local_server_port");

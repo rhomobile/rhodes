@@ -30,6 +30,8 @@
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
 
+#include "common/RhoThread.h"
+
 #if !defined(WINDOWS_PLATFORM)
 typedef int SOCKET;
 #  define INVALID_SOCKET -1
@@ -73,15 +75,15 @@ struct HttpHeader
 
 typedef Vector<HttpHeader> HttpHeaderList;
 
+class CDirectHttpRequestQueue;
+
 class CHttpServer
 {
     DEFINE_LOGCLASS;
     
     enum {BUF_SIZE = 4096};
     
-    typedef HttpHeader Header;
-    typedef HttpHeaderList HeaderList;
-    
+  
     typedef Vector<char> ByteVector;
     
     struct Route
@@ -105,6 +107,10 @@ class CHttpServer
     };
     
 public:
+
+    typedef HttpHeader Header;
+    typedef HttpHeaderList HeaderList;
+
     typedef void (*callback_t)(void *arg, String const &query);
     
 public:
@@ -133,6 +139,7 @@ public:
 
     bool call_ruby_method(String const &uri, String const &body, String& strReply);
   
+    //can be run only from ruby thread!
     String directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body );
   
 private:
@@ -169,6 +176,45 @@ private:
 
     common::CMutex m_mxSyncRequest;
     ResponseWriter* m_localResponseWriter;
+  
+    friend class CDirectHttpRequestQueue;
+    CDirectHttpRequestQueue* m_pQueue;
+    void setQueue( CDirectHttpRequestQueue* q ) { m_pQueue = q; }
+  
+};
+
+class CDirectHttpRequestQueue
+{
+public:
+  CDirectHttpRequestQueue( CHttpServer& server, common::CRhoThread& ownerThread ) : m_server(server), m_thread( ownerThread ), m_request(0) {}
+  
+  struct CDirectHttpRequest
+  {
+    CDirectHttpRequest() : /*method(0), uri(0), query(0), headers(0), body(0), */signal(0), mutex(0) {}
+    
+    void clear()
+    {
+      method = ""; uri = ""; query = ""; headers.clear(); body = ""; signal = 0; mutex = 0;
+    }
+    
+    String method;
+    String uri;
+    String query;
+    CHttpServer::HeaderList headers;
+    String body;
+    pthread_cond_t* signal;
+    pthread_mutex_t* mutex;
+  };
+  
+  bool run();
+  void doRequest( CDirectHttpRequest& req );
+  const String& getResponse() const { return m_response; }
+
+private:
+  CHttpServer& m_server;
+  common::CRhoThread& m_thread;
+  CDirectHttpRequest* m_request;
+  String m_response;
 };
 
 void rho_http_ruby_proc_callback(void *arg, rho::String const &query );

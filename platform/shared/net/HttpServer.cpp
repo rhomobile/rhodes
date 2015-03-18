@@ -78,6 +78,8 @@ typedef unsigned __int16 uint16_t;
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
 
+#include <pthread.h>
+
 //extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 
 namespace rho
@@ -285,7 +287,7 @@ static VALUE create_request_hash(String const &application, String const &model,
 
 
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
-    :m_active(false), m_port(port), verbose(true), m_localResponseWriter(0)
+    :m_active(false), m_port(port), verbose(true), m_localResponseWriter(0), m_pQueue(0)
 {
     m_root = CFilePath::normalizePath(root);
 #ifdef RHODES_EMULATOR
@@ -307,7 +309,7 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 }
     
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_active(false), m_port(port), verbose(true), m_localResponseWriter(0)
+    :m_active(false), m_port(port), verbose(true), m_localResponseWriter(0), m_pQueue(0)
 {
     
 	m_root = CFilePath::normalizePath(root);
@@ -449,23 +451,6 @@ bool CHttpServer::run()
 
     if (!init())
     {
-#ifdef OS_MACOSX
-      /*
-        AE:
-        IOS7 per-app VPN issue workaround:
-          If per-app VPN profile is activated call to bind() for listening socket will fail and server won't init.
-          This shouldn't be a problem as ios_direct_local_requests should be enabled for per-app VPN support,
-          so we check if it is set to true and pretend that server is actually started. 
-          Upon return app thread will sleep until server restart is requested.
-          On iOS8 bind() works correctly and this behavior is not observable.
-      */
-      if ( RHOCONF().getBool("ios_direct_local_requests"))
-      {
-        m_active = true;
-        RHODESAPP().notifyLocalServerStarted();
-        return true;
-      }
-#endif
         return false;
     }
 
@@ -1435,45 +1420,123 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
 String CHttpServer::directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body )
 {
-  CMutexLock lock(m_mxSyncRequest);
+  common::CMutexLock lock(m_mxSyncRequest);
   
-  ResponseWriter respWriter;
-  m_localResponseWriter = &respWriter;
-  
-#ifndef RHO_NO_RUBY_API
-  VALUE val;
-  if (rho_ruby_is_started())
+  String ret;
+  if ( m_pQueue != 0 )
   {
-    if ( !RHOCONF().getBool("enable_gc_while_request") )
-    {
-      val = rho_ruby_disable_gc();
-    }
-  }
-#endif
+    CDirectHttpRequestQueue::CDirectHttpRequest req;
+  
+    pthread_cond_t signal;
+    pthread_cond_init(&signal,0);
+    
+    CMutex m;
+  
+    req.signal = &signal;
+    req.mutex = m.getNativeMutex();
+    req.method = method;
+    req.uri = uri;
+    req.query = query;
+    req.headers = headers;
+    req.body = body;
+  
+    pthread_mutex_lock(m.getNativeMutex());
 
-  bool bProcessed = decide( method, uri, query, headers, body );
-  
-#ifndef RHO_NO_RUBY_API
-  if (rho_ruby_is_started())
-  {
-    if ( !RHOCONF().getBool("enable_gc_while_request") )
-    {
-      rho_ruby_enable_gc(val);
-    }
-
-    if ( bProcessed )
-    {
-      LOG(INFO) + "GC Start.";
-      rb_gc();
-      LOG(INFO) + "GC End.";
-    }
+    m_pQueue->doRequest( req );
+    
+    pthread_cond_wait(&signal, m.getNativeMutex());
+    pthread_mutex_unlock(m.getNativeMutex());
+    
+    ret = m_pQueue->getResponse();
   }
-#endif
   
-  m_localResponseWriter = 0;
-  
-  return respWriter.getResponse();
+  return ret;
+ 
 }
+
+  
+bool CDirectHttpRequestQueue::run( )
+{
+  m_server.m_pQueue = this;
+  m_server.m_active = true;
+  RHODESAPP().notifyLocalServerStarted();
+  
+  do
+  {
+    m_thread.wait(-1);
+    
+    m_response = "";
+    
+    if ( m_request != 0 )
+    {
+      CHttpServer::ResponseWriter respWriter;
+      m_server.m_localResponseWriter = &respWriter;
+      
+#ifndef RHO_NO_RUBY_API
+      VALUE val;
+      if (rho_ruby_is_started())
+      {
+        if ( !RHOCONF().getBool("enable_gc_while_request") )
+        {
+          val = rho_ruby_disable_gc();
+        }
+      }
+#endif
+      
+      bool bProcessed = m_server.decide(
+                                        m_request->method,
+                                        m_request->uri,
+                                        m_request->query,
+                                        m_request->headers,
+                                        m_request->body
+                                        );
+      
+#ifndef RHO_NO_RUBY_API
+      if (rho_ruby_is_started())
+      {
+        if ( !RHOCONF().getBool("enable_gc_while_request") )
+        {
+          rho_ruby_enable_gc(val);
+        }
+        
+        if ( bProcessed )
+        {
+          LOG(INFO) + "GC Start.";
+          rb_gc();
+          LOG(INFO) + "GC End.";
+        }
+      }
+#endif
+      
+      m_server.m_localResponseWriter = 0;
+      
+      m_response = respWriter.getResponse();
+      
+      pthread_cond_t* signal = m_request->signal;
+      pthread_mutex_t* mutex = m_request->mutex;
+      
+      m_request->clear();
+      m_request = 0;
+
+      if ( (signal != 0) && (mutex!=0) )
+      {
+        pthread_mutex_lock(mutex);
+        pthread_cond_signal(signal);
+        pthread_mutex_unlock(mutex);
+      }
+    }
+  }while (m_server.m_active);
+  
+  return true;
+}
+
+
+  void CDirectHttpRequestQueue::doRequest( CDirectHttpRequest& req )
+  {
+    m_request = &req;
+    m_thread.stopWait();
+  }
+
 
 
 } // namespace net
