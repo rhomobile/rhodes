@@ -448,10 +448,28 @@ bool CHttpServer::run()
     LOG(INFO) + "Start HTTP server";
 
     if (!init())
+    {
+#ifdef OS_MACOSX
+      /*
+        AE:
+        IOS7 per-app VPN issue workaround:
+          If per-app VPN profile is activated call to bind() for listening socket will fail and server won't init.
+          This shouldn't be a problem as ios_direct_local_requests should be enabled for per-app VPN support,
+          so we check if it is set to true and pretend that server is actually started. 
+          Upon return app thread will sleep until server restart is requested.
+          On iOS8 bind() works correctly and this behavior is not observable.
+      */
+      if ( RHOCONF().getBool("ios_direct_local_requests"))
+      {
+        m_active = true;
+        RHODESAPP().notifyLocalServerStarted();
+        return true;
+      }
+#endif
         return false;
+    }
 
     m_active = true;
-
     RHODESAPP().notifyLocalServerStarted();
 
     for(;;) 
