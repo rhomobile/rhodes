@@ -30,9 +30,10 @@
 #include "common/RhoDefs.h"
 #include "common/RhoStd.h"
 
+enum RhoFsSetupMode {RHO_FS_SETUP_NONE = 0, RHO_FS_SETUP_FORCE_DIRECTORIES, RHO_FS_SETUP_FORCE_FILES};
 enum RhoFsMode {RHO_FS_DISK_ONLY = 0, RHO_FS_TRANSPARRENT};
 
 RHO_GLOBAL void rho_file_set_fs_mode(int mode);
-RHO_GLOBAL void rho_file_patch_stat_table(const rho::String& path);
+RHO_GLOBAL void rho_file_android_process_stat_table(int setupMode);
 
 #endif /* FILEAPI_H_ */
