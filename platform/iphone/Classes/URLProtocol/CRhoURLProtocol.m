@@ -285,7 +285,18 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 + (BOOL) isLocalURL:(NSURL*)url
 {
+    if ( [[url absoluteString] isEqualToString:@""] )
+    {
+      return NO;
+    }
+
     const char* host = [[url host] UTF8String];
+  
+    if ( 0 == host )
+    {
+      return YES;
+    }
+  
     const char* scheme = [[url scheme] UTF8String];
   
     NSNumber* p = [url port];
@@ -295,9 +306,7 @@ int on_http_cb(http_parser* parser) { return 0; }
 
     return (
       ( (0==scheme) || (strcmp(scheme, "http") ==0 ))
-      /* && (rho_http_started()!=0) */
       && ((port == rhoPort))
-      && ( host != 0)
       && ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
     );
 }
