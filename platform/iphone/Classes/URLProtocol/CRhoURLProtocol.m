@@ -287,16 +287,18 @@ int on_http_cb(http_parser* parser) { return 0; }
 {
     const char* host = [[url host] UTF8String];
     const char* scheme = [[url scheme] UTF8String];
-    int port = [[url port] intValue];
-    if ( 0 == port ) {
-      port = 80;
-    }
+  
+    NSNumber* p = [url port];
+    int port = (nil==p)?80:[[url port] intValue];
+  
+    int rhoPort = rho_http_get_port();
 
     return (
-      ( (0==scheme) || (strcmp(scheme, "http") ==0 )) &&
-      /*(rho_http_started()!=0) &&*/
-      (port == rho_http_get_port()) &&
-      ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
+      ( (0==scheme) || (strcmp(scheme, "http") ==0 ))
+      /* && (rho_http_started()!=0) */
+      && ((port == rhoPort))
+      && ( host != 0)
+      && ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
     );
 }
 
