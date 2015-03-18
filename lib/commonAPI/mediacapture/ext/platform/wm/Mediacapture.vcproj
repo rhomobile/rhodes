@@ -524,7 +524,9 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.00"
+				AdditionalDependencies=".\src\lib\uuid.lib .\src\lib\dmoguids.lib .\src\lib\strmiids.lib .\src\lib\strmbase.lib"
 				OutputFile="$(OutDir)/Mediacapture.lib"
+				AdditionalLibraryDirectories=".\src\lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

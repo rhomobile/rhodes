@@ -83,7 +83,7 @@ BOOL CDirectShowCam::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValu
 }
 void CDirectShowCam::takeFullScreen()
 {
-	LOG(INFO) + __FUNCTION__ ; 	
+	LOG(INFO) + __FUNCTION__ ;
 	if(false == m_IsCameraRunning)
 	{
 		if(m_PreviewOn == false)
@@ -97,7 +97,7 @@ void CDirectShowCam::takeFullScreen()
 			m_pDSCam = new CDShowCam();			
 			if(m_pDSCam)
 			{
-				if(m_pDSCam->initFilterGraph())
+				if(SUCCEEDED(m_pDSCam->InitFilterGrp()))
 				{
 					LOG(INFO) + "Building graph for cam: " + m_szDeviceName; 
 					cfg.sCamID = m_szDeviceName;					
@@ -106,16 +106,37 @@ void CDirectShowCam::takeFullScreen()
 					cfg.bIsPrvEnb = TRUE;		// enable preview
 					cfg.bIsStillEnb = TRUE;		// enable still capture					
 			
-					if(m_pDSCam->BuildFilterGraph(cfg))
+					if(m_pDSCam->BuildFilterGrp(&cfg))
 					{
 						RECT pos;						
-						HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eFullScreen);					
-						if(m_pDSCam->SetupPreview(hWndViewer, pos))
+						HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eFullScreen);	
+						cfg.hwndOwnerWnd = hWndViewer;
+						cfg.rc = pos;
+						if(m_pDSCam->Setup_Preview(&cfg))
 						{
-							m_PreviewOn = true;
-							m_IsCameraRunning = true;
-							setCameraProperties();
-							createTriggerMonitorThread(this);
+							if(!m_pDSCam->RunGrp())
+							{								
+								LOG(ERROR) + L"Camera preview run failed";	
+								hidePreview();
+								UpdateCallbackStatus("error", "Unable to launch camera, start preview failed.","");
+
+							}
+							else
+							{
+								m_PreviewOn = true;
+								m_IsCameraRunning = true;
+								SetFlashMode();
+		                        if(SetResolution())
+								{
+								  createTriggerMonitorThread(this);
+								}
+								else
+								{
+									hidePreview();
+									UpdateCallbackStatus("error", "Unable to launch camera, set resolution failed.","");
+								}
+								
+							}
 						}
 						
 
@@ -123,7 +144,8 @@ void CDirectShowCam::takeFullScreen()
 					}
 				}
 			}
-			if(false == m_PreviewOn)
+			
+			if(false == m_PreviewOn )
 			{
 				//if preview failed
 				if (m_pDSCam) 
@@ -131,6 +153,7 @@ void CDirectShowCam::takeFullScreen()
 					delete m_pDSCam;
 					m_pDSCam = NULL;
 				}
+				m_ViewFinder.DestroyViewerWindow();
 			}		
 
 		}
@@ -153,7 +176,7 @@ BOOL CDirectShowCam::showPreview()
 			m_pDSCam = new CDShowCam();			
 			if(m_pDSCam)
 			{
-				if(m_pDSCam->initFilterGraph())
+				if(SUCCEEDED(m_pDSCam->InitFilterGrp()))
 				{
 					cfg.sCamID = m_szDeviceName;					
 					cfg.bIsAudioEnb = FALSE;	// no audio capture
@@ -161,7 +184,7 @@ BOOL CDirectShowCam::showPreview()
 					cfg.bIsPrvEnb = TRUE;		// enable preview
 					cfg.bIsStillEnb = TRUE;		// enable still capture					
 			
-					if(m_pDSCam->BuildFilterGraph(cfg))
+					if(m_pDSCam->BuildFilterGrp(&cfg))
 					{
 						RECT pos;
 						pos.left = m_PreviewLeft;
@@ -172,12 +195,29 @@ BOOL CDirectShowCam::showPreview()
 						//set pos.left and pos.top to zero
 						//renderer window always wants to fit into viewer wnd client area
 						pos.left=0;
-						pos.top=0;						
-						if(m_pDSCam->SetupPreview(hWndViewer, pos))
+						pos.top=0;	
+						cfg.hwndOwnerWnd = hWndViewer;
+						cfg.rc =pos;
+						if(m_pDSCam->Setup_Preview(&cfg))
 						{
-							m_PreviewOn = true;
-							m_IsCameraRunning = true;
-							setCameraProperties();
+							if(!m_pDSCam->RunGrp())
+							{
+								LOG(ERROR) + L"Camera preview run failed";		
+								hidePreview();
+								UpdateCallbackStatus("error", "Unable to launch camera, start preview failed.","");
+
+							}
+							else
+							{
+								m_PreviewOn = true;
+								m_IsCameraRunning = true;
+								SetFlashMode();
+								if(!SetResolution())
+								{								
+									hidePreview();
+									UpdateCallbackStatus("error", "Unable to launch camera, set resolution failed.","");
+								}
+							}
 						}
 						
 
@@ -194,6 +234,8 @@ BOOL CDirectShowCam::showPreview()
 					delete m_pDSCam;
 					m_pDSCam = NULL;
 				}
+				m_ViewFinder.DestroyViewerWindow();
+
 			}
 		}
 	}
@@ -213,6 +255,7 @@ BOOL CDirectShowCam::hidePreview()
 			{
 				LOG(ERROR) + __FUNCTION__ + L" Stop camera failed";				
 			}
+			m_pDSCam->ReleaseGrp();			
 			delete m_pDSCam;
 			m_pDSCam = NULL;
 			m_PreviewOn = false;
@@ -285,6 +328,10 @@ void CDirectShowCam::Capture()
                                     rho::common::GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
                                     delete[] pImageBuffer;
                                     pImageBuffer = NULL;
+									if(nImageWidth ==0 || nImageHeight==0)
+									{
+										imageUri="data:image/jpeg;base64,"; //temp fix; have to fix during mc67 dataUri issue
+									}
                                     //update callback
                                     UpdateCallbackStatus("ok","",imageUri,nImageWidth, nImageHeight );
 
@@ -374,24 +421,15 @@ void CDirectShowCam::SetFlashMode()
 		HRESULT hr;
 		CamPropTbl propTbl;
 		propTbl.p = CameraControl_Flash;
-		hr = m_pDSCam->Get_PropRng(&propTbl);
+		hr = m_pDSCam->Get_PropRng(CAM, &propTbl);
 		if (hr != E_PROP_ID_UNSUPPORTED)
 		{		
 			propTbl.plVal = m_FlashMode ? propTbl.plMax : propTbl.plMin;
-			m_pDSCam->Set_PropVal( &propTbl);
+			m_pDSCam->Set_PropVal( CAM, &propTbl);
 		}
 	}
 }
 
-void CDirectShowCam::setCameraProperties()
-{
-	if(m_PreviewOn)
-	{
-		SetFlashMode();
-		SetResolution();
-	}
-	
-}
 void CDirectShowCam::RedrawViewerWnd(RECT& pos)
 {
 	if(m_PreviewOn)
@@ -403,8 +441,9 @@ void CDirectShowCam::RedrawViewerWnd(RECT& pos)
 		}
 	}
 }
-void CDirectShowCam::SetResolution()
+bool CDirectShowCam::SetResolution()
 {
+	bool retStatus = true;
 	if(m_PreviewOn)
 	{
 		//  Set the resolution of the saved image
@@ -414,13 +453,15 @@ void CDirectShowCam::SetResolution()
 			ImageRes myRes;
 			myRes.nHeight = m_DesiredHeight;
 			myRes.nWidth = m_DesiredWidth;
-			if (!m_pDSCam->Set_Resolution(&myRes, myPIN))
+			if (! SUCCEEDED(m_pDSCam->Set_Resolution(&myRes, myPIN)))
 			{
+				retStatus = false;
 				//  Something went wrong setting the desired Image resolution
 				LOG(ERROR) + L"Set Image Resolution failed";
 			}
 		}
 	}
+	return retStatus;
 }
 void CDirectShowCam::getCameraHWDetails()
 {
@@ -433,15 +474,12 @@ void CDirectShowCam::getCameraHWDetails()
     m_pDSCam = new CDShowCam();			
     if(m_pDSCam)
     {
-        if(m_pDSCam->initFilterGraph())
-        {            			
+		if(m_pDSCam->initFilterGraph(m_szDeviceName))
+		{ 
+			m_pDSCam->Get_Resolution(supportedResln, S);
 
-            if(m_pDSCam->initCaptureDevice(m_szDeviceName))
-            {				
-				m_pDSCam->Get_Resolution(supportedResln, S);
-            }
-        }
-    }
+		}
+	}
 	delete m_pDSCam;
 	m_pDSCam = NULL;
 }
