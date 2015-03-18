@@ -3,6 +3,7 @@
 typedef unsigned long  time_t;
 #define _TIME_T_DEFINED 	/* avoid multiple def's of time_t */
 #endif
+typedef long off_t;
 
 void rho_ruby_holdValue(VALUE val)
 {
@@ -42,6 +43,27 @@ int rho_ruby_is_hash(VALUE val)
 {
     return  0;
 }
+
+int rho_ruby_to_int(VALUE val, int* dest)
+{
+    return 0;
+}
+
+int rho_ruby_to_double(VALUE val, double* dest)
+{
+    return 0;
+}
+
+int rho_ruby_to_bool(VALUE val, int* dest)
+{
+    return 0;
+}
+
+int rho_ruby_to_str_ex(VALUE val, const char** dest, int* len)
+{
+    return 0;
+}
+
 
 VALUE rho_ruby_createHash() {
     return 0;
@@ -112,6 +134,11 @@ VALUE rho_ruby_create_string(const char* szVal)
 }
 
 VALUE rho_ruby_create_string_withlen(int len)
+{
+    return 0;
+}
+
+VALUE rho_ruby_create_string_withlen2(const char* szVal, int len)
 {
     return 0;
 }
@@ -205,3 +232,7 @@ int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_le
     return 0;
 }
 
+off_t _lseeki64(int fd, off_t offset, int whence)
+{
+    return -1;
+}
