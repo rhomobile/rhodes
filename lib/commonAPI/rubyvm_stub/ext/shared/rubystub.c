@@ -231,8 +231,3 @@ int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_le
 {
     return 0;
 }
-
-off_t _lseeki64(int fd, off_t offset, int whence)
-{
-    return -1;
-}
