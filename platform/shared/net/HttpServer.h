@@ -142,8 +142,10 @@ public:
 
     bool call_ruby_method(String const &uri, String const &body, String& strReply);
   
+#ifdef OS_MACOSX
     //can be run only from ruby thread!
     String directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body );
+#endif
   
 private:
     bool init();
@@ -180,15 +182,17 @@ private:
     bool m_enable_external_access;
     bool m_started_as_separated_simple_server;
 
+#ifdef OS_MACOSX
     common::CMutex m_mxSyncRequest;
     ResponseWriter* m_localResponseWriter;
   
     friend class CDirectHttpRequestQueue;
     CDirectHttpRequestQueue* m_pQueue;
     void setQueue( CDirectHttpRequestQueue* q ) { m_pQueue = q; }
-  
+#endif
 };
 
+#ifdef OS_MACOSX
 class CDirectHttpRequestQueue
 {
 public:
@@ -222,7 +226,7 @@ private:
   CDirectHttpRequest* m_request;
   String m_response;
 };
-
+#endif //OS_MACOSX
 void rho_http_ruby_proc_callback(void *arg, rho::String const &query );
 
 } // namespace net
