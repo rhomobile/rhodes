@@ -74,7 +74,7 @@ typedef unsigned short WORD;
 #if defined(WIN32) || defined(_WIN32_WCE)
 #define _tsprintf wsprintf
 #elif defined(_WP8_LIB)
-#define _tsprintf _scprintf
+#define _tsprintf sprintf
 #endif
 #else
 #define _tsprintf sprintf
@@ -3907,7 +3907,7 @@ class TUnzip
   char *unzbuf;            // lazily created and destroyed, used by Unzip
   int currentfile; ZIPENTRY cze; int czei;
   char *password;
-  TCHAR rootdir[MAX_PATH]; // includes a trailing slash
+  TCHAR rootdir[UNZIP_MAX_PATH]; // includes a trailing slash
 
   ZRESULT Open(void *z,unsigned int len,DWORD flags);
   ZRESULT Get(int index,ZIPENTRY *ze);
@@ -3922,10 +3922,10 @@ ZRESULT TUnzip::Open(void *z,unsigned int len,DWORD flags)
 { if (uf!=0 || currentfile!=-1) return ZR_NOTINITED;
   //
 #ifdef ZIP_STD
-//  getcwd(rootdir,MAX_PATH-1);
+//  getcwd(rootdir,UNZIP_MAX_PATH-1);
 #else
 #ifdef GetCurrentDirectory
-  GetCurrentDirectory(MAX_PATH-1,rootdir);
+  GetCurrentDirectory(UNZIP_MAX_PATH-1,rootdir);
 #else
   rootdir[0]='/'; rootdir[1]=0;
 #endif
@@ -3947,7 +3947,7 @@ ZRESULT TUnzip::Open(void *z,unsigned int len,DWORD flags)
 }
 
 ZRESULT TUnzip::SetUnzipBaseDir(const TCHAR *dir)
-{ _tcsncpy(rootdir,dir,MAX_PATH-1);
+{ _tcsncpy(rootdir,dir,UNZIP_MAX_PATH-1);
   TCHAR *lastchar = &rootdir[_tcslen(rootdir)-1];
   if (*lastchar!='\\' && *lastchar!='/') {lastchar[1]='/'; lastchar[2]=0;}
   return ZR_OK;
@@ -3976,8 +3976,8 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
   }
   if (index<(int)uf->num_file) unzGoToFirstFile(uf);
   while ((int)uf->num_file<index) unzGoToNextFile(uf);
-  unz_file_info ufi; char fn[MAX_PATH];
-  unzGetCurrentFileInfo(uf,&ufi,fn,MAX_PATH,NULL,0,NULL,0);
+  unz_file_info ufi; char fn[UNZIP_MAX_PATH];
+  unzGetCurrentFileInfo(uf,&ufi,fn,UNZIP_MAX_PATH,NULL,0,NULL,0);
   // now get the extra header. We do this ourselves, instead of
   // calling unzOpenCurrentFile &c., to avoid allocating more than necessary.
   unsigned int extralen,iSizeVar; unsigned long offset;
@@ -3988,12 +3988,12 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
   if (lufread(extra,1,(uInt)extralen,uf->file)!=extralen) {delete[] extra; return ZR_READ;}
   //
   ze->index=uf->num_file;
-  TCHAR tfn[MAX_PATH];
+  TCHAR tfn[UNZIP_MAX_PATH];
 #ifdef UNICODE
 #if (defined(__SYMBIAN32__) && !defined(WIN32)) || defined(_WP8_LIB)
   strcpy(tfn,fn);
 #else  
-  MultiByteToWideChar(CP_UTF8,0,fn,-1,tfn,MAX_PATH);
+  MultiByteToWideChar(CP_UTF8,0,fn,-1,tfn,UNZIP_MAX_PATH);
 #endif
   
 #else
@@ -4017,7 +4017,7 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
     c=_tcsstr(sfn,_T("/..\\")); if (c!=0) {sfn=c+4; continue;}
     break;
   }
-  _tcsncpy(ze->name, sfn,MAX_PATH);
+  _tcsncpy(ze->name, sfn, UNZIP_MAX_PATH);
 
 
   unsigned long a = ufi.external_fa;
@@ -4095,13 +4095,13 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
 }
 
 ZRESULT TUnzip::Find(const TCHAR *tname,bool ic,int *index,ZIPENTRY *ze)
-{ char name[MAX_PATH];
+{ char name[UNZIP_MAX_PATH];
 #ifdef UNICODE
 
 #if (defined(__SYMBIAN32__) && !defined(WIN32)) || defined(_WP8_LIB)
   strcpy(name,tname);
 #else
-  WideCharToMultiByte(CP_UTF8,0,tname,-1,name,MAX_PATH,0,0);
+  WideCharToMultiByte(CP_UTF8,0,tname,-1,name,UNZIP_MAX_PATH,0,0);
 #endif
   
 #else
@@ -4126,7 +4126,7 @@ ZRESULT TUnzip::Find(const TCHAR *tname,bool ic,int *index,ZIPENTRY *ze)
 void EnsureDirectory(const TCHAR *rootdir, const TCHAR *dir)
 { // first check that rootdir exists. nb. rootdir has a trailing slash
   if (rootdir!=0)
-  { TCHAR rd[MAX_PATH]; _tcsncpy(rd,rootdir,MAX_PATH); size_t len=_tcslen(rd);
+  { TCHAR rd[UNZIP_MAX_PATH]; _tcsncpy(rd,rootdir,UNZIP_MAX_PATH); size_t len=_tcslen(rd);
     if (len>0 && (rd[len-1]=='/' || rd[len-1]=='\\')) rd[len-1]=0;
 #ifdef ZIP_STD
     if (!FileExists(rd)) lumkdir(rd);
@@ -4139,13 +4139,13 @@ void EnsureDirectory(const TCHAR *rootdir, const TCHAR *dir)
   while (*c!=0) {if (*c=='/' || *c=='\\') lastslash=c; c++;}
   const TCHAR *name=lastslash;
   if (lastslash!=dir)
-  { TCHAR tmp[MAX_PATH]; memcpy(tmp,dir,sizeof(TCHAR)*(lastslash-dir));
+  { TCHAR tmp[UNZIP_MAX_PATH]; memcpy(tmp,dir,sizeof(TCHAR)*(lastslash-dir));
     tmp[lastslash-dir]=0;
     EnsureDirectory(rootdir,tmp);
     name++;
   }
-  TCHAR cd[MAX_PATH]; *cd=0; if (rootdir!=0) _tcsncpy(cd,rootdir,MAX_PATH); cd[MAX_PATH-1]=0;
-  size_t len=_tcslen(cd); _tcsncpy(cd+len,dir,MAX_PATH-len); cd[MAX_PATH-1]=0;
+  TCHAR cd[UNZIP_MAX_PATH]; *cd=0; if (rootdir!=0) _tcsncpy(cd,rootdir,UNZIP_MAX_PATH); cd[UNZIP_MAX_PATH-1]=0;
+  size_t len=_tcslen(cd); _tcsncpy(cd+len,dir,UNZIP_MAX_PATH-len); cd[UNZIP_MAX_PATH-1]=0;
 #ifdef ZIP_STD
   if (!FileExists(cd)) lumkdir(cd);
 #else
@@ -4195,7 +4195,7 @@ ZRESULT TUnzip::Unzip(int index,void *dst,unsigned int len,DWORD flags)
     return ZR_OK;
   }
   // otherwise, we write the zipentry to a file/handle
-  HANDLE h; TCHAR fn[MAX_PATH]; fn[0]=0;
+  HANDLE h; TCHAR fn[UNZIP_MAX_PATH]; fn[0]=0;
   if (flags==ZIP_HANDLE) h=(HANDLE)dst;
   else
   { const TCHAR *ufn = (const TCHAR*)dst;
@@ -4207,7 +4207,7 @@ ZRESULT TUnzip::Unzip(int index,void *dst,unsigned int len,DWORD flags)
     // a malicious zip could unzip itself into c:\windows. Our solution is that GetZipItem (which
     // is how the user retrieve's the file's name within the zip) never returns absolute paths.
     const TCHAR *name=ufn; const TCHAR *c=name; while (*c!=0) {if (*c=='/' || *c=='\\') name=c+1; c++;}
-    TCHAR dir[MAX_PATH]; _tcsncpy(dir,ufn,MAX_PATH); if (name==ufn) *dir=0; else dir[name-ufn]=0;
+    TCHAR dir[UNZIP_MAX_PATH]; _tcsncpy(dir,ufn,UNZIP_MAX_PATH); if (name==ufn) *dir=0; else dir[name-ufn]=0;
     bool isabsolute = (dir[0]=='/' || dir[0]=='\\' || (dir[0]!=0 && dir[1]==':'));
     if (isabsolute) {_tsprintf(fn,_T("%s%s"),dir,name); EnsureDirectory(0,dir);}
     else {_tsprintf(fn,_T("%s%s%s"),rootdir,dir,name); EnsureDirectory(rootdir,dir);}

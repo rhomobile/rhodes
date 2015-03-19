@@ -601,8 +601,41 @@ function upload_file() {
                  </JAVASCRIPT>
                </CODE>
                </SECTION>
-           </SECTIONS>
-           </EXAMPLE>
+            </SECTIONS>
+            </EXAMPLE>
+            <EXAMPLE title="Network POST Using Ruby's Lambda">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>You can also define network request callbacks with this API using Ruby's lambda functions, similar to how you would use a JavaScript anonymous function for a callback. Simply define your callback, using lambda, in place of the callback parameter in the method call as such.</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+Rho::Network.post(
+  {
+    url:      url,
+    headers:  { 'Content-Type' => 'application/json', 'Accept' => 'application/json' },
+    body:     json
+  },
+  lambda do |response; body, headers, cookies, http_status|
+
+    body = response['body']
+    headers = response['headers']
+    cookies = response['cookies']
+    http_status = response['http_status']
+
+    app_info "TESTING got POST callback"
+    app_info "body = #{body.inspect}"
+    app_info "headers = #{headers.inspect}"
+    app_info "cookies = #{cookies.inspect}"
+    app_info "http_error = #{http_error.class} #{http_error.inspect}"
+    app_info "testing lambda context, url = '#{url}'"
+  end
+)
+                                ]]>
+                            </RUBY>
+                        </CODE>
+                </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
         </EXAMPLES>
     </MODULE>
 </API>

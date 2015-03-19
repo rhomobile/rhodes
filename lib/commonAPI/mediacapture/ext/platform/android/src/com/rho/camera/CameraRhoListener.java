@@ -54,6 +54,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		Uri captureUri = null;
 		String targetPath = " ";
 		Uri curUri = null;
+		ByteArrayOutputStream stream = null;
 		try {
 			if (resultCode == Activity.RESULT_OK)
 			{
@@ -81,12 +82,24 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					picChoosen_imagewidth = bmp.getWidth();
 					picChoosen_imageheight = bmp.getHeight();
 					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){				
-						ByteArrayOutputStream stream = new ByteArrayOutputStream();
+						stream = new ByteArrayOutputStream();
 						bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 						byte[] byteArray = stream.toByteArray();
 						StringBuilder dataBuilder = new StringBuilder();
 						dataBuilder.append("data:image/jpeg;base64,");
-						dataBuilder.append(Base64.encodeToString(byteArray, false));
+						try {
+							System.gc();
+							dataBuilder.append(Base64.encodeToString(byteArray, false));
+						} catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
+						}
+						catch(OutOfMemoryError e){
+							stream = new ByteArrayOutputStream();
+							bmp.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+							byteArray = stream.toByteArray();
+							dataBuilder.append(Base64.encodeToString(byteArray, false));
+						}
 						getActualPropertyMap().put("curUri", dataBuilder.toString());						
 						curUri=Uri.parse(dataBuilder.toString());
 					}
@@ -137,7 +150,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					HashMap<String,Object> resultMap=new HashMap<String,Object>();
 					resultMap.put("status","ok");
 					if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
-						resultMap.put("image_uri",  curUri.toString());
+						resultMap.put("image_uri",  "db/db-files/"+ curUri.toString().substring(curUri.toString().lastIndexOf("/")+1, curUri.toString().length()));
 						resultMap.put("image_format",   "jpg");						
 					}
 					else{
@@ -189,6 +202,14 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			}
 		} catch (Throwable err) {
 			Logger.E(TAG, err);	
+			if (stream != null) {
+				try {
+					stream.reset();
+					stream.close();
+				} catch (Throwable e1) {
+					// Do nothing
+				}
+			}
 			mMethodResult.setError(err.getMessage());
 		}
 		
