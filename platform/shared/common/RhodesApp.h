@@ -282,9 +282,9 @@ public:
     bool isLocalServerRunning() { return ( (m_httpServer) && (m_httpServer->started()) ); }
   
     unsigned int getLocalServerPort() { return (m_httpServer!=0)?(m_httpServer->getPort()):0; }
-  
+#ifdef OS_MACOSX
     String directHttpRequest( const String& method, const String& uri, const String& query, const rho::net::HttpHeaderList& headers, const String& body ) {  return m_httpServer->directRequest(method, uri, query, headers, body ); }
-
+#endif
     void callCallbackProcWithData(unsigned long oRubyCallbackProc, String strBody, const String& strCallbackData, bool bWaitForResponse);
 
     #ifdef OS_WINCE
@@ -356,14 +356,14 @@ void rho_http_free(void* data);
 int rho_http_started();
 int rho_http_get_port();
 
-
+#ifdef OS_MACOSX
 const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body );
 void rho_http_free_response( const char* data );
 
 void* rho_http_init_headers_list();
 void rho_http_add_header( void* list, const char* name, const char* value );
 void rho_http_free_headers_list( void* list );
-
+#endif
 
 void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
         const char* strError, int bCancel );
