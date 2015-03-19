@@ -668,17 +668,34 @@ public:
         ret = new CIPhoneNetResponseImpl( (int)[resp statusCode]  );
       }
       
+      NSDictionary* respHeadrs = [resp allHeaderFields];
+      
       if ( pHeaders != 0 )
       {
         pHeaders->clear();
-        
-        NSDictionary* respHeadrs = [resp allHeaderFields];
         
         for (NSString* key in respHeadrs)
         {
           NSString* val = [respHeadrs valueForKey:key];
           pHeaders->put( [key UTF8String], [val UTF8String] );
         }
+      }
+      
+      String sCookies;
+      
+      NSArray* cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:respHeadrs forURL:[m_pReq URL]];
+      
+      if ( cookies != nil )
+      {
+        for ( NSHTTPCookie* c in cookies )
+        {
+          sCookies += [[c name] UTF8String];
+          sCookies += "=";
+          sCookies += [[c value] UTF8String];
+          sCookies += ";";
+        }
+        
+        ret->setCookies(sCookies);
       }
       
       if ( (pSession!=0) && ( [resp statusCode] == 401 ) )
