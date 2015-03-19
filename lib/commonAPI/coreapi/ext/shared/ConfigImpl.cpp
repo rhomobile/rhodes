@@ -80,7 +80,7 @@ namespace rho {
 		{
 			RHOCONF().loadFromFile();
         } 
-
+/*
         virtual void getConflicts(rho::apiGenerator::CMethodResult& oResult) 
 		{
 			rho::HashtablePtr<String, Vector<String>* > conflictsHashPtr = RHOCONF().getConflicts();
@@ -91,6 +91,7 @@ namespace rho {
 
 			oResult.set(conflictsHash);
         } 
+*/
     };
     
     class CConfigImpl : public CConfigBase
