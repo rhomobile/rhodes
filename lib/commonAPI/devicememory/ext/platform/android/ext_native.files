@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/DeviceMemory.cpp
+ext/platform/android/generated/jni/devicememory_ruby_wrap.cpp
+ext/platform/android/generated/jni/devicememory_js_wrap.cpp
+ext/platform/android/jni/DeviceMemory_impl.cpp
+ext/shared/generated/devicememory_api_init.cpp
+ext/shared/generated/devicememory_js_api.cpp
+ext/shared/generated/devicememory_ruby_api.c

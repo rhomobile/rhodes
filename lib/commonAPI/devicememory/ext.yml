@@ -1,0 +1,16 @@
+entry: Init_DeviceMemory_extension
+javaentry: com.devicememory.DeviceMemory
+libraries: ["DeviceMemory"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+wp8:
+  csharp_impl: yes
+  root_namespace: rho
+
+project_paths:
+  wp8: ext/platform/wp8/DeviceMemoryLib.vcxproj
+  wm: ext/platform/wm/DeviceMemory.vcproj
+  win32: ext/platform/wm/DeviceMemory.vcproj
+  
+xml_api_paths: ext/DeviceMemory.xml

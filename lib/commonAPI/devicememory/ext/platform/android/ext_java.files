@@ -1,0 +1,10 @@
+ext/platform/android/generated/src/com/rho/devicememory/DeviceMemoryBase.java
+ext/platform/android/generated/src/com/rho/devicememory/DeviceMemoryFactorySingleton.java
+ext/platform/android/generated/src/com/rho/devicememory/DeviceMemorySingletonBase.java
+ext/platform/android/generated/src/com/rho/devicememory/IDeviceMemory.java
+ext/platform/android/generated/src/com/rho/devicememory/IDeviceMemoryFactory.java
+ext/platform/android/generated/src/com/rho/devicememory/IDeviceMemorySingleton.java
+ext/platform/android/src/com/rho/devicememory/DeviceMemory.java
+ext/platform/android/src/com/rho/devicememory/DeviceMemoryFactory.java
+ext/platform/android/src/com/rho/devicememory/DeviceMemorySingleton.java
+ext/platform/android/src/com/rho/devicememory/DeviceMemoryCalculator.java
