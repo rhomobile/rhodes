@@ -78,8 +78,6 @@ typedef unsigned __int16 uint16_t;
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
 
-#include <pthread.h>
-
 //extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 
 namespace rho
@@ -287,7 +285,11 @@ static VALUE create_request_hash(String const &application, String const &model,
 
 
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
-    :m_active(false), m_port(port), verbose(true), m_localResponseWriter(0), m_pQueue(0)
+    :m_active(false), m_port(port), verbose(true)
+#ifdef OS_MACOSX
+    , m_localResponseWriter(0)
+    , m_pQueue(0)
+#endif
 {
     m_root = CFilePath::normalizePath(root);
 #ifdef RHODES_EMULATOR
@@ -309,7 +311,11 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 }
     
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_active(false), m_port(port), verbose(true), m_localResponseWriter(0), m_pQueue(0)
+    :m_active(false), m_port(port), verbose(true)
+#ifdef OS_MACOSX
+    , m_localResponseWriter(0)
+    , m_pQueue(0)
+#endif
 {
     
 	m_root = CFilePath::normalizePath(root);
@@ -658,11 +664,12 @@ bool CHttpServer::receive_request(ByteVector &request)
 
 bool CHttpServer::send_response_impl(String const &data, bool continuation)
 {
-
+#ifdef OS_MACOSX
     if ( m_localResponseWriter != 0 ) {
       m_localResponseWriter->writeResponse( data );
       return true;
     }
+#endif
 
     if (verbose) {
         if (continuation)
@@ -1418,6 +1425,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
     return bRes;
 }
 
+#ifdef OS_MACOSX
 String CHttpServer::directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body )
 {
   common::CMutexLock lock(m_mxSyncRequest);
@@ -1537,7 +1545,7 @@ bool CDirectHttpRequestQueue::run( )
     m_thread.stopWait();
   }
 
-
+#endif
 
 } // namespace net
 } // namespace rho

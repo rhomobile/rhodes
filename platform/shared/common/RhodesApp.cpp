@@ -526,10 +526,10 @@ void CRhodesApp::run()
 	if(m_isJSFSApp)
 		RHODESAPP().notifyLocalServerStarted();
   
+#ifdef OS_MACOSX
   bool shouldRunDirectQueue = false;
   net::CDirectHttpRequestQueue directQueue(*m_httpServer, *this );
   
-#ifdef OS_MACOSX
   if ( RHOCONF().getBool("ios_direct_local_requests") )
   {
     shouldRunDirectQueue = true;
@@ -540,11 +540,13 @@ void CRhodesApp::run()
 	while (!m_bExit) {
 		if(!m_isJSFSApp)
     {
+#ifdef OS_MACOSX
       if ( shouldRunDirectQueue )
       {
         directQueue.run();
       }
       else
+#endif
       {
         m_httpServer->run();
       }
@@ -2604,6 +2606,7 @@ int rho_http_get_port()
   return RHODESAPP().getLocalServerPort();
 }
 
+#ifdef OS_MACOSX
 const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body )
 {
 
@@ -2666,7 +2669,7 @@ void rho_http_free_headers_list( void* list )
 {
   delete (rho::net::HttpHeaderList*)list;
 }
-
+#endif
 
 	
 void rho_rhodesapp_create(const char* szRootPath)
