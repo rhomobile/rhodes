@@ -160,6 +160,25 @@ int on_http_cb(http_parser* parser) { return 0; }
         
         if ( url != nil )
         {
+          //our URL;
+          if ( ([url host] == nil) && ([url port] == nil ) && ( [url scheme]==nil) && ( [url path] != nil ) )
+          {
+            NSMutableString* s = [NSMutableString stringWithFormat:@"http://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
+            
+            if ( [url query] != nil )
+            {
+              [s appendFormat:@"?%@",[url query]];
+            }
+            
+            if ( [url fragment] != nil )
+            {
+              [s appendFormat:@"#%@",[url fragment]];
+            }
+          
+            url = [NSURL URLWithString:s];
+          }
+        
+        
           NSURLRequest* redirReq = [NSURLRequest requestWithURL:url];
           [[self client] URLProtocol:self wasRedirectedToRequest:redirReq redirectResponse:resp];
           return;
