@@ -19,6 +19,26 @@ int rb_w32_map_errno(unsigned long winerr);
 
 //////////////////////////////////////////////////////////////////////////
 
+off_t
+_lseeki64(int fd, off_t offset, int whence)
+{
+    long u, l;
+    int e;
+    HANDLE h = (HANDLE)_get_osfhandle(fd);
+
+    if (!h) {
+	errno = EBADF;
+	return -1;
+    }
+    u = (long)(offset >> 32);
+    if ((l = SetFilePointer(h, (long)offset, &u, whence)) == -1L &&
+	(e = GetLastError())) {
+	errno = map_errno(e);
+	return -1;
+    }
+    return ((off_t)u << 32) | l;
+}
+
 char* rb_w32_getenv(const char *name)
 {
     int len = strlen(name);
