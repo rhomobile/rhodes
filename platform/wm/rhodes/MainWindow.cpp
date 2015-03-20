@@ -1241,7 +1241,7 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 {
     TNavigateData* nd = (TNavigateData*)hWndCtl;
     if (nd) {
-        LPTSTR wcurl = (LPTSTR)(nd->url);
+        LPTSTR wcurl = ((LPTSTR)(_tcsdup(nd->url)));
         if (wcurl) 
         {
             if ( m_pBrowserEng )
