@@ -1248,6 +1248,7 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
                 m_pBrowserEng->executeJavascript(wcurl, m_oTabBar.GetTabID(nd->index) );
         }
         delete nd;
+        free(wcurl);
     }
     return 0;
 }
