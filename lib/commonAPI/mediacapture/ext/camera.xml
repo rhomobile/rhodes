@@ -246,7 +246,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="useSystemViewfinder" type="BOOLEAN" default="false">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android</PLATFORM>
-                <DESC>Uses the system Camera application to take a picture instead of rhodes' camera. The system Camera application does not accept most rhodes' camera settings and can be adjusted by UI.</DESC>
+                <DESC>Setting the value of this property to "true", shall open the System ViewFinder with its properties. None of the Rho camera properties shall be applicable.</DESC>
             </PROPERTY>
 			<PROPERTY name="aimMode" type="STRING">
                 <PLATFORM>WM, CE</PLATFORM>
