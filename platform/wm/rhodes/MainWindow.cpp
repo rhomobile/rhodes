@@ -1241,8 +1241,11 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 {
     TNavigateData* nd = (TNavigateData*)hWndCtl;
     if (nd) {
-        LPTSTR wcurl = (LPTSTR)(nd->url);
-        if (wcurl) 
+        wchar_t wcurl[2046];
+	memset(wcurl,'0',2046);
+	wcscpy(wcurl,L"");
+	wcscpy(wcurl,nd->url);
+        if (wcslen(wcurl) != 0) 
         {
             if ( m_pBrowserEng )
                 m_pBrowserEng->executeJavascript(wcurl, m_oTabBar.GetTabID(nd->index) );
