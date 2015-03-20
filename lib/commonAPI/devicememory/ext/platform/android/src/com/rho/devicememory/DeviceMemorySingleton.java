@@ -75,7 +75,7 @@ class DeviceMemorySingleton  implements IDeviceMemorySingleton {
 		int str=DeviceMemoryCalculator.getAvailableMemory();
 		Log.d(TAG, "getAvailableMemory="+str);
 		Logger.I(TAG, "getAvailableMemory="+str);
-		str=2147483647;
+		//str=2147483647;
 		result.set(str);
 		
 	}
