@@ -129,39 +129,39 @@ class DeviceMemorySingleton  implements IDeviceMemorySingleton {
 			case ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE:
 																	Log.d(TAG,"TRIM_MEMORY_RUNNING_MODERATE");
 																	Logger.I(TAG,"TRIM_MEMORY_RUNNING_MODERATE");
-																	fireOsCallback("TRIM_MEMORY_RUNNING_MODERATE");
+																	fireOsCallback(IDeviceMemorySingleton.DEVICE_MEMORY_STATUS_LOW);
 																	break;
 			case ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
 																	Log.d(TAG,"TRIM_MEMORY_RUNNING_LOW");
 																	Logger.I(TAG,"TRIM_MEMORY_RUNNING_LOW");
-																	fireOsCallback("TRIM_MEMORY_RUNNING_LOW");
+																	fireOsCallback(IDeviceMemorySingleton.DEVICE_MEMORY_STATUS_LOW);
 																	break;
 			case ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
 																	Log.d(TAG,"TRIM_MEMORY_RUNNING_CRITICAL");
 																	Logger.I(TAG,"TRIM_MEMORY_RUNNING_CRITICAL");
-																	fireOsCallback("TRIM_MEMORY_RUNNING_CRITICAL");
+																	fireOsCallback(IDeviceMemorySingleton.DEVICE_MEMORY_STATUS_LOW);
 																	break;
 			
 			case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
 																	Log.d(TAG,"TRIM_MEMORY_UI_HIDDEN");
 																	Logger.I(TAG,"TRIM_MEMORY_UI_HIDDEN");
-																	fireOsCallback("TRIM_MEMORY_UI_HIDDEN");
+																	//fireOsCallback("TRIM_MEMORY_UI_HIDDEN");
 																	break;
 			
 			case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
 																	Log.d(TAG,"TRIM_MEMORY_BACKGROUND");
 																	Logger.I(TAG,"TRIM_MEMORY_BACKGROUND");
-																	fireOsCallback("TRIM_MEMORY_BACKGROUND");
+																	fireOsCallback(IDeviceMemorySingleton.DEVICE_MEMORY_STATUS_CRITICAL);
 																	break;
 			case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
 																	Log.d(TAG,"TRIM_MEMORY_MODERATE");
 																	Logger.I(TAG,"TRIM_MEMORY_MODERATE");
-																	fireOsCallback("TRIM_MEMORY_MODERATE");
+																	fireOsCallback(IDeviceMemorySingleton.DEVICE_MEMORY_STATUS_CRITICAL);
 																	break;
 			case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
 																	Log.d(TAG,"TRIM_MEMORY_COMPLETE");
 																	Logger.I(TAG,"TRIM_MEMORY_COMPLETE");
-																	fireOsCallback("TRIM_MEMORY_COMPLETE");
+																	fireOsCallback(IDeviceMemorySingleton.DEVICE_MEMORY_STATUS_CRITICAL);
 																	break;
 			
 			
@@ -174,8 +174,8 @@ class DeviceMemorySingleton  implements IDeviceMemorySingleton {
 	@Override
 	public void getInternalStorage(IMethodResult result) {
 		int str=DeviceMemoryCalculator.getAvailableDataMemory();
-		Log.d(TAG, "getAvailableDataMemory="+str);
-		Logger.I(TAG, "getAvailableDataMemory="+str);
+		Log.d(TAG, "getInternalStorage="+str);
+		Logger.I(TAG, "getInternalStorage="+str);
 		result.set(str);
 		
 	}
@@ -183,8 +183,8 @@ class DeviceMemorySingleton  implements IDeviceMemorySingleton {
 	@Override
 	public void getExternalStorage(IMethodResult result) {
 		int str=DeviceMemoryCalculator.getAvailableStorageMemory();
-		Log.d(TAG, "getAvailableStorageMemory="+str);
-		Logger.I(TAG, "getAvailableStorageMemory="+str);
+		Log.d(TAG, "getExternalStorage="+str);
+		Logger.I(TAG, "getExternalStorage="+str);
 		result.set(str);
 		
 	}
