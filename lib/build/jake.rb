@@ -728,13 +728,25 @@ class Jake
   def self.unzip(src_zip, dest_dir)
     require 'zip'
 
+    puts dest_dir
     unless File.exist?(dest_dir)
       FileUtils.mkdir_p(dest_dir)
     end
 
     Zip::File.open(src_zip) do |zip_file|
+
+      unzipped_bytes = 0
+      total_bytes = zip_file.inject(0) { |result, each| result  + each.size }
+
       zip_file.each do |entry|
+
+        if block_given? and entry.size != 0
+          unzipped_bytes = unzipped_bytes + entry.size
+          yield(unzipped_bytes, total_bytes, "Unpacking files: #{(unzipped_bytes * 100) / total_bytes}%")
+        end
+
         entry.extract(File.join(dest_dir, entry.name))
+
       end
     end
 
@@ -752,7 +764,6 @@ class Jake
         zipfile.add(filename, File.join(where, filename))
       end
     end
-
   end
 
   def self.zip_upgrade_bundle(folder_path, zip_file_path)
