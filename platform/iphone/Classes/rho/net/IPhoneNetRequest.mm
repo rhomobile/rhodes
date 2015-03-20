@@ -371,25 +371,35 @@ public:
       timeoutInterval:timeout
     ];
     
-    if ( method != 0 )
-    {
-      [m_pReq setHTTPMethod:[NSString stringWithUTF8String:method]];
-    }
-    
+    [m_pReq setHTTPMethod:(method!=0)?[NSString stringWithUTF8String:method]:@"NULL"];
+
     if ( body.length() > 0 )
     {
       [m_pReq setHTTPBody:[NSData dataWithBytes:(const void*)body.c_str() length:body.length()]];
     }
     
+    bool hasContentType = false;
+    
     if ( pHeaders != 0 )
     {
       for ( Hashtable<String,String>::iterator it = pHeaders->begin(); it != pHeaders->end(); ++it )
       {
+        if (!hasContentType && strcasecmp(it->first.c_str(), "content-type") == 0)
+        {
+          hasContentType = true;
+        }
+
         [m_pReq setValue:
           [NSString stringWithUTF8String: it->second.c_str() ]
           forHTTPHeaderField: [NSString stringWithUTF8String: it->first.c_str()]
         ];
       }
+    }
+    
+    if (!hasContentType && /*strcasecmp(method, "POST") == 0 &&*/ body.length() > 0)
+    {
+      String ct = (pSession !=0)?pSession->getContentType():"application/x-www-form-urlencoded";
+      [m_pReq setValue:[NSString stringWithUTF8String:ct.c_str()] forHTTPHeaderField:@"Content-Type"];
     }
     
     String session;
@@ -402,6 +412,9 @@ public:
     {
       [m_pReq setValue:[NSString stringWithUTF8String:session.c_str()] forHTTPHeaderField:@"Cookie"];
     }
+    
+    [m_pReq setValue:@"" forHTTPHeaderField:@"Expect"];
+    [m_pReq setValue:@"Keep-Alive" forHTTPHeaderField:@"Connection"];
     
     return true;
   }
