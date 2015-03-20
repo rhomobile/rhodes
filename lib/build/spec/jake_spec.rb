@@ -78,4 +78,17 @@ describe 'Unzipping' do
     expect(files[0]).to eq('spec_temp/abc.txt')
     expect(files[1]).to eq('spec_temp/def.txt')
   end
+
+  it 'Unzipping archieve with block handling' do
+    done = 0
+    total = 0
+    message = ''
+    Jake.unzip(Dir.pwd + '/archive.zip', temporary_directory) do |bytes_done, total_bytes, msg|
+      done = bytes_done
+      total = total_bytes
+      message = msg
+    end
+    expect(done).to eq(total)
+    expect(message).to eq('Unpacking files: 100%')
+  end
 end
