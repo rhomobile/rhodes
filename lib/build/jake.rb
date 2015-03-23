@@ -58,6 +58,7 @@ class Hash
   end
 end
 
+# Class with around building things
 class Jake
 
   def self.config(configfile)
@@ -725,10 +726,13 @@ class Jake
     return file_map
   end
 
+  # Unzips archive to specified directory
+  # @param src_zip [String] absolute path to archive
+  # @param dest_dir [String] path to directory when archive will be unzipped. If it not exists it will be created. It could contain nested directories
+  # @param block [block, optional] Block code will be called before each file entry extracting and it's parameters are: file entry size in bytes, archive total size in bytes, string like "Unpacking files: NN%" where NN% - unzipping progress in percents
   def self.unzip(src_zip, dest_dir)
     require 'zip'
 
-    puts dest_dir
     unless File.exist?(dest_dir)
       FileUtils.mkdir_p(dest_dir)
     end
@@ -752,6 +756,10 @@ class Jake
 
   end
 
+  # Zips specified files from directory
+  # @param where [String] absolute path to base directory with files fir zipping
+  # @param what [Array] Array of file path of files to zipping. Each file path is relative for where argument
+  # @param dest [String] File path to created archive. If file already exists it will be removed before archive creation
   def self.zip(where, what, dest)
     require 'zip'
 
