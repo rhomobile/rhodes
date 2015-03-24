@@ -27,7 +27,7 @@ namespace rho {
 			memset(szEncodedString, 0, iLength * 2 + 30);
 
 			// Start with the data header
-			strcpy(szEncodedString, "data:image/bmp;base64,");
+			strcpy(szEncodedString, "data:image/jpeg;base64,");
 
 			// Now append the encoded data itself
 			rho::common::EncodeToBase64(bData, iLength, szEncodedString + strlen (szEncodedString));

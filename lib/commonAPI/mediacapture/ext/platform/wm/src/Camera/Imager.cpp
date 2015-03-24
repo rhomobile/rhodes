@@ -513,8 +513,9 @@ void CImager::SetFlashMode()
 {
   Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_LAMPSTATE, sizeof(BOOL), &m_FlashMode);		
 }
-void CImager::SetResolution()
+bool CImager::SetResolution()
 {
+	return true;
 }
 void CImager::RedrawViewerWnd(RECT& pos)
 {

@@ -358,6 +358,8 @@ void CCamera::createTriggerMonitorThread(LPVOID pparam)
 {
 	if(m_bRcmLoaded)
 	{
+		//if previously registered trigger monitor present, unreg before proceeding further
+		UnregisterTriggerMonitor();
 		// Create event to signal thread to quit
 		m_hTriggerEvents[0] = CreateEvent (NULL, TRUE, FALSE, NULL);
 		// Create auto-reset event which system will signal when trigger occurs
@@ -385,6 +387,16 @@ void CCamera::createTriggerMonitorThread(LPVOID pparam)
 
 	
 }
+void CCamera::UnregisterTriggerMonitor()
+{
+	// Unregister for notifications
+	if(NULL != m_hRegisterTrigger)
+	{
+		m_Rcm.lpfn_RCM_DeregisterTrigger(m_hRegisterTrigger);
+		m_hRegisterTrigger = NULL;
+	}
+	closeTriggerEvents();
+}
 DWORD CCamera::TriggerMonitorProc (LPVOID pparam)
 { 
 	bool bContinue = true;
@@ -398,9 +410,8 @@ DWORD CCamera::TriggerMonitorProc (LPVOID pparam)
 		if (false == CCamera::m_bAppHasFocus)
 			continue;
 
-		// Unregister for notifications
-		m_Rcm.lpfn_RCM_DeregisterTrigger(m_hRegisterTrigger);
-		closeTriggerEvents();
+		UnregisterTriggerMonitor();
+		
 		DWORD dwEventIndex = dwEvent - WAIT_OBJECT_0; 
 		switch(dwEventIndex)
 		{

@@ -58,15 +58,24 @@ void CViewFinder::RepositionWindow(const RECT& pos)
 }
 void CViewFinder::DestroyViewerWindow()
 {   
-    if(m_PreviewWndParent != m_appMainWnd)
-    {
-        DestroyWindow(m_hwndPreview);
-        DestroyWindow(m_PreviewWndParent);
-    }
-    else
-    {
-        DestroyWindow(m_hwndPreview);
-    }
+	if(m_PreviewWndParent != m_appMainWnd)
+	{
+		if(IsWindow(m_hwndPreview))
+		{
+			DestroyWindow(m_hwndPreview);
+		}
+		if(IsWindow(m_PreviewWndParent))
+		{
+			DestroyWindow(m_PreviewWndParent);
+		}
+	}
+	else
+	{
+		if(IsWindow(m_hwndPreview))
+		{
+			DestroyWindow(m_hwndPreview);
+		}
+	}
 	m_PreviewWndParent = NULL;
 	m_hwndPreview = NULL;
 	m_CancelButton = NULL;

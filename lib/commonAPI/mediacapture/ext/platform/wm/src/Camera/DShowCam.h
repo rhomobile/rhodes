@@ -6,19 +6,62 @@
 // DESCRIPTION:	This is a C++ class used for Video and Audio stream property adjustments, 
 //				and for Camera related property settings via making calls to DirectShow Interfaces
 //				and this class wrapes DirectShow.
-/////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// %IF Symbol_Internal
+// AUTHOR: Wajra Attale
+// CREATION DATE: 01/25/2007
+// DERIVED FROM: New File
+//
+// EDIT HISTORY: No PVCS history for this file
+// $Log:   T:/MPA2.0_sandbox/archives/SymbolValueAdd_mpa2/CCL/Camera/DShowCam/test/DShowTestApp/DShowCam.h-arc  $
+//
+//   Rev 1.0   Apr 18 2008 10:17:30   cheung
+//Initial revision.
+//
+//   Rev 1.0   Dec 14 2007 07:20:58   sepalas
+//Initial revision.
+//
+//%End
+//--------------------------------------------------------------------------------------------------
+//
+
+#ifndef HEADERFILE_DSC_
+#define HEADERFILE_DSC_
 
 #pragma once
-
+#pragma warning (push, 3)
 #include "logging/RhoLog.h"
+#include <string>
 #include "dshow.h"
-#include "Dmodshow.h"
-#include "dmoreg.h"
+#include <Dmodshow.h>
+#include <dmoreg.h>
+
+#include "wmcodecids.h"
+#include "cs.h"
+#include "csmedia.h"
+#include "evcode.h"
+#include <iostream>
 #include <atlbase.h>
+
+//#include "../../common/public/PBPlugin.h"
+#pragma warning (pop)
+#pragma warning (push, 4)
 
 using namespace std;
 
-
+//define this to get debug logs out of camera plugin
+#ifdef LOG_TO_FILE
+#define DEBUGIT(__file, __str, ...) { \
+	SYSTEMTIME __st;              \
+    GetSystemTime(&__st);	      \
+	fprintf(__file, "%d:%d:%d-%d:%d:%d.%d " ## __FUNCTION__ ## "():%d -- " ## __str ## "\n", \
+			__st.wYear,__st.wMonth,__st.wDay,__st.wHour,__st.wMinute,          \
+			__st.wSecond, __st.wMilliseconds, __LINE__, ##__VA_ARGS__);                         \
+	fflush(__file); \
+}
+#else
+#define DEBUGIT(__file, __str, ...)
+#endif //LOG_TO_FILE
 
 
 const VideoProcAmpProperty IProp[] = {VideoProcAmp_Brightness,			//Index 0
@@ -138,51 +181,98 @@ typedef struct tagCamCapability
 	LONGLONG qwMaxFrameRate;
 }CamCapability;
 
-class CDShowCam
+typedef class CDShowCam
 {
 public:
-
 	CDShowCam();
-	~CDShowCam();
+	~CDShowCam(void);
+
+	//-----------------------------
+	BOOL FindFirstCam(wstring* pwsCamID);
+	BOOL FindNextCam(wstring* pwsCamID);
+	HRESULT InitFilterGrp();
+	BOOL BuildFilterGrp(CamConfig* ptCamcfg);
+	BOOL Setup_Preview(CamConfig* ptCamcfg);
+	BOOL ReBuildGrp();
+	BOOL RunGrp();
+	BOOL StopGrp();
+	BOOL PauseGrp();
+	BOOL ReleaseGrp();
+	BOOL ResizePreview(DWORD dwWidth, DWORD dwHeight);
+	HRESULT Get_PropRng(PropType ePType, HANDLE hPropTbl);
+	HRESULT Get_PropVal(PropType ePType, HANDLE hPropTbl);
+	HRESULT Set_PropVal(PropType ePType, HANDLE hPropTbl);
+	HRESULT CaptureStill();
+	HRESULT CaptureStill(wstring wsSFName);
+	HRESULT Set_VdoFileName(wstring wsVFName);
+	HRESULT StartCapture();
+	HRESULT StopCapture();
+	HRESULT Set_Flip(BOOL bIsHori);	
+	HRESULT EnumFirstCap(PinType ePType, ImgFmt* ptIFmt, INT* pnNoOfCap);
+	HRESULT EnumOtherCap(PinType ePType, ImgFmt* ptIFmt, INT nNoOfCap);
+	HRESULT Set_Resolution(ImageRes* ptRes, PinType ePType);
+	HRESULT Set_ColorFmt(ImageRes* ptRes, wstring* pwsClrFmt, PinType ePType);
+	HRESULT Set_FrameRate(LONGLONG qwFrmRate, PinType ePType);
+	HRESULT Set_CaptureSound(LPWSTR szSoundFile);
+	BOOL HandlesCaptureSound();	
+	void Get_Resolution(rho::Vector<ImageRes>& supportedRes, PinType ePType);
+	BOOL initFilterGraph(wstring szDeviceName);
+
+	BOOL Get_LastError(LONG* plErrno);
+	BOOL Cleanup();
+	//----------------------------
 
 private:
-	// Declare pointers to DirectShow interfaces
+
+	HRESULT SetupStill();
+	HRESULT SetupPreview(HWND OwnerWnd, RECT rc);
+	HRESULT Cus_GetRange(CameraCustomProperty eProp, LONG* plMin, LONG* plMax, LONG* plDelta, LONG* plDef);
+	HRESULT Cus_Get(CameraCustomProperty eProp, LONG* plVal);
+	HRESULT Cus_Set(CameraCustomProperty eProp, LONG plVal);
+	HRESULT SetupFlip();
+
+	DWORD GunGet(DWORD* value);
+	DWORD GunSet(DWORD value);
+	
+
+private:
+	//-------------
+	LONG m_lErrno;
+	CamConfig m_tCamcfg;
+	IGraphBuilder* m_pGraphBuilder;
+	ICaptureGraphBuilder2* m_pCaptureGraphBuilder;
+	IMediaControl* m_pMediaControl;
+	IVideoWindow* m_pViewWindow;
+	IMediaEventEx* m_pMediaEventEx;
+	IMediaSeeking* m_pMediaSeeking;
+	IBaseFilter* m_pVideoCaptureFilter;
+	IBaseFilter* m_pAudioCaptureFilter;
+	IAMVideoProcAmp* m_pImgCtrl;
+	IAMCameraControl* m_pCamCtrl;
+	IAMStreamConfig* m_pStrConf;
+	IBaseFilter* m_pMux;
+	IFileSinkFilter* m_pSink;
+	IBaseFilter* m_pVideoEncoder;
+	IDMOWrapperFilter* m_pVideoWrapperFilter;
+	IBaseFilter* m_pStillSink;
+	IAMVideoControl* m_pVideoCtrl;
+	IPin* m_pPrvPin;
+	wstring m_wsVFName;
+	IBaseFilter* m_pVideoRenderer;
+	INT m_nFileAutoCnt;
+	//CamCapability* m_ptCamCap[3];
+	boolean m_bCaptureSoundRegKeyExists;
+	CRITICAL_SECTION m_DSCamCriticalSection;
+	//-------------
 	CComPtr<ICaptureGraphBuilder2>  pCaptureGraphBuilder;
-	CComPtr<IBaseFilter>            pVideoCap;
-	CComPtr<IDMOWrapperFilter>      pVideoWrapperFilter;
-	CComPtr<IPersistPropertyBag>    pPropertyBag;
 	CComPtr<IGraphBuilder>          pGraph;
 	CComPtr<IMediaControl>          pMediaControl;
 	CComPtr<IMediaEvent>            pMediaEvent;
 	CComPtr<IMediaSeeking>          pMediaSeeking;
-	CComPtr<IVideoWindow>           pVideoWindow;
-	CComPtr<IBaseFilter>            pStillSink;
-	CComPtr<IBaseFilter>            pVideoRender;
-	CComPtr<IBaseFilter>            pVideoEncoder;
-	CComPtr<IBaseFilter>            m_pMux;
-	CComPtr<IFileSinkFilter>        pFileSink;
-	CComPtr<IAMStreamConfig>        m_pStrConf;
-
-
-private:
+	CComPtr<IBaseFilter>            pVideoCap;
+	CComPtr<IPersistPropertyBag>    pPropertyBag;
+	CComPtr<IAMStreamConfig>        pStrConf;
 	
-	BOOL SetupStill();
-
-
-public:
-	BOOL initCaptureDevice(wstring szDeviceName);
-	BOOL initFilterGraph();
-	BOOL BuildFilterGraph(CamConfig& ptCamcfg);
-	BOOL SetupPreview(HWND hViewerWnd, RECT& pos);
-	HRESULT Get_PropRng(HANDLE hPropTbl);
-	HRESULT Get_PropVal(HANDLE hPropTbl);
-	HRESULT Set_PropVal(HANDLE hPropTbl);
-	HRESULT Set_Resolution(ImageRes* ptRes, PinType ePType);
-	void Get_Resolution(rho::Vector<ImageRes>& supportedRes, PinType ePType);
-	BOOL StopGrp();
-	BOOL RunGrp();
-	BOOL ResizePreview(DWORD dwWidth, DWORD dwHeight);
-	HRESULT CaptureStill(wstring wsSFName);
 	
-};
-
+}VIDEOPROPERTY, *PVIDEOPROPERTY;
+#endif //HEADERFILE_DSC_;

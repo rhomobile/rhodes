@@ -17,8 +17,7 @@ public:
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
 protected:
 	void SetFlashMode();
-	void SetResolution();
-	void setCameraProperties();
+	bool SetResolution();
 	virtual void RedrawViewerWnd(RECT& pos);
 	void ResetResolution();
 	rho::Vector<ImageRes> supportedResln;
