@@ -86,19 +86,19 @@ void CDirectShowCam::takeFullScreen()
 		{
 			RECT pos;						
 			HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eFullScreen);
-			if(-1 != InitDirectShow(hWndViewer,  pos ))
-			{
-				m_PreviewOn = true;
-				m_IsCameraRunning = true;
-				setCameraProperties();
-				//createTriggerMonitorThread(this);
-			}
-			else
-			{
-				LOG(ERROR)+ L"InitDshow failed";
-				m_ViewFinder.DestroyViewerWindow();
-				CloseDShow();
-			}
+			//if(-1 != InitDirectShow(hWndViewer,  pos ))
+			//{
+			//	m_PreviewOn = true;
+			//	m_IsCameraRunning = true;
+			//	setCameraProperties();
+			//	//createTriggerMonitorThread(this);
+			//}
+			//else
+			//{
+			//	LOG(ERROR)+ L"InitDshow failed";
+			//	m_ViewFinder.DestroyViewerWindow();
+			//	CloseDShow();
+			//}
 		}
 	}
 }
@@ -121,17 +121,17 @@ BOOL CDirectShowCam::showPreview()
 			//renderer window always wants to fit into viewer wnd client area
 			pos.left=0;
 			pos.top=0;						
-			if(-1 != InitDirectShow(hWndViewer, pos ))
-			{
-				m_PreviewOn = true;
-				m_IsCameraRunning = true;
-				setCameraProperties();
-			}
-			else
-			{
-				m_ViewFinder.DestroyViewerWindow();
-				CloseDShow();
-			}
+			//if(-1 != InitDirectShow(hWndViewer, pos ))
+			//{
+			//	m_PreviewOn = true;
+			//	m_IsCameraRunning = true;
+			//	setCameraProperties();
+			//}
+			//else
+			//{
+			//	m_ViewFinder.DestroyViewerWindow();
+			//	CloseDShow();
+			//}
 
 
 
@@ -148,8 +148,8 @@ BOOL CDirectShowCam::hidePreview()
 	if (m_PreviewOn)
 	{
 		m_ViewFinder.DestroyViewerWindow();
-		Stop();
-		CloseDShow();	
+		//Stop();
+		//CloseDShow();	
 		m_PreviewOn = false;
 		m_IsCameraRunning = false;
 		bRetStatus = TRUE;
@@ -173,7 +173,7 @@ void CDirectShowCam::Capture()
 
 
 			rho::StringW fileName = getFileName();
-			hr= CaptureStill(fileName.c_str(), false);
+			//hr= CaptureStill(fileName.c_str(), false);
 			if(SUCCEEDED(hr))
 			{
 				rho::String imageUri;
@@ -303,7 +303,7 @@ void CDirectShowCam::SetFlashMode()
 	{
 		FlashSetting setting;
 		setting = m_FlashMode? FlashSetting::On : FlashSetting::Off;
-		SetFlash(setting);
+		//SetFlash(setting);
 	}
 }
 
@@ -311,7 +311,7 @@ void CDirectShowCam::setCameraProperties()
 {
 	if(m_PreviewOn)
 	{
-		SetFlashMode();
+		//SetFlashMode();
 		SetResolution();
 	}
 	
@@ -321,7 +321,7 @@ void CDirectShowCam::RedrawViewerWnd(RECT& pos)
 	if(m_PreviewOn)
 	{
 		CCamera::RedrawViewerWnd(pos);
-		ResizePreview(pos.right, pos.bottom);	
+		//ResizePreview(pos.right, pos.bottom);	
 	}
 }
 void CDirectShowCam::SetResolution()
@@ -332,13 +332,13 @@ void CDirectShowCam::SetResolution()
 		if (!(m_DesiredHeight == -1 && m_DesiredWidth == -1))
 		{
 			CameraSetting setting = GetNearestResolution();
-			SetCameraResolution(setting);
+			//SetCameraResolution(setting);
 		}
 	}
 }
 void CDirectShowCam::getCameraHWDetails()
 {  
-	GetResolution(supportedResln, m_szDeviceName, S);
+	//GetResolution(supportedResln, m_szDeviceName, S);
 }
 CameraSetting CDirectShowCam::GetNearestResolution()
 {

@@ -169,7 +169,7 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 			}
 
 		}
-		SetFlashMode();
+		//SetFlashMode();
 		
 	}
 	else if(cmp(szPropertyName, L"captureSound"))

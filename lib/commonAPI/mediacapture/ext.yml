@@ -24,3 +24,8 @@ project_paths:
 xml_api_paths: ext/camera.xml, ext/videocapture.xml
 
 platforms: ["wm", "iphone", "android", "wp8"]
+
+wm:
+  files:
+    common: ext\platform\wm\bin
+

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Mediacapture"
 	ProjectGUID="{421EB7D1-64C3-0130-423A-00FFE028F606}"
 	RootNamespace="Mediacapture"
@@ -525,9 +525,8 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.00"
-				AdditionalDependencies="DShowCamModule.lib"
 				OutputFile="$(OutDir)/Mediacapture.lib"
-				AdditionalLibraryDirectories="&quot;C:\rholatest\rhodes\lib\commonAPI\mediacapture\ext\platform\wm\DirectShow\DShowCamModule\DShowCamModule\Windows Mobile 6 Professional SDK (ARMV4I)\Release&quot;"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
