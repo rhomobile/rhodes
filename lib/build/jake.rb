@@ -58,6 +58,7 @@ class Hash
   end
 end
 
+# Class with around building things
 class Jake
 
   def self.config(configfile)
@@ -725,162 +726,50 @@ class Jake
     return file_map
   end
 
-  def self.list_zip_files(source_zip)
-    have_zip = false
-    begin
-      require 'zip'
+  # Unzips archive to specified directory
+  # @param src_zip [String] absolute path to archive
+  # @param dest_dir [String] path to directory when archive will be unzipped. If it not exists it will be created. It could contain nested directories
+  # @param block [block, optional] Block code will be called before each file entry extracting and it's parameters are: file entry size in bytes, archive total size in bytes, string like "Unpacking files: NN%" where NN% - unzipping progress in percents
+  def self.unzip(src_zip, dest_dir)
+    require 'zip'
 
-      have_zip = true
-    rescue Exception => e
-      have_zip = false
+    unless File.exist?(dest_dir)
+      FileUtils.mkdir_p(dest_dir)
     end
 
-    files = {}
+    Zip::File.open(src_zip) do |zip_file|
 
-    total_files = 0
-    total_size = 0
-    lines = 0
+      unzipped_bytes = 0
+      total_bytes = zip_file.inject(0) { |result, each| result  + each.size }
 
-    if !have_zip
-      res = run2("unzip", ['-l', source_zip], {:hide_output => true}) do |line|
-        lines = 0
+      zip_file.each do |entry|
 
-        r1 = /([\d]+)\s+(\d\d-\d\d-\d[\d]+)\s+(\d\d:\d\d)\s+([^\s]+)/.match(line)
-        if !r1.nil?
-          files[r1[4]]=r1[1].to_i
-        else
-          m = /([\d]+)\s+([\d]+)(?:.*?)files/.match(line)
-          if m.nil?
-            total_files = lines - 3
-          else
-            total_files = m[2]
-            total_size = m[1]
-          end
+        if block_given? and entry.size != 0
+          unzipped_bytes = unzipped_bytes + entry.size
+          yield(unzipped_bytes, total_bytes, "Unpacking files: #{(unzipped_bytes * 100) / total_bytes}%")
         end
 
-        true
-      end
+        entry.extract(File.join(dest_dir, entry.name))
 
-      if $? != 0
-        puts res
-        exit
-      end
-    else
-      Zip::File.open(source_zip) { |zip_file|
-        zip_file.each_with_index { |f, index|
-          files[f.name] = f.size
-        }
-      }
-    end
-
-    if !files.empty?
-      total_files = 0
-      total_size = 0
-      files.each do |name,size|
-        total_files += 1
-        total_size += size
       end
     end
 
-    return files, total_files, total_size
   end
 
-  def self.unzip(source_zip, dest_folder)
-    have_zip = false
-    begin
-      require 'zip'
+  # Zips specified files from directory
+  # @param where [String] absolute path to base directory with files fir zipping
+  # @param what [Array] Array of file path of files to zipping. Each file path is relative for where argument
+  # @param dest [String] File path to created archive. If file already exists it will be removed before archive creation
+  def self.zip(where, what, dest)
+    require 'zip'
 
-      have_zip = true
-    rescue Exception => e
-      have_zip = false
+    if File.exist?(dest)
+      FileUtils.rm(dest);
     end
 
-    if have_zip || RUBY_PLATFORM =~ /(win|w)32$/
-      begin
-        require 'rubygems'
-        require 'zip'
-        require 'find'
-        require 'fileutils'
-        include FileUtils
-
-        Zip::File.open(source_zip) { |zip_file|
-          last_path = ""
-          acc_size = 0
-          total_size = zip_file.inject(0) { |acc, inp| acc + inp.size }
-          total_files = zip_file.size
-
-          zip_file.each_with_index { |f, index|
-            if block_given?
-              yield(acc_size, total_size, "Unpacking files: #{(acc_size*100)/total_size}%")
-            end
-            acc_size += f.size
-            f_path=File.join(dest_folder, f.name)
-            d_path=File.dirname(f_path)
-            if last_path != d_path && !File.exists?(d_path)
-              FileUtils.mkdir_p(d_path)
-              last_path = d_path
-            end
-            zip_file.extract(f, f_path)
-          }
-
-          if block_given?
-            yield(acc_size, total_size, "Unpacking files: #{(acc_size*100)/total_size}%")
-          end
-        }
-      rescue Exception => e
-        puts "ERROR : #{e}"
-        puts 'Require "rubyzip" gem for make zip file !'
-        puts 'Install gem by "gem install rubyzip"'
-        raise
-      end
-    else
-      files, total_files, total_size = list_zip_files(source_zip)
-
-      last = 0
-      num_files = 0
-      acc_size = 0
-      progress = 0
-
-      res = run2("unzip", [source_zip, '-d', dest_folder], {:hide_output => true, :directory => dest_folder}) do |line|
-        if line =~ /Archive:/
-          #do nothing
-        else
-          m = /\s+(.*?):\s+(.*?)\s+/.match(line)
-          if !m.nil?
-            fname = m[2].gsub(dest_folder+'/','')
-            size = files[fname]
-            if size != nil
-              last = size
-            end
-          end
-        end
-
-        if total_size != 0
-          acc_size += last
-          last = 0
-          progress = acc_size * 100 / total_size
-        else
-          progress = num_files * 100 / total_files
-        end
-
-        if block_given?
-          yield(progress, 100, "Unpacking files: #{progress}%")
-        end
-
-        num_files += 1
-
-        true
-      end
-
-      if total_size != 0
-        acc_size += last
-        progress = acc_size * 100 / total_size
-      else
-        progress = files * 100 / total_files
-      end
-
-      if block_given?
-        yield(progress, 100, "Unpacking files: #{progress}%")
+    Zip::File.open(dest, Zip::File::CREATE) do |zipfile|
+      what.each do |filename|
+        zipfile.add(filename, File.join(where, filename))
       end
     end
   end

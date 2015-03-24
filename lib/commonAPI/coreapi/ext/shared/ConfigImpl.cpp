@@ -7,11 +7,19 @@
 #include "generated/cpp/ConfigBase.h"
 #include "logging/RhoLog.h"
 
+#include <algorithm>
+#include <functional>
+
 namespace rho {
     
     using namespace apiGenerator;
     using namespace common;
     
+	Hashtable<String, Vector<String>>::value_type convertHashPtrToHash(HashtablePtr<String, Vector<String>*>::value_type old)
+	{
+		return std::make_pair(old.first, *old.second);
+	}
+
     class CConfigSingletonImpl: public CConfigSingletonBase
     {
     public:
@@ -72,11 +80,18 @@ namespace rho {
 		{
 			RHOCONF().loadFromFile();
         } 
-
+/*
         virtual void getConflicts(rho::apiGenerator::CMethodResult& oResult) 
 		{
-			//oResult.set(RHOCONF().getConflicts());
+			rho::HashtablePtr<String, Vector<String>* > conflictsHashPtr = RHOCONF().getConflicts();
+			rho::Hashtable<String, rho::Vector<String>> conflictsHash;
+
+			std::transform(conflictsHashPtr.begin(), conflictsHashPtr.end(),
+				std::inserter(conflictsHash, conflictsHash.begin()), &convertHashPtrToHash);
+
+			oResult.set(conflictsHash);
         } 
+*/
     };
     
     class CConfigImpl : public CConfigBase

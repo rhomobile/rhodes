@@ -622,7 +622,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     <PARAM name="enable" type="BOOLEAN"/>
                 </PARAMS>
             </METHOD>
-            <METHOD name="startTimer" deprecated="true">
+            <METHOD name="startTimer" deprecated="true" productException="eb">
                 <DESC>Start timer. (It's works only with Ruby)</DESC>
                 <PARAMS>
                     <PARAM name="interval" type="INTEGER">
@@ -637,7 +637,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAM>
                 </PARAMS>
             </METHOD>
-            <METHOD name="stopTimer" deprecated="true">
+            <METHOD name="stopTimer" deprecated="true" productException="eb">
                 <DESC>Stop timer. (It's works only with Ruby)</DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">

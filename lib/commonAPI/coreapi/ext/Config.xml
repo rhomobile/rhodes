@@ -114,12 +114,7 @@
             <METHOD name="loadFromFile" access="STATIC">
                 <DESC>Load config from default file.</DESC>
             </METHOD>             
-
-            <METHOD name="getConflicts" access="STATIC">
-                <RETURN type="HASH"/>
-                <DESC>Get hash of confilict lines</DESC>
-            </METHOD>
-
+                          
         </METHODS>
 
         <USER_OVERVIEW>

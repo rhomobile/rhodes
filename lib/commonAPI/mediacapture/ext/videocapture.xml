@@ -138,17 +138,14 @@ The ebapi.js file is necessary for all single API inclusions.
 
         <REMARKS>
             <REMARK title="Memory requirements">
-                <DESC><![CDATA[
-Once duration has been reached the video file will be saved or transferred. Calling 'stop' once this has occurred will have no effect. A Video Capture will fail if there is not sufficient space on the device's filesystem to store it.
-]]>
-                </DESC>
+                <DESC>Once duration has been reached the video file will be saved or transferred. Calling 'stop' once this has occurred will have no effect. A Video Capture will fail if there is not sufficient space on the device's filesystem to store it.</DESC>
             </REMARK>
 
             <REMARK title="File Formats">
-                <DESC><![CDATA[
-The output file format on Android is MP4 and on Windows is WMV.
-]]>
-                </DESC>
+                <DESC>The output file format on Android is MP4 and on Windows is WMV.</DESC>
+            </REMARK>
+            <REMARK title="SDCard Access">
+                <DESC>Extensions which came from RhoElements (i.e. AudioCapture) that could possibly write files to external storage will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
             </REMARK>
         </REMARKS>
 
