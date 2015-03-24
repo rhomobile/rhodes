@@ -26,6 +26,7 @@ protected:
 private:
 	//CDShowCam* m_pDSCam;
 	void getCameraHWDetails();
+	CameraSetting GetNearestResolution();
 
 };
 #endif

@@ -71,13 +71,7 @@ typedef enum tagCameraCustomProperty
 	CUS_PROPERTY_TEST
 }CameraCustomProperty;
 
-typedef enum tagCameraSetting
-{
-	High = 0,	
-	Medium,
-	Low,
-	MidHigh
-}CameraSetting;
+
 
 
 
@@ -274,8 +268,7 @@ void WorkerThread();
 
 extern "C"
 {
-	DSHOWCAM_API int InitDShow(int hWnd, wchar_t* CamId, RECT& rc);	
-	DSHOWCAM_API int Stop();
+	DSHOWCAM_API int InitDShow(int hWnd, wchar_t* CamId, RECT& rc);		
 	DSHOWCAM_API int Run();
 	DSHOWCAM_API int Pause();
 	DSHOWCAM_API int SetBrightness(CameraSetting setting);	

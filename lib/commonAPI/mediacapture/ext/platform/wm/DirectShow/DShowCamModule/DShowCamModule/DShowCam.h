@@ -22,15 +22,23 @@ typedef struct tagImageRes
 {
 	INT nWidth;
 	INT nHeight;
-}ImageRes;	 
+}ImageRes;	
+typedef enum tagCameraSetting
+{
+	Low = 0,	
+	Medium,	
+	MidHigh,
+	High
+}CameraSetting;
 
 extern "C"
 {
 	DSHOWCAM_API int InitDirectShow(HWND hwnd, RECT rc);
 	DSHOWCAM_API void CloseDShow();
 	DSHOWCAM_API int SetFlash(FlashSetting setting);
-	DSHOWCAM_API int SetCameraResolution(int height, int width);
+	DSHOWCAM_API int SetCameraResolution(CameraSetting setting);
 	DSHOWCAM_API int CaptureStill(const wchar_t* filename, bool isES400);
 	DSHOWCAM_API BOOL ResizePreview(int width, int height);
 	DSHOWCAM_API void GetResolution(std::vector<ImageRes>& supportedRes, wchar_t* camId, PinType ePType);
+	DSHOWCAM_API int Stop();
 }

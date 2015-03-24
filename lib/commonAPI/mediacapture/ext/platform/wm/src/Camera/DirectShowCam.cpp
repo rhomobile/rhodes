@@ -91,7 +91,7 @@ void CDirectShowCam::takeFullScreen()
 				m_PreviewOn = true;
 				m_IsCameraRunning = true;
 				setCameraProperties();
-				createTriggerMonitorThread(this);
+				//createTriggerMonitorThread(this);
 			}
 			else
 			{
@@ -148,7 +148,8 @@ BOOL CDirectShowCam::hidePreview()
 	if (m_PreviewOn)
 	{
 		m_ViewFinder.DestroyViewerWindow();
-		CloseDShow();
+		Stop();
+		CloseDShow();	
 		m_PreviewOn = false;
 		m_IsCameraRunning = false;
 		bRetStatus = TRUE;
@@ -215,8 +216,8 @@ void CDirectShowCam::Capture()
 						CloseHandle(hFile);
 						if(fileReadSuccess)
 						{								
-							rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
-							rho::common::GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
+							//rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
+							//rho::common::GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
 							delete[] pImageBuffer;
 							pImageBuffer = NULL;
 							//update callback
@@ -238,7 +239,7 @@ void CDirectShowCam::Capture()
 				}
 				else
 				{
-					rho::common::GetJpegResolution( fileName.c_str(), nImageWidth, nImageHeight);
+					//rho::common::GetJpegResolution( fileName.c_str(), nImageWidth, nImageHeight);
 					imageUri = rho::common::convertToStringA(fileName).c_str();
 					//update callback
 					UpdateCallbackStatus("ok","",imageUri, nImageWidth, nImageHeight );
@@ -330,11 +331,35 @@ void CDirectShowCam::SetResolution()
 		//  Set the resolution of the saved image
 		if (!(m_DesiredHeight == -1 && m_DesiredWidth == -1))
 		{
-			SetCameraResolution(m_DesiredHeight, m_DesiredWidth);
+			CameraSetting setting = GetNearestResolution();
+			SetCameraResolution(setting);
 		}
 	}
 }
 void CDirectShowCam::getCameraHWDetails()
 {  
 	GetResolution(supportedResln, m_szDeviceName, S);
+}
+CameraSetting CDirectShowCam::GetNearestResolution()
+{
+	ImageRes res;
+	CameraSetting setting = Low;
+	int index =0;
+	for(index=0; index < supportedResln.size(); index++)
+	{		
+		res = supportedResln[index];
+		if(m_DesiredHeight <= res.nHeight)
+		{
+			setting = (CameraSetting)index;
+			break;
+		}
+				
+
+	}
+	if(index==supportedResln.size())
+	{
+		setting = (CameraSetting)(index-1);
+	}
+	return setting;
+
 }

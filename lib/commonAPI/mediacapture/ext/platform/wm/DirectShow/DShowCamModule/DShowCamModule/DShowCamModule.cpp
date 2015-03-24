@@ -24,10 +24,10 @@
 const GUID CLSID_COLOR_CONVERTER = {0xb0a377b8, 0x4eb8, 0x49ce, { 0xb0, 0xf4, 0xf6, 0x21, 0x3f, 0x70, 0xbe, 0x67 } };
 //--------------- MPA3 ----------------------
 
-const int LOW		= 320*240;
+const int LOW		= 352*288;
 const int MEDIUM	= 640*480;
-const int MIDHIGH	= 3264*2448;
-const int HIGH		= 3264*2448;//1280*1024;
+const int MIDHIGH	= 800*600;
+const int HIGH		= 1280*1024;
 
 //global variables
 CDShowCamModule		*g_Prop				= NULL;			// global instance pointer.
@@ -854,7 +854,7 @@ DSHOWCAM_API BOOL ResizePreview(int width, int height)
 // 
 // Notes:
 //------------------------------------------------------------------
-DSHOWCAM_API int SetCameraResolution(int height, int width)
+DSHOWCAM_API int SetCameraResolution(CameraSetting setting)
 {
 	int iError = -1;
 	int index = 0;
@@ -863,10 +863,8 @@ DSHOWCAM_API int SetCameraResolution(int height, int width)
 	{
 		return -1;
 	}
-	//height = 2448;
-	//	width = 3264;
 
-
+	g_Prop->m_tImgRes = setting;
 	//switch(setting)	
 	//{
 	//case High:
@@ -889,19 +887,26 @@ DSHOWCAM_API int SetCameraResolution(int height, int width)
 	*/
 	if(g_Prop->m_tStillImgFmtArray != NULL)
 	{
-
-
-		int i = 0;
-		for(i=0; i < g_Prop->m_nStillResCnt; i++)
+		DWORD *pArea = new DWORD[g_Prop->m_nStillResCnt];
+		if(NULL != pArea)
 		{
-			if( height <= abs( g_Prop->m_tStillImgFmtArray[i].nMaxHeight) && 
-				width <= abs(g_Prop->m_tStillImgFmtArray[i].nMaxWidth))				
-			{					
-				break;
+			int i = 0;
+			for(i=0; i < g_Prop->m_nStillResCnt; i++)
+			{
+				pArea[i] = abs(g_Prop->m_tStillImgFmtArray[i].nMaxWidth * g_Prop->m_tStillImgFmtArray[i].nMaxHeight);
+				if((setting == Low) && (pArea[i] >= LOW)){					
+					break;
+				}else if((setting == Medium) && (pArea[i] >= MEDIUM)){
+					break;
+				}else if((setting == MidHigh) && (pArea[i] >= MIDHIGH)){
+					break;
+				}else if((setting == High) && (pArea[i] >= HIGH)){
+					break;
+				}
 			}
-
+			index = i;
+			delete [] pArea;
 		}
-		index = i;
 
 		ImageRes imgRes;
 		imgRes.nWidth = g_Prop->m_tStillImgFmtArray[index].nMaxWidth;
@@ -914,73 +919,6 @@ DSHOWCAM_API int SetCameraResolution(int height, int width)
 
 	return iError;
 }
-
-
-//DSHOWCAM_API int SetCameraResolution(int height, int width)
-//{
-// int iError = -1;
-//	int index = 0;
-//
-//	if(g_Prop == NULL)
-//	{
-//		return -1;
-//	}
-//    CameraSetting setting = MidHigh;
-//	g_Prop->m_tImgRes = setting;
-//	//switch(setting)	
-//	//{
-//	//case High:
-//	//	index = g_Prop->m_nStillResCnt - 1 - 1;
-//	//	break;
-//	//case Medium:
-//	//	index = g_Prop->m_nStillResCnt / 2;
-//	//	break;
-//	//case Low:
-//	//	index = 0;
-//	//	break;
-//	//case MidHigh:
-//	//	index = g_Prop->m_nStillResCnt - 1 - 2;
-//	//	break;
-//	//}
-//
-//	/*
-//	* To avoid the out of memory error which comes to highest Megapixel rate (8MPX in MC67)
-//	* Followng resolutions were decided as base values for each resolution.
-//	*/
-//	if(g_Prop->m_tStillImgFmtArray != NULL)
-//	{
-//		DWORD *pArea = new DWORD[g_Prop->m_nStillResCnt];
-//		if(NULL != pArea)
-//		{
-//			int i = 0;
-//			for(i=0; i < g_Prop->m_nStillResCnt; i++)
-//			{
-//				pArea[i] = abs(g_Prop->m_tStillImgFmtArray[i].nMaxWidth * g_Prop->m_tStillImgFmtArray[i].nMaxHeight);
-//				if((setting == Low) && (pArea[i] >= LOW)){					
-//					break;
-//				}else if((setting == Medium) && (pArea[i] >= MEDIUM)){
-//					break;
-//				}else if((setting == MidHigh) && (pArea[i] >= MIDHIGH)){
-//					break;
-//				}else if((setting == High) && (pArea[i] >= HIGH)){
-//					break;
-//				}
-//			}
-//			index = i;
-//			delete [] pArea;
-//		}
-//
-//		ImageRes imgRes;
-//		imgRes.nWidth = g_Prop->m_tStillImgFmtArray[index].nMaxWidth;
-//		imgRes.nHeight = g_Prop->m_tStillImgFmtArray[index].nMaxHeight;
-//		if(SUCCEEDED(g_Prop->Set_Resolution(&imgRes, S, TRUE)))
-//		{
-//			iError = ERROR_SUCCESS;
-//		}
-//	}
-//
-//	return iError;
-//}
 //------------------------------------------------------------------
 //
 // Prototype:	int xxx(XXX xxx)
@@ -5235,132 +5173,147 @@ void CDShowCamModule::RegistryNotifyCallbackFuncIAC(HREGNOTIFY hNotify, DWORD dw
 
 DSHOWCAM_API void GetResolution(std::vector<ImageRes>& supportedRes, wchar_t* camId, PinType ePType)
 {
-	HRESULT hr;
-	CComPtr<ICaptureGraphBuilder2>  pCaptureGraphBuilder;
-	CComPtr<IBaseFilter>            pVideoCap;
-	CComPtr<IDMOWrapperFilter>      pVideoWrapperFilter;
-	CComPtr<IPersistPropertyBag>    pPropertyBag;
-	CComPtr<IGraphBuilder>          pGraph;
-	CComPtr<IMediaControl>          pMediaControl;
-	CComPtr<IMediaEvent>            pMediaEvent;
-	CComPtr<IMediaSeeking>          pMediaSeeking;
-	CComPtr<IVideoWindow>           pVideoWindow;
-	CComPtr<IBaseFilter>            pStillSink;
-	CComPtr<IBaseFilter>            pVideoRender;
-	CComPtr<IBaseFilter>            pVideoEncoder;
-	CComPtr<IBaseFilter>            pMux;
-	CComPtr<IFileSinkFilter>        pFileSink;
-	CComPtr<IAMStreamConfig>        pStrConf;
-
- 
 
 
-	hr = pCaptureGraphBuilder.CoCreateInstance( CLSID_CaptureGraphBuilder );
-	if(SUCCEEDED(hr))
-	{
-		hr = pGraph.CoCreateInstance( CLSID_FilterGraph );
-		if(SUCCEEDED(hr))
-		{
-			hr = pCaptureGraphBuilder->SetFiltergraph( pGraph );
-			if(SUCCEEDED(hr))
-			{
-				// Query all the interfaces needed later
-				hr = pGraph.QueryInterface( &pMediaControl );
-				if(SUCCEEDED(hr))
-				{
-					hr = pGraph.QueryInterface( &pMediaEvent );
-					if(SUCCEEDED(hr))
-					{
-						pGraph.QueryInterface( &pMediaSeeking );
-						if(SUCCEEDED(hr))
-						{
-							CComVariant varCamName;
-							VariantInit(&varCamName);
-							varCamName = camId;
-							
-							// Initialize the video capture filter
-							hr = pVideoCap.CoCreateInstance( CLSID_VideoCapture );	
-							if(SUCCEEDED(hr))
-							{
-								hr = pVideoCap.QueryInterface( &pPropertyBag );
-								if(SUCCEEDED(hr))
-								{
-									CPropertyBag  PropBag;
-									hr = PropBag.Write( L"VCapName", &varCamName );   
-									if(SUCCEEDED(hr))
-									{				
-										hr = pPropertyBag->Load( &PropBag, NULL );
-										if(SUCCEEDED(hr))
-										{
-											pPropertyBag.Release();
-											hr = pGraph->AddFilter( pVideoCap, L"Video capture source" );
-											if(SUCCEEDED(hr))
-											{
-												GUID pType;
+	ImageRes res;
+	res.nWidth = 352;
+	res.nHeight = 288;
+	supportedRes.push_back(res);
+	res.nWidth = 640;
+	res.nHeight = 480;
+	supportedRes.push_back(res);
+	res.nWidth = 800;
+	res.nHeight = 600;
+	supportedRes.push_back(res);
+	//res.nWidth = 1280;
+	//res.nHeight = 1024;
+	//supportedRes.push_back(res);
+	//HRESULT hr;
+	//CComPtr<ICaptureGraphBuilder2>  pCaptureGraphBuilder;
+	//CComPtr<IBaseFilter>            pVideoCap;
+	//CComPtr<IDMOWrapperFilter>      pVideoWrapperFilter;
+	//CComPtr<IPersistPropertyBag>    pPropertyBag;
+	//CComPtr<IGraphBuilder>          pGraph;
+	//CComPtr<IMediaControl>          pMediaControl;
+	//CComPtr<IMediaEvent>            pMediaEvent;
+	//CComPtr<IMediaSeeking>          pMediaSeeking;
+	//CComPtr<IVideoWindow>           pVideoWindow;
+	//CComPtr<IBaseFilter>            pStillSink;
+	//CComPtr<IBaseFilter>            pVideoRender;
+	//CComPtr<IBaseFilter>            pVideoEncoder;
+	//CComPtr<IBaseFilter>            pMux;
+	//CComPtr<IFileSinkFilter>        pFileSink;
+	//CComPtr<IAMStreamConfig>        pStrConf;
 
-												switch(ePType)
-												{
-												case V:
-													pType = PIN_CATEGORY_CAPTURE;			
-													break;
-												case S:
-													pType = PIN_CATEGORY_STILL;			
-													break;
-												case P:
-													pType = PIN_CATEGORY_PREVIEW;			
-													break;
-
-												}
-												hr = pCaptureGraphBuilder->FindInterface(&pType, 0, pVideoCap, IID_IAMStreamConfig, (void**)&pStrConf);
+ //
 
 
-												if(SUCCEEDED(hr))
-												{
-													VIDEO_STREAM_CONFIG_CAPS scc;
-													AM_MEDIA_TYPE *pmtConfig;
-													INT iResIdx=0;
+	//hr = pCaptureGraphBuilder.CoCreateInstance( CLSID_CaptureGraphBuilder );
+	//if(SUCCEEDED(hr))
+	//{
+	//	hr = pGraph.CoCreateInstance( CLSID_FilterGraph );
+	//	if(SUCCEEDED(hr))
+	//	{
+	//		hr = pCaptureGraphBuilder->SetFiltergraph( pGraph );
+	//		if(SUCCEEDED(hr))
+	//		{
+	//			// Query all the interfaces needed later
+	//			hr = pGraph.QueryInterface( &pMediaControl );
+	//			if(SUCCEEDED(hr))
+	//			{
+	//				hr = pGraph.QueryInterface( &pMediaEvent );
+	//				if(SUCCEEDED(hr))
+	//				{
+	//					pGraph.QueryInterface( &pMediaSeeking );
+	//					if(SUCCEEDED(hr))
+	//					{
+	//						CComVariant varCamName;
+	//						VariantInit(&varCamName);
+	//						varCamName = camId;
+	//						
+	//						// Initialize the video capture filter
+	//						hr = pVideoCap.CoCreateInstance( CLSID_VideoCapture );	
+	//						if(SUCCEEDED(hr))
+	//						{
+	//							hr = pVideoCap.QueryInterface( &pPropertyBag );
+	//							if(SUCCEEDED(hr))
+	//							{
+	//								CPropertyBag  PropBag;
+	//								hr = PropBag.Write( L"VCapName", &varCamName );   
+	//								if(SUCCEEDED(hr))
+	//								{				
+	//									hr = pPropertyBag->Load( &PropBag, NULL );
+	//									if(SUCCEEDED(hr))
+	//									{
+	//										pPropertyBag.Release();
+	//										hr = pGraph->AddFilter( pVideoCap, L"Video capture source" );
+	//										if(SUCCEEDED(hr))
+	//										{
+	//											GUID pType;
 
-													INT nCount = 0, nSize = 0;
+	//											switch(ePType)
+	//											{
+	//											case V:
+	//												pType = PIN_CATEGORY_CAPTURE;			
+	//												break;
+	//											case S:
+	//												pType = PIN_CATEGORY_STILL;			
+	//												break;
+	//											case P:
+	//												pType = PIN_CATEGORY_PREVIEW;			
+	//												break;
 
-													hr = pStrConf->GetNumberOfCapabilities(&nCount, &nSize);
-													if(SUCCEEDED(hr))
-													{
-													
+	//											}
+	//											hr = pCaptureGraphBuilder->FindInterface(&pType, 0, pVideoCap, IID_IAMStreamConfig, (void**)&pStrConf);
 
 
-														for(int i=iResIdx; i<nCount;i++)
-														{
-															hr = pStrConf->GetStreamCaps(i, &pmtConfig, (BYTE*)&scc);
+	//											if(SUCCEEDED(hr))
+	//											{
+	//												VIDEO_STREAM_CONFIG_CAPS scc;
+	//												AM_MEDIA_TYPE *pmtConfig;
+	//												INT iResIdx=0;
 
-															if (SUCCEEDED(hr))
-															{
-																ImageRes res;
-																//EMBPD00164210
-																//some camera hardware provides resolution as -ve values
-																//correct it before sending it to user
-																res.nHeight = scc.MaxOutputSize.cy >0 ? scc.MaxOutputSize.cy : -(scc.MaxOutputSize.cy);
-																res.nWidth = scc.MaxOutputSize.cx >0 ? scc.MaxOutputSize.cx : -(scc.MaxOutputSize.cx) ;
-																supportedRes.push_back(res);			
+	//												INT nCount = 0, nSize = 0;
 
-															}
-															DeleteMediaType(pmtConfig);
+	//												hr = pStrConf->GetNumberOfCapabilities(&nCount, &nSize);
+	//												if(SUCCEEDED(hr))
+	//												{
+	//												
 
-														}
-													}
 
-												}
+	//													for(int i=iResIdx; i<nCount;i++)
+	//													{
+	//														hr = pStrConf->GetStreamCaps(i, &pmtConfig, (BYTE*)&scc);
 
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+	//														if (SUCCEEDED(hr))
+	//														{
+	//															ImageRes res;
+	//															//EMBPD00164210
+	//															//some camera hardware provides resolution as -ve values
+	//															//correct it before sending it to user
+	//															res.nHeight = scc.MaxOutputSize.cy >0 ? scc.MaxOutputSize.cy : -(scc.MaxOutputSize.cy);
+	//															res.nWidth = scc.MaxOutputSize.cx >0 ? scc.MaxOutputSize.cx : -(scc.MaxOutputSize.cx) ;
+	//															supportedRes.push_back(res);			
+
+	//														}
+	//														DeleteMediaType(pmtConfig);
+
+	//													}
+	//												}
+
+	//											}
+
+	//										}
+	//									}
+	//								}
+	//							}
+	//						}
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 
 
 }
