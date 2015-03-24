@@ -246,7 +246,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="useSystemViewfinder" type="BOOLEAN" default="false">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android</PLATFORM>
-                <DESC>Uses the system Camera application to take a picture instead of rhodes' camera. The system Camera application does not accept most rhodes' camera settings and can be adjusted by UI.</DESC>
+                <DESC>Setting the value of this property to "true", shall open the System ViewFinder with its properties. None of the Rho camera properties shall be applicable.</DESC>
             </PROPERTY>
 			<PROPERTY name="aimMode" type="STRING">
                 <PLATFORM>WM, CE</PLATFORM>
@@ -834,6 +834,11 @@ alert(reslnArray[1].height);
               </SECTION>
             </SECTIONS>
           </EXAMPLE>
-       </EXAMPLES>
+        </EXAMPLES>
+        <REMARKS>
+            <REMARK title="SDCard Access">
+                <DESC>Extensions which came from RhoElements (i.e. AudioCapture) that could possibly write files to external storage will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
+            </REMARK>
+        </REMARKS>
     </MODULE>
 </API>

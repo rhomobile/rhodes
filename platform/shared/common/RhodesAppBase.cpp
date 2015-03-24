@@ -353,7 +353,7 @@ static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
 {
     rho::common::CFilePath oPath(szZipPath);
     rho::String strBaseDir = oPath.getFolderName();
-#if defined(UNICODE) && defined(WIN32)
+#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8)
     rho::StringW strZipPathW;
     rho::common::convertToStringW(szZipPath, strZipPathW);
     HZIP hz = OpenZipFile(strZipPathW.c_str(), psw);
@@ -363,19 +363,15 @@ static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
 	// Set base for unziping
     SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
 #else
-    HZIP hz = OpenZipFile(szZipPath, psw);
+    HZIP hz = OpenZipFile((TCHAR*)szZipPath, psw);
     if ( !hz )
         return -1;
 
 	// Set base for unziping
-    SetUnzipBaseDir(hz,strBaseDir.c_str() );
+    SetUnzipBaseDir(hz,(TCHAR*)strBaseDir.c_str() );
 #endif
 
-#ifdef OS_WP8
-	static ZIPENTRY ze;
-#else
 	ZIPENTRY ze;
-#endif
     ZRESULT res = 0;
 	// Get info about the zip
 	// -1 gives overall information about the zipfile
@@ -392,10 +388,14 @@ static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
         {
     		res = UnzipItem(hz, zi, ze.name);
             if ( res != 0 )
-                LOG(ERROR) + "Unzip item failed: " + res + "; " + ze.name; 
+                LOG(ERROR) + "Unzip item failed: " + res + "; " +
+				#if defined(OS_WP8)
+				(char*)
+				#endif
+				ze.name;
         }
         else
-            LOG(ERROR) + "Get unzip item failed: " + res + "; " + zi; 
+            LOG(ERROR) + "Get unzip item failed: " + res + "; " + zi;
 	}
 
 	CloseZip(hz);

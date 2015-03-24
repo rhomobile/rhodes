@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -86,6 +87,9 @@ namespace rho
             BitmapImage Rho_ToReduceResolution = new BitmapImage();
             Dictionary<CameraType, string> m_CameratypeMapping = new Dictionary<CameraType, string>();
             string Rho_FilePath = "C:\\Data\\Users\\Public\\Pictures\\Camera Roll\\";
+            IReadOnlyList<StorageFolder> subfolders;
+            IReadOnlyList<StorageFolder> subfoldersfolders;
+            IReadOnlyList<StorageFolder> subfolders_App;
             #endregion
             /// <summary>
             /// Constructor
@@ -1097,6 +1101,83 @@ namespace rho
                 return targetStream;
 
             }
+
+
+            /// <summary>
+            /// Stores file in its own virtual drive rho\apps\app
+            /// </summary>
+            /// <param name="file">Stream of file that needs to be saved in the Location.</param>
+            /// <param name="fileName">Name i n which the file needs to be saved</param>
+            /// <param name="StorechoosePictureResult">Callback event</param>
+            /// <param name="choosePicture_output">The path of the image needs to be stored</param>
+            /// <returns>Successll or error</returns>
+            public async Task SaveToLocalFolderAsync(Stream file, string fileName, IMethodResult StoreTakePictureResult, Dictionary<string, string> TakePicture_output)
+            {
+                Dictionary<string, string> Rho_SubFolder_rho = new Dictionary<string, string>();
+                Rho_SubFolder_rho.Add("rho", "rho");
+
+                Dictionary<string, string> Rho_SubFolder_apps = new Dictionary<string, string>();
+                Rho_SubFolder_rho.Add("apps", "apps");
+
+                Dictionary<string, string> Rho_SubFolder_apps_app = new Dictionary<string, string>();
+                Rho_SubFolder_apps_app.Add("app", "app");
+
+                StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+
+
+                subfolders = await localFolder.GetFoldersAsync();
+
+                foreach (StorageFolder Subfolder_list in subfolders)
+                {
+                    try
+                    {
+                        string strStore = Rho_SubFolder_rho[Subfolder_list.Name];
+                        subfoldersfolders = await Subfolder_list.GetFoldersAsync();
+                        foreach (StorageFolder SubSubFolderList in subfoldersfolders)
+                        {
+                            try
+                            {
+                                string strStoreFolder = Rho_SubFolder_rho[SubSubFolderList.Name];
+
+                                subfolders_App = await SubSubFolderList.GetFoldersAsync();
+
+                                foreach (StorageFolder appFolder in subfolders_App)
+                                {
+                                    string FolderApp = Rho_SubFolder_apps_app[appFolder.Name];
+                                    localFolder = appFolder;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+                string[] picList = Directory.GetFiles(localFolder.Path, "*.jpg");
+                foreach (string DeleteFile in picList)
+                {
+                    File.Delete(DeleteFile);
+                }
+               
+
+                StorageFile storageFile = await localFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+                Task<Stream> outputStreamTask = storageFile.OpenStreamForWriteAsync();
+                Stream outputStream = outputStreamTask.Result;
+                var bitmap = new BitmapImage();
+                bitmap.SetSource(file);
+                var wb = new WriteableBitmap(bitmap);
+                wb.SaveJpeg(outputStream, wb.PixelWidth, wb.PixelHeight, 0, 100);
+                outputStream.Close();
+                TakePicture_output["imageUri"] = storageFile.Name;
+                StoreTakePictureResult.set(TakePicture_output);
+
+
+            }
+
             /// <summary>
             /// After clicking image this event is fired.
             /// </summary>
@@ -1112,9 +1193,6 @@ namespace rho
                 {
                     try
                     {   // Write message to the UI thread.
-
-
-
                         LayoutGrid.Children.Remove(Rho_PhotoCameraCanvas);
                         MemoryStream ms = new MemoryStream();
                       
@@ -1137,6 +1215,14 @@ namespace rho
 
 
                         string returnablevalue = "";
+                        m_Take_Picture_Output["status"] = "ok";
+                        m_Take_Picture_Output["imageUri"] = returnablevalue;
+                        m_Take_Picture_Output["imageHeight"] = PictDetails.Height.ToString();
+                        m_Take_Picture_Output["imageWidth"] = PictDetails.Width.ToString();
+                       
+                        m_Take_Picture_Output["image_height"] = PictDetails.Height.ToString();
+                        m_Take_Picture_Output["image_width"] = PictDetails.Width.ToString();
+
                         try
                         {
                             IEnumerable<KeyValuePair<string, string>> OutPutFormat = Rho_OutPutFormat.Select(x => x).Where(k => k.Value == "image").ToList();
@@ -1144,6 +1230,9 @@ namespace rho
                             foreach (KeyValuePair<string, string> format in OutPutFormat)
                             {
                                 returnablevalue = Rho_FilePath + fileName + ".jpg";
+                                e.ImageStream.Close();
+                                Task Storetask = SaveToLocalFolderAsync(PictDetails.GetImage(), fileName, m_StoreTakePictureResult, m_Take_Picture_Output);
+                                
                                 
                             }
 
@@ -1161,19 +1250,16 @@ namespace rho
                             {
 
                                 returnablevalue = "data:image/jpeg;base64," + strbase64;
+                                m_Take_Picture_Output["image_uri"] = returnablevalue;
+                                e.ImageStream.Close();
+                                m_StoreTakePictureResult.set(m_Take_Picture_Output);
                             }
                         }
                         catch (Exception ex)
                         {
                             CRhoRuntime.getInstance().logEvent("Camera class-->cam_CaptureImageAvailable-->OutPutFormat-->exception" + ex.ToString());
                         }
-                        m_Take_Picture_Output["status"] = "ok";
-                        m_Take_Picture_Output["imageUri"] = returnablevalue;
-                        m_Take_Picture_Output["imageHeight"] = PictDetails.Height.ToString();
-                        m_Take_Picture_Output["imageWidth"] = PictDetails.Width.ToString();
-                        m_Take_Picture_Output["image_uri"] = returnablevalue;
-                        m_Take_Picture_Output["image_height"] = PictDetails.Height.ToString();
-                        m_Take_Picture_Output["image_width"] = PictDetails.Width.ToString();
+                        
 
                         GC.Collect();
 
@@ -1186,13 +1272,10 @@ namespace rho
                         m_Take_Picture_Output["message"] = ex.Message;
                         m_Take_Picture_Output["image_format"] = string.Empty;
                         m_Take_Picture_Output["imageFormat"] = string.Empty;
-                    }
-                    finally
-                    {
-                        // Close image stream
                         e.ImageStream.Close();
                         m_StoreTakePictureResult.set(m_Take_Picture_Output);
                     }
+                 
                 });
 
             }
@@ -1369,6 +1452,9 @@ namespace rho
             string Store_CaptureImage_outputformat = "image";
             Dictionary<string, string> Data_Uri = new Dictionary<string, string>();
             Dictionary<string, string> Imageoutputformat = new Dictionary<string, string>();
+            IReadOnlyList<StorageFolder> subfolders;
+            IReadOnlyList<StorageFolder> subfoldersfolders;
+            IReadOnlyList<StorageFolder> subfolders_App;
 
             /// <summary>
             /// Initialize DataURI and Image types.
@@ -1557,6 +1643,19 @@ namespace rho
                         {
                             CRhoRuntime.getInstance().logEvent("Camera class-->Not an Data URI");
                         }
+
+                        try
+                        {
+                            string Data = Imageoutputformat[Store_CaptureImage_outputformat];
+
+                            Task Storetask = SaveToLocalFolderAsync(e.ChosenPhoto, e.OriginalFileName.Split('\\')[e.OriginalFileName.Split('\\').Length - 1], m_StorechoosePictureResult, m_choosePicture_output);
+                           
+                            
+                        }
+                        catch (Exception ex)
+                        {
+                            CRhoRuntime.getInstance().logEvent("Camera class-->Not an Image");
+                        }
                         m_choosePicture_output["imageUri"] = ReturnValue;
                     }
                     else
@@ -1564,6 +1663,7 @@ namespace rho
                         m_choosePicture_output["status"] = "cancel";
                         m_choosePicture_output["image_format"] = string.Empty;
                         m_choosePicture_output["imageFormat"] = string.Empty;
+                        m_StorechoosePictureResult.set(m_choosePicture_output);
 
                     }
                 }
@@ -1573,14 +1673,87 @@ namespace rho
                     m_choosePicture_output["status"] = "error";
                     m_choosePicture_output["message"] = ex.Message;
                     m_choosePicture_output["image_format"] = string.Empty;
-                }
-                finally
-                {
                     m_StorechoosePictureResult.set(m_choosePicture_output);
                 }
+               
 
             }
+            /// <summary>
+            /// Stores file in its own virtual drive rho\apps\app
+            /// </summary>
+            /// <param name="file">Stream of file that needs to be saved in the Location.</param>
+            /// <param name="fileName">Name i n which the file needs to be saved</param>
+            /// <param name="StorechoosePictureResult">Callback event</param>
+            /// <param name="choosePicture_output">The path of the image needs to be stored</param>
+            /// <returns>Successll or error</returns>
+            public async Task SaveToLocalFolderAsync(Stream file, string fileName, IMethodResult StorechoosePictureResult, Dictionary<string, string> choosePicture_output)
+            {
+                Dictionary<string, string> Rho_SubFolder_rho = new Dictionary<string, string>();
+                Rho_SubFolder_rho.Add("rho", "rho");
 
+                Dictionary<string, string> Rho_SubFolder_apps = new Dictionary<string, string>();
+                Rho_SubFolder_rho.Add("apps", "apps");
+
+                 Dictionary<string, string> Rho_SubFolder_apps_app = new Dictionary<string, string>();
+                Rho_SubFolder_apps_app.Add("app", "app");
+
+                StorageFolder localFolder = ApplicationData.Current.LocalFolder ;
+               
+
+                subfolders = await localFolder.GetFoldersAsync();
+
+                foreach (StorageFolder Subfolder_list in subfolders)
+                {
+                    try
+                    {
+                        string strStore= Rho_SubFolder_rho[Subfolder_list.Name];
+                        subfoldersfolders = await Subfolder_list.GetFoldersAsync();
+                        foreach (StorageFolder SubSubFolderList in subfoldersfolders)
+                        {
+                            try
+                            {
+                                string strStoreFolder = Rho_SubFolder_rho[SubSubFolderList.Name];
+                                
+                                subfolders_App = await SubSubFolderList.GetFoldersAsync();
+
+                                foreach (StorageFolder appFolder in subfolders_App)
+                                {
+                                    string FolderApp = Rho_SubFolder_apps_app[appFolder.Name];
+                                    localFolder = appFolder;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+                string[] picList = Directory.GetFiles(localFolder.Path , "*.jpg");
+                foreach (string DeleteFile in picList)
+                {
+                    File.Delete(DeleteFile);
+                }
+                
+               
+                StorageFile storageFile = await localFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+                Task<Stream> outputStreamTask = storageFile.OpenStreamForWriteAsync();
+                Stream outputStream = outputStreamTask.Result;
+                var bitmap = new BitmapImage();
+                bitmap.SetSource(file);
+                var wb = new WriteableBitmap(bitmap);
+                wb.SaveJpeg(outputStream, wb.PixelWidth, wb.PixelHeight, 0, 100);
+                outputStream.Close();
+                
+                
+                choosePicture_output["imageUri"] = storageFile.Name;
+                StorechoosePictureResult.set(choosePicture_output);
+
+                
+            }
 
             /// <summary>
             /// Not supported by WP8.
