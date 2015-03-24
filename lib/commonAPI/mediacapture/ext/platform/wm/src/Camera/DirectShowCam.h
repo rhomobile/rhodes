@@ -1,7 +1,8 @@
 #ifndef _DIRECTSHOW_H
 #define _DIRECTSHOW_H
 #include "Camera.h"
-#include "DShowCam.h"
+#include "..\..\DirectShow\DShowCamModule\DShowCamModule\DShowCam.h"
+
 class CDirectShowCam : public CCamera
 {
 public:
@@ -21,9 +22,9 @@ protected:
 	void setCameraProperties();
 	virtual void RedrawViewerWnd(RECT& pos);
 	void ResetResolution();
-	rho::Vector<ImageRes> supportedResln;
+	std::vector<ImageRes> supportedResln;
 private:
-	CDShowCam* m_pDSCam;
+	//CDShowCam* m_pDSCam;
 	void getCameraHWDetails();
 
 };

@@ -222,6 +222,7 @@
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.00"
 				OutputFile="$(OutDir)/Mediacapture.lib"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -524,7 +525,9 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.00"
+				AdditionalDependencies="DShowCamModule.lib"
 				OutputFile="$(OutDir)/Mediacapture.lib"
+				AdditionalLibraryDirectories="&quot;C:\rholatest\rhodes\lib\commonAPI\mediacapture\ext\platform\wm\DirectShow\DShowCamModule\DShowCamModule\Windows Mobile 6 Professional SDK (ARMV4I)\Release&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -655,15 +658,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Camera\DShowCam.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Camera\Imager.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Camera\PropertyBag.cpp"
 					>
 				</File>
 				<File
@@ -688,10 +683,6 @@
 				</File>
 				<File
 					RelativePath=".\src\Camera\DirectShowCam.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Camera\DShowCam.h"
 					>
 				</File>
 				<File
