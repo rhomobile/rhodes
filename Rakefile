@@ -2815,6 +2815,9 @@ namespace "config" do
     if $app_config['extensions'].index('cardreader')
       $rhoelements_features << "- CardReader extension"
     end
+    if $app_config['extensions'].index('mobile_payment')
+      $rhoelements_features << "- MobilePayment extension"
+    end
 
     if $app_config['extensions'].index('nfc')
       #$app_config['extensions'].delete('nfc')
