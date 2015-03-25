@@ -293,7 +293,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="takePicture" hasCallback="mandatory" runInThread="ui">
 			    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                 <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
-                <DESC>Start the camera application to take a picture. The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use. In Windows, this method always shows the preview in full screen and user can use the native button to capture the image.
+                <DESC>Start the camera application to take a picture. The user can capture the displayed image by interacting with the resident camera app. In Windows, this method always shows the preview in full screen and user can use the native button to capture the image.
 > Note: To display an image, it is recommended that you use the full path to the image instead of a relative path. To do this, you can use the [`expandDatabaseBlobFilePath`](Application#mexpandDatabaseBlobFilePath) method of the [Application module](Application) as such:
 
 ##### Ruby
@@ -838,6 +838,12 @@ alert(reslnArray[1].height);
         <REMARKS>
             <REMARK title="SDCard Access">
                 <DESC>Extensions which came from RhoElements (i.e. AudioCapture) that could possibly write files to external storage will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
+            </REMARK>
+			<REMARK title="Camera in Full Screen">
+                <DESC>In some of the WM/CE devices, though user has opted for a full screen, preview rendering size is decided by the driver.</DESC>
+            </REMARK>
+			<REMARK title="DataUri">
+                <DESC>DataUri output is highly dependent on hardware capabilities. DataUri may fail in certain devices; recommend image path in such devices.</DESC>
             </REMARK>
         </REMARKS>
     </MODULE>
