@@ -198,7 +198,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="1"
-				AdditionalIncludeDirectories="&quot;$(RHO_ROOT)\platform\shared\ruby\wince&quot;;&quot;$(RHO_ROOT)\platform\shared\ruby\include&quot;;&quot;$(RHO_ROOT)\platform\shared&quot;;&quot;$(RHO_ROOT)\platform\shared\common&quot;;&quot;$(RHO_ROOT)\lib\commonAPI\mediacapture\ext\platform\wm\src\Include&quot;"
+				AdditionalIncludeDirectories="&quot;$(RHO_ROOT)\platform\shared\ruby\wince&quot;;&quot;$(RHO_ROOT)\platform\shared\ruby\include&quot;;&quot;$(RHO_ROOT)\platform\shared&quot;;&quot;$(RHO_ROOT)\platform\shared\common&quot;;"
 				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -655,15 +655,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Camera\DShowCam.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Camera\Imager.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Camera\PropertyBag.cpp"
 					>
 				</File>
 				<File
@@ -688,10 +680,6 @@
 				</File>
 				<File
 					RelativePath=".\src\Camera\DirectShowCam.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Camera\DShowCam.h"
 					>
 				</File>
 				<File

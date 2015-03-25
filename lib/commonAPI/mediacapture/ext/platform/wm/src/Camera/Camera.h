@@ -104,6 +104,7 @@ protected:
 private:
 	static void closeTriggerEvents();
     rho::StringW generate_filename(LPCTSTR szExt) ;
+	static void UnregisterTriggerMonitor();
 };
 
 #endif
