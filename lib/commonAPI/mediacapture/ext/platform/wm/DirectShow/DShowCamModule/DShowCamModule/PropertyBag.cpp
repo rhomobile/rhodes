@@ -11,7 +11,8 @@
 #include <windows.h>
 #include <Ocidl.h>
 #include <oleauto.h>
-#include <dshow.h>
+#include "stdafx.h"
+#include <streams.h>
 
 #include "propertybag.h"
 

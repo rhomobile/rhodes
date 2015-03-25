@@ -183,7 +183,7 @@ void CImager::takeFullScreen()
 
 					m_IsCameraRunning = true;
 					m_PreviewOn = true;
-					createTriggerMonitorThread(this);
+					//createTriggerMonitorThread(this);
 				}
 			}
 			else

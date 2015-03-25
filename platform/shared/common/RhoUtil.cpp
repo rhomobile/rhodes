@@ -293,13 +293,14 @@ namespace rho {
 			{
 				LPVOID pImageBuffer;///< Buffer store the image						
 				DWORD dwFileSize = GetFileSize(hFile, NULL);
+				bool bFileReadSuccess = true;
 				if (dwFileSize > 0)
 				{		
 					DWORD dwBytesRead = 0;
 					pImageBuffer = new BYTE[dwFileSize];
 					if(pImageBuffer)
 					{
-						bool bFileReadSuccess = true;
+						
 						do
 						{
 							if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
@@ -311,17 +312,21 @@ namespace rho {
 							}
 						}while (dwBytesRead != 0);
 
-						if(bFileReadSuccess)
-						{
-							bRetStatus = GetJpegResolution((BYTE*)pImageBuffer, dwFileSize, nWidth, nHeight);
-						}
-						delete[] pImageBuffer;
-						pImageBuffer = NULL;
+						
 					}
 
 
 				}
 				CloseHandle(hFile);
+				if(bFileReadSuccess)
+				{
+					if(pImageBuffer)
+					{
+						bRetStatus = GetJpegResolution((BYTE*)pImageBuffer, dwFileSize, nWidth, nHeight);
+					}
+				}
+				delete[] pImageBuffer;
+				pImageBuffer = NULL;
 			}
 			else
 			{

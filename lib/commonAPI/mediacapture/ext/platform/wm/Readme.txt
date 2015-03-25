@@ -1,0 +1,2 @@
+Mediacapture project loads DShowCamModule.dll at runtime to use the functionality of colour camera.
+User can modify the DshowCamModule.dll from the DshowCamModule.vcproj placed under DirectShow folder. And he/she should ensure same dll is placed under bin folder.
