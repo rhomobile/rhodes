@@ -39,6 +39,8 @@ import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
+import java.io.FileNotFoundException;
+import android.os.ParcelFileDescriptor;
 
 
 public class LocalFileProvider extends ContentProvider
@@ -98,7 +100,11 @@ public class LocalFileProvider extends ContentProvider
     }
     
     @Override
-    public AssetFileDescriptor openAssetFile(Uri uri, String mode) {
+    //public AssetFileDescriptor openAssetFile(Uri uri, String mode)
+    public ParcelFileDescriptor openFile(Uri uri, String mode)
+     throws FileNotFoundException, SecurityException
+    {
+        
         Logger.T(TAG, "Opening asset: " + uri);
         
         if(mode.compareTo("r") != 0)
@@ -106,11 +112,21 @@ public class LocalFileProvider extends ContentProvider
             Logger.E(TAG, uri + " unacceptable mode: " + mode);
             throw new SecurityException("Unacceptable openFile mode: " + mode);
         }
+     
+        
+        try {
         File path = fileFromUri(uri);
-        
-        AssetFileDescriptor fd = RhoFileApi.openAssetFd(path.getPath());
-        
-        return fd;
+        Logger.D(TAG, "Opening content file: " + path.getPath());
+       ParcelFileDescriptor fd = RhoFileApi.openParcelFd(path.getPath());
+      if(fd == null)
+         throw new IllegalArgumentException();
+         return fd;
+       } catch(IllegalArgumentException error)
+       {
+          FileNotFoundException fileError = new FileNotFoundException("Cannot assign file for URI: " + uri.toString());
+          fileError.initCause(error);
+          throw fileError;
+       }
     }
 
     @Override
