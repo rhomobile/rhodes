@@ -877,7 +877,7 @@ public class RhodesService extends Service {
         Boolean res = false;
        /* try
         {
-            Class<?> commonClass = Class.forName("com.motorolasolutions.rhoelements.Common");
+            Class<?> commonClass = Class.forName("com.rho.rhoelements.Common");
             Method isEmdkDeviceMethod = commonClass.getDeclaredMethod("isEmdkDevice");
             res = (Boolean)isEmdkDeviceMethod.invoke(null);
         } 
