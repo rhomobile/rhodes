@@ -26,13 +26,13 @@ CCamera::CCamera(LPCTSTR szDeviceName)
 	m_DesiredHeight = -1;
 	m_DesiredWidth =-1;
 	initializePreviewPos();
-	if(false == m_bRcmLoaded)
+	/*if(false == m_bRcmLoaded)
 	{
 		if(m_Rcm.LoadRcmDLL())
 		{
 			m_bRcmLoaded = true;
 		}
-	}
+	}*/
 }
 CCamera::~CCamera()
 {
@@ -358,6 +358,7 @@ void CCamera::createTriggerMonitorThread(LPVOID pparam)
 {
 	if(m_bRcmLoaded)
 	{
+		UnregisterTriggerMonitor();
 		// Create event to signal thread to quit
 		m_hTriggerEvents[0] = CreateEvent (NULL, TRUE, FALSE, NULL);
 		// Create auto-reset event which system will signal when trigger occurs
@@ -397,10 +398,9 @@ DWORD CCamera::TriggerMonitorProc (LPVOID pparam)
 		// ignore trigger events if we're in the background
 		if (false == CCamera::m_bAppHasFocus)
 			continue;
-
+        
 		// Unregister for notifications
-		m_Rcm.lpfn_RCM_DeregisterTrigger(m_hRegisterTrigger);
-		closeTriggerEvents();
+		UnregisterTriggerMonitor();		
 		DWORD dwEventIndex = dwEvent - WAIT_OBJECT_0; 
 		switch(dwEventIndex)
 		{
@@ -509,4 +509,13 @@ eImageFilePathErrorType CCamera::isImageFilePathValid()
 	
 	return retVal;
 
+}
+void CCamera::UnregisterTriggerMonitor()
+{
+	if(m_bRcmLoaded)
+	{
+		m_Rcm.lpfn_RCM_DeregisterTrigger(m_hRegisterTrigger);
+		m_hRegisterTrigger = NULL;
+		closeTriggerEvents();
+	}
 }
