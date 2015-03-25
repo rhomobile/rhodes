@@ -285,7 +285,11 @@ static VALUE create_request_hash(String const &application, String const &model,
 #endif
 
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server)
-    :m_active(false), m_port(port), verbose(true), m_IP_adress(""), m_localResponseWriter(0)
+    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
+#ifdef OS_MACOSX
+    , m_localResponseWriter(0)
+    , m_pQueue(0)    
+#endif
 {
     m_enable_external_access = enable_external_access;
     m_started_as_separated_simple_server = started_as_separated_simple_server;
