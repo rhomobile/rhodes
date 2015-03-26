@@ -9,6 +9,7 @@
 bool CCamera::m_IsCameraRunning = false;
 bool CCamera::m_bRcmLoaded = false;
 bool CCamera::m_bAppHasFocus= true;
+rho::StringW CCamera::m_ImageUriPath;
 CTriggerMonitor CCamera::m_Rcm;
 HANDLE CCamera::m_hTriggerEvents[eTriggerEventMax] = {NULL, NULL};
 HANDLE CCamera::m_hRegisterTrigger = NULL;
@@ -296,12 +297,13 @@ void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho:
 	statusData.put( "image_width", tempVal);
 
 	if("ok" == status)
-	{	
+	{
 		
 		rho::String outputFormat;
 		outputFormat = "jpg";//note, there is a confusion here, outputFormat we use here is to say in what format image saved
 		if(m_eOutputFormat == eImageUri)
-		{	
+		{
+			DeleteFile(m_ImageUriPath.c_str());
 			rho::String appRootPath;
 			rho::String fileName;
 			rho::String newFilePath;
@@ -316,9 +318,9 @@ void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho:
 				fileName = imageUri;
 			}
 			newFilePath = appRootPath + "/" + fileName;
-			rho::StringW szFilePath = rho::common::convertToStringW(newFilePath);
+			m_ImageUriPath = rho::common::convertToStringW(newFilePath);
 			rho::StringW szExistingPath= rho::common::convertToStringW(imageUri);
-			CopyFile(szExistingPath.c_str(), szFilePath.c_str(), TRUE);
+			CopyFile(szExistingPath.c_str(), m_ImageUriPath.c_str(), TRUE);
 			imageUri = fileName;
 
 		}		
