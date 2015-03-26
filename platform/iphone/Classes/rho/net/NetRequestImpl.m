@@ -122,7 +122,7 @@ VALUE rho_sys_has_cell_network() {
     if (rho_sys_has_cell_network_iphone()) {
         res = 1;
     }
-    rho_ruby_create_boolean(res);
+    return rho_ruby_create_boolean(res);
 }
 
 
