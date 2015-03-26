@@ -2,16 +2,22 @@ package com.rho.camera;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.provider.MediaStore.MediaColumns;
 import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -28,9 +34,13 @@ public class CameraRhoListener extends AbstractRhoListener implements
 	private static final String TAG = CameraRhoListener.class.getSimpleName();
 
 	private IMethodResult mMethodResult;
-	private Map<String, String> mActualPropertyMap;
-	private static CameraRhoListener sInstance;
-	private static int picChoosen_imagewidth, picChoosen_imageheight;
+	private Map<String, String> mActualPropertyMap = null;
+	private static CameraRhoListener sInstance = null;
+	private static int picChoosen_imagewidth, picChoosen_imageheight = 0;
+	private Uri curUri = null;
+	private HashMap<String,Object> resultMap = null;
+	private String imgPath = null;
+	private Bitmap mBitmap = null;
 	
 	static CameraRhoListener getInstance() {
 		return sInstance;
@@ -42,6 +52,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		CameraFactorySingleton.setInstance(new CameraFactory(this));
 		extManager.addRhoListener(this);
 		extManager.registerExtension("RhoCameraApi", new CameraExtension());
+		resultMap=new HashMap<String,Object>();
 	}
 
 	@SuppressLint("NewApi")
@@ -53,7 +64,6 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		}
 		Uri captureUri = null;
 		String targetPath = " ";
-		Uri curUri = null;
 		ByteArrayOutputStream stream = null;
 		try {
 			if (resultCode == Activity.RESULT_OK)
@@ -64,26 +74,53 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				{
 					captureUri = Uri.parse(getActualPropertyMap().get("captureUri"));		
 				}		
-			
-				if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT) || intent.hasExtra("intent_default_camera"))
+			if (captureUri != null )
+				{					
+					curUri = captureUri;
+					Cursor imageCursor = RhodesActivity.getContext().getContentResolver().query(
+							curUri, null, null, null, null);
+					if(imageCursor.moveToFirst()){
+						imgPath = imageCursor.getString(imageCursor
+								.getColumnIndex(MediaColumns.DATA));
+					}
+					
+					if (curUri != null) {
+						
+							File f= new File(imgPath);
+							BitmapFactory.Options options = new BitmapFactory.Options();
+							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+							        try {
+							        	mBitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
+							        } catch (FileNotFoundException e) {
+							            e.printStackTrace();
+							        }
+							picChoosen_imagewidth = mBitmap.getWidth();
+							picChoosen_imageheight = mBitmap.getHeight();
+							
+					}
+					mBitmap.recycle();
+				}
+				else
+				{
+					curUri = intent.getData();
+					Logger.T(TAG, "Check intent data: " + curUri);
+				}
+				if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT))
 				{
 					if(intent.hasExtra(MediaStore.EXTRA_OUTPUT)){
 						Logger.T(TAG, "Intent extras: "+ intent.getExtras().keySet());	
 						curUri = (Uri) intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-					}else if(intent.hasExtra("intent_default_camera")){
-						Logger.T(TAG, "Intent extras: "+ intent.getExtras().keySet());
-						curUri = (Uri) intent.getParcelableExtra("intent_default_camera");
 					}
 					if (curUri == null)
 					{
 						curUri = intent.getData();
 					}
-					Bitmap bmp = BitmapFactory.decodeFile(curUri.getPath());					
-					picChoosen_imagewidth = bmp.getWidth();
-					picChoosen_imageheight = bmp.getHeight();
+					mBitmap = BitmapFactory.decodeFile(curUri.getPath());					
+					picChoosen_imagewidth = mBitmap.getWidth();
+					picChoosen_imageheight = mBitmap.getHeight();
 					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){				
 						stream = new ByteArrayOutputStream();
-						bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+						mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 						byte[] byteArray = stream.toByteArray();
 						StringBuilder dataBuilder = new StringBuilder();
 						dataBuilder.append("data:image/jpeg;base64,");
@@ -96,7 +133,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						}
 						catch(OutOfMemoryError e){
 							stream = new ByteArrayOutputStream();
-							bmp.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+							mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
 							byteArray = stream.toByteArray();
 							dataBuilder.append(Base64.encodeToString(byteArray, false));
 						}
@@ -104,19 +141,9 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						curUri=Uri.parse(dataBuilder.toString());
 					}
 					Logger.T(TAG, "Photo is captured: " + curUri);					
-					bmp.recycle();
+					mBitmap.recycle();
 				}
-				else if (captureUri != null )
-				{
-					Logger.T(TAG, "Use stored captureUri: " + captureUri);					
-					curUri = captureUri;					
-				}
-				else
-				{
-					curUri = intent.getData();
-					Logger.T(TAG, "Check intent data: " + curUri);
-				}
-		
+				
 				if (curUri.getScheme().equals("file")) 
 				{					
 						curPath = curUri.getPath();					
@@ -132,12 +159,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					    else
 					    	targetPath = getActualPropertyMap().get("fileName")+".jpg";
 						File curFile = new File(curPath);
-						if (!curFile.isFile()) 
-						{							
-							throw new RuntimeException(
-									"Captured photo file does not exist: "
-											+ curPath);
-						}
+						
 						if (!curPath.equals(targetPath)) 
 						{
 						//	Utils.copy(curPath, targetPath);
@@ -147,37 +169,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						}
 				}
 				try{
-					HashMap<String,Object> resultMap=new HashMap<String,Object>();
-					resultMap.put("status","ok");
-					if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
-						resultMap.put("image_uri",  "db/db-files/"+ curUri.toString().substring(curUri.toString().lastIndexOf("/")+1, curUri.toString().length()));
-						resultMap.put("image_format",   "jpg");						
-					}
-					else{
-					   resultMap.put("imageUri",  curUri.toString());
-					   resultMap.put("imageFormat",   "jpg");					 
-					}
-					if(picChoosen_imagewidth > 0){
-						if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
-							resultMap.put("image_width",  "" + picChoosen_imagewidth);
-							resultMap.put("image_height",  "" + picChoosen_imageheight);							
-						}
-						else{
-						   resultMap.put("imageWidth",  "" + picChoosen_imagewidth);
-						   resultMap.put("imageHeight",  "" + picChoosen_imageheight);							
-						}
-					}
-					else{
-						if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
-							resultMap.put("image_width",  "" + picChoosen_imagewidth);
-							resultMap.put("image_height",  "" + picChoosen_imageheight);							
-						}
-						else{
-						resultMap.put("imageWidth",  "" + intent.getExtras().get("IMAGE_WIDTH"));
-						resultMap.put("imageHeight",  "" + intent.getExtras().get("IMAGE_HEIGHT"));							
-						}
-					}
-			    	mMethodResult.set(resultMap);					
+					DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);
+					async.execute();					
 				}
 				catch(Exception ex)
 				{
@@ -185,18 +178,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				}	
 			} 
 			else if (resultCode == Activity.RESULT_CANCELED) 
-			{	HashMap<String,Object> resultMap=new HashMap<String,Object>();
-				resultMap.put("message", "User canceled operation.");
-				if (intent != null && intent.hasExtra("error")) {
-					resultMap.put("message", ""+intent.getStringExtra("error"));
-					if(intent.getStringExtra("error").contains("\\"))
-					   resultMap.put("message", "File path is invalid.");
-					resultMap.put("status", "error");
-				//	mMethodResult.setError(intent.getStringExtra("error"));
-				} else {
-					resultMap.put("status", "cancel");
-				}
-				mMethodResult.set(resultMap);
+			{	DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent,resultCode);
+				async.execute();
 			} else {
 				mMethodResult.setError("Unknown error");
 			}
@@ -222,6 +205,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 
 	void releaseMethodResult() {
 		mMethodResult = null;
+		resultMap.clear();
+		mActualPropertyMap.clear();
 	}
 
 	void setActualPropertyMap(Map<String, String> propertyMap) {
@@ -231,4 +216,86 @@ public class CameraRhoListener extends AbstractRhoListener implements
 	Map<String, String> getActualPropertyMap() {
 		return mActualPropertyMap;
 	}
+	
+	/**
+	 * AsyncTask class to handle keydispatchingtimedout or ANR caused 
+	 * when OK or Cancel button of default camera in clicked 
+	 * @param  IMethodResult  Object to set the hash map properties
+	 * @param  HashMap to set properties of captured image to map
+	 * @param  Intent 
+	 * @param  ResultCode to decide click is OK or Cancel
+	 */
+	public class DefaultCameraAsyncTask extends AsyncTask<Void, Void, Void>{
+
+		IMethodResult inMethodRes;
+		HashMap<String, Object> inResultMap = new HashMap<String,Object>();
+		Intent intent = new Intent();
+		int resCode;
+		
+		public DefaultCameraAsyncTask(IMethodResult inMethodRes, HashMap<String, Object> inResultMap, Intent intent, int resCode){
+            this.inMethodRes = inMethodRes;
+            this.inResultMap = inResultMap;
+            this.intent = intent;
+            this.resCode = resCode;
+        }
+		
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			if(resCode == -1){
+				inResultMap.put("status","ok");
+				if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
+					inResultMap.put("image_uri",  "db/db-files/"+ curUri.toString().substring(curUri.toString().lastIndexOf("/")+1, curUri.toString().length()));
+					inResultMap.put("image_format",   "jpg");			
+				}
+				else{
+					inResultMap.put("imageUri",  curUri.toString());
+					inResultMap.put("imageFormat",   "jpg");			
+				}
+				if(picChoosen_imagewidth > 0){
+					if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
+						inResultMap.put("image_width",  "" + picChoosen_imagewidth);
+						inResultMap.put("image_height",  "" + picChoosen_imageheight);
+					}
+					else{
+						inResultMap.put("imageWidth",  "" + picChoosen_imagewidth);
+						inResultMap.put("imageHeight",  "" + picChoosen_imageheight);
+					}
+				}
+				else{
+					if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
+						inResultMap.put("image_width",  "" + picChoosen_imagewidth);
+						inResultMap.put("image_height",  "" + picChoosen_imageheight);
+					}
+					else{
+						inResultMap.put("imageWidth",  "" + intent.getExtras().get("IMAGE_WIDTH"));
+						inResultMap.put("imageHeight",  "" + intent.getExtras().get("IMAGE_HEIGHT"));
+					}
+				}
+				
+				
+			}else if(resCode == 0){
+				
+				inResultMap.put("message", "User canceled operation.");
+				if (intent != null && intent.hasExtra("error")) {
+					inResultMap.put("message", ""+intent.getStringExtra("error"));
+					if(intent.getStringExtra("error").contains("\\"))
+						inResultMap.put("message", "File path is invalid.");
+					inResultMap.put("status", "error");
+				} else {
+					inResultMap.put("status", "cancel");
+				}
+			}
+			return null;
+			
+		}	
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			inMethodRes.set(inResultMap);
+		}
+		
+	}
+	
 }
