@@ -668,6 +668,8 @@ class Jake
   end
 
   def self.build_file_map(dir, file_name, in_memory = false)
+    require 'digest/md5'
+    
     psize    = dir.size + 1
     file_map = Array.new
     file_map_name = File.join(dir, file_name)
@@ -690,17 +692,25 @@ class Jake
 
       if File.basename(f) == file_name
         next
+      end 
+      
+      if type.eql? 'file'
+        content = File.readlines(f)
+        md5 = Digest::MD5.hexdigest(content.to_s)
+      else
+        md5 = "" 
       end
-
-      size = File.stat(f).size
-      tm   = File.stat(f).mtime.to_i
+      
+      size    = File.stat(f).size
+      tm      = File.stat(f).mtime.to_i
+      md_hash = md5.to_s
 
       if in_memory == true
         map_item = Hash.new
-        map_item = { :path => relpath, :size => size, :time => tm }
+        map_item = { :path => relpath, :size => size, :time => tm, :hash => md_hash}
         file_map << map_item
       else
-        dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}"
+        dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}|#{md_hash.to_s}"
       end
     end
 
@@ -882,12 +892,12 @@ class Jake
         begin
 
           require 'rubygems'
-          require 'zip/zip'
+          require 'zip'
           require 'find'
           require 'fileutils'
           include FileUtils
 
-          Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE)do |zipfile|
+          Zip::File.open(zip_file_path, Zip::File::CREATE)do |zipfile|
             Find.find("RhoBundle") do |path|
               Find.prune if File.basename(path)[0] == ?.
               next if path.start_with?("RhoBundle/lib") || path.start_with?("RhoBundle/db") || path == 'RhoBundle/hash' || path == 'RhoBundle/name'

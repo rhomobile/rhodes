@@ -680,7 +680,20 @@ namespace "config" do
 
     $use_prebuild_data = false
 
-    $rubypath = "res/build-tools/RubyMac" #path to RubyMac
+    #$rubypath = "res/build-tools/RubyMac" #path to RubyMac
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      $all_files_mask = "*.*"
+      $rubypath = "res/build-tools/RhoRuby.exe"
+    else
+      $all_files_mask = "*"
+      if RUBY_PLATFORM =~ /darwin/
+        $rubypath = "res/build-tools/RubyMac"
+      else
+        $rubypath = "res/build-tools/rubylinux"
+      end
+    end
+    $file_map_name = "rhofilelist.txt"
+
     iphonepath = $app_path + "/project/iphone" #$config["build"]["iphonepath"]
     $builddir = $config["build"]["iphonepath"] + "/rbuild" #iphonepath + "/rbuild"
     $bindir = File.join(iphonepath, "bin")#Jake.get_absolute(iphonepath) + "/bin"
@@ -727,18 +740,43 @@ namespace "config" do
       end
     end
 
-    if !File.exists? $xcodebuild
+    if (!File.exists? $xcodebuild) && (!$skip_checking_XCode)
         puts 'ERROR: can not found XCode command line tools'
         puts 'Install XCode to default location'
         puts 'For XCode from 4.3 and later - you should install Command Line Tools package ! Open XCode - Preferences... - Downloads - Components - Command Line Tools'
         exit 1
     end
 
-    $homedir = ENV['HOME']
-    $simdir = "#{$homedir}/Library/Application Support/iPhone Simulator/"
-    $sim = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/Applications"
-    $guid = `uuidgen`.strip
-    $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"]
+    if !$skip_checking_XCode
+      $homedir = ENV['HOME']
+      $simdir = "#{$homedir}/Library/Application Support/iPhone Simulator/"
+      $sim = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/Applications"
+      $guid = `uuidgen`.strip
+      $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"]
+    else
+
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        $homedir = ''
+        $devroot = ''
+        $sim = ''
+        $guid = ''
+        $applog = ''
+      else
+        if RUBY_PLATFORM =~ /darwin/
+          $homedir = ENV['HOME']
+          $simdir = ''
+          $sim = ''
+          $guid = ''
+          $applog = ''
+        else
+          $homedir = ''
+          $devroot = ''
+          $sim = ''
+          $guid = ''
+          $applog = ''
+        end
+      end
+    end
 
     if $app_config["iphone"].nil?
       $signidentity = $config["env"]["iphone"]["codesignidentity"]
@@ -773,7 +811,9 @@ namespace "config" do
 
     puts $sdk
 
-    check_sdk($sdk)
+    if !$skip_checking_XCode
+      check_sdk($sdk)
+    end
 
     if $sdk =~ /iphonesimulator/
       $sdkver = $sdk.gsub(/iphonesimulator/,"")
@@ -795,9 +835,11 @@ namespace "config" do
       end
     end
 
-    unless File.exists? $homedir + "/.profile"
-      File.open($homedir + "/.profile","w") {|f| f << "#" }
-      chmod 0744, $homedir + "/.profile"
+    if !$skip_checking_XCode
+      unless File.exists? $homedir + "/.profile"
+        File.open($homedir + "/.profile","w") {|f| f << "#" }
+        chmod 0744, $homedir + "/.profile"
+      end
     end
 
     #if $app_config["iphone"] and $app_config["iphone"]["extensions"]
@@ -825,7 +867,7 @@ namespace "build" do
       ENV["RHO_BUNDLE_ALREADY_BUILDED"] = "NO"
 
       #chdir 'platform/iphone'
-      chdir File.join($app_path, 'project/iphone')
+      chdir File.join($app_path, 'project','iphone')
       rm_rf 'bin'
       #rm_rf 'build/Debug-*'
       #rm_rf 'build/Release-*'
@@ -858,20 +900,74 @@ namespace "build" do
 
     end
 
-    task :upgrade_package => ["build:iphone:rhobundle"] do
+    desc "build upgrade package with full bundle"
+    task :upgrade_package => ["config:common"] do
+
+        $skip_checking_XCode = true
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
+        Rake::Task['config:iphone'].invoke
+
+        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+        iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+
+        if !File.exist?(iphone_project)
+
+          puts '$ make iphone XCode project for application'
+          Rake::Task['build:iphone:make_xcode_project'].invoke
+
+        end
+
+        Rake::Task['build:iphone:rhobundle'].invoke
+
         #puts '$$$$$$$$$$$$$$$$$$'
         #puts 'targetdir = '+$targetdir.to_s
         #puts 'bindir = '+$bindir.to_s
+
 
         mkdir_p $targetdir if not File.exists? $targetdir
         zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
         Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
 
-    task :upgrade_package_partial => ["build:iphone:rhobundle"] do
+    desc "build upgrade package with part of bundle (changes configure by two text files - see documentation)"
+    task :upgrade_package_partial => ["config:common"] do
+
+        print_timestamp('build:iphone:upgrade_package_partial START')
+
+
+        $skip_checking_XCode = true
+        Rake::Task['config:iphone'].invoke
+
+
         #puts '$$$$$$$$$$$$$$$$$$'
         #puts 'targetdir = '+$targetdir.to_s
         #puts 'bindir = '+$bindir.to_s
+
+        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+        iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+
+        if !File.exist?(iphone_project)
+
+          puts '$ make iphone XCode project for application'
+          Rake::Task['build:iphone:make_xcode_project'].invoke
+
+        end
+
+
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
+        Rake::Task['build:iphone:rhobundle'].invoke
 
         # process partial update
 
@@ -916,12 +1012,12 @@ namespace "build" do
         end
 
         psize = dst_tmp_folder.size+1
-        Dir.glob(File.join(dst_tmp_folder, '**/*')).sort.each do |f|
+        Dir.glob(File.join(dst_tmp_folder, '**','*')).sort.each do |f|
           relpath = f[psize..-1]
 
           if File.file?(f)
              #puts '$$$ ['+relpath+']'
-             if not add_files.include?(relpath)
+             if (not add_files.include?(relpath)) && (relpath != 'rhofilelist.txt')
                  rm_rf f
              end
           end
@@ -950,6 +1046,8 @@ namespace "build" do
         zip_file_path = File.join($targetdir, "upgrade_bundle_partial.zip")
         Jake.zip_upgrade_bundle( tmp_folder, zip_file_path)
         rm_rf tmp_folder
+        print_timestamp('build:iphone:upgrade_package_partial FINISH')
+
     end
 
 
@@ -984,7 +1082,7 @@ namespace "build" do
          list_of_files << fil
       end
 
-      list_of_files << File.join( $startdir ,'platform/shared/common/app_build_capabilities.h')
+      list_of_files << File.join( $startdir ,'platform','shared','common','app_build_capabilities.h')
 
       if !FileUtils.uptodate?(result_lib_file, list_of_files)
           return true
@@ -1014,7 +1112,7 @@ namespace "build" do
       # only depfile is optional parameter !
 
       currentdir = Dir.pwd()
-      Dir.chdir File.join(extpath, "platform/iphone")
+      Dir.chdir File.join(extpath, "platform","iphone")
 
       xcodeproject = File.basename(xcodeproject)
       if depfile != nil
@@ -1577,20 +1675,20 @@ namespace "build" do
 
     def copy_generated_sources_and_binaries
       #copy sources
-      extensions_src = File.join($startdir, 'platform/shared/ruby/ext/rho/extensions.c')
-      extensions_dst = File.join($app_path, 'project/iphone/Rhodes/extensions.c')
+      extensions_src = File.join($startdir, 'platform','shared','ruby','ext','rho','extensions.c')
+      extensions_dst = File.join($app_path, 'project','iphone','Rhodes','extensions.c')
 
       rm_rf extensions_dst
       cp extensions_src, extensions_dst
 
-      properties_src = File.join($startdir, 'platform/shared/common/app_build_configs.c')
-      properties_dst = File.join($app_path, 'project/iphone/Rhodes/app_build_configs.c')
+      properties_src = File.join($startdir, 'platform','shared','common','app_build_configs.c')
+      properties_dst = File.join($app_path, 'project','iphone','Rhodes','app_build_configs.c')
 
       rm_rf properties_dst
       cp properties_src, properties_dst
 
       #copy libCoreAPI.a and Rhodes.a
-      prebuild_root = File.join($startdir, "platform/iphone/prebuild")
+      prebuild_root = File.join($startdir, "platform","iphone","prebuild")
 
       prebuild_ruby = File.join(prebuild_root, "ruby")
       prebuild_noruby = File.join(prebuild_root, "noruby")
@@ -1633,7 +1731,7 @@ namespace "build" do
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
-      iphone_project = File.join($app_path, "/project/iphone/#{appname_fixed}.xcodeproj")
+      iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
 
       if !File.exist?(iphone_project)
 
@@ -1645,14 +1743,15 @@ namespace "build" do
         chdir $app_path
 
         puts '$ prepare iphone XCode project for application'
-        Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+        rhogenpath = File.join($startdir, 'bin', 'rhogen')
+        Jake.run3("\"#{rhogenpath}\" iphone_project #{appname_fixed} \"#{$startdir}\"")
 
         Rake::Task['build:iphone:update_plist'].invoke
 
         if !$skip_build_xmls
           Rake::Task['build:bundle:prepare_native_generated_files'].invoke
-          rm_rf 'project/iphone/toremoved'
-          rm_rf 'project/iphone/toremovef'
+          rm_rf File.join('project','iphone','toremoved')
+          rm_rf File.join('project','iphone','toremovef')
         end
 
       end
@@ -1712,13 +1811,14 @@ namespace "build" do
 
       chdir $app_path
 
-      rm_rf 'project/iphone'
+      rm_rf File.join('project','iphone')
 
       puts 'prepare iphone XCode project for application'
+      rhogenpath = File.join($startdir, 'bin', 'rhogen')
       if $use_prebuild_data
-        Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project_prebuild #{appname_fixed} \"#{$startdir}\"")
+        Jake.run3("\"#{rhogenpath}\" iphone_project_prebuild #{appname_fixed} \"#{$startdir}\"")
       else
-        Jake.run3("\"#{$startdir}/bin/rhogen\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+        Jake.run3("\"#{rhogenpath}\" iphone_project #{appname_fixed} \"#{$startdir}\"")
       end
       #make_project_bakup
 
@@ -1767,10 +1867,9 @@ namespace "build" do
       Rake::Task['build:bundle:prepare_native_generated_files'].invoke
 
       #iTunesArtwork
-      itunes_artwork_in_project = File.join($app_path, "/project/iphone/iTunesArtwork")
-      itunes_artwork_in_project_2 = File.join($app_path, "/project/iphone/iTunesArtwork@2x")
-
-      itunes_artwork = File.join($app_path, "/project/iphone/iTunesArtwork")
+        itunes_artwork_in_project = File.join($app_path, "project","iphone","iTunesArtwork")
+        itunes_artwork_in_project_2 = File.join($app_path, "project","iphone","iTunesArtwork@2x")
+        itunes_artwork = File.join($app_path, "project","iphone","iTunesArtwork")
 
       if !$app_config["iphone"].nil?
         if !$app_config["iphone"]["production"].nil?
@@ -1812,8 +1911,11 @@ namespace "build" do
         BuildOutput.warning("iTunesArtwork@2x (image required for iTunes) not found - use default !!!" )
       end
 
-      rm_rf 'project/iphone/toremoved'
-      rm_rf 'project/iphone/toremovef'
+      rm_rf File.join('project','iphone','toremoved')
+      rm_rf File.join('project','iphone','toremovef')
+
+      copy_generated_sources_and_binaries
+
       print_timestamp('build:iphone:make_xcode_project FINISH')
 
     end
@@ -2442,7 +2544,7 @@ namespace "clean" do
       app_path = File.join($app_path, 'bin', 'target', 'iOS')
       rm_rf app_path
 
-      iphone_project_folder = File.join($app_path, "/project/iphone")
+      iphone_project_folder = File.join($app_path, "project","iphone")
 
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
@@ -2461,9 +2563,9 @@ namespace "clean" do
         end
         chdir $startdir
 
-        chdir File.join($app_path, "/project/iphone")
-         rm_rf 'build/Debug-*'
-         rm_rf 'build/Release-*'
+        chdir File.join($app_path, "project","iphone")
+           rm_rf File.join('build','Debug-*')
+           rm_rf File.join('build','Release-*')
         chdir $startdir
 
       end
@@ -2966,10 +3068,13 @@ namespace "device" do
       end
       print_timestamp('application bundle was updated')
 
+
+      chdir parent_app_bin
+
       #sign
       if !is_simulator
 
-        chdir parent_app_bin
+
         rm_rf File.join(parent_app_bin, "Payload/prebuild.app/_CodeSignature")
         rm_rf File.join(parent_app_bin, "Payload/prebuild.app/CodeResources")
 

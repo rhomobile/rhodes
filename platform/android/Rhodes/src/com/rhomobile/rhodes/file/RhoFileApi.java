@@ -41,6 +41,9 @@ import java.util.List;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
+import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
 import android.content.Context;
@@ -49,6 +52,8 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import android.view.View;
+import android.webkit.WebView;
 
 public class RhoFileApi {
 	
@@ -57,6 +62,7 @@ public class RhoFileApi {
 	private static final int MAX_SIZE = 2*1024*1024;
 	
 	private static final String STAT_TABLE_FILENAME = "rho.dat";
+	private static final String FORCE_ASSETS_FLAG_FILE = "assets_forced.txt";
 	
 	private static AssetManager am;
 	private static String root;
@@ -67,7 +73,7 @@ public class RhoFileApi {
 	private static native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath, String sharedPath);
 	private static native void nativeInitLogPath(String path);
 	private static native void nativeInit();
-    private static native void nativeInitAssetManager(AssetManager assetMgr);
+        private static native void nativeInitAssetManager(AssetManager assetMgr);
 	
 	/**
 	 * Replaces '\' (back slashes) with '/' slashes. Useful for changing Windows paths to more URI friendly strings   
@@ -84,6 +90,19 @@ public class RhoFileApi {
 	public static native void removeBundleUpgrade();
 
     private static native void processStatTable(boolean emulateFileTree, boolean resetFileTree) throws IOException;
+
+    
+    static void reloadStatTable() {
+        Log.i(TAG, "reloadStatTable()");
+        try {
+        	setFsModeTransparrent(false);
+        	processStatTable( !RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS"), false);
+        }
+        catch (Throwable e) {
+        	e.printStackTrace();
+            Log.e(TAG, "Exception during update Stat Table !!!");
+        }
+    }
 
 	private static void copyAssets(String assets[])
 	{
@@ -178,28 +197,170 @@ public class RhoFileApi {
         processStatTable(emulateFileTree, resetFileTree && !emulateFileTree);
     }
 
+	private static void doForceAllFilesForContext(Context ctx) {
+		
+		// clear cache in WebView
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				View v = RhoExtManager.getInstance().getWebView().getView();
+				if (v instanceof WebView) {
+					WebView wv = (WebView)v;
+					wv.clearCache(true);
+					Log.d(TAG, "%% WebCache was cleaned !!!");
+				}
+			}
+		});
+
+		// check for already forced files
+		File assets_forced_file = new File(root, FORCE_ASSETS_FLAG_FILE);
+		if (assets_forced_file.exists()) {
+			Log.d(TAG, "doForceAllFilesForContext() SKIP because founded flag file %%");
+			return;
+		}
+		try {
+			File parent = assets_forced_file.getParentFile();
+			if (parent != null)
+				parent.mkdirs();
+			OutputStream os = new FileOutputStream(assets_forced_file);
+			os.write("assets_forced".getBytes());
+			os.close();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			Log.d(TAG, "doForceAllFilesForContext() ERROR with creation of flag file %%");
+			e1.printStackTrace();
+		}
+		
+        try {
+        	//setFsModeTransparrent(false);
+        	//processStatTable( !RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS"), true);
+        }
+        catch (Throwable e) {
+        	e.printStackTrace();
+            Log.e(TAG, "Exception during update Stat Table with copy files from bundle to filesystem !!!");
+        }
+		
+		///*
+		try {
+	       InputStream is = null;
+	        try {
+	
+	            File statFile = new File(getRootPath(), STAT_TABLE_FILENAME);
+	            if (statFile.exists() && statFile.isFile()) {
+	                Log.i(TAG, "Opening stat table from FS: " + statFile.getCanonicalPath());
+	                is = new FileInputStream(statFile);
+	            } else {
+	                Log.i(TAG, "Opening stat table from package assets");
+	                is = am.open("rho.dat");
+	            }
+	
+	            BufferedReader in = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+				for (;;) {
+					String line = in.readLine();
+					if (line == null)
+						break;
+					
+					int idx = line.indexOf('|');
+					if (idx == -1)
+						continue;
+					String path = line.substring(0, idx);
+					line = line.substring(idx + 1);
+					idx = line.indexOf('|');
+					if (idx == -1)
+						continue;
+					String type = line.substring(0, idx);
+					line = line.substring(idx + 1);
+					idx = line.indexOf('|');
+					if (idx == -1)
+						continue;
+					
+					//updateStatTable(path, type, size, mtime);
+					if ("dir".equals(type)) {
+						path = path + "/ttt.txt";
+						File dst = new File(root, path);
+						File parent = dst.getParentFile();
+						if (parent != null) {
+							Log.d(TAG, "doForceAllFilesForContext() %% make dirs for = "+path);
+							parent.mkdirs();
+						}
+					}
+				}
+			}
+			finally {
+				if (is != null)
+					is.close();
+			}
+		}
+		catch(Exception e) {
+			Log.e(TAG, "doForceAllFilesForContext() Error during make dirs = "+e.getMessage());
+		}
+		
+		AssetManager amam = ctx.getAssets();
+		
+		try {
+			initialCopy(ctx, amam.list(""));
+		} catch (IOException e) {
+			Log.e(TAG, "%% Can not force all files !!!");
+			e.printStackTrace();
+		}
+		//*/
+	}
+	
+	public static void doForceAllFiles() 
+	{
+		Context ctx = RhodesService.getContext();
+		doForceAllFilesForContext(ctx);
+	}
+
     public static void initialCopy(Context ctx, String assets[])
     {
         am = ctx.getAssets();
         for(String asset: assets)
         {
-            copy(makeRelativePath(getRootPath() + asset));
+            //copy(makeRelativePath(getRootPath() + asset));
+		copyFileOrFolder(ctx, makeRelativePath(getRootPath() + asset));
         }
     }
 
+    public static void copyFileOrFolder(Context ctx, String path) {
+		// check for file
+        am = ctx.getAssets();
+    	try {
+			String[] l = am.list(path);
+			if (l.length > 0) {
+				// folder !
+				for (int i = 0; i < l.length; ++i) {
+					copyFileOrFolder(ctx, path + "/" + l[i]);
+	            }
+			}
+			else {
+				// file
+				copy(path);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+		
+		
+    	
+    }
+    
 	public static boolean copy(String path)
 	{
-		Log.d(TAG, "Copy " + path + " to FS");
+
+		Log.d(TAG, "%% Copy " + path + " to FS");
 		InputStream is = null;
 		OutputStream os = null;
 		try {
-			is = am.open(path);
-			
 			File dst = new File(root, path);
 			File parent = dst.getParentFile();
 			if (parent == null)
 				return false;
 			parent.mkdirs();
+			
+			is = am.open(path);
+			//AssetFileDescriptor fs = am.openFd(path);
 			
 			os = new FileOutputStream(dst);
 			byte[] buf = new byte[4096];
@@ -211,7 +372,8 @@ public class RhoFileApi {
 			return true;
 		}
 		catch (Exception e) {
-			Log.e(TAG, "Can not copy " + path + " to FS");
+			e.printStackTrace();
+			Log.e(TAG, "Can not copy " + path + " to FS with ERROR = "+e.getMessage());
 			return false;
 		}
 		finally {
@@ -313,7 +475,7 @@ public class RhoFileApi {
 	public static InputStream openInPackage(String path)
 	{
 		try {
-			//Log.d(TAG, "Open " + path + "...");
+			Log.d(TAG, "Open in package " + path + "...");
 			InputStream is = am.open(path, AssetManager.ACCESS_RANDOM);
 			is.mark(MAX_SIZE);
 			return is;

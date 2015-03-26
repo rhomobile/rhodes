@@ -36,10 +36,11 @@
 #include <algorithm>
 
 
-// REMOVE IT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
-//#define OS_ANDROID    
+#include "net/INetRequest.h"
 
-
+#if defined(OS_WINCE)
+#include <net/CompatWince.h>
+#endif
 
 using namespace rho;
 using namespace rho::common;
@@ -52,6 +53,7 @@ extern "C" int rho_prepare_folder_for_upgrade(const char* szPath);
 
 #if defined OS_ANDROID
 extern "C" void rho_android_file_reload_stat_table();
+extern "C" void rho_android_force_all_files();
 #endif
 
 
@@ -94,7 +96,12 @@ public:
     bool removeFile(const String& path); 
     void removeFolder(const String& path); 
     void addFile(const String& full_line); 
-    void addFolder(const String& full_line); 
+    void addFolder(const String& full_line);
+    
+    int getItemCount();
+    String getItem(int index);
+    int getItemDetails(int index, String* path, String* type, String* size, String* mtime, String* crc);
+    int findItemByPath(String path);
     
     void loadFromFile(const String& filelist_path, const String& prefix);
     void saveToFile();
@@ -115,13 +122,72 @@ private:
         
     }
     
+    int CFileList::getItemCount() {
+        return mLines.size();
+    }
+    
+    String CFileList::getItem(int index) {
+        return mLines.at(index);
+    }
+
+    
+    int CFileList::getItemDetails(int index, String* path, String* type, String* size, String* mtime, String* crc) {
+        String line = mLines.at(index);
+        int count = 0;
+        CTokenizer oTokenizer( line, "|" );
+        if (oTokenizer.hasMoreTokens()) {
+            if (path != NULL) {
+                *path = oTokenizer.nextToken();
+            }
+            count++;
+        }
+        if (oTokenizer.hasMoreTokens()) {
+            if (type != NULL) {
+                *type = oTokenizer.nextToken();
+            }
+            count++;
+        }
+        if (oTokenizer.hasMoreTokens()) {
+            if (size != NULL) {
+                *size = oTokenizer.nextToken();
+            }
+            count++;
+        }
+        if (oTokenizer.hasMoreTokens()) {
+            if (mtime != NULL) {
+                *mtime = oTokenizer.nextToken();
+            }
+            count++;
+        }
+        if (oTokenizer.hasMoreTokens()) {
+            if (crc != NULL) {
+                *crc = oTokenizer.nextToken();
+            }
+            count++;
+        }
+        return count;
+    }
+    
+    int CFileList::findItemByPath(String path) {
+        int i;
+        for (i = 0; i < getItemCount(); i++) {
+            String ipath = "";
+            getItemDetails(i, &ipath, NULL,NULL,NULL,NULL);
+            if (path.compare(ipath) == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
     
     bool CFileList::removeFile(const String& path) {
         String f = mPrefix + path;
         LOG(TRACE) + "CFileList::removeFile( " + f + ") :";
         bool founded = false;
         Vector<String>::iterator it;
-        String to_find = f + "\t";
+        String to_find = f + "|";
+        
         int i;
         for (i = 0; i < mLines.size(); i++) {
             String& line = mLines.at(i);
@@ -210,15 +276,22 @@ class CReplaceBundleThread : public rho::common::CRhoThread
     DEFINE_LOGCLASS;
 
     String m_bundle_path;
-    String m_finish_callback;
+    static String m_finish_callback;
     bool mDoNotRestartApp;
+    
+    static bool mCheckFileList;
+    static bool mAllViaCallback;
     
     bool* m_is_finished_flag;
 
     void doReplaceBundle();
+    
+    void sendRequestFullUpdate();
+    
+    bool is_need_full_update(CFileList* old_filelist, CFileList* new_filelist, CFileList* add_list, CFileList* remove_list);
 public:
 
-    CReplaceBundleThread(const char* root_path, const char* finish_callback, bool do_not_restart_app, bool* is_finished_flag) 
+    CReplaceBundleThread(const char* root_path, const char* finish_callback, bool do_not_restart_app, bool* is_finished_flag, bool is_check_filelist, bool is_all_responce_only_via_callback)
     {
         m_bundle_path = root_path;
         if (finish_callback != NULL) {
@@ -229,6 +302,8 @@ public:
         }
         mDoNotRestartApp = do_not_restart_app;
         m_is_finished_flag = is_finished_flag;
+        mCheckFileList = is_check_filelist;
+        mAllViaCallback = is_all_responce_only_via_callback;
         start(rho::common::IRhoRunnable::epNormal);
     }
     
@@ -241,11 +316,16 @@ public:
     static unsigned int removeFilesByList( const String& strListPath, const String& strSrcFolder, bool skipNotExist );
     static unsigned int moveFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder );
     
-    static unsigned int partialAddFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder, CFileList* filelist);
-    static unsigned int partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist);
+    static unsigned int partialAddFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder, CFileList* filelist, CFileList* filelist_apps);
+    static unsigned int partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist, CFileList* filelist_apps);
     
 };
 IMPLEMENT_LOGCLASS(CReplaceBundleThread,"RhoBundle");
+    
+String CReplaceBundleThread::m_finish_callback;
+bool CReplaceBundleThread::mCheckFileList;
+bool CReplaceBundleThread::mAllViaCallback;
+   
 
 CFileTransaction::CFileTransaction(const String& strFolder, boolean bRollbackInDestr) : m_strFolder(strFolder), m_bRollbackInDestr(bRollbackInDestr)
 {
@@ -395,6 +475,9 @@ unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath,
                     nError = 1;
                     break;
                 }
+                else {
+                    LOG(TRACE) + "Cannot remove file (not found): " + CFilePath::join( strSrcFolder,strPath);
+                }
             }
         }
     }
@@ -415,7 +498,7 @@ unsigned int CReplaceBundleThread::moveFilesByList( const String& strListPath, c
     {
 		String strLine = oTokenizer.nextToken();
 
-        CTokenizer oLineTok( strLine, "\t" );
+        CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
             continue;
         String strPath = oLineTok.nextToken();
@@ -447,7 +530,7 @@ unsigned int CReplaceBundleThread::moveFilesByList( const String& strListPath, c
 }
 
     
-unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder, CFileList* filelist) {
+unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder, CFileList* filelist, CFileList* filelist_apps) {
 	LOG(TRACE) + "Partial Moving files by list: " + strSrcFolder + " -> " + strDstFolder;
     
 	unsigned int nError = 0;
@@ -468,7 +551,7 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
             }
         }
         
-        CTokenizer oLineTok( strLine, "\t" );
+        CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
             continue;
         String strPath = oLineTok.nextToken();
@@ -489,12 +572,18 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
             if (!CRhoFile::isFileExist(strDstPath.c_str())) {
                 CRhoFile::createFolder(strDstPath.c_str());
                 filelist->addFolder(strLine);
+                filelist_apps->addFolder(strLine);
             }
         }else if ( strType.compare("file") == 0)
         {
             LOG(TRACE) + "Renaming file: " + strSrcPath + " -> " + strDstPath;
 
             bool must_be_exist = filelist->removeFile(strPath);
+            filelist_apps->removeFile(strPath);
+
+#ifdef OS_ANDROID
+            must_be_exist = false;
+#endif
 
             if (CRhoFile::isFileExist( strDstPath.c_str()) ) {
                 
@@ -523,6 +612,7 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
             }
             else {
                 filelist->addFile(strLine);
+                filelist_apps->addFile(strLine);
             }
         }
     }
@@ -530,7 +620,7 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
     return nError;
 }
     
-unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist) {
+unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist, CFileList* filelist_apps) {
 	LOG(TRACE) + "Partial Removing items by list: " + strSrcFolder + ", list: " + strListPath;
     
     unsigned int nError = 0;
@@ -554,7 +644,7 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
             }
         }
         
-        CTokenizer oLineTok( strLine, "\t" );
+        CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
             continue;
         String strPath = oLineTok.nextToken();
@@ -584,6 +674,7 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
                 }
                 else {
                     filelist->removeFolder(strPath);
+                    filelist_apps->removeFolder(strPath);
                 }
             }
             else {
@@ -608,6 +699,7 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
                 }
                 else {
                     filelist->removeFile(strPath);
+                    filelist_apps->removeFile(strPath);
                 }
             }
             else {
@@ -625,6 +717,16 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
     
     
     
+void CReplaceBundleThread::sendRequestFullUpdate()
+{
+    if (m_finish_callback.size() > 0) {
+        char* norm_url = rho_http_normalizeurl(m_finish_callback.c_str());
+        String query = "&rho_callback=1&status=need_sync";
+        rho_net_request_with_data(norm_url, query.c_str());
+        rho_http_free(norm_url);
+        m_finish_callback = "";
+    }
+}
     
     
 void CReplaceBundleThread::showError(int nError, const String& strError )
@@ -632,7 +734,19 @@ void CReplaceBundleThread::showError(int nError, const String& strError )
     LOG(ERROR) + "Error happen when replace bundle: " + strError + "; Code: " + LOGFMT("%d") + nError;
 
     String strMsg = "Error happen when replace bundle: " + strError;
-    rho_sys_impl_exit_with_errormessage("Bundle update", strMsg.c_str());
+    if (mAllViaCallback) {
+        if (m_finish_callback.size() > 0) {
+            char* norm_url = rho_http_normalizeurl(m_finish_callback.c_str());
+            String query = "&rho_callback=1&status=error&message=";
+            query = query + strMsg.c_str();
+            rho_net_request_with_data(norm_url, query.c_str());
+            rho_http_free(norm_url);
+            m_finish_callback = "";
+        }
+    }
+    else {
+        rho_sys_impl_exit_with_errormessage("Bundle update", strMsg.c_str());
+    }
 }
 
 void CReplaceBundleThread::run()
@@ -665,6 +779,115 @@ void CReplaceBundleThread::run()
 }
 
     
+bool CReplaceBundleThread::is_need_full_update(CFileList* old_filelist, CFileList* new_filelist, CFileList* add_list, CFileList* remove_list) {
+    // 1. enumerate new list
+    int i;
+    
+    for (i = 0; i < new_filelist->getItemCount(); i++) {
+        String new_item = new_filelist->getItem(i);
+        String new_item_path;
+        new_filelist->getItemDetails(i, &new_item_path, NULL, NULL, NULL, NULL);
+        int old_index = old_filelist->findItemByPath(new_item_path);
+        if (old_index >= 0) {
+            // exist in old
+            String old_item = old_filelist->getItem(old_index);
+            // extract type and crc
+            String old_type = "";
+            String new_type = "";
+            String old_crc = "";
+            String new_crc = "";
+            String old_size = "";
+            String new_size = "";
+            new_filelist->getItemDetails(i, NULL, &new_type, &new_size, NULL, &new_crc);
+            old_filelist->getItemDetails(old_index, NULL, &old_type, &old_size, NULL, &old_crc);
+            if ((new_type.length() > 0) && (new_size.length() > 0) && (new_crc.length() > 0) && (new_type.compare(old_type) == 0) && (new_size.compare(old_size) == 0) && (new_crc.compare(old_crc) == 0)) {
+            //if (new_item.compare(old_item) == 0) {
+                // equal
+                // good - skip it and go forward
+            }
+            else {
+                // not equal
+                // check for contain in add list
+                int add_index = add_list->findItemByPath(new_item_path);
+                if (add_index >= 0) {
+                    // exist in add_list
+                    // good - skip it and go forward
+                }
+                else {
+                    // not exist
+                    // sync issue founded !
+                    if ((new_item_path.compare("rhofilelist.txt") != 0) &&
+                        (new_item_path.compare("rhoconfig.txt") != 0) &&
+                        (new_item_path.compare("rhoconfig.txt.timestamp") != 0) &&
+                        (new_item_path.compare("app_manifest.txt") != 0) &&
+                        (!rho::String_startsWith(new_item_path, "public/api/")) ) {
+                        LOG(ERROR) + "SYNC ISSUE FOUNDED ! Item ["+new_item_path+"] is different with current server version !  value [new/old] size["+new_size+"/"+old_size+"] crc["+new_crc+"/"+old_crc+"]";
+                        return true;
+                    }
+                }
+            }
+        }
+        else {
+            // not exist in old
+            // check in add list
+            int add_index = add_list->findItemByPath(new_item_path);
+            if (add_index >= 0) {
+                // exist in add_list
+                // good - skip it and go forward
+            }
+            else {
+                // not exist
+                // sync issue founded !
+                if ((new_item_path.compare("rhofilelist.txt") != 0) &&
+                    (new_item_path.compare("rhoconfig.txt") != 0) &&
+                    (new_item_path.compare("rhoconfig.txt.timestamp") != 0) &&
+                    (new_item_path.compare("app_manifest.txt") != 0) &&
+                    (!rho::String_startsWith(new_item_path, "public/api/")) ) {
+                    LOG(ERROR) + "SYNC ISSUE FOUNDED ! Item ["+new_item_path+"] exist in current version on server but not exist on device !";
+                    return true;
+                }
+            }
+            
+        }
+    }
+    
+    // enumerate old list
+    for (i = 0; i < old_filelist->getItemCount(); i++) {
+        String old_item = old_filelist->getItem(i);
+        String old_item_path;
+        old_filelist->getItemDetails(i, &old_item_path, NULL, NULL, NULL, NULL);
+        int new_index = new_filelist->findItemByPath(old_item_path);
+        if (new_index >= 0) {
+            // none - already checked when enumerate new items
+        }
+        else {
+            // check remove list
+            int remove_index = remove_list->findItemByPath(old_item_path);
+            if (remove_index >= 0) {
+                // exist in removed
+                // good - skip and go forward
+            }
+            else {
+               // not in removed not in new
+               // sync issue founded !
+                if ((old_item_path.compare("rhofilelist.txt") != 0) &&
+                    (old_item_path.compare("rhoconfig.txt") != 0) &&
+                    (old_item_path.compare("rhoconfig.txt.timestamp") != 0) &&
+                    (old_item_path.compare("app_manifest.txt") != 0) &&
+                    (!rho::String_startsWith(old_item_path, "public/api/")) ) {
+                    LOG(ERROR) + "SYNC ISSUE FOUNDED ! Item ["+old_item_path+"] exist on device but not exist on server !";
+                    return true;
+                }
+            }
+        }
+    }
+    
+    
+    return false;
+}
+    
+    
+    
 void CReplaceBundleThread::doReplaceBundle()
 {
     CFileTransaction oFT( RHODESAPP().getAppRootPath());
@@ -685,20 +908,64 @@ void CReplaceBundleThread::doReplaceBundle()
 #endif    
 
     unsigned int nError = 0;
+    String rho_filelist_path = "";
+    String rho_filelist_apps_path = "";
     CFileList filelist;
+    CFileList filelist_apps;
     
     bool is_partial_update = CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str()) || CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt").c_str());
+
+    
+#ifdef OS_ANDROID
+    String root = RHODESAPP().getRhoRootPath().c_str();
+    LOG(TRACE) + "Android RhoRootPath = " + root.c_str();
+    rho_filelist_path = CFilePath::join(root, "rho.dat");
+    filelist.loadFromFile(rho_filelist_path, "apps/");
+    rho_filelist_apps_path = CFilePath::join( root, "apps/rhofilelist.txt");
+    filelist_apps.loadFromFile(rho_filelist_apps_path, "");
+#else
+    rho_filelist_path = CFilePath::join( RHODESAPP().getAppRootPath(), "rhofilelist.txt");
+    filelist.loadFromFile(rho_filelist_path, "");
+    rho_filelist_apps_path = rho_filelist_path;
+    filelist_apps.loadFromFile(rho_filelist_apps_path, "");
+#endif
     
 
+    if (is_partial_update && mCheckFileList) {
+        // check sync issue - compare rhofilelist's on device and from bundle zip
+        // device file list alreadyloaded to filelist
+        
+        // load bundle list to newfillist
+        CFileList newfilelist;
+        newfilelist.loadFromFile(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), "");
+        
+        CFileList add_list;
+        add_list.loadFromFile(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str(), "");
+    
+        CFileList remove_list;
+        remove_list.loadFromFile(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt").c_str(), "");
+
+        if (is_need_full_update(&filelist_apps, &newfilelist, &add_list, &remove_list)) {
+            // stop and send responce
+            sendRequestFullUpdate();
+            return;
+        }
+        
+    }
+    if (!is_partial_update) {
+        // check full update main file
+        String new_files_list_path = CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt");
+        if (!CRhoFile::isFileExist(new_files_list_path.c_str())) {
+            showError(nError, "Invalid new bundle content - not contain rhofilelist !" );
+            return;
+        }
+    }
+    
+    
     if (is_partial_update) {
-#ifdef OS_ANDROID
-        filelist.loadFromFile(CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat"), "apps/");
-#else
-        filelist.loadFromFile(CFilePath::join( RHODESAPP().getAppRootPath(), "rhofilelist.txt"), "");
-#endif        
         if (CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt").c_str())) {
             //nError = removeFilesByList( CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt"), ::RHODESAPP().getAppRootPath(), true );
-            nError = partialRemoveItemsByList( CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt"), ::RHODESAPP().getAppRootPath(), &filelist);
+            nError = partialRemoveItemsByList( CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt"), ::RHODESAPP().getAppRootPath(), &filelist, &filelist_apps);
             if ( nError != 0 )
             {
                 showError(nError, "Remove original files from partial remove list failed." );
@@ -709,7 +976,11 @@ void CReplaceBundleThread::doReplaceBundle()
     else {
         // full update
         //Remove current files
-        nError = removeFilesByList( CFilePath::join( RHODESAPP().getAppRootPath(), "rhofilelist.txt"), ::RHODESAPP().getAppRootPath(), true );
+#ifdef OS_ANDROID
+        nError = removeFilesByList( rho_filelist_apps_path, ::RHODESAPP().getAppRootPath(), true );
+#else
+        nError = removeFilesByList( rho_filelist_apps_path, ::RHODESAPP().getAppRootPath(), true );
+#endif
         if ( nError != 0 )
         {
             showError(nError, "Remove files from bundle failed." );
@@ -723,7 +994,7 @@ void CReplaceBundleThread::doReplaceBundle()
     if (is_partial_update) {
         if (CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str())) {
             // partial update
-            nError = partialAddFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() , &filelist);
+            nError = partialAddFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() , &filelist, &filelist_apps);
             if ( nError != 0 )
             {
                 showError(nError, "Copy files to bundle failed." );
@@ -733,34 +1004,67 @@ void CReplaceBundleThread::doReplaceBundle()
     }
     else {
         // full update
+#ifdef OS_ANDROID
+        nError = partialAddFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() , &filelist, &filelist_apps);
+        if ( nError != 0 )
+        {
+            showError(nError, "Copy files to bundle failed." );
+            return;
+        }
+#else
         nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() );
         if ( nError != 0 )
         {
             showError(nError, "Copy files to bundle failed." );
             return;
         }
-    }
-    if (is_partial_update) {
-        filelist.saveToFile();
-#ifdef OS_ANDROID
-        //rho_android_file_reload_stat_table();
-#endif                
+#endif
     }
     
     LOG(INFO) + "STOP";
     oFT.commit();
 
+    if (is_partial_update) {
+        filelist.saveToFile();
 #ifdef OS_ANDROID
-    if (!is_partial_update) {
-        //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
-        if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat").c_str()))
+        filelist_apps.saveToFile();
+#endif
+    }
+    else {
+#ifdef OS_ANDROID
+        
+            // no CFilePath::join(m_bundle_path, "RhoBundle/rho.dat") in current bundle - we should modify and copy CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt") !!!
+            filelist.saveToFile();
+        
+            if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), rho_filelist_apps_path.c_str()))
+            {
+                int err = errno;
+                LOG(ERROR) + "Cannot replace rhofilelist.txt, errno: " + LOGFMT("%d") + err;
+            }
+            //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
+            //if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat").c_str()))
+            //{
+            //    int err = errno;
+            //    LOG(ERROR) + "Cannot copy rho.dat, errno: " + LOGFMT("%d") + err;
+            //}
+#else
+        // copy new rhofilelist.txt
+        if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), rho_filelist_path.c_str()))
         {
             int err = errno;
-            LOG(ERROR) + "Cannot copy rho.dat, errno: " + LOGFMT("%d") + err;
+            LOG(ERROR) + "Cannot replace rhofilelist.txt, errno: " + LOGFMT("%d") + err;
         }
-    }
 #endif
+    
+    
+    }
 
+    
+
+
+#ifdef OS_ANDROID
+    rho_android_file_reload_stat_table();
+#endif
 
     //Delete bundle folder
     CRhoFile::deleteFolder( m_bundle_path.c_str());
@@ -772,10 +1076,15 @@ void CReplaceBundleThread::doReplaceBundle()
 extern "C" 
 {
 
-void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode )
+void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode, bool check_filelist, bool all_via_callback_only)
 {
+    
+#ifdef OS_ANDROID
+    rho_android_force_all_files();
+#endif
+    
     bool is_finished_flag = false;
-    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, (not_thread_mode ? &is_finished_flag : 0));  
+    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, (not_thread_mode ? &is_finished_flag : 0), check_filelist, all_via_callback_only);
     if (not_thread_mode) {
         while (!is_finished_flag) {
             replace_thread->sleep(10);
@@ -819,7 +1128,7 @@ void rho_sys_replace_current_bundle(const char* path, rho_param *p)
             }
         }
     }
-    rho_sys_replace_current_bundleEx( path, finish_callback, do_not_restart_app, not_thread_mode );
+    rho_sys_replace_current_bundleEx( path, finish_callback, do_not_restart_app, not_thread_mode , false, false );
 }
 
 int rho_sys_check_rollback_bundle(const char* szRhoPath)
@@ -844,5 +1153,16 @@ int rho_sysimpl_remove_bundle_files(const char* path, const char* fileListName)
     }
     return nError;
 }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 } //extern "C"
