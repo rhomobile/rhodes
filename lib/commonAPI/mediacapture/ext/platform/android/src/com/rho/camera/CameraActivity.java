@@ -44,7 +44,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.SurfaceView;
 import android.view.View;
@@ -60,7 +59,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
     MediaPlayer _shootMP;
-    private Camera mCamera;
+    private Camera mCamera = null;
     
     @Override
     protected void onCreate(Bundle extras) {
