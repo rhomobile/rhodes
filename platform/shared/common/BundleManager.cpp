@@ -581,6 +581,10 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
             bool must_be_exist = filelist->removeFile(strPath);
             filelist_apps->removeFile(strPath);
 
+#ifdef OS_ANDROID
+            must_be_exist = false;
+#endif
+
             if (CRhoFile::isFileExist( strDstPath.c_str()) ) {
                 
                 nError = CRhoFile::deleteFile( strDstPath.c_str() );
@@ -1010,9 +1014,7 @@ void CReplaceBundleThread::doReplaceBundle()
             return;
         }
 #else
-	nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), RHODESAPP().getAppRootPath());
-
-	if ( nError != 0 )
+        nError = moveFilesByList( CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), CFilePath::join(m_bundle_path, "RhoBundle/apps"), ::RHODESAPP().getAppRootPath().c_str() );
         if ( nError != 0 )
         {
             showError(nError, "Copy files to bundle failed." );
