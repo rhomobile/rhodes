@@ -156,7 +156,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>The captured image is stored on the device. The callback associated with takePicture will contain the location of the image.</DESC>
                     </VALUE>
                     <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
-                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>
+                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
