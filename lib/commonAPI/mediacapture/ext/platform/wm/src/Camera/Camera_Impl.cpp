@@ -255,9 +255,24 @@ namespace rho {
 				rho::String outputFormat;
 				if(eFormat == eImageUri)
 				{					
-					//for image path, set file:// as well so that user can access the link
-					rho::String pathPrefix = "file://";
-					imageUri= pathPrefix + imageUri;
+					rho::String appRootPath;
+					rho::String fileName;
+					rho::String newFilePath;
+					appRootPath = RHODESAPP().getAppRootPath();
+					unsigned int index = imageUri.find_last_of("\\");		
+					if(index > 0)
+					{
+						fileName = imageUri.substr(index);
+					}
+					else
+					{
+						fileName = imageUri;
+					}
+					newFilePath = appRootPath + "/" + fileName;
+					rho::StringW szFilePath = rho::common::convertToStringW(newFilePath);
+					rho::StringW szExistingPath= rho::common::convertToStringW(imageUri);
+					CopyFile(szExistingPath.c_str(), szFilePath.c_str(), TRUE);
+					imageUri = fileName;
 				}
 				outputFormat = "jpg";		
 				statusData.put( "imageFormat", outputFormat);
