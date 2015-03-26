@@ -12,6 +12,7 @@ import java.util.Map;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -40,6 +41,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
     
     private Camera mCamera;
     private int mCameraUsers;
+    private Uri fileUri;
+    String mCurrentPhotoPath = null;
+    private ContentValues values = null;
     
     int getCameraIndex() {
         return CameraSingletonObject.getCameraIndex(getId());
@@ -377,21 +381,17 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 throw new RuntimeException("Unknown 'outputFormat' value: " + outputFormat);
             }
             
-            ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
-            ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(actualPropertyMap);
-
             Intent intent = null;
             if (Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder"))) {
-                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
-                intent.putExtra("android.intent.extras.CAMERA_FACING", Integer.valueOf(getId().substring(7)).intValue());
                 if (outputFormat.equalsIgnoreCase("image")) {
-                    String tmpPath = getTemporaryPath(filePath);
-                    if (tmpPath == null) {
-                        throw new RuntimeException("Failed to access shared temporary folder");
-                    }
-                    Uri captureUri = Uri.fromFile(new File(tmpPath));
-                    actualPropertyMap.put("captureUri", captureUri.toString());
-                    intent.putExtra("intent_default_camera", captureUri);
+                    values = new ContentValues();
+            		fileUri = RhodesActivity.getContext().getContentResolver().insert(
+            				MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                	intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
+                	actualPropertyMap.put("captureUri", fileUri.toString());
+                	// intent is null with MediaStore.EXTRA_OUTPUT so adding fileuri to map and get it with same key
+                	// if instead of MediaStore.EXTRA_OUTPUT any other key is used then the bitmap is null though the file is getting created
+            		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 } else
                 if (outputFormat.equalsIgnoreCase("dataUri")) {
                     
@@ -400,6 +400,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 intent = new Intent(ContextFactory.getUiContext(), CameraActivity.class);
                 intent.putExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID", getId());
             }
+            ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
+            ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(actualPropertyMap);
+            
             RhodesActivity.safeGetInstance().startActivityForResult(intent, RhoExtManager.getInstance().getActivityResultNextRequestCode(CameraRhoListener.getInstance()));
         } catch (RuntimeException e) {
             Logger.E(TAG, e);
