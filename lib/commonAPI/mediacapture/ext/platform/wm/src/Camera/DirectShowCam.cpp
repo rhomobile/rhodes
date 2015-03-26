@@ -239,41 +239,44 @@ void CDirectShowCam::Capture()
 					if(hFile)
 					{
 						DWORD dwFileSize = GetFileSize(hFile, NULL);
-						bool fileReadSuccess = true;
+						bool fileReadSuccess = false;
 						DWORD dwImageBufSize =0;///< Variable for Buffer size of captured image
 						LPVOID pImageBuffer =NULL;///< Buffer to save captured image
 						if (dwFileSize > 0)
 						{
 					
 							pImageBuffer = new BYTE[dwFileSize];
-							dwImageBufSize = dwFileSize;
-							DWORD dwBytesRead = 0;
-							do
+							if(pImageBuffer)
 							{
-								if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+								dwImageBufSize = dwFileSize;
+								DWORD dwBytesRead = 0;
+								do
 								{
-									//  Some error has occured reading the file
-									LOG(ERROR) + L"Unable to send image data as URI, could not read data";		
-									UpdateCallbackStatus("error","Unable to send image data as URI, could not read data","");
-									delete[] pImageBuffer;
-									pImageBuffer = NULL;
-									fileReadSuccess = false;
-									break;
+									if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+									{
+										//  Some error has occured reading the file
+										LOG(ERROR) + L"Unable to send image data as URI, could not read data";		
+										UpdateCallbackStatus("error","Unable to send image data as URI, could not read data","");									
+										fileReadSuccess = false;
+										break;
+									}
+									else
+									{
+										fileReadSuccess = true;
+									}
 								}
+								while (dwBytesRead != 0);
 							}
-							while (dwBytesRead != 0);
 						}
 						CloseHandle(hFile);
 						if(fileReadSuccess)
-						{								
-							rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
-							if(nImageWidth != 0)
+						{	
+							if(pImageBuffer)
 							{
+								rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
 								rho::common::GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
-							}
-							delete[] pImageBuffer;
-							pImageBuffer = NULL;
-							//update callback
+							}							
+							//update callback						
 							UpdateCallbackStatus("ok","",imageUri,nImageWidth, nImageHeight );
 
 						}
@@ -282,6 +285,8 @@ void CDirectShowCam::Capture()
 							LOG(ERROR) + L"Unable to send image data as URI, an error occured during file read";		
 							UpdateCallbackStatus("error","Unable to send image data as URI, an error occured during file read","");				
 						}
+						delete[] pImageBuffer;
+						pImageBuffer = NULL;
 					}
 					else
 					{
