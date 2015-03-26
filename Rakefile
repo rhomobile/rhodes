@@ -2779,6 +2779,20 @@ namespace "config" do
       end
       
     end
+	
+    if $current_platform == "android"
+      if $app_config['extensions'].index('barcode') 
+        $app_config['extensions'].delete('barcode')
+	    $app_config['extensions'] |= ['emdk3-manager']
+		$app_config['extensions'] |= ['barcode']
+      end
+      
+      if $app_config['extensions'].index('mobile_payment') 
+        $app_config['extensions'].delete('mobile_payment')
+	    $app_config['extensions'] |= ['emdk3-manager']
+		$app_config['extensions'] |= ['mobile_payment']
+      end
+    end
 
     #if $app_config['extensions'].index('rhoelementsext')
     #    #$app_config["extensions"].delete("rawsensors")
