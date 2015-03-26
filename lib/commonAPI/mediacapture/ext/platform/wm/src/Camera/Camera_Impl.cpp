@@ -25,6 +25,7 @@ namespace rho {
 	private:
 		rho::Hashtable<String, eCamType> m_DeviceNameMap;
 		rho::apiGenerator::CMethodResult m_pCb;
+		rho::StringW m_ImageUriPath; //hold the imageUri path, needs to delete during every new choosePictureOperation
 	public:
 
 		CCameraSingletonImpl(): CCameraSingletonBase(){}
@@ -234,7 +235,7 @@ namespace rho {
 			}
 		}
 		void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri, eImageOutputFormat eFormat =eImageUri, int nImageWidth =0, int nImageHeight =0)
-		{
+		{		
 			char tempVal[6];
 
 			rho::Hashtable<rho::String, rho::String> statusData;
@@ -254,7 +255,8 @@ namespace rho {
 
 				rho::String outputFormat;
 				if(eFormat == eImageUri)
-				{					
+				{
+					DeleteFile(m_ImageUriPath.c_str());
 					rho::String appRootPath;
 					rho::String fileName;
 					rho::String newFilePath;
@@ -269,9 +271,9 @@ namespace rho {
 						fileName = imageUri;
 					}
 					newFilePath = appRootPath + "/" + fileName;
-					rho::StringW szFilePath = rho::common::convertToStringW(newFilePath);
+					m_ImageUriPath = rho::common::convertToStringW(newFilePath);
 					rho::StringW szExistingPath= rho::common::convertToStringW(imageUri);
-					CopyFile(szExistingPath.c_str(), szFilePath.c_str(), TRUE);
+					CopyFile(szExistingPath.c_str(), m_ImageUriPath.c_str(), TRUE);					 
 					imageUri = fileName;
 				}
 				outputFormat = "jpg";		
