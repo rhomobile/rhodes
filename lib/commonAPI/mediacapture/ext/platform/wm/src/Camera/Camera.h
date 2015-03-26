@@ -64,6 +64,7 @@ protected:
 	rho::StringW m_FileName;
 	BOOL m_FlashMode;
 	eImageOutputFormat m_eOutputFormat;
+	static rho::StringW m_ImageUriPath; //hold the imageUri path, needs to delete during every capture operation
 	rho::StringW m_CamType;
 	bool m_PreviewOn; 
 	static bool m_IsCameraRunning;

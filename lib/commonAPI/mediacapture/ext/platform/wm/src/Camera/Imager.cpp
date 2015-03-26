@@ -435,7 +435,7 @@ void CImager::Capture()
             PlaySound(m_CaptureSound.c_str(),NULL,SND_FILENAME|SND_ASYNC);
 
             DWORD dwImageBufSize;///< Variable for Buffer size of captured image
-            LPVOID pImageBuffer;///< Buffer to save captured image
+            LPVOID pImageBuffer = NULL;///< Buffer to save captured image
 
             if ((dwRes = Image_GetImage(m_hImager, &dwImageBufSize, &pImageBuffer)) != E_IMG_SUCCESS) 
             {
@@ -449,39 +449,48 @@ void CImager::Capture()
             }
             else
             {
-                rho::StringW fileName = getFileName();
-                HANDLE hFile = 
-                    CreateFile(fileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-                if(hFile)
-                {
-                    if(WriteFile(hFile,pImageBuffer,dwImageBufSize,&dwBytesWritten,NULL))
-                    {
-                        rho::String imageUri;
-                        int nImageWidth=0;
-                        int nImageHeight =0;
-                        if(m_eOutputFormat == eDataUri)
-                        {
-                            rho::common::GetDataURI((BYTE*)pImageBuffer, dwBytesWritten, imageUri);
-                        }
-                        else
-                        {
-                            imageUri = rho::common::convertToStringA(fileName).c_str();
-                        }
-                        rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
-                        //update callback
-                        UpdateCallbackStatus("ok","",imageUri, nImageWidth, nImageHeight);
-                    }
-                    else
-                    {
-                        UpdateCallbackStatus("error","Unable to save image","");
-                    }
-                    CloseHandle(hFile);
+				if(pImageBuffer)
+				{
+					rho::StringW fileName = getFileName();
+					HANDLE hFile = 
+						CreateFile(fileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+					if(hFile)
+					{
+						if(!WriteFile(hFile,pImageBuffer,dwImageBufSize,&dwBytesWritten,NULL))
+						{
+							CloseHandle(hFile);
+							UpdateCallbackStatus("error","Unable to save image","");
 
-                }
-                else
-                {
-                    UpdateCallbackStatus("error","Unable to save image","");
-                }
+						}
+						else
+						{							
+							CloseHandle(hFile);
+							rho::String imageUri;
+							int nImageWidth=0;
+							int nImageHeight =0;
+							if(m_eOutputFormat == eDataUri)
+							{
+								rho::common::GetDataURI((BYTE*)pImageBuffer, dwBytesWritten, imageUri);
+							}
+							else
+							{
+								imageUri = rho::common::convertToStringA(fileName).c_str();
+							}
+							rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
+							//update callback
+							UpdateCallbackStatus("ok","",imageUri, nImageWidth, nImageHeight);
+						}
+
+					}
+					else
+					{
+						UpdateCallbackStatus("error","Unable to save image","");
+					}
+				}
+				else
+				{
+					UpdateCallbackStatus("error","Image Capture failed.","");
+				}
 
             }	
 

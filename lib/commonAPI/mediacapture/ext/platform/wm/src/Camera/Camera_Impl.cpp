@@ -25,6 +25,7 @@ namespace rho {
 	private:
 		rho::Hashtable<String, eCamType> m_DeviceNameMap;
 		rho::apiGenerator::CMethodResult m_pCb;
+		rho::StringW m_ImageUriPath; //hold the imageUri path, needs to delete during every new choosePictureOperation
 	public:
 
 		CCameraSingletonImpl(): CCameraSingletonBase(){}
@@ -170,19 +171,19 @@ namespace rho {
 					//  Rather than get bogged down the Direct Show again we'll just
 					//  read the file back in from disk.
 					HANDLE hFile = CreateFile(strFullName.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, 
-						FILE_ATTRIBUTE_NORMAL, NULL);			
+						 FILE_ATTRIBUTE_NORMAL, NULL);			
 
 					if(hFile)
 					{
-						LPVOID pImageBuffer;///< Buffer store the image						
+						LPVOID pImageBuffer = NULL;///< Buffer store the image						
 						DWORD dwFileSize = GetFileSize(hFile, NULL);
+						bool bFileReadSuccess = false;
 						if (dwFileSize > 0)
 						{		
 							DWORD dwBytesRead = 0;
 							pImageBuffer = new BYTE[dwFileSize];
 							if(pImageBuffer)
-							{
-								bool bFileReadSuccess = true;
+							{								
 								do
 								{
 									if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
@@ -192,27 +193,32 @@ namespace rho {
 										bFileReadSuccess = false;
 										break;
 									}
+									else
+									{
+										bFileReadSuccess = true;
+									}
 								}while (dwBytesRead != 0);
 
-								if(bFileReadSuccess)
-								{									
-									rho::common::GetDataURI((BYTE*)pImageBuffer, dwFileSize, imageUri);
-									rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwFileSize, nWidth, nHeight);
-								}
-								delete[] pImageBuffer;
-								pImageBuffer = NULL;
+								
 							}
 
 
 						}
 						CloseHandle(hFile);
+						if(bFileReadSuccess)
+						{									
+							rho::common::GetDataURI((BYTE*)pImageBuffer, dwFileSize, imageUri);
+							rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwFileSize, nWidth, nHeight);
+						}
+						delete[] pImageBuffer;
+						pImageBuffer = NULL;
 					}
 				}
 				else
 				{
 					imageUri = rho::common::convertToStringA(strFullName);
 					rho::common::GetJpegResolution(strFullName.c_str(), nWidth, nHeight);
-				}
+				}			
 
 				UpdateCallbackStatus("ok","",imageUri, eFormat, nWidth, nHeight);
 
@@ -229,7 +235,7 @@ namespace rho {
 			}
 		}
 		void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri, eImageOutputFormat eFormat =eImageUri, int nImageWidth =0, int nImageHeight =0)
-		{
+		{		
 			char tempVal[6];
 
 			rho::Hashtable<rho::String, rho::String> statusData;
@@ -249,10 +255,26 @@ namespace rho {
 
 				rho::String outputFormat;
 				if(eFormat == eImageUri)
-				{					
-					//for image path, set file:// as well so that user can access the link
-					rho::String pathPrefix = "file://";
-					imageUri= pathPrefix + imageUri;
+				{
+					DeleteFile(m_ImageUriPath.c_str());
+					rho::String appRootPath;
+					rho::String fileName;
+					rho::String newFilePath;
+					appRootPath = RHODESAPP().getAppRootPath();
+					unsigned int index = imageUri.find_last_of("\\");		
+					if(index > 0)
+					{
+						fileName = imageUri.substr(index);
+					}
+					else
+					{
+						fileName = imageUri;
+					}
+					newFilePath = appRootPath + "/" + fileName;
+					m_ImageUriPath = rho::common::convertToStringW(newFilePath);
+					rho::StringW szExistingPath= rho::common::convertToStringW(imageUri);
+					CopyFile(szExistingPath.c_str(), m_ImageUriPath.c_str(), TRUE);					 
+					imageUri = fileName;
 				}
 				outputFormat = "jpg";		
 				statusData.put( "imageFormat", outputFormat);

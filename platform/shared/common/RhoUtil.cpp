@@ -21,22 +21,28 @@ namespace rho {
 		}
 		void GetDataURI (BYTE* bData, int iLength, rho::String& data)
 		{
-			//  Convert the Signature to base 64, this representation is about 1/3
-			//  larger than the binary input
-			char* szEncodedString = new char[iLength * 2 + 30];
-			memset(szEncodedString, 0, iLength * 2 + 30);
+			if(bData)
+			{
+				//  Convert the Signature to base 64, this representation is about 1/3
+				//  larger than the binary input
+				char* szEncodedString = new char[iLength * 2 + 30];
+				if(szEncodedString)
+				{
+					memset(szEncodedString, 0, iLength * 2 + 30);
 
-			// Start with the data header
-			strcpy(szEncodedString, "data:image/bmp;base64,");
+					// Start with the data header
+					strcpy(szEncodedString, "data:image/jpeg;base64,");
 
-			// Now append the encoded data itself
-			rho::common::EncodeToBase64(bData, iLength, szEncodedString + strlen (szEncodedString));
+					// Now append the encoded data itself
+					rho::common::EncodeToBase64(bData, iLength, szEncodedString + strlen (szEncodedString));
 
-			// Copy it to the caller
-			data = szEncodedString;
+					// Copy it to the caller
+					data = szEncodedString;
 
-			// Clean up
-			delete[] szEncodedString;
+					// Clean up
+					delete[] szEncodedString;
+				}
+			}
 		}
 
 		//  Encodes the specified byte array into base64 encoding, this is used for
@@ -204,82 +210,85 @@ namespace rho {
 		bool GetJpegResolution(BYTE* pData, DWORD buffSize, int& nWidth, int& nHeight)
 		{
 			bool bRetStatus = false;
-			unsigned int bufferIndex = 0; //use to iterate over the buffer
-			nWidth = 0;
-			nHeight=0;
-			//Check whether file starts with 0xFFD8 and 0xFFE0
-			//Any jpeg image should start with these markers
-			if(pData[bufferIndex] == 0xFF && pData[bufferIndex+1] == 0xD8 && 
-				pData[bufferIndex+2] == 0xFF && pData[bufferIndex+3] == 0xE0) 
+			if(pData)
 			{
-				//move to segment length of section:0xFFE0
-				bufferIndex = bufferIndex + 4;
-				// Check for "JFIF", see this in the data section of the segment, if true proceed further
-				if(pData[bufferIndex+2] == 'J' && pData[bufferIndex+3] == 'F' && pData[bufferIndex+4] == 'I' && 
-					pData[bufferIndex+5] == 'F' && pData[bufferIndex+6] == 0x00) 
+				unsigned int bufferIndex = 0; //use to iterate over the buffer
+				nWidth = 0;
+				nHeight=0;
+				//Check whether file starts with 0xFFD8 and 0xFFE0
+				//Any jpeg image should start with these markers
+				if(pData[bufferIndex] == 0xFF && pData[bufferIndex+1] == 0xD8 && 
+					pData[bufferIndex+2] == 0xFF && pData[bufferIndex+3] == 0xE0) 
 				{
-					//get block length of each segment and skip segments, till we reach our marker 0xFFC0
-					unsigned short segment_length = pData[bufferIndex] << 8 | pData[bufferIndex+1]; //convert big endian issue by shift operater (two bytes is the segment length)
-					while( bufferIndex < buffSize)
+					//move to segment length of section:0xFFE0
+					bufferIndex = bufferIndex + 4;
+					// Check for "JFIF", see this in the data section of the segment, if true proceed further
+					if(pData[bufferIndex+2] == 'J' && pData[bufferIndex+3] == 'F' && pData[bufferIndex+4] == 'I' && 
+						pData[bufferIndex+5] == 'F' && pData[bufferIndex+6] == 0x00) 
 					{
-						bufferIndex = bufferIndex + segment_length; // skip the segment and point to the next segment in the buffer
-
-						WCHAR szLog[512];
-								wsprintf(szLog, L"bufferIndex = %d, segment_length = %d, buff size =%d", 
-									bufferIndex, segment_length, buffSize);
-								LOG(INFO) + szLog;
-						if(bufferIndex >= buffSize) 
+						//get block length of each segment and skip segments, till we reach our marker 0xFFC0
+						unsigned short segment_length = pData[bufferIndex] << 8 | pData[bufferIndex+1]; //convert big endian issue by shift operater (two bytes is the segment length)
+						while( bufferIndex < buffSize)
 						{
-							LOG(INFO) + L"segment is corrupted";
-							break;
-						}
-						if(pData[bufferIndex] == 0xFF) 
-						{	
-							//check whether the segment is start of frame 0xFFC0
-							if(pData[bufferIndex+1] == 0xC0)
-							{   
-								//start of frame segment looks as shown below
-								//[0xFFC0][unsigned short][unsigned char precision][unsigned short][unsigned short]
-								//              |                                     |                |
-								//              |                                     |                |
-								//              -->length of segment                  |                |
-								//                                                    -->height        |
-								//                                                                     -->width
-								//--------------------------------------------------------------------------------------
+							bufferIndex = bufferIndex + segment_length; // skip the segment and point to the next segment in the buffer
 
-
-								nHeight = (pData[bufferIndex+5]<< 8) | pData[bufferIndex+6];
-								nWidth = (pData[bufferIndex+7] << 8) | pData[bufferIndex+8];
-								bRetStatus = true;
+							WCHAR szLog[512];
+							wsprintf(szLog, L"bufferIndex = %d, segment_length = %d, buff size =%d", 
+								bufferIndex, segment_length, buffSize);
+							LOG(INFO) + szLog;
+							if(bufferIndex >= buffSize) 
+							{
+								LOG(INFO) + L"segment is corrupted";
 								break;
+							}
+							if(pData[bufferIndex] == 0xFF) 
+							{	
+								//check whether the segment is start of frame 0xFFC0
+								if(pData[bufferIndex+1] == 0xC0)
+								{   
+									//start of frame segment looks as shown below
+									//[0xFFC0][unsigned short][unsigned char precision][unsigned short][unsigned short]
+									//              |                                     |                |
+									//              |                                     |                |
+									//              -->length of segment                  |                |
+									//                                                    -->height        |
+									//                                                                     -->width
+									//--------------------------------------------------------------------------------------
+
+
+									nHeight = (pData[bufferIndex+5]<< 8) | pData[bufferIndex+6];
+									nWidth = (pData[bufferIndex+7] << 8) | pData[bufferIndex+8];
+									bRetStatus = true;
+									break;
+								}
+								else
+								{
+									bufferIndex = bufferIndex +2;//skip segment marker, sothat it points length of the segment
+									segment_length = (pData[bufferIndex] << 8) | pData[bufferIndex+1];   //Go to next segment
+								}
 							}
 							else
 							{
-								bufferIndex = bufferIndex +2;//skip segment marker, sothat it points length of the segment
-								segment_length = (pData[bufferIndex] << 8) | pData[bufferIndex+1];   //Go to next segment
+								LOG(INFO) + L"segment is corrupted, not pointing to the start of next segment";
+								break;
 							}
 						}
-						else
+						if(false == bRetStatus)
 						{
-							LOG(INFO) + L"segment is corrupted, not pointing to the start of next segment";
-							break;
+							LOG(INFO) + L"Could not get the size info";
 						}
 					}
-					if(false == bRetStatus)
-					{
-						LOG(INFO) + L"Could not get the size info";
-					}
+					else
+					{ 
+						LOG(INFO) + L"Could not find JFIF in marker 0xFFE0";
+					}                  
+
 				}
 				else
 				{ 
-					LOG(INFO) + L"Could not find JFIF in marker 0xFFE0";
-				}                  
-
+					LOG(INFO) + L"Invalid SOI header";
+				}   
 			}
-			else
-			{ 
-				LOG(INFO) + L"Invalid SOI header";
-			}                   
 			return bRetStatus;
 		}
 		bool GetJpegResolution(LPCTSTR szFileName, int& nWidth, int& nHeight)
@@ -293,7 +302,7 @@ namespace rho {
 			{
 				LPVOID pImageBuffer;///< Buffer store the image						
 				DWORD dwFileSize = GetFileSize(hFile, NULL);
-				bool bFileReadSuccess = true;
+				bool bFileReadSuccess = false;
 				if (dwFileSize > 0)
 				{		
 					DWORD dwBytesRead = 0;
@@ -309,6 +318,10 @@ namespace rho {
 								LOG(INFO) + L"Unable to read image";	
 								bFileReadSuccess = false;
 								break;
+							}
+							else
+							{
+								bFileReadSuccess = true;
 							}
 						}while (dwBytesRead != 0);
 
