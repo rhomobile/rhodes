@@ -26,9 +26,13 @@ namespace rho {
 		rho::Hashtable<String, eCamType> m_DeviceNameMap;
 		rho::apiGenerator::CMethodResult m_pCb;
 		rho::StringW m_ImageUriPath; //hold the imageUri path, needs to delete during every new choosePictureOperation
+		bool m_bIsDeprecated;
 	public:
 
-		CCameraSingletonImpl(): CCameraSingletonBase(){}
+		CCameraSingletonImpl(): CCameraSingletonBase()
+		{
+			m_bIsDeprecated = false;
+		}
 
 		//methods
 		// enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
@@ -74,7 +78,7 @@ namespace rho {
 		// choosePicture Choose a picture from the album. 
 		virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
 
-			bool bRunningOnWM = false;
+			bool bRunningOnWM = false;			
 			OSVERSIONINFO osvi;
 			m_pCb = oResult;
 			memset(&osvi, 0, sizeof(OSVERSIONINFO));
@@ -99,6 +103,14 @@ namespace rho {
 							
 					}
 				}
+				m_bIsDeprecated = false;
+				if(propertyMap.containsKey("deprecated"))
+				{
+					if("true" == propertyMap.find("deprecated")->second)
+					{
+						m_bIsDeprecated = true;
+					}					
+				}			
 
 				choosePicture(eFormat, oResult);
 				
@@ -236,19 +248,27 @@ namespace rho {
 		}
 		void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri, eImageOutputFormat eFormat =eImageUri, int nImageWidth =0, int nImageHeight =0)
 		{		
-			char tempVal[6];
+			char imageHeight[6];
+			char imageWidth[6];
 
 			rho::Hashtable<rho::String, rho::String> statusData;
 			statusData.put( "status", status);	
 
-			tempVal[0] = 0;
-			sprintf(tempVal,"%d",nImageHeight);
-			statusData.put( "imageHeight",tempVal);	
-			statusData.put( "image_height", tempVal);
-			tempVal[0] = 0;
-			sprintf(tempVal,"%d",nImageWidth);
-			statusData.put( "imageWidth", tempVal);		
-			statusData.put( "image_width", tempVal);
+			imageHeight[0] = 0;
+			imageWidth[0] = 0;
+			sprintf(imageHeight,"%d",nImageHeight);
+			sprintf(imageWidth,"%d",nImageWidth);
+
+			if(false == m_bIsDeprecated)
+			{
+				statusData.put( "imageHeight",imageHeight);
+				statusData.put( "imageWidth", imageWidth);	
+			}
+			else
+			{
+				statusData.put( "image_height", imageHeight);
+				statusData.put( "image_width", imageWidth);
+			}
 
 			if("ok" == status)
 			{	
@@ -277,21 +297,35 @@ namespace rho {
 					imageUri = fileName;
 				}
 				outputFormat = "jpg";		
-				statusData.put( "imageFormat", outputFormat);
-				statusData.put( "imageUri", imageUri);
-				statusData.put( "image_format", imageUri);
-				statusData.put( "image_uri", outputFormat);
 				statusData.put( "message", "");
+
+				if(false == m_bIsDeprecated)
+				{
+					statusData.put( "imageFormat", outputFormat);
+					statusData.put( "imageUri", imageUri);
+				}
+				else
+				{
+					statusData.put( "image_format", imageUri);
+					statusData.put( "image_uri", outputFormat);
+				}
+				
 
 			}
 			else
 			{
 				//for cancel or error set only message
 				statusData.put( "message", message);
-				statusData.put( "imageFormat", "");
-				statusData.put( "imageUri", "");	
-				statusData.put( "image_format", "");
-				statusData.put( "image_uri", "");		
+				if(false == m_bIsDeprecated)
+				{
+					statusData.put( "imageFormat", "");
+					statusData.put( "imageUri", "");
+				}
+				else
+				{
+					statusData.put( "image_format", "");
+					statusData.put( "image_uri", "");	
+				}
 
 			}
 			m_pCb.set(statusData);		
@@ -406,9 +440,18 @@ namespace rho {
 			{
 
 				CMethodResult oRes;
-				setProperties(propertyMap, oRes);              	
+				setProperties(propertyMap, oRes); 
+				CCamera::SetAPICallType(false);
 				if (oResult.hasCallback())
 				{
+					if(propertyMap.containsKey("deprecated"))
+					{
+						if("true" == propertyMap.find("deprecated")->second)
+						{
+							CCamera::SetAPICallType(true);
+						}
+					}
+					
 					DEBUGMSG(true, (L"Callback"));
 					pCamera->SetCallback(oResult);                      
 					pCamera->takeFullScreen();
@@ -442,8 +485,10 @@ namespace rho {
 
 		virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
-			{              	
+			{ 
+             	
 				if (oResult.hasCallback()){
+					CCamera::SetAPICallType(false);
 					DEBUGMSG(true, (L"Callback"));
 					pCamera->SetCallback(oResult);                      
 					pCamera->Capture();
