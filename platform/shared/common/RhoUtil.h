@@ -45,7 +45,12 @@ namespace rho {
 		/*
 		* This method will parse the jpeg file to get the image resolution
 		*/
-		bool GetJpegResolution(LPCTSTR szFileName, int& nWidth, int& nHeight);
+		bool GetJpegResolution(LPCTSTR szFileName, int& nWidth, int& nHeight, bool bMemoryConstraint = true);
+
+		/*
+		* This method will parse the jpeg file without buffering
+		*/
+		bool GetJpegResolutionWithLessMemory(LPCTSTR fileName, int& nWidth, int& nHeight);
 
 		/*
 		* This method will parse the buffer to get the image resolution
