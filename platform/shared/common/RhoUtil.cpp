@@ -291,59 +291,155 @@ namespace rho {
 			}
 			return bRetStatus;
 		}
-		bool GetJpegResolution(LPCTSTR szFileName, int& nWidth, int& nHeight)
+		bool GetJpegResolutionWithLessMemory(LPCTSTR fileName, int& nWidth, int& nHeight)
+		{
+			bool bRetStatus= false;
+			FILE * pFile =NULL;
+			if(fileName != NULL)
+			{
+				pFile = _tfopen (fileName, TEXT("rb"));			
+				if (pFile!=NULL)
+				{
+					// seek to the end
+					fseek(pFile, 0, SEEK_END);
+					fpos_t flesize;
+					// get current position
+					fgetpos(pFile, &flesize);
+					char soiHeader1[] = { '\xFF', '\xD8', '\xFF', '\xE0'};
+					char soiHeader2[] = { 'J', 'F', 'I', 'F', '\x0'};
+					char resSegHeader[] ={ '\xFF', '\xC0'};	
+					char buffer[10];
+					fpos_t position;
+					fseek ( pFile ,0 , SEEK_SET );
+
+					fgets(buffer,5,pFile);
+					//Check whether file starts with 0xFFD8 and 0xFFE0
+					//Any jpeg image should start with these markers
+					if( 0 == memcmp(soiHeader1, buffer, 4))
+					{
+
+
+						fgetpos(pFile, &position);			
+						fgets(buffer,8,pFile);		
+						fsetpos(pFile, &position);
+						// Check for "JFIF", see this in the data section of the segment, if true proceed further
+						if( 0 == memcmp(soiHeader2, buffer+2, 5))
+						{
+
+							//get block length of each segment and skip segments, till we reach our marker 0xFFC0
+							unsigned short segment_length = buffer[0] << 8 | buffer[1]; //convert big endian issue by shift operater (two bytes is the segment length)
+							while( position < flesize)
+							{
+								position = position + segment_length; // skip the segment and point to the next segment in the buffer
+								if(position >= flesize) 
+								{
+									//LOG(INFO) + L"segment is corrupted";
+									break;
+								}
+								fsetpos(pFile, &position);
+								fgets(buffer,3,pFile);						
+								//check whether the segment is start of frame 0xFFC0
+								if(buffer[0] == '\xFF')
+								{
+									if(buffer[1] == '\xC0')
+									{
+										//start of frame segment looks as shown below
+										//[0xFFC0][unsigned short][unsigned char precision][unsigned short][unsigned short]
+										//              |                                     |                |
+										//              |                                     |                |
+										//              -->length of segment                  |                |
+										//                                                    -->height        |
+										//                                                                     -->width
+										//--------------------------------------------------------------------------------------							
+										unsigned char resolution[10];
+										fread(resolution,1,7,pFile);
+										nHeight = (resolution[3]<< 8) | resolution[4];
+										nWidth = (resolution[5] << 8) | resolution[6];						
+										bRetStatus = true;
+										break;
+									}
+									else
+									{							
+										fgetpos(pFile, &position);
+										fgets(buffer,3,pFile);
+										segment_length = (buffer[0] << 8) | buffer[1];   //Go to next segment
+										fsetpos(pFile, &position);
+									}
+								}
+
+
+
+
+
+							}
+						}
+					}
+					fclose (pFile);
+				}
+			}
+			return 0;
+			
+		}
+		bool GetJpegResolution(LPCTSTR szFileName, int& nWidth, int& nHeight, bool bMemoryConstraint)
 		{
 			bool bRetStatus = false;
-			//  read the file from disk.
-			HANDLE hFile = CreateFile(szFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 
-				FILE_ATTRIBUTE_NORMAL, NULL);
-
-			if(hFile)
+			if(bMemoryConstraint)
 			{
-				LPVOID pImageBuffer;///< Buffer store the image						
-				DWORD dwFileSize = GetFileSize(hFile, NULL);
-				bool bFileReadSuccess = false;
-				if (dwFileSize > 0)
-				{		
-					DWORD dwBytesRead = 0;
-					pImageBuffer = new BYTE[dwFileSize];
-					if(pImageBuffer)
-					{
-						
-						do
-						{
-							if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
-							{
-								//  Some error has occured reading the file
-								LOG(INFO) + L"Unable to read image";	
-								bFileReadSuccess = false;
-								break;
-							}
-							else
-							{
-								bFileReadSuccess = true;
-							}
-						}while (dwBytesRead != 0);
-
-						
-					}
-
-
-				}
-				CloseHandle(hFile);
-				if(bFileReadSuccess)
-				{
-					if(pImageBuffer)
-					{
-						bRetStatus = GetJpegResolution((BYTE*)pImageBuffer, dwFileSize, nWidth, nHeight);
-					}
-				}
-				delete[] pImageBuffer;
-				pImageBuffer = NULL;
+				bMemoryConstraint = GetJpegResolutionWithLessMemory(szFileName, nWidth, nHeight);
 			}
 			else
 			{
-				LOG(INFO) + L"Unable to find the image";
+				//  read the file from disk.
+				HANDLE hFile = CreateFile(szFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 
+					FILE_ATTRIBUTE_NORMAL, NULL);
+
+				if(hFile)
+				{
+					LPVOID pImageBuffer;///< Buffer store the image						
+					DWORD dwFileSize = GetFileSize(hFile, NULL);
+					bool bFileReadSuccess = false;
+					if (dwFileSize > 0)
+					{		
+						DWORD dwBytesRead = 0;
+						pImageBuffer = new BYTE[dwFileSize];
+						if(pImageBuffer)
+						{
+
+							do
+							{
+								if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+								{
+									//  Some error has occured reading the file
+									LOG(INFO) + L"Unable to read image";	
+									bFileReadSuccess = false;
+									break;
+								}
+								else
+								{
+									bFileReadSuccess = true;
+								}
+							}while (dwBytesRead != 0);
+
+
+						}
+
+
+					}
+					CloseHandle(hFile);
+					if(bFileReadSuccess)
+					{
+						if(pImageBuffer)
+						{
+							bRetStatus = GetJpegResolution((BYTE*)pImageBuffer, dwFileSize, nWidth, nHeight);
+						}
+					}
+					delete[] pImageBuffer;
+					pImageBuffer = NULL;
+				}
+				else
+				{
+					LOG(INFO) + L"Unable to find the image";
+				}
 			}
 			return bRetStatus;
 		}
