@@ -2735,7 +2735,9 @@ namespace "config" do
         $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
       end
     end
-
+    if $app_config['capabilities'].index("camera")
+		      $app_config['extensions'] = $app_config['extensions'] | ['mediacapture']
+	  end	
     if $app_config["app_type"] == 'rhoelements'
 
       # add audiocapture extensions for rhoelements app
