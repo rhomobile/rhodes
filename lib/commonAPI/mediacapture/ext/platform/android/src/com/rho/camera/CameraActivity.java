@@ -40,11 +40,8 @@ import com.rhomobile.rhodes.R;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.SurfaceView;
 import android.view.View;
@@ -59,8 +56,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private CameraPreview mPreview;
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
-    MediaPlayer _shootMP;
-    private Camera mCamera;
+    private Camera mCamera = null;
     
     @Override
     protected void onCreate(Bundle extras) {
@@ -114,11 +110,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     @Override
     protected void onStop() {
 	// TODO Auto-generated method stub
-	super.onStop();
-    	if(_shootMP != null){
-	    _shootMP.release();
-	    _shootMP = null;
-    	}
+	super.onStop();    	
     }
 	
     @Override
@@ -136,20 +128,6 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
         }
         catch(Exception e){
         	e.printStackTrace();
-        }
-    }
-    
-    public void playMusic(String musicPath)
-    {
-    	AudioManager meng = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
-        int volume = meng.getStreamVolume( AudioManager.STREAM_NOTIFICATION);
-
-        if (volume != 0)
-        {
-          if (_shootMP == null)
-            _shootMP = MediaPlayer.create(getBaseContext(), Uri.parse(musicPath));
-          if (_shootMP != null)
-            _shootMP.start();
         }
     }
 }
