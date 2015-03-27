@@ -161,7 +161,7 @@ namespace rho {
 
 			ofnex.lStructSize     = sizeof(ofnex);
 			ofnex.hwndOwner       = rhodes_data.m_hBrowserWnd;
-			ofnex.lpstrFilter     = NULL;
+			ofnex.lpstrFilter     = _T("JPEG Files (*.jpg)\0*.jpg\0");;
 			ofnex.lpstrFile       = image_uri;
 			ofnex.nMaxFile        = MAX_PATH;
 			ofnex.lpstrInitialDir = NULL;
@@ -175,8 +175,8 @@ namespace rho {
 				StringW strFullName = image_uri;	
 
 				rho::String imageUri;
-				int nWidth;
-				int nHeight;
+				int nWidth =0;
+				int nHeight =0;
 
 				if(eDataUri == eFormat)
 				{
