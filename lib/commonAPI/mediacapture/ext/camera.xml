@@ -367,7 +367,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
-			<METHOD name="showPreview">
+			<METHOD name="showPreview" runInThread="ui">
 				<DESC>Shows the preview in user configurable viewer window.</DESC>
 				<PLATFORM>WM, CE</PLATFORM>
         <PARAMS>
