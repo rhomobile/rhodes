@@ -75,8 +75,25 @@ class RhofilelistItem
     "#{@path}|#{self.file? ? 'file' : 'dir'}|#{self.size}|#{self.datetime}|#{self.file? ? self.hash : ''}"
   end
 
+  def allowedForDetectingChanges?
+    not_allowed = ['rhoconfig.txt', 'rhoconfig.txt.timestamp', 'app_manifest.txt'].include?(self.path)
+    not_allowed = not_allowed || (self.path.include?('public/api'))
+    return (not not_allowed)
+  end
+
+
 end
 
+
+class RhofilelistLoader
+
+
+  def self.loadFromFile(aString)
+     result = File.open(aString, "r").lines.collect {|each| RhofilelistItem.fromString(each)}
+     return result.select {|each| each.allowedForDetectingChanges?}
+  end
+
+end
 
 def setup(settings_folder_path, platform)
 
@@ -116,31 +133,6 @@ module_function :get_last_state_file_path
 
 def make_full_bundle
   system("rake build:#{$RhoDevelopmentPlatform}:upgrade_package")
-
-=begin
-  s_skip_build_rhodes_main = $skip_build_rhodes_main
-  s_skip_build_extensions = $skip_build_extensions
-  s_skip_build_xmls = $skip_build_xmls
-  s_use_prebuild_data = $use_prebuild_data
-  $skip_build_rhodes_main = true
-  $skip_build_extensions = true
-  $skip_build_xmls = true
-  $use_prebuild_data = true
-
-  #Rake::Task['config:common'].reenable
-  #Rake::Task['config:#{$RhoDevelopmentPlatform}'].reenable
-  Rake::Task["build:#{$RhoDevelopmentPlatform}:rhobundle"].reenable
-  Rake::Task["build:bundle:noxruby"].reenable
-  Rake::Task["build:#{$RhoDevelopmentPlatform}:upgrade_package"].reenable
-
-  Rake::Task["build:#{$RhoDevelopmentPlatform}:upgrade_package"].invoke
-
-
-  $skip_build_rhodes_main = s_skip_build_rhodes_main
-  $skip_build_extensions = s_skip_build_extensions
-  $skip_build_xmls = s_skip_build_xmls
-  $use_prebuild_data = s_use_prebuild_data
-=end
 end
 module_function :make_full_bundle
 
@@ -198,19 +190,8 @@ module_function :extract_item_path
   def extract_changes(old_items, new_items, added_files, removed_files)
 
     new_items.each do |new_item|
-
-      if new_item.path == "app/sdfssdf.css"
-        puts 'new'
-      end
-
-      if (new_item.path != 'rhoconfig.txt') &&
-          (new_item.path != 'rhoconfig.txt.timestamp') &&
-          (new_item.path.index('public/api') != 0) &&
-          (new_item.path != 'app_manifest.txt')
-
-        if !(old_items.any? { |each| each == new_item })
-          added_files << new_item.fixed_path
-        end
+      if !(old_items.any? { |each| each == new_item })
+        added_files << new_item.fixed_path
       end
     end
 
@@ -220,7 +201,7 @@ module_function :extract_item_path
       end
     end
 
-    return ((not added_files.empty?) or (not removed_files.empty?))
+    return ((not added_files.empty?) || (not removed_files.empty?))
 
   end
 
@@ -261,7 +242,7 @@ module_function :get_partial_bundle_zip_path
 
 def check_changes_from_last_build(add_file_path, remove_file_path)
 
-  is_real_changes = false
+  has_changes = false
 
   currentdir = Dir.pwd()
 
@@ -280,53 +261,28 @@ def check_changes_from_last_build(add_file_path, remove_file_path)
 
   old_state_file = get_last_state_file_path
 
-  add_array = []
-  remove_array = []
-
-  old_array = []
-  current_array = []
-
-
   if !(File.exist? get_last_state_file_path)
-    is_real_changes = nil
+    has_changes = nil
   end
 
-  if is_real_changes == nil
+  if has_changes == nil
     rm_rf get_last_state_file_path if File.exist? get_last_state_file_path
     cp current_state_file, get_last_state_file_path
-    return is_real_changes
+    return has_changes
   end
 
-  File.open(old_state_file, "r") do |f|
-     while line = f.gets
-        #old_array << line
-        old_array << RhofilelistItem.fromString(line)
-     end
-  end
-
-  File.open(current_state_file, "r") do |f|
-     while line = f.gets
-        #current_array << line
-        current_array << RhofilelistItem.fromString(line)
-     end
-  end
-
-
-  #cp get_last_state_file_path, '/Users/MOHUS/ReloadBundleDemo/old_state.txt'
-  #cp current_state_file, '/Users/MOHUS/ReloadBundleDemo/new_state.txt'
+  old_array = RhofilelistLoader.loadFromFile(old_state_file)
+  current_array = RhofilelistLoader.loadFromFile(current_state_file)
 
   rm_rf get_last_state_file_path if File.exist? get_last_state_file_path
   cp current_state_file, get_last_state_file_path
 
+  add_array = []
+  remove_array = []
+  has_changes = extract_changes(old_array, current_array, add_array, remove_array)
 
-  #puts 'AAAAA old_state = '+old_array.to_s
-  #puts 'BBBBB new_state = '+current_array.to_s
-
-  is_real_changes = extract_changes(old_array, current_array, add_array, remove_array)
-
-  if is_real_changes
+  if has_changes
      # save add and remove
-
 
      rm_rf add_file_path if File.exist? add_file_path
      rm_rf remove_file_path if File.exist? remove_file_path
@@ -344,7 +300,7 @@ def check_changes_from_last_build(add_file_path, remove_file_path)
 
   Dir.chdir currentdir
 
-  return is_real_changes
+  return has_changes
 end
 module_function :check_changes_from_last_build
 
