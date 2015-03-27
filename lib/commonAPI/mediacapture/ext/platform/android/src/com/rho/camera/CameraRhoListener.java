@@ -243,6 +243,13 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		protected Void doInBackground(Void... params) {
 
 			if(resCode == -1){
+				if (intent != null && intent.hasExtra("error")) {
+						inResultMap.put("message", ""+intent.getStringExtra("error"));
+						if(intent.getStringExtra("error").contains("\\"))
+							inResultMap.put("message", "File path is invalid.");
+						inResultMap.put("status", "error");
+					}
+				else{
 				inResultMap.put("status","ok");
 				if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
 					inResultMap.put("image_uri",  "db/db-files/"+ curUri.toString().substring(curUri.toString().lastIndexOf("/")+1, curUri.toString().length()));
@@ -272,7 +279,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						inResultMap.put("imageHeight",  "" + intent.getExtras().get("IMAGE_HEIGHT"));
 					}
 				}
-				
+				}
 				
 			}else if(resCode == 0){
 				
