@@ -74,7 +74,8 @@ protected:
 	static HANDLE m_hTriggerMonitorThread;
 	static bool m_bRcmLoaded;
 	static bool m_bAppHasFocus;	
-	rho::apiGenerator::CMethodResult m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  	
+	rho::apiGenerator::CMethodResult m_pCameraCb; //Status Event: Will give the status 
+	static bool m_bIsDeprecated;
 public:
 	CCamera(LPCTSTR szDeviceName);
 	virtual ~CCamera();	
@@ -87,6 +88,7 @@ public:
 	void ResetViewerWndPos();//called when user update position manually
 	void DisableFullScreenButtons();//when trigger is used in full screen, then button should be greyed out
 	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback);
+	static void SetAPICallType(bool bIsDeprecated);
 	virtual void ApplicationFocusChange(bool bAppHasFocus);
 protected:
 	/**
