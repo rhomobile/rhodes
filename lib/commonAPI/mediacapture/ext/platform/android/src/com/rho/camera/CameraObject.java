@@ -2,6 +2,7 @@ package com.rho.camera;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -18,6 +19,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -28,6 +30,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
 
 public class CameraObject extends CameraBase implements ICameraObject {
@@ -70,10 +73,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
 
     protected class TakePictureCallback implements Camera.PictureCallback {
         private Activity mPreviewActivity;
-        private CameraActivity mcameraActivity;
+        MediaPlayer mp;
         TakePictureCallback(Activity previewActivity) {
             mPreviewActivity = previewActivity;
-            mcameraActivity = (CameraActivity) previewActivity;
         }
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {        	
@@ -95,7 +97,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     	        else
     		   deprecated_take_pic = true;
                 if(propertyMap.containsKey("captureSound")){
-                	mcameraActivity.playMusic(propertyMap.get("captureSound"));
+                	playMusic(propertyMap.get("captureSound"));
                 }
                 
                 String filePath = null;
@@ -105,6 +107,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
          	}
          	else{
                    filePath = propertyMap.get("fileName");
+				   if(filePath.contains("\\")){
+						intent.putExtra("error", "Invalid file path");
+					}
          	}
                 Uri resultUri = null;
                 BitmapFactory.Options options=new BitmapFactory.Options();
@@ -172,8 +177,51 @@ public class CameraObject extends CameraBase implements ICameraObject {
 	    System.gc();
 	}
             mPreviewActivity.finish();
-        }		
-    }
+        }	
+	private void playMusic(String musicPath) {
+			 mp = new MediaPlayer();
+			 try {
+			        mp.setDataSource(RhoFileApi.openFd(musicPath));
+			    } catch (IllegalArgumentException e) {
+			        // TODO Auto-generated catch block
+			        e.printStackTrace();
+			    } catch (IllegalStateException e) {
+			        // TODO Auto-generated catch block
+			        e.printStackTrace();
+			    } catch (IOException e) {
+			        // TODO Auto-generated catch block
+			        e.printStackTrace();
+			    }
+			    try {
+			        mp.prepare();
+			    } catch (IllegalStateException e) {
+			        // TODO Auto-generated catch block
+			        e.printStackTrace();
+			    } catch (IOException e) {
+			        // TODO Auto-generated catch block
+			        e.printStackTrace();
+			    }
+			    mp.start();
+			    try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			    mp.stop();
+			    clearMediaPlayerResources();
+		}
+
+	private void clearMediaPlayerResources() {
+			// TODO Auto-generated method stub
+			if(mp != null){
+				mp.release();
+				mp = null;
+	    	}
+		}		
+ }
+	
+	
 
     protected Camera getCamera() { return mCamera; }
     protected void setCamera(Camera camera) { mCamera = camera; }
