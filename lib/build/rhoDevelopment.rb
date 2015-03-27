@@ -21,6 +21,63 @@ $RhoDevelopmentSettingsFolder = nil
 $RhoDevelopmentPlatform = nil
 
 
+class RhofilelistItem
+
+  attr_accessor :path, :file, :size, :datetime, :hash
+
+  def self.fromString(aString)
+    instance = self.new
+    instance.initializeFromString(aString)
+    instance
+  end
+
+  def initializeFromString(aString)
+    elements = aString.split('|')
+    @path = elements[0]
+    @file = elements[1] == 'file'
+    @size = elements[2].to_i
+    @datetime = elements[3].to_i
+    @hash = @file ? elements[4] : ''
+  end
+
+  def directory?
+    (not self.file?)
+  end
+
+  def file?
+    @file
+  end
+
+  def fixed_path
+    fixed_path = @path.gsub('_erb.iseq', '.erb')
+    fixed_path = fixed_path.gsub('.iseq', '.rb')
+    return fixed_path
+  end
+
+  def ==(object)
+    if self.class != object.class
+      return false
+    end
+
+    if self.directory? and object.directory?
+      return self.path == object.path
+    end
+
+    if self.file? and object.file?
+      return self.hash == object.hash
+    end
+
+    return false
+
+  end
+
+  def inspect
+    "#{@path}|#{self.file? ? 'file' : 'dir'}|#{self.size}|#{self.datetime}|#{self.file? ? self.hash : ''}"
+  end
+
+end
+
+
 def setup(settings_folder_path, platform)
 
   puts 'RhoDevelopment.setup('+platform.to_s+')'
@@ -42,9 +99,6 @@ def setup(settings_folder_path, platform)
 end
 module_function :setup
 
-
-
-
 def get_settings_folder
   return $RhoDevelopmentSettingsFolder
 end
@@ -55,16 +109,10 @@ def get_platform
 end
 module_function :get_platform
 
-
-
 def get_last_state_file_path
   return File.join($RhoDevelopmentSettingsFolder, "last_build_content_state.#{$RhoDevelopmentPlatform}.txt")
 end
 module_function :get_last_state_file_path
-
-
-
-
 
 def make_full_bundle
   system("rake build:#{$RhoDevelopmentPlatform}:upgrade_package")
@@ -95,10 +143,6 @@ def make_full_bundle
 =end
 end
 module_function :make_full_bundle
-
-
-
-
 
 def make_partial_bundle
   system("rake build:#{$RhoDevelopmentPlatform}:upgrade_package_partial")
@@ -151,66 +195,36 @@ def extract_item_path(item)
 end
 module_function :extract_item_path
 
+  def extract_changes(old_items, new_items, added_files, removed_files)
 
-def extract_changes(old_file_array, new_file_array, add_file_array, remove_file_array)
-  is_real_changes = false
+    new_items.each do |new_item|
 
-  old_file_paths = []
-  old_file_array.each do |item|
-    old_file_paths << extract_item_path(item)
-  end
-  new_file_paths = []
-  new_file_array.each do |item|
-    new_file_paths << extract_item_path(item)
-  end
+      if new_item.path == "app/sdfssdf.css"
+        puts 'new'
+      end
 
+      if (new_item.path != 'rhoconfig.txt') &&
+          (new_item.path != 'rhoconfig.txt.timestamp') &&
+          (new_item.path.index('public/api') != 0) &&
+          (new_item.path != 'app_manifest.txt')
 
-  #extract new and changes
-  new_file_array.each do |item|
-    item_path = extract_item_path(item)
-    item_fixed = item_path
-    item_fixed = item_fixed.gsub('_erb.iseq', '.erb')
-    item_fixed = item_fixed.gsub('.iseq', '.rb')
-
-    if !(old_file_array.include?(item))
-       #check for folder
-       if extract_item_type(item) == 'dir'
-          #check for this is new dir !
-          if !(old_file_paths.include?(item_path))
-             add_file_array << item_fixed
-             is_real_changes = true
-          end
-       else
-         if (item_path != 'rhoconfig.txt') &&
-            (item_path != 'rhoconfig.txt.timestamp') &&
-            (item_path.index('public/api') != 0) &&
-            (item_path != 'app_manifest.txt')
-           add_file_array << item_fixed
-           is_real_changes = true
-         end
-       end
+        if !(old_items.any? { |each| each == new_item })
+          added_files << new_item.fixed_path
+        end
+      end
     end
-  end
 
-  #make remove list
-  old_file_array.each do |item|
-    item_path = extract_item_path(item)
-    item_fixed = item_path
-    item_fixed = item_fixed.gsub('_erb.iseq', '.erb')
-    item_fixed = item_fixed.gsub('.iseq', '.rb')
-    if !(new_file_paths.include?(item_path))
-       remove_file_array << item_fixed
-       is_real_changes = true
+    old_items.each do |old_item|
+      if !(new_items.any? { |each| each.path == old_item.path })
+        removed_files << old_item.fixed_path
+      end
     end
+
+    return ((not added_files.empty?) or (not removed_files.empty?))
+
   end
 
-  return is_real_changes
-end
-module_function :extract_changes
-
-
-
-
+  module_function :extract_changes
 
 def extract_state_file_from_bundle_zip(zip_path, path_for_save_state_file)
 
@@ -235,12 +249,10 @@ def extract_state_file_from_bundle_zip(zip_path, path_for_save_state_file)
 end
 module_function :extract_state_file_from_bundle_zip
 
-
 def get_full_bundle_zip_path
   return File.join($targetdir, "upgrade_bundle.zip")
 end
 module_function :get_full_bundle_zip_path
-
 
 def get_partial_bundle_zip_path
   return File.join($targetdir, "upgrade_bundle_partial.zip")
@@ -287,13 +299,15 @@ def check_changes_from_last_build(add_file_path, remove_file_path)
 
   File.open(old_state_file, "r") do |f|
      while line = f.gets
-        old_array << line
+        #old_array << line
+        old_array << RhofilelistItem.fromString(line)
      end
   end
 
   File.open(current_state_file, "r") do |f|
      while line = f.gets
-        current_array << line
+        #current_array << line
+        current_array << RhofilelistItem.fromString(line)
      end
   end
 
@@ -334,10 +348,19 @@ def check_changes_from_last_build(add_file_path, remove_file_path)
 end
 module_function :check_changes_from_last_build
 
-
 def is_require_full_update
   return !(File.exist? get_last_state_file_path)
 end
 module_function :is_require_full_update
 
 end
+
+
+
+
+
+
+
+
+
+
