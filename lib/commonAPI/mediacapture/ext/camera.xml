@@ -849,7 +849,7 @@ alert(reslnArray[1].height);
                 <DESC>Image uri display is dependent on browser capability.</DESC>
             </REMARK>
 			<REMARK title="GetSupportedProperties in WP8">
-                <DESC>WP8 does not support getSupportedProperties and SetSupportedProperties</DESC>
+                <DESC>WP8 does not support getSupportedProperties and SetSupportedProperties </DESC>
             </REMARK>
 
         </REMARKS>
