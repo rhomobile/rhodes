@@ -73,9 +73,101 @@ describe 'RhofilelistItem' do
 
   end
 
+  context 'allowedForDetectingChanges' do
 
+    it 'Should be allowed for detecting changes' do
+      item = RhoDevelopment::RhofilelistItem.fromString('public/images/iphone/disclosure.png|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+      expect(item.allowedForDetectingChanges?).to be true
+    end
+
+    it 'Should be not allowed for detecting changes if path is equal "rhoconfig.txt"' do
+      item = RhoDevelopment::RhofilelistItem.fromString('rhoconfig.txt|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+      expect(item.allowedForDetectingChanges?).to be false
+    end
+
+    it 'Should be not allowed for detecting changes if path is equal "rhoconfig.txt.timestamp"' do
+      item = RhoDevelopment::RhofilelistItem.fromString('rhoconfig.txt.timestamp|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+      expect(item.allowedForDetectingChanges?).to be false
+    end
+
+    it 'Should be not allowed for detecting changes if path is equal "app_manifest.txt"' do
+      item = RhoDevelopment::RhofilelistItem.fromString('app_manifest.txt|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+      expect(item.allowedForDetectingChanges?).to be false
+    end
+
+    it 'Should be not allowed for detecting changes if path begins from "public/app"' do
+      item = RhoDevelopment::RhofilelistItem.fromString('public/api/test.txt|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+      expect(item.allowedForDetectingChanges?).to be false
+    end
+
+  end
 
 end
+
+describe 'RhofilelistLoader' do
+
+  def temporary_directory
+    'spec_temp'
+  end
+
+  before :each do
+    if File.exists?(temporary_directory)
+      FileUtils.rm_rf(temporary_directory)
+    end
+    Dir.mkdir(temporary_directory)
+
+  end
+  after :each do
+    FileUtils.rm_rf(temporary_directory)
+  end
+
+  it 'Should create array with RhofilelistItem' do
+    File.open(File.join(temporary_directory, 'rhofilelist.txt'), 'w') do |f|
+      f.write('public/images/iphone/disclosure.png|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+    end
+    result = RhoDevelopment::RhofilelistLoader.loadFromFile(File.join(temporary_directory, 'rhofilelist.txt'))
+    item = result[0]
+    expect(item.path).to eq('public/images/iphone/disclosure.png')
+    expect(item.file?).to be true
+    expect(item.size).to eq(47487)
+    expect(item.datetime).to eq(1409066890)
+    expect(item.hash).to eq('e5941140e9bf7a79ce96aa732b850e27')
+  end
+
+  it 'Should reject item if path contains "public/api"' do
+    File.open(File.join(temporary_directory, 'rhofilelist.txt'), 'w') do |f|
+      f.write('public/api/iphone/disclosure.png|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+    end
+    result = RhoDevelopment::RhofilelistLoader.loadFromFile(File.join(temporary_directory, 'rhofilelist.txt'))
+    expect(result.empty?).to be true
+  end
+
+  it 'Should reject item if path is equal "rhoconfig.txt"' do
+    File.open(File.join(temporary_directory, 'rhofilelist.txt'), 'w') do |f|
+      f.write('public/api/iphone/rhoconfig.txt|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+    end
+    result = RhoDevelopment::RhofilelistLoader.loadFromFile(File.join(temporary_directory, 'rhofilelist.txt'))
+    expect(result.empty?).to be true
+  end
+
+  it 'Should reject item if path is equal "rhoconfig.txt.timestamp"' do
+    File.open(File.join(temporary_directory, 'rhofilelist.txt'), 'w') do |f|
+      f.write('public/api/iphone/rhoconfig.txt.timestamp|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+    end
+    result = RhoDevelopment::RhofilelistLoader.loadFromFile(File.join(temporary_directory, 'rhofilelist.txt'))
+    expect(result.empty?).to be true
+  end
+
+  it 'Should reject item if path is equal "app_manifest.txt"' do
+    File.open(File.join(temporary_directory, 'rhofilelist.txt'), 'w') do |f|
+      f.write('public/api/iphone/app_manifest.txt|file|47487|1409066890|e5941140e9bf7a79ce96aa732b850e27')
+    end
+    result = RhoDevelopment::RhofilelistLoader.loadFromFile(File.join(temporary_directory, 'rhofilelist.txt'))
+    expect(result.empty?).to be true
+  end
+
+end
+
 
 describe 'extract_changes' do
 
