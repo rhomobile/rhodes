@@ -900,6 +900,7 @@ namespace "build" do
 
     #    desc "Build wm rhobundle"
     task :rhobundle, [:exclude_dirs] do
+      rm_rf $srcdir
       Rake::Task["config:wm"].invoke
       Rake::Task["build:bundle:noxruby"].invoke
       Rake::Task["build:wm:extensions"].execute if !$skip_build_extensions
