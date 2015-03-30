@@ -318,9 +318,9 @@ def update_rhodefs_header_file
 end
 
 
-namespace 'dev' do
+namespace :dev do
 
-  namespace 'update' do
+  namespace :update do
 
     desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'
     task :partial => ['config:common'] do
