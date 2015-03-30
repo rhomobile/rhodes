@@ -2543,22 +2543,22 @@ BOOL CDShowCamModule::BuildFilterGrp(CamConfig* ptCamcfg)
 		}
 
 		////--------------- MPA3 ----------------------
-		////Quality of the preview was significantly improved after using this behavior
-		////
-		//if(IsMPA3()){
-		//	ImageRes tRes;
-		//	tRes.nWidth		= 352;
-		//	tRes.nHeight	=-288;	// Minus values returns from the device prop for MPA3/MC67
-		//	
-		//	//Order should be preserved. First for the P pin and then to V pin 
-		//	InitVdoCapFilter(&tRes, P);		
-		//	InitVdoCapFilter(&tRes, V);
-		//	//----------------------
-		//	//m_pVideoCaptureFilter->Release();		
+		//Quality of the preview was significantly improved after using this behavior
 		//
-		//}else{
-		//	RETAILMSG(1, (TEXT("NOT MPA3")));
-		//}
+		if(IsMPA3()){
+			ImageRes tRes;
+			tRes.nWidth		= 352;
+			tRes.nHeight	=-288;	// Minus values returns from the device prop for MPA3/MC67
+			
+			//Order should be preserved. First for the P pin and then to V pin 
+			InitVdoCapFilter(&tRes, P);		
+			InitVdoCapFilter(&tRes, V);
+			//----------------------
+			//m_pVideoCaptureFilter->Release();		
+		
+		}else{
+			RETAILMSG(1, (TEXT("NOT MPA3")));
+		}
 
 
 		//--------------- MPA3 ----------------------
