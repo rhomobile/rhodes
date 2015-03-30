@@ -9,6 +9,8 @@
 #include "TriggerMonitor.h"
 using namespace rho::apiGenerator;
 
+#define CAN_SUPPORT_DATA_URI(FILE_SIZE) (FILE_SIZE/1024) <= 250 //support upto 250 kb
+
 enum eCamType
 {
 	eColorCam,
