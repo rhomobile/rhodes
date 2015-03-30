@@ -187,43 +187,56 @@ namespace rho {
 
 					if(hFile)
 					{
-						LPVOID pImageBuffer = NULL;///< Buffer store the image						
 						DWORD dwFileSize = GetFileSize(hFile, NULL);
-						bool bFileReadSuccess = false;
-						if (dwFileSize > 0)
-						{		
-							DWORD dwBytesRead = 0;
-							pImageBuffer = new BYTE[dwFileSize];
-							if(pImageBuffer)
-							{								
-								do
-								{
-									if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+						bool bCanSupportDataUri = false;
+						bCanSupportDataUri = CAN_SUPPORT_DATA_URI(dwFileSize) ? true : false;
+						if(bCanSupportDataUri)
+						{
+							LPVOID pImageBuffer = NULL;///< Buffer store the image
+							bool bFileReadSuccess = false;
+							if (dwFileSize > 0)
+							{		
+								DWORD dwBytesRead = 0;
+								pImageBuffer = new BYTE[dwFileSize];
+								if(pImageBuffer)
+								{								
+									do
 									{
-										//  Some error has occured reading the file
-										LOG(INFO) + L"Unable to read image";	
-										bFileReadSuccess = false;
-										break;
-									}
-									else
-									{
-										bFileReadSuccess = true;
-									}
-								}while (dwBytesRead != 0);
+										if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+										{
+											//  Some error has occured reading the file
+											LOG(INFO) + L"Unable to read image";	
+											bFileReadSuccess = false;
+											break;
+										}
+										else
+										{
+											bFileReadSuccess = true;
+										}
+									}while (dwBytesRead != 0);
 
-								
+
+								}
+								if(bFileReadSuccess)
+								{									
+									rho::common::GetDataURI((BYTE*)pImageBuffer, dwFileSize, imageUri);
+									rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwFileSize, nWidth, nHeight);
+								}
+								delete[] pImageBuffer;
+								pImageBuffer = NULL;
 							}
 
 
 						}
 						CloseHandle(hFile);
-						if(bFileReadSuccess)
-						{									
-							rho::common::GetDataURI((BYTE*)pImageBuffer, dwFileSize, imageUri);
-							rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwFileSize, nWidth, nHeight);
+						if(!bCanSupportDataUri)
+						{
+							//enter if cannot support data uri
+							rho::common::GetJpegResolution(strFullName.c_str(), nWidth, nHeight);
+							UpdateCallbackStatus("error","Failed to prepare dataUri.",imageUri, eDataUri,nWidth, nHeight );
+
 						}
-						delete[] pImageBuffer;
-						pImageBuffer = NULL;
+						
 					}
 				}
 				else
