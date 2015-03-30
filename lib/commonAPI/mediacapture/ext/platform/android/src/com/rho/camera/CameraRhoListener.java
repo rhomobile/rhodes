@@ -77,12 +77,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			if (captureUri != null )
 				{					
 					curUri = captureUri;
-					Cursor imageCursor = RhodesActivity.getContext().getContentResolver().query(
-							curUri, null, null, null, null);
-					if(imageCursor.moveToFirst()){
-						imgPath = imageCursor.getString(imageCursor
-								.getColumnIndex(MediaColumns.DATA));
-					}
+					imgPath = getFilePath(curUri);
 					
 					if (curUri != null) {
 						
@@ -115,7 +110,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					{
 						curUri = intent.getData();
 					}
-					mBitmap = BitmapFactory.decodeFile(curUri.getPath());					
+					imgPath = getFilePath(curUri);
+					mBitmap = BitmapFactory.decodeFile(imgPath);					
 					picChoosen_imagewidth = mBitmap.getWidth();
 					picChoosen_imageheight = mBitmap.getHeight();
 					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){				
@@ -305,4 +301,23 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		
 	}
 	
+	/*
+	 * method to convert uri to file path
+	 * 
+	 * @param Uri of file
+	 * @returns String path of file
+	 * 
+	 */
+	private String getFilePath(Uri uri){
+		String mImgPath = null;
+		Cursor imageCursor = RhodesActivity.getContext().getContentResolver().query(
+				uri, null, null, null, null);
+		if(imageCursor.moveToFirst()){
+			mImgPath = imageCursor.getString(imageCursor
+					.getColumnIndex(MediaColumns.DATA));
+			imageCursor.close();
+		
+		}
+		return mImgPath;
+	}
 }
