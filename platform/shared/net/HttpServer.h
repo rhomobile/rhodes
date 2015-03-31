@@ -30,6 +30,8 @@
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
 
+#include "common/RhoThread.h"
+
 #if !defined(WINDOWS_PLATFORM)
 typedef int SOCKET;
 #  define INVALID_SOCKET -1
@@ -73,15 +75,15 @@ struct HttpHeader
 
 typedef Vector<HttpHeader> HttpHeaderList;
 
+class CDirectHttpRequestQueue;
+
 class CHttpServer
 {
     DEFINE_LOGCLASS;
     
     enum {BUF_SIZE = 4096};
     
-    typedef HttpHeader Header;
-    typedef HttpHeaderList HeaderList;
-    
+  
     typedef Vector<char> ByteVector;
     
     struct Route
@@ -91,8 +93,24 @@ class CHttpServer
         String id;
         String action;
     };
+  
+    class ResponseWriter
+    {
+      String m_response;
+      
+    public:
+      void writeResponse( const String& data ) {
+        m_response += data;
+      }
+      
+      const String& getResponse() const { return m_response; }
+    };
     
 public:
+
+    typedef HttpHeader Header;
+    typedef HttpHeaderList HeaderList;
+
     typedef void (*callback_t)(void *arg, String const &query);
     
 public:
@@ -117,12 +135,18 @@ public:
     String create_response(String const &reason, HeaderList const &headers, String const &body);
 
     static int isIndex(String const &uri);
-    
+  
     int getPort();
     rho::String getIPAdress();
     void disableAllLogging();
 
     bool call_ruby_method(String const &uri, String const &body, String& strReply);
+  
+#ifdef OS_MACOSX
+    //can be run only from ruby thread!
+    String directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body );
+#endif
+  
 private:
     bool init();
     void close_listener();
@@ -157,8 +181,52 @@ private:
     bool verbose;
     bool m_enable_external_access;
     bool m_started_as_separated_simple_server;
+
+#ifdef OS_MACOSX
+    common::CMutex m_mxSyncRequest;
+    ResponseWriter* m_localResponseWriter;
+  
+    friend class CDirectHttpRequestQueue;
+    CDirectHttpRequestQueue* m_pQueue;
+    void setQueue( CDirectHttpRequestQueue* q ) { m_pQueue = q; }
+#endif
 };
 
+#ifdef OS_MACOSX
+class CDirectHttpRequestQueue
+{
+public:
+  CDirectHttpRequestQueue( CHttpServer& server, common::CRhoThread& ownerThread ) : m_server(server), m_thread( ownerThread ), m_request(0) {}
+  
+  struct CDirectHttpRequest
+  {
+    CDirectHttpRequest() : /*method(0), uri(0), query(0), headers(0), body(0), */signal(0), mutex(0) {}
+    
+    void clear()
+    {
+      method = ""; uri = ""; query = ""; headers.clear(); body = ""; signal = 0; mutex = 0;
+    }
+    
+    String method;
+    String uri;
+    String query;
+    CHttpServer::HeaderList headers;
+    String body;
+    pthread_cond_t* signal;
+    pthread_mutex_t* mutex;
+  };
+  
+  bool run();
+  void doRequest( CDirectHttpRequest& req );
+  const String& getResponse() const { return m_response; }
+
+private:
+  CHttpServer& m_server;
+  common::CRhoThread& m_thread;
+  CDirectHttpRequest* m_request;
+  String m_response;
+};
+#endif //OS_MACOSX
 void rho_http_ruby_proc_callback(void *arg, rho::String const &query );
 
 } // namespace net

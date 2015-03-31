@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		C04F28E019CAF3CA003E34BD /* RunnableWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */; };
 		C04F28E119CAF3CA003E34BD /* RunnableWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */; };
+		C5BA525F1A93ADF90095DE4A /* NetRequestImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5BA525E1A93ADF90095DE4A /* NetRequestImpl.mm */; };
+		C5BA525F1A93ADF90095DE4A /* IPhoneNetRequest.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */; };
 		C5DFBB31185B6FB400DB6BDB /* IAppMessageReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */; };
 		FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F248192121BF00FB1301 /* IRhoExtension.h */; };
 		FA11F24B192121F200FB1301 /* IRhoExtManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F24A192121F200FB1301 /* IRhoExtManager.h */; };
@@ -122,7 +124,9 @@
 
 /* Begin PBXFileReference section */
 		C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RunnableWrapper.h; sourceTree = "<group>"; };
-		C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RunnableWrapper.mm; sourceTree = "<group>"; };
+		C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RunnableWrapper.mm; sourceTree = "<group>"; };		
+		C5BA525D1A93AD6D0095DE4A /* IPhoneNetRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IPhoneNetRequest.h; path = rho/net/IPhoneNetRequest.h; sourceTree = "<group>"; };
+		C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = IPhoneNetRequest.mm; path = rho/net/IPhoneNetRequest.mm; sourceTree = "<group>"; };
 		C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAppMessageReceiver.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhoappbaselib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhoappbaselib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA11F248192121BF00FB1301 /* IRhoExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoExtension.h; path = RhoExtManager/IRhoExtension.h; sourceTree = "<group>"; };
@@ -522,6 +526,8 @@
 				FA20C279182B04140036D304 /* sslimpl.cpp */,
 				FA20C27A182B04140036D304 /* sslimpl.h */,
 				FA20C27B182B04140036D304 /* NetRequestImpl.m */,
+				C5BA525D1A93AD6D0095DE4A /* IPhoneNetRequest.h */,
+				C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */,
 			);
 			name = net;
 			sourceTree = "<group>";
@@ -744,7 +750,7 @@
 				FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */,
 				FA11F2531921224400FB1301 /* RhoExtManagerSingletone.m in Sources */,
 				FA11F24F1921221E00FB1301 /* RhoExtManagerImpl.m in Sources */,
-				FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */,
+        FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */,
 				FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */,
 				FA20C2EC182B07D50036D304 /* NativeBar.m in Sources */,
 				FA20C2CE182B07C40036D304 /* InitMemoryInfoCollector.mm in Sources */,
@@ -790,6 +796,7 @@
 				FA20C2C4182B07B60036D304 /* DateTimePickerDelegate.m in Sources */,
 				FA20C2DB182B07CB0036D304 /* SplitViewDelegate.m in Sources */,
 				FA20C2FC182B07EB0036D304 /* RhoFileImpl.m in Sources */,
+				C5BA525F1A93ADF90095DE4A /* IPhoneNetRequest.mm in Sources */,
 				FA20C2BB182B07A50036D304 /* RhoAlert.m in Sources */,
 				FA20C2B9182B07A10036D304 /* CRhoURLProtocol.m in Sources */,
 				FA20C2F9182B07EB0036D304 /* RhoThreadImpl.m in Sources */,
