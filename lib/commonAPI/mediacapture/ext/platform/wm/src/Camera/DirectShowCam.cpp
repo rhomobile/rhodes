@@ -17,6 +17,7 @@ CDirectShowCam::CDirectShowCam(LPCTSTR szDeviceName):CCamera(szDeviceName)
 	lpfn_DSHOW_Capture= NULL;	
 	lpfn_DSHOW_RedrawPreview= NULL;			
 	lpfn_DSHOW_GetResolution= NULL;	
+	lpfn_DSHOW_Run = NULL;
 	isDshowDllPresent = false;
 	if(InitDShow())
 	{
@@ -50,6 +51,8 @@ bool CDirectShowCam::InitDShow()
 		(m_hDshowDLL, L"CloseDShow");
 	lpfn_DSHOW_Stop = (LPFN_DSHOW_STOP)GetProcAddress
 		(m_hDshowDLL, L"Stop");
+	lpfn_DSHOW_Run = (LPFN_DSHOW_RUN)GetProcAddress
+		(m_hDshowDLL, L"Run");
 	lpfn_DSHOW_SetFlash = (LPFN_DSHOW_SET_FLASH)GetProcAddress
 		(m_hDshowDLL, L"SetFlash");
 	lpfn_DSHOW_SetResolution = (LPFN_DSHOW_SET_RESOLUTION)GetProcAddress
@@ -60,6 +63,19 @@ bool CDirectShowCam::InitDShow()
 		(m_hDshowDLL, L"ResizePreview");
 	lpfn_DSHOW_GetResolution = (LPFN_DSHOW_GET_RESOLUTION)GetProcAddress
 		(m_hDshowDLL, L"GetResolution");
+	if( lpfn_DSHOW_Init == NULL ||
+		lpfn_DSHOW_Close == NULL ||
+		lpfn_DSHOW_Stop == NULL ||
+		lpfn_DSHOW_Run == NULL ||
+		lpfn_DSHOW_SetFlash == NULL ||
+		lpfn_DSHOW_SetResolution == NULL ||
+		lpfn_DSHOW_Capture == NULL ||
+		lpfn_DSHOW_RedrawPreview == NULL ||
+		lpfn_DSHOW_GetResolution == NULL)
+	{
+		return false;
+	}
+	return true;
 	
 }
 BOOL CDirectShowCam::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp)
@@ -433,4 +449,42 @@ CameraSetting CDirectShowCam::GetNearestResolution()
 	}
 	return setting;
 
+}
+void CDirectShowCam::ApplicationFocusChange(bool bAppHasFocus)
+{
+	LOG(INFO) + L"Application focus change called";
+	CCamera::ApplicationFocusChange(bAppHasFocus);
+	if(m_PreviewOn)
+	{
+		if(bAppHasFocus)
+		{
+			LOG(INFO) + L"Application retained focus, rerun camera";
+			RECT pos;
+			pos.left = m_PreviewLeft;
+			pos.top = m_PreviewTop;
+			pos.right = m_PreviewWidth;	
+			pos.bottom = m_PreviewHeight;
+			HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eConfigurable);	
+			//set pos.left and pos.top to zero
+			//renderer window always wants to fit into viewer wnd client area
+			pos.left=0;
+			pos.top=0;						
+			if(-1 != lpfn_DSHOW_Init(hWndViewer, pos ))
+			{
+
+			}
+			else
+			{
+				LOG(ERROR) + L"Start preview failed in ApplicationFocusChange ";
+			}
+		}
+		else
+		{
+			LOG(INFO) + L"Application lost focus, stop camera";
+			m_ViewFinder.DestroyViewerWindow();
+			lpfn_DSHOW_Stop();
+			lpfn_DSHOW_Close();
+		
+		}
+	}
 }
