@@ -101,8 +101,8 @@
         NSString* value = (NSString*)[data objectForKey:@"desiredHeight"];
         self.height = [value intValue];
     }
-    if ([data objectForKey:@"saveToSharedGallery"] != nil) {
-        NSString* value = (NSString*)[data objectForKey:@"saveToSharedGallery"];
+    if ([data objectForKey:@"saveToDeviceGallery"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"saveToDeviceGallery"];
         if( (strcasecmp([value UTF8String], [[NSString stringWithFormat:@"%@", [NSNumber numberWithBool:YES]] UTF8String]) == 0) ||
            (strcasecmp([value UTF8String], "true") == 0) ) {
             self.save_to_shared_gallery = true;
