@@ -2607,7 +2607,7 @@ int rho_http_get_port()
 }
 
 #ifdef OS_MACOSX
-const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body )
+const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int* responseLength )
 {
 
   String sMethod;
@@ -2642,7 +2642,12 @@ const char* rho_http_direct_request( const char* method, const char* uri, const 
   
   if ( response.length() != 0 ) {
     ret = new char[response.length() + 1];
-    strncpy(ret, response.c_str(), response.length());
+    memmove(ret, response.c_str(), response.length());
+  }
+  
+  if ( responseLength != 0 )
+  {
+    *responseLength = (int)response.length();
   }
   
   return ret;
