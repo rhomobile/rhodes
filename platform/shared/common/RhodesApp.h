@@ -357,7 +357,7 @@ int rho_http_started();
 int rho_http_get_port();
 
 #ifdef OS_MACOSX
-const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body );
+const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int* responseLength );
 void rho_http_free_response( const char* data );
 
 void* rho_http_init_headers_list();
