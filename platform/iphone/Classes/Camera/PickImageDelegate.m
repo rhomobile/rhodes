@@ -343,8 +343,15 @@
             //nothing - use as is
         }
         else {
-            // only name
-            fullname = [folder stringByAppendingPathComponent:filename];
+            range = [fullname rangeOfString:@"\\"];
+            if (range.location != NSNotFound ) {
+                //full path
+                //nothing - use as is
+            }
+            else {
+                // only name
+                fullname = [folder stringByAppendingPathComponent:filename];
+            }
         }
 
     }
