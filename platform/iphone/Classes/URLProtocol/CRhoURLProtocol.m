@@ -9,7 +9,7 @@
 extern int rho_http_started();
 extern int rho_http_get_port();
 
-const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body );
+const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int* responseLength );
 void rho_http_free_response( const char* data );
 
 void* rho_http_init_headers_list();
@@ -224,7 +224,9 @@ int on_http_cb(http_parser* parser) { return 0; }
     
   }
   
-  const char* response = rho_http_direct_request(method, uri, query, cHeaders, body);
+  int len = 0;
+  
+  const char* response = rho_http_direct_request(method, uri, query, cHeaders, body, &len);
   
   rho_http_free_headers_list(cHeaders);
   
@@ -251,7 +253,7 @@ int on_http_cb(http_parser* parser) { return 0; }
     http_parser *parser = malloc(sizeof(http_parser));
     parser->data = self;
     http_parser_init(parser, HTTP_RESPONSE);
-    http_parser_execute(parser, &settings, response, strlen(response));
+    http_parser_execute(parser, &settings, response, len);
     
     NSString* strHttpVer = [NSString stringWithFormat:@"%d.%d",parser->http_major,parser->http_minor];
     
