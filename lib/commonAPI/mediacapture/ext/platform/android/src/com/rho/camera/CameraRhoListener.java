@@ -65,9 +65,12 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		Uri captureUri = null;
 		String targetPath = " ";
 		ByteArrayOutputStream stream = null;
+		String rename = null;
 		try {
 			if (resultCode == Activity.RESULT_OK)
 			{
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
+				rename = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
 				String curPath = null;		
 				String strCaptureUri = getActualPropertyMap().get("captureUri");		
 				if (strCaptureUri != null)
@@ -86,6 +89,11 @@ public class CameraRhoListener extends AbstractRhoListener implements
 							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 							        try {
 							        	mBitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
+							        	if (!getActualPropertyMap().containsKey("fileName")){ 
+							        	f.renameTo(new File(f.getParentFile(), rename));
+										RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
+								                Uri.parse(imgPath)));
+							        	}
 							        } catch (FileNotFoundException e) {
 							            e.printStackTrace();
 							        }
@@ -111,7 +119,14 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						curUri = intent.getData();
 					}
 					imgPath = getFilePath(curUri);
-					mBitmap = BitmapFactory.decodeFile(imgPath);					
+					mBitmap = BitmapFactory.decodeFile(imgPath);
+					File file = null;
+					if (!getActualPropertyMap().containsKey("fileName")){ 
+						file= new File(imgPath);
+						file.renameTo(new File(file.getParentFile(), rename));
+						RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
+				                Uri.parse(imgPath)));
+					}
 					picChoosen_imagewidth = mBitmap.getWidth();
 					picChoosen_imageheight = mBitmap.getHeight();
 					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){				
