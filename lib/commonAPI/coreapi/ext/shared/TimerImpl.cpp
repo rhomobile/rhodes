@@ -42,12 +42,32 @@ namespace rho
     class CTimerImpl : public CTimerBase, public common::CRhoTimer::ICallback
     {
 	private:
-		rho::String m_timerID;
+		class TimerResultThread : public CRhoThread
+		{
+		private:
+			rho::apiGenerator::CMethodResult m_oResult;
+
+		public:
+			TimerResultThread(const rho::apiGenerator::CMethodResult& oResult) : m_oResult(oResult) {}
+
+			virtual void run()
+			{
+				m_oResult.set("");
+			}
+		};
+
+	private:
+		rho::String                      m_timerID;
 		rho::apiGenerator::CMethodResult m_oResult;
+		TimerResultThread*               m_answerThread;
 
     public:
-		CTimerImpl(const rho::String& timerID) : m_timerID(timerID) {}
-		virtual ~CTimerImpl() {}
+		CTimerImpl(const rho::String& timerID) : m_timerID(timerID), m_answerThread(0) {}
+		virtual ~CTimerImpl() 
+		{
+			if (!m_answerThread)
+				delete m_answerThread;
+		}
 
         //methods
         virtual void start( int interval, rho::apiGenerator::CMethodResult& oResult) 
@@ -77,7 +97,12 @@ namespace rho
 
 		virtual bool onTimer()
 		{
-			m_oResult.set("");
+			if (!m_answerThread) {
+				m_answerThread = new TimerResultThread(m_oResult);
+			}
+
+			m_answerThread->start(IRhoRunnable::epNormal);
+
 			return true;
 		}
     };

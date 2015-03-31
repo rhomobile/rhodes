@@ -156,7 +156,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC>The captured image is stored on the device. The callback associated with takePicture will contain the location of the image.</DESC>
                     </VALUE>
                     <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
-                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>
+                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
@@ -367,7 +367,7 @@ The ebapi.js file is necessary for all single API inclusions.
                     </PARAMS>
                 </CALLBACK>
             </METHOD>
-			<METHOD name="showPreview">
+			<METHOD name="showPreview" runInThread="ui">
 				<DESC>Shows the preview in user configurable viewer window.</DESC>
 				<PLATFORM>WM, CE</PLATFORM>
         <PARAMS>
@@ -839,12 +839,19 @@ alert(reslnArray[1].height);
             <REMARK title="SDCard Access">
                 <DESC>Extensions which came from RhoElements (i.e. AudioCapture) that could possibly write files to external storage will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
             </REMARK>
-			<REMARK title="Camera in Full Screen">
+			<REMARK title="Camera Preview">
                 <DESC>In some of the WM/CE devices, though user has opted for a full screen, preview rendering size is decided by the driver.</DESC>
             </REMARK>
 			<REMARK title="DataUri">
-                <DESC>DataUri output is highly dependent on hardware capabilities. DataUri may fail in certain devices; recommend image path in such devices.</DESC>
+                <DESC>DataUri output is highly dependent on hardware capabilities. DataUri may fail in certain devices; recommended to use image path in such devices.</DESC>
             </REMARK>
+			<REMARK title="ImageUri">
+                <DESC>Image uri display is dependent on browser capability.</DESC>
+            </REMARK>
+			<REMARK title="GetSupportedProperties in WP8">
+                <DESC>WP8 does not support getSupportedProperties and SetSupportedProperties</DESC>
+            </REMARK>
+
         </REMARKS>
     </MODULE>
 </API>

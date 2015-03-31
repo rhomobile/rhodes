@@ -9,10 +9,12 @@
 bool CCamera::m_IsCameraRunning = false;
 bool CCamera::m_bRcmLoaded = false;
 bool CCamera::m_bAppHasFocus= true;
+rho::StringW CCamera::m_ImageUriPath;
 CTriggerMonitor CCamera::m_Rcm;
 HANDLE CCamera::m_hTriggerEvents[eTriggerEventMax] = {NULL, NULL};
 HANDLE CCamera::m_hRegisterTrigger = NULL;
 HANDLE CCamera::m_hTriggerMonitorThread = NULL;
+bool CCamera::m_bIsDeprecated = false;
 
 CCamera::CCamera(LPCTSTR szDeviceName)
 {
@@ -281,48 +283,85 @@ void CCamera::initializePreviewPos()
 }
 void CCamera::UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri,int nImageWidth, int nImageHeight)
 {
-	char tempVal[6];
+	char imageHeight[6];
+	char imageWidth[6];
 
 	rho::Hashtable<rho::String, rho::String> statusData;
 	statusData.put( "status", status);	
 
-	tempVal[0] = 0;
-    sprintf(tempVal,"%d",nImageHeight);
-	statusData.put( "imageHeight",tempVal);	
-	statusData.put( "image_height", tempVal);
-	tempVal[0] = 0;
-	sprintf(tempVal,"%d",nImageWidth);
-	statusData.put( "imageWidth", tempVal);		
-	statusData.put( "image_width", tempVal);
+	imageHeight[0] = 0;
+	imageWidth[0] = 0;
+	sprintf(imageHeight,"%d",nImageHeight);
+	sprintf(imageWidth,"%d",nImageWidth);
+
+	if(false == m_bIsDeprecated)
+	{
+		statusData.put( "imageHeight",imageHeight);
+		statusData.put( "imageWidth", imageWidth);	
+	}
+	else
+	{
+		statusData.put( "image_height", imageHeight);
+		statusData.put( "image_width", imageWidth);
+	}
 
 	if("ok" == status)
-	{	
-		
-		rho::String outputFormat;
-		outputFormat = "jpg";//note, there is a confusion here, outputFormat we use here is to say in what format image saved
-		if(m_eOutputFormat == eImageUri)
-		{			
-			//for image path, set file:// as well so that user can access the link
-			rho::String pathPrefix = "file://";
-			imageUri= pathPrefix + imageUri;
+	{
 
-		}		
-		statusData.put( "imageFormat", outputFormat);
-		statusData.put( "imageUri", imageUri);
-		statusData.put( "image_format", imageUri);
-		statusData.put( "image_uri", outputFormat);
+		rho::String outputFormat;		
+		if(m_eOutputFormat == eImageUri)
+		{
+			DeleteFile(m_ImageUriPath.c_str());
+			rho::String appRootPath;
+			rho::String fileName;
+			rho::String newFilePath;
+			appRootPath = RHODESAPP().getAppRootPath();
+			unsigned int index = imageUri.find_last_of("\\");		
+			if(index > 0)
+			{
+				fileName = imageUri.substr(index);
+			}
+			else
+			{
+				fileName = imageUri;
+			}
+			newFilePath = appRootPath + "/" + fileName;
+			m_ImageUriPath = rho::common::convertToStringW(newFilePath);
+			rho::StringW szExistingPath= rho::common::convertToStringW(imageUri);
+			CopyFile(szExistingPath.c_str(), m_ImageUriPath.c_str(), TRUE);
+			imageUri = fileName;
+
+		}	
+		outputFormat = "jpg";//note, there is a confusion here, outputFormat we use here is to say in what format image saved
 		statusData.put( "message", "");
+
+		if(false == m_bIsDeprecated)
+		{
+			statusData.put( "imageFormat", outputFormat);
+			statusData.put( "imageUri", imageUri);
+		}
+		else
+		{
+			statusData.put( "image_format", imageUri);
+			statusData.put( "image_uri", outputFormat);
+		}
 
 	}
 	else
 	{
 		//for cancel or error set only message
 		statusData.put( "message", message);
-		statusData.put( "imageFormat", "");
-		statusData.put( "imageUri", "");	
-		statusData.put( "image_format", "");
-		statusData.put( "image_uri", "");		
-		
+		if(false == m_bIsDeprecated)
+		{
+			statusData.put( "imageFormat", "");
+			statusData.put( "imageUri", "");
+		}
+		else
+		{
+			statusData.put( "image_format", "");
+			statusData.put( "image_uri", "");	
+		}
+
 	}
 	m_pCameraCb.set(statusData);		
 
@@ -518,4 +557,8 @@ void CCamera::UnregisterTriggerMonitor()
 		m_hRegisterTrigger = NULL;
 		closeTriggerEvents();
 	}
+}
+void CCamera::SetAPICallType(bool bIsDeprecated)
+{
+	m_bIsDeprecated = bIsDeprecated;
 }

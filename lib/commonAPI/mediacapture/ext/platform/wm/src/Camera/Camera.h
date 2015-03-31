@@ -9,6 +9,8 @@
 #include "TriggerMonitor.h"
 using namespace rho::apiGenerator;
 
+#define CAN_SUPPORT_DATA_URI(FILE_SIZE) (FILE_SIZE/1024) <= 250 //support upto 250 kb
+
 enum eCamType
 {
 	eColorCam,
@@ -64,6 +66,7 @@ protected:
 	rho::StringW m_FileName;
 	BOOL m_FlashMode;
 	eImageOutputFormat m_eOutputFormat;
+	static rho::StringW m_ImageUriPath; //hold the imageUri path, needs to delete during every capture operation
 	rho::StringW m_CamType;
 	bool m_PreviewOn; 
 	static bool m_IsCameraRunning;
@@ -73,7 +76,8 @@ protected:
 	static HANDLE m_hTriggerMonitorThread;
 	static bool m_bRcmLoaded;
 	static bool m_bAppHasFocus;	
-	rho::apiGenerator::CMethodResult m_pCameraCb; //Status Event: Will give the status that the audio has been recorded succesfully or not  	
+	rho::apiGenerator::CMethodResult m_pCameraCb; //Status Event: Will give the status 
+	static bool m_bIsDeprecated;
 public:
 	CCamera(LPCTSTR szDeviceName);
 	virtual ~CCamera();	
@@ -86,6 +90,7 @@ public:
 	void ResetViewerWndPos();//called when user update position manually
 	void DisableFullScreenButtons();//when trigger is used in full screen, then button should be greyed out
 	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback);
+	static void SetAPICallType(bool bIsDeprecated);
 	virtual void ApplicationFocusChange(bool bAppHasFocus);
 protected:
 	/**

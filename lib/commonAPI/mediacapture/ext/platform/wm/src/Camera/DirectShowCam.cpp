@@ -239,54 +239,72 @@ void CDirectShowCam::Capture()
 					if(hFile)
 					{
 						DWORD dwFileSize = GetFileSize(hFile, NULL);
-						bool fileReadSuccess = true;
-						DWORD dwImageBufSize =0;///< Variable for Buffer size of captured image
-						LPVOID pImageBuffer =NULL;///< Buffer to save captured image
-						if (dwFileSize > 0)
+						bool bCanSupportDataUri = false;
+						bCanSupportDataUri = CAN_SUPPORT_DATA_URI(dwFileSize) ? true : false;
+
+						if(bCanSupportDataUri)//filesize with in limit
 						{
-					
-							pImageBuffer = new BYTE[dwFileSize];
-							dwImageBufSize = dwFileSize;
-							DWORD dwBytesRead = 0;
-							do
+							bool fileReadSuccess = false;
+							DWORD dwImageBufSize =0;///< Variable for Buffer size of captured image
+							LPVOID pImageBuffer =NULL;///< Buffer to save captured image
+							if (dwFileSize > 0)
 							{
-								if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+
+								pImageBuffer = new BYTE[dwFileSize];
+								if(pImageBuffer)
 								{
-									//  Some error has occured reading the file
-									LOG(ERROR) + L"Unable to send image data as URI, could not read data";		
-									UpdateCallbackStatus("error","Unable to send image data as URI, could not read data","");
-									delete[] pImageBuffer;
-									pImageBuffer = NULL;
-									fileReadSuccess = false;
-									break;
+									dwImageBufSize = dwFileSize;
+									DWORD dwBytesRead = 0;
+									do
+									{
+										if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+										{
+											//  Some error has occured reading the file
+											LOG(ERROR) + L"Unable to send image data as URI, could not read data";		
+											UpdateCallbackStatus("error","Unable to send image data as URI, could not read data","");									
+											fileReadSuccess = false;
+											break;
+										}
+										else
+										{
+											fileReadSuccess = true;
+										}
+									}
+									while (dwBytesRead != 0);
 								}
 							}
-							while (dwBytesRead != 0);
-						}
-						CloseHandle(hFile);
-						if(fileReadSuccess)
-						{								
-							rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
-							if(nImageWidth != 0)
+							if(fileReadSuccess)
+							{	
+								if(pImageBuffer)
+								{
+									rho::common::GetJpegResolution((BYTE*)pImageBuffer, dwImageBufSize, nImageWidth, nImageHeight);
+									rho::common::GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
+								}							
+								//update callback						
+								UpdateCallbackStatus("ok","",imageUri,nImageWidth, nImageHeight );
+
+							}
+							else
 							{
-								rho::common::GetDataURI((BYTE*)pImageBuffer, dwImageBufSize, imageUri);
+								LOG(ERROR) + L"Unable to send image data as URI, an error occured during file read";		
+								UpdateCallbackStatus("error","Unable to send image data as URI, an error occured during file read","");				
 							}
 							delete[] pImageBuffer;
 							pImageBuffer = NULL;
-							//update callback
-							UpdateCallbackStatus("ok","",imageUri,nImageWidth, nImageHeight );
-
 						}
-						else
+						CloseHandle(hFile);
+						if(!bCanSupportDataUri)
 						{
-							LOG(ERROR) + L"Unable to send image data as URI, an error occured during file read";		
-							UpdateCallbackStatus("error","Unable to send image data as URI, an error occured during file read","");				
+							//enter if cannot support data uri
+							rho::common::GetJpegResolution( fileName.c_str(), nImageWidth, nImageHeight);
+							UpdateCallbackStatus("error","Failed to prepare dataUri, Image saved succesfully.",imageUri,nImageWidth, nImageHeight );
 						}
+						
 					}
 					else
 					{
 						LOG(ERROR) + L"Unable to send image data as URI, could not find captured image";		
-						UpdateCallbackStatus("error", "Unable to send image data as URI, could not find captured image","");
+						UpdateCallbackStatus("error", "Unable to send image as dataUri, could not find captured image","");
 
 					}
 				}

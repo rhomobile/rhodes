@@ -318,9 +318,9 @@ def update_rhodefs_header_file
 end
 
 
-namespace 'dev' do
+namespace :dev do
 
-  namespace 'update' do
+  namespace :update do
 
     desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'
     task :partial => ['config:common'] do
@@ -2735,7 +2735,9 @@ namespace "config" do
         $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
       end
     end
-
+    if $app_config['capabilities'].index("camera")
+		      $app_config['extensions'] = $app_config['extensions'] | ['mediacapture']
+	  end	
     if $app_config["app_type"] == 'rhoelements'
 
       # add audiocapture extensions for rhoelements app
@@ -4141,63 +4143,54 @@ namespace "build" do
 
     task :upgrade_package do
 
-      $bindir = File.join($app_path, "bin")
+      $bindir = File.join($app_path, 'bin')
       $current_platform = 'empty'
-      $srcdir = File.join($bindir, "RhoBundle")
+      $srcdir = File.join($bindir, 'RhoBundle')
 
-      $targetdir = File.join($bindir, "target")
-      $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
-      $tmpdir = File.join($bindir, "tmp")
-      $appname = $app_config["name"]
-      $appname = "Rhodes" if $appname.nil?
-      $vendor = $app_config["vendor"]
-      $vendor = "rhomobile" if $vendor.nil?
+      $targetdir = File.join($bindir, 'target')
+      $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
+      $tmpdir = File.join($bindir, 'tmp')
+      $appname = $app_config['name']
+      $appname = 'Rhodes' if $appname.nil?
+      $vendor = $app_config['vendor']
+      $vendor = 'rhomobile' if $vendor.nil?
       $vendor = $vendor.gsub(/^[^A-Za-z]/, '_').gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_').downcase
-      $appincdir = File.join $tmpdir, "include"
+      $appincdir = (File.join $tmpdir, 'include')
 
       Rake::Task["config:common"].invoke
 
       Rake::Task["build:bundle:noxruby"].invoke
 
-      new_zip_file = File.join($srcdir, "apps", "upgrade_bundle.zip")
+      new_zip_file = File.join($srcdir, 'apps', 'upgrade_bundle.zip')
 
       if RUBY_PLATFORM =~ /(win|w)32$/
-        begin
 
-          require 'rubygems'
-          require 'zip'
-          require 'find'
-          require 'fileutils'
-          include FileUtils
+        require 'rubygems'
+        require 'zip'
+        require 'find'
+        require 'fileutils'
+        include FileUtils
 
-          root = $srcdir
-
-          new_zip_file = File.join($srcdir, "upgrade_bundle.zip")
-
-          Zip::ZipFile.open(new_zip_file, Zip::ZipFile::CREATE)do |zipfile|
-            Find.find(root) do |path|
-              Find.prune if File.basename(path)[0] == ?.
-                dest = /apps\/(\w.*)/.match(path)
-              if dest
-                puts '     add file to zip : '+dest[1].to_s
-                zipfile.add(dest[1],path)
-              end
+        root = $srcdir
+        new_zip_file = File.join($srcdir, 'upgrade_bundle.zip')
+        (Zip::ZipFile rescue Zip::File).open(new_zip_file, Zip::File::CREATE) do |zipfile|
+          Find.find(root) do |path|
+            Find.prune if File.basename(path)[0] == ?.
+            dest = /apps\/(\w.*)/.match(path)
+            if dest
+              puts '     add file to zip : ' + dest[1].to_s
+              zipfile.add(dest[1], path)
             end
           end
-        rescue Exception => e
-          puts 'ERROR !'
-          puts 'Require "rubyzip" gem for make zip file !'
-          puts 'Install gem by "gem install rubyzip"'
         end
+
       else
-        chdir File.join($srcdir, "apps")
-        sh %{zip -r upgrade_bundle.zip .}
+        chdir File.join($srcdir, 'apps')
+        sh 'zip -r upgrade_bundle.zip .'
       end
 
-      cp   new_zip_file, $bindir
-
-      rm   new_zip_file
-
+      cp new_zip_file, $bindir
+      rm new_zip_file
     end
 
     task :noiseq do

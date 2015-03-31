@@ -25,9 +25,14 @@ namespace rho {
 	private:
 		rho::Hashtable<String, eCamType> m_DeviceNameMap;
 		rho::apiGenerator::CMethodResult m_pCb;
+		rho::StringW m_ImageUriPath; //hold the imageUri path, needs to delete during every new choosePictureOperation
+		bool m_bIsDeprecated;
 	public:
 
-		CCameraSingletonImpl(): CCameraSingletonBase(){}
+		CCameraSingletonImpl(): CCameraSingletonBase()
+		{
+			m_bIsDeprecated = false;
+		}
 
 		//methods
 		// enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
@@ -73,7 +78,7 @@ namespace rho {
 		// choosePicture Choose a picture from the album. 
 		virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
 
-			bool bRunningOnWM = false;
+			bool bRunningOnWM = false;			
 			OSVERSIONINFO osvi;
 			m_pCb = oResult;
 			memset(&osvi, 0, sizeof(OSVERSIONINFO));
@@ -98,6 +103,14 @@ namespace rho {
 							
 					}
 				}
+				m_bIsDeprecated = false;
+				if(propertyMap.containsKey("deprecated"))
+				{
+					if("true" == propertyMap.find("deprecated")->second)
+					{
+						m_bIsDeprecated = true;
+					}					
+				}			
 
 				choosePicture(eFormat, oResult);
 				
@@ -148,7 +161,7 @@ namespace rho {
 
 			ofnex.lStructSize     = sizeof(ofnex);
 			ofnex.hwndOwner       = rhodes_data.m_hBrowserWnd;
-			ofnex.lpstrFilter     = NULL;
+			ofnex.lpstrFilter     = _T("JPEG Files (*.jpg)\0*.jpg\0");;
 			ofnex.lpstrFile       = image_uri;
 			ofnex.nMaxFile        = MAX_PATH;
 			ofnex.lpstrInitialDir = NULL;
@@ -162,38 +175,48 @@ namespace rho {
 				StringW strFullName = image_uri;	
 
 				rho::String imageUri;
-				int nWidth;
-				int nHeight;
+				int nWidth =0;
+				int nHeight =0;
 
 				if(eDataUri == eFormat)
 				{
 					//  Rather than get bogged down the Direct Show again we'll just
 					//  read the file back in from disk.
 					HANDLE hFile = CreateFile(strFullName.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, 
-						FILE_ATTRIBUTE_NORMAL, NULL);			
+						 FILE_ATTRIBUTE_NORMAL, NULL);			
 
 					if(hFile)
 					{
-						LPVOID pImageBuffer;///< Buffer store the image						
 						DWORD dwFileSize = GetFileSize(hFile, NULL);
-						if (dwFileSize > 0)
-						{		
-							DWORD dwBytesRead = 0;
-							pImageBuffer = new BYTE[dwFileSize];
-							if(pImageBuffer)
-							{
-								bool bFileReadSuccess = true;
-								do
-								{
-									if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+						bool bCanSupportDataUri = false;
+						bCanSupportDataUri = CAN_SUPPORT_DATA_URI(dwFileSize) ? true : false;
+						if(bCanSupportDataUri)
+						{
+							LPVOID pImageBuffer = NULL;///< Buffer store the image
+							bool bFileReadSuccess = false;
+							if (dwFileSize > 0)
+							{		
+								DWORD dwBytesRead = 0;
+								pImageBuffer = new BYTE[dwFileSize];
+								if(pImageBuffer)
+								{								
+									do
 									{
-										//  Some error has occured reading the file
-										LOG(INFO) + L"Unable to read image";	
-										bFileReadSuccess = false;
-										break;
-									}
-								}while (dwBytesRead != 0);
+										if (!ReadFile(hFile, pImageBuffer, dwFileSize, &dwBytesRead, NULL))
+										{
+											//  Some error has occured reading the file
+											LOG(INFO) + L"Unable to read image";	
+											bFileReadSuccess = false;
+											break;
+										}
+										else
+										{
+											bFileReadSuccess = true;
+										}
+									}while (dwBytesRead != 0);
 
+
+								}
 								if(bFileReadSuccess)
 								{									
 									rho::common::GetDataURI((BYTE*)pImageBuffer, dwFileSize, imageUri);
@@ -206,13 +229,21 @@ namespace rho {
 
 						}
 						CloseHandle(hFile);
+						if(!bCanSupportDataUri)
+						{
+							//enter if cannot support data uri
+							rho::common::GetJpegResolution(strFullName.c_str(), nWidth, nHeight);
+							UpdateCallbackStatus("error","Failed to prepare dataUri.",imageUri, eDataUri,nWidth, nHeight );
+
+						}
+						
 					}
 				}
 				else
 				{
 					imageUri = rho::common::convertToStringA(strFullName);
 					rho::common::GetJpegResolution(strFullName.c_str(), nWidth, nHeight);
-				}
+				}			
 
 				UpdateCallbackStatus("ok","",imageUri, eFormat, nWidth, nHeight);
 
@@ -229,47 +260,85 @@ namespace rho {
 			}
 		}
 		void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri, eImageOutputFormat eFormat =eImageUri, int nImageWidth =0, int nImageHeight =0)
-		{
-			char tempVal[6];
+		{		
+			char imageHeight[6];
+			char imageWidth[6];
 
 			rho::Hashtable<rho::String, rho::String> statusData;
 			statusData.put( "status", status);	
 
-			tempVal[0] = 0;
-			sprintf(tempVal,"%d",nImageHeight);
-			statusData.put( "imageHeight",tempVal);	
-			statusData.put( "image_height", tempVal);
-			tempVal[0] = 0;
-			sprintf(tempVal,"%d",nImageWidth);
-			statusData.put( "imageWidth", tempVal);		
-			statusData.put( "image_width", tempVal);
+			imageHeight[0] = 0;
+			imageWidth[0] = 0;
+			sprintf(imageHeight,"%d",nImageHeight);
+			sprintf(imageWidth,"%d",nImageWidth);
+
+			if(false == m_bIsDeprecated)
+			{
+				statusData.put( "imageHeight",imageHeight);
+				statusData.put( "imageWidth", imageWidth);	
+			}
+			else
+			{
+				statusData.put( "image_height", imageHeight);
+				statusData.put( "image_width", imageWidth);
+			}
 
 			if("ok" == status)
 			{	
 
 				rho::String outputFormat;
 				if(eFormat == eImageUri)
-				{					
-					//for image path, set file:// as well so that user can access the link
-					rho::String pathPrefix = "file://";
-					imageUri= pathPrefix + imageUri;
+				{
+					DeleteFile(m_ImageUriPath.c_str());
+					rho::String appRootPath;
+					rho::String fileName;
+					rho::String newFilePath;
+					appRootPath = RHODESAPP().getAppRootPath();
+					unsigned int index = imageUri.find_last_of("\\");		
+					if(index > 0)
+					{
+						fileName = imageUri.substr(index);
+					}
+					else
+					{
+						fileName = imageUri;
+					}
+					newFilePath = appRootPath + "/" + fileName;
+					m_ImageUriPath = rho::common::convertToStringW(newFilePath);
+					rho::StringW szExistingPath= rho::common::convertToStringW(imageUri);
+					CopyFile(szExistingPath.c_str(), m_ImageUriPath.c_str(), TRUE);					 
+					imageUri = fileName;
 				}
 				outputFormat = "jpg";		
-				statusData.put( "imageFormat", outputFormat);
-				statusData.put( "imageUri", imageUri);
-				statusData.put( "image_format", imageUri);
-				statusData.put( "image_uri", outputFormat);
 				statusData.put( "message", "");
+
+				if(false == m_bIsDeprecated)
+				{
+					statusData.put( "imageFormat", outputFormat);
+					statusData.put( "imageUri", imageUri);
+				}
+				else
+				{
+					statusData.put( "image_format", imageUri);
+					statusData.put( "image_uri", outputFormat);
+				}
+				
 
 			}
 			else
 			{
 				//for cancel or error set only message
 				statusData.put( "message", message);
-				statusData.put( "imageFormat", "");
-				statusData.put( "imageUri", "");	
-				statusData.put( "image_format", "");
-				statusData.put( "image_uri", "");		
+				if(false == m_bIsDeprecated)
+				{
+					statusData.put( "imageFormat", "");
+					statusData.put( "imageUri", "");
+				}
+				else
+				{
+					statusData.put( "image_format", "");
+					statusData.put( "image_uri", "");	
+				}
 
 			}
 			m_pCb.set(statusData);		
@@ -384,9 +453,18 @@ namespace rho {
 			{
 
 				CMethodResult oRes;
-				setProperties(propertyMap, oRes);              	
+				setProperties(propertyMap, oRes); 
+				CCamera::SetAPICallType(false);
 				if (oResult.hasCallback())
 				{
+					if(propertyMap.containsKey("deprecated"))
+					{
+						if("true" == propertyMap.find("deprecated")->second)
+						{
+							CCamera::SetAPICallType(true);
+						}
+					}
+					
 					DEBUGMSG(true, (L"Callback"));
 					pCamera->SetCallback(oResult);                      
 					pCamera->takeFullScreen();
@@ -420,8 +498,10 @@ namespace rho {
 
 		virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
 			if(pCamera)
-			{              	
+			{ 
+             	
 				if (oResult.hasCallback()){
+					CCamera::SetAPICallType(false);
 					DEBUGMSG(true, (L"Callback"));
 					pCamera->SetCallback(oResult);                      
 					pCamera->Capture();

@@ -3,12 +3,12 @@
 <API>
     <MODULE name="Config" parent="Rho" productException="eb">
         <HELP_OVERVIEW>Rho.Config module</HELP_OVERVIEW>
-        <MORE_HELP>Implementation of the config api.</MORE_HELP>
+        <MORE_HELP>Implementation of the Config API.</MORE_HELP>
 
         <PROPERTIES access="STATIC" generateAccessors="true">
 
             <PROPERTY name="configPath" type="STRING" default="">
-                <DESC></DESC>
+                <DESC>Path to the config file.</DESC>
             </PROPERTY>
                             
         </PROPERTIES>
@@ -17,103 +17,103 @@
             <METHOD name="getPropertyString" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
-                        <DESC>Name of property</DESC>
+                        <DESC>Name of the property.</DESC>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="STRING"/>
-                <DESC>Get string property from config</DESC>
+                <DESC>Get string value of config property.</DESC>
             </METHOD>
 
             <METHOD name="setPropertyString" access="STATIC">
               <PARAMS>
                 <PARAM name="name" type="STRING">
-                  <DESC>Name of parameter</DESC>
+                  <DESC>Name of the property.</DESC>
                 </PARAM>
                 <PARAM name="value" type="STRING">
-                  <DESC>Name of parameter</DESC>
+                  <DESC>Value of the property.</DESC>
                 </PARAM>
                 <PARAM name="saveToFile" type="BOOLEAN">
-                  <DESC></DESC>
+                  <DESC>If true, save changes to file.</DESC>
                 </PARAM>
               </PARAMS>
-              <DESC></DESC>
+              <DESC>Set string value of config property and optionally save changes to file.</DESC>
             </METHOD>
           
             <METHOD name="getPropertyInt" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
-                        <DESC>Name of property</DESC>
+                        <DESC>Name of the property.</DESC>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="INTEGER"/>
-                <DESC>Get int property from config</DESC>
+                <DESC>Get integer value of config property.</DESC>
             </METHOD>
           
             <METHOD name="setPropertyInt" access="STATIC">
               <PARAMS>
                 <PARAM name="name" type="STRING">
-                  <DESC>Name of parameter</DESC>
+                  <DESC>Name of the property.</DESC>
                 </PARAM>
                 <PARAM name="value" type="INTEGER">
-                  <DESC>Name of parameter</DESC>
+                  <DESC>Value of the property.</DESC>
                 </PARAM>
                 <PARAM name="saveToFile" type="BOOLEAN">
-                  <DESC></DESC>
+                  <DESC>If true, save changes to file.</DESC>
                 </PARAM>
               </PARAMS>
-              <DESC></DESC>
+              <DESC>Set integer value of config property and optionally save changes to file.</DESC>
             </METHOD>
           
             <METHOD name="getPropertyBool" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
-                        <DESC>Name of property</DESC>
+                        <DESC>Name of the property.</DESC>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="BOOLEAN"/>
-                <DESC>Get boolean property from config</DESC>
+                <DESC>Get boolean value of config property.</DESC>
             </METHOD>
 
             <METHOD name="setPropertyBool" access="STATIC">
               <PARAMS>
                 <PARAM name="name" type="STRING">
-                  <DESC>Name of parameter</DESC>
+                  <DESC>Name of the property.</DESC>
                 </PARAM>
                 <PARAM name="value" type="BOOLEAN">
-                  <DESC>Name of parameter</DESC>
+                  <DESC>Value of the property.</DESC>
                 </PARAM>
                 <PARAM name="saveToFile" type="BOOLEAN">
-                  <DESC></DESC>
+                  <DESC>If true, save changes to file.</DESC>
                 </PARAM>
               </PARAMS>
-              <DESC></DESC>
+              <DESC>Set boolean value of config property and optionally save changes to file.</DESC>
             </METHOD>
           
             <METHOD name="isPropertyExists" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
-                        <DESC>Name of property</DESC>
+                        <DESC>Name of the property.</DESC>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="BOOLEAN"/>
-                <DESC>Is exists property in load config file</DESC>
+                <DESC>Returns true if property exists in the loaded config file.</DESC>
             </METHOD>
 
             <METHOD name="removeProperty" access="STATIC">
                 <PARAMS>
                     <PARAM name="name" type="STRING">
-                        <DESC>Name of parameter</DESC>
+                        <DESC>Name of the property.</DESC>
                     </PARAM>
                     <PARAM name="saveToFile" type="BOOLEAN">
-                        <DESC></DESC>
+                        <DESC>If true, save changes to file.</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>Remove existing property and save to file.</DESC>
+                <DESC>Remove existing property and optionally save changes to file.</DESC>
             </METHOD>
                                      
             <METHOD name="loadFromFile" access="STATIC">
-                <DESC>Load config from default file.</DESC>
-            </METHOD>             
+                <DESC>Load config from the file specified by configPath property.</DESC>
+            </METHOD>
                           
         </METHODS>
 
