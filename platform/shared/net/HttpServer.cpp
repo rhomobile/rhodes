@@ -284,9 +284,12 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 #endif
 
-    
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server)
     :m_active(false), m_port(port), verbose(true), m_IP_adress("")
+#ifdef OS_MACOSX
+    , m_localResponseWriter(0)
+    , m_pQueue(0)    
+#endif
 {
     m_enable_external_access = enable_external_access;
     m_started_as_separated_simple_server = started_as_separated_simple_server;
@@ -295,6 +298,10 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
     :m_active(false), m_port(port), verbose(true), m_IP_adress("")
+#ifdef OS_MACOSX
+    , m_localResponseWriter(0)
+    , m_pQueue(0)
+#endif
 {
     m_enable_external_access = false;
     m_started_as_separated_simple_server = false;
@@ -319,6 +326,10 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     
 CHttpServer::CHttpServer(int port, String const &root)
     :m_active(false), m_port(port), verbose(true), m_IP_adress("")
+#ifdef OS_MACOSX
+    , m_localResponseWriter(0)
+    , m_pQueue(0)
+#endif
 {
     m_enable_external_access = false;
     m_started_as_separated_simple_server = false;
@@ -417,6 +428,7 @@ extern "C" void rb_gc(void);
 bool CHttpServer::init()
 {
 	if (verbose) RAWTRACE("Open listening socket...");
+
     close_listener();
     
     //m_listener = socket(AF_INET, SOCK_STREAM, 0);
@@ -481,8 +493,8 @@ int CHttpServer::getPort()
 {
     return m_port;
 }
-    
-rho::String CHttpServer::getIPAdress() 
+
+rho::String CHttpServer::getIPAdress()
 {
     return m_IP_adress;
 }
@@ -491,13 +503,15 @@ void CHttpServer::disableAllLogging()
 {
     verbose = false;
 }
-   
+
 bool CHttpServer::run()
 {
     if (verbose) LOG(INFO) + "Start HTTP server";
 
     if (!init())
+    {
         return false;
+    }
 
     m_active = true;
 
@@ -709,6 +723,13 @@ bool CHttpServer::receive_request(ByteVector &request)
 
 bool CHttpServer::send_response_impl(String const &data, bool continuation)
 {
+#ifdef OS_MACOSX
+    if ( m_localResponseWriter != 0 ) {
+      m_localResponseWriter->writeResponse( data );
+      return true;
+    }
+#endif
+
     if (verbose) {
         if (continuation)
             if (verbose) RAWTRACE("Send continuation data...");
@@ -864,7 +885,7 @@ bool CHttpServer::process(SOCKET sock)
     return decide(method, uri, query, headers, body);
 }
 
-bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body)
+bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body )
 {
     method.clear();
     uri.clear();
@@ -1367,7 +1388,7 @@ void CHttpServer::call_ruby_proc( rho::String const &query, String const &body )
 }
 
 bool CHttpServer::decide(String const &method, String const &arg_uri, String const &query,
-                         HeaderList const &headers, String const &body)
+                         HeaderList const &headers, String const &body/*, IResponseSender& respSender*/ )
 {
     if (verbose) RAWTRACE1("Decide what to do with uri %s", arg_uri.c_str());
     callback_t callback = registered(arg_uri);
@@ -1383,17 +1404,6 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
     }
 
     String uri = arg_uri;
-
-//#ifdef OS_ANDROID
-//    //Work around malformed Android WebView URLs
-//    if (!String_startsWith(uri, "/app") &&
-//        !String_startsWith(uri, "/public") &&
-//        !String_startsWith(uri, "/data")) 
-//    {
-//        RAWTRACE1("Malformed URL: '%s', adding '/app' prefix.", uri.c_str());
-//        uri = CFilePath::join("/app", uri);
-//    }
-//#endif
 
     String fullPath = CFilePath::join(m_root, uri);
 #ifndef RHO_NO_RUBY_API    
@@ -1428,7 +1438,6 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             return true;
         }
         
-    //#ifndef OS_ANDROID
         if (isdir(fullPath)) {
             if (verbose) RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
             String q = query.empty() ? "" : "?" + query;
@@ -1439,14 +1448,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             send_response(create_response("301 Moved Permanently", headers), true);
             return false;
         }
-    //#else
-    //    //Work around this Android redirect bug:
-    //    //http://code.google.com/p/android/issues/detail?can=2&q=11583&id=11583
-    //    if (isdir(fullPath)) {
-    //        RAWTRACE1("Uri %s is directory, override with index", uri.c_str());
-    //        return decide(method, CFilePath::join( uri, "index"RHO_ERB_EXT), query, headers, body);
-    //    }
-    //#endif
+
         if (isindex(uri)) {
             if (!isfile(fullPath)) {
                 if (verbose) RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
@@ -1483,6 +1485,128 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
     return bRes;
 }
+
+#ifdef OS_MACOSX
+String CHttpServer::directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body )
+{
+  common::CMutexLock lock(m_mxSyncRequest);
+  
+  String ret;
+  if ( m_pQueue != 0 )
+  {
+    CDirectHttpRequestQueue::CDirectHttpRequest req;
+  
+    pthread_cond_t signal;
+    pthread_cond_init(&signal,0);
+    
+    CMutex m;
+  
+    req.signal = &signal;
+    req.mutex = m.getNativeMutex();
+    req.method = method;
+    req.uri = uri;
+    req.query = query;
+    req.headers = headers;
+    req.body = body;
+  
+    pthread_mutex_lock(m.getNativeMutex());
+
+    m_pQueue->doRequest( req );
+    
+    pthread_cond_wait(&signal, m.getNativeMutex());
+    pthread_mutex_unlock(m.getNativeMutex());
+    
+    ret = m_pQueue->getResponse();
+  }
+  
+  return ret;
+ 
+}
+
+  
+bool CDirectHttpRequestQueue::run( )
+{
+  m_server.m_pQueue = this;
+  m_server.m_active = true;
+  RHODESAPP().notifyLocalServerStarted();
+  
+  do
+  {
+    m_thread.wait(-1);
+    
+    m_response = "";
+    
+    if ( m_request != 0 )
+    {
+      CHttpServer::ResponseWriter respWriter;
+      m_server.m_localResponseWriter = &respWriter;
+      
+#ifndef RHO_NO_RUBY_API
+      VALUE val;
+      if (rho_ruby_is_started())
+      {
+        if ( !RHOCONF().getBool("enable_gc_while_request") )
+        {
+          val = rho_ruby_disable_gc();
+        }
+      }
+#endif
+      
+      bool bProcessed = m_server.decide(
+                                        m_request->method,
+                                        m_request->uri,
+                                        m_request->query,
+                                        m_request->headers,
+                                        m_request->body
+                                        );
+      
+#ifndef RHO_NO_RUBY_API
+      if (rho_ruby_is_started())
+      {
+        if ( !RHOCONF().getBool("enable_gc_while_request") )
+        {
+          rho_ruby_enable_gc(val);
+        }
+        
+        if ( bProcessed )
+        {
+          LOG(INFO) + "GC Start.";
+          rb_gc();
+          LOG(INFO) + "GC End.";
+        }
+      }
+#endif
+      
+      m_server.m_localResponseWriter = 0;
+      
+      m_response = respWriter.getResponse();
+      
+      pthread_cond_t* signal = m_request->signal;
+      pthread_mutex_t* mutex = m_request->mutex;
+      
+      m_request->clear();
+      m_request = 0;
+
+      if ( (signal != 0) && (mutex!=0) )
+      {
+        pthread_mutex_lock(mutex);
+        pthread_cond_signal(signal);
+        pthread_mutex_unlock(mutex);
+      }
+    }
+  }while (m_server.m_active);
+  
+  return true;
+}
+
+
+  void CDirectHttpRequestQueue::doRequest( CDirectHttpRequest& req )
+  {
+    m_request = &req;
+    m_thread.stopWait();
+  }
+
+#endif
 
 } // namespace net
 } // namespace rho

@@ -49,6 +49,7 @@ public:
 	virtual void Capture() = 0;
 	virtual void SetCallback(rho::apiGenerator::CMethodResult& pCallback)=0;
 	virtual void ApplicationFocusChange(bool bAppHasFocus)=0;
+	virtual void OnPowerButton(bool bPowerOn)=0;
 };
 
 class CCamera : public ICam, public IViewFinderCallBack
@@ -85,6 +86,7 @@ public:
     virtual BOOL setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue);
 	virtual void getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames);
 	virtual void cancel();
+	virtual void close();
 	virtual void captureImage();
 	virtual void ResetViewerWndPos(RECT& pos);//viewerwnd callback
 	void ResetViewerWndPos();//called when user update position manually

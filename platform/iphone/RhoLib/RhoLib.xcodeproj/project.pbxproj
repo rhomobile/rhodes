@@ -81,6 +81,8 @@
 		C08098B818059C88008FE912 /* RubyResultConvertor.h in Headers */ = {isa = PBXBuildFile; fileRef = C08098B618059C88008FE912 /* RubyResultConvertor.h */; };
 		C084B09117394D4D00C1DCC0 /* StringifyHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C084B08F17394D4800C1DCC0 /* StringifyHelper.cpp */; };
 		C084B09217394D4D00C1DCC0 /* StringifyHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = C084B09017394D4A00C1DCC0 /* StringifyHelper.h */; };
+		C51463711A9258F500607F50 /* http_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = C514636F1A9258F500607F50 /* http_parser.c */; };
+		C51463721A9258F500607F50 /* http_parser.h in Headers */ = {isa = PBXBuildFile; fileRef = C51463701A9258F500607F50 /* http_parser.h */; };
 		C51A570D19D1E2020064CE87 /* gunzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A570C19D1E2020064CE87 /* gunzip.cpp */; };
 		C51A570F19D1EA200064CE87 /* gzlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A570E19D1EA200064CE87 /* gzlib.cpp */; };
 		C51A571119D1F0C10064CE87 /* gzread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C51A571019D1F0C10064CE87 /* gzread.cpp */; };
@@ -209,6 +211,8 @@
 		C08098B618059C88008FE912 /* RubyResultConvertor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RubyResultConvertor.h; path = ../../shared/api_generator/RubyResultConvertor.h; sourceTree = "<group>"; };
 		C084B08F17394D4800C1DCC0 /* StringifyHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringifyHelper.cpp; path = ../../shared/api_generator/StringifyHelper.cpp; sourceTree = "<group>"; };
 		C084B09017394D4A00C1DCC0 /* StringifyHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringifyHelper.h; path = ../../shared/api_generator/StringifyHelper.h; sourceTree = "<group>"; };
+		C514636F1A9258F500607F50 /* http_parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = http_parser.c; path = ../../shared/net/http_parser.c; sourceTree = "<group>"; };
+		C51463701A9258F500607F50 /* http_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = http_parser.h; path = ../../shared/net/http_parser.h; sourceTree = "<group>"; };
 		C51A570B19D1E13B0064CE87 /* gunzip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gunzip.h; path = ../../shared/unzip/gunzip.h; sourceTree = "<group>"; };
 		C51A570C19D1E2020064CE87 /* gunzip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gunzip.cpp; path = ../../shared/unzip/gunzip.cpp; sourceTree = "<group>"; };
 		C51A570E19D1EA200064CE87 /* gzlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gzlib.cpp; path = ../../shared/unzip/gzlib.cpp; sourceTree = "<group>"; };
@@ -431,6 +435,8 @@
 		5CBD46251087397B00107D0D /* net */ = {
 			isa = PBXGroup;
 			children = (
+				C514636F1A9258F500607F50 /* http_parser.c */,
+				C51463701A9258F500607F50 /* http_parser.h */,
 				5CB821AD1312487000778441 /* INetRequest.cpp */,
 				BDFCB13B112EE2B500AE3724 /* ssl.cpp */,
 				BDFCB13C112EE2B500AE3724 /* ssl.h */,
@@ -582,6 +588,7 @@
 				5C59BF4E115B4BC300E96ADE /* unzip.h in Headers */,
 				5CCD7EBD116CE2D5005E6CA3 /* AppMenu.h in Headers */,
 				5CA2DE9111B01EF000B868D5 /* ThreadQueue.h in Headers */,
+				C51463721A9258F500607F50 /* http_parser.h in Headers */,
 				5C663BEB11F3712C005F60AF /* RhodesAppBase.h in Headers */,
 				5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */,
 				FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */,
@@ -715,6 +722,7 @@
 				C5D47762156A4ED000943A2D /* zip.cpp in Sources */,
 				A2D0557E15A7500A002376EE /* RhoPushManager.cpp in Sources */,
 				C56918CE168B9AB800F6013A /* RhodesApp.cpp in Sources */,
+				C51463711A9258F500607F50 /* http_parser.c in Sources */,
 				FAEF1DCF16AED9D200E22B05 /* CMethodResult.m in Sources */,
 				FAEF1DD116AED9D200E22B05 /* CRubyConverter.m in Sources */,
 				FAEF1DD416AED9D200E22B05 /* RubyCallbackHelper.mm in Sources */,

@@ -139,16 +139,26 @@ BOOL CImager::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
         if(cmp(szPropertyName, L"aimMode"))
         {
             if((cmp(szPropertyValue, L"on")))
-            {				
+            {	
+				
                 m_AimMode = TRUE;
-				Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode);
+				LOG(INFO) + L"Aim mode set to true";
+				if(m_PreviewOn)
+				{
+					
+					Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode);
+				}
             }
             else
             {
                 if((cmp(szPropertyValue, L"off")))
                 {
+					LOG(INFO) + L"Aim mode set to false";
                     m_AimMode = FALSE;
-					Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode);
+					if(m_PreviewOn)
+					{
+						Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode);
+					}
                 }
 
             }		
@@ -335,14 +345,21 @@ DWORD CImager::StartViewer(RECT& pos, eViewrWndMode eMode)
                         // Start acquiring images and Turn on the viewfinder
                         if ((dwRes = Image_StartAcquisition(m_hImager)) == E_IMG_SUCCESS) 
                         {
-                            if ((dwRes = Image_StartViewfinder(m_hImager)) == E_IMG_SUCCESS) 
-                            {
-                                Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_LAMPSTATE, sizeof(BOOL), &m_FlashMode);
-                                Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode);
-                                bErrorFlag = false;//we reach here if no error found
+							if ((dwRes = Image_StartViewfinder(m_hImager)) == E_IMG_SUCCESS) 
+							{
+								if(Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_LAMPSTATE, sizeof(BOOL), &m_FlashMode) != E_IMG_SUCCESS)
+								{
+									LOG(INFO) + L"Setting flash failed";									
+								}							
+								if(Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode) != E_IMG_SUCCESS)
+								{
+									LOG(INFO) + L"Setting aimMode failed";
+								}
+							
+								bErrorFlag = false;//we reach here if no error found
 
 
-                            }
+							}
 
                         }
 
@@ -397,6 +414,7 @@ DWORD CImager::StopViewer()
 	LOG(INFO) + __FUNCTION__;
 	DWORD dwRes = E_IMG_SUCCESS;
 	TCHAR message[100];
+	m_ViewFinder.DestroyViewerWindow();
 	// Stop the viewfinder first
 	if (E_IMG_SUCCESS != (dwRes = Image_StopViewfinder(m_hImager)))
 	{
@@ -413,7 +431,7 @@ DWORD CImager::StopViewer()
 		return dwRes;
 	}
 		
-	m_ViewFinder.DestroyViewerWindow();
+	
 	return E_IMG_SUCCESS;
 }
 
@@ -560,6 +578,50 @@ void CImager::RedrawViewerWnd(RECT& pos)
 
 			wsprintf(message, L"Imager_SetCapCurrValue error %d", dwRes);
 			LOG(ERROR) + __FUNCTION__ + message;	
+		}
+	}
+}
+void CImager::ApplicationFocusChange(bool bAppHasFocus)
+{
+	LOG(INFO) + L"Application focus change called";
+	CCamera::ApplicationFocusChange(bAppHasFocus);
+	if(m_PreviewOn)
+	{
+		if(bAppHasFocus)
+		{
+			if(m_FlashMode)
+			{
+				SetFlashMode();
+			}
+			if(m_AimMode)
+			{
+				Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode);
+			}
+
+		}
+		else
+		{
+			LOG(INFO) + L"Application lost focus, stop camera";
+			BOOL bDisable = FALSE;
+			if(m_FlashMode)
+			{
+				Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_LAMPSTATE, sizeof(BOOL), &bDisable);	
+			}
+			if(m_AimMode)
+			{
+				Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &bDisable);
+			}			
+
+		}
+	}
+}
+void CImager::OnPowerButton(bool bPowerOn)
+{
+	if(!bPowerOn)
+	{
+		if(m_PreviewOn)
+		{
+			hidePreview();
 		}
 	}
 }

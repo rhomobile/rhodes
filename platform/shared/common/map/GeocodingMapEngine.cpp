@@ -126,9 +126,13 @@ static bool parse_json(const char *data, double *plat, double *plon, String* adr
 {
     RHO_MAP_TRACE1("parse_json: data=%s", data);
     json::CJSONEntry json(data);
+    if ( json.isEmpty() )
+    {
+      return false;
+    }
     const char *status = json.getString("status");
-    RHO_MAP_TRACE1("parse_json: status=%s", status);
-    if (strcasecmp(status, "OK") != 0)
+    RHO_MAP_TRACE1("parse_json: status=%s", (0==status)?"(null)":status);
+    if ((0==status) || (strcasecmp(status, "OK") != 0))
         return false;
     bool params_founded = false;
     if (adress_ok != NULL) {

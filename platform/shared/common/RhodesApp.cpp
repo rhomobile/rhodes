@@ -243,8 +243,6 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     if (!cmd)
         return;
 
-    synchronized(getCommandLock());
-
     LOG(INFO) + toString(cmd->type) + " is received ++++++++++++++++++++++++++++";
 
     if (cmd->type == ui_created)
@@ -276,37 +274,48 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
         m_expected = local_server_started;
     }
+  
+    Vector<int> commandsLocalCopy;
+  
+    { //Command queue lock scope
+      synchronized(getCommandLock());
 
-    if (cmd->type > m_expected)
-    {
-        if ( hasCommand(cmd->type) )
-        {
-            LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
-            return;
-        }else
-        {
-            // Don't do that now
-            LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
 
-            if (cmd->type == app_deactivated && m_expected != local_server_started)
-            {
-                m_commands.clear();
-                m_commands.push_back(cmd->type);
-            }
-            else
-            {
-                m_commands.push_back(cmd->type);
-                std::sort(m_commands.begin(), m_commands.end());
-                return;
-            }
-        }
+      if (cmd->type > m_expected)
+      {
+          if ( hasCommand(cmd->type) )
+          {
+              LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
+              return;
+          }else
+          {
+              // Don't do that now
+              LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
+
+              if (cmd->type == app_deactivated && m_expected != local_server_started)
+              {
+                  m_commands.clear();
+                  m_commands.push_back(cmd->type);
+              }
+              else
+              {
+                  m_commands.push_back(cmd->type);
+                  std::sort(m_commands.begin(), m_commands.end());
+                  return;
+              }
+          }
+      }
+      else
+      {
+          m_commands.insert(m_commands.begin(), cmd->type);
+      }
+      
+      m_commands.swap( commandsLocalCopy );
+      
+    //Command queue lock scope
     }
-    else
-    {
-        m_commands.insert(m_commands.begin(), cmd->type);
-    }
 
-    for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
+    for (Vector<int>::const_iterator it = commandsLocalCopy.begin(), lim = commandsLocalCopy.end(); it != lim; ++it)
     {
         int type = *it;
         LOG(INFO) + "process command: " + toString(type) + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
@@ -356,7 +365,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         }
     }
-    m_commands.clear();
+    //m_commands.clear();
 }
 
 void CAppCallbacksQueue::processUiCreated()
@@ -511,10 +520,33 @@ void CRhodesApp::run()
     PROF_CREATE_COUNTER("LOW_FILE");
 	if(m_isJSFSApp)
 		RHODESAPP().notifyLocalServerStarted();
+  
+#ifdef OS_MACOSX
+  bool shouldRunDirectQueue = false;
+  net::CDirectHttpRequestQueue directQueue(*m_httpServer, *this );
+  
+  if ( RHOCONF().getBool("ios_direct_local_requests") )
+  {
+    shouldRunDirectQueue = true;
+  }
+#endif
+
 
 	while (!m_bExit) {
 		if(!m_isJSFSApp)
-			m_httpServer->run();
+    {
+#ifdef OS_MACOSX
+      if ( shouldRunDirectQueue )
+      {
+        directQueue.run();
+      }
+      else
+#endif
+      {
+        m_httpServer->run();
+      }
+      
+    }
 		else
 		{
 			LOG(INFO) + "RhodesApp thread wait.";
@@ -1555,6 +1587,7 @@ int CRhodesApp::determineFreeListeningPort()
         LOG(ERROR) + "Unable to set socket option";
         noerrors = 0;
     }
+  
 #if defined(OS_MACOSX)
     if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char *)&optval, sizeof(optval)) != 0)
     {
@@ -1562,7 +1595,7 @@ int CRhodesApp::determineFreeListeningPort()
         noerrors = 0;
     }
 #endif
-    
+
     if (noerrors)
     {
         int listenPort = rho_conf_getInt("local_server_port");
@@ -1960,7 +1993,7 @@ unsigned long CRhodesApp::getCallbackObject(int nIndex)
         return valRes;
     }
 #else
-    return 0;
+    return 6; //Ruby Qundef
 #endif
 }
 
@@ -2558,6 +2591,87 @@ int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...)
 		
 	return (n);
 }
+
+int rho_http_started()
+{
+  return RHODESAPP().isLocalServerRunning()?1:0;
+}
+
+int rho_http_get_port()
+{
+  return RHODESAPP().getLocalServerPort();
+}
+
+#ifdef OS_MACOSX
+const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int* responseLength )
+{
+
+  String sMethod;
+  String sUri;
+  String sQuery;
+  String sBody;
+  rho::net::HttpHeaderList oHeaders;
+  
+  if ( method != 0 ) {
+    sMethod = method;
+  }
+  
+  if ( uri != 0 ) {
+    sUri = uri;
+  }
+  
+  if  ( query != 0 ) {
+    sQuery = query;
+  }
+  
+  if ( body != 0 ) {
+    sBody = body;
+  }
+  
+  if ( headers != 0 ) {
+    oHeaders = *(rho::net::HttpHeaderList*)headers;
+  }
+
+  String response = RHODESAPP().directHttpRequest( sMethod, sUri, sQuery, oHeaders, sBody );
+  
+  char* ret = 0;
+  
+  if ( response.length() != 0 ) {
+    ret = new char[response.length() + 1];
+    memmove(ret, response.c_str(), response.length());
+  }
+  
+  if ( responseLength != 0 )
+  {
+    *responseLength = (int)response.length();
+  }
+  
+  return ret;
+}
+
+void rho_http_free_response( const char* data )
+{
+  delete[] data;
+}
+
+void* rho_http_init_headers_list()
+{
+  return new rho::net::HttpHeaderList();
+}
+
+void rho_http_add_header( void* list, const char* name, const char* value )
+{
+  if ( ( name != 0 ) && ( value != 0 ) ) {
+    ((rho::net::HttpHeaderList*)list)->addElement( rho::net::HttpHeader(name,value));
+  }
+}
+
+void rho_http_free_headers_list( void* list )
+{
+  delete (rho::net::HttpHeaderList*)list;
+}
+#endif
+
 	
 void rho_rhodesapp_create(const char* szRootPath)
 {

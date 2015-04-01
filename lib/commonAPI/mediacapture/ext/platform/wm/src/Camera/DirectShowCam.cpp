@@ -17,6 +17,7 @@ CDirectShowCam::CDirectShowCam(LPCTSTR szDeviceName):CCamera(szDeviceName)
 	lpfn_DSHOW_Capture= NULL;	
 	lpfn_DSHOW_RedrawPreview= NULL;			
 	lpfn_DSHOW_GetResolution= NULL;	
+	lpfn_DSHOW_Run = NULL;
 	isDshowDllPresent = false;
 	if(InitDShow())
 	{
@@ -50,6 +51,8 @@ bool CDirectShowCam::InitDShow()
 		(m_hDshowDLL, L"CloseDShow");
 	lpfn_DSHOW_Stop = (LPFN_DSHOW_STOP)GetProcAddress
 		(m_hDshowDLL, L"Stop");
+	lpfn_DSHOW_Run = (LPFN_DSHOW_RUN)GetProcAddress
+		(m_hDshowDLL, L"Run");
 	lpfn_DSHOW_SetFlash = (LPFN_DSHOW_SET_FLASH)GetProcAddress
 		(m_hDshowDLL, L"SetFlash");
 	lpfn_DSHOW_SetResolution = (LPFN_DSHOW_SET_RESOLUTION)GetProcAddress
@@ -60,6 +63,19 @@ bool CDirectShowCam::InitDShow()
 		(m_hDshowDLL, L"ResizePreview");
 	lpfn_DSHOW_GetResolution = (LPFN_DSHOW_GET_RESOLUTION)GetProcAddress
 		(m_hDshowDLL, L"GetResolution");
+	if( lpfn_DSHOW_Init == NULL ||
+		lpfn_DSHOW_Close == NULL ||
+		lpfn_DSHOW_Stop == NULL ||
+		lpfn_DSHOW_Run == NULL ||
+		lpfn_DSHOW_SetFlash == NULL ||
+		lpfn_DSHOW_SetResolution == NULL ||
+		lpfn_DSHOW_Capture == NULL ||
+		lpfn_DSHOW_RedrawPreview == NULL ||
+		lpfn_DSHOW_GetResolution == NULL)
+	{
+		return false;
+	}
+	return true;
 	
 }
 BOOL CDirectShowCam::enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp)
@@ -433,4 +449,39 @@ CameraSetting CDirectShowCam::GetNearestResolution()
 	}
 	return setting;
 
+}
+void CDirectShowCam::ApplicationFocusChange(bool bAppHasFocus)
+{
+	LOG(INFO) + L"Application focus change called";
+	CCamera::ApplicationFocusChange(bAppHasFocus);
+	if(m_PreviewOn)
+	{
+		if(bAppHasFocus)
+		{
+			if(m_FlashMode)
+			{
+				SetFlashMode();
+			}
+
+		}
+		else
+		{
+			LOG(INFO) + L"Application lost focus, stop camera";				
+			if(m_FlashMode)
+			{
+				lpfn_DSHOW_SetFlash(FlashSetting::Off);
+			}
+
+		}
+	}
+}
+void CDirectShowCam::OnPowerButton(bool bPowerOn)
+{
+	if(!bPowerOn)//kill the camer on power down
+	{
+		if(m_PreviewOn)
+		{
+			hidePreview();
+		}
+	}
 }
