@@ -26,7 +26,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     private static final String ENABLE_ZOOM = "enable_screen_zoom";
     private static final String ENABLE_WEB_PLUGINS = "enable_web_plugins";
     private static final String ENABLE_CACHE = "WebView.enableCache";
-    
+        
     private WebViewConfig mConfig = new WebViewConfig();
 
     public WebViewSingleton() {
@@ -412,17 +412,32 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     
     private void readRhoelementsConfig(IRhoConfig config) {
         if (config.isExist("enablezoom")) {
-           // mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enable_screen_zoom", WebViewConfig.ENABLE_ZOOM_DEF));
-            mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enablezoom"));
+            try {
+            	mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enablezoom"));
+            }
+            catch(IRhoConfig.ValueNotFoundException e) {
+            	Logger.W(TAG, "Invalid enablezoom value in config: " + e.getMessage());
+            	//EnableZoom Value has already been defaulted in WebViewConfig
+            }
         }
         if (config.isExist("pagezoom")) {
-            double zoomValue = config.getDouble("pagezoom");
-            mConfig.set(WebViewConfig.PAGE_ZOOM, zoomValue);
+        	try {
+        		mConfig.set(WebViewConfig.PAGE_ZOOM, config.getDouble("pagezoom"));
+        	}
+        	catch(IRhoConfig.ValueNotFoundException e) {
+        		Logger.W(TAG, "Invalid pagezoom value in config: " + e.getMessage());
+        		//PageZoom Value has already been defaulted in WebViewConfig
+        	}
         }
         
         if (config.isExist("cache")) {
-            int cache = config.getInt("cache");
-            mConfig.set(WebViewConfig.ENABLE_CACHE, cache != 0);
+        	try {
+        		mConfig.set(WebViewConfig.ENABLE_CACHE, config.getInt("cache") != 0);
+        	}
+        	catch(IRhoConfig.ValueNotFoundException e) {
+        		Logger.W(TAG, "Invalid cache value in config: " + e.getMessage());
+        		//Cache Value has already been defaulted in WebViewConfig
+        	}
         }
     }
     
