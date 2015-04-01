@@ -210,6 +210,9 @@ public class BaseActivity extends Activity implements ServiceConnection {
     protected void onResume() {
         super.onResume();
         setFullScreen(sFullScreen);
+        if (sScreenAutoRotate) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        }
     }
 
     @Override
