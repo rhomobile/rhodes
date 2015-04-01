@@ -120,6 +120,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
     public static void onActivityStarted(BaseActivity activity) {
         sTopActivity = activity;
+        setScreenAutoRotateMode(sScreenAutoRotate);
         activityStarted();
     }
 
