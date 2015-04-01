@@ -269,8 +269,7 @@ void WorkerThread();
 
 extern "C"
 {
-	DSHOWCAM_API int InitDShow(int hWnd, wchar_t* CamId, RECT& rc);		
-	DSHOWCAM_API int Run();
+	DSHOWCAM_API int InitDShow(int hWnd, wchar_t* CamId, RECT& rc);	
 	DSHOWCAM_API int Pause();
 	DSHOWCAM_API int SetBrightness(CameraSetting setting);	
 	DSHOWCAM_API int GetMetaDataFromImage(WCHAR *filename, double *latitude, double *longitude, LPTSTR datetime);

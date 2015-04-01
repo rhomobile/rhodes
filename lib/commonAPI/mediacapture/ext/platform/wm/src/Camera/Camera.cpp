@@ -247,12 +247,16 @@ void CCamera::getSupportedPropertyList(rho::Vector<rho::String>& arrayofNames)
 void CCamera::cancel()
 {	
 	hidePreview();
-	if(m_hTriggerEvents[eCancel])
+	/*if(m_hTriggerEvents[eCancel])
 	{
 		SetEvent(m_hTriggerEvents[eCancel]);
-	}
+	}*/
 	UpdateCallbackStatus("cancel","User canceled operation.","");	
 
+}
+void CCamera::close()
+{
+	hidePreview();
 }
 void CCamera::captureImage()
 {
