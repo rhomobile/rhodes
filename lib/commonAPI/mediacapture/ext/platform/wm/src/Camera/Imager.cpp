@@ -414,6 +414,7 @@ DWORD CImager::StopViewer()
 	LOG(INFO) + __FUNCTION__;
 	DWORD dwRes = E_IMG_SUCCESS;
 	TCHAR message[100];
+	m_ViewFinder.DestroyViewerWindow();
 	// Stop the viewfinder first
 	if (E_IMG_SUCCESS != (dwRes = Image_StopViewfinder(m_hImager)))
 	{
@@ -430,7 +431,7 @@ DWORD CImager::StopViewer()
 		return dwRes;
 	}
 		
-	m_ViewFinder.DestroyViewerWindow();
+	
 	return E_IMG_SUCCESS;
 }
 
@@ -588,30 +589,39 @@ void CImager::ApplicationFocusChange(bool bAppHasFocus)
 	{
 		if(bAppHasFocus)
 		{
-			LOG(INFO) + L"Application retained focus, rerun camera";
-			InitImager();
-			if(m_hImager != INVALID_HANDLE_VALUE)
+			if(m_FlashMode)
 			{
-				RECT pos;
-				pos.left = m_PreviewLeft;
-				pos.top = m_PreviewTop;
-				pos.right = m_PreviewWidth;	
-				pos.bottom = m_PreviewHeight;
-				if(TRUE == startPreview(pos, eConfigurable))
-				{
-				}
-				else
-				{
-					LOG(ERROR) + L"Start preview failed in ApplicationFocusChange ";
-				}
+				SetFlashMode();
 			}
+			if(m_AimMode)
+			{
+				Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &m_AimMode);
+			}
+
 		}
 		else
 		{
 			LOG(INFO) + L"Application lost focus, stop camera";
-			StopViewer();
-			DeInitImager();
-		
+			BOOL bDisable = FALSE;
+			if(m_FlashMode)
+			{
+				Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_LAMPSTATE, sizeof(BOOL), &bDisable);	
+			}
+			if(m_AimMode)
+			{
+				Image_SetCapCurrValue(m_hImager, IMG_ACQCAP_AIMING, sizeof(BOOL), &bDisable);
+			}			
+
+		}
+	}
+}
+void CImager::OnPowerButton(bool bPowerOn)
+{
+	if(!bPowerOn)
+	{
+		if(m_PreviewOn)
+		{
+			hidePreview();
 		}
 	}
 }

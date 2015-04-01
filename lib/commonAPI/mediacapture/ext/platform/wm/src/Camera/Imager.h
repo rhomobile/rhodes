@@ -42,6 +42,7 @@ public:
 	virtual void Capture();
 	virtual void getSupportedSizeList(StringifyVector& supportedSizeList){};
 	virtual void ApplicationFocusChange(bool bAppHasFocus);
+	virtual void OnPowerButton(bool bPowerOn);
 private:
 	static IMAGE_FINDCLOSEPROC Image_FindClose;///<Function pointer to Image Capture API
 	static IMAGE_FINDFIRSTPROC Image_FindFirst;///<Function pointer to Image Capture API

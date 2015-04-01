@@ -73,10 +73,11 @@ void CViewFinder::DestroyViewerWindow()
 	m_CaptureButton = NULL;
 }
 LRESULT CALLBACK CViewFinder::FullScreenWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
+{	
     IViewFinderCallBack* pObj = (IViewFinderCallBack *)GetWindowLong(hWnd, GWL_USERDATA);
     switch(message)
     {
+  
 	case WM_COMMAND:
 		{
 			switch(LOWORD(wParam))
@@ -103,6 +104,19 @@ LRESULT CALLBACK CViewFinder::FullScreenWndProc(HWND hWnd, UINT message, WPARAM 
 				pObj->captureImage();
 			}
 			break;
+		}
+	case WM_ACTIVATE:
+		{
+			int fActive = LOWORD(wParam);
+			if(WA_INACTIVE == fActive )
+			{				
+				bool bPowerPressed = GetPowerButtonPressedValue();
+				if(bPowerPressed)
+				{
+					pObj->close();				
+				}
+			}
+			
 		}
 	case WM_SETTINGCHANGE:
 		{
@@ -215,5 +229,25 @@ void CViewFinder::DisableFullScreenButtons()
 {
 	ShowWindow(m_CaptureButton, SW_HIDE);
 	ShowWindow(m_CancelButton, SW_HIDE);
+}
+bool CViewFinder::GetPowerButtonPressedValue()
+{
+	bool powerButtonPressed=false;
+	HWND hwnd = GetForegroundWindow();	
+	wchar_t szBuf[200];
+	if(hwnd!=NULL)
+	{
+		//LOG(INFO) + "Inside if(hwnd!=NULL)";
+		GetWindowText(hwnd,szBuf,199);
+		//LOG(INFO) + "After GetWindowText";
+		LOG(INFO) + szBuf;
+	}
+	if(0==wcscmp(szBuf,L"PowerKey Action"))
+	{
+		//LOG(INFO) + "Before powerButtonPressed=true;";
+		powerButtonPressed=true;		
+		//LOG(INFO) + "After m_SuspendedThroughPowerButton=true;";
+	}	
+	return powerButtonPressed;
 }
 
