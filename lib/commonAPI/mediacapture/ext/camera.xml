@@ -851,6 +851,12 @@ alert(reslnArray[1].height);
 			<REMARK title="GetSupportedProperties in WP8">
                 <DESC>WP8 does not support getSupportedProperties and SetSupportedProperties</DESC>
             </REMARK>
+      <REMARK title="Ruby Support for WM">
+            <DESC>Devices that has MPA3 board (eg: MC67) does not support color camera in ruby applications. Preferred imager in that case.</DESC>
+      </REMARK>
+      <REMARK title="Camera in Suspend mode">
+            <DESC>All WM and CE7 devices automatically turn off both color and imager cameras, when the device is suspended. User has to restart the camera on resume. Whereas CE5 (eg:MC9000) and CE6 (eg: MC31) devices retain the preview on resuming from suspend state.</DESC>
+      </REMARK>
 
         </REMARKS>
     </MODULE>
