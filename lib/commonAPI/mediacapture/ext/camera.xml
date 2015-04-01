@@ -852,7 +852,7 @@ alert(reslnArray[1].height);
                 <DESC>WP8 does not support getSupportedProperties and SetSupportedProperties</DESC>
             </REMARK>
 		        <REMARK title="colorModel as Grayscale in Android">
-                <DESC>Grayscale is not supported in Moto android devices for front camera</DESC>
+                <DESC>Grayscale is not supported in Motorola solution's android devices for front camera</DESC>
             </REMARK>
         </REMARKS>
     </MODULE>
