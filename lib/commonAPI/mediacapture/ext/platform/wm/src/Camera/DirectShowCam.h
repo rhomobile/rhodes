@@ -22,6 +22,7 @@ public:
 	static BOOL enumerate(rho::Vector<rho::String>& arIDs, rho::Hashtable<rho::String, eCamType>& camLookUp);
 	virtual void takeFullScreen();
 	virtual void ApplicationFocusChange(bool bAppHasFocus);
+	virtual void OnPowerButton(bool bPowerOn);
 	virtual BOOL showPreview();
 	virtual BOOL hidePreview();
 	virtual void Capture();

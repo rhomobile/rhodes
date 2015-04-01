@@ -458,33 +458,30 @@ void CDirectShowCam::ApplicationFocusChange(bool bAppHasFocus)
 	{
 		if(bAppHasFocus)
 		{
-			LOG(INFO) + L"Application retained focus, rerun camera";
-			RECT pos;
-			pos.left = m_PreviewLeft;
-			pos.top = m_PreviewTop;
-			pos.right = m_PreviewWidth;	
-			pos.bottom = m_PreviewHeight;
-			HWND hWndViewer = m_ViewFinder.CreateViewerWindow(pos, eConfigurable);	
-			//set pos.left and pos.top to zero
-			//renderer window always wants to fit into viewer wnd client area
-			pos.left=0;
-			pos.top=0;						
-			if(-1 != lpfn_DSHOW_Init(hWndViewer, pos ))
+			if(m_FlashMode)
 			{
+				SetFlashMode();
+			}
 
-			}
-			else
-			{
-				LOG(ERROR) + L"Start preview failed in ApplicationFocusChange ";
-			}
 		}
 		else
 		{
-			LOG(INFO) + L"Application lost focus, stop camera";
-			m_ViewFinder.DestroyViewerWindow();
-			lpfn_DSHOW_Stop();
-			lpfn_DSHOW_Close();
-		
+			LOG(INFO) + L"Application lost focus, stop camera";				
+			if(m_FlashMode)
+			{
+				lpfn_DSHOW_SetFlash(FlashSetting::Off);
+			}
+
+		}
+	}
+}
+void CDirectShowCam::OnPowerButton(bool bPowerOn)
+{
+	if(!bPowerOn)//kill the camer on power down
+	{
+		if(m_PreviewOn)
+		{
+			hidePreview();
 		}
 	}
 }
