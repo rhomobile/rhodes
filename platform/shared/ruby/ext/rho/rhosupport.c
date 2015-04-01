@@ -162,7 +162,7 @@ VALUE
 __rhoGetCallbackObject(VALUE obj, VALUE valIndex)
 {
     VALUE result = rho_rhodesapp_GetCallbackObject( NUM2INT(valIndex) );
-    if (result == 0) {
+    if (result == Qundef) {
         rb_raise(rb_eArgError, "__rhoGetCallbackObject invalid index -- %d", NUM2INT(valIndex) );
     }
 
