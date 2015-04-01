@@ -36,7 +36,7 @@
                   <DESC>If true, save changes to file.</DESC>
                 </PARAM>
               </PARAMS>
-              <DESC>Set string value of config property and optionally save changes to file.</DESC>
+              <DESC>Set string value of config property and optionally save changes to file. Properties save to separate file, common file (specify with configPath) doesn't change.</DESC>
             </METHOD>
           
             <METHOD name="getPropertyInt" access="STATIC">
@@ -61,7 +61,7 @@
                   <DESC>If true, save changes to file.</DESC>
                 </PARAM>
               </PARAMS>
-              <DESC>Set integer value of config property and optionally save changes to file.</DESC>
+              <DESC>Set integer value of config property and optionally save changes to file. Properties save to separate file, common file (specify with configPath) doesn't change.</DESC>
             </METHOD>
           
             <METHOD name="getPropertyBool" access="STATIC">
@@ -86,7 +86,7 @@
                   <DESC>If true, save changes to file.</DESC>
                 </PARAM>
               </PARAMS>
-              <DESC>Set boolean value of config property and optionally save changes to file.</DESC>
+              <DESC>Set boolean value of config property and optionally save changes to file. Properties save to separate file, common file (specify with configPath) doesn't change.</DESC>
             </METHOD>
           
             <METHOD name="isPropertyExists" access="STATIC">
@@ -108,7 +108,7 @@
                         <DESC>If true, save changes to file.</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>Remove existing property and optionally save changes to file.</DESC>
+                <DESC>Remove existing property and optionally save changes to file. Remove properties works only with properties that has been set with setProperty*** methods. Properties from config file doesn't changed.</DESC>
             </METHOD>
                                      
             <METHOD name="loadFromFile" access="STATIC">
