@@ -829,6 +829,7 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 	{
 	 m_SuspendedThroughPowerButton=false;
 	 LOG(INFO) + "Activation is due to powerbutton press suspend and resume.Skip it";
+     RHODESAPP().getExtManager().OnPowerButton(true);
 	 //return 0;
 	}
 	else
@@ -842,6 +843,7 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 		if(true ==powerButtonPressed)//Deactivation is not due to Suspend Through PowerButton
 		{
 			 LOG(INFO) + "Deactivation is due to powerbutton press.Skip it";
+			 RHODESAPP().getExtManager().OnPowerButton(false);
 		}
 		else
 		{

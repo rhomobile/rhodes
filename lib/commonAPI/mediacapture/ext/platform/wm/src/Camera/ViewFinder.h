@@ -11,6 +11,7 @@ struct IViewFinderCallBack
 {
 	virtual void cancel()=0;
 	virtual void captureImage()=0;
+	virtual void close() =0;
 	virtual void ResetViewerWndPos(RECT& pos)=0;
 };
 class CViewFinder
@@ -38,4 +39,5 @@ protected:
 	HWND createFullScreenWindow(HWND hwndParent, RECT& pos);
 	HWND createPreviewWindow(HWND hwndParent, const RECT& pos);
 	static void ReposFullScreen(RECT& pos);
+	static bool GetPowerButtonPressedValue();
 };

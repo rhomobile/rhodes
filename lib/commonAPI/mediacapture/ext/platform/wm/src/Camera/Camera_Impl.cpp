@@ -645,6 +645,17 @@ namespace rho {
 				pCamera->ApplicationFocusChange(bActivate);
 			}
 		}
+		virtual void OnPowerButton(bool bPowerOn, const CRhoExtData& oExtData)
+		{
+			if (!pCamera)
+			{
+				return;
+			}
+			else
+			{
+				pCamera->OnPowerButton(bPowerOn);
+			}
+		}
 	};
 
 

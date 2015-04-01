@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,9 +67,12 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		Uri captureUri = null;
 		String targetPath = " ";
 		ByteArrayOutputStream stream = null;
+		String rename = null;
 		try {
 			if (resultCode == Activity.RESULT_OK)
 			{
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
+				rename = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
 				String curPath = null;		
 				String strCaptureUri = getActualPropertyMap().get("captureUri");		
 				if (strCaptureUri != null)
@@ -77,12 +82,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			if (captureUri != null )
 				{					
 					curUri = captureUri;
-					Cursor imageCursor = RhodesActivity.getContext().getContentResolver().query(
-							curUri, null, null, null, null);
-					if(imageCursor.moveToFirst()){
-						imgPath = imageCursor.getString(imageCursor
-								.getColumnIndex(MediaColumns.DATA));
-					}
+					imgPath = getFilePath(curUri);
 					
 					if (curUri != null) {
 						
@@ -91,6 +91,11 @@ public class CameraRhoListener extends AbstractRhoListener implements
 							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 							        try {
 							        	mBitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
+							        	if (!getActualPropertyMap().containsKey("fileName")){ 
+							        	f.renameTo(new File(f.getParentFile(), rename));
+										RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
+								                Uri.parse(imgPath)));
+							        	}
 							        } catch (FileNotFoundException e) {
 							            e.printStackTrace();
 							        }
@@ -115,7 +120,15 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					{
 						curUri = intent.getData();
 					}
-					mBitmap = BitmapFactory.decodeFile(curUri.getPath());					
+					imgPath = getFilePath(curUri);
+					mBitmap = BitmapFactory.decodeFile(imgPath);
+					File file = null;
+					if (!getActualPropertyMap().containsKey("fileName")){ 
+						file= new File(imgPath);
+						file.renameTo(new File(file.getParentFile(), rename));
+						RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
+				                Uri.parse(imgPath)));
+					}
 					picChoosen_imagewidth = mBitmap.getWidth();
 					picChoosen_imageheight = mBitmap.getHeight();
 					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){				
@@ -305,4 +318,23 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		
 	}
 	
+	/*
+	 * method to convert uri to file path
+	 * 
+	 * @param Uri of file
+	 * @returns String path of file
+	 * 
+	 */
+	private String getFilePath(Uri uri){
+		String mImgPath = null;
+		Cursor imageCursor = RhodesActivity.getContext().getContentResolver().query(
+				uri, null, null, null, null);
+		if(imageCursor.moveToFirst()){
+			mImgPath = imageCursor.getString(imageCursor
+					.getColumnIndex(MediaColumns.DATA));
+			imageCursor.close();
+		
+		}
+		return mImgPath;
+	}
 }
