@@ -1460,7 +1460,7 @@ namespace "build" do
         deps = []
         libs = []
         $libname.each do |name, lib|
-          deps << lib
+          deps << File.dirname(lib) + "/#{realabi}/" + File.basename(lib) 
           libs << name
           args << "-L\"#{File.dirname(lib)}/#{realabi}\""
         end
