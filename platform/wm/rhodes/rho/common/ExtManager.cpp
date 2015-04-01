@@ -527,6 +527,13 @@ void CExtManager::OnAppActivate(bool bActivate)
         (it->second)->OnAppActivate( bActivate, makeExtData() );
     }
 }
+void CExtManager::OnPowerButton(bool bPowerOn)
+{
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+    {
+        (it->second)->OnPowerButton( bPowerOn, makeExtData() );
+    }
+}
 
 void CExtManager::OnWindowChanged(LPVOID lparam)
 {

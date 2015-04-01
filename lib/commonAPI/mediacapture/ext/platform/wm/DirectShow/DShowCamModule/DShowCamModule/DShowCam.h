@@ -42,5 +42,6 @@ extern "C"
 	DSHOWCAM_API BOOL ResizePreview(int width, int height);
 	DSHOWCAM_API void GetResolution(std::vector<ImageRes>& supportedRes, wchar_t* camId, PinType ePType);
 	DSHOWCAM_API int Stop();
+	DSHOWCAM_API int Run();
 	DSHOWCAM_API BOOL IsMPA3();
 }
