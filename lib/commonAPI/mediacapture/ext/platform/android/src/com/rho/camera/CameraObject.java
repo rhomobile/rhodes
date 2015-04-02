@@ -121,6 +121,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                     dataBuilder.append("data:image/jpeg;base64,");
                     dataBuilder.append(Base64.encodeToString(data, false));
                     propertyMap.put("captureUri", dataBuilder.toString());
+                    propertyMap.put("dataURI", "datauri_value");
                     Logger.T(TAG, dataBuilder.toString());
                     intent.putExtra("IMAGE_WIDTH", bitmap.getWidth());                    
                     intent.putExtra("IMAGE_HEIGHT", bitmap.getHeight());                  
@@ -132,7 +133,8 @@ public class CameraObject extends CameraBase implements ICameraObject {
                     if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
                     {                        
                         ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
-                        Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());                        
+                        Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());
+                        propertyMap.put("DeviceGallery_Key", "DeviceGallery_Value");
                         String strUri = null;
 			if (!propertyMap.containsKey("fileName")) 
 				strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
@@ -437,6 +439,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
             				MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                 	intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
                 	actualPropertyMap.put("captureUri", fileUri.toString());
+                	propertyMap.put("dataURI", "");
                 	// intent is null with MediaStore.EXTRA_OUTPUT so adding fileuri to map and get it with same key
                 	// if instead of MediaStore.EXTRA_OUTPUT any other key is used then the bitmap is null though the file is getting created
             		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
