@@ -843,7 +843,7 @@ alert(reslnArray[1].height);
                 <DESC>In some of the WM/CE devices, though user has opted for a full screen, preview rendering size is decided by the driver.</DESC>
             </REMARK>
 			<REMARK title="DataUri">
-                <DESC>DataUri output is highly dependent on hardware capabilities. DataUri may fail in certain devices; recommended to use image path in such devices.</DESC>
+                <DESC>DataUri output is highly dependent on virtual space avalability. DataUri may fail in certain devices; recommended to use image path in such devices.</DESC>
             </REMARK>
 			<REMARK title="ImageUri">
                 <DESC>Image uri display is dependent on browser capability.</DESC>
