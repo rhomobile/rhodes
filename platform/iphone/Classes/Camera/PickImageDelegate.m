@@ -416,11 +416,11 @@
         [dict setObject:str_result forKey:@"imageUri"];
         
 
-        [dict setObject:[NSString stringWithFormat:@"%d", imageWidth] forKey:@"image_width"];
+        [dict setObject:[NSString stringWithFormat:@"%d", imageWidth] forKey:@"imageWidth"];
         [dict setObject:[NSString stringWithFormat:@"%d", imageHeight] forKey:@"imageHeight"];
 
         [dict setObject:[NSString stringWithFormat:@"%d", imageWidth] forKey:@"image_width"];
-        [dict setObject:[NSString stringWithFormat:@"%d", imageHeight] forKey:@"imageWidth"];
+        [dict setObject:[NSString stringWithFormat:@"%d", imageHeight] forKey:@"image_height"];
         
         if (settings.format == CAMERA_SETTINGS_FORMAT_JPG) {
             [dict setObject:@"jpg" forKey:@"image_format"];
