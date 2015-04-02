@@ -7,6 +7,10 @@ module RhoDevelopment
   class DeviceFinder
     def run
       addresses = Network::available_addresses
+      if (addresses.empty?)
+        puts 'Network interfaces were not found.'.info
+        return
+      end
       if addresses.length != 1
         puts
         puts 'There are several network interfaces with following masks: '.primary
@@ -51,7 +55,6 @@ module RhoDevelopment
             http = Net::HTTP.new(url.host, url.port)
             http.open_timeout = 5
             response = http.get(url.path)
-            #puts "#{url} answered: #{response.body}".info
             data = JSON.parse(response.body)
             subscriber = {}
             subscriber['uri'] = "#{data['ip']}:#{data['port']}"
@@ -60,8 +63,7 @@ module RhoDevelopment
             subscriber['application'] = data['applicationName']
             subscribers << subscriber
           rescue *Configuration::handledNetworkExceptions => e
-            # rescue  => e
-            #TODO may be it is necessary remove subscriber from list?
+            #TODO may be it is necessary to remove subscriber from list?
             #puts "#{url} is not accessible. error: #{e.class}".info
           end
         }
