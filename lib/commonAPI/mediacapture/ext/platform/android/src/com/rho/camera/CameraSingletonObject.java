@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -59,7 +58,6 @@ public class CameraSingletonObject implements ICameraSingletonObject {
         Logger.T(TAG, "Number of cameras: " + cameraCount);
         for (int i = 0 ; i < cameraCount; i++) {
             result.collect(getCameraId(i));
-            Log.d(TAG, "Camera id's: "+ getCameraId(i));
         }
         result.set();
     }
@@ -114,6 +112,7 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 	            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(fileName + ".jpg")));
 	        }        
 	        ra.startActivityForResult(intent, 0);
+	        propertyMap.put("ChoosePicture_Key", "ChoosePicture_Value");
         }
          else {        	
             result.setArgError("'fileName' parameter is missed");
