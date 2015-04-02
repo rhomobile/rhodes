@@ -263,6 +263,8 @@ public class CameraObject extends CameraBase implements ICameraObject {
         
         getPropertiesMap().put("maxWidth", String.valueOf(params.getPictureSize().width));
         getPropertiesMap().put("maxHeight", String.valueOf(params.getPictureSize().height));
+        getPropertiesMap().put("desiredWidth", "640");
+	getPropertiesMap().put("desiredHeight", "480");
     }
 
     @Override
