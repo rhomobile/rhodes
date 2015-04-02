@@ -330,7 +330,7 @@ namespace :dev do
         puts 'Subscribers not found'.warning
         return
       end
-      RhoDevelopment::WebServer.dispatch_task( RhoDevelopment::PartialUpdateTask.new());
+      RhoDevelopment::WebServer.dispatch_task(RhoDevelopment::PartialUpdateTask.new());
     end
 
     desc 'Builds full update bundle for all subscribers and notifies them'
@@ -423,12 +423,17 @@ namespace :dev do
     desc 'Return string with available networks masks separated by semicolon. It needs for RhoStudio'
     task :list do
       addresses = RhoDevelopment::Network::available_addresses
-      addresses.each {
-          |each|
-        _mask = each.split('.')[0, 3].join('.')
-        print "#{_mask}.*"
-        print ';' if addresses.last != each
-      }
+
+      if (addresses.empty?)
+        puts 'Network interfaces were not found.'.info
+      else
+        addresses.each {
+            |each|
+          _mask = each.split('.')[0, 3].join('.')
+          print "#{_mask}.*"
+          print ';' if addresses.last != each
+        }
+      end
     end
   end
 
