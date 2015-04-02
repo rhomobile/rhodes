@@ -51,6 +51,13 @@ public class CameraObject extends CameraBase implements ICameraObject {
     int getCameraIndex() {
         return CameraSingletonObject.getCameraIndex(getId());
     }
+    @Override
+    public void setProperties(Map<String, String> propertyMap, IMethodResult result) {
+		// TODO Auto-generated method stub
+		Map<String, String> temp=getPropertiesMap();
+		temp.putAll(propertyMap);
+		result.set(true);
+    }
     
     static class CameraSize implements ICameraObject.ISize {
         private Camera.Size mSize;
