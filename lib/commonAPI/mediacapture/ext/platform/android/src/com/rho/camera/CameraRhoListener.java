@@ -79,37 +79,6 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				{
 					captureUri = Uri.parse(getActualPropertyMap().get("captureUri"));		
 				}		
-			if (captureUri != null )
-				{					
-					curUri = captureUri;
-					imgPath = getFilePath(curUri);
-					
-					if (curUri != null) {
-						
-							File f= new File(imgPath);
-							BitmapFactory.Options options = new BitmapFactory.Options();
-							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-							        try {
-							        	mBitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
-							        	if (!getActualPropertyMap().containsKey("fileName")){ 
-							        	f.renameTo(new File(f.getParentFile(), rename));
-										RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
-								                Uri.parse(imgPath)));
-							        	}
-							        } catch (FileNotFoundException e) {
-							            e.printStackTrace();
-							        }
-							picChoosen_imagewidth = mBitmap.getWidth();
-							picChoosen_imageheight = mBitmap.getHeight();
-							
-					}
-					mBitmap.recycle();
-				}
-				else
-				{
-					curUri = intent.getData();
-					Logger.T(TAG, "Check intent data: " + curUri);
-				}
 				if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT))
 				{
 					if(intent.hasExtra(MediaStore.EXTRA_OUTPUT)){
@@ -120,14 +89,24 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					{
 						curUri = intent.getData();
 					}
-					imgPath = getFilePath(curUri);
-					mBitmap = BitmapFactory.decodeFile(imgPath);
+					try {
+						System.gc();
+						if (getActualPropertyMap().get("DeviceGallery_Key") == null){
+							mBitmap = BitmapFactory.decodeFile(curUri.getPath());
+						}else{
+							imgPath = getFilePath(curUri);
+							mBitmap = BitmapFactory.decodeFile(imgPath);
+						}
+						
+					} catch (OutOfMemoryError e1) {
+						e1.printStackTrace();
+					}
 					File file = null;
-					if (!getActualPropertyMap().containsKey("fileName")){ 
-						file= new File(imgPath);
+					if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){ 
+						file= new File(curUri.getPath());
 						file.renameTo(new File(file.getParentFile(), rename));
 						RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
-				                Uri.parse(imgPath)));
+				                Uri.parse(curUri.getPath())));
 					}
 					picChoosen_imagewidth = mBitmap.getWidth();
 					picChoosen_imageheight = mBitmap.getHeight();
@@ -155,6 +134,37 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					}
 					Logger.T(TAG, "Photo is captured: " + curUri);					
 					mBitmap.recycle();
+				}else if (captureUri != null )
+				{			
+					
+				curUri = captureUri;
+					
+					
+					if (getActualPropertyMap().get("dataURI") == null) {
+						imgPath = getFilePath(curUri);
+							File f= new File(imgPath);
+							BitmapFactory.Options options = new BitmapFactory.Options();
+							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+							        try {
+							        	mBitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
+							        	if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){ 
+							        	f.renameTo(new File(f.getParentFile(), rename));
+										RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
+								                Uri.parse(imgPath)));
+							        	}
+							        } catch (FileNotFoundException e) {
+							            e.printStackTrace();
+							        }
+							picChoosen_imagewidth = mBitmap.getWidth();
+							picChoosen_imageheight = mBitmap.getHeight();
+							mBitmap.recycle();
+					}
+					
+				}
+				else
+				{
+					curUri = intent.getData();
+					Logger.T(TAG, "Check intent data: " + curUri);
 				}
 				
 				if (curUri.getScheme().equals("file")) 
@@ -220,6 +230,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		mMethodResult = null;
 		resultMap.clear();
 		mActualPropertyMap.clear();
+		getActualPropertyMap().put("DeviceGallery_Key", "");
+		getActualPropertyMap().put("ChoosePicture_Key", "");
 	}
 
 	void setActualPropertyMap(Map<String, String> propertyMap) {
