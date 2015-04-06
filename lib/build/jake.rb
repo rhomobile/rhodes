@@ -699,12 +699,9 @@ class Jake
         next
       end 
       
-      md5 = (type == 'file' ? Digest::MD5.file(f) : '').to_s
+      md5 = (type == 'file' ? (Digest::MD5.file(f)).to_s : '')
       size    = File.stat(f).size
       tm      = File.stat(f).mtime.to_i
-
-      puts "#{f} | #{md5}"
-
 
       if in_memory == true
         map_item = { :path => relpath, :size => size, :time => tm, :hash => md5}
