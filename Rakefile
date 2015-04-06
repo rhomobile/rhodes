@@ -426,6 +426,7 @@ namespace :dev do
 
       if (addresses.empty?)
         puts 'Network interfaces were not found.'.info
+        exit 1
       else
         addresses.each {
             |each|
