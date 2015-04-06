@@ -699,23 +699,18 @@ class Jake
         next
       end 
       
-      if type.eql? 'file'
-        content = File.readlines(f)
-        md5 = Digest::MD5.hexdigest(content.to_s)
-      else
-        md5 = "" 
-      end
-      
+      md5 = (type == 'file' ? Digest::MD5.file(f) : '').to_s
       size    = File.stat(f).size
       tm      = File.stat(f).mtime.to_i
-      md_hash = md5.to_s
+
+      puts "#{f} | #{md5}"
+
 
       if in_memory == true
-        map_item = Hash.new
-        map_item = { :path => relpath, :size => size, :time => tm, :hash => md_hash}
+        map_item = { :path => relpath, :size => size, :time => tm, :hash => md5}
         file_map << map_item
       else
-        dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}|#{md_hash.to_s}"
+        dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}|#{md5}"
       end
     end
 
