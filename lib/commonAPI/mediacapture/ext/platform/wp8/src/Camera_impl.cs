@@ -45,7 +45,7 @@ namespace rho
 
             VideoBrush Rho_PhotoCameraBrush;
             Canvas Rho_PhotoCameraCanvas;
-            TextBox txtDebug = new TextBox();
+           
             Grid Store_PreviousGridElements=new Grid();
             // Holds current flash mode.
 
@@ -120,6 +120,9 @@ namespace rho
             /// <param name="strId"> Front or Back camera</param>
             public void InitializeCameraProperties(string strId)
             {
+                double WidthofScreen = 0;
+                double HeightofScreen = 0;
+
                 CRhoRuntime.getInstance().logEvent("Camera class-->Entered InitializeCameraProperties ");
                 try
                 {
@@ -211,11 +214,24 @@ namespace rho
                 }
                 CameraRotation = new Dictionary<PageOrientation, Dictionary<string, double>>();
 
+                try
+                {
+                    WidthofScreen = Application.Current.Host.Content.ActualWidth;
+                    HeightofScreen = Application.Current.Host.Content.ActualHeight;
+                }
+                catch (Exception ex)
+                {
+                    MainPage.LayoutGrid().Dispatcher.BeginInvoke(delegate()
+                    {
+                        WidthofScreen = Application.Current.Host.Content.ActualWidth;
+                        HeightofScreen = Application.Current.Host.Content.ActualHeight;
+                    });
+                }
                 Dictionary<string, double> LandscapeLeft = new Dictionary<string, double>();
 
                 LandscapeLeft.Add("rotation", -90);
-                LandscapeLeft.Add("Height", Application.Current.Host.Content.ActualWidth);
-                LandscapeLeft.Add("Width", Application.Current.Host.Content.ActualHeight);
+                LandscapeLeft.Add("Height", WidthofScreen);
+                LandscapeLeft.Add("Width", HeightofScreen);
                 LandscapeLeft.Add("CameraType", 0);
 
                 CameraRotation.Add(PageOrientation.LandscapeLeft, LandscapeLeft);
@@ -224,8 +240,8 @@ namespace rho
 
                 Dictionary<string, double> LandscapeRight = new Dictionary<string, double>();
                 LandscapeRight.Add("rotation", 90);
-                LandscapeRight.Add("Height", Application.Current.Host.Content.ActualWidth);
-                LandscapeRight.Add("Width", Application.Current.Host.Content.ActualHeight);
+                LandscapeRight.Add("Height", WidthofScreen);
+                LandscapeRight.Add("Width", HeightofScreen);
 
                 CameraRotation.Add(PageOrientation.LandscapeRight, LandscapeRight);
 
@@ -233,16 +249,16 @@ namespace rho
 
                 Dictionary<string, double> PortraitDown = new Dictionary<string, double>();
                 PortraitDown.Add("rotation", 0);
-                PortraitDown.Add("Height", Application.Current.Host.Content.ActualHeight);
-                PortraitDown.Add("Width", Application.Current.Host.Content.ActualWidth);
+                PortraitDown.Add("Height", HeightofScreen);
+                PortraitDown.Add("Width", WidthofScreen);
                 PortraitDown.Add("front", -180);
 
                 CameraRotation.Add(PageOrientation.PortraitDown, PortraitDown);
 
                 Dictionary<string, double> PortraitUp = new Dictionary<string, double>();
                 PortraitUp.Add("rotation", 0);
-                PortraitUp.Add("Height", Application.Current.Host.Content.ActualHeight);
-                PortraitUp.Add("Width", Application.Current.Host.Content.ActualWidth);
+                PortraitUp.Add("Height", HeightofScreen);
+                PortraitUp.Add("Width", WidthofScreen);
                 PortraitUp.Add("front", 180);
 
                 CameraRotation.Add(PageOrientation.PortraitUp, PortraitUp);
@@ -980,10 +996,7 @@ namespace rho
                     m_Take_Picture_Output["image_format"] = string.Empty;
                     m_Take_Picture_Output["imageFormat"] = string.Empty;
                 }
-                new Thread(() =>
-                {
-                    m_StoreTakePictureResult.set(m_Take_Picture_Output);
-                }).Start();
+                m_StoreTakePictureResult.set(m_Take_Picture_Output);
             }
 
             protected AudioVideoCaptureDevice Device { get; set; }
@@ -1003,7 +1016,7 @@ namespace rho
                     Rho_PhotoCameraCanvas.Dispatcher.BeginInvoke(delegate()
                     {
                         // Write message.
-                        txtDebug.Text = "Camera initialized.";
+                     
                         Rho_StillCamera.FlashMode = Rho_FlashMode;
                         try
                         {
@@ -1028,10 +1041,7 @@ namespace rho
                     m_Take_Picture_Output["message"] = e.Exception.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
                     m_Take_Picture_Output["imageFormat"] = string.Empty;
-                    new Thread(() =>
-                    {
-                        m_StoreTakePictureResult.set(m_Take_Picture_Output);
-                    }).Start();
+                    m_StoreTakePictureResult.set(m_Take_Picture_Output);
                 }
             }
 
@@ -1179,10 +1189,11 @@ namespace rho
                 wb.SaveJpeg(outputStream, wb.PixelWidth, wb.PixelHeight, 0, 100);
                 outputStream.Close();
                 TakePicture_output["imageUri"] = storageFile.Name;
-                new Thread(() =>
-                {
-                    StoreTakePictureResult.set(TakePicture_output);
-                }).Start();
+                TakePicture_output["image_uri"] = storageFile.Name;
+                
+                StoreTakePictureResult.set(TakePicture_output);
+
+
             }
 
             /// <summary>
@@ -1223,7 +1234,7 @@ namespace rho
 
                         string returnablevalue = "";
                         m_Take_Picture_Output["status"] = "ok";
-                        m_Take_Picture_Output["imageUri"] = returnablevalue;
+                        
                         m_Take_Picture_Output["imageHeight"] = PictDetails.Height.ToString();
                         m_Take_Picture_Output["imageWidth"] = PictDetails.Width.ToString();
                        
@@ -1258,11 +1269,9 @@ namespace rho
 
                                 returnablevalue = "data:image/jpeg;base64," + strbase64;
                                 m_Take_Picture_Output["image_uri"] = returnablevalue;
+                                m_Take_Picture_Output["imageUri"] = returnablevalue;
                                 e.ImageStream.Close();
-                                new Thread(() =>
-                                {
-                                    m_StoreTakePictureResult.set(m_Take_Picture_Output);
-                                }).Start();
+                                m_StoreTakePictureResult.set(m_Take_Picture_Output);
                             }
                         }
                         catch (Exception ex)
@@ -1283,10 +1292,7 @@ namespace rho
                         m_Take_Picture_Output["image_format"] = string.Empty;
                         m_Take_Picture_Output["imageFormat"] = string.Empty;
                         e.ImageStream.Close();
-                        new Thread(() =>
-                        {
-                            m_StoreTakePictureResult.set(m_Take_Picture_Output);
-                        }).Start();
+                        m_StoreTakePictureResult.set(m_Take_Picture_Output);
                     }
                  
                 });
@@ -1668,18 +1674,19 @@ namespace rho
                         catch (Exception ex)
                         {
                             CRhoRuntime.getInstance().logEvent("Camera class-->Not an Image");
+                            m_choosePicture_output["imageUri"] = ReturnValue;
+                            m_choosePicture_output["image_uri"] = ReturnValue;
+                            m_StorechoosePictureResult.set(m_choosePicture_output);
                         }
-                        m_choosePicture_output["imageUri"] = ReturnValue;
+                       
                     }
                     else
                     {
                         m_choosePicture_output["status"] = "cancel";
                         m_choosePicture_output["image_format"] = string.Empty;
                         m_choosePicture_output["imageFormat"] = string.Empty;
-                        new Thread(() =>
-                        {
-                            m_StorechoosePictureResult.set(m_choosePicture_output);
-                        }).Start();
+                        m_StorechoosePictureResult.set(m_choosePicture_output);
+
                     }
                 }
                 catch (Exception ex)
@@ -1688,10 +1695,7 @@ namespace rho
                     m_choosePicture_output["status"] = "error";
                     m_choosePicture_output["message"] = ex.Message;
                     m_choosePicture_output["image_format"] = string.Empty;
-                    new Thread(() =>
-                    {
-                        m_StorechoosePictureResult.set(m_choosePicture_output);
-                    }).Start();
+                    m_StorechoosePictureResult.set(m_choosePicture_output);
                 }
                
 
@@ -1768,10 +1772,10 @@ namespace rho
                 
                 
                 choosePicture_output["imageUri"] = storageFile.Name;
-                new Thread(() =>
-                {
-                    StorechoosePictureResult.set(choosePicture_output);
-                }).Start();
+                choosePicture_output["image_uri"] = storageFile.Name;
+                StorechoosePictureResult.set(choosePicture_output);
+
+                
             }
 
             /// <summary>
