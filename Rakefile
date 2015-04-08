@@ -2915,6 +2915,8 @@ namespace "config" do
 
     $app_config['extensions'].delete("mspec") if !$debug && $app_config['extensions'].index('mspec')
     $app_config['extensions'].delete("rhospec") if !$debug && $app_config['extensions'].index('rhospec')
+    $app_config['extensions'].delete("development") if !$debug && $app_config['extensions'].index('development')
+    $app_config['extensions'].delete("Development") if !$debug && $app_config['extensions'].index('Development')
 
     $rhologhostport = $config["log_host_port"]
     $rhologhostport = 52363 unless $rhologhostport
