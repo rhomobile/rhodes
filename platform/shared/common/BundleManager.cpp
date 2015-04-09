@@ -824,9 +824,9 @@ bool CReplaceBundleThread::is_need_full_update(CFileList* old_filelist, CFileLis
                         // sync issue founded !
                         if ((new_item_path.compare("rhofilelist.txt") != 0) &&
                             (new_item_path.compare("rhoconfig.txt") != 0) &&
-                            (new_item_path.compare("rhoconfig.txt.timestamp") != 0) &&
+                            (new_item_path.compare("rhoconfig.txt.timestamp") != 0) /*&&
                             (new_item_path.compare("app_manifest.txt") != 0) &&
-                            (!rho::String_startsWith(new_item_path, "public/api/")) ) {
+                            (!rho::String_startsWith(new_item_path, "public/api/"))*/ ) {
                             LOG(ERROR) + "SYNC ISSUE FOUNDED ! Item ["+new_item_path+"] is different with current server version !  value [new/old] size["+new_size+"/"+old_size+"] crc["+new_crc+"/"+old_crc+"]";
                             return true;
                         }
@@ -847,9 +847,9 @@ bool CReplaceBundleThread::is_need_full_update(CFileList* old_filelist, CFileLis
                 // sync issue founded !
                 if ((new_item_path.compare("rhofilelist.txt") != 0) &&
                     (new_item_path.compare("rhoconfig.txt") != 0) &&
-                    (new_item_path.compare("rhoconfig.txt.timestamp") != 0) &&
+                    (new_item_path.compare("rhoconfig.txt.timestamp") != 0) /*&&
                     (new_item_path.compare("app_manifest.txt") != 0) &&
-                    (!rho::String_startsWith(new_item_path, "public/api/")) ) {
+                    (!rho::String_startsWith(new_item_path, "public/api/"))*/ ) {
                     LOG(ERROR) + "SYNC ISSUE FOUNDED ! Item ["+new_item_path+"] exist in current version on server but not exist on device !";
                     return true;
                 }
@@ -879,9 +879,9 @@ bool CReplaceBundleThread::is_need_full_update(CFileList* old_filelist, CFileLis
                // sync issue founded !
                 if ((old_item_path.compare("rhofilelist.txt") != 0) &&
                     (old_item_path.compare("rhoconfig.txt") != 0) &&
-                    (old_item_path.compare("rhoconfig.txt.timestamp") != 0) &&
+                    (old_item_path.compare("rhoconfig.txt.timestamp") != 0) /*&&
                     (old_item_path.compare("app_manifest.txt") != 0) &&
-                    (!rho::String_startsWith(old_item_path, "public/api/")) ) {
+                    (!rho::String_startsWith(old_item_path, "public/api/"))*/ ) {
                     LOG(ERROR) + "SYNC ISSUE FOUNDED ! Item ["+old_item_path+"] exist on device but not exist on server !";
                     return true;
                 }
