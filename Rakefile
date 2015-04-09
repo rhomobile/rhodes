@@ -2643,6 +2643,8 @@ namespace "config" do
     $skip_build_rhodes_main = false
     $skip_build_extensions = false
     $skip_build_xmls = false
+    $skip_checking_Android_SDK = false
+
     extpaths = []
 
     add_ext_path = lambda {|p| extpaths << File.absolute_path(p, $app_path)}
