@@ -294,6 +294,7 @@ The ebapi.js file is necessary for all single API inclusions.
 			    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                 <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <DESC>Start the camera application to take a picture. The user can capture the displayed image by interacting with the resident camera app. In Windows, this method always shows the preview in full screen and user can use the native button to capture the image.
+				On wp8,wm when 'outputFormat' is 'image' then imageUri/image_uri shall have only Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image'
 > Note: To display an image, it is recommended that you use the full path to the image instead of a relative path. To do this, you can use the [`expandDatabaseBlobFilePath`](Application#mexpandDatabaseBlobFilePath) method of the [Application module](Application) as such:
 
 ##### Ruby
@@ -322,7 +323,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <PARAM name="imageUri" type="STRING">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                             <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
-                            <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri </DESC>
+                            <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device.On wp8,wm when 'outputFormat' is 'image' then imageUri shall have only Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image', this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri </DESC>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
@@ -347,7 +348,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <PARAM name="image_uri" type="STRING" deprecated="true">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                             <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
-                            <DESC>It is recommended to use imageUri in preference to this parameter.</DESC>
+                            <DESC>It is recommended to use imageUri in preference to this parameter.On wp8,wm when 'outputFormat' is 'image' then image_uri shall have only Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image'</DESC>
                         </PARAM>
                         <PARAM name="image_height" type="INTEGER" deprecated="true">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
@@ -392,7 +393,7 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>Whether or not the image was successfully captured. The returned string will be one of 'ok' or 'error'.</DESC>
                         </PARAM>
                         <PARAM name="imageUri" type="STRING">
-                            <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI.</DESC>
+                            <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device, this image will have an auto-generated name.On wm when 'outputFormat' is 'image' then this field shall have only Image name with \ sign, If the specified 'outputFormat' was 'dataUri',then this field will be the image encoded as a Data URI.</DESC>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
                             <DESC>The actual height of the image that was captured, this may differ from the requested height as the Camera will only support a finite resolutions.</DESC>
@@ -416,7 +417,7 @@ The ebapi.js file is necessary for all single API inclusions.
 					     <PLATFORM>Android, WM, WP8, iOS</PLATFORM>
                          <PLATFORM_EB>Android, WM</PLATFORM_EB>
                         <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
-							In	Android and WP8 only imageUri and image_uri are supported, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri</DESC>
+							In	Android and WP8 only imageUri and image_uri are supported, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri.On wp8,wm when 'outputFormat' is 'image' then imageUri or image_uri shall have Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image'</DESC>
                         <DESC_EB>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. On Android, only imageUri and image_uri are supported.</DESC_EB>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
