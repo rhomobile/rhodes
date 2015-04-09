@@ -30,6 +30,7 @@
 #include <processthreadsapi.h>
 #include <wtypesbase.h>
 //#include "missing_wp8.h"
+#include "../../../../wp8/rhoruntime/common/RhodesHelperWP8.h"
 
 #define rb_w32_wopen _wopen
 
@@ -1810,7 +1811,7 @@ rb_w32_opendir(const char *filename)
     }
     if (!(sbuf.st_mode & S_IFDIR) &&
 	(!ISALPHA(filename[0]) || filename[1] != ':' || filename[2] != '\0' ||
-	 ((1 << ((filename[0] & 0x5f) - 'A')) & GetLogicalDrives()) == 0)) {
+	 ((1 << ((filename[0] & 0x5f) - 'A')) & 0 /*GetLogicalDrives()*/) == 0)) {
 	free(wpath);
 	errno = ENOTDIR;
 	return NULL;
@@ -2436,11 +2437,11 @@ is_not_socket(SOCKET sock)
 static int
 is_pipe(SOCKET sock) /* DONT call this for SOCKET! it clains it is PIPE. */
 {
-    int ret;
+    int ret = 0;
 
-    RUBY_CRITICAL({
-	ret = (GetFileType((HANDLE)sock) == FILE_TYPE_PIPE);
-    });
+    //RUBY_CRITICAL({
+    //    ret = (GetFileType((HANDLE)sock) == FILE_TYPE_PIPE);
+    //});
 
     return ret;
 }
@@ -3972,7 +3973,7 @@ rb_w32_getenv(const char *name)
 
     if (len == 0) return NULL;
     if (envarea) FreeEnvironmentStrings(envarea);
-    envarea = GetEnvironmentStrings();
+	envarea = NULL; //GetEnvironmentStrings();
     if (!envarea) {
 	map_errno(GetLastError());
 	return NULL;
@@ -4150,10 +4151,10 @@ rb_w32_fstat(int fd, struct stat *st)
 
     if (ret) return ret;
     st->st_mode &= ~(S_IWGRP | S_IWOTH);
-    if (GetFileInformationByHandle((HANDLE)_get_osfhandle(fd), &info) &&
-	!(info.dwFileAttributes & FILE_ATTRIBUTE_READONLY)) {
-	st->st_mode |= S_IWUSR;
-    }
+    //if (GetFileInformationByHandle((HANDLE)_get_osfhandle(fd), &info) &&
+	//!(info.dwFileAttributes & FILE_ATTRIBUTE_READONLY)) {
+	//st->st_mode |= S_IWUSR;
+    //}
     return ret;
 }
 
@@ -4167,12 +4168,12 @@ rb_w32_fstati64(int fd, struct stati64 *st)
     if (ret) return ret;
     tmp.st_mode &= ~(S_IWGRP | S_IWOTH);
     COPY_STAT(tmp, *st, +);
-    if (GetFileInformationByHandle((HANDLE)_get_osfhandle(fd), &info)) {
-	if (!(info.dwFileAttributes & FILE_ATTRIBUTE_READONLY)) {
-	    st->st_mode |= S_IWUSR;
-	}
-	st->st_size = ((__int64)info.nFileSizeHigh << 32) | info.nFileSizeLow;
-    }
+    //if (GetFileInformationByHandle((HANDLE)_get_osfhandle(fd), &info)) {
+	//if (!(info.dwFileAttributes & FILE_ATTRIBUTE_READONLY)) {
+	//    st->st_mode |= S_IWUSR;
+	//}
+	//st->st_size = ((__int64)info.nFileSizeHigh << 32) | info.nFileSizeLow;
+    //}
     return ret;
 }
 #endif
@@ -4741,7 +4742,7 @@ rb_w32_get_environ(void)
      * values.
      * (U.N. 2001-11-15)
      */
-    envtop = GetEnvironmentStrings();
+	envtop = NULL; // GetEnvironmentStrings();
     for (env = envtop, num = 0; *env; env += strlen(env) + 1)
 	if (*env != '=') num++;
 
@@ -4996,6 +4997,7 @@ rb_w32_wopen(const WCHAR *file, int oflag, ...)
 	    goto quit;
 	}
 
+	/*
 	switch (GetFileType(h)) {
 	  case FILE_TYPE_CHAR:
 	    flags |= FDEV;
@@ -5010,6 +5012,7 @@ rb_w32_wopen(const WCHAR *file, int oflag, ...)
 	    fd = -1;
 	    goto quit;
 	}
+	*/
 	if (!(flags & (FDEV | FPIPE)) && (oflag & O_APPEND))
 	    flags |= FAPPEND;
 
@@ -5507,10 +5510,12 @@ wutime(const WCHAR *path, const struct utimbuf *times)
 	    ret = -1;
 	}
 	else {
+		/*
 	    if (!SetFileTime(hFile, NULL, &atime, &mtime)) {
 		errno = map_errno(GetLastError());
 		ret = -1;
 	    }
+		*/
 	    CloseHandle(hFile);
 	}
 	if (attr != (DWORD)-1 && (attr & FILE_ATTRIBUTE_READONLY))

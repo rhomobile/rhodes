@@ -6,8 +6,8 @@ import java.io.FileOutputStream;
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
-import com.rhomobile.rhodes.extmanager.IRhoWebViewConfig;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
@@ -37,7 +37,7 @@ public class GoogleWebView implements IRhoWebView {
     private android.webkit.WebView mWebView;
     private ViewGroup mContainerView;
     private TextZoom mTextZoom = TextZoom.NORMAL;
-    private IRhoWebViewConfig mConfig;
+    private IRhoConfig mConfig;
 
     public GoogleWebView(Activity activity) {
         mWebView = new android.webkit.WebView(activity);
@@ -59,30 +59,22 @@ public class GoogleWebView implements IRhoWebView {
         OsVersionManager.registerSelector(Build.VERSION_CODES.ECLAIR, IWebSettingsProvider.class, WebSettingsProviderEclair.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.ECLAIR_MR1, IWebSettingsProvider.class, WebSettingsProviderEclairMR1.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.FROYO, IWebSettingsProvider.class, WebSettingsProviderFroyo.class.getCanonicalName());
+        OsVersionManager.registerSelector(Build.VERSION_CODES.HONEYCOMB_MR1, IWebSettingsProvider.class, WebSettingsProviderHoneycombMR1.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.JELLY_BEAN, IWebSettingsProvider.class, WebSettingsProviderJellyBean.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.KITKAT, IWebSettingsProvider.class, WebSettingsProviderKitKat.class.getCanonicalName());
 
         mInitialized = true;
     }
     
-    public void applyWebSettings() {
-        Logger.T(TAG, "applyWebSettings");
-        PerformOnUiThread.exec(new Runnable() {
-            @Override
-            public void run() {
-                Logger.T(TAG, "Web settings is applying now");
+    private void applyWebSettings() {
+        Logger.I(TAG, "applyWebSettings");
+//        PerformOnUiThread.exec(new Runnable() {
+//            @Override
+//            public void run() {
+                Logger.I(TAG, "Web settings is applying now  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 
-                float z=(float) 0.0;
-                try{
-                z=Float.parseFloat(RhoConf.getString("PageZoom"));
-                }
-                catch(NumberFormatException ex)
-                {
-                	Logger.E(TAG, "NumberFormatException,message="+ex.getMessage());
-                	z=(float) 0.0;
-                }
-               mWebView.setInitialScale((int)(z*150));
-                //mWebView.setInitialScale(0);
+                double z = getConfig().getDouble(WebViewConfig.PAGE_ZOOM);
+                mWebView.setInitialScale((int)(z * 100));
                 mWebView.setVerticalScrollBarEnabled(true);
                 mWebView.setHorizontalScrollBarEnabled(true);
                 mWebView.setVerticalScrollbarOverlay(true);
@@ -93,8 +85,8 @@ public class GoogleWebView implements IRhoWebView {
                 provider.fillSettings(mWebView.getSettings(), mConfig);
                 
                 RhodesActivity.safeGetInstance().notifyUiCreated();
-            }
-        });
+//            }
+//        });
     }
 
     @Override
@@ -110,12 +102,12 @@ public class GoogleWebView implements IRhoWebView {
     }
     
     @Override
-    public void setConfig(IRhoWebViewConfig config) {
+    public void setConfig(IRhoConfig config) {
         mConfig = config;
         applyWebSettings();
     }
     
-    public IRhoWebViewConfig getConfig() {
+    public IRhoConfig getConfig() {
         return mConfig;
     }
 
@@ -246,12 +238,12 @@ public class GoogleWebView implements IRhoWebView {
 
     @Override
     public void onPause() {
-        AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,true);
+        //AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,true);
     }
 
     @Override
     public void onResume() {
-        AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,false);
+        //AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,false);
     }
 
     @Override

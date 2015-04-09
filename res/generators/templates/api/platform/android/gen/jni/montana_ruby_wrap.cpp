@@ -10,7 +10,7 @@
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>RUBY"
 
 
-typedef <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>Proxy<ArgumentsAdapter<std::vector<VALUE> > > ObjectProxy;
+typedef <%= CppGen::make_namespace($cur_module.parents)%>C<%= $cur_module.name %>Proxy<ArgumentsAdapter<std::vector<VALUE> > > ObjectProxy;
 
 using namespace rho::apiGenerator;
 extern "C"
@@ -21,16 +21,16 @@ VALUE getRuby_<%= $cur_module.name %>_Module();
 <% if $cur_module.is_template_default_instance %>
 VALUE rb_<%= $cur_module.name %>_s_default(VALUE klass)
 {
-    RAWTRACE("rb_barcode1_s_default");
-    return rho_ruby_create_object_with_id(klass, <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>Base::getDefaultID().c_str());
+    RAWTRACE("rb_<%= $cur_module.name %>_s_default");
+    return rho_ruby_create_object_with_id(klass, <%= CppGen::make_namespace($cur_module.parents)%>C<%= $cur_module.name %>Base::getDefaultID().c_str());
 }
 
 VALUE rb_<%= $cur_module.name %>_s_setDefault(VALUE klass, VALUE valObj)
 {
-    RAWTRACE("rb_barcode1_s_set_default");
+    RAWTRACE("rb_<%= $cur_module.name %>_s_set_default");
 
     const char* szID = rho_ruby_get_object_id(valObj);
-    <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>Base::setDefaultID(szID);
+    <%= CppGen::make_namespace($cur_module.parents)%>C<%= $cur_module.name %>Base::setDefaultID(szID);
 
     return rho_ruby_get_NIL();
 } <%
@@ -109,7 +109,7 @@ end %>
 <%
 
 if api_generator_isApiObjectParam(method.result)
-  if method.result.type == MethodParam::TYPE_SELF %>
+  if method.result.type == RhogenCore::TYPE_SELF %>
     result.setRubyObjectClass(getRuby_<%= $cur_module.name %>_Module());
     RAWTRACE("Ruby object class is set");<%
   else %>

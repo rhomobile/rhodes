@@ -143,6 +143,7 @@ namespace rhodes
             get { return _uiThreadID == System.Threading.Thread.CurrentThread.ManagedThreadId; }
         }                         
                                     
+        
         private void raiseTabEvent( string eventName, int nOldTab, int nNewTab )
         {
             if ( _oTabResult != null)
@@ -160,11 +161,26 @@ namespace rhodes
         static public MainPage getInstance()
         {  
             return _instance;
-        } 
-
+        }
+        static public Grid LayoutGrid()
+        {
+            return _instance.LayoutRoot;
+        }
+        public UIElement RootVisual()
+        {
+            return App.Current.RootVisual; 
+        }
         public bool isEmulator() 
         {    
             return DeviceStatus.DeviceName.Contains("Emulator") == true ? true : false;
+        }
+        public void ApplicationBarEnable(bool Visible)
+        {
+            ApplicationBar.IsVisible = Visible;
+        }
+        public bool ApplicationBarStatus()
+        {
+            return ApplicationBar.IsVisible;
         }
           
         public MainPage()
@@ -565,6 +581,7 @@ namespace rhodes
 		public void toolbarShow()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarShow(); }); return; }
+            tabbarHide();
             updateAppBarModeAndVisibility();
         }
 
@@ -719,6 +736,7 @@ namespace rhodes
 		public void tabbarShow()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarShow(); }); return; }
+            toolbarHide();
             LayoutRoot.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
             LayoutRoot.RowDefinitions[1].Height = new GridLength(0, GridUnitType.Pixel);
             // not needed: TabbarPanel.Visibility = System.Windows.Visibility.Visible;
@@ -955,7 +973,7 @@ namespace rhodes
             // TODO: implement
         }
          
-
+        
         // *** MISC ***
         // this method is used as a callback for calling the C# API methods from C++
         public void DoWait(int timeout)

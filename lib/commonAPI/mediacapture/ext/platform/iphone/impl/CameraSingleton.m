@@ -5,7 +5,7 @@
 
 extern int get_camera_max_width(const char* camera_type);
 void camera_choose_picture(NSDictionary* options, id<IMethodResult> callback_api);
-extern void save_image_to_device_gallery(const char* image_path);
+extern int save_image_to_device_gallery(const char* image_path);
 
 @implementation CameraSingleton
 
@@ -37,8 +37,17 @@ extern void save_image_to_device_gallery(const char* image_path);
     camera_choose_picture([CameraBase applyAliasesToDictionary:[Camera convertValuesToString:propertyMap]], methodResult);
 }
 
--(void) saveImageToDeviceGallery:(NSString*)pathToImage methodResult:(id<IMethodResult>)methodResult {
-    save_image_to_device_gallery([pathToImage UTF8String]);
+
+-(void) copyImageToDeviceGallery:(NSString*)pathToImage methodResult:(id<IMethodResult>)methodResult {
+    if (save_image_to_device_gallery([pathToImage UTF8String])) {
+        
+    }
+    else {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:10];
+        [dict setObject:@"error" forKey:@"status"];
+        [dict setObject:@"can not read image file !" forKey:@"message"];
+        [methodResult setResult:dict];
+    }
 }
 
 

@@ -11,9 +11,11 @@
 
 IMPLEMENT_LOGCLASS(CIEBrowserEngine,"IEBrowser");
 
+extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd( WPARAM wParam, LPARAM lParam );
 extern "C" void rho_wmimpl_create_ieBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
+extern "C" bool rho_wmimpl_get_textselectionenabled();
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -56,7 +58,9 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
         m_hparentInst(NULL),
         m_bLoadingComplete(FALSE),
         m_hNavigated(NULL),
-        m_dwNavigationTimeout(0)
+        m_dwNavigationTimeout(45000),
+        m_urlList(NULL),
+	m_currentPage(NULL)
 {
     m_parentHWND = hParentWnd;    
     m_hparentInst = hInstance;
@@ -65,7 +69,12 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     GetWindowRect(hParentWnd, &m_rcViewSize);
 
     m_tcNavigatedURL[0] = 0;
-
+	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
+	if(m_dwNavigationTimeout<=0)
+	{
+		LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_dwNavigationTimeout;
+		m_dwNavigationTimeout=45000;
+	}
     CreateEngine();
 }
 
@@ -74,7 +83,7 @@ CIEBrowserEngine::~CIEBrowserEngine()
     //  Destroy the Browser Object
     DestroyWindow(m_hwndTabHTML);
     m_hwndTabHTML = NULL;
-
+    DeleteCascade(m_urlList);
     //  Destroy the Browser Object's parent if it exists
     if (g_hwndTabHTMLContainer)
     {
@@ -131,8 +140,12 @@ LRESULT CIEBrowserEngine::CreateEngine()
             return S_FALSE;
     }
 
+	DWORD dwTextSelectionStyle = 0;
+    if(!rho_wmimpl_get_textselectionenabled()) 
+		dwTextSelectionStyle = HS_NOSELECTION;
+
     m_hwndTabHTML = CreateWindow(WC_HTML, NULL, 
-        WS_POPUP | WS_VISIBLE | HS_NOSELECTION, 
+        WS_POPUP | WS_VISIBLE | dwTextSelectionStyle, 
         m_rcViewSize.left, m_rcViewSize.top, 
         (m_rcViewSize.right-m_rcViewSize.left), 
         (m_rcViewSize.bottom-m_rcViewSize.top), 
@@ -153,6 +166,7 @@ BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
     //  navigate to a Javascript function before the page is fully loaded can 
     //  crash PocketBrowser (specifically when using Reload).  This condition
     //  prevents that behaviour.
+    
     if (!m_bLoadingComplete && (wcsnicmp(tcURL, L"JavaScript:", wcslen(L"JavaScript:")) == 0))
     {
         LOG(TRACE) + "Failed to Navigate, Navigation in Progress\n";
@@ -163,9 +177,13 @@ BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 
     if (wcsicmp(tcURL, L"history:back") == 0)
     {
+		TCHAR tcPreviousURL[MAX_URL];
+		LOG(INFO) + "\nDRD history:back tcURL="+tcURL;
+		GetPreviousUrl(tcPreviousURL);
+		Navigate(tcPreviousURL, iTabID);
+		return S_OK;
     }
-    else
-    {
+
         //  Engine component does not accept Navigate(page.html), it needs
         //  the absolute URL of the page, add that here (if the user puts a .\ before)
         TCHAR tcDereferencedURL[MAX_URL];
@@ -200,7 +218,7 @@ BOOL CIEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
         }
         else
             retVal = SendMessage(m_hwndTabHTML, DTM_NAVIGATE, 0, (LPARAM) (LPCTSTR)tcDereferencedURL);
-    }
+    
 
     return retVal;
 }
@@ -262,14 +280,30 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-        if ( RHODESAPP().getExtManager().onWndMsg(msg) )
+		if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
+
+		IDispatch* pDisp;
+		SendMessage(m_hwndTabHTML, DTM_BROWSERDISPATCH, 0, (LPARAM) &pDisp); // New HTMLVIEW message
+		if (pDisp != NULL) {
+			//  If the Key is back we do not want to translate it causing the browser
+			//  to navigate back.
+			if ( ((msg.message != WM_KEYUP) && (msg.message != WM_KEYDOWN)) || (msg.wParam != VK_BACK) )
+			{
+				IOleInPlaceActiveObject* pInPlaceObject;
+				pDisp->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&pInPlaceObject );
+				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);	
+			}
+		}
 
         if (!mainWnd.TranslateAccelerator(&msg))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+
+		if(msg.message == WM_PAINT)
+			RHODESAPP().getExtManager().onHTMLWndMsg(msg);	
     }
 }
 
@@ -318,6 +352,12 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
 
     switch (uMsg) 
     {
+	case PB_WINDOW_RESTORE:
+		{			
+			short m_PB_WINRESTORED = 6;
+            RHODESAPP().getExtManager().OnWindowChanged((LPVOID) m_PB_WINRESTORED);
+		}
+		break;
     case PB_ONMETA:
         {
             EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
@@ -370,12 +410,8 @@ void CIEBrowserEngine::InvokeEngineEventMetaTag(LPTSTR tcHttpEquiv, LPTSTR tcCon
     metaTag2->tcContents = _tcsdup(metaTag.tcContents);
     lRet = PostMessage(rho_wmimpl_get_mainwnd(),PB_ONMETA,(WPARAM)m_tabID, (LPARAM)metaTag2);
 
-    delete []metaTag.tcHTTPEquiv;
-    delete []metaTag.tcContents;
-
-    //delete [] pMeta->tcHTTPEquiv;
-    //delete [] pMeta->tcContents;
-    //delete pMeta;
+    delete [] metaTag.tcHTTPEquiv;
+    delete [] metaTag.tcContents;
 }
 
 void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEventID)
@@ -388,10 +424,8 @@ void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEvent
 	{
 		case EEID_BEFORENAVIGATE:
 			m_bLoadingComplete = FALSE;
-			SetEvent(m_hNavigated);
-			CloseHandle(m_hNavigated);
-			m_hNavigated = NULL;
-
+			if(m_hNavigated==NULL)
+				m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 			//  Do not start the Navigation Timeout Timer if the 
 			//  navigation request is a script call.
 			if((!_memicmp(tcURL, L"javascript:", 11 * sizeof(TCHAR)))
@@ -421,7 +455,8 @@ void CIEBrowserEngine::InvokeEngineEventLoad(LPTSTR tcURL, EngineEventID eeEvent
 			SetEvent(m_hNavigated);
 			CloseHandle(m_hNavigated);
 			m_hNavigated = NULL;
-            SendMessage(m_parentHWND, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);			
+            		SendMessage(m_parentHWND, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)_tcsdup(tcURL));
+        		AddNewUrl(tcURL);
 			break;
 	}
 }
@@ -448,8 +483,19 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 {
 	LRESULT lResult = S_OK;
 
+	bool m_bFullScreen = RHOCONF().getBool("full_screen");
+
     switch (uMsg) 
 	{
+		case WM_KILLFOCUS:
+		{
+			if (m_bFullScreen)
+			{
+				HWND taskbarWnd = FindWindow(L"HHTaskBar", NULL);
+				ShowWindow(taskbarWnd, SW_HIDE);
+				return FALSE;
+			}
+		}
 		case WM_NOTIFY:
 		{
 			//  Received a message from the Pocket Internet Explorer component
@@ -528,6 +574,7 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 					mbstowcs(tcTarget, (LPSTR)pnmHTML->szTarget, MAX_URL);
 				if (tcTarget)
 					mobileTab->InvokeEngineEventLoad(tcTarget, EEID_NAVIGATECOMPLETE);
+
 				break;
 			case NM_PIE_KEYSTATE:
 			case NM_PIE_ALPHAKEYSTATE:
@@ -545,30 +592,179 @@ LRESULT CIEBrowserEngine::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
-	CIEBrowserEngine* pIEEng = reinterpret_cast<CIEBrowserEngine*>(lpParameter);
-
+    CIEBrowserEngine* pIEEng = reinterpret_cast<CIEBrowserEngine*>(lpParameter);
+    DWORD dwWaitResult;
     if (pIEEng->m_dwNavigationTimeout != 0)
     {
         LOG(TRACE) + "Mobile NavThread Started\n";
 
-	    if(pIEEng->m_hNavigated==NULL)
-		    pIEEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
-	    if(WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
-	    {
-		    //no point in doing anything as there is no event handler
-		    pIEEng->StopOnTab(0);
-		    CloseHandle(pIEEng->m_hNavigated);
-		    pIEEng->m_hNavigated = NULL;
+		dwWaitResult = WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout);
 
-            SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
-                (WPARAM)pIEEng->m_tabID, (LPARAM)pIEEng->m_tcNavigatedURL);
-	    }
+		switch (dwWaitResult) 
+		{
+			// Event object was signaled
+			case WAIT_OBJECT_0: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:Event object was signaled\n";
+								
+				CloseHandle(pIEEng->m_hNavigated);
+				pIEEng->m_hNavigated = NULL;
+
+				break; 
+			case WAIT_TIMEOUT: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:timeout\n";
+				
+					
+				pIEEng->StopOnTab(0);
+						
+				CloseHandle(pIEEng->m_hNavigated);
+				pIEEng->m_hNavigated = NULL;
+				SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+					(WPARAM)pIEEng->m_tabID, (LPARAM)_tcsdup(pIEEng->m_tcNavigatedURL));
+
+				break; 
+
+			// An error occurred
+			default: 
+				LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
+				return 0; 
+		}
+
+
+
+
 
 	    LOG(TRACE) + "NavThread Ended\n";
     }
 
 	return 0;
+}
+BOOL CIEBrowserEngine::AddNewUrl(LPCTSTR urlNew)
+{
+
+	CHistoryElement* newElement = new CHistoryElement();
+	newElement->pNext = NULL;
+	newElement->pPrev = NULL;
+	newElement->tcURL = new TCHAR[wcslen(urlNew)+1];
+	wcscpy(newElement->tcURL, urlNew);
+
+	//  Base Case, there is no current URL History
+	if (m_urlList == NULL)
+	{
+		//  Start the History List
+		m_urlList = newElement;
+		m_currentPage = newElement;
+	}
+	else
+	{
+		//  There is already at least one item in the history
+		//  Check we're not trying to add the same item to the history
+		//  twice (Reload)
+		if(!wcscmp(m_currentPage->tcURL, urlNew))
+		{
+			LOG(INFO) + "\nDRD Check we're not trying to add the same item to the history twice";
+			delete[] newElement->tcURL;
+			delete newElement;
+			return FALSE;
+		}
+
+		//  Check the History hasn't grown too large
+		//  Assume the Maximum history size is sensible, suggest a value of 50
+		if (BackListSize() >= MAX_HISTORY && MAX_HISTORY > 2)
+		{
+			//  History will be too large after the next element is added
+			//  Remove the first element in the history list and free the memory
+			CHistoryElement* firstElement = m_urlList;
+			m_urlList = m_urlList->pNext;
+			m_urlList->pPrev = NULL;
+			delete[] firstElement->tcURL;
+			delete firstElement;
+		}
+
+		//  Delete all history items FORWARD of the currentPage
+		DeleteCascade(m_currentPage->pNext);
+
+		//  Add the new history item to the List
+		m_currentPage->pNext = newElement;
+		newElement->pPrev = m_currentPage;
+		m_currentPage = newElement;
+	}
+	return TRUE;
+}
+
+
+void CIEBrowserEngine::DeleteCascade(CHistoryElement* fromThisElementOn)
+{
+	CHistoryElement* deletingElement = fromThisElementOn;
+	while (deletingElement != NULL)
+	{
+		delete[] deletingElement->tcURL;
+		deletingElement->tcURL = NULL;
+		CHistoryElement* nextElement = deletingElement->pNext;
+		delete deletingElement;
+		deletingElement = nextElement;
+	}
+}
+
+
+LRESULT  CIEBrowserEngine::GetPreviousUrl(LPTSTR tcURL)
+{
+
+
+	//  Check to see we can go back this many pages
+	CHistoryElement* tempHistoryElement = m_currentPage;
+	if(tempHistoryElement != NULL && tempHistoryElement->pPrev != NULL)
+	{
+		//  We can go to the previous page
+		//  Go back another item in the history
+		tempHistoryElement = tempHistoryElement->pPrev;
+
+
+			m_currentPage = tempHistoryElement;
+			_tcscpy(tcURL,m_currentPage->tcURL);
+			return S_OK;
+
+
+	}
+
+	//  If we exit the While loop we were not able to go back the 
+	//  specified number of places
+	return S_FALSE;
+}
+
+
+
+UINT CIEBrowserEngine::BackListSize()
+{
+	UINT iHistoryCounter = 1;
+	CHistoryElement* tempHistoryElement = m_currentPage;
+	while (tempHistoryElement != NULL && tempHistoryElement->pPrev != NULL)
+	{
+		//  We can go back
+		iHistoryCounter++;
+		tempHistoryElement = tempHistoryElement->pPrev;
+	}
+	return iHistoryCounter;
+}
+
+BOOL CIEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
+{
+	BOOL bRetVal = PostMessage(m_hwndTabHTML, DTM_ZOOMLEVEL, 0, 
+								(LPARAM)(DWORD) nZoom);
+
+	if (bRetVal)
+	{
+		//m_dwCurrentTextZoomLevel = dwZoomLevel;
+		return S_OK;
+	}
+	else
+		return S_FALSE;
 }
 
 #define  PB_ENGINE_IE_MOBILE

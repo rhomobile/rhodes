@@ -202,6 +202,42 @@
     <ClInclude Include="..\..\shared\net\ssl.h">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\crc32.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\deflate.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\gunzip.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\gzguts.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\inffast.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\inffixed.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\inflate.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\inftrees.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\trees.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\zconf.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\zlib.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\zutil.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\common\app_build_configs.c">
@@ -303,11 +339,53 @@
     <ClCompile Include="..\..\shared\api_generator\MethodResult.cpp">
       <Filter>api_generator</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\shared\api_generator\StringifyHelper.cpp">
+    <ClCompile Include="..\..\shared\api_generator\StringifyHelper.cpp">
       <Filter>api_generator</Filter>
-    </ClInclude>
+    </ClCompile>
     <ClCompile Include="..\..\shared\net\ssl.cpp">
       <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\adler32.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\crc32.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\deflate.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gunzip.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gzclose.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gzlib.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gzread.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gzwrite.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\infback.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\inffast.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\inflate.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\inftrees.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\trees.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\zutil.cpp">
+      <Filter>unzip</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

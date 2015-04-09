@@ -45,6 +45,9 @@
 
 #include "sync/RhoconnectClientManager.h"
 
+
+int rho_is_remote_debug();
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 extern void Init_strscan();
@@ -199,7 +202,7 @@ void RhoRubyStart()
     //rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
 
     ruby_init_loadpath(szRoot);
-#if defined(RHODES_EMULATOR) || defined(APP_BUILD_CAPABILITY_MOTOROLA) || defined(OS_WP8)
+#if defined(RHODES_EMULATOR) || defined(APP_BUILD_CAPABILITY_SYMBOL) || defined(OS_WP8)
     {
         VALUE load_path = GET_VM()->load_path;
         char* app_path = malloc(strlen(szRoot)+100);
@@ -216,7 +219,7 @@ void RhoRubyStart()
 #endif
         rb_ary_push(load_path, rb_str_new2(app_path) );
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
         strcpy(app_path, rho_native_reruntimepath());
         strcat(app_path, "lib");
 #elif defined(OS_WP8)
@@ -261,7 +264,7 @@ void RhoRubyStart()
 #endif
     Init_RhoBluetooth();
 	Init_RhodesNativeViewManager();
-#if !defined(OS_MACOSX)
+#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
     Init_Camera();
 #endif
     Init_stringio(); //+
@@ -284,7 +287,7 @@ void RhoRubyStart()
         
 #if defined(OS_MACOSX)
 #ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
-        Init_Camera();
+        //Init_Camera();
 //        Init_SignatureCapture();
 #endif
 #endif
@@ -330,10 +333,6 @@ void RhoRubyStart()
     {
         rb_const_set(rb_cObject, rb_intern("RHOSTUDIO_REMOTE_DEBUG"), Qfalse);
     }
-
-//#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-//    rb_require("rhomotoapi");
-//#endif //APP_BUILD_CAPABILITY_MOTOROLA
 
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
@@ -555,11 +554,15 @@ hash_each_json(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
     if ( value != 0 && value != Qnil )
     {
         VALUE strVal;
-        if ( TYPE(value) == T_STRING || TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
-             TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
-            strVal = rb_funcall(value, rb_intern("to_s"), 0);
-        else
-            strVal = rb_funcall(value, rb_intern("to_json"), 0);
+        if ( TYPE(value) != T_STRING ) {
+            if (TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
+                TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
+                strVal = rb_funcall(value, rb_intern("to_s"), 0);
+            else
+                strVal = rb_funcall(value, rb_intern("to_json"), 0);
+
+        } else
+            strVal = value;
 
         szValue = RSTRING_PTR(strVal);
         valueLen = RSTRING_LEN(strVal);
@@ -850,6 +853,11 @@ VALUE addHashToHash(VALUE hash, const char* key, VALUE val) {
 VALUE rho_ruby_hash_aref(VALUE hash, const char* key)
 {
     return rb_hash_aref( hash, rb_str_new2(key));
+}
+
+VALUE rho_ruby_hash_get(VALUE hash, VALUE key)
+{
+    return rb_hash_aref(hash, key);
 }
 
 VALUE rho_ruby_array_get(VALUE ar, int nIndex)
@@ -1213,6 +1221,108 @@ int rho_ruby_is_array(VALUE val)
 int rho_ruby_is_hash(VALUE val)
 {
     return (TYPE(val) == T_HASH) ? 1 : 0;
+}
+
+int isNil(VALUE value) {
+    return (NIL_P(value) || value == 0);
+}
+
+int rho_ruby_to_int(VALUE val, int* dest) {
+    if (isNil(val) && dest == 0)
+        return 0;
+    *dest = 0;
+    if (TYPE(val) == RUBY_T_FLOAT ||
+        TYPE(val) == RUBY_T_FIXNUM ||
+        TYPE(val) == RUBY_T_BIGNUM ||
+        TYPE(val) == RUBY_T_RATIONAL) {
+        *dest = NUM2INT(val);
+        return 1;
+    }
+    return 0;
+
+}
+int rho_ruby_to_double(VALUE val, double* dest) {
+    if (isNil(val) && dest == 0)
+        return 0;
+    *dest = 0.0;
+    if (TYPE(val) == RUBY_T_FLOAT ||
+        TYPE(val) == RUBY_T_FIXNUM ||
+        TYPE(val) == RUBY_T_BIGNUM ||
+        TYPE(val) == RUBY_T_RATIONAL) {
+        *dest = NUM2DBL(val);
+        return 1;
+    }
+    return 0;
+}
+
+int rho_ruby_to_bool(VALUE val, int* dest) {
+    if (isNil(val) && dest == 0)
+        return 0;
+    *dest = 0;
+    switch (TYPE(val)) {
+        case RUBY_T_TRUE:
+        case RUBY_T_FALSE:
+            *dest = TYPE(val) == RUBY_T_TRUE;
+            return 1;
+            break;
+        case RUBY_T_FLOAT:
+        case RUBY_T_BIGNUM:
+        case RUBY_T_FIXNUM:
+        case RUBY_T_RATIONAL:
+            *dest = NUM2INT(val) != 0;
+            return 1;
+            break;
+
+        default:
+            break;
+    }
+
+    return 0;
+}
+
+int rho_ruby_to_str(VALUE val, const char** dest, int* len) {
+    if (rb_type(val) != T_STRING)
+    {
+        val = rb_funcall(val, rb_intern("to_s"), 0, NULL);
+    }
+    *dest = getStringFromValue(val);
+    *len = getStringLenFromValue(val);
+    return 1;
+}
+
+static const char* empty_str = "";
+
+int rho_ruby_to_str_ex(VALUE val, const char** dest, int* len) {
+
+    if (0 == dest || 0 == len) {
+        return 0;
+    }
+
+    *dest = empty_str;
+    *len = 0;
+
+    if ( val != 0 && val != Qnil )
+    {
+        VALUE strVal;
+        if ( TYPE(val) == T_STRING || TYPE(val) == T_FIXNUM || TYPE(val) == T_TRUE || TYPE(val) == T_FALSE ||
+            TYPE(val) == T_FLOAT || TYPE(val) == T_BIGNUM || TYPE(val) == T_SYMBOL || TYPE(val) == T_RATIONAL || TYPE(val) == T_COMPLEX )
+            strVal = rb_funcall(val, rb_intern("to_s"), 0);
+        else
+            strVal = rb_funcall(val, rb_intern("to_json"), 0);
+
+        *dest = RSTRING_PTR(strVal);
+        *len = RSTRING_LEN(strVal);
+    }
+
+    return 1;
+}
+
+VALUE rho_ruby_hash_keys(VALUE val) {
+    return rb_funcall(val, rb_intern("keys"), 0);
+}
+
+VALUE rho_ruby_each_key(VALUE val) {
+    return rb_each(val);
 }
 
 VALUE rb_require_compiled_safe(VALUE obj, VALUE fname);

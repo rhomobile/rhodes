@@ -102,7 +102,6 @@ public:
     int tabbarGetCurrent();
 
 private:
-    //TODO: CLogView m_logView;
     bool m_started;
     void* qtMainWindow;
     void* qtApplication;

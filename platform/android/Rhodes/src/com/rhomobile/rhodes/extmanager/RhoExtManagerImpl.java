@@ -2,6 +2,7 @@ package com.rhomobile.rhodes.extmanager;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -14,18 +15,24 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.os.Bundle;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
@@ -50,7 +57,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private boolean mLogUser = false;
     private boolean mLogDebug = false;
     private boolean mFirstNavigate = true;
-    private IRhoWebViewConfig mWebViewConfig = null;
     private Integer mLastActivityRequestCode = Integer.valueOf(0);
     private SparseArray<IRhoListener> mActivityResultListeners = new SparseArray<IRhoListener>();
 
@@ -62,7 +68,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     static native String nativeJSCallEntryPoint(String query);
 
     static int getResId(String className, String idName) {
-        className = ContextFactory.getAppContext().getPackageName() + ".R$" + className;
+        className = "com.rhomobile.rhodes.R$" + className;
         try {
             Class<?> rClass = Class.forName(className);
             Field field = rClass.getDeclaredField(idName);
@@ -70,6 +76,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         } catch (Throwable e) {
             throw new IllegalArgumentException("Cannot get " + className + "." + idName, e);
         }
+    }
+    
+
+    public RhoExtManagerImpl() {
+        mConfigs.put("rhoconfig", new RhoConf.RhoConfig());
     }
     
     @Override
@@ -305,11 +316,14 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     public IRhoWebView createWebView(RhodesActivity activity, int tabIndex) {
         IRhoWebView res = null;
+        GoogleWebView googleWebView = null;
+        Collection<IRhoExtension> extensions = null;
         synchronized (mExtensions) {
-            for (IRhoExtension ext : mExtensions.values()) {
+            extensions = mExtensions.values();
+        }
+            for (IRhoExtension ext : extensions) {
                 IRhoWebView view = ext.onCreateWebView(this, tabIndex);
                 if (view != null) {
-                    view.setConfig(mWebViewConfig);
                     if (res != null) {
                         Logger.W(TAG, "WebView has already created by another extension, overlapping it");
                     }
@@ -317,17 +331,9 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                 }
             }
             if (res == null) {
-                Logger.T(TAG, "Creating Google web view");
-                final GoogleWebView googleWebView = new GoogleWebView(activity);
-                googleWebView.setConfig(mWebViewConfig);
+                Logger.I(TAG, "Creating Google web view !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                googleWebView = new GoogleWebView(activity);
                 res = googleWebView;
-                RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
-                    @Override
-                    public void run()
-                    {
-                        googleWebView.applyWebSettings();
-                    }
-                });
             }
             AbsoluteLayout containerView = new AbsoluteLayout(activity);
             containerView.addView(res.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
@@ -335,9 +341,13 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             res.setWebClient();
             boolean handled = false;
             res.addJSInterface(new RhoJSApi(), "__rhoNativeApi");
-            for (IRhoExtension ext : mExtensions.values()) {
-                handled = ext.onWebViewCreated(this, res, handled);
-            }
+
+        synchronized (mExtensions) {
+            extensions = mExtensions.values();
+        }
+
+        for (IRhoExtension ext : extensions) {
+            handled = ext.onWebViewCreated(this, res, handled);
         }
         return res;
     }
@@ -539,6 +549,95 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             builder.create().show();
         }
     }
+    
+    public void onAuthRequest(View view, final IRhoExtension.IAuthRequest request) {
+        final IRhoWebView rhoWebView = makeDefExtData(view);
+        boolean res = false;
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                res = ext.onAuthRequest(this, request, rhoWebView, res);
+            }
+        }
+        if (!res) {
+            Context ctx = ContextFactory.getUiContext();
+            final LinearLayout mainLayout = new LinearLayout(ctx);
+            mainLayout.setOrientation(LinearLayout.VERTICAL);
+            mainLayout.setPadding(10, 10, 10, 15);
+            TextView realmView = new TextView(ctx, null, android.R.style.Widget_TextView);
+            realmView.setGravity(Gravity.CENTER_HORIZONTAL);
+            realmView.setPadding(10, 10, 10, 10);
+
+            TableLayout formLayout = new TableLayout(ctx);
+            
+            TableRow userRow = new TableRow(ctx);
+            
+            TextView userPrompt = new TextView(ctx, null, android.R.style.Widget_TextView);
+            userPrompt.setText("Name:");
+            userPrompt.setPadding(0, 0, 10, 0);
+            final EditText userField = new EditText(ContextFactory.getUiContext());
+            userField.setSingleLine();
+            userField.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+            
+            userRow.addView(userPrompt);
+            userRow.addView(userField);
+            //userRow.setPadding(5, 0, 0, 5);
+            formLayout.addView(userRow);
+            
+            TableRow passRow = new TableRow(ctx);
+            
+            TextView passPrompt = new TextView(ctx, null, android.R.style.Widget_TextView);
+            passPrompt.setText("Password:");
+            passPrompt.setPadding(0, 0, 10, 0);
+            final EditText passField = new EditText(ContextFactory.getUiContext());
+            passField.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            passField.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            
+            passRow.addView(passPrompt);
+            passRow.addView(passField);
+            //passRow.setPadding(5, 0, 0, 5);
+            formLayout.addView(passRow);
+            formLayout.setColumnStretchable(1, true);
+            
+            mainLayout.addView(realmView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            mainLayout.addView(formLayout, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(ContextFactory.getUiContext());
+            builder.setView(mainLayout);
+
+            realmView.setText(request.realm());
+
+            builder.setCancelable(true);
+            builder.setTitle(RhodesActivity.safeGetInstance().getTitle());
+            builder.setPositiveButton("OK", new OnClickListener() {
+                @Override public void onClick(DialogInterface dialog, int which) {
+                    request.proceed(userField.getText().toString(), passField.getText().toString());
+                    dialog.dismiss();
+                }});
+//            builder.setNegativeButton("Cancel", new OnClickListener() {
+//                @Override public void onClick(DialogInterface dialog, int which) {
+//                    request.cancel();
+//                    dialog.dismiss();
+//                }});
+            builder.setOnKeyListener(new OnKeyListener() {
+                @Override public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_SEARCH) {
+                        request.cancel();
+                        dialog.dismiss();
+                        return true;
+                    }
+                    return false;
+                }});
+            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    request.cancel();
+                    dialog.dismiss();
+                    rhoWebView.goBack();
+                }
+            });
+            builder.create().show();
+        }
+    }
 
     public void onConsole(View view, String msg) {
         IRhoWebView rhoWebView = makeDefExtData(view);
@@ -608,7 +707,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     public void onPrompt(View view, String prompt, String defaultResponse, final IPromptResult promptResult) {
-        if (defaultResponse.startsWith("__rhoNativeApiCall")) {
+        if ((defaultResponse != null) &&  defaultResponse.startsWith("__rhoNativeApiCall")) {
             Logger.D(TAG, "Execute JS hook: " + prompt);
             String res = nativeJSCallEntryPoint(prompt);
             Logger.D(TAG, "JS result: " + res);
@@ -700,16 +799,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
                 res = ext.onStatus(this, title, rhoWebView, res);
-            }
-        }
-    }
-    
-    public void onAuthRequired(View view, String type, String url, String realm) {
-        IRhoWebView rhoWebView = makeDefExtData(view);
-        boolean res = false;
-        synchronized (mExtensions) {
-            for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onAuthRequired(this, type, url, realm, rhoWebView, res);
             }
         }
     }
@@ -851,6 +940,13 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             listener.onActivityResult(activity, reqCode, resCode, intent);
             dropActivityResultRequestCode(reqCode);
         }
+        else {
+            for (IRhoListener legacyListener: mListeners) {
+                if (mActivityResultListeners.indexOfValue(legacyListener) < 0) {
+                    legacyListener.onActivityResult(activity, reqCode, resCode, intent);
+                }
+            }
+        }
     }
 
     public void onSaveInstanceState(Bundle outState) {
@@ -873,16 +969,22 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             listener.onConfigurationChanged(activity, newConfig);
         }
     }
-
-    @Override
-    public void setWebViewConfig(IRhoWebViewConfig config) {
-        Logger.T(TAG, "Set WebView config");
-
-        mWebViewConfig = config;
-        MainView mainView = RhodesActivity.safeGetInstance().getMainView();
-        for (int i = 0; i < mainView.getTabsCount(); ++i) {
-            Logger.T(TAG, "Set WebView config: tab " + i);
-            mainView.getWebView(i).setConfig(config);
+    
+    public void onEBLicenseVisible() {
+        for (IRhoListener listener: mListeners) {
+            listener.onEBLicenseVisible();
+        }
+    }
+    
+    public void onEBLicenseHidden() {
+        for (IRhoListener listener: mListeners) {
+            listener.onEBLicenseHidden();
+        }
+    }
+    
+    public void onEBLicenseDestroyed() {
+        for (IRhoListener listener: mListeners) {
+            listener.onEBLicenseDestroyed();
         }
     }
 

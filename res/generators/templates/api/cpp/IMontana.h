@@ -31,10 +31,10 @@ struct I<%= $cur_module.name %>
 <% if $cur_module.properties_access == ModuleMethod::ACCESS_INSTANCE
    $cur_module.constants.each do |module_constant|
     if  module_constant.name && module_constant.name.length() > 0 
-    if module_constant.type == MethodParam::TYPE_STRING %>
+    if module_constant.type == RhogenCore::TYPE_STRING %>
     static const char <%= module_constant.name %>[];// "<%= module_constant.value %>" <%
 else %>
-    static const <%= api_generator_cpp_makeNativeType(module_constant.type) %> <%= module_constant.name %> = <%= module_constant.value %>; <%
+    static const <%= CppGen::native_type(module_constant) %> <%= module_constant.name %> = <%= module_constant.value %>; <%
 end; end; end; end %>
 
 //methods
@@ -47,7 +47,7 @@ end; end; end; end %>
     params = ''
     call_params = ''
     module_method.params.each do |param|
-        params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
+        params += " #{CppGen::native_type_arg(param)} #{param.name}, "
 
         call_params += " ," if call_params.length() > 0
         call_params += "#{param.name}"
@@ -66,10 +66,10 @@ struct I<%= $cur_module.name %>Singleton
 <% if $cur_module.properties_access == ModuleMethod::ACCESS_STATIC
    $cur_module.constants.each do |module_constant|
     if  module_constant.name && module_constant.name.length() > 0 
-    if module_constant.type == MethodParam::TYPE_STRING %>
+    if module_constant.type == RhogenCore::TYPE_STRING %>
     static const char <%= module_constant.name %>[];// "<%= module_constant.value %>" <%
 else %>
-    static const <%= api_generator_cpp_makeNativeType(module_constant.type) %> <%= module_constant.name %> = <%= module_constant.value %>; <%
+    static const <%= CppGen::native_type(module_constant) %> <%= module_constant.name %> = <%= module_constant.value %>; <%
 end; end; end; end %>
 
     virtual ~I<%= $cur_module.name %>Singleton(){}
@@ -80,7 +80,7 @@ end; end; end; end %>
 
     params = ''
     module_method.params.each do |param|
-        params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
+        params += " #{CppGen::native_type_arg(param)} #{param.name}, "
     end
 
     params += 'rho::apiGenerator::CMethodResult& oResult'

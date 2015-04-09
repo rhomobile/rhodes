@@ -1,0 +1,127 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Config" parent="Rho" productException="eb">
+        <HELP_OVERVIEW>Rho.Config module</HELP_OVERVIEW>
+        <MORE_HELP>Implementation of the Config API.</MORE_HELP>
+
+        <PROPERTIES access="STATIC" generateAccessors="true">
+
+            <PROPERTY name="configPath" type="STRING" default="">
+                <DESC>Path to the config file.</DESC>
+            </PROPERTY>
+                            
+        </PROPERTIES>
+
+        <METHODS>
+            <METHOD name="getPropertyString" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of the property.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING"/>
+                <DESC>Get string value of config property.</DESC>
+            </METHOD>
+
+            <METHOD name="setPropertyString" access="STATIC">
+              <PARAMS>
+                <PARAM name="name" type="STRING">
+                  <DESC>Name of the property.</DESC>
+                </PARAM>
+                <PARAM name="value" type="STRING">
+                  <DESC>Value of the property.</DESC>
+                </PARAM>
+                <PARAM name="saveToFile" type="BOOLEAN">
+                  <DESC>If true, save changes to file.</DESC>
+                </PARAM>
+              </PARAMS>
+              <DESC>Set string value of config property and optionally save changes to file. Properties save to separate file, common file (specify with configPath) doesn't change.</DESC>
+            </METHOD>
+          
+            <METHOD name="getPropertyInt" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of the property.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="INTEGER"/>
+                <DESC>Get integer value of config property.</DESC>
+            </METHOD>
+          
+            <METHOD name="setPropertyInt" access="STATIC">
+              <PARAMS>
+                <PARAM name="name" type="STRING">
+                  <DESC>Name of the property.</DESC>
+                </PARAM>
+                <PARAM name="value" type="INTEGER">
+                  <DESC>Value of the property.</DESC>
+                </PARAM>
+                <PARAM name="saveToFile" type="BOOLEAN">
+                  <DESC>If true, save changes to file.</DESC>
+                </PARAM>
+              </PARAMS>
+              <DESC>Set integer value of config property and optionally save changes to file. Properties save to separate file, common file (specify with configPath) doesn't change.</DESC>
+            </METHOD>
+          
+            <METHOD name="getPropertyBool" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of the property.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+                <DESC>Get boolean value of config property.</DESC>
+            </METHOD>
+
+            <METHOD name="setPropertyBool" access="STATIC">
+              <PARAMS>
+                <PARAM name="name" type="STRING">
+                  <DESC>Name of the property.</DESC>
+                </PARAM>
+                <PARAM name="value" type="BOOLEAN">
+                  <DESC>Value of the property.</DESC>
+                </PARAM>
+                <PARAM name="saveToFile" type="BOOLEAN">
+                  <DESC>If true, save changes to file.</DESC>
+                </PARAM>
+              </PARAMS>
+              <DESC>Set boolean value of config property and optionally save changes to file. Properties save to separate file, common file (specify with configPath) doesn't change.</DESC>
+            </METHOD>
+          
+            <METHOD name="isPropertyExists" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of the property.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+                <DESC>Returns true if property exists in the loaded config file.</DESC>
+            </METHOD>
+
+            <METHOD name="removeProperty" access="STATIC">
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of the property.</DESC>
+                    </PARAM>
+                    <PARAM name="saveToFile" type="BOOLEAN">
+                        <DESC>If true, save changes to file.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>Remove existing property and optionally save changes to file. Remove properties works only with properties that has been set with setProperty*** methods. Properties from config file doesn't changed.</DESC>
+            </METHOD>
+                                     
+            <METHOD name="loadFromFile" access="STATIC">
+                <DESC>Load config from the file specified by configPath property.</DESC>
+            </METHOD>
+                          
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>

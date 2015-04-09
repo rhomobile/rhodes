@@ -29,17 +29,23 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
 
    class Camera
 	
-       def self.take_picture(callback_url, options = nil)
-            if options == nil
-                options = {}
-            end
+       def self.take_picture(callback_url, options = {})
+
+            options = process_hash_params(options)
+
             cam_type = 'back'
-            if options['camera_type'] != nil
-                 cam_type =  options['camera_type']
+
+            cam_type = if options['camera_type'] != nil
+              options['camera_type']
+            elsif options[:camera_type] != nil
+              options[:camera_type]
             end
+
             cam_type = 'back' if cam_type == 'main'
-            unless options['fileName']
-                options['fileName'] = File.join(Rho::RhoApplication.get_blob_folder(), Rho::RhoConfig.generate_id.to_s)
+            if Rho::System.platform != 'APPLE' 
+              unless options['fileName']
+                  options['fileName'] = File.join(Rho::RhoApplication.get_blob_folder(), Rho::RhoConfig.generate_id.to_s)
+              end
             end
             cams = Camera.enumerate
             if cams != nil
@@ -55,15 +61,19 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
             end
        end
 
-       def self.choose_picture(callback_url, options = nil)
-            options = {} unless options
-            unless options['fileName']
-                options['fileName'] = File.join(Rho::RhoApplication.get_blob_folder(), Rho::RhoConfig.generate_id.to_s)
-            end
-            Camera.choosePicture(options, callback_url)
+       def self.choose_picture(callback_url, options = {})
+        options[:deprecated] = true
+
+        if Rho::System.platform != 'APPLE' 
+          unless options['fileName']
+              options['fileName'] = File.join(Rho::RhoApplication.get_blob_folder(), Rho::RhoConfig.generate_id.to_s)
+          end
+        end
+
+        Camera.choosePicture(options, callback_url)
        end
 
-       def self.get_camera_info(cam_type)
+       def self.get_camera_info(cam_type='main')
             cam_type = 'back' if cam_type == 'main'
             cams = Camera.enumerate
             if cams != nil
@@ -77,4 +87,78 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
             return nil	
        end
    end
+
+   private
+   def process_hash_params(options = {})
+      options[:deprecated] = true
+
+      #if color_model is there then handle it in new way
+      #Default value  
+      colorModel = 'rgb'
+      colorModel = if options['color_model'] != nil
+        if options['color_model'] == 'RGB'
+          'rgb'
+        elsif options['color_model'] == 'Grayscale'
+          'grayscale'
+        end
+      elsif options[:color_model] != nil
+        if options[:color_model] == 'RGB'
+          'rgb'
+        elsif options[:color_model] == 'Grayscale'
+          'grayscale'
+        end
+      end
+      options[:colorModel] = colorModel
+
+      #if image_format is there then handle it in new way
+      imageFormat = 'jpg'
+      imageFormat = if options['format'] != nil
+        options['format']
+      elsif options[:format] != nil
+        options[:format]
+      end
+
+      options[:imageFormat] = imageFormat
+      
+      #if flash_mode is there then handle it in new way
+      #No default value for flash mode. Set to off
+      flashMode = 'off'
+      flashMode = if options['flash_mode'] != nil
+        if options['flash_mode'] == 'red-eye'
+          "redEye"
+        else
+          options['flash_mode']
+        end
+      elsif options[:flash_mode] != nil
+        if options[:flash_mode] == 'red-eye'
+          "redEye"
+        else
+          options[:flash_mode]
+        end
+      end
+      options[:flashMode] = flashMode
+
+      #if desired_width is there then handle it in new way
+
+      imageWidth = if options['desired_width'] != nil
+        options['desired_width']
+      elsif options[:desired_width] != nil
+        options[:desired_width]
+      end
+      options[:imageWidth] = imageWidth
+
+      #if desired_height is there then handle it in new way
+
+      imageHeight = if options['desired_height'] != nil
+        options['desired_height']
+      elsif options[:desired_height] != nil
+        options[:desired_height]
+      end
+      options[:imageHeight] = imageHeight
+
+      options
+   end
 end
+
+
+

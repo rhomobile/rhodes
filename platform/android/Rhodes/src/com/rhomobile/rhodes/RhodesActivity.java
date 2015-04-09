@@ -26,6 +26,8 @@
 
 package com.rhomobile.rhodes;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Set;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +42,7 @@ import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.Config;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -81,6 +84,22 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
 	private long uiThreadId = 0;
 	
+	public static interface GestureListener {
+		void onTripleTap();
+		void onQuadroTap();
+	};
+	
+	public static class GestureListenerAdapter implements GestureListener {
+		public void onTripleTap() {
+			
+		}
+		
+		public void onQuadroTap() {
+			
+		}
+	};
+	
+	private static ArrayList<GestureListener> ourGestureListeners = new ArrayList<GestureListener>();
 
 	
 	public long getUiThreadId() {
@@ -137,13 +156,22 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             String CAPath = config.getValue("CAPath");
             if (CAPath != null && CAPath.length() > 0)
                 RhoConf.setString("CAPath", CAPath);
+
+            String sVerifyPeer = config.getValue("VerifyPeerCertificate");
+            if (sVerifyPeer != null && sVerifyPeer.length() > 0)
+                RhoConf.setBoolean("no_ssl_verify_peer", sVerifyPeer.equals("0"));
+
                 
             String pageZoom=config.getValue("PageZoom");
             if(pageZoom !=null && pageZoom.length()>0)
 		RhoConf.setString("PageZoom", pageZoom);
             else
             	RhoConf.setString("PageZoom", "1.0");
-
+            	
+            	
+            
+            
+           
         } catch (Throwable e) {
             Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
             //Logger.W(TAG, e);
@@ -256,7 +284,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.T(TAG, "onActivityResult");
 
         RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
-        com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
+       // com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
         
         RhoExtManager.getImplementationInstance().onActivityResult(this, requestCode, resultCode, data);
     }
@@ -384,6 +412,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         
+        mAppMenu.enumerateMenu(menu);
         Logger.T(TAG, "onCreateOptionsMenu");
         
         return mAppMenu.getItemsCount() != 0;
@@ -409,9 +438,13 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         View splashView = splashScreen.getSplashView();
         if (splashView != null) {
             ViewGroup parent = (ViewGroup)splashView.getParent();
-            parent.removeView(splashScreen.getSplashView());
+            if (parent != null) {
+                parent.removeView(splashView);
+            }
         }
-        mMainView = splashScreen.getBackendView();
+        if ((mMainView instanceof SplashScreen) && (mMainView == splashScreen)) {
+        	mMainView = splashScreen.getBackendView();
+        }
     }
 
     @Override
@@ -578,4 +611,27 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			throw new IllegalStateException("No rhodes activity instance at this moment");
 		return ra;
 	}
+
+	public static void addGestureListener(GestureListener listener) {
+		ourGestureListeners.add(listener);
+		Utils.platformLog(TAG, "$$$ addGestureListener()");
+	}
+
+	public static void onTripleTap() {
+		Utils.platformLog(TAG, "$$$ onTripleTap()");
+		Iterator<GestureListener> i = ourGestureListeners.iterator();
+		while (i.hasNext()) {
+			i.next().onTripleTap();
+		}
+	}
+
+	public static void onQuadroTap() {
+		Utils.platformLog(TAG, "$$$ onQuadroTap()");
+		Iterator<GestureListener> i = ourGestureListeners.iterator();
+		while (i.hasNext()) {
+			i.next().onQuadroTap();
+		}
+	}
+
+
 }

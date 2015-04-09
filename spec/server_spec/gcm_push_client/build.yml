@@ -8,7 +8,7 @@ bbver: 4.6
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator5.0
+  sdk: iphonesimulator8.1
   provisionprofile:
   codesignidentity:
   entitlements:
@@ -16,8 +16,6 @@ iphone:
   BundleURLScheme: gcmpushclient
 wp:
   productid: '80b879d0-16fc-0130-39e9-3c0754090a18'
-symbian:
-  uid: '0xe77b6fc3'
 android:
   version: 2.3.3
   capabilities:

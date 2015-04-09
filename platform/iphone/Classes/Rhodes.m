@@ -44,6 +44,9 @@
 
 #import "CRhoURLProtocol.h"
 
+int rho_rhodesapp_check_mode();
+void rho_splash_screen_start();
+
 
 /*
 use this non-public code for see level of memory warning 
@@ -68,6 +71,9 @@ extern int rho_extensions_are_loaded();
 extern void rho_sysimpl_sethas_network(int value);
 extern void rho_sysimpl_sethas_cellnetwork(int value);
 
+extern void rho_rhodesapp_callScreenOnCallbackAsync();
+
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
@@ -83,12 +89,13 @@ static BOOL app_created = NO;
 
 @implementation RhoActivateTask
 + (void)run {
+    rho_rhodesapp_callAppActiveCallback(1);
+
     if ([[Rhodes sharedInstance] mScreenStateChanged])
     {
-        rho_rhodesapp_callScreenOnCallback();
+        rho_rhodesapp_callScreenOnCallbackAsync();
         [[Rhodes sharedInstance] setMScreenStateChanged:NO];
     }
-    rho_rhodesapp_callAppActiveCallback(1);
 }
 @end
 
@@ -407,8 +414,22 @@ static Rhodes *instance = NULL;
         else 
 #endif
         {
-            if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_FRONT) {
-                picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+            if (type == UIImagePickerControllerSourceTypeCamera) {
+                if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_FRONT) {
+                    picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+                }
+                if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_MAIN) {
+                    picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+                }
+                if (delegateObject.settings.flash_mode == CAMERA_SETTINGS_FLASH_AUTO) {
+                    picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeAuto;
+                }
+                if (delegateObject.settings.flash_mode == CAMERA_SETTINGS_FLASH_OFF) {
+                    picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+                }
+                if (delegateObject.settings.flash_mode == CAMERA_SETTINGS_FLASH_ON) {
+                    picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOn;
+                }
             }
             
             //[window addSubview:picker.view];
@@ -426,7 +447,7 @@ static Rhodes *instance = NULL;
     if (!rho_rhodesapp_check_mode())
         return;
 #ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
-    [pickImageDelegate setPostUrl:settings.callback_url];
+    //[pickImageDelegate setPostUrl:settings.callback_url];
 #endif
     pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
@@ -495,7 +516,7 @@ static Rhodes *instance = NULL;
     if (!rho_rhodesapp_check_mode())
         return;
 #ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
-    [pickImageDelegate setPostUrl:settings.callback_url];
+    //[pickImageDelegate setPostUrl:settings.callback_url];
 #endif
     pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
@@ -647,8 +668,8 @@ static Rhodes *instance = NULL;
         
         const char *szRootPath = rho_native_rhopath();
         const char *szUserPath = rho_native_rhouserpath();
-        NSLog(@"Init logconf");
-        rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
+        //NSLog(@"Init logconf");
+        //rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
         InitMemoryInfoCollector();
         NSLog(@"Create rhodes app");
         rho_rhodesapp_create_with_separate_user_path(szRootPath, szUserPath);
@@ -717,6 +738,11 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     [CRhoURLProtocol initAndRegister];
     
     [NSThread setThreadPriority:1.0];
+    
+    const char *szRootPath = rho_native_rhopath();
+    const char *szUserPath = rho_native_rhouserpath();
+    NSLog(@"Init logconf");
+    rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
     
     NSLog(@"Create new detached thread for initialization stuff");
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
@@ -967,8 +993,36 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 }
 
-
 // UIApplicationDelegate implementation
+
+- (void)registerForRemoteNotification {
+#ifdef __IPHONE_8_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+#ifdef APP_BUILD_CAPABILITY_PUSH
+        UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
+#else
+        UIUserNotificationType types = UIUserNotificationTypeBadge;
+#endif
+        UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    } else
+#endif
+    {
+#ifdef APP_BUILD_CAPABILITY_PUSH
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+#else
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge)];
+#endif
+    }
+}
+
+#ifdef __IPHONE_8_0
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    [application registerForRemoteNotifications];
+}
+#endif
+
+
 
 #ifdef __IPHONE_3_0
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -994,6 +1048,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
     NSLog(@"didFinishLaunchingWithOptions: %@", url);
 	
+    
+    //[self registerForRemoteNotification];
+    
     
 	// store start parameter
 	NSString* start_parameter = [NSString stringWithUTF8String:""];
@@ -1040,28 +1097,6 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
         */
         //exit(EXIT_SUCCESS);
     }
-    /*  REMOVED LICENSE
-    if (!rho_can_app_started_with_current_licence(
-               get_app_build_config_item("motorola_license"),
-               get_app_build_config_item("motorola_license_company"),
-               get_app_build_config_item("name")))
-    {
-		NSLog(@"############################");
-		NSLog(@" ");
-		NSLog(@"ERROR: motorola_license is INVALID !");
-		NSLog(@" ");
-		NSLog(@"############################");
-        //exit(EXIT_SUCCESS);
-        //[self exit_with_errormessage:@"Motorola Licence" message:@"Your licence key is invalid !"];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Motorola License" 
-                                                            message:@"Please provide RhoElements license key."
-                                                           delegate:nil 
-                                                  cancelButtonTitle:@"OK" 
-                                                  otherButtonTitles: nil];
-            [alert show];
-            [alert release];
-    }
-    */
 	
 	return NO;
 }

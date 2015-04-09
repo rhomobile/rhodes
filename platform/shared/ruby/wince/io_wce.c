@@ -87,10 +87,12 @@ int rb_w32_unlink(const char *path)
 }
 #endif
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 int _unlink(const char *file)
 {
     return rb_w32_unlink(file);
 }
+#endif
 
 /*
 int
@@ -126,7 +128,7 @@ int rb_w32_open( const char *file, int mode, ... )
 
 RHO_INIT_LOCK(FileHandlers);
 #define  g_nMaxFileHandlers  256
-static HANDLE g_arFileHandlers[g_nMaxFileHandlers];
+static HANDLE g_arFileHandlers[g_nMaxFileHandlers] = {0};
 int get_NewFileNumber()
 {
     int i = 0;
@@ -299,9 +301,13 @@ int _wopen(const wchar_t *path, int oflag, va_list arg)
 
 int close(int fd)
 {
-    HANDLE fHandle = get_OSHandleByFileNumber(fd);
-    set_FileNumber( fd, 0);
-	CloseHandle( fHandle );
+    if (fd-1 < g_nMaxFileHandlers)
+    {
+        HANDLE fHandle = get_OSHandleByFileNumber(fd);
+        set_FileNumber( fd, 0);
+	    CloseHandle( fHandle );
+    }
+
 	return 0;
 }
 
@@ -467,6 +473,7 @@ int _findclose( long fd )
 //	return -1;
 //}
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 int _umask(int cmask)
 {
 	return 0;
@@ -476,6 +483,7 @@ int _chmod(const char *path, int mode)
 {
 	return 0;
 }
+#endif
 
 /* WinCE doesn't have dup and dup2.  */
 /* so, we cannot use missing/dup2.c. */
@@ -510,6 +518,7 @@ int rb_w32_pipe(int *phandles )//, unsigned int psize, int textmode)
 	return -1;
 }
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 int _access(const char *filename, int flags)
 {
     DWORD attr = GetFileAttributesA(filename);
@@ -520,7 +529,6 @@ int _access(const char *filename, int flags)
 	return 0;
 }
 
-#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 int _open_osfhandle( long osfhandle, int flags)
 {
  /*	return 0; */

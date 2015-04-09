@@ -1,0 +1,83 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="LogCapture" parent="Rho" productException='eb'>
+        <HELP_OVERVIEW>The LogCapture class is used for capturing logging events.
+        </HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["logCapture"]
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+
+        </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+There are two methods of enabling the LogCapture API:
+
+* Include all ebapi modules or
+* Include only the API modules you need
+
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
+
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the LogCapture API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.logcapture.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
+        </MORE_HELP_EB>
+
+        <PROPERTIES access="STATIC" generateAccessors="true">
+            <PROPERTY name="excludeCategories" type="STRING" default="">
+                <DESC>Comma-separated list of excluded log categories.</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="maxLines" type="INTEGER" default="1024">
+                <DESC>Maximum number of captured lines.</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS access="STATIC">
+            <METHOD name="start">
+                <DESC>Start capture log events.</DESC>
+            </METHOD>
+            <METHOD name="stop">
+                <DESC>Stop capture log events.</DESC>
+            </METHOD>
+            <METHOD name="clear">
+                <DESC>Clear captured events.</DESC>
+            </METHOD>
+            <METHOD name="numLines">
+                <DESC>Return number of captured lines.</DESC>
+                <RETURN type="INTEGER"/>
+            </METHOD>
+            <METHOD name="read">
+                <DESC>Read captured items.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+        </METHODS>
+
+        <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+    </MODULE>
+</API>

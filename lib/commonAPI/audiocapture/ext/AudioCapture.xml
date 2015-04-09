@@ -1,0 +1,419 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="AudioCapture" parent="Rho">
+        <HELP_OVERVIEW>Audio capture API allows you to capture audio from the device's built in microphone or input source.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["audiocapture"]
+
+### JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+### Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+        </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+There are two methods of enabling the AudioCapture API:
+
+* Include all ebapi modules or
+* Include only the API modules you need
+
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
+
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the AudioCapture API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.audiocapture.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
+        </MORE_HELP_EB>
+
+        <VER_INTRODUCED>4.2.0</VER_INTRODUCED>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+        <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
+
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/>
+            <PROPERTY_BAG/>
+        </TEMPLATES>
+
+        <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
+
+            <PROPERTY name="source" type="STRING" generateDoc="false"  default="mic">
+                <DESC>Audio source.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <VALUES>
+                    <VALUE constName="MIC" value="mic">
+                        <DESC>Embedded microphone. This is the default value.</DESC>
+                    </VALUE>
+
+                </VALUES>
+            </PROPERTY>
+            <PROPERTY name="encoder" type="STRING">
+                <DESC>Encoder to compress recorded audio. In Android devices, the supported encoder type is dependent upon device hardware and vendor.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <VALUES>
+
+                    <VALUE constName="ENCODER_AAC" value="AAC">
+                        <DESC>AAC low complexity. This is the default value. If wrong or no value is specified this value will be accounted.</DESC>
+                    </VALUE>
+
+                    <VALUE constName="ENCODER_AMR_NB" value="AMR_NB">
+                        <DESC>AMR narrow-band.</DESC>
+                    </VALUE>
+                    <VALUE constName="ENCODER_AMR_WB" value="AMR_WB">
+                        <DESC>AMR wide-band.</DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
+
+            <PROPERTY name="maxDuration" type="INTEGER" default="20000">
+                <DESC>Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milliseconds is specified, the interval will be defaulted to 20000 milliseconds. The default value is 20,000 milliseconds.</DESC>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
+            </PROPERTY>
+            <PROPERTY name="fileName" type="STRING">
+                <DESC>(Required) This parameter is used to specify the file name. The file name should be set at least once before calling 'start' method, otherwise the 'start' method will update the callback 'status' as 'error'.</DESC>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
+            </PROPERTY>
+        </PROPERTIES>
+        <METHODS>
+
+            <METHOD name="start" hasCallback="mandatory">
+                <PARAMS>
+                    <PARAM name="props" type="HASH" propertyHash="true">
+                        <DESC>Map of Audio Capture properties to be set. For iOS 22kHz 16bit Mono WAV file will be created. In Android, ruby callbacks are taking 20secs to fire.</DESC>
+                        <DESC_EB>Map of Audio Capture properties to be set.</DESC_EB>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>Whether or not the audio recording was successfully captured, status will be 'ok' or 'cancel' or 'error'.</DESC>
+                        </PARAM>
+                        <PARAM name="message" type="STRING">
+                            <DESC>If 'status' == 'error', then message contains error message. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+                        <PARAM name="fileName" type="STRING">
+                            <DESC>If 'status' == 'ok', then contain full file path with the file name of recorded audiofile. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+                <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'ok' as the status. An unsuccessful recording will set 'cancel' or 'error' as the status in the callback returning parameters. If 'cancel' method is called during recording, 'cancel' status will be set in the callback returning parameters. In order to restart the audio capture, if the audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
+            </METHOD>
+            <METHOD name="stop" runInThread="separate">
+                <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'ok' in the callback returning parameter of 'start' method. The file is saved in user provided location.</DESC>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
+            </METHOD>
+            <METHOD name="cancel" runInThread="separate">
+                <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved. In android, it will delete the file if it exists.</DESC>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
+            </METHOD>
+        </METHODS>
+		<REMARKS>
+            <REMARK title="File Name">
+                <DESC>
+                    <![CDATA[
+In Windows, to store the file in a particular location, specify the path with the file name. Mentioning the extension name with the file name is optional. Only *.wav files are supported. If the path is not specified with the file name, the captured file is stored in the root directory of the device. In Windows and Android, if the folder is not present, it should be created manually for storing the file in that location. In Android, the file extension depends on encoder value. If it is AAC, the extension should be '.mp4'. In all other cases, it is of '.3gpp'. If only filename is specified, it will be saved in the root directory of external storage.
+                    ]]>
+                </DESC>
+            </REMARK>
+			<REMARK title="Audio Capture">
+			<DESC>
+			<![CDATA[
+In Windows & Android, Audio capture will not be started, if the file name is set to null. File will not be saved for invaild file name. It will return error in the callback returning parameters with the valid reason.
+			]]>
+			</DESC>
+			</REMARK>
+			<REMARK title="Restarting of Audio Capture">
+                <DESC>
+                    <![CDATA[
+Audio recording will not be restarted, if the audio recording is already in process. In order to restart the audio capture, stop or cancel method need to be invoked before invoking start method.
+                    ]]>
+                </DESC>
+            </REMARK>
+			<REMARK title="Page Refresh">
+                <DESC>
+                    <![CDATA[
+If the page is to be refreshed, the audio recording should be canceled. In Android and iOS, the state will be persisted.
+                    ]]>
+                </DESC>
+                <DESC_EB>
+                    <![CDATA[
+If the page is to be refreshed, the audio recording should be canceled. In Android, the state will be persisted.
+                    ]]>
+                </DESC_EB>
+            </REMARK>
+			<REMARK title="Page Navigation">
+                <DESC>
+                    <![CDATA[
+Upon page navigation, the audio recording should be canceled.In iOS, the state will be persisted.
+                    ]]>
+                </DESC>
+                <DESC_EB>
+                    <![CDATA[
+Upon page navigation, the audio recording should be canceled.
+                    ]]>
+                </DESC_EB>
+            </REMARK>
+			<REMARK title="Duration And File Name Settings">
+                <DESC>
+                    <![CDATA[
+The default values will be applied for duration if no values are provided by the user. If values are provided then it will apply the user provided values. Later if values are not provided then it will apply the last provided values for the same. The settings for duration and file name will not be applied if the audio capture is already started and in progress. In android, there might be slight omit of recording data initially.
+                    ]]>
+                </DESC>
+			</REMARK>
+			<REMARK title="Get Property Or Get Properties">
+                <DESC>
+                    <![CDATA[
+In Windows, 'getProperty' or 'getProperties' for fileName will return the complete path along with the extension name. For example: If file name was set to '\\Application\\AudioCapture', then 'getProperty' or 'getProperties' will return '\Application\AudioCapture.wav'. If file name was set to 'AudioCapture', then 'getProperty' or 'getProperties' will return '\AudioCapture.wav'. In Android, the fileName will return whatever is set with or without extension.
+                    ]]>
+                </DESC>
+			</REMARK>
+			<REMARK title="General">
+                <DESC>
+                    <![CDATA[
+On Quitting of the Application, Android will save the data in the file and gracefully exit. In Android, during suspend/resume or screen timeout the audio will keep on recording.
+                    ]]>
+                </DESC>
+			</REMARK>
+            <REMARK title="SDCard Access">
+                <DESC>Extensions which came from RhoElements (i.e. AudioCapture) that could possibly write files to external storage will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
+            </REMARK>
+		</REMARKS>
+        <REMARKS_EB>
+            <REMARK title="SDCard Access">
+                <DESC>Extensions that could possibly write files to external storage (i.e. AudioCapture) will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
+            </REMARK>
+        </REMARKS_EB>
+        <USER_OVERVIEW></USER_OVERVIEW>
+		<EXAMPLES>
+			<EXAMPLE title="Starting, Stopping And Canceling Audio Capture">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>Starting, Stopping and Canceling audio capture is same across all platforms.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Starting Audio Capture without settings. Callback is mandatory. Setting the file name at least once is also mandatory before invoking 'start' method.
+Rho::AudioCapture.start({},mycallback);
+
+#Starting Audio Capture with settings. Callback is mandatory.
+#On successful recording the hash property  for fileName' in callback will return the complete file path with the filename.
+#In Windows, for the below settings, it will return "file://\AudioCapture.wav".
+Rho::AudioCapture.start({'fileName'=>"AudioCapture",'maxDuration'=>'15000'},mycallback);
+
+#Stopping Audio Capture
+Rho::AudioCapture.stop();
+
+#Cancelling Audio Capture
+Rho::AudioCapture.cancel();
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+// Starting Audio Capture without settings. Callback is mandatory. Setting the file name at least once is also mandatory before invoking 'start' method.
+Rho.AudioCapture.start({},mycallback);
+
+// Starting Audio Capture with settings. Callback is mandatory.
+// On successful recording the hash property  for fileName' in callback will return the complete file path with the filename.
+// In Windows, for the below settings, it will return "file://\AudioCapture.wav".
+Rho.AudioCapture.start({'fileName':"AudioCapture",'maxDuration':'15000'},mycallback);
+
+// Stopping Audio Capture
+Rho.AudioCapture.stop();
+
+// Cancelling Audio Capture
+Rho.AudioCapture.cancel();
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+            </EXAMPLE>
+			<EXAMPLE title="Setting And Getting File Name">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>In WM/WinCE, one can set the fileName with or without extensions. On retrieving, the fileName property will return the complete path with the extension name.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Setting fileName without extension
+Rho::AudioCapture.fileName = "\\Application\\Audio1";
+
+#The returned value is "\Application\Audio1.wav"
+Alert.show_popup(Rho::AudioCapture.fileName);
+
+#Setting fileName with extension
+Rho::AudioCapture.fileName = "Audio2.wav";
+
+#The returned value is "\Audio2.wav"
+Alert.show_popup(Rho::AudioCapture.fileName);
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+// Setting fileName without extension
+Rho.AudioCapture.fileName = "\\Application\\Audio1";
+
+// The returned value is "\Application\Audio1.wav"
+alert(Rho.AudioCapture.fileName);
+
+// Setting fileName with extension
+Rho.AudioCapture.fileName = "Audio2.wav";
+
+// The returned value is "\Audio2.wav"
+alert(Rho.AudioCapture.fileName);
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                        <SECTION>
+                            <DESC>In Android, one can set the fileName with or without extensions. The extension depends on encoder. The directory should be present. </DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Setting fileName without extension
+Rho::AudioCapture.fileName = "/sdcard/Audio/sample";
+
+#The returned value is "/sdcard/Audio/sample"
+Alert.show_popup(Rho::AudioCapture.fileName);
+
+#Setting fileName with extension
+Rho::AudioCapture.fileName = "/sdcard/Audio/sample.mp4";
+
+#The returned value is "/sdcard/Audio/sample.mp4"
+Alert.show_popup(Rho::AudioCapture.fileName);
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+// Setting fileName without extension
+Rho.AudioCapture.fileName = "/sdcard/Audio/sample";
+
+// The returned value is "/sdcard/Audio/sample";
+alert(Rho.AudioCapture.fileName);
+
+// Setting fileName with extension
+Rho.AudioCapture.fileName = "/sdcard/Audio/sample.mp4";
+
+// The returned value is "/sdcard/Audio/sample.mp4";
+alert(Rho.AudioCapture.fileName);
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                        <SECTION>
+                            <DESC>In iOS, one can set the fileName without extensions. The extension depends on encoder and will be automatically added. Currently supported WAV (16kHz, 16 bit, mono) IF you do not specify fullpath filename, then file will be placed to default folder. You can receive result fullpath filename in callback.</DESC>
+                            <CODE>
+                                <RUBY><![CDATA[
+#Setting fileName without extension
+Rho::AudioCapture.fileName = 'sample'
+
+// The returned value is "sample"
+Alert.show_popup(Rho.AudioCapture.fileName)
+
+#Setting fileName with fullpath
+Rho::AudioCapture.fileName = File.join(Rho::Application.userFolder,'mysound')
+
+// The returned value is (this is example for simulator) "/Users/MOHUS/Library/Application Support/iPhone Simulator/7.1/Applications/376D660D-B6C7-4E6E-8B69-38E7C681DAC5/Documents/apps/mysound";
+Alert.show_popup(Rho.AudioCapture.fileName)
+
+]]>
+                                </RUBY>
+                                <JAVASCRIPT><![CDATA[
+#Setting fileName without extension
+Rho.AudioCapture.fileName = "sample";
+
+// The returned value is "sample";
+alert(Rho.AudioCapture.fileName);
+
+#Setting fileName with fullpath
+Rho.AudioCapture.fileName = Rho.Application.userFolder + 'mysound';
+
+// The returned value is (this is example for simulator) "/Users/MOHUS/Library/Application Support/iPhone Simulator/7.1/Applications/376D660D-B6C7-4E6E-8B69-38E7C681DAC5/Documents/apps/mysound";
+alert(Rho.AudioCapture.fileName);
+
+]]>
+                                </JAVASCRIPT>
+                            </CODE>
+                        </SECTION>
+                    </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
+        <EXAMPLES_EB>
+            <EXAMPLE title="Capturing and Playing Audio">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This example will show how to capture audio from your device to a file and then play that audio file. Note that this example assumes that your ebapi-modules.js file is located in the same folder as the HTML that is evoking it.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+<head>
+    <script src="http://192.168.1.28:8080/target/target-script-min.js#anonymous"></script>
+    <script type="text/javascript" charset="utf-8" src="../apis/EnterpriseBrowser/ebapi-modules.js"></script>
+
+    <title>Audio Capture API Example</title>
+
+    <script>
+        audioFile = null;
+
+        function captureAudio(){
+            display.innerHTML = 'Capturing...'
+            EB.AudioCapture.start({fileName:   'testCap',
+                                                         maxDuration: 5000}, captureCallback);
+        }
+
+        function captureCallback(params){
+            if (params['status'] == 'ok'){
+                display.innerHTML = 'Captured Audio File: ' + params['fileName'];
+                audioFile = params['fileName'];
+                audioFile = audioFile.substr(7); // Remove 'file://' from the beginning of the fileName
+            }
+            else{
+                display.innerHTML = 'Audio Not Captured';
+            }
+        }
+
+        function playCapturedAudio(){
+            if(audioFile){
+                EB.Mediaplayer.start(audioFile);
+            }
+            else{
+                alert("No audio captured yet.");
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <h1>AudioCapture API Example</h1>
+    <div id="display"></div>
+    </br>
+    </br>
+    <button onclick="captureAudio()">Capture Audio</button>
+    <button onclick="playCapturedAudio()">Play Captured Audio</button>
+</body>
+                                ]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES_EB>
+    </MODULE>
+</API>

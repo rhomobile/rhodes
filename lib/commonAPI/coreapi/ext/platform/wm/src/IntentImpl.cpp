@@ -8,6 +8,8 @@
 #include "Intents.h"
 #include "SystemImpl.h"
 
+extern UINT WM_INTENTMSG;
+
 namespace rho {
 
 	using namespace apiGenerator;
@@ -89,7 +91,7 @@ namespace rho {
 			cds.cbData = sizeof(InterprocessMessage);
 			cds.lpData = &msg;
 
-			SendMessage(appWindow, WM_COPYDATA, (WPARAM)(HWND)0, (LPARAM) (LPVOID) &cds);
+			SendMessage(appWindow, WM_INTENTMSG, (WPARAM)(HWND)0, (LPARAM) (LPVOID) &cds);
 		}
 
 	};

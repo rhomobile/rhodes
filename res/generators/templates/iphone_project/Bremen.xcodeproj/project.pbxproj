@@ -59,8 +59,17 @@
 		FA6DFCEC18232A2C00A3B595 /* icon76.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE418232A2C00A3B595 /* icon76.png */; };
 		FA6DFCED18232A2C00A3B595 /* icon152.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE518232A2C00A3B595 /* icon152.png */; };
 		FAA5A5BC182B11EB00590B1F /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA5A5BB182B11EB00590B1F /* libstdc++.dylib */; };
+		FAC70A7C19D10F0A0036337B /* Default-667h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7419D10F0A0036337B /* Default-667h@2x.png */; };
+		FAC70A7D19D10F0A0036337B /* Default-736h@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7519D10F0A0036337B /* Default-736h@3x.png */; };
+		FAC70A7E19D10F0A0036337B /* Default-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7619D10F0A0036337B /* Default-Landscape@2x.png */; };
+		FAC70A7F19D10F0A0036337B /* Default-LandscapeLeft@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7719D10F0A0036337B /* Default-LandscapeLeft@2x.png */; };
+		FAC70A8019D10F0A0036337B /* Default-LandscapeRight@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7819D10F0A0036337B /* Default-LandscapeRight@2x.png */; };
+		FAC70A8119D10F0A0036337B /* Default-Portrait@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7919D10F0A0036337B /* Default-Portrait@2x.png */; };
+		FAC70A8219D10F0A0036337B /* Default-PortraitUpsideDown@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7A19D10F0A0036337B /* Default-PortraitUpsideDown@2x.png */; };
+		FAC70A8319D10F0A0036337B /* icon180.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7B19D10F0A0036337B /* icon180.png */; };
 		FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC20FF123A759A0088A447 /* GameKit.framework */; };
 		FAED78CE183C3CF400BC7028 /* libRhodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED7893183C3A8200BC7028 /* libRhodes.a */; };
+		FAEE464419D111E500E7E2CE /* iTunesArtwork@2x in Resources */ = {isa = PBXBuildFile; fileRef = FAEE464319D111E500E7E2CE /* iTunesArtwork@2x */; };
 		FAF3BF3218E26D3B00860FCA /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3018E26D3B00860FCA /* app_build_configs.c */; };
 		FAF3BF3318E26D3B00860FCA /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3118E26D3B00860FCA /* extensions.c */; };
 /* End PBXBuildFile section */
@@ -140,8 +149,17 @@
 		FA6DFCE418232A2C00A3B595 /* icon76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon76.png; sourceTree = "<group>"; };
 		FA6DFCE518232A2C00A3B595 /* icon152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon152.png; sourceTree = "<group>"; };
 		FAA5A5BB182B11EB00590B1F /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/usr/lib/libstdc++.dylib"; sourceTree = DEVELOPER_DIR; };
+		FAC70A7419D10F0A0036337B /* Default-667h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-667h@2x.png"; sourceTree = "<group>"; };
+		FAC70A7519D10F0A0036337B /* Default-736h@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-736h@3x.png"; sourceTree = "<group>"; };
+		FAC70A7619D10F0A0036337B /* Default-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x.png"; sourceTree = "<group>"; };
+		FAC70A7719D10F0A0036337B /* Default-LandscapeLeft@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-LandscapeLeft@2x.png"; sourceTree = "<group>"; };
+		FAC70A7819D10F0A0036337B /* Default-LandscapeRight@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-LandscapeRight@2x.png"; sourceTree = "<group>"; };
+		FAC70A7919D10F0A0036337B /* Default-Portrait@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait@2x.png"; sourceTree = "<group>"; };
+		FAC70A7A19D10F0A0036337B /* Default-PortraitUpsideDown@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-PortraitUpsideDown@2x.png"; sourceTree = "<group>"; };
+		FAC70A7B19D10F0A0036337B /* icon180.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon180.png; sourceTree = "<group>"; };
 		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Rhodes.xcodeproj; path = Rhodes/Rhodes.xcodeproj; sourceTree = "<group>"; };
+		FAEE464319D111E500E7E2CE /* iTunesArtwork@2x */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iTunesArtwork@2x"; sourceTree = "<group>"; };
 		FAF3BF3018E26D3B00860FCA /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = Rhodes/app_build_configs.c; sourceTree = "<group>"; };
 		FAF3BF3118E26D3B00860FCA /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = Rhodes/extensions.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -206,6 +224,7 @@
 			children = (
 				FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */,
 				FA3D8EAA182B831400231D0E /* iTunesArtwork */,
+				FAEE464319D111E500E7E2CE /* iTunesArtwork@2x */,
 				FA52317212E750F300AB55CC /* Resources */,
 				BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -262,6 +281,14 @@
 		FA52317212E750F300AB55CC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				FAC70A7419D10F0A0036337B /* Default-667h@2x.png */,
+				FAC70A7519D10F0A0036337B /* Default-736h@3x.png */,
+				FAC70A7619D10F0A0036337B /* Default-Landscape@2x.png */,
+				FAC70A7719D10F0A0036337B /* Default-LandscapeLeft@2x.png */,
+				FAC70A7819D10F0A0036337B /* Default-LandscapeRight@2x.png */,
+				FAC70A7919D10F0A0036337B /* Default-Portrait@2x.png */,
+				FAC70A7A19D10F0A0036337B /* Default-PortraitUpsideDown@2x.png */,
+				FAC70A7B19D10F0A0036337B /* icon180.png */,
 				FA20C1E5182B01DF0036D304 /* Default-568h@2x.png */,
 				FA20C1E6182B01DF0036D304 /* Default-Landscape.png */,
 				FA20C1E8182B01DF0036D304 /* Default-LandscapeLeft.png */,
@@ -388,15 +415,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAEE464419D111E500E7E2CE /* iTunesArtwork@2x in Resources */,
 				FA20C1F7182B01DF0036D304 /* Default-LandscapeRight.png in Resources */,
+				FAC70A7E19D10F0A0036337B /* Default-Landscape@2x.png in Resources */,
 				FA20C1A9182AFD760036D304 /* back_btn.png in Resources */,
 				FA20C1AC182AFD760036D304 /* home_btn.png in Resources */,
 				FA20C1B1182AFD870036D304 /* BluePushpin.png in Resources */,
+				FAC70A7C19D10F0A0036337B /* Default-667h@2x.png in Resources */,
 				BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */,
 				FA20C1AA182AFD760036D304 /* forward_btn.png in Resources */,
 				FA20C1F5182B01DF0036D304 /* Default-LandscapeLeft.png in Resources */,
 				FA6DFCE618232A2C00A3B595 /* icon144.png in Resources */,
 				FA6DFCE918232A2C00A3B595 /* icon57.png in Resources */,
+				FAC70A8219D10F0A0036337B /* Default-PortraitUpsideDown@2x.png in Resources */,
+				FAC70A8319D10F0A0036337B /* icon180.png in Resources */,
 				FA6DFCED18232A2C00A3B595 /* icon152.png in Resources */,
 				FA20C1FE182B01DF0036D304 /* Default@2x.png in Resources */,
 				FA3D8EAB182B831400231D0E /* iTunesArtwork in Resources */,
@@ -407,13 +439,17 @@
 				FA6DFCEA18232A2C00A3B595 /* icon120.png in Resources */,
 				FA20C1FD182B01DF0036D304 /* Default.png in Resources */,
 				FA20C1F2182B01DF0036D304 /* Default-568h@2x.png in Resources */,
+				FAC70A7F19D10F0A0036337B /* Default-LandscapeLeft@2x.png in Resources */,
 				FA20C1F3182B01DF0036D304 /* Default-Landscape.png in Resources */,
 				FA6DFCEB18232A2C00A3B595 /* icon60.png in Resources */,
 				FA6DFCE718232A2C00A3B595 /* icon72.png in Resources */,
 				FA6DFCEC18232A2C00A3B595 /* icon76.png in Resources */,
 				FA20C1B2182AFD870036D304 /* BluePushpin@2x.png in Resources */,
+				FAC70A8119D10F0A0036337B /* Default-Portrait@2x.png in Resources */,
 				FA6DFCE818232A2C00A3B595 /* icon114.png in Resources */,
 				FA20C1B3182AFD870036D304 /* esri.png in Resources */,
+				FAC70A8019D10F0A0036337B /* Default-LandscapeRight@2x.png in Resources */,
+				FAC70A7D19D10F0A0036337B /* Default-736h@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -487,7 +523,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libstdc++";
 				CODE_SIGN_ENTITLEMENTS = "";
@@ -523,7 +558,6 @@
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "Rhodes";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -531,7 +565,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libstdc++";
 				CODE_SIGN_ENTITLEMENTS = "";
@@ -559,14 +592,12 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "Rhodes";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
 		46B0041C10332DA700D0C2F4 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
@@ -591,10 +622,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libstdc++";
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COMPRESS_PNG_FILES = NO;
@@ -618,14 +648,12 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "Rhodes";
-				VALID_ARCHS = armv7;
 			};
 			name = Distribution;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -656,7 +684,6 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_C_LANGUAGE_STANDARD = c99;

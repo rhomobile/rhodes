@@ -22,7 +22,7 @@ bbver: 4.6
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator5.0
+  sdk: iphonesimulator8.1
   provisionprofile:
   codesignidentity:
   entitlements:
@@ -30,8 +30,6 @@ iphone:
   BundleURLScheme: autocompletehelper
 wp:
   productid: '34ebdf30-feaf-012f-648c-64ce8f469495'
-symbian:
-  uid: '0xeece192a'
 android:
   version: 2.1
 wm:

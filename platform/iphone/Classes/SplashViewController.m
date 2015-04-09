@@ -226,6 +226,8 @@
 	NSString *pngDefaultLandscapeLeftPath = [NSString stringWithFormat:@"%@/Default-LandscapeLeft.png", resourcePath];
 	NSString *pngDefaultLandscapeRightPath = [NSString stringWithFormat:@"%@/Default-LandscapeRight.png", resourcePath];
 	NSString *pngDefaultiPhone5 = [NSString stringWithFormat:@"%@/Default-568h@2x.png", resourcePath];
+    NSString *pngDefaultiPhone6 = [NSString stringWithFormat:@"%@/Default-667h@2x.png", resourcePath];
+    NSString *pngDefaultiPhone6plus = [NSString stringWithFormat:@"%@/Default-736h@3x.png", resourcePath];
 
 	CGRect win_frame = [[[UIApplication sharedApplication] keyWindow] bounds];
 	
@@ -293,8 +295,20 @@
 				result = pngDefault2xPath;
 			}
             // check for iPhone5 screen
-            if (frame.size.height*scales > 1000) {
-                result = pngDefaultiPhone5;
+            if (frame.size.height*scales >= (1136-1)) {
+                if ([fileManager fileExistsAtPath:pngDefaultiPhone5]) {
+                    result = pngDefaultiPhone5;
+                }
+            }
+            if (frame.size.height*scales >= (1334-1)) {
+                if ([fileManager fileExistsAtPath:pngDefaultiPhone6]) {
+                    result = pngDefaultiPhone6;
+                }
+            }
+            if (frame.size.height*scales >= (2208-1)) {
+                if ([fileManager fileExistsAtPath:pngDefaultiPhone6plus]) {
+                    result = pngDefaultiPhone6plus;
+                }
             }
 		}
 	}
@@ -305,6 +319,15 @@
 		else if ([fileManager fileExistsAtPath:pngDefault2xPath]) {
 			result = pngDefault2xPath;
 		}
+        else if ([fileManager fileExistsAtPath:pngDefaultiPhone5]) {
+            result = pngDefaultiPhone5;
+        }
+        else if ([fileManager fileExistsAtPath:pngDefaultiPhone6]) {
+            result = pngDefaultiPhone6;
+        }
+        else if ([fileManager fileExistsAtPath:pngDefaultiPhone6plus]) {
+            result = pngDefaultiPhone6plus;
+        }
 		else if ([fileManager fileExistsAtPath:pngDefaultPortraitPath]) {
 			result = pngDefaultPortraitPath;
 		}
@@ -338,6 +361,8 @@
 	NSString *pngDefaultLandscapeLeftPath = [NSString stringWithFormat:@"%@/Default-LandscapeLeft.png", resourcePath];
 	NSString *pngDefaultLandscapeRightPath = [NSString stringWithFormat:@"%@/Default-LandscapeRight.png", resourcePath];
 	NSString *pngDefaultiPhone5 = [NSString stringWithFormat:@"%@/Default-568h@2x.png", resourcePath];
+    NSString *pngDefaultiPhone6 = [NSString stringWithFormat:@"%@/Default-667@2x.png", resourcePath];
+    NSString *pngDefaultiPhone6plus = [NSString stringWithFormat:@"%@/Default-736h@3x.png", resourcePath];
 	
 	return (
 			//([fileManager fileExistsAtPath:pngLoadingPath]) ||
@@ -348,6 +373,8 @@
 			([fileManager fileExistsAtPath:pngDefaultLandscapeLeftPath]) ||
 			([fileManager fileExistsAtPath:pngDefaultLandscapeRightPath]) ||
 			([fileManager fileExistsAtPath:pngDefaultiPhone5]) ||
+            ([fileManager fileExistsAtPath:pngDefaultiPhone6]) ||
+            ([fileManager fileExistsAtPath:pngDefaultiPhone6plus]) ||
 			([fileManager fileExistsAtPath:pngDefaultLandscapePath])
 	);
 

@@ -1,4 +1,8 @@
 module Rhom
+
+  class RecordNotFound < StandardError
+  end
+  
   class RhomObjectFactory
 
     # Initialize new object with dynamic attributes
@@ -12,10 +16,12 @@ module Rhom
           @klass_model
         end
 
+        def self.get_source_id
+          @klass_model.source_id
+        end
+
         def self.method_missing(method_sym, *args, &block)
-          puts "MZV_DEBUG: we are in method missing #{method_sym}"
           if klass_model.respond_to?(method_sym)
-            puts "MZV_DEBUG: we are trying to call ORMModel #{method_sym}, #{args.inspect}, #{block}"
             # convert all symbols into strings
             args.collect! { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
             klass_model.send(method_sym, *args)
@@ -97,10 +103,11 @@ module Rhom
                 value = value.split(",")
                 value.each do |item|
                   item.strip!
-                  if item.start_with?("\"") && item.end_with?("\"")
-                    item.slice!(0)
-                    item.chop!
-                  end
+
+                  need_unescape = (item.start_with?('\'') && item.end_with?('\'')) ||
+                  (item.start_with?('\"') && item.end_with?('\"')) 
+                    
+                  item = need_unescape ? item[1..-1] : item
                 end
               end
 
@@ -119,7 +126,6 @@ module Rhom
         end
 
         def self._normalize_conditions(what, conditions, op)
-          puts "MZV_DEBUG : make_conditions : #{what}, #{conditions}, #{op}"
           if !op
             retV = []
             if !conditions
@@ -147,7 +153,7 @@ module Rhom
           self.new(objHash);
         end
 
-        def self._normalize_args_for_find(what, args_hash = {}, normalized_string_args, normalized_vector_args)
+        def self._normalize_args_for_find(what, args_hash, normalized_string_args, normalized_vector_args)
           # 1) Normalize LIMITS
           normalized_string_args.merge!(self.klass_model.buildFindLimits(what, args_hash))
 
@@ -203,8 +209,7 @@ module Rhom
         end
 
         def self.find(*args, &block)
-          raise "OrmFindError: invalid arguments" if args[0].nil? or args.length == 0
-          puts "MZV_DEBUG: we are in find  #{args.inspect}"
+          raise RecordNotFound if args[0].nil? or args.length == 0
           args[0] = args[0].to_s
           args[1] = args[1] || {}
           retVal = nil
@@ -216,10 +221,8 @@ module Rhom
             _normalize_args_for_find(args[0], args[1], normalized_string_args, normalized_vector_args)
             # Build Where Conditions
             cond_str, quests = _normalize_conditions(args[0], args[1][:conditions], args[1][:op])
-            puts " we have here : #{cond_str}, #{quests.inspect}"
             normalized_string_args[:conditions] = cond_str || ""
             normalized_vector_args[:quests] = quests || []
-            puts "MZV_DEBUG: we have here options before find as #{args[0]} , #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
             retVal = klass_model.findObjects(args[0],
                                            normalized_string_args,
                                            normalized_vector_args[:quests],
@@ -244,7 +247,6 @@ module Rhom
                 args[1][:quests] = args[1][:conditions][1..-1]
                 args[1][:conditions] = args[1][:conditions][0]
               end
-              puts "MZV_DEBUG: we are here and #{args[0]}, #{args[1][:conditions].inspect}, #{args[1][:quests].inspect}"
               retVal = klass_model.findObjectsPropertyBagByCondArray(args[0],
                                                                     args[1][:conditions],
                                                                     args[1][:quests],
@@ -253,9 +255,18 @@ module Rhom
             end
           end
 
-          puts "MZV_DEBUG: find has returned : #{retVal.inspect}"
           if retVal.is_a?Array
-            return retVal unless retVal.size() > 0
+            # as per description http://apidock.com/rails/v2.3.8/ActiveRecord/Base/find/class
+            if retVal.empty?
+              case args[0]
+                when 'first', 'last'
+                  return nil
+                when 'all'
+                  return retVal
+                else
+                  return nil          
+              end
+            end
 
             # if arg[0] is :first or objId return one object
             return self.new(retVal[0]) if (args[0] != 'all')
@@ -265,7 +276,6 @@ module Rhom
               orm_objs << self.new(obj)
             end
             _order_array(orm_objs, args[1][:order], args[1][:orderdir], &block)
-            puts "MZV_DEBUG: orm_objs : #{orm_objs.inspect}"
             return orm_objs
           end
           retVal
@@ -298,7 +308,6 @@ module Rhom
 
         # deletes all records matching conditions (optionally nil)
         def self.delete_all(*args)
-          puts "MZV_DEBUG: we are in delete_all  #{args.inspect}"
           args[0] ||= {}
           retVal = nil
 
@@ -309,10 +318,8 @@ module Rhom
             _normalize_args_for_find("all", args[0], normalized_string_args, normalized_vector_args)
             # Build Where Conditions
             cond_str, quests = _normalize_conditions("all", args[0][:conditions], args[0][:op])
-            puts " we have here : #{cond_str}, #{quests.inspect}"
             normalized_string_args[:conditions] = cond_str || ""
             normalized_vector_args[:quests] = quests || []
-            puts " before passing to delete_all #{args[1]}, #{normalized_string_args.inspect}, #{normalized_vector_args.inspect}"
             # call API function
             retVal = klass_model.deleteObjects(normalized_string_args,
                                                normalized_vector_args[:quests])
@@ -330,12 +337,9 @@ module Rhom
                 quests = conditions[1..-1]
                 conditions = conditions[0]
               end
-              puts "we are here and #{conditions.inspect}, #{quests.inspect}"
               retVal = klass_model.deleteObjectsPropertyBagByCondArray(conditions, quests, normalized_string_args)
             end
           end
-
-          puts "MZV_DEBUG: delete_all has returned : #{retVal.inspect}"
           retVal
         end
 
@@ -371,8 +375,15 @@ module Rhom
           klass_model.pushChanges
         end
 
-        # This holds the attributes for an instance of
-        # the rhom object
+        def update_var(key, value)
+          key_s = key.to_sym()
+          if value
+            @vars[key_s] = value 
+          else
+            @vars.delete(key_s)
+          end
+        end
+
         attr_accessor :vars
 
         def initialize(obj={})
@@ -381,16 +392,12 @@ module Rhom
           unless obj[:object] or obj['object']
             objHash = self.class.klass_model.createInstance(obj)
           end
-          objHash.each do |key,value|
-            self.vars[key.to_sym()] = value
-          end
+          objHash.each { |key,value| update_var(key, value)}
         end
 
         def update_attributes(attrs)
           objHash = self.class.klass_model.updateObject(self.object, @vars, attrs)
-          objHash.each do |key, value|
-            self.vars[key.to_sym()] = value
-          end
+          objHash.each { |key,value| update_var(key, value)}
           true
         end
 
@@ -398,9 +405,7 @@ module Rhom
           #objId = self.object
           #attrs = @vars.collect { |arg| (arg.is_a?Symbol) ? arg.to_s : arg }
           objHash = self.class.klass_model.saveObject(self.object, @vars)
-          objHash.each do |key, value|
-            self.vars[key.to_sym()] = value
-          end
+          objHash.each { |key,value| update_var(key, value)}
           true
         end
 
@@ -418,12 +423,11 @@ module Rhom
         end
 
         def method_missing(method_sym, *args, &block)
-          puts "MZV_DEBUG: we are in #{self.class.name} method missing and #{method_sym}, #{args.inspect}"
           unless method_sym == Fixnum
             if method_sym[-1] == '='
               s_name = method_sym.to_s.chop
               self.class.klass_model.validateFreezedAttribute(s_name)
-              @vars[s_name.to_sym()] = args[0]
+              update_var(s_name.to_sym(), args[0])
             else
               @vars[method_sym]
             end

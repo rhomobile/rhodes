@@ -259,7 +259,6 @@ namespace rho {
     public:
         CNewORMModelSingletonImpl(): CNewORMModelSingletonBase()
         {
-            LOG(INFO) + "MZV_DEBUG: calling init_once";
             CNewORMModelImpl::init_once();
         }
         
@@ -288,7 +287,10 @@ namespace rho {
 
         virtual void clear(rho::apiGenerator::CMethodResult&) 
         {  
-          CNewORMModelImpl::models().clear();
+            HashtablePtr<rho::String, CNewORMModelImpl*>& models = CNewORMModelImpl::models();
+            for(HashtablePtr<rho::String, CNewORMModelImpl*>::iterator it = models.begin(); it != models.end(); ) {
+                models.erase(it++);
+            }
         }
     };
     

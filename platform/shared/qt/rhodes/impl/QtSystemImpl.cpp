@@ -46,11 +46,20 @@
 using namespace rho;
 using namespace rho::common;
 
+static char qt_webview_framework[32] = "";
+
 extern "C" {
 
 const char* rho_sys_qt_getWebviewFramework()
 {
-    return QString("WEBKIT/").append(qWebKitVersion()).toStdString().c_str();
+    if (qt_webview_framework[0] == '\0') {
+        const QByteArray ver = QString("WEBKIT/").append(qWebKitVersion()).toLatin1();
+        if (ver.length() < 32) {
+            strncpy(qt_webview_framework, ver.constData(), ver.length());
+            qt_webview_framework[ver.length()] = '\0';
+        }
+    }
+    return qt_webview_framework;
 }
 
 VALUE phone_number()
@@ -136,15 +145,6 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     }
 
 #if defined(__SYMBIAN32__)
-    if (strcasecmp("platform",szPropName) == 0) {
-        *resValue = rho_ruby_create_string("Symbian");
-        return 1;
-    }
-
-     if (strcasecmp("os_version",szPropName) == 0) {
-        *resValue = rho_ruby_create_string("");
-        return 1;
-    }
 #elif defined(RHO_SYMBIAN)
     if (strcasecmp("platform",szPropName) == 0) {
         *resValue = rho_ruby_create_string("Qt Emulator");

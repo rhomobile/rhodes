@@ -38,11 +38,15 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.Process;
 import android.util.Log;
 
-import com.rhomobile.rhodes.camera.Camera;
+
+import com.rhomobile.rhodes.ScreenReceiver.DeviceScreenEvent;
+//import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -54,24 +58,14 @@ class ScreenReceiver extends BroadcastReceiver
 {
 	public enum DeviceScreenEvent
 	{
-		SCREEN_OFF(0),
-		SCREEN_ON(1);
-
-		/**
-		 * Value for this difficulty
-		 */
-		public final int Value;
-
-		private DeviceScreenEvent(int value)
-		{
-			Value = value;
-		}
+		SCREEN_OFF,
+		SCREEN_ON;
 	}
 
 	public ScreenReceiver() {
 	}
 
-	private native static void notifyDeviceScreenEvent(int event);
+	public native static void notifyDeviceScreenEvent(int event);
 
 	@Override
 	public void onReceive(Context context, Intent intent)
@@ -81,25 +75,20 @@ class ScreenReceiver extends BroadcastReceiver
 			return;
 		}
 
-		// device is locked
-		if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF))
-		{
-			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_OFF.Value);
-		}
 		// device is probably unlocked
-		else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON))
+		if (intent.getAction().equals(Intent.ACTION_SCREEN_ON))
 		{
 			// if keyguard is locked then unlock event should be called in ACTION_USER_PRESENT
 			KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
 			if (!keyguardManager.inKeyguardRestrictedInputMode())
 			{
-				notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_ON.Value);
+				notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_ON.ordinal());
 			}
 		}
 		// device is unlocked
 		else if(intent.getAction().equals(Intent.ACTION_USER_PRESENT))
 		{
-			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_ON.Value);
+			notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_ON.ordinal());
 		}
 	}
 }
@@ -152,6 +141,17 @@ public class RhodesApplication extends Application{
                     }
                 });
         RhodesApplication.runWhen(
+                UiState.MainActivityPaused,
+                new StateHandler(false) {
+                    @Override
+                    public void run() {
+                        PowerManager powerMgr = (PowerManager)getSystemService(POWER_SERVICE);
+                        if(!powerMgr.isScreenOn()) {
+                            ScreenReceiver.notifyDeviceScreenEvent(DeviceScreenEvent.SCREEN_OFF.ordinal());
+                        }
+                    }
+                });
+        RhodesApplication.runWhen(
                 AppState.AppActivated,
                 new StateHandler(false) {
                     @Override
@@ -167,7 +167,7 @@ public class RhodesApplication extends Application{
                         RhoExtManager.getImplementationInstance().onAppActivate(false);
                     }
                 });
-        RhodesApplication.runWhen(
+     /*   RhodesApplication.runWhen(
                 AppState.AppActivated,
                 new StateHandler(true) {
                     @Override public void run() {
@@ -178,6 +178,7 @@ public class RhodesApplication extends Application{
                         });
                     }
                 });
+				*/
     }
     
     @Override
@@ -194,70 +195,62 @@ public class RhodesApplication extends Application{
 
         ApplicationInfo appInfo = getApplicationInfo();
         String rootPath;
+        String sharedPath = null;
 
-        rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, null);
-        Log.d(TAG, "Root path: " + rootPath);
+        String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + appInfo.packageName;
+        String configPath = new File(externalSharedPath, "Config.xml").getAbsolutePath();
 
-        boolean hashChanged = isAppHashChanged(rootPath);
-        if (hashChanged) {
-            Log.i(TAG, "Application hash was changed");
-            
-            File rho_dat = new File(rootPath, "rho.dat");
-            if (rho_dat.exists()) {
-                Log.i(TAG, "Removing rho.dat from file system");
-                rho_dat.delete();
+        File configXmlFile = null;
+        File rhoconfigTxtFile = null;
+        try
+        {
+            configXmlFile = new File(configPath);
+
+            if (configXmlFile != null && configXmlFile.exists()) {
+                rhoconfigTxtFile = new File(configXmlFile.getParent() + "/rhoconfig.txt");
             }
-            
-            RhoFileApi.initialCopy(this, new String[] {"hash", "apps/rhoconfig.txt"});
+             
+            if (rhoconfigTxtFile != null && rhoconfigTxtFile.exists()) {
+                sharedPath = rhoconfigTxtFile.getParent();
+            }
+        
+        } 
+        catch (Throwable e)
+        {
+            Logger.E(TAG, e);
         }
         
+        rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, sharedPath);
+        Log.d(TAG, "Root path: " + rootPath);
+
         try {
-            RhoFileApi.init(this);
+            boolean hashChanged = isAppHashChanged(rootPath);
+            RhoFileApi.basicSetup(this, hashChanged);
+
+            // Use paths for config and rholog
+            setupRhodesApp();
+
+            boolean emulateFileTree = !RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS");
+            RhoFileApi.finalSetup(this, hashChanged, emulateFileTree);
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
             stop();
             return;
         }
 
-        setupRhodesApp();
-
-        if (hashChanged) {
-            try {
-                RhoFileApi.removeBundleUpgrade();
-                RhoFileApi.copy("apps/rhoconfig.txt");
-                
-                File libDir = new File(rootPath, "lib");
-                File testLib = new File(libDir.getPath(), "rhoframework.iseq");
-                if(libDir.isDirectory() && testLib.isFile())
-                {
-                    Logger.I(TAG, "Updating from very old rhodes version, clean filesystem.");
-                    Utils.deleteChildrenIgnoreFirstLevel(new File(rootPath, "apps"), "rhoconfig.txt");
-                    Utils.deleteRecursively(libDir);
-                }
-
-                rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, null);
-            } catch (IOException e) {
-                Logger.E(TAG, e.getMessage());
-                stop();
-                return;
-            }
-        }
-
         Logger.T(TAG, "Root path: " + rootPath);
-
-        RhoFileApi.setFsModeTransparrent(true);
 
         //Signature.registerSignatureCaptureExtension();
         RhoExtManager.getImplementationInstance().createRhoListeners();
 
-	    IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-	    filter.addAction(Intent.ACTION_SCREEN_OFF);
-	    filter.addAction(Intent.ACTION_USER_PRESENT);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
 
-	    mReceiver = new ScreenReceiver();
-	    registerReceiver(mReceiver, filter);
+        mReceiver = new ScreenReceiver();
+        registerReceiver(mReceiver, filter);
 
-      Logger.I(TAG, "Initialized");
+        Logger.I(TAG, "Initialized");
     }
 
     private native static void initClassLoader(ClassLoader c);

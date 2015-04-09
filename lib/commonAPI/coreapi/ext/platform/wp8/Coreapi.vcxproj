@@ -71,24 +71,28 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
-    <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
+    <IntDir>$(TEMP_FILES_DIR)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
-    <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
+    <IntDir>$(TEMP_FILES_DIR)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
-    <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
+    <IntDir>$(TEMP_FILES_DIR)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <IncludePath>$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
     <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
-    <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
+    <IntDir>$(TEMP_FILES_DIR)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_WP8_LIB;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -105,7 +109,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;_LIB;_WP8_LIB;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_LIB;_WP8_LIB;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -122,7 +126,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_WP8_LIB;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -138,11 +142,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_WP8_LIB;NDEBUG;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\wp8;$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\wp8;$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
@@ -152,13 +156,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\ApplicationImpl.cpp" />
+    <ClCompile Include="..\..\shared\ConfigImpl.cpp" />
     <ClCompile Include="..\..\shared\FileImpl.cpp" />
     <ClCompile Include="..\..\shared\generated\application_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\application_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\application_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\config_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\config_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\config_ruby_api.c" />
     <ClCompile Include="..\..\shared\generated\cpp\ApplicationBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Application_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Application_ruby_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\ConfigBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Config_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Config_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\LogBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Log_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Log_ruby_wrap.cpp" />
@@ -213,6 +224,9 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\TimerBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Timer_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Timer_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\log_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\log_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\log_ruby_api.c" />
@@ -268,6 +282,9 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\..\shared\generated\timer_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\timer_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\timer_ruby_api.c" />
     <ClCompile Include="..\..\shared\InitExtension.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -298,6 +315,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\..\shared\TimerImpl.cpp" />
     <ClCompile Include="..\wm\src\NetworkDetect.cpp" />
     <ClCompile Include="src\SystemImpl.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</CompileAsWinRT>
@@ -315,12 +333,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ApplicationBase.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\ConfigBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\IApplication.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\IConfig.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ILog.h" />
     <ClInclude Include="..\..\shared\generated\cpp\INetwork.h" />
     <ClInclude Include="..\..\shared\generated\cpp\IRhoFile.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISQLite3.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\ITimer.h" />
     <ClInclude Include="..\..\shared\generated\cpp\LogBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\NetworkBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\NewORMBase.h" />
@@ -328,6 +349,7 @@
     <ClInclude Include="..\..\shared\generated\cpp\RhoFileBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\TimerBase.h" />
     <ClInclude Include="..\..\shared\NewORMModelImpl.h" />
     <ClInclude Include="..\wm\src\NetworkDetect.h" />
   </ItemGroup>
@@ -373,6 +395,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\Config.xml">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+    </Xml>
     <Xml Include="..\..\push.xml">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </Xml>

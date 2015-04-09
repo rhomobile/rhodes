@@ -21,11 +21,13 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.add_dependency('templater', '>= 0.5.0')
   s.add_dependency('rake', '>= 0.9.2')
-  s.add_dependency('activesupport', '~> 2.3.5')
   s.add_dependency('uuid', '>= 2.3.2')
   s.add_dependency('systemu', '>= 2.5.0')
   s.add_dependency('json', '~>1.5.4')
   s.add_dependency('rest-client', '~>1.6.6')
+  s.add_dependency('CFPropertyList', '>= 2.2.0')
+  s.add_dependency('listen', '>= 2.8.5')
+  s.add_dependency('rubyzip', '>= 1.1.7')
   #s.add_dependency('rdoc', '~> 3.6.1')
   s.executables << 'rhogen'
   s.executables << 'rhodes'

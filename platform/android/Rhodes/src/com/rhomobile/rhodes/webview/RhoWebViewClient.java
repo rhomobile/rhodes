@@ -40,6 +40,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.view.Window;
+import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
 import android.webkit.URLUtil;
 import android.webkit.WebResourceResponse;
@@ -49,6 +50,54 @@ import android.webkit.CookieSyncManager;
 
 public class RhoWebViewClient extends WebViewClient
 {
+    private class HttpAuthResult implements IRhoExtension.IAuthRequest {
+        private HttpAuthHandler authHandler;
+        private String host;
+        private String realm;
+//        private boolean pending;
+        
+        public HttpAuthResult(HttpAuthHandler handler, String host, String realm) {
+            authHandler = handler;
+            this.host = host;
+            this.realm = realm;
+        }
+
+        @Override
+        public void proceed(String user, String pass) {
+            authHandler.proceed(user, pass);
+        }
+
+        @Override
+        public void cancel() {
+            authHandler.cancel();
+        }
+
+        @Override
+        public String host() {
+            return this.host;
+        }
+
+        @Override
+        public String realm() {
+            return this.realm;
+        }
+
+//        @Override
+//        public void setPending() {
+//            pending = true;
+//        }
+//        
+//        boolean isPending() {
+//            return pending;
+//        }
+
+        @Override
+        public String type() {
+            return "http";
+        }
+        
+    }
+    
     private final String TAG = RhoWebViewClient.class.getSimpleName();
     private GoogleWebView mWebView;
 
@@ -70,6 +119,23 @@ public class RhoWebViewClient extends WebViewClient
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Logger.I(TAG, "Loading URL: " + url);
+        
+        //RhoElements implementation of "history:back"
+        if(url.equalsIgnoreCase("history:back")) {
+        	view.goBack();
+        	return true;
+        }
+        
+        if (url.contains(".HTM")) 
+        {
+    	     url=url.replace(".HTML", ".html");
+    	     url=url.replace(".HTM", ".htm");
+    	     Logger.I(TAG, "Changed to lower case html, url="+ url);
+    	}
+        
+        
+        
+        
         boolean res = RhodesService.getInstance().handleUrlLoading(url);
         if (!res) {
             Logger.profStart("BROWSER_PAGE");
@@ -93,7 +159,7 @@ public class RhoWebViewClient extends WebViewClient
         
         RhoExtManager.getImplementationInstance().onNavigateStarted(view, url);
 
-        if (mWebView.getConfig() != null && mWebView.getConfig().getBool("enablePageLoadingIndication"))
+        if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION))
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
     }
     
@@ -104,9 +170,14 @@ public class RhoWebViewClient extends WebViewClient
 
         // Set title
         String title = view.getTitle();
-        RhodesActivity.safeGetInstance().setTitle(title);
-        if (mWebView.getConfig() != null && mWebView.getConfig().getBool("enablePageLoadingIndication"))
-            RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
+        try {
+            RhodesActivity.safeGetInstance().setTitle(title);
+
+            if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION))
+                RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
+        } catch (Throwable ex) {
+            //Do nothing. Just for case if activity has been destroyed in between.
+        }
 
         RhoExtManager.getImplementationInstance().onNavigateComplete(view, url);
         //CookieSyncManager.getInstance().sync();
@@ -157,4 +228,12 @@ public class RhoWebViewClient extends WebViewClient
             handler.cancel();
         }
     }
+    
+    @Override
+    public void onReceivedHttpAuthRequest (WebView view, HttpAuthHandler handler, String host, String realm) {
+        HttpAuthResult authResult = new HttpAuthResult(handler, host, realm);
+        RhoExtManager.getImplementationInstance().onAuthRequest(view, authResult);
+    }
+    
+    
 }

@@ -71,7 +71,7 @@ class CEng;
 //extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 
-#if !defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if !defined(APP_BUILD_CAPABILITY_SYMBOL)
 extern "C" LRESULT	rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam){ return 0;}
 #else
 extern "C" void initialiseRhoElementsExt();
@@ -91,11 +91,12 @@ extern "C" {
 	void rho_wmimpl_set_startpage(const char* path);
 	const char* rho_wmimpl_get_logpath();
 	const char* rho_wmimpl_get_logurl();
+	const char* rho_wmimpl_get_httpproxy();  
 	bool rho_wmimpl_get_fullscreen();
 	void rho_wmimpl_set_is_version2(const char* path);
 	bool rho_wmimpl_get_is_version2();
     const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
-#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && !defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && !defined(APP_BUILD_CAPABILITY_SYMBOL)
     bool rho_wmimpl_get_is_version2(){ return 1;}
     void rho_wmimpl_set_is_version2(const char* path){}
     void rho_wmimpl_set_configfilepath(const char* path){}
@@ -118,7 +119,7 @@ extern "C" {
 };
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-#if !defined( APP_BUILD_CAPABILITY_MOTOROLA ) && !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+#if !defined( APP_BUILD_CAPABILITY_SYMBOL ) && !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 extern "C" bool rho_wmimpl_get_resize_on_sip()
 {
     return true;
@@ -174,7 +175,7 @@ extern "C" BOOL LoadSoundDll();
 #endif
 
 //This is hack. MC4900 device failed to enable barcode after webkit initialization. So we enable it before.
-#if defined(APP_BUILD_CAPABILITY_BARCODE) && defined(APP_BUILD_CAPABILITY_MOTOROLA) && defined (OS_PLATFORM_MOTCE)
+#if defined(APP_BUILD_CAPABILITY_BARCODE) && defined(APP_BUILD_CAPABILITY_SYMBOL) && defined (OS_PLATFORM_MOTCE)
 extern "C" void rho_scanner_before_webkit();
 extern "C" void rho_scanner_after_webkit();
 struct CBarcodeInit
@@ -395,8 +396,62 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }*/
     // Note: In this sample, we don't respond differently to different hr success codes.
 
-    SetLastError(0);
-    HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
+    //SetLastError(0);
+//    HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
+
+  //  if ( !m_bRestarting && hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+    //{
+        // Rho Running so could bring to foreground
+      //  HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
+
+        //if (hWnd)
+        //{
+          //  ShowWindow(hWnd, SW_SHOW);
+            //SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+            //SetForegroundWindow( hWnd );
+
+            //COPYDATASTRUCT cds = {0};
+            //cds.cbData = m_strTabName.length()+1;
+            //cds.lpData = (char*)m_strTabName.c_str();
+            //SendMessage( hWnd, WM_COPYDATA, (WPARAM)WM_WINDOW_SWITCHTAB, (LPARAM)(LPVOID)&cds);
+        //}
+
+        //return S_FALSE;
+    //}
+
+    if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
+    {
+        rho_sys_impl_exit_with_errormessage( "Bundle update", "Application is corrupted. Reinstall it, please.");
+        return S_FALSE;
+    }
+
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
+    if (rho_wmimpl_get_logurl()[0]!=0)
+	{
+        LOGCONF().setLogURL(rho_wmimpl_get_logurl());
+		LOGCONF().setLogToSocket(true);
+	}
+    if (rho_wmimpl_get_logmaxsize())
+        LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
+    if (rho_wmimpl_get_loglevel())
+        LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
+    if (rho_wmimpl_get_fullscreen())
+        RHOCONF().setBool("full_screen", true, false);
+    if (rho_wmimpl_get_logmemperiod())
+        LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
+    //SR EMBPD00121468
+    //Network api via proxy is not working with proxy enable using config.xml 
+    //Sabir: The values were getting set from rhoconfig.txt from function rho_logconf_Init
+    //fix: we have to override http_proxy_host using config.xml value
+    rho::String szHttpProxy =  rho_wmimpl_get_httpproxy();
+    parseHttpProxyURI(szHttpProxy);
+#else
+    rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
+ SetLastError(0);
+ HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
 
     if ( !m_bRestarting && hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
     {
@@ -418,27 +473,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         return S_FALSE;
     }
 
-    if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
-    {
-        rho_sys_impl_exit_with_errormessage( "Bundle update", "Application is corrupted. Reinstall it, please.");
-        return S_FALSE;
-    }
 
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-    rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
-    if (rho_wmimpl_get_logurl()[0]!=0)
-        LOGCONF().setLogURL(rho_wmimpl_get_logurl());
-    if (rho_wmimpl_get_logmaxsize())
-        LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
-    if (rho_wmimpl_get_loglevel())
-        LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
-    if (rho_wmimpl_get_fullscreen())
-        RHOCONF().setBool("full_screen", true, false);
-    if (rho_wmimpl_get_logmemperiod())
-        LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
-#else
-    rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
-#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
     LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
 
@@ -547,8 +582,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
     m_appWindow.InvalidateRect(NULL, TRUE);
+	m_appWindow.SetActiveWindow();	//  Enterprise Browser was failing to launch maximimized through a shortcut, this line ensures it launches maximised
     m_appWindow.UpdateWindow();
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
 	initialiseRhoElementsExt();
 #endif
     m_appWindow.initBrowserWindow();
@@ -559,7 +595,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 /*
     if (bRE1App)
     {
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
         registerRhoExtension();
 #endif
 
@@ -760,7 +796,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	return _AtlModule.WinMain(nShowCmd);
 }
 
-extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask) 
+extern "C" void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask) 
 {
     CMainWindow* mainWnd = _AtlModule.GetMainWindowObject();
     mainWnd->performOnUiThread(pTask);    
@@ -826,10 +862,7 @@ extern "C" void rho_wm_impl_CheckLicense()
         if(pCheckLicense)
         {
             StringW strLicenseW;
-            common::convertToStringW( get_app_build_config_item("motorola_license"), strLicenseW );
-
             StringW strCompanyW;
-            common::convertToStringW( get_app_build_config_item("motorola_license_company"), strCompanyW );
 
         #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
             LPCTSTR szLicense = rho_wmimpl_sharedconfig_getvalue( L"LicenseKey" );
@@ -852,7 +885,7 @@ extern "C" void rho_wm_impl_CheckLicense()
         nRes = pIsOK ? pIsOK() : 0;
     }
 
-#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+#ifdef APP_BUILD_CAPABILITY_SYMBOL
     if ( nRes == 0 )
     {
         rho::BrowserFactory::getInstance()->checkLicense(getMainWnd(), hLicenseInstance);
@@ -946,7 +979,7 @@ extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
 extern "C" void Init_fcntl(void)
 {
 }
-
+#include <aygshell.h>
 extern "C" BOOL LoadAYGShell()
 {
 	bool bReturnValue = FALSE;
@@ -959,16 +992,12 @@ extern "C" BOOL LoadAYGShell()
 	}
 	else
 	{
-		lpfn_Registry_CloseNotification = 
-			(LPFN_REGISTRY_CLOSENOTIFICATION_T)GetProcAddress(g_hAygShellDLL, _T("RegistryCloseNotification"));
-		lpfn_Registry_NotifyWindow = 
-			(LPFN_REGISTRY_NOTIFYWINDOW_T)GetProcAddress(g_hAygShellDLL, _T("RegistryNotifyWindow"));
-		lpfn_Registry_GetString = 
-			(LPFN_REGISTRY_GETSTRING_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetString"));
-		lpfn_Registry_GetDWORD = 
-			(LPFN_REGISTRY_GETDWORD_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetDWORD"));
-		lpfn_Camera_Capture = (LPFN_CAMERA_CAPTURE_T)GetProcAddress(g_hAygShellDLL, _T("SHCameraCapture"));
-		lpfn_GetOpen_FileEx = (LPFN_GETOPEN_FILEEX_T)GetProcAddress(g_hAygShellDLL, _T("GetOpenFileNameEx"));
+		lpfn_Registry_CloseNotification = (LPFN_REGISTRY_CLOSENOTIFICATION_T)GetProcAddress(g_hAygShellDLL, _T("RegistryCloseNotification"));
+		lpfn_Registry_NotifyWindow      = (LPFN_REGISTRY_NOTIFYWINDOW_T)GetProcAddress(g_hAygShellDLL, _T("RegistryNotifyWindow"));
+		lpfn_Registry_GetString         = (LPFN_REGISTRY_GETSTRING_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetString"));
+		lpfn_Registry_GetDWORD          = (LPFN_REGISTRY_GETDWORD_T)GetProcAddress(g_hAygShellDLL, _T("RegistryGetDWORD"));
+		lpfn_Camera_Capture             = (LPFN_CAMERA_CAPTURE_T)GetProcAddress(g_hAygShellDLL, _T("SHCameraCapture"));
+		lpfn_GetOpen_FileEx             = (LPFN_GETOPEN_FILEEX_T)GetProcAddress(g_hAygShellDLL, _T("GetOpenFileNameEx"));
 
 		if (!lpfn_Registry_CloseNotification)
 		{
@@ -1000,11 +1029,11 @@ extern "C" BOOL LoadAYGShell()
 extern "C" BOOL LoadSoundDll()
 {
 	bool bReturnValue = FALSE;
-	g_hSndDLL = LoadLibrary(L"soundfile.dll");
+	g_hSndDLL = LoadLibrary(L"aygshell.dll");
 	if (!g_hSndDLL)
 	{
 		//  Error loading AygShell.dll (used for Retrieving values from the Registry)
-		LOG(INFO) + "Failed to load SoundFile.dll, WAN status event will not be available";
+		LOG(INFO) + "Failed to load sound api";
 	}
 	else
 	{

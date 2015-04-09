@@ -3,6 +3,8 @@
 <API>
     <MODULE name="Sensor" parent="Rho">
         <HELP_OVERVIEW>The Sensors extension is used to retrieve the raw data values of the specified sensors (accelerometer, tilt angle, device orientation, motion, eCompass, magnetometer, gyroscope, ambient light, proximity, proximity long range, pressure, temperature, humidity, gravity, linear acceleration, rotation, orientation etc.) from the device. To use this, you have to first call makeSensorByType to get an instance of that sensor. Then you can use the start and stop methods on that instance.
+        </HELP_OVERVIEW>
+        <MORE_HELP>
 ## Enabling the API
 In order to use this API you must include the following extension in your `build.yml`.
     :::ruby
@@ -13,15 +15,44 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
-        </HELP_OVERVIEW>
 
-        <PLATFORM>WM, Android, iOS</PLATFORM>
- 
+        </MORE_HELP>
+        <MORE_HELP_EB>
+## Enabling the API
+There are two methods of enabling the Sensor API:
+
+* Include all ebapi modules or
+* Include only the API modules you need
+
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
+
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the Sensor API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.sensor.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
+        </MORE_HELP_EB>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+        <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
+
         <TEMPLATES>
             <SINGLETON_INSTANCES/> <!--   produce enumerate() fabric method, all instances is singletons by ID, add ID property -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
- 
+
         <CONSTANTS>
             <CONSTANT name="SENSOR_TYPE_ACCELEROMETER" value="Accelerometer">
                 <DESC>Accelerometer sensor type.</DESC>
@@ -112,16 +143,18 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="type" type="STRING">
                         <DESC>Sensor type. Use the appropriate constants to get the sensor type. In the case of accelerometer use SENSOR_TYPE_ACCELEROMETER.</DESC>
                     </PARAM>
-                </PARAMS>                   
+                </PARAMS>
                 <RETURN type="SELF_INSTANCE">
                     <DESC>Returns a sensor object for the sensor type passed as parameter. You can use the type field along with the Rho.Sensor Constants to see what type of sensor is returned.</DESC>
                 </RETURN>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
             </METHOD>
 
             <METHOD name="start" hasCallback="optional">
                 <DESC>This enables the sensor data retrieval. Call start on the instance returned from the makeSensorByType.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <CALLBACK type="HASH">
                     <DESC>The callback is triggered with the sensors values according to sensor type when a parameter of the sensor is changed. Each sensor sends to the callback different object types - see sensor prefix of value name. All sensors will contain a status and message parameter in the callback.</DESC>
                     <PARAMS>
@@ -162,7 +195,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
                         <!-- only for DeviceOrientation callback -->
                         <PARAM name="deviceorientation_value" type="STRING">
-                            <DESC>The values of the Orientation sensor. Possible values include Portrait Down, Portrait Up, Landscape Left, Landscape Right, Face Up, Face Down. Applicable only for Motorola Windows Mobile/CE devices with Sensor support.</DESC>
+                            <DESC>The values of the Orientation sensor. Possible values include Portrait Down, Portrait Up, Landscape Left, Landscape Right, Face Up, Face Down. Applicable only for Symbol Windows Mobile/CE devices with Sensor support.</DESC>
                         </PARAM>
 
                         <!-- only for Motion callback -->
@@ -186,7 +219,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
                         <PARAM name="magnetometer_z" type="FLOAT">
                             <DESC>Z value of the magnetometer sensor in micro-Tesla (uT) units.</DESC>
-                        </PARAM>                                                        
+                        </PARAM>
 
                         <!-- only for Gyroscope callback -->
                         <PARAM name="gyroscope_x" type="FLOAT">
@@ -283,7 +316,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <DESC>Z co-ordinate value of the orientation sensor in degrees units.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK> 
+                </CALLBACK>
             </METHOD>
 
             <METHOD name="readData">
@@ -291,17 +324,20 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH">
                     <DESC>Current sensor data - format is the same with callback specified for start method.</DESC>
                 </RETURN>>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
             </METHOD>
 
             <METHOD name="stop">
                 <DESC>Stops listening to the sensor retrieved by using makeSensorType. On Windows Mobile/CE its recommended to call stop on all retrieved sensor objects before exiting a page.</DESC>
-                <PLATFORM>WM, Android, iOS</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
             </METHOD>
         </METHODS>
 
         <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
         <PLATFORM>Android, WM, iOS</PLATFORM>
+        <PLATFORM_EB>Android, WM</PLATFORM_EB>
 
         <REMARKS>
             <REMARK title="General">
@@ -327,21 +363,21 @@ def index
         @accelerometer_sensor.start(url_for(:action => :myevent))
     else
        puts "Warning: This device has not Accelerometer sensor !"
-    end    
+    end
 end
 
 def stop_listening_accelerator
     if @accelerometer_sensor != nil
         @accelerometer_sensor.stop
-    end    
+    end
 end
 
-def myevent       
+def myevent
     puts "Accelerometer params: #{@params}"
     puts "X is #{@params['accelerometer_x']}"
-    puts "Y is #{@params['accelerometer_y']}"  
-    puts "Z is #{@params['accelerometer_z']}"      
-end 
+    puts "Y is #{@params['accelerometer_y']}"
+    puts "Z is #{@params['accelerometer_z']}"
+end
                     ]]>
                             </RUBY>
                         </CODE>

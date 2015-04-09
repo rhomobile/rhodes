@@ -47,6 +47,13 @@ public class WebView {
 		public NavigateTask(String u, int i) {
 			url = u;
 			index = i;
+			//Check For Case sensitivity of HTML and html also for HTM and htm
+			if (url.contains(".HTM")) 
+			{
+	    	     		url=url.replace(".HTML", ".html");
+	    	         	url=url.replace(".HTM", ".htm");
+	    	         	Logger.I(TAG,"Replaced to lowercase html extension,url="+ url);
+	    	     	}
 		}
 
         public void run() {
@@ -58,6 +65,28 @@ public class WebView {
             }
 		}
 	};
+	
+	///*** ExecuteJSTask ***
+	///
+	private static class ExecuteJSTask implements Runnable {
+		private String url;
+		private int index;
+		
+		public ExecuteJSTask(String u, int i) {
+			url = u;
+			index = i;
+		}
+
+        public void run() {
+            try {
+                MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+                mainView.executeJS(url, index);
+            } catch (Throwable ex) {
+                Logger.E(TAG, ex);
+            }
+		}
+	};	
+	
 	
 	///*** NavigateBackTask ***
 	///
@@ -247,7 +276,8 @@ public class WebView {
 
 	public static void executeJs(String js, int index) {
 		try {
-			PerformOnUiThread.exec(new NavigateTask("javascript:" + js, index));
+			//PerformOnUiThread.exec(new NavigateTask("javascript:" + js, index));
+			PerformOnUiThread.exec(new ExecuteJSTask(js, index));
 		}
 		catch (Exception e) {
             Logger.E(TAG, e);

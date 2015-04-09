@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Navbar" parent="Rho" generateUnderscoreRubyNames="true">
+    <MODULE name="Navbar" parent="Rho" generateUnderscoreRubyNames="true" productException="eb">
         <HELP_OVERVIEW>The NavBar API supports a native navigation bar for iOS devices.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API
@@ -9,13 +9,13 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-## JavaScript Usage
+### JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
-## Ruby Usage
+### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
-        
+
         <PLATFORM>iOS</PLATFORM>
 
         <ALIASES>
@@ -40,7 +40,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 </PARAM>
                             </PARAMS>
                         </PARAM>
-                        
+
                         <PARAM name="right" type="HASH">
                             <DESC>(optional) Right button with :action and :label defined.</DESC>
                             <PARAMS>
@@ -52,7 +52,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 </PARAM>
                             </PARAMS>
                         </PARAM>
-                        
+
                         <PARAM name="title" type="STRING">
                             <DESC>Title of the navigation bar.</DESC>
                         </PARAM>

@@ -27,7 +27,7 @@
 #include "INetRequest.h"
 
 #include "common/RhoFile.h"
-#include "common/RhodesAppBase.h"
+#include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
 #include "net/URI.h"
 
@@ -232,7 +232,10 @@ void CNetRequestWrapper::setCallback(rho::net::INetRequestCallback* callback )
 }
 
 
-
+CAsyncNetRequest::~CAsyncNetRequest()
+{
+  RHODESAPP().getTimer().stopNativeTimer(this);
+}
 
 void CAsyncNetRequest::run(common::CRhoThread &)
 {
@@ -245,6 +248,18 @@ void CAsyncNetRequest::cancel()
 {
   m_request.cancel();
 }
+
+void CAsyncNetRequest::requestCancel()
+{
+    RHODESAPP().getTimer().addNativeTimer(0,this);
+}
+
+bool CAsyncNetRequest::onTimer()
+{
+  cancel();
+  return true;
+}
+
 
   void CAsyncNetRequest::didReceiveResponse(NetResponse& resp, const Hashtable<String,String>* headers)
   {

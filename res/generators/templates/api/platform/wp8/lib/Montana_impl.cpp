@@ -1,6 +1,4 @@
-#include "common/RhodesApp.h"
-#include "../../wp8/rhoruntime/common/RhoConvertWP8.h"
-//#include "../../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
+#include "<%= $cur_module.name %>_impl.h"
 #include "<%= $cur_module.name %>Factory.h"
 #include "api_generator/wp8/MethodResultImpl.h"
 
@@ -20,7 +18,7 @@ end%>
     call_params = ''
     covert_params = ''
     module_method.params.each do |param|
-        params += "#{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
+        params += "#{CppGen::native_type_arg(param)} #{param.name}, "
         param_name = param.name
         param_conv = api_generator_cli_conversion(param.type, param.name)
         if param_conv.length() > 0
@@ -35,21 +33,16 @@ end%>
     module_method.cached_data["cpp2cs_params"] = params
     module_method.cached_data["cpp2cs_call_params"] = call_params
 
-    method_def = "\n    virtual void #{module_method.native_name}(#{params})\n    {\n#{covert_params}        try {\n            _runtime->#{module_method.native_name}(#{call_params});\n        } catch (Platform::Exception^ e) {\n            LOG(ERROR) + rho::common::convertStringAFromWP8(e->ToString());\n        }\n    }\n"
     if module_method.access == ModuleMethod::ACCESS_STATIC
-      static_methods += method_def
+      static_methods += "\n    virtual void #{module_method.native_name}(#{params})\n    {\n#{covert_params}        try {\n            _runtime->#{module_method.native_name}(#{call_params});\n        } catch (Platform::Exception^ e) {\n            LOG(ERROR) + rho::common::convertStringAFromWP8(e->ToString());\n        }\n    }\n"
     else
-      dynamic_methods += method_def
+      if /^(getProperty|getProperties|getAllProperties|setProperty|setProperties)$/ !~ module_method.native_name
+        dynamic_methods += "\nvoid C#{$cur_module.name}Impl::#{module_method.native_name}(#{params})\n{\n#{covert_params}    try {\n        _runtime->#{module_method.native_name}(#{call_params});\n    } catch (Platform::Exception^ e) {\n        LOG(ERROR) + rho::common::convertStringAFromWP8(e->ToString());\n    }\n}\n"
+      end
     end
   end
 %>
-class C<%= $cur_module.name %>Impl: public C<%= $cur_module.name %>Base
-{
-private:
-    I<%= $cur_module.name %>Impl^ _runtime;
-public:
-    C<%= $cur_module.name %>Impl(const rho::String& strID, I<%= $cur_module.name %>Impl^ runtime): C<%= $cur_module.name %>Base(), _runtime(runtime) {}
-<%= dynamic_methods%>};
+<%= dynamic_methods%>
 
 class C<%= $cur_module.name %>Singleton: public C<%= $cur_module.name %>SingletonBase
 {
@@ -63,8 +56,9 @@ public:
     virtual rho::String getDefaultID(){return "1";} // TODO: implement getDefaultID
     virtual rho::String getInitialDefaultID(){return "1";} // TODO: implement getInitialDefaultID
     virtual void setDefaultID(const rho::String& strID){} // TODO: implement setDefaultID
-<% end %>    virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor){} // TODO: implement addCommandToQueue
-    virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor){} // TODO: implement callCommandInThread
+<% end %>    
+    //virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor){} // TODO: implement addCommandToQueue
+    //virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor){} // TODO: implement callCommandInThread
 };
 
 I<%= $cur_module.name %>FactoryImpl^ C<%= $cur_module.name %>Factory::_impl;

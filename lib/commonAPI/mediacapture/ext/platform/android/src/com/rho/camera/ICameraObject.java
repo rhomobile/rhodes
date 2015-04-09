@@ -12,7 +12,7 @@ public interface ICameraObject extends ICamera {
     void startPreview(SurfaceHolder sh);
     void stopPreview();
     ISize setPreviewSize(int width, int height);
-
+    void setDisplayOrientation(int rotate);
     void doTakePicture(Activity previewActivity, int rotation);
 
 }

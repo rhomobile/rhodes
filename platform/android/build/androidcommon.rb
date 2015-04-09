@@ -64,7 +64,7 @@ def num_cpus
 end
 
 def get_sources(sourcelist)
-    File.read(sourcelist).split("\n")
+    res = File.read(sourcelist).split(/\r?\n/)
 end
 
 def get_objects(sources, objdir)
@@ -197,6 +197,7 @@ def cc_def_args
     args << "-Wextra"
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
+    args << '-Wno-unused-parameter'
     args << "-mandroid"
     args << "-DANDROID"
     args << "-DOS_ANDROID"

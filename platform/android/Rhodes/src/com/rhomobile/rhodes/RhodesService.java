@@ -75,6 +75,7 @@ import com.rhomobile.rhodes.util.JSONGenerator;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.PhoneId;
 import com.rhomobile.rhodes.util.Utils;
+//import com.rhomobile.rhodes.camera.Camera;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -94,6 +95,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.hardware.Camera;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -105,12 +107,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.Process;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.RemoteViews;
+
+
+import java.util.Enumeration;
+import java.net.NetworkInterface;
+import java.net.InetAddress;
+import java.net.Inet4Address;
+import java.net.SocketException;
 
 public class RhodesService extends Service {
 	
@@ -530,6 +540,11 @@ public class RhodesService extends Service {
 		return ra.getMainView();
 	}
 
+	public static void kill() {
+		Logger.I(TAG, "kkkill !!!");
+		Process.killProcess(Process.myPid());
+	}
+	
 	public static void exit() {
 	    PerformOnUiThread.exec(new Runnable() {
 	        @Override
@@ -542,12 +557,12 @@ public class RhodesService extends Service {
                     RhodesService service = RhodesService.getInstance();
                     if (service != null)
                     {
-                        Logger.T(TAG, "stop RhodesService");
+                        Logger.I(TAG, "stop RhodesService");
                         service.wakeLock.reset();
                         service.stopSelf();
                     }
                     
-                    Logger.T(TAG, "stop RhodesApplication");
+                    Logger.I(TAG, "stop RhodesApplication");
                     RhodesApplication.stop();
                 }
                 catch (Exception e) {
@@ -570,14 +585,7 @@ public class RhodesService extends Service {
 	}
 	
 	public static void showLogView() {
-		PerformOnUiThread.exec(new Runnable() {
-			public void run() {
-				final LogViewDialog logViewDialog = new LogViewDialog(ContextFactory.getUiContext());
-				logViewDialog.setTitle("Log View");
-				logViewDialog.setCancelable(true);
-				logViewDialog.show();
-			}
-		});
+	    getInstance().startActivity(new Intent().setClass(getContext(), LogViewDialog.class));
 	}
 	
 	public static void showLogOptions() {
@@ -826,8 +834,9 @@ public class RhodesService extends Service {
             else if (name.equalsIgnoreCase("webview_framework")) {
                 return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
             }
-            else if (name.equalsIgnoreCase("is_motorola_device")) {
-                return isMotorolaDevice();
+            else if (name.equalsIgnoreCase("is_symbol_device") ||
+                    name.equalsIgnoreCase("is_motorola_device")) {
+                return isSymbolDevice();
             }
             else if (name.equalsIgnoreCase("oem_info")) {
                 return Build.PRODUCT;
@@ -836,7 +845,22 @@ public class RhodesService extends Service {
                 return fetchUUID();
             }
             else if (name.equalsIgnoreCase("has_camera")) {
-                return Boolean.TRUE;
+            	boolean hasCamera = false;
+            	/*try {
+            		if (Camera.getCameraService() != null) {
+            			if ((Camera.getCameraService().getMainCamera() != null) || (Camera.getCameraService().getFrontCamera() != null)) {
+            				hasCamera = true;
+            			}
+            		}
+            	}
+            	catch (Throwable e) {
+            		e.printStackTrace();
+            		Logger.E(TAG, "Exception during detect Camera for has_camera");
+            	}
+				*/
+            	int noofCameras=Camera.getNumberOfCameras();
+            	hasCamera=noofCameras==0?false:true;
+                return hasCamera;//Boolean.TRUE;
             }
             else {
                 return RhoExtManager.getImplementationInstance().getProperty(name);
@@ -849,23 +873,23 @@ public class RhodesService extends Service {
 		return null;
 	}
     
-    public static Boolean isMotorolaDevice() {
+    public static Boolean isSymbolDevice() {
         Boolean res = false;
-        try
+       /* try
         {
-            Class<?> commonClass = Class.forName("com.motorolasolutions.rhoelements.Common");
+            Class<?> commonClass = Class.forName("com.rho.rhoelements.Common");
             Method isEmdkDeviceMethod = commonClass.getDeclaredMethod("isEmdkDevice");
             res = (Boolean)isEmdkDeviceMethod.invoke(null);
         } 
         catch (Throwable e) { }
-        return Boolean.valueOf(Capabilities.MOTOROLA_ENABLED && res);
+        return Boolean.valueOf(Capabilities.MOTOROLA_ENABLED && res);*/
         
-        // There is a loading issue if app_type=rhodes. SR EMBPD00111897
+      //   There is a loading issue if app_type=rhodes. SR EMBPD00111897
         
-//       if(isAppInstalled("com.motorolasolutions.emdk.proxyframework") || isAppInstalled("com.motorolasolutions.emdk.datawedge") )
-//            return true;
-//        else
-//            return false;
+      return isAppInstalled("com.symbol.emdk.proxyframework") ||
+             isAppInstalled("com.symbol.emdk.datawedge") ||
+             isAppInstalled("com.motorolasolutions.emdk.proxyframework") ||
+             isAppInstalled("com.motorolasolutions.emdk.datawedge");
     }
 	
 	public static String getTimezoneStr() {
@@ -1315,7 +1339,7 @@ public class RhodesService extends Service {
 		// Get serial number from UUID file built into image
 		try
 		{
-		    if (isMotorolaDevice())
+		    if (isSymbolDevice())
 		    {
 				BufferedReader reader = new BufferedReader(new FileReader("/sys/hardware_id/uuid"));
 				uuid = reader.readLine();
@@ -1335,7 +1359,7 @@ public class RhodesService extends Service {
 	}
 	
 	/**
-	 * This method is used only for non-Motorola devices as the UUID needs to be computed by other parameters.
+	 * This method is used only for non-Symbol devices as the UUID needs to be computed by other parameters.
 	 * @return 32-byte long UUID
 	 */
 	private static String computeUUID()
@@ -1444,6 +1468,17 @@ public class RhodesService extends Service {
         }
     }
 
+
+    public static native void onUiThreadCallback(int idx);
+
+    public static void runOnUiThread(final int idx) {
+        PerformOnUiThread.exec(new Runnable() {
+            public void run() {
+                RhodesService.onUiThreadCallback(idx);
+            }
+        });
+    }
+
     public static String getNativeMenu() {
         List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
         String menuJson = new JSONGenerator(menuItems).toString();
@@ -1478,5 +1513,38 @@ public class RhodesService extends Service {
             }
         }
         RhodesActivity.safeGetInstance().getMenu().setMenu(nativeMenu);
+        if (Build.VERSION.SDK_INT >= 11) {
+        	PerformOnUiThread.exec(new Runnable() {
+        		public void run() {
+        			RhodesActivity.safeGetInstance().invalidateOptionsMenu();
+        		}
+        	});
+        }
+    }
+
+   public static String getLocalIpAddress()
+{
+   String res = "";
+    try {
+        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+            NetworkInterface intf = en.nextElement();
+            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                InetAddress inetAddress = enumIpAddr.nextElement();
+                if (!inetAddress.isLoopbackAddress() && (inetAddress instanceof Inet4Address)) {
+                    res = inetAddress.getHostAddress().toString();
+                    //Logger.T(TAG, "@@@@@@@@@@@@@@@@ = "+res);
+                }
+             }
+         }
+     } catch (SocketException ex) {
+         //Log.e(LOG_TAG, ex.toString());
+     }
+
+     return res;
+}
+
+
+    public static void removeSplashScreen() {
+        getInstance().getMainView().removeSplashScreen();
     }
 }

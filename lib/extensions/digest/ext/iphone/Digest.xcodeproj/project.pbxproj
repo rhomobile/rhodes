@@ -201,7 +201,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/Digest.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -215,7 +214,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Digest;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "i386 armv7";
 			};
 			name = Debug;
 		};
@@ -223,7 +221,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /tmp/Digest.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -233,7 +230,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Digest;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "i386 armv7";
 			};
 			name = Release;
 		};

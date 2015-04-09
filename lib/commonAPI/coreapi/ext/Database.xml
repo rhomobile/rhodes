@@ -1,10 +1,10 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-  <MODULE name="Database" parent="Rho" generateUnderscoreRubyNames="true">
+  <MODULE name="Database" parent="Rho" generateUnderscoreRubyNames="true" productException='eb'>
     <HELP_OVERVIEW>Database is low-level API to access SQLite local database.</HELP_OVERVIEW>
     <MORE_HELP>This API used internally by RHOM. To use RHOM, just define your models and partition databases will be created automatically.
-## Enabling the API           
+## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
@@ -15,10 +15,12 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
     </MORE_HELP>
+        <MORE_HELP_EB>
+        </MORE_HELP_EB>
 
     <ALIASES>
     </ALIASES>
-    
+
     <TEMPLATES>
     </TEMPLATES>
 
@@ -32,9 +34,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
       </ALIASES>
       <METHOD name="initialize" constructor="true" generateAPI="false">
         <DESC>This method is a constructor for this class. Instead of saying Rho.Database.initialize(dbPath,dbPartition) you would use new Rho.Database(dbPath,dbPartition). ex: `var db = new Rho.Database(Rho.Application.databaseFilePath('test'), 'test');` Make sure you issue a `.close()` when you are finished using the database. If the database file does not exist it will be created using a SQL schema: rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC>
+        <DESC_EB>This method is a constructor for this class. Instead of saying `EB.Database.initialize(dbPath,dbPartition)` you would use `new EB.Database(dbPath,dbPartition). ex: `var db = new EB.Database(EB.Application.databaseFilePath('test'), 'test');` Make sure you issue a `.close()` when you are finished using the database. If the database file does not exist it will be created using a default SQL schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC_EB>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
-            <DESC>The path to the database. Databases stored at the path provided by Rho::Application.databaseFilePath.</DESC>
+            <DESC>The path to the database. Databases stored at the path provided by Application.databaseFilePath.</DESC>
           </PARAM>
           <PARAM name="dbPartition" type="STRING">
             <DESC>The database partition. Used as a file name for database and when connecting to RhoConnect server.</DESC>
@@ -60,7 +63,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <DESC>Unlock database, previously locked by lockDb.</DESC>
       </METHOD>
       <METHOD name="isUiWaitForDb" generateAPI="false" generateDoc="false">
-        <DESC>Is UI waiting for DB? Should be used in separate Ruby thread, which updates database (implementing custom data sync logic). Will be true when database method calls from Main Ruby thread and waits for database.</DESC>
+        <DESC>Indicates if UI waiting for DB? Should be used in separate thread, which updates database (implementing custom data sync logic). Will be true when database method calls from Main application thread and waits for database.</DESC>
         <RETURN type="BOOLEAN"/>
       </METHOD>
       <METHOD name="executeSql" generateAPI="false" >
@@ -131,7 +134,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </PARAMS>
         <RETURN type="BOOLEAN"/>
       </METHOD>
-      <METHOD name="setDoNotBackupAttribute" generateAPI="false" generateDoc="false" >
+      <METHOD name="setDoNotBackupAttribute" generateAPI="false" generateDoc="false" productException="eb">
         <DESC>Set "do not backup attribute" for the database file. This is special flag set on files, which will exclude it from iCloud service.</DESC>
         <PLATFORM>iOS</PLATFORM>
         <PARAMS>
@@ -148,8 +151,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
     </USER_OVERVIEW>
     <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-         <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
-
+    <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+    <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
     <EXAMPLES>
       <EXAMPLE title="Using Transactions">
         <SECTIONS>
@@ -158,23 +161,23 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <CODE>
               <RUBY>
                 <![CDATA[
-db = Rho::Database
-  db.startTransaction
-  begin
-    items.each do |item|
-      # create hash of attribute/value pairs
-      data = {
-        :field1 => item['value1'], 
-        :field2 => item['value2'] 
-      } 
-      # Creates a new itemModel object and saves it
-      new_item = itemModel.create(data)
-    end
-   db.commitTransaction
-  rescue
-   db.rollbackTransaction
+db = Rho::Database.new
+db.startTransaction
+begin
+  items.each do |item|
+    # create hash of attribute/value pairs
+    data = {
+      :field1 => item['value1'],
+      :field2 => item['value2']
+    }
+    # Creates a new itemModel object and saves it
+    new_item = itemModel.create(data)
   end
-  ]]>
+  db.commitTransaction
+rescue
+  db.rollbackTransaction
+end
+]]>
               </RUBY>
               <JAVASCRIPT>
                 <![CDATA[
@@ -185,13 +188,13 @@ try
   for (var index in items) {
     // create hash of attribute/value pairs
     data = {
-      field1 : item[index].value1, 
+      field1 : item[index].value1,
       field2 : item[index].value2
-    }; 
+    };
     // Creates a new itemModel object and saves it
     new_item = itemModel.create(data);
   }
-  
+
  db.commitTransaction();
 }
 catch

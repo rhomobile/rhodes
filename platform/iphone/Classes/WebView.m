@@ -32,6 +32,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebView"
 
+int rho_rhodesapp_check_mode();
+
 static int getIndex(NSValue *value)
 {
     int index;
@@ -151,6 +153,12 @@ const char* rho_webview_execute_js(const char* js, int index) {
         return "";
     id runnable = [RhoWebViewExecuteJsTask class];
     id arg1 = [NSString stringWithUTF8String:js];
+  
+    if ( arg1 == nil )
+    {
+      arg1 = [[NSString alloc] initWithCString:js encoding:NSASCIIStringEncoding];
+    }
+  
     id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg1 arg:arg2 wait:NO];
     return "";

@@ -35,6 +35,8 @@
 
 #include "json/JSONIterator.h"
 
+#include "common/IRhoThreadImpl.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Callbacks"
 
@@ -179,11 +181,32 @@ RHO_GLOBAL int rho_sys_set_sleeping(int sleeping) {
 RHO_GLOBAL void rho_sys_app_exit()
 {
     JNIEnv *env = jnienv();
+
+    int isKill = 0;
+    void *q = NULL;
+    if (env == 0) {
+    	isKill = 1;
+    	q = rho_nativethread_start();
+    	env = jnienv();
+    }
+    if (env == 0) {
+    	RAWLOG_ERROR("JNIEnv is not set for this thread!!! WTF ?!");
+    }
+
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "exit", "()V");
+    jmethodID mid = NULL;
+    if (isKill) {
+    	mid = getJNIClassStaticMethod(env, cls, "kill", "()V");
+    }
+    else {
+    	mid = getJNIClassStaticMethod(env, cls, "exit", "()V");
+    }
     if (!mid) return;
     env->CallStaticVoidMethod(cls, mid);
+    if (q != NULL) {
+    	rho_nativethread_end(q);
+    }
 }
 
 RHO_GLOBAL void rho_sys_run_app(const rho::String& appname, const rho::String& params, rho::apiGenerator::CMethodResult& result)
@@ -315,6 +338,33 @@ RHO_GLOBAL void rho_sys_get_screen_auto_rotate_mode(rho::apiGenerator::CMethodRe
     result.set(static_cast<bool>(env->CallStaticBooleanMethod(cls, mid)));
 }
 
+static rho::Hashtable<int, rho::common::IRhoRunnable*> cbk_array;
+static int counter = 0;
+
+extern "C" void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
+{
+    if (pTask == NULL) {
+        return;
+    }
+    int curr = ++counter;
+    cbk_array[curr] = pTask;
+    
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "runOnUiThread", "(I)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, curr);
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_onUiThreadCallback(JNIEnv *env, jint idx)
+{
+    int cbk_idx = static_cast<int>(idx);
+    if (cbk_array.count(cbk_idx) > 0) {
+        cbk_array[cbk_idx]->runObject();
+        cbk_array.erase(cbk_idx);
+    }
+}
 
 namespace rho {
 

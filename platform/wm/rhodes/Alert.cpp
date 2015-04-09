@@ -186,7 +186,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	dc.GetTextMetrics(&tm);
 
 	int msgWidth  =  (int)(m_message.length() * (tm.tmAveCharWidth * 1.3) + (2 * INDENT));
-	int msgHeight =  tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading;
+	int msgHeight =  ((tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading) * 3);
 
 	int desiredDlgWidth = iconRect.right + msgWidth + (INDENT * 2);
 
@@ -204,7 +204,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		if (desiredDlgWidth >= (int)maxWidth) {
 			msgWidth = maxWidth - (iconRect.right + INDENT*2 + xBorderWidth*2);
 			msgHeight = (((m_message.length() * tm.tmAveCharWidth) / msgWidth) + 1) 
-						* (tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading);
+						* ((tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading)*3);
 			desiredDlgWidth = maxWidth;
 		}
 		
@@ -265,7 +265,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) 
     {
-		//btnWidth = (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent;
+		btnWidth = (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent;
 
 		RECT rc = {point.x, point.y, point.x + btnWidth, point.y + btnHeight};
 		itr->Create(m_hWnd, rc, 
@@ -408,17 +408,19 @@ void CAlert::playFile(String fileName)
     }
 
     StringW strPathW = convertToStringW(path);
-    HRESULT hr = lpfn_snd_open( strPathW.c_str(), &hSound);
+    /*HRESULT hr = lpfn_snd_open( strPathW.c_str(), &hSound);
     hr = lpfn_snd_playasync(hSound, 0);
-      
+      */
+
+	HRESULT hr =  sndPlaySound(strPathW.c_str(), SND_FILENAME | SND_ASYNC);
     if (hr != S_OK) {
         LOG(WARNING) + "OnAlertPlayFile: failed to play file"; 
     }
     
-    WaitForSingleObject(hSound, INFINITE);
+    //WaitForSingleObject(hSound, INFINITE);
                         
-    hr = lpfn_snd_close(hSound);
-    lpfn_snd_stop(SND_SCOPE_PROCESS, NULL);
+    /*hr = lpfn_snd_close(hSound);
+    lpfn_snd_stop(SND_SCOPE_PROCESS, NULL);*/
 }
 
 #endif //_WIN32_WCE
@@ -575,7 +577,7 @@ extern "C" void alert_vibrate(int duration_ms) {
 
 extern "C" void alert_play_file(char* file_name, char* media_type) {
 #if _WIN32_WCE > 0x499 //&& !defined( OS_PLATFORM_MOTCE )
-	if(RHO_IS_WMDEVICE)
+	//if(RHO_IS_WMDEVICE)
 		CAlert::playFile(file_name);
 #endif
 }

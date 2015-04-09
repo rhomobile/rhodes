@@ -213,7 +213,7 @@ public:
     virtual  void reset(){ m_oFile.movePosToStart(); }
 };
 
-bool CRhoFile::isOpened(){
+bool CRhoFile::isOpened() const{
     return m_file!=0;
 }
 
@@ -351,11 +351,45 @@ void CRhoFile::setPosTo(int nPos){
     fseek(m_file,nPos,SEEK_SET);
 }
 
-unsigned int CRhoFile::size(){
+int CRhoFile::getPos() const {
+    if ( !isOpened() )
+        return -1;
+
+    fpos_t pos;
+    if(fgetpos(m_file, &pos) == 0)
+    {
+        return pos;
+    } else
+    {
+        return -1;
+    }
+}
+
+bool CRhoFile::isEnd() const
+{
+    if(!isOpened())
+        return false;
+
+    return feof(m_file) != 0;
+}
+
+unsigned int CRhoFile::size() const {
     if ( !isOpened() )
         return 0;
 
     return getFileSize( m_strPath.c_str() );
+}
+
+void CRhoFile::truncate(unsigned int size) {
+    if ( !isOpened() )
+        return;
+
+#ifdef WINDOWS_PLATFORM
+    //_chsize(fileno(m_file), size);
+#else
+    ftruncate(fileno(m_file), size);
+#endif
+
 }
 
 bool CRhoFile::isFileExist( const char* szFilePath ){
@@ -573,7 +607,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     dst.flush();
     dst.close();
     
-    delete buf;
+    delete[] buf;
 
     return 0;
 }
@@ -664,7 +698,13 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     hFind = FindFirstFileW(wFolderMask.c_str(), &FindFileData);
 
     if (hFind == INVALID_HANDLE_VALUE) 
-        return GetLastError();
+    {
+        DWORD dwErr = GetLastError();
+        if (dwErr == ERROR_NO_MORE_FILES)
+            return 0;
+
+        return dwErr;
+    }
 
     do{
         if (!wcscmp(FindFileData.cFileName , L".")) continue ;

@@ -26,6 +26,12 @@
 
 package com.rhomobile.rhodes.mainview;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Vector;
 import java.util.List;
@@ -45,17 +51,23 @@ import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
+import android.app.ActionBar.LayoutParams;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.WebView;
+import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -74,8 +86,96 @@ public class SimpleMainView implements MainView {
 		}
 	};
 	
+	public static class TransparencyViewForCaptureTouchEvents extends View {
+
+		public TransparencyViewForCaptureTouchEvents(Context context) {
+			super(context);
+		}
+		
+	}
+	
 	private void addWebViewToMainView(IRhoWebView webView, int index, LinearLayout.LayoutParams params) {
 		view.addView(webView.getContainerView(), index, params);
+		
+		Utils.platformLog("Development Extra Simple View WV", "$$$$$ setup $$$$$");
+		
+		Context activity = ContextFactory.getUiContext();
+
+		
+		View al = webView.getView();
+			
+		if (al instanceof WebView) {
+			// we have android WebView (not private Motorola)
+			
+			// check for exist developer extension
+			try {
+				Class<?> dev_class = Class.forName("com.rho.development.Development");
+				// we have Development extension !
+				
+				// check for already add transparency view
+				ViewGroup cv = webView.getContainerView();
+				int child_count = cv.getChildCount();
+				int i;
+				boolean hasTransparencyView = false;
+				for (i = 0; i < child_count; i++) {
+					View v = cv.getChildAt(i);
+					if (v instanceof TransparencyViewForCaptureTouchEvents) {
+						hasTransparencyView = true;
+					}
+				}
+				
+				if (!hasTransparencyView) {
+					final View dst = al;
+					View transView = new TransparencyViewForCaptureTouchEvents(activity);
+					transView.setClickable(true);
+					transView.setBackgroundColor(Color.TRANSPARENT);
+					transView.setOnTouchListener(new View.OnTouchListener() {
+			
+						private View mDST = dst;
+						private int mCurrentMax = 0;
+			
+						@Override
+						public boolean onTouch(View v, MotionEvent event) {
+							//Utils.platformLog("Development Extra Simple View TV", "$$$$$ TOUCH EVENT TV ["+MotionEvent.actionToString(event.getAction())+", "+String.valueOf(event.getPointerCount())+"] $$$$$");
+							if ((event.getActionMasked() == MotionEvent.ACTION_UP) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)) {
+								//Utils.platformLog("Development Extra Simple View", "$$$$$ UP TV ["+String.valueOf(event.getPointerCount())+"] $$$$$");
+								if ((event.getPointerCount() == 3) && (mCurrentMax == 3)) {
+									//Utils.platformLog("Development Extra Simple View", "$$$$$ TRIPLE TAP TV $$$$$");
+									RhodesActivity.onTripleTap();
+								}
+								if ((event.getPointerCount() == 4) && (mCurrentMax == 4)) {
+									//Utils.platformLog("Development Extra Simple View", "$$$$$ QUADRO TAP TV $$$$$");
+									RhodesActivity.onQuadroTap();
+								}
+								if (event.getPointerCount() == 1) {
+									mCurrentMax = 0;
+								}
+							}
+							else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+								mCurrentMax = 0;
+							}
+							else if ((event.getActionMasked() == MotionEvent.ACTION_DOWN) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN)) {
+								if (event.getPointerCount() > mCurrentMax) {
+									mCurrentMax = event.getPointerCount();
+								}
+							}
+							mDST.dispatchTouchEvent(event);
+							return false;
+							
+						}
+					});	
+					
+					cv.addView(transView, new AbsoluteLayout.LayoutParams(FILL_PARENT, FILL_PARENT, 0, 0));
+					cv.bringChildToFront(transView);
+				}
+			
+			} catch (ClassNotFoundException e) {
+				//e.printStackTrace();
+			}
+		
+		}
+		
+
 	}
 	
 	private void removeWebViewFromMainView() {
@@ -368,9 +468,23 @@ public class SimpleMainView implements MainView {
 		if (iconObj != null) {
 			if (!(iconObj instanceof String))
 				throw new IllegalArgumentException("'icon' should be String");
-			String iconPath = "apps/" + (String)iconObj;
-			iconPath = RhoFileApi.normalizePath(iconPath);
-			Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));
+			
+			InputStream is = null;
+			String iconPath = (String)iconObj;
+			is = RhoFileApi.open(iconPath);
+			if (is == null) {
+				iconPath = RhoFileApi.normalizePath(iconPath);
+				is = RhoFileApi.open(iconPath);
+			}
+			if (is == null) {
+				iconPath = "apps/" + (String)iconObj;
+				iconPath = RhoFileApi.normalizePath(iconPath);
+				is = RhoFileApi.open(iconPath);
+			}
+			if (is == null) {
+				throw new IllegalArgumentException("Can't find icon file: " + iconPath);
+			}
+			Bitmap bitmap = BitmapFactory.decodeStream(is);
 			if (bitmap == null)
 				throw new IllegalArgumentException("Can't find icon: " + iconPath);
 			bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);
@@ -532,7 +646,7 @@ public class SimpleMainView implements MainView {
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
-
+		
 		LinearLayout bottom = new LinearLayout(activity);
 		bottom.setOrientation(LinearLayout.HORIZONTAL);
 		bottom.setBackgroundColor(Color.GRAY);
@@ -597,6 +711,7 @@ public class SimpleMainView implements MainView {
 	}
 
 	public void navigate(String url, int index) {
+		//Utils.platformLog("@&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&@", "navigate("+url+")");
 		String cleared_url = processForNativeView(url);
 		Logger.I(TAG, "Cleared URL: " + url);
 		if (cleared_url.length() > 0) {
@@ -607,9 +722,72 @@ public class SimpleMainView implements MainView {
 		}
 	}
 
-    @Override
+	
+    //@Override
     public void executeJS(String js, int index) {
-        com.rhomobile.rhodes.WebView.executeJs(js, index);
+    	
+    	//Utils.platformLog("@$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$@", "ExecuteJS("+js+")");
+    	//((android.webkit.WebView)webView.getView()).executeJS();
+    	if ((android.os.Build.VERSION.SDK_INT < 14) || (android.os.Build.VERSION.SDK_INT >= 19)) {    // 14 is 4.0, 19 is 4.4
+    		navigate("javascript:"+js, index);
+    		return;
+    	}
+    	
+    	
+		Method mStringByEvaluatingJavaScriptFromString = null;
+		Method mSendMessage = null;
+	    Object mWebViewCore = null;
+	    Object mBrowserFrame = null;
+	    boolean mHasPossibleUseOfReflectionExecuteJS = false;
+	    Object webViewObject = this;
+	    Class webViewClass = android.webkit.WebView.class;
+	    try {
+	        Field mp = webViewClass.getDeclaredField("mProvider");
+	        mp.setAccessible(true);
+	        webViewObject = mp.get((android.webkit.WebView)webView.getView());
+	        webViewClass = webViewObject.getClass();
+	        Field wc = webViewClass.getDeclaredField("mWebViewCore");
+	        wc.setAccessible(true);
+	        mWebViewCore = wc.get(webViewObject);
+	        if (mWebViewCore != null) {
+	        	
+	        	mSendMessage = mWebViewCore.getClass().getDeclaredMethod("sendMessage", Message.class);
+	        	mSendMessage.setAccessible(true);
+
+	        	/*
+	        	Field bf= mWebViewCore.getClass().getDeclaredField("mBrowserFrame");
+	            
+	        	bf.setAccessible(true);
+	        	mBrowserFrame = bf.get(mWebViewCore);
+	            mStringByEvaluatingJavaScriptFromString = mBrowserFrame.getClass().getDeclaredMethod("stringByEvaluatingJavaScriptFromString", String.class);
+	            mStringByEvaluatingJavaScriptFromString.setAccessible(true);   
+				*/
+	        }
+	        mHasPossibleUseOfReflectionExecuteJS = true;
+	    } catch (Throwable e) {
+	    	mHasPossibleUseOfReflectionExecuteJS = false;
+	        //e.printStackTrace();
+	    }		    		
+
+	    boolean mHasReflectionWasExecutedOK = false;
+	    
+	    if (mHasPossibleUseOfReflectionExecuteJS && (mSendMessage != null)) {
+			try {
+				//mStringByEvaluatingJavaScriptFromString.invoke(mBrowserFrame, js);
+				Message execJSCodeMsg = Message.obtain(null, 194, js);
+				mSendMessage.invoke(mWebViewCore, execJSCodeMsg);
+				mHasReflectionWasExecutedOK = true;
+				//Utils.platformLog("@#########################@", "EvaluateJS("+js+")");
+			} catch (Throwable e) {
+				//e.printStackTrace();
+			}
+	    }
+	    
+	    if (!mHasReflectionWasExecutedOK) {
+	        //com.rhomobile.rhodes.WebView.executeJs(js, index);
+	    	navigate("javascript:"+js, index);
+	    	
+	    }
     }
 
 	public void reload(int index) {
@@ -720,6 +898,10 @@ public class SimpleMainView implements MainView {
             return "";
         }
         return webView.getUrl();
+    }
+
+    @Override
+    public void removeSplashScreen() {
     }
 
 }

@@ -160,6 +160,10 @@ public :
     virtual void setCallback(INetRequestCallback* callback) { }
 
     static void deinitConnection();
+  
+    virtual boolean getFollowRedirects() { return false; }
+    virtual void setFollowRedirects(boolean follow) {}
+
 
 private:
     void close();

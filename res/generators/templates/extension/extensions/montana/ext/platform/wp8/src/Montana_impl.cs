@@ -13,92 +13,56 @@ using rhoruntime;
 
 namespace rho {
 
-namespace <%= name.camel_case() %>Impl
+namespace <%= namecamelcase %>Impl
 {
-    public class <%= name.camel_case() %> : I<%= name.camel_case() %>Impl
+    public class <%= namecamelcase %> : <%= namecamelcase %>Base
     {
-        public <%= name.camel_case() %>()
+        public <%= namecamelcase %>()
         {
-            var _runtime = new <%= name.camel_case() %>RuntimeComponent(this);
+            // initialize class instance in C# here
         }
 
-        public void enable(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
-        {
-            // implement this method in C# here
-        }
-
-        public void start(IMethodResult oResult)
+        public override void getSimpleStringProperty(IMethodResult oResult)
         {
             // implement this method in C# here
         }
 
-        public void stop(IMethodResult oResult)
+        public override void setSimpleStringProperty(string simpleStringProperty, IMethodResult oResult)
         {
             // implement this method in C# here
         }
 
-        public void disable(IMethodResult oResult)
+        public override void getPlatformName(IMethodResult oResult)
         {
             // implement this method in C# here
         }
 
-        public void take(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
+        public override void calcSumm(int a, int b, IMethodResult oResult)
         {
             // implement this method in C# here
         }
 
-        public void getProperty(string propertyName, IMethodResult oResult)
-        {
-            // implement this method in C# here
-        }
-
-        public void getProperties(IReadOnlyList<string> arrayofNames, IMethodResult oResult)
-        {
-            // implement this method in C# here
-        }
-
-        public void getAllProperties(IMethodResult oResult)
-        {
-            // implement this method in C# here
-        }
-
-        public void setProperty(string propertyName, string propertyValue, IMethodResult oResult)
-        {
-            // implement this method in C# here
-        }
-
-        public void setProperties(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
-        {
-            // implement this method in C# here
-        }
-
-        public void clearAllProperties(IMethodResult oResult)
+        public override void joinStrings(string a, string b, IMethodResult oResult)
         {
             // implement this method in C# here
         }
     }
 
-    public class <%= name.camel_case() %>Singleton : I<%= name.camel_case() %>SingletonImpl
+    public class <%= namecamelcase %>Singleton : <%= namecamelcase %>SingletonBase
     {
-        public <%= name.camel_case() %>Singleton()
+        public <%= namecamelcase %>Singleton()
         {
-            var _runtime = new <%= name.camel_case() %>SingletonComponent(this);
+            // initialize singleton instance in C# here
         }
 
-        public void enumerate(IMethodResult oResult)
+        public override void enumerate(IMethodResult oResult)
         {
             // implement this method in C# here
         }
     }
 
-    public class <%= name.camel_case() %>Factory : I<%= name.camel_case() %>FactoryImpl
+    public class <%= namecamelcase %>Factory : <%= namecamelcase %>FactoryBase
     {
-        public I<%= name.camel_case() %>Impl getImpl() {
-            return new <%= name.camel_case() %>();
-        }
-        public I<%= name.camel_case() %>SingletonImpl getSingletonImpl() {
-            return new <%= name.camel_case() %>Singleton();
-        }
     }
 }
 

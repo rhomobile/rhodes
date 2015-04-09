@@ -1,55 +1,60 @@
-#include "../../../shared/generated/cpp/<%= name.camel_case %>Base.h"
+#include "../../../shared/generated/cpp/<%= namecamelcase %>Base.h"
 
 namespace rho {
 
 using namespace apiGenerator;
 
-class C<%= name.camel_case %>Impl: public C<%= name.camel_case %>Base
+class C<%= namecamelcase %>Impl: public C<%= namecamelcase %>Base
 {
 public:
-    C<%= name.camel_case %>Impl(const rho::String& strID): C<%= name.camel_case %>Base()
+    C<%= namecamelcase %>Impl(const rho::String& strID): C<%= namecamelcase %>Base()
     {
     }
 
-    virtual void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult){}
-    virtual void start(CMethodResult& oResult){}
-    virtual void stop(CMethodResult& oResult){}
-    virtual void disable(CMethodResult& oResult){}
-    virtual void take( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult){}
+    virtual void getPlatformName(rho::apiGenerator::CMethodResult& oResult) {
+         oResult.set("WP8");
+    }
 
+    virtual void calcSumm( int a,  int b, rho::apiGenerator::CMethodResult& oResult) {
+         oResult.set(a+b);
+    }
+    
+    virtual void joinStrings( const rho::String& a,  const rho::String& b, rho::apiGenerator::CMethodResult& oResult) {
+         oResult.set(a+b);
+    }
 };
 
-class C<%= name.camel_case %>Singleton: public C<%= name.camel_case %>SingletonBase
+class C<%= namecamelcase %>Singleton: public C<%= namecamelcase %>SingletonBase
 {
-    ~C<%= name.camel_case %>Singleton(){}
+    ~C<%= namecamelcase %>Singleton(){}
     virtual rho::String getInitialDefaultID();
     virtual void enumerate(CMethodResult& oResult);
 };
 
-class C<%= name.camel_case %>Factory: public C<%= name.camel_case %>FactoryBase
+class C<%= namecamelcase %>Factory: public C<%= namecamelcase %>FactoryBase
 {
-    ~C<%= name.camel_case %>Factory(){}
-    virtual I<%= name.camel_case %>Singleton* createModuleSingleton();
-    virtual I<%= name.camel_case %>* createModuleByID(const rho::String& strID);
+    ~C<%= namecamelcase %>Factory(){}
+    virtual I<%= namecamelcase %>Singleton* createModuleSingleton();
+    virtual I<%= namecamelcase %>* createModuleByID(const rho::String& strID);
 };
 
-extern "C" void Init_<%= name.camel_case %>_extension()
+extern "C" void Init_<%= namecamelcase %>_extension()
 {
-    C<%= name.camel_case %>Factory::setInstance( new C<%= name.camel_case %>Factory() );
-    Init_<%= name.camel_case %>_API();
+    C<%= namecamelcase %>Factory::setInstance( new C<%= namecamelcase %>Factory() );
+    Init_<%= namecamelcase %>_API();
 }
 
-I<%= name.camel_case %>* C<%= name.camel_case %>Factory::createModuleByID(const rho::String& strID)
+I<%= namecamelcase %>* C<%= namecamelcase %>Factory::createModuleByID(const rho::String& strID)
 {
-    return new C<%= name.camel_case %>Impl(strID);
+    return new C<%= namecamelcase %>Impl(strID);
 }
 
-I<%= name.camel_case %>Singleton* C<%= name.camel_case %>Factory::createModuleSingleton()
+I<%= namecamelcase %>Singleton* C<%= namecamelcase %>Factory::createModuleSingleton()
 {
-    return new C<%= name.camel_case %>Singleton();
+    return new C<%= namecamelcase %>Singleton();
 }
 
-void C<%= name.camel_case %>Singleton::enumerate(CMethodResult& oResult)
+void C<%= namecamelcase %>Singleton::enumerate(CMethodResult& oResult)
 {
     rho::Vector<rho::String> arIDs;
     arIDs.addElement("SC1");
@@ -58,7 +63,7 @@ void C<%= name.camel_case %>Singleton::enumerate(CMethodResult& oResult)
     oResult.set(arIDs);
 }
 
-rho::String C<%= name.camel_case %>Singleton::getInitialDefaultID()
+rho::String C<%= namecamelcase %>Singleton::getInitialDefaultID()
 {
     CMethodResult oRes;
     enumerate(oRes);

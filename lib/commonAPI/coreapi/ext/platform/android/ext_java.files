@@ -5,7 +5,6 @@ ext/platform/android/generated/src/com/rho/webview/IWebViewSingleton.java
 ext/platform/android/generated/src/com/rho/webview/WebViewBase.java
 ext/platform/android/generated/src/com/rho/webview/WebViewFactorySingleton.java
 ext/platform/android/generated/src/com/rho/webview/WebViewSingletonBase.java
-ext/platform/android/src/com/rho/webview/WebViewConfig.java
 ext/platform/android/src/com/rho/webview/WebViewSingleton.java
 ext/platform/android/src/com/rho/webview/WebViewFactory.java
 ext/platform/android/generated/src/com/rho/nativetabbar/INativeTabbar.java

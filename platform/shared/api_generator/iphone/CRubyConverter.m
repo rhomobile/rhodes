@@ -14,7 +14,7 @@
     if ([objectiveC_value isKindOfClass:[NSString class]]) {
         // string
         NSString* objString = (NSString*)objectiveC_value;
-        v = rho_ruby_create_string([objString UTF8String]);
+        v = rho_ruby_create_string_withlen2([objString UTF8String], [objString length]);
     }
     else if ([objectiveC_value isKindOfClass:[NSNumber class]]) {
         // int, bool or float
@@ -69,6 +69,7 @@
     }
     else if ([objectiveC_value isKindOfClass:[CMethodResultError class]]) {
         CMethodResultError* errorObject = (CMethodResultError*)objectiveC_value;
+        rb_raise(rho_ruby_get_NIL(), "error with code [%d] description [%s]", [errorObject getErrorCode], [[errorObject getErrorDescription] UTF8String]);
         
     }
     // ToDo: Support CMethodResultError
@@ -133,7 +134,7 @@
             }
             if (rb_type(ruby_value) != T_STRING)
                 value = rb_funcall(value, rb_intern("to_s"), 0, NULL);
-            return [NSString stringWithUTF8String:RSTRING_PTR(value)];
+            return [[NSString alloc] initWithBytes:RSTRING_PTR(value) length:RSTRING_LEN(value) encoding:NSUTF8StringEncoding];
         }
     }
     return nil;

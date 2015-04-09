@@ -1,0 +1,29 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Btdiscover" parent="Rho" productException='eb'>
+        <HELP_OVERVIEW>Example extension api</HELP_OVERVIEW>
+        <MORE_HELP>This is example of API. Implementation contain in extension.</MORE_HELP>
+    
+        <TEMPLATES>
+        </TEMPLATES>
+
+         <PROPERTIES >
+        </PROPERTIES>
+
+        <METHODS>
+
+            <METHOD name="enumerate" access="STATIC">
+                <RETURN type="HASH"/>
+            </METHOD>
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>    

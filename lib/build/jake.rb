@@ -26,9 +26,7 @@
 #------------------------------------------------------------------------
 
 require 'pathname'
-require 'yaml'
 require 'socket'
-require 'webrick'
 
 
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
@@ -60,13 +58,22 @@ class Hash
   end
 end
 
+# Class with around building things
 class Jake
 
   def self.config(configfile)
+    require 'yaml'
+
     conf = YAML::load(configfile)
     res = self.config_parse(conf)
     res
   end
+
+  def self.normalize_build_yml(yml = $app_config)
+    yml['wm'] = {} unless yml['wm'].is_a?(Hash)
+    yml['wm']['webkit_outprocess'] = '0' if yml['wm']['webkit_outprocess'].nil?
+  end
+
   def self.set_bbver(bbver)
     @@bbver = bbver
   end
@@ -146,6 +153,8 @@ class Jake
   end
 
   def self.run_local_server(port = 0)
+    require 'webrick'
+
     addr = localip                   #:BindAddress => addr,
     server = WEBrick::HTTPServer.new :Port => port
     port = server.config[:Port]
@@ -155,6 +164,8 @@ class Jake
   end
 
   def self.run_local_server_with_logger(port, log_file)
+    require 'webrick'
+
     addr = localip
     log = WEBrick::Log.new log_file
     access_log = [[log_file, WEBrick::AccessLog::COMBINED_LOG_FORMAT]]
@@ -218,6 +229,9 @@ class Jake
     $passed ||= 0
     $failed ||= 0
     $faillog = []
+    @default_file_name = "junit.xml"
+    $junitname = ''
+    $junitlogs = {@default_file_name => []}
     $getdump = false
   end
 
@@ -235,13 +249,34 @@ class Jake
         end
       end
 
-      if line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
-        $failed += $1.to_i
-        return false
-      elsif line =~ /\| \*\*\*Total:\s+(.*)/  # | ***Total:
+      if line =~ /JUNIT\| (.*)/          # JUNIT| XML
+        $junitlogs[@default_file_name] << $1
+      elsif line =~ /JUNITNAME\|\s+(.*)/          # JUNITNAME| name
+        $junitname = File.basename($1.strip,'.xml')
+        $junitlogs[$junitname] = []
+      elsif line =~ /JUNITBLOB\| (.*)/
+        if $junitname && $1
+          $junitlogs[$junitname] << $1
+        end
+      end
+
+      ###
+      # Here we are looking for the following pattern of spec stats:
+      # ...   APP| ***Total:  ...
+      # ...   APP| ***Passed: ...
+      # ...   APP| ***Failed: ...
+      # ...
+      # ...   APP| ***Terminated
+      # Bail out as soon as prev. line is found
+      ###
+      if line =~ /\| \*\*\*Total:\s+(.*)/  # | ***Total:
         $total += $1.to_i
       elsif line =~ /\| \*\*\*Passed:\s+(.*)/ # | ***Passed:
         $passed += $1.to_i
+      elsif line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
+        $failed += $1.to_i
+      elsif line =~ /\| \*\*\*Terminated\s+(.*)/ # | ***Terminated
+        return false
       end
       # Faillog for MSpec
       if line =~ /\| FAIL:/
@@ -265,7 +300,25 @@ class Jake
   def self.process_spec_results(start)
     finish = Time.now
 
+    jpath = File.join($app_path,'junitrep')
+
+    # remove old spec results
+    test_patterns = ['Test*.xml', '*_spec_results.xml']
+    base_path = File.join($app_path,'**')
+    Dir.glob( test_patterns.map{ |pat| File.join(base_path, pat) } ).each { |file_name| File.delete(file_name) }
+      
+    FileUtils.rm_rf jpath
+
+    FileUtils.mkdir_p jpath
+
+    $junitlogs.each do |name, log|
+      if log.length > 0
+        File.open(File.join(jpath,"#{name}.xml"), "w") { |io| io << log.join().gsub('~~',$/) }
+      end
+    end
+
     FileUtils.rm_rf $app_path + "/faillog.txt"
+
     if $failed.to_i > 0
       puts "************************"
       puts "\n\n"
@@ -299,6 +352,10 @@ class Jake
     end
 
     cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
+
+    if options[:string_for_add_to_command_line] != nil
+      cmdstr = cmdstr + options[:string_for_add_to_command_line]
+    end
 
     $stdout.flush
     unless options[:hide_output]
@@ -399,6 +456,8 @@ class Jake
   def self.edit_yml(file, out_file = nil)
     out_file = file if out_file.nil?
 
+    require 'yaml'
+
     yml = YAML::load_file(file)
     yield yml
     File.open(out_file, 'w') {|f| f.write yml.to_yaml}
@@ -410,6 +469,15 @@ class Jake
     doc = REXML::Document.new(File.new(file).read)
     yield doc
     File.open(out_file, 'w') {|f| f << doc}
+  end
+
+  def self.edit_lines(file, out_file = nil)
+    out_file = file if out_file.nil?
+
+    lines = File.readlines(file)
+    File.open(out_file, 'w') do |f|
+      lines.each { |line| f.puts(yield line) }
+    end
   end
 
   def self.clean_vsprops(file)
@@ -605,6 +673,8 @@ class Jake
   end
 
   def self.build_file_map(dir, file_name, in_memory = false)
+    require 'digest/md5'
+    
     psize    = dir.size + 1
     file_map = Array.new
     file_map_name = File.join(dir, file_name)
@@ -627,17 +697,17 @@ class Jake
 
       if File.basename(f) == file_name
         next
-      end
-
-      size = File.stat(f).size
-      tm   = File.stat(f).mtime.to_i
+      end 
+      
+      md5 = (type == 'file' ? (Digest::MD5.file(f)).to_s : '')
+      size    = File.stat(f).size
+      tm      = File.stat(f).mtime.to_i
 
       if in_memory == true
-        map_item = Hash.new
-        map_item = { :path => relpath, :size => size, :time => tm }
+        map_item = { :path => relpath, :size => size, :time => tm, :hash => md5}
         file_map << map_item
       else
-        dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}"
+        dat.puts "#{relpath}|#{type}|#{size.to_s}|#{tm.to_s}|#{md5}"
       end
     end
 
@@ -648,162 +718,50 @@ class Jake
     return file_map
   end
 
-  def self.list_zip_files(source_zip)
-    have_zip = false
-    begin
-      require 'zip'
+  # Unzips archive to specified directory
+  # @param src_zip [String] absolute path to archive
+  # @param dest_dir [String] path to directory when archive will be unzipped. If it not exists it will be created. It could contain nested directories
+  # @param block [block, optional] Block code will be called before each file entry extracting and it's parameters are: file entry size in bytes, archive total size in bytes, string like "Unpacking files: NN%" where NN% - unzipping progress in percents
+  def self.unzip(src_zip, dest_dir)
+    require 'zip'
 
-      have_zip = true
-    rescue Exception => e   
-      have_zip = false
+    unless File.exist?(dest_dir)
+      FileUtils.mkdir_p(dest_dir)
     end
 
-    files = {}
+    Zip::File.open(src_zip) do |zip_file|
 
-    total_files = 0
-    total_size = 0
-    lines = 0
+      unzipped_bytes = 0
+      total_bytes = zip_file.inject(0) { |result, each| result  + each.size }
 
-    if !have_zip
-      res = run2("unzip", ['-l', source_zip], {:hide_output => true}) do |line|
-        lines = 0
+      zip_file.each do |entry|
 
-        r1 = /([\d]+)\s+(\d\d-\d\d-\d[\d]+)\s+(\d\d:\d\d)\s+([^\s]+)/.match(line)
-        if !r1.nil?
-          files[r1[4]]=r1[1].to_i
-        else
-          m = /([\d]+)\s+([\d]+)(?:.*?)files/.match(line)
-          if m.nil?
-            total_files = lines - 3
-          else
-            total_files = m[2]
-            total_size = m[1]
-          end
+        if block_given? and entry.size != 0
+          unzipped_bytes = unzipped_bytes + entry.size
+          yield(unzipped_bytes, total_bytes, "Unpacking files: #{(unzipped_bytes * 100) / total_bytes}%")
         end
 
-        true
-      end
+        entry.extract(File.join(dest_dir, entry.name))
 
-      if $? != 0
-        puts res
-        exit
-      end
-    else
-      Zip::File.open(source_zip) { |zip_file|
-        zip_file.each_with_index { |f, index|
-          files[f.name] = f.size
-        }
-      }
-    end
-
-    if !files.empty?
-      total_files = 0
-      total_size = 0
-      files.each do |name,size|
-        total_files += 1
-        total_size += size
       end
     end
 
-    return files, total_files, total_size
   end
 
-  def self.unzip(source_zip, dest_folder)
-    have_zip = false
-    begin
-      require 'zip'
+  # Zips specified files from directory
+  # @param where [String] absolute path to base directory with files fir zipping
+  # @param what [Array] Array of file path of files to zipping. Each file path is relative for where argument
+  # @param dest [String] File path to created archive. If file already exists it will be removed before archive creation
+  def self.zip(where, what, dest)
+    require 'zip'
 
-      have_zip = true
-    rescue Exception => e   
-      have_zip = false
+    if File.exist?(dest)
+      FileUtils.rm(dest);
     end
 
-    if have_zip || RUBY_PLATFORM =~ /(win|w)32$/
-      begin
-        require 'rubygems'
-        require 'zip'
-        require 'find'
-        require 'fileutils'
-        include FileUtils
-
-        Zip::File.open(source_zip) { |zip_file|
-          last_path = ""
-          acc_size = 0
-          total_size = zip_file.inject(0) { |acc, inp| acc + inp.size }
-          total_files = zip_file.size
-
-          zip_file.each_with_index { |f, index|
-            if block_given?
-              yield(acc_size, total_size, "Unpacking files: #{(acc_size*100)/total_size}%")
-            end
-            acc_size += f.size
-            f_path=File.join(dest_folder, f.name)
-            d_path=File.dirname(f_path)
-            if last_path != d_path && !File.exists?(d_path)
-              FileUtils.mkdir_p(d_path)
-              last_path = d_path
-            end
-            zip_file.extract(f, f_path) 
-          }
-
-          if block_given?
-            yield(acc_size, total_size, "Unpacking files: #{(acc_size*100)/total_size}%")
-          end
-        }
-      rescue Exception => e
-        puts "ERROR : #{e}"
-        puts 'Require "rubyzip" gem for make zip file !'
-        puts 'Install gem by "gem install rubyzip"'
-        raise
-      end
-    else
-      files, total_files, total_size = list_zip_files(source_zip)
-
-      last = 0
-      num_files = 0
-      acc_size = 0
-      progress = 0
-
-      res = run2("unzip", [source_zip, '-d', dest_folder], {:hide_output => true, :directory => dest_folder}) do |line|
-        if line =~ /Archive:/
-          #do nothing
-        else
-          m = /\s+(.*?):\s+(.*?)\s+/.match(line)
-          if !m.nil?
-            fname = m[2].gsub(dest_folder+'/','') 
-            size = files[fname]
-            if size != nil
-              last = size
-            end
-          end
-        end
-
-        if total_size != 0
-          acc_size += last
-          last = 0
-          progress = acc_size * 100 / total_size
-        else
-          progress = num_files * 100 / total_files
-        end
-
-        if block_given?
-          yield(progress, 100, "Unpacking files: #{progress}%")
-        end
-
-        num_files += 1
-
-        true
-      end
-       
-      if total_size != 0
-        acc_size += last
-        progress = acc_size * 100 / total_size
-      else
-        progress = files * 100 / total_files
-      end
-
-      if block_given?
-        yield(progress, 100, "Unpacking files: #{progress}%")
+    Zip::File.open(dest, Zip::File::CREATE) do |zipfile|
+      what.each do |filename|
+        zipfile.add(filename, File.join(where, filename))
       end
     end
   end
@@ -819,12 +777,12 @@ class Jake
         begin
 
           require 'rubygems'
-          require 'zip/zip'
+          require 'zip'
           require 'find'
           require 'fileutils'
           include FileUtils
 
-          Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE)do |zipfile|
+          Zip::File.open(zip_file_path, Zip::File::CREATE)do |zipfile|
             Find.find("RhoBundle") do |path|
               Find.prune if File.basename(path)[0] == ?.
               next if path.start_with?("RhoBundle/lib") || path.start_with?("RhoBundle/db") || path == 'RhoBundle/hash' || path == 'RhoBundle/name'
@@ -940,11 +898,12 @@ class Jake
   end
 
   def self.run_rho_log_server(app_path)
+    require 'webrick'
 
-	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-	confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
-	confpath_content += "\r\n" + "LogToSocket=1" if !confpath_content.include?("LogToSocket=")
-	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+    confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
+    confpath_content += "\r\n" + "LogToSocket=1" if !confpath_content.include?("LogToSocket=")
+    File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
 
     begin
         require 'net/http'

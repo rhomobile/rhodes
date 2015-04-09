@@ -1106,8 +1106,51 @@ void rho_appmanager_load( void* httpContext, const char* szQuery)
 }
 
 
+#define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
+#ifdef __IPHONE_8_0
+
+BOOL checkNotificationType(UIUserNotificationType type)
+{
+    UIUserNotificationSettings *currentSettings = [[UIApplication sharedApplication] currentUserNotificationSettings];
+    
+    return (currentSettings.types & type);
+}
+
+#endif
+
+void setApplicationBadgeNumber(NSInteger badgeNumber)
+{
+    [[Rhodes sharedInstance] registerForRemoteNotification];
+    
+    UIApplication *application = [UIApplication sharedApplication];
+    
+#ifdef __IPHONE_8_0
+    // compile with Xcode 6 or higher (iOS SDK >= 8.0)
+    
+    if(SYSTEM_VERSION_LESS_THAN(@"8.0"))
+    {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = badgeNumber;
+    }
+    else
+    {
+        if (checkNotificationType(UIUserNotificationTypeBadge))
+        {
+            NSLog(@"badge number changed to %d", badgeNumber);
+            [UIApplication sharedApplication].applicationIconBadgeNumber = badgeNumber;
+        }
+        else
+            NSLog(@"access denied for UIUserNotificationTypeBadge");
+    }
+#else
+    // compile with Xcode 5 (iOS SDK < 8.0)
+    [UIApplication sharedApplication].applicationIconBadgeNumber = badgeNumber;
+    
+#endif
+}
+
 void rho_sys_set_application_icon_badge(int badge_number) {
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badge_number];
+    setApplicationBadgeNumber(badge_number);
 }
 
 void rho_platform_restart_application() {
@@ -1197,6 +1240,11 @@ void rho_title_change(const int tabIndex, const char* strTitle) {
     // not implemented on iOS
 }
 
+
+
+void rho_ios_log_console_output(const char* message) {
+    NSLog(@"%@", [NSString stringWithUTF8String:message]);
+}
 
 /*
 #define MAX_ACTIONS 4

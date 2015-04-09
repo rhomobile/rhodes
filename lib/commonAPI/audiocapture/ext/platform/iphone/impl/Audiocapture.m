@@ -116,13 +116,16 @@ extern const char* rho_rhodesapp_getblobsdirpath();
 - (void) stopCommand {
     if (recorder != nil) {
         isSaveFile = YES;
+        isStopping = YES;
         [recorder stop];
     }
     else {
-        [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"not any record process"];
+        if (!isStopping) {
+          [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"not any record process"];
+        }
     }
     recorder = nil;
-    
+
     //NSURL *url = [NSURL fileURLWithPath: destination];
     //NSError *err = nil;
     //NSData *audioData = [NSData dataWithContentsOfFile:[url path] options: 0 error:&err];
@@ -134,10 +137,13 @@ extern const char* rho_rhodesapp_getblobsdirpath();
 - (void) cancelCommand {
     if (recorder != nil) {
         isSaveFile = NO;
+        isStopping = YES;
         [recorder stop];
     }
     else {
+      if (!isStopping) {
         [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"not any record process"];
+      }
     }
     recorder = nil;
 }
@@ -147,6 +153,10 @@ extern const char* rho_rhodesapp_getblobsdirpath();
     if (![self exportAssetAsWaveFormat:recorderFilePath outPath:destination] ) {
         //fire ERROR
         [self fireCallback:CALLBACK_STATUS_ERROR param_name:@"message" param_value:@"can not save WAV after capturing"];
+        if (isStopping) {
+          isStopping = NO;
+          self.callback = nil;
+        }
     }
 }
 
@@ -163,11 +173,15 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         else {
             //fire CANCEL
             [self fireCallback:CALLBACK_STATUS_CANCEL param_name:nil param_value:nil];
+            self.callback = nil;
+            isStopping = NO;
         }
     }
     else {
         //fire ERROR
         [self fireCallback:CALLBACK_STATUS_ERROR param_name:nil param_value:nil];
+        self.callback = nil;
+        isStopping = NO;
     }
 }
 
@@ -339,6 +353,11 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         
         //fire OK
         [self fireCallback:CALLBACK_STATUS_OK param_name:HK_FILE_NAME param_value:[@"file://" stringByAppendingString:destination]];//[NSString stringWithFormat:@"%d", durInMilis]];
+      
+        if (isStopping) {
+          isStopping = NO;
+          self.callback = nil;
+        }
     }];
     
     dispatch_release(queue);
@@ -356,7 +375,13 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         return;
     }
     isStarted = YES;
-    callback = methodResult;
+    isStopping = NO;
+  
+    CMethodResult_SimpleHolder* sh = [CMethodResult_SimpleHolder makeEmptyHolder];
+    [super setProperties:props methodResult:sh];
+  
+    self.callback = methodResult;
+    
     destination = [[self getPreparedFileNameWithHash:props] retain];
     if (destination == nil) {
         isStarted = NO;

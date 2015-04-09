@@ -55,6 +55,9 @@
     <ClCompile Include="..\..\shared\api_generator\wp8\MethodResultImpl.cpp">
       <Filter>api_generator</Filter>
     </ClCompile>
+    <ClCompile Include="common\RhodesHelperWP8.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />
@@ -82,6 +85,9 @@
     </ClInclude>
     <ClInclude Include="..\..\shared\api_generator\wp8\MethodResultImpl.h">
       <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RhodesHelperWP8.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -37,15 +37,19 @@
 #include <algorithm>
 #include <iterator>
 
+
 #if !defined(WINDOWS_PLATFORM)
 #include <arpa/inet.h>
 #endif
 
 #if !defined(OS_WINCE)
 #include <common/stat.h>
+#define HTTP_EAGAIN_TIMEOUT 10
+#define HTTP_EAGAIN_TIMEOUT_STR "10"
 #else
 #include "CompatWince.h"
-
+#define HTTP_EAGAIN_TIMEOUT 60
+#define HTTP_EAGAIN_TIMEOUT_STR "60"
 #ifdef EAGAIN
 #undef EAGAIN
 #endif
@@ -280,9 +284,27 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 #endif
 
-CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
-    :m_active(false), m_port(port), verbose(true)
+CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server)
+    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
+#ifdef OS_MACOSX
+    , m_localResponseWriter(0)
+    , m_pQueue(0)    
+#endif
 {
+    m_enable_external_access = enable_external_access;
+    m_started_as_separated_simple_server = started_as_separated_simple_server;
+    CHttpServer(port, root, user_root, runtime_root);
+}
+    
+CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
+    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
+#ifdef OS_MACOSX
+    , m_localResponseWriter(0)
+    , m_pQueue(0)
+#endif
+{
+    m_enable_external_access = false;
+    m_started_as_separated_simple_server = false;
     m_root = CFilePath::normalizePath(root);
 #ifdef RHODES_EMULATOR
     m_strRhoRoot = m_root;
@@ -303,8 +325,14 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 }
     
 CHttpServer::CHttpServer(int port, String const &root)
-    :m_active(false), m_port(port), verbose(true)
+    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
+#ifdef OS_MACOSX
+    , m_localResponseWriter(0)
+    , m_pQueue(0)
+#endif
 {
+    m_enable_external_access = false;
+    m_started_as_separated_simple_server = false;
     
 	m_root = CFilePath::normalizePath(root);
     m_strRuntimeRoot = (m_strRhoRoot = m_root.substr(0, m_root.length()-5)) +
@@ -343,7 +371,7 @@ void CHttpServer::stop()
     // to the listener. This surely unblock accept on listener and,
     // therefore, stop server thread (because m_active set to false).
     m_active = false;
-    RAWLOG_INFO("Stopping server...");
+    if (verbose) RAWLOG_INFO("Stopping server...");
 
     if (m_sock!=INVALID_SOCKET)
     {
@@ -358,10 +386,12 @@ void CHttpServer::stop()
     sa.sin_port = htons((uint16_t)m_port);
     sa.sin_addr.s_addr = inet_addr("127.0.0.1");
     int err = connect(conn, (struct sockaddr *)&sa, sizeof(sa));
-    if (err == SOCKET_ERROR)
-        RAWLOG_ERROR1("Stopping server: can not connect to listener: %d", RHO_NET_ERROR_CODE);
-    else
-        RAWTRACE("Stopping server: command sent");
+    if (err == SOCKET_ERROR) {
+        if (verbose) RAWLOG_ERROR1("Stopping server: can not connect to listener: %d", RHO_NET_ERROR_CODE);
+    }
+    else {
+        if (verbose) RAWTRACE("Stopping server: command sent");
+    }
     closesocket(conn);
     /*
     RAWTRACE("Close listening socket");
@@ -397,17 +427,21 @@ extern "C" void rb_gc(void);
 
 bool CHttpServer::init()
 {
-	RAWTRACE("Open listening socket...");
+	if (verbose) RAWTRACE("Open listening socket...");
+
     close_listener();
-    m_listener = socket(AF_INET, SOCK_STREAM, 0);
+    
+    //m_listener = socket(AF_INET, SOCK_STREAM, 0);
+    m_listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    
     if (m_listener == INVALID_SOCKET) {
-        RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
+        if (verbose) RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
         return false;
     }
 
     int enable = 1;
     if (setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable)) == SOCKET_ERROR) {
-        RAWLOG_ERROR1("Can not set socket option (SO_REUSEADDR): %d", RHO_NET_ERROR_CODE);
+        if (verbose) RAWLOG_ERROR1("Can not set socket option (SO_REUSEADDR): %d", RHO_NET_ERROR_CODE);
         close_listener();
         return false;
     }
@@ -416,39 +450,79 @@ bool CHttpServer::init()
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
     sa.sin_port = htons((uint16_t)m_port);
-    sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    
+    if (m_enable_external_access) {
+        sa.sin_addr.s_addr = htonl(INADDR_ANY);
+    }
+    else {
+        sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    }
+    
+    
     if (bind(m_listener, (const sockaddr *)&sa, sizeof(sa)) == SOCKET_ERROR) {
-        RAWLOG_ERROR2("Can not bind to port %d: %d", m_port, RHO_NET_ERROR_CODE);
+        if (verbose) RAWLOG_ERROR2("Can not bind to port %d: %d", m_port, RHO_NET_ERROR_CODE);
         close_listener();
         return false;
     }
     
     if (listen(m_listener, 128) == SOCKET_ERROR) {
-        RAWLOG_ERROR1("Can not listen on socket: %d", RHO_NET_ERROR_CODE);
+        if (verbose) RAWLOG_ERROR1("Can not listen on socket: %d", RHO_NET_ERROR_CODE);
         close_listener();
         return false;
     }
     
-    RAWLOG_INFO1("Listen for connections on port %d", m_port);
+    // detect local IP adress
+    struct sockaddr_in sin;
+    memset(&sin, 0, sizeof(sin));
+    //sin.sin_len = sizeof(sin);
+    sin.sin_family = AF_INET; // or AF_INET6 (address family)
+    socklen_t len = sizeof(sin);
+    if (getsockname(m_listener, (struct sockaddr *)&sin, &len) < 0) {
+        // Handle error here
+        if (verbose) RAWLOG_ERROR("Can not detect local IP adress");
+    }
+    else {
+        m_IP_adress = inet_ntoa(sin.sin_addr);
+    }
+    
+    if (verbose) RAWLOG_INFO1("Listen for connections on port %d", m_port);
     return true;
+}
+
+int CHttpServer::getPort() 
+{
+    return m_port;
+}
+
+rho::String CHttpServer::getIPAdress()
+{
+    return m_IP_adress;
+}
+    
+void CHttpServer::disableAllLogging() 
+{
+    verbose = false;
 }
 
 bool CHttpServer::run()
 {
-    LOG(INFO) + "Start HTTP server";
+    if (verbose) LOG(INFO) + "Start HTTP server";
 
     if (!init())
+    {
         return false;
+    }
 
     m_active = true;
 
-    RHODESAPP().notifyLocalServerStarted();
+    if (!m_started_as_separated_simple_server)
+        RHODESAPP().notifyLocalServerStarted();
 
     for(;;) 
     {
-        RAWTRACE("Waiting for connections...");
+        if (verbose) RAWTRACE("Waiting for connections...");
 #ifndef RHO_NO_RUBY_API
-        if (rho_ruby_is_started())
+        if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
             rho_ruby_start_threadidle();
 #endif
         fd_set readfds;
@@ -461,7 +535,7 @@ bool CHttpServer::run()
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
 #ifndef RHO_NO_RUBY_API
-        if (rho_ruby_is_started())
+        if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
             rho_ruby_stop_threadidle();
 #endif
         bool bProcessed = false;
@@ -473,7 +547,7 @@ bool CHttpServer::run()
                 SOCKET conn = accept(m_listener, NULL, NULL);
                 //RAWTRACE("After accept...");
                 if (!m_active) {
-                    RAWTRACE("Stop HTTP server");
+                    if (verbose) RAWTRACE("Stop HTTP server");
                     return true;
                 }
                 if (conn == INVALID_SOCKET) {
@@ -481,14 +555,14 @@ bool CHttpServer::run()
                     if (RHO_NET_ERROR_CODE == EINTR)
                         continue;
         #endif
-                    RAWLOG_ERROR1("Can not accept connection: %d", RHO_NET_ERROR_CODE);
+                    if (verbose) RAWLOG_ERROR1("Can not accept connection: %d", RHO_NET_ERROR_CODE);
                     return false;
                 }
 
-                RAWTRACE("Connection accepted, process it...");
+                if (verbose) RAWTRACE("Connection accepted, process it...");
                 VALUE val;
 #ifndef RHO_NO_RUBY_API                
-                if (rho_ruby_is_started())
+                if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
                 {
                     if ( !RHOCONF().getBool("enable_gc_while_request") )                
                         val = rho_ruby_disable_gc();
@@ -497,13 +571,13 @@ bool CHttpServer::run()
                 m_sock = conn;
                 bProcessed = process(m_sock);
 #ifndef RHO_NO_RUBY_API
-                if (rho_ruby_is_started())
+                if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
                 {
                     if ( !RHOCONF().getBool("enable_gc_while_request") )
                         rho_ruby_enable_gc(val);
                 }
 #endif
-                RAWTRACE("Close connected socket");
+                if (verbose) RAWTRACE("Close connected socket");
                 closesocket(m_sock);
                 m_sock = INVALID_SOCKET;
             }
@@ -514,17 +588,21 @@ bool CHttpServer::run()
         }
         else
         {
-            RAWLOG_ERROR1("select error: %d", ret);
+            if (verbose) RAWLOG_ERROR1("select error: %d", ret);
             return false;
         }
 #ifndef RHO_NO_RUBY_API
-        if (rho_ruby_is_started())
+        if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
         {
             if ( bProcessed )
             {
-                LOG(INFO) + "GC Start.";
+                if (verbose) {
+                    LOG(INFO) + "GC Start.";
+                }
                 rb_gc();
-                LOG(INFO) + "GC End.";
+                if (verbose) {
+                    LOG(INFO) + "GC End.";
+                }
             }
         }
 #endif
@@ -583,7 +661,7 @@ bool CHttpServer::receive_request(ByteVector &request)
         //RAWTRACE1("RECV: %d", n);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
-            RAWTRACE1("RECV ERROR: %d", e);
+            if (verbose) RAWTRACE1("RECV ERROR: %d", e);
 #if !defined(WINDOWS_PLATFORM)
             if (e == EINTR)
                 continue;
@@ -592,7 +670,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 				continue;
 #endif
 
-#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP))
+#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
             if (e == EAGAIN || e == WSAEWOULDBLOCK) {
 #else
             if (e == EAGAIN) {
@@ -600,9 +678,9 @@ bool CHttpServer::receive_request(ByteVector &request)
                 if (!r.empty())
                     break;
                 
-                if(++attempts > 100)
+                if(++attempts > (HTTP_EAGAIN_TIMEOUT*10))
                 {
-                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for 10 sec. Cancel recieve.");
+                    if (verbose) RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
                     return false;
                 }
 
@@ -615,7 +693,7 @@ bool CHttpServer::receive_request(ByteVector &request)
                 continue;
             }
             
-            RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
+            if (verbose) RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
             return false;
         }
         
@@ -624,7 +702,7 @@ bool CHttpServer::receive_request(ByteVector &request)
                 if (verbose) RAWTRACE("Client closed connection gracefully");
                 break;
             } else {
-                RAWLOG_ERROR("Connection gracefully closed before we receive any data");
+                if (verbose) RAWLOG_ERROR("Connection gracefully closed before we receive any data");
                 return false;
             }
         } else {
@@ -635,19 +713,28 @@ bool CHttpServer::receive_request(ByteVector &request)
     
     if (!r.empty()) {
         request.insert(request.end(), r.begin(), r.end());
-        if ( !rho_conf_getBool("log_skip_post") )
-            RAWTRACE1("Received request:\n%s", &request[0]);
+        if ( !rho_conf_getBool("log_skip_post") ) {
+            String strRequest(request.begin(),request.end());
+            if (verbose) RAWTRACE1("Received request:\n%s", strRequest.c_str());
+        }
     }
     return true;
 }
 
 bool CHttpServer::send_response_impl(String const &data, bool continuation)
 {
+#ifdef OS_MACOSX
+    if ( m_localResponseWriter != 0 ) {
+      m_localResponseWriter->writeResponse( data );
+      return true;
+    }
+#endif
+
     if (verbose) {
         if (continuation)
-            RAWTRACE("Send continuation data...");
+            if (verbose) RAWTRACE("Send continuation data...");
         else
-            RAWTRACE("Sending response...");
+            if (verbose) RAWTRACE("Sending response...");
     }
     
     // First of all, make socket blocking
@@ -660,11 +747,11 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
 #else
     int flags = fcntl(m_sock, F_GETFL);
     if (flags == -1) {
-        RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
+        if (verbose) RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
         return false;
     }
     if (fcntl(m_sock, F_SETFL, flags & ~O_NONBLOCK) == -1) {
-        RAWLOG_ERROR1("Can not set blocking socket mode: %d", errno);
+        if (verbose) RAWLOG_ERROR1("Can not set blocking socket mode: %d", errno);
         return false;
     }
 #endif
@@ -679,7 +766,7 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
                 continue;
 #endif
             
-            RAWLOG_ERROR1("Can not send response data: %d", e);
+            if (verbose) RAWLOG_ERROR1("Can not send response data: %d", e);
             return false;
         }
         
@@ -691,10 +778,12 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     
     //String dbg_response = response.size() > 100 ? response.substr(0, 100) : response;
     //RAWTRACE2("Sent response:\n%s%s", dbg_response.c_str(), response.size() > 100 ? "..." : "   ");
-    if (continuation)
-        RAWTRACE1("Sent response body: %d bytes", data.size());
-    else if ( !rho_conf_getBool("log_skip_post") )
-        RAWTRACE1("Sent response (only headers displayed):\n%s", data.c_str());
+    if (continuation) {
+        if (verbose) RAWTRACE1("Sent response body: %d bytes", data.size());
+    }
+    else if ( !rho_conf_getBool("log_skip_post") ) {
+        if (verbose) RAWTRACE1("Sent response (only headers displayed):\n%s", data.c_str());
+    }
 
     return true;
 }
@@ -763,17 +852,17 @@ bool CHttpServer::process(SOCKET sock)
 #if defined(WINDOWS_PLATFORM)
 	unsigned long optval = 1;
 	if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
-		RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", RHO_NET_ERROR_CODE);
+		if (verbose) RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", RHO_NET_ERROR_CODE);
 		return false;
 	}
 #else
 	int flags = fcntl(m_sock, F_GETFL);
 	if (flags == -1) {
-		RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
+		if (verbose) RAWLOG_ERROR1("Can not get current socket mode: %d", errno);
 		return false;
 	}
 	if (fcntl(m_sock, F_SETFL, flags | O_NONBLOCK) == -1) {
-		RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", errno);
+		if (verbose) RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", errno);
 		return false;
 	}
 #endif
@@ -785,18 +874,18 @@ bool CHttpServer::process(SOCKET sock)
     HeaderList headers;
     String body;
     if (!parse_request(method, uri, query, headers, body)) {
-        RAWLOG_ERROR("Parsing error");
+        if (verbose) RAWLOG_ERROR("Parsing error");
         send_response(create_response("500 Internal Error"));
         return false;
     }
 
     if ( !String_endsWith( uri, "js_api_entrypoint" ) )
-        RAWLOG_INFO1("Process URI: '%s'", uri.c_str());
+        if (verbose) RAWLOG_INFO1("Process URI: '%s'", uri.c_str());
 
     return decide(method, uri, query, headers, body);
 }
 
-bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body)
+bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body )
 {
     method.clear();
     uri.clear();
@@ -822,7 +911,7 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
                 break;
             }
             if (request[e + 1] != '\n') {
-                RAWLOG_ERROR("Wrong request syntax, line should ends by '\\r\\n'");
+                if (verbose) RAWLOG_ERROR("Wrong request syntax, line should ends by '\\r\\n'");
                 return false;
             }
             
@@ -873,7 +962,7 @@ bool CHttpServer::parse_startline(String const &line, String &method, String &ur
     // Find first space
     for(s = line.c_str(), e = s; *e != ' ' && *e != '\0'; ++e);
     if (*e == '\0') {
-        RAWLOG_ERROR1("Parse startline (1): syntax error: \"%s\"", line.c_str());
+        if (verbose) RAWLOG_ERROR1("Parse startline (1): syntax error: \"%s\"", line.c_str());
         return false;
     }
     
@@ -884,7 +973,7 @@ bool CHttpServer::parse_startline(String const &line, String &method, String &ur
     
     for(e = s; *e != '?' && *e != ' ' && *e != '\0'; ++e);
     if (*e == '\0') {
-        RAWLOG_ERROR1("Parse startline (2): syntax error: \"%s\"", line.c_str());
+        if (verbose) RAWLOG_ERROR1("Parse startline (2): syntax error: \"%s\"", line.c_str());
         return false;
     }
     
@@ -911,7 +1000,7 @@ bool CHttpServer::parse_header(String const &line, Header &hdr)
     const char *s, *e;
     for(s = line.c_str(), e = s; *e != ' ' && *e != ':' && *e != '\0'; ++e);
     if (*e == '\0') {
-        RAWLOG_ERROR1("Parse header (1): syntax error: %s", line.c_str());
+        if (verbose) RAWLOG_ERROR1("Parse header (1): syntax error: %s", line.c_str());
         return false;
     }
     hdr.name.assign(s, e);
@@ -1138,7 +1227,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 #endif
 
     if ( doesNotExists ) {
-        RAWLOG_ERROR1("The file %s was not found", path.c_str());
+        if (verbose) RAWLOG_ERROR1("The file %s was not found", path.c_str());
         String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
         send_response(create_response("404 Not Found",error));
         return false;
@@ -1148,7 +1237,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     FILE *fp = fopen(fullPath.c_str(), "rb");
     PROF_STOP("LOW_FILE");
     if (!fp) {
-        RAWLOG_ERROR1("The file %s could not be opened", path.c_str());
+        if (verbose) RAWLOG_ERROR1("The file %s could not be opened", path.c_str());
         String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
         send_response(create_response("404 Not Found",error));
         return false;
@@ -1186,7 +1275,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 			headers.push_back(Header("Content-Range", buf));
 			send_response(create_response("416 Request Range Not Satisfiable",headers));
             fclose(fp);
-            delete buf;
+            delete[] buf;
             return false;
         }
 		
@@ -1206,9 +1295,9 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     
     // Send headers
     if (!send_response(create_response(start_line, headers))) {
-        RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
+        if (verbose) RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
         fclose(fp);
-        delete buf;
+        delete[] buf;
         return false;
     }
     
@@ -1226,21 +1315,21 @@ PROF_START("LOW_FILE");
 PROF_STOP("LOW_FILE");
         if (n < need_to_read) {
 			if (ferror(fp) ) {
-				RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
+				if (verbose) RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
 			} else if ( feof(fp) ) {
-				RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)need_to_read);
+				if (verbose) RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)need_to_read);
 			}
             fclose(fp);
-            delete buf;
+            delete[] buf;
             return false;
         }
         
         start += n;
         
         if (!send_response_body(String(buf, n))) {
-            RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
+            if (verbose) RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
             fclose(fp);
-            delete buf;
+            delete[] buf;
             return false;
         }
     }
@@ -1248,7 +1337,7 @@ PROF_STOP("LOW_FILE");
 PROF_START("LOW_FILE");
     fclose(fp);
 PROF_STOP("LOW_FILE");
-    delete buf;
+    delete[] buf;
     if (verbose) RAWTRACE1("File %s was sent successfully", path.c_str());
     return false;
 }
@@ -1299,12 +1388,12 @@ void CHttpServer::call_ruby_proc( rho::String const &query, String const &body )
 }
 
 bool CHttpServer::decide(String const &method, String const &arg_uri, String const &query,
-                         HeaderList const &headers, String const &body)
+                         HeaderList const &headers, String const &body/*, IResponseSender& respSender*/ )
 {
-    RAWTRACE1("Decide what to do with uri %s", arg_uri.c_str());
+    if (verbose) RAWTRACE1("Decide what to do with uri %s", arg_uri.c_str());
     callback_t callback = registered(arg_uri);
     if (callback) {
-        RAWTRACE1("Uri %s is registered callback, so handle it appropriately", arg_uri.c_str());
+        if (verbose) RAWTRACE1("Uri %s is registered callback, so handle it appropriately", arg_uri.c_str());
 
         if ( callback == rho_http_ruby_proc_callback )
             call_ruby_proc( query, body );
@@ -1316,24 +1405,13 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
     String uri = arg_uri;
 
-//#ifdef OS_ANDROID
-//    //Work around malformed Android WebView URLs
-//    if (!String_startsWith(uri, "/app") &&
-//        !String_startsWith(uri, "/public") &&
-//        !String_startsWith(uri, "/data")) 
-//    {
-//        RAWTRACE1("Malformed URL: '%s', adding '/app' prefix.", uri.c_str());
-//        uri = CFilePath::join("/app", uri);
-//    }
-//#endif
-
     String fullPath = CFilePath::join(m_root, uri);
 #ifndef RHO_NO_RUBY_API    
     if (rho_ruby_is_started())
     {
         Route route;
         if (dispatch(uri, route)) {
-            RAWTRACE1("Uri %s is correct route, so enable MVC logic", uri.c_str());
+            if (verbose) RAWTRACE1("Uri %s is correct route, so enable MVC logic", uri.c_str());
             
             VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
                                             method, uri, query, headers, body);
@@ -1360,9 +1438,8 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             return true;
         }
         
-    //#ifndef OS_ANDROID
         if (isdir(fullPath)) {
-            RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
+            if (verbose) RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
             String q = query.empty() ? "" : "?" + query;
             
             HeaderList headers;
@@ -1371,23 +1448,16 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             send_response(create_response("301 Moved Permanently", headers), true);
             return false;
         }
-    //#else
-    //    //Work around this Android redirect bug:
-    //    //http://code.google.com/p/android/issues/detail?can=2&q=11583&id=11583
-    //    if (isdir(fullPath)) {
-    //        RAWTRACE1("Uri %s is directory, override with index", uri.c_str());
-    //        return decide(method, CFilePath::join( uri, "index"RHO_ERB_EXT), query, headers, body);
-    //    }
-    //#endif
+
         if (isindex(uri)) {
             if (!isfile(fullPath)) {
-                RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
+                if (verbose) RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
                 String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
                 send_response(create_response("404 Not Found",error));
                 return false;
             }
             
-            RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
+            if (verbose) RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
 
             VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
                                             method, uri, query, headers, body);
@@ -1407,7 +1477,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
     }
 #endif
     // Try to send requested file
-    RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
+    if (verbose) RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
 
     PROF_START("READ_FILE");
     bool bRes = send_file(uri, headers);
@@ -1415,6 +1485,128 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
     return bRes;
 }
+
+#ifdef OS_MACOSX
+String CHttpServer::directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body )
+{
+  common::CMutexLock lock(m_mxSyncRequest);
+  
+  String ret;
+  if ( m_pQueue != 0 )
+  {
+    CDirectHttpRequestQueue::CDirectHttpRequest req;
+  
+    pthread_cond_t signal;
+    pthread_cond_init(&signal,0);
+    
+    CMutex m;
+  
+    req.signal = &signal;
+    req.mutex = m.getNativeMutex();
+    req.method = method;
+    req.uri = uri;
+    req.query = query;
+    req.headers = headers;
+    req.body = body;
+  
+    pthread_mutex_lock(m.getNativeMutex());
+
+    m_pQueue->doRequest( req );
+    
+    pthread_cond_wait(&signal, m.getNativeMutex());
+    pthread_mutex_unlock(m.getNativeMutex());
+    
+    ret = m_pQueue->getResponse();
+  }
+  
+  return ret;
+ 
+}
+
+  
+bool CDirectHttpRequestQueue::run( )
+{
+  m_server.m_pQueue = this;
+  m_server.m_active = true;
+  RHODESAPP().notifyLocalServerStarted();
+  
+  do
+  {
+    m_thread.wait(-1);
+    
+    m_response = "";
+    
+    if ( m_request != 0 )
+    {
+      CHttpServer::ResponseWriter respWriter;
+      m_server.m_localResponseWriter = &respWriter;
+      
+#ifndef RHO_NO_RUBY_API
+      VALUE val;
+      if (rho_ruby_is_started())
+      {
+        if ( !RHOCONF().getBool("enable_gc_while_request") )
+        {
+          val = rho_ruby_disable_gc();
+        }
+      }
+#endif
+      
+      bool bProcessed = m_server.decide(
+                                        m_request->method,
+                                        m_request->uri,
+                                        m_request->query,
+                                        m_request->headers,
+                                        m_request->body
+                                        );
+      
+#ifndef RHO_NO_RUBY_API
+      if (rho_ruby_is_started())
+      {
+        if ( !RHOCONF().getBool("enable_gc_while_request") )
+        {
+          rho_ruby_enable_gc(val);
+        }
+        
+        if ( bProcessed )
+        {
+          LOG(INFO) + "GC Start.";
+          rb_gc();
+          LOG(INFO) + "GC End.";
+        }
+      }
+#endif
+      
+      m_server.m_localResponseWriter = 0;
+      
+      m_response = respWriter.getResponse();
+      
+      pthread_cond_t* signal = m_request->signal;
+      pthread_mutex_t* mutex = m_request->mutex;
+      
+      m_request->clear();
+      m_request = 0;
+
+      if ( (signal != 0) && (mutex!=0) )
+      {
+        pthread_mutex_lock(mutex);
+        pthread_cond_signal(signal);
+        pthread_mutex_unlock(mutex);
+      }
+    }
+  }while (m_server.m_active);
+  
+  return true;
+}
+
+
+  void CDirectHttpRequestQueue::doRequest( CDirectHttpRequest& req )
+  {
+    m_request = &req;
+    m_thread.stopWait();
+  }
+
+#endif
 
 } // namespace net
 } // namespace rho

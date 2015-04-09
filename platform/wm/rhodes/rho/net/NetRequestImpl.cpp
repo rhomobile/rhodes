@@ -33,9 +33,14 @@
 #include "common/StringConverter.h"
 #include "net/URI.h"
 #include "common/RhoConf.h"
+#if defined(OS_WINDOWS_DESKTOP) || defined(_WIN32_WCE)
+#pragma comment(lib, "crypt32.lib")
+#include "wincrypt.h"
+#endif
 
 #if defined(_WIN32_WCE)
 #include "connmgr.h"
+
 typedef HRESULT (WINAPI* LPFN_CONMGR_RELEASECONNECTION_T) (HANDLE, LONG);
 typedef HRESULT (WINAPI* LPFN_CONMGR_ESTABLISHCONNECTION_T)	(CONNMGR_CONNECTIONINFO*,HANDLE*);
 typedef HRESULT (WINAPI* LPFN_CONMGR_MAPURL_T)	(LPCTSTR, GUID*, DWORD*);
@@ -43,10 +48,12 @@ typedef HRESULT (WINAPI* LPFN_CONMGR_CONNECTIONSTATUS_T) (HANDLE, DWORD*);
 
 LPFN_CONMGR_RELEASECONNECTION_T		lpfn_ConMgr_ReleaseConnection = NULL;
 LPFN_CONMGR_ESTABLISHCONNECTION_T	lpfn_ConMgr_EstablishConnection = NULL;
-LPFN_CONMGR_MAPURL_T lpfn_ConMgr_MapUrl = NULL;
+LPFN_CONMGR_MAPURL_T                lpfn_ConMgr_MapUrl = NULL;
 LPFN_CONMGR_CONNECTIONSTATUS_T		lpfn_ConMgr_ConnectionStatus = NULL;
+
 HMODULE g_hConnManDLL = NULL;	
 extern "C" BOOL LoadConnectionManager();
+
 #endif
 
 #ifdef OS_WINCE
@@ -55,10 +62,12 @@ extern "C" int strnicmp( const char *s1, const char *s2, size_t count );
 
 namespace rho {
 namespace net {
+
 IMPLEMENT_LOGCLASS(CNetRequestImpl,"Net");
+
 common::CMutex CNetRequestImpl::m_mxInternet;
-HINTERNET CNetRequestImpl::m_hInternet;
-HANDLE    CNetRequestImpl::m_hWceConnMgrConnection;
+HINTERNET      CNetRequestImpl::m_hInternet;
+HANDLE         CNetRequestImpl::m_hWceConnMgrConnection;
 
 CNetRequestImpl::CNetRequestImpl()
 {
@@ -72,8 +81,10 @@ CNetRequestImpl::CNetRequestImpl()
     m_sslVerifyPeer = true;
 
 #if !defined(OS_WINDOWS_DESKTOP)
-	if(winversion == 1 && !g_hConnManDLL)
+	if(RHO_IS_WMDEVICE && !g_hConnManDLL)
+    {
 		LoadConnectionManager();
+    }
 #endif
 }
 
@@ -114,6 +125,20 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
 			break;
 		}
 
+        DWORD timeout = ((DWORD)rho_conf_getInt("net_timeout"))*1000;
+        if (timeout == 0 )
+            timeout = 30000;
+
+        InternetSetOption( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_SEND_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_DATA_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_DATA_SEND_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_CONNECT_TIMEOUT, &timeout, sizeof(timeout) );
+        InternetSetOption( m_hInternet, INTERNET_OPTION_DISCONNECTED_TIMEOUT, &timeout, sizeof(timeout) );
+
+        //DWORD timeout_size;
+        //InternetQueryOptionW( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, &timeout_size );
+
         m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), 
 										 NULL, INTERNET_SERVICE_HTTP, 0, 0 );
         if ( !m_hConnection ) 
@@ -121,12 +146,6 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
             m_strErrFunction = L"InternetConnect";
             break;
         }
-
-        int timeout = rho_conf_getInt("net_timeout")*1000;
-        if (timeout == 0 )
-            timeout = 30000;
-
-        InternetSetOption( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) ); 
 
         m_strReqUrlW = m_uri.lpszUrlPath;
         m_strReqUrlW += m_uri.lpszExtraInfo;
@@ -137,7 +156,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
         if ( !m_sslVerifyPeer )
             dwFlags |= INTERNET_FLAG_IGNORE_CERT_CN_INVALID|INTERNET_FLAG_IGNORE_CERT_DATE_INVALID;
 
-        m_hRequest = HttpOpenRequest( m_hConnection, CAtlStringW(method), m_strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
+        m_hRequest = HttpOpenRequest(m_hConnection, CAtlStringW(method), m_strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
         if ( !m_hRequest ) 
         {
             m_strErrFunction = L"HttpOpenRequest";
@@ -216,6 +235,44 @@ boolean CNetRequestImpl::checkSslCertError()
 
         return true;
     }
+	else if(dwError == ERROR_INTERNET_CLIENT_AUTH_CERT_NEEDED)
+	{
+#if defined(OS_WINDOWS_DESKTOP) || defined(_WIN32_WCE)
+		if (RHOCONF().isExist("clientSSLCertificate")) {
+			CRYPT_DATA_BLOB data;
+			FILE *fIn = fopen(RHOCONF().getString("clientSSLCertificate").c_str(), "rb");
+			fseek(fIn, 0, SEEK_END);
+			data.cbData = ftell(fIn);
+			fseek(fIn, 0, SEEK_SET);
+			data.pbData = (BYTE *)malloc(data.cbData);
+			fread(data.pbData, 1, data.cbData, fIn);
+			fclose(fIn);
+
+			LPCWSTR pwd = NULL;
+			std::wstring wpwd;
+			if(RHOCONF().isExist("clientSSLCertificatePassword"))
+			{
+				wpwd = rho::common::convertToStringW((RHOCONF().getString("clientSSLCertificatePassword")));
+				pwd = wpwd.c_str();
+			}
+			HCERTSTORE hCertStore = PFXImportCertStore(&data, pwd, 0);
+			PCCERT_CONTEXT hContext = NULL;
+			if(hCertStore)
+				hContext = CertFindCertificateInStore (hCertStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, CERT_FIND_ANY, NULL, NULL);
+
+			if(hContext)
+				InternetSetOption(m_hRequest, INTERNET_OPTION_CLIENT_CERT_CONTEXT, (void*)hContext, sizeof(CERT_CONTEXT));
+
+			if(hContext)
+				CertFreeCertificateContext(hContext);
+			
+			if(hCertStore)
+				CertCloseStore(hCertStore, 0);
+
+			return true;
+		}
+#endif
+	}
 
     return false;
 }
@@ -259,7 +316,7 @@ INetResponse* CNetRequestImpl::doRequest( const char* method, const String& strU
         {
             if (!m_bCancel && checkSslCertError())
             {
-                if ( !HttpSendRequest( m_hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
+				if ( !HttpSendRequest( m_hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
                 {
                     m_strErrFunction = L"HttpSendRequest";
                     break;
@@ -887,16 +944,31 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
     if (!bLocalHost)
     {
         common::CMutexLock lock(m_mxInternet);
-        if ( !SetupInternetConnection(url) )
-            return false;
+
+        if (RHO_IS_WMDEVICE)
+        {
+            if ( !SetupInternetConnection(url) )
+                return false;
+        }
     }
 
     common::CMutexLock lock(m_mxInternet);
 
-    if (m_hInternet)
-        return true;
+    /****************************************/
+    //SR ID - EMBPD00120791
+    //Issue Description - <System API>Proxy is not getting set using Rho.System.httpProxyURI.
+    //Fix Provided - Closing existing HINTERNET handle i.e. m_hInternet and recreating the m_hInternet as we don't know when user will set the proxy using httpProxyURI.
+    //Developer Name - Abhineet Agarwal
+    //File Name - NetRequestImpl.cpp
+    //Function Name - initConnection(rho::boolean bLocalHost, LPCTSTR url)
+    //Date - 10/07/2014
+    /****************************************/
+    if (m_hInternet){
+	 InternetCloseHandle(m_hInternet);
+	 m_hInternet = NULL;
+    } 
 
-	if (RHOCONF().isExist("http_proxy_host")) {
+    if (RHOCONF().isExist("http_proxy_host")) {
 		rho::String proxyName = RHOCONF().getString("http_proxy_host");
 
 		if (RHOCONF().isExist("http_proxy_port")) {
@@ -930,8 +1002,10 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
     m_hInternet = NULL;
 
 #if defined (_WIN32_WCE)
-    if ( m_hWceConnMgrConnection )
+    if ( m_hWceConnMgrConnection && RHO_IS_WMDEVICE)
+    {
         lpfn_ConMgr_ReleaseConnection(m_hWceConnMgrConnection, FALSE);
+    }
 
     m_hWceConnMgrConnection = NULL;
 #endif //_WIN32_WCE
@@ -1023,6 +1097,7 @@ extern "C" BOOL LoadConnectionManager()
 {
 	bool bReturnValue = FALSE;
 	g_hConnManDLL = LoadLibrary(L"cellcore.dll");
+
 	if (!g_hConnManDLL)
 	{
 		//  Error loading CellCore.dll (used for Connection Manager)
@@ -1030,14 +1105,10 @@ extern "C" BOOL LoadConnectionManager()
 	}
 	else
 	{
-		lpfn_ConMgr_EstablishConnection = 
-			(LPFN_CONMGR_ESTABLISHCONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrEstablishConnection"));
-		lpfn_ConMgr_ReleaseConnection = 
-			(LPFN_CONMGR_RELEASECONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrReleaseConnection"));
-		lpfn_ConMgr_MapUrl = 
-			(LPFN_CONMGR_MAPURL_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrMapUrl"));
-		lpfn_ConMgr_ConnectionStatus = 
-			(LPFN_CONMGR_CONNECTIONSTATUS_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrConnectionStatus"));
+		lpfn_ConMgr_EstablishConnection = (LPFN_CONMGR_ESTABLISHCONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrEstablishConnection"));
+		lpfn_ConMgr_ReleaseConnection   = (LPFN_CONMGR_RELEASECONNECTION_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrReleaseConnection"));
+		lpfn_ConMgr_MapUrl              = (LPFN_CONMGR_MAPURL_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrMapURL"));
+		lpfn_ConMgr_ConnectionStatus    = (LPFN_CONMGR_CONNECTIONSTATUS_T)GetProcAddress(g_hConnManDLL, _T("ConnMgrConnectionStatus"));
 
 		if (!lpfn_ConMgr_EstablishConnection)
 		{

@@ -154,7 +154,7 @@ void LogSettings::setLogToSocket(bool bLogToSocket)
     {
         m_bLogToSocket = bLogToSocket;
         if(m_pSocketSink == 0)
-			reinitRemoteLog();
+          reinitRemoteLog();
     }
 }
 
@@ -163,10 +163,11 @@ void LogSettings::setLogURL(const char* szLogURL)
     if ( m_strLogURL != szLogURL )
     {
         m_strLogURL = rho::String(szLogURL); 
-        if(m_pSocketSink == 0)
-			reinitRemoteLog();
-		else
-			((CLogSocketSink*)m_pSocketSink)->setUrl(m_strLogURL);
+        if(m_pSocketSink == 0) {
+    			reinitRemoteLog();
+        } else {
+		    	((CLogSocketSink*)m_pSocketSink)->setUrl(m_strLogURL);
+        }
     }
 }
 
@@ -197,6 +198,78 @@ void LogSettings::getLogText(String& strText)
 int LogSettings::getLogTextPos()
 {
     return m_pFileSink ? m_pFileSink->getCurPos() : -1;
+}
+
+unsigned int LogSettings::getLogFileSize()
+{
+    if(!isLogToFile())
+    {
+        return 0;
+    }
+    return common::CRhoFile::getFileSize(getLogFilePath().c_str());
+}
+
+void LogSettings::getLogFileText(int linearPos, int maxSize, String& strText, int refCircularPos)
+{
+    if(!isLogToFile())
+    {
+        return;
+    }
+
+    setLogToFile(false);
+
+    int curCircularPos = getLogTextPos();
+
+    common::CRhoFile oFile;
+    if(oFile.open(getLogFilePath().c_str(), common::CRhoFile::OpenReadOnly))
+    {
+        unsigned int fileSize = oFile.size();
+
+        int circularDelta = curCircularPos - refCircularPos;
+        if(circularDelta < 0)
+        {
+            circularDelta += fileSize;
+        }
+
+        int pos = linearPos;
+        if(pos < circularDelta)
+        {
+            pos = circularDelta;
+        }
+        if(refCircularPos > 0)
+        {
+            pos += refCircularPos;
+        }
+        if(pos > fileSize)
+        {
+            pos -= fileSize;
+            if(pos >= curCircularPos) {
+                maxSize = 0;
+            }
+        }
+        if(pos < curCircularPos)
+        {
+            int available = curCircularPos - pos;
+            if(available < maxSize) maxSize = available;
+        }
+
+        oFile.setPosTo(pos);
+
+        char *buffer = new char[maxSize + 1];
+
+        if(fileSize - pos > maxSize) {
+            oFile.readData(buffer, 0, maxSize);
+        }
+        else
+        {
+            oFile.readData(buffer, 0, fileSize - pos);
+            oFile.movePosToStart();
+            oFile.readData(buffer, fileSize - pos, maxSize - (fileSize - pos));
+        }
+        strText.assign(buffer, maxSize);
+        delete [] buffer;
+    }
+    setLogToFile(true);
 }
 
 void LogSettings::saveToFile(){
@@ -430,8 +503,11 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
 #endif//!RHO_DEBUG
 
     LOGCONF().setLogPrefix(true);
-
+#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
+	rho::String logPath = oLogPath.getPath();
+#else
 	rho::String logPath = oLogPath.makeFullPath("rholog.txt");
+#endif
 
     LOGCONF().setLogToFile(true);
     LOGCONF().setLogFilePath( logPath.c_str() );
@@ -501,6 +577,13 @@ void rho_conf_clean_log()
     LOGCONF().clearLog();
 }
 
+void rho_log_resetup_http_url(const char* http_log_url) 
+{
+    LOGCONF().setLogURL(http_log_url);
+		LOGCONF().setLogToSocket(true);
+    //LOGCONF().reinitRemoteLog();
+}
+
 #ifndef RHO_NO_RUBY
 VALUE rho_conf_get_property_by_name(char* name)
 {
@@ -563,12 +646,6 @@ VALUE rho_conf_read_log(int limit)
     return res;
 }
 
-
-void rho_log_resetup_http_url(const char* http_log_url) 
-{
-    LOGCONF().setLogURL(http_log_url);
-    //LOGCONF().reinitRemoteLog();
-}
 #else
 // we should empty methods for linking with ruby wrappers in case of building pure JavaScript application (when we still have Ruby code but not used it)
     unsigned long rho_conf_get_property_by_name(char* name)
@@ -586,10 +663,6 @@ void rho_log_resetup_http_url(const char* http_log_url)
         return 0;
     }
     
-    
-    void rho_log_resetup_http_url(const char* http_log_url) 
-    {
-    }
 #endif //RHO_NO_RUBY
 
 }

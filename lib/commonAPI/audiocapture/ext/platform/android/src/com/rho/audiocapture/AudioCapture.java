@@ -20,9 +20,9 @@ import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.extmanager.AbstractRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
-import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.Capabilities;
 
 public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
     
@@ -468,7 +468,22 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
                 storedMethodResult=null;
                 return;
             }
-           
+            if(path.contains("sdcard") && (Capabilities.READ_SDCARD_ENABLED==true))
+            {
+            	 Map<String, Object> tempprops = new HashMap<String, Object>();
+                 tempprops.put("status", "error");
+                 tempprops.put("message", "writing to sdcard permission is NOT there in build.yml");
+                 tempprops.put("fileName", "");
+                 if(storedMethodResult!=null)
+                 	{
+                 		
+                	 storedMethodResult.set(tempprops);
+                 	
+                 	}
+                 storedMethodResult=null;
+                 return;
+            	
+            }
             if(path.contains("/"))
             {
             	String str=path.substring(0, path.lastIndexOf("/"));

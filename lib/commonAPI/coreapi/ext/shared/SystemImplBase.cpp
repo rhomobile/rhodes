@@ -81,8 +81,6 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
         oResult.set( L"ANDROID" );
     else if ( strPlatform.compare("iphone") == 0 )
         oResult.set( L"APPLE" );
-    else if ( strPlatform.compare("symbian") == 0 )
-        oResult.set( L"SYMBIAN" );
     else
         oResult.set( L"UNKNOWN" );
 
@@ -98,8 +96,6 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 #else
 	oResult.set( PLATFORM_WM_CE );
 #endif
-#elif defined(OS_SYMBIAN)
-	oResult.set( L"SYMBIAN" );
 #elif defined(OS_ANDROID)
     oResult.set( PLATFORM_ANDROID );
 #elif defined(OS_LINUX)
@@ -146,7 +142,7 @@ void CSystemImplBase::getOsVersion(CMethodResult& oResult)
 #endif
 }
 
-void CSystemImplBase::getIsMotorolaDevice(CMethodResult& oResult)
+void CSystemImplBase::getIsSymbolDevice(CMethodResult& oResult)
 {
     oResult.set(false);
 }
@@ -211,10 +207,10 @@ void CSystemImplBase::getStartParams(rho::apiGenerator::CMethodResult& oResult)
 }
 
 //TODO: move rho_sys_unzip_file here
-extern "C" int rho_sys_unzip_file(const char* szZipPath, const char* psw);
-void CSystemImplBase::unzipFile( const rho::String& localPathToZip, const rho::String& password, rho::apiGenerator::CMethodResult& oResult)
+extern "C" int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outputFilename);
+void CSystemImplBase::unzipFile( const rho::String& localPathToZip, const rho::String& password, const rho::String& outputFilename, rho::apiGenerator::CMethodResult& oResult)
 {
-    oResult.set( rho_sys_unzip_file( localPathToZip.c_str(), password.c_str()) );
+    oResult.set( rho_sys_unzip_file( localPathToZip.c_str(), password.c_str(), outputFilename.c_str() ) );
 }
 
 void CSystemImplBase::zipFile( const rho::String& localPathToZip,  const rho::String& localPathToFile,  const rho::String& password, CMethodResult& oResult)
@@ -265,7 +261,7 @@ void CSystemImplBase::zipFiles( const rho::String& localPathToZip,  const rho::S
 }
 
 struct rho_param;
-extern "C" void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode );
+extern "C" void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode, bool check_filelist, bool all_via_callback_only);
 void CSystemImplBase::replaceCurrentBundle( const rho::String& pathToBundle,  const rho::Hashtable<rho::String, rho::String>& params, rho::apiGenerator::CMethodResult& oResult)
 {
     bool do_not_restart_app = false, not_thread_mode = false;
@@ -274,7 +270,7 @@ void CSystemImplBase::replaceCurrentBundle( const rho::String& pathToBundle,  co
     if( params.containsKey("not_thread_mode") )
         convertFromStringA( params.get("not_thread_mode").c_str(), not_thread_mode );
 
-    rho_sys_replace_current_bundleEx( pathToBundle.c_str(), params.containsKey("callback") ? params.get("callback").c_str():0, do_not_restart_app, not_thread_mode );
+    rho_sys_replace_current_bundleEx( pathToBundle.c_str(), params.containsKey("callback") ? params.get("callback").c_str():0, do_not_restart_app, not_thread_mode, false, false );
 }
 
 void CSystemImplBase::deleteFolder( const rho::String& pathToFolder, rho::apiGenerator::CMethodResult& oResult)
@@ -437,6 +433,11 @@ void CSystemImplBase::getMain_window_closed(rho::apiGenerator::CMethodResult& oR
     //windows only
 }
 
+void CSystemImplBase::hideSplashScreen(rho::apiGenerator::CMethodResult& result)
+{
+    //Android only
+}
+
 }
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
@@ -444,8 +445,12 @@ extern "C" void rho_qt_unset_window_proxy();
 extern "C" void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password);
 #endif
 
+rho::String g_strHttpProxy;
+
+
 extern "C" void rho_sys_unset_http_proxy()
 {
+    g_strHttpProxy = "";
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
 	rho_qt_unset_window_proxy();
 #endif
@@ -587,7 +592,6 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 	}
 }
 
-rho::String g_strHttpProxy;
 extern "C" void rho_sys_set_http_proxy_url(const char* url)
 {
 	g_strHttpProxy = url;

@@ -55,7 +55,7 @@ static LocationController *sharedLC = nil;
             return false;
         if (![CLLocationManager locationServicesEnabled])    
             return false;
-        if (([CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorized) && 
+        if (([CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorizedWhenInUse) &&
             ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined) ) 
             return false;
         isEnabled = YES;
@@ -143,6 +143,13 @@ static LocationController *sharedLC = nil;
     self._locationManager = [[[CLLocationManager alloc] init] autorelease];
     self._locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self._locationManager.delegate = self; // Tells the location manager to send updates to this object
+    
+    if ([self._locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self._locationManager requestWhenInUseAuthorization];
+    }
+    
+    
+    
 }
 
 - (id) init {

@@ -1,24 +1,16 @@
 package com.rho.camera;
 
-import java.util.List;
+import android.content.Context;
+import android.app.Activity;
+import android.graphics.Rect;
+import android.hardware.Camera;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.widget.FrameLayout;
+import android.view.Surface;
 
 import com.rho.camera.ICameraObject.ISize;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.R;
-
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.hardware.Camera;
-import android.hardware.Camera.Size;
-import android.view.Gravity;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 public class CameraPreview implements SurfaceHolder.Callback {
     private static final String TAG = CameraPreview.class.getSimpleName();
@@ -26,7 +18,8 @@ public class CameraPreview implements SurfaceHolder.Callback {
     private SurfaceView mSurfaceView;
     private SurfaceHolder mHolder;
     private ICameraObject mCamera;
-
+    private Context mContext;
+    
     public CameraPreview(SurfaceView surfaceView) {
         Logger.T(TAG, "CameraPreview");
         
@@ -35,7 +28,7 @@ public class CameraPreview implements SurfaceHolder.Callback {
 
     public void startPreview(ICameraObject camera, Context context) {
         Logger.T(TAG, "startPreview");
-
+        mContext = context;
         if (camera == null) {
             Logger.E(TAG, "Camera is null");
             return;
@@ -65,8 +58,33 @@ public class CameraPreview implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         Rect surfaceRect = holder.getSurfaceFrame();
         Logger.T(TAG, "surfaceCreated: " + surfaceRect.right + "x" + surfaceRect.bottom);
+        try{
+        if (mCamera != null) {
+           mCamera.startPreview(holder);
+         }
+        }
+        catch(RuntimeException e){
+        	
+        }
         
-        mCamera.startPreview(holder);
+        int rotation = ((Activity)mContext).getWindowManager().getDefaultDisplay().getRotation();
+    	int degrees = 0;
+		switch (rotation) {
+		case Surface.ROTATION_0:
+			degrees = 90;
+			break;
+		case Surface.ROTATION_90:
+			degrees = 0;
+			break;
+		case Surface.ROTATION_180:
+			degrees = 270;
+			break;
+		case Surface.ROTATION_270:
+			degrees = 180;
+			break;
+		}
+       mCamera.setDisplayOrientation(degrees);
+       
         ISize size = mCamera.setPreviewSize(surfaceRect.right, surfaceRect.bottom);
         
         double previewRatio = (double) size.getWidth() / size.getHeight();
@@ -81,10 +99,10 @@ public class CameraPreview implements SurfaceHolder.Callback {
         
 
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)mSurfaceView.getLayoutParams();
-        layoutParams.leftMargin = marginX;
-        layoutParams.rightMargin = marginX;
-        layoutParams.topMargin = marginY;
-        layoutParams.bottomMargin = marginY;
+        layoutParams.leftMargin = layoutParams.FILL_PARENT;
+        layoutParams.rightMargin = layoutParams.FILL_PARENT;
+        layoutParams.topMargin = layoutParams.FILL_PARENT;
+        layoutParams.bottomMargin = layoutParams.FILL_PARENT;
         mSurfaceView.setLayoutParams(layoutParams);
         mSurfaceView.requestLayout();
     }

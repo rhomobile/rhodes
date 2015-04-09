@@ -237,7 +237,7 @@ module Rhom
                   if cond.is_a?(Array) && !op
                     condition_str = cond[0].split(/\?/).each_with_index { |param,i|
                       value = cond[i + 1]
-                      value = value.is_a?(String) ? "'#{value}'" : value.to_s
+                      value = value.is_a?(String) ? ::Rhom::RhomDbAdapter.safe_str_escape(value) : value.to_s
                       param << value
                     }.join(' ').to_s
                     # puts "condition_str : #{condition_str}"

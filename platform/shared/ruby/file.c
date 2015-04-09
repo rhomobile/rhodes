@@ -120,6 +120,10 @@ be_fchown(int fd, uid_t owner, gid_t group)
 #define fchown be_fchown
 #endif /* __BEOS__ || __HAIKU__ */
 
+#ifdef _WP8_LIB
+#include "../../wp8/rhoruntime/common/RhodesHelperWP8.h"
+#endif
+
 VALUE rb_cFile;
 VALUE rb_mFileTest;
 VALUE rb_cStat;
@@ -840,10 +844,12 @@ w32_io_info(VALUE *file, BY_HANDLE_FILE_INFORMATION *st)
 	if (f == INVALID_HANDLE_VALUE) return f;
 	ret = f;
     }
+#if !defined(_WP8_LIB)
     if (GetFileType(f) == FILE_TYPE_DISK) {
 	ZeroMemory(st, sizeof(*st));
 	if (GetFileInformationByHandle(f, st)) return ret;
     }
+#endif
     if (ret) CloseHandle(ret);
     return INVALID_HANDLE_VALUE;
 }

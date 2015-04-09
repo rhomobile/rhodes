@@ -3,14 +3,24 @@
 
 namespace rhoruntime {
 
+CMethodResultImpl::CMethodResultImpl():
+    oResult(new rho::apiGenerator::CMethodResult())
+{
+}
+
 CMethodResultImpl::CMethodResultImpl(int64 native):
     oResult((rho::apiGenerator::CMethodResult*)native)
 {
 }
 
+int64 CMethodResultImpl::getNative()
+{
+    return (int64)oResult;
+}
+
 bool CMethodResultImpl::hasCallback()
 {
-	return oResult->hasCallback();
+    return oResult->hasCallback();
 }
 
 void CMethodResultImpl::set(bool res)
@@ -38,14 +48,39 @@ void CMethodResultImpl::set(Platform::String^ res)
     oResult->set(rho::common::convertStringWFromWP8(res));
 }
 
-void CMethodResultImpl::set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res)
+void CMethodResultImpl::set(WFC::IVectorView<Platform::String^>^ res)
 {
     oResult->set(rho::common::convertArrayFromWP8(res));
 }
 
-void CMethodResultImpl::set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res)
+void CMethodResultImpl::set(WFC::IVectorView<WFC::IMapView<Platform::String^, Platform::String^>^>^ res)
+{
+    oResult->set(rho::common::convertArrayOfHashesFromWP8(res));
+}
+
+void CMethodResultImpl::set(WFC::IMapView<Platform::String^, Platform::String^>^ res)
 {
     oResult->set(rho::common::convertHashFromWP8(res));
+}
+
+void CMethodResultImpl::set(WFC::IMapView<Platform::String^, WFC::IVectorView<Platform::String^>^>^ res)
+{
+    oResult->set(rho::common::convertHashOfArraysFromWP8(res));
+}
+
+void CMethodResultImpl::set(WFC::IMapView<Platform::String^, WFC::IMapView<Platform::String^, Platform::String^>^>^ res)
+{
+    oResult->set(rho::common::convertHashOfHashesFromWP8(res));
+}
+
+void CMethodResultImpl::setRubyCallback(Platform::String^ strCallback)
+{
+	oResult->setRubyCallback(rho::common::convertStringAFromWP8(strCallback));
+}
+
+Platform::String^ CMethodResultImpl::getRubyCallback()
+{
+	return rho::common::convertStringToWP8(oResult->getRubyCallback());
 }
 
 }

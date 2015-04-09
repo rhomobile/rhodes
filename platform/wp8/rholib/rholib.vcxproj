@@ -80,36 +80,36 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+    <IncludePath>../../shared/ruby;../../shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+    <IncludePath>../../shared/ruby;../../shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+    <IncludePath>../../shared/ruby;../../shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+    <IncludePath>../../shared/ruby;../../shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+    <IncludePath>../../shared/ruby;../../shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+    <IncludePath>../../shared/ruby;../../shared;$(ProgramFiles)\Windows Phone Kits\8.0\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_WP8_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -122,7 +122,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_WP8_LIB;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -135,7 +135,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_WP8_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -148,7 +148,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_WP8_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -161,7 +161,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_WP8_LIB;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -174,7 +174,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_WP8_LIB;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -250,8 +250,20 @@
     <ClInclude Include="..\..\shared\rubyext\GeoLocation.h" />
     <ClInclude Include="..\..\shared\rubyext\WebView.h" />
     <ClInclude Include="..\..\shared\statistic\RhoProfiler.h" />
+    <ClInclude Include="..\..\shared\unzip\crc32.h" />
+    <ClInclude Include="..\..\shared\unzip\deflate.h" />
+    <ClInclude Include="..\..\shared\unzip\gunzip.h" />
+    <ClInclude Include="..\..\shared\unzip\gzguts.h" />
+    <ClInclude Include="..\..\shared\unzip\inffast.h" />
+    <ClInclude Include="..\..\shared\unzip\inffixed.h" />
+    <ClInclude Include="..\..\shared\unzip\inflate.h" />
+    <ClInclude Include="..\..\shared\unzip\inftrees.h" />
+    <ClInclude Include="..\..\shared\unzip\trees.h" />
     <ClInclude Include="..\..\shared\unzip\unzip.h" />
+    <ClInclude Include="..\..\shared\unzip\zconf.h" />
     <ClInclude Include="..\..\shared\unzip\zip.h" />
+    <ClInclude Include="..\..\shared\unzip\zlib.h" />
+    <ClInclude Include="..\..\shared\unzip\zutil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\api_generator\js_helpers.cpp" />
@@ -287,8 +299,22 @@
     <ClCompile Include="..\..\shared\rubyext\RhoAppAdapter.cpp" />
     <ClCompile Include="..\..\shared\rubyext\ZipFiles.cpp" />
     <ClCompile Include="..\..\shared\statistic\RhoProfiler.cpp" />
+    <ClCompile Include="..\..\shared\unzip\adler32.cpp" />
+    <ClCompile Include="..\..\shared\unzip\crc32.cpp" />
+    <ClCompile Include="..\..\shared\unzip\deflate.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gunzip.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gzclose.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gzlib.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gzread.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gzwrite.cpp" />
+    <ClCompile Include="..\..\shared\unzip\infback.cpp" />
+    <ClCompile Include="..\..\shared\unzip\inffast.cpp" />
+    <ClCompile Include="..\..\shared\unzip\inflate.cpp" />
+    <ClCompile Include="..\..\shared\unzip\inftrees.cpp" />
+    <ClCompile Include="..\..\shared\unzip\trees.cpp" />
     <ClCompile Include="..\..\shared\unzip\unzip.cpp" />
     <ClCompile Include="..\..\shared\unzip\zip.cpp" />
+    <ClCompile Include="..\..\shared\unzip\zutil.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

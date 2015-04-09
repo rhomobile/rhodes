@@ -1,5 +1,7 @@
 package com.rho.webview;
 
+import android.graphics.Rect;
+
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
@@ -8,10 +10,15 @@ import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.extmanager.IRhoConfig;
+import com.rhomobile.rhodes.extmanager.IRhoExtManager;
+import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.webview.WebViewConfig;
 
-public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSingleton {
+public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     private static final String TAG = WebViewSingleton.class.getSimpleName();
     
@@ -23,38 +30,13 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
     private WebViewConfig mConfig = new WebViewConfig();
 
     public WebViewSingleton() {
-
-        if (RhoConf.isExist(DISABLE_PAGE_LOADING_INDICATION))
-            mConfig.set("enablePageLoadingIndication", !RhoConf.getBool(DISABLE_PAGE_LOADING_INDICATION));
-        else
-            mConfig.set("enablePageLoadingIndication", true);
-
-        
-        if (RhoConf.isExist(ENABLE_ZOOM))
-            mConfig.set("enableZoom", RhoConf.getBool(ENABLE_ZOOM));
-        else
-            mConfig.set("enableZoom", true);
-
-        if (RhoConf.isExist(ENABLE_WEB_PLUGINS))
-            mConfig.set("enableWebPlugins", RhoConf.getBool(ENABLE_WEB_PLUGINS));
-        else
-            mConfig.set("enableWebPlugins", true);
-
-        if (RhoConf.isExist(ENABLE_CACHE))
-            mConfig.set("enableCache", RhoConf.getBool(ENABLE_CACHE));
-        else
-            mConfig.set("enableCache", true);
-
-        RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true) {
-            @Override public void run() {
-                RhoExtManager.getInstance().setWebViewConfig(mConfig);
-            }});
+        IRhoExtManager extManager = RhoExtManager.getInstance();
+        readRhoConfig(extManager.getConfig("rhoconfig"));
     }
     
     @Override
     public void getFramework(IMethodResult result) {
         result.set(RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId());
-
     }
 
     @Override
@@ -69,7 +51,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
 
     @Override
     public void getEnableZoom(IMethodResult result) {
-        result.set(mConfig.getBool("enableZoom"));
+        result.set(mConfig.getBool(WebViewConfig.ENABLE_ZOOM));
     }
 
 //    @Override
@@ -80,7 +62,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
 
     @Override
     public void getEnablePageLoadingIndication(IMethodResult result) {
-        result.set(mConfig.getBool("enablePageLoadingIndication"));
+        result.set(mConfig.getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION));
     }
 
 //    @Override
@@ -91,7 +73,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
 
     @Override
     public void getEnableWebPlugins(IMethodResult result) {
-        result.set(mConfig.getBool("enableWebPlugins"));
+        result.set(mConfig.getBool(WebViewConfig.ENABLE_WEB_PLUGINS));
     }
 
 //    @Override
@@ -149,7 +131,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
 
     @Override
     public void getEnableCache(IMethodResult result) {
-        result.set(mConfig.getBool("enableCache"));
+        result.set(mConfig.getBool(WebViewConfig.ENABLE_CACHE));
     }
 
 //    @Override
@@ -268,6 +250,195 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
     @Override
     public void getActiveTab(IMethodResult result) {
         result.set(RhodesActivity.safeGetInstance().getMainView().activeTab());
+    }
+
+    public WebViewConfig getWebViewConfig() {
+        return mConfig;
+    }
+
+    @Override
+    public IRhoWebView onCreateWebView(IRhoExtManager extManager, int tabIndex) {
+        return null;
+    }
+
+    @Override
+    public boolean onWebViewCreated(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
+        Logger.I(TAG, "Set config initially: " + (mConfig != null));
+        ext.setConfig(mConfig);
+        return res;
+    }
+
+    @Override
+    public boolean onSetPropertiesData(IRhoExtManager extManager, String propId, String data, int pos, int total, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onSetPropertiesDataEnd(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onSetProperty(IRhoExtManager extManager, String name, String value, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        Logger.I(TAG, "onBeforeNavigate ------------------------------------------------------------");
+        return res;
+    }
+
+    @Override
+    public boolean onNavigateStarted(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onNavigateProgress(IRhoExtManager extManager, String url, int pos, int total, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onNavigateComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        Logger.I(TAG, "onNavigateComplete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        return res;
+    }
+
+    @Override
+    public boolean onDocumentComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onAlert(IRhoExtManager extManager, String message, IRhoWebView ext, IAlertResult alertResult, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onConfirm(IRhoExtManager extManager, String message, IRhoWebView ext, IAlertResult confirmResult, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onPrompt(IRhoExtManager extManager, String message, String defaultResponse, IRhoWebView ext, IPromptResult promptResult, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onSelect(IRhoExtManager extManager, String[] items, int selected, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onStatus(IRhoExtManager extManager, String status, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onTitle(IRhoExtManager extManager, String title, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onConsole(IRhoExtManager extManager, String message, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onInputMethod(IRhoExtManager extManager, boolean enabled, String type, Rect area, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onNavigateError(IRhoExtManager extManager, String url, LoadErrorReason reason, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onAuthRequest(IRhoExtManager extManager, IAuthRequest request, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public void onAppActivate(IRhoExtManager extManager, boolean bActivate) {
+    }
+
+    @Override
+    public boolean startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean stopLocationUpdates(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config, String name, boolean res) {
+
+        if(name.equalsIgnoreCase("rhoelementsext")) {
+            readRhoelementsConfig(config);
+            RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true) {
+                @Override public void run() {
+                    MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+                    for (int i = 0; i < mainView.getTabsCount(); ++i) {
+                        Logger.T(TAG, "Set WebView config: tab " + i);
+                        mainView.getWebView(i).setConfig(mConfig);
+                    }
+                }});
+        } else
+        if (name.equalsIgnoreCase("rhoconfig")) {
+            
+            readRhoConfig(config);
+
+            RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true) {
+                @Override public void run() {
+                    MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+                    for (int i = 0; i < mainView.getTabsCount(); ++i) {
+                        Logger.T(TAG, "Set WebView config: tab " + i);
+                        mainView.getWebView(i).setConfig(mConfig);
+                    }
+                }});
+        }
+
+        return res;
+    }
+
+    @Override
+    public String onGetProperty(IRhoExtManager extManager, String name) {
+        return null;
+    }
+    
+    private void readRhoelementsConfig(IRhoConfig config) {
+        if (config.isExist("enablezoom")) {
+           // mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enable_screen_zoom", WebViewConfig.ENABLE_ZOOM_DEF));
+            mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enablezoom"));
+        }
+        if (config.isExist("pagezoom")) {
+            double zoomValue = config.getDouble("pagezoom");
+            mConfig.set(WebViewConfig.PAGE_ZOOM, zoomValue);
+        }
+        
+        if (config.isExist("cache")) {
+            int cache = config.getInt("cache");
+            mConfig.set(WebViewConfig.ENABLE_CACHE, cache != 0);
+        }
+    }
+    
+    private void readRhoConfig(IRhoConfig config) {
+        if (RhoConf.isExist(DISABLE_PAGE_LOADING_INDICATION))
+            mConfig.set(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION, !RhoConf.getBool(DISABLE_PAGE_LOADING_INDICATION));
+
+        
+        if (RhoConf.isExist(ENABLE_ZOOM))
+            mConfig.set(WebViewConfig.ENABLE_ZOOM, RhoConf.getBool(ENABLE_ZOOM));
+
+        if (RhoConf.isExist(ENABLE_WEB_PLUGINS))
+            mConfig.set(WebViewConfig.ENABLE_WEB_PLUGINS, RhoConf.getBool(ENABLE_WEB_PLUGINS));
+
+        if (RhoConf.isExist(ENABLE_CACHE))
+            mConfig.set(WebViewConfig.ENABLE_CACHE, RhoConf.getBool(ENABLE_CACHE));
     }
 
 }

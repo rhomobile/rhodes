@@ -9,14 +9,18 @@
 #include "common/RhoConf.h"
 #include "MainWindow.h"
 #include "EngineDefines.h"
+#include "EditSip.h"
 
 #if defined(_WIN32_WCE)
 #include <webvw.h>
 #endif
 //////////////////////////////////////////////////////////////////////////
-
+extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
 extern "C" HWND rho_wmimpl_get_mainwnd();
 extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam);
+extern "C" bool rho_wmimpl_get_textselectionenabled();
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 IMPLEMENT_LOGCLASS(CEBrowserEngine,"CEBrowser");
 
@@ -39,18 +43,29 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     , m_bInPlaceActive(true)
     , m_pBrowser(NULL)
     , m_hNavigated(NULL)
+    , m_hDocComp(NULL)
     , m_hwndTabHTML(NULL)
     , bRunningOnWM(FALSE)
     , bDeviceCausesDoubleBackspace(FALSE)
     , m_tabID(0)
-    , m_dwNavigationTimeout(30*1000)
+    , m_dwNavigationTimeout(45000)
     , m_bLoadingComplete(FALSE)
+    , m_bNavigationError(FALSE)
+	, m_bInitialised(FALSE)
+	,m_bNavigationComplete(FALSE)
 {
 	m_hwndParent  = hwndParent;
 	m_hInstance = hInstance;
 
 	memset(m_tcCurrentPageTitle, NULL, sizeof(TCHAR) * MAX_URL);
 	memset(m_tcNavigatedURL, 0, sizeof(TCHAR) * MAX_URL);
+	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
+	if(m_dwNavigationTimeout<=0)
+	{
+		LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_dwNavigationTimeout;
+		m_dwNavigationTimeout=45000;
+	}
+    CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
 	GetWindowRect(hwndParent, &m_rcViewSize);
     CreateEngine();
@@ -72,12 +87,42 @@ LRESULT CEBrowserEngine::CreateEngine()
 	DWORD			dwFlags;			/// shdocvw client flags
 	IClassFactory	*ppv;				/// pointer variable to hold WebBrowser interface pointer
 
+
+	TCHAR szPlatform[128];
+	memset(szPlatform, 0, 127 * sizeof(TCHAR));
+	SystemParametersInfo(SPI_GETOEMINFO, 127, szPlatform, 0);
+
+
+		if((_tcsstr(szPlatform,TEXT("MK4000")) != NULL) || (_tcsstr(szPlatform,TEXT("MK3100")) != NULL) || (_tcsstr(szPlatform,TEXT("MC18")) != NULL)|| (_tcsstr(szPlatform,TEXT("MK3000")) != NULL))
+		{
+			HKEY hRegKey= NULL;
+			DWORD Type;
+			DWORD RetSize = 999;
+			DWORD dwManSIP = 0;
+			if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\Main"), 0, 0, &hRegKey)) 
+			{
+
+				RetSize = 999;
+				RegQueryValueEx(hRegKey, _T("Disable Auto SIP"), NULL, &Type, (BYTE *) &dwManSIP, &RetSize);
+				if(dwManSIP==1)
+				{
+					DWORD dwAutoSIP =0;
+					LONG lResult = RegSetValueEx(hRegKey,_T("Disable Auto SIP"),0,Type,(BYTE *)&dwAutoSIP,sizeof(DWORD));
+				}
+
+				RegCloseKey(hRegKey);
+			}
+		}
+
+	/////////////
 	//we only want to do this once, so check that the m_pBrowser is null
 	if (!m_pBrowser)
 	{
+    
 		// See if text selection is enabled, so we can pass the correct value through the GetHostInfo() interface
 		//configFunction(m_tabID, L"HTMLStyles\\TextSelectionEnabled", tcConfigSetting);
-		m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
+		//m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
+		m_bTextSelectionEnabled = rho_wmimpl_get_textselectionenabled();
 
 		// Create an instance of a web browser object (from Shdocvw.dll).
 		
@@ -142,9 +187,10 @@ LRESULT CEBrowserEngine::CreateEngine()
 			bDeviceCausesDoubleBackspace = TRUE;
 		}
 	}
+//		CloseHandle (CreateThread(NULL, 0, 
+//			&CEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
+		
 
-    CloseHandle (CreateThread(NULL, 0, 
-        &CEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
 
 Cleanup:
 	if (pUnk)
@@ -177,9 +223,9 @@ Cleanup:
     SetWindowLong(m_hwndTabHTML, GWL_STYLE, lStyle);
 	SetParent(m_hwndTabHTML, m_hwndParent);
 
-	//ShowWindow(m_hwndTabHTML, SW_SHOW);
-	//SetForegroundWindow(m_hwndTabHTML);
-	//MoveWindow(m_hwndTabHTML, m_rcViewSize.left, m_rcViewSize.top, (m_rcViewSize.right-m_rcViewSize.left), (m_rcViewSize.bottom-m_rcViewSize.top), FALSE);
+	ShowWindow(m_hwndTabHTML, SW_SHOW);
+	SetForegroundWindow(m_hwndTabHTML);
+	MoveWindow(m_hwndTabHTML, m_rcViewSize.left, m_rcViewSize.top, (m_rcViewSize.right-m_rcViewSize.left), (m_rcViewSize.bottom-m_rcViewSize.top), FALSE);
 
 	return S_OK;		
 };
@@ -244,6 +290,10 @@ BOOL CEBrowserEngine::StopOnTab(UINT iTab)
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
 
+        SetEvent(m_hDocComp);
+        CloseHandle(m_hDocComp);
+        m_hDocComp = NULL;
+            
         PostMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
         PostMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
 
@@ -253,22 +303,92 @@ BOOL CEBrowserEngine::StopOnTab(UINT iTab)
 	return FALSE;
 }
 
+DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
+{
+    LOG(INFO) + (L"DocThread Started\n");
+
+    CEBrowserEngine * pEng = reinterpret_cast<CEBrowserEngine*>(lpParameter);
+
+    if(pEng->m_hDocComp == NULL)
+    {
+        pEng->m_hDocComp = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_DOCCOMPLETE_IN_PROGRESS"/*NULL*/);
+
+        if(WaitForSingleObject(pEng->m_hDocComp, pEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
+        {
+            //no point in doing anything as there is no event handler
+            pEng->StopOnTab(pEng->m_tabID);
+            CloseHandle(pEng->m_hDocComp);
+            pEng->m_hDocComp = NULL;
+
+            //send fake document complete event to plug-in modules
+            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, 
+                (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+
+            //send navigation timeout event to hit the local bad link page for recovery from missing document complete event
+            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+                (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+        }
+    }
+
+    LOG(INFO) + (L"DocThread Ended\n");
+
+    return 0;
+}
+
 DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
     CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
+	DWORD dwWaitResult;
 
-    if(pEng->m_hNavigated==NULL)
-        pEng->m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
+    if (pEng->m_dwNavigationTimeout)
+    {				
+		dwWaitResult = WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout);
 
-    if(WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
-    {
-        //no point in doing anything as there is no event handler
-        pEng->StopOnTab(pEng->m_tabID);
-        CloseHandle(pEng->m_hNavigated);
-        pEng->m_hNavigated = NULL;
+		switch (dwWaitResult) 
+		{
+			// Event object was signaled
+			case WAIT_OBJECT_0: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:Event object was signaled\n";
+								
+				CloseHandle(pEng->m_hNavigated);
+				pEng->m_hNavigated = NULL;
+				if(pEng->m_bNavigationError)
+				{
+					LOG(INFO) + "NavigationTimeoutThread:m_bNavigationError\n";
+					pEng->StopOnTab(0);
+					Sleep(400);
+					SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, 
+					(WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+					pEng->m_bNavigationError=FALSE;
 
-        SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
-            (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+				}
+				break; 
+			case WAIT_TIMEOUT: 
+				//
+				// TODO: Read from the shared buffer
+				//
+				LOG(INFO) + "NavigationTimeoutThread:timeout\n";
+				
+					
+				pEng->StopOnTab(0);
+						
+				CloseHandle(pEng->m_hNavigated);
+				pEng->m_hNavigated = NULL;
+				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+                (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+
+				break; 
+
+			// An error occurred
+			default: 
+				LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
+				return 0; 
+		}		
+		
+		
     }
 
     return 0;
@@ -338,6 +458,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			const GUID __RPC_FAR *pguidCmdGroup,
 			DWORD nCmdID)
 {
+	/*
 	if (lpMsg && (lpMsg->message == WM_KEYDOWN))
 	{
 		if (lpMsg->wParam == VK_LEFT ||
@@ -369,7 +490,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			return S_FALSE;
 		}
 	}
-
+*/
 	return S_FALSE;
 }
 
@@ -455,6 +576,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 	switch (dispidMember) 
 	{
 	case DISPID_NAVIGATEERROR:
+        LOG(INFO) + "DISPID_NAVIGATEERROR";
+		m_bNavigationError=TRUE;
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
@@ -463,7 +586,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR)
 			wcsncpy(tcURL, pdparams->rgvarg[3].pvarVal->bstrVal, MAX_URL-1);
 		
-        SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, (WPARAM)m_tabID, (LPARAM)tcURL);
+  //      SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, (WPARAM)m_tabID, (LPARAM)tcURL);
 		
         *(pdparams->rgvarg[0].pboolVal) = VARIANT_TRUE;
 		retVal = S_OK;
@@ -471,6 +594,10 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		break;
 	
 	case DISPID_NAVIGATECOMPLETE2:
+        LOG(INFO) + "DISPID_NAVIGATECOMPLETE2";
+		if (!m_bInitialised)
+			RegisterWndProcThread(this);
+
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
@@ -485,6 +612,12 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 			if(pdparams->rgvarg[0].pvarVal->vt == VT_BSTR && pdparams->rgvarg[0].pvarVal->bstrVal)
 				wcsncpy(tcURL, pdparams->rgvarg[0].pvarVal->bstrVal, MAX_URL-1);
 		}
+
+        SetEvent(m_hDocComp);
+        CloseHandle(m_hDocComp);
+        m_hDocComp = NULL;
+
+        CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::DocumentTimeoutThread, (LPVOID)this, 0, NULL));
 
         SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);
 
@@ -502,6 +635,11 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 	case DISPID_DOCUMENTCOMPLETE:
 		//Validate that there is an event handler
+        LOG(INFO) + "DISPID_DOCUMENTCOMPLETE";
+
+        SetEvent(m_hDocComp);
+        CloseHandle(m_hDocComp);
+        m_hDocComp = NULL;
 
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR) 
 		{
@@ -521,10 +659,12 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
         ParseTags();
 
 		retVal = S_OK;
-        
+        m_bNavigationComplete = TRUE;
 		break;
 
 	case DISPID_BEFORENAVIGATE2:
+        LOG(INFO) + "DISPID_BEFORENAVIGATE2";
+
 		if (pdparams && pdparams->rgvarg[5].pvarVal[0].vt == VT_BSTR) 
 		{
 			if(pdparams->rgvarg[5].pvarVal[0].bstrVal)
@@ -555,11 +695,18 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		//  Test if the user has attempted to navigate back in the history
 		if (wcsicmp(tcURL, L"history:back") == 0)
 		{
-            m_pBrowser->GoBack();
-            break;
+            		m_pBrowser->GoBack();
+        		 *(pdparams->rgvarg[0].pboolVal) = VARIANT_TRUE;
+			retVal = S_OK;
+            		break;
 		}
+        if(m_hNavigated==NULL)
+            m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
 		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
+		// EMBPD00158491
+		m_bNavigationComplete = FALSE;
+		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NetworkWindowThread, (LPVOID)this, 0, NULL));
 		wcscpy(m_tcNavigatedURL, tcURL);
 
 #ifdef SCROLL_NOTIFY
@@ -576,8 +723,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		break;
 	}
 
-	delete[] tcURL;
-	tcURL = NULL;
+	//delete[] tcURL;
+	//tcURL = NULL;
 
 	return retVal;
 }
@@ -668,6 +815,12 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     switch (uMsg) 
     {
+	case PB_WINDOW_RESTORE:
+		{
+			short m_PB_WINRESTORED = 6;
+            RHODESAPP().getExtManager().OnWindowChanged((LPVOID) m_PB_WINRESTORED);   
+		}
+		break;
     case PB_ONMETA:
         {
             EngineMETATag* metaTag2 = (EngineMETATag*)lParam;
@@ -695,17 +848,43 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd) 
 {
-    MSG msg;
+	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-        if ( RHODESAPP().getExtManager().onWndMsg(msg) )
+        if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 
-        if (!mainWnd.TranslateAccelerator(&msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+		if (msg.message == WM_MOUSEFIRST)
+		{
+			bool m_bFullScreen = RHOCONF().getBool("full_screen");
+
+			if (m_bFullScreen)
+			{
+				HWND taskbarWnd = FindWindow(L"HHTaskBar", NULL);
+				ShowWindow(taskbarWnd, SW_HIDE);
+			}
+		}
+		
+		if (msg.message == WM_KEYDOWN && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
+		{
+			IDispatch* pDisp;
+			m_pBrowser->get_Document(&pDisp);
+			if (pDisp != NULL)
+			{
+				IOleInPlaceActiveObject* pInPlaceObject;
+				pDisp->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&pInPlaceObject);
+				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);
+			}
+		}
+
+		if (!mainWnd.TranslateAccelerator(&msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		if(msg.message == WM_PAINT)
+			RHODESAPP().getExtManager().onHTMLWndMsg(msg);	
     }
 }
 
@@ -879,6 +1058,7 @@ HRESULT CEBrowserEngine::ParseTags()
 								TCHAR tcHttpEquiv[MAX_URL], tcContents[MAX_URL];
 								memset(tcHttpEquiv, 0, MAX_URL);
 								memset(tcContents, 0, MAX_URL);
+
 								//  Obtain the HTTP Equiv from the IE 
 								//  component, stored in bstr
 								if (S_OK == pMetaElem->get_httpEquiv(&bstr)) 
@@ -888,9 +1068,10 @@ HRESULT CEBrowserEngine::ParseTags()
 										//  Copy the HTTP Equiv returned
 										//  from the IE Component into our 
 										//  Meta Tag Structure
-										wcsncpy(tcHttpEquiv, bstr, MAX_URL);
-                                        metaTag->tcHTTPEquiv = new WCHAR[wcslen(tcHttpEquiv)+1];
-                                        wcsncpy(metaTag->tcHTTPEquiv, tcHttpEquiv, MAX_URL);
+										wcsncpy(tcHttpEquiv, bstr, MAX_URL);                                        
+                                        int httpEquivLenght = wcslen(tcHttpEquiv)+1;
+                                        metaTag->tcHTTPEquiv = new WCHAR[httpEquivLenght];
+                                        wcsncpy(metaTag->tcHTTPEquiv, tcHttpEquiv, httpEquivLenght);
 										::SysFreeString(bstr);
 									}
 									else if	(S_OK == pMetaElem->get_name(&bstr))
@@ -902,12 +1083,14 @@ HRESULT CEBrowserEngine::ParseTags()
 											//  from the IE Component into our 
 											//  Meta Tag Structure
 											wcsncpy(tcHttpEquiv, bstr, MAX_URL);
-                                            metaTag->tcHTTPEquiv = new WCHAR[wcslen(tcHttpEquiv)+1];
-											metaTag->tcHTTPEquiv = tcHttpEquiv;
+                                            int httpEquivLenght = wcslen(tcHttpEquiv)+1;
+                                            metaTag->tcHTTPEquiv = new WCHAR[httpEquivLenght];											
+                                            wcsncpy(metaTag->tcHTTPEquiv, tcHttpEquiv, httpEquivLenght);
 											::SysFreeString(bstr);
 										}
 									}
 								}
+
 								if (metaTag->tcHTTPEquiv && S_OK == pMetaElem->get_content(&bstr)) 
 								{
 									if (bstr != 0) 
@@ -916,14 +1099,15 @@ HRESULT CEBrowserEngine::ParseTags()
 										//  from the IE component into our
 										//  Meta Tag Structure
 										wcsncpy(tcContents, bstr, MAX_URL);
-                                        metaTag->tcContents = new WCHAR[wcslen(tcContents)+1];
-                                        wcsncpy(metaTag->tcContents, tcContents, MAX_URL);
+                                        int contentsLenght = wcslen(tcContents)+1;
+                                        metaTag->tcContents = new WCHAR[contentsLenght];
+                                        wcsncpy(metaTag->tcContents, tcContents, contentsLenght);
 										::SysFreeString(bstr);
 										//  Invoke the Meta Tag Callback.
 										//  This blocks whilst the callback
 										//  code is handled so metaTag does not
 										//  go out of scope.
-                                        PostMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)metaTag);
+                                        SendMessage(rho_wmimpl_get_mainwnd(), PB_ONMETA, (WPARAM)m_tabID, (LPARAM)metaTag);
 									}
 								}
 								pMetaElem->Release();
@@ -948,6 +1132,7 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
 {
 	//  We are passed a pointer to the engine we are interested in.
 	CEBrowserEngine* pEngine = reinterpret_cast<CEBrowserEngine*>(lpParameter);
+	pEngine->m_bInitialised = true;
 
 	//  The window tree appears as follows on CE:
 	//  +--m_htmlHWND
@@ -983,10 +1168,125 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
         Sleep(100);
 	}
 
-    PostMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+	//  Invoke directly as this must be done before all meta tag parsing.  On some devices meta tags were 
+	//  being partially processed causing subsequent meta tags to not be read correctly.
+	//rho_wm_appmanager_ProcessOnTopMostWnd((LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
+	SendMessage(rho_wmimpl_get_mainwnd(), PB_ONTOPMOSTWINDOW,(LPARAM)0, (WPARAM)hwndHTMLMessageWindow);
 
     return 0;
 }
 
+BOOL CEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab) 
+{ 
+	LPDISPATCH pDisp = NULL;
+	LPOLECOMMANDTARGET pCmdTarg = NULL;
+	if (S_OK != m_pBrowser->get_Document(&pDisp)) 
+		return S_FALSE;
+	if (pDisp == NULL)
+		return S_FALSE;
+	pDisp->QueryInterface(IID_IOleCommandTarget, (LPVOID*)&pCmdTarg);
+	if (pCmdTarg == NULL)
+		return S_FALSE;
+	VARIANT vaZoomFactor;   // input arguments
+	VariantInit(&vaZoomFactor);
+	V_VT(&vaZoomFactor) = VT_I4;
+	V_I4(&vaZoomFactor) = nZoom;
+	pCmdTarg->Exec(NULL,
+				OLECMDID_ZOOM,
+				OLECMDEXECOPT_DONTPROMPTUSER,
+				&vaZoomFactor,
+				NULL);
+	VariantClear(&vaZoomFactor);
+	if (pCmdTarg)
+	   pCmdTarg->Release(); // release document's command target
+	if (pDisp)
+	   pDisp->Release();    // release document's dispatch interface
+	return S_OK;
+}
 
+
+DWORD WINAPI CEBrowserEngine::NetworkWindowThread( LPVOID lpParameter )
+{
+
+	CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
+
+	TCHAR szWindowText[MAX_PATH];
+	TCHAR szWindowClass[MAX_PATH];
+	HWND hCurrentWindow = NULL;
+
+	ZeroMemory(szWindowText,MAX_PATH);
+	ZeroMemory(szWindowClass,MAX_PATH);
+
+	while(!pEng->m_bNavigationComplete)
+	{
+		HWND hCurrentWindow=FindWindow(TEXT("Dialog"),TEXT("Enter Network Password"));
+		if(hCurrentWindow != NULL)
+		{
+			GetWindowText(hCurrentWindow,szWindowText,MAX_PATH);
+			ZeroMemory(szWindowClass,MAX_PATH);
+			GetClassName(hCurrentWindow,szWindowClass,MAX_PATH);
+			LONG lIndex = GetWindowLong(hCurrentWindow,GWL_ID);
+			
+			::EnumChildWindows(hCurrentWindow,(WNDENUMPROC)NetworkWndProc,0);
+			pEng->m_bNavigationComplete = TRUE;
+			return 0;	
+		}
+	}
+	return 0;
+}
+
+// EMBPD00158491 - [SAP-ITS][CE5/MK4000]-Sip is not shown while trying to enter text in fields of Authentication screen
+// SIP not appearing on authentication window on IE engine has been fixed
+LRESULT CALLBACK NetworkWndProc(HWND hWnd,LPARAM lParam)
+{
+	if(hWnd)
+	{
+
+		TCHAR szChildWndText[MAX_PATH];
+		TCHAR szChildWndClass[MAX_PATH];
+
+		ZeroMemory(szChildWndText,MAX_PATH);
+		ZeroMemory(szChildWndClass,MAX_PATH);
+
+		GetWindowText(hWnd,szChildWndText,MAX_PATH);
+		GetClassName(hWnd,szChildWndClass,MAX_PATH);
+		
+		if(_tcsicmp(szChildWndClass,TEXT("Edit")) ==0)
+		{
+			g_wpEditWndProc= (WNDPROC)SetWindowLong(hWnd,GWL_WNDPROC,(LONG)EditWndProc);
+			if(g_wpEditWndProc== NULL)
+			{
+				LOG(ERROR) + "[NetworkWndProc] Setwindowlong returns null";
+				LOG(ERROR) + GetLastError();
+			}
+		}
+		return TRUE;
+	}
+	else
+		return FALSE;
+	
+}
+
+
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+
+			switch(message)
+			{
+			case WM_SETFOCUS:
+				{
+					ShowSIPWnd(TRUE);
+				}
+				break;
+			case WM_KILLFOCUS:
+				{
+					ShowSIPWnd(FALSE);
+				}
+				break;
+			}
+			return CallWindowProc(g_wpEditWndProc, hwnd, message, wParam, lParam); 
+}
 #endif //!defined( OS_WINCE )
+
+

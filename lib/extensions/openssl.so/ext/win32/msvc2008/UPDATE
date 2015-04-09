@@ -1,0 +1,21 @@
+To update OpenSSL library (openssl.so extension) for Visual Studio 2008 follow these steps:
+
+* Install Platform SDK 7.1 (if it's not installed yet) (http://www.microsoft.com/en-us/download/details.aspx?id=8279)
+* Install Perl interpreter (if it's not installed yet), e.g. ActiveState Perl (http://www.activestate.com/activeperl), and add path to perl.exe to PATH variable, e.g. C:\Perl\bin
+* Install Netwide Assembler (NASM) from http://www.nasm.us/ (if it's not installed yet) and add path to nasm.exe (usually 'C:\Program Files\nasm') to the PATH variable
+* Download OpenSSL library source code from http://www.openssl.org/ and extract the downloaded archive, e.g. into C:\Qt\openssl-src
+* Open Visual Studio 2008 Command Prompt. This is accomplished using Start » All Programs » Microsoft Visual Studio 2008 » Visual Studio Tools » Visual Studio 2008 Command Prompt. Run in Visual Studio 2008 Command Prompt:
+
+      > call vcvarsall.bat x86
+      > set CL=/MP
+      > set PATH=%ProgramFiles%\Microsoft SDKs\Windows\v7.1\Bin;%PATH%
+      > set INCLUDE=%ProgramFiles%\Microsoft SDKs\Windows\v7.1\Include;%INCLUDE%
+      > set LIB=%ProgramFiles%\Microsoft SDKs\Windows\v7.1\Lib;%LIB%
+      > cd \Qt\openssl-src
+      > call perl Configure VC-WIN32 enable-static-engine --prefix=<path-to-rhodes>/lib/extensions/openssl.so/ext/win32/msvc2008
+      > call ms\do_nasm
+      > nmake -f ms\ntdll.mak
+      > nmake -f ms\ntdll.mak install
+      > nmake -f ms\ntdll.mak clean
+
+* Remove `lib/extensions/openssl.so/ext/win32/msvc2008/include` folder

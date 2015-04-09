@@ -2,8 +2,8 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
   <MODULE name="RhoFile" parent="Rho" generateUnderscoreRubyNames="true">
-    <HELP_OVERVIEW>File I/O</HELP_OVERVIEW>
-    <MORE_HELP>Use this API to access local files for reading and writing. Only string data can be read and written with this API. Please note that binary files are not supported. Strings filled with \0 will be truncated to the last non \0 character. 
+    <HELP_OVERVIEW>This API provides several methods for access to files and folders found on the device's local file system.</HELP_OVERVIEW>
+    <MORE_HELP>Use this API to access local files for reading and writing. Only string data can be read and written with this API. Please note that binary files are not supported. Strings filled with \0 will be truncated to the last non \0 character.
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
@@ -14,11 +14,39 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
-  </MORE_HELP>
+    </MORE_HELP>
+    <MORE_HELP_EB>
+## Enabling the API
+There are two methods of enabling the RhoFile API:
+
+* Include all ebapi modules or
+* Include only the API modules you need
+
+For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
+
+### Include all JS API modules
+To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+> Note: that the pathing for this file is relative to the current page.
+
+This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
+
+### Include only the modules you need
+To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the RhoFile API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.file.js"&gt;&lt;/script&gt;
+
+The ebapi.js file is necessary for all single API inclusions.
+    </MORE_HELP_EB>
 
     <ALIASES>
     </ALIASES>
-    
+
     <TEMPLATES>
     </TEMPLATES>
 
@@ -62,7 +90,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
               <DESC>True if file is opened, false otherwise.</DESC>
           </RETURN>
       </METHOD>
-        
+
       <METHOD name="read">
           <DESC>Reads specified number of characters from current position of the file.</DESC>
           <PARAMS>
@@ -74,14 +102,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
               <DESC>String from current position of file containing specified number of characters.</DESC>
           </RETURN>
       </METHOD>
-        
+
       <METHOD name="readAll">
           <DESC>Reads all file contents to the string object.</DESC>
           <RETURN type="STRING">
               <DESC>Contents of the file.</DESC>
           </RETURN>
       </METHOD>
-        
+
       <METHOD name="write">
           <DESC>Writes the provided string at current position in the file.</DESC>
           <PARAMS>
@@ -93,11 +121,11 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
               <DESC>Number of bytes written.</DESC>
           </RETURN>
       </METHOD>
-        
+
       <METHOD name="flush">
           <DESC>Flushes all buffered data to the storage media.</DESC>
       </METHOD>
-        
+
       <METHOD name="seek">
           <DESC>Sets file position to specified value from the beginning of the file.</DESC>
           <PARAMS>
@@ -106,14 +134,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
               </PARAM>
           </PARAMS>
       </METHOD>
-        
+
       <METHOD name="size">
           <DESC>Returns file size.</DESC>
           <RETURN type="INTEGER">
               <DESC>File size in bytes.</DESC>
           </RETURN>
       </METHOD>
-      
+
     <!--    STATIC METHODS -->
         <METHOD name="copy" access="STATIC">
             <DESC>Copies file from "from" (source) to "to" (destination).</DESC>
@@ -129,7 +157,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Error code raised during copy operation. 0 if no error.</DESC>
             </RETURN>
         </METHOD>
-        
+
         <METHOD name="rename" access="STATIC">
             <DESC>Renames / moves file.</DESC>
             <PARAMS>
@@ -144,7 +172,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Error code raised on move / rename. 0 on success, -1 otherwise.</DESC>
             </RETURN>
         </METHOD>
-        
+
         <METHOD name="makeDir" access="STATIC">
             <DESC>Creates directory with the provided path. If all top-level nodes of the path doesn't exists, directory will not be created.</DESC>
             <PARAMS>
@@ -156,7 +184,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Error code raised on directory creation. 0 on success, -1 otherwise.</DESC>
             </RETURN>
         </METHOD>
-        
+
         <METHOD name="exists" access="STATIC">
             <DESC>Checks if specified path exists.</DESC>
             <PARAMS>
@@ -168,7 +196,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>True if path exists, otherwise false.</DESC>
             </RETURN>
         </METHOD>
-        
+
         <METHOD name="getFileSize" access="STATIC">
             <DESC>Returns size of the file.</DESC>
             <PARAMS>
@@ -180,7 +208,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>File size in bytes.</DESC>
             </RETURN>
         </METHOD>
-            
+
         <METHOD name="isDir" access="STATIC">
             <DESC>Checks if specified path is a directory.</DESC>
             <PARAMS>
@@ -192,7 +220,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>True if path is a directory. False otherwise.</DESC>
             </RETURN>
         </METHOD>
-        
+
         <METHOD name="isFile" access="STATIC">
             <DESC>Checks if specified path is a file.</DESC>
             <PARAMS>
@@ -204,7 +232,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>True if path is a file, false otherwise.</DESC>
             </RETURN>
         </METHOD>
-        
+
         <METHOD name="deleteFile" access="STATIC">
             <DESC>Deletes file.</DESC>
             <PARAMS>
@@ -217,7 +245,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </RETURN>
 
         </METHOD>
-        
+
         <METHOD name="deleteDir" access="STATIC">
             <DESC>Deletes specified directory. The specified directory must be empty to be deleted.</DESC>
             <PARAMS>
@@ -229,7 +257,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Error code raised on directory deletion. 0 on success, -1 otherwise.</DESC>
             </RETURN>
         </METHOD>
-        
+
         <METHOD name="makeDirs" access="STATIC">
             <DESC>Creates directory and all top-level directories if necessary. Subsequent isDir call is necessary to check if path was successfully created.</DESC>
             <PARAMS>
@@ -238,7 +266,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAM>
             </PARAMS>
         </METHOD>
-        
+
         <METHOD name="deleteRecursive" access="STATIC">
             <DESC>Deletes all directory contents.</DESC>
             <PARAMS>
@@ -251,7 +279,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAM>
             </PARAMS>
         </METHOD>
-        
+
         <METHOD name="listDir" access="STATIC">
             <DESC>Lists all entries of specified directory.</DESC>
             <PARAMS>
@@ -263,10 +291,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Array of directory entry names. If directory is empty array of size 0 will be returned.</DESC>
             </RETURN>
         </METHOD>
-        
-        
+
+
     <!--PATH METHODS -->
-            
+
         <METHOD name="basename" access="STATIC">
             <DESC>Return basename part for the specified path. Will remove any prefix up to the last path separator ('/' or '\' depending on platform). Example: for path '/full/path/to/file.ext' basename will return 'file.ext'. </DESC>
             <PARAMS>
@@ -278,7 +306,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Basename part for the given path.</DESC>
             </RETURN>
         </METHOD>
-            
+
         <METHOD name="dirname" access="STATIC">
             <DESC>Returns directory name part of the specified path.</DESC>
             <PARAMS>
@@ -290,7 +318,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Directory name.</DESC>
             </RETURN>
         </METHOD>
-            
+
         <METHOD name="join" access="STATIC">
             <DESC>Joins two parts of the path considering all necessary path delimiters. I.e.: join('/path/to','file') will return '/path/to/file' </DESC>
             <PARAMS>
@@ -305,7 +333,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Joined path.</DESC>
             </RETURN>
         </METHOD>
-        
+
         <METHOD name="read" access="STATIC">
             <DESC>Reads specified file to a string object.</DESC>
             <PARAMS>
@@ -325,8 +353,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 
     </USER_OVERVIEW>
     <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
-      <EXAMPLES >
+    <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+    <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+      <EXAMPLES>
            <EXAMPLE title="List contents of a folder">
             <SECTIONS>
               <SECTION>
@@ -338,11 +367,11 @@ folders = []
 files = []
 
 root_path = "/arbitrary/path"
-entries = Rho::File.listDir(root_path)
+entries = Rho::RhoFile.listDir(root_path)
 
 entries.each do |entry|
   unless (entry == "." || entry == "..")
-    (Rho::File.isDir(Rho::File.join(root_path,entry)) ? folders : files) << entry
+    (Rho::RhoFile.isDir(Rho::RhoFile.join(root_path,entry)) ? folders : files) << entry
   end
 end
                    ]]>

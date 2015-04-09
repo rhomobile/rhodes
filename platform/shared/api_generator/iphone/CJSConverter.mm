@@ -107,7 +107,7 @@
     }
     else if ([objectiveC_value isKindOfClass:[CMethodResultError class]]) {
         CMethodResultError* errorObject = (CMethodResultError*)objectiveC_value;
-        NSString* str = [NSString stringWithFormat:@"\"error\": {\"code\": %d, \"message\": \"%@\"}", [errorObject getErrorCode], [errorObject getErrorDescription]];
+        NSString* str = [NSString stringWithFormat:@"\"error\": {\"code\": %@, \"message\": \"%@\"}", [NSNumber numberWithInt:[errorObject getErrorCode]], [errorObject getErrorDescription]];
         return str;
     }
     //if (level == 0)
@@ -128,7 +128,9 @@
     
 
     if (jsonEntry->isString()) {
-        return [NSString stringWithUTF8String:jsonEntry->getString()];
+        rho::String str = json_entry->getStringObject();
+
+        return [[NSString alloc] initWithBytes:str.c_str() length:str.length() encoding:NSUTF8StringEncoding];
     }
     if (jsonEntry->isInteger()) {
         return [NSNumber numberWithInt:jsonEntry->getInt()];

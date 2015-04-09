@@ -238,7 +238,7 @@ void CExtManager::executeJavascript(const wchar_t* szJSFunction)
     nd->index = rho_webview_active_tab();
 #ifndef RHODES_QT_PLATFORM
     nd->url = _tcsdup(szJSFunction);
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
+    ::SendMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
 #else
     nd->url = wcsdup(szJSFunction);
     CMainWindow::getInstance()->executeJavaScriptCommand(nd);
@@ -350,7 +350,7 @@ int CExtManager::getTextZoom() //Enum (0 to 4)
 
 StringW CExtManager::getConfigPath()
 {
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
     return rho_wmimpl_get_configfilepath();
 #else
     return L"";
@@ -513,12 +513,25 @@ long CExtManager::OnLicenseError(const wchar_t* szUrlBeingNavigatedTo)
 
     return 0;
 }
-
+void CExtManager::OnLicenseScreen(bool bActivate)
+{
+	for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+	{
+		(it->second)->OnLicenseScreen( bActivate, makeExtData() );
+	}
+}
 void CExtManager::OnAppActivate(bool bActivate)
 {
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
     {
         (it->second)->OnAppActivate( bActivate, makeExtData() );
+    }
+}
+void CExtManager::OnPowerButton(bool bPowerOn)
+{
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+    {
+        (it->second)->OnPowerButton( bPowerOn, makeExtData() );
     }
 }
 

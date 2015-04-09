@@ -28,11 +28,21 @@
 
 #include "common/RhoFile.h"
 #include "common/StringConverter.h"
+#include "common/RhodesApp.h"
 #include "net/RawSocket.h"
+#include "net/URI.h"
 
 #if defined( OS_SYMBIAN )
 #include <e32debug.h>
 #endif
+
+
+#if defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
+
+extern "C" void rho_ios_log_console_output(const char* message);
+
+#endif
+
 
 namespace rho {
 
@@ -66,6 +76,7 @@ void CLogFileSink::writeLogMessage( String& strMsg ){
         if ( ( m_nCirclePos >= 0 && m_nCirclePos + len > getLogConf().getMaxLogFileSize() ) || 
              ( m_nCirclePos < 0 && m_nFileLogSize + len > getLogConf().getMaxLogFileSize() ) )
         {
+            m_pFile->truncate(m_pFile->getPos());
             m_pFile->movePosToStart();
             m_nFileLogSize = 0;
             m_nCirclePos = 0;
@@ -157,14 +168,16 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 #elif defined( OS_PLATFORM_MOTCE )
 		::OutputDebugStringW(common::convertToStringW(strMsg).c_str());
 #elif defined(OS_WP8)
-		::OutputDebugStringA(szMsg);
+		::OutputDebugStringW(common::convertToStringW(strMsg).c_str());
 #elif defined( OS_SYMBIAN )
         TPtrC8 des((const TUint8*)szMsg);
       	RDebug::RawPrint(des);
         return;
+#elif defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
+        rho_ios_log_console_output(szMsg);
 #endif
 
-#if !defined( OS_PLATFORM_MOTCE )
+#if !defined( OS_PLATFORM_MOTCE ) && !(defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
     for( int n = 0; n < (int)strMsg.length(); n+= 100 )
         fwrite(szMsg+n, 1, min(100,strMsg.length()-n) , stdout );
 
@@ -200,10 +213,19 @@ void CLogSocketSink::writeLogMessage( String& strMsg )
 void CLogSocketSink::processCommand(IQueueCommand* pCmd)
 {
     LogCommand *cmd = (LogCommand *)pCmd;
-    if (!cmd)
+  
+    /*
+      Checking CRhodesApp instance is needed because net request requires it to be valid.
+      If socket sink is initialized from ext manager, log messages could occur before app instance is set so we will crash.
+    */     
+    if (!cmd || (common::CRhodesApp::getInstance()==0))
         return;
-	
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+
+	getNet().doRequest( "GET", cmd->m_url+"?LogSeverity="+cmd->m_body[0]+"&LogComment="+net::URI::urlEncode(cmd->m_body), String(), 0, 0 );
+#else
 	getNet().doRequest( "POST", cmd->m_url, cmd->m_body, 0, 0 );
+#endif
 }
         
 }

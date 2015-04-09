@@ -3,10 +3,10 @@
 #ifndef OS_WP8
 extern "C" void Init_Camera_API();
 extern "C" void Init_Videocapture();
-#else
+#endif
+#if defined(OS_WINCE) || defined(OS_WP8)
 extern "C" void Init_Camera_extension();
 #endif
-
 extern "C" void Init_Mediacapture_extension()
 {
 #ifndef OS_WP8
@@ -15,8 +15,10 @@ extern "C" void Init_Mediacapture_extension()
     RHODESAPP().getExtManager().requireRubyFile("RhoCameraApi");
 #endif
     LOG(INFO) + __FUNCTION__ + " Loading Videocapture extension";
-    Init_Videocapture();
-#else
+    Init_Videocapture(); 
+#endif
+
+#if defined(OS_WINCE) || defined(OS_WP8)   
     Init_Camera_extension();
 #endif
 }

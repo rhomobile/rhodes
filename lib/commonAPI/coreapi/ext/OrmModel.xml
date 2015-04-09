@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="[Your-OrmModel]" parent="Rho">
+    <MODULE name="[Your-OrmModel]" parent="Rho" productException="eb">
         <HELP_OVERVIEW>RhoMobile applications provide automatic JavaScript CRUD methods for any models that you have defined to interact with the database.  You must define a model class by using the [ORM.addModel](Orm#maddModel) method before you can use the API's referenced here.  See [Orm](Orm) to learn about defining and adding a model.
 
 All methods here are accessed from the model instance object that you have created. In places where you see `[Your-OrmModel]` on this page, you would use the instance object instead.
@@ -28,8 +28,8 @@ All methods here are accessed from the model instance object that you have creat
     product.get('name'); // iPhone5
 
         </HELP_OVERVIEW>
-        <LINK><a href='./Orm'>Orm</a></LINK> 
-        <MORE_HELP> 
+        <LINK><a href='./Orm'>Orm</a></LINK>
+        <MORE_HELP>
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
@@ -75,7 +75,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                         <DESC>An object of selection options</DESC>
                         <PARAMS>
                             <PARAM name="conditions" type="HASH">
-                                <DESC>A name:value object that you want to find. Ex: conditions { name:'Motorola'}.</DESC>
+                                <DESC>A name:value object that you want to find. Ex: conditions { name:'Symbol'}.</DESC>
                                 <PARAMS>
                                     <PARAM name="propertyName" type=""></PARAM>
                                     <PARAM name="propertyValue" type=""></PARAM>
@@ -211,7 +211,8 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
 
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-            <PLATFORM>WM, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
         <EXAMPLES>
             <EXAMPLE title="ORM Make and Create Method Examples">
                 <SECTIONS>

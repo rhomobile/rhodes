@@ -38,7 +38,6 @@ import android.webkit.WebView;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
-import com.rhomobile.rhodes.extmanager.IRhoWebViewConfig;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 
@@ -130,7 +129,7 @@ public class RhoWebChromeClient extends WebChromeClient {
 //    }
 
     public void onProgressChanged(WebView view, int newProgress) {
-        if (mWebView.getConfig() != null && mWebView.getConfig().getBool("enablePageLoadingIndication")) {
+        if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION)) {
             newProgress *= 100;
             if (newProgress < 0)
                 newProgress = 0;

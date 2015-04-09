@@ -37,7 +37,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RightViewController"
 
-
+void rho_webview_refresh(int index);
 
 
 @interface RhoRightItem : NSObject {

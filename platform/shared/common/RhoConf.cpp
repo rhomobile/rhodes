@@ -33,6 +33,7 @@ static const char* CONF_FILENAME = "rhoconfig.txt";
 #else
 static const char* CONF_FILENAME = "apps/rhoconfig.txt";
 #endif
+static const char* CONF_SHARED_FILENAME = "rhoconfig.txt";
 static const char* CONF_CHANGES = ".changes";
 static const char* CONF_TIMESTAMP = ".timestamp";
 static const char* CONF_TIMESTAMP_PROP = "rho_conf_timestamp";
@@ -290,7 +291,18 @@ void  rho_conf_Init_with_separate_user_path(const char* szRootPath, const char* 
     
     RHOCONF().loadFromFile();
 }
+
+void rho_conf_Init_from_shared_path(const char* szSharedRootPath)
+{
+    rho::common::CFilePath oRhoPath( szSharedRootPath );
+    rho::common::CFilePath oUserPath( szSharedRootPath );
     
+    RHOCONF().setAppConfFilePath(oRhoPath.makeFullPath(CONF_SHARED_FILENAME).c_str());
+    RHOCONF().setAppConfUserFilePath(oUserPath.makeFullPath(CONF_SHARED_FILENAME).c_str());
+    RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_SHARED_FILENAME).c_str());
+
+    RHOCONF().loadFromFile();
+}
 
 int rho_conf_getBool(const char* szName) {
     return RHOCONF().getBool(szName) ? 1 : 0;

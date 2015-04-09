@@ -126,9 +126,13 @@ static bool parse_json(const char *data, double *plat, double *plon, String* adr
 {
     RHO_MAP_TRACE1("parse_json: data=%s", data);
     json::CJSONEntry json(data);
+    if ( json.isEmpty() )
+    {
+      return false;
+    }
     const char *status = json.getString("status");
-    RHO_MAP_TRACE1("parse_json: status=%s", status);
-    if (strcasecmp(status, "OK") != 0)
+    RHO_MAP_TRACE1("parse_json: status=%s", (0==status)?"(null)":status);
+    if ((0==status) || (strcasecmp(status, "OK") != 0))
         return false;
     bool params_founded = false;
     if (adress_ok != NULL) {
@@ -184,7 +188,7 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
         url += "latlng=";
         sprintf(buf, "%f,%f", (float)cmd->latitude, (float)cmd->longitude);
         url += buf;
-        delete buf;
+        delete[] buf;
     }
     else {
         url += "address=";
@@ -314,7 +318,7 @@ public:
         rho_net_request_with_data(norm_url, buf);
         rho_http_free(norm_url);
         
-        delete buf;
+        delete[] buf;
         //delete this;
     }
 
@@ -340,7 +344,7 @@ public:
         rho_net_request_with_data(norm_url, buf);
         rho_http_free(norm_url);
                 
-        delete buf;
+        delete[] buf;
         //delete this;
     }
     

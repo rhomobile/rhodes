@@ -284,8 +284,14 @@
     UIGraphicsBeginImageContextWithOptions(contextRect.size, NO, scale);
     CGContextRef c = UIGraphicsGetCurrentContext();
 
-    CGContextSetShadowWithColor(c, shadowOffset, shadowBlur, cgShadowColor);
-
+    
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        // not shadow on iOS from 7.0 and later - new flat design !
+    }
+    else {
+        CGContextSetShadowWithColor(c, shadowOffset, shadowBlur, cgShadowColor);
+    }
+    
     CGContextBeginTransparencyLayer(c, NULL);
     CGContextScaleCTM(c, 1.0, -1.0);
     CGContextClipToMask(c, CGRectMake(itemImagePosition.x, -itemImagePosition.y, itemImageSize.width, -itemImageSize.height), [itemImage CGImage]);
@@ -293,7 +299,7 @@
     CGContextSetFillColorWithColor(c, cgColor);
     contextRect.size.height = -contextRect.size.height;
 	
-	float* colorComponents = CGColorGetComponents(cgColor);
+	CGFloat* colorComponents = CGColorGetComponents(cgColor);
 	float color0R = colorComponents[0];
 	float color0G = colorComponents[1];
 	float color0B = colorComponents[2];
@@ -512,18 +518,26 @@
 			
 				tabItem.image = [UIImage imageWithContentsOfFile:imagePath];
 				tabItem.badgeValue = nil;
-
-				//subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
-				//subController.tabBarItem.badgeValue = nil;
 				
 				UIImage* img = [UIImage imageWithContentsOfFile:imagePath];
 				//img = [self recolorImageWithColor:img color:[UIColor colorWithRed:(43.0 / 255.0) green:(143.0 / 255.0) blue:(230.0 / 255.0) alpha:1.0] shadowColor:[UIColor blackColor] shadowOffset:CGSizeMake(0.5f, 1.0f) shadowBlur:3.0f];
 				img = [self recolorImageWithColor:img color:[UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0] shadowColor:[UIColor blackColor] shadowOffset:CGSizeMake(0.5f, 1.0f) shadowBlur:3.0f];
 				tabItem.customHighlightedImage = img;
-				tabItem.customStdImage=nil;       
-			
-				subController.tabBarItem=tabItem;
-				[tabItem release]; 
+				tabItem.customStdImage=nil;
+                
+#ifdef __IPHONE_7_0
+                if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+                    [subController.tabBarItem setImage:[UIImage imageWithContentsOfFile:imagePath]];
+                    [subController.tabBarItem setSelectedImage:[img imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+                }
+                else {
+                    subController.tabBarItem = tabItem;
+                }
+#else
+                subController.tabBarItem = tabItem;
+#endif
+
+                [tabItem release];
 			}
 			else {
 				subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
@@ -693,7 +707,7 @@
 			rho_rhodesapp_load_url(s);
 			td.loaded = YES;
 		}
-		[[[self subView:tabindex] view] setNeedsDisplay];
+        [[[self subView:tabindex] view] setNeedsDisplay];
 	}
 }
 

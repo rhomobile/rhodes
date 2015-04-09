@@ -62,6 +62,8 @@
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 UINT WM_LICENSE_SCREEN = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
 
+UINT WM_INTENTMSG		   = ::RegisterWindowMessage(L"RHODES_WM_INTENTMSG");
+
 #include "DateTimePicker.h"
 
 extern "C" void rho_sysimpl_sethas_network(int nValue);
@@ -89,6 +91,7 @@ extern "C" int rho_wm_impl_CheckLicense();
 
 CMainWindow::CMainWindow()
 {
+    m_bLicenseScreenShownFirsttime=true;
     mIsBrowserViewHided = false;
     mNativeView = NULL;
     mNativeViewFactory = NULL;
@@ -516,7 +519,29 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     }
 
     if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()) )
-        m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+    {
+        //if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
+        //{
+        //m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+        //}
+        
+
+		if(rho::BrowserFactory::getCurrentBrowserType() != eIE)//webkit
+		{
+		 LOG(INFO)+"ResizeOnTab..";
+		 m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+		}
+		else//IE
+		{
+
+			if(RHO_IS_CEDEVICE)//CE IE Engine
+			{
+			 LOG(INFO)+"ResizeOnTab.";
+			 m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
+			}
+
+		}
+     }
 
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, ySize-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
@@ -530,7 +555,18 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
     LOG(INFO) + "START load png";
     
-    retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
+    //SR:EMBPD00150338 - Fixed SIP issue & SR:EMBPD00155397 - IE Coke issue
+    if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
+    { 
+	if(m_bLoading)
+	{
+		retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
+	}
+    }
+    else
+    {
+	retCode = rho_wmimpl_draw_splash_screen(m_hWnd);
+    }
     
     //SPR 23830 - Fix - Do loading.html On load png failure
     if (retCode == 0 && m_bLoading)
@@ -617,8 +653,12 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     Rhodes_WM_ProcessBeforeNavigate((LPCTSTR)lParam);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    if ( m_bLoading )
-        rho_wm_impl_CheckLicense();
+    if (( m_bLoading ==true)&&(m_bLicenseScreenShownFirsttime==true))
+	{
+        	LOG(INFO) + "Showing License screen";
+		m_bLicenseScreenShownFirsttime = false;
+		rho_wm_impl_CheckLicense();
+	}
 #endif
 
     free((void*)lParam);
@@ -628,6 +668,7 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 LRESULT CMainWindow::OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     PROF_STOP("BROWSER_PAGE");
+    LOG(INFO) + "Calling OnNavigateTimeout";
     LRESULT lRes =  RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
 
     free((void*)lParam);
@@ -672,8 +713,17 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     ProcessActivate( FALSE, MAKEWPARAM(0,1), 0 );
 
 	//SetForegroundWindow(m_hWnd);
-
+	LOG(INFO)+"Window getting minimized-Show taskbar..";	
+	showTaskBar(true);
 	::ShowWindow( m_hWnd, SW_MINIMIZE );
+	HWND hwnd = ::GetForegroundWindow();
+	if(hwnd!=NULL)
+	{
+		wchar_t szBuf[200];
+		::GetWindowText(hwnd,szBuf,199);
+		if(wcscmp(szBuf, L"RhoElements") == 0)
+			::ShowWindow(hwnd, SW_MINIMIZE);
+	}
 
 	m_isMinimized = true;
 
@@ -766,8 +816,11 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 #if defined(_WIN32_WCE) 
 	if (m_bFullScreen)
     {
-		//RhoSetFullScreen(fActive!=0);
-        showTaskBar(fActive==0);
+	if(fActive!=0)//if activated Hide taskbar
+	{
+	LOG(INFO)+"Hide taskbar";	
+	showTaskBar(false);
+	}
     }
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
@@ -776,6 +829,7 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 	{
 	 m_SuspendedThroughPowerButton=false;
 	 LOG(INFO) + "Activation is due to powerbutton press suspend and resume.Skip it";
+     RHODESAPP().getExtManager().OnPowerButton(true);
 	 //return 0;
 	}
 	else
@@ -789,6 +843,7 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 		if(true ==powerButtonPressed)//Deactivation is not due to Suspend Through PowerButton
 		{
 			 LOG(INFO) + "Deactivation is due to powerbutton press.Skip it";
+			 RHODESAPP().getExtManager().OnPowerButton(false);
 		}
 		else
 		{
@@ -1174,7 +1229,10 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     if (nd) {
         LPTSTR wcurl = (LPTSTR)(nd->url);
         if (wcurl)
+          {
+            LOG(INFO) + "Call of Navigate2 function";
             Navigate2(wcurl, nd->index);
+          }
 
         delete nd;
     }
@@ -1185,13 +1243,14 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 {
     TNavigateData* nd = (TNavigateData*)hWndCtl;
     if (nd) {
-        LPTSTR wcurl = (LPTSTR)(nd->url);
+        LPTSTR wcurl = ((LPTSTR)(_tcsdup(nd->url)));
         if (wcurl) 
         {
             if ( m_pBrowserEng )
                 m_pBrowserEng->executeJavascript(wcurl, m_oTabBar.GetTabID(nd->index) );
         }
         delete nd;
+        free(wcurl);
     }
     return 0;
 }
@@ -1433,7 +1492,7 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 
 LRESULT CMainWindow::OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    ::MessageBoxW( m_hWnd, L"Please provide RhoElements license key.", L"Motorola License", MB_ICONERROR | MB_OK);
+    ::MessageBoxW( m_hWnd, L"Please provide RhoElements license key.", L"Symbol License", MB_ICONERROR | MB_OK);
 
     return 0;
 }
@@ -1452,6 +1511,8 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
         if ( !m_bFullScreenBeforeLicense )
             RhoSetFullScreen(false);
     }
+	//send messages to extention which looks for license screens
+	RHODESAPP().getExtManager().OnLicenseScreen(static_cast<bool>(wParam));
 
 /*		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
 		if(hTaskBar) {
@@ -1564,9 +1625,23 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
 
 void CMainWindow::ProcessTitleChange(LPCTSTR title)
 {
+     TCHAR *szWindowTitle = new TCHAR[MAX_PATH];
+     ZeroMemory(szWindowTitle, MAX_PATH);
+
     LOG(TRACE) + "OnBrowserTitleChange: " + title;
+    GetWindowText(szWindowTitle, MAX_PATH);
     //return;
     String strTitle = RHOCONF().getString("title_text");
+    if(strTitle.length() <=0)
+    {
+		CHAR szWindowTitleA[MAX_PATH*2];
+		ZeroMemory(szWindowTitleA,sizeof(szWindowTitleA));
+		sprintf(szWindowTitleA,"%ls",szWindowTitle);
+		strTitle.clear();
+		strTitle.append(szWindowTitleA);
+     }
+     RHOCONF().setString("title_text", strTitle.c_str(), false);
+	
     if ( strTitle.length() > 0 )
         SetWindowText(convertToStringW(strTitle).c_str());
     else
@@ -1574,9 +1649,14 @@ void CMainWindow::ProcessTitleChange(LPCTSTR title)
         LPCTSTR szTitle = title;
         if ( szTitle && 
             (_tcsncmp(szTitle, _T("http:"), 5) == 0 || _tcscmp(szTitle, _T("about:blank"))==0 ))
+        {
+            delete [] szWindowTitle;
             return;
+        }
 
         SetWindowText(szTitle);
+
+        delete [] szWindowTitle;
     }
 }
 
@@ -1739,9 +1819,8 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 			return TRUE;
 		}
 
-		if (m_bFullScreen && pMsg->message == WM_KEYUP && 
-			(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
-			RhoSetFullScreen(false);
+		//if (m_bFullScreen && pMsg->message == WM_KEYUP && (pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
+		//	RhoSetFullScreen(false);
 	}
 
     // Accelerators are only keyboard or mouse messages
@@ -1775,9 +1854,27 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
         return FALSE;
     }
 
+	// workaround for escape key in text fields on CE:
+	if (RHO_IS_CEDEVICE && (pMsg->message == WM_KEYDOWN) && (pMsg->wParam == VK_ESCAPE))
+		return TRUE;
+
     // Find a direct child of this window from the window that has focus.
     // This will be AtlAxWin window for the hosted control.
     CWindow control = ::GetFocus();
+
+	// workaround for backspace key in text fields:
+	if (control.m_hWnd && (pMsg->message == WM_KEYUP) && (pMsg->wParam == VK_BACK))
+	{
+		if(RHO_IS_CEDEVICE)
+		{
+			control.SendMessage(WM_KEYDOWN, VK_BACK, 0);
+			control.SendMessage(WM_KEYUP, VK_BACK, 0);
+		}
+		else
+			control.SendMessage(WM_CHAR, VK_BACK, 1);
+		//return TRUE;
+	}
+
     if (IsChild(control) && m_hWnd != control.GetParent())
     {
         do
@@ -2084,6 +2181,21 @@ LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
         return m_oTabBar.OnTimer(uMsg, wParam, lParam);
     }
 
+    return 0;
+}
+
+LRESULT CMainWindow::OnIntentMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
+    if (pcds->dwData == COPYDATA_INTERPROCESSMESSAGE){
+        InterprocessMessage *ipmsg = reinterpret_cast<InterprocessMessage*>(pcds->lpData);
+        LOG(INFO) + "INTERPROCESSMESSAGE : " + rho::String(ipmsg->appName) + rho::String(ipmsg->params);
+        rho::Intent::addApplicationMessage(ipmsg->appName, ipmsg->params);
+		LOG(INFO) + L"INTERPROCESSMESSAGE IS DONE.";
+    }
+    else if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData)){
+        m_oTabBar.SwitchTabByName((LPCSTR)(pcds->lpData), true);
+    }
     return 0;
 }
 

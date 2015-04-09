@@ -16,19 +16,17 @@ namespace rho {
 
 namespace NativeToolbarImpl
 {
-    public class NativeToolbar : INativeToolbarImpl
+    public class NativeToolbar : NativeToolbarBase
     {
         public NativeToolbar()
         {
-            NativeToolbarRuntimeComponent _runtime = new NativeToolbarRuntimeComponent(this);
         }
     }
 
-    public class NativeToolbarSingleton : INativeToolbarSingletonImpl
+    public class NativeToolbarSingleton : NativeToolbarSingletonBase
     {
         public NativeToolbarSingleton()
         {
-            NativeToolbarSingletonComponent _runtime = new NativeToolbarSingletonComponent(this);
         }
 
         static private MainPage getMainPage()
@@ -37,7 +35,7 @@ namespace NativeToolbarImpl
             return mainPage;
         }
 
-        public void create(IReadOnlyList<string> toolbarElements, IReadOnlyDictionary<string, string> toolBarProperties, IMethodResult oResult)
+        public override void create(IReadOnlyList<string> toolbarElements, IReadOnlyDictionary<string, string> toolBarProperties, IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             if (mp != null)
@@ -93,7 +91,7 @@ namespace NativeToolbarImpl
             }
         }
 
-        public void remove(IMethodResult oResult)
+        public override void remove(IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             if (mp != null)
@@ -103,21 +101,15 @@ namespace NativeToolbarImpl
             }
         }
 
-        public void isCreated(IMethodResult oResult)
+        public override void isCreated(IMethodResult oResult)
         {
             MainPage mp = getMainPage();
             oResult.set(mp != null ? (mp.toolbarIsStarted() != 0) : false);
         }
     }
 
-    public class NativeToolbarFactory : INativeToolbarFactoryImpl
+    public class NativeToolbarFactory : NativeToolbarFactoryBase
     {
-        public INativeToolbarImpl getImpl() {
-            return new NativeToolbar();
-        }
-        public INativeToolbarSingletonImpl getSingletonImpl() {
-            return new NativeToolbarSingleton();
-        }
     }
 }
 

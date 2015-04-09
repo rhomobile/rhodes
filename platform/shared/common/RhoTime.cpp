@@ -243,5 +243,22 @@ void CRhoTimer::stopNativeTimer(CRhoTimer::ICallback* callback)
 
 }
 
+bool CRhoTimer::isNativeTimerExist(CRhoTimer::ICallback* callback)
+{
+	if (callback)
+	{
+		for (int i = (int)m_arNativeItems.size() - 1; i >= 0; i--)
+		{
+			CNativeTimerItem oItem = m_arNativeItems.elementAt(i);
+			if (oItem.m_pCallback == callback)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 }
 }

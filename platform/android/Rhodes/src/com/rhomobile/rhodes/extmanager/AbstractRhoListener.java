@@ -44,10 +44,18 @@ public abstract class AbstractRhoListener implements IRhoListener {
     @Override
     public void onConfigurationChanged(RhodesActivity activity, Configuration newConfig) { }
 
-	  @Override
-	  public boolean onKey(int keyCode, KeyEvent event){ return false; }
+	@Override
+	public boolean onKey(int keyCode, KeyEvent event){ return false; }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {}
+    
+    @Override
+	public void onEBLicenseHidden() { }
 
+    @Override
+    public void onEBLicenseVisible() { }
+    
+    @Override
+    public void onEBLicenseDestroyed() { }
 }

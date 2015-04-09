@@ -102,6 +102,8 @@ static UINT WM_WINDOW_MINIMIZE 		   = ::RegisterWindowMessage(L"RHODES_WM_MINIMI
 static UINT WM_SHOW_LICENSE_WARNING	   = ::RegisterWindowMessage(L"RHOELEMENTS_WM_LICENSE_WARNING");
 static UINT WM_WINDOW_SWITCHTAB		   = ::RegisterWindowMessage(L"RHODES_WM_SWITCHTAB");
 extern UINT WM_LICENSE_SCREEN;
+extern UINT WM_INTENTMSG;
+
 
 namespace rho
 {
@@ -228,6 +230,7 @@ public:
         MESSAGE_HANDLER(WM_EXECUTE_RUNNABLE, OnExecuteRunnable);
         MESSAGE_HANDLER(WM_WINDOW_MINIMIZE, OnWindowMinimized);
         MESSAGE_HANDLER(WM_COPYDATA, OnCopyData);
+		MESSAGE_HANDLER(WM_INTENTMSG, OnIntentMsg);
         MESSAGE_HANDLER(WM_SHOW_LICENSE_WARNING, OnLicenseWarning);
 		MESSAGE_HANDLER(WM_LICENSE_SCREEN, OnLicenseScreen);
         MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
@@ -297,6 +300,7 @@ private:
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnCopyData (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnIntentMsg (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnLicenseScreen (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnSetFocus (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -388,6 +392,7 @@ private:
     SHACTIVATEINFO m_sai;
 #endif
 
+	bool m_bLicenseScreenShownFirsttime;
 	bool m_bLoading;
     CNativeToolbar m_toolbar;
     CNativeTabbar  m_oTabBar;

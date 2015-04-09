@@ -128,10 +128,10 @@ Section %SECTION_NAME% appSection
   File /r "rho"
   File %APP_EXECUTABLE%
   File *.dll
-  File /r "imageformats"
-  %QT_VSPEC_FILES%
-  File "icon.ico"
+%QT_VSPEC_FILES%  File "icon.ico"
   File "icon.png"
+
+  System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 
 SectionEnd
 

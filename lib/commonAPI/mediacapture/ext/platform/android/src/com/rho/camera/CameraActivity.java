@@ -26,11 +26,21 @@
 
 package com.rho.camera;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.InvalidParameterException;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.R;
 
+import android.content.Context;
 import android.graphics.PixelFormat;
+import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.OrientationEventListener;
 import android.view.SurfaceView;
@@ -38,6 +48,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class CameraActivity extends BaseActivity implements OnClickListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
@@ -45,21 +56,17 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private CameraPreview mPreview;
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
-
+    private Camera mCamera = null;
+    
     @Override
     protected void onCreate(Bundle extras) {
         super.onCreate(extras);
         Logger.T(TAG, "onCreate");
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         setContentView(R.layout.camera);
-
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().setFormat(PixelFormat.TRANSLUCENT);
-        
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);        
         findViewById(R.id.cameraButton).setOnClickListener(this);
-
         mPreview = new CameraPreview((SurfaceView)findViewById(R.id.previewSurface));
         mOrientationListener = new OrientationEventListener(this) {
             @Override public void onOrientationChanged(int rotation) {
@@ -67,45 +74,60 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
                 mRotation = rotation;
             }
         };
+        
 
     }
     
     @Override
     protected void onResume() {
         super.onResume();
-        Logger.T(TAG, "onResume");
-        
+        Logger.T(TAG, "onResume");        
         if (mOrientationListener.canDetectOrientation()) {
             mOrientationListener.enable();
         }
-
-        String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
-        
+        String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");        
         ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
-        mPreview.startPreview(camera, this);
+        try{
+          mPreview.startPreview(camera, this);
+        }
+        catch(RuntimeException e){
+        	
+        }
     }
     
     @Override
     protected void onPause() {
+    	super.onPause();
         Logger.T(TAG, "onPause");
-
-        mPreview.stopPreview();
+        if(mCamera != null){
+          mCamera.stopPreview();
+          mCamera.release();
+          mCamera = null;
+        }
         mOrientationListener.disable();
-        
-        super.onPause();
     }
     
     @Override
+    protected void onStop() {
+	// TODO Auto-generated method stub
+	super.onStop();    	
+    }
+	
+    @Override
     public void onClick(View view) {
         Logger.T(TAG, "onClick");
+        try{
         if (view.getId() == R.id.cameraButton) {
-            Logger.T(TAG, "cameraButton");
+            Logger.T(TAG, "cameraButton");            
             String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
-            
             ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
             camera.doTakePicture(this, (mRotation + 45)/90 * 90);
+            Button button=(Button)view.findViewById(R.id.cameraButton);
+            button.setEnabled(false);
+          }
+        }
+        catch(Exception e){
+        	e.printStackTrace();
         }
     }
-
-
 }

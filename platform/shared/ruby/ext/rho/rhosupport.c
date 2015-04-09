@@ -52,6 +52,8 @@ static VALUE rb_RhoStdoutClass;
 static VALUE rb_RhoLogModule;
 static VALUE rb_RhoProfilerModule;
 
+VALUE rb_str_chop_bang(VALUE str);
+
 extern /*RHO static*/ VALUE eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result, int bLoad);
@@ -160,7 +162,7 @@ VALUE
 __rhoGetCallbackObject(VALUE obj, VALUE valIndex)
 {
     VALUE result = rho_rhodesapp_GetCallbackObject( NUM2INT(valIndex) );
-    if (result == 0) {
+    if (result == Qundef) {
         rb_raise(rb_eArgError, "__rhoGetCallbackObject invalid index -- %d", NUM2INT(valIndex) );
     }
 

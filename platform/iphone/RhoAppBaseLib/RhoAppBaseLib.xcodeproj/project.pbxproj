@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C04F28E019CAF3CA003E34BD /* RunnableWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */; };
+		C04F28E119CAF3CA003E34BD /* RunnableWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */; };
+		C5BA525F1A93ADF90095DE4A /* NetRequestImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5BA525E1A93ADF90095DE4A /* NetRequestImpl.mm */; };
+		C5BA525F1A93ADF90095DE4A /* IPhoneNetRequest.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */; };
 		C5DFBB31185B6FB400DB6BDB /* IAppMessageReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */; };
 		FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F248192121BF00FB1301 /* IRhoExtension.h */; };
 		FA11F24B192121F200FB1301 /* IRhoExtManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F24A192121F200FB1301 /* IRhoExtManager.h */; };
@@ -14,8 +18,6 @@
 		FA11F24F1921221E00FB1301 /* RhoExtManagerImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = FA11F24D1921221E00FB1301 /* RhoExtManagerImpl.m */; };
 		FA11F2521921224400FB1301 /* RhoExtManagerSingletone.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F2501921224400FB1301 /* RhoExtManagerSingletone.h */; };
 		FA11F2531921224400FB1301 /* RhoExtManagerSingletone.m in Sources */ = {isa = PBXBuildFile; fileRef = FA11F2511921224400FB1301 /* RhoExtManagerSingletone.m */; };
-		FA20C2B6182B078C0036D304 /* PickImageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C21C182B04140036D304 /* PickImageDelegate.h */; };
-		FA20C2B7182B078C0036D304 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C21D182B04140036D304 /* PickImageDelegate.m */; };
 		FA20C2B8182B07A10036D304 /* CRhoURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C21F182B04140036D304 /* CRhoURLProtocol.h */; };
 		FA20C2B9182B07A10036D304 /* CRhoURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C220182B04140036D304 /* CRhoURLProtocol.m */; };
 		FA20C2BA182B07A50036D304 /* RhoAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C222182B04140036D304 /* RhoAlert.h */; };
@@ -108,6 +110,8 @@
 		FA20C311182B08080036D304 /* SplashViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C298182B04140036D304 /* SplashViewController.h */; };
 		FA20C312182B08080036D304 /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C299182B04140036D304 /* SplashViewController.m */; };
 		FA20C313182B08080036D304 /* IPushNotificationsReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C29A182B04140036D304 /* IPushNotificationsReceiver.h */; };
+		FA87B5DC1A82A1AD0073EE44 /* PickImageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C22E182B04140036D304 /* PickImageDelegate.h */; };
+		FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C22F182B04140036D304 /* PickImageDelegate.m */; };
 		FA89817818917EA900AF5E39 /* SignatureView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C281182B04140036D304 /* SignatureView.h */; };
 		FA89817918917EAD00AF5E39 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C282182B04140036D304 /* SignatureView.m */; };
 		FA89817A18917EAF00AF5E39 /* SignatureDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C283182B04140036D304 /* SignatureDelegate.h */; };
@@ -119,6 +123,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RunnableWrapper.h; sourceTree = "<group>"; };
+		C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RunnableWrapper.mm; sourceTree = "<group>"; };		
+		C5BA525D1A93AD6D0095DE4A /* IPhoneNetRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IPhoneNetRequest.h; path = rho/net/IPhoneNetRequest.h; sourceTree = "<group>"; };
+		C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = IPhoneNetRequest.mm; path = rho/net/IPhoneNetRequest.mm; sourceTree = "<group>"; };
 		C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAppMessageReceiver.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhoappbaselib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhoappbaselib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA11F248192121BF00FB1301 /* IRhoExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoExtension.h; path = RhoExtManager/IRhoExtension.h; sourceTree = "<group>"; };
@@ -518,6 +526,8 @@
 				FA20C279182B04140036D304 /* sslimpl.cpp */,
 				FA20C27A182B04140036D304 /* sslimpl.h */,
 				FA20C27B182B04140036D304 /* NetRequestImpl.m */,
+				C5BA525D1A93AD6D0095DE4A /* IPhoneNetRequest.h */,
+				C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */,
 			);
 			name = net;
 			sourceTree = "<group>";
@@ -600,6 +610,8 @@
 				FA20C28D182B04140036D304 /* WebView */,
 				FA20C28E182B04140036D304 /* NetworkStatusMonitor.h */,
 				FA20C28F182B04140036D304 /* NetworkStatusMonitor.mm */,
+				C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */,
+				C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */,
 				FA20C290182B04140036D304 /* Reachability.h */,
 				FA20C291182B04140036D304 /* Reachability.m */,
 				FA20C292182B04140036D304 /* RhoDelegate.h */,
@@ -626,12 +638,13 @@
 				FA20C2D6182B07CB0036D304 /* RightViewController.h in Headers */,
 				FA89817C18917EB400AF5E39 /* SignatureViewController.h in Headers */,
 				FA20C2C8182B07B60036D304 /* DateTimePickerViewController.h in Headers */,
+				C04F28E019CAF3CA003E34BD /* RunnableWrapper.h in Headers */,
 				FA20C2DA182B07CB0036D304 /* SplitViewDelegate.h in Headers */,
 				FA20C2E7182B07D10036D304 /* MapViewController.h in Headers */,
+				FA87B5DC1A82A1AD0073EE44 /* PickImageDelegate.h in Headers */,
 				FA20C2D4182B07CB0036D304 /* LeftViewController.h in Headers */,
 				FA20C2EE182B07DA0036D304 /* RhoNativeViewManagerOC.h in Headers */,
 				FA20C2E1182B07D10036D304 /* RhoMapViewController.h in Headers */,
-				FA20C2B6182B078C0036D304 /* PickImageDelegate.h in Headers */,
 				FA20C2BA182B07A50036D304 /* RhoAlert.h in Headers */,
 				FA20C300182B07EE0036D304 /* sslimpl.h in Headers */,
 				FA20C2CA182B07BA0036D304 /* Event.h in Headers */,
@@ -737,9 +750,11 @@
 				FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */,
 				FA11F2531921224400FB1301 /* RhoExtManagerSingletone.m in Sources */,
 				FA11F24F1921221E00FB1301 /* RhoExtManagerImpl.m in Sources */,
+        FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */,
 				FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */,
 				FA20C2EC182B07D50036D304 /* NativeBar.m in Sources */,
 				FA20C2CE182B07C40036D304 /* InitMemoryInfoCollector.mm in Sources */,
+				C04F28E119CAF3CA003E34BD /* RunnableWrapper.mm in Sources */,
 				FA20C308182B08080036D304 /* NetworkStatusMonitor.mm in Sources */,
 				FA20C2DE182B07CB0036D304 /* SimpleMainView.m in Sources */,
 				FA20C2F0182B07DA0036D304 /* NVDelegate.m in Sources */,
@@ -781,7 +796,7 @@
 				FA20C2C4182B07B60036D304 /* DateTimePickerDelegate.m in Sources */,
 				FA20C2DB182B07CB0036D304 /* SplitViewDelegate.m in Sources */,
 				FA20C2FC182B07EB0036D304 /* RhoFileImpl.m in Sources */,
-				FA20C2B7182B078C0036D304 /* PickImageDelegate.m in Sources */,
+				C5BA525F1A93ADF90095DE4A /* IPhoneNetRequest.mm in Sources */,
 				FA20C2BB182B07A50036D304 /* RhoAlert.m in Sources */,
 				FA20C2B9182B07A10036D304 /* CRhoURLProtocol.m in Sources */,
 				FA20C2F9182B07EB0036D304 /* RhoThreadImpl.m in Sources */,
@@ -797,7 +812,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LIBRARY = "libstdc++";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -831,7 +845,6 @@
 				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -839,7 +852,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LIBRARY = "libstdc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
@@ -870,14 +882,12 @@
 				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
-				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
 		1DEB91F008733DB70010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -892,7 +902,6 @@
 		1DEB91F108733DB70010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -905,7 +914,6 @@
 		46B0042B10332DC400D0C2F4 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -919,7 +927,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LIBRARY = "libstdc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
@@ -950,7 +957,6 @@
 				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
-				VALID_ARCHS = armv7;
 			};
 			name = Distribution;
 		};

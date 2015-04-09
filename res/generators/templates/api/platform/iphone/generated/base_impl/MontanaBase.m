@@ -44,12 +44,12 @@ static NSDictionary* ourPropertyAliases= nil;
 <% if $cur_module.property_aliases.size > 0
 %>
     if (ourPropertyAliases == nil) {
-        ourPropertyAliases = [NSDictionary dictionaryWithObjectsAndKeys:<%
+        ourPropertyAliases = [[NSDictionary dictionaryWithObjectsAndKeys:<%
                                $cur_module.property_aliases.each do |palias|
                                   line = '@"'+palias.existing_name+'", @"'+palias.new_name+'",' %>
                               <%= line %><%
                                end %>
-                              nil];
+                              nil] retain];
     }
     NSObject* resNameObj = [ourPropertyAliases objectForKey:prop_name];
     if (resNameObj != nil) {
@@ -90,12 +90,16 @@ static NSDictionary* ourPropertyAliases= nil;
 
 
 -(void) getProperty:(NSString*)propertyName methodResult:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[mProperties objectForKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]]];
+    NSObject* value = [mProperties objectForKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]];
+    [methodResult setResult:value];
 }
 
 -(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue methodResult:(id<IMethodResult>)methodResult {
     NSObject* value = propertyValue;
     NSString* strValue = propertyValue;
+    if ([propertyName isEqualToString:@"ID"] && [value isKindOfClass:[NSString class]] && [strValue isEqualToString:@""]) {
+        NSLog(@"Clearing ID!");
+    }
     if ([value isKindOfClass:[NSNumber class]]) {
         NSNumber* numValue = (NSNumber*)value;
         if ([CMethodResult isBoolInsideNumber:numValue]) {
@@ -131,23 +135,21 @@ static NSDictionary* ourPropertyAliases= nil;
 }
 
 -(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult {
-    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:[arrayofNames count]];
-    NSArray* keys = arrayofNames;
+    NSMutableDictionary* dict = [[NSMutableDictionary dictionaryWithCapacity:[arrayofNames count]] autorelease];
     CMethodResult_SimpleHolder* resultHolder = [CMethodResult_SimpleHolder makeEmptyHolder];
-    int i;
-    for (i = 0; i < [keys count]; i++) {
-        NSString* key = (NSString*)[keys objectAtIndex:i];
-        [resultHolder setResult:nil];
-        [self getProperty:key methodResult:resultHolder];
-        if ([resultHolder getResult] != nil) {
-            NSString* value = (NSString*)[resultHolder getResult];
-            [dict setObject:value forKey:key];
-        } <% 
+    for (NSString* key in arrayofNames) {        
+      [resultHolder setResult:nil];
+      [self getProperty:key methodResult:resultHolder];
+      if ([resultHolder getResult] != nil) {
+          NSString* value = (NSString*)[resultHolder getResult];
+          [dict setObject:value forKey:key];
+      } <% 
 if !$cur_module.is_property_bag_limit_to_only_declared_properties && $cur_module.is_template_propertybag %>
-        else {
-          [dict setObject:@"" forKey:key];
-        }<% end %>
+      else {
+        [dict setObject:@"" forKey:key];
+      }<% end %>
     }
+
     [methodResult setResult:dict];
 }
 
@@ -157,10 +159,7 @@ if !$cur_module.is_property_bag_limit_to_only_declared_properties && $cur_module
 
 
 -(void) setProperties:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
-    NSArray* keys = [propertyMap allKeys];
-    int i;
-    for (i = 0; i < [keys count]; i++) {
-        NSString* key = (NSString*)[keys objectAtIndex:i];
+    for (NSString* key in propertyMap) {    
         NSString* value = (NSString*)[propertyMap objectForKey:key];
         [self setProperty:key propertyValue:value methodResult:methodResult];
     }

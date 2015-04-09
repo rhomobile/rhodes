@@ -26,6 +26,7 @@
 #define IDD_SYNCSTATUS                  122
 #define IDD_MAPVIEW                     123
 #define IDD_TAKE_SIGNATURE              124
+#define IDD_CONNECTION_DLG              125
 #define IDR_SIGNATURE_MENU              126
 #define IDM_SAVE                        127
 #define IDC_STATIC_PROMPT               1001

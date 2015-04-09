@@ -1,9 +1,11 @@
-<% moduleNamespace = api_generator_cpp_MakeNamespace($cur_module.parents) %>
+<% moduleNamespace = CppGen::make_namespace($cur_module.parents) %>
 #include "<%= $cur_module.name %>Base.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>"
+
+#include "api_generator/RubyResultConvertor.h"
 
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/StringConverter.h"
@@ -15,7 +17,7 @@ using namespace rho::apiGenerator;
 
 extern "C"
 {
-void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
+void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 VALUE getRuby_<%= $cur_module.name %>_Module();
 
 <% if $cur_module.is_template_default_instance %>
@@ -77,7 +79,7 @@ end %>
     end
 
     result_type = nil
-    if MethodParam::BASE_TYPES.include?(module_method.result.type)
+    if RhogenCore::BASE_TYPES.include?(module_method.result.type)
       result_type = module_method.result.item_type
     else
       result_type = module_method.result.type;
@@ -85,7 +87,7 @@ end %>
 
 if api_generator_isSelfModule( $cur_module, result_type) %>
     oRes.setRubyObjectClass( getRuby_<%= $cur_module.name %>_Module() );<%
-elsif result_type && result_type.length()>0 && !MethodParam::BASE_TYPES.include?(result_type) %>
+elsif result_type && result_type.length()>0 && !RhogenCore::BASE_TYPES.include?(result_type) %>
     oRes.setRubyObjectClassPath( "<%= result_type %>" );<%
     if !module_method.linked_entity.nil?%>
     oRes.setResultAsEntity();
@@ -93,9 +95,9 @@ elsif result_type && result_type.length()>0 && !MethodParam::BASE_TYPES.include?
 end; end
 
 if module_method.linked_property && module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
-    oRes.setRequestedType(<%= api_generator_cpp_makeMethodResultType(module_method.linked_property.type) %>);<%
+    oRes.setRequestedType(<%= CppGen::native_result_type(module_method.linked_property) %>);<%
 elsif module_method.result && module_method.result.type %>
-    oRes.setRequestedType(<%= api_generator_cpp_makeMethodResultType(module_method.result.type) %>);<%
+    oRes.setRequestedType(<%= CppGen::native_result_type(module_method.result) %>);<%
 end %>
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
@@ -112,8 +114,8 @@ if !param.can_be_nil %>
     }<%
 end
 
-if param.type == MethodParam::TYPE_STRING %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = "<%= param.default_value ? param.default_value : "" %>";
+if param.type == RhogenCore::TYPE_STRING %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %> = "<%= param.default_value ? param.default_value : "" %>";
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
@@ -128,8 +130,8 @@ if param.type == MethodParam::TYPE_STRING %>
     }
 <% end
 
-if param.type == MethodParam::TYPE_INT %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
+if param.type == RhogenCore::TYPE_INT %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_integer(argv[<%= first_arg %>]) )
@@ -142,8 +144,8 @@ if param.type == MethodParam::TYPE_INT %>
     }
 <% end
 
-if param.type == MethodParam::TYPE_BOOL %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : false %>;
+if param.type == RhogenCore::TYPE_BOOL %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : false %>;
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_boolean(argv[<%= first_arg %>]) )
@@ -156,8 +158,8 @@ if param.type == MethodParam::TYPE_BOOL %>
     }
 <% end
 
-if param.type == MethodParam::TYPE_DOUBLE %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
+if param.type == RhogenCore::TYPE_DOUBLE %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_double(argv[<%= first_arg %>]) )
@@ -170,12 +172,17 @@ if param.type == MethodParam::TYPE_DOUBLE %>
     }
 <% end
 
-if param.type == MethodParam::TYPE_ARRAY %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+convert_args = ["argv[#{first_arg}]","arg#{first_arg}"].join(', ')
+
+if param.type == RhogenCore::TYPE_ARRAY %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_array(argv[<%= first_arg %>]) )
-            getStringArrayFromValue(argv[<%= first_arg %>], arg<%= first_arg %>);
+        {
+            rho::String res;
+            <%= CppGen::result_converter(param) %>(<%= convert_args %>, res);
+        }
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
@@ -184,12 +191,15 @@ if param.type == MethodParam::TYPE_ARRAY %>
     }
 <% end
 
-if param.type == MethodParam::TYPE_HASH %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+if param.type == RhogenCore::TYPE_HASH %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_hash(argv[<%= first_arg %>]) )
-            getStringHashFromValue(argv[<%= first_arg %>], arg<%= first_arg %>);
+        {
+            rho::String res;
+            <%= CppGen::result_converter(param) %>(<%= convert_args %>, res);
+        }
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
@@ -198,8 +208,8 @@ if param.type == MethodParam::TYPE_HASH %>
     }
 <% end
 
-if !MethodParam::BASE_TYPES.include?(param.type) %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+if !RhogenCore::BASE_TYPES.include?(param.type) %>
+    <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
         <%  type_name = param.type;
@@ -275,7 +285,7 @@ end
 
 if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
     <%= functorWar %>
-    rho_wm_impl_performOnUiThread( pFunctor );<%
+    rho_os_impl_performOnUiThread( pFunctor );<%
 elsif (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
     <%= functorWar %>
     <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );<%
