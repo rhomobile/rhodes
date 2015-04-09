@@ -325,8 +325,15 @@ namespace :dev do
     desc 'This command initializes original state files. It needs for correct execution of command partial update from CLI. The first partial update cannot find out source code changes if initialize didn\'t execute before it'
     task :initialize => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
-      RhoDevelopment::WebServer.ensure_running
-      RhoDevelopment::WebServer.dispatch_task(RhoDevelopment::PartialUpdateTask.new());
+      mkdir_p RhoDevelopment::Configuration::development_directory
+      updated_list_filename = File.join(RhoDevelopment::Configuration::application_root, 'upgrade_package_add_files.txt')
+      removed_list_filename = File.join(RhoDevelopment::Configuration::application_root, 'upgrade_package_remove_files.txt')
+      RhoDevelopment.setup(RhoDevelopment::Configuration::development_directory, 'wm')
+      RhoDevelopment::check_changes_from_last_build(updated_list_filename, removed_list_filename)
+      RhoDevelopment.setup(RhoDevelopment::Configuration::development_directory, 'iphone')
+      RhoDevelopment::check_changes_from_last_build(updated_list_filename, removed_list_filename)
+      RhoDevelopment.setup(RhoDevelopment::Configuration::development_directory, 'android')
+      RhoDevelopment::check_changes_from_last_build(updated_list_filename, removed_list_filename)
     end
 
     desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'

@@ -14,6 +14,10 @@ module RhoDevelopment
       [Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net.const_defined?(:OpenTimeout) ? Net::OpenTimeout : Timeout::Error]
     end
 
+    def self.development_directory
+      File.join(self.application_root, '.development')
+    end
+
     def self.own_ip_address
       Network::available_addresses.first
     end
@@ -79,7 +83,6 @@ module RhoDevelopment
           subscriber.application = each['application']
           (each['enabled'] == true || each['enabled'] == 1) ? subscriber.beEnabled : subscriber.beDisabled
           subscribers << subscriber
-          puts subscriber
         }
       end
       subscribers

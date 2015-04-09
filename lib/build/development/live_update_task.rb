@@ -233,12 +233,11 @@ module RhoDevelopment
 
     # Checks has source code changes for each platform
     def action
-      development_directory = File.join(Configuration::application_root, '.development')
       updated_list_filename = File.join(Configuration::application_root, 'upgrade_package_add_files.txt')
       removed_list_filename = File.join(Configuration::application_root, 'upgrade_package_remove_files.txt')
-      mkdir_p development_directory
+      mkdir_p Configuration::development_directory
       Configuration::enabled_subscriber_platforms.each { |each|
-        RhoDevelopment.setup(development_directory, each)
+        RhoDevelopment.setup(Configuration::development_directory, each)
         changed = RhoDevelopment.check_changes_from_last_build(updated_list_filename, removed_list_filename)
         if changed
           puts "Source code for platform #{each} was changed".primary
