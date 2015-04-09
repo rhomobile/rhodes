@@ -322,28 +322,43 @@ namespace :dev do
 
   namespace :update do
 
-    desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'
-    task :partial => ['config:common'] do
+    desc 'This command initializes original state files. It needs for correct execution of command partial update from CLI. The first partial update cannot find out source code changes if initialize didn\'t execute before it'
+    task :initialize => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
       RhoDevelopment::WebServer.ensure_running
-      unless RhoDevelopment::Configuration::has_subscribers?
-        puts 'Subscribers not found'.warning
-        return
-      end
       RhoDevelopment::WebServer.dispatch_task(RhoDevelopment::PartialUpdateTask.new());
     end
 
-    desc 'Builds full update bundle for all subscribers and notifies them'
+    desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'
+    task :partial => ['config:common'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      unless RhoDevelopment::Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        exit 1
+      end
+      RhoDevelopment::WebServer.ensure_running
+      RhoDevelopment::WebServer.dispatch_task(RhoDevelopment::PartialUpdateTask.new());
+    end
+
+    desc 'Builds full update bundle for all platforms and notifies all subscribers'
     task :full => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
+      unless RhoDevelopment::Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        exit 1
+      end
       RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersFullUpdateNotifyingTask.new)
     end
 
-    desc 'It builds partial update for all platforms and notifies all subscribers'
+    desc 'It builds update with files from diff file list for all platforms and notifies all subscribers'
     task :build_and_notify => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
+      unless RhoDevelopment::Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        exit 1
+      end
       RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersPartialUpdateNotifyingTask.new)
