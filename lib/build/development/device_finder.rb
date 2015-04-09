@@ -61,6 +61,7 @@ module RhoDevelopment
             subscriber['name'] = data['deviceFriendlyName']
             subscriber['platform'] = data['platform']
             subscriber['application'] = data['applicationName']
+            subscriber['enabled'] = true
             subscribers << subscriber
           rescue *Configuration::handledNetworkExceptions => e
             #TODO may be it is necessary to remove subscriber from list?

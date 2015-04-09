@@ -3,7 +3,7 @@ module RhoDevelopment
   class BuildServer
 
     def build_partial_bundles_for_all_subscribers
-      Configuration::subscribers.each { |each|
+      Configuration::enabled_subscribers.each { |each|
         self.build_partial_bundle_for_platform(each.normalized_platform_name)
         self.copy_platform_bundle_to_web_server_root(each.normalized_platform_name, Configuration::partial_bundle_name)
       }
@@ -12,7 +12,6 @@ module RhoDevelopment
     def build_partial_bundle_for_platform(aPlatform)
       RhoDevelopment.setup(File.join(Configuration::application_root, '.development'), aPlatform)
       RhoDevelopment.make_partial_bundle
-      #system('rake ')
       self.copy_platform_bundle_to_web_server_root(aPlatform, Configuration::partial_bundle_name)
     end
 
@@ -23,7 +22,7 @@ module RhoDevelopment
     end
 
     def build_full_bundles_for_all_subscribers
-      Configuration::subscribers.each { |each|
+      Configuration::enabled_subscribers.each { |each|
         self.build_full_bundle_for_subscriber(each)
         self.copy_platform_bundle_to_web_server_root(each.normalized_platform_name, Configuration::full_bundle_name)
       }

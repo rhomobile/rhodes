@@ -65,6 +65,8 @@ module RhoDevelopment
       config
     end
 
+    # Returns all subscribers in dev-config.yml
+    # @return [Subscribers] array of subscribers
     def self.subscribers
       subscribers = []
       config = self.read_configuration
@@ -75,15 +77,26 @@ module RhoDevelopment
           subscriber.platform = each['platform']
           subscriber.name = each['name']
           subscriber.application = each['application']
+          (each['enabled'] == true || each['enabled'] == 1) ? subscriber.beEnabled : subscriber.beDisabled
           subscribers << subscriber
+          puts subscriber
         }
       end
       subscribers
     end
 
+    # Returns all subscribers in dev-config.yml
+    # @return [Subscribers] array of subscribers
+    def self.enabled_subscribers
+      self.subscribers.select { | each | each.enabled?}
+    end
+
     def self.has_subscribers?
-      config = self.read_configuration
-      config['devices'].nil? ? false : true
+      self.subscribers.empty? == false
+    end
+
+    def self.has_enabled_subscribers?
+      self.enabled_subscribers.empty? == false
     end
 
     def self.store_subscribers(anArray)
@@ -102,12 +115,12 @@ module RhoDevelopment
       raise "Subscriber with IP #{aString} not found"
     end
 
-    def self.subscriber_platforms
-      (self.subscribers.collect { |each| each.normalized_platform_name }).to_set
+    def self.enabled_subscriber_platforms
+      (self.enabled_subscribers.collect { |each| each.normalized_platform_name }).to_set
     end
 
-    def self.subscribers_by_platform(platform_string)
-      (self.subscribers.select { |each| (each.normalized_platform_name) == platform_string || (each.platform == platform_string) })
+    def self.enabled_subscribers_by_platform(platform_string)
+      (self.enabled_subscribers.select { |each| (each.normalized_platform_name) == platform_string || (each.platform == platform_string) })
     end
 
     def self.partial_bundle_name

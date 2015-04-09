@@ -6,11 +6,16 @@ module RhoDevelopment
     @platform
     @name
     @application
+    @enabled
 
     attr_accessor :uri
     attr_accessor :platform
     attr_accessor :name
     attr_accessor :application
+
+    def initialize
+      self.beEnabled
+    end
 
     def ip
       @uri.split(':')[0]
@@ -18,6 +23,18 @@ module RhoDevelopment
 
     def port
       @uri.split(':')[1]
+    end
+
+    def enabled?
+      @enabled
+    end
+
+    def beEnabled
+      @enabled = true
+    end
+
+    def beDisabled
+      @enabled = false
     end
 
     def normalized_platform_name
@@ -73,7 +90,7 @@ module RhoDevelopment
 
 
     def to_s
-      "#{self.class}(uri=#{@uri}, name=#{@name}, platform=#{@platform}, app=#{@application})"
+      "#{self.class}(uri=#{@uri}, name=#{@name}, platform=#{@platform}, app=#{@application}, enabled=#{@enabled})"
     end
 
   end
