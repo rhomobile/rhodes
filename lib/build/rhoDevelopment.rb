@@ -59,8 +59,12 @@ class RhofilelistItem
       return false
     end
 
+    if self.path != object.path
+      return false
+    end
+
     if self.directory? and object.directory?
-      return self.path == object.path
+      return true
     end
 
     if self.file? and object.file?
