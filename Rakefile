@@ -3235,7 +3235,7 @@ end
 def init_extensions(dest, mode = "")
 
 
-  print_timestamp('init_extensions( '+dest+', mode= ['+mode+'] ) START')
+  print_timestamp('init_extensions( '+dest.to_s+', mode= ['+mode.to_s+'] ) START')
 
   extentries = []
   extentries_init = []
@@ -3654,7 +3654,7 @@ end
 
 def common_bundle_start( startdir, dest)
 
-  print_timestamp('common_bundle_start( '+startdir+' , '+dest+' ) START')
+  print_timestamp('common_bundle_start( '+startdir.to_s+' , '+dest.to_s+' ) START')
 
   app = $app_path
 
