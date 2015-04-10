@@ -268,22 +268,24 @@ namespace "config" do
       $neon_root = $app_config["paths"]["neon"]
     end
 
-    $androidsdkpath = $config["env"]["paths"]["android"]
-    unless File.exists? $androidsdkpath
-      puts "Missing or invalid 'android' section in rhobuild.yml: '#{$androidsdkpath}'"
-      exit 1
-    end
+    if !$skip_checking_Android_SDK
+      $androidsdkpath = $config["env"]["paths"]["android"]
+      unless File.exists? $androidsdkpath
+        puts "Missing or invalid 'android' section in rhobuild.yml: '#{$androidsdkpath}'"
+        exit 1
+      end
 
-    $androidndkpath = $config["env"]["paths"]["android-ndk"]
-    unless File.exists? $androidndkpath
-      puts "Missing or invalid 'android-ndk' section in rhobuild.yml: '#{$androidndkpath}'"
-      exit 1
-    end
+      $androidndkpath = $config["env"]["paths"]["android-ndk"]
+      unless File.exists? $androidndkpath
+        puts "Missing or invalid 'android-ndk' section in rhobuild.yml: '#{$androidndkpath}'"
+        exit 1
+      end
 
-    errfmt = "WARNING!!! Path to Android %s contain spaces! It will not work because of the Google toolchain restrictions. Move it to another location and reconfigure rhodes."
-    if $androidndkpath =~ /\s/
-      puts(errfmt % "NDK")
-      exit 1
+      errfmt = "WARNING!!! Path to Android %s contain spaces! It will not work because of the Google toolchain restrictions. Move it to another location and reconfigure rhodes."
+      if $androidndkpath =~ /\s/
+        puts(errfmt % "NDK")
+        exit 1
+      end
     end
 
     $min_sdk_level = $app_config["android"]["minSDK"] unless $app_config["android"].nil?
@@ -293,15 +295,18 @@ namespace "config" do
 
     $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
 
-    $androidplatform = AndroidTools.fill_api_levels $androidsdkpath
-    if $androidplatform == nil
-      puts "No Android platform found at SDK path: '#{$androidsdkpath}'"
-      exit 1
+    if !$skip_checking_Android_SDK
+      $androidplatform = AndroidTools.fill_api_levels $androidsdkpath
+      if $androidplatform == nil
+        puts "No Android platform found at SDK path: '#{$androidsdkpath}'"
+        exit 1
+      end
+
+      android_api_levels = AndroidTools.get_installed_api_levels
+      android_api_levels.sort!
+      $found_api_level = android_api_levels.last
     end
 
-    android_api_levels = AndroidTools.get_installed_api_levels
-    android_api_levels.sort!
-    $found_api_level = android_api_levels.last
 
     $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
     $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
@@ -386,67 +391,71 @@ namespace "config" do
     end
 
     build_tools_path = nil
-    if File.exist?(File.join($androidsdkpath, "build-tools"))
-      build_tools_path = []
-      Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
-        next if entry == '.' or entry == '..'
-        build_tools_path << entry
+
+    if !$skip_checking_Android_SDK
+      if File.exist?(File.join($androidsdkpath, "build-tools"))
+        build_tools_path = []
+        Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
+          next if entry == '.' or entry == '..'
+          build_tools_path << entry
+        end
+        build_tools_path.sort!
+        build_tools_path = build_tools_path.last
       end
-      build_tools_path.sort!
-      build_tools_path = build_tools_path.last
+
+      if build_tools_path
+        puts "Using Android SDK build-tools: #{build_tools_path}"
+        build_tools_path = File.join $androidsdkpath,'build-tools',build_tools_path
+        $dxjar = File.join(build_tools_path,'lib','dx.jar')
+        $aapt = File.join(build_tools_path, "aapt#{$exe_ext}")
+      else
+        $dxjar = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "lib", "dx.jar")
+        $dxjar = File.join($androidsdkpath, "platform-tools", "lib", "dx.jar") unless File.exists? $dxjar
+        $aapt = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext)
+        $aapt = File.join($androidsdkpath, "platform-tools", "aapt" + $exe_ext) unless File.exists? $aapt
+      end
+
+      $androidbin = File.join($androidsdkpath, "tools", "android" + $bat_ext)
+      $adb = find_file( "adb" + $exe_ext,
+        [
+          [$androidsdkpath, "tools"],
+          [$androidsdkpath, "platform-tools"]
+        ]
+      )
+
+      $zipalign = find_file( "zipalign" + $exe_ext,
+        [
+          [$androidsdkpath, "tools"],
+          [build_tools_path],
+          [$androidsdkpath,'build-tools','*']
+        ]
+      )
+
+      $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
+      $sdklibjar = File.join($androidsdkpath, 'tools', 'lib', 'sdklib.jar')
+
+      $keytool = File.join($java, "keytool" + $exe_ext)
+      $jarsigner = File.join($java, "jarsigner" + $exe_ext)
+      $jarbin = File.join($java, "jar" + $exe_ext)
+
+      $keystore = nil
+      $keystore = $app_config["android"]["production"]["certificate"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
+      $keystore = $config["android"]["production"]["certificate"] if $keystore.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
+      $keystore = File.expand_path($keystore, $app_path) unless $keystore.nil?
+      $keystore = File.expand_path(File.join(ENV['HOME'], ".rhomobile", "keystore")) if $keystore.nil?
+
+      $storepass = nil
+      $storepass = $app_config["android"]["production"]["password"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
+      $storepass = $config["android"]["production"]["password"] if $storepass.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
+      $storepass = "81719ef3a881469d96debda3112854eb" if $storepass.nil?
+      $keypass = $storepass
+
+      $storealias = nil
+      $storealias = $app_config["android"]["production"]["alias"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
+      $storealias = $config["android"]["production"]["alias"] if $storealias.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
+      $storealias = "rhomobile.keystore" if $storealias.nil?
+
     end
-
-    if build_tools_path
-      puts "Using Android SDK build-tools: #{build_tools_path}"
-      build_tools_path = File.join $androidsdkpath,'build-tools',build_tools_path
-      $dxjar = File.join(build_tools_path,'lib','dx.jar')
-      $aapt = File.join(build_tools_path, "aapt#{$exe_ext}")
-    else
-      $dxjar = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "lib", "dx.jar")
-      $dxjar = File.join($androidsdkpath, "platform-tools", "lib", "dx.jar") unless File.exists? $dxjar
-      $aapt = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext)
-      $aapt = File.join($androidsdkpath, "platform-tools", "aapt" + $exe_ext) unless File.exists? $aapt
-    end
-
-    $androidbin = File.join($androidsdkpath, "tools", "android" + $bat_ext)
-    $adb = find_file( "adb" + $exe_ext, 
-      [
-        [$androidsdkpath, "tools"],
-        [$androidsdkpath, "platform-tools"]
-      ]
-    )
-
-    $zipalign = find_file( "zipalign" + $exe_ext, 
-      [
-        [$androidsdkpath, "tools"], 
-        [build_tools_path],
-        [$androidsdkpath,'build-tools','*']
-      ] 
-    )
-
-    $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
-    $sdklibjar = File.join($androidsdkpath, 'tools', 'lib', 'sdklib.jar')
-
-    $keytool = File.join($java, "keytool" + $exe_ext)
-    $jarsigner = File.join($java, "jarsigner" + $exe_ext)
-    $jarbin = File.join($java, "jar" + $exe_ext)
-
-    $keystore = nil
-    $keystore = $app_config["android"]["production"]["certificate"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
-    $keystore = $config["android"]["production"]["certificate"] if $keystore.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
-    $keystore = File.expand_path($keystore, $app_path) unless $keystore.nil?
-    $keystore = File.expand_path(File.join(ENV['HOME'], ".rhomobile", "keystore")) if $keystore.nil?
-
-    $storepass = nil
-    $storepass = $app_config["android"]["production"]["password"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
-    $storepass = $config["android"]["production"]["password"] if $storepass.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
-    $storepass = "81719ef3a881469d96debda3112854eb" if $storepass.nil?
-    $keypass = $storepass
-
-    $storealias = nil
-    $storealias = $app_config["android"]["production"]["alias"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
-    $storealias = $config["android"]["production"]["alias"] if $storealias.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
-    $storealias = "rhomobile.keystore" if $storealias.nil?
 
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
@@ -482,24 +491,28 @@ namespace "config" do
       $applog_path = File.join($app_path, $applog_file)
     end
 
-    if $min_sdk_level > $found_api_level
-      raise "Latest installed Android platform '#{$androidplatform}' does not meet minSdk '#{$min_sdk_level}' requirement"
+    if !$skip_checking_Android_SDK
+      if $min_sdk_level > $found_api_level
+        raise "Latest installed Android platform '#{$androidplatform}' does not meet minSdk '#{$min_sdk_level}' requirement"
+      end
     end
 
-    # Detect Google API add-on path
-    if $use_google_addon_api
-      puts "Looking for Google API SDK add-on..." if USE_TRACES
-      #google_jars = ['com.google.android.maps']
-      $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
-    end
-    
-    v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
-    raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
-    $v4support_classpath = v4jar.first
+    if !$skip_checking_Android_SDK
+      # Detect Google API add-on path
+      if $use_google_addon_api
+        puts "Looking for Google API SDK add-on..." if USE_TRACES
+        #google_jars = ['com.google.android.maps']
+        $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
+      end
 
-    #setup_ndk($androidndkpath, $found_api_level, 'arm')
-    $abis = $app_config['android']['abis'] if $app_config["android"]
-    $abis = ['arm'] unless $abis
+      v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
+      raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
+      $v4support_classpath = v4jar.first
+
+      #setup_ndk($androidndkpath, $found_api_level, 'arm')
+      $abis = $app_config['android']['abis'] if $app_config["android"]
+      $abis = ['arm'] unless $abis
+    end
 
     $native_libs = ["sqlite", "curl", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
@@ -528,48 +541,51 @@ namespace "config" do
     $push_notifications = "none" if $push_notifications.nil?
     $push_notifications = $push_notifications
 
-    # Detect android targets
-    $androidtargets = {}
-    id = nil
-    apilevel = nil
-    target_name = nil
+    if !$skip_checking_Android_SDK
+      # Detect android targets
+      $androidtargets = {}
+      id = nil
+      apilevel = nil
+      target_name = nil
 
-    `"#{$androidbin}" list targets`.split(/\n/).each do |line|
-      line.chomp!
+      `"#{$androidbin}" list targets`.split(/\n/).each do |line|
+        line.chomp!
 
-      if line =~ /^id:\s+([0-9]+)\s+or\s+\"(.*)\"/
-        id = $1
-        target_name = $2
+        if line =~ /^id:\s+([0-9]+)\s+or\s+\"(.*)\"/
+          id = $1
+          target_name = $2
 
-        if $use_google_addon_api
-          if line =~ /Google Inc\.:Google APIs:([0-9]+)/
+          if $use_google_addon_api
+            if line =~ /Google Inc\.:Google APIs:([0-9]+)/
+              apilevel = $1.to_i
+              $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
+            end
+          end
+        end
+
+        unless $use_google_addon_api
+          if line =~ /^\s+API\s+level:\s+([0-9]+)$/
             apilevel = $1.to_i
             $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
           end
         end
-      end
 
-      unless $use_google_addon_api
-        if line =~ /^\s+API\s+level:\s+([0-9]+)$/
-          apilevel = $1.to_i
-          $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
-        end
-      end
-
-      if apilevel && $androidtargets[apilevel][:id] == id.to_i
-        if line =~ /^\s+ABIs\s*:\s+(.*)/
-          $androidtargets[apilevel][:abis] = []
-          $1.split(/,\s*/).each do |abi|
-            $androidtargets[apilevel][:abis] << abi
+        if apilevel && $androidtargets[apilevel][:id] == id.to_i
+          if line =~ /^\s+ABIs\s*:\s+(.*)/
+            $androidtargets[apilevel][:abis] = []
+            $1.split(/,\s*/).each do |abi|
+              $androidtargets[apilevel][:abis] << abi
+            end
+            puts $androidtargets[apilevel][:abis].inspect if USE_TRACES
           end
-          puts $androidtargets[apilevel][:abis].inspect if USE_TRACES
         end
       end
-    end
 
-    if USE_TRACES
-      puts "Android targets:"
-      puts $androidtargets.inspect
+      if USE_TRACES
+        puts "Android targets:"
+        puts $androidtargets.inspect
+      end
+
     end
 
     mkdir_p $bindir if not File.exists? $bindir
@@ -1930,13 +1946,16 @@ namespace "build" do
       $android_jars << $v4support_classpath
     end
 
-    task :upgrade_package => ["config:android"] do
+    task :upgrade_package => ["config:common"] do
       print_timestamp('build:android:upgrade_package START')
 
       $skip_build_rhodes_main = true
       $skip_build_extensions = true
       $skip_build_xmls = true
       $use_prebuild_data = true
+      $skip_checking_Android_SDK = true
+
+      Rake::Task["config:android"].invoke
 
       Rake::Task['build:android:rhobundle'].invoke
 
@@ -1970,7 +1989,7 @@ namespace "build" do
       print_timestamp('build:android:upgrade_package FINISH')
     end
 
-    task :upgrade_package_partial => ["config:android"] do
+    task :upgrade_package_partial => ["config:common"] do
 
       print_timestamp('build:android:upgrade_package_partial START')
       #puts '$$$$$$$$$$$$$$$$$$'
@@ -1983,6 +2002,9 @@ namespace "build" do
         $skip_build_extensions = true
         $skip_build_xmls = true
         $use_prebuild_data = true
+        $skip_checking_Android_SDK = true
+
+        Rake::Task["config:android"].invoke
 
         Rake::Task['build:android:rhobundle'].invoke
 

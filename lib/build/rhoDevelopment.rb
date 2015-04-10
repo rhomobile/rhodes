@@ -59,8 +59,12 @@ class RhofilelistItem
       return false
     end
 
+    if self.path != object.path
+      return false
+    end
+
     if self.directory? and object.directory?
-      return self.path == object.path
+      return true
     end
 
     if self.file? and object.file?
@@ -76,9 +80,9 @@ class RhofilelistItem
   end
 
   def allowedForDetectingChanges?
-    not_allowed = ['rhoconfig.txt', 'rhoconfig.txt.timestamp', 'app_manifest.txt'].include?(self.path)
-    not_allowed = not_allowed || (self.path.include?('public/api'))
-    return (not not_allowed)
+    not_allowed = ['rhoconfig.txt', 'rhoconfig.txt.timestamp'].include?(self.path)
+    puts "#{self.path} #{not_allowed}"
+    return (!not_allowed)
   end
 
 
@@ -89,7 +93,7 @@ class RhofilelistLoader
 
 
   def self.loadFromFile(aString)
-     result = File.open(aString, "r").lines.collect {|each| RhofilelistItem.fromString(each)}
+     result = File.open(aString, 'r').lines.collect {|each| RhofilelistItem.fromString(each)}
      return result.select {|each| each.allowedForDetectingChanges?}
   end
 

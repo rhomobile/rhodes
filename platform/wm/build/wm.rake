@@ -24,6 +24,14 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+def get_ruby_path()
+  if RUBY_PLATFORM =~ /(win|w)32$/
+    File.join($startdir,'res/build-tools/RhoRuby.exe')
+  else
+    File.join($startdir,'res/build-tools/RubyMac')
+  end
+end
+
 module WM
   def self.config
     unless $sdk
@@ -34,7 +42,7 @@ module WM
       $sdk = "MC3000c50b (ARMV4I)"
     end
 
-    $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
+    $rubypath = get_ruby_path #"res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"
     $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
