@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -91,7 +93,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
             Bitmap bitmap = null;
             try {
             	
-                Map<String, String> propertyMap = getActualPropertyMap();
+                final Map<String, String> propertyMap = getActualPropertyMap();
                 if (propertyMap == null) {
                     throw new RuntimeException("Camera property map is undefined");
                 }
@@ -104,7 +106,13 @@ public class CameraObject extends CameraBase implements ICameraObject {
     	        else
     		   deprecated_take_pic = true;
                 if(propertyMap.containsKey("captureSound")){
-                	playMusic(propertyMap.get("captureSound"));
+                    Runnable music= new Runnable(){
+                		public void run() {
+                			playMusic(propertyMap.get("captureSound"));
+                		}
+                	};
+                    ExecutorService exec = Executors.newSingleThreadExecutor();
+                    exec.submit(music);
                 }
                 
                 String filePath = null;
@@ -123,7 +131,35 @@ public class CameraObject extends CameraBase implements ICameraObject {
 		options.inPurgeable = true;
                 bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
-                    Logger.T(TAG, "outputFormat: " + outputFormat);                    
+                    Logger.T(TAG, "outputFormat: " + outputFormat);   
+                    filePath = getTemporaryPath(filePath)+ ".jpg";
+                    if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
+                    {                        
+                        ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
+                        Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());
+                        propertyMap.put("DeviceGallery_Key", "DeviceGallery_Value");
+                        String strUri = null;
+						if (!propertyMap.containsKey("fileName")) {
+							strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
+						}
+							else{
+							strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, new File(propertyMap.get("fileName")).getName(), "Camera");
+						}
+						if (strUri != null) {
+                            resultUri = Uri.parse(strUri);                           
+                        } else {
+                            throw new RuntimeException("Failed to save camera image to Gallery");
+                        }                  
+                    } 
+                    else
+                    {   
+	                    
+	                    stream = new FileOutputStream(filePath);                        
+	                    resultUri = Uri.fromFile(new File(filePath));                        
+	                    stream.write(data);    
+	                    stream.flush();                        
+	                    stream.close();
+                    }
                     StringBuilder dataBuilder = new StringBuilder();
                     dataBuilder.append("data:image/jpeg;base64,");
                     dataBuilder.append(Base64.encodeToString(data, false));
@@ -415,7 +451,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
         Logger.T(TAG, "takePicture");
-        
+        CameraActivity.click_rotation = false;
         try {
             Map<String, String> actualPropertyMap = new HashMap<String, String>();
             actualPropertyMap.putAll(getPropertiesMap());

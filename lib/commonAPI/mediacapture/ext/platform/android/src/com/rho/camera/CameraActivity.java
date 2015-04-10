@@ -52,7 +52,7 @@ import android.widget.Button;
 
 public class CameraActivity extends BaseActivity implements OnClickListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
-    
+    public static boolean click_rotation;
     private CameraPreview mPreview;
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
@@ -116,6 +116,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     @Override
     public void onClick(View view) {
         Logger.T(TAG, "onClick");
+        click_rotation = true;
         try{
         if (view.getId() == R.id.cameraButton) {
             Logger.T(TAG, "cameraButton");            

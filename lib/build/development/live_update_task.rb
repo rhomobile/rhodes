@@ -139,7 +139,7 @@ module RhoDevelopment
     end
 
     def action
-      Configuration::subscribers.each { |subscriber|
+      Configuration::enabled_subscribers.each { |subscriber|
         subscriber.partial_notify
       }
     end
@@ -153,7 +153,7 @@ module RhoDevelopment
     end
 
     def action
-      Configuration::subscribers.each { |subscriber|
+      Configuration::enabled_subscribers.each { |subscriber|
         subscriber.full_notify
       }
     end
@@ -233,17 +233,16 @@ module RhoDevelopment
 
     # Checks has source code changes for each platform
     def action
-      development_directory = File.join(Configuration::application_root, '.development')
       updated_list_filename = File.join(Configuration::application_root, 'upgrade_package_add_files.txt')
       removed_list_filename = File.join(Configuration::application_root, 'upgrade_package_remove_files.txt')
-      mkdir_p development_directory
-      Configuration::subscriber_platforms.each { |each|
-        RhoDevelopment.setup(development_directory, each)
+      mkdir_p Configuration::development_directory
+      Configuration::enabled_subscriber_platforms.each { |each|
+        RhoDevelopment.setup(Configuration::development_directory, each)
         changed = RhoDevelopment.check_changes_from_last_build(updated_list_filename, removed_list_filename)
         if changed
           puts "Source code for platform #{each} was changed".primary
           WebServer.dispatch_task(PlatformPartialUpdateBuildingTask.new(each));
-          Configuration::subscribers_by_platform(each).each { |subscriber|
+          Configuration::enabled_subscribers_by_platform(each).each { |subscriber|
             WebServer.dispatch_task(SubscriberPartialUpdateNotifyingTask.new(subscriber));
           }
         else

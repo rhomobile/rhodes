@@ -322,28 +322,50 @@ namespace :dev do
 
   namespace :update do
 
+    desc 'This command initializes original state files. It needs for correct execution of command partial update from CLI. The first partial update cannot find out source code changes if initialize didn\'t execute before it'
+    task :initialize => ['config:common'] do
+      RhoDevelopment::Configuration::application_root = $app_basedir
+      mkdir_p RhoDevelopment::Configuration::development_directory
+      updated_list_filename = File.join(RhoDevelopment::Configuration::application_root, 'upgrade_package_add_files.txt')
+      removed_list_filename = File.join(RhoDevelopment::Configuration::application_root, 'upgrade_package_remove_files.txt')
+      RhoDevelopment.setup(RhoDevelopment::Configuration::development_directory, 'wm')
+      RhoDevelopment::check_changes_from_last_build(updated_list_filename, removed_list_filename)
+      RhoDevelopment.setup(RhoDevelopment::Configuration::development_directory, 'iphone')
+      RhoDevelopment::check_changes_from_last_build(updated_list_filename, removed_list_filename)
+      RhoDevelopment.setup(RhoDevelopment::Configuration::development_directory, 'android')
+      RhoDevelopment::check_changes_from_last_build(updated_list_filename, removed_list_filename)
+    end
+
     desc 'If source code was changed - builds partial update for all platforms and notifies all subscribers'
     task :partial => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
-      RhoDevelopment::WebServer.ensure_running
-      unless RhoDevelopment::Configuration::has_subscribers?
-        puts 'Subscribers not found'.warning
-        return
+      unless RhoDevelopment::Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        exit 1
       end
+      RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer.dispatch_task(RhoDevelopment::PartialUpdateTask.new());
     end
 
-    desc 'Builds full update bundle for all subscribers and notifies them'
+    desc 'Builds full update bundle for all platforms and notifies all subscribers'
     task :full => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
+      unless RhoDevelopment::Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        exit 1
+      end
       RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersFullUpdateNotifyingTask.new)
     end
 
-    desc 'It builds partial update for all platforms and notifies all subscribers'
+    desc 'It builds update with files from diff file list for all platforms and notifies all subscribers'
     task :build_and_notify => ['config:common'] do
       RhoDevelopment::Configuration::application_root = $app_basedir
+      unless RhoDevelopment::Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        exit 1
+      end
       RhoDevelopment::WebServer.ensure_running
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new)
       RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersPartialUpdateNotifyingTask.new)
@@ -2643,6 +2665,8 @@ namespace "config" do
     $skip_build_rhodes_main = false
     $skip_build_extensions = false
     $skip_build_xmls = false
+    $skip_checking_Android_SDK = false
+
     extpaths = []
 
     add_ext_path = lambda {|p| extpaths << File.absolute_path(p, $app_path)}
@@ -2915,6 +2939,8 @@ namespace "config" do
 
     $app_config['extensions'].delete("mspec") if !$debug && $app_config['extensions'].index('mspec')
     $app_config['extensions'].delete("rhospec") if !$debug && $app_config['extensions'].index('rhospec')
+    $app_config['extensions'].delete("development") if !$debug && $app_config['extensions'].index('development')
+    $app_config['extensions'].delete("Development") if !$debug && $app_config['extensions'].index('Development')
 
     $rhologhostport = $config["log_host_port"]
     $rhologhostport = 52363 unless $rhologhostport
@@ -3209,7 +3235,7 @@ end
 def init_extensions(dest, mode = "")
 
 
-  print_timestamp('init_extensions() START')
+  print_timestamp('init_extensions( '+dest.to_s+', mode= ['+mode.to_s+'] ) START')
 
   extentries = []
   extentries_init = []
@@ -3369,7 +3395,7 @@ def init_extensions(dest, mode = "")
           end
         end
 
-        if !$skip_build_extensions
+        #if !$skip_build_extensions
           unless rhoapi_js_folder.nil?
             Dir.glob(extpath + "/public/api/*.js").each do |f|
               fBaseName = File.basename(f)
@@ -3416,7 +3442,7 @@ def init_extensions(dest, mode = "")
               end
             end
           end
-        end
+        #end
 
       end
 
@@ -3454,7 +3480,7 @@ def init_extensions(dest, mode = "")
   extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
   extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
   #
-  if !$skip_build_extensions
+  #if !$skip_build_extensions
     if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
       rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
       mkdir_p rhoapi_js_folder
@@ -3485,7 +3511,7 @@ def init_extensions(dest, mode = "")
         write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
       end
     end
-  end
+  #end
 
 
   if mode == "update_rho_modules_js"
@@ -3628,7 +3654,7 @@ end
 
 def common_bundle_start( startdir, dest)
 
-  print_timestamp('common_bundle_start() START')
+  print_timestamp('common_bundle_start( '+startdir.to_s+' , '+dest.to_s+' ) START')
 
   app = $app_path
 
