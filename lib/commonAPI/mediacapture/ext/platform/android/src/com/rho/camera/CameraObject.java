@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -91,7 +93,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
             Bitmap bitmap = null;
             try {
             	
-                Map<String, String> propertyMap = getActualPropertyMap();
+                final Map<String, String> propertyMap = getActualPropertyMap();
                 if (propertyMap == null) {
                     throw new RuntimeException("Camera property map is undefined");
                 }
@@ -104,7 +106,13 @@ public class CameraObject extends CameraBase implements ICameraObject {
     	        else
     		   deprecated_take_pic = true;
                 if(propertyMap.containsKey("captureSound")){
-                	playMusic(propertyMap.get("captureSound"));
+                    Runnable music= new Runnable(){
+                		public void run() {
+                			playMusic(propertyMap.get("captureSound"));
+                		}
+                	};
+                    ExecutorService exec = Executors.newSingleThreadExecutor();
+                    exec.submit(music);
                 }
                 
                 String filePath = null;
