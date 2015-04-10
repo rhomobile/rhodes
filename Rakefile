@@ -3235,7 +3235,7 @@ end
 def init_extensions(dest, mode = "")
 
 
-  print_timestamp('init_extensions() START')
+  print_timestamp('init_extensions( '+dest+', mode= ['+mode+'] ) START')
 
   extentries = []
   extentries_init = []
@@ -3395,7 +3395,7 @@ def init_extensions(dest, mode = "")
           end
         end
 
-        if !$skip_build_extensions
+        #if !$skip_build_extensions
           unless rhoapi_js_folder.nil?
             Dir.glob(extpath + "/public/api/*.js").each do |f|
               fBaseName = File.basename(f)
@@ -3442,7 +3442,7 @@ def init_extensions(dest, mode = "")
               end
             end
           end
-        end
+        #end
 
       end
 
@@ -3480,7 +3480,7 @@ def init_extensions(dest, mode = "")
   extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
   extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
   #
-  if !$skip_build_extensions
+  #if !$skip_build_extensions
     if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
       rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
       mkdir_p rhoapi_js_folder
@@ -3511,7 +3511,7 @@ def init_extensions(dest, mode = "")
         write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
       end
     end
-  end
+  #end
 
 
   if mode == "update_rho_modules_js"
@@ -3654,7 +3654,7 @@ end
 
 def common_bundle_start( startdir, dest)
 
-  print_timestamp('common_bundle_start() START')
+  print_timestamp('common_bundle_start( '+startdir+' , '+dest+' ) START')
 
   app = $app_path
 
