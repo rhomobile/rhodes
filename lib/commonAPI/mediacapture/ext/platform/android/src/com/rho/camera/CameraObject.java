@@ -451,7 +451,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
         Logger.T(TAG, "takePicture");
-        
+        CameraActivity.click_rotation = false;
         try {
             Map<String, String> actualPropertyMap = new HashMap<String, String>();
             actualPropertyMap.putAll(getPropertiesMap());
