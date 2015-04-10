@@ -855,8 +855,8 @@ alert(reslnArray[1].height);
 		        <REMARK title="colorModel as Grayscale in Android">
                 <DESC>Grayscale is not supported in Motorola solution's android devices for front camera</DESC>
             </REMARK>
-            		<REMARK title="Invalid/Null values for properties in Android">
-                <DESC>Only valid and non-empty values for properties are supported in Android</DESC>
+            <REMARK title="Invalid/Null values for properties in Android and iOS">
+                <DESC>Only valid and non-empty values for properties are supported in Android and iOS</DESC>
             </REMARK>
 			<REMARK title="Ruby Support">
             <DESC>WM devices that has MPA3 board (eg: MC67) does not support color camera in ruby applications. Preferred imager in that case. CE5 and CE6 devices can support imager/color camera in javascript applications only.</DESC>
