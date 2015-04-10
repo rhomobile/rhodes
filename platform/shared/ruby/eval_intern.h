@@ -224,7 +224,7 @@ translit_char(char *p, int from, int to)
     while (*p) {
 	if ((unsigned char)*p == from)
 	    *p = to;
-	p = CharNext(p);
+	p = CharNextA(p);
     }
 }
 #endif
