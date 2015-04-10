@@ -203,6 +203,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			else if (resultCode == Activity.RESULT_CANCELED) 
 			{	DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent,resultCode);
 				async.execute();
+				CameraActivity.click_rotation = false;
 			} else {
 				mMethodResult.setError("Unknown error");
 			}
