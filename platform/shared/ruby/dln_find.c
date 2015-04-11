@@ -76,10 +76,6 @@ void *xrealloc();
 char *getenv();
 #endif
 
-#ifndef CharNextA		/* defined as CharNextA[AW] on Windows. */
-# define CharNextA(p) ((p) + 1)
-#endif
-
 static char *dln_find_1(const char *fname, const char *path, char *buf, size_t size, int exe_flag);
 
 char *
@@ -152,8 +148,8 @@ dln_find_1(const char *fname, const char *path, char *fbuf, size_t size,
 
     RETURN_IF(!fname);
 #ifdef DOSISH
-# ifndef CharNext
-# define CharNext(p) ((p)+1)
+# ifndef CharNextA
+# define CharNextA(p) ((p)+1)
 # endif
 # ifdef DOSISH_DRIVE_LETTER
     if (((p[0] | 0x20) - 'a') < 26  && p[1] == ':') {
