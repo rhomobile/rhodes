@@ -953,7 +953,7 @@ join_argv(char *cmd, char *const *argv, BOOL escape)
 		}
 	      default:
 		bs = 0;
-		p = CharNext(p) - 1;
+		p = CharNextA(p) - 1;
 		break;
 	    }
 	}

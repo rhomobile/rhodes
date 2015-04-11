@@ -51,10 +51,6 @@
 #include "../../wp8/rhoruntime/common/RhodesHelperWP8.h"
 #endif
 
-#ifndef CharNextA		/* defined as CharNextA[AW] on Windows. */
-# define CharNextA(p) ((p) + 1)
-#endif
-
 #ifndef HAVE_STDLIB_H
 char *getenv();
 #endif
