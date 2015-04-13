@@ -2655,8 +2655,8 @@ static const char file_alt_separator[] = {FILE_ALT_SEPARATOR, '\0'};
 #define istrailinggarbage(x) 0
 #endif
 
-#ifndef CharNext		/* defined as CharNext[AW] on Windows. */
-# define CharNext(p) ((p) + 1)
+#ifndef CharNextA		/* defined as CharNextA[AW] on Windows. */
+# define CharNextA(p) ((p) + 1)
 #endif
 
 #if defined(DOSISH_UNC)
@@ -2733,7 +2733,7 @@ char *
 rb_path_next(const char *s)
 {
     while (*s && !isdirsep(*s)) {
-	s = CharNext(s);
+	s = CharNextA(s);
     }
     return (char *)s;
 }
@@ -2789,7 +2789,7 @@ rb_path_last_separator(const char *path)
 	    last = (char *)tmp;
 	}
 	else {
-	    path = CharNext(path);
+	    path = CharNextA(path);
 	}
     }
     return last;
@@ -2805,7 +2805,7 @@ chompdirsep(const char *path)
 	    if (!*path) return (char *)last;
 	}
 	else {
-	    path = CharNext(path);
+	    path = CharNextA(path);
 	}
     }
     return (char *)path;
@@ -2836,7 +2836,7 @@ ntfs_tail(const char *path)
 	    if (*path == ':') path++;
 	}
 	else {
-	    path = CharNext(path);
+	    path = CharNextA(path);
 	}
     }
     return (char *)path;
@@ -2893,7 +2893,7 @@ rb_home_dir(const char *user, VALUE result)
 #endif
     }
 #if defined DOSISH || defined __CYGWIN__
-    for (p = buf; *p; p = CharNext(p)) {
+    for (p = buf; *p; p = CharNextA(p)) {
 	if (*p == '\\') {
 	    *p = '/';
 	}
@@ -3105,7 +3105,7 @@ file_expand_path(VALUE fname, VALUE dname, int abs_mode, VALUE result)
 	    b = ++s;
 	    break;
 	  default:
-	    s = CharNext(s);
+	    s = CharNextA(s);
 	    break;
 	}
     }
@@ -3418,7 +3418,7 @@ rb_realpath_internal(VALUE basedir, VALUE path, int strict)
 	if (*prefixptr == FILE_ALT_SEPARATOR) {
 	    *prefixptr = '/';
 	}
-	prefixptr = CharNext(prefixptr);
+	prefixptr = CharNextA(prefixptr);
     }
 #endif
 
@@ -3718,7 +3718,7 @@ ruby_find_extname(const char *name, long *len)
 #endif
 	else if (isdirsep(*p))
 	    break;
-	p = CharNext(p);
+	p = CharNextA(p);
     }
 
     if (len) {
