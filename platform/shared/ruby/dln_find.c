@@ -148,8 +148,8 @@ dln_find_1(const char *fname, const char *path, char *fbuf, size_t size,
 
     RETURN_IF(!fname);
 #ifdef DOSISH
-# ifndef CharNext
-# define CharNext(p) ((p)+1)
+# ifndef CharNextA
+# define CharNextA(p) ((p)+1)
 # endif
 # ifdef DOSISH_DRIVE_LETTER
     if (((p[0] | 0x20) - 'a') < 26  && p[1] == ':') {
@@ -175,7 +175,7 @@ dln_find_1(const char *fname, const char *path, char *fbuf, size_t size,
 	    p++;
 	    break;
 	  default:
-	    p = CharNext(p);
+	    p = CharNextA(p);
 	}
     }
     if (ext) {

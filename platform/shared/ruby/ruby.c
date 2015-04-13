@@ -188,11 +188,11 @@ rubylib_mangled_path(const char *s, unsigned int l)
 	if (newp) {
 	    oldp = newp = strdup(newp);
 	    while (*newp && !ISSPACE(*newp) && *newp != ';') {
-		newp = CharNext(newp);	/* Skip digits. */
+		newp = CharNextA(newp);	/* Skip digits. */
 	    }
 	    oldl = newp - oldp;
 	    while (*newp && (ISSPACE(*newp) || *newp == ';')) {
-		newp = CharNext(newp);	/* Skip whitespace. */
+		newp = CharNextA(newp);	/* Skip whitespace. */
 	    }
 	    newl = strlen(newp);
 	    if (newl == 0 || oldl == 0) {
@@ -230,7 +230,7 @@ push_include(const char *path, VALUE (*filter)(VALUE))
 	while (*p == sep)
 	    p++;
 	if (!*p) break;
-	for (s = p; *s && *s != sep; s = CharNext(s));
+	for (s = p; *s && *s != sep; s = CharNextA(s));
 	rb_ary_push(load_path, (*filter)(rubylib_mangled_path(p, s - p)));
 	p = s;
     }
@@ -250,7 +250,7 @@ push_include_cygwin(const char *path, VALUE (*filter)(VALUE))
 	while (*p == ';')
 	    p++;
 	if (!*p) break;
-	for (s = p; *s && *s != ';'; s = CharNext(s));
+	for (s = p; *s && *s != ';'; s = CharNextA(s));
 	len = s - p;
 	if (*s) {
 	    if (!buf) {

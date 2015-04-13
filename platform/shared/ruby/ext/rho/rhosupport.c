@@ -563,8 +563,8 @@ RCompExit:
     return retval;
 }
 
-#ifndef CharNext		/* defined as CharNext[AW] on Windows. */
-#define CharNext(p) ((p) + mblen(p, RUBY_MBCHAR_MAXSIZE))
+#ifndef CharNextA		/* defined as CharNext[AW] on Windows. */
+#define CharNextA(p) ((p) + mblen(p, RUBY_MBCHAR_MAXSIZE))
 #endif
 
 static void
@@ -573,7 +573,7 @@ translate_char(char *p, int from, int to)
     while (*p) {
 	    if ((unsigned char)*p == from)
 	      *p = to;
-	    p = CharNext(p);
+	    p = CharNextA(p);
     }
 }
 
