@@ -75,7 +75,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Intent();
 #endif
 
-#if defined(OS_WP8)
+#if defined(OS_WP8) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
 	Init_Config_extension();
 	Init_Timer_extension();
 #endif
