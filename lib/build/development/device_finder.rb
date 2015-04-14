@@ -66,7 +66,7 @@ module RhoDevelopment
             subscribers << subscriber
           rescue *Configuration::handledNetworkExceptions => e
             #TODO may be it is necessary to remove subscriber from list?
-            puts "#{url} is not accessible. error: #{e.class}".info
+            #puts "#{url} is not accessible. error: #{e.class}".info
           end
         }
       }
