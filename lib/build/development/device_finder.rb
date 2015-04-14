@@ -54,6 +54,7 @@ module RhoDevelopment
           begin
             http = Net::HTTP.new(url.host, url.port)
             http.open_timeout = 5
+            http.read_timeout = 5
             response = http.get(url.path)
             data = JSON.parse(response.body)
             subscriber = {}
@@ -65,7 +66,7 @@ module RhoDevelopment
             subscribers << subscriber
           rescue *Configuration::handledNetworkExceptions => e
             #TODO may be it is necessary to remove subscriber from list?
-            #puts "#{url} is not accessible. error: #{e.class}".info
+            puts "#{url} is not accessible. error: #{e.class}".info
           end
         }
       }
