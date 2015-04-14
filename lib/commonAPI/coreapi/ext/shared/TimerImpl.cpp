@@ -7,6 +7,7 @@
 #include "common/RhoTime.h"
 #include "generated/cpp/TimerBase.h"
 #include "logging/RhoLog.h"
+#include <stdlib.h>
 
 namespace rho 
 {    
@@ -30,7 +31,8 @@ namespace rho
 			++createdTimers;
 
 			char buf[10];
-			itoa(createdTimers, buf, 10);
+			//itoa(createdTimers, buf, 10);
+            sprintf(buf, "%d", createdTimers);
 			oResult.set(buf);
         } 
         // enumerate This is documentation 

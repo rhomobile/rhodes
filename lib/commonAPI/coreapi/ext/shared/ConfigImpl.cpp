@@ -15,7 +15,7 @@ namespace rho {
     using namespace apiGenerator;
     using namespace common;
     
-	Hashtable<String, Vector<String>>::value_type convertHashPtrToHash(HashtablePtr<String, Vector<String>*>::value_type old)
+	Hashtable<String, Vector<String> >::value_type convertHashPtrToHash(HashtablePtr<String, Vector<String>*>::value_type old)
 	{
 		return std::make_pair(old.first, *old.second);
 	}

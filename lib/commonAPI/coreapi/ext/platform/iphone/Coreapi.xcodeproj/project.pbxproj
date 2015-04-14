@@ -150,6 +150,24 @@
 		FA4EC301174D109B00969368 /* NavbarSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2FB174D109B00969368 /* NavbarSetup.m */; };
 		FA4EC302174D109B00969368 /* NavbarSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4EC2FC174D109B00969368 /* NavbarSingleton.h */; };
 		FA4EC303174D109B00969368 /* NavbarSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2FD174D109B00969368 /* NavbarSingleton.m */; };
+		FA5EC0071ADD3DAC00FE0B60 /* config_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EBFFE1ADD3DAC00FE0B60 /* config_js_api.cpp */; };
+		FA5EC0081ADD3DAC00FE0B60 /* config_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5EBFFF1ADD3DAC00FE0B60 /* config_ruby_api.c */; };
+		FA5EC0091ADD3DAC00FE0B60 /* Config_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0001ADD3DAC00FE0B60 /* Config_js_wrap.cpp */; };
+		FA5EC00A1ADD3DAC00FE0B60 /* Config_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0011ADD3DAC00FE0B60 /* Config_ruby_wrap.cpp */; };
+		FA5EC00B1ADD3DAC00FE0B60 /* IConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5EC0021ADD3DAC00FE0B60 /* IConfig.h */; };
+		FA5EC00C1ADD3DAC00FE0B60 /* ConfigBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0031ADD3DAC00FE0B60 /* ConfigBase.cpp */; };
+		FA5EC00D1ADD3DAC00FE0B60 /* ConfigBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5EC0041ADD3DAC00FE0B60 /* ConfigBase.h */; };
+		FA5EC00E1ADD3DAC00FE0B60 /* config_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0051ADD3DAC00FE0B60 /* config_api_init.cpp */; };
+		FA5EC00F1ADD3DAC00FE0B60 /* ConfigImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0061ADD3DAC00FE0B60 /* ConfigImpl.cpp */; };
+		FA5EC0191ADD3DD700FE0B60 /* ITimer.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5EC0101ADD3DD700FE0B60 /* ITimer.h */; };
+		FA5EC01A1ADD3DD700FE0B60 /* Timer_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0111ADD3DD700FE0B60 /* Timer_js_wrap.cpp */; };
+		FA5EC01B1ADD3DD700FE0B60 /* Timer_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0121ADD3DD700FE0B60 /* Timer_ruby_wrap.cpp */; };
+		FA5EC01C1ADD3DD700FE0B60 /* TimerBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0131ADD3DD700FE0B60 /* TimerBase.cpp */; };
+		FA5EC01D1ADD3DD700FE0B60 /* TimerBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5EC0141ADD3DD700FE0B60 /* TimerBase.h */; };
+		FA5EC01E1ADD3DD700FE0B60 /* timer_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0151ADD3DD700FE0B60 /* timer_api_init.cpp */; };
+		FA5EC01F1ADD3DD700FE0B60 /* timer_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0161ADD3DD700FE0B60 /* timer_js_api.cpp */; };
+		FA5EC0201ADD3DD700FE0B60 /* timer_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0171ADD3DD700FE0B60 /* timer_ruby_api.c */; };
+		FA5EC0211ADD3DD700FE0B60 /* TimerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA5EC0181ADD3DD700FE0B60 /* TimerImpl.cpp */; };
 		FA7C85BB16E4126C0000EAE6 /* network_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85B816E4126C0000EAE6 /* network_api_init.cpp */; };
 		FA7C85BC16E4126C0000EAE6 /* network_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85B916E4126C0000EAE6 /* network_js_api.cpp */; };
 		FA7C85BD16E4126C0000EAE6 /* network_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85BA16E4126C0000EAE6 /* network_ruby_api.c */; };
@@ -359,6 +377,24 @@
 		FA4EC2FB174D109B00969368 /* NavbarSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavbarSetup.m; path = impl/NavbarSetup.m; sourceTree = "<group>"; };
 		FA4EC2FC174D109B00969368 /* NavbarSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavbarSingleton.h; path = impl/NavbarSingleton.h; sourceTree = "<group>"; };
 		FA4EC2FD174D109B00969368 /* NavbarSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavbarSingleton.m; path = impl/NavbarSingleton.m; sourceTree = "<group>"; };
+		FA5EBFFE1ADD3DAC00FE0B60 /* config_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = config_js_api.cpp; path = ../../shared/generated/config_js_api.cpp; sourceTree = "<group>"; };
+		FA5EBFFF1ADD3DAC00FE0B60 /* config_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = config_ruby_api.c; path = ../../shared/generated/config_ruby_api.c; sourceTree = "<group>"; };
+		FA5EC0001ADD3DAC00FE0B60 /* Config_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Config_js_wrap.cpp; path = ../../shared/generated/cpp/Config_js_wrap.cpp; sourceTree = "<group>"; };
+		FA5EC0011ADD3DAC00FE0B60 /* Config_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Config_ruby_wrap.cpp; path = ../../shared/generated/cpp/Config_ruby_wrap.cpp; sourceTree = "<group>"; };
+		FA5EC0021ADD3DAC00FE0B60 /* IConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IConfig.h; path = ../../shared/generated/cpp/IConfig.h; sourceTree = "<group>"; };
+		FA5EC0031ADD3DAC00FE0B60 /* ConfigBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConfigBase.cpp; path = ../../shared/generated/cpp/ConfigBase.cpp; sourceTree = "<group>"; };
+		FA5EC0041ADD3DAC00FE0B60 /* ConfigBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConfigBase.h; path = ../../shared/generated/cpp/ConfigBase.h; sourceTree = "<group>"; };
+		FA5EC0051ADD3DAC00FE0B60 /* config_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = config_api_init.cpp; path = ../../shared/generated/config_api_init.cpp; sourceTree = "<group>"; };
+		FA5EC0061ADD3DAC00FE0B60 /* ConfigImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConfigImpl.cpp; path = ../../shared/ConfigImpl.cpp; sourceTree = "<group>"; };
+		FA5EC0101ADD3DD700FE0B60 /* ITimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ITimer.h; path = ../../shared/generated/cpp/ITimer.h; sourceTree = "<group>"; };
+		FA5EC0111ADD3DD700FE0B60 /* Timer_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Timer_js_wrap.cpp; path = ../../shared/generated/cpp/Timer_js_wrap.cpp; sourceTree = "<group>"; };
+		FA5EC0121ADD3DD700FE0B60 /* Timer_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Timer_ruby_wrap.cpp; path = ../../shared/generated/cpp/Timer_ruby_wrap.cpp; sourceTree = "<group>"; };
+		FA5EC0131ADD3DD700FE0B60 /* TimerBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimerBase.cpp; path = ../../shared/generated/cpp/TimerBase.cpp; sourceTree = "<group>"; };
+		FA5EC0141ADD3DD700FE0B60 /* TimerBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimerBase.h; path = ../../shared/generated/cpp/TimerBase.h; sourceTree = "<group>"; };
+		FA5EC0151ADD3DD700FE0B60 /* timer_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = timer_api_init.cpp; path = ../../shared/generated/timer_api_init.cpp; sourceTree = "<group>"; };
+		FA5EC0161ADD3DD700FE0B60 /* timer_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = timer_js_api.cpp; path = ../../shared/generated/timer_js_api.cpp; sourceTree = "<group>"; };
+		FA5EC0171ADD3DD700FE0B60 /* timer_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = timer_ruby_api.c; path = ../../shared/generated/timer_ruby_api.c; sourceTree = "<group>"; };
+		FA5EC0181ADD3DD700FE0B60 /* TimerImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimerImpl.cpp; path = ../../shared/TimerImpl.cpp; sourceTree = "<group>"; };
 		FA7C85B816E4126C0000EAE6 /* network_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = network_api_init.cpp; path = ../../shared/generated/network_api_init.cpp; sourceTree = "<group>"; };
 		FA7C85B916E4126C0000EAE6 /* network_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = network_js_api.cpp; path = ../../shared/generated/network_js_api.cpp; sourceTree = "<group>"; };
 		FA7C85BA16E4126C0000EAE6 /* network_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = network_ruby_api.c; path = ../../shared/generated/network_ruby_api.c; sourceTree = "<group>"; };
@@ -467,6 +503,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FA5EBFFD1ADD3D2100FE0B60 /* Timer */,
+				FA5EBFFC1ADD3D1A00FE0B60 /* Config */,
 				C53D6BCF1897FB40001E4FA2 /* Intent */,
 				258D5F26189980BD007A6F14 /* NewORM */,
 				C5F48AD6177DEAD20071BFE2 /* Push */,
@@ -986,6 +1024,38 @@
 			name = impl;
 			sourceTree = "<group>";
 		};
+		FA5EBFFC1ADD3D1A00FE0B60 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				FA5EBFFE1ADD3DAC00FE0B60 /* config_js_api.cpp */,
+				FA5EBFFF1ADD3DAC00FE0B60 /* config_ruby_api.c */,
+				FA5EC0001ADD3DAC00FE0B60 /* Config_js_wrap.cpp */,
+				FA5EC0011ADD3DAC00FE0B60 /* Config_ruby_wrap.cpp */,
+				FA5EC0021ADD3DAC00FE0B60 /* IConfig.h */,
+				FA5EC0031ADD3DAC00FE0B60 /* ConfigBase.cpp */,
+				FA5EC0041ADD3DAC00FE0B60 /* ConfigBase.h */,
+				FA5EC0051ADD3DAC00FE0B60 /* config_api_init.cpp */,
+				FA5EC0061ADD3DAC00FE0B60 /* ConfigImpl.cpp */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		FA5EBFFD1ADD3D2100FE0B60 /* Timer */ = {
+			isa = PBXGroup;
+			children = (
+				FA5EC0101ADD3DD700FE0B60 /* ITimer.h */,
+				FA5EC0111ADD3DD700FE0B60 /* Timer_js_wrap.cpp */,
+				FA5EC0121ADD3DD700FE0B60 /* Timer_ruby_wrap.cpp */,
+				FA5EC0131ADD3DD700FE0B60 /* TimerBase.cpp */,
+				FA5EC0141ADD3DD700FE0B60 /* TimerBase.h */,
+				FA5EC0151ADD3DD700FE0B60 /* timer_api_init.cpp */,
+				FA5EC0161ADD3DD700FE0B60 /* timer_js_api.cpp */,
+				FA5EC0171ADD3DD700FE0B60 /* timer_ruby_api.c */,
+				FA5EC0181ADD3DD700FE0B60 /* TimerImpl.cpp */,
+			);
+			name = Timer;
+			sourceTree = "<group>";
+		};
 		FA7C85B116E411B90000EAE6 /* System */ = {
 			isa = PBXGroup;
 			children = (
@@ -1330,6 +1400,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA5EC0191ADD3DD700FE0B60 /* ITimer.h in Headers */,
 				FAC155E7145855CF0016F3BD /* CoreAPI_Prefix.pch in Headers */,
 				FA7C85C316E4127D0000EAE6 /* INetwork.h in Headers */,
 				FA7C85C716E4127D0000EAE6 /* NetworkBase.h in Headers */,
@@ -1349,6 +1420,7 @@
 				FA340BA816F0E455000094DD /* WebViewSingleton.h in Headers */,
 				C06A0F0316F21C880065EF81 /* ILog.h in Headers */,
 				C53284B21898001C0039193D /* IntentBase.h in Headers */,
+				FA5EC00B1ADD3DAC00FE0B60 /* IConfig.h in Headers */,
 				C53284B41898001C0039193D /* IntentFactoryBase.h in Headers */,
 				C06A0F0D16F21C880065EF81 /* LogBase.h in Headers */,
 				258D5F431899815C007A6F14 /* NewORMModelBase.h in Headers */,
@@ -1356,10 +1428,12 @@
 				FA1C7FB016FBCAF00024FB5C /* IApplication.h in Headers */,
 				FAEB2B901743C486001AE032 /* INativeToolbar.h in Headers */,
 				FAEB2B971743C498001AE032 /* NativeToolbarBase.h in Headers */,
+				FA5EC00D1ADD3DAC00FE0B60 /* ConfigBase.h in Headers */,
 				FAEB2B991743C498001AE032 /* NativeToolbarFactoryBase.h in Headers */,
 				FAEB2B9B1743C498001AE032 /* NativeToolbarSingletonBase.h in Headers */,
 				FAEB2BAD1743C4E0001AE032 /* NativeToolbar.h in Headers */,
 				FAEB2BB11743C4E0001AE032 /* NativeToolbarSingleton.h in Headers */,
+				FA5EC01D1ADD3DD700FE0B60 /* TimerBase.h in Headers */,
 				FAEB2BC01743C584001AE032 /* NativeTabbar.h in Headers */,
 				FAEB2BC41743C584001AE032 /* NativeTabbarSingleton.h in Headers */,
 				FAEB2BD61743C5C0001AE032 /* NativeTabbarBase.h in Headers */,
@@ -1441,8 +1515,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA5EC00C1ADD3DAC00FE0B60 /* ConfigBase.cpp in Sources */,
 				FA7C85BB16E4126C0000EAE6 /* network_api_init.cpp in Sources */,
 				FA7C85BC16E4126C0000EAE6 /* network_js_api.cpp in Sources */,
+				FA5EC0091ADD3DAC00FE0B60 /* Config_js_wrap.cpp in Sources */,
 				FA7C85BD16E4126C0000EAE6 /* network_ruby_api.c in Sources */,
 				FA7C85C416E4127D0000EAE6 /* Network_js_wrap.cpp in Sources */,
 				FA7C85C516E4127D0000EAE6 /* Network_ruby_wrap.cpp in Sources */,
@@ -1450,6 +1526,7 @@
 				FA7C85CA16E412950000EAE6 /* InitExtension.cpp in Sources */,
 				FA7C85CB16E412950000EAE6 /* NetworkImpl.cpp in Sources */,
 				FA7C85D416E413300000EAE6 /* system_api_init.cpp in Sources */,
+				FA5EC0071ADD3DAC00FE0B60 /* config_js_api.cpp in Sources */,
 				FA7C85D516E413300000EAE6 /* system_js_api.cpp in Sources */,
 				258D5F2E189980FD007A6F14 /* NewORMImpl.cpp in Sources */,
 				FA7C85D616E413300000EAE6 /* system_ruby_api.c in Sources */,
@@ -1469,6 +1546,7 @@
 				FA01F1EE16E65FED00D53D60 /* SQLite3Impl.cpp in Sources */,
 				FA01F1EF16E65FED00D53D60 /* SQLite3ImplRuby.c in Sources */,
 				FA340B8916F0E3FE000094DD /* webview_api_init.cpp in Sources */,
+				FA5EC0211ADD3DD700FE0B60 /* TimerImpl.cpp in Sources */,
 				FA340B8A16F0E3FE000094DD /* webview_js_api.cpp in Sources */,
 				FA340B8B16F0E3FE000094DD /* webview_ruby_api.c in Sources */,
 				FA340B9516F0E42F000094DD /* WebViewBase.m in Sources */,
@@ -1485,6 +1563,7 @@
 				258D5F381899812A007A6F14 /* neworm_ruby_api.c in Sources */,
 				C06A0F0A16F21C880065EF81 /* Log_js_wrap.cpp in Sources */,
 				C06A0F0B16F21C880065EF81 /* Log_ruby_wrap.cpp in Sources */,
+				FA5EC00E1ADD3DAC00FE0B60 /* config_api_init.cpp in Sources */,
 				C06A0F0C16F21C880065EF81 /* LogBase.cpp in Sources */,
 				C06A0F2616F21C880065EF81 /* log_api_init.cpp in Sources */,
 				C06A0F2716F21C880065EF81 /* log_js_api.cpp in Sources */,
@@ -1493,6 +1572,7 @@
 				FA1C7FA416FBCAC50024FB5C /* application_api_init.cpp in Sources */,
 				FA1C7FA516FBCAC50024FB5C /* application_js_api.cpp in Sources */,
 				C53284B51898001C0039193D /* IntentFactoryBase.m in Sources */,
+				FA5EC00A1ADD3DAC00FE0B60 /* Config_ruby_wrap.cpp in Sources */,
 				258D5F491899815C007A6F14 /* NewORM_ruby_wrap.cpp in Sources */,
 				FA1C7FA616FBCAC50024FB5C /* application_ruby_api.c in Sources */,
 				FA1C7FAC16FBCAF00024FB5C /* Application_js_wrap.cpp in Sources */,
@@ -1502,6 +1582,7 @@
 				C50050C4189801C4000C4A15 /* intent_ruby_wrap.m in Sources */,
 				C5AA919617380F6B002E4A65 /* NetworkDetectBase.cpp in Sources */,
 				C5AA919817380FD0002E4A65 /* NetworkDetect.mm in Sources */,
+				FA5EC01A1ADD3DD700FE0B60 /* Timer_js_wrap.cpp in Sources */,
 				C53D6BD71897FB99001E4FA2 /* intent_js_api.cpp in Sources */,
 				FAEB2B981743C498001AE032 /* NativeToolbarBase.m in Sources */,
 				FAEB2B9A1743C498001AE032 /* NativeToolbarFactoryBase.m in Sources */,
@@ -1538,16 +1619,20 @@
 				FA4EC2EB174D106600969368 /* NavbarFactoryBase.m in Sources */,
 				FA4EC2ED174D106600969368 /* NavbarSingletonBase.m in Sources */,
 				FA4EC2EF174D107200969368 /* navbar_js_wrap.mm in Sources */,
+				FA5EC01B1ADD3DD700FE0B60 /* Timer_ruby_wrap.cpp in Sources */,
 				FA4EC2F1174D107C00969368 /* navbar_ruby_wrap.m in Sources */,
 				FA4EC2F5174D108C00969368 /* navbar_api_init.cpp in Sources */,
 				FA4EC2F6174D108C00969368 /* navbar_js_api.cpp in Sources */,
 				FA4EC2F7174D108C00969368 /* navbar_ruby_api.c in Sources */,
+				FA5EC01C1ADD3DD700FE0B60 /* TimerBase.cpp in Sources */,
 				FA4EC2FF174D109B00969368 /* Navbar.m in Sources */,
 				FA4EC300174D109B00969368 /* NavbarFactorySingleton.m in Sources */,
 				FA4EC301174D109B00969368 /* NavbarSetup.m in Sources */,
+				FA5EC01E1ADD3DD700FE0B60 /* timer_api_init.cpp in Sources */,
 				FA4EC303174D109B00969368 /* NavbarSingleton.m in Sources */,
 				C50050C01898015C000C4A15 /* IntentSetup.m in Sources */,
 				C57BD8F8174FD25500494EA3 /* FileImpl.cpp in Sources */,
+				FA5EC01F1ADD3DD700FE0B60 /* timer_js_api.cpp in Sources */,
 				C57BD8FC175392E700494EA3 /* rhofile_api_init.cpp in Sources */,
 				C50050C21898015C000C4A15 /* IntentSingleton.m in Sources */,
 				C57BD8FD175392E700494EA3 /* rhofile_js_api.cpp in Sources */,
@@ -1555,6 +1640,8 @@
 				258D5F441899815C007A6F14 /* NewORMModelBase.cpp in Sources */,
 				C53D6BD81897FB99001E4FA2 /* intent_ruby_api.c in Sources */,
 				C57BD902175392F200494EA3 /* RhoFile_js_wrap.cpp in Sources */,
+				FA5EC0201ADD3DD700FE0B60 /* timer_ruby_api.c in Sources */,
+				FA5EC00F1ADD3DAC00FE0B60 /* ConfigImpl.cpp in Sources */,
 				258D5F4A1899815C007A6F14 /* NewORM_js_wrap.cpp in Sources */,
 				C57BD903175392F200494EA3 /* RhoFile_ruby_wrap.cpp in Sources */,
 				C57BD904175392F200494EA3 /* RhoFileBase.cpp in Sources */,
@@ -1563,6 +1650,7 @@
 				C00E098C1761429200ADA93E /* NativeMenubar_ruby_wrap.cpp in Sources */,
 				C00E098D1761429200ADA93E /* NativeMenubarBase.cpp in Sources */,
 				C00E0994176142C900ADA93E /* nativemenubar_api_init.cpp in Sources */,
+				FA5EC0081ADD3DAC00FE0B60 /* config_ruby_api.c in Sources */,
 				C00E0995176142C900ADA93E /* nativemenubar_js_api.cpp in Sources */,
 				258D5F451899815C007A6F14 /* NewORMModel_ruby_wrap.cpp in Sources */,
 				258D5F2D189980FD007A6F14 /* NewORMModelImpl.cpp in Sources */,
@@ -1661,6 +1749,20 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = CoreAPI_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes/**",
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+					/Users/MOHUS/rhodes/platform/iphone/Classes,
+				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
@@ -1677,6 +1779,20 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = CoreAPI_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes/**",
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+					/Users/MOHUS/rhodes/platform/iphone/Classes,
+				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
