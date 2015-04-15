@@ -30,7 +30,7 @@ namespace rho
 			++createdTimers;
 
 			char buf[10];
-			itoa(createdTimers, buf, 10);
+			_itoa(createdTimers, buf, 10);
 			oResult.set(buf);
         } 
         // enumerate This is documentation 

@@ -75,8 +75,11 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Intent();
 #endif
 
+#if defined(OS_ANDROID) || defined(OS_WINCE) || defined(OS_MACOSX) || defined(OS_WP8)
+	Init_Timer_extension();
+#endif
+
 #if defined(OS_WP8)
 	Init_Config_extension();
-	Init_Timer_extension();
 #endif
 }
