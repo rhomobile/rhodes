@@ -1653,9 +1653,9 @@ module RhogenCore
       module_item.methods << module_method
     end
 
-    if module_item.has_instance_methods && (!module_item.has_factory_methods && !module_item.is_template_default_instance)
-      raise "If module has instance methods, then module should have factory methods for produce instances ! Module[#{module_item.name}]"
-    end
+#    if module_item.has_instance_methods && (!module_item.has_factory_methods && !module_item.is_template_default_instance)
+#      raise "If module has instance methods, then module should have factory methods for produce instances ! Module[#{module_item.name}]"
+#    end
   end
 
   def process_properties(module_item, unsupported_names, xml_module_item)
