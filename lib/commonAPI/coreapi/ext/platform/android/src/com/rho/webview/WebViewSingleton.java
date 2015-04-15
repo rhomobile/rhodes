@@ -421,8 +421,15 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         }
         
         if (config.isExist("cache")) {
-            int cache = config.getInt("cache");
-            mConfig.set(WebViewConfig.ENABLE_CACHE, cache != 0);
+            String cache = config.getString("cache");
+            cache=cache.toLowerCase();
+            int cacheTemp=0;
+            int endString=cache.indexOf("mb");
+            if(endString==-1)
+            	endString=cache.indexOf("kb");
+            int cacheInt =Integer.parseInt(cache.substring(0,endString ).toString());
+         
+            mConfig.set(WebViewConfig.ENABLE_CACHE, cacheInt!=0);
         }
     }
     
