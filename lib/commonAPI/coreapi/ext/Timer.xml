@@ -24,13 +24,8 @@
                     timer.stop();
                 },3000);
         </MORE_HELP>
-        
-        <TEMPLATES>
-            <SINGLETON_INSTANCES/>
-        </TEMPLATES>
-
-        <PROPERTIES access="STATIC" generateAccessors="true">                           
-        </PROPERTIES>
+        <PLATFORM>Android, WP8</PLATFORM>
+        <PLATFORM_EB>Android</PLATFORM_EB>
         
         <METHODS>
             <METHOD name="create" access="STATIC">
@@ -65,7 +60,7 @@
         <USER_OVERVIEW>
         </USER_OVERVIEW>
 
-        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <VER_INTRODUCED>5.1.0</VER_INTRODUCED>
         <PLATFORM>
          </PLATFORM>
     </MODULE>
