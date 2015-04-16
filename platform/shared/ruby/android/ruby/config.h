@@ -305,7 +305,7 @@
 #define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
 
 #  include <sys/select.h>
-#  include <asm/page.h>
+//#  include <asm/page.h>
 
 typedef long int fd_mask;
 #ifndef HAVE_RLIM_T

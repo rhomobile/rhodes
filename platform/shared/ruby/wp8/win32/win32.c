@@ -429,7 +429,7 @@ translate_char(char *p, int from, int to)
     while (*p) {
 	if ((unsigned char)*p == from)
 	    *p = to;
-	p = CharNext(p);
+	p = CharNextA(p);
     }
     return p;
 }
@@ -953,7 +953,7 @@ join_argv(char *cmd, char *const *argv, BOOL escape)
 		}
 	      default:
 		bs = 0;
-		p = CharNext(p) - 1;
+		p = CharNextA(p) - 1;
 		break;
 	    }
 	}
@@ -1153,7 +1153,7 @@ rb_w32_spawn(int mode, const char *cmd, const char *prog)
 	}
 	else {
 	    int len = 0, quote = (*cmd == '"') ? '"' : (*cmd == '\'') ? '\'' : 0;
-	    for (prog = cmd + !!quote;; prog = CharNext(prog)) {
+	    for (prog = cmd + !!quote;; prog = CharNextA(prog)) {
 		if (!*prog) {
 		    len = prog - cmd;
 		    shell = cmd;
@@ -1308,7 +1308,7 @@ cmdglob(NtCmdLineElement *patt, NtCmdLineElement **tail)
 
     strlcpy(buf, patt->str, patt->len + 1);
     buf[patt->len] = '\0';
-    for (p = buf; *p; p = CharNext(p))
+    for (p = buf; *p; p = CharNextA(p))
 	if (*p == '\\')
 	    *p = '/';
     status = ruby_brace_glob(buf, 0, insert, (VALUE)&tail);
@@ -1367,7 +1367,7 @@ has_redirection(const char *cmd)
 	  case '\\':
 	    ptr++;
 	  default:
-	    ptr = CharNext(ptr);
+	    ptr = CharNextA(ptr);
 	    break;
 	}
     }
@@ -1482,7 +1482,7 @@ rb_w32_cmdvector(const char *cmd, char ***vec)
 		break;
 
 	      default:
-		ptr = CharNext(ptr);
+		ptr = CharNextA(ptr);
 		slashes = 0;
 		continue;
 	    }
@@ -1539,7 +1539,7 @@ rb_w32_cmdvector(const char *cmd, char ***vec)
 		    break;
 
 		  default:
-		    p = CharNext(p);
+		    p = CharNextA(p);
 		    slashes = 0;
 		    break;
 		}

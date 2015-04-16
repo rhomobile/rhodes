@@ -773,9 +773,8 @@ class Jake
       currentdir = Dir.pwd()
       Dir.chdir folder_path
 
-      if RUBY_PLATFORM =~ /(win|w)32$/
-        begin
-
+      #if RUBY_PLATFORM =~ /(win|w)32$/
+      #  begin
           require 'rubygems'
           require 'zip'
           require 'find'
@@ -791,34 +790,34 @@ class Jake
               zipfile.add(path, path)
             end
           end
-        rescue Exception => e
-          puts "ERROR : #{e}"
-          puts 'Require "rubyzip" gem for make zip file !'
-          puts 'Install gem by "gem install rubyzip"'
-        end
-      else
-        require 'fileutils'
+       # rescue Exception => e
+       #   puts "ERROR : #{e}"
+       #   puts 'Require "rubyzip" gem for make zip file !'
+       #   puts 'Install gem by "gem install rubyzip"'
+       # end
+      #else
+      #  require 'fileutils'
 
-        #chdir folder_path
-        temp_dir = folder_path + '_tmp'
-        FileUtils.mkdir_p temp_dir
-        FileUtils.cp_r 'RhoBundle', temp_dir
-        Dir.chdir temp_dir
-        FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/lib')
-        FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/db')
-        FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/hash')
-        FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/name')
-        #sh %{zip -r temporary_archive.zip .}
-        #cmd "zip -r temporary_archive.zip ."
-        args = []
-        args << "-r"
-        args << "temporary_archive.zip"
-        args << "."
-        run("zip", args, temp_dir)
-        FileUtils.cp_r 'temporary_archive.zip', zip_file_path
-        FileUtils.rm_rf 'temporary_archive.zip'
-        FileUtils.rm_rf temp_dir
-      end
+      #  #chdir folder_path
+      #  temp_dir = folder_path + '_tmp'
+      #  FileUtils.mkdir_p temp_dir
+      #  FileUtils.cp_r 'RhoBundle', temp_dir
+      #  Dir.chdir temp_dir
+      #  FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/lib')
+      #  FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/db')
+      #  FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/hash')
+      #  FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/name')
+      #  #sh %{zip -r temporary_archive.zip .}
+      #  #cmd "zip -r temporary_archive.zip ."
+      #  args = []
+      #  args << "-r"
+      #  args << "temporary_archive.zip"
+      #  args << "."
+      #  run("zip", args, temp_dir)
+      #  FileUtils.cp_r 'temporary_archive.zip', zip_file_path
+      #  FileUtils.rm_rf 'temporary_archive.zip'
+      #  FileUtils.rm_rf temp_dir
+      #end
 
       Dir.chdir currentdir
 

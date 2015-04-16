@@ -62,7 +62,6 @@ extern "C" void Init_CoreAPI_Extension()
     Init_NativeMenuBar();
 #endif
 
-
 #if defined(OS_WINCE) || defined(OS_ANDROID)
     //Init_Led();
 #endif
@@ -75,8 +74,11 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Intent();
 #endif
 
-#if defined(OS_WP8)
-	Init_Config_extension();
-	Init_Timer_extension();
+#if defined(OS_ANDROID) || defined(OS_WINCE) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR)) || defined(OS_WP8)
+    Init_Timer_extension();
+#endif
+
+#if defined(OS_WP8) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
+    Init_Config_extension();
 #endif
 }
