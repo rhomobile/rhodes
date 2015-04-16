@@ -76,7 +76,6 @@ public:
         {
             strRes = "\"error\": ";
             strRes += convertor.getError();
-            return strRes;
         } else
         {
             strRes = "\"result\":";
@@ -104,9 +103,7 @@ public:
             } else  if (convertor.isDouble())
             {
                 strRes += convertor.getDouble();
-            } else  if (convertor.isError())
-            {
-            }else
+            } else
             {
                strRes += "null";
             }

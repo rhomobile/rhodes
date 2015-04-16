@@ -27,25 +27,30 @@ rho::String CMethodResult::toJSON()
 
 rho::String CMethodResult::toString()
 {
-    if ( m_ResType == eString)
+    switch(m_ResType) {
+    case eString:
         return m_strRes;
-    if ( m_ResType == eStringW)
+    case eStringW:
         return convertToStringA(m_strResW);
-    else if ( m_ResType == eJSON)
+    case eJSON:
         return m_strJSONRes;
-    else if ( m_ResType == eBool)
+    case eBool:
         return convertToStringA(m_bRes);
-    else if ( m_ResType == eInt)
+    case eInt:
         return convertToStringA(m_nRes);
-    else if ( m_ResType == eDouble)
+    case eDouble:
         return convertToStringA(m_dRes);
+    case eArgError:
+    case eError:
+        return "error: " + getErrorString();
+    }
 
     return rho::String();
 }
 
 void CMethodResult::convertToType(const ETypes& eType)
 {
-    if ( eType == m_ResType || eType == eNone || eError == m_ResType )
+    if ( eType == m_ResType || eType == eNone || eError == m_ResType || eArgError == m_ResType )
         return;
 
     switch(eType)
