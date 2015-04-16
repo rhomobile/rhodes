@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Coreapi"
 	ProjectGUID="{E0343F80-50EA-0130-78EC-3CAEC51BD50E}"
 	RootNamespace="Coreapi"
@@ -2709,6 +2709,58 @@
 						RelativePath="..\..\shared\generated\cpp\NewORMModelBase.cpp"
 						>
 					</File>
+				</Filter>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Timer"
+			>
+			<Filter
+				Name="shared"
+				>
+				<File
+					RelativePath="..\..\shared\TimerImpl.cpp"
+					>
+				</File>
+				<Filter
+					Name="generator"
+					>
+					<File
+						RelativePath="..\..\shared\generated\timer_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\timer_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\timer_ruby_api.c"
+						>
+					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\ITimer.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Timer_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Timer_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\TimerBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\TimerBase.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 		</Filter>

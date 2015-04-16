@@ -213,9 +213,9 @@ VALUE rb_vm_cbase(void);
 int rb_vm_get_sourceline(const rb_control_frame_t *);
 void rb_trap_restore_mask(void);
 
-#ifndef CharNext		/* defined as CharNext[AW] on Windows. */
-#define CharNext(p) ((p) + mblen(p, RUBY_MBCHAR_MAXSIZE))
-#endif
+#ifndef CharNextA		/* defined as CharNext[AW] on Windows. */
+#define CharNextA(p) ((p) + mblen(p, RUBY_MBCHAR_MAXSIZE))
+#endif 
 
 #if defined __SYMBIAN32__ || defined DOSISH || defined __CYGWIN__
 static inline void
@@ -224,7 +224,7 @@ translit_char(char *p, int from, int to)
     while (*p) {
 	if ((unsigned char)*p == from)
 	    *p = to;
-	p = CharNext(p);
+	p = CharNextA(p);
     }
 }
 #endif
