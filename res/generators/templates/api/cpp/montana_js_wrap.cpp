@@ -27,7 +27,7 @@ using namespace rho::apiGenerator;
    if module_method.generateNativeAPI %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, module_method.native_name, module_method.access == ModuleMethod::ACCESS_STATIC)%>
 {
-    RAWTRACE3("<%=module_method.native_name%>(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+    RAWTRACE4("<%=module_method.native_name%>(strObjID = %s, argc = %d, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), argv.getSize(), strCallbackID.c_str(), strJsVmID.c_str());
 
 #ifdef OS_ANDROID
     if ( jnienv() == 0 )
@@ -69,19 +69,17 @@ end %>
     int argc = argv.getSize();
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
     <%= moduleNamespace%>I<%= $cur_module.name %>* pObj = <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strObjID);
-<%end%>
-
-<% functor_params = ""; first_arg = 0;
-   module_method.params.each do |param| %>
-    <% if !param.can_be_nil %>
+<%end
+functor_params = ""; first_arg = 0;
+module_method.params.each do |param| 
+  if !param.can_be_nil %>
     if ( argc == <%= first_arg %> )
     {
         oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(<%= module_method.params.size() %>) );
         return oRes.toJSON();
     }
-    <% end %>
-
-<% if param.type == RhogenCore::TYPE_STRING %>
+    <% end 
+     if param.type == RhogenCore::TYPE_STRING %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %> = "<%= param.default_value ? param.default_value : "" %>";
     if ( argc > <%= first_arg %> )
     {
@@ -95,9 +93,9 @@ end %>
             return oRes.toJSON();
         }
     }
-<% end %>
-
-<% if param.type == RhogenCore::TYPE_INT %>
+<%
+  end 
+  if param.type == RhogenCore::TYPE_INT %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
@@ -109,9 +107,10 @@ end %>
             return oRes.toJSON();
         }
     }
-<% end %>
-
-<% if param.type == RhogenCore::TYPE_BOOL %>
+<%
+  end 
+  
+  if param.type == RhogenCore::TYPE_BOOL %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : false %>;
     if ( argc > <%= first_arg %> )
     {
@@ -123,9 +122,10 @@ end %>
             return oRes.toJSON();
         }
     }
-<% end %>
+<%
+  end
 
-<% if param.type == RhogenCore::TYPE_DOUBLE %>
+  if param.type == RhogenCore::TYPE_DOUBLE %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
@@ -139,11 +139,12 @@ end %>
             return oRes.toJSON();
         }
     }
-<% end %>
+<% 
+  end 
 
-<% convert_args = ["argv[#{first_arg}]","arg#{first_arg}"].join(', ')
+  convert_args = ["argv[#{first_arg}]","arg#{first_arg}"].join(', ')
 
-if param.type == RhogenCore::TYPE_ARRAY %>
+  if param.type == RhogenCore::TYPE_ARRAY %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
@@ -168,9 +169,10 @@ if param.type == RhogenCore::TYPE_ARRAY %>
             return oRes.toJSON();
         }
     }
-<% end %>
+<% 
+  end 
 
-<% if param.type == RhogenCore::TYPE_HASH %>
+  if param.type == RhogenCore::TYPE_HASH %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
@@ -195,23 +197,36 @@ if param.type == RhogenCore::TYPE_ARRAY %>
             return oRes.toJSON();
         }
     }
-<% end %>
+<% 
+  end 
 
-<% if !RhogenCore::BASE_TYPES.include?(param.type) %>
+  if !RhogenCore::BASE_TYPES.include?(param.type) %>
     <%= CppGen::native_type(param) %> arg<%= first_arg %>;
-<% end %>
+<%
+  end 
 
-<% functor_params += "arg#{first_arg}, " %>
-<% first_arg = first_arg+1 %>
-<% end %>
+  functor_params += "arg#{first_arg}, " 
+  first_arg = first_arg+1 
+end 
 
-<% if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>
+if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>
     oRes.setCallInUIThread(<%= (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) ? "true" : "false" %>);
     oRes.setJSCallback( strCallbackID );
     oRes.setCallbackParam( strCallbackParam );
-<% end %>
+<% 
+end 
 
-<% numParams = module_method.params.size()+1
+if module_method.has_callback  == ModuleMethod::CALLBACK_MANDATORY %>
+    if ( !oRes.hasCallback() )
+    {
+        oRes.setArgError("Callback argument is missed");
+        return oRes.toJSON();
+    }
+<%
+end
+
+numParams = module_method.params.size()+1
+
 if module_method.access != ModuleMethod::ACCESS_STATIC
     nativeInterfaceFunc = "#{moduleNamespace}I#{$cur_module.name}::#{module_method.native_name}"
     functorWar = "pFunctor = rho_makeInstanceClassFunctor#{numParams}( pObj, &#{nativeInterfaceFunc}, #{functor_params} oRes );"
