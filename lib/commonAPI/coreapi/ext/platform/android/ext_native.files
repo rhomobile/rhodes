@@ -109,3 +109,10 @@ ext/platform/android/jni/Intent_impl.cpp
 ext/shared/generated/intent_api_init.cpp
 ext/shared/generated/intent_js_api.cpp
 ext/shared/generated/intent_ruby_api.c
+ext/shared/generated/timer_api_init.cpp
+ext/shared/generated/timer_js_api.cpp
+ext/shared/generated/timer_ruby_api.c
+ext/shared/generated/cpp/Timer_js_wrap.cpp
+ext/shared/generated/cpp/Timer_ruby_wrap.cpp
+ext/shared/generated/cpp/TimerBase.cpp
+ext/shared/TimerImpl.cpp
