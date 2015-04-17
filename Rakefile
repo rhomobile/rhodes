@@ -4597,275 +4597,276 @@ namespace "run" do
     MSpec.exit_code
   end
 
-  task :set_rhosimulator_flag do
-    $is_rho_simulator = true
-  end
+  namespace :rhosimulator do
 
-  task :rhosimulator_base => [:set_rhosimulator_flag, "config:common"] do
+    task :build => ["config:common"] do
 
-    RhoPackages.request 'rhosimulator'
+      RhoPackages.request 'rhosimulator'
 
-    puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
-    $path = ""
-    if $js_application
-      $args = ["-jsapproot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
-    else
-      $args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
-    end
+      puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
 
-    $args << "-security_token=#{ENV['security_token']}" if !ENV['security_token'].nil?
-    cmd = nil
+      $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
 
-    if RUBY_PLATFORM =~ /(win|w)32$/
-      if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
-        $path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
+      sim_conf = "rhodes_path='#{$startdir}'\r\n"
+      sim_conf += "app_version='#{$app_config["version"]}'\r\n"
+      sim_conf += "app_name='#{$appname}'\r\n"
+      if ( ENV['rho_reload_app_changes'] )
+        sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"
       else
-        $path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
+        sim_conf += "reload_app_changes=1\r\n"
       end
-    elsif RUBY_PLATFORM =~ /darwin/
-      if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
-        $path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )
+
+      if $config['debug']
+        sim_conf += "debug_port=#{$config['debug']['port']}\r\n"
       else
-        $path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app" )
-      end
-      cmd = 'open'
-      $args.unshift($path, '--args')
-    else
-      $args << ">/dev/null"
-      $args << "2>/dev/null"
-    end
-
-    $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
-    if !File.exists?($path)
-      puts "Cannot find RhoSimulator: '#{$path}' does not exists"
-      puts "Check sdk path in build.yml - it should point to latest rhodes (run 'set-rhodes-sdk' in application folder) OR"
-
-      if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
-        puts "Check 'env:paths:rhosimulator' path in '<rhodes>/rhobuild.yml' OR"
+        sim_conf += "debug_port=\r\n"
       end
 
-      puts "Install Rhodes gem OR"
-      puts "Install RhoSimulator and modify 'env:paths:rhosimulator' section in '<rhodes>/rhobuild.yml'"
-      exit 1
-    end
-
-    sim_conf = "rhodes_path='#{$startdir}'\r\n"
-    sim_conf += "app_version='#{$app_config["version"]}'\r\n"
-    sim_conf += "app_name='#{$appname}'\r\n"
-    if ( ENV['rho_reload_app_changes'] )
-      sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"
-    else
-      sim_conf += "reload_app_changes=1\r\n"
-    end
-
-    if $config['debug']
-      sim_conf += "debug_port=#{$config['debug']['port']}\r\n"
-    else
-      sim_conf += "debug_port=\r\n"
-    end
-
-    if $config['debug'] && $config['debug']['host'] && $config['debug']['host'].length() > 0
-      sim_conf += "debug_host='#{$config['debug']['host']}'\r\n"
-    else
-      sim_conf += "debug_host='127.0.0.1'\r\n"
-    end
-
-    sim_conf += $rhosim_config if $rhosim_config
-
-    #check gem extensions
-    config_ext_paths = ""
-    extpaths = $app_config["extpaths"]
-    extjsmodulefiles = []
-    extjsmodulefiles_opt = []
-    startJSModules = []
-    startJSModules_opt = []
-    endJSModules = []
-
-    rhoapi_js_folder = File.join( $app_path, "public/api" )
-    puts "rhoapi_js_folder: #{rhoapi_js_folder}"
-
-    do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
-
-    # TODO: checker init
-    gen_checker = GeneratorTimeChecker.new
-    gen_checker.init($startdir, $app_path)
-
-    $app_config["extensions"].each do |extname|
-
-      extpath = nil
-      extpaths.each do |p|
-        ep = File.join(p, extname)
-        if File.exists? ep
-          extpath = ep
-          break
-        end
+      if $config['debug'] && $config['debug']['host'] && $config['debug']['host'].length() > 0
+        sim_conf += "debug_host='#{$config['debug']['host']}'\r\n"
+      else
+        sim_conf += "debug_host='127.0.0.1'\r\n"
       end
 
-      if extpath.nil?
-        begin
-          $rhodes_extensions = nil
-          $rhodes_join_ext_name = false
-          require extname
+      sim_conf += $rhosim_config if $rhosim_config
 
-          if $rhodes_extensions
-            extpath = $rhodes_extensions[0]
-            if $rhodes_join_ext_name
-              extpath = File.join(extpath,extname)
-            end
+      #check gem extensions
+      config_ext_paths = ""
+      extpaths = $app_config["extpaths"]
+      extjsmodulefiles = []
+      extjsmodulefiles_opt = []
+      startJSModules = []
+      startJSModules_opt = []
+      endJSModules = []
+
+      rhoapi_js_folder = File.join( $app_path, "public/api" )
+      puts "rhoapi_js_folder: #{rhoapi_js_folder}"
+
+      do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
+
+      # TODO: checker init
+      gen_checker = GeneratorTimeChecker.new
+      gen_checker.init($startdir, $app_path)
+
+      $app_config["extensions"].each do |extname|
+
+        extpath = nil
+        extpaths.each do |p|
+          ep = File.join(p, extname)
+          if File.exists? ep
+            extpath = ep
+            break
           end
+        end
+
+        if extpath.nil?
+          begin
+            $rhodes_extensions = nil
+            $rhodes_join_ext_name = false
+            require extname
+
+            if $rhodes_extensions
+              extpath = $rhodes_extensions[0]
+              if $rhodes_join_ext_name
+                extpath = File.join(extpath,extname)
+              end
+            end
+
+            config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0
+          rescue Exception => e
+          end
+        else
+
+          # if $config["platform"] != "bb"
+          #     extyml = File.join(extpath, "ext.yml")
+          #     next if File.file? extyml
+          # end
 
           config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0
-        rescue Exception => e
         end
-      else
 
-        # if $config["platform"] != "bb"
-        #     extyml = File.join(extpath, "ext.yml")
-        #     next if File.file? extyml
-        # end
+        if extpath && extpath.length() > 0
+          extyml = File.join(extpath, "ext.yml")
+          puts "extyml " + extyml
 
-        config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0
-      end
+          if File.file? extyml
+            extconf = Jake.config(File.open(extyml))
+            type = Jake.getBuildProp( "exttype", extconf )
+            xml_api_paths  = extconf["xml_api_paths"]
+            templates_path = File.join($startdir, "res", "generators", "templates")
 
-      if extpath && extpath.length() > 0
-        extyml = File.join(extpath, "ext.yml")
-        puts "extyml " + extyml
+            if xml_api_paths && type != "prebuilt"
+              xml_api_paths = xml_api_paths.split(',')
 
-        if File.file? extyml
-          extconf = Jake.config(File.open(extyml))
-          type = Jake.getBuildProp( "exttype", extconf )
-          xml_api_paths  = extconf["xml_api_paths"]
-          templates_path = File.join($startdir, "res", "generators", "templates")
+              xml_api_paths.each do |xml_api|
+                xml_path = File.join(extpath, xml_api.strip())
 
-          if xml_api_paths && type != "prebuilt"
-            xml_api_paths = xml_api_paths.split(',')
-
-            xml_api_paths.each do |xml_api|
-              xml_path = File.join(extpath, xml_api.strip())
-
-              #TODO checker check
-              if gen_checker.check(xml_path)
-                #                      puts 'ruuuuuuuun generatooooooooooooor'
-                cmd_line = "#{$startdir}/bin/rhogen api #{xml_path}"
-                puts "cmd_line: #{cmd_line}"
-                system "#{cmd_line}"
+                #TODO checker check
+                if gen_checker.check(xml_path)
+                  #                      puts 'ruuuuuuuun generatooooooooooooor'
+                  cmd_line = "#{$startdir}/bin/rhogen api #{xml_path}"
+                  puts "cmd_line: #{cmd_line}"
+                  system "#{cmd_line}"
+                end
               end
             end
           end
-        end
 
-        # TODO: RhoSimulator should look for 'public' at all extension folders!
-        unless rhoapi_js_folder.nil?
-          Dir.glob(extpath + "/public/api/*.js").each do |f|
-            fBaseName = File.basename(f)
-            if (fBaseName.start_with?("rhoapi-native") )
-              endJSModules << f if fBaseName == "rhoapi-native.all.js"
-              next
+          # TODO: RhoSimulator should look for 'public' at all extension folders!
+          unless rhoapi_js_folder.nil?
+            Dir.glob(extpath + "/public/api/*.js").each do |f|
+              fBaseName = File.basename(f)
+              if (fBaseName.start_with?("rhoapi-native") )
+                endJSModules << f if fBaseName == "rhoapi-native.all.js"
+                next
+              end
+              if (fBaseName == "rhoapi-force.ajax.js")
+                add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
+                add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
+                endJSModules << f if add
+                next
+              end
+              if (fBaseName == "#{extname}-postDef.js")
+                puts "add post-def module: #{f}"
+                endJSModules << f
+              end
+
+              if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
+                startJSModules.unshift(f)
+              elsif f.downcase().end_with?("rhoapi.js")
+                startJSModules << f
+              elsif f.downcase().end_with?("rho.application.js")
+                endJSModules << f
+              elsif f.downcase().end_with?("rho.database.js")
+                endJSModules << f
+              elsif f.downcase().end_with?("rho.newormhelper.js")
+                endJSModules << f #if $current_platform == "android" || $current_platform == "iphone" || $current_platform == "wm"
+              elsif /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
+                puts "add #{f} to startJSModules_opt.."
+                startJSModules_opt << f
+              else
+                extjsmodulefiles << f
+              end
             end
-            if (fBaseName == "rhoapi-force.ajax.js")
-              add = Jake.getBuildBoolProp("ajax_api_bridge", $app_config, false)
-              add = Jake.getBuildBoolProp2($current_platform, "ajax_api_bridge", $app_config, add)
-              endJSModules << f if add
-              next
-            end
-            if (fBaseName == "#{extname}-postDef.js")
-              puts "add post-def module: #{f}"
-              endJSModules << f
+            Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
+              if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
+                puts "add #{f} to extjsmodulefiles_opt.."
+                extjsmodulefiles_opt << f
+              else
+                puts "add #{f} to extjsmodulefiles.."
+                extjsmodulefiles << f
+              end
             end
 
-            if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
-              startJSModules.unshift(f)
-            elsif f.downcase().end_with?("rhoapi.js")
-              startJSModules << f
-            elsif f.downcase().end_with?("rho.application.js")
-              endJSModules << f
-            elsif f.downcase().end_with?("rho.database.js")
-              endJSModules << f
-            elsif f.downcase().end_with?("rho.newormhelper.js")
-              endJSModules << f #if $current_platform == "android" || $current_platform == "iphone" || $current_platform == "wm"
-            elsif /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
-              puts "add #{f} to startJSModules_opt.."
-              startJSModules_opt << f
-            else
-              extjsmodulefiles << f
-            end
           end
-          Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-            if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
-              puts "add #{f} to extjsmodulefiles_opt.."
-              extjsmodulefiles_opt << f
-            else
-              puts "add #{f} to extjsmodulefiles.."
-              extjsmodulefiles << f
-            end
-          end
 
         end
+      end
 
+      #TODO: checker update
+      gen_checker.update
+
+      # deploy Common API JS implementation
+      extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
+      extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
+      extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
+      #
+      if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
+        rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
+        mkdir_p rhoapi_js_folder
+      end
+      #
+      if extjsmodulefiles.count > 0
+        puts "extjsmodulefiles: #{extjsmodulefiles}"
+        write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
+      end
+      #
+      if extjsmodulefiles_opt.count > 0
+        puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
+        #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+        write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
+      end
+
+      sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0
+
+      security_token = $app_config["security_token"]
+      sim_conf += "security_token=#{security_token}\r\n" if !security_token.nil?
+
+      fdir = File.join($app_path, 'rhosimulator')
+      mkdir fdir unless File.exist?(fdir)
+
+      Jake.get_config_override_params.each do |key, value|
+        if key != 'start_path'
+          puts "Override '#{key}' is not supported."
+          next
+        end
+        sim_conf += "#{key}=#{value}\r\n"
+      end
+
+      fname = File.join(fdir, 'rhosimconfig.txt')
+      File.open(fname, "wb") do |fconf|
+        fconf.write( sim_conf )
       end
     end
 
-    #TODO: checker update
-    gen_checker.update
+    task :run, [:wait] => ["config:common"] do |t, args|
+      wait = args[:wait] == 'wait'
 
-    # deploy Common API JS implementation
-    extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
-    extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
-    extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
-    #
-    if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
-      rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
-      mkdir_p rhoapi_js_folder
-    end
-    #
-    if extjsmodulefiles.count > 0
-      puts "extjsmodulefiles: #{extjsmodulefiles}"
-      write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
-    end
-    #
-    if extjsmodulefiles_opt.count > 0
-      puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
-      #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
-      write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
-    end
+      RhoPackages.request 'rhosimulator'
 
-    sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0
-
-    security_token = $app_config["security_token"]
-    sim_conf += "security_token=#{security_token}\r\n" if !security_token.nil?
-
-    fdir = File.join($app_path, 'rhosimulator')
-    mkdir fdir unless File.exist?(fdir)
-
-    Jake.get_config_override_params.each do |key, value|
-      if key != 'start_path'
-        puts "Override '#{key}' is not supported."
-        next
+      path = ""
+      if $js_application
+        args = ["-jsapproot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
+      else
+        args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
       end
-      sim_conf += "#{key}=#{value}\r\n"
+
+      args << "-security_token=#{ENV['security_token']}" if !ENV['security_token'].nil?
+
+      cmd = path
+
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
+          path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
+        else
+          path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
+        end
+      elsif RUBY_PLATFORM =~ /darwin/
+        if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
+          path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )
+        else
+          path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app" )
+        end
+        cmd = 'open'
+        args.unshift(path, '--args')
+        args.unshift('-W') if wait
+      else
+        args << ">/dev/null"
+        args << "2>/dev/null"
+      end
+
+      if !File.exists?(path)
+        puts "Cannot find RhoSimulator: '#{path}' does not exists"
+        puts "Check sdk path in build.yml - it should point to latest rhodes (run 'set-rhodes-sdk' in application folder) OR"
+
+        if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
+          puts "Check 'env:paths:rhosimulator' path in '<rhodes>/rhobuild.yml' OR"
+        end
+
+        puts "Install Rhodes gem OR"
+        puts "Install RhoSimulator and modify 'env:paths:rhosimulator' section in '<rhodes>/rhobuild.yml'"
+        exit 1
+      end
+
+      puts 'start rhosimulator'
+      Jake.run2 cmd, args
     end
 
-    fname = File.join(fdir, 'rhosimconfig.txt')
-    File.open(fname, "wb") do |fconf|
-      fconf.write( sim_conf )
-    end
-
-    if not cmd.nil?
-      $path = cmd
-    end
   end
+
 
   #desc "Run application on RhoSimulator"
-  task :rhosimulator => "run:rhosimulator_base" do
-    puts 'start rhosimulator'
-    Jake.run2 $path, $args, {:nowait => true}
-  end
-
-  task :rhosimulator_debug => "run:rhosimulator_base" do
-    puts 'start rhosimulator debug'
-    Jake.run2 $path, $args, {:nowait => true}
-  end
-
+  task :rhosimulator => ["run:rhosimulator:build", "run:rhosimulator:run"]
 end
 
 #------------------------------------------------------------------------
