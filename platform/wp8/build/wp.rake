@@ -500,15 +500,18 @@ namespace "run" do
       puts "log_file=" + getLogPath
     end
 
-    desc "Run application on RhoSimulator"
-    task :rhosimulator => ["config:set_wp8_platform", "config:common"] do
-      $rhosim_config = "platform='wp8'\r\n"
-      Rake::Task["run:rhosimulator"].invoke
+    rhosim_task = lambda do |name, &block|
+      task name => ["config:set_wp8_platform", "config:common"] do
+        $rhosim_config = "platform='wp8'\r\n"
+        block.()
+      end
     end
 
-    task :rhosimulator_debug => ["config:set_wp8_platform", "config:common"] do
-      $rhosim_config = "platform='wp8'\r\n"
-      Rake::Task["run:rhosimulator_debug"].invoke
+    desc "Run application on RhoSimulator"
+    rhosim_task.(:rhosimulator) { Rake::Task["run:rhosimulator"].invoke }
+    namespace :rhosimulator do
+      rhosim_task.(:build) { Rake::Task["run:rhosimulator:build"].invoke         }
+      rhosim_task.(:debug) { Rake::Task["run:rhosimulator:run"  ].invoke('wait') }
     end
 
     task :spec do

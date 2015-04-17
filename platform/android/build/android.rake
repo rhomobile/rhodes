@@ -2488,27 +2488,21 @@ namespace "run" do
       sleepRubyProcess
     end
 
-    desc "Run application on RhoSimulator"
-    task :rhosimulator => ["config:set_android_platform", "config:common"] do
-
-      $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
-      $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
-
-      $rhosim_config = "platform='android'\r\n"
-      $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
-
-      Rake::Task["run:rhosimulator"].invoke
+    rhosim_task = lambda do |name, &block|
+      task name => ["config:set_android_platform", "config:common"] do
+        $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
+        $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
+        $rhosim_config = "platform='android'\r\n"
+        $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
+        block.()
+      end
     end
 
-    task :rhosimulator_debug => ["config:set_android_platform", "config:common"] do
-
-      $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
-      $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
-
-      $rhosim_config = "platform='android'\r\n"
-      $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
-
-      Rake::Task["run:rhosimulator_debug"].invoke
+    desc "Run application on RhoSimulator"
+    rhosim_task.(:rhosimulator) { Rake::Task["run:rhosimulator"].invoke }
+    namespace :rhosimulator do
+      rhosim_task.(:build) { Rake::Task["run:rhosimulator:build"].invoke         }
+      rhosim_task.(:debug) { Rake::Task["run:rhosimulator:run"  ].invoke('wait') }
     end
   end
 
