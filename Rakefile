@@ -4814,7 +4814,6 @@ namespace "run" do
 
       RhoPackages.request 'rhosimulator'
 
-      path = ""
       if $js_application
         args = ["-jsapproot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
       else
@@ -4823,14 +4822,15 @@ namespace "run" do
 
       args << "-security_token=#{ENV['security_token']}" if !ENV['security_token'].nil?
 
-      cmd = path
-
+      path = ''
+      cmd = ''
       if RUBY_PLATFORM =~ /(win|w)32$/
         if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
           path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
         else
           path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
         end
+        cmd = path
       elsif RUBY_PLATFORM =~ /darwin/
         if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
           path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )
@@ -4859,7 +4859,9 @@ namespace "run" do
       end
 
       puts 'start rhosimulator'
-      Jake.run2 cmd, args
+      xwait = false # waiting on Mac OS X is controlled other way. Examine this task.
+      xwait = wait if RUBY_PLATFORM =~ /(win|w)32$/
+      Jake.run2 cmd, args, {:nowait => !xwait}
     end
 
   end
