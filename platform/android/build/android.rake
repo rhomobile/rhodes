@@ -2410,19 +2410,9 @@ end
 namespace "run" do
   namespace "android" do
 
-    def sleepRubyProcess
-      if $remote_debug == true
-        while 1
-          sleep 1
-        end
-      end
-    end
-
-    namespace "emulator" do
-      task :spec, :uninstall_app do |t, args|
-        Jake.decorate_spec { run_as_spec('-e', args.uninstall_app) }
-      end
-    end
+    task :build => ['run:android:emulator:build']
+    task :run   => ['run:android:emulator:run'  ]
+    task :debug => ['run:android:emulator:debug']
 
     namespace "device" do
       task :spec, :uninstall_app do |t, args|
@@ -2463,16 +2453,25 @@ namespace "run" do
       puts "log_file=" + $applog_path
     end
 
-    task :emulator => ['config:android:emulator', 'device:android:debug'] do
-      AndroidTools.kill_adb_logcat('-e')
-      AndroidTools.run_emulator
+    task :emulator => ['run:android:emulator:build', 'run:android:emulator:run']
 
-      apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
-      AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
+    namespace "emulator" do
 
-      AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),'-e')
+      task :build => ['config:android:emulator', 'device:android:debug']
+      task :debug => ['run:android:emulator:run']
+      task :run => ['config:android:emulator'] do
+        AndroidTools.kill_adb_logcat('-e')
+        AndroidTools.run_emulator
 
-      sleepRubyProcess
+        apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
+        AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
+
+        AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),'-e')
+      end
+
+      task :spec, :uninstall_app do |t, args|
+        Jake.decorate_spec { run_as_spec('-e', args.uninstall_app) }
+      end
     end
 
     desc "build, install and run on device"
@@ -2484,8 +2483,6 @@ namespace "run" do
       AndroidTools.load_app_and_run(args.device_id, apkfile, $app_package_name)
 
       AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),args.device_id)
-
-      sleepRubyProcess
     end
 
     rhosim_task = lambda do |name, &block|
@@ -2507,8 +2504,7 @@ namespace "run" do
   end
 
   desc "build and launch emulator"
-  task :android => "run:android:emulator" do
-  end
+  task :android => "run:android:emulator"
 end
 
 namespace "uninstall" do
