@@ -2451,7 +2451,7 @@ namespace "run" do
 
     namespace "emulator" do
 
-      task :build => ['config:android:emulator', 'device:android:debug']
+      task :build => ['device:android:debug']
       task :debug => ['run:android:emulator:run']
       task :run => ['config:android:emulator'] do
         AndroidTools.kill_adb_logcat('-e')
