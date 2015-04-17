@@ -2414,12 +2414,6 @@ namespace "run" do
     task :run   => ['run:android:emulator:run'  ]
     task :debug => ['run:android:emulator:debug']
 
-    namespace "device" do
-      task :spec, :uninstall_app do |t, args|
-        Jake.decorate_spec { run_as_spec('-d', args.uninstall_app) }
-      end
-    end
-
     desc "Run downloaded binary package on emulator"
     task "simulator:package", [:package_file, :package_name] => ['config:android:emulator'] do |t, args|
       package_file = args.package_file
@@ -2475,14 +2469,25 @@ namespace "run" do
     end
 
     desc "build, install and run on device"
-    task :device, [:device_id] => "device:android:debug" do |t, args|
-      args.with_defaults(:device_id => '-d')
-      AndroidTools.kill_adb_logcat(args.device_id)
+    task :device, [:device_id] => ['run:android:device:build', 'run:android:device:run']
 
-      apkfile = File.join $targetdir, $appname + "-debug.apk"
-      AndroidTools.load_app_and_run(args.device_id, apkfile, $app_package_name)
+    namespace "device" do
 
-      AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),args.device_id)
+      task :build => ['device:android:debug']
+      task :debug => ['run:android:device:run']
+      task :run, [:device_id] => ['config:android'] do |t, args|
+        args.with_defaults(:device_id => '-d')
+        AndroidTools.kill_adb_logcat(args.device_id)
+
+        apkfile = File.join $targetdir, $appname + "-debug.apk"
+        AndroidTools.load_app_and_run(args.device_id, apkfile, $app_package_name)
+
+        AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),args.device_id)
+      end
+
+      task :spec, :uninstall_app do |t, args|
+        Jake.decorate_spec { run_as_spec('-d', args.uninstall_app) }
+      end
     end
 
     rhosim_task = lambda do |name, &block|
