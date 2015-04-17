@@ -116,3 +116,10 @@ ext/shared/generated/cpp/Timer_js_wrap.cpp
 ext/shared/generated/cpp/Timer_ruby_wrap.cpp
 ext/shared/generated/cpp/TimerBase.cpp
 ext/shared/TimerImpl.cpp
+ext/shared/generated/config_api_init.cpp
+ext/shared/generated/config_js_api.cpp
+ext/shared/generated/config_ruby_api.c
+ext/shared/generated/cpp/Config_js_wrap.cpp
+ext/shared/generated/cpp/Config_ruby_wrap.cpp
+ext/shared/generated/cpp/ConfigBase.cpp
+ext/shared/ConfigImpl.cpp
