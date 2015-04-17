@@ -76,6 +76,7 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKillMs)
     stopWait();
     if ( m_hThread )
     {
+    	LOG(INFO) + "Stopping thread";
         DWORD dwRes = ::WaitForSingleObject( m_hThread, nTimeoutToKillMs );
         if ( dwRes != WAIT_OBJECT_0 )
         {
