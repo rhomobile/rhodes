@@ -153,7 +153,7 @@ LRESULT CIEBrowserEngine::CreateEngine()
 
     if (!m_hwndTabHTML)
         return S_FALSE;
-runme
+
     CloseHandle (CreateThread(NULL, 0, 
         &CIEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
 
