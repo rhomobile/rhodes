@@ -153,7 +153,7 @@ LRESULT CIEBrowserEngine::CreateEngine()
 
     if (!m_hwndTabHTML)
         return S_FALSE;
-
+runme
     CloseHandle (CreateThread(NULL, 0, 
         &CIEBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
 
@@ -280,6 +280,19 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
+    	// If function key capturable is disabled & if VK_F5 key is enabled then we should refresh the page. 
+		// In all other cases, KeyCapture module will take care.
+		if( WM_KEYDOWN == msg.message )
+		{
+			if( msg.wParam == VK_F5 )
+			{
+				if(!rho_wmimpl_get_function_keys_capturable() && rho_wmimpl_get_function_key_enabled(VK_F5-VK_F1))
+				{
+					RHODESAPP().getExtManager().refreshPage(false);
+				}
+			}
+		}	
+		
 		if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 
