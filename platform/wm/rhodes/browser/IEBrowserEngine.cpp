@@ -252,11 +252,35 @@ BOOL CIEBrowserEngine::BackOnTab(int iInstID,int iPagesBack /*= 1*/)
 
 BOOL CIEBrowserEngine::ForwardOnTab(int iInstID)
 {
+    int iPagesForward = 1;
+    //  iPreviousPages must be greater than 0, otherwise we're not doing anything
+    if (iPagesForward == 0)
+	return TRUE;
+
+    //  Check to see we can go forward this many pages
+    int iHistoryCounter = 0;
+    CHistoryElement* tempHistoryElement = m_currentPage;
+    while(tempHistoryElement != NULL && tempHistoryElement->pNext != NULL)
+    {
+    	//  We can go to the previous page
+	iHistoryCounter++;
+	//  Go forward another item in the history
+	tempHistoryElement = tempHistoryElement->pNext;
+	//  If we have gone forward the specified number of times navigate to the 
+	//  page
+	if (iPagesForward == iHistoryCounter)
+	{			
+		m_currentPage = tempHistoryElement;
+		Navigate(m_currentPage->tcURL, iInstID);			
+	}
+    }
     return TRUE;
 }
 
 BOOL CIEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 {
+    if(m_currentPage!=NULL)
+	Navigate(m_currentPage->tcURL,iTab);
     return TRUE; 
 }
 
@@ -280,6 +304,19 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
+    	// If function key capturable is disabled & if VK_F5 key is enabled then we should refresh the page. 
+	// In all other cases, KeyCapture module will take care.
+	if( WM_KEYDOWN == msg.message )
+	{
+		if( msg.wParam == VK_F5 )
+		{
+			if(!rho_wmimpl_get_function_keys_capturable() && rho_wmimpl_get_function_key_enabled(VK_F5-VK_F1))
+			{
+				RHODESAPP().getExtManager().refreshPage(false);
+			}
+		}
+	}	
+		
 		if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 
