@@ -164,17 +164,9 @@ public:
 
 	bool addMillis(int nMs)
     {
-        unsigned long temp=m_nativeTime;
-		m_nativeTime=m_nativeTime+nMs;
-		if((m_nativeTime<temp)||(m_nativeTime<nMs))
-		{
-		return true;
-		}
-		else
-		{
-		return false;
-		}
-
+        time_t prevTime = m_nativeTime;
+        m_nativeTime += nMs;
+        return (nMs < 0) || (m_nativeTime < prevTime) || (m_nativeTime < (time_t)nMs);
 	}
 
 
