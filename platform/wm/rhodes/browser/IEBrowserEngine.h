@@ -10,6 +10,10 @@
 #include <piedocvw.h>
 #endif
 #define MAX_HISTORY 30
+
+extern "C" bool rho_wmimpl_get_function_keys_capturable();
+extern "C" bool rho_wmimpl_get_function_key_enabled(int iFKey);
+
 class CHistoryElement
 {
 public:
