@@ -328,10 +328,13 @@ namespace :dev do
       mkdir_p RhoDevelopment::Configuration::development_directory
       updated_list_filename = File.join(RhoDevelopment::Configuration::application_root, 'upgrade_package_add_files.txt')
       removed_list_filename = File.join(RhoDevelopment::Configuration::application_root, 'upgrade_package_remove_files.txt')
+      #WindowsMobile
       RhoDevelopment.setup(RhoDevelopment::Configuration::development_directory, 'wm')
       RhoDevelopment::check_changes_from_last_build(updated_list_filename, removed_list_filename)
+      #iPhone
       RhoDevelopment.setup(RhoDevelopment::Configuration::development_directory, 'iphone')
       RhoDevelopment::check_changes_from_last_build(updated_list_filename, removed_list_filename)
+      #Android
       RhoDevelopment.setup(RhoDevelopment::Configuration::development_directory, 'android')
       RhoDevelopment::check_changes_from_last_build(updated_list_filename, removed_list_filename)
     end

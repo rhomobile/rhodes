@@ -113,6 +113,7 @@ def setup(settings_folder_path, platform)
 
   #disable checking XCode in config:iphone - it required for working on Win platfrom or on MAc OS without XCode
   $skip_checking_XCode = true
+  $skip_checking_Android_SDK = true
 
   Rake::Task["config:#{$RhoDevelopmentPlatform}"].reenable
   Rake::Task["config:#{$RhoDevelopmentPlatform}"].invoke
@@ -142,27 +143,6 @@ module_function :make_full_bundle
 
 def make_partial_bundle
   system("rake build:#{$RhoDevelopmentPlatform}:upgrade_package_partial")
-=begin
-  s_skip_build_rhodes_main = $skip_build_rhodes_main
-  s_skip_build_extensions = $skip_build_extensions
-  s_skip_build_xmls = $skip_build_xmls
-  s_use_prebuild_data = $use_prebuild_data
-  $skip_build_rhodes_main = true
-  $skip_build_extensions = true
-  $skip_build_xmls = true
-  $use_prebuild_data = true
-
-  Rake::Task["build:#{$RhoDevelopmentPlatform}:rhobundle"].reenable
-  Rake::Task["build:bundle:noxruby"].reenable
-  Rake::Task["build:#{$RhoDevelopmentPlatform}:upgrade_package_partial"].reenable
-
-  Rake::Task["build:#{$RhoDevelopmentPlatform}:upgrade_package_partial"].invoke
-
-  $skip_build_rhodes_main = s_skip_build_rhodes_main
-  $skip_build_extensions = s_skip_build_extensions
-  $skip_build_xmls = s_skip_build_xmls
-  $use_prebuild_data = s_use_prebuild_data
-=end
 end
 module_function :make_partial_bundle
 
