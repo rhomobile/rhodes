@@ -263,16 +263,16 @@ BOOL CIEBrowserEngine::ForwardOnTab(int iInstID)
     while(tempHistoryElement != NULL && tempHistoryElement->pNext != NULL)
     {
     	//  We can go to the previous page
-	iHistoryCounter++;
-	//  Go forward another item in the history
-	tempHistoryElement = tempHistoryElement->pNext;
-	//  If we have gone forward the specified number of times navigate to the 
-	//  page
-	if (iPagesForward == iHistoryCounter)
-	{			
-		m_currentPage = tempHistoryElement;
-		Navigate(m_currentPage->tcURL, iInstID);			
-	}
+		iHistoryCounter++;
+		//  Go forward another item in the history
+		tempHistoryElement = tempHistoryElement->pNext;
+		//  If we have gone forward the specified number of times navigate to the 
+		//  page
+		if (iPagesForward == iHistoryCounter)
+		{			
+			m_currentPage = tempHistoryElement;
+			Navigate(m_currentPage->tcURL, iInstID);			
+		}
     }
     return TRUE;
 }
@@ -280,7 +280,7 @@ BOOL CIEBrowserEngine::ForwardOnTab(int iInstID)
 BOOL CIEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 {
     if(m_currentPage!=NULL)
-    		Navigate(m_currentPage->tcURL,iTab);
+    	Navigate(m_currentPage->tcURL,iTab);
     return TRUE; 
 }
 
@@ -305,9 +305,9 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
     while (GetMessage(&msg, NULL, 0, 0))
     {
 		if (RHODESAPP().getExtManager().onWndMsg(msg) )
-            		continue;
+            continue;
             	
-            	// If VK_F5 key is enabled in config.xml, then we should refresh the page. 
+        // If VK_F5 key is enabled in config.xml, then we should refresh the page. 
 		// In all other cases, KeyCapture module will take care from onWndMsg.
 		if( WM_KEYDOWN == msg.message )
 		{
