@@ -995,7 +995,10 @@ namespace rho
                     m_Take_Picture_Output["image_format"] = string.Empty;
                     m_Take_Picture_Output["imageFormat"] = string.Empty;
                 }
-                m_StoreTakePictureResult.set(m_Take_Picture_Output);
+                new Thread(() =>
+                {
+                    m_StoreTakePictureResult.set(m_Take_Picture_Output);
+                }).Start();
             }
 
             protected AudioVideoCaptureDevice Device { get; set; }
@@ -1040,7 +1043,10 @@ namespace rho
                     m_Take_Picture_Output["message"] = e.Exception.Message;
                     m_Take_Picture_Output["image_format"] = string.Empty;
                     m_Take_Picture_Output["imageFormat"] = string.Empty;
-                    m_StoreTakePictureResult.set(m_Take_Picture_Output);
+                    new Thread(() =>
+                    {
+                        m_StoreTakePictureResult.set(m_Take_Picture_Output);
+                    }).Start();
                 }
             }
 
@@ -1213,8 +1219,10 @@ namespace rho
                 TakePicture_output["imageUri"] = "\\" + storageFile.Name;
                 TakePicture_output["image_uri"] = "\\" + storageFile.Name;
 
-                StoreTakePictureResult.set(TakePicture_output);
-
+                new Thread(() =>
+                {
+                    StoreTakePictureResult.set(TakePicture_output);
+                }).Start();
 
             }
 
@@ -1293,7 +1301,10 @@ namespace rho
                                 m_Take_Picture_Output["image_uri"] = returnablevalue;
                                 m_Take_Picture_Output["imageUri"] = returnablevalue;
                                 e.ImageStream.Close();
-                                m_StoreTakePictureResult.set(m_Take_Picture_Output);
+                                new Thread(() =>
+                                {
+                                    m_StoreTakePictureResult.set(m_Take_Picture_Output);
+                                }).Start();
                             }
                         }
                         catch (Exception ex)
@@ -1314,7 +1325,10 @@ namespace rho
                         m_Take_Picture_Output["image_format"] = string.Empty;
                         m_Take_Picture_Output["imageFormat"] = string.Empty;
                         e.ImageStream.Close();
-                        m_StoreTakePictureResult.set(m_Take_Picture_Output);
+                        new Thread(() =>
+                        {
+                            m_StoreTakePictureResult.set(m_Take_Picture_Output);
+                        }).Start();
                     }
 
                 });
@@ -1707,8 +1721,10 @@ namespace rho
                         m_choosePicture_output["status"] = "cancel";
                         m_choosePicture_output["image_format"] = string.Empty;
                         m_choosePicture_output["imageFormat"] = string.Empty;
-                        m_StorechoosePictureResult.set(m_choosePicture_output);
-
+                        new Thread(() =>
+                        {
+                            m_StorechoosePictureResult.set(m_choosePicture_output);
+                        }).Start();
                     }
                 }
                 catch (Exception ex)
@@ -1717,7 +1733,10 @@ namespace rho
                     m_choosePicture_output["status"] = "error";
                     m_choosePicture_output["message"] = ex.Message;
                     m_choosePicture_output["image_format"] = string.Empty;
-                    m_StorechoosePictureResult.set(m_choosePicture_output);
+                    new Thread(() =>
+                    {
+                        m_StorechoosePictureResult.set(m_choosePicture_output);
+                    }).Start();
                 }
 
 
@@ -1810,8 +1829,10 @@ namespace rho
 
                 choosePicture_output["imageUri"] = "\\" + storageFile.Name;
                 choosePicture_output["image_uri"] = "\\" + storageFile.Name;
-                StorechoosePictureResult.set(choosePicture_output);
-
+                new Thread(() =>
+                {
+                    StorechoosePictureResult.set(choosePicture_output);
+                }).Start();
 
             }
 
