@@ -72,7 +72,9 @@ namespace 'device' do
     def self.generate_manifest(prebuilt_path,prebuilt_config,app_config)
       print_timestamp('AndroidPrebuild.generate_manifest START')
       version = {'major' => 0, 'minor' => 0, 'patch' => 0, "build" => 0}
+      versionName = '0.0'
       if $app_config["version"]
+        versionName = $app_config["version"]
         if $app_config["version"] =~ /^(\d+)$/
           version["major"] = $1.to_i
         elsif $app_config["version"] =~ /^(\d+)\.(\d+)$/
@@ -118,7 +120,7 @@ namespace 'device' do
 
       generator = ManifestGenerator.new JAVA_PACKAGE_NAME, $app_package_name, hidden, usesPermissions
 
-      generator.versionName = prebuilt_config["version"]
+      generator.versionName = versionName
       generator.versionCode = version
       generator.installLocation = 'auto'
       generator.minSdkVer = $min_sdk_level
