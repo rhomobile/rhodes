@@ -2028,7 +2028,13 @@ namespace 'cloud' do
       raise Exception.new('Empty project list')
     end
 
-    matching_extenral = $apps.select{|x| x['use_external_git_url'] == true && includes(x['external_url'], remote_origin_url) }
+    matching_extenral = $apps.select do |x|
+      # it is possible to have true for x['use_external_git_url'] and nil for x['external_url']
+      x['use_external_git_url'] &&
+      !x['external_url'].nil? &&
+      !x['external_url'].empty? &&
+      includes(x['external_url'], remote_origin_url)
+    end
     
     if (matching_extenral.empty?)
       user_proj = cloud_url_git_match(remote_origin_url)
