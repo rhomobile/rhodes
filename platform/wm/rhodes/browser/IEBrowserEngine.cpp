@@ -280,7 +280,7 @@ BOOL CIEBrowserEngine::ForwardOnTab(int iInstID)
 BOOL CIEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 {
     if(m_currentPage!=NULL)
-	Navigate(m_currentPage->tcURL,iTab);
+    		Navigate(m_currentPage->tcURL,iTab);
     return TRUE; 
 }
 
