@@ -632,10 +632,15 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
 	String h = RHOCONF().getString("clientSSLCertificatePassword");
 	if(RHOCONF().isExist("clientSSLCertificate") && RHOCONF().getString("clientSSLCertificate").length() > 0)
 	{
-		curl_easy_setopt(m_curl, CURLOPT_SSLCERT, RHOCONF().getString("clientSSLCertificate").c_str());
+		curl_easy_setopt(m_curl, CURLOPT_SSLCERTTYPE, "PEM");
+		curl_easy_setopt(m_curl, CURLOPT_SSLCERT, RHOCONF().getString("clientSSLCertificate").c_str());		
 		//curl_easy_setopt(m_curl, CURLOPT_SSLCERTTYPE, "P12");
 
 		//curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
+	}
+	if(RHOCONF().isExist("clientSSLCertificateKeyFile") && RHOCONF().getString("clientSSLCertificateKeyFile").length() > 0)
+	{
+		curl_easy_setopt(m_curl, CURLOPT_SSLKEY, RHOCONF().getString("clientSSLCertificateKeyFile").c_str());		
 	}
 
 	if(RHOCONF().isExist("clientSSLCertificatePassword") && RHOCONF().getString("clientSSLCertificatePassword").length() > 0)

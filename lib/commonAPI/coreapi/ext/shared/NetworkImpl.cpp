@@ -616,6 +616,7 @@ void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho:
     String clientCertificate = "";
     String clientCertificatePassword = "";
 	String serverCertificate = "";
+	String clientCertificateKeyFile = "";
 
     //will enable server SSL auth if true.
     if ( propertyMap.containsKey("verifyPeerCertificate") ) {
@@ -635,6 +636,9 @@ void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho:
 			if ( propertyMap.containsKey("serverSSLCertificate") ) {
                 serverCertificate = propertyMap.get("serverSSLCertificate");
             }
+			if ( propertyMap.containsKey("clientSSLCertificateKeyFile") ) {
+                clientCertificateKeyFile = propertyMap.get("clientSSLCertificateKeyFile");
+            }			
         }
         
     }
@@ -642,6 +646,7 @@ void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho:
     RHOCONF().setString("clientSSLCertificate",clientCertificate,false);
     RHOCONF().setString("clientSSLCertificatePassword",clientCertificatePassword,false);
 	RHOCONF().setString("serverSSLCertificate",serverCertificate,false);
+	RHOCONF().setString("clientSSLCertificateKeyFile",clientCertificateKeyFile,false);
 }
     
 
