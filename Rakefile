@@ -377,7 +377,7 @@ namespace :dev do
       RhoDevelopment::WebServer.ensure_running
       pid = RhoDevelopment::WebServer::get_auto_update_pid
       if pid
-        puts 'Another auto updating is already launched'.warning
+        puts 'Another auto updating process is already launched'.warning
         exit 1
       end
       updater = RhoDevelopment::AutoUpdater.new
@@ -387,7 +387,7 @@ namespace :dev do
     end
 
     namespace 'auto' do
-      desc 'It stop auto update process'
+      desc 'It stops auto update process'
       task :stop => ['config:common'] do
         RhoDevelopment::Configuration::application_root = $app_basedir
         pid = RhoDevelopment::WebServer::get_auto_update_pid
