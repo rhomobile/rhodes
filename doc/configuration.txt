@@ -140,6 +140,10 @@ Sync server url, typically this will look like 'http://<hostname>:<port>/applica
 Set this option to 1 in order to open Rhodes app in full screen mode. Default is 1 for Android up to Rhodes 2.2.5. On all other platforms and on Android from Rhodes > 2.2.5 default is 0
 
 	full_screen = 1
+	
+Set this option to 0 in order to hide title bar on Android.
+
+	android_title = 0
 
 Set this option to 1 in order to enable WebView zoom (Android only). Default is 0
 

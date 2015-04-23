@@ -420,10 +420,9 @@ You can adjust the settings of the Android emulator from your application's buil
 	  version: 2.1
 	  emulator: myDeviceEmulator20
 
-You can also disable the Android title in the application and set the orientation to portrait (or landscape):
+You can also set the orientation to portrait (or landscape):
 
 	android:
-	  android_title: 0
 	  orientation: portrait
 
 If the rake command gets stuck, you can kill the command window, open another window, and run:
