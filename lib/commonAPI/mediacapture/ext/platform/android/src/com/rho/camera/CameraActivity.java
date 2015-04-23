@@ -57,6 +57,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
     private Camera mCamera = null;
+    private ICameraObject camera = null;
     
     @Override
     protected void onCreate(Bundle extras) {
@@ -86,7 +87,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
             mOrientationListener.enable();
         }
         String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");        
-        ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
+        camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
         try{
           mPreview.startPreview(camera, this);
         }
@@ -111,6 +112,15 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     protected void onStop() {
 	// TODO Auto-generated method stub
 	super.onStop();    	
+    }
+    
+    @Override
+    protected void onDestroy() {
+    	super.onDestroy();
+    	if(camera !=null){
+    		camera.stopPreview();
+    		camera = null;
+    	}
     }
 	
     @Override
