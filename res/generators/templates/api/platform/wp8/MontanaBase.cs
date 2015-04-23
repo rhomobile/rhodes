@@ -148,10 +148,10 @@ if has_setProperties
 
     public class <%= $cur_module.name %>FactoryBase : I<%= $cur_module.name %>FactoryImpl
     {
-        public I<%= $cur_module.name %>Impl getImpl() {
+        public virtual I<%= $cur_module.name %>Impl getImpl() {
             return new <%= $cur_module.name %>();
         }
-        public I<%= $cur_module.name %>SingletonImpl getSingletonImpl() {
+        public virtual I<%= $cur_module.name %>SingletonImpl getSingletonImpl() {
             return new <%= $cur_module.name %>Singleton();
         }
     }
