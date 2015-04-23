@@ -31,6 +31,8 @@
 #include "common/RhoConf.h"
 #include "net/URI.h"
 
+#pragma comment(lib, "ws2.lib")
+
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 #include <connmgr.h>
 #endif
@@ -607,7 +609,50 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
 	else
         curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, method);
 
-    curl_easy_setopt(m_curl, CURLOPT_URL, strUrl.c_str());
+	//here we parse url domain name
+	String hostName = strUrl; //take a copy
+	int domainNameStartIndex =0;
+	if(hostName.find("https://") == 0)
+	{
+		hostName.replace(0,8,"");
+		domainNameStartIndex =8;
+	}
+	else
+	{
+		if(hostName.find("http://") == 0)
+		{
+			hostName.replace(0,7,"");
+			domainNameStartIndex = 7;
+		}
+	}
+
+	//get the domain name by ignoring all entries from port
+	int index = hostName.find(":");
+	hostName = hostName.substr(0,index);
+
+	struct hostent *remoteHost;   
+	struct in_addr addr;
+	char* hostIp = "";
+	remoteHost = gethostbyname(hostName.c_str());
+	if (remoteHost != NULL) 
+	{
+		if(remoteHost->h_addr_list[0] != 0)
+		{
+			addr.s_addr = *(u_long *) remoteHost->h_addr_list[0];
+			hostIp =  inet_ntoa(addr);	
+		}
+	}
+
+
+
+	int domainNameLength = hostName.length();	
+
+	//update memeber variable and use that variable
+	mStrUrl.replace(domainNameStartIndex, domainNameLength, hostIp);
+
+
+
+    curl_easy_setopt(m_curl, CURLOPT_URL, mStrUrl.c_str());
     
     // Just to enable cookie parser
     curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
@@ -662,7 +707,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     // Set very large timeout in case of local requests
     // It is required because otherwise requests (especially requests to writing!)
     // could repeated twice or more times
-    if (RHODESAPP().isBaseUrl(strUrl))
+    if (RHODESAPP().isBaseUrl(mStrUrl))
 	{
         curl_easy_setopt(m_curl, CURLOPT_CONNECTTIMEOUT, 10*24*60*60);
 		curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, 10*24*60*60);
@@ -755,12 +800,15 @@ CURLNetRequest::CURLHolder::CURLHolder()
     m_curl = curl_easy_init();
     m_curlm = curl_multi_init();
     curl_easy_setopt(m_curl, CURLOPT_ERRORBUFFER, &errbuf);
+	WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
 }
 
 CURLNetRequest::CURLHolder::~CURLHolder()
 {
     curl_easy_cleanup(m_curl);
     curl_multi_cleanup(m_curlm);
+	WSACleanup();
 }
     
 void CURLNetRequest::CURLHolder::activate()
