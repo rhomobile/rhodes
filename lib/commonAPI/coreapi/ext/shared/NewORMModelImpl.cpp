@@ -462,6 +462,9 @@ void rho::CNewORMModelImpl::initDbSchema(rho::apiGenerator::CMethodResult& oResu
     if (bTableExists && !bMigrateSchema)
         return;
 
+    // result MUST be set to nil in order to execute next operation (drop table)
+    res = NULL;
+
     rho::String strCreateSQL = _make_create_sql_script();
     db.startTransaction();
     setProperty("sql", strCreateSQL, oResult);
