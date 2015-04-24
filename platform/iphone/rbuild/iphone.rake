@@ -2560,10 +2560,13 @@ namespace "clean" do
         chdir iphone_project_folder
 
         args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project]
-        ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
-        unless ret == 0
-          puts "Error cleaning"
-          exit 1
+        if RUBY_PLATFORM =~ /(win|w)32$/
+        else
+          ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
+          unless ret == 0
+            puts "Error cleaning"
+            exit 1
+          end
         end
         chdir $startdir
 
@@ -2663,8 +2666,10 @@ namespace "clean" do
 
       require   rootdir + '/lib/build/jake.rb'
 
-      ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
-
+      if RUBY_PLATFORM =~ /(win|w)32$/
+      else
+        ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
+      end
       Dir.chdir currentdir
 
     end
