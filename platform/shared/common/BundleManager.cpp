@@ -136,32 +136,37 @@ private:
         int count = 0;
         CTokenizer oTokenizer( line, "|" );
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (path != NULL) {
-                *path = oTokenizer.nextToken();
+                *path = v;
             }
             count++;
         }
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (type != NULL) {
-                *type = oTokenizer.nextToken();
+                *type = v;
             }
             count++;
         }
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (size != NULL) {
-                *size = oTokenizer.nextToken();
+                *size = v;
             }
             count++;
         }
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (mtime != NULL) {
-                *mtime = oTokenizer.nextToken();
+                *mtime = v;
             }
             count++;
         }
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (crc != NULL) {
-                *crc = oTokenizer.nextToken();
+                *crc = v;
             }
             count++;
         }
@@ -268,7 +273,7 @@ private:
     
     
     
-    
+common::CMutex   m_mxBundleReplaceMutex;
     
 
 class CReplaceBundleThread : public rho::common::CRhoThread
@@ -751,31 +756,33 @@ void CReplaceBundleThread::showError(int nError, const String& strError )
 
 void CReplaceBundleThread::run()
 {
-    //Stop application
-    if (!mDoNotRestartApp) {
-        rho_rhodesapp_callAppActiveCallback(0);
-        rho_rhodesapp_callUiDestroyedCallback();
-        RHODESAPP().stopApp();
-    }
-    doReplaceBundle();
-
-    if (mDoNotRestartApp /*&& (m_finish_callback.size() > 0)*/) {
-        // call callback
-        if (m_finish_callback.size() > 0) {
-            char* norm_url = rho_http_normalizeurl(m_finish_callback.c_str());
-            rho_net_request_with_data(norm_url, "&rho_callback=1&status=ok");
-            rho_http_free(norm_url);
+    synchronized(m_mxBundleReplaceMutex)
+    {
+        //Stop application
+        if (!mDoNotRestartApp) {
+            rho_rhodesapp_callAppActiveCallback(0);
+            rho_rhodesapp_callUiDestroyedCallback();
+            RHODESAPP().stopApp();
+        }
+        doReplaceBundle();
+        
+        if (mDoNotRestartApp /*&& (m_finish_callback.size() > 0)*/) {
+            // call callback
+            if (m_finish_callback.size() > 0) {
+                char* norm_url = rho_http_normalizeurl(m_finish_callback.c_str());
+                rho_net_request_with_data(norm_url, "&rho_callback=1&status=ok");
+                rho_http_free(norm_url);
+            }
+        }
+        else {
+            rho_platform_restart_application();
+            rho_sys_app_exit();
+        }
+        
+        if (m_is_finished_flag != NULL) {
+            *m_is_finished_flag = true;
         }
     }
-    else {
-        rho_platform_restart_application();
-        rho_sys_app_exit();
-    }
-
-    if (m_is_finished_flag != NULL) {
-        *m_is_finished_flag = true;
-    }
-
 }
 
     
