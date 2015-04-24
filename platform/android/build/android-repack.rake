@@ -63,6 +63,7 @@ namespace 'device' do
       $skip_build_rhodes_main = true
       $skip_build_extensions = true
       $skip_build_xmls = true
+      $skip_build_js_api_files = true
 
       Rake::Task['build:android:rhobundle'].execute
       print_timestamp('AndroidPrebuild.make_app_bundle FINISH')

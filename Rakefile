@@ -2675,6 +2675,7 @@ namespace "config" do
     $skip_build_extensions = false
     $skip_build_xmls = false
     $skip_checking_Android_SDK = false
+    $skip_build_js_api_files = false
 
     extpaths = []
 
@@ -3495,29 +3496,31 @@ def init_extensions(dest, mode = "")
       mkdir_p rhoapi_js_folder
     end
     #
-    if extjsmodulefiles.count > 0
-      puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
-      write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
+    if !$skip_build_js_api_files
+      if extjsmodulefiles.count > 0
+        puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
+        write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
 
-      if $use_shared_runtime || $shared_rt_js_appliction
-        start_path = Dir.pwd
-        chdir rhoapi_js_folder
+        if $use_shared_runtime || $shared_rt_js_appliction
+          start_path = Dir.pwd
+          chdir rhoapi_js_folder
 
-        Dir.glob("**/*").each { |f|
-          $new_name = f.to_s.dup
-          $new_name.sub! 'rho', 'eb'
-          cp File.join(rhoapi_js_folder, f.to_s), File.join(rhoapi_js_folder, $new_name)
-        }
+          Dir.glob("**/*").each { |f|
+            $new_name = f.to_s.dup
+            $new_name.sub! 'rho', 'eb'
+            cp File.join(rhoapi_js_folder, f.to_s), File.join(rhoapi_js_folder, $new_name)
+          }
 
-        chdir start_path
+          chdir start_path
+        end
       end
-    end
-    # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
-    if !$shared_rt_js_appliction
-      if extjsmodulefiles_opt.count > 0
-        puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
-        #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
-        write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
+      # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
+      if !$shared_rt_js_appliction
+        if extjsmodulefiles_opt.count > 0
+          puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
+          #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
+          write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
+        end
       end
     end
   #end

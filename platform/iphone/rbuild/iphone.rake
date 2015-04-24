@@ -2873,6 +2873,7 @@ namespace "device" do
       $skip_build_extensions = true
       $skip_build_xmls = true
       $use_prebuild_data = true
+      $skip_build_js_api_files = true
 
       is_simulator = ($sdk =~ /iphonesimulator/)
 

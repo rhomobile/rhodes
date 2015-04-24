@@ -1441,6 +1441,7 @@ namespace "device" do
       container_path = determine_prebuild_path_win('wm', $app_config)
       Rake::Task['device:wm:apply_container'].invoke(container_path)
       $skip_build_extensions = true
+      $skip_build_js_api_files = true
       Rake::Task['build:bundle:noxruby'].invoke
       Rake::Task['device:wm:cab'].invoke
       print_timestamp('device:wm:production_with_prebuild_binary FINISH')
