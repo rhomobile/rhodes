@@ -32,3 +32,7 @@ win32:
   deploymsvc: 1
 
 extensions: [<%=@rhoconnectclient_ext%>]
+
+rhobundle:
+  exclude_items:
+  - thumb.db
