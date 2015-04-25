@@ -22,7 +22,7 @@ module RhoDevelopment
 
     def add_directory(string)
       listener = Listen.to(string, {:debug => true}) { | modified, added, removed |
-        puts 'Files were changed...'.info
+        puts 'Files were changed...'.primary
         puts "Files were added: #{added}".info
         puts "Files were modified: #{modified}".info
         puts "Files were removed: #{removed}".info
@@ -41,7 +41,7 @@ module RhoDevelopment
     end
 
   def on_file_changed(added_files, changed_files, removed_files)
-    puts 'The following files will be included in update bundle:'.info
+    puts 'The following files will be included in update bundle:'.primary
     puts "As added: #{added_files}".info
     puts "As modified: #{changed_files}".info
     puts "As removed: #{removed_files}".info
@@ -58,14 +58,14 @@ module RhoDevelopment
 
   def create_diff_files(added_files, changed_files, removed_files)
     self.write_list_of_updated_files(added_files, changed_files)
-    self.write_lis_of_removed_files(removed_files)
+    self.write_list_of_removed_files(removed_files)
   end
 
   def write_list_of_updated_files(added_files, changed_files)
     self.write_array_to_file('upgrade_package_add_files.txt', added_files + changed_files)
   end
 
-  def write_lis_of_removed_files(removed_files)
+  def write_list_of_removed_files(removed_files)
     self.write_array_to_file('upgrade_package_remove_files.txt', removed_files)
   end
 
