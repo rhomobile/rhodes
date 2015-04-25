@@ -768,60 +768,40 @@ class Jake
 
   def self.zip_upgrade_bundle(folder_path, zip_file_path)
 
+    require 'zip'
+
+    current_dir = Dir.pwd()
+    begin
+      Dir.chdir(folder_path)
       File.delete(zip_file_path) if File.exists?(zip_file_path)
 
-      currentdir = Dir.pwd()
-      Dir.chdir folder_path
+      items_to_zip = []
 
-      #if RUBY_PLATFORM =~ /(win|w)32$/
-      #  begin
-          require 'rubygems'
-          require 'zip'
-          require 'find'
-          require 'fileutils'
-          include FileUtils
-
-          Zip::File.open(zip_file_path, Zip::File::CREATE)do |zipfile|
-            Find.find("RhoBundle") do |path|
-              Find.prune if File.basename(path)[0] == ?.
-              next if path.start_with?("RhoBundle/lib") || path.start_with?("RhoBundle/db") || path == 'RhoBundle/hash' || path == 'RhoBundle/name'
-
-              puts "add to zip : #{path}"
-              zipfile.add(path, path)
-            end
-          end
-       # rescue Exception => e
-       #   puts "ERROR : #{e}"
-       #   puts 'Require "rubyzip" gem for make zip file !'
-       #   puts 'Install gem by "gem install rubyzip"'
-       # end
-      #else
-      #  require 'fileutils'
-
-      #  #chdir folder_path
-      #  temp_dir = folder_path + '_tmp'
-      #  FileUtils.mkdir_p temp_dir
-      #  FileUtils.cp_r 'RhoBundle', temp_dir
-      #  Dir.chdir temp_dir
-      #  FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/lib')
-      #  FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/db')
-      #  FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/hash')
-      #  FileUtils.rm_rf File.join(temp_dir, 'RhoBundle/name')
-      #  #sh %{zip -r temporary_archive.zip .}
-      #  #cmd "zip -r temporary_archive.zip ."
-      #  args = []
-      #  args << "-r"
-      #  args << "temporary_archive.zip"
-      #  args << "."
-      #  run("zip", args, temp_dir)
-      #  FileUtils.cp_r 'temporary_archive.zip', zip_file_path
-      #  FileUtils.rm_rf 'temporary_archive.zip'
-      #  FileUtils.rm_rf temp_dir
-      #end
-
-      Dir.chdir currentdir
-
+      Zip::File.open(zip_file_path, Zip::File::CREATE) do |zip_file|
+        (Dir['RhoBundle/**/*']).each { |path|
+          exclude_items = (Jake.getBuildProp2('rhobundle', 'exclude_items') || []).collect { |each| %r{#{each}} }
+          begin
+            puts "Excluded: #{path}".warning
+            next
+          end if (exclude_items.any? { |each| path.index(each) })
+          puts "added to zip : #{path}"
+          zip_file.add(path, path)
+        }
+      end
+    ensure
+      Dir.chdir(current_dir)
+    end
   end
+
+=begin
+        Find.find('RhoBundle') do |path|
+          Find.prune if File.basename(path)[0] == ?.
+          next if path.start_with?('RhoBundle/lib') || path.start_with?('RhoBundle/db') || path == 'RhoBundle/hash' || path == 'RhoBundle/name'
+          puts "add to zip : #{path}"
+          zip_file.add(path, path)
+        end
+=end
+
 
   def self.modify_rhoconfig_for_debug
     confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
