@@ -83,7 +83,7 @@ module RhoDevelopment
       puts "Webserver URL: #{Configuration::webserver_ip}:#{Configuration::webserver_port}".primary
       puts "Webserver document root: #{document_root}".primary
       print 'Cleaning document root directory... '.primary
-      FileUtils.rm_rf("#{document_root}/.", secure: true)
+      FileUtils.rm_rf("#{document_root}/.", {:secure => true})
       puts 'done'.success
       @tasks = Queue.new
       @web_server = WEBrick::HTTPServer.new(

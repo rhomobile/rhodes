@@ -81,11 +81,11 @@ module RhoDevelopment
     end
 
     def partial_notify
-      self.notify(self.notify_url(Configuration::partial_bundle_name))
+      self.notify(self.notify_url(Configuration::last_filename_for_downloading))
     end
 
     def full_notify
-      self.notify(self.notify_url(Configuration::full_bundle_name))
+      self.notify(self.notify_url(Configuration::last_filename_for_downloading))
     end
 
 

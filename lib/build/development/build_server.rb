@@ -18,7 +18,6 @@ module RhoDevelopment
     def build_full_bundle_for_subscriber(aSubscriber)
       RhoDevelopment.setup(Configuration::development_directory, aSubscriber.normalized_platform_name)
       RhoDevelopment.make_full_bundle
-      self.copy_platform_bundle_to_web_server_root(aSubscriber.normalized_platform_name, Configuration::full_bundle_name)
     end
 
     def build_full_bundles_for_all_subscribers
@@ -40,7 +39,7 @@ module RhoDevelopment
           tmp = platform
       end
       from = File.join(Configuration::application_root,'bin', 'target', tmp, filename)
-      to = File.join(Configuration::document_root, 'download', platform, filename)
+      to = File.join(Configuration::document_root, 'download', platform, Configuration::next_filename_for_downloading)
       FileUtils.mkpath(File.dirname(to))
       FileUtils.cp(from, to)
     end
