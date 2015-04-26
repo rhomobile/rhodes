@@ -8,7 +8,7 @@ module RhoDevelopment
     def run
       addresses = Network::available_addresses
       if (addresses.empty?)
-        puts 'Network interfaces were not found.'.info
+        puts 'Network interfaces were not found.'.warning
         return
       end
       if addresses.length != 1

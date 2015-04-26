@@ -450,7 +450,7 @@ namespace :dev do
       addresses = RhoDevelopment::Network::available_addresses
 
       if (addresses.empty?)
-        puts 'Network interfaces were not found.'.info
+        puts 'Network interfaces were not found.'.warning
         exit 1
       else
         addresses.each {

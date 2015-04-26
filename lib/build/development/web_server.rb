@@ -12,6 +12,10 @@ module RhoDevelopment
 # class instance methods
 
     def self.ensure_running
+      if Network::available_addresses.empty?
+        puts 'Available network interfaces are not found'.warning
+        exit 1
+      end
       unless self.alive?
         case RbConfig::CONFIG['host_os']
           when /mswin|mingw32|windows/i
