@@ -73,6 +73,7 @@ module RhoDevelopment
     path = File.join(Configuration::application_root, filename)
     File.open(path, 'w') { |file|
       array.each { |each| file.puts(self.relative_path(each)) }
+      file.puts '--'
     }
   end
 
