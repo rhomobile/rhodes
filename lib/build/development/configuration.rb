@@ -11,7 +11,7 @@ module RhoDevelopment
     end
 
     def self.handledNetworkExceptions
-      [Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net.const_defined?(:OpenTimeout) ? Net::OpenTimeout : Timeout::Error]
+      [Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Net::ReadTimeout, Net.const_defined?(:OpenTimeout) ? Net::OpenTimeout : Timeout::Error]
     end
 
     def self.development_directory
