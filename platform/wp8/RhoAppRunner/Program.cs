@@ -25,13 +25,11 @@
 *------------------------------------------------------------------------*/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Globalization;
 using System.IO;
-using System.Threading;
-using System.Reflection;
-using Microsoft.SmartDevice.Connectivity;
+using System.Linq;
+using Microsoft.SmartDevice.Connectivity.Interface;
+using Microsoft.SmartDevice.MultiTargeting.Connectivity;
 
 namespace RhoAppRunner
 {
@@ -39,11 +37,13 @@ namespace RhoAppRunner
     {
         static int Main(string[] args)
         {
-            DatastoreManager dsmgrObj = new DatastoreManager(1033);
-            Platform WP8SDK = dsmgrObj.GetPlatforms().Single(p => p.Name == "Windows Phone 8");
+            MultiTargetingConnectivity WP8SDK = new MultiTargetingConnectivity(CultureInfo.CurrentCulture.LCID, false);
+            //foreach (ConnectableDevice device in WP8SDK.GetConnectableDevices(false))
+            //    Console.WriteLine(device.Name);
 
             bool useEmulator = true;
-            Device WP8Device = null;
+            ConnectableDevice cDevice = null;
+            IDevice WP8Device = null;
 
             if (args.Length < 5)
             {
@@ -59,18 +59,33 @@ namespace RhoAppRunner
             if (args[4] == "dev")
                 useEmulator = false;
 
-            if (useEmulator)
-           //     WP8Device = WP8SDK.GetDevices().First(d => d.Name.StartsWith("Windows Phone Emulator") || d.Name.StartsWith("Windows Phone 8 Emulator"));
-                WP8Device = WP8SDK.GetDevices().First(d => d.Name.StartsWith("Emulator WVGA"));
-            else
-                WP8Device = WP8SDK.GetDevices().First(d => d.Name.StartsWith("Windows Phone Device") || d.Name.StartsWith("Windows Phone 8 Device") || d.Name.StartsWith("Device"));
+            try
+            {
+                if (useEmulator)
+                    cDevice = WP8SDK.GetConnectableDevices(false).First(d => d.Name.StartsWith("Emulator WVGA"));
+                else
+                    cDevice = WP8SDK.GetConnectableDevices(false).First(d => d.Name.StartsWith("Device") || d.Name.StartsWith("Windows Phone 8 Device") || d.Name.StartsWith("Windows Phone Device"));
+            }
+            catch
+            {
+                Console.WriteLine("Cannot find Windows Phone 8.0 Emulator/Device.");
+                return 3;
+            }
 
-            Console.WriteLine("Connecting to Windows Phone 8 Emulator/Device...");
-            WP8Device.Connect();
+            Console.WriteLine("Connecting to " + cDevice.Name);
+            try
+            {
+                WP8Device = cDevice.Connect();
+            }
+            catch
+            {
+                Console.WriteLine("Failed to connect to Windows Phone 8 Emulator/Device.");
+                return 4;
+            }
             Console.WriteLine("Windows Phone 8 Emulator/Device Connected...");
 
             Guid appID = new Guid(args[0]);
-            RemoteApplication app;
+            IRemoteApplication app;
             if (WP8Device.IsApplicationInstalled(appID))
             {
                 Console.WriteLine("Updating sample XAP to Windows Phone 8 Emulator/Device...");
@@ -94,21 +109,6 @@ namespace RhoAppRunner
                 }
 
                 app.Uninstall();
-               /* app.UpdateApplication(args[1],
-                                      args[2],
-                                      args[3]);
-
-                Console.WriteLine("Sample XAP Updated on Windows Phone 8 Emulator/Device...");
-
-                Console.WriteLine("Launching sample app on Windows Phone 8 Emulator...");
-                //app.Launch();
-                Console.WriteLine("Launched sample app on Windows Phone 8 Emulator...");*/
-
-                //var remoteIso = app.GetIsolatedStore();
-                //bool result = remoteIso.FileExists("rholog.txt");
-                //result = remoteIso.FileExists("rho/apps/app/loading.png");
-
-                //return;
             }            
 
             Console.WriteLine("Installing sample XAP to Windows Phone 8 Emulator/Device...");

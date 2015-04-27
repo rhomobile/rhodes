@@ -50,6 +50,10 @@ module RhoDevelopment
     end
 
     def action
+      unless Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        return
+      end
       server = BuildServer.new
       server.build_partial_bundles_for_all_subscribers
     end
@@ -63,6 +67,10 @@ module RhoDevelopment
     end
 
     def action
+      unless Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        return
+      end
       server = BuildServer.new
       server.build_full_bundles_for_all_subscribers
     end
@@ -139,6 +147,10 @@ module RhoDevelopment
     end
 
     def action
+      unless Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        return
+      end
       Configuration::enabled_subscribers.each { |subscriber|
         subscriber.partial_notify
       }
@@ -153,6 +165,10 @@ module RhoDevelopment
     end
 
     def action
+      unless Configuration::has_enabled_subscribers?
+        puts 'Enabled subscribers not found'.warning
+        return
+      end
       Configuration::enabled_subscribers.each { |subscriber|
         subscriber.full_notify
       }

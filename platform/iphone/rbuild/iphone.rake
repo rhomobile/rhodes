@@ -2037,6 +2037,66 @@ end
 
 namespace "run" do
   namespace "iphone" do
+    task :build => 'run:buildsim'
+    task :debug => :run
+
+    task :run => 'config:iphone' do
+
+      print_timestamp('run:iphone:run START')
+
+      mkdir_p $tmpdir
+      log_name  =   File.join($app_path, 'rholog.txt')
+      File.delete(log_name) if File.exist?(log_name)
+
+      rhorunner = File.join(File.join($app_path, "/project/iphone"),"build/#{$configuration}-iphonesimulator/rhorunner.app")
+      commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+
+      kill_iphone_simulator
+
+
+      $ios_run_completed = false
+
+
+      #thr = Thread.new do
+      #end
+      #Thread.new {
+      thr = Thread.new do
+        puts 'start thread with execution of application'
+        if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+          puts  'use old execution way - just open iPhone Simulator'
+          system("open \"#{$sim}/iPhone Simulator.app\"")
+          $ios_run_completed = true
+          sleep(1000)
+        else
+          puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
+          puts 'Execute command: '+commandis
+          system(commandis)
+          $ios_run_completed = true
+          sleep(1000)
+        end
+        #}
+      end
+
+      print_timestamp('application was launched in simulator')
+      if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+        thr.join
+      else
+        puts 'start waiting for run application in Simulator'
+        while (!File.exist?(log_name)) && (!$ios_run_completed)
+          puts ' ... still waiting'
+          sleep(1)
+        end
+        puts 'stop waiting - application started'
+        #sleep(1000)
+        thr.kill
+        #thr.join
+        puts 'application is started in Simulator'
+        exit
+      end
+      print_timestamp('run:iphone FINISH')
+      puts "end build iphone app"
+      exit
+    end
 
     task :spec => ["clean:iphone"] do
       Jake.decorate_spec do
@@ -2173,17 +2233,18 @@ namespace "run" do
       end
     end
 
-    desc "Run application on RhoSimulator"
-    task :rhosimulator => ["config:set_iphone_platform","config:common"] do
+    rhosim_task = lambda do |name, &block|
+      task name => ["config:set_iphone_platform", "config:common"] do
         $rhosim_config = "platform='iphone'\r\n"
-
-        Rake::Task["run:rhosimulator"].invoke
+        block.()
+      end
     end
 
-    task :rhosimulator_debug => ["config:set_iphone_platform","config:common"] do
-        $rhosim_config = "platform='iphone'\r\n"
-
-        Rake::Task["run:rhosimulator_debug"].invoke
+    desc "Run application on RhoSimulator"
+    rhosim_task.(:rhosimulator) { Rake::Task["run:rhosimulator"].invoke }
+    namespace :rhosimulator do
+      rhosim_task.(:build) { Rake::Task["run:rhosimulator:build"].invoke         }
+      rhosim_task.(:debug) { Rake::Task["run:rhosimulator:run"  ].invoke('wait') }
     end
 
     task :get_log => ["config:iphone"] do
@@ -2443,63 +2504,7 @@ namespace "run" do
   # split this off separate so running it normally is run:iphone
   # testing we will not launch emulator directly
   desc "Builds everything, launches iphone simulator"
-  task :iphone => :buildsim do
-
-    print_timestamp('run:iphone START')
-
-    mkdir_p $tmpdir
-    log_name  =   File.join($app_path, 'rholog.txt')
-    File.delete(log_name) if File.exist?(log_name)
-
-    rhorunner = File.join(File.join($app_path, "/project/iphone"),"build/#{$configuration}-iphonesimulator/rhorunner.app")
-    commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
-
-    kill_iphone_simulator
-
-
-    $ios_run_completed = false
-
-
-    #thr = Thread.new do
-    #end
-    #Thread.new {
-    thr = Thread.new do
-       puts 'start thread with execution of application'
-       if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-           puts  'use old execution way - just open iPhone Simulator'
-           system("open \"#{$sim}/iPhone Simulator.app\"")
-           $ios_run_completed = true
-           sleep(1000)
-       else
-           puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
-           puts 'Execute command: '+commandis
-           system(commandis)
-           $ios_run_completed = true
-           sleep(1000)
-       end
-    #}
-    end
-
-    print_timestamp('application was launched in simulator')
-    if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-       thr.join
-    else
-       puts 'start waiting for run application in Simulator'
-       while (!File.exist?(log_name)) && (!$ios_run_completed)
-          puts ' ... still waiting'
-          sleep(1)
-       end
-       puts 'stop waiting - application started'
-       #sleep(1000)
-       thr.kill
-       #thr.join
-       puts 'application is started in Simulator'
-       exit
-    end
-    print_timestamp('run:iphone FINISH')
-    puts "end build iphone app"
-    exit
-  end
+  task :iphone => ['run:iphone:build', 'run:iphone:run']
 
   task :allspecs do
     $dont_exit_on_failure = true
@@ -2555,10 +2560,13 @@ namespace "clean" do
         chdir iphone_project_folder
 
         args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project]
-        ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
-        unless ret == 0
-          puts "Error cleaning"
-          exit 1
+        if RUBY_PLATFORM =~ /(win|w)32$/
+        else
+          ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
+          unless ret == 0
+            puts "Error cleaning"
+            exit 1
+          end
         end
         chdir $startdir
 
@@ -2658,8 +2666,10 @@ namespace "clean" do
 
       require   rootdir + '/lib/build/jake.rb'
 
-      ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
-
+      if RUBY_PLATFORM =~ /(win|w)32$/
+      else
+        ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
+      end
       Dir.chdir currentdir
 
     end
@@ -2863,6 +2873,7 @@ namespace "device" do
       $skip_build_extensions = true
       $skip_build_xmls = true
       $use_prebuild_data = true
+      $skip_build_js_api_files = true
 
       is_simulator = ($sdk =~ /iphonesimulator/)
 

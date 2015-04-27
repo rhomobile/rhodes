@@ -5,6 +5,10 @@
         <HELP_OVERVIEW>Rho.Config module</HELP_OVERVIEW>
         <MORE_HELP>Implementation of the Config API.</MORE_HELP>
 
+        <PLATFORM>Android, WP8</PLATFORM>
+        <PLATFORM_EB>Android</PLATFORM_EB>
+        <VER_INTRODUCED>5.1.0</VER_INTRODUCED>
+
         <PROPERTIES access="STATIC" generateAccessors="true">
 
             <PROPERTY name="configPath" type="STRING" default="">
@@ -33,7 +37,7 @@
                   <DESC>Value of the property.</DESC>
                 </PARAM>
                 <PARAM name="saveToFile" type="BOOLEAN">
-                  <DESC>If true, save changes to file.</DESC>
+                  <DESC>If true, save changes to file. All changes will save in separate file, not in common config of a aplication.</DESC>
                 </PARAM>
               </PARAMS>
               <DESC>Set string value of config property and optionally save changes to file. Properties save to separate file, common file (specify with configPath) doesn't change.</DESC>
@@ -58,7 +62,7 @@
                   <DESC>Value of the property.</DESC>
                 </PARAM>
                 <PARAM name="saveToFile" type="BOOLEAN">
-                  <DESC>If true, save changes to file.</DESC>
+                  <DESC>If true, save changes to file. All changes will save in separate file, not in common config of a aplication.</DESC>
                 </PARAM>
               </PARAMS>
               <DESC>Set integer value of config property and optionally save changes to file. Properties save to separate file, common file (specify with configPath) doesn't change.</DESC>
@@ -83,7 +87,7 @@
                   <DESC>Value of the property.</DESC>
                 </PARAM>
                 <PARAM name="saveToFile" type="BOOLEAN">
-                  <DESC>If true, save changes to file.</DESC>
+                  <DESC>If true, save changes to file. All changes will save in separate file, not in common config of a aplication.</DESC>
                 </PARAM>
               </PARAMS>
               <DESC>Set boolean value of config property and optionally save changes to file. Properties save to separate file, common file (specify with configPath) doesn't change.</DESC>
@@ -105,7 +109,7 @@
                         <DESC>Name of the property.</DESC>
                     </PARAM>
                     <PARAM name="saveToFile" type="BOOLEAN">
-                        <DESC>If true, save changes to file.</DESC>
+                        <DESC>If true, save changes to file. All changes will save in separate file, not in common config of a aplication.</DESC>
                     </PARAM>
                 </PARAMS>
                 <DESC>Remove existing property and optionally save changes to file. Remove properties works only with properties that has been set with setProperty*** methods. Properties from config file doesn't changed.</DESC>
@@ -119,9 +123,5 @@
 
         <USER_OVERVIEW>
         </USER_OVERVIEW>
-
-        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>
-         </PLATFORM>
     </MODULE>
 </API>

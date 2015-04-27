@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -29,6 +31,7 @@ import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.file.RhoFileApi;
 
 public class CameraRhoListener extends AbstractRhoListener implements
 		IRhoListener {
@@ -43,6 +46,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 	private HashMap<String,Object> resultMap = null;
 	private String imgPath = null;
 	private Bitmap mBitmap = null;
+	private String rename = null;
 	
 	static CameraRhoListener getInstance() {
 		return sInstance;
@@ -67,10 +71,10 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		Uri captureUri = null;
 		String targetPath = " ";
 		ByteArrayOutputStream stream = null;
-		String rename = null;
 		try {
 			if (resultCode == Activity.RESULT_OK)
 			{
+				getActualPropertyMap().put("default_camera_key_path", "");
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
 				rename = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
 				String curPath = null;		
@@ -143,6 +147,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					if (getActualPropertyMap().get("dataURI") == null) {
 						imgPath = getFilePath(curUri);
 							File f= new File(imgPath);
+							imgPath = copyImg(imgPath);
+							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
 							BitmapFactory.Options options = new BitmapFactory.Options();
 							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 							        try {
@@ -150,7 +156,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 							        	if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){ 
 							        	f.renameTo(new File(f.getParentFile(), rename));
 										RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
-								                Uri.parse(imgPath)));
+								                Uri.parse(f.getAbsolutePath())));
 							        	}
 							        } catch (FileNotFoundException e) {
 							            e.printStackTrace();
@@ -190,6 +196,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 							Logger.T(TAG, "File copied to " + targetPath);							
 							curUri = Uri.fromFile(new File(targetPath));
 						}
+						imgPath = copyImg(curPath);
+						curUri = Uri.parse(imgPath);
 				}
 				try{
 					DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);
@@ -201,7 +209,9 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				}	
 			} 
 			else if (resultCode == Activity.RESULT_CANCELED) 
-			{	DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent,resultCode);
+			{	
+				getActualPropertyMap().put("default_camera_key_path", "");
+				DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent,resultCode);
 				async.execute();
 				CameraActivity.click_rotation = false;
 			} else {
@@ -220,7 +230,6 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			mMethodResult.setError(err.getMessage());
 		}
 		
-		releaseMethodResult();
 	}
 
 	void setMethodResult(IMethodResult result) {
@@ -282,8 +291,13 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					inResultMap.put("image_format",   "jpg");			
 				}
 				else{
-					inResultMap.put("imageUri",  curUri.toString());
-					inResultMap.put("imageFormat",   "jpg");			
+					if(getActualPropertyMap().get("default_camera_key_path") != null){
+						inResultMap.put("imageUri",  imgPath);
+						inResultMap.put("imageFormat",   "jpg");
+					}else{
+						inResultMap.put("imageUri",  curUri.toString());
+						inResultMap.put("imageFormat",   "jpg");
+					}			
 				}
 				if(picChoosen_imagewidth > 0){
 					if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
@@ -327,6 +341,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			inMethodRes.set(inResultMap);
+			releaseMethodResult();
 		}
 		
 	}
@@ -349,5 +364,53 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		
 		}
 		return mImgPath;
+	}
+	
+	/**
+	 * Copy image.
+	 * Function to copy image from sd card to application root path
+	 *  
+	 * @param photo
+	 *            the photo
+	 * @return the string
+	 */
+	public String copyImg(String imgPath){
+		
+		File oldFile = new File(imgPath);
+		
+		File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
+		FileInputStream finput= null;
+		FileOutputStream fout = null;
+		try {
+			finput = new FileInputStream(oldFile);
+			fout = new FileOutputStream(mediafile);
+			byte[] b = new byte[1024];
+			int read = 0;
+			while ((read = finput.read(b)) != -1) {
+				fout.write(b, 0, read);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(finput != null){
+				try {
+					finput.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(fout != null){
+				try {
+					fout.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return mediafile.getAbsolutePath();
 	}
 }

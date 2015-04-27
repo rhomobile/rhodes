@@ -1441,6 +1441,7 @@ namespace "device" do
       container_path = determine_prebuild_path_win('wm', $app_config)
       Rake::Task['device:wm:apply_container'].invoke(container_path)
       $skip_build_extensions = true
+      $skip_build_js_api_files = true
       Rake::Task['build:bundle:noxruby'].invoke
       Rake::Task['device:wm:cab'].invoke
       print_timestamp('device:wm:production_with_prebuild_binary FINISH')
@@ -1724,19 +1725,22 @@ namespace "run" do
     task :get_log => "run:wm" do
     end
 
-    desc "Run application on RhoSimulator"    
-    task :rhosimulator => ["config:set_wince_platform", "config:common"] do      
-      $rhosim_config = "platform='wm'\r\n"
-      Rake::Task["run:rhosimulator"].invoke
+    rhosim_task = lambda do |name, &block|
+      task name => ["config:set_wince_platform", "config:common"] do
+        $rhosim_config = "platform='wm'\r\n"
+        block.()
+      end
     end
-    
-    task :rhosimulator_debug => ["config:set_wince_platform", "config:common"] do
-      $rhosim_config = "platform='wm'\r\n"
-      Rake::Task["run:rhosimulator_debug"].invoke
+
+    desc "Run application on RhoSimulator"
+    rhosim_task.(:rhosimulator) { Rake::Task["run:rhosimulator"].invoke }
+    namespace :rhosimulator do
+      rhosim_task.(:build) { Rake::Task["run:rhosimulator:build"].invoke         }
+      rhosim_task.(:debug) { Rake::Task["run:rhosimulator:run"  ].invoke('wait') }
     end
-    
+
     desc "Build and run on the Windows CE device"
-    task :device => ["config:set_wince_platform", "run:wm:device"] do      
+    task :device => ["config:set_wince_platform", "run:wm:device"] do
     end
 
     namespace "device" do
@@ -1751,16 +1755,20 @@ namespace "run" do
       puts "log_file=" + gelLogPath
     end
 
-    desc "Run application on RhoSimulator"    
-    task :rhosimulator => ["config:set_wm_platform", "config:common"] do
-      $rhosim_config = "platform='wm'\r\n"
-      Rake::Task["run:rhosimulator"].invoke
+    rhosim_task = lambda do |name, &block|
+      task name => ["config:set_wm_platform", "config:common"] do
+        $rhosim_config = "platform='wm'\r\n"
+        block.()
+      end
     end
-    
-    task :rhosimulator_debug => ["config:set_wm_platform", "config:common"] do
-      $rhosim_config = "platform='wm'\r\n"
-      Rake::Task["run:rhosimulator_debug"].invoke
+
+    desc "Run application on RhoSimulator"
+    rhosim_task.(:rhosimulator) { Rake::Task["run:rhosimulator"].invoke }
+    namespace :rhosimulator do
+      rhosim_task.(:build) { Rake::Task["run:rhosimulator:build"].invoke         }
+      rhosim_task.(:debug) { Rake::Task["run:rhosimulator:run"  ].invoke('wait') }
     end
+
 
     desc "Build and run on the Windows Mobile device"
     task :device  => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do 
@@ -2027,15 +2035,18 @@ namespace "run" do
   end
 
   namespace "win32" do
-    desc "Run application on RhoSimulator"    
-    task :rhosimulator => ["config:set_win32_platform", "config:common"] do
-      $rhosim_config = "platform='win32'\r\n"
-      Rake::Task["run:rhosimulator"].invoke
+    rhosim_task = lambda do |name, &block|
+      task name => ["config:set_win32_platform", "config:common"] do
+        $rhosim_config = "platform='win32'\r\n"
+        block.()
+      end
     end
-    
-    task :rhosimulator_debug => ["config:set_win32_platform", "config:common"] do
-      $rhosim_config = "platform='win32'\r\n"
-      Rake::Task["run:rhosimulator_debug"].invoke
+
+    desc "Run application on RhoSimulator"
+    rhosim_task.(:rhosimulator) { Rake::Task["run:rhosimulator"].invoke }
+    namespace :rhosimulator do
+      rhosim_task.(:build) { Rake::Task["run:rhosimulator:build"].invoke         }
+      rhosim_task.(:debug) { Rake::Task["run:rhosimulator:run"  ].invoke('wait') }
     end
 
     task :package do

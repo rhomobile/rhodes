@@ -95,7 +95,7 @@ public class RhoFileApi {
     static void reloadStatTable() {
         Log.i(TAG, "reloadStatTable()");
         try {
-        	setFsModeTransparrent(false);
+        	//setFsModeTransparrent(false);
         	processStatTable( !RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS"), false);
         }
         catch (Throwable e) {

@@ -7,7 +7,7 @@ build: debug
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator8.1
+  sdk: iphonesimulator8.2
   provisionprofile:
   codesignidentity: iPhone Developer
   entitlements: ""
@@ -32,3 +32,7 @@ win32:
   deploymsvc: 1
 
 extensions: [<%=@rhoconnectclient_ext%>]
+
+rhobundle:
+  exclude_items:
+  - thumb.db
