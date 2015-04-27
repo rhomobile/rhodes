@@ -105,8 +105,7 @@ module RhoDevelopment
     def self.store_subscribers(anArray)
       config = self.read_configuration
       config['devices'] = anArray
-      yml = config.to_yaml
-      File.open(self.config_filename, 'w') { |file| file.write yml }
+      self.save_to_file(config)
     end
 
     def self.subscriber_by_ip(aString)
@@ -127,19 +126,36 @@ module RhoDevelopment
     end
 
     def self.partial_bundle_name
-      'upgrade_bundle_partial.zip'
+       return 'upgrade_bundle_partial.zip'
     end
 
     def self.full_bundle_name
-      'upgrade_bundle.zip'
+      return 'upgrade_bundle.zip'
     end
+
+    def self.next_filename_for_downloading
+      config = self.read_configuration
+      key = (config['last_bundle_key'].nil?) ? 0 : config['last_bundle_key']
+      key = key + 1
+      config['last_bundle_key'] = key
+      self.save_to_file(config)
+      return "bundle_#{key}.zip"
+    end
+
+    def self.last_filename_for_downloading
+      config = self.read_configuration
+      if config['last_bundle_key'].nil?
+        raise "The last bundle key not found at #{self.config_filename}"
+      end
+      key = config['last_bundle_key']
+      return "bundle_#{key}.zip"
+    end
+
 
     def self.document_root=(aString)
       config = self.read_configuration
-      puts config.inspect
       config['webserver'] = {'documentRoot' => aString}
-      yml = config.to_yaml
-      File.open(self.config_filename, 'w') { |file| file.write yml }
+      self.save_to_file(config)
     end
 
     def self.document_root
@@ -155,6 +171,10 @@ module RhoDevelopment
       document_root
     end
 
+    def self.save_to_file(config)
+      yml = config.to_yaml
+      File.open(self.config_filename, 'w') { |file| file.write yml }
+    end
 
   end
 

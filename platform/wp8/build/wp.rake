@@ -449,71 +449,9 @@ namespace "clean" do
   end
 end
 
-namespace "run" do
-
-  def getLogPath
-    log_file_path = File.join($app_path, $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"])
-    return log_file_path
-  end
-
-  desc "Build, install .xap and run on WP8 emulator"
-  task :wp8 => ["emulator:wp8:production"] do
-
-    if $productid != nil
-
-      #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
-      #Jake.run_rho_log_server($app_path)
-      #puts "RhoLogServer is starting"
-
-      #while (1)
-      #  if File.exists?($app_path + "/started")
-      #    break
-      #  end
-      #end
-
-	  #addconfigtoxap()
-
-      cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
-      mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
-
-      args = []
-      args << $productid
-      args << $app_config["name"]
-      args << $app_path + "/icon/icon.png"
-      args << $targetdir + "/" + $appname + ".xap"
-      args << "emu"
-      puts Jake.run($wp7runner, args)
-
-      #while(1)
-      #	sleep(1000)
-      #end
-      #$rhologfile.close
-    else
-      puts "productid must be set in build.yml"
-      puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    end
-  end
-
-  namespace "wp8" do
-
-    task :get_log => "config:wp8" do
-      puts "log_file=" + getLogPath
-    end
-
-    desc "Run application on RhoSimulator"
-    task :rhosimulator => ["config:set_wp8_platform", "config:common"] do
-      $rhosim_config = "platform='wp8'\r\n"
-      Rake::Task["run:rhosimulator"].invoke
-    end
-
-    task :rhosimulator_debug => ["config:set_wp8_platform", "config:common"] do
-      $rhosim_config = "platform='wp8'\r\n"
-      Rake::Task["run:rhosimulator_debug"].invoke
-    end
-
-    task :spec do
+def runWP8spec(rakeCommand)
       Jake.decorate_spec do
-         Rake::Task["run:wp8"].invoke
+        Rake::Task[rakeCommand].invoke
         Jake.before_run_spec
         start = Time.now
         log_file = getLogPath
@@ -569,6 +507,81 @@ namespace "run" do
         $stdout.flush
         chdir $startdir
 
+      end
+end
+
+namespace "run" do
+
+  def getLogPath
+    log_file_path = File.join($app_path, $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"])
+    return log_file_path
+  end
+
+  desc "Build, install .xap and run on WP8 emulator"
+  task :wp8 => ["emulator:wp8:production"] do
+
+    if $productid != nil
+
+      #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
+      #Jake.run_rho_log_server($app_path)
+      #puts "RhoLogServer is starting"
+
+      #while (1)
+      #  if File.exists?($app_path + "/started")
+      #    break
+      #  end
+      #end
+
+	  #addconfigtoxap()
+
+      cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
+      mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
+
+      args = []
+      args << $productid
+      args << $app_config["name"]
+      args << $app_path + "/icon/icon.png"
+      args << $targetdir + "/" + $appname + ".xap"
+      args << "emu"
+      puts Jake.run($wp7runner, args)
+
+      #while(1)
+      #	sleep(1000)
+      #end
+      #$rhologfile.close
+    else
+      puts "productid must be set in build.yml"
+      puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    end
+  end
+
+  namespace "wp8" do
+
+    task :get_log => "config:wp8" do
+      puts "log_file=" + getLogPath
+    end
+
+    rhosim_task = lambda do |name, &block|
+      task name => ["config:set_wp8_platform", "config:common"] do
+        $rhosim_config = "platform='wp8'\r\n"
+        block.()
+      end
+    end
+
+    desc "Run application on RhoSimulator"
+    rhosim_task.(:rhosimulator) { Rake::Task["run:rhosimulator"].invoke }
+    namespace :rhosimulator do
+      rhosim_task.(:build) { Rake::Task["run:rhosimulator:build"].invoke         }
+      rhosim_task.(:debug) { Rake::Task["run:rhosimulator:run"  ].invoke('wait') }
+    end
+
+    task :spec do
+      runWP8spec("run:wp8")
+    end
+
+    namespace "device" do
+      task :spec do
+        runWP8spec("run:wp8:device")
       end
     end
 

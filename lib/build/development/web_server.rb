@@ -12,6 +12,10 @@ module RhoDevelopment
 # class instance methods
 
     def self.ensure_running
+      if Network::available_addresses.empty?
+        puts 'Available network interfaces are not found'.warning
+        exit 1
+      end
       unless self.alive?
         case RbConfig::CONFIG['host_os']
           when /mswin|mingw32|windows/i
@@ -83,7 +87,7 @@ module RhoDevelopment
       puts "Webserver URL: #{Configuration::webserver_ip}:#{Configuration::webserver_port}".primary
       puts "Webserver document root: #{document_root}".primary
       print 'Cleaning document root directory... '.primary
-      FileUtils.rm_rf("#{document_root}/.", secure: true)
+      FileUtils.rm_rf("#{document_root}/.", {:secure => true})
       puts 'done'.success
       @tasks = Queue.new
       @web_server = WEBrick::HTTPServer.new(

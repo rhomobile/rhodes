@@ -2410,25 +2410,9 @@ end
 namespace "run" do
   namespace "android" do
 
-    def sleepRubyProcess
-      if $remote_debug == true
-        while 1
-          sleep 1
-        end
-      end
-    end
-
-    namespace "emulator" do
-      task :spec, :uninstall_app do |t, args|
-        Jake.decorate_spec { run_as_spec('-e', args.uninstall_app) }
-      end
-    end
-
-    namespace "device" do
-      task :spec, :uninstall_app do |t, args|
-        Jake.decorate_spec { run_as_spec('-d', args.uninstall_app) }
-      end
-    end
+    task :build => ['run:android:emulator:build']
+    task :run   => ['run:android:emulator:run'  ]
+    task :debug => ['run:android:emulator:debug']
 
     desc "Run downloaded binary package on emulator"
     task "simulator:package", [:package_file, :package_name] => ['config:android:emulator'] do |t, args|
@@ -2463,58 +2447,69 @@ namespace "run" do
       puts "log_file=" + $applog_path
     end
 
-    task :emulator => ['config:android:emulator', 'device:android:debug'] do
-      AndroidTools.kill_adb_logcat('-e')
-      AndroidTools.run_emulator
+    task :emulator => ['run:android:emulator:build', 'run:android:emulator:run']
 
-      apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
-      AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
+    namespace "emulator" do
 
-      AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),'-e')
+      task :build => ['device:android:debug']
+      task :debug => ['run:android:emulator:run']
+      task :run => ['config:android:emulator'] do
+        AndroidTools.kill_adb_logcat('-e')
+        AndroidTools.run_emulator
 
-      sleepRubyProcess
+        apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
+        AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
+
+        AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),'-e')
+      end
+
+      task :spec, :uninstall_app do |t, args|
+        Jake.decorate_spec { run_as_spec('-e', args.uninstall_app) }
+      end
     end
 
     desc "build, install and run on device"
-    task :device, [:device_id] => "device:android:debug" do |t, args|
-      args.with_defaults(:device_id => '-d')
-      AndroidTools.kill_adb_logcat(args.device_id)
+    task :device, [:device_id] => ['run:android:device:build', 'run:android:device:run']
 
-      apkfile = File.join $targetdir, $appname + "-debug.apk"
-      AndroidTools.load_app_and_run(args.device_id, apkfile, $app_package_name)
+    namespace "device" do
 
-      AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),args.device_id)
+      task :build => ['device:android:debug']
+      task :debug => ['run:android:device:run']
+      task :run, [:device_id] => ['config:android'] do |t, args|
+        args.with_defaults(:device_id => '-d')
+        AndroidTools.kill_adb_logcat(args.device_id)
 
-      sleepRubyProcess
+        apkfile = File.join $targetdir, $appname + "-debug.apk"
+        AndroidTools.load_app_and_run(args.device_id, apkfile, $app_package_name)
+
+        AndroidTools.logcat_process(BuildConfig.get_key('android/logcatFilter',nil),args.device_id)
+      end
+
+      task :spec, :uninstall_app do |t, args|
+        Jake.decorate_spec { run_as_spec('-d', args.uninstall_app) }
+      end
+    end
+
+    rhosim_task = lambda do |name, &block|
+      task name => ["config:set_android_platform", "config:common"] do
+        $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
+        $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
+        $rhosim_config = "platform='android'\r\n"
+        $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
+        block.()
+      end
     end
 
     desc "Run application on RhoSimulator"
-    task :rhosimulator => ["config:set_android_platform", "config:common"] do
-
-      $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
-      $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
-
-      $rhosim_config = "platform='android'\r\n"
-      $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
-
-      Rake::Task["run:rhosimulator"].invoke
-    end
-
-    task :rhosimulator_debug => ["config:set_android_platform", "config:common"] do
-
-      $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
-      $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
-
-      $rhosim_config = "platform='android'\r\n"
-      $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
-
-      Rake::Task["run:rhosimulator_debug"].invoke
+    rhosim_task.(:rhosimulator) { Rake::Task["run:rhosimulator"].invoke }
+    namespace :rhosimulator do
+      rhosim_task.(:build) { Rake::Task["run:rhosimulator:build"].invoke         }
+      rhosim_task.(:debug) { Rake::Task["run:rhosimulator:run"  ].invoke('wait') }
     end
   end
 
   desc "build and launch emulator"
-  task :android => "run:android:emulator" do
-  end
+  task :android => "run:android:emulator"
 end
 
 namespace "uninstall" do

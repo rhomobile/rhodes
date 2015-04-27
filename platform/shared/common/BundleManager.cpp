@@ -54,6 +54,7 @@ extern "C" int rho_prepare_folder_for_upgrade(const char* szPath);
 #if defined OS_ANDROID
 extern "C" void rho_android_file_reload_stat_table();
 extern "C" void rho_android_force_all_files();
+extern "C" int rho_android_remove_item(const char* path);
 #endif
 
 
@@ -136,32 +137,37 @@ private:
         int count = 0;
         CTokenizer oTokenizer( line, "|" );
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (path != NULL) {
-                *path = oTokenizer.nextToken();
+                *path = v;
             }
             count++;
         }
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (type != NULL) {
-                *type = oTokenizer.nextToken();
+                *type = v;
             }
             count++;
         }
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (size != NULL) {
-                *size = oTokenizer.nextToken();
+                *size = v;
             }
             count++;
         }
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (mtime != NULL) {
-                *mtime = oTokenizer.nextToken();
+                *mtime = v;
             }
             count++;
         }
         if (oTokenizer.hasMoreTokens()) {
+            String v = oTokenizer.nextToken();
             if (crc != NULL) {
-                *crc = oTokenizer.nextToken();
+                *crc = v;
             }
             count++;
         }
@@ -259,7 +265,7 @@ private:
         while (oTokenizer.hasMoreTokens()) 
         {
             String strLine = oTokenizer.nextToken();
-            if (strLine.length() > 0) {
+            if (strLine.length() > 3) {
                 mLines.push_back(strLine);
                 LOG(TRACE) + "                " + strLine;
             }
@@ -268,7 +274,7 @@ private:
     
     
     
-    
+common::CMutex   m_mxBundleReplaceMutex;
     
 
 class CReplaceBundleThread : public rho::common::CRhoThread
@@ -448,6 +454,8 @@ unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath,
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+        if (strLine.length() < 4)
+            continue;
 
         CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
@@ -497,6 +505,8 @@ unsigned int CReplaceBundleThread::moveFilesByList( const String& strListPath, c
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+        if (strLine.length() < 4)
+            continue;
 
         CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
@@ -550,6 +560,8 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
                 strLine = strLine.substr(0, strLine.length()-1);
             }
         }
+        if (strLine.length() < 4)
+            continue;
         
         CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
@@ -644,6 +656,8 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
             }
         }
         
+        if (strLine.length() < 4)
+            continue;
         CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
             continue;
@@ -658,14 +672,15 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
         
         if ( is_dir)
         {
-            LOG(TRACE) + "Deleting item: " + CFilePath::join( strSrcFolder,strPath);
+            LOG(ERROR) + "Deleting item: " + CFilePath::join( strSrcFolder,strPath);
             
             if (CRhoFile::isFileExist(CFilePath::join( strSrcFolder,strPath).c_str()) ) {
                 
-                nError = CRhoFile::deleteFolder( CFilePath::join( strSrcFolder,strPath).c_str() );
 #ifdef OS_ANDROID
-                nError = 0;
-#endif                
+                nError = rho_android_remove_item(CFilePath::join( strSrcFolder,strPath).c_str());
+#else
+                nError = CRhoFile::deleteFolder( CFilePath::join( strSrcFolder,strPath).c_str() );
+#endif
                 
                 if (nError != 0)
                 {
@@ -684,14 +699,15 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
         }
         else
         {
-            LOG(TRACE) + "Deleting file: " + CFilePath::join( strSrcFolder,strPath);
+            LOG(ERROR) + "Deleting file: " + CFilePath::join( strSrcFolder,strPath);
             
             if (CRhoFile::isFileExist(CFilePath::join( strSrcFolder,strPath).c_str()) ) {
 
-                nError = CRhoFile::deleteFile( CFilePath::join( strSrcFolder,strPath).c_str() );
 #ifdef OS_ANDROID
-                nError = 0;
-#endif                
+                nError = rho_android_remove_item(CFilePath::join( strSrcFolder,strPath).c_str());
+#else
+                nError = CRhoFile::deleteFile( CFilePath::join( strSrcFolder,strPath).c_str() );
+#endif
                 if (nError != 0)
                 {
                     LOG(ERROR) + "Cannot remove file: " + CFilePath::join( strSrcFolder,strPath);
@@ -751,31 +767,33 @@ void CReplaceBundleThread::showError(int nError, const String& strError )
 
 void CReplaceBundleThread::run()
 {
-    //Stop application
-    if (!mDoNotRestartApp) {
-        rho_rhodesapp_callAppActiveCallback(0);
-        rho_rhodesapp_callUiDestroyedCallback();
-        RHODESAPP().stopApp();
-    }
-    doReplaceBundle();
-
-    if (mDoNotRestartApp /*&& (m_finish_callback.size() > 0)*/) {
-        // call callback
-        if (m_finish_callback.size() > 0) {
-            char* norm_url = rho_http_normalizeurl(m_finish_callback.c_str());
-            rho_net_request_with_data(norm_url, "&rho_callback=1&status=ok");
-            rho_http_free(norm_url);
+    synchronized(m_mxBundleReplaceMutex)
+    {
+        //Stop application
+        if (!mDoNotRestartApp) {
+            rho_rhodesapp_callAppActiveCallback(0);
+            rho_rhodesapp_callUiDestroyedCallback();
+            RHODESAPP().stopApp();
+        }
+        doReplaceBundle();
+        
+        if (mDoNotRestartApp /*&& (m_finish_callback.size() > 0)*/) {
+            // call callback
+            if (m_finish_callback.size() > 0) {
+                char* norm_url = rho_http_normalizeurl(m_finish_callback.c_str());
+                rho_net_request_with_data(norm_url, "&rho_callback=1&status=ok");
+                rho_http_free(norm_url);
+            }
+        }
+        else {
+            rho_platform_restart_application();
+            rho_sys_app_exit();
+        }
+        
+        if (m_is_finished_flag != NULL) {
+            *m_is_finished_flag = true;
         }
     }
-    else {
-        rho_platform_restart_application();
-        rho_sys_app_exit();
-    }
-
-    if (m_is_finished_flag != NULL) {
-        *m_is_finished_flag = true;
-    }
-
 }
 
     

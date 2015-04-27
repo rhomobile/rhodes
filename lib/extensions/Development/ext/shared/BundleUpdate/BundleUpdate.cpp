@@ -36,62 +36,66 @@ extern "C" void rho_webview_refresh(int index);
 
 
 
-static rho::String our_responce_server_url = "";
-static bool our_refresh_webview = false;
+//static rho::String our_responce_server_url = "";
+//static bool our_refresh_webview = false;
 
 
-void callback_system_update_bundle(void *arg, rho::String const &strQuery)
+class BundleUpdateThreadQueue : public rho::common::CThreadQueue
 {
-    const char* s = strQuery.c_str();
-    
-    rho::String qURL = "";
-    rho::String qServerIP = "";
-    rho::String qServerPort = "";
-    bool isRefresh = false;
-    
-    
-    rho::common::CTokenizer oTokenizer(strQuery, "&");
-    while (oTokenizer.hasMoreTokens())
+    DEFINE_LOGCLASS;
+public:
+    struct BUCommand : public IQueueCommand
     {
-        rho::String tok = oTokenizer.nextToken();
-        if (tok.length() == 0)
-        continue;
+        rho::String bundle_url;
+        rho::String responce_url;
+        bool refresh_webview;
+        bool canContinue;
         
-        size_t nPos = tok.find("package_url=");
-        if ( nPos != rho::String::npos )
+        
+        BUCommand(rho::String &_bundle_url, rho::String &_responce_url, bool _refresh_webview)
+        :bundle_url(_bundle_url), responce_url(_responce_url), refresh_webview(_refresh_webview)
         {
-            qURL = strQuery.substr(nPos+12);
+            canContinue = false;
         }
-        if ( rho::String_startsWith(tok, "package_url=") )
-        {
-            qURL = tok.substr(12);
-        }else if ( rho::String_startsWith( tok, "server_ip=") )
-        {
-            qServerIP = tok.substr(10);
-        }else if ( rho::String_startsWith( tok, "server_port=") )
-        {
-            qServerPort = tok.substr(12);
-        }else if ( rho::String_startsWith( tok, "refresh_after_update=") )
-        {
-            rho::String srefresh = tok.substr(21);
-            if ((srefresh.compare("false") != 0) && (srefresh.compare("0") != 0) && (srefresh.compare("FALSE") != 0)) {
-                isRefresh = true;
-            }
-        }
+        
+        bool equals(IQueueCommand const &) {return false;}
+        rho::String toString();
+    };
+public:
+    BundleUpdateThreadQueue() {
+        start(epNormal);
     }
-
-    our_responce_server_url = "http://";
-    our_responce_server_url = our_responce_server_url + qServerIP + ":" + qServerPort + "/response_from_device";
+    ~BundleUpdateThreadQueue() {
+        
+    }
     
-    rho::String fileURL = qURL;
+    BUCommand* getCurrentBUCommand() {
+        return (BUCommand*)getCurCommand();
+    }
+    
+private:
+    void processCommand(IQueueCommand* cmd);
+};
+
+
+rho::String BundleUpdateThreadQueue::BUCommand::toString()
+{
+    return bundle_url;
+}
+
+
+void BundleUpdateThreadQueue::processCommand(IQueueCommand *pCmd)
+{
+    BUCommand *cmd = (BUCommand*)pCmd;
+    
+    
+    rho::String fileURL = cmd->bundle_url;
     
     rho::String fileZipLocalDir = rho::common::CFilePath::join(RHODESAPPBASE().getRhoUserPath(), "RhoBundle");
     
     rho::String fileZipLocalPath = rho::common::CFilePath::join(fileZipLocalDir, "upgrade_bundle.zip");
     
     const char* flz = fileZipLocalPath.c_str();
-    
-    rho_http_sendresponse(arg, "");
     
     
     // 0 remove old files
@@ -146,7 +150,7 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
     // 3 call update bundle
     
     bool do_not_restart_app = true;
-    bool not_thread_mode = false;
+    bool not_thread_mode = true;
     bool check_filelist = true;
     
     
@@ -154,9 +158,87 @@ void callback_system_update_bundle(void *arg, rho::String const &strQuery)
     cb_url = cb_url + DevHTTPServer::getInstance()->getPort() + "/development/update_bundle_callback";
     const char* hu = cb_url.c_str();
     
-    our_refresh_webview = isRefresh;
+    
+    cmd->canContinue = false;
+
     rho_sys_replace_current_bundleEx( fileZipLocalDir.c_str(), cb_url.c_str(), do_not_restart_app, not_thread_mode, check_filelist, true );
     
+    
+    // wait responce
+    while (!cmd->canContinue) {
+        sleep(30);
+    }
+}
+
+
+
+
+
+
+static BundleUpdateThreadQueue* ourBundleUpdateThreadQueue = NULL;
+
+static BundleUpdateThreadQueue* getBundleUpdateThreadQueueSignletone() {
+    if (ourBundleUpdateThreadQueue == NULL) {
+        ourBundleUpdateThreadQueue = new BundleUpdateThreadQueue();
+    }
+    return ourBundleUpdateThreadQueue;
+}
+
+
+
+
+
+
+
+
+void callback_system_update_bundle(void *arg, rho::String const &strQuery)
+{
+    const char* s = strQuery.c_str();
+    
+    rho::String qURL = "";
+    rho::String qServerIP = "";
+    rho::String qServerPort = "";
+    bool isRefresh = false;
+    
+    
+    rho::common::CTokenizer oTokenizer(strQuery, "&");
+    while (oTokenizer.hasMoreTokens())
+    {
+        rho::String tok = oTokenizer.nextToken();
+        if (tok.length() == 0)
+        continue;
+        
+        size_t nPos = tok.find("package_url=");
+        if ( nPos != rho::String::npos )
+        {
+            qURL = strQuery.substr(nPos+12);
+        }
+        if ( rho::String_startsWith(tok, "package_url=") )
+        {
+            qURL = tok.substr(12);
+        }else if ( rho::String_startsWith( tok, "server_ip=") )
+        {
+            qServerIP = tok.substr(10);
+        }else if ( rho::String_startsWith( tok, "server_port=") )
+        {
+            qServerPort = tok.substr(12);
+        }else if ( rho::String_startsWith( tok, "refresh_after_update=") )
+        {
+            rho::String srefresh = tok.substr(21);
+            if ((srefresh.compare("false") != 0) && (srefresh.compare("0") != 0) && (srefresh.compare("FALSE") != 0)) {
+                isRefresh = true;
+            }
+        }
+    }
+
+    rho::String our_responce_server_url = "http://";
+    our_responce_server_url = our_responce_server_url + qServerIP + ":" + qServerPort + "/response_from_device";
+    
+    rho_http_sendresponse(arg, "");
+    
+    
+    BundleUpdateThreadQueue::BUCommand* cmd = new BundleUpdateThreadQueue::BUCommand(qURL, our_responce_server_url, isRefresh);
+    getBundleUpdateThreadQueueSignletone()->addQueueCommand(cmd);
     
 }
 
@@ -244,6 +326,15 @@ void callback_system_update_bundle_callback(void *arg, rho::String const &strQue
     
     rho::String query = "";
     
+    bool our_refresh_webview = false;
+    rho::String our_responce_server_url = "";
+    
+    BundleUpdateThreadQueue::BUCommand* cmd = getBundleUpdateThreadQueueSignletone()->getCurrentBUCommand();
+    if (cmd != NULL) {
+        our_refresh_webview = cmd->refresh_webview;
+        our_responce_server_url = cmd->responce_url;
+    }
+    
     rho::String message = "Unrecognizing Situation during update bundle! Restart application and reconnect device to server !";
     if (qStatus.compare("ok") == 0) {
        message = "Update bundle was finished !";
@@ -279,7 +370,10 @@ void callback_system_update_bundle_callback(void *arg, rho::String const &strQue
     rho::String fileZipLocalDir = rho::common::CFilePath::join(RHODESAPPBASE().getRhoUserPath(), "RhoBundle");
     //rho_file_impl_delete_folder(fileZipLocalDir.c_str());
     rho::common::CRhoFile::deleteFolder(fileZipLocalDir.c_str());
-
+    
+    if (cmd != NULL) {
+        cmd->canContinue = true;
+    }
 }
 
 
