@@ -1694,7 +1694,7 @@ namespace rho
             /// <param name="e"></param>
             void photoChooserTask_Completed(object sender, PhotoResult e)
             {
-              
+               
                        CRhoRuntime.getInstance().logEvent("Camera class-->photoChooserTask_Completed");
                        try
                        {
