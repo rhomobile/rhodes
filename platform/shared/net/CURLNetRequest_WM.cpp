@@ -693,15 +693,15 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
 		curl_easy_setopt(m_curl, CURLOPT_SSLKEYPASSWD, RHOCONF().getString("clientSSLCertificatePassword").c_str());
 	}
 
-	/*if(RHOCONF().isExist("serverSSLCertificate") && RHOCONF().getString("serverSSLCertificate").length() > 0)
+	if(RHOCONF().isExist("serverSSLCertificate") && RHOCONF().getString("serverSSLCertificate").length() > 0)
 	{
-		curl_easy_setopt(m_curl, CURLOPT_CAINFO, RHOCONF().getString("serverSSLCertificate"));
+		curl_easy_setopt(m_curl, CURLOPT_CAINFO, RHOCONF().getString("serverSSLCertificate").c_str());
 		curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 1);
 	}
 	else
-		curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);*/
+		curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
 
-    curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
+    //curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
     
     // Set very large timeout in case of local requests
