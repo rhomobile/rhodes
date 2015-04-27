@@ -120,7 +120,7 @@ namespace rho
                 }
                 catch (Exception ex)
                 {
-                    RubyStyle = true;
+                    
                   
                 }
             
@@ -1694,8 +1694,7 @@ namespace rho
             /// <param name="e"></param>
             void photoChooserTask_Completed(object sender, PhotoResult e)
             {
-                rhodes.MainPage.LayoutGrid().Dispatcher.BeginInvoke(delegate()
-                   {
+             
                        CRhoRuntime.getInstance().logEvent("Camera class-->photoChooserTask_Completed");
                        try
                        {
@@ -1783,7 +1782,7 @@ namespace rho
                            m_StorechoosePictureResult.set(m_choosePicture_output);
                        }
 
-                   });
+                  
             }
             /// <summary>
             /// Stores file in its own virtual drive rho\apps\app
