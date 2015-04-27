@@ -151,7 +151,7 @@ if has_setProperties
         public virtual I<%= $cur_module.name %>Impl getImpl() {
             return new <%= $cur_module.name %>();
         }
-        public virtual I<%= $cur_module.name %>SingletonImpl getSingletonImpl() {
+        public I<%= $cur_module.name %>SingletonImpl getSingletonImpl() {
             return new <%= $cur_module.name %>Singleton();
         }
     }
