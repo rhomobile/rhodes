@@ -54,6 +54,7 @@ extern "C" int rho_prepare_folder_for_upgrade(const char* szPath);
 #if defined OS_ANDROID
 extern "C" void rho_android_file_reload_stat_table();
 extern "C" void rho_android_force_all_files();
+extern "C" int rho_android_remove_item(const char* path);
 #endif
 
 
@@ -264,7 +265,7 @@ private:
         while (oTokenizer.hasMoreTokens()) 
         {
             String strLine = oTokenizer.nextToken();
-            if (strLine.length() > 0) {
+            if (strLine.length() > 3) {
                 mLines.push_back(strLine);
                 LOG(TRACE) + "                " + strLine;
             }
@@ -453,6 +454,8 @@ unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath,
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+        if (strLine.length() < 4)
+            continue;
 
         CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
@@ -502,6 +505,8 @@ unsigned int CReplaceBundleThread::moveFilesByList( const String& strListPath, c
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+        if (strLine.length() < 4)
+            continue;
 
         CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
@@ -555,6 +560,8 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
                 strLine = strLine.substr(0, strLine.length()-1);
             }
         }
+        if (strLine.length() < 4)
+            continue;
         
         CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
@@ -649,6 +656,8 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
             }
         }
         
+        if (strLine.length() < 4)
+            continue;
         CTokenizer oLineTok( strLine, "|" );
         if ( !oLineTok.hasMoreTokens() )
             continue;
@@ -663,14 +672,15 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
         
         if ( is_dir)
         {
-            LOG(TRACE) + "Deleting item: " + CFilePath::join( strSrcFolder,strPath);
+            LOG(ERROR) + "Deleting item: " + CFilePath::join( strSrcFolder,strPath);
             
             if (CRhoFile::isFileExist(CFilePath::join( strSrcFolder,strPath).c_str()) ) {
                 
-                nError = CRhoFile::deleteFolder( CFilePath::join( strSrcFolder,strPath).c_str() );
 #ifdef OS_ANDROID
-                nError = 0;
-#endif                
+                nError = rho_android_remove_item(CFilePath::join( strSrcFolder,strPath).c_str());
+#else
+                nError = CRhoFile::deleteFolder( CFilePath::join( strSrcFolder,strPath).c_str() );
+#endif
                 
                 if (nError != 0)
                 {
@@ -689,14 +699,15 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
         }
         else
         {
-            LOG(TRACE) + "Deleting file: " + CFilePath::join( strSrcFolder,strPath);
+            LOG(ERROR) + "Deleting file: " + CFilePath::join( strSrcFolder,strPath);
             
             if (CRhoFile::isFileExist(CFilePath::join( strSrcFolder,strPath).c_str()) ) {
 
-                nError = CRhoFile::deleteFile( CFilePath::join( strSrcFolder,strPath).c_str() );
 #ifdef OS_ANDROID
-                nError = 0;
-#endif                
+                nError = rho_android_remove_item(CFilePath::join( strSrcFolder,strPath).c_str());
+#else
+                nError = CRhoFile::deleteFile( CFilePath::join( strSrcFolder,strPath).c_str() );
+#endif
                 if (nError != 0)
                 {
                     LOG(ERROR) + "Cannot remove file: " + CFilePath::join( strSrcFolder,strPath);

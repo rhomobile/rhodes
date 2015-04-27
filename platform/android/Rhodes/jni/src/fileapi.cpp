@@ -138,6 +138,7 @@ static jmethodID midSeek;
 static jmethodID midGetChildren;
 static jmethodID midReloadStatTable;
 static jmethodID midForceAllFiles;
+static jmethodID midDeleteRecursively;
 
 static jobject jAssetManager;
 static AAssetManager* pAssetManager = 0;
@@ -510,6 +511,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     if (!midGetChildren) return;
     midReloadStatTable = getJNIClassStaticMethod(env, clsFileApi, "reloadStatTable", "()V");
     if (!midReloadStatTable) return;
+    midDeleteRecursively = getJNIClassStaticMethod(env, clsFileApi, "deleteRecursively", "(Ljava/lang/String;)I");
+    if (!midDeleteRecursively) return;
 
     const char *libc = "/system/lib/libc.so";
     void *pc = dlopen(libc, RTLD_LAZY);
@@ -1968,5 +1971,18 @@ RHO_GLOBAL void rho_android_force_all_files() {
     RHO_LOG("rho_android_force_all_files() FINISH");
 }
 
+RHO_GLOBAL int rho_android_remove_item(const char* path) {
 
+    RHO_LOG("rho_android_remove_item() START");
+
+    JNIEnv *env = jnienv();
+
+    jhstring objStr = rho_cast<jstring>(env, path);
+
+    int res = env->CallStaticIntMethod(clsFileApi, midDeleteRecursively, objStr.get());
+
+    RHO_LOG("rho_android_remove_item() FINISH");
+
+    return res;
+}
 
