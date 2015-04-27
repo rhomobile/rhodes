@@ -91,7 +91,7 @@ module RhoDevelopment
       puts 'done'.success
       @tasks = Queue.new
       @web_server = WEBrick::HTTPServer.new(
-          :BindAddress => Configuration::webserver_ip,
+          :BindAddress => "0.0.0.0",
           :Port => Configuration::webserver_port,
           :DocumentRoot => document_root,
           :ServerType => WEBrick::SimpleServer
