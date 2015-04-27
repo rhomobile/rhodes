@@ -417,6 +417,8 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 }
             }
         }
+        if(optimalSize == null)
+        return getCamera().getParameters().getPictureSize();
         return optimalSize;
     }
 
