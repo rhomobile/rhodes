@@ -859,13 +859,16 @@ alert(reslnArray[1].height);
                 <DESC>Only valid and non-empty values for properties are supported in Android and iOS</DESC>
             </REMARK>
 			<REMARK title="Ruby Support">
-            <DESC>Due to platform limitation devices such as ES400, MC65 and MC67 does not support color camera in ruby applications. Preferred Imager in that case. Similarly imager and color camera is not supported in ruby applications for CE5 and CE6 devices.</DESC>
+            <DESC>Due to platform limitation imager and color camera is not supported in ruby applications for CE5 and CE6 devices.</DESC>
             </REMARK>
             <REMARK title="Camera in Suspend mode">
               <DESC>All WM and CE7 devices automatically turn off both color and imager cameras, when the device is suspended. User has to restart the camera on resume. Whereas CE5 (eg:MC9000) and CE6 (eg: MC31) devices retain the preview on resuming from suspend state.</DESC>
             </REMARK>
             <REMARK title="Image saving while take picture">
               <DESC>Image captured in few devices(eg: Samsung), irrespective of picture taken (Landscape/Portrait) , will always save in Landscape Mode, Even though on the device it appears as captured, when the same is copied to Desktop, you can see that it will be in Landscape Mode.This is default behaviour of the device</DESC>
+            </REMARK>
+			<REMARK title="Devices lacking support">
+            <DESC>Due to platform limitation devices such as ES400, MC65 and MC67 does not support color camera.</DESC>
             </REMARK>
         </REMARKS>
     </MODULE>
