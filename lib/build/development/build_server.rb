@@ -5,7 +5,6 @@ module RhoDevelopment
     def build_partial_bundles_for_all_subscribers
       Configuration::enabled_subscribers.each { |each|
         self.build_partial_bundle_for_platform(each.normalized_platform_name)
-        self.copy_platform_bundle_to_web_server_root(each.normalized_platform_name, Configuration::partial_bundle_name)
       }
     end
 
@@ -18,12 +17,12 @@ module RhoDevelopment
     def build_full_bundle_for_subscriber(aSubscriber)
       RhoDevelopment.setup(Configuration::development_directory, aSubscriber.normalized_platform_name)
       RhoDevelopment.make_full_bundle
+      self.copy_platform_bundle_to_web_server_root(aSubscriber.normalized_platform_name, Configuration::full_bundle_name)
     end
 
     def build_full_bundles_for_all_subscribers
       Configuration::enabled_subscribers.each { |each|
         self.build_full_bundle_for_subscriber(each)
-        self.copy_platform_bundle_to_web_server_root(each.normalized_platform_name, Configuration::full_bundle_name)
       }
     end
 
