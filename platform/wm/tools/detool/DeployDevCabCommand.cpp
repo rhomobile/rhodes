@@ -48,16 +48,30 @@ void DeployDevCabCommand::runObject()
 	//FIXME: rake gives pathname with unix-like '/' file separators,
 	//so if we want to use this tool outside of rake, we should remember this
 	//or check and convert cab_file
-	TCHAR *p = _tcsrchr (cab_file, '/');
-	if (p) p++;
-	_tcscpy(params_buf, p != NULL ? p : cab_file);
+    TCHAR *noui = new TCHAR[100];
+    _tcscpy(noui, L"/noui ");
+
+	TCHAR *p1 = _tcsrchr (cab_file, '/');
+    
+    TCHAR *p = NULL;
+
+    if (p1){
+        p1++;
+        p = _tcscat (noui, p1);
+        _tcscpy(params_buf, p);
+    }
+    else {
+        p = _tcscat (noui, cab_file);
+        _tcscpy(params_buf, p);
+    }
+	
 	//_tcscat(params_buf, p != NULL ? p : cab_file);
 
     if(!rapi::wceInvokeCabSetup(T2A(params_buf))) {
 		_tprintf( TEXT("FAILED\n"));
 
 		_tprintf( TEXT("Starting installator GUI ..."));
-        if(!rapi::wceRunProcess ("\\windows\\wceload.exe", T2A(p != NULL ? p : cab_file))) {
+        if(!rapi::wceRunProcess ("\\windows\\wceload.exe", T2A(p))) {
 			_tprintf( TEXT("FAILED\n"));
 			ExitProcess(EXIT_FAILURE);
 		} else {
