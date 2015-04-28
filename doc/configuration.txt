@@ -141,6 +141,10 @@ Set this option to 1 in order to open Rhodes app in full screen mode. Default is
 
 	full_screen = 1
 
+Set this option to 0 in order to hide title bar on Android.
+
+	android_title = 0	
+
 Set this option to 1 in order to enable WebView zoom (Android only). Default is 0
 
 	enable_screen_zoom = 1
