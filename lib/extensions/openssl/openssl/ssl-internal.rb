@@ -115,7 +115,7 @@ module OpenSSL
     module_function :verify_certificate_identity
 
     class SSLSocket
-      include Buffering
+     # include Buffering
       include SocketForwarder
       include Nonblock
 
