@@ -252,11 +252,35 @@ BOOL CIEBrowserEngine::BackOnTab(int iInstID,int iPagesBack /*= 1*/)
 
 BOOL CIEBrowserEngine::ForwardOnTab(int iInstID)
 {
+    int iPagesForward = 1;
+    //  iPreviousPages must be greater than 0, otherwise we're not doing anything
+    if (iPagesForward == 0)
+	return TRUE;
+
+    //  Check to see we can go forward this many pages
+    int iHistoryCounter = 0;
+    CHistoryElement* tempHistoryElement = m_currentPage;
+    while(tempHistoryElement != NULL && tempHistoryElement->pNext != NULL)
+    {
+    	//  We can go to the previous page
+		iHistoryCounter++;
+		//  Go forward another item in the history
+		tempHistoryElement = tempHistoryElement->pNext;
+		//  If we have gone forward the specified number of times navigate to the 
+		//  page
+		if (iPagesForward == iHistoryCounter)
+		{			
+			m_currentPage = tempHistoryElement;
+			Navigate(m_currentPage->tcURL, iInstID);			
+		}
+    }
     return TRUE;
 }
 
 BOOL CIEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 {
+    if(m_currentPage!=NULL)
+    	Navigate(m_currentPage->tcURL,iTab);
     return TRUE; 
 }
 
