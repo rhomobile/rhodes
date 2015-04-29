@@ -1946,7 +1946,7 @@ namespace "build" do
       $android_jars << $v4support_classpath
     end
 
-    task :upgrade_package => ["config:common"] do
+    task :upgrade_package => ["config:set_android_platform", "config:common"] do
       print_timestamp('build:android:upgrade_package START')
 
       $skip_build_rhodes_main = true
@@ -1989,7 +1989,7 @@ namespace "build" do
       print_timestamp('build:android:upgrade_package FINISH')
     end
 
-    task :upgrade_package_partial => ["config:common"] do
+    task :upgrade_package_partial => ["config:set_android_platform", "config:common"] do
 
       print_timestamp('build:android:upgrade_package_partial START')
       #puts '$$$$$$$$$$$$$$$$$$'
