@@ -821,7 +821,7 @@ namespace "build" do
     end
 
     desc "build upgrade package with full bundle"
-    task :upgrade_package => ["config:common"] do
+    task :upgrade_package => ["config:set_iphone_platform", "config:common"] do
 
         $skip_checking_XCode = true
         $skip_build_rhodes_main = true
@@ -865,7 +865,7 @@ namespace "build" do
     end
 
     desc "build upgrade package with part of bundle (changes configure by two text files - see documentation)"
-    task :upgrade_package_partial => ["config:common"] do
+    task :upgrade_package_partial => ["config:set_iphone_platform", "config:common"] do
 
         print_timestamp('build:iphone:upgrade_package_partial START')
 
