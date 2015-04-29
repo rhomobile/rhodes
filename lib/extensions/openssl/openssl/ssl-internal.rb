@@ -115,9 +115,9 @@ module OpenSSL
     module_function :verify_certificate_identity
 
     class SSLSocket
-     # include Buffering
+      include Buffering
       include SocketForwarder
-      include Nonblock
+      #include Nonblock
 
       def post_connection_check(hostname)
         unless OpenSSL::SSL.verify_certificate_identity(peer_cert, hostname)
