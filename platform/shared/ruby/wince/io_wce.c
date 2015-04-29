@@ -299,8 +299,7 @@ int _wopen(const wchar_t *path, int oflag, va_list arg)
 
 int close(int fd)
 {
-    HANDLE fHandle = get_OSHandleByFileNumber(fd);
-    set_FileNumber( fd, 0);
+    
     if (fd-1 < g_nMaxFileHandlers)
     {
        HANDLE fHandle = get_OSHandleByFileNumber(fd);
