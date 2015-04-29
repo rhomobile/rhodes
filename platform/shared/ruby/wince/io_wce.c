@@ -1,9 +1,7 @@
 /***************************************************************
   io.c
-
   author : uema2
   date   : Nov 30, 2002
-
   You can freely use, copy, modify, and redistribute
   the whole contents.
 ***************************************************************/
@@ -42,20 +40,16 @@ int rb_w32_rename(const char *oldname, const char *newname)
 {
 	wchar_t *wold, *wnew;
 	int ret = 0;
-
 	wold = wce_mbtowc(oldname);
 	wnew = wce_mbtowc(newname);
-
 	/* replace with MoveFile. */
 	if ( MoveFileW(wold, wnew) == FALSE )
     {
         errno = map_errno(GetLastError());
         ret = -1;
     }
-
 	free(wold);
 	free(wnew);
-
 	return ret;
 }
 #endif
@@ -69,7 +63,6 @@ int rb_w32_unlink(const char *path)
 {
 	wchar_t *wfile = wce_mbtowc(path);
     int ret = 0;
-
 	const DWORD attr = GetFileAttributes(path);
 	if (attr != (DWORD)-1 && (attr & FILE_ATTRIBUTE_READONLY)) {
 	    SetFileAttributes(path, attr & ~FILE_ATTRIBUTE_READONLY);
@@ -81,7 +74,6 @@ int rb_w32_unlink(const char *path)
 		SetFileAttributes(path, attr);
 	    }
 	}
-
 	free(wfile);
     return ret;
 }
@@ -100,13 +92,11 @@ vsnprintf(char *buf, size_t size, const char *format, va_list va)
     if (size > 0) buf[size - 1] = 0;
     return ret;
 }
-
 int
 snprintf(char *buf, size_t size, const char *format, ...)
 {
     int ret;
     va_list va;
-
     va_start(va, format);
     ret = vsnprintf(buf, size, format, va);
     va_end(va);
@@ -299,14 +289,12 @@ int _wopen(const wchar_t *path, int oflag, va_list arg)
 
 int close(int fd)
 {
-    
-    if (fd-1 < g_nMaxFileHandlers)
+   if (fd-1 < g_nMaxFileHandlers)
     {
-       HANDLE fHandle = get_OSHandleByFileNumber(fd);
-       set_FileNumber( fd, 0);
+        HANDLE fHandle = get_OSHandleByFileNumber(fd);
+        set_FileNumber( fd, 0);
 	CloseHandle( fHandle );
-    }	
-	
+    }
 	return 0;
 }
 
