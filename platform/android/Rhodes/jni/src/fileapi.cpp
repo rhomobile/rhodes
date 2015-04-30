@@ -1620,6 +1620,8 @@ RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct t
    RHO_LOG("select: return %d (native)", count);
     return count;
 }
+RHO_GLOBAL int getdents(unsigned int fd, struct dirent *dirp, unsigned int count)
+{
     RHO_LOG("getdents: fd=%u, dirp=%p, count=%u", fd, (void*)dirp, count);
     return real_getdents(fd, dirp, count);
 }
