@@ -41,6 +41,39 @@
     //NSLog(@"RVC::%@::shouldAutorotate",[[self class] description]);
     if ([[Rhodes sharedInstance] isRotationLocked])
         return NO;
+   
+   //checking for device version
+    NSString *version = [[UIDevice currentDevice] systemVersion];
+    float versionFloat = [version floatValue];
+    
+    //if version is less than 7 no frame changes are made
+    if(versionFloat < 7.0f)
+        return YES;
+    
+    //Update frame on rotation
+    CGRect screenBounds = [UIScreen mainScreen].bounds ;
+    CGFloat width = CGRectGetWidth(screenBounds)  ;
+    CGFloat height = CGRectGetHeight(screenBounds) ;
+    UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    //calculating frame
+    screenBounds = self.view.frame;
+    if(UIInterfaceOrientationIsPortrait(interfaceOrientation)){
+        if (width<height) {
+            screenBounds.size = CGSizeMake(width, height);
+        } else {
+            screenBounds.size = CGSizeMake(height, width);
+        }
+    }else if(UIInterfaceOrientationIsLandscape(interfaceOrientation)){
+        if (width<height) {
+            screenBounds.size = CGSizeMake(height, width);
+        } else {
+            screenBounds.size = CGSizeMake(width, height);
+        }
+    }
+    //updating frame
+    self.view.frame = screenBounds;
+
 	return YES;
 }
 
