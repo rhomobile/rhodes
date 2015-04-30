@@ -696,11 +696,17 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
 	if(RHOCONF().isExist("serverSSLCertificate") && RHOCONF().getString("serverSSLCertificate").length() > 0)
 	{
 		curl_easy_setopt(m_curl, CURLOPT_CAINFO, RHOCONF().getString("serverSSLCertificate").c_str());
-		curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 1);
+		curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 1);		
+		
 	}
 	else
+	{
 		curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
-
+	}
+	if(RHOCONF().isExist("certificateRevocationList") && RHOCONF().getString("certificateRevocationList").length() > 0)
+	{
+		curl_easy_setopt(m_curl, CURLOPT_CRLFILE, RHOCONF().getString("certificateRevocationList").c_str());
+	}
     //curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
     
