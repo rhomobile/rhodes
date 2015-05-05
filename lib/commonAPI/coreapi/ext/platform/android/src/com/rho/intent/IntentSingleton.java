@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -123,6 +125,9 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
         if (categories != null) {
             for(String category : categories) {
                 intent.addCategory(category);
+                if(intent.toString().contains(" xxx ") && isTablet(ContextFactory.getContext())) {
+                	intent.removeCategory(category);
+                }
             }
         }
         
@@ -200,6 +205,12 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
         return intent;
     }
     
+    private boolean isTablet(Context context) {
+		return (context.getResources().getConfiguration().screenLayout 
+				& Configuration.SCREENLAYOUT_SIZE_MASK) 
+				>= Configuration.SCREENLAYOUT_SIZE_LARGE;
+	}
+	
     private Map<String, Object> parseIntent(Intent intent) {
         Map<String, Object> params = new HashMap<String, Object>();
         
