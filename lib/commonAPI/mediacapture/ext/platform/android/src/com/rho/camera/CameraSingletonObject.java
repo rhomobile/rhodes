@@ -154,7 +154,7 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 		String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
 		String strUri = null;
 		try {
-			strUri = MediaStore.Images.Media.insertImage(contentResolver, pathToImage, imageName, "Saving Image to Device Gallery through Camera");
+			strUri = MediaStore.Images.Media.insertImage(contentResolver, new File(pathToImage).getAbsolutePath(), imageName, "Saving Image to Device Gallery through Camera");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
