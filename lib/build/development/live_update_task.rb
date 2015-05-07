@@ -128,7 +128,7 @@ module RhoDevelopment
 
     def dispatchToUrl(anUri)
       uri = URI.join(anUri, 'tasks/new')
-      Net::HTTP.post_form(uri, {'taskName' => self.class.taskName, 'ip' => @subscriber.ip}, 'filename' => @filename)
+      Net::HTTP.post_form(uri, {'taskName' => self.class.taskName, 'ip' => @subscriber.ip, 'filename' => @filename})
     end
 
   end
@@ -296,7 +296,7 @@ module RhoDevelopment
 
     def dispatchToUrl(anUri)
       uri = URI.join(anUri, 'tasks/new')
-      Net::HTTP.post_form(uri, {'taskName' => self.class.taskName, 'ip' => @subscriber.ip}, 'filename' => @filename)
+      Net::HTTP.post_form(uri, {'taskName' => self.class.taskName, 'ip' => @subscriber.ip, 'filename' => @filename})
     end
 
   end
