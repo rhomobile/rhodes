@@ -1952,6 +1952,10 @@ RHO_GLOBAL void rho_file_set_fs_mode(int mode)
     }
 }
 
+RHO_GLOBAL int rho_file_get_fs_mode()
+{
+    return rho_fs_mode;
+}
 
 RHO_GLOBAL void rho_android_file_reload_stat_table() {
     

@@ -55,6 +55,10 @@ extern "C" int rho_prepare_folder_for_upgrade(const char* szPath);
 extern "C" void rho_android_file_reload_stat_table();
 extern "C" void rho_android_force_all_files();
 extern "C" int rho_android_remove_item(const char* path);
+
+extern "C" void rho_file_set_fs_mode(int mode);
+extern "C" int rho_file_get_fs_mode();
+
 #endif
 
 
@@ -63,6 +67,17 @@ void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
 }
 #endif
+
+
+
+
+extern "C" void rho_file_operation_test() {
+    
+}
+
+
+
+
 
 namespace rho {
 namespace common {
@@ -367,7 +382,7 @@ public:
     static unsigned int moveFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder );
     
     static unsigned int partialAddFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder, CFileList* filelist, CFileList* filelist_apps);
-    static unsigned int partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist, CFileList* filelist_apps);
+    static unsigned int partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist, CFileList* filelist_apps, String tmp_remove_folder);
     
 };
 IMPLEMENT_LOGCLASS(CReplaceBundleThread,"RhoBundle");
@@ -681,7 +696,7 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
     return nError;
 }
     
-unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist, CFileList* filelist_apps) {
+unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strListPath, const String& strSrcFolder, CFileList* filelist, CFileList* filelist_apps, String tmp_remove_folder) {
 	LOG(TRACE) + "Partial Removing items by list: " + strSrcFolder + ", list: " + strListPath;
     
     unsigned int nError = 0;
@@ -726,11 +741,11 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
             
             if (CRhoFile::isFileExist(CFilePath::join( strSrcFolder,strPath).c_str()) ) {
                 
-#ifdef OS_ANDROID
-                nError = rho_android_remove_item(CFilePath::join( strSrcFolder,strPath).c_str());
-#else
+//#ifdef OS_ANDROID
+                //nError = rho_android_remove_item(CFilePath::join( strSrcFolder,strPath).c_str());
+//#else
                 nError = CRhoFile::deleteFolder( CFilePath::join( strSrcFolder,strPath).c_str() );
-#endif
+//#endif
                 
                 if (nError != 0)
                 {
@@ -753,11 +768,21 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
             
             if (CRhoFile::isFileExist(CFilePath::join( strSrcFolder,strPath).c_str()) ) {
 
-#ifdef OS_ANDROID
-                nError = rho_android_remove_item(CFilePath::join( strSrcFolder,strPath).c_str());
-#else
+//#ifdef OS_ANDROID
+                
+//                nError = CRhoFile::renameFile( CFilePath::join( strSrcFolder,strPath).c_str(),  CFilePath::join( tmp_remove_folder, "to_remove.bin").c_str());
+//                if (nError != 0)
+//                {
+//                    LOG(ERROR) + "Cannot rename file (for deleting)  from : " + CFilePath::join( strSrcFolder,strPath) + "; to: " + CFilePath::join( tmp_remove_folder, "to_remove.bin");
+//                    break;
+//                }
+                
+                
+                
+                //nError = rho_android_remove_item(CFilePath::join( strSrcFolder,strPath).c_str());
+//#else
                 nError = CRhoFile::deleteFile( CFilePath::join( strSrcFolder,strPath).c_str() );
-#endif
+//#endif
                 if (nError != 0)
                 {
                     LOG(ERROR) + "Cannot remove file: " + CFilePath::join( strSrcFolder,strPath);
@@ -965,10 +990,20 @@ bool CReplaceBundleThread::is_need_full_update(CFileList* old_filelist, CFileLis
     
 void CReplaceBundleThread::doReplaceBundle()
 {
+    
+#ifdef OS_ANDROID
+    int saved_mode = rho_file_get_fs_mode();
+    rho_file_set_fs_mode(0);
+#endif
+    
+    
     CFileTransaction oFT( RHODESAPP().getAppRootPath());
     if (oFT.start())
     {
         showError(oFT.getError(), oFT.getErrorText());
+#ifdef OS_ANDROID
+        rho_file_set_fs_mode(saved_mode);
+#endif
         return;
     }
     LOG(INFO) + "START";
@@ -978,6 +1013,9 @@ void CReplaceBundleThread::doReplaceBundle()
     if ( rho_prepare_folder_for_upgrade( RHODESAPP().getAppRootPath().c_str() ) == 0) {
         // error
         showError(0, "Prepare bundle for upgrade on iOS failed." );
+#ifdef OS_ANDROID
+        rho_file_set_fs_mode(saved_mode);
+#endif
         return;
     }
 #endif    
@@ -1023,6 +1061,9 @@ void CReplaceBundleThread::doReplaceBundle()
         if (is_need_full_update(&filelist_apps, &newfilelist, &add_list, &remove_list)) {
             // stop and send responce
             sendRequestFullUpdate();
+#ifdef OS_ANDROID
+            rho_file_set_fs_mode(saved_mode);
+#endif
             return;
         }
         
@@ -1032,6 +1073,9 @@ void CReplaceBundleThread::doReplaceBundle()
         String new_files_list_path = CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt");
         if (!CRhoFile::isFileExist(new_files_list_path.c_str())) {
             showError(nError, "Invalid new bundle content - not contain rhofilelist !" );
+#ifdef OS_ANDROID
+            rho_file_set_fs_mode(saved_mode);
+#endif
             return;
         }
     }
@@ -1040,10 +1084,13 @@ void CReplaceBundleThread::doReplaceBundle()
     if (is_partial_update) {
         if (CRhoFile::isFileExist(CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt").c_str())) {
             //nError = removeFilesByList( CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_add_files.txt"), ::RHODESAPP().getAppRootPath(), true );
-            nError = partialRemoveItemsByList( CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt"), ::RHODESAPP().getAppRootPath(), &filelist, &filelist_apps);
+            nError = partialRemoveItemsByList( CFilePath::join( m_bundle_path, "RhoBundle/apps/upgrade_package_remove_files.txt"), ::RHODESAPP().getAppRootPath(), &filelist, &filelist_apps, m_bundle_path);
             if ( nError != 0 )
             {
                 showError(nError, "Remove original files from partial remove list failed." );
+#ifdef OS_ANDROID
+                rho_file_set_fs_mode(saved_mode);
+#endif
                 return;
             }
         }
@@ -1059,6 +1106,9 @@ void CReplaceBundleThread::doReplaceBundle()
         if ( nError != 0 )
         {
             showError(nError, "Remove files from bundle failed." );
+#ifdef OS_ANDROID
+            rho_file_set_fs_mode(saved_mode);
+#endif
             return;
         }
     }
@@ -1075,6 +1125,9 @@ void CReplaceBundleThread::doReplaceBundle()
             if ( nError != 0 )
             {
                 showError(nError, "Copy files to bundle failed." );
+#ifdef OS_ANDROID
+                rho_file_set_fs_mode(saved_mode);
+#endif
                 return;
             }
         }
@@ -1086,6 +1139,9 @@ void CReplaceBundleThread::doReplaceBundle()
         if ( nError != 0 )
         {
             showError(nError, "Copy files to bundle failed." );
+#ifdef OS_ANDROID
+            rho_file_set_fs_mode(saved_mode);
+#endif
             return;
         }
 #else
@@ -1093,14 +1149,14 @@ void CReplaceBundleThread::doReplaceBundle()
         if ( nError != 0 )
         {
             showError(nError, "Copy files to bundle failed." );
+#ifdef OS_ANDROID
+            rho_file_set_fs_mode(saved_mode);
+#endif
             return;
         }
 #endif
     }
     
-    LOG(INFO) + "STOP";
-    oFT.commit();
-
     if (is_partial_update) {
         filelist.saveToFile();
 #ifdef OS_ANDROID
@@ -1136,15 +1192,19 @@ void CReplaceBundleThread::doReplaceBundle()
     
     }
 
+    LOG(INFO) + "STOP";
+    oFT.commit();
     
-
+    //Delete bundle folder
+    CRhoFile::deleteFolder( m_bundle_path.c_str());
 
 #ifdef OS_ANDROID
     rho_android_file_reload_stat_table();
 #endif
+#ifdef OS_ANDROID
+    rho_file_set_fs_mode(saved_mode);
+#endif
 
-    //Delete bundle folder
-    CRhoFile::deleteFolder( m_bundle_path.c_str());
 }
 
 }
