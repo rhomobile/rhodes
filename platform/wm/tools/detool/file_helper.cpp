@@ -211,7 +211,7 @@ bool wceInvokeCabSetup(const char *wceload_params)
 	return true ;
 }
 
-int copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool use_shared_runtime)
+int copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool overwrite_existing_file, bool use_shared_runtime)
 {
 	TCHAR exe_fullpath[MAX_PATH];
 	int retval = 0;
@@ -226,7 +226,7 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool use_shared_runtime)
 	_tcscat(exe_fullpath, app_name);
 	_tcscat(exe_fullpath, (use_shared_runtime ? _T(".lnk") : _T(".exe")));
 
-    if (doMakeCopyFile(exe_fullpath, file_name))
+    if (doMakeCopyFile(exe_fullpath, file_name, overwrite_existing_file))
     {
 	    hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	    if (INVALID_HANDLE_VALUE == hSrc) 
@@ -277,7 +277,7 @@ copyFailure:
 	return EXIT_FAILURE;
 }
 
-bool doMakeCopyFile(TCHAR *deviceFilePath, TCHAR* hostFilePath)
+bool doMakeCopyFile(TCHAR *deviceFilePath, TCHAR* hostFilePath, bool overwriteExistingFile)
 {
     HANDLE hSrc = CreateFile(hostFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (INVALID_HANDLE_VALUE == hSrc) 
@@ -290,6 +290,11 @@ bool doMakeCopyFile(TCHAR *deviceFilePath, TCHAR* hostFilePath)
     CloseHandle (hSrc);
 
     HANDLE hDest = CeCreateFile(deviceFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (!overwriteExistingFile && INVALID_HANDLE_VALUE != hDest)
+    {
+        CeCloseHandle(hDest);
+        return false;
+    }
 
     FILETIME deviceCreateTime, deviceLastAccessTime, deviceLastWriteTime;
     CeGetFileTime(hDest, &deviceCreateTime, &deviceLastAccessTime, &deviceLastWriteTime);

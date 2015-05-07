@@ -101,20 +101,13 @@ void DeployEmuCommand::runObject()
 
             int retval = EXIT_SUCCESS;
 
-            if (exe_change)
-            {
-                retval = file::copyExecutable (app_exe, app_dir, use_shared_runtime);
-                if (retval != EXIT_SUCCESS) {
-                    printf ("Failed to copy application executable\n");
-                    if (retval == 32) {
-                        printf ("Please, stop application on device and try again.\n");
-                    }
-                    releaseDeploy();
+            retval = file::copyExecutable (app_exe, app_dir, exe_change, use_shared_runtime);
+            if (retval != EXIT_SUCCESS) {
+                printf ("Failed to copy application executable\n");
+                if (retval == 32) {
+                    printf ("Please, stop application on device and try again.\n");
                 }
-            }
-            else
-            {
-                printf ("%s executable POSTPONE.\n", app_exe);
+                releaseDeploy();
             }
 
             if (lcdll_path) {
