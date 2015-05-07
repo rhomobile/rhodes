@@ -136,4 +136,7 @@ extern "C" void Init_Timer_extension()
 {
     rho::CTimerFactory::setInstance( new rho::CTimerFactory() );
     rho::Init_Timer_API();
+#ifndef RHO_NO_RUBY_API
+    RHODESAPP().getExtManager().requireRubyFile("RhoTimerApi");
+#endif
 }
