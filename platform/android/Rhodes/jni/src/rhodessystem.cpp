@@ -159,6 +159,13 @@ RHO_GLOBAL void android_setup(JNIEnv *env)
     if (!clsRE)
         return;
 
+    // Init logconf
+    rho_logconf_Init(rho_log_path().c_str(), rho_root_path().c_str(), "");
+    if (rho_root_path().compare(rho_shared_path()) != 0)
+    {
+        rho_conf_Init_from_shared_path(rho_shared_path().c_str());
+    }
+  if(!(RHOCONF().isExist("useAssetFS")) || RHOCONF().getBool("useAssetFS")) {
     struct rlimit rlim;
     if (getrlimit(RLIMIT_NOFILE, &rlim) == -1)
     {
@@ -180,6 +187,7 @@ RHO_GLOBAL void android_setup(JNIEnv *env)
             return;
         }
     }
+  }
 
     if (!set_posix_environment(env, clsRE)) return;
 
@@ -192,12 +200,8 @@ RHO_GLOBAL void android_setup(JNIEnv *env)
     // Init SQLite temp directory
     sqlite3_temp_directory = (char*)s_sqlite_path.c_str();
 
-    // Init logconf
-    rho_logconf_Init(rho_log_path().c_str(), rho_root_path().c_str(), "");
-    if (rho_root_path().compare(rho_shared_path()) != 0)
-    {
-        rho_conf_Init_from_shared_path(rho_shared_path().c_str());
-    }
+   
+   
 
     // Disable log to stdout as on android all stdout redirects to /dev/null
     RHOCONF().setBool("LogToOutput", false, true);
@@ -224,4 +228,4 @@ RHO_GLOBAL void rho_nativethread_end(void *)
     jvm()->DetachCurrentThread();
     store_thr_jnienv(0);
 }
-//--------------------------------------------------------------------------------------------------
+//-------------------
