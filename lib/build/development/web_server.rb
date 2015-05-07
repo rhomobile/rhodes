@@ -178,8 +178,9 @@ module RhoDevelopment
       subscriber = Configuration::subscriber_by_ip(request.query['ip'])
       if request.query['status'] == 'need_full_update'
         puts "#{subscriber} is requesting full update bundle".info
-        WebServer::dispatch_task(SubscriberFullBundleUpdateBuildingTask.new(subscriber))
-        WebServer::dispatch_task(SubscriberFullUpdateNotifyingTask.new(subscriber))
+        filename = RhoDevelopment::Configuration::next_filename_for_downloading()
+        WebServer::dispatch_task(SubscriberFullBundleUpdateBuildingTask.new(subscriber, filename))
+        WebServer::dispatch_task(SubscriberFullUpdateNotifyingTask.new(subscriber, filename))
       end
       if request.query['status'] == 'ok'
         puts "#{subscriber} applied update bundle successfully".info

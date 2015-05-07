@@ -67,6 +67,7 @@ module RhoDevelopment
     end
 
     def notify(anUrl)
+      puts anUrl.to_s
       print "Notifying #{self} ...".primary
       begin
         http = Net::HTTP.new(anUrl.host, anUrl.port)
@@ -80,12 +81,12 @@ module RhoDevelopment
       end
     end
 
-    def partial_notify
-      self.notify(self.notify_url(Configuration::last_filename_for_downloading))
+    def partial_notify(aFilename)
+      self.notify(self.notify_url(aFilename))
     end
 
-    def full_notify
-      self.notify(self.notify_url(Configuration::last_filename_for_downloading))
+    def full_notify(aFilename)
+      self.notify(self.notify_url(aFilename))
     end
 
 

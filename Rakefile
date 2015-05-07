@@ -347,7 +347,8 @@ namespace :dev do
         exit 1
       end
       RhoDevelopment::WebServer.ensure_running
-      RhoDevelopment::WebServer.dispatch_task(RhoDevelopment::PartialUpdateTask.new());
+      filename = RhoDevelopment::Configuration::next_filename_for_downloading()
+      RhoDevelopment::WebServer.dispatch_task(RhoDevelopment::PartialUpdateTask.new(filename));
     end
 
     desc 'Builds full update bundle for all platforms and notifies all subscribers'
@@ -358,8 +359,9 @@ namespace :dev do
         exit 1
       end
       RhoDevelopment::WebServer.ensure_running
-      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new)
-      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersFullUpdateNotifyingTask.new)
+      filename = RhoDevelopment::Configuration::next_filename_for_downloading()
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsFullBundleBuildingTask.new(filename))
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersFullUpdateNotifyingTask.new(filename))
     end
 
     desc 'It builds update with files from diff file list for all platforms and notifies all subscribers'
@@ -370,8 +372,9 @@ namespace :dev do
         exit 1
       end
       RhoDevelopment::WebServer.ensure_running
-      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new)
-      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersPartialUpdateNotifyingTask.new)
+      filename = RhoDevelopment::Configuration::next_filename_for_downloading()
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllPlatformsPartialBundleBuildingTask.new(filename))
+      RhoDevelopment::WebServer::dispatch_task(RhoDevelopment::AllSubscribersPartialUpdateNotifyingTask.new(filename))
     end
 
     desc 'It launches watcher for source code and builds partial update and notifies all subscribers on each change'

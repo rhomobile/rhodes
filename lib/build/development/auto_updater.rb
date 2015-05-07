@@ -47,8 +47,9 @@ module RhoDevelopment
     puts "As removed: #{removed_files}".info
     begin
       self.create_diff_files(added_files, changed_files, removed_files)
-      WebServer::dispatch_task(AllPlatformsPartialBundleBuildingTask.new)
-      WebServer::dispatch_task(AllSubscribersPartialUpdateNotifyingTask.new)
+      filename = RhoDevelopment::Configuration::next_filename_for_downloading()
+      WebServer::dispatch_task(AllPlatformsPartialBundleBuildingTask.new(filename))
+      WebServer::dispatch_task(AllSubscribersPartialUpdateNotifyingTask.new(filename))
     rescue => e
       puts 'Exception...'.warning
       puts e.inspect.warning
