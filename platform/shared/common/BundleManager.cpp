@@ -86,6 +86,45 @@ public:
 
 };
     
+    
+    String rho_normalize_path_string(String& p) {
+        char* buf = NULL;
+        int i;
+        int res_len = 0;
+        int len = (int)p.length();
+        const char* str = p.c_str();
+        for (i = 0; i < len; i++) {
+            char c = str[i];
+            
+            if (c == 0x0D) {
+                c = 0;
+                if (buf == NULL) {
+                    buf = new char[len+1];
+                }
+            }
+            if (c == '\\') {
+                c = '/';
+                if (buf == NULL) {
+                    buf = new char[len+1];
+                }
+            }
+            if (buf != NULL) {
+                if (c != 0) {
+                    buf[res_len] = c;
+                    res_len++;
+                }
+            }
+        }
+        
+        if (buf != NULL) {
+            buf[res_len] = 0;
+            String res_s(buf);
+            delete buf;
+            return res_s;
+        }
+        return p;
+    }
+    
 
     
 class CFileList 
@@ -266,6 +305,7 @@ private:
         {
             String strLine = oTokenizer.nextToken();
             if (strLine.length() > 3) {
+                strLine = rho_normalize_path_string(strLine);
                 mLines.push_back(strLine);
                 LOG(TRACE) + "                " + strLine;
             }
@@ -275,6 +315,10 @@ private:
     
     
 common::CMutex   m_mxBundleReplaceMutex;
+    
+    
+    
+    
     
 
 class CReplaceBundleThread : public rho::common::CRhoThread
@@ -454,6 +498,8 @@ unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath,
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+        strLine = rho_normalize_path_string(strLine);
+        
         if (strLine.length() < 4)
             continue;
 
@@ -505,6 +551,8 @@ unsigned int CReplaceBundleThread::moveFilesByList( const String& strListPath, c
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+        strLine = rho_normalize_path_string(strLine);
+        
         if (strLine.length() < 4)
             continue;
 
@@ -551,6 +599,7 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+        strLine = rho_normalize_path_string(strLine);
         
         if (strLine.length() > 0) {
             if ((strLine[0] == 0xD) || (strLine[0] == 0xA)) {
@@ -646,6 +695,7 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+        strLine = rho_normalize_path_string(strLine);
 
         if (strLine.length() > 0) {
             if ((strLine[0] == 0xD) || (strLine[0] == 0xA)) {
