@@ -107,10 +107,10 @@ void simulateKeyInput (int vk, BOOL bExtended, BOOL doDown, BOOL doUp);
 namespace file
 {
 bool changeFileTimeInDest(TCHAR *deviceFilePath, TCHAR* hostFilePath);
-bool doMakeCopyFile(TCHAR *deviceFilePath, TCHAR* hostFilePath);
+bool doMakeCopyFile(TCHAR *deviceFilePath, TCHAR* hostFilePath, bool overwriteExistingFile = true);
 int  copyLicenseDll (TCHAR *file_name, TCHAR *app_dir);
 int  copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir);
-int  copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool use_shared_runtime);
+int  copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool overwrite_existing_file, bool use_shared_runtime);
 }
 
 #endif
