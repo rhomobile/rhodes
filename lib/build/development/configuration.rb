@@ -154,16 +154,6 @@ module RhoDevelopment
       return "bundle_#{key}.zip"
     end
 
-    def self.last_filename_for_downloading
-      config = self.read_configuration
-      if config['last_bundle_key'].nil?
-        raise "The last bundle key not found at #{self.config_filename}"
-      end
-      key = config['last_bundle_key']
-      return "bundle_#{key}.zip"
-    end
-
-
     def self.document_root=(aString)
       config = self.read_configuration
       config['webserver'] = {'documentRoot' => aString}
