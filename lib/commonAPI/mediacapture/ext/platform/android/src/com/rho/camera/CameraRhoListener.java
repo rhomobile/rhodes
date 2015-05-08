@@ -81,7 +81,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				String strCaptureUri = getActualPropertyMap().get("captureUri");		
 				if (strCaptureUri != null)
 				{
-					captureUri = Uri.parse(getActualPropertyMap().get("captureUri"));		
+					captureUri = Uri.parse(getActualPropertyMap().get("captureUri"));
+					getActualPropertyMap().put("default_camera_key_path", "");
 				}		
 				if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT))
 				{
@@ -100,6 +101,12 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						}else{
 							imgPath = getFilePath(curUri);
 							mBitmap = BitmapFactory.decodeFile(imgPath);
+							File f= new File(imgPath);
+							imgPath = copyImg(imgPath);
+							f.renameTo(new File(f.getParentFile(), rename));
+							RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
+					                Uri.parse(curUri.getPath())));
+							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
 						}
 						
 					} catch (OutOfMemoryError e1) {
@@ -291,7 +298,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					inResultMap.put("image_format",   "jpg");			
 				}
 				else{
-					if(getActualPropertyMap().get("default_camera_key_path") != null){
+					if((getActualPropertyMap().get("default_camera_key_path") != null) && (getActualPropertyMap().get("default_camera_key_path") != "")){
 						inResultMap.put("imageUri",  imgPath);
 						inResultMap.put("imageFormat",   "jpg");
 					}else{
