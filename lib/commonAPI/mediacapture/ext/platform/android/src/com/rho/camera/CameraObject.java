@@ -287,6 +287,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     CameraObject(String id) {
         super(id);
 
+	getPropertiesMap().put("ChoosePicture_Key", "");
         getPropertiesMap().put("cameraType", "back");
         getPropertiesMap().put("compressionFormat", "jpg");
         getPropertiesMap().put("outputFormat", "image");
