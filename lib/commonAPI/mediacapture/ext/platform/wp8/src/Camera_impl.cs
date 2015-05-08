@@ -109,9 +109,7 @@ namespace rho
             /// <param name="native"></param>
             public override void setNativeImpl(string strID, long native)
             {
-                Dictionary<bool, bool> is_Ruby = new Dictionary<bool, bool>();
-                is_Ruby.Add(true, true);
-                bool RubyStyle = false;
+               
                 try
                 {
                     CRhoRuntime.getInstance().logEvent(" Camera class--> setNativeImpl" + strID);
@@ -482,10 +480,18 @@ namespace rho
             /// <param name="oResult"></param>
             public override void setFileName(string fileName, IMethodResult oResult)
             {
-              
-                            CRhoRuntime.getInstance().logEvent("Camera class--> setFileName " + fileName);
-                            Rho_StringParameters["filename"] = fileName;
-                       
+                Dictionary<bool, bool> stringnullorempty = new Dictionary<bool, bool>();
+                stringnullorempty.Add(false, false);
+                try
+                {
+                    bool filenameemptyornull = stringnullorempty[String.IsNullOrEmpty(fileName)];
+                    CRhoRuntime.getInstance().logEvent("Camera class--> setFileName " + fileName);
+                    Rho_StringParameters["filename"] = fileName;
+                }
+                catch (Exception ex)
+                {
+                    Rho_StringParameters["filename"] = "Img";
+                }
             }
 
             /// <summary>
@@ -1287,6 +1293,16 @@ namespace rho
             void cam_CaptureImageAvailable(object sender, Microsoft.Devices.ContentReadyEventArgs e)
             {
                 CRhoRuntime.getInstance().logEvent("Camera class-->cam_CaptureImageAvailable");
+                Dictionary<bool, bool> stringnullorempty = new Dictionary<bool, bool>();
+                stringnullorempty.Add(false, false);
+                try
+                {
+                    bool strstringnullorempty = stringnullorempty[String.IsNullOrEmpty(Rho_StringParameters["filename"])];
+                }
+                catch (Exception ex)
+                {
+                    Rho_StringParameters["filename"] = "Img";
+                }
                 string fileName = Rho_StringParameters["filename"] + "_" + DateTime.Now.ToLongDateString() + "_" + DateTime.Now.ToLongTimeString().Replace(':', '_');
 
 
