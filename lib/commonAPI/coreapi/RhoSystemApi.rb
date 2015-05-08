@@ -16,6 +16,11 @@ class System
 
        return localServerPort if prop_name == 'rhodes_port'
        return freeServerPort if prop_name == 'free_server_port'
+       return devicePushId if prop_name == 'device_id'
+	   
+	    return '' if prop_name == 'phone_number'
+	    return '' if prop_name == 'full_browser'
+	    return '' if prop_name == ''
 
        res = orig_get_property(prop_name)
     
