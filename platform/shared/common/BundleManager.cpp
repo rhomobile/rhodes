@@ -133,7 +133,7 @@ public:
         
         if (buf != NULL) {
             buf[res_len] = 0;
-            String res_s(buf);
+            String res_s = buf;
             delete buf;
             return res_s;
         }
