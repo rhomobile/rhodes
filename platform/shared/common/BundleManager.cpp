@@ -1162,11 +1162,21 @@ void CReplaceBundleThread::doReplaceBundle()
             // no CFilePath::join(m_bundle_path, "RhoBundle/rho.dat") in current bundle - we should modify and copy CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt") !!!
             filelist.saveToFile();
         
-            if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), rho_filelist_apps_path.c_str()))
-            {
-                int err = errno;
-                LOG(ERROR) + "Cannot replace rhofilelist.txt, errno: " + LOGFMT("%d") + err;
-            }
+        nError = CRhoFile::deleteFile( rho_filelist_path.c_str() );
+        if (nError != 0)
+        {
+            LOG(ERROR) + "Cannot remove file old rhofilelist.txt";
+        }
+        if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), rho_filelist_apps_path.c_str()))
+        {
+            int err = errno;
+            LOG(ERROR) + "Cannot replace rhofilelist.txt, errno: " + LOGFMT("%d") + err;
+            showError(nError, "Cannot replace rhofilelist.txt" );
+#ifdef OS_ANDROID
+            rho_file_set_fs_mode(saved_mode);
+#endif
+            return;
+        }
             //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
             //if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat").c_str()))
             //{
@@ -1175,10 +1185,22 @@ void CReplaceBundleThread::doReplaceBundle()
             //}
 #else
         // copy new rhofilelist.txt
+        nError = CRhoFile::deleteFile( rho_filelist_path.c_str() );
+        if (nError != 0)
+        {
+            LOG(ERROR) + "Cannot remove file old rhofilelist.txt";
+        }
+
+        
         if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt").c_str(), rho_filelist_path.c_str()))
         {
             int err = errno;
             LOG(ERROR) + "Cannot replace rhofilelist.txt, errno: " + LOGFMT("%d") + err;
+            showError(nError, "Cannot replace rhofilelist.txt" );
+#ifdef OS_ANDROID
+            rho_file_set_fs_mode(saved_mode);
+#endif
+            return;
         }
 #endif
     
