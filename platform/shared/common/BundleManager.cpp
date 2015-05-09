@@ -108,26 +108,19 @@ public:
         int res_len = 0;
         int len = (int)p.length();
         const char* str = p.c_str();
+        buf = new char[len+1];
         for (i = 0; i < len; i++) {
             char c = str[i];
             
-            if (c == 0x0D) {
+            if ((c == 0x0D) || (c == 0x0A)) {
                 c = 0;
-                if (buf == NULL) {
-                    buf = new char[len+1];
-                }
             }
             if (c == '\\') {
                 c = '/';
-                if (buf == NULL) {
-                    buf = new char[len+1];
-                }
             }
-            if (buf != NULL) {
-                if (c != 0) {
-                    buf[res_len] = c;
-                    res_len++;
-                }
+            if (c != 0) {
+                buf[res_len] = c;
+                res_len++;
             }
         }
         
