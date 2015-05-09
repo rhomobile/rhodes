@@ -2034,7 +2034,7 @@ namespace "build" do
       if File.exists? add_list_full_name
         File.open(add_list_full_name, "r") do |f|
           while line = f.gets
-            fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chop
+            fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chomp
             add_files << fixed_path
             puts '### ['+fixed_path+']'
           end
@@ -2045,7 +2045,7 @@ namespace "build" do
       if File.exists? remove_list_full_name
         File.open(remove_list_full_name, "r") do |f|
           while line = f.gets
-            fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chop
+            fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chomp
             remove_files << fixed_path
             #puts '### ['+fixed_path+']'
           end
