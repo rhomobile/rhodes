@@ -1162,7 +1162,7 @@ void CReplaceBundleThread::doReplaceBundle()
             // no CFilePath::join(m_bundle_path, "RhoBundle/rho.dat") in current bundle - we should modify and copy CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt") !!!
             filelist.saveToFile();
         
-        nError = CRhoFile::deleteFile( rho_filelist_path.c_str() );
+        nError = CRhoFile::deleteFile( rho_filelist_apps_path.c_str() );
         if (nError != 0)
         {
             LOG(ERROR) + "Cannot remove file old rhofilelist.txt";
