@@ -870,6 +870,9 @@ alert(reslnArray[1].height);
 			<REMARK title="Devices lacking support">
             <DESC>Due to platform limitation devices such as ES400, MC65 and MC67 does not support color camera.</DESC>
             </REMARK>
+            <REMARK title="takepicture Resolution Issue on Low Memory Device WP8">
+            <DESC>In devices having low processor, lower resolution image capture may show a small area of preview on black background at the time of transition back to application.</DESC>
+            </REMARK>
         </REMARKS>
     </MODULE>
 </API>
