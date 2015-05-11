@@ -60,6 +60,36 @@ public class CameraObject extends CameraBase implements ICameraObject {
 		temp.putAll(propertyMap);
 		result.set(true);
     }
+    @Override
+public void getProperties(List<String> arrayofNames, IMethodResult result) {
+	
+	//super.getProperties(arrayofNames, result);
+	Map<String, Object> props = new HashMap<String, Object>();
+       for (String name: arrayofNames)
+       {
+    	  props.put(name, cameraPropGet(name));
+       }
+       result.set(props);
+       
+}
+    
+    private String cameraPropGet(String name)
+    {
+    	String propValue="";
+    	Map<String, String> temp=getPropertiesMap();
+    	if(temp.containsKey(name))
+    	{
+    		
+    		 try{
+    		 	propValue=String.valueOf(temp.get(name));
+    		}
+    		 catch(Exception ex)
+    		 {
+    			
+    		 }
+    	}
+    	return propValue;
+    }
     
     static class CameraSize implements ICameraObject.ISize {
         private Camera.Size mSize;
