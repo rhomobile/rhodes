@@ -315,6 +315,23 @@ void CSystemImpl::getIsSymbolDevice(CMethodResult& oResult)
 #endif
 }
 
+void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
+{
+#if defined( APP_BUILD_CAPABILITY_SYMBOL ) && defined( OS_WINCE )
+    //get the system OEM string
+    TCHAR szPlatform[MAX_PATH+1];
+    memset(szPlatform, 0, MAX_PATH*sizeof(TCHAR));
+    SystemParametersInfo(SPI_GETOEMINFO, MAX_PATH, szPlatform, 0);
+    _wcslwr(szPlatform);
+    if(wcsstr(szPlatform, L"symbol") || wcsstr(szPlatform, L"motorola"))
+        oResult.set(true);
+    else
+        oResult.set(false);
+#else
+    oResult.set(false);
+#endif
+}
+
 void CSystemImpl::getOemInfo(CMethodResult& oResult)
 {
 #if defined( OS_WINCE )
