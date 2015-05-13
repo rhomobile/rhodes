@@ -90,7 +90,7 @@ public:
     // menu proxy
     void menuClear();
     void menuAddSeparator();
-    void menuAddAction(const char* label, int item);
+    void menuAddAction(const char* label, int item, bool enabled);
     // tabbar
     int getTabbarHeight();
     void removeAllTabs(bool restore);

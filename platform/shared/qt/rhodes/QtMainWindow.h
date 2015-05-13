@@ -94,7 +94,7 @@ public:
     void setToolbarStyle(bool border, QString background, int viewHeight);
     // menu
     void menuClear(void);
-    void menuAddAction(const QString & text, int item);
+    void menuAddAction(const QString & text, int item, bool enabled);
     void menuAddSeparator(void);
     // tabbar
     void tabbarInitialize(void);
