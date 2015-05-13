@@ -59,60 +59,60 @@ The ebapi.js file is necessary for all single API inclusions.
 		
 		  <!-- Camera Types -->
     
-			<CONSTANT name="CAMERA_TYPE_BACK" value="back" type=”STRING”>
+			<CONSTANT name="CAMERA_TYPE_BACK" value="back" type="STRING">
 				<DESC>Back camera. This is not supported in WM/CE devices.</DESC>
 			</CONSTANT>
-			<CONSTANT name="CAMERA_TYPE_FRONT" value="front" type=”STRING”>
+			<CONSTANT name="CAMERA_TYPE_FRONT" value="front" type="STRING">
 				<DESC>Front camera. This is not supported in WM/CE devices.</DESC>
 			</CONSTANT>
-			 <CONSTANT name="CAMERA_TYPE_IMAGER" value="imager" type=”STRING”>
+			 <CONSTANT name="CAMERA_TYPE_IMAGER" value="imager" type="STRING">
 				<DESC>Camera is an imager. This is supported only in WM/CE devices.</DESC>
 			</CONSTANT>
-			 <CONSTANT name="CAMERA_TYPE_COLOR" value="color" type=”STRING”>
+			 <CONSTANT name="CAMERA_TYPE_COLOR" value="color" type="STRING">
 				<DESC>Camera is color camera. This is supported only in WM/CE devices.</DESC>
 			</CONSTANT>
 			 <!-- Camera Compression Format -->
-			 <CONSTANT name="COMPRESSION_FORMAT_JPG" value="jpg" type=”STRING”>
+			 <CONSTANT name="COMPRESSION_FORMAT_JPG" value="jpg" type="STRING">
 				<DESC>JPG compression.</DESC>
 			</CONSTANT>
-			<CONSTANT name="COMPRESSION_FORMAT_PNG" value="png" type=”STRING”>
+			<CONSTANT name="COMPRESSION_FORMAT_PNG" value="png" type="STRING">
 				<DESC>PNG compression.</DESC>
 			</CONSTANT>
 			 <!-- Camera Output Image Format -->
-			<CONSTANT name="OUTPUT_FORMAT_IMAGE" value="image" type=”STRING”>
+			<CONSTANT name="OUTPUT_FORMAT_IMAGE" value="image" type="STRING">
 				<DESC>This shall provide the image path.</DESC>
 			</CONSTANT>
-			<CONSTANT name="OUTPUT_FORMAT_DATAURI" value="dataUri" type=”STRING”>
+			<CONSTANT name="OUTPUT_FORMAT_DATAURI" value="dataUri" type="STRING">
 				<DESC> this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
 			</CONSTANT>
 			<!-- Camera Color Model -->
-			<CONSTANT name="COLOR_MODEL_RGB" value="rgb" type=”STRING”>
+			<CONSTANT name="COLOR_MODEL_RGB" value="rgb" type="STRING">
 				<DESC>A colour image is captured.</DESC>
 			</CONSTANT>
-			<CONSTANT name="COLOR_MODEL_GRAYSCALE" value="grayscale" type=”STRING”>
+			<CONSTANT name="COLOR_MODEL_GRAYSCALE" value="grayscale" type="STRING">
 				<DESC>A grayscale image is captured.</DESC>
 			</CONSTANT>
 			
-			<CONSTANT name="FLASH_ON" value="on" type=”STRING”>
+			<CONSTANT name="FLASH_ON" value="on" type="STRING">
 				<DESC>Flash will be used.</DESC>
 			</CONSTANT>
-			<CONSTANT name="FLASH_OFF" value="off" type=”STRING”>
+			<CONSTANT name="FLASH_OFF" value="off" type="STRING">
 				<DESC>Flash will not be used.</DESC>
 			</CONSTANT>
-			<CONSTANT name="FLASH_AUTO" value="auto" type=”STRING”>
+			<CONSTANT name="FLASH_AUTO" value="auto" type="STRING">
 				<DESC>Flash will be used if lighting conditions deem it necessary. This is not supported in WM/CE devices.</DESC>
 			</CONSTANT>
-			<CONSTANT name="FLASH_RED_EYE" value="redEye" type=”STRING”>
+			<CONSTANT name="FLASH_RED_EYE" value="redEye" type="STRING">
 				<DESC>Flash with red eye reduction is used. This is not supported in iOS/WM/CE devices.</DESC>
 			</CONSTANT>
-			<CONSTANT name="FLASH_TORCH" value="torch" type=”STRING”>
+			<CONSTANT name="FLASH_TORCH" value="torch" type="STRING">
 				<DESC>The flash is turned on in torch mode. This is supported only in Android devices.</DESC>
 			</CONSTANT>
 			<!-- Camera Imager AIM Types -->
-			<CONSTANT name="AIM_ON" value="on" type=”STRING>
+			<CONSTANT name="AIM_ON" value="on" type="STRING">
 				 <DESC>switches the imager's aim ON </DESC>
 			</CONSTANT>
-			<CONSTANT name="AIM_OFF" value="off" type=”STRING>
+			<CONSTANT name="AIM_OFF" value="off" type="STRING">
 				<DESC>switches the imager's aim OFF </DESC>
 			</CONSTANT>
         </CONSTANTS>
