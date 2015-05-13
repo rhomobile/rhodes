@@ -81,11 +81,9 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
 				//rename = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
 				if(!propertyMap.containsKey("fileName")){
-					System.out.println("CameraObj onActivityResult !Filename ");
 					rename = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())) + ".jpg";
 				}
 				else{
-					System.out.println("CameraObj onActivityResult Filename ");
 					rename = propertyMap.get("fileName")+ ".jpg";
 				}
 				String curPath = null;		
