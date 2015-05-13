@@ -829,10 +829,11 @@ void QtMainWindow::setToolbarStyle(bool border, QString background, int viewHeig
 
 // Menu:
 
-void QtMainWindow::menuAddAction(const QString & text, int item)
+void QtMainWindow::menuAddAction(const QString & text, int item, bool enabled)
 {
     QAction* qAction = new QAction(text, ui->toolBar);
     qAction->setData(QVariant(item));
+    qAction->setEnabled(enabled);
     QObject::connect(qAction, SIGNAL(triggered(bool)), this, SLOT(menuActionEvent(bool)) );
     ui->menuMain->addAction(qAction);
 }
