@@ -48,6 +48,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     private int mCameraUsers;
     private Uri fileUri;
     String mCurrentPhotoPath = null;
+    public static String userFilePath = null;
     private ContentValues values = null;
     
     int getCameraIndex() {
@@ -149,9 +150,11 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");                
                 if(!propertyMap.containsKey("fileName")){
                    filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
+                    userFilePath = filePath;
          	}
          	else{
                    filePath = propertyMap.get("fileName");
+                    userFilePath = filePath;
 				   if(filePath.contains("\\")){
 						intent.putExtra("error", "Invalid file path");
 					}
@@ -183,12 +186,38 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                     } 
                     else
                     {   
-	                    
-	                    stream = new FileOutputStream(filePath);                        
-	                    resultUri = Uri.fromFile(new File(filePath));                        
+                    	 if(userFilePath.contains("sdcard")){
+                    		 
+                    		 Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+                    			
+
+                    				if(isSDPresent)
+                    				{
+                    					int lastIndex = userFilePath.lastIndexOf("/");
+                    					
+                    					String subfolderName = userFilePath.replaceAll("/sdcard", "");
+                    					String folderName = subfolderName.substring(subfolderName.indexOf("/")+1,subfolderName.lastIndexOf("/"));
+                    					
+                    					String file_name= userFilePath.substring(lastIndex+1, userFilePath.length());
+                    					
+                    					
+                    					File directory = new File(Environment.getExternalStorageDirectory()+File.separator + folderName);
+                    					boolean flag = directory.mkdirs();
+                    					
+                    					stream = new FileOutputStream(directory +File.separator  + file_name+".jpg");                        
+                	                    resultUri = Uri.fromFile(new File(directory +File.separator  + file_name+".jpg"));                        
+                	                    stream.write(data);    
+                	                    stream.flush();                        
+                	                    stream.close();
+                    			}
+                      }else{
+  	                    stream = new FileOutputStream(filePath);                        
+  	                    resultUri = Uri.fromFile(new File(filePath));                         
 	                    stream.write(data);    
 	                    stream.flush();                        
 	                    stream.close();
+                      }
+	                    //CameraRhoListener.getInstance().copyImgAsUserChoice(filePath);
                     }
                     StringBuilder dataBuilder = new StringBuilder();
                     dataBuilder.append("data:image/jpeg;base64,");
