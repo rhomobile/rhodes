@@ -1,6 +1,7 @@
 package com.rho.camera;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,6 +49,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     private int mCameraUsers;
     private Uri fileUri;
     String mCurrentPhotoPath = null;
+    public static String userFilePath = null;
     private ContentValues values = null;
     
     int getCameraIndex() {
@@ -149,9 +151,11 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");                
                 if(!propertyMap.containsKey("fileName")){
                    filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
+                   userFilePath = filePath;
          	}
          	else{
                    filePath = propertyMap.get("fileName");
+                   userFilePath = filePath;
 				   if(filePath.contains("\\")){
 						intent.putExtra("error", "Invalid file path");
 					}
@@ -183,12 +187,38 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                     } 
                     else
                     {   
-	                    
-	                    stream = new FileOutputStream(filePath);                        
-	                    resultUri = Uri.fromFile(new File(filePath));                        
+                    	 if(userFilePath.contains("sdcard")){
+                    		 
+                    		 Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+                    			
+
+                    				if(isSDPresent)
+                    				{
+                    					int lastIndex = userFilePath.lastIndexOf("/");
+                    					
+                    					String subfolderName = userFilePath.replaceAll("/sdcard", "");
+                    					String folderName = subfolderName.substring(subfolderName.indexOf("/")+1,subfolderName.lastIndexOf("/"));
+                    					
+                    					String file_name= userFilePath.substring(lastIndex+1, userFilePath.length());
+                    					
+                    					
+                    					File directory = new File(Environment.getExternalStorageDirectory()+File.separator + folderName);
+                    					boolean flag = directory.mkdirs();
+                    					
+                    					stream = new FileOutputStream(directory +File.separator  + file_name+".jpg");                        
+                	                    resultUri = Uri.fromFile(new File(directory +File.separator  + file_name+".jpg"));                        
+                	                    stream.write(data);    
+                	                    stream.flush();                        
+                	                    stream.close();
+                    			}
+                      }else{
+  	                    stream = new FileOutputStream(filePath);                        
+  	                    resultUri = Uri.fromFile(new File(filePath));                         
 	                    stream.write(data);    
 	                    stream.flush();                        
 	                    stream.close();
+                      }
+	                    //CameraRhoListener.getInstance().copyImgAsUserChoice(filePath);
                     }
                     StringBuilder dataBuilder = new StringBuilder();
                     dataBuilder.append("data:image/jpeg;base64,");
@@ -484,7 +514,6 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
         Logger.T(TAG, "takePicture");
-        CameraActivity.click_rotation = false;
         try {
             Map<String, String> actualPropertyMap = new HashMap<String, String>();
             actualPropertyMap.putAll(getPropertiesMap());
@@ -598,4 +627,36 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
 	    Camera camera = getCamera();
 	    camera.setDisplayOrientation(rotate);
 	}
+	
+	
+	/**
+	 * Checks the device if it has
+	 * auto focus feature and sets auto focus
+	 * @param Preview Activity
+	 * 
+	 */
+	
+	@Override
+	public void setFocus(final Activity preview) {
+		openCamera();
+		 if (hasAutoFocus()) {
+	            getCamera().autoFocus(new Camera.AutoFocusCallback() {
+	                public void onAutoFocus(boolean success, Camera camera) {
+	                }
+	            });
+	            
+	        } 
+		 closeCamera();
+	}
+	
+	private boolean hasAutoFocus() {
+        String focusMode = getCamera().getParameters().getFocusMode();
+        boolean supported = false;
+        if (focusMode != null) {
+            supported = (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO)) || (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_MACRO));
+        }
+        return supported;
+        
+    }
+	
 }
