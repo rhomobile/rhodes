@@ -55,7 +55,68 @@ The ebapi.js file is necessary for all single API inclusions.
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
-        <PROPERTIES usePropertyBag="accessorsViaPropertyBag" generateAccessors="true">
+		<CONSTANTS>
+		
+		  <!-- Camera Types -->
+    
+			<CONSTANT name="CAMERA_TYPE_BACK" value="back" type="STRING">
+				<DESC>Back camera. This is not supported in WM/CE devices.</DESC>
+			</CONSTANT>
+			<CONSTANT name="CAMERA_TYPE_FRONT" value="front" type="STRING">
+				<DESC>Front camera. This is not supported in WM/CE devices.</DESC>
+			</CONSTANT>
+			 <CONSTANT name="CAMERA_TYPE_IMAGER" value="imager" type="STRING">
+				<DESC>Camera is an imager. This is supported only in WM/CE devices.</DESC>
+			</CONSTANT>
+			 <CONSTANT name="CAMERA_TYPE_COLOR" value="color" type="STRING">
+				<DESC>Camera is color camera. This is supported only in WM/CE devices.</DESC>
+			</CONSTANT>
+			 <!-- Camera Compression Format -->
+			 <CONSTANT name="COMPRESSION_FORMAT_JPG" value="jpg" type="STRING">
+				<DESC>JPG compression.</DESC>
+			</CONSTANT>
+			<CONSTANT name="COMPRESSION_FORMAT_PNG" value="png" type="STRING">
+				<DESC>PNG compression.</DESC>
+			</CONSTANT>
+			 <!-- Camera Output Image Format -->
+			<CONSTANT name="OUTPUT_FORMAT_IMAGE" value="image" type="STRING">
+				<DESC>This shall provide the image path.</DESC>
+			</CONSTANT>
+			<CONSTANT name="OUTPUT_FORMAT_DATAURI" value="dataUri" type="STRING">
+				<DESC> this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
+			</CONSTANT>
+			<!-- Camera Color Model -->
+			<CONSTANT name="COLOR_MODEL_RGB" value="rgb" type="STRING">
+				<DESC>A colour image is captured.</DESC>
+			</CONSTANT>
+			<CONSTANT name="COLOR_MODEL_GRAYSCALE" value="grayscale" type="STRING">
+				<DESC>A grayscale image is captured.</DESC>
+			</CONSTANT>
+			
+			<CONSTANT name="FLASH_ON" value="on" type="STRING">
+				<DESC>Flash will be used.</DESC>
+			</CONSTANT>
+			<CONSTANT name="FLASH_OFF" value="off" type="STRING">
+				<DESC>Flash will not be used.</DESC>
+			</CONSTANT>
+			<CONSTANT name="FLASH_AUTO" value="auto" type="STRING">
+				<DESC>Flash will be used if lighting conditions deem it necessary. This is not supported in WM/CE devices.</DESC>
+			</CONSTANT>
+			<CONSTANT name="FLASH_RED_EYE" value="redEye" type="STRING">
+				<DESC>Flash with red eye reduction is used. This is not supported in iOS/WM/CE devices.</DESC>
+			</CONSTANT>
+			<CONSTANT name="FLASH_TORCH" value="torch" type="STRING">
+				<DESC>The flash is turned on in torch mode. This is supported only in Android devices.</DESC>
+			</CONSTANT>
+			<!-- Camera Imager AIM Types -->
+			<CONSTANT name="AIM_ON" value="on" type="STRING">
+				 <DESC>switches the imager's aim ON </DESC>
+			</CONSTANT>
+			<CONSTANT name="AIM_OFF" value="off" type="STRING">
+				<DESC>switches the imager's aim OFF </DESC>
+			</CONSTANT>
+        </CONSTANTS>
+        <PROPERTIES usePropertyBag="accessorsViaPropertyBag" generateAccessors="true" >
             <DESC>These properties are used to configure the Camera.</DESC>
             <ALIASES>
                 <ALIAS new="format" existing="compressionFormat" deprecated="true"/>
@@ -73,22 +134,12 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="cameraType" type="STRING" readOnly="true">
 			    <PLATFORM>Android, iOS, WP8, WM, CE</PLATFORM>
                 <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
-                <DESC>This property is device specific. The value for this property can be either 'back' or 'front' in the case of Android/iOS/WP8 devices.In the case of windows it could be either 'imager' or 'color'. WM/CE devices will use 'color'as default and if color camera not avialble the default value will be 'imager'. Android/iOS/WP8 devices will use 'back'as default and if back camera not avialble the default value will be 'front'.</DESC>
-                <DESC_EB>This property is device specific. The value for this property can be either 'back' or 'front' in the case of Android devices.In the case of windows it could be either 'imager' or 'color'. WM/CE devices will use 'color'as default and if color camera not avialble the default value will be 'imager'. Android devices will use 'back'as default and if back camera not avialble the default value will be 'front'.</DESC_EB>
-                <VALUES>
-                    <VALUE constName="CAMERA_TYPE_BACK" value="back">
-                        <DESC>Back camera.</DESC>
-                    </VALUE>
-                    <VALUE constName="CAMERA_TYPE_FRONT" value="front">
-                        <DESC>Front camera.</DESC>
-                    </VALUE>
-					 <VALUE constName="CAMERA_TYPE_IMAGER" value="imager">
-                        <DESC>Camera is an imager.</DESC>
-                    </VALUE>
-					 <VALUE constName="CAMERA_TYPE_COLOR" value="color">
-                        <DESC>Camera is color camera.</DESC>
-                    </VALUE>
-                </VALUES>
+                <DESC>This property is device specific. The value for this property can be either 'back' or 'front' in the case of Android/iOS/WP8 devices.In the case of WM/CE it could be either 'imager' or 'color'. WM/CE devices will use 'color'as default and if color camera not available the default value will be 'imager'. Android/iOS/WP8 devices will use 'back'as default and if back camera not available the default value will be 'front',
+				This Property shall return one among the values mentioned in constant section which starts with CAMERA_TYPE_...
+				</DESC>
+                <DESC_EB>This property is device specific. The value for this property can be either 'back' or 'front' in the case of Android devices.In the case of windows it could be either 'imager' or 'color'. WM/CE devices will use 'color'as default and if color camera not available the default value will be 'imager'. Android devices will use 'back'as default and if back camera not available the default value will be 'front'.
+				This Property shall return one among the values mentioned in constant section which starts with CAMERA_TYPE_...</DESC_EB>
+               
             </PROPERTY>
             <PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
                 <PLATFORM>Android, iOS, WP8, WM, CE</PLATFORM>
@@ -107,7 +158,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <PARAM name="height" type="INTEGER"/>
                     </PARAMS>
                 </PARAM>
-                <PLATFORM>Android, WP8, WM, CE</PLATFORM>
+                <PLATFORM>Android, WP8, WM, CE, iOS</PLATFORM>
                 <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
                 <DESC>List of resolutions (width and height in pixels) supported by the camera. On WM/CE devices this feature is supported only by color camera and it is not supported by imager. Refer example section for more details.</DESC>
             </PROPERTY>
@@ -135,44 +186,35 @@ The ebapi.js file is necessary for all single API inclusions.
                 <APPLIES>JPG is supported on all devices, Android, WP8 and Windows Mobile does not support PNG images</APPLIES>
                 <PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
                 <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
-                <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data. In windows and WP8 devices the format will be always jpg type</DESC>
-                <DESC_EB>The format of the captured image in subsequent calls to takePicture(). On windows devices the format will be always .jpg type.</DESC_EB>
-                <VALUES>
-                    <VALUE constName="COMPRESSION_FORMAT_JPG" value="jpg">
-                        <DESC>JPG compression.</DESC>
-                    </VALUE>
-                    <VALUE constName="COMPRESSION_FORMAT_PNG" value="png">
-                        <DESC>PNG compression.</DESC>
-                    </VALUE>
-                </VALUES>
+                <DESC>The format of the captured image in subsequent calls to takePicture(). If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data. In windows and WP8 devices the format will be always jpg type.
+				This Property shall accept/return one among the values mentioned in constant section which starts with COMPRESSION_FORMAT_...
+				</DESC>
+                <DESC_EB>The format of the captured image in subsequent calls to takePicture(). On windows devices the format will be always .jpg type.
+				This Property shall accept/return one among the values mentioned in constant section which starts with COMPRESSION_FORMAT_...
+				</DESC_EB>
+                
             </PROPERTY>
             <PROPERTY name="outputFormat" type="STRING" default="image">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
 				<PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
                 <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
-                <DESC>Specifies the way to return the captured image to the application.</DESC>
-                <VALUES>
-                    <VALUE constName="OUTPUT_FORMAT_IMAGE" value="image">
-                        <DESC>The captured image is stored on the device. The callback associated with takePicture will contain the location of the image.</DESC>
-                    </VALUE>
-                    <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
-                        <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
-                    </VALUE>
-                </VALUES>
+                <DESC>Specifies the way to return the captured image to the application.
+				This Property shall accept/return one among the values mentioned in constant section which starts with OUTPUT_FORMAT_...</DESC>
+				<DESC_EB>Specifies the way to return the captured image to the application.
+				This Property shall accept/return one among the values mentioned in constant section which starts with OUTPUT_FORMAT_...
+				</DESC_EB>
+                
             </PROPERTY>
             <PROPERTY name="colorModel" type="STRING" default="rgb">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>Android, iOS</PLATFORM>
                 <PLATFORM_EB>Android</PLATFORM_EB>
-                <DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.</DESC>
-                <VALUES>
-                    <VALUE constName="COLOR_MODEL_RGB" value="rgb">
-                        <DESC>A colour image is captured.</DESC>
-                    </VALUE>
-                    <VALUE constName="COLOR_MODEL_GRAYSCALE" value="grayscale">
-                        <DESC>A grayscale image is captured.</DESC>
-                    </VALUE>
-                </VALUES>
+                <DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.
+				This Property shall accept/return one among the values mentioned in constant section which starts with COLOR_MODEL_...</DESC>
+				<DESC_EB>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.
+				This Property shall accept/return one among the values mentioned in constant section which starts with COLOR_MODEL_...
+				</DESC_EB>
+                
             </PROPERTY>
             <PROPERTY name="enableEditing" type="BOOLEAN" default="true" productException="eb">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -183,33 +225,11 @@ The ebapi.js file is necessary for all single API inclusions.
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
                 <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                 <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
-                <DESC>Specifies the flash behavior when taking a picture.</DESC>
-                <VALUES>
-                    <VALUE constName="FLASH_ON" value="on">
-					    <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
-                        <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
-                        <DESC>Flash will be used.</DESC>
-                    </VALUE>
-                    <VALUE constName="FLASH_OFF" value="off">
-					    <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
-                        <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
-                        <DESC>Flash will not be used.</DESC>
-                    </VALUE>
-                    <VALUE constName="FLASH_AUTO" value="auto">
-					    <PLATFORM>Android, iOS, WP8</PLATFORM>
-                        <PLATFORM_EB>Android</PLATFORM_EB>
-                        <DESC>Flash will be used if lighting conditions deem it necessary.</DESC>
-                    </VALUE>
-                    <VALUE constName="FLASH_RED_EYE" value="redEye">
-					    <PLATFORM>Android, WP8</PLATFORM>
-                        <PLATFORM_EB>Android</PLATFORM_EB>
-                        <DESC>Flash with red eye reduction is used.</DESC>
-                    </VALUE>
-                    <VALUE constName="FLASH_TORCH" value="torch">
-					    <PLATFORM>Android</PLATFORM>
-                        <DESC>The flash is turned on in torch mode.</DESC>
-                    </VALUE>
-                </VALUES>
+                <DESC>Specifies the flash behavior when taking a picture.
+				This Property shall accept/return one among the values mentioned in constant section which starts with FLASH_...</DESC>
+				<DESC_EB>Specifies the flash behavior when taking a picture.
+				This Property shall accept/return one among the values mentioned in constant section which starts with FLASH_...</DESC_EB>
+               
             </PROPERTY>
             <PROPERTY name="saveToDeviceGallery" type="BOOLEAN" default="false">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -250,15 +270,11 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
 			<PROPERTY name="aimMode" type="STRING">
                 <PLATFORM>WM, CE</PLATFORM>
-                <DESC>Specifies the aim behaviour when taking a picture. Applicable only for imager module.</DESC>
-                <VALUES>
-                    <VALUE constName="AIM_ON" value="on">
-                         <DESC>switches the imager's aim ON </DESC>
-                    </VALUE>
-                    <VALUE constName="AIM_OFF" value="off">
-                        <DESC>switches the imager's aim OFF </DESC>
-                    </VALUE>
-                </VALUES>
+                <DESC>Specifies the aim behaviour when taking a picture. Applicable only for imager module.
+				This Property shall accept/return one among the values mentioned in constant section which starts with AIM_...</DESC>
+				<DESC_EB>Specifies the aim behaviour when taking a picture. Applicable only for imager module.
+				This Property shall accept/return one among the values mentioned in constant section which starts with AIM_...</DESC_EB>
+                
             </PROPERTY>
         </PROPERTIES>
 
@@ -371,6 +387,7 @@ The ebapi.js file is necessary for all single API inclusions.
 			<METHOD name="showPreview" runInThread="ui">
 				<DESC>Shows the preview in user configurable viewer window.</DESC>
 				<PLATFORM>WM, CE</PLATFORM>
+				<PLATFORM_EB>WM, CE</PLATFORM_EB>
         <PARAMS>
 				<PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Provide a set of properties to configure the camera.</DESC>
@@ -383,10 +400,12 @@ The ebapi.js file is necessary for all single API inclusions.
 			<METHOD name="hidePreview">
 				<DESC>Hides the preview opened by using showPreview.</DESC>
 				<PLATFORM>WM, CE</PLATFORM>
+				<PLATFORM_EB>WM, CE</PLATFORM_EB>
 			</METHOD>
 			<METHOD name="capture" hasCallback="mandatory">
 				<DESC>Capture the image and save it to a file.</DESC>
 				<PLATFORM>WM, CE</PLATFORM>
+				<PLATFORM_EB>WM, CE</PLATFORM_EB>
 				<CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="status" type="STRING">
@@ -414,8 +433,8 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC>Choose a picture from the album.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
-					     <PLATFORM>Android, WM, WP8, iOS</PLATFORM>
-                         <PLATFORM_EB>Android, WM</PLATFORM_EB>
+					     <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
+                         <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                         <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
 							In	Android and WP8 only imageUri and image_uri are supported, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri.On wp8,wm when 'outputFormat' is 'image' then imageUri or image_uri shall have Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image'</DESC>
                         <DESC_EB>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. On Android, only imageUri and image_uri are supported.</DESC_EB>
@@ -838,13 +857,13 @@ alert(reslnArray[1].height);
         </EXAMPLES>
         <REMARKS>
             <REMARK title="SDCard Access">
-                <DESC>Extensions which came from RhoElements (i.e. AudioCapture) that could possibly write files to external storage will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
+                <DESC>The capability for SDCard has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
             </REMARK>
 			<REMARK title="Camera Preview">
                 <DESC>In some of the WM/CE devices, though user has opted for a full screen, preview rendering size is decided by the driver.</DESC>
             </REMARK>
 			<REMARK title="DataUri">
-                <DESC>DataUri output is highly dependent on virtual space avalability. DataUri may fail(Unresponsive/Reboot/Degraded Performance/Never load) in certain devices; recommended to use image path in such devices.</DESC>
+                <DESC>DataUri output is highly dependent on virtual space availability. DataUri may fail(Unresponsive/Reboot/Degraded Performance/Never load) in certain devices; recommended to use image path in such devices.</DESC>
             </REMARK>
 			<REMARK title="ImageUri">
                 <DESC>Image uri display is dependent on browser capability.</DESC>
@@ -852,8 +871,8 @@ alert(reslnArray[1].height);
 			<REMARK title="GetSupportedProperties in WP8">
                 <DESC>WP8 does not support getSupportedProperties and SetSupportedProperties</DESC>
             </REMARK>
-		        <REMARK title="colorModel as Grayscale in Android">
-                <DESC>Grayscale is not supported in Motorola solution's android devices for front camera</DESC>
+		    <REMARK title="colorModel as Grayscale in Android">
+                <DESC>Grayscale is supported only in consumer android devices for front camera</DESC>
             </REMARK>
             <REMARK title="Invalid/Null values for properties in Android and iOS">
                 <DESC>Only valid and non-empty values for properties are supported in Android and iOS</DESC>
@@ -862,10 +881,10 @@ alert(reslnArray[1].height);
             <DESC>Due to platform limitation imager and color camera is not supported in ruby applications for CE5 and CE6 devices.</DESC>
             </REMARK>
             <REMARK title="Camera in Suspend mode">
-              <DESC>All WM and CE7 devices automatically turn off both color and imager cameras, when the device is suspended. User has to restart the camera on resume. Whereas CE5 (eg:MC9000) and CE6 (eg: MC31) devices retain the preview on resuming from suspend state.</DESC>
+              <DESC>All WM and CE7 devices automatically turn off both color and imager cameras when the device is suspended. User has to restart the camera on resume. Whereas CE5 (eg:MC9000) and CE6 (eg: MC31) devices retain the preview on resuming from suspend state.</DESC>
             </REMARK>
             <REMARK title="Image saving while take picture">
-              <DESC>Image captured in few devices(eg: Samsung), irrespective of picture taken (Landscape/Portrait) , will always save in Landscape Mode, Even though on the device it appears as captured, when the same is copied to Desktop, you can see that it will be in Landscape Mode.This is default behaviour of the device</DESC>
+              <DESC>Image captured in few devices(eg: Samsung), irrespective of picture taken (Landscape/Portrait) , will always save in Landscape Mode, Even though on the device it appears as captured(landscape/Portrait), when the same is copied to Desktop, you can see that it will be in Landscape Mode.This is default behaviour of the device</DESC>
             </REMARK>
 			<REMARK title="Devices lacking support">
             <DESC>Due to platform limitation devices such as ES400, MC65 and MC67 does not support color camera.</DESC>
