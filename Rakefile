@@ -3084,7 +3084,7 @@ def init_extensions(dest, mode = "")
       end
     end
 
-    if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
+    if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')  && ($skip_build_extensions == false)
       raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
     end
 
