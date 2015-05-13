@@ -443,6 +443,15 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		return mediafile.getAbsolutePath();
 	}
 	
+	/**
+	 * copyImgAsUserChoice image.
+	 * Function to copy image from sd card to User specific path
+	 *  Provided in TestCam.html file.
+	 * @param photo
+	 *            the photo
+	 * 
+	 */
+	
 	public void copyImgAsUserChoice(String imgPath){
 	if(rename.contains("sdcard")){
 			
@@ -505,6 +514,14 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			
 		}
 	}
+
+/**
+ * deleteImage image.
+ * Function for Deleting the Image from SD card.
+ * And maintain a copy of same Image at user specific Path  
+ * @param nothing
+ * 
+ */
 
 public void deleteImage(){
 	int lastIndex = rename.lastIndexOf("/");
