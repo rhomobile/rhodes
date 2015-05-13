@@ -127,7 +127,7 @@ void CNetworkDetectionBase::run()
 	CheckConnectivity();
 	while( !isStopping() )    
     {
-		wait(m_iNetworkPollInterval / 1000);
+		wait(m_iNetworkPollInterval);
 		if (!isStopping())
 		{
 			CheckConnectivity();
