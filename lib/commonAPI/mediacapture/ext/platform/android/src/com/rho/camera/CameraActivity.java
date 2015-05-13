@@ -38,6 +38,7 @@ import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.R;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
@@ -49,15 +50,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 public class CameraActivity extends BaseActivity implements OnClickListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
-    public static boolean click_rotation;
     private CameraPreview mPreview;
     private OrientationEventListener mOrientationListener;
     private int mRotation = 0;
     private Camera mCamera = null;
     private ICameraObject camera = null;
+    private Button button = null;
+    private String id = null;
     
     @Override
     protected void onCreate(Bundle extras) {
@@ -67,7 +70,10 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
         setContentView(R.layout.camera);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setFormat(PixelFormat.TRANSLUCENT);        
-        findViewById(R.id.cameraButton).setOnClickListener(this);
+        id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");        
+        camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
+        button =(Button)findViewById(R.id.cameraButton);
+        button.setOnClickListener(this);
         mPreview = new CameraPreview((SurfaceView)findViewById(R.id.previewSurface));
         mOrientationListener = new OrientationEventListener(this) {
             @Override public void onOrientationChanged(int rotation) {
@@ -86,10 +92,10 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
         if (mOrientationListener.canDetectOrientation()) {
             mOrientationListener.enable();
         }
-        String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");        
-        camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
         try{
           mPreview.startPreview(camera, this);
+          // Setting focus if supported by camera of the device after camera previewing
+          camera.setFocus(this);
         }
         catch(RuntimeException e){
         	
@@ -100,6 +106,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     protected void onPause() {
     	super.onPause();
         Logger.T(TAG, "onPause");
+        button.setEnabled(true);
         if(mCamera != null){
           mCamera.stopPreview();
           mCamera.release();
@@ -111,6 +118,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     @Override
     protected void onStop() {
 	// TODO Auto-generated method stub
+	button.setEnabled(true);
 	super.onStop();    	
     }
     
@@ -126,14 +134,10 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     @Override
     public void onClick(View view) {
         Logger.T(TAG, "onClick");
-        click_rotation = true;
         try{
         if (view.getId() == R.id.cameraButton) {
             Logger.T(TAG, "cameraButton");            
-            String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
-            ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
             camera.doTakePicture(this, (mRotation + 45)/90 * 90);
-            Button button=(Button)view.findViewById(R.id.cameraButton);
             button.setEnabled(false);
           }
         }
