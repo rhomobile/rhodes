@@ -101,18 +101,22 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
             params.setPictureSize(pictureSize.getWidth(), pictureSize.getHeight());
         }
         getCamera().setParameters(params);
-        if (hasAutoFocus()) {
+        getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
+        
+        // commented the code because auto focus logic is moved as soon as camera previews not on button click
+        /*if (hasAutoFocus()) {
             getCamera().autoFocus(new Camera.AutoFocusCallback() {
                 public void onAutoFocus(boolean success, Camera camera) {
+                	 
                     openCamera();
-                    getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
+                	getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
                     closeCamera();
                 }
             });
             
         } else {
             getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
-        }
+        }*/
         closeCamera();
     }
 }
