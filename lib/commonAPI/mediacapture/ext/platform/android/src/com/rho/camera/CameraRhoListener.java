@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
@@ -43,6 +44,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 	private static CameraRhoListener sInstance = null;
 	private static int picChoosen_imagewidth, picChoosen_imageheight = 0;
 	private Uri curUri = null;
+	private Uri storedUri = null;
 	private HashMap<String,Object> resultMap = null;
 	private String imgPath = null;
 	private Bitmap mBitmap = null;
@@ -65,6 +67,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 	@Override
 	public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
 		RhoExtManager.getInstance().dropActivityResultRequestCode(requestCode);
+		Map<String, String> propertyMap = getActualPropertyMap();
 		if (mMethodResult == null) {
 			return;
 		}
@@ -76,7 +79,15 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			{
 				getActualPropertyMap().put("default_camera_key_path", "");
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
-				rename = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
+				//rename = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
+				if(!propertyMap.containsKey("fileName")){
+					System.out.println("CameraObj onActivityResult !Filename ");
+					rename = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())) + ".jpg";
+				}
+				else{
+					System.out.println("CameraObj onActivityResult Filename ");
+					rename = propertyMap.get("fileName")+ ".jpg";
+				}
 				String curPath = null;		
 				String strCaptureUri = getActualPropertyMap().get("captureUri");		
 				if (strCaptureUri != null)
@@ -89,6 +100,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					if(intent.hasExtra(MediaStore.EXTRA_OUTPUT)){
 						Logger.T(TAG, "Intent extras: "+ intent.getExtras().keySet());	
 						curUri = (Uri) intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+						storedUri = curUri;
 					}
 					if (curUri == null)
 					{
@@ -205,6 +217,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						}
 						imgPath = copyImg(curPath);
 						curUri = Uri.parse(imgPath);
+						copyImgAsUserChoice(curPath);
 				}
 				try{
 					DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);
@@ -220,7 +233,6 @@ public class CameraRhoListener extends AbstractRhoListener implements
 				getActualPropertyMap().put("default_camera_key_path", "");
 				DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent,resultCode);
 				async.execute();
-				CameraActivity.click_rotation = false;
 			} else {
 				mMethodResult.setError("Unknown error");
 			}
@@ -385,7 +397,13 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		
 		File oldFile = new File(imgPath);
 		
-		File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
+		int lastIndex  = rename.lastIndexOf("/");
+		
+		String file_name= rename.substring(lastIndex+1, rename.length());
+		
+		File mediafile  =  new File(RhoFileApi.getDbFilesPath(), file_name);
+		
+		//File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
 		FileInputStream finput= null;
 		FileOutputStream fout = null;
 		try {
@@ -420,4 +438,93 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		
 		return mediafile.getAbsolutePath();
 	}
+	
+	/**
+	 * copyImgAsUserChoice image.
+	 * Function to copy image from sd card to User specific path
+	 *  Provided in TestCam.html file.
+	 * @param photo
+	 *            the photo
+	 * 
+	 */
+	public void copyImgAsUserChoice(String imgPath){
+	if(rename.contains("sdcard")){
+			
+		Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+		
+
+			if(isSDPresent)
+			{
+	
+				File oldFile = new File(imgPath);
+				
+				int lastIndex = rename.lastIndexOf("/");
+				
+				String subfolderName = rename.replaceAll("/sdcard", "");
+				String folderName = subfolderName.substring(subfolderName.indexOf("/")+1,subfolderName.lastIndexOf("/"));
+				
+				String file_name= rename.substring(lastIndex+1, rename.length());
+				
+				File directory = new File(Environment.getExternalStorageDirectory()+File.separator + folderName);
+				boolean flag = directory.mkdirs();
+				
+				File mediafile  =  new File(directory +File.separator  + file_name);
+				
+				
+				FileInputStream finput= null;
+				FileOutputStream fout = null;
+				try {
+					finput = new FileInputStream(oldFile);
+					fout = new FileOutputStream(mediafile);
+					byte[] b = new byte[1024];
+					int read = 0;
+					while ((read = finput.read(b)) != -1) {
+						fout.write(b, 0, read);
+					}
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if(finput != null){
+						try {
+							finput.close();
+							
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					
+					if(fout != null){
+						try {
+							fout.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				deleteImage();
+			}
+			
+			
+		}
+	}
+
+/**
+ * deleteImage image.
+ * Function for Deleting the Image from SD card.
+ * And maintain a copy of same Image at user specific Path  
+ * @param nothing
+ * 
+ */
+public void deleteImage(){
+	
+	int lastIndex = rename.lastIndexOf("/");
+	String file_name= rename.substring(lastIndex+1, rename.length());
+	File file = new File("/storage/sdcard/Pictures/"+file_name);
+	  if(file.exists()){
+		  file.delete();
+	  }
+   }
+   
 }
