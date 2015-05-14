@@ -1,6 +1,9 @@
 package com.rho.camera;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.io.FileNotFoundException;
 import android.content.ContentResolver;
@@ -13,6 +16,7 @@ import android.provider.MediaStore;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.ui.FileList;
 
 public class CameraSingletonObject implements ICameraSingletonObject {
@@ -150,15 +154,54 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 	public void copyImageToDeviceGallery(String pathToImage,
 			IMethodResult result) {
 		// TODO Auto-generated method stub
-		ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
 		String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
-		String strUri = null;
+		String abspath = copyImageToDesired(pathToImage, imageName);
+	String strUri = null;
 		try {
-			strUri = MediaStore.Images.Media.insertImage(contentResolver, new File(pathToImage).getAbsolutePath(), imageName, "Saving Image to Device Gallery through Camera");
+			strUri = MediaStore.Images.Media.insertImage(RhodesActivity.getContext().getContentResolver(), abspath, imageName, "Saving Image to Device Gallery through Camera");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}	
+	}
+	private String copyImageToDesired(String pathToImage, String imageName) {
+		// TODO Auto-generated method stub
+		File oldFile = new File(RhoFileApi.absolutePath(pathToImage));
+		File mediafile  =  new File(RhoFileApi.getDbFilesPath(), imageName);
+	
+		FileInputStream finput= null;
+		FileOutputStream fout = null;
+		try {
+			finput = new FileInputStream(oldFile);
+			fout = new FileOutputStream(mediafile);
+			byte[] b = new byte[1024];
+			int read = 0;
+			while ((read = finput.read(b)) != -1) {
+				fout.write(b, 0, read);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(finput != null){
+				try {
+					finput.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(fout != null){
+				try {
+					fout.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return mediafile.getAbsolutePath();
 	}
 
 }
