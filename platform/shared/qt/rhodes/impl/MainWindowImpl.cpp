@@ -127,7 +127,7 @@ void CMainWindow::createCustomMenu(void)
             menuAddSeparator();
         else
         {
-            menuAddAction((oItem.m_strLink == "close" ? "Exit" : oItem.m_strLabel.c_str()), i);
+            menuAddAction((oItem.m_strLink == "close" ? "Exit" : oItem.m_strLabel.c_str()), i, oItem.m_isEnable);
         }
     }
 }
@@ -591,9 +591,9 @@ void CMainWindow::menuAddSeparator()
     ((QtMainWindow*)qtMainWindow)->menuAddSeparator();
 }
 
-void CMainWindow::menuAddAction(const char* label, int item)
+void CMainWindow::menuAddAction(const char* label, int item, bool enabled)
 {
-    ((QtMainWindow*)qtMainWindow)->menuAddAction(QString(label), item);
+    ((QtMainWindow*)qtMainWindow)->menuAddAction(QString(label), item, enabled);
 }
 
 // Handlers

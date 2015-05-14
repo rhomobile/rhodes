@@ -20,6 +20,7 @@ CNetworkDetectionBase::CNetworkDetectionBase()
 	m_connectionTimeout.tv_sec = DEFAULT_CONNECTION_TIMEOUT_SECONDS;
 	m_connectionTimeout.tv_usec = 0;
 	m_szLastError = "";
+  m_deleteSelf = false;
 }
 
 /**
@@ -126,13 +127,18 @@ void CNetworkDetectionBase::run()
 	CheckConnectivity();
 	while( !isStopping() )    
     {
-		wait(m_iNetworkPollInterval / 1000);
+		wait(m_iNetworkPollInterval);
 		if (!isStopping())
 		{
 			CheckConnectivity();
 		}     
     }
 	LOG(INFO) + "Stopping Network Detection Thread";
+  
+  if ( m_deleteSelf )
+  {
+    delete this;
+  }
 }
 
 std::string CNetworkDetectionBase::itos(int i)
@@ -140,5 +146,11 @@ std::string CNetworkDetectionBase::itos(int i)
     char buf[16];
     snprintf(buf,16,"%d",i);    
 	return std::string(buf);
+}
+
+void CNetworkDetectionBase::CleanupAndDeleteSelf()
+{
+  m_deleteSelf = true;
+  Cleanup();
 }
 

@@ -829,10 +829,11 @@ void QtMainWindow::setToolbarStyle(bool border, QString background, int viewHeig
 
 // Menu:
 
-void QtMainWindow::menuAddAction(const QString & text, int item)
+void QtMainWindow::menuAddAction(const QString & text, int item, bool enabled)
 {
     QAction* qAction = new QAction(text, ui->toolBar);
     qAction->setData(QVariant(item));
+    qAction->setEnabled(enabled);
     QObject::connect(qAction, SIGNAL(triggered(bool)), this, SLOT(menuActionEvent(bool)) );
     ui->menuMain->addAction(qAction);
 }
@@ -990,17 +991,11 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
     rho::StringW strAppName = RHODESAPP().getAppNameW();
 
     if (params->m_dlgType == CAlertParams::DLG_STATUS) {
-    //    if (m_SyncStatusDlg == NULL) 
-    //        m_SyncStatusDlg = new CSyncStatusDlg();
-    //    m_SyncStatusDlg->setStatusText(convertToStringW(params->m_message).c_str());
-    //    m_SyncStatusDlg->setTitle( convertToStringW(params->m_title).c_str() );
-    //    if ( !m_SyncStatusDlg->m_hWnd )
-    //        m_SyncStatusDlg->Create(m_hWnd, 0);
-    //    else
-    //    {
-    //        m_SyncStatusDlg->ShowWindow(SW_SHOW);
-    //        m_SyncStatusDlg->BringWindowToTop();
-    //    }
+        m_alertDialog = new QMessageBox(QMessageBox::NoIcon,
+            QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
+            QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
+        m_alertDialog->setStandardButtons(QMessageBox::Cancel);
+        m_alertDialog->exec();
     } else if (params->m_dlgType == CAlertParams::DLG_DEFAULT) {
         QMessageBox::warning(0, QString::fromWCharArray(strAppName.c_str()),
             QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));

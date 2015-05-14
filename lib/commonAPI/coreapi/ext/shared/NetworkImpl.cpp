@@ -52,6 +52,7 @@ public:
 
     CNetworkImpl(): CNetworkSingletonBase()
 	{
+    m_networkPoller = 0;
 #if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
 		if(winversion == 1)
 		{
@@ -122,7 +123,7 @@ private:
     void createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult );
 	//  RE1 Network API
 //	std::list<INetworkDetection*> m_networkPollers;
-    std::auto_ptr<INetworkDetection> m_networkPoller;
+    INetworkDetection* m_networkPoller;
 #if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
 	CWAN *m_pConnectionManager;
 #endif
@@ -590,7 +591,13 @@ void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::Stri
     
 	pNetworkDetection->Initialise();
 //	m_networkPollers.push_back(pNetworkDetection);
-    m_networkPoller.reset(pNetworkDetection);
+  if ( m_networkPoller != 0 )
+  {
+    m_networkPoller->CleanupAndDeleteSelf();
+    m_networkPoller = 0;
+  }
+
+    m_networkPoller = pNetworkDetection;
 	if (!pNetworkDetection->IsChecking())
 	{
 		typedef std::map<rho::String, rho::String>::const_iterator it_type;
@@ -639,12 +646,12 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 	else
 		LOG(WARNING) + "Unable to stop detecting network connection, could not find specified callback";
     */
-    if ( m_networkPoller.get() != 0) {
+    if ( m_networkPoller != 0) {
         if ( m_networkPoller->IsChecking() ) {
             m_networkPoller->StopNetworkChecking();
         }
-        m_networkPoller->Cleanup();
-        m_networkPoller.reset(0);
+        m_networkPoller->CleanupAndDeleteSelf();
+        m_networkPoller = 0;
     }
 }
 

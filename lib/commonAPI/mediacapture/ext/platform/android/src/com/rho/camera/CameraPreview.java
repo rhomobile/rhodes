@@ -56,7 +56,6 @@ public class CameraPreview implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-    	if(!CameraActivity.click_rotation){
         Rect surfaceRect = holder.getSurfaceFrame();
         Logger.T(TAG, "surfaceCreated: " + surfaceRect.right + "x" + surfaceRect.bottom);
         try{
@@ -106,16 +105,13 @@ public class CameraPreview implements SurfaceHolder.Callback {
         layoutParams.bottomMargin = layoutParams.FILL_PARENT;
         mSurfaceView.setLayoutParams(layoutParams);
         mSurfaceView.requestLayout();
-    	}
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         Logger.T(TAG, "surfaceDestroyed");
-        if(!CameraActivity.click_rotation){
         if (mCamera != null) {
             mCamera.stopPreview();
-        }
         }
     }
 
