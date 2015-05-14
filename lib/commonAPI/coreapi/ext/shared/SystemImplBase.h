@@ -68,6 +68,8 @@ public:
     virtual void setHttpProxyURI( const rho::String& httpProxyURI, rho::apiGenerator::CMethodResult& oResult);
 
     virtual void hideSplashScreen(rho::apiGenerator::CMethodResult& oResult);
+    virtual void getIsMotorolaDevice(rho::apiGenerator::CMethodResult& oResult);
+
 
     DEFINE_LOGCLASS
 };

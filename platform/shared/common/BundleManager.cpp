@@ -752,7 +752,10 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
             }
             else {
                 LOG(ERROR) + "Cannot remove folder (not found): " + CFilePath::join( strSrcFolder,strPath);
-                break;
+                filelist->removeFolder(strPath);
+                filelist_apps->removeFolder(strPath);                // folder can be removed manually etc. It is not real issue - after this cammand files not exist, how it was removed is does not matter
+                //nError = 1;
+                //break;
             }
         }
         else
@@ -788,8 +791,10 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
             }
             else {
                 LOG(ERROR) + "Cannot remove file (not found): " + CFilePath::join( strSrcFolder,strPath);
-                nError = 1;
-                break;
+                filelist->removeFile(strPath);
+                filelist_apps->removeFile(strPath);                // file can be removed manually etc. It is not real issue - after this cammand files not exist, how it was removed is does not matter
+                //nError = 1;
+                //break;
             }
         }
     }
