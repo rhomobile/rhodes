@@ -1485,7 +1485,8 @@ namespace "device" do
     if !skip_nsis
       vspec_files = ''
       if Jake.getBuildBoolProp('deployqt', $app_config, true)
-        vspec_files += "  File /r \"imageformats\"\n" + ($qt_version > 4 ? "  File /r \"platforms\"\n" : '')
+        vspec_files += "  File /r \"imageformats\"\n"
+        vspec_files += "  File /r \"platforms\"\n" if $qt_version.nil? || $qt_version > 4
       end
       if Jake.getBuildBoolProp('deploymsvc', $app_config, true) && ($vs_version == 2008)
         vspec_files += "  File *.manifest\n"
