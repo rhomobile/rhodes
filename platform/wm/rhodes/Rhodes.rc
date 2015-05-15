@@ -27,8 +27,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 1 VERSIONINFO
- FILEVERSION 2,0,0,5
- PRODUCTVERSION 2,0,0,5
+ FILEVERSION 0,0,0,0
+ PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -43,13 +43,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "FileDescription", "RhoElements Application"
-            VALUE "FileVersion", "2, 0, 0, 5"
-            VALUE "InternalName", "RhoElements"
-            VALUE "LegalCopyright", "Symbol Technologies, Inc., Copyright (C) 2012"
-            VALUE "OriginalFilename", "RhoElements.exe"
-            VALUE "ProductName", "RhoElements"
-            VALUE "ProductVersion", "2, 0, 0, 5"
+            VALUE "FileDescription", "EnterpriseBrowser application"
+            VALUE "FileVersion", "0, 0, 0, 0"
+            VALUE "InternalName", "EnterpriseBrowser"
+            VALUE "LegalCopyright", "© 2014 Symbol Technologies, Inc. All rights reserved."
+            VALUE "OriginalFilename", "EnterpriseBrowser.exe"
+            VALUE "ProductName", "EnterpriseBrowser"
+            VALUE "ProductVersion", "0, 0, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
