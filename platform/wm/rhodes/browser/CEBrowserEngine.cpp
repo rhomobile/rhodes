@@ -939,6 +939,18 @@ bool CEBrowserEngine::isExistJavascript(const wchar_t* szJSFunction, int index)
 
     return retVal;
 }
+int CEBrowserEngine::findAndReplace(rho::StringW& source, rho::StringW find, rho::StringW replace)
+{
+	int num=0;
+	size_t fLen = find.size();
+	size_t rLen = replace.size();
+	for (size_t pos=0; (pos=source.find(find, pos))!=rho::StringW::npos; pos+=rLen)
+	{
+		num++;
+		source.replace(pos, fLen, replace);
+	}
+	return num;
+}
 
 void CEBrowserEngine::executeJavascript(const wchar_t* szJSFunction, int index) 
 {
@@ -953,16 +965,130 @@ void CEBrowserEngine::executeJavascript(const wchar_t* szJSFunction, int index)
             //  Function does not start with JavaScript:
             wchar_t* tcURI = new wchar_t[MAX_URL];
             wsprintf(tcURI, L"JavaScript:%s", szJSFunction);
-            Navigate(tcURI, index);
+		         InvokeJs(tcURI, index);
             delete[] tcURI;
         }
         else
         {
-            Navigate(szJSFunction, index);
+		         InvokeJs(szJSFunction, index);
         }
     }
 }
 
+void CEBrowserEngine::InvokeJs(const wchar_t* szJSFunction, int index)
+{
+	TCHAR functionName[MAX_URL];
+	memset(functionName, 0, sizeof(functionName));
+
+	TCHAR* functionNamePtr = functionName;
+	TCHAR* pParen = wcschr(szJSFunction, '(');
+	int posOfFirstParen = pParen-szJSFunction;
+	int startPos = 0;
+
+	if (!_memicmp(szJSFunction, L"JavaScript:", 22))
+		startPos = 11;
+
+	for (int i=startPos; i < posOfFirstParen; i++)
+	{
+		//  Populate the function Name
+		if (szJSFunction[i] != ' ')
+		{
+			*functionNamePtr = szJSFunction[i];
+			functionNamePtr++;
+		}
+	}
+
+	OLECHAR FAR* szJSMethodName = (OLECHAR *)functionName;
+	LPDISPATCH   pDisp          = (IDispatch FAR*)NULL;
+	bool         retVal         = false;
+
+	// Set the IDispatch object to the document loaded in the browser
+	m_pBrowser->get_Document(&pDisp);
+
+	if (pDisp != NULL)
+	{
+		IHTMLDocument2* pHTMLDocument2;
+		HRESULT hr = pDisp->QueryInterface( IID_IHTMLDocument2, (void**)&pHTMLDocument2 );
+
+		//  Set the IDispatch pointer to the scripts in the document
+		hr = pHTMLDocument2->get_Script(&pDisp);
+		//  dispid will hold a reference to the JavaScript function we want to call
+		DISPID dispid;
+
+		//  Obtain the id of the JavaScript method with the name 'szJSMethodName'
+		hr = pDisp->GetIDsOfNames(IID_NULL, &szJSMethodName, 1, LOCALE_SYSTEM_DEFAULT, &dispid);
+
+		if (hr != DISP_E_UNKNOWNNAME)
+		{
+
+			wchar_t* script = const_cast<wchar_t *> (szJSFunction) + posOfFirstParen + 1;//start parsing from paranthesis (		
+			wchar_t * seps = L",";
+			wchar_t* token;
+			rho::Vector<rho::StringW> argValList;
+			rho::StringW argvalTemp;
+			token = wcstok (script, seps);
+			std::wstring argval;
+			while (token != NULL)
+			{
+				argvalTemp = token;		
+				if(argvalTemp.find(L"'") != -1)
+				{
+					findAndReplace(argvalTemp, L"'",L"");
+				}
+				if(argvalTemp.find(L")") != -1)
+				{
+					findAndReplace(argvalTemp, L")",L"");//may have closing paranthesis for the last argument in the list
+				}
+				if(argvalTemp.find(L";") != -1)
+				{
+					findAndReplace(argvalTemp, L";",L"");//may have semi column for the last entry
+				}
+				argValList.push_back(argvalTemp);				
+				token = wcstok (NULL, seps);
+			}
+
+			int argCount = argValList.size();
+			//Fill argument list
+			DISPPARAMS params;
+			memset(&params, 0, sizeof(DISPPARAMS));
+			params.cArgs      = argCount; //set no:of args
+			params.rgvarg     = new VARIANT[argCount];//allocate memory for array of args
+			params.cNamedArgs = 0;
+
+			//iterate through the arg list;
+			//but careful, we have to fill args in reverse order
+			//Arguments are stored in pDispParams->rgvarg in reverse order, so the first parameter is the one with the highest index in the array.
+			int argListIndex = argCount -1;
+			for( int i = 0; i < argCount; i++)
+			{ 		
+				CComBSTR bstr = argValList[i].c_str(); 
+				bstr.CopyTo(&params.rgvarg[argListIndex - i].bstrVal);
+				params.rgvarg[argListIndex - i].vt = VT_BSTR;
+			}
+			EXCEPINFO exeptionInfo;
+			memset(&exeptionInfo, 0, sizeof(EXCEPINFO));
+			CComVariant vaResult;
+			UINT nArgErrIndex = (UINT)-1;
+			//invoke JavaScript Function      
+			hr = pDisp->Invoke(dispid,IID_NULL,0,
+				DISPATCH_METHOD,&params,
+				&vaResult,&exeptionInfo,&nArgErrIndex);
+			delete [] params.rgvarg;
+			if(FAILED(hr))
+			{
+				LOG(ERROR) + L"Invoke script failed";
+			}
+		}
+		else
+		{
+			LOG(ERROR) + L"JS Function specified not found";
+		}
+	}
+	else
+	{
+		LOG(ERROR) + L"Unable to get Document interface";
+	}
+}
 void CEBrowserEngine::OnDocumentComplete(LPCTSTR url) 
 {
     if(!m_bLoadingComplete && wcscmp(url,_T("about:blank")) != 0)
