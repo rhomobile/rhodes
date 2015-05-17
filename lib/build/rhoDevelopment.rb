@@ -107,7 +107,7 @@ def setup(settings_folder_path, platform)
   $RhoDevelopmentPlatform = platform
 
   $current_platform = platform
-
+  $sdk = nil
   Rake::Task['config:common'].reenable
   Rake::Task['config:common'].invoke
 
