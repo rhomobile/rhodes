@@ -1176,6 +1176,44 @@ DWORD WINAPI CEBrowserEngine::RegisterWndProcThread(LPVOID lpParameter)
     return 0;
 }
 
+int CEBrowserEngine::GetTextZoomOnTab(UINT iTab)
+{
+	int nZoom = TEXT_ZOOM_NORMAL;//Setting initial value as Normal
+	LPDISPATCH pDisp = NULL;
+	LPOLECOMMANDTARGET pCmdTarg = NULL;
+	if (S_OK != m_pBrowser->get_Document(&pDisp)) 
+		return nZoom;
+	if (pDisp == NULL)
+		return nZoom;
+	pDisp->QueryInterface(IID_IOleCommandTarget, (LPVOID*)&pCmdTarg);
+	if (pCmdTarg == NULL)
+		return nZoom;
+	VARIANT vaZoomFactor;   // input arguments
+	VariantInit(&vaZoomFactor);
+	pCmdTarg->Exec(NULL,
+				OLECMDID_ZOOM,
+				OLECMDEXECOPT_DONTPROMPTUSER,
+				NULL,
+				&vaZoomFactor);
+	//  vaZoomFactor contains the current zoom level of the page
+	if (V_I4(&vaZoomFactor) == (DWORD)TEXT_ZOOM_SMALLEST)
+		nZoom = TEXT_ZOOM_SMALLEST;
+	else if (V_I4(&vaZoomFactor) == (DWORD)TEXT_ZOOM_SMALLER)
+		nZoom = TEXT_ZOOM_SMALLER;
+	else if (V_I4(&vaZoomFactor) == (DWORD)TEXT_ZOOM_NORMAL)
+		nZoom = TEXT_ZOOM_NORMAL;
+	else if (V_I4(&vaZoomFactor) == (DWORD)TEXT_ZOOM_BIGGER)
+		nZoom = TEXT_ZOOM_BIGGER;
+	else if (V_I4(&vaZoomFactor) == (DWORD)TEXT_ZOOM_BIGGEST)
+		nZoom = TEXT_ZOOM_BIGGEST;
+	VariantClear(&vaZoomFactor);
+	if (pCmdTarg)
+	   pCmdTarg->Release(); // release document's command target
+	if (pDisp)
+	   pDisp->Release();// release document's dispatch interface
+	return nZoom;
+}
+
 BOOL CEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab) 
 { 
 	LPDISPATCH pDisp = NULL;
