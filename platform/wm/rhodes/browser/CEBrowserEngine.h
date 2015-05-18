@@ -60,6 +60,7 @@ private:
 private:
     HRESULT ParseTags();
     LRESULT CreateEngine();
+	void InvokeJs(const wchar_t* szJSFunction, int index);
 
 	BOOL GetPageSize (int *pwidth, int *pheight);
 
