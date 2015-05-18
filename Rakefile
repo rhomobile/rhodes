@@ -3854,6 +3854,8 @@ namespace "build" do
 
       common_bundle_start(startdir,dest)
 
+      Rake::Task["app:after_build_bundle"].invoke if $app_rakefile_exist
+
       Dir.chdir currentdir
     end
 
@@ -4069,6 +4071,8 @@ namespace "build" do
 
       # create bundle map file with the final information
       Jake.build_file_map($srcdir, $file_map_name)
+
+      Rake::Task["app:after_build_bundle"].invoke if $app_rakefile_exist
     end # end of noxruby
 
     def is_exclude_folder(excludes, filename)
