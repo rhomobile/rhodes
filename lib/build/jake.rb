@@ -724,6 +724,7 @@ class Jake
   # @param block [block, optional] Block code will be called before each file entry extracting and it's parameters are: file entry size in bytes, archive total size in bytes, string like "Unpacking files: NN%" where NN% - unzipping progress in percents
   def self.unzip(src_zip, dest_dir)
     require 'zip'
+    require 'fileutils'
 
     unless File.exist?(dest_dir)
       FileUtils.mkdir_p(dest_dir)
@@ -740,7 +741,8 @@ class Jake
           unzipped_bytes = unzipped_bytes + entry.size
           yield(unzipped_bytes, total_bytes, "Unpacking files: #{(unzipped_bytes * 100) / total_bytes}%")
         end
-
+        file_dir_name = File.join(dest_dir,File.dirname(entry.name))
+        FileUtils::mkdir_p file_dir_name unless Dir.exists?(file_dir_name)
         entry.extract(File.join(dest_dir, entry.name))
 
       end
