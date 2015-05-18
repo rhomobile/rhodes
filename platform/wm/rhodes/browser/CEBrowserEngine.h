@@ -48,7 +48,6 @@ private:
     HRESULT ParseTags();
     LRESULT CreateEngine();
 	void InvokeJs(const wchar_t* szJSFunction, int index);
-	int findAndReplace(rho::StringW& source, rho::StringW find, rho::StringW replace);
 
 	BOOL GetPageSize (int *pwidth, int *pheight);
 
