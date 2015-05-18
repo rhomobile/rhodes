@@ -20,6 +20,19 @@
 #define MAX_URL MAXURL	///< Maximimum allowable length of a URL in Internet Explorer
 #endif
 
+/**
+*  Possible values for the browser's text zoom.  These map to The IWebBrowser2
+*  zoom factor.
+*/
+enum TextZoomValue
+{
+	TEXT_ZOOM_SMALLEST = 0,	///< Smallest possible text size
+	TEXT_ZOOM_SMALLER = 1,	///< Slightly smaller than normal text size
+	TEXT_ZOOM_NORMAL = 2,	///< Normal Text size
+	TEXT_ZOOM_BIGGER = 3,	///< Slightly larger than normal text size
+	TEXT_ZOOM_BIGGEST = 4	///< Largest possible text size
+};
+
 class CEBrowserEngine :
 	public rho::IBrowserEngine,
 	public IOleContainer,
@@ -105,7 +118,7 @@ private:
     virtual BOOL    GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab) { return FALSE; }
     virtual BOOL    ZoomPageOnTab(float fZoom, UINT iTab) { return FALSE; }
     virtual BOOL    ZoomTextOnTab(int nZoom, UINT iTab);
-    virtual int     GetTextZoomOnTab(UINT iTab) { return 2; }   
+    virtual int     GetTextZoomOnTab(UINT iTab);
     virtual void    NotifyEngineOfSipPosition() {}
     virtual void    setNavigationTimeout(unsigned int dwMilliseconds){}
     virtual void    setBrowserGesturing(bool bEnableGesturing) {}
