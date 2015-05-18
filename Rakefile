@@ -1418,14 +1418,6 @@ def wait_and_get_build(app_id, build_id, proxy, save_to = nil, unzip_to = nil)
     if is_ok
       if !(unzip_to.nil? || unzip_to.empty?)
         if (status == "completed")
-          #TODO: this is Jake Error, remove this ,once Rhodes framework upgraded to ruby 2.3 with default zip support
-          require 'zip'
-          dir_names = Zip::File.open(result_link).collect {|e| File.dirname(e.name)}.uniq-["."]
-          dir_names.collect {|e|
-            full_name = File.join(unzip_to,e)
-            Dir.mkdir(full_name) unless Dir.exists?(full_name)
-          }
-
           Jake.unzip(result_link, unzip_to) do |a,b,msg|
             put_message_with_timestamp("Current status: #{msg}", true)
           end
