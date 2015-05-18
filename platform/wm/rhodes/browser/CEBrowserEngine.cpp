@@ -982,16 +982,42 @@ void CEBrowserEngine::executeJavascript(const wchar_t* szJSFunction, int index)
             //  Function does not start with JavaScript:
             wchar_t* tcURI = new wchar_t[MAX_URL];
             wsprintf(tcURI, L"JavaScript:%s", szJSFunction);
-            Navigate(tcURI, index);
+		         InvokeJs(tcURI, index);
             delete[] tcURI;
         }
         else
         {
-            Navigate(szJSFunction, index);
+		         InvokeJs(szJSFunction, index);
         }
     }
 }
 
+void CEBrowserEngine::InvokeJs(const wchar_t* szJSFunction, int index)
+{
+	LPDISPATCH   pDoc          = (IDispatch FAR*)NULL;
+	CComPtr<IHTMLWindow2> pIHTMLWindow2 = NULL;
+	CComVariant retval;
+	// get the active doc interface
+	m_pBrowser->get_Document(&pDoc);
+	if (pDoc != NULL)
+	{
+		IHTMLDocument2* pHTMLDocument2;
+		HRESULT hr = pDoc->QueryInterface( IID_IHTMLDocument2, (void**)&pHTMLDocument2 );		
+		//get the associated window; It provides access to the window object, which represents an open window in the browser.
+		pHTMLDocument2->get_parentWindow( &pIHTMLWindow2);
+		//Executes the specified script in the provided language.		
+		hr = pIHTMLWindow2->execScript( CComBSTR(szJSFunction) , NULL , &retval );
+		if(FAILED(hr))
+		{
+			LOG(ERROR) + L"execute script failed";
+		}
+	
+	}
+	else
+	{
+		LOG(ERROR) + L"Unable to get Document interface";
+	}
+}
 void CEBrowserEngine::OnDocumentComplete(LPCTSTR url) 
 {
     if(!m_bLoadingComplete && wcscmp(url,_T("about:blank")) != 0)
