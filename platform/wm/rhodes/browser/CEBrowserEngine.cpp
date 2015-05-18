@@ -339,9 +339,13 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
     CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
 	DWORD dwWaitResult;
+	bool flag=false;
+	HWND authwindowhandle;
 
     if (pEng->m_dwNavigationTimeout)
-    {				
+    {		
+    	do
+    	{
 		dwWaitResult = WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout);
 
 		switch (dwWaitResult) 
@@ -355,6 +359,7 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 								
 				CloseHandle(pEng->m_hNavigated);
 				pEng->m_hNavigated = NULL;
+				flag=false;
 				if(pEng->m_bNavigationError)
 				{
 					LOG(INFO) + "NavigationTimeoutThread:m_bNavigationError\n";
@@ -371,7 +376,30 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 				// TODO: Read from the shared buffer
 				//
 				LOG(INFO) + "NavigationTimeoutThread:timeout\n";
+				HWND currentForeGroundWindowHandle;
+				currentForeGroundWindowHandle = GetForegroundWindow();
+				wchar_t szBuf[200];
+				if(currentForeGroundWindowHandle!=NULL)
+				{
+				GetWindowText(currentForeGroundWindowHandle,szBuf,199);
+				LOG(INFO) + szBuf;
+				}
 				
+				authwindowhandle = FindWindow(null,L"Enter Network Password");
+	
+				if(authwindowhandle)
+				{
+				LOG(INFO) + "Authentication window present";
+				LOG(INFO) + "NavigationTimeoutThread:Authentication popup\n";
+				flag=true;
+				break;
+				}
+				else
+				{
+				flag=false;
+				LOG(INFO) + "NavigationTimeoutThread:Navigation Timed out\n";
+				LOG(INFO) + "Authentication window not present";
+				}
 					
 				pEng->StopOnTab(0);
 						
@@ -385,10 +413,11 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 			// An error occurred
 			default: 
 				LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
+				flag=false;
 				return 0; 
 		}		
 		
-		
+    	}while(flag);	
     }
 
     return 0;
