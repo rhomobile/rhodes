@@ -618,53 +618,80 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
     CIEBrowserEngine* pIEEng = reinterpret_cast<CIEBrowserEngine*>(lpParameter);
     DWORD dwWaitResult;
+    
+    bool flag=false;
+    HWND authwindowhandle;
     if (pIEEng->m_dwNavigationTimeout != 0)
     {
         LOG(TRACE) + "Mobile NavThread Started\n";
+        
+        	do
+        	{
 
+			dwWaitResult = WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout);
 
-		dwWaitResult = WaitForSingleObject(pIEEng->m_hNavigated, pIEEng->m_dwNavigationTimeout);
-
-		switch (dwWaitResult) 
-		{
-			// Event object was signaled
-			case WAIT_OBJECT_0: 
-				//
-				// TODO: Read from the shared buffer
-				//
-				LOG(INFO) + "NavigationTimeoutThread:Event object was signaled\n";
-								
-				CloseHandle(pIEEng->m_hNavigated);
-				pIEEng->m_hNavigated = NULL;
-
-				break; 
-			case WAIT_TIMEOUT: 
-				//
-				// TODO: Read from the shared buffer
-				//
-				LOG(INFO) + "NavigationTimeoutThread:timeout\n";
+			switch (dwWaitResult) 
+			{
+				// Event object was signaled
+				case WAIT_OBJECT_0: 
+					//
+					// TODO: Read from the shared buffer
+					//
+					LOG(INFO) + "NavigationTimeoutThread:Event object was signaled\n";
+									
+					CloseHandle(pIEEng->m_hNavigated);
+					pIEEng->m_hNavigated = NULL;
+					flag=false;
+					break; 
+				case WAIT_TIMEOUT: 
+					//
+					// TODO: Read from the shared buffer
+					//
+					LOG(INFO) + "NavigationTimeoutThread:timeout\n";
 				
+					HWND currentForeGroundWindowHandle;
+					currentForeGroundWindowHandle = GetForegroundWindow();
+					wchar_t szBuf[200];
+					if(currentForeGroundWindowHandle!=NULL)
+					{
+					GetWindowText(currentForeGroundWindowHandle,szBuf,199);
+					LOG(INFO) + szBuf;
+					}
 					
-				pIEEng->StopOnTab(0);
+					authwindowhandle = FindWindow(null,L"Enter Network Password");
+	
+					if(authwindowhandle)
+					{
+					LOG(INFO) + "Authentication window present";
+					LOG(INFO) + "NavigationTimeoutThread:Authentication popup\n";
+					flag=true;
+					break;
+					}
+					else
+					{
+					flag=false;
+					LOG(INFO) + "NavigationTimeoutThread:Navigation Timed out\n";
+					LOG(INFO) + "Authentication window not present";
+					}
+					pIEEng->StopOnTab(0);
 						
-				CloseHandle(pIEEng->m_hNavigated);
-				pIEEng->m_hNavigated = NULL;
-				SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+					CloseHandle(pIEEng->m_hNavigated);
+					pIEEng->m_hNavigated = NULL;
+					SendMessage(pIEEng->m_parentHWND, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
 					(WPARAM)pIEEng->m_tabID, (LPARAM)_tcsdup(pIEEng->m_tcNavigatedURL));
 
-				break; 
+					break; 
 
-			// An error occurred
-			default: 
-				LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
-				return 0; 
-		}
+				// An error occurred
+				default: 
+					LOG(INFO) + "Wait error  GetLastError()=\n"+ GetLastError();
+					flag=false;
+					return 0; 
+			}
+        	
 
-
-
-
-
-	    LOG(TRACE) + "NavThread Ended\n";
+			 LOG(TRACE) + "NavThread Ended\n";
+        	}while(flag);
     }
 
 	return 0;
