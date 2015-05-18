@@ -43,6 +43,7 @@
 #include "Reachability.h"
 
 #import "CRhoURLProtocol.h"
+#import "RhoExtManager/RhoExtManagerSingletone.h"
 
 int rho_rhodesapp_check_mode();
 void rho_splash_screen_start();
@@ -1172,7 +1173,11 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
         [NSThread detachNewThreadSelector:@selector(doRhoActivate) toTarget:self withObject:nil];
     }
     else
+    {
         [Rhodes performOnUiThread:[RhoActivateTask class] wait:NO];
+        
+        [[RhoExtManagerSingletone getExtensionManager] applicationDidBecomeActive: application];
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -1269,11 +1274,19 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
         [mainView performSelector:sel];
 }
 
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+//- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+- (BOOL)application:(UIApplication *)application_arg
+    openURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication
+    annotation:(id)annotation
 {
     if (!url) {  return NO; }
 
     rho_rhodesapp_setStartParametersOriginal( [[url absoluteString] UTF8String] );
+    
+    [[RhoExtManagerSingletone getExtensionManager] application:application_arg openURL:url
+                                             sourceApplication:sourceApplication
+                                                    annotation:annotation];
     
     NSBundle* mb = [NSBundle mainBundle];
     NSDictionary* md = [mb infoDictionary];
