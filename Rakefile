@@ -1018,8 +1018,8 @@ def cloud_url_git_match(str)
   server = nil
   user = ''
   app = nil
-  
-  res = /git@(git.*?\.(?:rhomobile|rhohub)\.com):(.*?)\/(.*?).git/i.match(str)
+  #TODO: remove this to support any valid git repo url
+  res = /git@(git.*?\.(?:rhomobile|rhohub|github)\.com):(.*?)\/(.*?).git/i.match(str)
   unless res.nil?
   #   res = /(git@|http\:\/\/|https\:\/\/)(.*?)\/(.*?).git/i.match(str)
   #   unless res.nil?
@@ -1806,8 +1806,8 @@ end
 def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
 
   platform_conf = try_get_platform_config(platform_name, platform_list)
-
-  req_ver = platform_ver_from_config(platform_name, config_override, platform_name == 'wm')
+#TODO: WARNING: Ruby 1.9.3 is getting old day by day , please upgrade to ruby 2.3
+  req_ver = platform_ver_from_config(platform_name, config_override, platform_name == 'wm').to_s
 
   if platform_name == 'wm'
     digits = nil
