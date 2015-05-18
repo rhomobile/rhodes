@@ -1018,8 +1018,8 @@ def cloud_url_git_match(str)
   server = nil
   user = ''
   app = nil
-  
-  res = /git@(git.*?\.(?:rhomobile|rhohub)\.com):(.*?)\/(.*?).git/i.match(str)
+  #TODO: remove this to support any valid git repo url
+  res = /git@(git.*?\.(?:rhomobile|rhohub|github)\.com):(.*?)\/(.*?).git/i.match(str)
   unless res.nil?
   #   res = /(git@|http\:\/\/|https\:\/\/)(.*?)\/(.*?).git/i.match(str)
   #   unless res.nil?
@@ -1418,6 +1418,14 @@ def wait_and_get_build(app_id, build_id, proxy, save_to = nil, unzip_to = nil)
     if is_ok
       if !(unzip_to.nil? || unzip_to.empty?)
         if (status == "completed")
+          #TODO: this is Jake Error, remove this ,once Rhodes framework upgraded to ruby 2.3 with default zip support
+          require 'zip'
+          dir_names = Zip::File.open(result_link).collect {|e| File.dirname(e.name)}.uniq-["."]
+          dir_names.collect {|e|
+            full_name = File.join(unzip_to,e)
+            Dir.mkdir(full_name) unless Dir.exists?(full_name)
+          }
+
           Jake.unzip(result_link, unzip_to) do |a,b,msg|
             put_message_with_timestamp("Current status: #{msg}", true)
           end
@@ -1806,8 +1814,8 @@ end
 def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_info = {}, config_override = nil)
 
   platform_conf = try_get_platform_config(platform_name, platform_list)
-
-  req_ver = platform_ver_from_config(platform_name, config_override, platform_name == 'wm')
+#TODO: WARNING: Ruby 1.9.3 is getting old day by day , please upgrade to ruby 2.3
+  req_ver = platform_ver_from_config(platform_name, config_override, platform_name == 'wm').to_s
 
   if platform_name == 'wm'
     digits = nil
