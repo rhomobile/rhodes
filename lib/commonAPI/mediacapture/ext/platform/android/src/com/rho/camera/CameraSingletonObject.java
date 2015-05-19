@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.io.FileNotFoundException;
 import android.content.ContentResolver;
@@ -169,10 +170,10 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 		File oldFile = new File(RhoFileApi.absolutePath(pathToImage));
 		File mediafile  =  new File(RhoFileApi.getDbFilesPath(), imageName);
 	
-		FileInputStream finput= null;
+		InputStream finput= null;
 		FileOutputStream fout = null;
 		try {
-			finput = new FileInputStream(oldFile);
+			finput= RhoFileApi.open(pathToImage);
 			fout = new FileOutputStream(mediafile);
 			byte[] b = new byte[1024];
 			int read = 0;
