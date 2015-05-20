@@ -151,24 +151,20 @@ public class CameraSingletonObject implements ICameraSingletonObject {
         Logger.T(TAG, "createCameraObject: " + id);
         return new CameraObject(id);
     }
-	@Override
+@Override
 	public void copyImageToDeviceGallery(String pathToImage,
 			IMethodResult result) {
 		// TODO Auto-generated method stub
 		String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
-		String abspath = copyImageToDesired(pathToImage, imageName);
-	String strUri = null;
-		try {
-			strUri = MediaStore.Images.Media.insertImage(RhodesActivity.getContext().getContentResolver(), abspath, imageName, "Saving Image to Device Gallery through Camera");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
+		copyImageToDesired(pathToImage, imageName);
 	}
-	private String copyImageToDesired(String pathToImage, String imageName) {
+	
+	private void copyImageToDesired(String pathToImage, String imageName) {
 		// TODO Auto-generated method stub
 		File oldFile = new File(RhoFileApi.absolutePath(pathToImage));
-		File mediafile  =  new File(RhoFileApi.getDbFilesPath(), imageName);
+		File directory = new File(Environment.getExternalStorageDirectory()+ "/DCIM/Camera/");
+		boolean flag = directory.mkdirs();
+		File mediafile  =  new File(directory +File.separator + imageName);
 	
 		InputStream finput= null;
 		FileOutputStream fout = null;
@@ -202,7 +198,7 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 			}
 		}
 		
-		return mediafile.getAbsolutePath();
 	}
+
 
 }
