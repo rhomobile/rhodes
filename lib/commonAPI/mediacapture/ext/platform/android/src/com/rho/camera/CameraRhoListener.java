@@ -79,11 +79,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 			{
 				getActualPropertyMap().put("default_camera_key_path", "");
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
-				//rename = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
-				if(!propertyMap.containsKey("fileName")){
-					rename = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())) + ".jpg";
-				}
-				else{
+				rename = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
+				if(propertyMap.containsKey("fileName")){
 					rename = propertyMap.get("fileName")+ ".jpg";
 				}
 				String curPath = null;		
@@ -516,10 +513,13 @@ public class CameraRhoListener extends AbstractRhoListener implements
  * 
  */
 public void deleteImage(){
+	String storageLocation = null;
+	storageLocation = Environment.getExternalStorageDirectory().toString();
 	
 	int lastIndex = rename.lastIndexOf("/");
 	String file_name= rename.substring(lastIndex+1, rename.length());
-	File file = new File("/storage/sdcard/Pictures/"+file_name);
+	
+	File file = new File(storageLocation + "/Pictures/"+file_name);
 	  if(file.exists()){
 		  file.delete();
 	  }
