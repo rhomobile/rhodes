@@ -75,8 +75,8 @@ import com.rhomobile.rhodes.util.JSONGenerator;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.PhoneId;
 import com.rhomobile.rhodes.util.Utils;
-import com.rhomobile.rhodes.camera.Camera;
-
+//import com.rhomobile.rhodes.camera.Camera;
+import android.hardware.Camera;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -837,6 +837,7 @@ public class RhodesService extends Service {
             }
             else if (name.equalsIgnoreCase("has_camera")) {
             	boolean hasCamera = false;
+            	/*
             	try {
             		if (Camera.getCameraService() != null) {
             			if ((Camera.getCameraService().getMainCamera() != null) || (Camera.getCameraService().getFrontCamera() != null)) {
@@ -848,6 +849,32 @@ public class RhodesService extends Service {
             		e.printStackTrace();
             		Logger.E(TAG, "Exception during detect Camera for has_camera");
             	}
+            	*/
+            	
+            	int noofCameras=0;
+				
+            	
+		try 
+		{
+		noofCameras=Camera.getNumberOfCameras();
+		}
+		catch (Throwable e) 
+		{
+            		e.printStackTrace();
+            		Logger.E(TAG, "Exception while getting the number of Cameras");
+            	}
+				
+			Logger.I(TAG, "number of of Cameras present" + noofCameras);
+				if(noofCameras > 0)
+				{
+				hasCamera=true;
+				}
+				else
+				{
+				hasCamera=false;
+				}
+            	
+            	
                 return hasCamera;//Boolean.TRUE;
             }
             else {
