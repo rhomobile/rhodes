@@ -306,7 +306,7 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="detectConnection" hasCallback="mandatory" runInThread="none">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback. Note that callback will be called only if connection status has changed compared to previous polling.</DESC>
+                <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback. Note that callback will be called only if connection status has changed compared to previous polling. Multiple concurrent detectionConnection is not supported.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
