@@ -645,12 +645,12 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 	else
 		LOG(WARNING) + "Unable to stop detecting network connection, could not find specified callback";
     */
-    if ( m_networkPoller.get() != 0) {
+    if ( m_networkPoller != 0) {
         if ( m_networkPoller->IsChecking() ) {
             m_networkPoller->StopNetworkChecking();
         }
-        m_networkPoller->Cleanup();
-        m_networkPoller.reset(0);
+       m_networkPoller->CleanupAndDeleteSelf();
+       m_networkPoller = 0;
     }
 }
 
