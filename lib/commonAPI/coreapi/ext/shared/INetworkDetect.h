@@ -19,6 +19,7 @@ public:
 	*/
 	virtual bool Initialise() = 0;
     virtual void Cleanup() = 0;
+        virtual void CleanupAndDeleteSelf() = 0;
 	virtual bool SetHost(const rho::String& host) = 0;
 	virtual void SetPort(int iPort) = 0;
 	virtual bool SetNetworkPollInterval(int iInterval) = 0;
