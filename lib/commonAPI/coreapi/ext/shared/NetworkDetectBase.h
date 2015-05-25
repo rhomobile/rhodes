@@ -36,7 +36,7 @@ protected:  //  Methods
     
     virtual void Startup() = 0;
     virtual void Cleanup() = 0;
-    
+    void CleanupAndDeleteSelf();
 	std::string itos(int i);
 
 protected:  //  Threads
@@ -49,4 +49,5 @@ protected:  //  Attributes
 	int m_iPort;
 	int m_iNetworkPollInterval;
 	NetworkState m_NetworkState;
+	bool m_deleteSelf;
 };
