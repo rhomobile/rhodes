@@ -4480,12 +4480,8 @@ task :gem do
   end
   File.open("Manifest.txt",'w') {|f| f.write(out)}
 
-  puts "Loading gemspec"
-  require 'rubygems'
-  spec = Gem::Specification.load('rhodes.gemspec')
-
   puts "Building gem"
-  gemfile = Gem::Builder.new(spec).build
+  Jake.run3('gem build rhodes.gemspec')
 end
 
 namespace "rhomobile-debug" do
