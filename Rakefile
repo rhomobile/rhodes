@@ -4502,12 +4502,8 @@ namespace "rhomobile-debug" do
     startdir = pwd
     chdir 'rhomobile-debug'
 
-    puts "Loading gemspec"
-    require 'rubygems'
-    spec = Gem::Specification.load('rhomobile-debug.gemspec')
-
     puts "Building gem"
-    gemfile = Gem::Builder.new(spec).build
+    Jake.run3('gem build rhomobile-debug.gemspec')
 
     Dir.glob("rhomobile-debug*.gem").each do |f|
       cp f, startdir, :preserve => true
