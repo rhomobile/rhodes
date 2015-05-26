@@ -1000,7 +1000,7 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 	int width  = GetSystemMetrics(SM_CXSCREEN);	
 	int height = GetSystemMetrics(SM_CYSCREEN);
 	
-	if (wParam == SETTINGCHANGE_RESET) {
+	if (wParam == SETTINGCHANGE_RESET || (!rho_wmimpl_get_resize_on_sip() && (wParam == SPI_SETSIPINFO)) ) {
 
 		rho_rhodesapp_callScreenRotationCallback(width, height, (m_bFullScreen ? 0 : 90) );
 
