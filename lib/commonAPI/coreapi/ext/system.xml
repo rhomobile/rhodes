@@ -152,7 +152,7 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="isSymbolDevice" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if the device supports Symbol device capabilities. APIs will indicate if the property or method is available on Symbol devices only. You can use this property to help your application decide when to take advantage of advanced Symbol capabilities.</DESC>
             </PROPERTY>
-            <PROPERTY name="isMotorolaDevice" type="BOOLEAN" readOnly="true" generateDoc="false" deprecated="true">
+            <PROPERTY name="isMotorolaDevice" type="BOOLEAN" readOnly="true" deprecated="true">
                 <DESC>Returns true if the device supports Motorola device capabilities. APIs will indicate if the property or method is available on Motorola devices only. You can use this property to help your application decide when to take advantage of advanced Motorola capabilities. This property has been deprecated. It is recommended to use 'isSymbolDevice' property.</DESC>
             </PROPERTY>
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
