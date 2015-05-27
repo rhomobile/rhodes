@@ -472,8 +472,37 @@ void QtMainWindow::navigate(QString url, int index)
 			QString errStr = test.errorString();
 			if (errStr.length() > 0 )
 				LOG(ERROR) + "WebView navigate: failed to parse URL: " + errStr.toStdString();
+#ifdef	EXTENDEDTRACE
+			LOG(INFO) + "[Extended trace] naviage : signals intiated";
+			QUrl currenturl= QUrl(url);
+            wv->load(currenturl);
+			m_request = QNetworkRequest (currenturl);
+			m_reply = wv->page()->networkAccessManager()->get(m_request);
 
-            wv->load(QUrl(url));
+			connect(wv->page()->networkAccessManager(), SIGNAL(finished(QNetworkReply *)),
+				this, SLOT(replyFinish(QNetworkReply *)),Qt::UniqueConnection);
+
+			
+			connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
+				this,  SLOT(PrintError(QNetworkReply::NetworkError)));
+	
+
+			connect(wv->page(), SIGNAL(unsupportedContent(QNetworkReply*)),
+            this, SLOT(PageunsupportedContent(QNetworkReply*)));
+			
+			connect(wv->page(), SIGNAL(loadStarted()),
+            this, SLOT(PageloadStarted(QNetworkReply*)));
+			
+			connect(wv->page(), SIGNAL(loadProgress(int )),
+            this, SLOT(PageloadProgress(int )));
+			
+			connect(wv->page(), SIGNAL(loadFinished(bool )),
+            this, SLOT(PageFinished(bool)));
+			
+			
+#else
+			wv->load(QUrl(url));
+#endif
         }
     }
 }
@@ -1189,3 +1218,43 @@ void QtMainWindow::setTitle(const char* title)
 {
     this->setWindowTitle(QString::fromUtf8(title));
 }
+
+#ifdef	EXTENDEDTRACE
+	void QtMainWindow::replyFinish(QNetworkReply *reply)
+	{
+		QString tempstring = reply->url().toString();
+		LOG(INFO) + "[Extended Trace] replyFinish : " + tempstring.toStdString().c_str();
+	}
+
+
+	void QtMainWindow::PrintError(QNetworkReply::NetworkError code)
+	{
+		QString PrintErrorString = QString::number(code);
+		LOG(INFO) + "[Extended Trace] PrintError Code :" +   PrintErrorString.toStdString().c_str();
+	}
+
+	void QtMainWindow::PageunsupportedContent(QNetworkReply *ureply)
+	{
+		QString tempstring = ureply->url().toString();
+		QString errorString = ureply->errorString();
+		LOG(INFO) + "[Extended Trace] PageunsupportedContent : " +  errorString.toStdString().c_str() + "----" + tempstring.toStdString().c_str();
+	}
+	void QtMainWindow::PageloadStarted()
+	{
+		LOG(INFO) + "[Extended Trace] PageloadStarted : " ;
+	}
+	void QtMainWindow::PageloadProgress(int progress)
+	{
+		QString ProgressString = QString::number(progress);
+		LOG(INFO) + "[Extended Trace] PageloadProgress :" +   ProgressString.toStdString().c_str();
+
+	}
+	void QtMainWindow::PageFinished(bool ok)
+	{
+		if(ok)
+			LOG(INFO) + "[Extended Trace] PageFinished : True" ; 
+		else
+			LOG(INFO) + "[Extended Trace] PageFinished : False" ;
+	}
+	
+#endif

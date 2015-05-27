@@ -51,6 +51,14 @@
 #include "api_generator/MethodResult.h"
 #include "QtLogView.h"
 
+#ifndef EXTENDEDTRACE
+	#define EXTENDEDTRACE
+#endif
+
+#ifdef	EXTENDEDTRACE
+	#include <QNetworkReply>
+#endif
+
 namespace Ui {
     class QtMainWindow;
 }
@@ -136,6 +144,10 @@ private:
     int toolBarSeparatorWidth;
     QNetworkProxy m_proxy;
     QtLogView* m_logView;
+#ifdef	EXTENDEDTRACE
+	QNetworkReply *m_reply;
+	QNetworkRequest m_request;
+#endif
 
 private slots:
     void on_webView_urlChanged(QUrl );
@@ -178,6 +190,14 @@ public slots:
     void setSize(int width, int height);
     void lockSize(int locked);
     void setTitle(const char* title);
+#ifdef	EXTENDEDTRACE	
+	void replyFinish(QNetworkReply *);
+	void PrintError(QNetworkReply::NetworkError code);
+	void PageunsupportedContent(QNetworkReply * reply);
+	void PageloadStarted();
+	void PageloadProgress(int progress);
+	void PageFinished(bool ok);
+#endif
 protected:
     void resizeEvent(QResizeEvent *);
 };
