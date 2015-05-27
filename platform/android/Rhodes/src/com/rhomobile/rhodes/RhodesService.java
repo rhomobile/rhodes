@@ -889,9 +889,18 @@ public class RhodesService extends Service {
       return isAppInstalled("com.symbol.emdk.proxyframework") ||
              isAppInstalled("com.symbol.emdk.datawedge") ||
              isAppInstalled("com.motorolasolutions.emdk.proxyframework") ||
-             isAppInstalled("com.motorolasolutions.emdk.datawedge");
+             isAppInstalled("com.motorolasolutions.emdk.datawedge") ||  isAppInstalled("com.symbol.datawedge") || symbolSupportedDeviceID();
     }
-	
+   private static Boolean symbolSupportedDeviceID(){
+    	boolean flag = false;
+    	if((Build.MODEL.compareToIgnoreCase("MC18N0") == 0) || (Build.MODEL.compareToIgnoreCase("MC32N0") == 0)
+    			|| (Build.MODEL.compareToIgnoreCase("MC40N0") == 0) || (Build.MODEL.compareToIgnoreCase("TC55") == 0) 
+    			|| (Build.MODEL.compareToIgnoreCase("TC700H") == 0) || (Build.MODEL.compareToIgnoreCase("TC75") == 0) ){
+    		flag = true;
+    		
+    	}
+		return flag;
+    }
 	public static String getTimezoneStr() {
 		Calendar cal = Calendar.getInstance();
 		TimeZone tz = cal.getTimeZone();
