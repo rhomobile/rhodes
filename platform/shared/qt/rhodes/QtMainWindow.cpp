@@ -491,7 +491,7 @@ void QtMainWindow::navigate(QString url, int index)
             this, SLOT(PageunsupportedContent(QNetworkReply*)));
 			
 			connect(wv->page(), SIGNAL(loadStarted()),
-            this, SLOT(PageloadStarted(QNetworkReply*)));
+            this, SLOT(PageloadStarted()));
 			
 			connect(wv->page(), SIGNAL(loadProgress(int )),
             this, SLOT(PageloadProgress(int )));
