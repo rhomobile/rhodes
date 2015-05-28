@@ -158,7 +158,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         <PARAM name="height" type="INTEGER"/>
                     </PARAMS>
                 </PARAM>
-                <PLATFORM>Android, WP8, WM, CE, iOS</PLATFORM>
+                <PLATFORM>Android, WP8, WM, CE</PLATFORM>
                 <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
                 <DESC>List of resolutions (width and height in pixels) supported by the camera. On WM/CE devices this feature is supported only by color camera and it is not supported by imager. Refer example section for more details.</DESC>
             </PROPERTY>
