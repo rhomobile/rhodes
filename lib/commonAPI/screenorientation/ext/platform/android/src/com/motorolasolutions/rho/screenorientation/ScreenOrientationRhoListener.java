@@ -51,7 +51,7 @@ public class ScreenOrientationRhoListener extends AbstractRhoListener {
         Iterator<ScreenOrientationSingleton> iterator = mScreenOrientationInstances.iterator();
         while (iterator.hasNext()) {
             ScreenOrientationSingleton screenOrientationInstance = iterator.next();
-            screenOrientationInstance.cleanUp();
+            //screenOrientationInstance.cleanUp();
         }
     }
 
