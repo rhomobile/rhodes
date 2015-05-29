@@ -24,7 +24,7 @@
                     timer.stop();
                 },3000);
         </MORE_HELP>
-        <PLATFORM>Android, WP8</PLATFORM>
+        <PLATFORM>Android, WP8,iOS</PLATFORM>
         <PLATFORM_EB>Android</PLATFORM_EB>
         
         <METHODS>
