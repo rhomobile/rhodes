@@ -48,6 +48,8 @@
 #import "common/app_build_configs.h"
 
 #include <sys/xattr.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -745,6 +747,7 @@ static const double RHO_IPHONE_PPI = 163.0;
 static const double RHO_IPHONE4_PPI = 326.0;
 // http://www.apple.com/ipad/specs/
 static const double RHO_IPAD_PPI = 132.0;
+static const double RHO_IPAD_MINI_PPI = 163.0;
 static const double RHO_NEW_IPAD_PPI = 264.0;
 
 static float get_scale() {
@@ -814,10 +817,26 @@ int rho_sysimpl_get_property_iphone(char* szPropName, NSObject** resValue)
     }
     else if (strcasecmp("ppi_x", szPropName) == 0 ||
              strcasecmp("ppi_y", szPropName) == 0) {
+		
 #ifdef __IPHONE_3_2
+		
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            if (get_scale() > 1.2) {
-                *resValue = [NSNumber numberWithDouble:RHO_NEW_IPAD_PPI];
+			
+			//Fix DPI issue on Ipad Mini
+			//get the device model name
+			size_t size;
+			sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+			char *machine = malloc(size);
+			sysctlbyname("hw.machine", machine, &size, NULL, 0);
+			NSString *platform = [NSString stringWithUTF8String:machine];
+			free(machine);
+				
+			// IPad Mini
+			if([platform isEqualToString:@"iPad2,5"] || [platform isEqualToString:@"iPad2,6"] || [platform isEqualToString:@"iPad2,7"]){
+				*resValue = [NSNumber numberWithDouble:RHO_IPAD_MINI_PPI];
+			}
+		    else if (get_scale() > 1.2) {
+		        *resValue = [NSNumber numberWithDouble:RHO_NEW_IPAD_PPI];
             }
             else {
                 *resValue = [NSNumber numberWithDouble:RHO_IPAD_PPI];
