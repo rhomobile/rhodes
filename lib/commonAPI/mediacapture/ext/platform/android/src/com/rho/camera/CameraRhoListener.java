@@ -111,8 +111,10 @@ public class CameraRhoListener extends AbstractRhoListener implements
 							File f= new File(imgPath);
 							imgPath = copyImg(imgPath);
 							f.renameTo(new File(f.getParentFile(), rename));
-							RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
-					                Uri.parse(curUri.getPath())));
+							String pathAfterRename = f.getParentFile().getAbsolutePath() +"/"+rename;
+							fixTheGalleryIssue(pathAfterRename);
+							// RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
+					  //              Uri.parse(curUri.getPath())));
 							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
 						}
 						
@@ -123,8 +125,10 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){ 
 						file= new File(curUri.getPath());
 						file.renameTo(new File(file.getParentFile(), rename));
-						RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
-				                Uri.parse(curUri.getPath())));
+						String pathAfterRename = file.getParentFile().getAbsolutePath() +"/"+rename;
+						fixTheGalleryIssue(pathAfterRename);
+						// RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
+				  //              Uri.parse(curUri.getPath())));
 					}
 					picChoosen_imagewidth = mBitmap.getWidth();
 					picChoosen_imageheight = mBitmap.getHeight();
@@ -169,8 +173,10 @@ public class CameraRhoListener extends AbstractRhoListener implements
 							        	mBitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
 							        	if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){ 
 							        	f.renameTo(new File(f.getParentFile(), rename));
-										RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
-								                Uri.parse(f.getAbsolutePath())));
+							        	String pathAfterRename = f.getParentFile().getAbsolutePath() +"/"+rename;
+							        	fixTheGalleryIssue(pathAfterRename);
+										// RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, 
+								  //              Uri.parse(f.getAbsolutePath())));
 							        	}
 							        } catch (FileNotFoundException e) {
 							            e.printStackTrace();
@@ -245,6 +251,29 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		}
 		
 	}
+
+
+
+	private void fixTheGalleryIssue(String absoluteRenamedPath ) 
+	{
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+			{
+				 MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[] {absoluteRenamedPath }, null, new MediaScannerConnection.OnScanCompletedListener() {
+
+						public void onScanCompleted(String path, Uri uri) 
+			              {
+			              }
+			            });
+
+			}
+			else
+			{ 
+			RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+			} 
+		
+
+	}
+
 
 	void setMethodResult(IMethodResult result) {
 		mMethodResult = result;
