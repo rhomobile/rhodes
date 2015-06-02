@@ -585,32 +585,39 @@ bool receive_request_test(ByteVector &request, int attempt)
 			int attempts = 0;
 			int n=0;
 			int nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
+			BOOL bFirstTime = true;
 
-			if(nConfigRetry > nMaxAttempts)
+			if(nConfigRetry > 0)
 				nMaxAttempts = nConfigRetry;
 			else
 				nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
-				RAWTRACE1("Configured Max Attempts %d", nMaxAttempts);
+			
+			RAWTRACE1("Configured Max Attempts %d", nMaxAttempts);
 
 			for(;;) {
-				fd_set fds;
-				FD_ZERO(&fds);
-				FD_SET(m_sock, &fds);
-				timeval tv = {0};
-				tv.tv_usec = 100000;//100 MS
-				int ret = select(m_sock + 1, &fds, 0, 0, &tv);
+			
 
-				RAWTRACE("Checking read socket is set");
-				if (FD_ISSET(m_sock, &fds))
+				RAWTRACE("Checking read socket is set ");
+				if(bFirstTime)
 				{
-					if (verbose) RAWTRACE("Read portion of data from socket...");
+					if (verbose) RAWTRACE("(0)Read portion of data from socket...");
 					n = recv(m_sock, &buf[0], sizeof(buf), 0);
+					bFirstTime = false;
 				}
 				else
 				{
-					if (verbose) RAWTRACE("No data available now. Read socket not ready.");
+					if (FD_ISSET(m_sock, &fds))
+					{
+						if (verbose) RAWTRACE("(1)Read portion of data from socket...");
+						n = recv(m_sock, &buf[0], sizeof(buf), 0);
+
+					}
+					else
+					{
+						if (verbose) RAWTRACE("No data available now. Read socket not ready.");
+					}
+					RAWTRACE("Socket check complete");
 				}
-				RAWTRACE("Socket check complete");
 
 				//RAWTRACE1("RECV: %d", n);
 				if (n == -1) {
@@ -638,7 +645,13 @@ bool receive_request_test(ByteVector &request, int attempt)
 							return false;
 						}
 
-			
+						fd_set fds;
+						FD_ZERO(&fds);
+						FD_SET(m_sock, &fds);
+						timeval tv = {0};
+						tv.tv_usec = 100000;//100 MS
+						int ret = select(m_sock + 1, &fds, 0, 0, &tv);
+						RAWLOG_ERROR1("Return value of select is  %d", ret);
 						continue;
 					}
 		            
