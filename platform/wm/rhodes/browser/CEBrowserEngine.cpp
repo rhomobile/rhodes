@@ -475,7 +475,11 @@ HRESULT CEBrowserEngine::GetHostInfo( DOCHOSTUIINFO* pInfo )
     pInfo->dwFlags = DOCHOSTUIFLAG_NO3DBORDER;
 
 	if (!m_bTextSelectionEnabled)
-		pInfo->dwFlags |= DOCHOSTUIFLAG_DIALOG;
+	{
+		//Setting of pInfo->dwFlags to DOCHOSTUIFLAG_DIALOG
+		//has been commented as this restricts zoom button to work
+		//pInfo->dwFlags |= DOCHOSTUIFLAG_DIALOG;
+	}
 
 	pInfo->dwDoubleClick = DOCHOSTUIDBLCLK_DEFAULT;
 
