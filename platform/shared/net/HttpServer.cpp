@@ -586,6 +586,8 @@ bool receive_request_test(ByteVector &request, int attempt)
 			int n=0;
 			int nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
 			BOOL bFirstTime = true;
+			fd_set fds;
+			FD_ZERO(&fds);
 
 			if(nConfigRetry > 0)
 				nMaxAttempts = nConfigRetry;
@@ -645,7 +647,6 @@ bool receive_request_test(ByteVector &request, int attempt)
 							return false;
 						}
 
-						fd_set fds;
 						FD_ZERO(&fds);
 						FD_SET(m_sock, &fds);
 						timeval tv = {0};
