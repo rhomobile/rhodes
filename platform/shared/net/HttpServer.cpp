@@ -579,6 +579,8 @@ bool receive_request_test(ByteVector &request, int attempt)
 		{
 			if (verbose) RAWTRACE("[Windows]Receiving request...");
 			int nConfigRetry = RHOCONF().getInt("soc_retry");
+			int nAttemptRetry = RHOCONF().getInt("nAttemptRetry");
+			int nRetryMethod = RHOCONF().getInt("RetryMethod");
 
 			ByteVector r;
 			char buf[BUF_SIZE];
@@ -597,31 +599,13 @@ bool receive_request_test(ByteVector &request, int attempt)
 			RAWTRACE1("Configured Max Attempts %d", nMaxAttempts);
 
 			for(;;) {
-			
+				
+				bFirstTime = FD_ISSET(m_sock, &fds);
 
-				RAWTRACE("Checking read socket is set ");
-				if(bFirstTime)
-				{
-					if (verbose) RAWTRACE("(0)Read portion of data from socket...");
-					n = recv(m_sock, &buf[0], sizeof(buf), 0);
-					bFirstTime = false;
-				}
-				else
-				{
-					if (FD_ISSET(m_sock, &fds))
-					{
-						if (verbose) RAWTRACE("(1)Read portion of data from socket...");
-						n = recv(m_sock, &buf[0], sizeof(buf), 0);
+				if (verbose) RAWTRACE1("(1)Read portion of data from socket...(%d)",bFirstTime);
+				n = recv(m_sock, &buf[0], sizeof(buf), 0);
 
-					}
-					else
-					{
-						if (verbose) RAWTRACE("No data available now. Read socket not ready.");
-					}
-					RAWTRACE("Socket check complete");
-				}
-
-				//RAWTRACE1("RECV: %d", n);
+				RAWTRACE1("RECV: %d", n);
 				if (n == -1) {
 					int e = RHO_NET_ERROR_CODE;
 					RAWTRACE1("RECV ERROR: %d", e);
@@ -640,19 +624,43 @@ bool receive_request_test(ByteVector &request, int attempt)
 		#endif
 						if (!r.empty())
 							break;
-		                
-						if(++attempts > nMaxAttempts)
+						
+		                if(nAttemptRetry)
 						{
-							RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
-							return false;
+							RAWLOG_INFO("nAttemptRetry is enabled");
+							if(++attempts > nMaxAttempts)
+							{
+								RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
+								return false;
+							}
+						}
+						else
+						{
+							RAWLOG_INFO("nAttemptRetry is disabled");	
+							if(nRetryMethod)
+							{
+								RAWLOG_INFO("Retry is enabled. returning to parent");
+								return false;
+							}
+							else
+							{
+								RAWLOG_INFO("Retry is Disbaled. means ignoring error and continue");
+								continue;
+							}
 						}
 
+						fd_set fds;
+						fd_set exceptfds;
 						FD_ZERO(&fds);
+						FD_ZERO(&exceptfds);
 						FD_SET(m_sock, &fds);
 						timeval tv = {0};
 						tv.tv_usec = 100000;//100 MS
-						int ret = select(m_sock + 1, &fds, 0, 0, &tv);
-						RAWLOG_ERROR1("Return value of select is  %d", ret);
+						int ret = select(m_sock + 1, &fds, 0, &exceptfds, &tv);
+						int except = FD_ISSET(m_sock, &exceptfds);
+						RAWLOG_ERROR1("Return value of select is  %d ", ret);
+						RAWLOG_ERROR1("Return value of select  error : %d", errno);
+						RAWLOG_ERROR1("Return value of select is  except=%d", except);
 						continue;
 					}
 		            

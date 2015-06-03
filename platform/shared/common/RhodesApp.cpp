@@ -1466,6 +1466,9 @@ void CRhodesApp::initHttpServer()
 #ifndef RHODES_EMULATOR
     strAppRootPath += "apps";
 #endif
+	LOG(INFO) +  "strAppRootPath = " +strAppRootPath.c_str();
+	LOG(INFO) +  "strAppUserPath = " +strAppUserPath.c_str();
+	LOG(INFO) +  "strRuntimePath = " +strRuntimePath.c_str();
 
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
     m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
@@ -1520,6 +1523,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/syncengine/get_src_attrs", callback_get_src_attrs);
     m_httpServer->register_uri("/system/syncengine/is_blob_attr", callback_is_blob_attr);
 
+	
 }
 
 const char* CRhodesApp::getFreeListeningPort()
