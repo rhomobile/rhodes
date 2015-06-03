@@ -588,8 +588,7 @@ bool receive_request_test(ByteVector &request, int attempt)
 			int n=0;
 			int nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
 			BOOL bFirstTime = true;
-			fd_set fds;
-			FD_ZERO(&fds);
+			
 
 			if(nConfigRetry > 0)
 				nMaxAttempts = nConfigRetry;
@@ -649,18 +648,13 @@ bool receive_request_test(ByteVector &request, int attempt)
 						}
 
 						fd_set fds;
-						fd_set exceptfds;
 						FD_ZERO(&fds);
-						FD_ZERO(&exceptfds);
 						FD_SET(m_sock, &fds);
-						FD_SET(m_sock, &exceptfds);
 						timeval tv = {0};
 						tv.tv_usec = 100000;//100 MS
-						int ret = select(m_sock + 1, &fds, 0, &exceptfds, &tv);
-						int except = FD_ISSET(m_sock, &exceptfds);
+						int ret = select(m_sock + 1, &fds, 0, 0, &tv);
 						RAWLOG_ERROR1("Return value of select is  %d ", ret);
 						RAWLOG_ERROR1("Return value of select  error : %d", errno);
-						RAWLOG_ERROR1("Return value of select is  except=%d", except);
 						continue;
 					}
 		            
