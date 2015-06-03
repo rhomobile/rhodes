@@ -898,7 +898,7 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 			}
 		}
 		
-		if (msg.message == WM_KEYDOWN && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
+		if ((msg.message == WM_KEYDOWN || msg.message == WM_KEYUP) && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
 		{
 			IDispatch* pDisp;
 			m_pBrowser->get_Document(&pDisp);
