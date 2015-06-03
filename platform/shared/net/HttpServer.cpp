@@ -600,9 +600,8 @@ bool receive_request_test(ByteVector &request, int attempt)
 
 			for(;;) {
 				
-				bFirstTime = FD_ISSET(m_sock, &fds);
 
-				if (verbose) RAWTRACE1("(1)Read portion of data from socket...(%d)",bFirstTime);
+				if (verbose) RAWTRACE("Read portion of data from socket.");
 				n = recv(m_sock, &buf[0], sizeof(buf), 0);
 
 				RAWTRACE1("RECV: %d", n);
@@ -654,6 +653,7 @@ bool receive_request_test(ByteVector &request, int attempt)
 						FD_ZERO(&fds);
 						FD_ZERO(&exceptfds);
 						FD_SET(m_sock, &fds);
+						FD_SET(m_sock, &exceptfds);
 						timeval tv = {0};
 						tv.tv_usec = 100000;//100 MS
 						int ret = select(m_sock + 1, &fds, 0, &exceptfds, &tv);
