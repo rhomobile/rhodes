@@ -691,6 +691,8 @@ bool CHttpServer::receive_request(ByteVector &request)
 				{
 					int e = RHO_NET_ERROR_CODE;
 					RAWTRACE1("RECV ERROR: %d", e);
+					if(ERROR_NO_DATA==e)
+						break;
 #if !defined(WINDOWS_PLATFORM)
 					if (e == EINTR)
 						continue;
