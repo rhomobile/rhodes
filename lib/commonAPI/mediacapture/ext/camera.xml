@@ -83,7 +83,7 @@ The ebapi.js file is necessary for all single API inclusions.
 				<DESC>This shall provide the image path.</DESC>
 			</CONSTANT>
 			<CONSTANT name="OUTPUT_FORMAT_DATAURI" value="dataUri" type="STRING">
-				<DESC> this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
+				<DESC> This is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
 			</CONSTANT>
 			<!-- Camera Color Model -->
 			<CONSTANT name="COLOR_MODEL_RGB" value="rgb" type="STRING">
@@ -103,17 +103,17 @@ The ebapi.js file is necessary for all single API inclusions.
 				<DESC>Flash will be used if lighting conditions deem it necessary. This is not supported in WM/CE devices.</DESC>
 			</CONSTANT>
 			<CONSTANT name="FLASH_RED_EYE" value="redEye" type="STRING">
-				<DESC>Flash with red eye reduction is used. This is not supported in iOS/WM/CE devices.</DESC>
+				<DESC>Flash with red eye reduction is used. This is supported only in Android devices.</DESC>
 			</CONSTANT>
 			<CONSTANT name="FLASH_TORCH" value="torch" type="STRING">
 				<DESC>The flash is turned on in torch mode. This is supported only in Android devices.</DESC>
 			</CONSTANT>
 			<!-- Camera Imager AIM Types -->
 			<CONSTANT name="AIM_ON" value="on" type="STRING">
-				 <DESC>switches the imager's aim ON </DESC>
+				 <DESC>Switches the imager's aim to ON</DESC>
 			</CONSTANT>
 			<CONSTANT name="AIM_OFF" value="off" type="STRING">
-				<DESC>switches the imager's aim OFF </DESC>
+				<DESC>Switches the imager's aim to OFF</DESC>
 			</CONSTANT>
         </CONSTANTS>
         <PROPERTIES usePropertyBag="accessorsViaPropertyBag" generateAccessors="true" >
@@ -179,7 +179,7 @@ The ebapi.js file is necessary for all single API inclusions.
 				<PLATFORM>Android, iOS, WM, CE, WP8</PLATFORM>
                 <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
                 <DESC>The image file path without file extension to store captured image in subsequent calls to takePicture() or capture(). Default filename will be IMG_timestamp and will be saved under root directory. The filename extension will be added automatically according to compressionFormat property value.
-				In Wp8 only filename can be changed, by default the path shall be under picture=>CameraRoll</DESC>
+				In Wp8, only filename can be changed, by default the path shall be under picture=>CameraRoll</DESC>
             </PROPERTY>
             <PROPERTY name="compressionFormat" type="STRING" default="jpg">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
@@ -435,9 +435,9 @@ The ebapi.js file is necessary for all single API inclusions.
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
 					     <PLATFORM>Android, WM, CE, WP8, iOS</PLATFORM>
                          <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
-                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
-							In	Android and WP8 only imageUri and image_uri are supported, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri.On wp8,wm when 'outputFormat' is 'image' then imageUri or image_uri shall have Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image'</DESC>
-                        <DESC_EB>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE devices user can only specify the outputFormat in the property bag. On Android, only imageUri and image_uri are supported.</DESC_EB>
+                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE,Android and WP8 devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
++							In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri.On wp8, wm when 'outputFormat' is 'image' then imageUri or image_uri shall have Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image'</DESC>
++                        <DESC_EB>Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE,Android devices user can only specify the outputFormat in the property bag.</DESC_EB>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>
                         </CAN_BE_NIL>
