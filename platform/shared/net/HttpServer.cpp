@@ -573,120 +573,6 @@ bool receive_request_test(ByteVector &request, int attempt)
 	return true;
 }
 
-/* Temporary Testing of this function on Windows program only*/
-#if defined(WINDOWS_PLATFORM)
-		bool CHttpServer::receive_request(ByteVector &request)
-		{
-			if (verbose) RAWTRACE("[Windows]Receiving request...");
-			int nConfigRetry = RHOCONF().getInt("soc_retry");
-			int nAttemptRetry = RHOCONF().getInt("nAttemptRetry");
-			int nRetryMethod = RHOCONF().getInt("RetryMethod");
-
-			ByteVector r;
-			char buf[BUF_SIZE];
-			int attempts = 0;
-			int n=0;
-			int nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
-			BOOL bFirstTime = true;
-			
-
-			if(nConfigRetry > 0)
-				nMaxAttempts = nConfigRetry;
-			else
-				nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
-			
-			RAWTRACE1("Configured Max Attempts %d", nMaxAttempts);
-
-			for(;;) {
-				
-
-				if (verbose) RAWTRACE("Read portion of data from socket.");
-				n = recv(m_sock, &buf[0], sizeof(buf), 0);
-
-				RAWTRACE1("RECV: %d", n);
-				if (n == -1) {
-					int e = RHO_NET_ERROR_CODE;
-					RAWTRACE1("RECV ERROR: %d", e);
-		#if !defined(WINDOWS_PLATFORM)
-					if (e == EINTR)
-						continue;
-		#else
-					if (e == WSAEINTR)
-						continue;
-		#endif
-
-		#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
-					if (e == EAGAIN || e == WSAEWOULDBLOCK) {
-		#else
-					if (e == EAGAIN) {
-		#endif
-						if (!r.empty())
-							break;
-						
-		                if(nAttemptRetry)
-						{
-							RAWLOG_INFO("nAttemptRetry is enabled");
-							if(++attempts > nMaxAttempts)
-							{
-								RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
-								return false;
-							}
-						}
-						else
-						{
-							RAWLOG_INFO("nAttemptRetry is disabled");	
-							if(nRetryMethod)
-							{
-								RAWLOG_INFO("Retry is enabled. returning to parent");
-								return false;
-							}
-							else
-							{
-								RAWLOG_INFO("Retry is Disbaled. means ignoring error and continue");
-								continue;
-							}
-						}
-
-						fd_set fds;
-						FD_ZERO(&fds);
-						FD_SET(m_sock, &fds);
-						timeval tv = {0};
-						tv.tv_usec = 100000;//100 MS
-						int ret = select(m_sock + 1, &fds, 0, 0, &tv);
-						RAWLOG_ERROR1("Return value of select is  %d ", ret);
-						RAWLOG_ERROR1("Return value of select  error : %d", errno);
-						continue;
-					}
-		            
-					RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
-					return false;
-				}
-		        
-				if (n == 0) {
-					if(!r.empty()) {
-						if (verbose) RAWTRACE("Client closed connection gracefully");
-						break;
-					} else {
-						RAWLOG_ERROR("Connection gracefully closed before we receive any data");
-						return false;
-					}
-				} else {
-					if (verbose) RAWTRACE1("Actually read %d bytes", n);
-					r.insert(r.end(), &buf[0], &buf[0] + n);
-				}
-			}
-		    
-			if (!r.empty()) {
-				request.insert(request.end(), r.begin(), r.end());
-				if ( !rho_conf_getBool("log_skip_post") ) {
-					String strRequest(request.begin(),request.end());
-					RAWTRACE1("Received request:\n%s", strRequest.c_str());
-				}
-			}
-			return true;
-		}
-
-#else
 bool CHttpServer::receive_request(ByteVector &request)
 {
 	if (verbose) RAWTRACE("Receiving request...");
@@ -694,6 +580,19 @@ bool CHttpServer::receive_request(ByteVector &request)
 	ByteVector r;
     char buf[BUF_SIZE];
     int attempts = 0;
+
+	int nSolution = RHOCONF().getInt("Method");
+	int nRetry = RHOCONF().getInt("Retry");
+	int nMaxAttempts = RHOCONF().getInt("Attempts");
+	 RAWTRACE1("Method: %d", nSolution);
+	 
+	 if(nMaxAttempts <= 0 )
+		nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
+	 RAWTRACE1("nMaxAttempts : %d", nMaxAttempts);
+
+	if(nSolution == 0)
+	{
+		if (verbose) RAWTRACE("Executing Method 0");
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
@@ -717,7 +616,7 @@ bool CHttpServer::receive_request(ByteVector &request)
                 if (!r.empty())
                     break;
                 
-                if(++attempts > (HTTP_EAGAIN_TIMEOUT*10))
+                if(++attempts > nMaxAttempts)
                 {
                     RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
                     return false;
@@ -730,11 +629,11 @@ bool CHttpServer::receive_request(ByteVector &request)
 				tv.tv_usec = 100000;//100 MS
                 select(m_sock + 1, &fds, 0, 0, &tv);
                 continue;
-            }
+            } // end of (e == EAGAIN || e == WSAEWOULDBLOCK)
             
             RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
             return false;
-        }
+        } //end of n==-1
         
         if (n == 0) {
             if(!r.empty()) {
@@ -747,19 +646,109 @@ bool CHttpServer::receive_request(ByteVector &request)
         } else {
             if (verbose) RAWTRACE1("Actually read %d bytes", n);
             r.insert(r.end(), &buf[0], &buf[0] + n);
-        }
-    }
-    
-    if (!r.empty()) {
-        request.insert(request.end(), r.begin(), r.end());
-        if ( !rho_conf_getBool("log_skip_post") ) {
-            String strRequest(request.begin(),request.end());
-            RAWTRACE1("Received request:\n%s", strRequest.c_str());
-        }
-    }
+        } //end of (n==0)
+    } //end of for loop
+	}
+	else if(nSolution == 1) //Alternative solution
+	{
+		if (verbose) RAWTRACE("Executing Method 1");
+		for(;;) 
+		{
+			fd_set fds;
+			FD_ZERO(&fds);
+			FD_SET(m_sock, &fds);
+			timeval tv = {0};
+			tv.tv_usec = 100000;//100 MS
+			int ret = select(m_sock + 1, &fds, 0, 0, &tv);
+
+			RAWLOG_ERROR1("return value of select call: %d", ret);
+			if (verbose) RAWTRACE("Select call completed");
+
+			if (FD_ISSET(m_sock, &fds))
+			{
+				if (verbose) RAWTRACE("Read portion of data from socket...");
+				int n = recv(m_sock, &buf[0], sizeof(buf), 0);
+				RAWTRACE1("RECV: %d", n);
+
+				if (n == -1) 
+				{
+					int e = RHO_NET_ERROR_CODE;
+					RAWTRACE1("RECV ERROR: %d", e);
+#if !defined(WINDOWS_PLATFORM)
+					if (e == EINTR)
+						continue;
+#else
+					if (e == WSAEINTR)
+						continue;
+#endif
+
+#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
+					if (e == EAGAIN || e == WSAEWOULDBLOCK)
+					{
+#else
+					if (e == EAGAIN) 
+					{
+#endif
+						if (!r.empty())
+							break;
+						if(nRetry==0)
+						{
+							if (verbose) RAWTRACE("Continuing");
+							continue;
+						}
+						else
+						{
+							if (verbose) RAWTRACE("returning to parent");
+							return false;
+						}
+					} // end of (e == EAGAIN || e == WSAEWOULDBLOCK)
+
+					RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
+					return false;
+				} //end of n==-1
+
+				if (n == 0) 
+				{
+					if(!r.empty()) 
+					{
+						if (verbose) RAWTRACE("Client closed connection gracefully");
+						break;
+					} 
+					else 
+					{
+						RAWLOG_ERROR("Connection gracefully closed before we receive any data");
+						return false;
+					}
+				}
+				else 
+				{
+					if (verbose) RAWTRACE1("Actually read %d bytes", n);
+					r.insert(r.end(), &buf[0], &buf[0] + n);
+				} //end of (n==0)
+
+
+			} //end of FD_ISSET(m_sock, &fds)
+			else
+			{
+				if (verbose) RAWTRACE("FDISset failed");
+				if (verbose) RAWTRACE1("Error in FDisset", errno);
+			}
+	
+		} //end of for loop
+	} //end of solution =1
+	if (!r.empty()) 
+	{
+		request.insert(request.end(), r.begin(), r.end());
+		if ( !rho_conf_getBool("log_skip_post") )
+		{
+			String strRequest(request.begin(),request.end());
+			RAWTRACE1("Received request:\n%s", strRequest.c_str());
+		}
+	}
+
+
     return true;
 }
-#endif
 
 bool CHttpServer::send_response_impl(String const &data, bool continuation)
 {
