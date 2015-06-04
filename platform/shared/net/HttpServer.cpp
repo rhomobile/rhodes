@@ -654,20 +654,29 @@ bool CHttpServer::receive_request(ByteVector &request)
 	else if(nSolution == 1) //Alternative solution
 	{
 		if (verbose) RAWTRACE("Executing Method 1");
+		fd_set fds;
 		for(;;) 
 		{
-			fd_set fds;
+			if (verbose) RAWTRACE("Start of for loop");
+			
 			FD_ZERO(&fds);
 			FD_SET(m_sock, &fds);
 			timeval tv = {0};
-			//tv.tv_usec = 100000;//100 MS
-			tv.tv_sec=5;
+			tv.tv_usec = 100000;//100 MS
+			//tv.tv_sec=5;
+			u_long nread =0;
 			int ret = select(m_sock + 1, &fds, 0, 0, &tv);
 
 			RAWLOG_ERROR1("return value of select call: %d", ret);
+			RAWLOG_ERROR1("err value of select call: %d", errno);
 			if (verbose) RAWTRACE("Select call completed");
 
-			if (FD_ISSET(m_sock, &fds))
+			//if (FD_ISSET(m_sock, &fds))
+			int nSuccess= ioctlsocket(m_sock, FIONREAD, &nread);
+			RAWLOG_ERROR1("ioctlsocket return value  %d", nSuccess);
+			RAWLOG_ERROR1("ioctlsocket error value  %d", errno);
+			RAWLOG_ERROR1("ioctlsocket bytes %d", nread);
+			if( nSuccess == 0)
 			{
 				if (verbose) RAWTRACE("Read portion of data from socket...");
 				int n = recv(m_sock, &buf[0], sizeof(buf), 0);
@@ -733,10 +742,9 @@ bool CHttpServer::receive_request(ByteVector &request)
 			} //end of FD_ISSET(m_sock, &fds)
 			else
 			{
-				if (verbose) RAWTRACE("FDISset failed");
-				if (verbose) RAWTRACE1("Error in FDisset : %d", errno);
+				if (verbose) RAWTRACE("ioctlsocket failed");
+				if (verbose) RAWTRACE1("Error in ioctlsocket : %d", errno);
 			}
-	
 		} //end of for loop
 	} //end of solution =1
 	if (!r.empty()) 
